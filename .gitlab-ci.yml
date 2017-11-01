@@ -1,19 +1,22 @@
-.cargo_make_ci_template: &cargo_make_ci
+.install_dependencies_template: &install_dependencies
   stage: test
   before_script:
     - cargo install cargo-make
-  script:
-    - cargo make ci-flow
 
 stable:build:
   # https://hub.docker.com/r/library/rust/tags/
   # https://github.com/rust-lang-nursery/docker-rust
   image: "rust:latest"
-  <<: *cargo_make_ci
+  <<: *install_dependencies
+  script:
+    - cargo make workspace-ci-flow
 
 nightly:build:
   # https://hub.docker.com/r/rustlang/rust/tags/
   image: "rustlang/rust:nightly"
   variables:
     CARGO_MAKE_RUN_CODECOV: 'true'
-  <<: *cargo_make_ci
+  <<: *install_dependencies
+  script:
+    - cargo make workspace-ci-flow
+    - cargo make --no-workspace workspace-coverage
