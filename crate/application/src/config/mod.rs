@@ -2,8 +2,8 @@
 
 mod error;
 mod find;
+mod find_context;
 
 pub use self::error::{Error, ErrorKind};
-
-// Consumers will use this as `application::config::find()`
-pub use self::find::find;
+pub use self::find::{find, find_in};
+pub use self::find_context::FindContext;

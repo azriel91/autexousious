@@ -6,9 +6,13 @@
 
 #[macro_use]
 extern crate derive_error_chain;
-#[macro_use]
 extern crate error_chain;
 #[cfg(test)]
+#[macro_use]
+extern crate pretty_assertions;
+#[cfg(test)]
 extern crate tempdir;
+#[cfg(test)]
+extern crate tempfile;
 
 pub mod config;
