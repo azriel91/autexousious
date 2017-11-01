@@ -1,7 +1,18 @@
 .install_dependencies_template: &install_dependencies
   stage: test
   before_script:
-    - apt-get update -qq && apt-get install -y -qq libcurl4-openssl-dev libelf-dev libdw-dev cmake gcc binutils-dev zlib1g-dev libiberty-dev
+    - apt-get update -qq
+    - |
+      apt-get install -y -qq \
+        libcurl4-openssl-dev \
+        libelf-dev \
+        libdw-dev \
+        cmake \
+        gcc \
+        binutils-dev \
+        zlib1g-dev \
+        libiberty-dev \
+        zip
     - cargo install cargo-make || true
 
 .cache_artifacts_template: &cache_artifacts
