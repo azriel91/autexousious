@@ -1,6 +1,7 @@
 .install_dependencies_template: &install_dependencies
   stage: test
   before_script:
+    - apt-get update -qq && apt-get install -y -qq libcurl4-openssl-dev libelf-dev libdw-dev cmake gcc binutils-dev
     - cargo install cargo-make
 
 stable:build:
@@ -19,4 +20,5 @@ nightly:build:
   <<: *install_dependencies
   script:
     - cargo make workspace-ci-flow
+  after_script:
     - cargo make --no-workspace workspace-coverage
