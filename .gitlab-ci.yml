@@ -1,0 +1,75 @@
+.install_dependencies_template: &install_dependencies
+  stage: test
+  before_script:
+    - apt-get update -qq
+    - |
+      apt-get install -y -qq \
+        libcurl4-openssl-dev \
+        libelf-dev \
+        libdw-dev \
+        cmake \
+        gcc \
+        binutils-dev \
+        zlib1g-dev \
+        libiberty-dev \
+        zip
+    - cargo install cargo-make || true
+
+.cache_artifacts_template: &cache_artifacts
+  cache:
+    paths:
+      # we don't cache target/ as well because old binaries interferes with coverage
+      - cargo/
+      - kcov-$KCOV_VERSION
+
+variables:
+  CARGO_HOME: $CI_PROJECT_DIR/cargo
+
+stable:build:
+  # https://hub.docker.com/r/library/rust/tags/
+  # https://github.com/rust-lang-nursery/docker-rust
+  image: "rust:latest"
+  variables:
+    CARGO_MAKE_SKIP_CODECOV: 'true'
+  <<: *install_dependencies
+  <<: *cache_artifacts
+  script:
+    - cargo make workspace-ci-flow
+
+nightly:build:
+  # https://hub.docker.com/r/rustlang/rust/tags/
+  image: "rustlang/rust:nightly"
+  variables:
+    CARGO_MAKE_RUN_CODECOV: 'true'
+    KCOV_VERSION: 34
+  <<: *install_dependencies
+  <<: *cache_artifacts
+  script:
+    - cargo make workspace-ci-flow
+  after_script:
+    # On gitlab-ci we cannot use sudo to install kcov, which ships with the default Makefile from
+    # cargo-make.
+    #
+    # We have tried overriding the kcov install_script in [tasks.coverage-kcov] in Makefile.toml,
+    # but for some reason cargo-make does not use the override. cargo-make does have tests proving
+    # that it does use overrides; maybe it's to do with workspace crates.
+    #
+    # Anyway, we install it ourselves here.
+    - |
+      # install kcov
+      command -v kcov >/dev/null 2>&1 || {
+        if [ "$(grep -Ei 'debian|buntu|mint' /etc/*release)" ]; then
+          wget https://github.com/SimonKagstrom/kcov/archive/v$KCOV_VERSION.zip
+          unzip v$KCOV_VERSION.zip
+          cd kcov-$KCOV_VERSION
+          mkdir build
+          cd ./build
+          cmake ..
+          make
+          make install
+          cd ../..
+          # Don't delete old build files, so kcov builds quicker next time
+          # rm -rf kcov-$KCOV_VERSION
+        fi
+      }
+    - cargo make --no-workspace workspace-coverage
