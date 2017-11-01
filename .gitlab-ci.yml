@@ -20,6 +20,7 @@
     paths:
       # we don't cache target/ as well because old binaries interferes with coverage
       - cargo/
+      - kcov-$KCOV_VERSION
 
 variables:
   CARGO_HOME: $CI_PROJECT_DIR/cargo
@@ -67,7 +68,8 @@ nightly:build:
           make
           make install
           cd ../..
-          rm -rf kcov-$KCOV_VERSION
+          # Don't delete old build files, so kcov builds quicker next time
+          # rm -rf kcov-$KCOV_VERSION
         fi
       }
     - cargo make --no-workspace workspace-coverage
