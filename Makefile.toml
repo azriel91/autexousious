@@ -1,3 +1,27 @@
 [env]
 CARGO_MAKE_KCOV_EXCLUDE_LINE = "unimplemented,kcov-ignore"
 CARGO_MAKE_KCOV_EXCLUDE_REGION = "kcov-ignore-start:kcov-ignore-end"
+
+# We override the default coverage-kcov task as gitlab-ci runs the job in a container, which does
+# not have sudo.
+#
+# https://github.com/sagiegurari/cargo-make/blob/0.7.3/src/Makefile.stable.toml#L468-L538
+[tasks.coverage-kcov]
+install_script = [
+'''
+command -v kcov >/dev/null 2>&1 || {
+    if [ "$(grep -Ei 'debian|buntu|mint' /etc/*release)" ]; then
+        wget https://github.com/SimonKagstrom/kcov/archive/v$KCOV_VERSION.zip
+        unzip v$KCOV_VERSION.zip
+        cd kcov-$KCOV_VERSION
+        mkdir build
+        cd ./build
+        cmake ..
+        make
+        make install
+        cd ../..
+        rm -rf kcov-$KCOV_VERSION
+    fi
+}
+'''
+]
