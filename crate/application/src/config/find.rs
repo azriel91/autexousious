@@ -5,13 +5,38 @@ use std::path::{Path, PathBuf};
 use config::error::Result;
 use config::FindContext;
 
+/// Returns development-time base directories as a `Vec<::std::path::Path>`.
+///
+/// Currently this includes the following directories:
+///
+/// * [`option_env!`][1]`("`[`OUT_DIR`][2]`")`
+/// * [`option_env!`][1]`("`[`CARGO_MANIFEST_DIR`][2]`")`
+///
+/// This has to be invoked by the consumer crate as the environmental variables change based on
+/// which crate invokes the macro. This cannot be a function as the environmental variables are
+/// evaluated at compile time of this crate.
+///
+/// [1]: https://doc.rust-lang.org/std/macro.option_env.html
+/// [2]: http://doc.crates.io/environment-variables.html#environment-variables-cargo-sets-for-crates
+#[macro_export]
+macro_rules! development_base_dirs {
+    () => {
+        vec![option_env!("OUT_DIR"), option_env!("CARGO_MANIFEST_DIR")]
+            .iter()
+            .filter(|dir| dir.is_some())
+            .map(|dir| dir.expect("Unwrapping option"))
+            .map(|dir| ::std::path::Path::new(&dir).to_owned())
+            .collect()
+    }
+}
+
 /// Finds and returns the path to the configuration file.
 ///
 /// # Parameters:
 ///
 /// * `file_name`: Name of the file to search for which should be next to the executable.
 pub fn find(file_name: &str) -> Result<PathBuf> {
-    find_in(Path::new(""), &file_name)
+    find_in(Path::new(""), &file_name, None)
 }
 
 /// Finds and returns the path to the configuration file within the given configuration directory.
@@ -20,17 +45,24 @@ pub fn find(file_name: &str) -> Result<PathBuf> {
 ///
 /// * `conf_dir`: Directory relative to the executable in which to search for configuration.
 /// * `file_name`: Name of the file to search for.
+/// * `additional_base_dirs`: Additional base directories to look into. Useful at development time
+///     when configuration is generated and placed in a separate output directory.
 pub fn find_in<P: AsRef<Path> + AsRef<ffi::OsStr>>(
     conf_dir: P,
     file_name: &str,
+    additional_base_dirs: Option<Vec<PathBuf>>,
 ) -> Result<PathBuf> {
     let mut exe_dir = env::current_exe()?;
     exe_dir.pop();
 
     let mut base_dirs = vec![exe_dir];
 
+    if let Some(mut additional_dirs) = additional_base_dirs {
+        base_dirs.append(&mut additional_dirs);
+    }
+
     if cfg!(debug_assertions) {
-        base_dirs.append(&mut development_base_dirs());
+        base_dirs.push(development_base_dirs!());
     }
 
     for base_dir in &base_dirs {
@@ -50,21 +82,6 @@ pub fn find_in<P: AsRef<Path> + AsRef<ffi::OsStr>>(
     Err(find_context.into())
 }
 
-fn development_base_dirs() -> Vec<PathBuf> {
-    let mut base_dirs = Vec::new();
-
-    // Not sure that we need to have both OUT_DIR and CARGO_MANIFEST_DIR looked up. When we add
-    // other resources we probably want to just read OUT_DIR and not CARGO_MANIFEST_DIR
-    let development_base_dirs = vec![option_env!("OUT_DIR"), option_env!("CARGO_MANIFEST_DIR")];
-    for development_dir in &development_base_dirs {
-        if let &Some(dir) = development_dir {
-            base_dirs.push(Path::new(dir).to_owned());
-        }
-    }
-
-    base_dirs
-}
-
 #[cfg(test)]
 mod test {
     use std::env;
@@ -75,7 +92,7 @@ mod test {
 
     use config::error::ErrorKind;
     use config::FindContext;
-    use super::{development_base_dirs, find, find_in};
+    use super::{find, find_in};
 
     fn exe_dir() -> PathBuf {
         let mut exe_dir = env::current_exe().unwrap();
@@ -124,7 +141,14 @@ mod test {
         let temp_dir = temp_dir.unwrap();
 
         let expected = temp_dir.path().join("config.ron");
-        assert_eq!(expected, find_in(&temp_dir.path(), "config.ron").unwrap());
+        assert_eq!(
+            expected,
+            find_in(
+                &temp_dir.path(),
+                "config.ron",
+                Some(development_base_dirs!())
+            ).unwrap()
+        );
     }
 
     #[test]
@@ -140,7 +164,7 @@ mod test {
 
         if let &ErrorKind::Find(ref find_context) = find("config.ron").unwrap_err().kind() {
             let mut base_dirs = vec![exe_dir()];
-            base_dirs.append(&mut development_base_dirs());
+            base_dirs.append(&mut development_base_dirs!());
             let expected = FindContext {
                 base_dirs,
                 conf_dir: PathBuf::from(""),
