@@ -6,12 +6,9 @@ use std::env;
 use std::path::{Path, PathBuf};
 use std::process;
 
-use amethyst::ecs::rendering::{MaterialComponent, MeshComponent, RenderBundle};
-use amethyst::ecs::transform::Transform;
-use amethyst::event::{KeyboardInput, VirtualKeyCode};
+use amethyst::renderer::{DisplayConfig, DrawFlat, Event, KeyboardInput, Pipeline, PosNormTex,
+                         RenderBundle, RenderSystem, Stage, VirtualKeyCode, WindowEvent};
 use amethyst::prelude::*;
-use amethyst::renderer::prelude::*;
-use amethyst::renderer;
 
 struct Example;
 
@@ -34,8 +31,6 @@ impl State for Example {
         }
     }
 }
-
-type DrawFlat = pass::DrawFlat<PosNormTex, MeshComponent, MaterialComponent, Transform>;
 
 fn renderer_config() -> Result<PathBuf, &'static str> {
     let mut exe_dir = env::current_exe().unwrap();
@@ -61,18 +56,17 @@ fn renderer_config() -> Result<PathBuf, &'static str> {
 }
 
 fn run() -> Result<(), amethyst::Error> {
-    let config = renderer::Config::load(renderer_config().unwrap().as_os_str().to_str().unwrap());
+    let config = DisplayConfig::load(renderer_config().unwrap().as_os_str().to_str().unwrap());
 
-    let mut app = Application::build(Example)?
-        .with_bundle(
-            RenderBundle::new(
-                Pipeline::build().with_stage(
-                    Stage::with_backbuffer()
-                        .clear_target([1.0, 1.0, 1.0, 1.0], 1.0)
-                        .with_pass(DrawFlat::new()),
-                ),
-            ).with_config(config),
-        )?
+    let pipe = Pipeline::build().with_stage(
+        Stage::with_backbuffer()
+            .clear_target([0.2, 0.4, 1.0, 1.0], 1.0)
+            .with_pass(DrawFlat::<PosNormTex>::new()),
+    );
+
+    let mut app = Application::build(".", Example)?
+        .with_bundle(RenderBundle::new())?
+        .with_local(RenderSystem::build(pipe, Some(config))?)
         .build()
         .expect("Fatal error");
 
