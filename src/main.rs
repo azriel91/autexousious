@@ -34,9 +34,12 @@ impl State for Example {
 }
 
 fn run() -> Result<(), amethyst::Error> {
-    let config = DisplayConfig::load(
-        find_in("resources", "config.ron", Some(development_base_dirs!()))
-            .unwrap()
+    let display_config = DisplayConfig::load(
+        find_in(
+            "resources",
+            "display_config.ron",
+            Some(development_base_dirs!()),
+        ).unwrap()
             .as_os_str()
             .to_str()
             .unwrap(),
@@ -50,7 +53,7 @@ fn run() -> Result<(), amethyst::Error> {
 
     let mut app = Application::build(".", Example)?
         .with_bundle(RenderBundle::new())?
-        .with_local(RenderSystem::build(pipe, Some(config))?)
+        .with_local(RenderSystem::build(pipe, Some(display_config))?)
         .build()
         .expect("Fatal error");
 
