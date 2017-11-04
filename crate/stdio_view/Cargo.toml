@@ -1,0 +1,10 @@
+[package]
+name = "stdio_view"
+version = "0.1.0"
+authors = ["Azriel Hoh <azriel91@gmail.com>"]
+
+[dependencies]
+console = "0.5"
+dialoguer = "0.1"
+shred = "0.5"
+specs = "0.10"

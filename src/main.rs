@@ -3,6 +3,7 @@
 extern crate amethyst;
 #[macro_use]
 extern crate application;
+extern crate stdio_view;
 
 use std::process;
 
@@ -10,6 +11,7 @@ use amethyst::renderer::{DisplayConfig, DrawFlat, Event, KeyboardInput, Pipeline
                          RenderBundle, RenderSystem, Stage, VirtualKeyCode, WindowEvent};
 use amethyst::prelude::*;
 use application::config::find_in;
+use stdio_view::StdinSystem;
 
 struct Example;
 
@@ -54,6 +56,7 @@ fn run() -> Result<(), amethyst::Error> {
     let mut app = Application::build(".", Example)?
         .with_bundle(RenderBundle::new())?
         .with_local(RenderSystem::build(pipe, Some(display_config))?)
+        .with_local(StdinSystem)
         .build()
         .expect("Fatal error");
 
