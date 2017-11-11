@@ -198,6 +198,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "application_input"
+version = "0.1.0"
+dependencies = [
+ "amethyst 0.5.1 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
+]
+
+[[package]]
 name = "approx"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -576,6 +583,7 @@ version = "0.1.0"
 dependencies = [
  "amethyst 0.5.1 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "application 0.1.0",
+ "application_input 0.1.0",
  "stdio_view 0.1.0",
 ]
 
@@ -1284,10 +1292,10 @@ dependencies = [
 name = "stdio_view"
 version = "0.1.0"
 dependencies = [
+ "amethyst 0.5.1 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
+ "application_input 0.1.0",
  "console 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "dialoguer 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "specs 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
