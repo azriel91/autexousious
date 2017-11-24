@@ -10,4 +10,5 @@ extern crate dialoguer;
 
 pub use stdin_system::StdinSystem;
 
+pub(crate) mod reader;
 mod stdin_system;

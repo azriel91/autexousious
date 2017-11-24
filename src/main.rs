@@ -51,8 +51,8 @@ impl State for Example {
                             ..
                         },
                     ..
-                } |
-                WindowEvent::Closed => Trans::Quit,
+                }
+                | WindowEvent::Closed => Trans::Quit,
                 _ => Trans::None,
             },
             _ => Trans::None,
@@ -104,7 +104,7 @@ fn run() -> Result<(), amethyst::Error> {
         .with_bundle(RenderBundle::new())?
         .with_bundle(ApplicationInputBundle::new())?
         .with_local(RenderSystem::build(pipe, Some(display_config))?)
-        .with_local(StdinSystem)
+        .with_local(StdinSystem::new())
         .build()
         .expect("Fatal error");
 
