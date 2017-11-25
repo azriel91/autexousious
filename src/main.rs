@@ -3,17 +3,44 @@
 extern crate amethyst;
 #[macro_use]
 extern crate application;
+extern crate application_input;
+extern crate stdio_view;
 
 use std::process;
 
 use amethyst::renderer::{DisplayConfig, DrawFlat, Event, KeyboardInput, Pipeline, PosNormTex,
                          RenderBundle, RenderSystem, Stage, VirtualKeyCode, WindowEvent};
 use amethyst::prelude::*;
+use amethyst::shrev::{EventChannel, EventReadData, ReaderId};
 use application::config::find_in;
+use application_input::{ApplicationEvent, ApplicationInputBundle};
+use stdio_view::StdinSystem;
 
-struct Example;
+#[derive(Debug, Default)]
+struct Example {
+    reader: Option<ReaderId>,
+}
+
+impl Example {
+    pub fn new() -> Self {
+        Default::default()
+    }
+}
 
 impl State for Example {
+    fn on_start(&mut self, engine: &mut Engine) {
+        // You can't unregister a reader from an EventChannel in on_stop because we don't have to
+        //
+        // @torkleyy: No need to unregister, it's just two integer values.
+        // @Rhuagh: Just drop the reader id
+        let reader_id = engine
+            .world
+            .read_resource::<EventChannel<ApplicationEvent>>()
+            .register_reader();
+
+        self.reader.get_or_insert(reader_id);
+    }
+
     fn handle_event(&mut self, _: &mut Engine, event: Event) -> Trans {
         match event {
             Event::WindowEvent { event, .. } => match event {
@@ -24,12 +51,34 @@ impl State for Example {
                             ..
                         },
                     ..
-                } |
-                WindowEvent::Closed => Trans::Quit,
+                }
+                | WindowEvent::Closed => Trans::Quit,
                 _ => Trans::None,
             },
             _ => Trans::None,
         }
+    }
+
+    fn update(&mut self, engine: &mut Engine) -> Trans {
+        let app_event_channel = engine
+            .world
+            .read_resource::<EventChannel<ApplicationEvent>>();
+
+        let mut reader_id = self.reader.as_mut().expect("Expected reader to be set");
+        if let Ok(event_read_data) = app_event_channel.read(&mut reader_id) {
+            match event_read_data {
+                EventReadData::Data(mut storage_iterator) => {
+                    while let Some(_event) = storage_iterator.next() {
+                        return Trans::Quit;
+                    }
+                }
+                _ => {}
+            }
+        } else {
+            unimplemented!();
+        }
+
+        Trans::None
     }
 }
 
@@ -51,9 +100,11 @@ fn run() -> Result<(), amethyst::Error> {
             .with_pass(DrawFlat::<PosNormTex>::new()),
     );
 
-    let mut app = Application::build(".", Example)?
+    let mut app = Application::build(".", Example::new())?
         .with_bundle(RenderBundle::new())?
+        .with_bundle(ApplicationInputBundle::new())?
         .with_local(RenderSystem::build(pipe, Some(display_config))?)
+        .with_local(StdinSystem::new())
         .build()
         .expect("Fatal error");
 
