@@ -28,20 +28,19 @@ impl Example {
 }
 
 impl State for Example {
-    fn on_start(&mut self, engine: &mut Engine) {
+    fn on_start(&mut self, world: &mut World) {
         // You can't unregister a reader from an EventChannel in on_stop because we don't have to
         //
         // @torkleyy: No need to unregister, it's just two integer values.
         // @Rhuagh: Just drop the reader id
-        let reader_id = engine
-            .world
+        let reader_id = world
             .read_resource::<EventChannel<ApplicationEvent>>()
             .register_reader();
 
         self.reader.get_or_insert(reader_id);
     }
 
-    fn handle_event(&mut self, _: &mut Engine, event: Event) -> Trans {
+    fn handle_event(&mut self, _: &mut World, event: Event) -> Trans {
         match event {
             Event::WindowEvent { event, .. } => match event {
                 WindowEvent::KeyboardInput {
@@ -59,10 +58,8 @@ impl State for Example {
         }
     }
 
-    fn update(&mut self, engine: &mut Engine) -> Trans {
-        let app_event_channel = engine
-            .world
-            .read_resource::<EventChannel<ApplicationEvent>>();
+    fn update(&mut self, world: &mut World) -> Trans {
+        let app_event_channel = world.read_resource::<EventChannel<ApplicationEvent>>();
 
         let mut reader_id = self.reader.as_mut().expect("Expected reader to be set");
         if let Ok(event_read_data) = app_event_channel.read(&mut reader_id) {
