@@ -69,19 +69,24 @@ mod test {
 
     use amethyst::ecs::RunNow;
     use amethyst::shred::{Resources, SystemData};
-    use amethyst::shrev::{EventChannel, EventReadData, ReaderId};
+    use amethyst::shrev::{EventChannel, ReaderId};
     use application_input::ApplicationEvent;
 
     use super::{EventChannelData, StdinSystem};
 
-    fn setup() -> (StdinSystem, Sender<String>, Resources, ReaderId) {
+    fn setup() -> (
+        StdinSystem,
+        Sender<String>,
+        Resources,
+        ReaderId<ApplicationEvent>,
+    ) {
         let mut res = Resources::new();
         res.add(EventChannel::<ApplicationEvent>::with_capacity(10));
         let (tx, rx) = mpsc::channel();
         let stdin_system = StdinSystem::internal_new(rx, || {});
 
         let reader_id = {
-            let event_channel = EventChannelData::fetch(&res, 0);
+            let mut event_channel = EventChannelData::fetch(&res, 0);
             event_channel.register_reader()
         }; // kcov-ignore
 
@@ -90,20 +95,11 @@ mod test {
 
     fn expect_event(
         event_channel: &EventChannel<ApplicationEvent>,
-        mut reader_id: &mut ReaderId,
+        mut reader_id: &mut ReaderId<ApplicationEvent>,
         expected_event: Option<&ApplicationEvent>,
     ) {
-        match event_channel.read(&mut reader_id) {
-            Ok(EventReadData::Data(mut event_it)) => {
-                assert_eq!(expected_event, event_it.next());
-            }
-            // kcov-ignore-start
-            Ok(EventReadData::Overflow(..)) => {
-                panic!("Expected Ok(EventReadData::Data) but was Ok(EventReadData::Overflow(..))")
-            }
-            _ => panic!("Expected Ok(EventReadData::Data) but was Err(..)}"),
-            // kcov-ignore-end
-        };
+        let mut event_it = event_channel.read(&mut reader_id);
+        assert_eq!(expected_event, event_it.next());
     }
 
     #[test]

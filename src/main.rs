@@ -85,10 +85,7 @@ fn run() -> Result<(), amethyst::Error> {
             "resources",
             "display_config.ron",
             Some(development_base_dirs!()),
-        ).unwrap()
-            .as_os_str()
-            .to_str()
-            .unwrap(),
+        ).unwrap(),
     );
 
     let pipe = Pipeline::build().with_stage(

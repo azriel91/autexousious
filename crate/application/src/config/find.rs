@@ -137,7 +137,7 @@ mod test {
 
     #[test]
     fn find_in_returns_conf_path_when_conf_file_exists() {
-        let (temp_dir, _conf_path) = setup(Some("resources")).unwrap();
+        let (temp_dir, conf_path) = setup(Some("resources")).unwrap();
         let temp_dir = temp_dir.unwrap();
 
         let expected = temp_dir.path().join("config.ron");
@@ -149,13 +149,18 @@ mod test {
                 Some(development_base_dirs!())
             ).unwrap()
         );
+
+        conf_path.close().unwrap();
+        temp_dir.close().unwrap();
     }
 
     #[test]
     fn find_returns_conf_path_when_conf_file_exists() {
-        let (_, _conf_path) = setup(Some("")).unwrap();
+        let (_, conf_path) = setup(Some("")).unwrap();
 
         assert_eq!(exe_dir().join("config.ron"), find("config.ron").unwrap());
+
+        conf_path.close().unwrap();
     }
 
     #[test]
