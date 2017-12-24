@@ -1,0 +1,4 @@
+// Used in top level module documentation
+(
+  title: "Example Config",
+)
