@@ -11,14 +11,14 @@ use std::process;
 use amethyst::renderer::{DisplayConfig, DrawFlat, Event, KeyboardInput, Pipeline, PosNormTex,
                          RenderBundle, RenderSystem, Stage, VirtualKeyCode, WindowEvent};
 use amethyst::prelude::*;
-use amethyst::shrev::{EventChannel, EventReadData, ReaderId};
+use amethyst::shrev::{EventChannel, ReaderId};
 use application::config::find_in;
 use application_input::{ApplicationEvent, ApplicationInputBundle};
 use stdio_view::StdinSystem;
 
 #[derive(Debug, Default)]
 struct Example {
-    reader: Option<ReaderId>,
+    reader: Option<ReaderId<ApplicationEvent>>,
 }
 
 impl Example {
@@ -34,7 +34,7 @@ impl State for Example {
         // @torkleyy: No need to unregister, it's just two integer values.
         // @Rhuagh: Just drop the reader id
         let reader_id = world
-            .read_resource::<EventChannel<ApplicationEvent>>()
+            .write_resource::<EventChannel<ApplicationEvent>>()
             .register_reader();
 
         self.reader.get_or_insert(reader_id);
@@ -62,17 +62,9 @@ impl State for Example {
         let app_event_channel = world.read_resource::<EventChannel<ApplicationEvent>>();
 
         let mut reader_id = self.reader.as_mut().expect("Expected reader to be set");
-        if let Ok(event_read_data) = app_event_channel.read(&mut reader_id) {
-            match event_read_data {
-                EventReadData::Data(mut storage_iterator) => {
-                    while let Some(_event) = storage_iterator.next() {
-                        return Trans::Quit;
-                    }
-                }
-                _ => {}
-            }
-        } else {
-            unimplemented!();
+        let mut storage_iterator = app_event_channel.read(&mut reader_id);
+        while let Some(_event) = storage_iterator.next() {
+            return Trans::Quit;
         }
 
         Trans::None

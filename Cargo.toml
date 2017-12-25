@@ -9,4 +9,7 @@ application = { path = "./crate/application" }
 application_input = { path = "./crate/application_input" }
 stdio_view = { path = "./crate/stdio_view" }
 
+[dev-dependencies]
+assert_cli = "0.5"
+
 [workspace]
