@@ -82,10 +82,23 @@ pub fn find_in<P: AsRef<Path> + AsRef<ffi::OsStr>>(
     Err(find_context.into())
 }
 
+/// The tests in here rely on file system state, which can cause failures when one test creates a
+/// temporary file, and another test expects an Error when the file does not exist (but it does).
+///
+/// This is mentioned in the following issues:
+///
+/// * https://github.com/rust-lang/rust/issues/33519
+/// * https://github.com/rust-lang/rust/pull/42684#issuecomment-314224230
+/// * https://github.com/rust-lang/rust/issues/43155
+///
+/// We use a static mutex to ensure these tests are run serially. The code is taken from the third
+/// link above.
 #[cfg(test)]
 mod test {
     use std::env;
+    use std::panic;
     use std::path::PathBuf;
+    use std::sync::Mutex;
 
     use tempdir::TempDir;
     use tempfile::{NamedTempFile, NamedTempFileOptions};
@@ -93,6 +106,25 @@ mod test {
     use config::error::ErrorKind;
     use config::FindContext;
     use super::{find, find_in};
+
+    lazy_static! {
+        static ref TEST_MUTEX: Mutex<()> = Mutex::new(());
+    }
+
+    macro_rules! test {
+        (fn $name:ident() $body:block) => {
+            #[test]
+            fn $name() {
+                let guard = TEST_MUTEX.lock().unwrap();
+                if let Err(e) = panic::catch_unwind(|| { $body }) {
+                    // kcov-ignore-start
+                    drop(guard);
+                    panic::resume_unwind(e);
+                    // kcov-ignore-end
+                }
+            }
+        }
+    }
 
     fn exe_dir() -> PathBuf {
         let mut exe_dir = env::current_exe().unwrap();
@@ -135,50 +167,54 @@ mod test {
         None
     }
 
-    #[test]
-    fn find_in_returns_conf_path_when_conf_file_exists() {
-        let (temp_dir, conf_path) = setup(Some("resources")).unwrap();
-        let temp_dir = temp_dir.unwrap();
+    test! {
+        fn find_in_returns_conf_path_when_conf_file_exists() {
+            let (temp_dir, conf_path) = setup(Some("resources")).unwrap();
+            let temp_dir = temp_dir.unwrap();
 
-        let expected = temp_dir.path().join("config.ron");
-        assert_eq!(
-            expected,
-            find_in(
-                &temp_dir.path(),
-                "config.ron",
-                Some(development_base_dirs!())
-            ).unwrap()
-        );
+            let expected = temp_dir.path().join("config.ron");
+            assert_eq!(
+                expected,
+                find_in(
+                    &temp_dir.path(),
+                    "config.ron",
+                    Some(development_base_dirs!())
+                ).unwrap()
+            );
 
-        conf_path.close().unwrap();
-        temp_dir.close().unwrap();
-    }
-
-    #[test]
-    fn find_returns_conf_path_when_conf_file_exists() {
-        let (_, conf_path) = setup(Some("")).unwrap();
-
-        assert_eq!(exe_dir().join("config.ron"), find("config.ron").unwrap());
-
-        conf_path.close().unwrap();
-    }
-
-    #[test]
-    fn find_returns_error_when_conf_file_does_not_exist() {
-        let _ = setup(None);
-
-        if let &ErrorKind::Find(ref find_context) = find("config.ron").unwrap_err().kind() {
-            let mut base_dirs = vec![exe_dir()];
-            base_dirs.append(&mut development_base_dirs!());
-            let expected = FindContext {
-                base_dirs,
-                conf_dir: PathBuf::from(""),
-                file_name: "config.ron".to_owned(),
-            }; // kcov-ignore
-
-            assert_eq!(&expected, find_context);
-        } else {
-            panic!("Expected `find` to return error"); // kcov-ignore
+            conf_path.close().unwrap();
+            temp_dir.close().unwrap();
         }
     }
+
+    test! {
+        fn find_returns_conf_path_when_conf_file_exists() {
+            let (_, conf_path) = setup(Some("")).unwrap();
+
+            assert_eq!(exe_dir().join("config.ron"), find("config.ron").unwrap());
+
+            conf_path.close().unwrap();
+        }
+    }
+
+    test! {
+        fn find_returns_error_when_conf_file_does_not_exist() {
+            let _ = setup(None);
+
+            if let &ErrorKind::Find(ref find_context) = find("config.ron").unwrap_err().kind() {
+                let mut base_dirs = vec![exe_dir()];
+                base_dirs.append(&mut development_base_dirs!());
+                let expected = FindContext {
+                    base_dirs,
+                    conf_dir: PathBuf::from(""),
+                    file_name: "config.ron".to_owned(),
+                }; // kcov-ignore
+
+                assert_eq!(&expected, find_context);
+            } else {
+                panic!("Expected `find` to return error"); // kcov-ignore
+            }
+        }
+    }
+
 }
