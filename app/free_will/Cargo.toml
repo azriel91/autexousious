@@ -1,0 +1,13 @@
+[package]
+name = "free_will"
+version = "0.1.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+
+[dependencies]
+amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop" }
+application = { path = "../../crate/application" }
+application_input = { path = "../../crate/application_input" }
+stdio_view = { path = "../../crate/stdio_view" }
+
+[dev-dependencies]
+assert_cli = "0.5"
