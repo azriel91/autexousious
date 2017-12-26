@@ -61,7 +61,7 @@ nightly:build:
       command -v kcov >/dev/null 2>&1 || {
         if [ "$(grep -Ei 'debian|buntu|mint' /etc/*release)" ]; then
           wget https://github.com/SimonKagstrom/kcov/archive/v$KCOV_VERSION.zip
-          unzip -u v$KCOV_VERSION.zip
+          unzip -uo v$KCOV_VERSION.zip
           cd kcov-$KCOV_VERSION
           mkdir build
           cd ./build
