@@ -63,7 +63,7 @@ nightly:build:
           wget https://github.com/SimonKagstrom/kcov/archive/v$KCOV_VERSION.zip
           unzip -uo v$KCOV_VERSION.zip
           cd kcov-$KCOV_VERSION
-          mkdir build
+          mkdir build || true
           cd ./build
           cmake ..
           make
