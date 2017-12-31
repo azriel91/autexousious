@@ -33,6 +33,24 @@
       - cargo/
       - kcov-$KCOV_VERSION
 
+.start_xvfb: &start_xvfb |
+  # Start XVFB
+  export DISPLAY=:99.0
+  /sbin/start-stop-daemon --start \
+                          --quiet \
+                          --pidfile /tmp/custom_xvfb_99.pid \
+                          --make-pidfile \
+                          --background \
+                          --exec /usr/bin/Xvfb \
+                          -- \
+                          :99 \
+                          -screen 0 1280x1024x24+32 \
+                          -pixdepths 3 27 32 \
+                          -ac \
+                          +extension GLX \
+                          +render \
+                          -noreset
+
 variables:
   CARGO_HOME: $CI_PROJECT_DIR/cargo
 
@@ -56,23 +74,7 @@ nightly:build:
   <<: *install_dependencies
   <<: *cache_artifacts
   script:
-    - |
-      # Start XVFB
-      export DISPLAY=:99.0
-      /sbin/start-stop-daemon --start \
-                              --quiet \
-                              --pidfile /tmp/custom_xvfb_99.pid \
-                              --make-pidfile \
-                              --background \
-                              --exec /usr/bin/Xvfb \
-                              -- \
-                              :99 \
-                              -screen 0 1280x1024x24+32 \
-                              -pixdepths 3 27 32 \
-                              -ac \
-                              +extension GLX \
-                              +render \
-                              -noreset
+    - *start_xvfb
     - sleep 2 && glxinfo || true
     - cargo make workspace-ci-flow
   after_script:
@@ -101,6 +103,7 @@ nightly:build:
           # rm -rf kcov-$KCOV_VERSION
         fi
       }
+    - *start_xvfb
     - cargo make --no-workspace workspace-coverage
     - grep -F merged_files ./target/coverage/index.json | grep -o '"covered":"[0-9]\+\.[0-9]\+"'
   coverage: '/"covered":"\d+\.\d+"/'
