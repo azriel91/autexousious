@@ -20,7 +20,7 @@
         xvfb \
         libgl1-mesa-dev \
         libgl1-mesa-glx
-    - cargo install cargo-make --force || true
+    - cargo install --force --git https://github.com/azriel91/cargo-make.git --branch issue-50/do-not-restrict-test-naming-convention || true
 
 .cache_artifacts_template: &cache_artifacts
   cache:
