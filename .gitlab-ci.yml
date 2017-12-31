@@ -1,6 +1,8 @@
 .install_dependencies_template: &install_dependencies
   stage: test
   before_script:
+    - cargo --version -v
+    - rustc --version -v
     - apt-get update -qq
     - |
       apt-get install -y -qq \
