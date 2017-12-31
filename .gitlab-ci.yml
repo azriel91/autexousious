@@ -1,6 +1,7 @@
 .install_dependencies_template: &install_dependencies
   stage: test
   before_script:
+    - uname -a
     - cargo --version -v
     - rustc --version -v
     - apt-get update -qq
@@ -72,7 +73,7 @@ nightly:build:
                               +extension GLX \
                               +render \
                               -noreset
-    - glxinfo
+    - sleep 2 && glxinfo || true
     - cargo make workspace-ci-flow
   after_script:
     # On gitlab-ci we cannot use sudo to install kcov, which ships with the default Makefile from
