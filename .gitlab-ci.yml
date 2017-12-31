@@ -21,7 +21,8 @@
       apt-get install -y -qq \
         xvfb \
         libgl1-mesa-dev \
-        libgl1-mesa-glx
+        libgl1-mesa-glx \
+        mesa-utils
     - cargo install --force --git https://github.com/azriel91/cargo-make.git --branch issue-50/do-not-restrict-test-naming-convention || true
 
 .cache_artifacts_template: &cache_artifacts
@@ -71,6 +72,7 @@ nightly:build:
                               +extension GLX \
                               +render \
                               -noreset
+    - glxinfo
     - cargo make workspace-ci-flow
   after_script:
     # On gitlab-ci we cannot use sudo to install kcov, which ships with the default Makefile from
