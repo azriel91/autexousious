@@ -5,6 +5,9 @@ extern crate amethyst;
 extern crate application;
 extern crate application_input;
 extern crate stdio_view;
+extern crate structopt;
+#[macro_use]
+extern crate structopt_derive;
 
 use std::process;
 
@@ -15,6 +18,7 @@ use amethyst::shrev::{EventChannel, ReaderId};
 use application::config::find_in;
 use application_input::{ApplicationEvent, ApplicationInputBundle};
 use stdio_view::StdinSystem;
+use structopt::StructOpt;
 
 #[derive(Debug, Default)]
 struct Example {
@@ -71,28 +75,38 @@ impl State for Example {
     }
 }
 
-fn run() -> Result<(), amethyst::Error> {
-    let display_config = DisplayConfig::load(
-        find_in(
-            "resources",
-            "display_config.ron",
-            Some(development_base_dirs!()),
-        ).unwrap(),
-    );
+#[derive(StructOpt, Debug)]
+#[structopt(name = "Free Will")]
+struct Opt {
+    #[structopt(long = "headless", help = "Run headlessly (no GUI)")] headless: bool,
+}
 
-    let pipe = Pipeline::build().with_stage(
-        Stage::with_backbuffer()
-            .clear_target([0.2, 0.4, 1.0, 1.0], 1.0)
-            .with_pass(DrawFlat::<PosNormTex>::new()),
-    );
-
-    let mut app = Application::build(".", Example::new())?
-        .with_bundle(RenderBundle::new())?
+fn run(opt: Opt) -> Result<(), amethyst::Error> {
+    let mut app_builder = Application::build(".", Example::new())?
         .with_bundle(ApplicationInputBundle::new())?
-        .with_local(RenderSystem::build(pipe, Some(display_config))?)
-        .with_local(StdinSystem::new())
-        .build()
-        .expect("Fatal error");
+        .with_local(StdinSystem::new());
+
+    if !opt.headless {
+        let display_config = DisplayConfig::load(
+            find_in(
+                "resources",
+                "display_config.ron",
+                Some(development_base_dirs!()),
+            ).unwrap(),
+        );
+
+        let pipe = Pipeline::build().with_stage(
+            Stage::with_backbuffer()
+                .clear_target([0.2, 0.4, 1.0, 1.0], 1.0)
+                .with_pass(DrawFlat::<PosNormTex>::new()),
+        );
+
+        app_builder = app_builder
+            .with_bundle(RenderBundle::new())?
+            .with_local(RenderSystem::build(pipe, Some(display_config))?);
+    }
+
+    let mut app = app_builder.build().expect("Fatal error");
 
     app.run();
 
@@ -100,7 +114,9 @@ fn run() -> Result<(), amethyst::Error> {
 }
 
 fn main() {
-    if let Err(e) = run() {
+    let opt = Opt::from_args();
+
+    if let Err(e) = run(opt) {
         println!("Failed to execute example: {}", e);
         process::exit(1);
     }

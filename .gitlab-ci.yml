@@ -1,7 +1,6 @@
 .install_dependencies_template: &install_dependencies
   stage: test
   before_script:
-    - uname -a
     - cargo --version -v
     - rustc --version -v
     - apt-get update -qq
@@ -17,13 +16,6 @@
         zlib1g-dev \
         libiberty-dev \
         zip
-    # For GUI tests
-    - |
-      apt-get install -y -qq \
-        xvfb \
-        libgl1-mesa-dev \
-        libgl1-mesa-glx \
-        mesa-utils
     - cargo install --force --git https://github.com/azriel91/cargo-make.git --branch issue-50/do-not-restrict-test-naming-convention || true
 
 .cache_artifacts_template: &cache_artifacts
@@ -32,24 +24,6 @@
       # we don't cache target/ as well because old binaries interferes with coverage
       - cargo/
       - kcov-$KCOV_VERSION
-
-.start_xvfb: &start_xvfb |
-  # Start XVFB
-  export DISPLAY=:99.0
-  /sbin/start-stop-daemon --start \
-                          --quiet \
-                          --pidfile /tmp/custom_xvfb_99.pid \
-                          --make-pidfile \
-                          --background \
-                          --exec /usr/bin/Xvfb \
-                          -- \
-                          :99 \
-                          -screen 0 1280x1024x24+32 \
-                          -pixdepths 3 27 32 \
-                          -ac \
-                          +extension GLX \
-                          +render \
-                          -noreset
 
 variables:
   CARGO_HOME: $CI_PROJECT_DIR/cargo
@@ -74,8 +48,6 @@ nightly:build:
   <<: *install_dependencies
   <<: *cache_artifacts
   script:
-    - *start_xvfb
-    - sleep 2 && glxinfo || true
     - cargo make workspace-ci-flow
   after_script:
     # On gitlab-ci we cannot use sudo to install kcov, which ships with the default Makefile from
@@ -103,7 +75,6 @@ nightly:build:
           # rm -rf kcov-$KCOV_VERSION
         fi
       }
-    - *start_xvfb
     - cargo make --no-workspace workspace-coverage
     - grep -F merged_files ./target/coverage/index.json | grep -o '"covered":"[0-9]\+\.[0-9]\+"'
   coverage: '/"covered":"\d+\.\d+"/'

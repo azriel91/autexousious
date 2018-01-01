@@ -1,5 +1,6 @@
 [package]
 name = "free_will"
+description = "In this game, you make your choices; then your choices make you."
 version = "0.1.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 
@@ -8,6 +9,8 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop
 application = { path = "../../crate/application" }
 application_input = { path = "../../crate/application_input" }
 stdio_view = { path = "../../crate/stdio_view" }
+structopt = "0.1.6"
+structopt-derive = "0.1.6"
 
 [dev-dependencies]
 assert_cli = "0.5"
