@@ -65,13 +65,19 @@ nightly:build:
           wget https://github.com/SimonKagstrom/kcov/archive/v$KCOV_VERSION.zip
           unzip -uo v$KCOV_VERSION.zip
           cd kcov-$KCOV_VERSION
-          mkdir build || true
-          cd ./build
+
+          build_dir='./build'
+
+          # Uncomment the next line if kcov is not building correctly
+          rm -rf "${build_dir}"
+
+          if ! test -d "${build_dir}"; then mkdir "${build_dir}" ; fi
+          cd "${build_dir}"
           cmake ..
           make
           make install
           cd ../..
-          # Don't delete old build files, so kcov builds quicker next time
+          # Don't delete previously downloaded files
           # rm -rf kcov-$KCOV_VERSION
         fi
       }
