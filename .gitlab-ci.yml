@@ -69,7 +69,7 @@ nightly:build:
           build_dir='./build'
 
           # Uncomment the next line if kcov is not building correctly
-          rm -rf "${build_dir}"
+          # rm -rf "${build_dir}"
 
           if ! test -d "${build_dir}"; then mkdir "${build_dir}" ; fi
           cd "${build_dir}"
