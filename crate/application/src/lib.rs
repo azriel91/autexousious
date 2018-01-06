@@ -29,6 +29,9 @@ extern crate derive_error_chain;
 extern crate error_chain;
 #[cfg(test)]
 #[macro_use]
+extern crate lazy_static;
+#[cfg(test)]
+#[macro_use]
 extern crate pretty_assertions;
 #[cfg(test)]
 extern crate tempdir;

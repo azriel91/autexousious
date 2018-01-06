@@ -6,7 +6,6 @@
 extern crate amethyst;
 extern crate application_input;
 extern crate console;
-extern crate dialoguer;
 
 pub use stdin_system::StdinSystem;
 

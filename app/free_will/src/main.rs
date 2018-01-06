@@ -5,20 +5,24 @@ extern crate amethyst;
 extern crate application;
 extern crate application_input;
 extern crate stdio_view;
+extern crate structopt;
+#[macro_use]
+extern crate structopt_derive;
 
 use std::process;
 
 use amethyst::renderer::{DisplayConfig, DrawFlat, Event, KeyboardInput, Pipeline, PosNormTex,
                          RenderBundle, RenderSystem, Stage, VirtualKeyCode, WindowEvent};
 use amethyst::prelude::*;
-use amethyst::shrev::{EventChannel, EventReadData, ReaderId};
+use amethyst::shrev::{EventChannel, ReaderId};
 use application::config::find_in;
 use application_input::{ApplicationEvent, ApplicationInputBundle};
 use stdio_view::StdinSystem;
+use structopt::StructOpt;
 
 #[derive(Debug, Default)]
 struct Example {
-    reader: Option<ReaderId>,
+    reader: Option<ReaderId<ApplicationEvent>>,
 }
 
 impl Example {
@@ -34,7 +38,7 @@ impl State for Example {
         // @torkleyy: No need to unregister, it's just two integer values.
         // @Rhuagh: Just drop the reader id
         let reader_id = world
-            .read_resource::<EventChannel<ApplicationEvent>>()
+            .write_resource::<EventChannel<ApplicationEvent>>()
             .register_reader();
 
         self.reader.get_or_insert(reader_id);
@@ -62,45 +66,47 @@ impl State for Example {
         let app_event_channel = world.read_resource::<EventChannel<ApplicationEvent>>();
 
         let mut reader_id = self.reader.as_mut().expect("Expected reader to be set");
-        if let Ok(event_read_data) = app_event_channel.read(&mut reader_id) {
-            match event_read_data {
-                EventReadData::Data(mut storage_iterator) => {
-                    while let Some(_event) = storage_iterator.next() {
-                        return Trans::Quit;
-                    }
-                }
-                _ => {}
-            }
-        } else {
-            unimplemented!();
+        let mut storage_iterator = app_event_channel.read(&mut reader_id);
+        while let Some(_event) = storage_iterator.next() {
+            return Trans::Quit;
         }
 
         Trans::None
     }
 }
 
-fn run() -> Result<(), amethyst::Error> {
-    let display_config = DisplayConfig::load(
-        find_in(
-            "resources",
-            "display_config.ron",
-            Some(development_base_dirs!()),
-        ).unwrap(),
-    );
+#[derive(StructOpt, Debug)]
+#[structopt(name = "Free Will")]
+struct Opt {
+    #[structopt(long = "headless", help = "Run headlessly (no GUI)")] headless: bool,
+}
 
-    let pipe = Pipeline::build().with_stage(
-        Stage::with_backbuffer()
-            .clear_target([0.2, 0.4, 1.0, 1.0], 1.0)
-            .with_pass(DrawFlat::<PosNormTex>::new()),
-    );
-
-    let mut app = Application::build(".", Example::new())?
-        .with_bundle(RenderBundle::new())?
+fn run(opt: Opt) -> Result<(), amethyst::Error> {
+    let mut app_builder = Application::build(".", Example::new())?
         .with_bundle(ApplicationInputBundle::new())?
-        .with_local(RenderSystem::build(pipe, Some(display_config))?)
-        .with_local(StdinSystem::new())
-        .build()
-        .expect("Fatal error");
+        .with_local(StdinSystem::new());
+
+    if !opt.headless {
+        let display_config = DisplayConfig::load(
+            find_in(
+                "resources",
+                "display_config.ron",
+                Some(development_base_dirs!()),
+            ).unwrap(),
+        );
+
+        let pipe = Pipeline::build().with_stage(
+            Stage::with_backbuffer()
+                .clear_target([0.2, 0.4, 1.0, 1.0], 1.0)
+                .with_pass(DrawFlat::<PosNormTex>::new()),
+        );
+
+        app_builder = app_builder
+            .with_bundle(RenderBundle::new())?
+            .with_local(RenderSystem::build(pipe, Some(display_config))?);
+    }
+
+    let mut app = app_builder.build().expect("Fatal error");
 
     app.run();
 
@@ -108,7 +114,9 @@ fn run() -> Result<(), amethyst::Error> {
 }
 
 fn main() {
-    if let Err(e) = run() {
+    let opt = Opt::from_args();
+
+    if let Err(e) = run(opt) {
         println!("Failed to execute example: {}", e);
         process::exit(1);
     }

@@ -1,3 +1,0 @@
-[env]
-CARGO_MAKE_KCOV_EXCLUDE_LINE = "unimplemented,kcov-ignore"
-CARGO_MAKE_KCOV_EXCLUDE_REGION = "kcov-ignore-start:kcov-ignore-end"

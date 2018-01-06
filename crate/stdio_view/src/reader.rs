@@ -1,8 +1,8 @@
+use std::io::{self, Write};
 use std::sync::mpsc::Sender;
 
 use console::style;
 use console::Term;
-use dialoguer::Input;
 
 /// Name of this reader, useful when naming threads.
 pub const NAME: &'static str = concat!(module_path!(), "::StdinReader");
@@ -29,16 +29,26 @@ impl StdinReader {
 
     /// Signals this reader to read from stdin.
     pub fn start(&self) {
-        let term = Term::stdout();
-        let prompt = format!("{}", style(">>").blue().bold());
-        let input = Input::new(&prompt);
+        let mut term = Term::stdout();
+        let prompt = format!("{}: ", style(">>").blue().bold());
 
+        let mut buffer = String::new();
         loop {
-            let msg = input.interact_on(&term).unwrap();
-            if let Err(_) = self.system_tx.send(msg) {
-                // TODO: log
-                break;
+            write!(term, "{}", &prompt).expect("Failed to write stdio prompt");
+            match io::stdin().read_line(&mut buffer) {
+                Ok(n) => {
+                    if n > 0 {
+                        buffer.truncate(n);
+                        if let Err(_) = self.system_tx.send(buffer.trim().to_string()) {
+                            // TODO: log
+                            break;
+                        }
+                    }
+                }
+                Err(e) => panic!("{:?}", e),
             }
+
+            buffer.clear();
         }
     }
 }
