@@ -8,8 +8,10 @@
       pkgs=(
         # amethyst
         libasound2-dev
+
         # enigo
         libxtst-dev
+
         # kcov
         libcurl4-openssl-dev
         libelf-dev
@@ -20,6 +22,12 @@
         zlib1g-dev
         libiberty-dev
         zip
+
+        # xvfb
+        xvfb
+        libgl1-mesa-dev
+        libgl1-mesa-glx
+        mesa-utils
       )
       apt-get install -y -qq "${pkgs[@]}"
     - cargo install cargo-make --force
@@ -30,6 +38,24 @@
       # we don't cache target/ as well because old binaries interfere with coverage
       - cargo/
       - kcov-$KCOV_VERSION
+
+.xvfb_start_template: &xvfb_start_template |
+  # Start XVFB
+  export DISPLAY=:99.0
+  /sbin/start-stop-daemon --start \
+                          --quiet \
+                          --pidfile /tmp/custom_xvfb_99.pid \
+                          --make-pidfile \
+                          --background \
+                          --exec /usr/bin/Xvfb \
+                          -- \
+                          :99 \
+                          -screen 0 1280x1024x24+32 \
+                          -pixdepths 3 27 32 \
+                          -ac \
+                          +extension GLX \
+                          +render \
+                          -noreset
 
 variables:
   CARGO_HOME: $CI_PROJECT_DIR/cargo
@@ -43,6 +69,7 @@ stable:build:
   <<: *install_dependencies
   <<: *cache_artifacts
   script:
+    - *xvfb_start_template
     - cargo make workspace-ci-flow
 
 nightly:build:
@@ -54,6 +81,7 @@ nightly:build:
   <<: *install_dependencies
   <<: *cache_artifacts
   script:
+    - *xvfb_start_template
     - cargo make workspace-ci-flow
   after_script:
     # On gitlab-ci we cannot use sudo to install kcov, which ships with the default Makefile from
