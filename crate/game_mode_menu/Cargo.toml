@@ -9,4 +9,4 @@ application_input = { path = "../application_input" }
 
 [dev-dependencies]
 enigo = "0.0.11"
-winit = "0.7.6"
+winit = "0.10"

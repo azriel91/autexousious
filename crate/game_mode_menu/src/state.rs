@@ -107,7 +107,7 @@ mod test {
         let (mut state, mut world) = setup();
 
         let mut events_loop = EventsLoop::new();
-        let window = Window::new(&events_loop).unwrap();
+        let _window = Window::new(&events_loop).unwrap();
 
         let mut enigo = Enigo::new();
         enigo.key_click(Key::Escape);
