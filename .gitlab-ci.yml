@@ -84,6 +84,7 @@ nightly:build:
     - *xvfb_start_template
     - cargo make workspace-ci-flow
   after_script:
+    - *xvfb_start_template
     # On gitlab-ci we cannot use sudo to install kcov, which ships with the default Makefile from
     # cargo-make.
     #
