@@ -8,9 +8,6 @@ extern crate application_input;
 #[cfg(test)]
 extern crate enigo;
 #[cfg(test)]
-#[macro_use]
-extern crate lazy_static;
-#[cfg(test)]
 extern crate winit;
 
 pub use state::State;

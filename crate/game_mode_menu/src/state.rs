@@ -32,13 +32,17 @@ impl amethyst::State for State {
         // @Rhuagh: Just drop the reader id
         let reader_id = world
             .write_resource::<EventChannel<ApplicationEvent>>()
-            .register_reader();
+            .register_reader(); // kcov-ignore
 
         self.application_event_reader.get_or_insert(reader_id);
     }
 
     fn handle_event(&mut self, _: &mut World, event: Event) -> Trans {
+        // intentionally ignore testing mouse events as we cannot guarantee the cursor is over
+        // the window when someone runs `cargo test`
+        // kcov-ignore-start-mouse
         match event {
+            // kcov-ignore-end-mouse
             Event::WindowEvent { event, .. } => match event {
                 WindowEvent::KeyboardInput {
                     input:
@@ -48,10 +52,10 @@ impl amethyst::State for State {
                         },
                     ..
                 }
-                | WindowEvent::Closed => Trans::Quit,
+                | WindowEvent::Closed => Trans::Quit, // kcov-ignore-mouse
                 _ => Trans::None,
             },
-            _ => Trans::None,
+            _ => Trans::None, // kcov-ignore-mouse
         }
     }
 
@@ -62,7 +66,7 @@ impl amethyst::State for State {
             .as_mut()
             .expect("Expected reader to be set");
         let mut storage_iterator = app_event_channel.read(&mut reader_id);
-        while let Some(_event) = storage_iterator.next() {
+        if let Some(_event) = storage_iterator.next() {
             return Trans::Quit;
         }
 
@@ -72,8 +76,7 @@ impl amethyst::State for State {
 
 #[cfg(test)]
 mod test {
-    use std::panic;
-    use std::sync::Mutex;
+    use std::mem::discriminant;
 
     use amethyst::ecs::World;
     use amethyst::renderer::{Event, WindowEvent};
@@ -86,8 +89,54 @@ mod test {
 
     use super::State;
 
-    lazy_static! {
-        static ref TEST_MUTEX: Mutex<()> = Mutex::new(());
+    fn setup() -> (State, World) {
+        let mut world = World::new();
+        world.add_resource(EventChannel::<ApplicationEvent>::with_capacity(10));
+
+        (State::new(), world)
+    }
+
+    #[test]
+    fn on_start_registers_reader() {
+        let (mut state, mut world) = setup();
+
+        state.on_start(&mut world);
+
+        assert!(state.application_event_reader.is_some());
+        let app_event_channel = world.read_resource::<EventChannel<ApplicationEvent>>();
+        let mut reader_id = &mut state.application_event_reader.as_mut().unwrap();
+        assert_eq!(None, app_event_channel.read(&mut reader_id).next());
+    }
+
+    #[test]
+    fn update_returns_trans_none_when_no_application_event_exists() {
+        let (mut state, mut world) = setup();
+
+        // register reader
+        state.on_start(&mut world);
+
+        assert_eq!(
+            discriminant(&Trans::None),
+            discriminant(&state.update(&mut world))
+        );
+    }
+
+    #[test]
+    fn update_returns_trans_quit_on_application_event() {
+        let (mut state, mut world) = setup();
+
+        // register reader
+        state.on_start(&mut world);
+
+        {
+            let mut app_event_channel = world.write_resource::<EventChannel<ApplicationEvent>>();
+            app_event_channel.single_write(ApplicationEvent::Exit);
+        } // kcov-ignore
+
+        assert_eq!(
+            discriminant(&Trans::Quit),
+            discriminant(&state.update(&mut world))
+        );
     }
 
     /// We have to run multiple tests in a single function because:
@@ -115,99 +164,55 @@ mod test {
     /// On Ubuntu 17.10, the window that starts up during the test does not get destroyed until
     /// after the entire test executable ends, even if you `drop(window)` and `drop(events_loop)`.
     /// This may be a symptom of the problem.
-    macro_rules! test {
-        (fn $name:ident() $body:block) => {
-            #[test]
-            fn $name() {
-                let guard = TEST_MUTEX.lock().unwrap();
-
-                // A `panic!` indicates a failing test. However this would normally poison the mutex
-                // used to serialize tests. Therefore we capture the test result using a `Result`,
-                // free the mutex, then throw the `panic!` if it was a failure.
-                let execution_result = panic::catch_unwind(|| -> Result<(), &str> {
-                    { $body }
-                });
-                drop(guard);
-                match execution_result {
-                    Ok(test_result) => test_result.unwrap_or_else(|failure: &str| {
-                        panic!(failure)
-                    }),
-                    Err(e) => panic::resume_unwind(e), // kcov-ignore
-                }
-            }
-        }
-    }
-
-    fn setup() -> (State, World) {
-        let mut world = World::new();
-        world.add_resource(EventChannel::<ApplicationEvent>::with_capacity(10));
-
-        (State::new(), world)
-    }
-
     #[test]
-    fn on_start_registers_reader() {
+    fn handle_event_returns_correct_transition_on_keyboard_input() {
         let (mut state, mut world) = setup();
 
-        state.on_start(&mut world);
-
-        assert!(state.application_event_reader.is_some());
-        let app_event_channel = world.read_resource::<EventChannel<ApplicationEvent>>();
-        let mut reader_id = &mut state.application_event_reader.as_mut().unwrap();
-        assert_eq!(None, app_event_channel.read(&mut reader_id).next());
-    }
-
-    test! {
-        fn handle_event_returns_trans_quit_on_escape_keyboard_input() {
-            let (mut state, mut world) = setup();
-
-            let mut attempts = 3;
-            match_window_event(Key::Escape, |event| {
-                match state.handle_event(&mut world, event) {
-                    Trans::Quit => Some(Ok(())),
-                    // kcov-ignore-start
-                    Trans::None => {
-                        attempts -= 1;
-                        if attempts == 0 {
-                            Some(Err("Expected Trans::Quit but was Trans::None"))
-                        } else {
-                            None
-                        }
-                    }
-                    Trans::Pop => Some(Err("Expected Trans::Quit but was Trans::Pop")),
-                    Trans::Push(..) => Some(Err("Expected Trans::Quit but was Trans::Push(..)")),
-                    Trans::Switch(..) => Some(Err("Expected Trans::Quit but was Trans::Switch(..)")),
-                    // kcov-ignore-end
-                }
-            })
-        }
-    }
-
-    test! {
-        fn handle_event_returns_trans_none_on_other_keyboard_input() {
-            let (mut state, mut world) = setup();
-
-            match_window_event(Key::Backspace, |event| {
-                match state.handle_event(&mut world, event) {
-                    Trans::None => Some(Ok(())),
-                    // kcov-ignore-begin
-                    Trans::Quit => None, // Some(Err("Expected Trans::None but was Trans::Quit"))
-                    Trans::Pop => Some(Err("Expected Trans::None but was Trans::Pop")),
-                    Trans::Push(..) => Some(Err("Expected Trans::None but was Trans::Push(..)")),
-                    Trans::Switch(..) => Some(Err("Expected Trans::None but was Trans::Switch(..)")),
-                    // kcov-ignore-end
-                }
-            })
-        }
-    }
-
-    fn match_window_event<'f, F>(key: Key, mut assertion_fn: F) -> Result<(), &'f str>
-    where
-        F: FnMut(Event) -> Option<Result<(), &'f str>>,
-    {
         let mut events_loop = EventsLoop::new();
         let _window = Window::new(&events_loop).unwrap();
 
+        let mut attempts = 3;
+
+        // Trans::Quit on Escape key
+        match_window_event(&mut events_loop, Key::Escape, |event| {
+            match state.handle_event(&mut world, event) {
+                Trans::Quit => Some(Ok(())),
+                // kcov-ignore-start
+                Trans::None => {
+                    attempts -= 1;
+                    if attempts == 0 {
+                        Some(Err("Expected Trans::Quit but was Trans::None"))
+                    } else {
+                        None
+                    }
+                }
+                Trans::Pop => Some(Err("Expected Trans::Quit but was Trans::Pop")),
+                Trans::Push(..) => Some(Err("Expected Trans::Quit but was Trans::Push(..)")),
+                Trans::Switch(..) => Some(Err("Expected Trans::Quit but was Trans::Switch(..)")),
+                // kcov-ignore-end
+            }
+        });
+
+        // Trans::None on Backspace key
+        match_window_event(&mut events_loop, Key::Backspace, |event| {
+            match state.handle_event(&mut world, event) {
+                Trans::None => Some(Ok(())),
+                // kcov-ignore-start
+                Trans::Quit => Some(Err(
+                    "Expected Trans::None but was Trans::Quit on Backspace key",
+                )),
+                Trans::Pop => Some(Err("Expected Trans::None but was Trans::Pop")),
+                Trans::Push(..) => Some(Err("Expected Trans::None but was Trans::Push(..)")),
+                Trans::Switch(..) => Some(Err("Expected Trans::None but was Trans::Switch(..)")),
+                // kcov-ignore-end
+            }
+        }); // kcov-ignore
+    } // kcov-ignore
+
+    fn match_window_event<F>(events_loop: &mut EventsLoop, key: Key, mut assertion_fn: F)
+    where
+        F: FnMut(Event) -> Option<Result<(), &'static str>>,
+    {
         let mut enigo = Enigo::new();
         enigo.key_click(key);
 
@@ -233,6 +238,10 @@ mod test {
             }
         });
 
-        test_result.unwrap()
+        events_loop.poll_events(|_event| {}); // empty event queue
+
+        test_result
+            .unwrap()
+            .unwrap_or_else(|failure: &str| panic!(failure)); // kcov-ignore
     }
 }
