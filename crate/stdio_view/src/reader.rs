@@ -5,7 +5,7 @@ use console::style;
 use console::Term;
 
 /// Name of this reader, useful when naming threads.
-pub const NAME: &'static str = concat!(module_path!(), "::StdinReader");
+pub const NAME: &str = concat!(module_path!(), "::StdinReader");
 
 /// Reads lines from stdin and sends them to the [`StdinSystem`](struct.StdinSystem.html).
 ///
@@ -22,7 +22,7 @@ impl StdinReader {
     ///
     /// # Parameters:
     ///
-    /// * `system_tx`: Channel sender to the System for input from stdin.
+    /// * `system_tx`: Channel sender to `StdinSystem` for input from stdin.
     pub fn new(system_tx: Sender<String>) -> Self {
         StdinReader { system_tx }
     }
@@ -39,8 +39,13 @@ impl StdinReader {
                 Ok(n) => {
                     if n > 0 {
                         buffer.truncate(n);
-                        if let Err(_) = self.system_tx.send(buffer.trim().to_string()) {
-                            // TODO: log
+                        trace!("Read input from stdin: \"{}\".", buffer);
+
+                        if let Err(payload) = self.system_tx.send(buffer.trim().to_string()) {
+                            warn!(
+                                "Channel sender to `StdinSystem` disconnected. Payload: \"{}\"",
+                                payload
+                            );
                             break;
                         }
                     }

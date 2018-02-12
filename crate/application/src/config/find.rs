@@ -36,7 +36,7 @@ macro_rules! development_base_dirs {
 ///
 /// * `file_name`: Name of the file to search for which should be next to the executable.
 pub fn find(file_name: &str) -> Result<PathBuf> {
-    find_in(Path::new(""), &file_name, None)
+    find_in(Path::new(""), file_name, None)
 }
 
 /// Finds and returns the path to the configuration file within the given configuration directory.

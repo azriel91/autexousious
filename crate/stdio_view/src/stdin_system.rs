@@ -1,8 +1,7 @@
 use std::sync::mpsc::{self, Receiver, TryRecvError};
 use std::thread;
 
-use amethyst::ecs::{FetchMut, RunNow};
-use amethyst::shred::{Resources, SystemData};
+use amethyst::ecs::{FetchMut, System};
 use amethyst::shrev::EventChannel;
 use application_input::ApplicationEvent;
 
@@ -21,15 +20,7 @@ pub struct StdinSystem {
 impl StdinSystem {
     /// Returns a new StdinSystem that listens to stdin on a separate thread.
     pub fn new() -> Self {
-        let (tx, rx) = mpsc::channel();
-        let reader_spawn_fn = || {
-            thread::Builder::new()
-                .name(reader::NAME.to_string())
-                .spawn(|| StdinReader::new(tx).start())
-                // TODO: replace new() with build() and return Result<..>
-                .expect("Failed to spawn StdinReader thread.");
-        };
-        Self::internal_new(rx, reader_spawn_fn)
+        Self::default()
     }
 
     /// Returns a new StdinSystem
@@ -44,20 +35,37 @@ impl StdinSystem {
     }
 }
 
-impl<'a> RunNow<'a> for StdinSystem {
-    fn run_now(&mut self, res: &'a Resources) {
+impl Default for StdinSystem {
+    fn default() -> Self {
+        let (tx, rx) = mpsc::channel();
+        let reader_spawn_fn = || {
+            thread::Builder::new()
+                .name(reader::NAME.to_string())
+                .spawn(|| StdinReader::new(tx).start())
+                // TODO: replace new() with build() and return Result<..>
+                .expect("Failed to spawn StdinReader thread.");
+        };
+        Self::internal_new(rx, reader_spawn_fn)
+    }
+}
+
+impl<'a> System<'a> for StdinSystem {
+    type SystemData = EventChannelData<'a>;
+
+    fn run(&mut self, mut event_channel: Self::SystemData) {
         match self.rx.try_recv() {
             Ok(msg) => {
-                let mut event_channel = EventChannelData::fetch(res, 0);
+                debug!("Received message from StdinReader: \"{}\".", msg);
                 if let "exit" = msg.as_str() {
                     event_channel.single_write(ApplicationEvent::Exit);
                 }
             }
             Err(TryRecvError::Empty) => {
                 // do nothing
+                trace!("No message from StdinReader");
             }
             Err(TryRecvError::Disconnected) => {
-                // TODO: log warning
+                warn!("Channel receiver to `StdinReader` disconnected.");
             }
         };
     }

@@ -10,8 +10,8 @@
 //! At time of writing, we are using a pre-0.6 version of amethyst. This version's event system has
 //! an Event enum with the following variants:
 //!
-//! * WindowEvent: variant that eventually backs onto winit's WindowEvent
-//! * DeviceEvent: variant that is meant to represent hardware input devices
+//! * `WindowEvent`: variant that eventually backs onto winit's `WindowEvent`
+//! * `DeviceEvent`: variant that is meant to represent hardware input devices
 //! * Awakened
 //!
 //! There is no variant for user events. This is what `@torkleyy` said when I asked:
@@ -21,15 +21,15 @@
 //!
 //! See:
 //!
-//! * https://github.com/amethyst/amethyst/issues/229
-//! * https://github.com/amethyst/amethyst/issues/481
+//! * <https://github.com/amethyst/amethyst/issues/229>
+//! * <https://github.com/amethyst/amethyst/issues/481>
 //!
 //! The following documentation was useful while writing this
 //!
-//! * https://docs.rs/specs/0.10.0/specs/struct.World.html
-//! * https://docs.rs/shred/0.5.0/shred/
-//! * https://docs.rs/shrev/0.6.0/shrev/struct.EventChannel.html
-//! * https://www.amethyst.rs/doc/develop/doc/amethyst/struct.Engine.html
+//! * <https://docs.rs/specs/0.10.0/specs/struct.World.html>
+//! * <https://docs.rs/shred/0.5.2/shred/>
+//! * <https://docs.rs/shrev/0.8.1/shrev/struct.EventChannel.html>
+//! * <https://www.amethyst.rs/doc/develop/doc/amethyst/struct.Engine.html>
 
 extern crate amethyst;
 
