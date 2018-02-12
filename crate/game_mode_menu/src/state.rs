@@ -173,6 +173,21 @@ mod test {
 
         let mut attempts = 3;
 
+        // Trans::None on Backspace key
+        match_window_event(&mut events_loop, Key::Backspace, |event| {
+            match state.handle_event(&mut world, event) {
+                Trans::None => Some(Ok(())),
+                // kcov-ignore-start
+                Trans::Quit => Some(Err(
+                    "Expected Trans::None but was Trans::Quit on Backspace key",
+                )),
+                Trans::Pop => Some(Err("Expected Trans::None but was Trans::Pop")),
+                Trans::Push(..) => Some(Err("Expected Trans::None but was Trans::Push(..)")),
+                Trans::Switch(..) => Some(Err("Expected Trans::None but was Trans::Switch(..)")),
+                // kcov-ignore-end
+            }
+        }); // kcov-ignore
+
         // Trans::Quit on Escape key
         match_window_event(&mut events_loop, Key::Escape, |event| {
             match state.handle_event(&mut world, event) {
@@ -192,21 +207,6 @@ mod test {
                 // kcov-ignore-end
             }
         });
-
-        // Trans::None on Backspace key
-        match_window_event(&mut events_loop, Key::Backspace, |event| {
-            match state.handle_event(&mut world, event) {
-                Trans::None => Some(Ok(())),
-                // kcov-ignore-start
-                Trans::Quit => Some(Err(
-                    "Expected Trans::None but was Trans::Quit on Backspace key",
-                )),
-                Trans::Pop => Some(Err("Expected Trans::None but was Trans::Pop")),
-                Trans::Push(..) => Some(Err("Expected Trans::None but was Trans::Push(..)")),
-                Trans::Switch(..) => Some(Err("Expected Trans::None but was Trans::Switch(..)")),
-                // kcov-ignore-end
-            }
-        }); // kcov-ignore
     } // kcov-ignore
 
     fn match_window_event<F>(events_loop: &mut EventsLoop, key: Key, mut assertion_fn: F)
