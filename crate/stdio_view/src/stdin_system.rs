@@ -1,8 +1,7 @@
 use std::sync::mpsc::{self, Receiver, TryRecvError};
 use std::thread;
 
-use amethyst::ecs::{FetchMut, RunNow};
-use amethyst::shred::{Resources, SystemData};
+use amethyst::ecs::{FetchMut, System};
 use amethyst::shrev::EventChannel;
 use application_input::ApplicationEvent;
 
@@ -44,11 +43,12 @@ impl StdinSystem {
     }
 }
 
-impl<'a> RunNow<'a> for StdinSystem {
-    fn run_now(&mut self, res: &'a Resources) {
+impl<'a> System<'a> for StdinSystem {
+    type SystemData = EventChannelData<'a>;
+
+    fn run(&mut self, mut event_channel: Self::SystemData) {
         match self.rx.try_recv() {
             Ok(msg) => {
-                let mut event_channel = EventChannelData::fetch(res, 0);
                 if let "exit" = msg.as_str() {
                     event_channel.single_write(ApplicationEvent::Exit);
                 }

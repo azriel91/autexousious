@@ -12,8 +12,7 @@ extern crate structopt_derive;
 
 use std::process;
 
-use amethyst::renderer::{DisplayConfig, DrawFlat, Pipeline, PosNormTex, RenderBundle,
-                         RenderSystem, Stage};
+use amethyst::renderer::{DisplayConfig, DrawFlat, Pipeline, PosNormTex, RenderBundle, Stage};
 use amethyst::prelude::*;
 use application::config::find_in;
 use application_input::ApplicationInputBundle;
@@ -23,13 +22,14 @@ use structopt::StructOpt;
 #[derive(StructOpt, Debug)]
 #[structopt(name = "Free Will")]
 struct Opt {
-    #[structopt(long = "headless", help = "Run headlessly (no GUI)")] headless: bool,
+    #[structopt(long = "headless", help = "Run headlessly (no GUI)")]
+    headless: bool,
 }
 
 fn run(opt: Opt) -> Result<(), amethyst::Error> {
     let mut app_builder = Application::build(".", game_mode_menu::State::new())?
         .with_bundle(ApplicationInputBundle::new())?
-        .with_local(StdinSystem::new());
+        .with::<StdinSystem>(StdinSystem::new(), "StdinSystem", &[]);
 
     if !opt.headless {
         let display_config = DisplayConfig::load(
@@ -46,9 +46,7 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
                 .with_pass(DrawFlat::<PosNormTex>::new()),
         );
 
-        app_builder = app_builder
-            .with_bundle(RenderBundle::new())?
-            .with_local(RenderSystem::build(pipe, Some(display_config))?);
+        app_builder = app_builder.with_bundle(RenderBundle::new(pipe, Some(display_config)))?;
     }
 
     let mut app = app_builder.build().expect("Fatal error");
