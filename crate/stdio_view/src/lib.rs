@@ -6,6 +6,9 @@
 extern crate amethyst;
 extern crate application_input;
 extern crate console;
+extern crate fern;
+#[macro_use]
+extern crate log;
 
 pub use stdin_system::StdinSystem;
 

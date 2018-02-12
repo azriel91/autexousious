@@ -55,15 +55,17 @@ impl<'a> System<'a> for StdinSystem {
     fn run(&mut self, mut event_channel: Self::SystemData) {
         match self.rx.try_recv() {
             Ok(msg) => {
+                debug!("Received message from StdinReader: \"{}\".", msg);
                 if let "exit" = msg.as_str() {
                     event_channel.single_write(ApplicationEvent::Exit);
                 }
             }
             Err(TryRecvError::Empty) => {
                 // do nothing
+                trace!("No message from StdinReader");
             }
             Err(TryRecvError::Disconnected) => {
-                // TODO: log warning
+                warn!("Channel receiver to `StdinReader` disconnected.");
             }
         };
     }

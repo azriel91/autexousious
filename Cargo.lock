@@ -1558,6 +1558,8 @@ dependencies = [
  "amethyst 0.6.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "application_input 0.1.0",
  "console 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "fern 0.5.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
