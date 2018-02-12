@@ -5,7 +5,7 @@ use error_chain;
 use config::FindContext;
 
 // kcov-ignore-start
-/// ErrorKind for application configuration
+/// `ErrorKind` for application configuration
 #[derive(Debug, ErrorChain)]
 pub enum ErrorKind {
     /// Plain error message without additional structure or context

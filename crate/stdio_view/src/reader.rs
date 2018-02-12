@@ -5,7 +5,7 @@ use console::style;
 use console::Term;
 
 /// Name of this reader, useful when naming threads.
-pub const NAME: &'static str = concat!(module_path!(), "::StdinReader");
+pub const NAME: &str = concat!(module_path!(), "::StdinReader");
 
 /// Reads lines from stdin and sends them to the [`StdinSystem`](struct.StdinSystem.html).
 ///
@@ -39,7 +39,7 @@ impl StdinReader {
                 Ok(n) => {
                     if n > 0 {
                         buffer.truncate(n);
-                        if let Err(_) = self.system_tx.send(buffer.trim().to_string()) {
+                        if self.system_tx.send(buffer.trim().to_string()).is_err() {
                             // TODO: log
                             break;
                         }

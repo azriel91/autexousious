@@ -20,15 +20,7 @@ pub struct StdinSystem {
 impl StdinSystem {
     /// Returns a new StdinSystem that listens to stdin on a separate thread.
     pub fn new() -> Self {
-        let (tx, rx) = mpsc::channel();
-        let reader_spawn_fn = || {
-            thread::Builder::new()
-                .name(reader::NAME.to_string())
-                .spawn(|| StdinReader::new(tx).start())
-                // TODO: replace new() with build() and return Result<..>
-                .expect("Failed to spawn StdinReader thread.");
-        };
-        Self::internal_new(rx, reader_spawn_fn)
+        Self::default()
     }
 
     /// Returns a new StdinSystem
@@ -40,6 +32,20 @@ impl StdinSystem {
     {
         reader_spawn_fn();
         StdinSystem { rx }
+    }
+}
+
+impl Default for StdinSystem {
+    fn default() -> Self {
+        let (tx, rx) = mpsc::channel();
+        let reader_spawn_fn = || {
+            thread::Builder::new()
+                .name(reader::NAME.to_string())
+                .spawn(|| StdinReader::new(tx).start())
+                // TODO: replace new() with build() and return Result<..>
+                .expect("Failed to spawn StdinReader thread.");
+        };
+        Self::internal_new(rx, reader_spawn_fn)
     }
 }
 

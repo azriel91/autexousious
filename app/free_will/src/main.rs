@@ -26,7 +26,7 @@ struct Opt {
     headless: bool,
 }
 
-fn run(opt: Opt) -> Result<(), amethyst::Error> {
+fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     let mut app_builder = Application::build(".", game_mode_menu::State::new())?
         .with_bundle(ApplicationInputBundle::new())?
         .with::<StdinSystem>(StdinSystem::new(), "StdinSystem", &[]);
@@ -59,7 +59,7 @@ fn run(opt: Opt) -> Result<(), amethyst::Error> {
 fn main() {
     let opt = Opt::from_args();
 
-    if let Err(e) = run(opt) {
+    if let Err(e) = run(&opt) {
         println!("Failed to execute example: {}", e);
         process::exit(1);
     }
