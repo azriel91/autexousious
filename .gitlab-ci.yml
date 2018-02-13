@@ -1,5 +1,36 @@
-.install_dependencies_template: &install_dependencies
-  stage: test
+# === Templates === #
+# These are commonized definitions used across the stage definitions.
+# Scroll down to the `CI Stages` section for the stage definitions.
+
+# Artifacts transferred between different stages of jobs
+.artifacts_build: &artifacts_build
+  artifacts:
+    # Send all files in target
+    paths:
+      - target/
+    expire_in: 3 days
+
+.cache_build: &cache_build
+  cache:
+    # We don't cache target/ as well because old binaries interfere with coverage
+    paths:
+      # Build dependencies (dependent crates)
+      - cargo/ 
+
+.cache_test: &cache_test
+  cache:
+    # We don't cache target/ as well because old binaries interfere with coverage
+    paths:
+      - kcov-$KCOV_VERSION
+
+# https://hub.docker.com/r/rustlang/rust/tags/
+.rust_image_nightly: &rust_image_nightly "rustlang/rust:nightly"
+
+# https://hub.docker.com/r/library/rust/tags/
+# https://github.com/rust-lang-nursery/docker-rust
+.rust_image_stable: &rust_image_stable "rust:latest"
+
+.install_dependencies_build: &install_dependencies_build
   before_script:
     - cargo --version -v
     - rustc --version -v
@@ -11,7 +42,17 @@
 
         # enigo
         libxtst-dev
+      )
+      apt-get install -y -qq "${pkgs[@]}"
 
+    # Automated crate security audit
+    - cargo --list | grep -F audit || cargo install cargo-audit
+
+.install_dependencies_test: &install_dependencies_test
+  before_script:
+    - apt-get update -qq
+    - |
+      pkgs=(
         # kcov
         libcurl4-openssl-dev
         libelf-dev
@@ -32,17 +73,18 @@
       apt-get install -y -qq "${pkgs[@]}"
     - cargo install cargo-make --force
 
-    # Automated crate security audit
-    - cargo --list | grep -F audit || cargo install cargo-audit
+.job_nightly: &job_nightly
+  image: *rust_image_nightly
+  variables:
+    CARGO_MAKE_RUN_CODECOV: 'true'
+    KCOV_VERSION: 34
 
-.cache_artifacts_template: &cache_artifacts
-  cache:
-    paths:
-      # we don't cache target/ as well because old binaries interfere with coverage
-      - cargo/
-      - kcov-$KCOV_VERSION
+.job_stable: &job_stable
+  image: *rust_image_stable
+  variables:
+    CARGO_MAKE_SKIP_CODECOV: 'true'
 
-.xvfb_start_template: &xvfb_start_template |
+.xvfb_start: &xvfb_start |
   # Start XVFB
   export DISPLAY=:99.0
   /sbin/start-stop-daemon --start \
@@ -60,36 +102,43 @@
                           +render \
                           -noreset
 
+.stage_build: &stage_build
+  stage: build
+  <<: *install_dependencies_build
+  <<: *artifacts_build
+  <<: *cache_build
+  script:
+    - cargo audit
+    - cargo test --all --no-run
+
+.stage_test: &stage_test
+  stage: test
+  <<: *install_dependencies_test
+  <<: *cache_test
+  script:
+    - *xvfb_start
+    - cargo test --all
+
+# === CI Stages === #
+
+stages:
+  - build
+  - test
+
 variables:
   CARGO_HOME: $CI_PROJECT_DIR/cargo
 
-stable:build:
-  # https://hub.docker.com/r/library/rust/tags/
-  # https://github.com/rust-lang-nursery/docker-rust
-  image: "rust:latest"
-  variables:
-    CARGO_MAKE_SKIP_CODECOV: 'true'
-  <<: *install_dependencies
-  <<: *cache_artifacts
-  script:
-    - *xvfb_start_template
-    - cargo audit
-    - cargo make workspace-ci-flow
-
 nightly:build:
-  # https://hub.docker.com/r/rustlang/rust/tags/
-  image: "rustlang/rust:nightly"
-  variables:
-    CARGO_MAKE_RUN_CODECOV: 'true'
-    KCOV_VERSION: 34
-  <<: *install_dependencies
-  <<: *cache_artifacts
-  script:
-    - *xvfb_start_template
-    - cargo audit
-    - cargo make workspace-ci-flow
+  <<: *stage_build
+  <<: *job_nightly
+
+nightly:test:
+  <<: *stage_test
+  <<: *job_nightly
+  dependencies:
+    - nightly:build
   after_script:
-    - *xvfb_start_template
+    - *xvfb_start
     # On gitlab-ci we cannot use sudo to install kcov, which ships with the default Makefile from
     # cargo-make.
     #
@@ -124,3 +173,13 @@ nightly:build:
     - cargo make --no-workspace workspace-coverage
     - grep -F merged_files ./target/coverage/index.json | grep -o '"covered":"[0-9]\+\.[0-9]\+"'
   coverage: '/"covered":"\d+\.\d+"/'
+
+stable:build:
+  <<: *stage_build
+  <<: *job_stable
+
+stable:test:
+  <<: *stage_test
+  <<: *job_stable
+  dependencies:
+    - stable:build
