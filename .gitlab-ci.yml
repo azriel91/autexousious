@@ -56,7 +56,10 @@
       fi
 
     # Automated crate security audit
-    - cargo --list | grep -F audit || cargo install cargo-audit
+    - cargo --list | grep -q '\baudit\b' || cargo install cargo-audit
+
+    # Automated license checks
+    - cargo --list | grep -q '\blicense\b' || cargo install cargo-license
 
     # Nightly - Rustfmt and Clippy
     #

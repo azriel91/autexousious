@@ -5,6 +5,8 @@ permissive licenses
 '''
 script = [
 '''
+set -e
+
 if rustc --version | grep -qF 'nightly'; then
     # Rust fmt
     cargo fmt --all -- --write-mode=diff
