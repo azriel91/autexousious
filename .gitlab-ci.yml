@@ -2,25 +2,12 @@
 # These are commonized definitions used across the stage definitions.
 # Scroll down to the `CI Stages` section for the stage definitions.
 
-# Artifacts transferred between different stages of jobs
-.artifacts_build: &artifacts_build
-  artifacts:
-    # Send all files in target
-    paths:
-      - target/
-    expire_in: 3 days
-
-.cache_build: &cache_build
+.cache_build_and_test: &cache_build_and_test
   cache:
     # We don't cache target/ as well because old binaries interfere with coverage
     paths:
       # Build dependencies (dependent crates)
-      - cargo/ 
-
-.cache_test: &cache_test
-  cache:
-    # We don't cache target/ as well because old binaries interfere with coverage
-    paths:
+      - cargo/
       - kcov-$KCOV_VERSION
 
 # https://hub.docker.com/r/rustlang/rust/tags/
@@ -30,7 +17,7 @@
 # https://github.com/rust-lang-nursery/docker-rust
 .rust_image_stable: &rust_image_stable "rust:latest"
 
-.install_dependencies_build: &install_dependencies_build
+.install_dependencies: &install_dependencies
   before_script:
     - cargo --version -v
     - rustc --version -v
@@ -42,17 +29,7 @@
 
         # enigo
         libxtst-dev
-      )
-      apt-get install -y -qq "${pkgs[@]}"
 
-    # Automated crate security audit
-    - cargo --list | grep -F audit || cargo install cargo-audit
-
-.install_dependencies_test: &install_dependencies_test
-  before_script:
-    - apt-get update -qq
-    - |
-      pkgs=(
         # kcov
         libcurl4-openssl-dev
         libelf-dev
@@ -71,7 +48,15 @@
         mesa-utils
       )
       apt-get install -y -qq "${pkgs[@]}"
-    - cargo install cargo-make --force
+    - |
+      # Install cargo-make
+      # Minimum version 0.10
+      if (! cargo --list | grep '\bmake\b') || ! cargo make --version | grep '\b[0-9]\+[.][0-9]\{2,\}'; then
+        cargo install cargo-make --force
+      fi
+
+    # Automated crate security audit
+    - cargo --list | grep -F audit || cargo install cargo-audit
 
 .job_nightly: &job_nightly
   image: *rust_image_nightly
@@ -102,41 +87,34 @@
                           +render \
                           -noreset
 
-.stage_build: &stage_build
-  stage: build
-  <<: *install_dependencies_build
-  <<: *artifacts_build
-  <<: *cache_build
+.stage_build_and_test: &stage_build_and_test
+  stage: build_and_test
+  <<: *install_dependencies
+  <<: *cache_build_and_test
   script:
     - cargo audit
+
+    # Compile all tests before running them
     - cargo test --all --no-run
 
-.stage_test: &stage_test
-  stage: test
-  <<: *install_dependencies_test
-  <<: *cache_test
-  script:
+    # Start XVFB and run tests
     - *xvfb_start
     - cargo test --all
 
 # === CI Stages === #
 
+# Unfortunately we are not able to split `build` and `test` phases -- when we do, the `test` Gitlab
+# CI runner is slightly different to the `build` runner, so the artifacts compiled in the `build`
+# phase aren't used, and Rust attempts to recompile them in the test phase.
 stages:
-  - build
-  - test
+  - build_and_test
 
 variables:
   CARGO_HOME: $CI_PROJECT_DIR/cargo
 
-nightly:build:
-  <<: *stage_build
+nightly:build_and_test:
+  <<: *stage_build_and_test
   <<: *job_nightly
-
-nightly:test:
-  <<: *stage_test
-  <<: *job_nightly
-  dependencies:
-    - nightly:build
   after_script:
     - *xvfb_start
     # On gitlab-ci we cannot use sudo to install kcov, which ships with the default Makefile from
@@ -174,12 +152,6 @@ nightly:test:
     - grep -F merged_files ./target/coverage/index.json | grep -o '"covered":"[0-9]\+\.[0-9]\+"'
   coverage: '/"covered":"\d+\.\d+"/'
 
-stable:build:
-  <<: *stage_build
+stable:build_and_test:
+  <<: *stage_build_and_test
   <<: *job_stable
-
-stable:test:
-  <<: *stage_test
-  <<: *job_stable
-  dependencies:
-    - stable:build
