@@ -51,15 +51,24 @@
     - |
       # Install cargo-make
       # Minimum version 0.10
-      if (! cargo --list | grep '\bmake\b') || ! cargo make --version | grep '\b[0-9]\+[.][0-9]\{2,\}'; then
+      if (! cargo --list | grep -q '\bmake\b') || (! cargo make --version | grep -q '\b[0-9]\+[.][0-9]\{2,\}'); then
         cargo install cargo-make --force
       fi
 
     # Automated crate security audit
     - cargo --list | grep -F audit || cargo install cargo-audit
 
-    # Make sure rustfmt is installed
-    - rustup component add rustfmt-preview
+    # Nightly - Rustfmt and Clippy
+    #
+    # TODO: Don't install clippy --force when it is automatically distributed
+    # https://github.com/rust-lang-nursery/rust-clippy/issues/1358
+    # https://github.com/nrc/dev-tools-team/issues/4
+    - |
+      # Install Rustfmt and Clippy if on nightly
+      if rustc --version | grep -qF 'nightly'; then
+        rustup component add rustfmt-preview
+        cargo install clippy --force
+      fi
 
 .job_nightly: &job_nightly
   image: *rust_image_nightly
