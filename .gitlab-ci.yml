@@ -1,5 +1,23 @@
-.install_dependencies_template: &install_dependencies
-  stage: test
+# === Templates === #
+# These are commonized definitions used across the stage definitions.
+# Scroll down to the `CI Stages` section for the stage definitions.
+
+.cache_build_and_test: &cache_build_and_test
+  cache:
+    # We don't cache target/ as well because old binaries interfere with coverage
+    paths:
+      # Build dependencies (dependent crates)
+      - cargo/
+      - kcov-$KCOV_VERSION
+
+# https://hub.docker.com/r/rustlang/rust/tags/
+.rust_image_nightly: &rust_image_nightly "rustlang/rust:nightly"
+
+# https://hub.docker.com/r/library/rust/tags/
+# https://github.com/rust-lang-nursery/docker-rust
+.rust_image_stable: &rust_image_stable "rust:latest"
+
+.install_dependencies: &install_dependencies
   before_script:
     - cargo --version -v
     - rustc --version -v
@@ -30,19 +48,28 @@
         mesa-utils
       )
       apt-get install -y -qq "${pkgs[@]}"
-    - cargo install cargo-make --force
+    - |
+      # Install cargo-make
+      # Minimum version 0.10
+      if (! cargo --list | grep '\bmake\b') || ! cargo make --version | grep '\b[0-9]\+[.][0-9]\{2,\}'; then
+        cargo install cargo-make --force
+      fi
 
     # Automated crate security audit
     - cargo --list | grep -F audit || cargo install cargo-audit
 
-.cache_artifacts_template: &cache_artifacts
-  cache:
-    paths:
-      # we don't cache target/ as well because old binaries interfere with coverage
-      - cargo/
-      - kcov-$KCOV_VERSION
+.job_nightly: &job_nightly
+  image: *rust_image_nightly
+  variables:
+    CARGO_MAKE_RUN_CODECOV: 'true'
+    KCOV_VERSION: 34
 
-.xvfb_start_template: &xvfb_start_template |
+.job_stable: &job_stable
+  image: *rust_image_stable
+  variables:
+    CARGO_MAKE_SKIP_CODECOV: 'true'
+
+.xvfb_start: &xvfb_start |
   # Start XVFB
   export DISPLAY=:99.0
   /sbin/start-stop-daemon --start \
@@ -60,36 +87,36 @@
                           +render \
                           -noreset
 
+.stage_build_and_test: &stage_build_and_test
+  stage: build_and_test
+  <<: *install_dependencies
+  <<: *cache_build_and_test
+  script:
+    - cargo audit
+
+    # Compile all tests before running them
+    - cargo test --all --no-run
+
+    # Start XVFB and run tests
+    - *xvfb_start
+    - cargo test --all
+
+# === CI Stages === #
+
+# Unfortunately we are not able to split `build` and `test` phases -- when we do, the `test` Gitlab
+# CI runner is slightly different to the `build` runner, so the artifacts compiled in the `build`
+# phase aren't used, and Rust attempts to recompile them in the test phase.
+stages:
+  - build_and_test
+
 variables:
   CARGO_HOME: $CI_PROJECT_DIR/cargo
 
-stable:build:
-  # https://hub.docker.com/r/library/rust/tags/
-  # https://github.com/rust-lang-nursery/docker-rust
-  image: "rust:latest"
-  variables:
-    CARGO_MAKE_SKIP_CODECOV: 'true'
-  <<: *install_dependencies
-  <<: *cache_artifacts
-  script:
-    - *xvfb_start_template
-    - cargo audit
-    - cargo make workspace-ci-flow
-
-nightly:build:
-  # https://hub.docker.com/r/rustlang/rust/tags/
-  image: "rustlang/rust:nightly"
-  variables:
-    CARGO_MAKE_RUN_CODECOV: 'true'
-    KCOV_VERSION: 34
-  <<: *install_dependencies
-  <<: *cache_artifacts
-  script:
-    - *xvfb_start_template
-    - cargo audit
-    - cargo make workspace-ci-flow
+nightly:build_and_test:
+  <<: *stage_build_and_test
+  <<: *job_nightly
   after_script:
-    - *xvfb_start_template
+    - *xvfb_start
     # On gitlab-ci we cannot use sudo to install kcov, which ships with the default Makefile from
     # cargo-make.
     #
@@ -124,3 +151,7 @@ nightly:build:
     - cargo make --no-workspace workspace-coverage
     - grep -F merged_files ./target/coverage/index.json | grep -o '"covered":"[0-9]\+\.[0-9]\+"'
   coverage: '/"covered":"\d+\.\d+"/'
+
+stable:build_and_test:
+  <<: *stage_build_and_test
+  <<: *job_stable
