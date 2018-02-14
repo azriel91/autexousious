@@ -58,6 +58,9 @@
     # Automated crate security audit
     - cargo --list | grep -F audit || cargo install cargo-audit
 
+    # Make sure rustfmt is installed
+    - rustup component add rustfmt-preview
+
 .job_nightly: &job_nightly
   image: *rust_image_nightly
   variables:
