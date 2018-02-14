@@ -92,7 +92,8 @@
   <<: *install_dependencies
   <<: *cache_build_and_test
   script:
-    - cargo audit
+    # Code quality, security vulnerability checks, license compatibility
+    - cargo make --no-workspace conformance
 
     # Compile all tests before running them
     - cargo test --all --no-run

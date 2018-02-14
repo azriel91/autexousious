@@ -1,0 +1,24 @@
+[tasks.conformance]
+description = '''
+Ensures the repository conforms to coding best practices, and only depends on libraries with
+permissive licenses
+'''
+script = [
+'''
+# Code formatting
+cargo fmt --all -- --write-mode=diff
+
+# Clippy - best practices
+cargo clippy --all
+
+# Security vulnerability
+cargo audit
+
+# License compatibility
+if cargo license | grep -qi '\bGPL\b'; then
+    echo GPL license detected in a dependent crate. \
+         This is not compatible with a closed-source commercial application.
+    exit 1
+fi
+'''
+]
