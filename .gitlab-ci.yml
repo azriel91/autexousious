@@ -89,7 +89,12 @@
       fi
 
     # Nightly - Rustfmt and Clippy
-    - build/install_rustfmt_and_clippy.sh
+    - |
+      # Install rustfmt and clippy
+
+      # Needed for gitlab-ci
+      export USER=build
+      build/install_rustfmt_and_clippy.sh
 
 .job_nightly: &job_nightly
   image: *rust_image_nightly
