@@ -27,6 +27,9 @@
     - apt-get update -qq
     - |
       pkgs=(
+        # CI agents come with `grep` 2.27, which has a bug when matching piped input
+        grep
+
         # amethyst
         libasound2-dev
 
