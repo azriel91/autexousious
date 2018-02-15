@@ -20,16 +20,12 @@
 .install_dependencies: &install_dependencies
   before_script:
     - $0 --version
-    - grep --version
     - cargo --version -v
     - rustc --version -v
     - cargo --list
     - apt-get update -qq
     - |
       pkgs=(
-        # CI agents come with `grep` 2.27, which has a bug when matching piped input
-        grep
-
         # amethyst
         libasound2-dev
 
@@ -54,9 +50,6 @@
         mesa-utils
       )
       apt-get install -y -qq "${pkgs[@]}"
-
-    # Check grep version after update
-    - grep --version
 
     # For the `cargo --list` commands, we need to pipe stderr to /dev/null because of these issues:
     #
