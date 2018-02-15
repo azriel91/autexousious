@@ -48,18 +48,30 @@
         mesa-utils
       )
       apt-get install -y -qq "${pkgs[@]}"
+
+    # For the `cargo --list` commands, we need to pipe stderr to /dev/null because of these issues:
+    #
+    # * https://github.com/sfackler/cargo-tree/issues/25
+    # * https://github.com/rust-lang/rust/issues/46016
     - |
       # Install cargo-make
-      # Minimum version 0.10
-      if (! cargo --list | grep -q '\bmake\b') || (! cargo make --version | grep -q '\b[0-9]\+[.][0-9]\{2,\}'); then
+      is_cargo_make_installed() {
+        return $(cargo --list 2>/dev/null | grep -q '\bmake\b'; echo $?)
+      }
+      is_cargo_make_minimum() {
+        # Minimum version 0.10
+        return $(cargo make --version | grep -q '\b[0-9]\+[.][0-9]\{2,\}'; echo $?)
+      }
+
+      if (! is_cargo_make_installed) || (! is_cargo_make_minimum); then
         cargo install cargo-make --force
       fi
 
     # Automated crate security audit
-    - cargo --list | grep -q '\baudit\b' || cargo install cargo-audit
+    - cargo --list 2>/dev/null | grep -q '\baudit\b' || cargo install cargo-audit
 
     # Automated license checks
-    - cargo --list | grep -q '\blicense\b' || cargo install cargo-license
+    - cargo --list 2>/dev/null | grep -q '\blicense\b' || cargo install cargo-license
 
     # Nightly - Rustfmt and Clippy
     #
