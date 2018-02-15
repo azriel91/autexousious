@@ -58,7 +58,7 @@
     - |
       # Install cargo-make
       is_cargo_make_installed() {
-        return $(cargo --list 2>/dev/null | grep -qF 'make'; echo $?)
+        return $(cargo --list 2>&1 | grep -q '\bmake\b'; echo $?)
       }
       is_cargo_make_minimum() {
         # Minimum version 0.10
@@ -72,10 +72,10 @@
       fi
 
     # Automated crate security audit
-    - cargo --list 2>/dev/null | grep -qF 'audit' || cargo install cargo-audit
+    - cargo --list 2>&1 | grep -q '\baudit\b' || cargo install cargo-audit
 
     # Automated license checks
-    - cargo --list 2>/dev/null | grep -qF 'license' || cargo install cargo-license
+    - cargo --list 2>&1 | grep -q '\blicense\b' || cargo install cargo-license
 
     # Nightly - Rustfmt and Clippy
     #
