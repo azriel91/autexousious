@@ -23,6 +23,7 @@
     - grep --version
     - cargo --version -v
     - rustc --version -v
+    - cargo --list
     - apt-get update -qq
     - |
       pkgs=(
