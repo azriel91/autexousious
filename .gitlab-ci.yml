@@ -55,6 +55,9 @@
       )
       apt-get install -y -qq "${pkgs[@]}"
 
+    # Check grep version after update
+    - grep --version
+
     # For the `cargo --list` commands, we need to pipe stderr to /dev/null because of these issues:
     #
     # * https://github.com/sfackler/cargo-tree/issues/25
@@ -62,7 +65,8 @@
     - |
       # Install cargo-make
       is_cargo_make_installed() {
-        return $(cargo --list 2>&1 | grep -q '\bmake\b'; echo $?)
+        existing_crates="$(cargo --list 2>&1)"
+        return $(echo "${existing_crates}" | grep -q '\bmake\b'; echo $?)
       }
       is_cargo_make_minimum() {
         # Minimum version 0.10
@@ -76,10 +80,20 @@
       fi
 
     # Automated crate security audit
-    - cargo --list 2>&1 | grep -q '\baudit\b' || cargo install cargo-audit
+    - |
+      # Install cargo-audit
+      existing_crates="$(cargo --list 2>&1)"
+      if ! echo "${existing_crates}" | grep -q '\baudit\b' ; then
+        cargo install cargo-audit
+      fi
 
     # Automated license checks
-    - cargo --list 2>&1 | grep -q '\blicense\b' || cargo install cargo-license
+    - |
+      # Install cargo-license
+      existing_crates="$(cargo --list 2>&1)"
+      if ! echo "${existing_crates}" | grep -q '\blicense\b'; then
+        cargo install cargo-license
+      fi
 
     # Nightly - Rustfmt and Clippy
     #
