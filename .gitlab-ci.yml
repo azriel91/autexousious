@@ -89,16 +89,7 @@
       fi
 
     # Nightly - Rustfmt and Clippy
-    #
-    # TODO: Don't install clippy --force when it is automatically distributed
-    # https://github.com/rust-lang-nursery/rust-clippy/issues/1358
-    # https://github.com/nrc/dev-tools-team/issues/4
-    - |
-      # Install Rustfmt and Clippy if on nightly
-      if rustc --version | grep -qF 'nightly'; then
-        rustup component add rustfmt-preview
-        cargo install clippy --force
-      fi
+    - build/install_rustfmt_and_clippy.sh
 
 .job_nightly: &job_nightly
   image: *rust_image_nightly
