@@ -19,6 +19,8 @@
 
 .install_dependencies: &install_dependencies
   before_script:
+    - $0 --version
+    - grep --version
     - cargo --version -v
     - rustc --version -v
     - apt-get update -qq
