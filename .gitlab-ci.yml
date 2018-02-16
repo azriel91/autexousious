@@ -19,8 +19,10 @@
 
 .install_dependencies: &install_dependencies
   before_script:
+    - $0 --version
     - cargo --version -v
     - rustc --version -v
+    - cargo --list
     - apt-get update -qq
     - |
       pkgs=(
@@ -48,15 +50,51 @@
         mesa-utils
       )
       apt-get install -y -qq "${pkgs[@]}"
+
+    # For the `cargo --list` commands, we need to pipe stderr to /dev/null because of these issues:
+    #
+    # * https://github.com/sfackler/cargo-tree/issues/25
+    # * https://github.com/rust-lang/rust/issues/46016
     - |
       # Install cargo-make
-      # Minimum version 0.10
-      if (! cargo --list | grep '\bmake\b') || ! cargo make --version | grep '\b[0-9]\+[.][0-9]\{2,\}'; then
+      is_cargo_make_installed() {
+        existing_crates="$(cargo --list 2>&1)"
+        return $(echo "${existing_crates}" | grep -q '\bmake\b'; echo $?)
+      }
+      is_cargo_make_minimum() {
+        # Minimum version 0.10
+        return $(cargo make --version | grep -q '\b[0-9]\+[.][0-9]\{2,\}'; echo $?)
+      }
+
+      if ! is_cargo_make_installed; then
+        cargo install cargo-make
+      elif ! is_cargo_make_minimum; then
         cargo install cargo-make --force
       fi
 
     # Automated crate security audit
-    - cargo --list | grep -F audit || cargo install cargo-audit
+    - |
+      # Install cargo-audit
+      existing_crates="$(cargo --list 2>&1)"
+      if ! echo "${existing_crates}" | grep -q '\baudit\b' ; then
+        cargo install cargo-audit
+      fi
+
+    # Automated license checks
+    - |
+      # Install cargo-license
+      existing_crates="$(cargo --list 2>&1)"
+      if ! echo "${existing_crates}" | grep -q '\blicense\b'; then
+        cargo install cargo-license
+      fi
+
+    # Nightly - Rustfmt and Clippy
+    - |
+      # Install rustfmt and clippy
+
+      # Needed for gitlab-ci
+      export USER=build
+      build/install_rustfmt_and_clippy.sh
 
 .job_nightly: &job_nightly
   image: *rust_image_nightly
@@ -92,7 +130,8 @@
   <<: *install_dependencies
   <<: *cache_build_and_test
   script:
-    - cargo audit
+    # Code quality, security vulnerability checks, license compatibility
+    - cargo make --no-workspace conformance
 
     # Compile all tests before running them
     - cargo test --all --no-run
