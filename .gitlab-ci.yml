@@ -168,8 +168,11 @@ nightly:build_and_test:
       # install kcov
       command -v kcov >/dev/null 2>&1 || {
         if [ "$(grep -Ei 'debian|buntu|mint' /etc/*release)" ]; then
-          wget https://github.com/SimonKagstrom/kcov/archive/v$KCOV_VERSION.zip
+
+          # -nc is okay since we are downloading a tagged version
+          wget -nc https://github.com/SimonKagstrom/kcov/archive/v$KCOV_VERSION.zip
           unzip -uo v$KCOV_VERSION.zip
+
           cd kcov-$KCOV_VERSION
 
           build_dir='./build'
