@@ -107,6 +107,11 @@
   variables:
     CARGO_MAKE_SKIP_CODECOV: 'true'
 
+.job_conformance: &job_conformance
+  image: *rust_image_nightly # for clippy
+  variables:
+    CARGO_MAKE_SKIP_CODECOV: 'true'
+
 .xvfb_start: &xvfb_start |
   # Start XVFB
   export DISPLAY=:99.0
@@ -130,15 +135,20 @@
   <<: *install_dependencies
   <<: *cache_build_and_test
   script:
-    # Code quality, security vulnerability checks, license compatibility
-    - cargo make --no-workspace conformance
-
     # Compile all tests before running them
     - cargo test --all --no-run
 
     # Start XVFB and run tests
     - *xvfb_start
     - cargo test --all
+
+.stage_build_and_test_conformance: &stage_build_and_test_conformance
+  stage: build_and_test # piggy backing so that it runs in parallel
+  <<: *install_dependencies
+  <<: *cache_build_and_test
+  script:
+    # Code quality, security vulnerability checks, license compatibility
+    - cargo make --no-workspace conformance
 
 # === CI Stages === #
 
@@ -150,6 +160,10 @@ stages:
 
 variables:
   CARGO_HOME: $CI_PROJECT_DIR/cargo
+
+nightly:conformance:
+  <<: *stage_build_and_test_conformance
+  <<: *job_conformance
 
 nightly:build_and_test:
   <<: *stage_build_and_test
