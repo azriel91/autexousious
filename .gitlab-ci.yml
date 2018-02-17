@@ -4,6 +4,7 @@
 
 .cache_build_and_test: &cache_build_and_test
   cache:
+    key: "$CI_JOB_NAME"
     # We don't cache target/ as well because old binaries interfere with coverage
     paths:
       # Build dependencies (dependent crates)
