@@ -171,7 +171,7 @@ nightly:build_and_test:
 
           # -nc is okay since we are downloading a tagged version
           wget -nc https://github.com/SimonKagstrom/kcov/archive/v$KCOV_VERSION.zip
-          unzip -uo v$KCOV_VERSION.zip
+          unzip -uoq v$KCOV_VERSION.zip
 
           cd kcov-$KCOV_VERSION
 
