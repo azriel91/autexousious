@@ -18,60 +18,57 @@
 # https://github.com/rust-lang-nursery/docker-rust
 .rust_image_stable: &rust_image_stable "rust:latest"
 
-.install_dependencies: &install_dependencies
+.install_dependencies_compile: &install_dependencies_compile |
+  pkgs=(
+    # amethyst
+    libasound2-dev
+
+    # enigo
+    libxtst-dev
+
+    # kcov
+    libcurl4-openssl-dev
+    libelf-dev
+    libdw-dev
+    cmake
+    gcc
+    binutils-dev
+    zlib1g-dev
+    libiberty-dev
+    zip
+
+    # xvfb
+    xvfb
+    libgl1-mesa-dev
+    libgl1-mesa-glx
+    mesa-utils
+  )
+  apt-get install -y -qq "${pkgs[@]}"
+
+.setup_dependencies_build: &setup_dependencies_build
   before_script:
     - $0 --version
     - cargo --version -v
     - rustc --version -v
     - cargo --list
     - apt-get update -qq
-    - |
-      pkgs=(
-        # amethyst
-        libasound2-dev
+    - *install_dependencies_compile
+    # nightly uses this for coverage
+    - build/install_cargo_make.sh
 
-        # enigo
-        libxtst-dev
-
-        # kcov
-        libcurl4-openssl-dev
-        libelf-dev
-        libdw-dev
-        cmake
-        gcc
-        binutils-dev
-        zlib1g-dev
-        libiberty-dev
-        zip
-
-        # xvfb
-        xvfb
-        libgl1-mesa-dev
-        libgl1-mesa-glx
-        mesa-utils
-      )
-      apt-get install -y -qq "${pkgs[@]}"
-
+.setup_dependencies_conformance: &setup_dependencies_conformance
+  before_script:
+    - $0 --version
+    - cargo --version -v
+    - rustc --version -v
+    - cargo --list
+    - apt-get update -qq
+    - *install_dependencies_compile
     # For the `cargo --list` commands, we need to pipe stderr to /dev/null because of these issues:
     #
     # * https://github.com/sfackler/cargo-tree/issues/25
     # * https://github.com/rust-lang/rust/issues/46016
-    - |
-      # Install cargo-make
-      is_cargo_make_installed() {
-        existing_crates="$(cargo --list 2>&1)"
-        return $(echo "${existing_crates}" | grep -q '\bmake\b'; echo $?)
-      }
-      is_cargo_make_minimum() {
-        # Minimum version 0.10
-        return $(cargo make --version | grep -q '\b[0-9]\+[.][0-9]\{2,\}'; echo $?)
-      }
-
-      if ! is_cargo_make_installed; then
-        cargo install cargo-make
-      elif ! is_cargo_make_minimum; then
-        cargo install cargo-make --force
-      fi
+    - build/install_cargo_make.sh
 
     # Automated crate security audit
     - |
@@ -133,7 +130,7 @@
 
 .stage_build_and_test: &stage_build_and_test
   stage: build_and_test
-  <<: *install_dependencies
+  <<: *setup_dependencies_build
   <<: *cache_build_and_test
   script:
     # Compile all tests before running them
@@ -145,7 +142,7 @@
 
 .stage_build_and_test_conformance: &stage_build_and_test_conformance
   stage: build_and_test # piggy backing so that it runs in parallel
-  <<: *install_dependencies
+  <<: *setup_dependencies_conformance
   <<: *cache_build_and_test
   script:
     # Code quality, security vulnerability checks, license compatibility
