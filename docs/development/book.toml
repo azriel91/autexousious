@@ -1,0 +1,7 @@
+[book]
+authors = ["Azriel Hoh <mail@azriel.im>"]
+multilingual = false
+src = "src"
+
+[output.html]
+additional-css = ["custom.css"]
