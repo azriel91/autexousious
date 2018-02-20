@@ -1,5 +1,6 @@
 //! ECS input bundle for custom events
 
+use std::error::Error;
 use std::fs::File;
 
 use amethyst::assets::{AssetStorage, Loader};
@@ -32,19 +33,14 @@ impl<'a, 'b> ECSBundle<'a, 'b> for ApplicationUiBundle {
         world: &mut World,
         builder: DispatcherBuilder<'a, 'b>,
     ) -> Result<DispatcherBuilder<'a, 'b>> {
-        let font_config_path =
-            find_in(
-                "resources",
-                "font_config.ron",
-                Some(development_base_dirs!()),
-            ).expect("Failed to find font_config. TODO: turn this into a proper amethyst::Error");
+        let font_config_path = find_in(
+            "resources",
+            "font_config.ron",
+            Some(development_base_dirs!()),
+        )?;
 
-        let font_config_file = File::open(font_config_path)
-            .expect("Failed to open font_config. TODO: turn this into amethyst::Error");
-
-        let font_config: FontConfig = from_reader(font_config_file).expect(
-            "font_config.ron does not match required format. TODO: turn this into amethyst::Error",
-        );
+        let font_config_file = File::open(font_config_path).map_err(error_description)?;
+        let font_config: FontConfig = from_reader(font_config_file).map_err(error_description)?;
 
         // Order is important, this must align with `font_variant::FontVariant`
         let mut font_paths = vec![
@@ -68,6 +64,10 @@ impl<'a, 'b> ECSBundle<'a, 'b> for ApplicationUiBundle {
 
         Ok(builder)
     }
+}
+
+fn error_description<E: Error>(e: E) -> String {
+    e.description().to_string()
 }
 
 #[cfg(test)]
