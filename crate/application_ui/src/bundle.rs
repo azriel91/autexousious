@@ -88,7 +88,7 @@ mod test {
             .with_bundle(UiBundle::new())?
             .with_bundle(ApplicationUiBundle::new())?
             .build()
-    }
+    } // kcov-ignore
 
     #[test]
     fn build_adds_font_to_world() {
