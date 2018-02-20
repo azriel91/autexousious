@@ -1,9 +1,16 @@
 //! ECS input bundle for custom events
 
-use amethyst::assets::Loader;
+use std::fs::File;
+
+use amethyst::assets::{AssetStorage, Loader};
 use amethyst::core::bundle::{ECSBundle, Result};
 use amethyst::ecs::{DispatcherBuilder, World};
-use amethyst::ui::TtfFormat;
+use amethyst::ui::{FontAsset, TtfFormat};
+use application::config::find_in;
+use ron::de::from_reader;
+
+use font_config::FontConfig;
+use font_variant::FontVariant;
 
 /// Bundle that loads application UI assets.
 ///
@@ -25,13 +32,39 @@ impl<'a, 'b> ECSBundle<'a, 'b> for ApplicationUiBundle {
         world: &mut World,
         builder: DispatcherBuilder<'a, 'b>,
     ) -> Result<DispatcherBuilder<'a, 'b>> {
-        let _font = world.read_resource::<Loader>().load(
-            "font/source-code-pro-2.030R-ro-1.050R-it/TTF/SourceCodePro-Regular.ttf",
-            TtfFormat,
-            Default::default(),
-            (),
-            &world.read_resource(),
+        let font_config_path =
+            find_in(
+                "resources",
+                "font_config.ron",
+                Some(development_base_dirs!()),
+            ).expect("Failed to find font_config. TODO: turn this into a proper amethyst::Error");
+
+        let font_config_file = File::open(font_config_path)
+            .expect("Failed to open font_config. TODO: turn this into amethyst::Error");
+
+        let font_config: FontConfig = from_reader(font_config_file).expect(
+            "font_config.ron does not match required format. TODO: turn this into amethyst::Error",
         );
+
+        // Order is important, this must align with `font_variant::FontVariant`
+        let mut font_paths = vec![
+            (FontVariant::Regular, font_config.regular),
+            (FontVariant::Bold, font_config.bold),
+            (FontVariant::Italic, font_config.italic),
+            (FontVariant::BoldItalic, font_config.bold_italic),
+        ];
+
+        font_paths.drain(..).for_each(|(font_variant, font_path)| {
+            let font_handle = {
+                // `world` is borrowed immutably in here for `loader` and `font_storage`
+                let loader = world.read_resource::<Loader>();
+                let font_storage = world.read_resource::<AssetStorage<FontAsset>>();
+                loader.load(font_path, TtfFormat, (), (), &font_storage)
+            };
+
+            // `world` is borrowed mutably here to add the font handle
+            world.add_resource_with_id(font_handle, font_variant as usize);
+        });
 
         Ok(builder)
     }
@@ -43,6 +76,7 @@ mod test {
     use amethyst::prelude::*;
     use amethyst::ui::{FontHandle, UiBundle};
 
+    use font_variant::FontVariant;
     use super::ApplicationUiBundle;
 
     fn setup<'a, 'b>() -> Result<Application<'a, 'b>> {
@@ -61,8 +95,27 @@ mod test {
         let app =
             setup().expect("Failed to build Application, check the bundle initialization code.");
 
+        let world = &app.world;
+
         // If the font was not added, the next line will panic
-        let _font = app.world.read::<FontHandle>();
+        let _font_handle_regular =
+            world.read_resource_with_id::<FontHandle>(FontVariant::Regular as usize);
+        let _font_handle_bold =
+            world.read_resource_with_id::<FontHandle>(FontVariant::Bold as usize);
+        let _font_handle_italic =
+            world.read_resource_with_id::<FontHandle>(FontVariant::Italic as usize);
+        let _font_handle_bold_italic =
+            world.read_resource_with_id::<FontHandle>(FontVariant::BoldItalic as usize);
+
+        // TODO: The following verification relies on https://github.com/redox-os/rusttype/issues/86
+        // Need to import the hamcrest crate
+
+        // let font_storage = world.read_resource::<AssetStorage<FontAsset>>();
+        // let font_asset_regular = font_storage
+        //     .get(&font_handle_regular)
+        //     .expect("Failed to get regular font handle.");
+        // let font_regular = font_asset_regular.0;
+        // assert_that!(font_regular.font_name_strings(), contains(vec!["Source Code Pro Regular"]));
     }
 
     #[derive(Debug)]
