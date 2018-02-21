@@ -7,7 +7,7 @@
 ///
 /// * <https://stackoverflow.com/q/41648339/1576773>
 /// * <https://doc.rust-lang.org/nomicon/other-reprs.html>
-#[repr(u8)]
+#[repr(usize)]
 #[derive(Debug)]
 pub enum FontVariant {
     /// For normal text.
@@ -18,4 +18,15 @@ pub enum FontVariant {
     Italic,
     /// For important, emphasized text.
     BoldItalic,
+}
+
+impl From<FontVariant> for usize {
+    fn from(variant: FontVariant) -> usize {
+        match variant {
+            FontVariant::Bold => 0,
+            FontVariant::Italic => 1,
+            FontVariant::BoldItalic => 2,
+            FontVariant::Regular => 3,
+        }
+    }
 }

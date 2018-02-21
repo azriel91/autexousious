@@ -192,12 +192,10 @@
 //!         (
 //!             // The `clone()` calls here are necessary to obtain the `FontHandle`, as the
 //!             // `read_resource_with_id(..)` function returns a `Fetch` wrapper around the type.
-//!             world.read_resource_with_id::<FH>(Regular as usize).clone(),
-//!             world.read_resource_with_id::<FH>(Bold as usize).clone(),
-//!             world.read_resource_with_id::<FH>(Italic as usize).clone(),
-//!             world
-//!                 .read_resource_with_id::<FH>(BoldItalic as usize)
-//!                 .clone(),
+//!             world.read_resource_with_id::<FH>(Regular.into()).clone(),
+//!             world.read_resource_with_id::<FH>(Bold.into()).clone(),
+//!             world.read_resource_with_id::<FH>(Italic.into()).clone(),
+//!             world.read_resource_with_id::<FH>(BoldItalic.into()).clone(),
 //!         )
 //!     }
 //! }

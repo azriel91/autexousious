@@ -68,11 +68,9 @@ type FH = FontHandle;
 fn read_fonts(world: &mut World) -> (FH, FH, FH, FH) {
     use application_ui::FontVariant::{Bold, BoldItalic, Italic, Regular};
     (
-        world.read_resource_with_id::<FH>(Regular as usize).clone(),
-        world.read_resource_with_id::<FH>(Bold as usize).clone(),
-        world.read_resource_with_id::<FH>(Italic as usize).clone(),
-        world
-            .read_resource_with_id::<FH>(BoldItalic as usize)
-            .clone(),
+        world.read_resource_with_id::<FH>(Regular.into()).clone(),
+        world.read_resource_with_id::<FH>(Bold.into()).clone(),
+        world.read_resource_with_id::<FH>(Italic.into()).clone(),
+        world.read_resource_with_id::<FH>(BoldItalic.into()).clone(),
     )
 }
