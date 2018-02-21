@@ -8,3 +8,7 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop
 application = { path = "../application" }
 ron = "0.1"
 serde = "1.0"
+
+[[example]]
+name = "01_draw_text"
+path = "examples/01_draw_text/main.rs"
