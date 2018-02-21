@@ -17,13 +17,35 @@ use font_variant::FontVariant;
 ///
 /// Registers `FontHandle` resources in the world. See the [module level documentation](index.html)
 /// for more details.
-#[derive(Debug, Default)]
-pub struct ApplicationUiBundle;
+#[derive(Debug)]
+pub struct ApplicationUiBundle {
+    font_config_name: &'static str,
+}
 
 impl ApplicationUiBundle {
     /// Returns an application bundle.
     pub fn new() -> Self {
         Default::default()
+    }
+
+    /// Returns an application bundle with a custom font configuration file name.
+    ///
+    /// For testing purposes, this allows you to override the font configuration file name.
+    ///
+    /// # Parameters
+    ///
+    /// * `font_config_name`: Name of the font configuration file.
+    #[cfg(test)]
+    fn internal_new(font_config_name: &'static str) -> Self {
+        ApplicationUiBundle { font_config_name }
+    }
+}
+
+impl Default for ApplicationUiBundle {
+    fn default() -> Self {
+        ApplicationUiBundle {
+            font_config_name: "font_config.ron",
+        }
     }
 }
 
@@ -35,7 +57,7 @@ impl<'a, 'b> ECSBundle<'a, 'b> for ApplicationUiBundle {
     ) -> Result<DispatcherBuilder<'a, 'b>> {
         let font_config_path = find_in(
             "resources",
-            "font_config.ron",
+            self.font_config_name,
             Some(development_base_dirs!()),
         )?;
 
@@ -66,9 +88,13 @@ impl<'a, 'b> ECSBundle<'a, 'b> for ApplicationUiBundle {
     }
 }
 
+// The kcov-ignore lines are in odd places, but that's because the native code does not always line
+// up with the source code.
+// kcov-ignore-start
 fn error_description<E: Error>(e: E) -> String {
+    // kcov-ignore-end
     e.description().to_string()
-}
+} // kcov-ignore
 
 #[cfg(test)]
 mod test {
@@ -79,21 +105,21 @@ mod test {
     use font_variant::FontVariant;
     use super::ApplicationUiBundle;
 
-    fn setup<'a, 'b>() -> Result<Application<'a, 'b>> {
+    fn setup<'a, 'b>(application_ui_bundle: ApplicationUiBundle) -> Result<Application<'a, 'b>> {
         // We need to instantiate an amethyst::Application because:
         //
         // * The `Loader` needs to be added to the world, and the code to do this is non-trivial
         // * The `AppBundle` in amethyst that does this is non-public
         Application::build(format!("{}/assets", env!("CARGO_MANIFEST_DIR")), MockState)?
             .with_bundle(UiBundle::new())?
-            .with_bundle(ApplicationUiBundle::new())?
+            .with_bundle(application_ui_bundle)?
             .build()
     } // kcov-ignore
 
     #[test]
     fn build_adds_font_to_world() {
-        let app =
-            setup().expect("Failed to build Application, check the bundle initialization code.");
+        let app = setup(ApplicationUiBundle::new())
+            .expect("Failed to build Application, check the bundle initialization code.");
 
         let world = &app.world;
 
@@ -117,6 +143,18 @@ mod test {
         // let font_regular = font_asset_regular.0;
         // assert_that!(font_regular.font_name_strings(), contains(vec!["Source Code Pro Regular"]));
     }
+
+    #[test]
+    #[should_panic(expected = "Failed to find \\'resources/non_existent.ron\\'")]
+    fn fails_with_useful_error_when_font_config_does_not_exist() {
+        let _app = setup(ApplicationUiBundle::internal_new("non_existent.ron")).unwrap();
+    } // kcov-ignore
+
+    #[test]
+    #[should_panic(expected = "missing field `bold`")]
+    fn fails_with_useful_error_when_font_config_fails_to_parse() {
+        let _app = setup(ApplicationUiBundle::internal_new("bad_config.ron")).unwrap();
+    } // kcov-ignore
 
     #[derive(Debug)]
     struct MockState;
