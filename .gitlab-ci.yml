@@ -104,6 +104,7 @@
   image: *rust_image_stable
   variables:
     CARGO_MAKE_SKIP_CODECOV: 'true'
+    RUST_BACKTRACE: 1
 
 .job_conformance: &job_conformance
   image: *rust_image_nightly # for clippy
