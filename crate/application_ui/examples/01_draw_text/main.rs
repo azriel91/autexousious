@@ -13,6 +13,9 @@ extern crate amethyst;
 #[macro_use]
 extern crate application;
 extern crate application_ui;
+extern crate structopt;
+#[macro_use]
+extern crate structopt_derive;
 
 mod state;
 
@@ -23,10 +26,18 @@ use amethyst::renderer::{DisplayConfig, Pipeline, RenderBundle, Stage};
 use amethyst::ui::{DrawUi, UiBundle};
 use application::config::find_in;
 use application_ui::ApplicationUiBundle;
+use structopt::StructOpt;
 
 use state::TextState;
 
-fn run() -> Result<(), amethyst::Error> {
+#[derive(StructOpt, Debug)]
+#[structopt(name = "Example 01: Draw Text")]
+struct Opt {
+    #[structopt(long = "no-run", help = "Don't run the Amethyst application")]
+    no_run: bool,
+}
+
+fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     let display_config = DisplayConfig::load(
         find_in(
             "resources",
@@ -48,13 +59,17 @@ fn run() -> Result<(), amethyst::Error> {
         .build()
         .expect("Failed to build application.");
 
-    app.run();
+    if !opt.no_run {
+        app.run();
+    }
 
     Ok(())
 }
 
 fn main() {
-    if let Err(e) = run() {
+    let opt = Opt::from_args();
+
+    if let Err(e) = run(&opt) {
         println!("Failed to execute example: {}", e);
         process::exit(1);
     }

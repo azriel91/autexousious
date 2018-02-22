@@ -9,6 +9,11 @@ application = { path = "../application" }
 ron = "0.1"
 serde = "1.0"
 
+[dev-dependencies]
+assert_cli = "0.5"
+structopt = "0.1.6"
+structopt-derive = "0.1.6"
+
 [[example]]
 name = "01_draw_text"
 path = "examples/01_draw_text/main.rs"
