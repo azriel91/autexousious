@@ -61,8 +61,9 @@ impl<'a, 'b> ECSBundle<'a, 'b> for ApplicationUiBundle {
             Some(development_base_dirs!()),
         )?;
 
-        let font_config_file = File::open(font_config_path).map_err(error_description)?;
-        let font_config: FontConfig = from_reader(font_config_file).map_err(error_description)?;
+        let font_config_file = File::open(font_config_path).map_err(|e| error_description(&e))?;
+        let font_config: FontConfig =
+            from_reader(font_config_file).map_err(|e| error_description(&e))?;
 
         // Order is important, this must align with `font_variant::FontVariant`
         let mut font_paths = vec![
@@ -91,7 +92,7 @@ impl<'a, 'b> ECSBundle<'a, 'b> for ApplicationUiBundle {
 // The kcov-ignore lines are in odd places, but that's because the native code does not always line
 // up with the source code.
 // kcov-ignore-start
-fn error_description<E: Error>(e: E) -> String {
+fn error_description<E: Error>(e: &E) -> String {
     // kcov-ignore-end
     e.description().to_string()
 } // kcov-ignore
