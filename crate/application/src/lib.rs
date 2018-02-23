@@ -9,11 +9,12 @@
 //! #[macro_use] // for the development_base_dirs!() macro
 //! extern crate application;
 //!
+//! use application::resource::dir;
 //! use application::resource::find_in;
 //!
 //! fn main() {
 //!     let path_to_resource = find_in(
-//!         "resources",
+//!         dir::RESOURCES,
 //!         "config.ron",
 //!         Some(development_base_dirs!()),
 //!     ).unwrap();

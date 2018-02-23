@@ -103,6 +103,7 @@ mod test {
     use tempdir::TempDir;
     use tempfile::{NamedTempFile, NamedTempFileOptions};
 
+    use resource::dir;
     use resource::error::ErrorKind;
     use resource::FindContext;
     use super::{find, find_in};
@@ -169,7 +170,7 @@ mod test {
 
     test! {
         fn find_in_returns_conf_path_when_conf_file_exists() {
-            let (temp_dir, conf_path) = setup(Some("resources")).unwrap();
+            let (temp_dir, conf_path) = setup(Some(dir::RESOURCES)).unwrap();
             let temp_dir = temp_dir.unwrap();
 
             let expected = temp_dir.path().join("config.ron");

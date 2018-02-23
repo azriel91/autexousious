@@ -7,6 +7,7 @@ use amethyst::assets::{AssetStorage, Loader};
 use amethyst::core::bundle::{ECSBundle, Result};
 use amethyst::ecs::{DispatcherBuilder, World};
 use amethyst::ui::{FontAsset, TtfFormat};
+use application::resource::dir;
 use application::resource::find_in;
 use ron::de::from_reader;
 
@@ -56,7 +57,7 @@ impl<'a, 'b> ECSBundle<'a, 'b> for ApplicationUiBundle {
         builder: DispatcherBuilder<'a, 'b>,
     ) -> Result<DispatcherBuilder<'a, 'b>> {
         let font_config_path = find_in(
-            "resources",
+            dir::RESOURCES,
             self.font_config_name,
             Some(development_base_dirs!()),
         )?;

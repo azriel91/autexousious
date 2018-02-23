@@ -64,6 +64,7 @@
 //! use amethyst::prelude::*;
 //! use amethyst::renderer::{DisplayConfig, Pipeline, RenderBundle, Stage};
 //! use amethyst::ui::{DrawUi, UiBundle};
+//! use application::resource::dir;
 //! use application::resource::find_in;
 //! use application_ui::ApplicationUiBundle;
 //!
@@ -73,7 +74,7 @@
 //! fn run() -> Result<(), amethyst::Error> {
 //!     let display_config = DisplayConfig::load(
 //!         find_in(
-//!             "resources",
+//!             dir::RESOURCES,
 //!             "display_config.ron",
 //!             Some(development_base_dirs!()),
 //!         ).unwrap(),

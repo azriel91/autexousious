@@ -1,5 +1,7 @@
 //! Contains modules for various application configuration
 
+pub mod dir;
+
 mod error;
 mod find;
 mod find_context;
