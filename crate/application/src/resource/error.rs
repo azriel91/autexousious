@@ -5,7 +5,7 @@ use amethyst::core;
 use amethyst::config::ConfigError;
 use error_chain;
 
-use config::FindContext;
+use resource::FindContext;
 
 // kcov-ignore-start
 /// `ErrorKind` for application configuration
@@ -31,8 +31,8 @@ impl From<FindContext> for Error {
 }
 
 impl From<Error> for io::Error {
-    fn from(config_error: Error) -> io::Error {
-        match config_error.0 /* error_kind */ {
+    fn from(resource_error: Error) -> io::Error {
+        match resource_error.0 /* error_kind */ {
             ErrorKind::Msg(msg) => io::Error::new(io::ErrorKind::Other, msg),
             ErrorKind::Find(find_context) => {
                 io::Error::new(io::ErrorKind::Other, format!("{}", find_context))
@@ -43,14 +43,14 @@ impl From<Error> for io::Error {
 }
 
 impl From<Error> for amethyst::Error {
-    fn from(config_error: Error) -> amethyst::Error {
-        let config_error = ConfigError::File(config_error.into());
-        amethyst::Error::Config(config_error)
+    fn from(resource_error: Error) -> amethyst::Error {
+        let resource_error = ConfigError::File(resource_error.into());
+        amethyst::Error::Config(resource_error)
     }
 }
 
 impl From<Error> for core::Error {
-    fn from(config_error: Error) -> core::Error {
-        core::Error::from_kind(core::ErrorKind::Msg(format!("{}", config_error)))
+    fn from(resource_error: Error) -> core::Error {
+        core::Error::from_kind(core::ErrorKind::Msg(format!("{}", resource_error)))
     }
 }

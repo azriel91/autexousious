@@ -24,7 +24,7 @@ use std::process;
 use amethyst::prelude::*;
 use amethyst::renderer::{DisplayConfig, Pipeline, RenderBundle, Stage};
 use amethyst::ui::{DrawUi, UiBundle};
-use application::config::find_in;
+use application::resource::find_in;
 use application_ui::ApplicationUiBundle;
 use structopt::StructOpt;
 

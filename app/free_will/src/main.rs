@@ -14,7 +14,7 @@ use std::process;
 
 use amethyst::renderer::{DisplayConfig, DrawFlat, Pipeline, PosNormTex, RenderBundle, Stage};
 use amethyst::prelude::*;
-use application::config::find_in;
+use application::resource::find_in;
 use application_input::ApplicationInputBundle;
 use stdio_view::StdinSystem;
 use structopt::StructOpt;

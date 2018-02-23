@@ -2,8 +2,8 @@ use std::env;
 use std::ffi;
 use std::path::{Path, PathBuf};
 
-use config::error::Result;
-use config::FindContext;
+use resource::error::Result;
+use resource::FindContext;
 
 /// Returns development-time base directories as a `Vec<::std::path::Path>`.
 ///
@@ -103,8 +103,8 @@ mod test {
     use tempdir::TempDir;
     use tempfile::{NamedTempFile, NamedTempFileOptions};
 
-    use config::error::ErrorKind;
-    use config::FindContext;
+    use resource::error::ErrorKind;
+    use resource::FindContext;
     use super::{find, find_in};
 
     lazy_static! {

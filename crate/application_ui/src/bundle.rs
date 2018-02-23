@@ -7,7 +7,7 @@ use amethyst::assets::{AssetStorage, Loader};
 use amethyst::core::bundle::{ECSBundle, Result};
 use amethyst::ecs::{DispatcherBuilder, World};
 use amethyst::ui::{FontAsset, TtfFormat};
-use application::config::find_in;
+use application::resource::find_in;
 use ron::de::from_reader;
 
 use font_config::FontConfig;
