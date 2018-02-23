@@ -1,0 +1,11 @@
+// This is intended to be shared by examples
+(
+  title: "Example",
+  dimensions: Some((400, 300)),
+  max_dimensions: None,
+  min_dimensions: None,
+  fullscreen: false,
+  multisampling: 0, // #12
+  visibility: true,
+  vsync: true,
+)

@@ -24,6 +24,7 @@
 //! ```
 //!
 
+extern crate amethyst;
 #[macro_use]
 extern crate derive_error_chain;
 extern crate error_chain;

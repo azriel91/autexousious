@@ -1,5 +1,8 @@
 use std::io;
 
+use amethyst;
+use amethyst::core;
+use amethyst::config::ConfigError;
 use error_chain;
 
 use config::FindContext;
@@ -21,8 +24,33 @@ pub enum ErrorKind {
 }
 // kcov-ignore-end
 
-impl Into<Error> for FindContext {
-    fn into(self) -> Error {
-        Error(ErrorKind::Find(self), error_chain::State::default())
+impl From<FindContext> for Error {
+    fn from(find_context: FindContext) -> Error {
+        Error(ErrorKind::Find(find_context), error_chain::State::default())
+    }
+}
+
+impl From<Error> for io::Error {
+    fn from(config_error: Error) -> io::Error {
+        match config_error.0 /* error_kind */ {
+            ErrorKind::Msg(msg) => io::Error::new(io::ErrorKind::Other, msg),
+            ErrorKind::Find(find_context) => {
+                io::Error::new(io::ErrorKind::Other, format!("{}", find_context))
+            }
+            ErrorKind::Io(io_error) => io_error,
+        }
+    }
+}
+
+impl From<Error> for amethyst::Error {
+    fn from(config_error: Error) -> amethyst::Error {
+        let config_error = ConfigError::File(config_error.into());
+        amethyst::Error::Config(config_error)
+    }
+}
+
+impl From<Error> for core::Error {
+    fn from(config_error: Error) -> core::Error {
+        core::Error::from_kind(core::ErrorKind::Msg(format!("{}", config_error)))
     }
 }
