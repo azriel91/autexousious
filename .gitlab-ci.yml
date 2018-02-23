@@ -126,7 +126,6 @@
                           -pixdepths 3 27 32 \
                           -ac \
                           +extension GLX \
-                          +iglx \
                           +render \
                           -noreset
 
