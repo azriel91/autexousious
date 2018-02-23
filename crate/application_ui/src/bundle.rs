@@ -147,6 +147,14 @@ mod test {
 
     #[test]
     #[should_panic(expected = "Failed to find \\'resources/non_existent.ron\\'")]
+    #[cfg(not(windows))]
+    fn fails_with_useful_error_when_font_config_does_not_exist() {
+        let _app = setup(ApplicationUiBundle::internal_new("non_existent.ron")).unwrap();
+    } // kcov-ignore
+
+    #[test]
+    #[should_panic(expected = "Failed to find \\'resources\\\\non_existent.ron\\'")]
+    #[cfg(windows)]
     fn fails_with_useful_error_when_font_config_does_not_exist() {
         let _app = setup(ApplicationUiBundle::internal_new("non_existent.ron")).unwrap();
     } // kcov-ignore
