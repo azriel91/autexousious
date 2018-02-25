@@ -4,6 +4,7 @@ use amethyst;
 use amethyst::core;
 use amethyst::config::ConfigError;
 use error_chain;
+use ron;
 
 use resource::FindContext;
 
@@ -21,6 +22,10 @@ pub enum ErrorKind {
     /// Application configuration error due to an IO failure
     #[error_chain(foreign, display = r#"|e| write!(f, "io::Error: '{}'", e)"#)]
     Io(io::Error),
+
+    /// Error when failing to find a configuration file
+    #[error_chain(foreign, display = r#"|e| write!(f, "ron::de::Error: '{}'", e)"#)]
+    RonDeserialization(ron::de::Error),
 }
 // kcov-ignore-end
 
@@ -38,6 +43,7 @@ impl From<Error> for io::Error {
                 io::Error::new(io::ErrorKind::Other, format!("{}", find_context))
             }
             ErrorKind::Io(io_error) => io_error,
+            ErrorKind::RonDeserialization(ron_de_error) => io::Error::new(io::ErrorKind::Other, format!("{}", ron_de_error)),
         }
     }
 }

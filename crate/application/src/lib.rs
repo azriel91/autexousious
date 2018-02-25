@@ -35,6 +35,8 @@ extern crate lazy_static;
 #[cfg(test)]
 #[macro_use]
 extern crate pretty_assertions;
+extern crate ron;
+extern crate serde;
 #[cfg(test)]
 extern crate tempdir;
 #[cfg(test)]
