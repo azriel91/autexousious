@@ -15,7 +15,7 @@ use resource::error::Result;
 ///
 /// * `file_name`: Name of the file to search for relative to the executable.
 /// * `format`: File format.
-pub fn load<T>(file_name: &str, format: Format) -> Result<T>
+pub fn load<T>(file_name: &str, format: &Format) -> Result<T>
 where
     for<'de> T: Deserialize<'de>,
 {
@@ -35,7 +35,7 @@ where
 pub fn load_in<T, P>(
     conf_dir: P,
     file_name: &str,
-    format: Format,
+    format: &Format,
     additional_base_dirs: Option<Vec<PathBuf>>,
 ) -> Result<T>
 where
@@ -46,13 +46,13 @@ where
     load_internal(file_path, format)
 }
 
-fn load_internal<T, P>(file_path: P, format: Format) -> Result<T>
+fn load_internal<T, P>(file_path: P, format: &Format) -> Result<T>
 where
     for<'de> T: Deserialize<'de>,
     P: AsRef<Path> + AsRef<ffi::OsStr>,
 {
     let file_reader = File::open(file_path)?;
-    match format {
+    match *format {
         Format::Ron => Ok(from_reader(file_reader)?),
     }
 }
@@ -87,7 +87,7 @@ mod test {
                 load_in(
                     &temp_dir.path(),
                     "test__load_config.ron",
-                    Format::Ron,
+                    &Format::Ron,
                     Some(development_base_dirs!())
                 ).unwrap()
             );
@@ -104,7 +104,7 @@ mod test {
 
             assert_eq!(
                 Data(123),
-                load("test__load_config.ron", Format::Ron).unwrap()
+                load("test__load_config.ron", &Format::Ron).unwrap()
             );
 
             resource_path.close().unwrap();
@@ -118,7 +118,7 @@ mod test {
             let load_result = load_in::<Data, _>(
                 "",
                 "test__load_config.ron",
-                Format::Ron,
+                &Format::Ron,
                 None,
             );
 
@@ -143,7 +143,7 @@ mod test {
             // We don't setup_temp_file(..);
 
             if let &ErrorKind::Find(ref find_context) =
-                load::<Data>("test__load_config.ron", Format::Ron).unwrap_err().kind()
+                load::<Data>("test__load_config.ron", &Format::Ron).unwrap_err().kind()
             {
                 let mut base_dirs = vec![exe_dir()];
                 base_dirs.append(&mut development_base_dirs!());
@@ -169,7 +169,7 @@ mod test {
                 Some("I'm parsable. Unparsable."),
             ).unwrap();
 
-            let load_result = load::<Data>("test__load_config.ron", Format::Ron);
+            let load_result = load::<Data>("test__load_config.ron", &Format::Ron);
             resource_path.close().unwrap();
 
             // We cannot use `assert_eq!` because `ron::parse::Position` is private
