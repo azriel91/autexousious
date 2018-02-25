@@ -9,17 +9,18 @@
 //! #[macro_use] // for the development_base_dirs!() macro
 //! extern crate application;
 //!
-//! use application::config::find_in;
+//! use application::resource::dir;
+//! use application::resource::find_in;
 //!
 //! fn main() {
 //!     let path_to_resource = find_in(
-//!         "examples",
+//!         dir::RESOURCES,
 //!         "config.ron",
 //!         Some(development_base_dirs!()),
 //!     ).unwrap();
 //!
 //!     println!("{:?}", path_to_resource);
-//!     // "/path/to/crate/application/examples/config.ron"
+//!     // "/path/to/crate/application/resources/config.ron"
 //! }
 //! ```
 //!
@@ -34,9 +35,15 @@ extern crate lazy_static;
 #[cfg(test)]
 #[macro_use]
 extern crate pretty_assertions;
+extern crate ron;
+#[cfg(test)]
+#[macro_use]
+extern crate serde;
+#[cfg(not(test))]
+extern crate serde;
 #[cfg(test)]
 extern crate tempdir;
 #[cfg(test)]
 extern crate tempfile;
 
-pub mod config;
+pub mod resource;

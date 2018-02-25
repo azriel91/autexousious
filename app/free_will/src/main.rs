@@ -14,7 +14,8 @@ use std::process;
 
 use amethyst::renderer::{DisplayConfig, DrawFlat, Pipeline, PosNormTex, RenderBundle, Stage};
 use amethyst::prelude::*;
-use application::config::find_in;
+use application::resource::dir;
+use application::resource::find_in;
 use application_input::ApplicationInputBundle;
 use stdio_view::StdinSystem;
 use structopt::StructOpt;
@@ -27,14 +28,14 @@ struct Opt {
 }
 
 fn run(opt: &Opt) -> Result<(), amethyst::Error> {
-    let mut app_builder = Application::build(".", game_mode_menu::State::new())?
+    let mut app_builder = Application::build(dir::ASSETS, game_mode_menu::State::new())?
         .with_bundle(ApplicationInputBundle::new())?
         .with::<StdinSystem>(StdinSystem::new(), "StdinSystem", &[]);
 
     if !opt.headless {
         let display_config = DisplayConfig::load(
             find_in(
-                "resources",
+                dir::RESOURCES,
                 "display_config.ron",
                 Some(development_base_dirs!()),
             ).unwrap(),

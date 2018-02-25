@@ -1,3 +1,5 @@
+extern crate application;
+
 use std::env;
 use std::io;
 #[cfg(unix)]
@@ -6,13 +8,13 @@ use std::os::unix::fs;
 use std::os::windows::fs;
 use std::path::Path;
 
-const RESOURCES_DIR_NAME: &str = "resources";
+use application::resource::dir;
 
 fn main() {
     let crate_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    let resources_dir = Path::new(&crate_dir).join(RESOURCES_DIR_NAME);
+    let resources_dir = Path::new(&crate_dir).join(dir::RESOURCES);
     let out_dir = env::var("OUT_DIR").unwrap();
-    let target_resources_dir = Path::new(&out_dir).join(RESOURCES_DIR_NAME);
+    let target_resources_dir = Path::new(&out_dir).join(dir::RESOURCES);
 
     let message = format!(
         "Failed to create symlink for '{}' at '{}'",

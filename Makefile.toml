@@ -12,7 +12,7 @@ if rustc --version | grep -qF 'nightly'; then
     cargo fmt --all -- --write-mode=diff
 
     # Clippy - best practices
-    cargo clippy --all
+    [ "${CLIPPY_ENABLED}" = "false" ] || cargo clippy --all
 fi
 
 # Security vulnerability
