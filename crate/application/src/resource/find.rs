@@ -107,15 +107,16 @@ mod test {
 
     test! {
         fn find_in_returns_conf_path_when_conf_file_exists() {
-            let (temp_dir, conf_path) = setup_temp_file(Some(dir::RESOURCES), "config", ".ron").unwrap();
+            let (temp_dir, conf_path) =
+                setup_temp_file(Some(dir::RESOURCES), "test__find_config", ".ron").unwrap();
             let temp_dir = temp_dir.unwrap();
 
-            let expected = temp_dir.path().join("config.ron");
+            let expected = temp_dir.path().join("test__find_config.ron");
             assert_eq!(
                 expected,
                 find_in(
                     &temp_dir.path(),
-                    "config.ron",
+                    "test__find_config.ron",
                     Some(development_base_dirs!())
                 ).unwrap()
             );
@@ -127,9 +128,13 @@ mod test {
 
     test! {
         fn find_returns_conf_path_when_conf_file_exists() {
-            let (_, conf_path) = setup_temp_file(Some(""), "config", ".ron").unwrap();
+            let (_, conf_path) =
+                setup_temp_file(Some(""), "test__find_config", ".ron").unwrap();
 
-            assert_eq!(exe_dir().join("config.ron"), find("config.ron").unwrap());
+            assert_eq!(
+                exe_dir().join("test__find_config.ron"),
+                find("test__find_config.ron").unwrap()
+            );
 
             conf_path.close().unwrap();
         }
@@ -137,15 +142,17 @@ mod test {
 
     test! {
         fn find_returns_error_when_conf_file_does_not_exist() {
-            let _ = setup_temp_file(None, "config", ".ron");
+            let _ = setup_temp_file(None, "test__find_config", ".ron");
 
-            if let &ErrorKind::Find(ref find_context) = find("config.ron").unwrap_err().kind() {
+            if let &ErrorKind::Find(ref find_context) =
+                find("test__find_config.ron").unwrap_err().kind()
+            {
                 let mut base_dirs = vec![exe_dir()];
                 base_dirs.append(&mut development_base_dirs!());
                 let expected = FindContext {
                     base_dirs,
                     conf_dir: PathBuf::from(""),
-                    file_name: "config.ron".to_owned(),
+                    file_name: "test__find_config.ron".to_owned(),
                 }; // kcov-ignore
 
                 assert_eq!(&expected, find_context);
