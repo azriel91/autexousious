@@ -1,15 +1,18 @@
 #! /bin/sh
 #
-# Installs Rustfmt and Clippy if on nightly.
+# Installs Clippy if on nightly.
 #
 # TODO: Use `rustup component add` for clippy when it is ready.
 #
 # * https://github.com/rust-lang-nursery/rust-clippy/issues/1358
 # * https://github.com/nrc/dev-tools-team/issues/4
-if rustc --version | grep -qF 'nightly'; then
 
-  # Install Rustfmt
-  rustup component add rustfmt-preview
+if [ "${CLIPPY_ENABLED}" = "false" ]; then
+  echo "Clippy is not enabled. Skipping installation."
+  exit 0
+fi
+
+if rustc --version | grep -qF 'nightly'; then
 
   # Install Clippy
   is_clippy_nightly_compatible() {

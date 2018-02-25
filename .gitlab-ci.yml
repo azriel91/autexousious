@@ -92,7 +92,8 @@
 
       # Needed for gitlab-ci
       export USER=build
-      build/install_rustfmt_and_clippy.sh
+      build/install_rustfmt.sh
+      build/install_clippy.sh
 
 .job_nightly: &job_nightly
   image: *rust_image_nightly
@@ -110,6 +111,9 @@
   image: *rust_image_nightly # for clippy
   variables:
     CARGO_MAKE_SKIP_CODECOV: 'true'
+    # Disable clippy while it fails to compile with nightly
+    # https://github.com/rust-lang-nursery/rust-clippy/issues/2482
+    CLIPPY_ENABLED: 'false'
 
 .xvfb_start: &xvfb_start |
   # Start XVFB
