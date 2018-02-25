@@ -2,6 +2,10 @@
 
 pub mod dir;
 
+#[cfg(test)]
+#[macro_use]
+mod test_support;
+
 mod error;
 mod find;
 mod find_context;
