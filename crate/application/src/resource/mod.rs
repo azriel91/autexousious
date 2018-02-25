@@ -7,6 +7,8 @@ pub mod dir;
 mod test_support;
 
 mod error;
+// `development_base_dirs` macro is also used in tests.
+#[macro_use]
 mod find;
 mod find_context;
 mod format;

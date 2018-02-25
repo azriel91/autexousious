@@ -47,6 +47,9 @@ pub fn find(file_name: &str) -> Result<PathBuf> {
 /// * `file_name`: Name of the file to search for.
 /// * `additional_base_dirs`: Additional base directories to look into. Useful at development time
 ///     when configuration is generated and placed in a separate output directory.
+///
+///     When compiled as `#[cfg(test)]`, `development_base_dirs!()` are automatically appended to
+///     the base directories to search in.
 pub fn find_in<P: AsRef<Path> + AsRef<ffi::OsStr>>(
     conf_dir: P,
     file_name: &str,
@@ -66,11 +69,11 @@ pub fn find_in<P: AsRef<Path> + AsRef<ffi::OsStr>>(
     }
 
     for base_dir in &base_dirs {
-        let mut conf_path = base_dir.join(&conf_dir);
-        conf_path.push(&file_name);
+        let mut resource_path = base_dir.join(&conf_dir);
+        resource_path.push(&file_name);
 
-        if conf_path.exists() {
-            return Ok(conf_path);
+        if resource_path.exists() {
+            return Ok(resource_path);
         }
     }
 
@@ -106,9 +109,9 @@ mod test {
     test_mutex!();
 
     test! {
-        fn find_in_returns_conf_path_when_conf_file_exists() {
-            let (temp_dir, conf_path) =
-                setup_temp_file(Some(dir::RESOURCES), "test__find_config", ".ron").unwrap();
+        fn find_in_returns_resource_path_when_file_exists() {
+            let (temp_dir, resource_path) =
+                setup_temp_file(dir::RESOURCES, "test__find_config", ".ron", None).unwrap();
             let temp_dir = temp_dir.unwrap();
 
             let expected = temp_dir.path().join("test__find_config.ron");
@@ -121,28 +124,28 @@ mod test {
                 ).unwrap()
             );
 
-            conf_path.close().unwrap();
+            resource_path.close().unwrap();
             temp_dir.close().unwrap();
         }
     }
 
     test! {
-        fn find_returns_conf_path_when_conf_file_exists() {
-            let (_, conf_path) =
-                setup_temp_file(Some(""), "test__find_config", ".ron").unwrap();
+        fn find_returns_resource_path_when_file_exists() {
+            let (_, resource_path) =
+                setup_temp_file("", "test__find_config", ".ron", None).unwrap();
 
             assert_eq!(
                 exe_dir().join("test__find_config.ron"),
                 find("test__find_config.ron").unwrap()
             );
 
-            conf_path.close().unwrap();
+            resource_path.close().unwrap();
         }
     }
 
     test! {
-        fn find_returns_error_when_conf_file_does_not_exist() {
-            let _ = setup_temp_file(None, "test__find_config", ".ron");
+        fn find_returns_error_when_file_does_not_exist() {
+            // We don't setup_temp_file(..);
 
             if let &ErrorKind::Find(ref find_context) =
                 find("test__find_config.ron").unwrap_err().kind()
@@ -158,6 +161,32 @@ mod test {
                 assert_eq!(&expected, find_context);
             } else {
                 panic!("Expected `find` to return error"); // kcov-ignore
+            }
+        }
+    }
+
+    test! {
+        fn find_in_returns_error_when_file_does_not_exist() {
+            // We don't setup_temp_file(..);
+
+            let find_result = find_in(
+                "",
+                "test__find_config.ron",
+                None,
+            );
+
+            if let &ErrorKind::Find(ref find_context) = find_result.unwrap_err().kind() {
+                let mut base_dirs = vec![exe_dir()];
+                base_dirs.append(&mut development_base_dirs!());
+                let expected = FindContext {
+                    base_dirs,
+                    conf_dir: PathBuf::from(""),
+                    file_name: "test__find_config.ron".to_owned(),
+                }; // kcov-ignore
+
+                assert_eq!(&expected, find_context);
+            } else {
+                panic!("Expected `find_in` to return error"); // kcov-ignore
             }
         }
     }

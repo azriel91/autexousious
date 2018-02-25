@@ -56,3 +56,133 @@ where
         Format::Ron => Ok(from_reader(file_reader)?),
     }
 }
+
+#[cfg(test)]
+mod test {
+    use std::path::PathBuf;
+
+    use ron;
+    use ron::de::ParseError;
+
+    use resource::dir;
+    use resource::error::ErrorKind;
+    use resource::test_support::{exe_dir, setup_temp_file};
+    use resource::{FindContext, Format};
+    use super::{load, load_in};
+
+    test_mutex!();
+
+    test! {
+        fn load_in_returns_resource_when_file_exists_and_parses_successfully() {
+            let (temp_dir, resource_path) = setup_temp_file(
+                dir::RESOURCES,
+                "test__load_config",
+                ".ron",
+                Some("Data(123)"),
+            ).unwrap();
+            let temp_dir = temp_dir.unwrap();
+
+            assert_eq!(
+                Data(123),
+                load_in(
+                    &temp_dir.path(),
+                    "test__load_config.ron",
+                    Format::Ron,
+                    Some(development_base_dirs!())
+                ).unwrap()
+            );
+
+            resource_path.close().unwrap();
+            temp_dir.close().unwrap();
+        }
+    }
+
+    test! {
+        fn load_returns_resource_when_file_exists_and_parses_successfully() {
+            let (_, resource_path) =
+                setup_temp_file("", "test__load_config", ".ron", Some("Data(123)")).unwrap();
+
+            assert_eq!(
+                Data(123),
+                load("test__load_config.ron", Format::Ron).unwrap()
+            );
+
+            resource_path.close().unwrap();
+        }
+    }
+
+    test! {
+        fn load_in_returns_error_when_file_does_not_exist() {
+            // We don't setup_temp_file(..);
+
+            let load_result = load_in::<Data, _>(
+                "",
+                "test__load_config.ron",
+                Format::Ron,
+                None,
+            );
+
+            if let &ErrorKind::Find(ref find_context) = load_result.unwrap_err().kind() {
+                let mut base_dirs = vec![exe_dir()];
+                base_dirs.append(&mut development_base_dirs!());
+                let expected = FindContext {
+                    base_dirs,
+                    conf_dir: PathBuf::from(""),
+                    file_name: "test__load_config.ron".to_owned(),
+                }; // kcov-ignore
+
+                assert_eq!(&expected, find_context);
+            } else {
+                panic!("Expected `load_in` to return error"); // kcov-ignore
+            }
+        }
+    }
+
+    test! {
+        fn load_returns_error_when_file_does_not_exist() {
+            // We don't setup_temp_file(..);
+
+            if let &ErrorKind::Find(ref find_context) =
+                load::<Data>("test__load_config.ron", Format::Ron).unwrap_err().kind()
+            {
+                let mut base_dirs = vec![exe_dir()];
+                base_dirs.append(&mut development_base_dirs!());
+                let expected = FindContext {
+                    base_dirs,
+                    conf_dir: PathBuf::from(""),
+                    file_name: "test__load_config.ron".to_owned(),
+                }; // kcov-ignore
+
+                assert_eq!(&expected, find_context);
+            } else {
+                panic!("Expected `load` to return error"); // kcov-ignore
+            }
+        }
+    }
+
+    test! {
+        fn load_returns_error_when_file_fails_to_parse() {
+            let (_, resource_path) = setup_temp_file(
+                "",
+                "test__load_config",
+                ".ron",
+                Some("I'm parsable. Unparsable."),
+            ).unwrap();
+
+            let load_result = load::<Data>("test__load_config.ron", Format::Ron);
+            resource_path.close().unwrap();
+
+            // We cannot use `assert_eq!` because `ron::parse::Position` is private
+            match load_result.expect_err("Expected parse failure.").kind() {
+                &ErrorKind::RonDeserialization(ron::de::Error::Parser(
+                    ParseError::ExpectedStruct,
+                    ..
+                )) => (),
+                _ => panic!("Expected RonDeserialization error"),
+            };
+        }
+    }
+
+    #[derive(Debug, Deserialize, PartialEq)]
+    struct Data(i32);
+}
