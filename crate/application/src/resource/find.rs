@@ -134,7 +134,7 @@ mod test {
             let (_, resource_path) =
                 setup_temp_file("", "test__find_config", ".ron", None).unwrap();
 
-            assert_eq!(
+            assert_eq!( // kcov-ignore
                 exe_dir().join("test__find_config.ron"),
                 find("test__find_config.ron").unwrap()
             );

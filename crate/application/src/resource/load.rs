@@ -178,7 +178,7 @@ mod test {
                     ParseError::ExpectedStruct,
                     ..
                 )) => (),
-                _ => panic!("Expected RonDeserialization error"),
+                _ => panic!("Expected RonDeserialization error"), // kcov-ignore
             };
         }
     }
