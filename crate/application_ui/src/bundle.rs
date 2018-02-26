@@ -1,15 +1,12 @@
 //! ECS input bundle for custom events
 
-use std::error::Error;
-use std::fs::File;
-
 use amethyst::assets::{AssetStorage, Loader};
 use amethyst::core::bundle::{ECSBundle, Result};
 use amethyst::ecs::{DispatcherBuilder, World};
 use amethyst::ui::{FontAsset, TtfFormat};
+use application::resource;
 use application::resource::dir;
-use application::resource::find_in;
-use ron::de::from_reader;
+use application::resource::load_in;
 
 use font_config::FontConfig;
 use font_variant::FontVariant;
@@ -56,15 +53,12 @@ impl<'a, 'b> ECSBundle<'a, 'b> for ApplicationUiBundle {
         world: &mut World,
         builder: DispatcherBuilder<'a, 'b>,
     ) -> Result<DispatcherBuilder<'a, 'b>> {
-        let font_config_path = find_in(
+        let font_config: FontConfig = load_in(
             dir::RESOURCES,
             self.font_config_name,
+            &resource::Format::Ron,
             Some(development_base_dirs!()),
         )?;
-
-        let font_config_file = File::open(font_config_path).map_err(|e| error_description(&e))?;
-        let font_config: FontConfig =
-            from_reader(font_config_file).map_err(|e| error_description(&e))?;
 
         // Order is important, this must align with `font_variant::FontVariant`
         let mut font_paths = vec![
@@ -89,14 +83,6 @@ impl<'a, 'b> ECSBundle<'a, 'b> for ApplicationUiBundle {
         Ok(builder)
     }
 }
-
-// The kcov-ignore lines are in odd places, but that's because the native code does not always line
-// up with the source code.
-// kcov-ignore-start
-fn error_description<E: Error>(e: &E) -> String {
-    // kcov-ignore-end
-    e.description().to_string()
-} // kcov-ignore
 
 #[cfg(test)]
 mod test {
