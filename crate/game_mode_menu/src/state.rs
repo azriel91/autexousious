@@ -8,9 +8,8 @@ use application_input::ApplicationEvent;
 ///
 /// Available transitions:
 ///
-/// * Selection of game mode
-/// * Exiting the application
-///
+/// * Select game mode.
+/// * Exit application.
 #[derive(Debug, Default)]
 pub struct State {
     /// ID of the reader for application events.
@@ -26,10 +25,10 @@ impl State {
 
 impl amethyst::State for State {
     fn on_start(&mut self, world: &mut World) {
-        // You can't unregister a reader from an EventChannel in on_stop because we don't have to
+        // You can't (don't have to) unregister a reader from an EventChannel in `on_stop();`:
         //
-        // @torkleyy: No need to unregister, it's just two integer values.
-        // @Rhuagh: Just drop the reader id
+        // > @torkleyy: No need to unregister, it's just two integer values.
+        // > @Rhuagh: Just drop the reader id
         let reader_id = world
             .write_resource::<EventChannel<ApplicationEvent>>()
             .register_reader(); // kcov-ignore
@@ -38,8 +37,8 @@ impl amethyst::State for State {
     }
 
     fn handle_event(&mut self, _: &mut World, event: Event) -> Trans {
-        // intentionally ignore testing mouse events as we cannot guarantee the cursor is over
-        // the window when someone runs `cargo test`
+        // Intentionally ignore testing mouse events as we cannot guarantee the cursor is over the
+        // window when someone runs `cargo test`
         // kcov-ignore-start-mouse
         match event {
             // kcov-ignore-end-mouse
@@ -157,9 +156,9 @@ mod test {
     ///
     ///         Possibly this bug: https://github.com/tomaka/winit/issues/347
     ///
-    /// I have tried using `thread::sleep`s to try and see if it is a race condition between opening
-    /// the window and the programmatic input, but it does not appear to be the case - it fails in
-    /// the same way even with the `sleep`s.
+    /// I have tried using `thread::sleep`s to check if it is a race condition between opening the
+    /// window and the programmatic input, but it does not appear to be the case - it fails in the
+    /// same way even with the `sleep`s.
     ///
     /// On Ubuntu 17.10, the window that starts up during the test does not get destroyed until
     /// after the entire test executable ends, even if you `drop(window)` and `drop(events_loop)`.
