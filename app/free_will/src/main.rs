@@ -4,6 +4,7 @@ extern crate amethyst;
 #[macro_use]
 extern crate application;
 extern crate application_input;
+extern crate application_ui;
 extern crate game_mode_menu;
 extern crate stdio_view;
 extern crate structopt;
@@ -14,9 +15,11 @@ use std::process;
 
 use amethyst::renderer::{DisplayConfig, DrawFlat, Pipeline, PosNormTex, RenderBundle, Stage};
 use amethyst::prelude::*;
+use amethyst::ui::{DrawUi, UiBundle};
 use application::resource::dir;
 use application::resource::find_in;
 use application_input::ApplicationInputBundle;
+use application_ui::ApplicationUiBundle;
 use stdio_view::StdinSystem;
 use structopt::StructOpt;
 
@@ -43,11 +46,15 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
 
         let pipe = Pipeline::build().with_stage(
             Stage::with_backbuffer()
-                .clear_target([0.2, 0.4, 1.0, 1.0], 1.0)
-                .with_pass(DrawFlat::<PosNormTex>::new()),
+                .clear_target([0., 0., 0., 1.], 1.)
+                .with_pass(DrawFlat::<PosNormTex>::new())
+                .with_pass(DrawUi::new()),
         );
 
-        app_builder = app_builder.with_bundle(RenderBundle::new(pipe, Some(display_config)))?;
+        app_builder = app_builder
+            .with_bundle(UiBundle::new())?
+            .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
+            .with_bundle(ApplicationUiBundle::new())?;
     }
 
     let mut app = app_builder.build().expect("Fatal error");

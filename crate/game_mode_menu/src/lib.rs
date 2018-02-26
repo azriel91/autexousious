@@ -5,6 +5,7 @@
 
 extern crate amethyst;
 extern crate application_input;
+extern crate application_ui;
 #[cfg(test)]
 extern crate enigo;
 #[cfg(test)]
@@ -12,4 +13,5 @@ extern crate winit;
 
 pub use state::State;
 
+mod menu_build_fn;
 mod state;

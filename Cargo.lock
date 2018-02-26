@@ -713,6 +713,7 @@ dependencies = [
  "amethyst 0.6.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "application 0.1.0",
  "application_input 0.1.0",
+ "application_ui 0.1.0",
  "assert_cli 0.5.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_mode_menu 0.1.0",
  "stdio_view 0.1.0",
@@ -745,6 +746,7 @@ version = "0.1.0"
 dependencies = [
  "amethyst 0.6.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "application_input 0.1.0",
+ "application_ui 0.1.0",
  "enigo 0.0.11 (registry+https://github.com/rust-lang/crates.io-index)",
  "winit 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

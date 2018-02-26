@@ -4,6 +4,8 @@ use amethyst::renderer::{Event, KeyboardInput, VirtualKeyCode, WindowEvent};
 use amethyst::shrev::{EventChannel, ReaderId};
 use application_input::ApplicationEvent;
 
+use menu_build_fn::MenuBuildFn;
+
 /// Game mode selection state.
 ///
 /// Available transitions:
@@ -14,6 +16,8 @@ use application_input::ApplicationEvent;
 pub struct State {
     /// ID of the reader for application events.
     application_event_reader: Option<ReaderId<ApplicationEvent>>,
+    /// Function used to build the menu.
+    menu_build_fn: MenuBuildFn,
 }
 
 impl State {
@@ -21,10 +25,16 @@ impl State {
     pub fn new() -> Self {
         Default::default()
     }
-}
 
-impl amethyst::State for State {
-    fn on_start(&mut self, world: &mut World) {
+    #[cfg(test)]
+    fn internal_new(menu_build_fn: MenuBuildFn) -> Self {
+        State {
+            application_event_reader: Option::default(),
+            menu_build_fn,
+        }
+    }
+
+    fn register_application_event_reader(&mut self, world: &mut World) {
         // You can't (don't have to) unregister a reader from an EventChannel in `on_stop();`:
         //
         // > @torkleyy: No need to unregister, it's just two integer values.
@@ -34,6 +44,15 @@ impl amethyst::State for State {
             .register_reader(); // kcov-ignore
 
         self.application_event_reader.get_or_insert(reader_id);
+    }
+}
+
+impl amethyst::State for State {
+    fn on_start(&mut self, world: &mut World) {
+        self.register_application_event_reader(world);
+        // https://github.com/rust-lang/rust/issues/26186
+        // https://stackoverflow.com/q/46472082/1576773
+        (&mut *self.menu_build_fn)(world);
     }
 
     fn handle_event(&mut self, _: &mut World, event: Event) -> Trans {
@@ -78,21 +97,22 @@ mod test {
     use std::mem::discriminant;
 
     use amethyst::ecs::World;
+    use amethyst::prelude::*;
     use amethyst::renderer::{Event, WindowEvent};
     use amethyst::shrev::EventChannel;
     use amethyst::State as AmethystState;
-    use amethyst::prelude::*;
     use application_input::ApplicationEvent;
     use enigo::{Enigo, Key, KeyboardControllable};
     use winit::{ControlFlow, EventsLoop, Window};
 
+    use menu_build_fn::MenuBuildFn;
     use super::State;
 
     fn setup() -> (State, World) {
         let mut world = World::new();
         world.add_resource(EventChannel::<ApplicationEvent>::with_capacity(10));
 
-        (State::new(), world)
+        (State::internal_new(MenuBuildFn(Box::new(|_| {}))), world)
     }
 
     #[test]
