@@ -210,7 +210,6 @@
 extern crate amethyst;
 #[macro_use]
 extern crate application;
-extern crate ron;
 #[macro_use]
 extern crate serde;
 
