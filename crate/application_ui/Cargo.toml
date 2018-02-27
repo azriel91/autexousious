@@ -10,9 +10,14 @@ serde = "1.0"
 
 [dev-dependencies]
 assert_cli = "0.5"
+log = "0.4"
 structopt = "0.1.6"
 structopt-derive = "0.1.6"
 
 [[example]]
 name = "01_draw_text"
 path = "examples/01_draw_text/main.rs"
+
+[[example]]
+name = "02_menu"
+path = "examples/02_menu/main.rs"
