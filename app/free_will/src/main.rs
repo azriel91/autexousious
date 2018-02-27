@@ -13,8 +13,9 @@ extern crate structopt_derive;
 
 use std::process;
 
-use amethyst::renderer::{DisplayConfig, DrawFlat, Pipeline, PosNormTex, RenderBundle, Stage};
+use amethyst::input::InputBundle;
 use amethyst::prelude::*;
+use amethyst::renderer::{DisplayConfig, DrawFlat, Pipeline, PosNormTex, RenderBundle, Stage};
 use amethyst::ui::{DrawUi, UiBundle};
 use application::resource::dir;
 use application::resource::find_in;
@@ -51,8 +52,11 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 .with_pass(DrawUi::new()),
         );
 
+        // `InputBundle` provides `InputHandler<A, B>`, needed by the `UiBundle` for mouse events.
+        // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
         app_builder = app_builder
-            .with_bundle(UiBundle::new())?
+            .with_bundle(InputBundle::<String, String>::new())?
+            .with_bundle(UiBundle::<String, String>::new())?
             .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
             .with_bundle(ApplicationUiBundle::new())?;
     }

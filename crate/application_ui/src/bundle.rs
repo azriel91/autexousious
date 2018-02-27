@@ -86,8 +86,9 @@ impl<'a, 'b> ECSBundle<'a, 'b> for ApplicationUiBundle {
 
 #[cfg(test)]
 mod test {
-    use amethyst::Result;
+    use amethyst::input::InputBundle;
     use amethyst::prelude::*;
+    use amethyst::Result;
     use amethyst::ui::{FontHandle, UiBundle};
 
     use font_variant::FontVariant;
@@ -99,7 +100,8 @@ mod test {
         // * The `Loader` needs to be added to the world, and the code to do this is non-trivial
         // * The `AppBundle` in amethyst that does this is non-public
         Application::build(format!("{}/assets", env!("CARGO_MANIFEST_DIR")), MockState)?
-            .with_bundle(UiBundle::new())?
+            .with_bundle(InputBundle::<String, String>::new())?
+            .with_bundle(UiBundle::<String, String>::new())?
             .with_bundle(application_ui_bundle)?
             .build()
     } // kcov-ignore

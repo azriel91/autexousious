@@ -21,6 +21,7 @@ mod state;
 
 use std::process;
 
+use amethyst::input::InputBundle;
 use amethyst::prelude::*;
 use amethyst::renderer::{DisplayConfig, Pipeline, RenderBundle, Stage};
 use amethyst::ui::{DrawUi, UiBundle};
@@ -54,7 +55,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     );
 
     let mut app = Application::build("assets", TextState)?
-        .with_bundle(UiBundle::new())?
+        .with_bundle(InputBundle::<String, String>::new())?
+        .with_bundle(UiBundle::<String, String>::new())?
         .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
         .with_bundle(ApplicationUiBundle::new())?
         .build()
