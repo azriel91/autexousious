@@ -20,6 +20,7 @@ extern crate structopt;
 extern crate structopt_derive;
 
 mod menu;
+mod other;
 
 use std::process;
 

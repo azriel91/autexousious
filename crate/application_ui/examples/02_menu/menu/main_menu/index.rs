@@ -1,3 +1,7 @@
+use amethyst::prelude::Trans;
+
+use other;
+
 /// Indicies of main menu items.
 #[derive(Debug, Clone, Copy)]
 pub enum Index {
@@ -16,5 +20,10 @@ impl Index {
         }
     }
 
-    // TODO: return `Trans::??` for each item.
+    pub fn trans(&self) -> Trans {
+        match *self {
+            Index::StartGame => Trans::Push(Box::new(other::State::new())),
+            Index::Exit => Trans::Quit,
+        }
+    }
 }

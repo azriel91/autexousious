@@ -1,6 +1,7 @@
 use amethyst;
+use amethyst::ecs::Entity;
 use amethyst::prelude::*;
-use amethyst::renderer::{Event, KeyboardInput, ScreenDimensions, VirtualKeyCode, WindowEvent};
+use amethyst::renderer::ScreenDimensions;
 use amethyst::ui::{FontHandle, MouseReactive, UiResize, UiText, UiTransform};
 use amethyst::shrev::{EventChannel, ReaderId};
 
@@ -14,6 +15,8 @@ const FONT_SIZE: f32 = 25.;
 pub struct State {
     /// ID of the reader for application events.
     menu_event_reader: Option<ReaderId<MenuEvent<main_menu::Index>>>,
+    /// Menu item entities, which we create / delete when the state is run / paused
+    menu_items: Vec<Entity>,
 }
 
 impl State {
@@ -36,29 +39,76 @@ impl State {
 
         self.menu_event_reader.take();
     }
+
+    fn initialize_menu_items(&mut self, world: &mut World) {
+        let (_, font_bold, _, _) = read_fonts(world);
+
+        let mut menu_items = vec![main_menu::Index::StartGame, main_menu::Index::Exit];
+        menu_items
+            .drain(..)
+            .enumerate()
+            .for_each(|(index, menu_item)| {
+                let mut text_transform = UiTransform::new(
+                    menu_item.title().to_string(),
+                    20.,
+                    index as f32 * 50. + 20.,
+                    1.,
+                    400.,
+                    100.,
+                    0,
+                );
+                let ui_text_size_fn = |_transform: &mut UiTransform, (_width, _height)| {};
+
+                {
+                    let dim = world.read_resource::<ScreenDimensions>();
+                    ui_text_size_fn(&mut text_transform, (dim.width(), dim.height()));
+                }
+
+                let menu_item_entity = world
+                    .create_entity()
+                    .with(text_transform)
+                    .with(UiText::new(
+                        font_bold.clone(),
+                        menu_item.title().to_string(),
+                        [1., 1., 1., 1.],
+                        FONT_SIZE,
+                    ))
+                    .with(UiResize(Box::new(ui_text_size_fn)))
+                    .with(MouseReactive)
+                    .with(MenuItem { index: menu_item })
+                    .build();
+
+                self.menu_items.push(menu_item_entity);
+            });
+    }
+
+    fn terminate_menu_items(&mut self, world: &mut World) {
+        self.menu_items.drain(..).for_each(|menu_item| {
+            world
+                .delete_entity(menu_item)
+                .expect("Failed to delete menu item.");
+        });
+    }
 }
 
 impl amethyst::State for State {
     fn on_start(&mut self, world: &mut World) {
         self.initialize_menu_event_channel(world);
-        initialize_menu_items(world);
+        self.initialize_menu_items(world);
     }
 
-    fn handle_event(&mut self, _: &mut World, event: Event) -> Trans {
-        match event {
-            Event::WindowEvent { event, .. } => match event {
-                WindowEvent::KeyboardInput {
-                    input:
-                        KeyboardInput {
-                            virtual_keycode: Some(VirtualKeyCode::Escape),
-                            ..
-                        },
-                    ..
-                } => Trans::Quit,
-                _ => Trans::None,
-            },
-            _ => Trans::None,
-        }
+    fn on_stop(&mut self, world: &mut World) {
+        self.terminate_menu_items(world);
+        self.terminate_menu_event_channel(world);
+    }
+
+    // Need to explicitly hide and show the menu items during pause and resume
+    fn on_resume(&mut self, world: &mut World) {
+        self.initialize_menu_items(world);
+    }
+
+    fn on_pause(&mut self, world: &mut World) {
+        self.terminate_menu_items(world);
     }
 
     fn update(&mut self, world: &mut World) -> Trans {
@@ -70,57 +120,12 @@ impl amethyst::State for State {
         let mut storage_iterator = menu_event_channel.read(&mut reader_id);
         match storage_iterator.next() {
             Some(event) => match *event {
-                MenuEvent::Select(main_menu::Index::StartGame) => Trans::None,
-                MenuEvent::Select(main_menu::Index::Exit) => Trans::Quit,
+                MenuEvent::Select(idx) => idx.trans(),
                 MenuEvent::Close => Trans::Quit,
             },
             None => Trans::None,
         }
     }
-
-    fn on_stop(&mut self, world: &mut World) {
-        self.terminate_menu_event_channel(world);
-    }
-}
-
-fn initialize_menu_items(world: &mut World) {
-    let (_, font_bold, _, _) = read_fonts(world);
-
-    let mut menu_items = vec![main_menu::Index::StartGame, main_menu::Index::Exit];
-    menu_items
-        .drain(..)
-        .enumerate()
-        .for_each(|(index, menu_item)| {
-            let mut text_transform = UiTransform::new(
-                menu_item.title().to_string(),
-                20.,
-                index as f32 * 50. + 20.,
-                1.,
-                400.,
-                100.,
-                0,
-            );
-            let ui_text_size_fn = |_transform: &mut UiTransform, (_width, _height)| {};
-
-            {
-                let dim = world.read_resource::<ScreenDimensions>();
-                ui_text_size_fn(&mut text_transform, (dim.width(), dim.height()));
-            }
-
-            world
-                .create_entity()
-                .with(text_transform)
-                .with(UiText::new(
-                    font_bold.clone(),
-                    menu_item.title().to_string(),
-                    [1., 1., 1., 1.],
-                    FONT_SIZE,
-                ))
-                .with(UiResize(Box::new(ui_text_size_fn)))
-                .with(MouseReactive)
-                .with(MenuItem { index: menu_item })
-                .build();
-        });
 }
 
 type FH = FontHandle;
