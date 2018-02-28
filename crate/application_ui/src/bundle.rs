@@ -77,7 +77,7 @@ impl<'a, 'b> ECSBundle<'a, 'b> for ApplicationUiBundle {
             };
 
             // `world` is borrowed mutably here to add the font handle
-            world.add_resource_with_id(font_handle, font_variant as usize);
+            world.add_resource_with_id(font_handle, font_variant.into());
         });
 
         Ok(builder)
