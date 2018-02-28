@@ -14,7 +14,10 @@ extern crate amethyst;
 extern crate application;
 extern crate application_ui;
 #[macro_use]
+extern crate derivative;
+#[macro_use]
 extern crate log;
+extern crate rayon;
 extern crate structopt;
 #[macro_use]
 extern crate structopt_derive;
@@ -34,7 +37,6 @@ use application_ui::ApplicationUiBundle;
 use structopt::StructOpt;
 
 use menu::main_menu;
-use menu::MenuBundle;
 
 const TITLE: &str = "Example 02: Menu";
 
@@ -66,7 +68,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         .with_bundle(UiBundle::<String, String>::new())?
         .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
         .with_bundle(ApplicationUiBundle::new())?
-        .with_bundle(MenuBundle)?
+        .with_bundle(main_menu::Bundle)?
         .build()
         .expect("Failed to build application.");
 

@@ -1,18 +1,26 @@
+use std::sync::Arc;
+
 use amethyst;
 use amethyst::ecs::Entity;
 use amethyst::prelude::*;
 use amethyst::renderer::ScreenDimensions;
 use amethyst::ui::{FontHandle, MouseReactive, UiResize, UiText, UiTransform};
+use amethyst::shred::ParSeq;
 use amethyst::shrev::{EventChannel, ReaderId};
+use rayon;
 
-use menu::main_menu;
+use menu::main_menu::{self, UiEventHandlerSystem};
 use menu::{MenuEvent, MenuItem};
 
 const FONT_SIZE: f32 = 25.;
 
 /// Main menu with options to start a game or exit.
-#[derive(Debug, Default)]
+#[derive(Default, Derivative)]
+#[derivative(Debug)]
 pub struct State {
+    /// Dispatcher for UI handler system.
+    #[derivative(Debug = "ignore")]
+    dispatch: Option<ParSeq<Arc<rayon::ThreadPool>, UiEventHandlerSystem>>,
     /// ID of the reader for application events.
     menu_event_reader: Option<ReaderId<MenuEvent<main_menu::Index>>>,
     /// Menu item entities, which we create / delete when the state is run / paused
@@ -93,6 +101,11 @@ impl State {
 
 impl amethyst::State for State {
     fn on_start(&mut self, world: &mut World) {
+        self.dispatch = Some(ParSeq::new(
+            UiEventHandlerSystem::new(),
+            world.read_resource::<Arc<rayon::ThreadPool>>().clone(),
+        ));
+
         self.initialize_menu_event_channel(world);
         self.initialize_menu_items(world);
     }
@@ -100,6 +113,8 @@ impl amethyst::State for State {
     fn on_stop(&mut self, world: &mut World) {
         self.terminate_menu_items(world);
         self.terminate_menu_event_channel(world);
+
+        self.dispatch.take();
     }
 
     // Need to explicitly hide and show the menu items during pause and resume
@@ -112,6 +127,8 @@ impl amethyst::State for State {
     }
 
     fn update(&mut self, world: &mut World) -> Trans {
+        self.dispatch.as_mut().unwrap().dispatch(&mut world.res);
+
         let menu_event_channel = world.read_resource::<EventChannel<MenuEvent<main_menu::Index>>>();
 
         let mut reader_id = self.menu_event_reader

@@ -2,12 +2,12 @@ use amethyst::core::bundle::{ECSBundle, Result};
 use amethyst::ecs::{DispatcherBuilder, World};
 
 use menu::main_menu;
-use menu::{MenuItem, UiEventHandlerSystem};
+use menu::MenuItem;
 
 /// This bundle prepares the world for a menu.
-pub struct MenuBundle;
+pub struct Bundle;
 
-impl<'a, 'b> ECSBundle<'a, 'b> for MenuBundle {
+impl<'a, 'b> ECSBundle<'a, 'b> for Bundle {
     fn build(
         self,
         world: &mut World,
@@ -15,6 +15,6 @@ impl<'a, 'b> ECSBundle<'a, 'b> for MenuBundle {
     ) -> Result<DispatcherBuilder<'a, 'b>> {
         world.register::<MenuItem<main_menu::Index>>();
 
-        Ok(builder.add(UiEventHandlerSystem::new(), "ui_event_handler", &[]))
+        Ok(builder)
     }
 }
