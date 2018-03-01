@@ -1,8 +1,8 @@
 use amethyst::core::bundle::{ECSBundle, Result};
 use amethyst::ecs::{DispatcherBuilder, World};
+use application_menu::MenuItem;
 
-use menu::main_menu;
-use menu::MenuItem;
+use main_menu;
 
 /// This bundle prepares the world for a menu.
 pub struct Bundle;

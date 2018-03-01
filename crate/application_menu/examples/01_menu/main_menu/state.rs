@@ -7,10 +7,10 @@ use amethyst::renderer::ScreenDimensions;
 use amethyst::ui::{FontHandle, MouseReactive, UiResize, UiText, UiTransform};
 use amethyst::shred::ParSeq;
 use amethyst::shrev::{EventChannel, ReaderId};
+use application_menu::{MenuEvent, MenuItem};
 use rayon;
 
-use menu::main_menu::{self, UiEventHandlerSystem};
-use menu::{MenuEvent, MenuItem};
+use main_menu::{self, UiEventHandlerSystem};
 
 const FONT_SIZE: f32 = 25.;
 
@@ -51,15 +51,15 @@ impl State {
     fn initialize_menu_items(&mut self, world: &mut World) {
         let (_, font_bold, _, _) = read_fonts(world);
 
-        let mut menu_items = vec![main_menu::Index::StartGame, main_menu::Index::Exit];
-        menu_items
+        let mut item_indices = vec![main_menu::Index::StartGame, main_menu::Index::Exit];
+        item_indices
             .drain(..)
             .enumerate()
-            .for_each(|(index, menu_item)| {
+            .for_each(|(order, index)| {
                 let mut text_transform = UiTransform::new(
-                    menu_item.title().to_string(),
+                    index.title().to_string(),
                     20.,
-                    index as f32 * 50. + 20.,
+                    order as f32 * 50. + 20.,
                     1.,
                     400.,
                     100.,
@@ -77,13 +77,13 @@ impl State {
                     .with(text_transform)
                     .with(UiText::new(
                         font_bold.clone(),
-                        menu_item.title().to_string(),
+                        index.title().to_string(),
                         [1., 1., 1., 1.],
                         FONT_SIZE,
                     ))
                     .with(UiResize(Box::new(ui_text_size_fn)))
                     .with(MouseReactive)
-                    .with(MenuItem { index: menu_item })
+                    .with(MenuItem { index })
                     .build();
 
                 self.menu_items.push(menu_item_entity);

@@ -1,10 +1,9 @@
 use amethyst::ecs::{FetchMut, ReadStorage, System};
 use amethyst::shrev::{EventChannel, ReaderId};
 use amethyst::ui::{UiEvent, UiEventType};
+use application_menu::{MenuEvent, MenuItem};
 
-use menu::event::MenuEvent;
-use menu::main_menu;
-use menu::menu_item::MenuItem;
+use main_menu;
 
 /// System that processes `UiEvent`s and generates `MenuEvent`s.
 #[derive(Debug, Default)]

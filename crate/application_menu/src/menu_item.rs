@@ -4,9 +4,10 @@ use amethyst::ecs::{Component, DenseVecStorage};
 ///
 /// # Type Parameters
 ///
-/// * `I`: Type that represents the index of the selected menu item.
+/// * `I`: Index type of the selected menu item.
 #[derive(Debug)]
 pub struct MenuItem<I: 'static + Send + Sync> {
+    /// Index of the menu item.
     pub index: I,
 }
 

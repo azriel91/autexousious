@@ -1,18 +1,20 @@
 [package]
-name = "application_ui"
+name = "application_menu"
 version = "0.1.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop" }
-application = { path = "../application" }
-serde = "1.0"
 
 [dev-dependencies]
-assert_cli = "0.5"
+application = { path = "../application" }
+application_ui = { path = "../application_ui" }
+derivative = "1.0"
+log = "0.4"
+rayon = "0.8"
 structopt = "0.1.6"
 structopt-derive = "0.1.6"
 
 [[example]]
-name = "01_draw_text"
-path = "examples/01_draw_text/main.rs"
+name = "01_menu"
+path = "examples/01_menu/main.rs"

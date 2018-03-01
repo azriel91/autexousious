@@ -3,7 +3,7 @@
 //! This example uses the following resources and assets:
 //!
 //! * `resources/font_config.ron`
-//! * `resources/display_config.ron`
+//! * `resources/example_display_config.ron`
 //! * `assets/font/source-code-pro-2.030R-ro-1.050R-it/TTF/SourceCodePro-Bold.ttf`
 //! * `assets/font/source-code-pro-2.030R-ro-1.050R-it/TTF/SourceCodePro-BoldIt.ttf`
 //! * `assets/font/source-code-pro-2.030R-ro-1.050R-it/TTF/SourceCodePro-It.ttf`
@@ -12,6 +12,7 @@
 extern crate amethyst;
 #[macro_use]
 extern crate application;
+extern crate application_menu;
 extern crate application_ui;
 #[macro_use]
 extern crate derivative;
@@ -22,7 +23,7 @@ extern crate structopt;
 #[macro_use]
 extern crate structopt_derive;
 
-mod menu;
+mod main_menu;
 mod other;
 
 use std::process;
@@ -36,12 +37,10 @@ use application::resource::find_in;
 use application_ui::ApplicationUiBundle;
 use structopt::StructOpt;
 
-use menu::main_menu;
-
-const TITLE: &str = "Example 02: Menu";
+const TITLE: &str = "Example 01: Menu";
 
 #[derive(StructOpt, Debug)]
-#[structopt(name = "Example 02: Menu")]
+#[structopt(name = "Example 01: Menu")]
 struct Opt {
     #[structopt(long = "no-run", help = "Don't run the Amethyst application")]
     no_run: bool,
