@@ -111,9 +111,8 @@
   image: *rust_image_nightly # for clippy
   variables:
     CARGO_MAKE_SKIP_CODECOV: 'true'
-    # Disable clippy while it fails to compile with nightly
-    # https://github.com/rust-lang-nursery/rust-clippy/issues/2482
-    CLIPPY_ENABLED: 'false'
+    # Uncomment the next line if clippy is not compatible with the latest nightly.
+    # CLIPPY_ENABLED: 'false'
 
 .xvfb_start: &xvfb_start |
   # Start XVFB
@@ -168,49 +167,48 @@ nightly:conformance:
   <<: *stage_build_and_test_conformance
   <<: *job_conformance
 
-# Disable nightly, pending: https://github.com/rust-lang/rust/issues/48551
-# nightly:build_and_test:
-#   <<: *stage_build_and_test
-#   <<: *job_nightly
-#   after_script:
-#     - *xvfb_start
-#     # On gitlab-ci we cannot use sudo to install kcov, which ships with the default Makefile from
-#     # cargo-make.
-#     #
-#     # We have tried overriding the kcov install_script in [tasks.coverage-kcov] in Makefile.toml,
-#     # but for some reason cargo-make does not use the override. cargo-make does have tests proving
-#     # that it does use overrides; maybe it's to do with workspace crates.
-#     #
-#     # Anyway, we install it ourselves here.
-#     - |
-#       # install kcov
-#       command -v kcov >/dev/null 2>&1 || {
-#         if [ "$(grep -Ei 'debian|buntu|mint' /etc/*release)" ]; then
+nightly:build_and_test:
+  <<: *stage_build_and_test
+  <<: *job_nightly
+  after_script:
+    - *xvfb_start
+    # On gitlab-ci we cannot use sudo to install kcov, which ships with the default Makefile from
+    # cargo-make.
+    #
+    # We have tried overriding the kcov install_script in [tasks.coverage-kcov] in Makefile.toml,
+    # but for some reason cargo-make does not use the override. cargo-make does have tests proving
+    # that it does use overrides; maybe it's to do with workspace crates.
+    #
+    # Anyway, we install it ourselves here.
+    - |
+      # install kcov
+      command -v kcov >/dev/null 2>&1 || {
+        if [ "$(grep -Ei 'debian|buntu|mint' /etc/*release)" ]; then
 
-#           # -nc is okay since we are downloading a tagged version
-#           wget -nc https://github.com/SimonKagstrom/kcov/archive/v$KCOV_VERSION.zip
-#           unzip -uoq v$KCOV_VERSION.zip
+          # -nc is okay since we are downloading a tagged version
+          wget -nc https://github.com/SimonKagstrom/kcov/archive/v$KCOV_VERSION.zip
+          unzip -uoq v$KCOV_VERSION.zip
 
-#           cd kcov-$KCOV_VERSION
+          cd kcov-$KCOV_VERSION
 
-#           build_dir='./build'
+          build_dir='./build'
 
-#           # Uncomment the next line if kcov is not building correctly
-#           # rm -rf "${build_dir}"
+          # Uncomment the next line if kcov is not building correctly
+          # rm -rf "${build_dir}"
 
-#           if ! test -d "${build_dir}"; then mkdir "${build_dir}" ; fi
-#           cd "${build_dir}"
-#           cmake ..
-#           make
-#           make install
-#           cd ../..
-#           # Don't delete previously downloaded files
-#           # rm -rf kcov-$KCOV_VERSION
-#         fi
-#       }
-#     - cargo make --no-workspace workspace-coverage
-#     - grep -F merged_files ./target/coverage/index.json | grep -o '"covered":"[0-9]\+\.[0-9]\+"'
-#   coverage: '/"covered":"\d+\.\d+"/'
+          if ! test -d "${build_dir}"; then mkdir "${build_dir}" ; fi
+          cd "${build_dir}"
+          cmake ..
+          make
+          make install
+          cd ../..
+          # Don't delete previously downloaded files
+          # rm -rf kcov-$KCOV_VERSION
+        fi
+      }
+    - cargo make --no-workspace workspace-coverage
+    - grep -F merged_files ./target/coverage/index.json | grep -o '"covered":"[0-9]\+\.[0-9]\+"'
+  coverage: '/"covered":"\d+\.\d+"/'
 
 stable:build_and_test:
   <<: *stage_build_and_test
