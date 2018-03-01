@@ -28,5 +28,5 @@ impl From<FontVariant> for usize {
             FontVariant::BoldItalic => 2,
             FontVariant::Regular => 3,
         }
-    }
+    } // kcov-ignore
 }
