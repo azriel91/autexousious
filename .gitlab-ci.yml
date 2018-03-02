@@ -111,9 +111,8 @@
   image: *rust_image_nightly # for clippy
   variables:
     CARGO_MAKE_SKIP_CODECOV: 'true'
-    # Disable clippy while it fails to compile with nightly
-    # https://github.com/rust-lang-nursery/rust-clippy/issues/2482
-    CLIPPY_ENABLED: 'false'
+    # Uncomment the next line if clippy is not compatible with the latest nightly.
+    # CLIPPY_ENABLED: 'false'
 
 .xvfb_start: &xvfb_start |
   # Start XVFB

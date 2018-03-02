@@ -1,0 +1,11 @@
+// This is shared by examples throughout the repository
+(
+  title: "Autexousious",
+  dimensions: Some((800, 600)),
+  max_dimensions: None,
+  min_dimensions: None,
+  fullscreen: false,
+  multisampling: 0, // #12
+  visibility: true,
+  vsync: true,
+)

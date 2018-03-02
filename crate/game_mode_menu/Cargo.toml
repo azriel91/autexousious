@@ -6,7 +6,14 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop" }
 application_input = { path = "../application_input" }
+application_menu = { path = "../application_menu" }
+application_ui = { path = "../application_ui" }
+derivative = "1.0"
+log = "0.4"
+rayon = "0.8"
 
 [dev-dependencies]
 enigo = "0.0.11"
+# TODO: Remove when https://github.com/amethyst/amethyst/pull/579 is done.
+rayon-core = "1.4.0"
 winit = "0.10"

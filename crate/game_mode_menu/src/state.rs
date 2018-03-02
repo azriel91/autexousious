@@ -1,20 +1,39 @@
+use std::sync::Arc;
+
 use amethyst;
+use amethyst::ecs::Entity;
 use amethyst::prelude::*;
 use amethyst::renderer::{Event, KeyboardInput, VirtualKeyCode, WindowEvent};
+use amethyst::shred::ParSeq;
 use amethyst::shrev::{EventChannel, ReaderId};
 use application_input::ApplicationEvent;
+use application_menu::MenuEvent;
+use rayon;
+
+use index::Index;
+use menu_build_fn::MenuBuildFn;
+use system::UiEventHandlerSystem;
 
 /// Game mode selection state.
 ///
 /// Available transitions:
 ///
-/// * Selection of game mode
-/// * Exiting the application
-///
-#[derive(Debug, Default)]
+/// * Select game mode.
+/// * Exit application.
+#[derive(Derivative, Default)]
+#[derivative(Debug)]
 pub struct State {
+    /// Dispatcher for UI handler system.
+    #[derivative(Debug = "ignore")]
+    dispatch: Option<ParSeq<Arc<rayon::ThreadPool>, UiEventHandlerSystem>>,
     /// ID of the reader for application events.
     application_event_reader: Option<ReaderId<ApplicationEvent>>,
+    /// Function used to build the menu.
+    menu_build_fn: MenuBuildFn,
+    /// Menu item entities, which we create / delete when the state is run / paused
+    menu_items: Vec<Entity>,
+    /// ID of the reader for menu events.
+    menu_event_reader: Option<ReaderId<MenuEvent<Index>>>,
 }
 
 impl State {
@@ -22,14 +41,34 @@ impl State {
     pub fn new() -> Self {
         Default::default()
     }
-}
 
-impl amethyst::State for State {
-    fn on_start(&mut self, world: &mut World) {
-        // You can't unregister a reader from an EventChannel in on_stop because we don't have to
+    #[cfg(test)]
+    fn internal_new(menu_build_fn: MenuBuildFn) -> Self {
+        State {
+            dispatch: Option::default(),
+            application_event_reader: Option::default(),
+            menu_build_fn,
+            menu_items: Vec::default(),
+            menu_event_reader: Option::default(),
+        } // kcov-ignore
+    }
+
+    fn initialize_dispatcher(&mut self, world: &mut World) {
+        self.dispatch = Some(ParSeq::new(
+            UiEventHandlerSystem::new(),
+            world.read_resource::<Arc<rayon::ThreadPool>>().clone(),
+        ));
+    }
+
+    fn terminate_dispatcher(&mut self) {
+        self.dispatch.take();
+    }
+
+    fn initialize_application_event_reader(&mut self, world: &mut World) {
+        // You can't (don't have to) unregister a reader from an EventChannel in `on_stop();`:
         //
-        // @torkleyy: No need to unregister, it's just two integer values.
-        // @Rhuagh: Just drop the reader id
+        // > @torkleyy: No need to unregister, it's just two integer values.
+        // > @Rhuagh: Just drop the reader id
         let reader_id = world
             .write_resource::<EventChannel<ApplicationEvent>>()
             .register_reader(); // kcov-ignore
@@ -37,9 +76,62 @@ impl amethyst::State for State {
         self.application_event_reader.get_or_insert(reader_id);
     }
 
+    fn initialize_menu_event_channel(&mut self, world: &mut World) {
+        let mut menu_event_channel = EventChannel::<MenuEvent<Index>>::with_capacity(20);
+        let reader_id = menu_event_channel.register_reader();
+        self.menu_event_reader.get_or_insert(reader_id);
+
+        world.add_resource(menu_event_channel);
+    }
+
+    fn terminate_menu_event_channel(&mut self, _world: &mut World) {
+        // By design there is no function to unregister a reader from an `EventChannel`.
+        // Nor is there one to remove a resource from the `World`.
+
+        self.menu_event_reader.take();
+    }
+
+    fn initialize_menu_items(&mut self, world: &mut World) {
+        // https://github.com/rust-lang/rust/issues/26186
+        // https://stackoverflow.com/q/46472082/1576773
+        (&mut *self.menu_build_fn)(world, &mut self.menu_items);
+    }
+
+    fn terminate_menu_items(&mut self, world: &mut World) {
+        self.menu_items.drain(..).for_each(|menu_item| {
+            world
+                .delete_entity(menu_item)
+                .expect("Failed to delete menu item.");
+        });
+    }
+}
+
+impl amethyst::State for State {
+    fn on_start(&mut self, world: &mut World) {
+        self.initialize_dispatcher(world);
+        self.initialize_application_event_reader(world);
+        self.initialize_menu_event_channel(world);
+        self.initialize_menu_items(world);
+    }
+
+    fn on_stop(&mut self, world: &mut World) {
+        self.terminate_menu_items(world);
+        self.terminate_menu_event_channel(world);
+        self.terminate_dispatcher();
+    }
+
+    // Need to explicitly hide and show the menu items during pause and resume
+    fn on_resume(&mut self, world: &mut World) {
+        self.initialize_menu_items(world);
+    }
+
+    fn on_pause(&mut self, world: &mut World) {
+        self.terminate_menu_items(world);
+    }
+
     fn handle_event(&mut self, _: &mut World, event: Event) -> Trans {
-        // intentionally ignore testing mouse events as we cannot guarantee the cursor is over
-        // the window when someone runs `cargo test`
+        // Intentionally ignore testing mouse events as we cannot guarantee the cursor is over the
+        // window when someone runs `cargo test`
         // kcov-ignore-start-mouse
         match event {
             // kcov-ignore-end-mouse
@@ -60,6 +152,10 @@ impl amethyst::State for State {
     }
 
     fn update(&mut self, world: &mut World) -> Trans {
+        {
+            self.dispatch.as_mut().unwrap().dispatch(&world.res);
+        }
+
         let app_event_channel = world.read_resource::<EventChannel<ApplicationEvent>>();
 
         let mut reader_id = self.application_event_reader
@@ -70,35 +166,75 @@ impl amethyst::State for State {
             return Trans::Quit;
         }
 
-        Trans::None
+        let menu_event_channel = world.read_resource::<EventChannel<MenuEvent<Index>>>();
+
+        let mut reader_id = self.menu_event_reader
+            .as_mut()
+            .expect("Expected menu_event_reader to be set");
+        let mut storage_iterator = menu_event_channel.read(&mut reader_id);
+        match storage_iterator.next() {
+            Some(event) => match *event {
+                MenuEvent::Select(idx) => idx.trans(),
+                MenuEvent::Close => Trans::Quit,
+            },
+            None => Trans::None,
+        }
     }
 }
 
 #[cfg(test)]
 mod test {
     use std::mem::discriminant;
+    use std::sync::Arc;
 
     use amethyst::ecs::World;
+    use amethyst::prelude::*;
     use amethyst::renderer::{Event, WindowEvent};
     use amethyst::shrev::EventChannel;
     use amethyst::State as AmethystState;
-    use amethyst::prelude::*;
+    use amethyst::ui::UiEvent;
     use application_input::ApplicationEvent;
+    use application_menu::{MenuEvent, MenuItem};
     use enigo::{Enigo, Key, KeyboardControllable};
+    use rayon_core::ThreadPoolBuilder;
     use winit::{ControlFlow, EventsLoop, Window};
 
+    use menu_build_fn::MenuBuildFn;
+    use index::Index;
     use super::State;
 
     fn setup() -> (State, World) {
-        let mut world = World::new();
-        world.add_resource(EventChannel::<ApplicationEvent>::with_capacity(10));
+        setup_with_menu_items(MenuBuildFn(Box::new(|_, _| {})))
+    }
 
-        (State::new(), world)
+    fn setup_with_menu_items(menu_build_fn: MenuBuildFn) -> (State, World) {
+        let mut world = World::new();
+        // TODO: use rayon::ThreadPoolBuilder; https://github.com/amethyst/amethyst/pull/579
+        world.add_resource(Arc::new(ThreadPoolBuilder::new().build().unwrap()));
+        world.add_resource(EventChannel::<ApplicationEvent>::with_capacity(10));
+        world.add_resource(EventChannel::<MenuEvent<Index>>::with_capacity(10));
+        world.add_resource(EventChannel::<UiEvent>::with_capacity(10)); // needed by system
+        world.register::<MenuItem<Index>>();
+
+        (State::internal_new(menu_build_fn), world)
     }
 
     #[test]
-    fn on_start_registers_reader() {
+    fn on_start_initializes_dispatcher() {
         let (mut state, mut world) = setup();
+
+        assert!(state.dispatch.is_none());
+
+        state.on_start(&mut world);
+
+        assert!(state.dispatch.is_some());
+    }
+
+    #[test]
+    fn on_start_initializes_application_event_channel_reader() {
+        let (mut state, mut world) = setup();
+
+        assert!(state.application_event_reader.is_none());
 
         state.on_start(&mut world);
 
@@ -109,7 +245,109 @@ mod test {
     }
 
     #[test]
-    fn update_returns_trans_none_when_no_application_event_exists() {
+    fn on_start_initializes_menu_event_channel_reader() {
+        let (mut state, mut world) = setup();
+
+        assert!(state.menu_event_reader.is_none());
+
+        state.on_start(&mut world);
+
+        assert!(state.menu_event_reader.is_some());
+        let menu_event_channel = world.read_resource::<EventChannel<MenuEvent<Index>>>();
+        let mut reader_id = &mut state.menu_event_reader.as_mut().unwrap();
+        assert_eq!(None, menu_event_channel.read(&mut reader_id).next());
+    }
+
+    #[test]
+    fn on_start_initializes_menu_items() {
+        let (mut state, mut world) = setup_with_menu_items(MenuBuildFn(Box::new(
+            |world, menu_items| menu_items.push(world.create_entity().build()),
+        )));
+
+        assert!(state.menu_items.is_empty());
+
+        state.on_start(&mut world);
+
+        assert_eq!(1, state.menu_items.len());
+    }
+
+    #[test]
+    fn on_stop_terminates_dispatcher() {
+        let (mut state, mut world) = setup();
+
+        state.on_start(&mut world);
+
+        assert!(state.dispatch.is_some());
+
+        state.on_stop(&mut world);
+
+        assert!(state.dispatch.is_none());
+    }
+
+    #[test]
+    fn on_stop_terminates_menu_event_channel_reader() {
+        let (mut state, mut world) = setup();
+
+        state.on_start(&mut world);
+
+        assert!(state.menu_event_reader.is_some());
+
+        state.on_stop(&mut world);
+
+        assert!(state.menu_event_reader.is_none());
+    }
+
+    #[test]
+    fn on_stop_terminates_menu_items() {
+        let (mut state, mut world) = setup_with_menu_items(MenuBuildFn(Box::new(
+            |world, menu_items| menu_items.push(world.create_entity().build()),
+        )));
+
+        state.on_start(&mut world);
+
+        assert_eq!(1, state.menu_items.len());
+
+        state.on_stop(&mut world);
+
+        assert!(state.menu_items.is_empty());
+    }
+
+    #[test]
+    fn on_pause_terminates_menu_items() {
+        let (mut state, mut world) = setup_with_menu_items(MenuBuildFn(Box::new(
+            |world, menu_items| menu_items.push(world.create_entity().build()),
+        )));
+
+        state.on_start(&mut world);
+
+        assert_eq!(1, state.menu_items.len());
+
+        state.on_pause(&mut world);
+
+        assert!(state.menu_items.is_empty());
+    }
+
+    #[test]
+    fn on_resume_initializes_menu_items() {
+        let (mut state, mut world) = setup_with_menu_items(MenuBuildFn(Box::new(
+            |world, menu_items| menu_items.push(world.create_entity().build()),
+        )));
+
+        state.on_start(&mut world);
+
+        assert_eq!(1, state.menu_items.len());
+
+        state.on_pause(&mut world);
+
+        assert!(state.menu_items.is_empty());
+
+        state.on_resume(&mut world);
+
+        assert_eq!(1, state.menu_items.len());
+    }
+
+    #[test]
+    fn update_returns_trans_none_when_no_application_or_menu_event_exists() {
         let (mut state, mut world) = setup();
 
         // register reader
@@ -139,6 +377,24 @@ mod test {
         );
     }
 
+    #[test]
+    fn update_returns_trans_quit_on_close_menu_event() {
+        let (mut state, mut world) = setup();
+
+        // register reader
+        state.on_start(&mut world);
+
+        {
+            let mut menu_event_channel = world.write_resource::<EventChannel<MenuEvent<Index>>>();
+            menu_event_channel.single_write(MenuEvent::Close);
+        } // kcov-ignore
+
+        assert_eq!(
+            discriminant(&Trans::Quit),
+            discriminant(&state.update(&mut world))
+        );
+    }
+
     /// We have to run multiple tests in a single function because:
     ///
     /// * Test functions are run in parallel.
@@ -157,9 +413,9 @@ mod test {
     ///
     ///         Possibly this bug: https://github.com/tomaka/winit/issues/347
     ///
-    /// I have tried using `thread::sleep`s to try and see if it is a race condition between opening
-    /// the window and the programmatic input, but it does not appear to be the case - it fails in
-    /// the same way even with the `sleep`s.
+    /// I have tried using `thread::sleep`s to check if it is a race condition between opening the
+    /// window and the programmatic input, but it does not appear to be the case - it fails in the
+    /// same way even with the `sleep`s.
     ///
     /// On Ubuntu 17.10, the window that starts up during the test does not get destroyed until
     /// after the entire test executable ends, even if you `drop(window)` and `drop(events_loop)`.
