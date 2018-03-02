@@ -58,7 +58,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(InputBundle::<String, String>::new())?
             .with_bundle(UiBundle::<String, String>::new())?
             .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
-            .with_bundle(ApplicationUiBundle::new())?;
+            .with_bundle(ApplicationUiBundle::new())?
+            .with_bundle(game_mode_menu::Bundle)?;
     }
 
     let mut app = app_builder.build().expect("Fatal error");

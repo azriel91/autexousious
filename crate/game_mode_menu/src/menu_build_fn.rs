@@ -1,9 +1,13 @@
 use std::fmt::{Debug, Error, Formatter};
 use std::ops::{Deref, DerefMut};
 
+use amethyst::ecs::Entity;
 use amethyst::prelude::World;
 use amethyst::renderer::ScreenDimensions;
-use amethyst::ui::{FontHandle, UiResize, UiText, UiTransform};
+use amethyst::ui::{FontHandle, MouseReactive, UiResize, UiText, UiTransform};
+use application_menu::MenuItem;
+
+use index::Index;
 
 /// Wraps a `FnMut(&mut World)` in a `Box`.
 ///
@@ -11,25 +15,24 @@ use amethyst::ui::{FontHandle, UiResize, UiText, UiTransform};
 ///
 /// This also implements `Debug` to allow consumers to easily derive `Debug`, though the current
 /// implementation does not show what the function does.
-pub struct MenuBuildFn(pub Box<FnMut(&mut World)>);
+pub struct MenuBuildFn(pub Box<FnMut(&mut World, &mut Vec<Entity>)>);
 
 const FONT_SIZE: f32 = 25.;
 
 impl MenuBuildFn {
-    fn initialize_menu(world: &mut World) {
+    fn initialize_menu(world: &mut World, menu_items: &mut Vec<Entity>) {
         let font_bold = Self::read_font(world);
 
-        // TODO: Replace this with menu definition.
-        // TODO: Use UI Buttons: https://github.com/amethyst/amethyst/pull/580
-        let mut menu_items = vec!["Start Game", "Exit"];
-        menu_items
+        // TODO: Use UI Buttons: https://github.com/amethyst/amethyst/issues/577
+        let mut item_indices = vec![Index::StartGame, Index::Exit];
+        item_indices
             .drain(..)
             .enumerate()
-            .for_each(|(index, item_name)| {
+            .for_each(|(order, index)| {
                 let mut text_transform = UiTransform::new(
-                    item_name.to_string(),
+                    index.title().to_string(),
                     20.,
-                    index as f32 * 50. + 20.,
+                    order as f32 * 50. + 20.,
                     1.,
                     400.,
                     100.,
@@ -42,17 +45,21 @@ impl MenuBuildFn {
                     ui_text_size_fn(&mut text_transform, (dim.width(), dim.height()));
                 }
 
-                world
+                let menu_item_entity = world
                     .create_entity()
                     .with(text_transform)
                     .with(UiText::new(
                         font_bold.clone(),
-                        item_name.to_string(),
+                        index.title().to_string(),
                         [1., 1., 1., 1.],
                         FONT_SIZE,
                     ))
                     .with(UiResize(Box::new(ui_text_size_fn)))
+                    .with(MouseReactive)
+                    .with(MenuItem { index })
                     .build();
+
+                menu_items.push(menu_item_entity);
             });
     }
 
@@ -77,15 +84,15 @@ impl Default for MenuBuildFn {
 }
 
 impl Deref for MenuBuildFn {
-    type Target = Box<FnMut(&mut World)>;
+    type Target = Box<FnMut(&mut World, &mut Vec<Entity>)>;
 
-    fn deref(&self) -> &Box<FnMut(&mut World)> {
+    fn deref(&self) -> &Box<FnMut(&mut World, &mut Vec<Entity>)> {
         &self.0
     }
 }
 
 impl DerefMut for MenuBuildFn {
-    fn deref_mut(&mut self) -> &mut Box<FnMut(&mut World)> {
+    fn deref_mut(&mut self) -> &mut Box<FnMut(&mut World, &mut Vec<Entity>)> {
         &mut self.0
     }
 }

@@ -21,7 +21,7 @@ pub struct State {
     /// Dispatcher for UI handler system.
     #[derivative(Debug = "ignore")]
     dispatch: Option<ParSeq<Arc<rayon::ThreadPool>, UiEventHandlerSystem>>,
-    /// ID of the reader for application events.
+    /// ID of the reader for menu events.
     menu_event_reader: Option<ReaderId<MenuEvent<main_menu::Index>>>,
     /// Menu item entities, which we create / delete when the state is run / paused
     menu_items: Vec<Entity>,
