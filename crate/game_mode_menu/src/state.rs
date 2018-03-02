@@ -153,7 +153,7 @@ impl amethyst::State for State {
 
     fn update(&mut self, world: &mut World) -> Trans {
         {
-            self.dispatch.as_mut().unwrap().dispatch(&mut world.res);
+            self.dispatch.as_mut().unwrap().dispatch(&world.res);
         }
 
         let app_event_channel = world.read_resource::<EventChannel<ApplicationEvent>>();
