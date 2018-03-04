@@ -68,7 +68,7 @@ impl MenuBuildFn {
         world
             .read_resource_with_id::<FontHandle>(Bold.into())
             .clone()
-    }
+    } // kcov-ignore
 }
 
 impl Debug for MenuBuildFn {
@@ -95,4 +95,63 @@ impl DerefMut for MenuBuildFn {
     fn deref_mut(&mut self) -> &mut Box<FnMut(&mut World, &mut Vec<Entity>)> {
         &mut self.0
     }
+}
+
+#[cfg(test)]
+mod test {
+    use amethyst::input::InputBundle;
+    use amethyst::prelude::*;
+    use amethyst::renderer::{DisplayConfig, Pipeline, RenderBundle, Stage};
+    use amethyst::Result;
+    use amethyst::ui::{DrawUi, UiBundle};
+    use application::resource::dir;
+    use application::resource::find_in;
+    use application_ui::ApplicationUiBundle;
+
+    use bundle::Bundle;
+    use super::MenuBuildFn;
+
+    fn setup<'a, 'b>() -> Result<Application<'a, 'b>> {
+        let display_config = DisplayConfig::load(
+            find_in(
+                dir::RESOURCES,
+                "display_config.ron",
+                Some(development_base_dirs!()),
+            ).unwrap(),
+        );
+
+        let pipe = Pipeline::build().with_stage(
+            Stage::with_backbuffer()
+                .clear_target([0., 0., 0., 1.], 1.)
+                .with_pass(DrawUi::new()),
+        );
+
+        // We need to instantiate an amethyst::Application because:
+        //
+        // * The `Loader` needs to be added to the world, and the code to do this is non-trivial
+        // * The `AppBundle` in amethyst that does this is non-public
+        Application::build(format!("{}/assets", env!("CARGO_MANIFEST_DIR")), MockState)?
+            .with_bundle(InputBundle::<String, String>::new())?
+            .with_bundle(UiBundle::<String, String>::new())?
+            // needed for ScreenDimensions
+            .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
+            .with_bundle(ApplicationUiBundle::new())?
+            .with_bundle(Bundle)?
+            .build()
+    } // kcov-ignore
+
+    #[test]
+    fn initialize_menu_creates_entity_for_each_menu_index() {
+        let mut app = setup().expect("Failed to build Application.");
+        let mut menu_items = vec![];
+
+        let mut mb_fn = MenuBuildFn::default();
+        (&mut *mb_fn)(&mut app.world, &mut menu_items);
+
+        assert_eq!(2, menu_items.len());
+    }
+
+    #[derive(Debug)]
+    struct MockState;
+    impl State for MockState {}
 }
