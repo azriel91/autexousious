@@ -70,12 +70,8 @@ impl<S: amethyst::State + Debug> amethyst::State for State<S> {
     }
 
     fn handle_event(&mut self, world: &mut World, event: Event) -> Trans {
-        // Intentionally ignore testing mouse events as we cannot guarantee the cursor is over the
-        // window when someone runs `cargo test`
-        // kcov-ignore-start-mouse
-        match event {
-            // kcov-ignore-end-mouse
-            Event::WindowEvent { ref event, .. } => match *event {
+        if let Event::WindowEvent { ref event, .. } = event {
+            match *event {
                 WindowEvent::KeyboardInput {
                     input:
                         KeyboardInput {
@@ -86,9 +82,8 @@ impl<S: amethyst::State + Debug> amethyst::State for State<S> {
                 }
                 | WindowEvent::Closed => return Trans::Quit, // kcov-ignore-mouse
                 _ => {}
-            },
-            _ => {} // kcov-ignore-mouse
-        };
+            }
+        }
 
         self.delegate.handle_event(world, event)
     }
