@@ -4,6 +4,7 @@ extern crate amethyst;
 #[macro_use]
 extern crate application;
 extern crate application_input;
+extern crate application_robot;
 extern crate application_ui;
 extern crate game_mode_menu;
 extern crate stdio_view;
@@ -32,8 +33,10 @@ struct Opt {
 }
 
 fn run(opt: &Opt) -> Result<(), amethyst::Error> {
-    let mut app_builder = Application::build(dir::ASSETS, game_mode_menu::State::new())?
-        .with_bundle(ApplicationInputBundle::new())?
+    let mut app_builder = Application::build(
+        dir::ASSETS,
+        application_robot::State::new(game_mode_menu::State::new()),
+    )?.with_bundle(ApplicationInputBundle::new())?
         .with::<StdinSystem>(StdinSystem::new(), "StdinSystem", &[]);
 
     if !opt.headless {
