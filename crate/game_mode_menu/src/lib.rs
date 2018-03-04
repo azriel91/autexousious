@@ -4,20 +4,18 @@
 //! Menu to allow the user to select game mode.
 
 extern crate amethyst;
-extern crate application_input;
+#[cfg(test)]
+#[macro_use]
+extern crate application;
 extern crate application_menu;
 extern crate application_ui;
 #[macro_use]
 extern crate derivative;
-#[cfg(test)]
-extern crate enigo;
 #[macro_use]
 extern crate log;
 extern crate rayon;
 #[cfg(test)]
 extern crate rayon_core;
-#[cfg(test)]
-extern crate winit;
 
 pub use bundle::Bundle;
 pub use index::Index;

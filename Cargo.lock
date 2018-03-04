@@ -255,6 +255,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "application_robot"
+version = "0.1.0"
+dependencies = [
+ "amethyst 0.6.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
+ "application_input 0.1.0",
+ "enigo 0.0.11 (registry+https://github.com/rust-lang/crates.io-index)",
+ "winit 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "application_ui"
 version = "0.1.0"
 dependencies = [
@@ -796,6 +806,7 @@ dependencies = [
  "amethyst 0.6.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "application 0.1.0",
  "application_input 0.1.0",
+ "application_robot 0.1.0",
  "application_ui 0.1.0",
  "assert_cli 0.5.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_mode_menu 0.1.0",
@@ -828,15 +839,13 @@ name = "game_mode_menu"
 version = "0.1.0"
 dependencies = [
  "amethyst 0.6.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
- "application_input 0.1.0",
+ "application 0.1.0",
  "application_menu 0.1.0",
  "application_ui 0.1.0",
  "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "enigo 0.0.11 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "rayon 0.8.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "rayon-core 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "winit 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

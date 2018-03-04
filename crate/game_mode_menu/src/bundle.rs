@@ -19,3 +19,31 @@ impl<'a, 'b> ECSBundle<'a, 'b> for Bundle {
         Ok(builder)
     }
 }
+
+#[cfg(test)]
+mod test {
+    use amethyst::core::bundle::ECSBundle;
+    use amethyst::ecs::{DispatcherBuilder, World};
+    use application_menu::MenuItem;
+
+    use index::Index;
+    use super::Bundle;
+
+    #[test]
+    fn build_adds_application_event_channel_to_world() {
+        let mut world = World::new();
+        let builder = DispatcherBuilder::new();
+
+        Bundle
+            .build(&mut world, builder)
+            .expect("game_mode_menu::Bundle#build() should succeed");
+
+        // If the component was not registered, the next line will panic
+        let _ = world
+            .create_entity()
+            .with(MenuItem {
+                index: Index::StartGame,
+            })
+            .build();
+    }
+}
