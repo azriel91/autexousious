@@ -41,7 +41,9 @@ impl ApplicationEventIntercept {
             return Some(Trans::Quit);
         }
 
-        None
+        // TODO: cover this case when there is support for dummy events
+        // <https://gitlab.com/azriel91/autexousious/issues/15>
+        None // kcov-ignore
     }
 }
 
@@ -65,7 +67,8 @@ impl Intercept for ApplicationEventIntercept {
                 _ => None,
             }
         } else {
-            None
+            // TODO: cover this case when there is support for dummy events #15
+            None // kcov-ignore
         }
     }
 

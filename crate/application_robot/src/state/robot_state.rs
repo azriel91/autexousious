@@ -165,54 +165,86 @@ impl<S: State + Debug> State for RobotState<S> {
 
 #[cfg(test)]
 mod test {
+    use std::cell::RefCell;
+    use std::rc::Rc;
+
     use amethyst::ecs::World;
     use amethyst::prelude::*;
     use amethyst::renderer::{Event, WindowEvent};
     use enigo::{Enigo, Key, KeyboardControllable};
     use winit::{ControlFlow, EventsLoop, Window};
 
-    use super::RobotState;
+    use state::Intercept;
+    use super::{RobotState, RobotStateBuilder};
 
-    fn setup() -> (RobotState<MockState>, World) {
+    fn setup(
+        invocations: Rc<RefCell<Vec<Invocation>>>,
+        intercepts: Vec<Box<Intercept>>,
+    ) -> (RobotState<MockState>, World) {
+        let mut robot_state = RobotStateBuilder::default()
+                .delegate(Box::new(MockState::new(invocations.clone())))
+                // .intercepts(vec![Box::new(MockIntercept(None))])
+                .build()
+                .expect("Failed to build RobotState");
+
+        // TODO: Use setter method, pending <https://gitlab.com/azriel91/autexousious/issues/17>
+        robot_state.intercepts = intercepts;
+
         let world = World::new();
 
-        (RobotState::new(MockState::new()), world)
+        (robot_state, world)
+    }
+
+    fn setup_without_intercepts() -> (RobotState<MockState>, World) {
+        setup(Rc::new(RefCell::new(vec![])), Vec::new())
     }
 
     #[test]
     fn on_start_delegates_to_delegate() {
-        let (mut state, mut world) = setup();
+        let (mut state, mut world) = setup_without_intercepts();
 
         state.on_start(&mut world);
 
-        assert_eq!(vec![Invocation::OnStart], state.delegate.invocations);
+        assert_eq!(
+            vec![Invocation::OnStart],
+            *state.delegate.invocations.borrow()
+        );
     }
 
     #[test]
     fn on_stop_delegates_to_delegate() {
-        let (mut state, mut world) = setup();
+        let (mut state, mut world) = setup_without_intercepts();
 
         state.on_stop(&mut world);
 
-        assert_eq!(vec![Invocation::OnStop], state.delegate.invocations);
+        assert_eq!(
+            vec![Invocation::OnStop],
+            *state.delegate.invocations.borrow()
+        );
     }
 
     #[test]
     fn on_pause_delegates_to_delegate() {
-        let (mut state, mut world) = setup();
+        let (mut state, mut world) = setup_without_intercepts();
 
         state.on_pause(&mut world);
 
-        assert_eq!(vec![Invocation::OnPause], state.delegate.invocations);
+        assert_eq!(
+            vec![Invocation::OnPause],
+            *state.delegate.invocations.borrow()
+        );
     }
 
     #[test]
     fn on_resume_delegates_to_delegate() {
-        let (mut state, mut world) = setup();
+        let (mut state, mut world) = setup_without_intercepts();
 
         state.on_resume(&mut world);
 
-        assert_eq!(vec![Invocation::OnResume], state.delegate.invocations);
+        assert_eq!(
+            vec![Invocation::OnResume],
+            *state.delegate.invocations.borrow()
+        );
     }
 
     // TODO: We ignore running this test because we cannot construct a window in both this test and
@@ -221,7 +253,7 @@ mod test {
     #[test]
     #[ignore]
     fn handle_event_delegates_to_delegate() {
-        let (mut state, mut world) = setup();
+        let (mut state, mut world) = setup_without_intercepts();
 
         let mut events_loop = EventsLoop::new();
         let _window = Window::new(&events_loop).unwrap();
@@ -229,25 +261,34 @@ mod test {
 
         state.handle_event(&mut world, event);
 
-        assert_eq!(vec![Invocation::HandleEvent], state.delegate.invocations);
+        assert_eq!(
+            vec![Invocation::HandleEvent],
+            *state.delegate.invocations.borrow()
+        );
     }
 
     #[test]
     fn fixed_update_delegates_to_delegate() {
-        let (mut state, mut world) = setup();
+        let (mut state, mut world) = setup_without_intercepts();
 
         state.fixed_update(&mut world);
 
-        assert_eq!(vec![Invocation::FixedUpdate], state.delegate.invocations);
+        assert_eq!(
+            vec![Invocation::FixedUpdate],
+            *state.delegate.invocations.borrow()
+        );
     }
 
     #[test]
     fn update_delegates_to_delegate() {
-        let (mut state, mut world) = setup();
+        let (mut state, mut world) = setup_without_intercepts();
 
         state.update(&mut world);
 
-        assert_eq!(vec![Invocation::Update], state.delegate.invocations);
+        assert_eq!(
+            vec![Invocation::Update],
+            *state.delegate.invocations.borrow()
+        );
     }
 
     #[derive(Debug, PartialEq)]
@@ -263,44 +304,44 @@ mod test {
 
     #[derive(Debug, Default)]
     struct MockState {
-        invocations: Vec<Invocation>,
+        invocations: Rc<RefCell<Vec<Invocation>>>,
     }
 
     impl MockState {
-        fn new() -> Self {
-            Default::default()
+        fn new(invocations: Rc<RefCell<Vec<Invocation>>>) -> Self {
+            MockState { invocations }
         }
     }
 
     impl State for MockState {
         fn on_start(&mut self, _: &mut World) {
-            self.invocations.push(Invocation::OnStart);
+            self.invocations.borrow_mut().push(Invocation::OnStart);
         }
 
         fn on_stop(&mut self, _: &mut World) {
-            self.invocations.push(Invocation::OnStop);
+            self.invocations.borrow_mut().push(Invocation::OnStop);
         }
 
         fn on_pause(&mut self, _: &mut World) {
-            self.invocations.push(Invocation::OnPause);
+            self.invocations.borrow_mut().push(Invocation::OnPause);
         }
 
         fn on_resume(&mut self, _: &mut World) {
-            self.invocations.push(Invocation::OnResume);
+            self.invocations.borrow_mut().push(Invocation::OnResume);
         }
 
         fn handle_event(&mut self, _: &mut World, _: Event) -> Trans {
-            self.invocations.push(Invocation::HandleEvent);
+            self.invocations.borrow_mut().push(Invocation::HandleEvent);
             Trans::None
         }
 
         fn fixed_update(&mut self, _: &mut World) -> Trans {
-            self.invocations.push(Invocation::FixedUpdate);
+            self.invocations.borrow_mut().push(Invocation::FixedUpdate);
             Trans::None
         }
 
         fn update(&mut self, _: &mut World) -> Trans {
-            self.invocations.push(Invocation::Update);
+            self.invocations.borrow_mut().push(Invocation::Update);
             Trans::None
         }
     }
