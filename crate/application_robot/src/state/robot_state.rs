@@ -199,60 +199,36 @@ mod test {
         setup(Rc::new(RefCell::new(vec![])), Vec::new())
     }
 
-    #[test]
-    fn on_start_delegates_to_delegate() {
-        let (mut state, mut world) = setup_without_intercepts();
+    #[macro_use]
+    macro_rules! delegate_test {
+        ($test_name:ident, $function:ident, $invocation:ident) => {
+            #[test]
+            fn $test_name() {
+                let (mut state, mut world) = setup_without_intercepts();
 
-        state.on_start(&mut world);
+                state.$function(&mut world);
 
-        assert_eq!(
-            vec![Invocation::OnStart],
-            *state.delegate.invocations.borrow()
-        );
+                assert_eq!(
+                    vec![Invocation::$invocation],
+                    *state.delegate.invocations.borrow()
+                );
+            }
+        }
     }
 
-    #[test]
-    fn on_stop_delegates_to_delegate() {
-        let (mut state, mut world) = setup_without_intercepts();
-
-        state.on_stop(&mut world);
-
-        assert_eq!(
-            vec![Invocation::OnStop],
-            *state.delegate.invocations.borrow()
-        );
-    }
-
-    #[test]
-    fn on_pause_delegates_to_delegate() {
-        let (mut state, mut world) = setup_without_intercepts();
-
-        state.on_pause(&mut world);
-
-        assert_eq!(
-            vec![Invocation::OnPause],
-            *state.delegate.invocations.borrow()
-        );
-    }
-
-    #[test]
-    fn on_resume_delegates_to_delegate() {
-        let (mut state, mut world) = setup_without_intercepts();
-
-        state.on_resume(&mut world);
-
-        assert_eq!(
-            vec![Invocation::OnResume],
-            *state.delegate.invocations.borrow()
-        );
-    }
+    delegate_test!(on_start_delegates_to_state, on_start, OnStart);
+    delegate_test!(on_stop_delegates_to_state, on_stop, OnStop);
+    delegate_test!(on_pause_delegates_to_state, on_pause, OnPause);
+    delegate_test!(on_resume_delegates_to_state, on_resume, OnResume);
+    delegate_test!(fixed_update_delegates_to_state, fixed_update, FixedUpdate);
+    delegate_test!(update_delegates_to_state, update, Update);
 
     // TODO: We ignore running this test because we cannot construct a window in both this test and
     // in the application_event_intercept module due to
     // <https://gitlab.com/azriel91/autexousious/issues/16>.
     #[test]
     #[ignore]
-    fn handle_event_delegates_to_delegate() {
+    fn handle_event_delegates_to_state() {
         let (mut state, mut world) = setup_without_intercepts();
 
         let mut events_loop = EventsLoop::new();
@@ -263,30 +239,6 @@ mod test {
 
         assert_eq!(
             vec![Invocation::HandleEvent],
-            *state.delegate.invocations.borrow()
-        );
-    }
-
-    #[test]
-    fn fixed_update_delegates_to_delegate() {
-        let (mut state, mut world) = setup_without_intercepts();
-
-        state.fixed_update(&mut world);
-
-        assert_eq!(
-            vec![Invocation::FixedUpdate],
-            *state.delegate.invocations.borrow()
-        );
-    }
-
-    #[test]
-    fn update_delegates_to_delegate() {
-        let (mut state, mut world) = setup_without_intercepts();
-
-        state.update(&mut world);
-
-        assert_eq!(
-            vec![Invocation::Update],
             *state.delegate.invocations.borrow()
         );
     }
