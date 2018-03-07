@@ -1,6 +1,8 @@
 pub use self::application_event_intercept::ApplicationEventIntercept;
+pub use self::fixed_timeout_intercept::FixedTimeoutIntercept;
 
 mod application_event_intercept;
+mod fixed_timeout_intercept;
 
 use std::fmt::Debug;
 
