@@ -6,7 +6,10 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop" }
 application_input = { path = "../application_input" }
+derive_builder = "0.5"
+itertools = "0.7"
 
 [dev-dependencies]
+debug_util_amethyst = { path = "../debug_util_amethyst" }
 enigo = "0.0.11"
 winit = "0.10"

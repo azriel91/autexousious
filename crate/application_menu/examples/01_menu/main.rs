@@ -13,6 +13,7 @@ extern crate amethyst;
 #[macro_use]
 extern crate application;
 extern crate application_menu;
+extern crate application_robot;
 extern crate application_ui;
 #[macro_use]
 extern crate derivative;
@@ -27,6 +28,7 @@ mod main_menu;
 mod other;
 
 use std::process;
+use std::time::Duration;
 
 use amethyst::input::InputBundle;
 use amethyst::prelude::*;
@@ -34,6 +36,8 @@ use amethyst::renderer::{DisplayConfig, Pipeline, RenderBundle, Stage};
 use amethyst::ui::{DrawUi, UiBundle};
 use application::resource::dir;
 use application::resource::find_in;
+use application_robot::RobotStateBuilder;
+use application_robot::state::FixedTimeoutIntercept;
 use application_ui::ApplicationUiBundle;
 use structopt::StructOpt;
 
@@ -42,8 +46,11 @@ const TITLE: &str = "Example 01: Menu";
 #[derive(StructOpt, Debug)]
 #[structopt(name = "Example 01: Menu")]
 struct Opt {
-    #[structopt(long = "no-run", help = "Don't run the Amethyst application")]
+    #[structopt(short = "n", long = "no-run", help = "Don't run the Amethyst application")]
     no_run: bool,
+    #[structopt(short = "t", long = "timeout",
+                help = "Timeout to automatically close the application")]
+    timeout: Option<u64>,
 }
 
 fn run(opt: &Opt) -> Result<(), amethyst::Error> {
@@ -62,7 +69,23 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_pass(DrawUi::new()),
     );
 
-    let mut app = Application::build("assets", main_menu::State::new())?
+    let mut state = RobotStateBuilder::default()
+        .delegate(Box::new(main_menu::State::new()))
+        .build()
+        .unwrap();
+
+    // TODO: Use setter method, pending <https://gitlab.com/azriel91/autexousious/issues/17>
+    state.intercepts = {
+        if let Some(timeout) = opt.timeout {
+            vec![
+                Box::new(FixedTimeoutIntercept::new(Duration::from_millis(timeout))),
+            ]
+        } else {
+            vec![]
+        }
+    };
+
+    let mut app = Application::build("assets", state)?
         .with_bundle(InputBundle::<String, String>::new())?
         .with_bundle(UiBundle::<String, String>::new())?
         .with_bundle(RenderBundle::new(pipe, Some(display_config)))?

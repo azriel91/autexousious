@@ -8,7 +8,9 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop
 
 [dev-dependencies]
 application = { path = "../application" }
+application_robot = { path = "../application_robot" }
 application_ui = { path = "../application_ui" }
+assert_cli = "0.5"
 derivative = "1.0"
 log = "0.4"
 rayon = "0.8"

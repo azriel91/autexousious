@@ -1,0 +1,7 @@
+[package]
+name = "debug_util_amethyst"
+version = "0.1.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+
+[dependencies]
+amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop" }

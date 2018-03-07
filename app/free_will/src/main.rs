@@ -21,6 +21,7 @@ use amethyst::ui::{DrawUi, UiBundle};
 use application::resource::dir;
 use application::resource::find_in;
 use application_input::ApplicationInputBundle;
+use application_robot::RobotStateBuilder;
 use application_ui::ApplicationUiBundle;
 use stdio_view::StdinSystem;
 use structopt::StructOpt;
@@ -33,10 +34,12 @@ struct Opt {
 }
 
 fn run(opt: &Opt) -> Result<(), amethyst::Error> {
-    let mut app_builder = Application::build(
-        dir::ASSETS,
-        application_robot::State::new(game_mode_menu::State::new()),
-    )?.with_bundle(ApplicationInputBundle::new())?
+    let state = RobotStateBuilder::default()
+        .delegate(Box::new(game_mode_menu::State::new()))
+        .build()
+        .expect("Failed to build RobotState");
+    let mut app_builder = Application::build(dir::ASSETS, state)?
+        .with_bundle(ApplicationInputBundle::new())?
         .with::<StdinSystem>(StdinSystem::new(), "StdinSystem", &[]);
 
     if !opt.headless {
