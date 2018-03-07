@@ -19,9 +19,9 @@ pub struct RobotState<S: State + Debug> {
     /// to toggle the enablement of certain `Intercept`s.
     #[builder(default = "self.default_intercepts()?")]
     #[builder(setter(skip))]
-    intercepts: Vec<Box<Intercept>>,
+    pub intercepts: Vec<Box<Intercept>>,
     /// State to delegate behaviour to.
-    delegate: Box<S>,
+    pub delegate: Box<S>,
 }
 
 impl<S: State + Debug> RobotStateBuilder<S> {
