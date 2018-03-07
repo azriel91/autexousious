@@ -7,6 +7,8 @@ use std::fmt::Debug;
 use amethyst::prelude::*;
 use amethyst::renderer::Event;
 
+// Ignore default implementation coverage.
+// kcov-ignore-start
 /// Trait for types that intercept and manipulate application behaviour.
 ///
 /// Types that implement this trait are invoked at the beginning of each [`State`][state] function
@@ -96,3 +98,4 @@ pub trait Intercept: Debug {
         None
     }
 }
+// kcov-ignore-end

@@ -10,5 +10,6 @@ derive_builder = "0.5"
 itertools = "0.7"
 
 [dev-dependencies]
+debug_util_amethyst = { path = "../debug_util_amethyst" }
 enigo = "0.0.11"
 winit = "0.10"

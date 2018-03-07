@@ -42,7 +42,7 @@ pub fn display_trans(trans: &Trans) -> &str {
         Trans::Push(..) => "Trans::Push",
         Trans::Switch(..) => "Trans::Switch",
     }
-}
+} // kcov-ignore
 
 /// Asserts that the `Trans` objects, but not their state, are equal.
 ///
@@ -127,14 +127,14 @@ mod test {
         assert_eq_trans(
             &Trans::Push(Box::new(MockState)),
             &Trans::Push(Box::new(MockState)),
-        );
+        ); // kcov-ignore
     }
 
     #[test]
     #[should_panic(expected = "Expected `Trans::None` but got `Trans::Push`.")]
     fn assert_eq_trans_panics_on_different_trans_discriminant() {
         assert_eq_trans(&Trans::None, &Trans::Push(Box::new(MockState)));
-    }
+    } // kcov-ignore
 
     struct MockState;
     impl State for MockState {}

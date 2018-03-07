@@ -8,6 +8,8 @@
 
 extern crate amethyst;
 extern crate application_input;
+#[cfg(test)]
+extern crate debug_util_amethyst;
 #[macro_use]
 extern crate derive_builder;
 #[cfg(test)]
