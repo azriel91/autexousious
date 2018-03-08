@@ -1,3 +1,5 @@
+#![windows_subsystem = "windows"]
+
 //! Opens an empty window.
 
 extern crate amethyst;
