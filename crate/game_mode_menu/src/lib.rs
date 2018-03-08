@@ -9,8 +9,11 @@ extern crate amethyst;
 extern crate application;
 extern crate application_menu;
 extern crate application_ui;
+#[cfg(test)]
+extern crate debug_util_amethyst;
 #[macro_use]
 extern crate derivative;
+extern crate game_play;
 #[macro_use]
 extern crate log;
 extern crate rayon;

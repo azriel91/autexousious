@@ -8,10 +8,12 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop
 application_menu = { path = "../application_menu" }
 application_ui = { path = "../application_ui" }
 derivative = "1.0"
+game_play = { path = "../game_play" }
 log = "0.4"
 rayon = "0.8"
 
 [dev-dependencies]
 application = { path = "../application" }
+debug_util_amethyst = { path = "../debug_util_amethyst" }
 # TODO: Remove when https://github.com/amethyst/amethyst/pull/579 is done.
 rayon-core = "1.4.0"
