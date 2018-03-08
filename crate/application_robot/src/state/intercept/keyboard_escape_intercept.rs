@@ -33,6 +33,7 @@ impl Intercept for KeyboardEscapeIntercept {
 mod test {
     use amethyst::prelude::*;
     use amethyst::renderer::{Event, WindowEvent};
+    use debug_util_amethyst::assert_eq_opt_trans;
     use enigo::{Enigo, Key, KeyboardControllable};
     use winit::{ControlFlow, EventsLoop, Window};
 
@@ -79,42 +80,27 @@ mod test {
 
         // None on Backspace key
         match_window_event(&mut events_loop, Key::Backspace, |mut event| {
-            match intercept.handle_event_begin(&mut world, &mut event) {
-                // kcov-ignore-start
-                Some(Trans::None) => Some(Err("Expected None but was Some(Trans::None)")),
-                Some(Trans::Quit) => Some(Err(
-                    "Expected None but was Some(Trans::Quit) on Backspace key",
-                )),
-                Some(Trans::Pop) => Some(Err("Expected None but was Some(Trans::Pop)")),
-                Some(Trans::Push(..)) => Some(Err("Expected None but was Some(Trans::Push(..))")),
-                Some(Trans::Switch(..)) => {
-                    Some(Err("Expected None but was Some(Trans::Switch(..))"))
-                }
-                // kcov-ignore-end
-                None => Some(Ok(())),
+            let trans = intercept.handle_event_begin(&mut world, &mut event);
+            if trans.is_none() {
+                return Some(Ok(()));
             }
+            assert_eq_opt_trans(None, trans.as_ref()); // kcov-ignore
+            unreachable!(); // kcov-ignore
         }); // kcov-ignore
 
         // Trans::Quit on Escape key
         match_window_event(&mut events_loop, Key::Escape, |mut event| {
-            match intercept.handle_event_begin(&mut world, &mut event) {
-                Some(Trans::Quit) => Some(Ok(())),
-                // kcov-ignore-start
-                Some(Trans::None) => {
-                    attempts -= 1;
-                    if attempts == 0 {
-                        Some(Err("Expected Trans::Quit but was Trans::None"))
-                    } else {
-                        None
-                    }
-                }
-                Some(Trans::Pop) => Some(Err("Expected Trans::Quit but was Trans::Pop")),
-                Some(Trans::Push(..)) => Some(Err("Expected Trans::Quit but was Trans::Push(..)")),
-                Some(Trans::Switch(..)) => {
-                    Some(Err("Expected Trans::Quit but was Trans::Switch(..)"))
-                }
-                None => Some(Err("Expected Some(Trans::Quit) but was None")), // kcov-ignore-end
+            let trans = intercept.handle_event_begin(&mut world, &mut event);
+            if let Some(Trans::Quit) = trans {
+                return Some(Ok(()));
             }
+            // kcov-ignore-start
+            attempts -= 1;
+            if attempts == 0 {
+                assert_eq_opt_trans(Some(Trans::Quit).as_ref(), trans.as_ref());
+            }
+            None
+            // kcov-ignore-end
         });
     } // kcov-ignore
 
