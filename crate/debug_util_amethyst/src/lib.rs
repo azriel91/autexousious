@@ -160,9 +160,8 @@ pub fn assert_eq_opt_trans(expected: Option<&Trans>, actual: Option<&Trans>) {
                 display_trans(expected)
             ),
         },
-        None => match actual {
-            Some(actual) => panic!("Expected `None` but got `Some({})`.", display_trans(actual)),
-            None => {}
+        None => if let Some(actual) = actual {
+            panic!("Expected `None` but got `Some({})`.", display_trans(actual));
         },
     };
 }
