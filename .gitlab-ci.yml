@@ -9,7 +9,6 @@
     paths:
       # Build dependencies (dependent crates)
       - cargo/
-      - kcov-$KCOV_VERSION
 
 # https://hub.docker.com/r/rustlang/rust/tags/
 .rust_image_nightly: &rust_image_nightly "rustlang/rust:nightly"
@@ -25,17 +24,6 @@
 
     # enigo
     libxtst-dev
-
-    # kcov
-    libcurl4-openssl-dev
-    libelf-dev
-    libdw-dev
-    cmake
-    gcc
-    binutils-dev
-    zlib1g-dev
-    libiberty-dev
-    zip
 
     # xvfb
     xvfb
@@ -97,9 +85,10 @@
 
 .job_nightly: &job_nightly
   image: *rust_image_nightly
+  tags:
+    - kcov
   variables:
     CARGO_MAKE_RUN_CODECOV: 'true'
-    KCOV_VERSION: 34
 
 .job_stable: &job_stable
   image: *rust_image_stable
@@ -172,40 +161,6 @@ nightly:build_and_test:
   <<: *job_nightly
   after_script:
     - *xvfb_start
-    # On gitlab-ci we cannot use sudo to install kcov, which ships with the default Makefile from
-    # cargo-make.
-    #
-    # We have tried overriding the kcov install_script in [tasks.coverage-kcov] in Makefile.toml,
-    # but for some reason cargo-make does not use the override. cargo-make does have tests proving
-    # that it does use overrides; maybe it's to do with workspace crates.
-    #
-    # Anyway, we install it ourselves here.
-    - |
-      # install kcov
-      command -v kcov >/dev/null 2>&1 || {
-        if [ "$(grep -Ei 'debian|buntu|mint' /etc/*release)" ]; then
-
-          # -nc is okay since we are downloading a tagged version
-          wget -nc https://github.com/SimonKagstrom/kcov/archive/v$KCOV_VERSION.zip
-          unzip -uoq v$KCOV_VERSION.zip
-
-          cd kcov-$KCOV_VERSION
-
-          build_dir='./build'
-
-          # Uncomment the next line if kcov is not building correctly
-          # rm -rf "${build_dir}"
-
-          if ! test -d "${build_dir}"; then mkdir "${build_dir}" ; fi
-          cd "${build_dir}"
-          cmake ..
-          make
-          make install
-          cd ../..
-          # Don't delete previously downloaded files
-          # rm -rf kcov-$KCOV_VERSION
-        fi
-      }
     - cargo make --no-workspace workspace-coverage
     - grep -F merged_files ./target/coverage/index.json | grep -o '"covered":"[0-9]\+\.[0-9]\+"'
   coverage: '/"covered":"\d+\.\d+"/'
