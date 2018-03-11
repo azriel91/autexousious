@@ -2,17 +2,6 @@
 # These are commonized definitions used across the stage definitions.
 # Scroll down to the `CI Stages` section for the stage definitions.
 
-.install_dependencies_compile_linux: &install_dependencies_compile_linux |
-  sudo apt update -qq
-  pkgs=(
-    # amethyst
-    libasound2-dev
-
-    # enigo
-    libxtst-dev
-  )
-  sudo apt install -y -qq "${pkgs[@]}"
-
 .print_tool_versions_linux: &print_tool_versions_linux |
   # Print tool versions
   printf "Shell:\n"
@@ -62,7 +51,7 @@ nightly:conformance:
     # CLIPPY_ENABLED: 'false'
   before_script:
     - *print_tool_versions_linux
-    - *install_dependencies_compile_linux
+    - build/install_packages_linux.sh
     - build/install_cargo_make.sh
 
     # For the `cargo --list` commands, we need to pipe stderr to /dev/null because of these issues:
@@ -110,7 +99,7 @@ linux:stable:
     RUSTUP_TOOLCHAIN: stable-x86_64-unknown-linux-gnu
   before_script:
     - *print_tool_versions_linux
-    - *install_dependencies_compile_linux
+    - build/install_packages_linux.sh
     - build/install_cargo_make.sh
   script:
     - cargo test --all --no-run
