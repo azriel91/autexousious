@@ -46,7 +46,7 @@ nightly:conformance:
     - rust
     - nightly
   variables:
-    RUST_TOOLCHAIN: nightly-x86_64-unknown-linux-gnu
+    RUSTUP_TOOLCHAIN: nightly-x86_64-unknown-linux-gnu
     # Uncomment the next line if clippy is not compatible with the latest nightly.
     # CLIPPY_ENABLED: 'false'
   before_script:
@@ -96,7 +96,7 @@ linux:stable:
     - xvfb
   variables:
     CARGO_MAKE_RUN_CODECOV: 'true'
-    RUST_TOOLCHAIN: stable-x86_64-unknown-linux-gnu
+    RUSTUP_TOOLCHAIN: stable-x86_64-unknown-linux-gnu
   before_script:
     - *print_tool_versions_linux
     - *install_dependencies_compile_linux
@@ -122,7 +122,7 @@ windows:stable:
     - rust
     - stable
   variables:
-    RUST_TOOLCHAIN: stable-x86_64-pc-windows-msvc
+    RUSTUP_TOOLCHAIN: stable-x86_64-pc-windows-msvc
   before_script:
     - cargo --version -v
     - rustc --version -v
