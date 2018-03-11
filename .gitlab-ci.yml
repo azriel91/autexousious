@@ -13,10 +13,6 @@
 # https://hub.docker.com/r/rustlang/rust/tags/
 .rust_image_nightly: &rust_image_nightly "rustlang/rust:nightly"
 
-# https://hub.docker.com/r/library/rust/tags/
-# https://github.com/rust-lang-nursery/docker-rust
-.rust_image_stable: &rust_image_stable "rust:latest"
-
 .install_dependencies_compile: &install_dependencies_compile |
   pkgs=(
     # amethyst
@@ -33,12 +29,23 @@
   )
   apt-get install -y -qq "${pkgs[@]}"
 
+.print_tool_versions_linux: &print_tool_versions_linux |
+  # Print tool versions
+  printf "Shell:\n"
+  $0 --version
+  printf "\n"
+
+  printf "Cargo:\n"
+  cargo --version -v
+  printf "\n"
+
+  printf "Rustc:\n"
+  rustc --version -v
+  printf "\n"
+
 .setup_dependencies_build: &setup_dependencies_build
   before_script:
-    - $0 --version
-    - cargo --version -v
-    - rustc --version -v
-    - cargo --list
+    - *print_tool_versions_linux
     - apt-get update -qq
     - *install_dependencies_compile
     # nightly uses this for coverage
@@ -46,10 +53,7 @@
 
 .setup_dependencies_conformance: &setup_dependencies_conformance
   before_script:
-    - $0 --version
-    - cargo --version -v
-    - rustc --version -v
-    - cargo --list
+    - *print_tool_versions_linux
     - apt-get update -qq
     - *install_dependencies_compile
     # For the `cargo --list` commands, we need to pipe stderr to /dev/null because of these issues:
@@ -89,12 +93,6 @@
     - kcov
   variables:
     CARGO_MAKE_RUN_CODECOV: 'true'
-
-.job_stable: &job_stable
-  image: *rust_image_stable
-  variables:
-    CARGO_MAKE_SKIP_CODECOV: 'true'
-    RUST_BACKTRACE: 1
 
 .job_conformance: &job_conformance
   image: *rust_image_nightly # for clippy
@@ -151,6 +149,7 @@ stages:
 
 variables:
   CARGO_HOME: $CI_PROJECT_DIR/cargo
+  RUST_BACKTRACE: 1
 
 nightly:conformance:
   <<: *stage_build_and_test_conformance
@@ -165,6 +164,18 @@ nightly:build_and_test:
     - grep -F merged_files ./target/coverage/index.json | grep -o '"covered":"[0-9]\+\.[0-9]\+"'
   coverage: '/"covered":"\d+\.\d+"/'
 
-stable:build_and_test:
-  <<: *stage_build_and_test
-  <<: *job_stable
+windows:stable:
+  stage: build_and_test
+  tags:
+    - windows
+    - rust
+    - stable
+  variables:
+    RUST_TOOLCHAIN: stable-x86_64-pc-windows-msvc
+  before_script:
+    - cargo --version -v
+    - rustc --version -v
+  script:
+    # Compile all tests before running them
+    - cargo test --all --no-run
+    - cargo test --all
