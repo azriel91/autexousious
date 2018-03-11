@@ -17,4 +17,4 @@ winit = "0.10"
 [features]
 default = []
 # Used to control compilation on CI
-ci = []
+test_ui = []

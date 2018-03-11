@@ -30,7 +30,7 @@ impl Intercept for KeyboardEscapeIntercept {
 }
 
 #[cfg(test)]
-#[cfg(not(all(windows, feature = "ci")))]
+#[cfg(all(windows, feature = "test_ui"))]
 mod test {
     use amethyst::prelude::*;
     use amethyst::renderer::{Event, WindowEvent};

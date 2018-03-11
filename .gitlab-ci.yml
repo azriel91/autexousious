@@ -2,9 +2,6 @@
 # These are commonized definitions used across the stage definitions.
 # Scroll down to the `CI Stages` section for the stage definitions.
 
-.command_build: &command_build cargo test --all --no-run --features ci
-.command_test: &command_test cargo test --all --features ci
-
 .install_dependencies_compile_linux: &install_dependencies_compile_linux |
   sudo apt update -qq
   pkgs=(
@@ -116,9 +113,9 @@ linux:stable:
     - *install_dependencies_compile_linux
     - build/install_cargo_make.sh
   script:
-    - *command_build
+    - cargo test --all --no-run
     - source xvfb_start
-    - *command_test
+    - cargo test --all
   after_script:
     - cargo make --no-workspace workspace-coverage
     - source xvfb_stop
@@ -137,5 +134,5 @@ windows:stable:
     - cargo --version -v
     - rustc --version -v
   script:
-    - *command_build
-    - *command_test
+    - cargo test --all --no-run
+    - cargo test --all
