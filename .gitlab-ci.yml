@@ -10,22 +10,14 @@
       # Build dependencies (dependent crates)
       - cargo/
 
-# https://hub.docker.com/r/rustlang/rust/tags/
-.rust_image_nightly: &rust_image_nightly "rustlang/rust:nightly"
-
-.install_dependencies_compile: &install_dependencies_compile |
+.install_dependencies_compile_linux: &install_dependencies_compile_linux |
+  apt-get update -qq
   pkgs=(
     # amethyst
     libasound2-dev
 
     # enigo
     libxtst-dev
-
-    # xvfb
-    xvfb
-    libgl1-mesa-dev
-    libgl1-mesa-glx
-    mesa-utils
   )
   apt-get install -y -qq "${pkgs[@]}"
 
@@ -43,25 +35,39 @@
   rustc --version -v
   printf "\n"
 
-.setup_dependencies_build: &setup_dependencies_build
+# === CI Stages === #
+
+# Unfortunately we are not able to split `build` and `test` phases -- when we do, the `test` Gitlab
+# CI runner is slightly different to the `build` runner, so the artifacts compiled in the `build`
+# phase aren't used, and Rust attempts to recompile them in the test phase.
+stages:
+  - build_and_test
+
+variables:
+  CARGO_HOME: $CI_PROJECT_DIR/cargo
+  RUST_BACKTRACE: 1
+
+nightly:conformance:
+  stage: build_and_test # piggy backing so that it runs in parallel
+  tags:
+    - kcov
+    - linux
+    - rust
+    - nightly
+  variables:
+    RUST_TOOLCHAIN: nightly-x86_64-unknown-linux-gnu
+    # Uncomment the next line if clippy is not compatible with the latest nightly.
+    # CLIPPY_ENABLED: 'false'
+  <<: *cache_build_and_test
   before_script:
     - *print_tool_versions_linux
-    - apt-get update -qq
-    - *install_dependencies_compile
-    # nightly uses this for coverage
+    - *install_dependencies_compile_linux
     - build/install_cargo_make.sh
 
-.setup_dependencies_conformance: &setup_dependencies_conformance
-  before_script:
-    - *print_tool_versions_linux
-    - apt-get update -qq
-    - *install_dependencies_compile
     # For the `cargo --list` commands, we need to pipe stderr to /dev/null because of these issues:
     #
     # * https://github.com/sfackler/cargo-tree/issues/25
     # * https://github.com/rust-lang/rust/issues/46016
-    - build/install_cargo_make.sh
-
     # Automated crate security audit
     - |
       # Install cargo-audit
@@ -83,84 +89,40 @@
       # Install rustfmt and clippy
 
       # Needed for gitlab-ci
-      export USER=build
+      test -z "${USER}" && export USER=build
       build/install_rustfmt.sh
       build/install_clippy.sh
+  script:
+    # Code quality, security vulnerability checks, license compatibility
+    - cargo make --no-workspace conformance
 
-.job_nightly: &job_nightly
-  image: *rust_image_nightly
+linux:stable:
+  stage: build_and_test
   tags:
     - kcov
+    - linux
+    - rust
+    - stable
+    - xvfb
   variables:
     CARGO_MAKE_RUN_CODECOV: 'true'
-
-.job_conformance: &job_conformance
-  image: *rust_image_nightly # for clippy
-  variables:
-    CARGO_MAKE_SKIP_CODECOV: 'true'
-    # Uncomment the next line if clippy is not compatible with the latest nightly.
-    # CLIPPY_ENABLED: 'false'
-
-.xvfb_start: &xvfb_start |
-  # Start XVFB
-  export DISPLAY=:99.0
-  /sbin/start-stop-daemon --start \
-                          --quiet \
-                          --pidfile /tmp/custom_xvfb_99.pid \
-                          --make-pidfile \
-                          --background \
-                          --exec /usr/bin/Xvfb \
-                          -- \
-                          :99 \
-                          -screen 0 1280x1024x24+32 \
-                          -pixdepths 3 27 32 \
-                          -ac \
-                          +extension GLX \
-                          +render \
-                          -noreset
-
-.stage_build_and_test: &stage_build_and_test
-  stage: build_and_test
-  <<: *setup_dependencies_build
+    RUST_TOOLCHAIN: stable-x86_64-unknown-linux-gnu
   <<: *cache_build_and_test
+  before_script:
+    - *print_tool_versions_linux
+    - *install_dependencies_compile_linux
+    - build/install_cargo_make.sh
   script:
     # Compile all tests before running them
     - cargo test --all --no-run
 
     # Start XVFB and run tests
-    - *xvfb_start
+    - source xvfb_start
     - cargo test --all
 
-.stage_build_and_test_conformance: &stage_build_and_test_conformance
-  stage: build_and_test # piggy backing so that it runs in parallel
-  <<: *setup_dependencies_conformance
-  <<: *cache_build_and_test
-  script:
-    # Code quality, security vulnerability checks, license compatibility
-    - cargo make --no-workspace conformance
-
-# === CI Stages === #
-
-# Unfortunately we are not able to split `build` and `test` phases -- when we do, the `test` Gitlab
-# CI runner is slightly different to the `build` runner, so the artifacts compiled in the `build`
-# phase aren't used, and Rust attempts to recompile them in the test phase.
-stages:
-  - build_and_test
-
-variables:
-  CARGO_HOME: $CI_PROJECT_DIR/cargo
-  RUST_BACKTRACE: 1
-
-nightly:conformance:
-  <<: *stage_build_and_test_conformance
-  <<: *job_conformance
-
-nightly:build_and_test:
-  <<: *stage_build_and_test
-  <<: *job_nightly
   after_script:
-    - *xvfb_start
     - cargo make --no-workspace workspace-coverage
+    - source xvfb_stop
     - grep -F merged_files ./target/coverage/index.json | grep -o '"covered":"[0-9]\+\.[0-9]\+"'
   coverage: '/"covered":"\d+\.\d+"/'
 
