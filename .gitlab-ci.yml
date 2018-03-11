@@ -3,7 +3,7 @@
 # Scroll down to the `CI Stages` section for the stage definitions.
 
 .install_dependencies_compile_linux: &install_dependencies_compile_linux |
-  apt-get update -qq
+  sudo apt update -qq
   pkgs=(
     # amethyst
     libasound2-dev
@@ -11,7 +11,7 @@
     # enigo
     libxtst-dev
   )
-  apt-get install -y -qq "${pkgs[@]}"
+  sudo apt install -y -qq "${pkgs[@]}"
 
 .print_tool_versions_linux: &print_tool_versions_linux |
   # Print tool versions
