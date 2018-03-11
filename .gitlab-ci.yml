@@ -2,14 +2,6 @@
 # These are commonized definitions used across the stage definitions.
 # Scroll down to the `CI Stages` section for the stage definitions.
 
-.cache_build_and_test: &cache_build_and_test
-  cache:
-    key: "$CI_JOB_NAME"
-    # We don't cache target/ as well because old binaries interfere with coverage
-    paths:
-      # Build dependencies (dependent crates)
-      - cargo/
-
 .install_dependencies_compile_linux: &install_dependencies_compile_linux |
   apt-get update -qq
   pkgs=(
@@ -44,7 +36,6 @@ stages:
   - build_and_test
 
 variables:
-  CARGO_HOME: $CI_PROJECT_DIR/cargo
   RUST_BACKTRACE: 1
 
 nightly:conformance:
@@ -58,7 +49,6 @@ nightly:conformance:
     RUST_TOOLCHAIN: nightly-x86_64-unknown-linux-gnu
     # Uncomment the next line if clippy is not compatible with the latest nightly.
     # CLIPPY_ENABLED: 'false'
-  <<: *cache_build_and_test
   before_script:
     - *print_tool_versions_linux
     - *install_dependencies_compile_linux
@@ -107,7 +97,6 @@ linux:stable:
   variables:
     CARGO_MAKE_RUN_CODECOV: 'true'
     RUST_TOOLCHAIN: stable-x86_64-unknown-linux-gnu
-  <<: *cache_build_and_test
   before_script:
     - *print_tool_versions_linux
     - *install_dependencies_compile_linux
