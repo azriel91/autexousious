@@ -13,3 +13,8 @@ itertools = "0.7"
 debug_util_amethyst = { path = "../debug_util_amethyst" }
 enigo = "0.0.11"
 winit = "0.10"
+
+[features]
+default = []
+# Used to control compilation on CI
+ci = []
