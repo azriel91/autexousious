@@ -36,6 +36,17 @@ stages:
   - build_and_test
 
 variables:
+  # If we do not override `CARGO_HOME`, we must ensure that ALL projects that use the Gitlab runners
+  # do not request different versions of tooling, otherwise we run into concurrency issues.
+  # Also, we are not able to set it at the this level since we have a Windows runner which does not
+  # use the `$VAR` syntax, but `%VAR%`.
+  #
+  # Furthermore, there is an open bug in Gitlab that Windows is unable to use CI environment
+  # variables in .gitlab-ci.yml:
+  #
+  # See <https://gitlab.com/gitlab-org/gitlab-ce/issues/43337>
+  # ---
+  # CARGO_HOME: $CI_PROJECT_DIR/cargo
   RUST_BACKTRACE: 1
 
 nightly:conformance:
