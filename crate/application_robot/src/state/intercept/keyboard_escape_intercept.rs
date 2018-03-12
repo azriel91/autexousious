@@ -30,6 +30,7 @@ impl Intercept for KeyboardEscapeIntercept {
 }
 
 #[cfg(test)]
+#[cfg(all(windows, feature = "test_ui"))]
 mod test {
     use amethyst::prelude::*;
     use amethyst::renderer::{Event, WindowEvent};
@@ -69,6 +70,9 @@ mod test {
     /// On Ubuntu 17.10, the window that starts up during the test does not get destroyed until
     /// after the entire test executable ends, even if you `drop(window)` and `drop(events_loop)`.
     /// This may be a symptom of the problem.
+    ///
+    /// On Windows, this test works if run interactively. However it does not when run through a
+    /// Gitlab CI runner.
     #[test]
     fn handle_event_begin_returns_correct_transition_on_keyboard_input() {
         let (mut intercept, mut world) = setup();
