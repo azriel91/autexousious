@@ -151,7 +151,9 @@ mod test {
                 find("test__find_config.ron").unwrap_err().kind()
             {
                 let mut base_dirs = vec![exe_dir()];
-                base_dirs.append(&mut development_base_dirs!());
+                if cfg!(debug_assertions) {
+                    base_dirs.push(development_base_dirs!());
+                }
                 let expected = FindContext {
                     base_dirs,
                     conf_dir: PathBuf::from(""),
@@ -177,7 +179,9 @@ mod test {
 
             if let &ErrorKind::Find(ref find_context) = find_result.unwrap_err().kind() {
                 let mut base_dirs = vec![exe_dir()];
-                base_dirs.append(&mut development_base_dirs!());
+                if cfg!(debug_assertions) {
+                    base_dirs.push(development_base_dirs!());
+                }
                 let expected = FindContext {
                     base_dirs,
                     conf_dir: PathBuf::from(""),
