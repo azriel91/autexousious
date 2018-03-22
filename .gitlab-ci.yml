@@ -163,7 +163,8 @@ linux:publish:
     - metadata="$(cargo metadata --format-version 1 --no-deps --manifest-path app/${app}/Cargo.toml)"
     - version="$(echo "${metadata}" | jq -s ".[0].packages[] | select(.name == \"${app}\") | .version")"
     # Currently just echo. We will actually publish when the windows job is ready
-    - echo butler push \
+    - >
+      echo butler push \
         "target/publish/app/${app}" \
         "${ITCH_IO_USER}/${app}:${CHANNEL}" \
         --userversion "${version}" \
