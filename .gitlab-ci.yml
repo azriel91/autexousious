@@ -23,6 +23,7 @@
 # phase aren't used, and Rust attempts to recompile them in the test phase.
 stages:
   - build_and_test
+  - publish
 
 variables:
   # If we do not override `CARGO_HOME`, we must ensure that ALL projects that use the Gitlab runners
@@ -106,11 +107,18 @@ linux:stable:
     - source xvfb_start
     - cargo test --all
     - source xvfb_stop
+    - ./build/publish_prepare_app.sh
   after_script:
     - source xvfb_start
     - cargo make --no-workspace workspace-coverage
     - source xvfb_stop
     - grep -F merged_files ./target/coverage/index.json | grep -o '"covered":"[0-9]\+\.[0-9]\+"'
+  artifacts:
+    name: linux-x86_64
+    when: on_success
+    paths:
+    - target/publish
+    expire_in: 1 week
   coverage: '/"covered":"\d+\.\d+"/'
 
 windows:stable:
@@ -127,3 +135,33 @@ windows:stable:
   script:
     - cargo test --all --no-run
     - cargo test --all
+
+linux:publish:
+  stage: publish
+  tags:
+    - linux
+    - rust
+    - stable
+  dependencies: ["linux:stable"]
+  variables:
+    ITCH_IO_USER: azriel91
+    CHANNEL: linux-x86_64
+  script:
+    # Publish `will`
+    - app=will
+    - metadata="$(cargo metadata --format-version 1 --no-deps --manifest-path app/${app}/Cargo.toml)"
+    - version="$(echo "${metadata}" | jq -s ".[0].packages[] | select(.name == \"${app}\") | .version")"
+    # Currently just echo. We will actually publish when the windows job is ready
+    - echo butler push \
+        "target/publish/app/${app}" \
+        "${ITCH_IO_USER}/${app}:${CHANNEL}" \
+        --userversion "${version}" \
+        --if-changed
+  # artifacts:
+  #   name: linux-x86_64
+  #   when: on_success
+  #   paths:
+  #   - target/publish
+  #   expire_in: 1 week
+  # only:
+  #   - tags
