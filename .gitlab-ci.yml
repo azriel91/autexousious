@@ -87,7 +87,7 @@ nightly:conformance:
     # Code quality, security vulnerability checks, license compatibility
     - cargo make --no-workspace conformance
 
-linux:stable:
+.linux_job_common: &linux_job_common
   stage: build_and_test
   tags:
     - kcov
@@ -102,24 +102,35 @@ linux:stable:
     - *print_tool_versions_linux
     - build/install_packages_linux.sh
     - build/install_cargo_make.sh
-  script:
-    - cargo test --all --no-run
-    - source xvfb_start
-    - cargo test --all
-    - source xvfb_stop
-    - ./build/publish_prepare_app.sh
   after_script:
     - source xvfb_start
     - cargo make --no-workspace workspace-coverage
     - source xvfb_stop
     - grep -F merged_files ./target/coverage/index.json | grep -o '"covered":"[0-9]\+\.[0-9]\+"'
+  coverage: '/"covered":"\d+\.\d+"/'
+
+linux:debug:
+  <<: *linux_job_common
+  script:
+    - cargo test --all --no-run
+    - source xvfb_start
+    - cargo test --all
+    - source xvfb_stop
+
+linux:release:
+  <<: *linux_job_common
+  script:
+    - cargo test --all --release --no-run
+    - source xvfb_start
+    - cargo test --all --release
+    - source xvfb_stop
+    - ./build/publish_prepare_app.sh
   artifacts:
     name: linux-x86_64
     when: on_success
     paths:
     - target/publish
     expire_in: 1 week
-  coverage: '/"covered":"\d+\.\d+"/'
 
 windows:stable:
   stage: build_and_test
@@ -142,7 +153,7 @@ linux:publish:
     - linux
     - rust
     - stable
-  dependencies: ["linux:stable"]
+  dependencies: ["linux:release"]
   variables:
     ITCH_IO_USER: azriel91
     CHANNEL: linux-x86_64
