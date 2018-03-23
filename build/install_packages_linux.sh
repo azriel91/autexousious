@@ -6,6 +6,9 @@ pkgs_desired=(
 
   # enigo
   libxtst-dev
+
+  # publishing
+  jq
 )
 
 # `apt_install` can be found at:

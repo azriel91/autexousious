@@ -23,6 +23,7 @@
 # phase aren't used, and Rust attempts to recompile them in the test phase.
 stages:
   - build_and_test
+  - publish
 
 variables:
   # If we do not override `CARGO_HOME`, we must ensure that ALL projects that use the Gitlab runners
@@ -86,7 +87,7 @@ nightly:conformance:
     # Code quality, security vulnerability checks, license compatibility
     - cargo make --no-workspace conformance
 
-linux:stable:
+.linux_job_common: &linux_job_common
   stage: build_and_test
   tags:
     - kcov
@@ -101,6 +102,9 @@ linux:stable:
     - *print_tool_versions_linux
     - build/install_packages_linux.sh
     - build/install_cargo_make.sh
+
+linux:debug:
+  <<: *linux_job_common
   script:
     - cargo test --all --no-run
     - source xvfb_start
@@ -113,7 +117,22 @@ linux:stable:
     - grep -F merged_files ./target/coverage/index.json | grep -o '"covered":"[0-9]\+\.[0-9]\+"'
   coverage: '/"covered":"\d+\.\d+"/'
 
-windows:stable:
+linux:release:
+  <<: *linux_job_common
+  script:
+    - cargo test --all --release --no-run
+    - source xvfb_start
+    - cargo test --all --release
+    - source xvfb_stop
+    - ./build/publish_prepare_app.sh
+  artifacts:
+    name: linux-x86_64
+    when: on_success
+    paths:
+    - target/publish
+    expire_in: 1 week
+
+.windows_job_common: &windows_job_common
   stage: build_and_test
   tags:
     - windows
@@ -124,6 +143,75 @@ windows:stable:
   before_script:
     - cargo --version -v
     - rustc --version -v
+
+windows:debug:
+  <<: *windows_job_common
   script:
     - cargo test --all --no-run
     - cargo test --all
+
+windows:release:
+  <<: *windows_job_common
+  script:
+    - cargo test --all --release --no-run
+    - cargo test --all --release
+    - .\build\publish_prepare_app.bat
+  artifacts:
+    name: windows-x86_64
+    when: on_success
+    paths:
+    - target/publish
+    expire_in: 1 week
+
+linux:publish:
+  stage: publish
+  tags:
+    - linux
+    - rust
+    - stable
+  dependencies: ["linux:release"]
+  variables:
+    ITCH_IO_USER: azriel91
+    CHANNEL: linux-x86_64
+  script:
+    # Publish `will`
+    - app=will
+    - metadata="$(cargo metadata --format-version 1 --no-deps --manifest-path app/${app}/Cargo.toml)"
+    - version="$(echo "${metadata}" | jq -s ".[0].packages[] | select(.name == \"${app}\") | .version")"
+    # Currently just echo. We will actually publish when the windows job is ready
+    - >
+      echo butler push \
+        "target/publish/app/${app}" \
+        "${ITCH_IO_USER}/${app}:${CHANNEL}" \
+        --userversion "${version}" \
+        --if-changed
+  artifacts:
+    name: linux-x86_64
+    when: on_success
+    paths:
+    - target/publish
+    expire_in: 1 week
+  only:
+    - tags
+
+windows:publish:
+  stage: publish
+  tags:
+    - windows
+    - rust
+    - stable
+  dependencies: ["windows:release"]
+  variables:
+    ITCH_IO_USER: azriel91
+    CHANNEL: windows-x86_64
+  script:
+    # Publish `will`
+    - .\build\publish_butler_push.bat
+  artifacts:
+    name: windows-x86_64
+    when: on_success
+    paths:
+    - target/publish
+    expire_in: 1 week
+  only:
+    - tags
