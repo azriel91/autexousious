@@ -4,6 +4,9 @@
 
 setlocal enableDelayedExpansion
 
+:: Provides additional executables such as `find` and `xcopy`.
+set "path=%path%;C:\WINDOWS\system32"
+
 :: Release options
 set profile=release
 
@@ -73,7 +76,7 @@ exit /b
   setlocal enableDelayedExpansion
   set "file=%~2"
   set "abs_path=%file%"
-  for /f "tokens=2 delims=[]" %%i in ('dir %file%* ^| C:\WINDOWS\system32\find "<SYMLINK"') do (
+  for /f "tokens=2 delims=[]" %%i in ('dir %file%* ^| find "<SYMLINK"') do (
     call :dirname parent_dir "%file%"
     pushd "!parent_dir!"
     pushd "%%i"
