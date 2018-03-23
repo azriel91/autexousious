@@ -18,8 +18,7 @@ if errorlevel 1 (
 
 echo Parsed version from "app/%app%/Cargo.toml": !version!
 
-:: Currently just echo. We will actually publish when we're more confident we have this right.
-echo butler push ^
+butler push ^
   "target\publish\app\%app%" ^
   "%ITCH_IO_USER%/%app%:%CHANNEL%" ^
   --userversion !version! ^
