@@ -132,7 +132,7 @@ linux:release:
     - target/publish
     expire_in: 1 week
 
-windows:stable:
+.windows_job_common: &windows_job_common
   stage: build_and_test
   tags:
     - windows
@@ -143,9 +143,25 @@ windows:stable:
   before_script:
     - cargo --version -v
     - rustc --version -v
+
+windows:debug:
+  <<: *windows_job_common
   script:
     - cargo test --all --no-run
     - cargo test --all
+
+windows:release:
+  <<: *windows_job_common
+  script:
+    - cargo test --all --release --no-run
+    - cargo test --all --release
+    - .\build\publish_prepare_app.bat
+  artifacts:
+    name: windows-x86_64
+    when: on_success
+    paths:
+    - target/publish
+    expire_in: 1 week
 
 linux:publish:
   stage: publish
@@ -171,6 +187,28 @@ linux:publish:
         --if-changed
   # artifacts:
   #   name: linux-x86_64
+  #   when: on_success
+  #   paths:
+  #   - target/publish
+  #   expire_in: 1 week
+  # only:
+  #   - tags
+
+windows:publish:
+  stage: publish
+  tags:
+    - windows
+    - rust
+    - stable
+  dependencies: ["windows:release"]
+  variables:
+    ITCH_IO_USER: azriel91
+    CHANNEL: windows-x86_64
+  script:
+    # Publish `will`
+    - .\build\publish_butler_push.bat
+  # artifacts:
+  #   name: windows-x86_64
   #   when: on_success
   #   paths:
   #   - target/publish
