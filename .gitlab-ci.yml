@@ -185,14 +185,14 @@ linux:publish:
         "${ITCH_IO_USER}/${app}:${CHANNEL}" \
         --userversion "${version}" \
         --if-changed
-  # artifacts:
-  #   name: linux-x86_64
-  #   when: on_success
-  #   paths:
-  #   - target/publish
-  #   expire_in: 1 week
-  # only:
-  #   - tags
+  artifacts:
+    name: linux-x86_64
+    when: on_success
+    paths:
+    - target/publish
+    expire_in: 1 week
+  only:
+    - tags
 
 windows:publish:
   stage: publish
@@ -207,11 +207,11 @@ windows:publish:
   script:
     # Publish `will`
     - .\build\publish_butler_push.bat
-  # artifacts:
-  #   name: windows-x86_64
-  #   when: on_success
-  #   paths:
-  #   - target/publish
-  #   expire_in: 1 week
-  # only:
-  #   - tags
+  artifacts:
+    name: windows-x86_64
+    when: on_success
+    paths:
+    - target/publish
+    expire_in: 1 week
+  only:
+    - tags
