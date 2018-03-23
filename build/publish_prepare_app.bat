@@ -1,6 +1,9 @@
 @echo off
 
 :: `CMD` syntax: <https://ss64.com/nt/>
+::
+:: WARNING: This script's exit code doesn't work properly, so it may exit with 0 even if you run:
+:: `exit /b 1`.
 
 setlocal enableDelayedExpansion
 
@@ -55,12 +58,12 @@ for /L %%i in (%artifacts_first_index%,1,%artifacts_last_index%) do (
   set "f=!app_publish_artifacts[%%i]!"
   for /r %%f in (!f!) do (set "f_basename=%%~nxf")
   echo F | xcopy /S /I /Y /F "!f!" "%target_publish_app_dir%\!f_basename!"
-  if !errorlevel! neq 0 exit /b !errorlevel!
+  if errorlevel 1 exit /b 1
   endlocal
 )
 
 endlocal
-exit /b 0
+exit /b
 
 :dirname
   setlocal

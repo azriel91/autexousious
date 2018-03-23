@@ -11,7 +11,7 @@ for /f "skip=2 delims== tokens=2" %%i in (
     set version=!version:~1!
 )
 
-if %errorlevel% neq 0 (
+if errorlevel 1 (
   echo Failed to parse version from app/%app%/Cargo.toml
   exit /b %errorlevel%
 )
@@ -24,6 +24,11 @@ echo butler push ^
   "%ITCH_IO_USER%/%app%:%CHANNEL%" ^
   --userversion !version! ^
   --if-changed
+
+if errorlevel 1 (
+  echo Failed to push to butler
+  exit /b 1
+)
 
 endlocal
 
