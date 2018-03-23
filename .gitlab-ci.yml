@@ -102,12 +102,6 @@ nightly:conformance:
     - *print_tool_versions_linux
     - build/install_packages_linux.sh
     - build/install_cargo_make.sh
-  after_script:
-    - source xvfb_start
-    - cargo make --no-workspace workspace-coverage
-    - source xvfb_stop
-    - grep -F merged_files ./target/coverage/index.json | grep -o '"covered":"[0-9]\+\.[0-9]\+"'
-  coverage: '/"covered":"\d+\.\d+"/'
 
 linux:debug:
   <<: *linux_job_common
@@ -116,6 +110,12 @@ linux:debug:
     - source xvfb_start
     - cargo test --all
     - source xvfb_stop
+  after_script:
+    - source xvfb_start
+    - cargo make --no-workspace workspace-coverage
+    - source xvfb_stop
+    - grep -F merged_files ./target/coverage/index.json | grep -o '"covered":"[0-9]\+\.[0-9]\+"'
+  coverage: '/"covered":"\d+\.\d+"/'
 
 linux:release:
   <<: *linux_job_common
