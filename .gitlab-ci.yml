@@ -47,7 +47,7 @@ nightly:conformance:
     - rust
     - nightly
   variables:
-    RUSTUP_TOOLCHAIN: nightly-2018-03-16-x86_64-unknown-linux-gnu
+    RUSTUP_TOOLCHAIN: nightly-x86_64-unknown-linux-gnu
     # Uncomment the next line if clippy is not compatible with the latest nightly.
     # CLIPPY_ENABLED: 'false'
   before_script:
