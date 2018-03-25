@@ -26,3 +26,71 @@ if cargo license | grep -qi '\bGPL\b'; then
 fi
 '''
 ]
+
+[tasks.maintain]
+description = '''
+Performs the following code maintenance tasks:
+
+* Format code: `cargo fmt --all`
+* Update dependencies: `cargo update`
+'''
+dependencies = [
+    "workspace-format",
+    "workspace-dependencies-update"
+]
+
+# === workspace-format === #
+
+[tasks.workspace-format]
+dependencies = [
+    "workspace-format-pre",
+    "workspace-format-do",
+    "workspace-format-post"
+]
+
+[tasks.workspace-format-pre]
+dependencies = ["ensure-repository-clean"]
+
+[tasks.workspace-format-do]
+command = "cargo"
+args = ["fmt", "--all"]
+
+[tasks.workspace-format-post]
+condition_script = ["[ -n \"$(git status --porcelain)\" ]"]
+script = ["git commit -am 'Format repository with Rustfmt.'"]
+
+# === workspace-dependencies-update === #
+
+[tasks.workspace-dependencies-update]
+dependencies = [
+    "workspace-dependencies-update-pre",
+    "workspace-dependencies-update-do",
+    "workspace-dependencies-update-post"
+]
+
+[tasks.workspace-dependencies-update-pre]
+dependencies = ["ensure-repository-clean"]
+
+[tasks.workspace-dependencies-update-do]
+command = "cargo"
+args = ["update"]
+
+[tasks.workspace-dependencies-update-post]
+condition_script = ["[ -n \"$(git status --porcelain)\" ]"]
+script = [
+    "git commit -am 'Upgraded workspace dependencies'",
+    "echo Remember to run \\`cargo test\\` before pushing."
+]
+
+# === common === #
+
+[tasks.ensure-repository-clean]
+script = [
+'''
+[ -z "$(git status --porcelain)" ] || (
+    echo "ERROR: Ensure the workspace is clean before running this task" 1>&2
+    exit 1
+)
+exit $?
+'''
+]
