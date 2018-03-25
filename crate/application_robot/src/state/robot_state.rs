@@ -2,11 +2,11 @@ use std::fmt::Debug;
 
 use amethyst::prelude::*;
 use amethyst::renderer::Event;
-use itertools::Itertools;
 use itertools::FoldWhile::{Continue, Done};
+use itertools::Itertools;
 
-use state::intercept::ApplicationEventIntercept;
 use state::Intercept;
+use state::intercept::ApplicationEventIntercept;
 
 /// Wraps a delegate state with automation capabilities.
 #[derive(Builder, Debug)]
@@ -181,8 +181,8 @@ mod test {
     use enigo::{Enigo, Key, KeyboardControllable};
     use winit::{ControlFlow, EventsLoop, Window};
 
-    use state::Intercept;
     use super::{RobotState, RobotStateBuilder};
+    use state::Intercept;
 
     fn setup(
         invocations: Rc<RefCell<Vec<Invocation>>>,
@@ -277,19 +277,16 @@ mod test {
 
     #[macro_use]
     macro_rules! delegate_test {
-        ($test_name:ident, $function:ident, $invocation:expr) => {
+        ($test_name: ident, $function: ident, $invocation: expr) => {
             #[test]
             fn $test_name() {
                 let (mut state, mut world) = setup_without_intercepts();
 
                 state.$function(&mut world);
 
-                assert_eq!(
-                    vec![$invocation],
-                    *state.delegate.invocations.borrow()
-                );
+                assert_eq!(vec![$invocation], *state.delegate.invocations.borrow());
             }
-        }
+        };
     }
 
     #[macro_use]

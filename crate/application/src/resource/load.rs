@@ -1,13 +1,13 @@
-use std::path::{Path, PathBuf};
 use std::ffi;
 use std::fs::File;
+use std::path::{Path, PathBuf};
 
 use ron::de::from_reader;
 use serde::Deserialize;
 
+use resource::error::Result;
 use resource::find::{find, find_in};
 use resource::format::Format;
-use resource::error::Result;
 
 /// Loads and returns the data from the specified file.
 ///
@@ -64,11 +64,11 @@ mod test {
     use ron;
     use ron::de::ParseError;
 
+    use super::{load, load_in};
     use resource::dir;
     use resource::error::ErrorKind;
     use resource::test_support::{exe_dir, setup_temp_file};
     use resource::{FindContext, Format};
-    use super::{load, load_in};
 
     test_mutex!();
 

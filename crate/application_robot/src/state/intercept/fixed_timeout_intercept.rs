@@ -69,8 +69,8 @@ mod test {
     use amethyst::prelude::*;
     use debug_util_amethyst::assert_eq_opt_trans;
 
-    use state::Intercept;
     use super::FixedTimeoutIntercept;
+    use state::Intercept;
 
     fn setup(timeout: Duration) -> (FixedTimeoutIntercept, World) {
         let world = World::new();

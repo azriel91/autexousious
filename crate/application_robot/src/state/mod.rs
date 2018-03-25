@@ -1,7 +1,7 @@
 //! Provides support for programmatic `State` tracking and manipulation.
 
-pub use self::robot_state::{RobotState, RobotStateBuilder};
 pub use self::intercept::{ApplicationEventIntercept, FixedTimeoutIntercept, Intercept};
+pub use self::robot_state::{RobotState, RobotStateBuilder};
 
-mod robot_state;
 mod intercept;
+mod robot_state;

@@ -60,8 +60,8 @@ mod test {
     use rayon::ThreadPool;
     use rayon_core::ThreadPoolBuilder;
 
-    use index::Index;
     use super::UiEventHandlerSystem;
+    use index::Index;
 
     fn setup() -> (
         ParSeq<Arc<ThreadPool>, UiEventHandlerSystem>,
