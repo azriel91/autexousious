@@ -54,8 +54,14 @@ dependencies = [
 dependencies = ["ensure-repository-clean"]
 
 [tasks.workspace-format-do]
-command = "cargo"
-args = ["fmt", "--all"]
+script = [
+'''
+set +x
+. ./build/log.sh
+notice "Running \`cargo fmt --all\`"
+cargo fmt --all
+'''
+]
 
 [tasks.workspace-format-post]
 script = [
@@ -83,8 +89,14 @@ dependencies = [
 dependencies = ["ensure-repository-clean"]
 
 [tasks.workspace-dependencies-update-do]
-command = "cargo"
-args = ["update"]
+script = [
+'''
+set +x
+. ./build/log.sh
+notice "Running \`cargo update\`"
+cargo update
+'''
+]
 
 [tasks.workspace-dependencies-update-post]
 script = [
@@ -95,7 +107,7 @@ set +x
 if [ -n "$(git status --porcelain)" ]; then
     git commit -am "Upgraded workspace dependencies"
     notice "Upgraded workspace dependencies and committed changes."
-    info "Remember to run \\`cargo test\\` before pushing."
+    info "Remember to run \`cargo test\` before pushing."
 fi
 '''
 ]
@@ -118,6 +130,7 @@ script = [
 '''
 set +x
 . ./build/log.sh
+notice "Running \`cargo outdated -w --root-deps-only --exit-code 1\`"
 if ! cargo outdated -w --root-deps-only --exit-code 1; then
     warn "There are outdated dependencies. Please upgrade them as soon as possible."
 fi
