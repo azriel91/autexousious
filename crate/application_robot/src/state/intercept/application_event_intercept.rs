@@ -68,8 +68,8 @@ mod test {
     use amethyst::shrev::EventChannel;
     use application_input::ApplicationEvent;
 
-    use state::Intercept;
     use super::ApplicationEventIntercept;
+    use state::Intercept;
 
     fn setup() -> (ApplicationEventIntercept, World) {
         let mut world = World::new();

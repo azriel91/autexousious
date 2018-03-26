@@ -36,5 +36,5 @@ extern crate amethyst;
 pub use bundle::ApplicationInputBundle;
 pub use event::ApplicationEvent;
 
-mod event;
 mod bundle;
+mod event;

@@ -26,8 +26,8 @@ mod test {
     use amethyst::ecs::{DispatcherBuilder, World};
     use application_menu::MenuItem;
 
-    use index::Index;
     use super::Bundle;
+    use index::Index;
 
     #[test]
     fn build_adds_application_event_channel_to_world() {

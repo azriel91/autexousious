@@ -1,8 +1,8 @@
 use std::io;
 
 use amethyst;
-use amethyst::core;
 use amethyst::config::ConfigError;
+use amethyst::core;
 use error_chain;
 use ron;
 

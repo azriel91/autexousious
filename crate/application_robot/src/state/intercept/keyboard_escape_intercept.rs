@@ -38,8 +38,8 @@ mod test {
     use enigo::{Enigo, Key, KeyboardControllable};
     use winit::{ControlFlow, EventsLoop, Window};
 
-    use state::Intercept;
     use super::KeyboardEscapeIntercept;
+    use state::Intercept;
 
     fn setup() -> (KeyboardEscapeIntercept, World) {
         (KeyboardEscapeIntercept, World::new())

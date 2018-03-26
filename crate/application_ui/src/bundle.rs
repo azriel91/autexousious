@@ -86,13 +86,13 @@ impl<'a, 'b> ECSBundle<'a, 'b> for ApplicationUiBundle {
 
 #[cfg(test)]
 mod test {
+    use amethyst::Result;
     use amethyst::input::InputBundle;
     use amethyst::prelude::*;
-    use amethyst::Result;
     use amethyst::ui::{FontHandle, UiBundle};
 
-    use font_variant::FontVariant;
     use super::ApplicationUiBundle;
+    use font_variant::FontVariant;
 
     fn setup<'a, 'b>(application_ui_bundle: ApplicationUiBundle) -> Result<Application<'a, 'b>> {
         // We need to instantiate an amethyst::Application because:

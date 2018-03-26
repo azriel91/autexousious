@@ -135,17 +135,17 @@ mod test {
     use std::mem::discriminant;
     use std::sync::Arc;
 
+    use amethyst::State as AmethystState;
     use amethyst::ecs::World;
     use amethyst::prelude::*;
     use amethyst::shrev::EventChannel;
-    use amethyst::State as AmethystState;
     use amethyst::ui::UiEvent;
     use application_menu::{MenuEvent, MenuItem};
     use rayon_core::ThreadPoolBuilder;
 
-    use menu_build_fn::MenuBuildFn;
-    use index::Index;
     use super::State;
+    use index::Index;
+    use menu_build_fn::MenuBuildFn;
 
     fn setup() -> (State, World) {
         setup_with_menu_items(MenuBuildFn(Box::new(|_, _| {})))

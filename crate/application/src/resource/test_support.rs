@@ -16,23 +16,23 @@ macro_rules! test_mutex {
         lazy_static! {
             static ref TEST_MUTEX: Mutex<()> = Mutex::new(());
         }
-    }
+    };
 }
 
 #[macro_export]
 macro_rules! test {
-    (fn $name:ident() $body:block) => {
+    (fn $name: ident() $body: block) => {
         #[test]
         fn $name() {
             let guard = TEST_MUTEX.lock().unwrap();
-            if let Err(e) = panic::catch_unwind(|| { $body }) {
+            if let Err(e) = panic::catch_unwind(|| $body) {
                 // kcov-ignore-start
                 drop(guard);
                 panic::resume_unwind(e);
                 // kcov-ignore-end
             }
         }
-    }
+    };
 }
 
 /// Returns the base directory path of the current executable.

@@ -99,17 +99,17 @@ impl DerefMut for MenuBuildFn {
 
 #[cfg(test)]
 mod test {
+    use amethyst::Result;
     use amethyst::input::InputBundle;
     use amethyst::prelude::*;
     use amethyst::renderer::{DisplayConfig, Pipeline, RenderBundle, Stage};
-    use amethyst::Result;
     use amethyst::ui::{DrawUi, UiBundle};
     use application::resource::dir;
     use application::resource::find_in;
     use application_ui::ApplicationUiBundle;
 
-    use bundle::Bundle;
     use super::MenuBuildFn;
+    use bundle::Bundle;
 
     fn setup<'a, 'b>() -> Result<Application<'a, 'b>> {
         let display_config = DisplayConfig::load(

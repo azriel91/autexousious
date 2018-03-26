@@ -1,8 +1,8 @@
 //! ECS input bundle for custom events
 
 use amethyst::core::bundle::{ECSBundle, Result};
-use amethyst::shrev::EventChannel;
 use amethyst::ecs::{DispatcherBuilder, World};
+use amethyst::shrev::EventChannel;
 
 use event::ApplicationEvent;
 
@@ -35,8 +35,8 @@ impl<'a, 'b> ECSBundle<'a, 'b> for ApplicationInputBundle {
 #[cfg(test)]
 mod test {
     use amethyst::core::bundle::ECSBundle;
-    use amethyst::shrev::EventChannel;
     use amethyst::ecs::{DispatcherBuilder, World};
+    use amethyst::shrev::EventChannel;
 
     use event::ApplicationEvent;
 

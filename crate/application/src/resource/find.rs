@@ -2,8 +2,8 @@ use std::env;
 use std::ffi;
 use std::path::{Path, PathBuf};
 
-use resource::error::Result;
 use resource::FindContext;
+use resource::error::Result;
 
 /// Returns development-time base directories as a `Vec<::std::path::Path>`.
 ///
@@ -27,7 +27,7 @@ macro_rules! development_base_dirs {
             .map(|dir| dir.expect("Unwrapping option"))
             .map(|dir| ::std::path::Path::new(&dir).to_owned())
             .collect()
-    }
+    };
 }
 
 /// Finds and returns the path to the configuration file.
@@ -100,11 +100,11 @@ pub fn find_in<P: AsRef<Path> + AsRef<ffi::OsStr>>(
 mod test {
     use std::path::PathBuf;
 
+    use super::{find, find_in};
+    use resource::FindContext;
     use resource::dir;
     use resource::error::ErrorKind;
-    use resource::FindContext;
     use resource::test_support::{exe_dir, setup_temp_file};
-    use super::{find, find_in};
 
     test_mutex!();
 

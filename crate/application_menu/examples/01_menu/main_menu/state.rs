@@ -4,9 +4,9 @@ use amethyst;
 use amethyst::ecs::Entity;
 use amethyst::prelude::*;
 use amethyst::renderer::ScreenDimensions;
-use amethyst::ui::{FontHandle, MouseReactive, UiResize, UiText, UiTransform};
 use amethyst::shred::ParSeq;
 use amethyst::shrev::{EventChannel, ReaderId};
+use amethyst::ui::{FontHandle, MouseReactive, UiResize, UiText, UiTransform};
 use application_menu::{MenuEvent, MenuItem};
 use rayon;
 
