@@ -33,6 +33,7 @@ Performs the following code maintenance tasks:
 
 * Format code: `cargo fmt --all`
 * Update dependencies: `cargo update`
+* Check for outdated dependencies: `cargo outdated`
 '''
 dependencies = [
     "workspace-format",
@@ -57,8 +58,17 @@ command = "cargo"
 args = ["fmt", "--all"]
 
 [tasks.workspace-format-post]
-condition_script = ["[ -n \"$(git status --porcelain)\" ]"]
-script = ["git commit -am 'Format repository with Rustfmt.'"]
+script = [
+'''
+set +x
+. ./build/log.sh
+
+if [ -n "$(git status --porcelain)" ]; then
+    git commit -am "Format repository with Rustfmt."
+    notice "Formatted repository and committed changes."
+fi
+'''
+]
 
 # === workspace-dependencies-update === #
 
@@ -77,10 +87,17 @@ command = "cargo"
 args = ["update"]
 
 [tasks.workspace-dependencies-update-post]
-condition_script = ["[ -n \"$(git status --porcelain)\" ]"]
 script = [
-    "git commit -am 'Upgraded workspace dependencies'",
-    "echo Remember to run \\`cargo test\\` before pushing."
+'''
+set +x
+. ./build/log.sh
+
+if [ -n "$(git status --porcelain)" ]; then
+    git commit -am "Upgraded workspace dependencies"
+    notice "Upgraded workspace dependencies and committed changes."
+    info "Remember to run \\`cargo test\\` before pushing."
+fi
+'''
 ]
 
 # === workspace-outdated === #
@@ -97,8 +114,15 @@ dependencies = [
 [tasks.workspace-outdated-do]
 description = "Runs verify-outdated cargo plugin."
 condition = { env = { "CARGO_MAKE_CRATE_HAS_DEPENDENCIES" = "TRUE" } }
-command = "cargo"
-args = ["outdated", "-w", "--root-deps-only", "--exit-code", "1"]
+script = [
+'''
+set +x
+. ./build/log.sh
+if ! cargo outdated -w --root-deps-only --exit-code 1; then
+    warn "There are outdated dependencies. Please upgrade them as soon as possible."
+fi
+'''
+]
 
 [tasks.workspace-outdated-post]
 
@@ -107,10 +131,8 @@ args = ["outdated", "-w", "--root-deps-only", "--exit-code", "1"]
 [tasks.ensure-repository-clean]
 script = [
 '''
-[ -z "$(git status --porcelain)" ] || (
-    echo "ERROR: Ensure the workspace is clean before running this task" 1>&2
-    exit 1
-)
-exit $?
+set +x
+. ./build/log.sh
+[ -z "$(git status --porcelain)" ] || error "Ensure the workspace is clean before running this task"
 '''
 ]
