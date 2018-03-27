@@ -4,7 +4,6 @@ Compiles all crates, tests, and examples in the workspace using the debug profil
 
 Usage: `cargo make --no-workspace compile`
 '''
-install_crate = "cargo-script"
 script_runner = "@shell"
 command = "cargo"
 args = ["script", "--", "./build/workspace_crate_each.rs", "--", "../../build/crate_compile.rs"]
@@ -15,7 +14,6 @@ Compiles all crates, tests, and examples in the workspace using the debug profil
 
 Usage: `cargo make --no-workspace compile-release`
 '''
-install_crate = "cargo-script"
 script_runner = "@shell"
 command = "cargo"
 args = ["script", "--", "./build/workspace_crate_each.rs", "--", "../../build/crate_compile.rs", "--release"]
@@ -26,7 +24,8 @@ Runs tests in the workspace. This is analogous to `cargo test --all`
 
 Usage: `cargo make --no-workspace test`
 '''
-script = ["cargo test --all"]
+command = "cargo"
+args = ["test", "--all"]
 
 [tasks.test-release]
 description = '''
@@ -34,7 +33,8 @@ Runs tests in the workspace. This is analogous to `cargo test --all --release`
 
 Usage: `cargo make --no-workspace test-release`
 '''
-script = ["cargo test --all --release"]
+command = "cargo"
+args = ["test", "--all", "--release"]
 
 [tasks.conformance]
 description = '''
