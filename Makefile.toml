@@ -1,3 +1,41 @@
+[tasks.compile]
+description = '''
+Compiles all crates, tests, and examples in the workspace using the debug profile.
+
+Usage: `cargo make --no-workspace compile`
+'''
+install_crate = "cargo-script"
+script_runner = "@shell"
+command = "cargo"
+args = ["script", "--", "./build/workspace_crate_each.rs", "--", "../../build/crate_compile.rs"]
+
+[tasks.compile-release]
+description = '''
+Compiles all crates, tests, and examples in the workspace using the debug profile.
+
+Usage: `cargo make --no-workspace compile-release`
+'''
+install_crate = "cargo-script"
+script_runner = "@shell"
+command = "cargo"
+args = ["script", "--", "./build/workspace_crate_each.rs", "--", "../../build/crate_compile.rs", "--release"]
+
+[tasks.test]
+description = '''
+Runs tests in the workspace. This is analogous to `cargo test --all`
+
+Usage: `cargo make --no-workspace test`
+'''
+script = ["cargo test --all"]
+
+[tasks.test-release]
+description = '''
+Runs tests in the workspace. This is analogous to `cargo test --all --release`
+
+Usage: `cargo make --no-workspace test-release`
+'''
+script = ["cargo test --all --release"]
+
 [tasks.conformance]
 description = '''
 Ensures the repository conforms to coding best practices, and only depends on libraries with
