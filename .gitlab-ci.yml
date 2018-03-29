@@ -16,6 +16,9 @@
   rustc --version -v
   printf "\n"
 
+.install_update_cargo_subcommands: &install_update_cargo_subcommands >-
+  cargo install-update -i cargo-update hull
+
 # === CI Stages === #
 
 # Unfortunately we are not able to split `build` and `test` phases -- when we do, the `test` Gitlab
@@ -53,27 +56,11 @@ nightly:conformance:
   before_script:
     - *print_tool_versions_linux
     - build/install_packages_linux.sh
-    - build/install_cargo_make.sh
+    - build/install_cargo_update.sh
+    - *install_update_cargo_subcommands
 
-    # For the `cargo --list` commands, we need to pipe stderr to /dev/null because of these issues:
-    #
-    # * https://github.com/sfackler/cargo-tree/issues/25
-    # * https://github.com/rust-lang/rust/issues/46016
-    # Automated crate security audit
-    - |
-      # Install cargo-audit
-      existing_crates="$(cargo --list 2>&1)"
-      if ! echo "${existing_crates}" | grep -q '\baudit\b' ; then
-        cargo install cargo-audit
-      fi
-
-    # Automated license checks
-    - |
-      # Install cargo-license
-      existing_crates="$(cargo --list 2>&1)"
-      if ! echo "${existing_crates}" | grep -q '\blicense\b'; then
-        cargo install cargo-license
-      fi
+    # Security audit and license checks
+    - cargo install-update -i cargo-make cargo-audit cargo-license
 
     # Nightly - Rustfmt and Clippy
     - |
@@ -101,14 +88,16 @@ nightly:conformance:
   before_script:
     - *print_tool_versions_linux
     - build/install_packages_linux.sh
-    - build/install_cargo_make.sh
+    - build/install_cargo_update.sh
+    - *install_update_cargo_subcommands
+    - cargo install-update -i cargo-make
 
 linux:debug:
   <<: *linux_job_common
   script:
-    - cargo make --no-workspace compile
+    - hull build
     - source xvfb_start
-    - cargo make --no-workspace test
+    - cargo test --all
     - source xvfb_stop
   after_script:
     - source xvfb_start
@@ -120,9 +109,9 @@ linux:debug:
 linux:release:
   <<: *linux_job_common
   script:
-    - cargo make --no-workspace compile-release
+    - hull build -- --release
     - source xvfb_start
-    - cargo make --no-workspace test-release
+    - cargo test --all --release
     - source xvfb_stop
     - ./build/publish_prepare_app.sh
   artifacts:
@@ -143,18 +132,20 @@ linux:release:
   before_script:
     - cargo --version -v
     - rustc --version -v
+    - build\\install_cargo_update.bat
+    - *install_update_cargo_subcommands
 
 windows:debug:
   <<: *windows_job_common
   script:
-    - cargo make --no-workspace compile
-    - cargo make --no-workspace test
+    - hull build
+    - cargo test --all
 
 windows:release:
   <<: *windows_job_common
   script:
-    - cargo make --no-workspace compile-release
-    - cargo make --no-workspace test-release
+    - hull build-release
+    - cargo test --all --release
     - .\build\publish_prepare_app.bat
   artifacts:
     name: windows-x86_64
