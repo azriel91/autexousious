@@ -144,7 +144,7 @@ windows:debug:
 windows:release:
   <<: *windows_job_common
   script:
-    - hull build-release
+    - hull build -- --release
     - cargo test --all --release
     - .\build\publish_prepare_app.bat
   artifacts:
