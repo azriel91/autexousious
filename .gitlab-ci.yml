@@ -133,7 +133,7 @@ linux:release:
     - cargo --version -v
     - rustc --version -v
     - C:\\Windows\\System32\\cmd.exe /C build\\install_cargo_update.bat
-    - *install_update_cargo_subcommands
+    - cargo install-update -i hull
 
 windows:debug:
   <<: *windows_job_common

@@ -18,7 +18,12 @@ for /f %%i in ('cargo --list') do (
 )
 
 if %is_installed% equ true (
-  echo cargo-update already installed
+  :: Update cargo-update
+  cargo install-update cargo-update
+  if errorlevel 1 (
+    1>&2 echo Failed to update cargo-update
+    exit /b 1
+  )
 ) else (
   cargo install cargo-update
   if errorlevel 1 (
