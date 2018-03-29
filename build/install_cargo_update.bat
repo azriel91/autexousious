@@ -21,6 +21,10 @@ if %is_installed% equ true (
   echo cargo-update already installed
 ) else (
   cargo install cargo-update
+  if errorlevel 1 (
+    1>&2 echo Failed to install cargo-update
+    exit /b 1
+  )
 )
 
 endlocal
