@@ -14,4 +14,6 @@ is_cargo_update_installed() {
   return $(echo "${existing_crates}" | grep -q '\binstall-update\b'; echo $?)
 }
 
-is_cargo_update_installed || cargo install cargo-update
+# The `--force` simply avoids a failure in case two jobs run on the same agent and both install
+# `cargo-update`.
+is_cargo_update_installed || cargo install cargo-update --force
