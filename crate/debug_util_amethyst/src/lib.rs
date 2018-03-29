@@ -174,7 +174,7 @@ mod test {
 
     #[macro_use]
     macro_rules! test_opt_trans_panic {
-        ($test_name: ident, $message: expr, $expected: expr, $actual: expr) => {
+        ($test_name:ident, $message:expr, $expected:expr, $actual:expr) => {
             #[test]
             #[should_panic(expected = $message)]
             fn $test_name() {

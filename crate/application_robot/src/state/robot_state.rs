@@ -277,7 +277,7 @@ mod test {
 
     #[macro_use]
     macro_rules! delegate_test {
-        ($test_name: ident, $function: ident, $invocation: expr) => {
+        ($test_name:ident, $function:ident, $invocation:expr) => {
             #[test]
             fn $test_name() {
                 let (mut state, mut world) = setup_without_intercepts();
