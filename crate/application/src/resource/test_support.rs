@@ -21,7 +21,7 @@ macro_rules! test_mutex {
 
 #[macro_export]
 macro_rules! test {
-    (fn $name: ident() $body: block) => {
+    (fn $name:ident() $body:block) => {
         #[test]
         fn $name() {
             let guard = TEST_MUTEX.lock().unwrap();
