@@ -5,6 +5,13 @@ setlocal
 ::
 :: Note: The command to run is `cargo install-update`, since `cargo update` is one of `cargo`'s
 ::       subcommands.
+::
+:: If adding this to .gitlab-ci.yml, use the following line, otherwise the job terminates when the
+:: script ends:
+::
+:: ```
+:: C:\\Windows\\System32\\cmd.exe /C build\\install_cargo_update.bat
+:: ```
 
 :: For the `cargo --list` command, we need to loop over its output before piping to `find.exe`
 :: because of these issues:
