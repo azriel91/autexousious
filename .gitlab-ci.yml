@@ -136,14 +136,14 @@ linux:release:
 windows:debug:
   <<: *windows_job_common
   script:
-    - time cargo build --all-targets
-    - time cargo test --all
+    - cargo build --all-targets
+    - cargo test --all
 
 windows:release:
   <<: *windows_job_common
   script:
-    - time cargo build --all-targets --release
-    - time cargo test --all --release
+    - cargo build --all-targets --release
+    - cargo test --all --release
     - .\build\publish_prepare_app.bat
   artifacts:
     name: windows-x86_64
