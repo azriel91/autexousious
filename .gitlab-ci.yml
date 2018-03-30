@@ -95,9 +95,9 @@ nightly:conformance:
 linux:debug:
   <<: *linux_job_common
   script:
-    - cargo build --all-targets
+    - time cargo build --all-targets
     - source xvfb_start
-    - cargo test --all
+    - time cargo test --all
     - source xvfb_stop
   after_script:
     - source xvfb_start
@@ -109,9 +109,9 @@ linux:debug:
 linux:release:
   <<: *linux_job_common
   script:
-    - cargo build --all-targets --release
+    - time cargo build --all-targets --release
     - source xvfb_start
-    - cargo test --all --release
+    - time cargo test --all --release
     - source xvfb_stop
     - ./build/publish_prepare_app.sh
   artifacts:
@@ -136,14 +136,14 @@ linux:release:
 windows:debug:
   <<: *windows_job_common
   script:
-    - cargo build --all-targets
-    - cargo test --all
+    - time cargo build --all-targets
+    - time cargo test --all
 
 windows:release:
   <<: *windows_job_common
   script:
-    - cargo build --all-targets --release
-    - cargo test --all --release
+    - time cargo build --all-targets --release
+    - time cargo test --all --release
     - .\build\publish_prepare_app.bat
   artifacts:
     name: windows-x86_64
