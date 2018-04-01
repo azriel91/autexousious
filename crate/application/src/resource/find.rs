@@ -111,7 +111,7 @@ mod test {
     test! {
         fn find_in_returns_resource_path_when_file_exists() {
             let (temp_dir, resource_path) =
-                setup_temp_file(dir::RESOURCES, "test__find_config", ".ron", None).unwrap();
+                setup_temp_file(dir::RESOURCES, "test__find_config", ".ron", None);
             let temp_dir = temp_dir.unwrap();
 
             let expected = temp_dir.path().join("test__find_config.ron");
@@ -132,7 +132,7 @@ mod test {
     test! {
         fn find_returns_resource_path_when_file_exists() {
             let (_, resource_path) =
-                setup_temp_file("", "test__find_config", ".ron", None).unwrap();
+                setup_temp_file("", "test__find_config", ".ron", None);
 
             assert_eq!( // kcov-ignore
                 exe_dir().join("test__find_config.ron"),

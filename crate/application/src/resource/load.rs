@@ -79,7 +79,7 @@ mod test {
                 "test__load_config",
                 ".ron",
                 Some("Data(123)"),
-            ).unwrap();
+            );
             let temp_dir = temp_dir.unwrap();
 
             assert_eq!(
@@ -100,7 +100,7 @@ mod test {
     test! {
         fn load_returns_resource_when_file_exists_and_parses_successfully() {
             let (_, resource_path) =
-                setup_temp_file("", "test__load_config", ".ron", Some("Data(123)")).unwrap();
+                setup_temp_file("", "test__load_config", ".ron", Some("Data(123)"));
 
             assert_eq!(
                 Data(123),
@@ -171,7 +171,7 @@ mod test {
                 "test__load_config",
                 ".ron",
                 Some("I'm parsable. Unparsable."),
-            ).unwrap();
+            );
 
             let load_result = load::<Data>("test__load_config.ron", &Format::Ron);
             resource_path.close().unwrap();

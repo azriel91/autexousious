@@ -54,7 +54,7 @@ pub(crate) fn setup_temp_file(
     file_prefix: &str,
     file_suffix: &str,
     contents: Option<&str>,
-) -> Option<(Option<TempDir>, NamedTempFile)> {
+) -> (Option<TempDir>, NamedTempFile) {
     let conf_path = PathBuf::from(resource_dir);
 
     // normalize relative paths to be relative to exe directory instead of working directory
@@ -88,5 +88,5 @@ pub(crate) fn setup_temp_file(
         write!(temp_file, "{}", contents).expect("Failed to write contents to temp_file");
     }
 
-    return Some((temp_dir, temp_file));
+    (temp_dir, temp_file)
 }
