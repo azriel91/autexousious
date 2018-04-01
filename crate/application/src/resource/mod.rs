@@ -12,6 +12,7 @@ mod error;
 mod find;
 mod find_context;
 mod format;
+mod io_support;
 mod load;
 
 pub use self::error::{Error, ErrorKind};
