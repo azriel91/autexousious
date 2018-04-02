@@ -47,31 +47,46 @@ fn assets_dir_internal(current_exe_result: io::Result<PathBuf>) -> Result<PathBu
         ).into()
     })?;
 
-    {
+    let dir = {
         // Makes no sense if the current executable has no parent directory.
         let exe_dir = current_exe
             .parent()
             .expect("Expected current exe to have a parent directory");
 
-        // Check if directory exists.
-        let dir = exe_dir.join(ASSETS);
-        if dir.is_dir() {
-            return Ok(dir);
-        }
-    }
+        exe_dir.join(ASSETS)
+    };
 
-    return Err(DiscoveryContext::new(
-        Some(current_exe),
-        ASSETS,
-        "Failed to assert that directory exists and can be accessed.",
-        None,
-    ).into());
+    // Canonicalize path to handle symlinks.
+    match dir.canonicalize() {
+        Ok(dir) => {
+            if dir.is_dir() {
+                Ok(dir)
+            } else {
+                Err(DiscoveryContext::new(
+                    Some(current_exe),
+                    ASSETS,
+                    "Path is not a directory.",
+                    None,
+                ).into())
+            }
+        }
+        Err(io_error) => Err(DiscoveryContext::new(
+            Some(current_exe),
+            ASSETS,
+            "Failed to canonicalize path. Please ensure directory exists and can be accessed.",
+            Some(io_error),
+        ).into()),
+    }
 }
 
 #[cfg(test)]
 mod test {
     use std::fs;
     use std::io;
+    #[cfg(unix)]
+    use std::os::unix;
+    #[cfg(windows)]
+    use std::os::windows;
     use std::path::PathBuf;
 
     use tempfile::tempdir;
@@ -128,7 +143,6 @@ mod test {
             "Failed to get current executable path.",
             Some(io::Error::new(io::ErrorKind::Other, "oh no!")),
         ); // kcov-ignore
-
         asset_dir_discovery_error(expected_discovery_context, assets_dir);
     }
 
@@ -141,8 +155,103 @@ mod test {
         let expected_discovery_context = dir::DiscoveryContext::new(
             Some(exe_path),
             ASSETS,
-            "Failed to assert that directory exists and can be accessed.",
-            None,
+            "Failed to canonicalize path. Please ensure directory exists and can be accessed.",
+            Some(io::Error::new(
+                io::ErrorKind::NotFound,
+                "No such file or directory",
+            )),
+        );
+        asset_dir_discovery_error(expected_discovery_context, assets_dir);
+    }
+
+    #[test]
+    fn assets_dir_returns_assets_dir_path_when_path_is_symlink_to_directory() {
+        let exe_dir = tempdir().unwrap();
+        let exe_path = exe_dir.path().join("current_exe");
+        let _assets_dir = fs::create_dir(exe_dir.path().join("my_assets")).unwrap();
+
+        #[cfg(unix)]
+        unix::fs::symlink(
+            exe_dir.path().join("my_assets"),
+            exe_dir.path().join(ASSETS),
+        ).expect("Failed to create symlink for test.");
+
+        #[cfg(windows)]
+        {
+            windows::fs::symlink_dir(
+                exe_dir.path().join("my_assets"),
+                exe_dir.path().join(ASSETS),
+            ).expect("Failed to create symlink for test.");
+        }
+
+        let assets_dir = assets_dir_internal(Ok(exe_path.clone()));
+        let expected: Result<PathBuf, Error> = Ok(exe_dir.path().join("my_assets"));
+        assert!(
+            assets_dir.is_ok(),
+            "Expected assets_dir to return {:?}, but was {:?}",
+            expected,
+            assets_dir
+        );
+        assert_eq!(expected.unwrap(), assets_dir.unwrap());
+    }
+
+    #[test]
+    fn assets_dir_returns_contextual_error_when_assets_dir_points_to_non_directory() {
+        let exe_dir = tempdir().unwrap();
+        let exe_path = exe_dir.path().join("current_exe");
+        let assets_file = fs::File::create(exe_dir.path().join("my_assets")).unwrap();
+        drop(assets_file); // close the file
+
+        #[cfg(unix)]
+        unix::fs::symlink(
+            exe_dir.path().join("my_assets"),
+            exe_dir.path().join(ASSETS),
+        ).expect("Failed to create symlink for test.");
+
+        #[cfg(windows)]
+        {
+            windows::fs::symlink_file(
+                exe_dir.path().join("my_assets"),
+                exe_dir.path().join(ASSETS),
+            ).expect("Failed to create symlink for test.");
+        }
+
+        let assets_dir = assets_dir_internal(Ok(exe_path.clone()));
+
+        let expected_discovery_context =
+            dir::DiscoveryContext::new(Some(exe_path), ASSETS, "Path is not a directory.", None);
+        asset_dir_discovery_error(expected_discovery_context, assets_dir);
+    }
+
+    #[test]
+    fn assets_dir_returns_contextual_error_when_assets_symlink_points_to_non_existent_path() {
+        let exe_dir = tempdir().unwrap();
+        let exe_path = exe_dir.path().join("current_exe");
+
+        #[cfg(unix)]
+        unix::fs::symlink(
+            exe_dir.path().join("non_existent_assets"),
+            exe_dir.path().join(ASSETS),
+        ).expect("Failed to create symlink for test.");
+
+        #[cfg(windows)]
+        {
+            windows::fs::symlink_file(
+                exe_dir.path().join("non_existent_assets"),
+                exe_dir.path().join(ASSETS),
+            ).expect("Failed to create symlink for test.");
+        }
+
+        let assets_dir = assets_dir_internal(Ok(exe_path.clone()));
+
+        let expected_discovery_context = dir::DiscoveryContext::new(
+            Some(exe_path),
+            ASSETS,
+            "Failed to canonicalize path. Please ensure directory exists and can be accessed.",
+            Some(io::Error::new(
+                io::ErrorKind::NotFound,
+                "No such file or directory",
+            )),
         );
         asset_dir_discovery_error(expected_discovery_context, assets_dir);
     }
