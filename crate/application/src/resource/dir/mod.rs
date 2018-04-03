@@ -203,7 +203,8 @@ mod test {
 
         // `error-chain` generated `Error` doesn't implement `PartialEq`, so we have to manually
         // compare
-        let expected: Result<PathBuf, Error> = Ok(exe_dir.path().join(ASSETS));
+        let expected: Result<PathBuf, Error> =
+            Ok(exe_dir.path().join(ASSETS).canonicalize().unwrap());
         assert!(
             assets_dir.is_ok(),
             "Expected assets_dir to return {:?}, but was {:?}",
@@ -260,7 +261,8 @@ mod test {
         }
 
         let assets_dir = assets_dir_internal(Ok(exe_path.clone()), None);
-        let expected: Result<PathBuf, Error> = Ok(exe_dir.path().join("my_assets"));
+        let expected: Result<PathBuf, Error> =
+            Ok(exe_dir.path().join("my_assets").canonicalize().unwrap());
         assert!(
             assets_dir.is_ok(),
             "Expected assets_dir to return {:?}, but was {:?}",
