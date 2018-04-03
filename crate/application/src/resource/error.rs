@@ -7,7 +7,6 @@ use error_chain;
 use ron;
 
 use resource::FindContext;
-use resource::dir;
 
 // kcov-ignore-start
 /// `ErrorKind` for application configuration
@@ -15,10 +14,6 @@ use resource::dir;
 pub enum ErrorKind {
     /// Plain error message without additional structure or context
     Msg(String),
-
-    /// Error when unable to find a directory beside the executable.
-    #[error_chain(custom, display = r#"|e| write!(f, "{}", e)"#)]
-    DirDiscovery(dir::DiscoveryContext),
 
     /// Error when failing to find a configuration file
     #[error_chain(custom, display = r#"|e| write!(f, "{}", e)"#)]
@@ -40,22 +35,10 @@ impl From<FindContext> for Error {
     }
 }
 
-impl From<dir::DiscoveryContext> for Error {
-    fn from(discovery_context: dir::DiscoveryContext) -> Error {
-        Error(
-            ErrorKind::DirDiscovery(discovery_context),
-            error_chain::State::default(),
-        ) // kcov-ignore
-    }
-}
-
 impl From<Error> for io::Error {
     fn from(resource_error: Error) -> io::Error {
         match resource_error.0 /* error_kind */ {
             ErrorKind::Msg(msg) => io::Error::new(io::ErrorKind::Other, msg),
-            ErrorKind::DirDiscovery(discovery_context) => {
-                io::Error::new(io::ErrorKind::Other, format!("{}", discovery_context))
-            }
             ErrorKind::Find(find_context) => {
                 io::Error::new(io::ErrorKind::Other, format!("{}", find_context))
             }

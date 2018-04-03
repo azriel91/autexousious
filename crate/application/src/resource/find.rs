@@ -1,5 +1,6 @@
 use std::env;
 use std::ffi;
+use std::io;
 use std::path::{Path, PathBuf};
 
 use resource::FindContext;
@@ -46,26 +47,34 @@ pub fn find(file_name: &str) -> Result<PathBuf> {
 /// * `conf_dir`: Directory relative to the executable in which to search for configuration.
 /// * `file_name`: Name of the file to search for.
 /// * `additional_base_dirs`: Additional base directories to look into. Useful at development time
-///     when configuration is generated and placed in a separate output directory.
-///
-///     When compiled as `#[cfg(test)]`, `development_base_dirs!()` are automatically appended to
-///     the base directories to search in.
+///   when configuration is generated and placed in a separate output directory.
 pub fn find_in<P: AsRef<Path> + AsRef<ffi::OsStr>>(
     conf_dir: P,
     file_name: &str,
     additional_base_dirs: Option<Vec<PathBuf>>,
 ) -> Result<PathBuf> {
-    let mut exe_dir = env::current_exe()?;
+    find_in_internal(
+        env::current_exe(),
+        conf_dir,
+        file_name,
+        additional_base_dirs,
+    )
+} // kcov-ignore
+
+#[inline]
+pub(crate) fn find_in_internal<P: AsRef<Path> + AsRef<ffi::OsStr>>(
+    current_exe_result: io::Result<PathBuf>,
+    conf_dir: P,
+    file_name: &str,
+    additional_base_dirs: Option<Vec<PathBuf>>,
+) -> Result<PathBuf> {
+    let mut exe_dir = current_exe_result?;
     exe_dir.pop();
 
     let mut base_dirs = vec![exe_dir];
 
     if let Some(mut additional_dirs) = additional_base_dirs {
         base_dirs.append(&mut additional_dirs);
-    }
-
-    if cfg!(debug_assertions) {
-        base_dirs.push(development_base_dirs!());
     }
 
     for base_dir in &base_dirs {
@@ -151,9 +160,6 @@ mod test {
                 find("test__find_config.ron").unwrap_err().kind()
             {
                 let mut base_dirs = vec![exe_dir()];
-                if cfg!(debug_assertions) {
-                    base_dirs.push(development_base_dirs!());
-                }
                 let expected = FindContext {
                     base_dirs,
                     conf_dir: PathBuf::from(""),
@@ -179,9 +185,6 @@ mod test {
 
             if let &ErrorKind::Find(ref find_context) = find_result.unwrap_err().kind() {
                 let mut base_dirs = vec![exe_dir()];
-                if cfg!(debug_assertions) {
-                    base_dirs.push(development_base_dirs!());
-                }
                 let expected = FindContext {
                     base_dirs,
                     conf_dir: PathBuf::from(""),
