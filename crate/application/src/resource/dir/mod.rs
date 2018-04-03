@@ -142,7 +142,7 @@ mod test {
                 );
             } // kcov-ignore-end
         };
-        match resource_error_kind {
+        match *resource_error_kind {
             resource::ErrorKind::Find(ref find_context) => {
                 assert_eq!(&expected_find_context, find_context)
             }
@@ -182,7 +182,7 @@ mod test {
                 );
             } // kcov-ignore-end
         };
-        match resource_error_kind {
+        match *resource_error_kind {
             resource::ErrorKind::Io(ref io_error) => {
                 assert_eq!(expected_io_error_kind, io_error.kind())
             }
