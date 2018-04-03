@@ -20,7 +20,7 @@ use amethyst::input::InputBundle;
 use amethyst::prelude::*;
 use amethyst::renderer::{DisplayConfig, DrawFlat, Pipeline, PosNormTex, RenderBundle, Stage};
 use amethyst::ui::{DrawUi, UiBundle};
-use application::resource::dir;
+use application::resource::dir::{self, assets_dir};
 use application::resource::find_in;
 use application_input::ApplicationInputBundle;
 use application_robot::RobotStateBuilder;
@@ -40,7 +40,9 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         .delegate(Box::new(game_mode_menu::State::new()))
         .build()
         .expect("Failed to build RobotState");
-    let mut app_builder = Application::build(dir::ASSETS, state)?
+    let assets_dir = assets_dir(Some(development_base_dirs!()))?;
+
+    let mut app_builder = Application::build(assets_dir, state)?
         .with_bundle(ApplicationInputBundle::new())?
         .with::<StdinSystem>(StdinSystem::new(), "StdinSystem", &[]);
 
