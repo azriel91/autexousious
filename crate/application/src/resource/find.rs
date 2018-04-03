@@ -22,12 +22,16 @@ use resource::error::Result;
 #[macro_export]
 macro_rules! development_base_dirs {
     () => {
-        vec![option_env!("OUT_DIR"), option_env!("CARGO_MANIFEST_DIR")]
-            .iter()
-            .filter(|dir| dir.is_some())
-            .map(|dir| dir.expect("Unwrapping option"))
-            .map(|dir| ::std::path::Path::new(&dir).to_owned())
-            .collect()
+        if cfg!(debug_assertions) {
+            vec![option_env!("OUT_DIR"), option_env!("CARGO_MANIFEST_DIR")]
+                .iter()
+                .filter(|dir| dir.is_some())
+                .map(|dir| dir.expect("Unwrapping option"))
+                .map(|dir| ::std::path::Path::new(&dir).to_owned())
+                .collect()
+        } else {
+            vec![]
+        }
     };
 }
 
