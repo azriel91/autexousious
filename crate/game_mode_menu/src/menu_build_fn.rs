@@ -99,6 +99,8 @@ impl DerefMut for MenuBuildFn {
 
 #[cfg(test)]
 mod test {
+    use std::env;
+
     use amethyst::Result;
     use amethyst::input::InputBundle;
     use amethyst::prelude::*;
@@ -130,6 +132,7 @@ mod test {
         //
         // * The `Loader` needs to be added to the world, and the code to do this is non-trivial
         // * The `AppBundle` in amethyst that does this is non-public
+        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
         Application::build(format!("{}/assets", env!("CARGO_MANIFEST_DIR")), MockState)?
             .with_bundle(InputBundle::<String, String>::new())?
             .with_bundle(UiBundle::<String, String>::new())?

@@ -21,18 +21,23 @@ use resource::error::Result;
 /// [2]: http://doc.crates.io/environment-variables.html#environment-variables-cargo-sets-for-crates
 #[macro_export]
 macro_rules! development_base_dirs {
-    () => {
-        if cfg!(debug_assertions) {
+    () => {{
+        // If we are compiling tests, or compiling using the `debug` profile, add development
+        // directories.
+        //
+        // Note: If you have two crates, `B` and `C`, where `B` invokes this macro, and `C` invokes
+        // `B` in `#[cfg(test)]`, `B` will NOT be in `test` mode.
+        let base_dirs = if cfg!(test) || cfg!(debug_assertions) {
             vec![option_env!("OUT_DIR"), option_env!("CARGO_MANIFEST_DIR")]
-                .iter()
-                .filter(|dir| dir.is_some())
-                .map(|dir| dir.expect("Unwrapping option"))
-                .map(|dir| ::std::path::Path::new(&dir).to_owned())
-                .collect()
         } else {
             vec![]
-        }
-    };
+        };
+        base_dirs
+            .into_iter()
+            .filter_map(|dir| dir)
+            .map(|dir| ::std::path::Path::new(&dir).to_owned())
+            .collect()
+    }};
 }
 
 /// Finds and returns the path to the configuration file.
@@ -75,7 +80,13 @@ pub(crate) fn find_in_internal<P: AsRef<Path> + AsRef<ffi::OsStr>>(
     let mut exe_dir = current_exe_result?;
     exe_dir.pop();
 
-    let mut base_dirs = vec![exe_dir];
+    // Use `APP_DIR` environment directory if set, else default to executable parent directory.
+    let app_dir_env = env::var_os("APP_DIR");
+    let app_dir = app_dir_env
+        .as_ref()
+        .map_or(exe_dir, |env_app_dir| Path::new(env_app_dir).to_path_buf());
+
+    let mut base_dirs = vec![app_dir];
 
     if let Some(mut additional_dirs) = additional_base_dirs {
         base_dirs.append(&mut additional_dirs);
