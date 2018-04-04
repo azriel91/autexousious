@@ -1,7 +1,10 @@
 #![deny(missing_docs)]
 #![deny(missing_debug_implementations)]
 
-//! Provides functions for finding files and loading configuration
+//! Provides functions for finding files and loading configuration.
+//!
+//! Please see the documentation for the [`resource::find_in`][find_in] and [`resource::load_in`]
+//! [load_in] functions for detailed explanations.
 //!
 //! # Examples
 //!
@@ -24,6 +27,8 @@
 //! }
 //! ```
 //!
+//! [find_in]: resource/fn.find_in.html
+//! [load_in]: resource/fn.load_in.html
 
 extern crate amethyst;
 #[macro_use]

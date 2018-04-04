@@ -51,12 +51,41 @@ pub fn find(file_name: &str) -> Result<PathBuf> {
 
 /// Finds and returns the path to the configuration file within the given configuration directory.
 ///
+/// By default, configuration directories are assumed to be beside the current executable. This can
+/// be overridden with the `APP_DIR` environmental variable. Setting this variable overrides the
+/// directory that is searched &mdash; this function does not fall back to the executable base
+/// directory.
+///
 /// # Parameters:
 ///
 /// * `conf_dir`: Directory relative to the executable in which to search for configuration.
 /// * `file_name`: Name of the file to search for.
 /// * `additional_base_dirs`: Additional base directories to look into. Useful at development time
 ///   when configuration is generated and placed in a separate output directory.
+///
+/// # Examples
+///
+/// ```rust
+/// #[macro_use]
+/// extern crate application;
+///
+/// use application::resource::find_in;
+/// use application::resource::dir;
+///
+/// # fn main() {
+/// // Search for '<application_dir>/resources/config.ron'.
+/// let path = match find_in(
+///     dir::RESOURCES,
+///     "config.ron",
+///     Some(development_base_dirs!()))
+/// {
+///     Ok(path) => path,
+///     Err(e) => panic!("Failed to find configuration file: {}", e),
+/// };
+///
+/// println!("Path: {}", path.display());
+/// # }
+/// ```
 pub fn find_in<P: AsRef<Path> + AsRef<ffi::OsStr>>(
     conf_dir: P,
     file_name: &str,

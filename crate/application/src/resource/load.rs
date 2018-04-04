@@ -29,9 +29,47 @@ where
 ///
 /// * `conf_dir`: Directory relative to the executable in which to search for configuration.
 /// * `file_name`: Name of the file to search for relative to the executable.
-/// * `format`: File format.
+/// * `format`: File [format][format].
 /// * `additional_base_dirs`: Additional base directories to look into. Useful at development time
 ///     when configuration is generated and placed in a separate output directory.
+///
+/// [format]: enum.Format.html
+///
+/// # Examples
+///
+/// ```rust
+/// // Cargo.toml
+/// //
+/// // [dependencies]
+/// // serde = "1.0"
+///
+/// #[macro_use]
+/// extern crate application;
+/// #[macro_use]
+/// extern crate serde;
+///
+/// use application::resource::load_in;
+/// use application::resource::{self, dir};
+///
+/// #[derive(Debug, Deserialize)]
+/// struct Config {
+///     title: String,
+/// }
+///
+/// # fn main() {
+/// // Search for '<application_dir>/resources/config.ron'.
+/// let config: Config = match load_in(
+///     dir::RESOURCES,
+///     "config.ron",
+///     &resource::Format::Ron,
+///     Some(development_base_dirs!()))
+/// {
+///     Ok(path) => path,
+///     Err(e) => panic!("Failed to load configuration file: {}", e),
+/// };
+///
+/// println!("Config: {:?}", config);
+/// # }
 pub fn load_in<T, P>(
     conf_dir: P,
     file_name: &str,
