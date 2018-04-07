@@ -1,7 +1,10 @@
 #![deny(missing_docs)]
 #![deny(missing_debug_implementations)]
 
-//! Provides functions for finding files and loading configuration
+//! Provides functions for finding files and loading configuration.
+//!
+//! Please see the documentation for the [`resource::find_in`][find_in] and [`resource::load_in`]
+//! [load_in] functions for detailed explanations.
 //!
 //! # Examples
 //!
@@ -24,10 +27,16 @@
 //! }
 //! ```
 //!
+//! [find_in]: resource/fn.find_in.html
+//! [load_in]: resource/fn.load_in.html
 
 extern crate amethyst;
 #[macro_use]
+extern crate derivative;
+#[macro_use]
 extern crate derive_error_chain;
+#[macro_use]
+extern crate derive_more;
 extern crate error_chain;
 #[cfg(test)]
 #[macro_use]
@@ -41,8 +50,6 @@ extern crate ron;
 extern crate serde;
 #[cfg(not(test))]
 extern crate serde;
-#[cfg(test)]
-extern crate tempdir;
 #[cfg(test)]
 extern crate tempfile;
 

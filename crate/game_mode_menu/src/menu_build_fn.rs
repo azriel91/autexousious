@@ -4,7 +4,7 @@ use std::ops::{Deref, DerefMut};
 use amethyst::ecs::Entity;
 use amethyst::prelude::World;
 use amethyst::renderer::ScreenDimensions;
-use amethyst::ui::{FontHandle, MouseReactive, UiResize, UiText, UiTransform};
+use amethyst::ui::{Anchor, Anchored, FontHandle, MouseReactive, UiText, UiTransform};
 use application_menu::MenuItem;
 
 use index::Index;
@@ -23,27 +23,29 @@ impl MenuBuildFn {
     fn initialize_menu(world: &mut World, menu_items: &mut Vec<Entity>) {
         let font_bold = Self::read_font(world);
 
+        let screen_w = {
+            let dim = world.read_resource::<ScreenDimensions>();
+            dim.width()
+        };
+        let text_w = screen_w / 3.;
+        let text_h = 50.;
+
         // TODO: Use UI Buttons: https://github.com/amethyst/amethyst/issues/577
         let mut item_indices = vec![Index::StartGame, Index::Exit];
+        let total_items = item_indices.len() as f32;
         item_indices
             .drain(..)
             .enumerate()
             .for_each(|(order, index)| {
-                let mut text_transform = UiTransform::new(
+                let text_transform = UiTransform::new(
                     index.title().to_string(),
-                    20.,
-                    order as f32 * 50. + 20.,
+                    0.,
+                    (order as f32 * text_h) - (total_items * text_h / 2.),
                     1.,
-                    400.,
-                    100.,
+                    text_w,
+                    text_h,
                     0,
                 );
-                let ui_text_size_fn = |_transform: &mut UiTransform, (_width, _height)| {};
-
-                {
-                    let dim = world.read_resource::<ScreenDimensions>();
-                    ui_text_size_fn(&mut text_transform, (dim.width(), dim.height()));
-                }
 
                 let menu_item_entity = world
                     .create_entity()
@@ -54,7 +56,7 @@ impl MenuBuildFn {
                         [1., 1., 1., 1.],
                         FONT_SIZE,
                     ))
-                    .with(UiResize(Box::new(ui_text_size_fn)))
+                    .with(Anchored::new(Anchor::Middle))
                     .with(MouseReactive)
                     .with(MenuItem { index })
                     .build();
@@ -99,6 +101,8 @@ impl DerefMut for MenuBuildFn {
 
 #[cfg(test)]
 mod test {
+    use std::env;
+
     use amethyst::Result;
     use amethyst::input::InputBundle;
     use amethyst::prelude::*;
@@ -130,6 +134,7 @@ mod test {
         //
         // * The `Loader` needs to be added to the world, and the code to do this is non-trivial
         // * The `AppBundle` in amethyst that does this is non-public
+        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
         Application::build(format!("{}/assets", env!("CARGO_MANIFEST_DIR")), MockState)?
             .with_bundle(InputBundle::<String, String>::new())?
             .with_bundle(UiBundle::<String, String>::new())?

@@ -4,7 +4,7 @@ use std::path::PathBuf;
 /// Context of a find operation
 ///
 /// Useful for debugging failures to find application configuration.
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FindContext {
     /// Base directories searched during the find
     ///

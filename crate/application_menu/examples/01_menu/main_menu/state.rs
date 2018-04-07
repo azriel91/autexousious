@@ -3,10 +3,9 @@ use std::sync::Arc;
 use amethyst;
 use amethyst::ecs::Entity;
 use amethyst::prelude::*;
-use amethyst::renderer::ScreenDimensions;
 use amethyst::shred::ParSeq;
 use amethyst::shrev::{EventChannel, ReaderId};
-use amethyst::ui::{FontHandle, MouseReactive, UiResize, UiText, UiTransform};
+use amethyst::ui::{Anchor, Anchored, FontHandle, MouseReactive, UiText, UiTransform};
 use application_menu::{MenuEvent, MenuItem};
 use rayon;
 
@@ -56,21 +55,17 @@ impl State {
             .drain(..)
             .enumerate()
             .for_each(|(order, index)| {
-                let mut text_transform = UiTransform::new(
+                let width = 400.;
+                let height = 100.;
+                let text_transform = UiTransform::new(
                     index.title().to_string(),
-                    20.,
-                    order as f32 * 50. + 20.,
+                    20. + (width / 2.),
+                    order as f32 * 50. + (height / 2.) + 20.,
                     1.,
-                    400.,
-                    100.,
+                    width,
+                    height,
                     0,
                 );
-                let ui_text_size_fn = |_transform: &mut UiTransform, (_width, _height)| {};
-
-                {
-                    let dim = world.read_resource::<ScreenDimensions>();
-                    ui_text_size_fn(&mut text_transform, (dim.width(), dim.height()));
-                }
 
                 let menu_item_entity = world
                     .create_entity()
@@ -81,7 +76,7 @@ impl State {
                         [1., 1., 1., 1.],
                         FONT_SIZE,
                     ))
-                    .with(UiResize(Box::new(ui_text_size_fn)))
+                    .with(Anchored::new(Anchor::TopLeft))
                     .with(MouseReactive)
                     .with(MenuItem { index })
                     .build();

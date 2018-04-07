@@ -1,5 +1,6 @@
 use std::env;
 use std::ffi;
+use std::io;
 use std::path::{Path, PathBuf};
 
 use resource::FindContext;
@@ -20,14 +21,23 @@ use resource::error::Result;
 /// [2]: http://doc.crates.io/environment-variables.html#environment-variables-cargo-sets-for-crates
 #[macro_export]
 macro_rules! development_base_dirs {
-    () => {
-        vec![option_env!("OUT_DIR"), option_env!("CARGO_MANIFEST_DIR")]
-            .iter()
-            .filter(|dir| dir.is_some())
-            .map(|dir| dir.expect("Unwrapping option"))
+    () => {{
+        // If we are compiling tests, or compiling using the `debug` profile, add development
+        // directories.
+        //
+        // Note: If you have two crates, `B` and `C`, where `B` invokes this macro, and `C` invokes
+        // `B` in `#[cfg(test)]`, `B` will NOT be in `test` mode.
+        let base_dirs = if cfg!(test) || cfg!(debug_assertions) {
+            vec![option_env!("OUT_DIR"), option_env!("CARGO_MANIFEST_DIR")]
+        } else {
+            vec![]
+        };
+        base_dirs
+            .into_iter()
+            .filter_map(|dir| dir)
             .map(|dir| ::std::path::Path::new(&dir).to_owned())
             .collect()
-    };
+    }};
 }
 
 /// Finds and returns the path to the configuration file.
@@ -41,31 +51,74 @@ pub fn find(file_name: &str) -> Result<PathBuf> {
 
 /// Finds and returns the path to the configuration file within the given configuration directory.
 ///
+/// By default, configuration directories are assumed to be beside the current executable. This can
+/// be overridden with the `APP_DIR` environmental variable. Setting this variable overrides the
+/// directory that is searched &mdash; this function does not fall back to the executable base
+/// directory.
+///
 /// # Parameters:
 ///
 /// * `conf_dir`: Directory relative to the executable in which to search for configuration.
 /// * `file_name`: Name of the file to search for.
 /// * `additional_base_dirs`: Additional base directories to look into. Useful at development time
-///     when configuration is generated and placed in a separate output directory.
+///   when configuration is generated and placed in a separate output directory.
 ///
-///     When compiled as `#[cfg(test)]`, `development_base_dirs!()` are automatically appended to
-///     the base directories to search in.
+/// # Examples
+///
+/// ```rust
+/// #[macro_use]
+/// extern crate application;
+///
+/// use application::resource::find_in;
+/// use application::resource::dir;
+///
+/// # fn main() {
+/// // Search for '<application_dir>/resources/config.ron'.
+/// let path = match find_in(
+///     dir::RESOURCES,
+///     "config.ron",
+///     Some(development_base_dirs!()))
+/// {
+///     Ok(path) => path,
+///     Err(e) => panic!("Failed to find configuration file: {}", e),
+/// };
+///
+/// println!("Path: {}", path.display());
+/// # }
+/// ```
 pub fn find_in<P: AsRef<Path> + AsRef<ffi::OsStr>>(
     conf_dir: P,
     file_name: &str,
     additional_base_dirs: Option<Vec<PathBuf>>,
 ) -> Result<PathBuf> {
-    let mut exe_dir = env::current_exe()?;
+    find_in_internal(
+        env::current_exe(),
+        conf_dir,
+        file_name,
+        additional_base_dirs,
+    )
+} // kcov-ignore
+
+#[inline]
+pub(crate) fn find_in_internal<P: AsRef<Path> + AsRef<ffi::OsStr>>(
+    current_exe_result: io::Result<PathBuf>,
+    conf_dir: P,
+    file_name: &str,
+    additional_base_dirs: Option<Vec<PathBuf>>,
+) -> Result<PathBuf> {
+    let mut exe_dir = current_exe_result?;
     exe_dir.pop();
 
-    let mut base_dirs = vec![exe_dir];
+    // Use `APP_DIR` environment directory if set, else default to executable parent directory.
+    let app_dir_env = env::var_os("APP_DIR");
+    let app_dir = app_dir_env
+        .as_ref()
+        .map_or(exe_dir, |env_app_dir| Path::new(env_app_dir).to_path_buf());
+
+    let mut base_dirs = vec![app_dir];
 
     if let Some(mut additional_dirs) = additional_base_dirs {
         base_dirs.append(&mut additional_dirs);
-    }
-
-    if cfg!(debug_assertions) {
-        base_dirs.push(development_base_dirs!());
     }
 
     for base_dir in &base_dirs {
@@ -111,7 +164,7 @@ mod test {
     test! {
         fn find_in_returns_resource_path_when_file_exists() {
             let (temp_dir, resource_path) =
-                setup_temp_file(dir::RESOURCES, "test__find_config", ".ron", None).unwrap();
+                setup_temp_file(dir::RESOURCES, "test__find_config", ".ron", None);
             let temp_dir = temp_dir.unwrap();
 
             let expected = temp_dir.path().join("test__find_config.ron");
@@ -132,7 +185,7 @@ mod test {
     test! {
         fn find_returns_resource_path_when_file_exists() {
             let (_, resource_path) =
-                setup_temp_file("", "test__find_config", ".ron", None).unwrap();
+                setup_temp_file("", "test__find_config", ".ron", None);
 
             assert_eq!( // kcov-ignore
                 exe_dir().join("test__find_config.ron"),
@@ -151,9 +204,6 @@ mod test {
                 find("test__find_config.ron").unwrap_err().kind()
             {
                 let mut base_dirs = vec![exe_dir()];
-                if cfg!(debug_assertions) {
-                    base_dirs.push(development_base_dirs!());
-                }
                 let expected = FindContext {
                     base_dirs,
                     conf_dir: PathBuf::from(""),
@@ -179,9 +229,6 @@ mod test {
 
             if let &ErrorKind::Find(ref find_context) = find_result.unwrap_err().kind() {
                 let mut base_dirs = vec![exe_dir()];
-                if cfg!(debug_assertions) {
-                    base_dirs.push(development_base_dirs!());
-                }
                 let expected = FindContext {
                     base_dirs,
                     conf_dir: PathBuf::from(""),
