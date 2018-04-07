@@ -298,7 +298,7 @@ mod test {
         let expected_discovery_context =
             DiscoveryContext::new(ASSETS, "Path is not a directory.", None);
         assert_dir_discovery_error(expected_discovery_context, assets_dir);
-    }
+    } // kcov-ignore
 
     #[test]
     fn assets_dir_returns_contextual_error_when_assets_symlink_points_to_non_existent_path() {
