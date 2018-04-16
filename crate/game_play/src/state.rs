@@ -1,7 +1,10 @@
 use amethyst;
+use amethyst::core::cgmath::{Matrix4, Vector3};
+use amethyst::core::transform::GlobalTransform;
 use amethyst::ecs::Entity;
 use amethyst::prelude::*;
-use amethyst::renderer::{Event, KeyboardInput, ScreenDimensions, VirtualKeyCode, WindowEvent};
+use amethyst::renderer::{Camera, Event, KeyboardInput, Projection, ScreenDimensions,
+                         VirtualKeyCode, WindowEvent};
 use amethyst::ui::{Anchor, Anchored, FontHandle, UiText, UiTransform};
 
 const FONT_SIZE: f32 = 17.;
@@ -13,6 +16,8 @@ const FONT_SIZE: f32 = 17.;
 pub struct State {
     /// Holds the info label.
     entity: Option<Entity>,
+    /// Camera entity
+    camera: Option<Entity>,
 }
 
 impl State {
@@ -52,11 +57,45 @@ impl State {
             .delete_entity(self.entity.take().expect("Expected entity to be set."))
             .expect("Failed to delete entity.");
     }
+
+    /// Initializes a camera to view the game.
+    fn initialize_camera(&mut self, world: &mut World) {
+        let (width, height) = {
+            let dim = world.read_resource::<ScreenDimensions>();
+            (dim.width(), dim.height())
+        };
+
+        let camera = world
+            .create_entity()
+            .with(Camera::from(Projection::orthographic(
+                0.0,
+                width,
+                height,
+                0.0,
+            )))
+            .with(GlobalTransform(Matrix4::from_translation(
+                Vector3::new(0.0, 0.0, 1.0).into(),
+            )))
+            .build();
+        self.camera = Some(camera);
+    }
+
+    /// Terminates the camera.
+    fn terminate_camera(&mut self, world: &mut World) {
+        world
+            .delete_entity(
+                self.camera
+                    .take()
+                    .expect("Expected camera entity to be set."),
+            )
+            .expect("Failed to delete camera entity.");
+    }
 }
 
 impl amethyst::State for State {
     fn on_start(&mut self, world: &mut World) {
         self.initialize_informative(world);
+        self.initialize_camera(world);
     }
 
     fn handle_event(&mut self, _: &mut World, event: Event) -> Trans {
@@ -80,6 +119,7 @@ impl amethyst::State for State {
     }
 
     fn on_stop(&mut self, world: &mut World) {
+        self.terminate_camera(world);
         self.terminate_informative(world);
     }
 }
