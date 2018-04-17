@@ -1200,6 +1200,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "object_config"
+version = "0.1.0"
+dependencies = [
+ "serde 1.0.38 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_derive 1.0.38 (registry+https://github.com/rust-lang/crates.io-index)",
+ "toml 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "odds"
 version = "0.2.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1856,6 +1865,14 @@ version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "toml"
+version = "0.4.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "serde 1.0.38 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "tuple_utils"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2336,6 +2353,7 @@ dependencies = [
 "checksum thread_local 0.3.5 (registry+https://github.com/rust-lang/crates.io-index)" = "279ef31c19ededf577bfd12dfae728040a21f635b06a24cd670ff510edd38963"
 "checksum time 0.1.39 (registry+https://github.com/rust-lang/crates.io-index)" = "a15375f1df02096fb3317256ce2cee6a1f42fc84ea5ad5fc8c421cfe40c73098"
 "checksum token_store 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "a686838375fc11103b9c1529c6508320b7bd5e2401cd62831ca51b3e82e61849"
+"checksum toml 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)" = "a0263c6c02c4db6c8f7681f9fd35e90de799ebd4cfdeab77a38f4ff6b3d8c0d9"
 "checksum tuple_utils 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "cbfecd7bb8f0a3e96b3b31c46af2677a55a588767c0091f484601424fcb20e7e"
 "checksum twox-hash 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "475352206e7a290c5fccc27624a163e8d0d115f7bb60ca18a64fc9ce056d7435"
 "checksum ucd-util 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "fd2be2d6639d0f8fe6cdda291ad456e23629558d466e2789d2c3e9892bda285d"
