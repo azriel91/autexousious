@@ -1,0 +1,13 @@
+[package]
+name = "game_config"
+version = "0.1.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+
+[dependencies]
+derive_more = "0.10"
+itertools = "~0.7.8"
+log = "0.4"
+object_config = { path = "../object_config" }
+
+[dev-dependencies]
+tempfile = "3.0"
