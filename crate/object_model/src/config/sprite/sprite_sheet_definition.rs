@@ -1,4 +1,4 @@
-use sprite::SpriteOffset;
+use config::sprite::SpriteOffset;
 
 /// Information about how sprites are laid out on the sprite sheet.
 ///

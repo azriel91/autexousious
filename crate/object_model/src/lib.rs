@@ -24,8 +24,7 @@ extern crate serde_derive;
 extern crate toml;
 
 pub use object_type::ObjectType;
-pub use sprite::{SpriteOffset, SpriteSheetDefinition, SpritesDefinition};
 
+pub mod config;
 pub mod loaded;
 mod object_type;
-mod sprite;

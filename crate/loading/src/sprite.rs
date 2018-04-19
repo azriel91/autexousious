@@ -1,5 +1,5 @@
 use amethyst::renderer::{Sprite, SpriteSheet};
-use object_model::SpriteSheetDefinition;
+use object_model::config::SpriteSheetDefinition;
 
 /// Converts a `SpriteSheetDefinition` into a `SpriteSheet`.
 ///
