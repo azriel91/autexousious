@@ -839,17 +839,6 @@ version = "0.1.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
-name = "game_config"
-version = "0.1.0"
-dependencies = [
- "derive_more 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "itertools 0.7.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "log 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "object_model 0.1.0",
- "tempfile 3.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
 name = "game_mode_menu"
 version = "0.1.0"
 dependencies = [
@@ -863,6 +852,17 @@ dependencies = [
  "log 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "rayon 0.8.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "rayon-core 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "game_model"
+version = "0.1.0"
+dependencies = [
+ "derive_more 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "itertools 0.7.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "object_model 0.1.0",
+ "tempfile 3.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -1110,7 +1110,7 @@ dependencies = [
  "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-error-chain 0.11.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "error-chain 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "game_config 0.1.0",
+ "game_model 0.1.0",
  "log 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "object_model 0.1.0",
  "toml 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",

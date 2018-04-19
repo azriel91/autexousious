@@ -10,7 +10,7 @@ extern crate derivative;
 #[macro_use]
 extern crate derive_error_chain;
 extern crate error_chain;
-extern crate game_config;
+extern crate game_model;
 #[macro_use]
 extern crate log;
 extern crate object_model;

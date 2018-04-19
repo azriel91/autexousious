@@ -9,7 +9,7 @@ amethyst_animation = { git = "https://github.com/azriel91/amethyst.git", branch 
 derivative = "1.0"
 derive-error-chain = "0.11"
 error-chain = "0.11"
-game_config = { path = "../game_config" }
+game_model = { path = "../game_model" }
 log = "0.4"
 object_model = { path = "../object_model" }
 toml = "0.4"
