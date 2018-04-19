@@ -1,5 +1,3 @@
-use std::path::PathBuf;
-
 use sprite::SpriteOffset;
 
 /// Information about how sprites are laid out on the sprite sheet.
@@ -8,7 +6,7 @@ use sprite::SpriteOffset;
 #[derive(Debug, Deserialize)]
 pub struct SpriteSheetDefinition {
     /// Path to the sprite sheet, relative to the object's directory.
-    pub path: PathBuf,
+    pub path: String,
     /// Width of each individual sprite on the sprite sheet.
     pub sprite_w: f32,
     /// Height of each individual sprite on the sprite sheet.
@@ -43,7 +41,7 @@ impl SpriteSheetDefinition {
     /// * `column_count`: Number of columns in the sprite sheet.
     /// * `has_border`: Whether or not there is a 1 pixel border between sprites.
     pub fn new(
-        path: PathBuf,
+        path: String,
         sprite_w: f32,
         sprite_h: f32,
         row_count: usize,

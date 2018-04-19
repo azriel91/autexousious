@@ -1,0 +1,15 @@
+[package]
+name = "loading"
+version = "0.1.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+
+[dependencies]
+amethyst = { git = "https://github.com/azriel91/amethyst.git", branch = "feature/634/sprite-rendering-and-animation" }
+amethyst_animation = { git = "https://github.com/azriel91/amethyst.git", branch = "feature/634/sprite-rendering-and-animation" }
+derivative = "1.0"
+derive-error-chain = "0.11"
+error-chain = "0.11"
+game_config = { path = "../game_config" }
+log = "0.4"
+object_config = { path = "../object_config" }
+toml = "0.4"

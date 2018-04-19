@@ -12,6 +12,11 @@
 //! [obj_type]: enum.ObjectType.html
 //! [spritesheet]: struct.SpriteSheetDefinition.html
 
+extern crate amethyst;
+#[macro_use]
+extern crate derive_more;
+#[macro_use]
+extern crate derivative;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
@@ -19,7 +24,8 @@ extern crate serde_derive;
 extern crate toml;
 
 pub use object_type::ObjectType;
-pub use sprite::{SpriteOffset, SpriteSheetDefinition};
+pub use sprite::{SpriteOffset, SpriteSheetDefinition, SpritesDefinition};
 
+pub mod loaded;
 mod object_type;
 mod sprite;
