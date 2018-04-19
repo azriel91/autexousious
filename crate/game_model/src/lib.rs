@@ -7,8 +7,26 @@
 //! does not contain the types that represent actual configuration. Those are provided by the
 //! respective configuration crates.
 //!
-//! For example, this crate contains the `ConfigurationIndex` type, which stores where object configuration is, but
-//! does not contain `ObjectType` or `CharacterConfiguration`.
+//! For example, this crate contains the [`ConfigIndex`][cfg_index] type, which stores where object
+//! configuration is, but does not contain `ObjectType` or types for the various object types.
+//!
+//! # Examples
+//!
+//! ```rust
+//! extern crate game_model;
+//!
+//! use std::path::PathBuf;
+//!
+//! use game_model::config;
+//!
+//! fn main() {
+//!     let assets_dir = PathBuf::from(format!("{}/assets", env!("CARGO_MANIFEST_DIR")));
+//!     let config_index = config::index_configuration(&assets_dir);
+//!     println!("{:#?}", config_index);
+//! }
+//! ```
+//!
+//! [cfg_index]: config/enum.ConfigIndex.html
 
 #[macro_use]
 extern crate derive_more;
@@ -19,10 +37,4 @@ extern crate object_model;
 #[cfg(test)]
 extern crate tempfile;
 
-pub use discovery::index_configuration;
-pub use index::ConfigIndex;
-pub use index::ConfigRecord;
-
-mod config_type;
-mod discovery;
-mod index;
+pub mod config;

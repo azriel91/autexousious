@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use object_model::ObjectType;
 
-use index::config_record::ConfigRecord;
+use config::index::ConfigRecord;
 
 /// Index of all configuration records.
 #[derive(Debug, Default, PartialEq)]

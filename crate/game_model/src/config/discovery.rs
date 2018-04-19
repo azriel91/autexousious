@@ -6,8 +6,7 @@ use std::path::{Path, PathBuf};
 use itertools::Itertools;
 use object_model::ObjectType;
 
-use config_type::ConfigType;
-use index::{ConfigIndex, ConfigRecord};
+use config::{ConfigIndex, ConfigRecord, ConfigType};
 
 /// Directory under `assets` with the default application configuration.
 const DEFAULT_CONFIG_DIR: &str = "default";
@@ -172,7 +171,7 @@ mod test {
     use tempfile::tempdir;
 
     use super::{index_configuration, DEFAULT_CONFIG_DIR};
-    use index::{ConfigIndex, ConfigRecord};
+    use config::{ConfigIndex, ConfigRecord};
 
     #[test]
     fn empty_assets_directory_returns_empty_configuration_index() {

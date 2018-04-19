@@ -10,7 +10,7 @@
 //! * [`SpriteSheetDefinition`][spritesheet]: Defines how sprites are laid out on sprite sheets.
 //!
 //! [obj_type]: enum.ObjectType.html
-//! [spritesheet]: struct.SpriteSheetDefinition.html
+//! [spritesheet]: config/struct.SpriteSheetDefinition.html
 
 extern crate amethyst;
 #[macro_use]

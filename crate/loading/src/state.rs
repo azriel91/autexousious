@@ -3,7 +3,7 @@ use std::path::Path;
 
 use amethyst;
 use amethyst::prelude::*;
-use game_model;
+use game_model::config::index_configuration;
 use object_model::ObjectType;
 use object_model::loaded;
 
@@ -34,7 +34,7 @@ impl<'p, T: amethyst::State + 'static> amethyst::State for State<'p, T> {
     fn on_start(&mut self, world: &mut World) {
         // TODO: Start thread to load resources / assets.
 
-        let configuration_index = game_model::index_configuration(&self.assets_dir);
+        let configuration_index = index_configuration(&self.assets_dir);
         debug!("Indexed configuration: {:?}", &configuration_index);
 
         let mut object_loader = ObjectLoader { world };
