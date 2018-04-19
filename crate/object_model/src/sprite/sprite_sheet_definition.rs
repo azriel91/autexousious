@@ -6,6 +6,9 @@ use sprite::SpriteOffset;
 #[derive(Debug, Deserialize)]
 pub struct SpriteSheetDefinition {
     /// Path to the sprite sheet, relative to the object's directory.
+    ///
+    /// This is a `String` because Amethyst expects an `Into<String>` when loading an asset, and if
+    /// we store a `PathBuf`, it would need to re-allocate another `String`.
     pub path: String,
     /// Width of each individual sprite on the sprite sheet.
     pub sprite_w: f32,
