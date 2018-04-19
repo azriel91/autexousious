@@ -109,7 +109,6 @@ fn into_object_config_records(paths: &Vec<PathBuf>) -> HashMap<ObjectType, Vec<C
                 .iter()
                 .filter_map(into_read_dir_opt)
                 .map(|read_dir| {
-                    // panic!("{:?}", &read_dir);
                     read_dir
                         .filter_map(|entry| entry.ok())
                         .filter_map(|entry| {
@@ -147,6 +146,8 @@ fn into_config_records(paths: Vec<PathBuf>) -> Vec<ConfigRecord> {
 fn into_read_dir_opt(dir: &PathBuf) -> Option<ReadDir> {
     match dir.read_dir() {
         Ok(read_dir) => Some(read_dir),
+        // kcov-ignore-start
+        // There isn't much perceived value in automatically testing this
         Err(io_err) => match io_err.kind() {
             io::ErrorKind::NotFound => None,
             _ => {
@@ -158,6 +159,7 @@ fn into_read_dir_opt(dir: &PathBuf) -> Option<ReadDir> {
                 None
             }
         },
+        // kcov-ignore-end
     }
 }
 
@@ -176,7 +178,9 @@ mod test {
     fn empty_assets_directory_returns_empty_configuration_index() {
         let assets_dir = tempdir().unwrap();
 
+        // kcov-ignore-start
         assert_eq!(
+            // kcov-ignore-end
             ConfigIndex::default(),
             index_configuration(&assets_dir.path())
         );
@@ -187,7 +191,9 @@ mod test {
         let assets_dir = tempdir().unwrap();
         fs::create_dir(assets_dir.path().join(DEFAULT_CONFIG_DIR)).unwrap();
 
+        // kcov-ignore-start
         assert_eq!(
+            // kcov-ignore-end
             ConfigIndex::default(),
             index_configuration(&assets_dir.path())
         );
@@ -198,7 +204,9 @@ mod test {
         let assets_dir = tempdir().unwrap();
         fs::create_dir_all(assets_dir.path().join("default/object")).unwrap();
 
+        // kcov-ignore-start
         assert_eq!(
+            // kcov-ignore-end
             HashMap::new(),
             index_configuration(&assets_dir.path()).objects
         );
@@ -244,6 +252,22 @@ mod test {
                 ConfigRecord::new(path_char_a),
                 ConfigRecord::new(path_char_b),
             ]),
+            index_configuration(&assets_dir.path())
+                .objects
+                .get(&ObjectType::Character)
+        );
+    }
+
+    #[test]
+    fn ignores_files_in_object_type_directory() {
+        let assets_dir = tempdir().unwrap();
+        let path_char_a = assets_dir.path().join("default/object/character/char_a");
+        let path_char_b = assets_dir.path().join("default/object/character/char_b");
+        fs::create_dir_all(&path_char_a).unwrap();
+        fs::File::create(&path_char_b).unwrap();
+
+        assert_eq!(
+            Some(&vec![ConfigRecord::new(path_char_a)]),
             index_configuration(&assets_dir.path())
                 .objects
                 .get(&ObjectType::Character)
