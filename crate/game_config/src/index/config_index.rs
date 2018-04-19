@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use object_config::ObjectType;
+use object_model::ObjectType;
 
 use index::config_record::ConfigRecord;
 

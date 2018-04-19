@@ -11,5 +11,5 @@ derive-error-chain = "0.11"
 error-chain = "0.11"
 game_config = { path = "../game_config" }
 log = "0.4"
-object_config = { path = "../object_config" }
+object_model = { path = "../object_model" }
 toml = "0.4"

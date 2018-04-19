@@ -4,7 +4,7 @@ use std::io;
 use std::path::{Path, PathBuf};
 
 use itertools::Itertools;
-use object_config::ObjectType;
+use object_model::ObjectType;
 
 use config_type::ConfigType;
 use index::{ConfigIndex, ConfigRecord};
@@ -30,7 +30,7 @@ pub fn index_configuration(assets_dir: &Path) -> ConfigIndex {
 
     let objects = type_config_dirs
         .get(&ConfigType::Object)
-        .map_or(HashMap::new(), into_object_config_records);
+        .map_or(HashMap::new(), into_object_model_records);
 
     ConfigIndex { objects }
 }
@@ -87,7 +87,7 @@ fn into_type_config_dirs(config_dir: &PathBuf) -> Vec<(ConfigType, PathBuf)> {
 /// # Parameters
 ///
 /// * `paths`: Object configuration directories to traverse.
-fn into_object_config_records(paths: &Vec<PathBuf>) -> HashMap<ObjectType, Vec<ConfigRecord>> {
+fn into_object_model_records(paths: &Vec<PathBuf>) -> HashMap<ObjectType, Vec<ConfigRecord>> {
     ObjectType::variants()
         .into_iter()
         .filter_map(|object_type| {
@@ -105,7 +105,7 @@ fn into_object_config_records(paths: &Vec<PathBuf>) -> HashMap<ObjectType, Vec<C
 
             // Loop through all of the object type configuration directories, and list their child
             // directories. Each of these should be an object configuration directory.
-            let object_config_records = object_type_dir
+            let object_model_records = object_type_dir
                 .iter()
                 .filter_map(into_read_dir_opt)
                 .map(|read_dir| {
@@ -124,7 +124,7 @@ fn into_object_config_records(paths: &Vec<PathBuf>) -> HashMap<ObjectType, Vec<C
                 .flat_map(into_config_records)
                 .collect::<Vec<ConfigRecord>>();
 
-            Some((object_type, object_config_records))
+            Some((object_type, object_model_records))
         })
         .collect::<HashMap<ObjectType, Vec<ConfigRecord>>>()
 }
@@ -168,7 +168,7 @@ mod test {
     use std::collections::HashMap;
     use std::fs;
 
-    use object_config::ObjectType;
+    use object_model::ObjectType;
     use tempfile::tempdir;
 
     use super::{index_configuration, DEFAULT_CONFIG_DIR};

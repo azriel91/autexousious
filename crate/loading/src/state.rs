@@ -4,8 +4,8 @@ use std::path::Path;
 use amethyst;
 use amethyst::prelude::*;
 use game_config;
-use object_config::ObjectType;
-use object_config::loaded;
+use object_model::ObjectType;
+use object_model::loaded;
 
 use object_loader::ObjectLoader;
 

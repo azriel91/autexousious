@@ -15,7 +15,7 @@ extern crate derive_more;
 extern crate itertools;
 #[macro_use]
 extern crate log;
-extern crate object_config;
+extern crate object_model;
 #[cfg(test)]
 extern crate tempfile;
 

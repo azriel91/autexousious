@@ -13,7 +13,7 @@ extern crate error_chain;
 extern crate game_config;
 #[macro_use]
 extern crate log;
-extern crate object_config;
+extern crate object_model;
 extern crate toml;
 
 pub use state::State;

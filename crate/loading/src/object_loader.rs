@@ -6,8 +6,8 @@ use amethyst::prelude::*;
 use amethyst::renderer::{Material, MaterialDefaults, SpriteSheet, SpriteSheetHandle, TextureHandle};
 use amethyst_animation::MaterialTextureSet;
 use game_config::ConfigRecord;
-use object_config::SpritesDefinition;
-use object_config::loaded;
+use object_model::SpritesDefinition;
+use object_model::loaded;
 use toml;
 
 use error::Result;
