@@ -37,7 +37,7 @@ impl<'p, T: amethyst::State + 'static> amethyst::State for State<'p, T> {
         let configuration_index = index_configuration(&self.assets_dir);
         debug!("Indexed configuration: {:?}", &configuration_index);
 
-        let mut object_loader = ObjectLoader { world };
+        let mut object_loader = ObjectLoader::new(world);
 
         ObjectType::variants()
             .iter()

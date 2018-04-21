@@ -7,7 +7,7 @@ use object_model::config::SpriteSheetDefinition;
 ///
 /// * `index`: Index of the sprite sheet's texture in the `MaterialTextureSet`.
 /// * `definition`: Definition of the sprite layout on the sprite sheet.
-pub fn into_sprite_sheet((index, definition): (usize, &SpriteSheetDefinition)) -> SpriteSheet {
+pub fn into_sprite_sheet(index: usize, definition: &SpriteSheetDefinition) -> SpriteSheet {
     let mut sprites = Vec::with_capacity(definition.row_count * definition.column_count);
     let (offset_w, offset_h) = offset_distances(&definition);
     let (image_w, image_h) = (
