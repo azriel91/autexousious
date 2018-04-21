@@ -2182,12 +2182,14 @@ name = "will"
 version = "0.1.0"
 dependencies = [
  "amethyst 0.6.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/634/sprite-rendering-and-animation)",
+ "amethyst_animation 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/634/sprite-rendering-and-animation)",
  "application 0.1.0",
  "application_input 0.1.0",
  "application_robot 0.1.0",
  "application_ui 0.1.0",
  "assert_cli 0.5.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_mode_menu 0.1.0",
+ "loading 0.1.0",
  "stdio_view 0.1.0",
  "structopt 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt-derive 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",

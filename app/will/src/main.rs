@@ -3,12 +3,14 @@
 //! Opens an empty window.
 
 extern crate amethyst;
+extern crate amethyst_animation;
 #[macro_use]
 extern crate application;
 extern crate application_input;
 extern crate application_robot;
 extern crate application_ui;
 extern crate game_mode_menu;
+extern crate loading;
 extern crate stdio_view;
 extern crate structopt;
 #[macro_use]
@@ -16,14 +18,17 @@ extern crate structopt_derive;
 
 use std::process;
 
+use amethyst::core::transform::TransformBundle;
 use amethyst::input::InputBundle;
 use amethyst::prelude::*;
-use amethyst::renderer::{DisplayConfig, DrawFlat, Pipeline, PosNormTex, RenderBundle, Stage};
+use amethyst::renderer::{DisplayConfig, DrawFlat, Material, Pipeline, PosNormTex, RenderBundle,
+                         Stage};
 use amethyst::ui::{DrawUi, UiBundle};
+use amethyst_animation::AnimationBundle;
 use application::resource::dir::{self, assets_dir};
 use application::resource::find_in;
 use application_input::ApplicationInputBundle;
-use application_robot::RobotStateBuilder;
+use application_robot::RobotState;
 use application_ui::ApplicationUiBundle;
 use stdio_view::StdinSystem;
 use structopt::StructOpt;
@@ -36,13 +41,13 @@ struct Opt {
 }
 
 fn run(opt: &Opt) -> Result<(), amethyst::Error> {
-    let state = RobotStateBuilder::default()
-        .delegate(Box::new(game_mode_menu::State::new()))
-        .build()
-        .expect("Failed to build RobotState");
     let assets_dir = assets_dir(Some(development_base_dirs!()))?;
 
-    let mut app_builder = Application::build(assets_dir, state)?
+    let game_mode_menu_state = game_mode_menu::State::new();
+    let loading_state = loading::State::new(&assets_dir, Box::new(game_mode_menu_state));
+    let state = RobotState::new(loading_state);
+
+    let mut app_builder = Application::build(assets_dir.clone(), state)?
         .with_bundle(ApplicationInputBundle::new())?
         .with::<StdinSystem>(StdinSystem::new(), "StdinSystem", &[]);
 
@@ -69,6 +74,16 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(UiBundle::<String, String>::new())?
             .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
             .with_bundle(ApplicationUiBundle::new())?
+            // Provides sprite animation
+            .with_bundle(AnimationBundle::<u32, Material>::new(
+                "animation_control_system",
+                "sampler_interpolation_system",
+            ))?
+            // Handles transformations of textures
+            .with_bundle(
+                TransformBundle::new()
+                    .with_dep(&["animation_control_system", "sampler_interpolation_system"]),
+            )?
             .with_bundle(game_mode_menu::Bundle)?;
     }
 
