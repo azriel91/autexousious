@@ -30,12 +30,7 @@ impl<'w> ObjectLoader<'w> {
     }
 
     pub fn load_object(&mut self, config_record: &ConfigRecord) -> Result<loaded::Object> {
-        let sprites_path = config_record.directory.join("sprites.toml");
-        let mut sprites_toml = File::open(sprites_path)?;
-        let mut buffer = Vec::new();
-        sprites_toml.read_to_end(&mut buffer)?;
-
-        let sprites_definition = toml::from_slice::<SpritesDefinition>(&buffer)?;
+        let sprites_definition = self.load_sprites_definition(&config_record)?;
 
         let texture_index_offset = self.texture_index_offset;
         self.texture_index_offset += sprites_definition.sheets.len();
@@ -51,6 +46,16 @@ impl<'w> ObjectLoader<'w> {
 
         // TODO: Swap sprite_sheet_handles for animation handles
         Ok(loaded::Object::new(default_material, sprite_sheet_handles))
+    }
+
+    /// Loads the sprites definition from the object configuration directory.
+    fn load_sprites_definition(&self, config_record: &ConfigRecord) -> Result<SpritesDefinition> {
+        let sprites_path = config_record.directory.join("sprites.toml");
+        let mut sprites_toml = File::open(sprites_path)?;
+        let mut buffer = Vec::new();
+        sprites_toml.read_to_end(&mut buffer)?;
+
+        Ok(toml::from_slice::<SpritesDefinition>(&buffer)?)
     }
 
     /// Computes the Amethyst sprite sheets and returns the handles to the sprite sheets.
@@ -97,6 +102,12 @@ impl<'w> ObjectLoader<'w> {
         )
     }
 
+    /// Stores the texture handles into the global `MaterialTextureSet`.
+    ///
+    /// # Parameters
+    ///
+    /// * `texture_handles`: Texture handles to store.
+    /// * `texture_index_offset`: The texture index offset to begin with.
     fn store_textures_in_material_texture_set(
         &self,
         texture_handles: Vec<TextureHandle>,
