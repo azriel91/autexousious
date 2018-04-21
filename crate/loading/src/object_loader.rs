@@ -1,9 +1,10 @@
 use std::fs::File;
 use std::io::prelude::*;
 
-use amethyst::assets::{Handle, Loader};
+use amethyst::assets::{AssetStorage, Handle, Loader};
 use amethyst::prelude::*;
-use amethyst::renderer::{Material, MaterialDefaults, SpriteSheet, TextureHandle};
+use amethyst::renderer::{Material, MaterialDefaults, Mesh, MeshHandle, PosTex, SpriteSheet,
+                         TextureHandle};
 use amethyst_animation::{Animation, InterpolationFunction, MaterialChannel, MaterialPrimitive,
                          MaterialTextureSet, Sampler};
 use game_model::config::ConfigRecord;
@@ -43,6 +44,7 @@ impl<'w> ObjectLoader<'w> {
         self.texture_index_offset += sprites_definition.sheets.len();
 
         let sprite_sheets = self.load_sprite_sheets(&sprites_definition, texture_index_offset);
+        let mesh = self.create_mesh(&sprites_definition);
         let texture_handles = self.load_textures(sprites_definition);
         let default_material = self.create_default_material(&texture_handles);
 
@@ -55,7 +57,11 @@ impl<'w> ObjectLoader<'w> {
 
         self.store_textures_in_material_texture_set(texture_handles, texture_index_offset);
 
-        Ok(loaded::Object::new(default_material, animation_handles))
+        Ok(loaded::Object::new(
+            default_material,
+            mesh,
+            animation_handles,
+        ))
     }
 
     /// Loads the sprites definition from the object configuration directory.
@@ -76,6 +82,63 @@ impl<'w> ObjectLoader<'w> {
             .enumerate()
             .map(|(idx, definition)| into_sprite_sheet(texture_index_offset + idx, definition))
             .collect::<Vec<SpriteSheet>>()
+    }
+
+    /// Creates a mesh for mapping the object's sprites to screen.
+    fn create_mesh(&self, sprites_definition: &SpritesDefinition) -> MeshHandle {
+        let (sprite_w, sprite_h) = {
+            sprites_definition
+                .sheets
+                .first()
+                .map_or((1., 1.), |sheet_def| {
+                    (sheet_def.sprite_w, sheet_def.sprite_h)
+                })
+        };
+
+        let loader = self.world.read_resource::<Loader>();
+        loader.load_from_data(
+            Self::create_mesh_vertices(sprite_w, sprite_h).into(),
+            (),
+            &self.world.read_resource::<AssetStorage<Mesh>>(),
+        )
+    }
+
+    /// Returns a set of vertices that make up a rectangular mesh of the given size.
+    ///
+    /// This function expects pixel coordinates -- starting from the top left of the image. X increases
+    /// to the right, Y increases downwards.
+    ///
+    /// # Parameters
+    ///
+    /// * `sprite_w`: Width of each sprite, excluding the border pixel if any.
+    /// * `sprite_h`: Height of each sprite, excluding the border pixel if any.
+    fn create_mesh_vertices(sprite_w: f32, sprite_h: f32) -> Vec<PosTex> {
+        vec![
+            PosTex {
+                position: [0., 0., 0.],
+                tex_coord: [0., 0.],
+            },
+            PosTex {
+                position: [sprite_w, 0., 0.],
+                tex_coord: [1., 0.],
+            },
+            PosTex {
+                position: [0., sprite_h, 0.],
+                tex_coord: [0., 1.],
+            },
+            PosTex {
+                position: [sprite_w, sprite_h, 0.],
+                tex_coord: [1., 1.],
+            },
+            PosTex {
+                position: [0., sprite_h, 0.],
+                tex_coord: [0., 1.],
+            },
+            PosTex {
+                position: [sprite_w, 0., 0.],
+                tex_coord: [1., 0.],
+            },
+        ]
     }
 
     /// Loads the sprite sheet images as textures and returns the texture handles.
@@ -181,8 +244,7 @@ impl<'w> ObjectLoader<'w> {
         input.push(tick_counter);
 
         let texture_sampler = Self::texture_sampler(sequence, texture_index_offset, input.clone());
-        let sprite_offset_sampler =
-            Self::sprite_offset_sampler(sequence, texture_index_offset, sprite_sheets, input);
+        let sprite_offset_sampler = Self::sprite_offset_sampler(sequence, sprite_sheets, input);
 
         let loader = self.world.read_resource::<Loader>();
         let texture_animation_handle =
@@ -229,16 +291,13 @@ impl<'w> ObjectLoader<'w> {
 
     fn sprite_offset_sampler<SeqId>(
         sequence: &Sequence<SeqId>,
-        texture_index_offset: usize,
         sprite_sheets: &Vec<SpriteSheet>,
         input: Vec<f32>,
     ) -> Sampler<MaterialPrimitive> {
         let mut output = sequence
             .frames
             .iter()
-            .map(|frame| {
-                (&sprite_sheets[texture_index_offset + frame.sheet].sprites[frame.sprite]).into()
-            })
+            .map(|frame| (&sprite_sheets[frame.sheet].sprites[frame.sprite]).into())
             .collect::<Vec<MaterialPrimitive>>();
         let final_key_frame = {
             let last_frame = output.last();

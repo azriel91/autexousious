@@ -40,7 +40,7 @@ impl<'p, T: amethyst::State + 'static> amethyst::State for State<'p, T> {
 
         let mut object_loader = ObjectLoader::new(world);
 
-        ObjectType::variants()
+        let _loaded_objects_by_type = ObjectType::variants()
             .into_iter()
             .filter_map(|object_type| {
                 configuration_index
