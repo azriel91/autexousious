@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::fmt::Debug;
 use std::path::Path;
 
@@ -40,16 +41,25 @@ impl<'p, T: amethyst::State + 'static> amethyst::State for State<'p, T> {
         let mut object_loader = ObjectLoader::new(world);
 
         ObjectType::variants()
-            .iter()
-            .filter_map(|object_type| configuration_index.objects.get(object_type))
-            .map(|config_records| {
-                // config_records is the list of records for one object type
-                config_records
-                    .iter()
-                    .filter_map(|config_record| object_loader.load_object(config_record).ok())
-                    .collect::<Vec<loaded::Object>>()
+            .into_iter()
+            .filter_map(|object_type| {
+                configuration_index
+                    .objects
+                    .get(&object_type)
+                    .map(|config_records| (object_type, config_records))
             })
-            .collect::<Vec<Vec<loaded::Object>>>();
+            .map(|(object_type, config_records)| {
+                // config_records is the list of records for one object type
+                let loaded_objects = config_records
+                    .iter()
+                    .filter_map(|config_record| {
+                        object_loader.load_object(&object_type, config_record).ok()
+                    })
+                    .collect::<Vec<loaded::Object>>();
+
+                (object_type, loaded_objects)
+            })
+            .collect::<HashMap<ObjectType, Vec<loaded::Object>>>();
     }
 
     fn fixed_update(&mut self, _world: &mut World) -> Trans {

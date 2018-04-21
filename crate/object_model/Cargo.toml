@@ -5,8 +5,9 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 
 [dependencies]
 amethyst = { git = "https://github.com/azriel91/amethyst.git", branch = "feature/634/sprite-rendering-and-animation" }
-derive_more = "0.10"
+amethyst_animation = { git = "https://github.com/azriel91/amethyst.git", branch = "feature/634/sprite-rendering-and-animation" }
 derivative = "1.0"
+derive_more = "0.10"
 serde = "1.0"
 serde_derive = "1.0"
 

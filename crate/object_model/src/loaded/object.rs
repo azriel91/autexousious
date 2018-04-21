@@ -1,4 +1,6 @@
-use amethyst::renderer::{Material, SpriteSheetHandle};
+use amethyst::assets::Handle;
+use amethyst::renderer::Material;
+use amethyst_animation::Animation;
 
 /// Represents an in-game object that has been loaded.
 #[derive(Constructor, Derivative)]
@@ -10,10 +12,8 @@ pub struct Object {
     /// Amethyst requires us to set a default material for entities. If we don't then it panics.
     #[derivative(Debug = "ignore")]
     pub default_material: Material,
-    /// Handle to the sprite sheets that this object uses.
+    /// Handle to the animations that this object uses.
     ///
-    /// This should be replaced with animations when that part is implemented.
-    ///
-    /// Later on, that will be substituted with `Sequences` which will contain the animations.
-    pub sprite_sheets: Vec<SpriteSheetHandle>,
+    /// This should be substituted with `loaded::Sequences` which will contain the animations.
+    pub animations: Vec<Handle<Animation<Material>>>,
 }
