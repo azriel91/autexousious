@@ -4,6 +4,7 @@ use std::path::Path;
 
 use amethyst;
 use amethyst::prelude::*;
+use game_model::config::GameConfig;
 use game_model::config::index_configuration;
 use object_model::ObjectType;
 use object_model::loaded;
@@ -29,18 +30,13 @@ impl<'p, T: amethyst::State + 'static> State<'p, T> {
             next_state: Some(next_state),
         }
     }
-}
 
-impl<'p, T: amethyst::State + 'static> amethyst::State for State<'p, T> {
-    fn on_start(&mut self, world: &mut World) {
-        // TODO: Start thread to load resources / assets.
-
+    fn load_game_config(&mut self, world: &mut World) -> GameConfig {
         let configuration_index = index_configuration(&self.assets_dir);
         debug!("Indexed configuration: {:?}", &configuration_index);
 
         let mut object_loader = ObjectLoader::new(world);
-
-        let _loaded_objects_by_type = ObjectType::variants()
+        let loaded_objects_by_type = ObjectType::variants()
             .into_iter()
             .filter_map(|object_type| {
                 configuration_index
@@ -60,6 +56,18 @@ impl<'p, T: amethyst::State + 'static> amethyst::State for State<'p, T> {
                 (object_type, loaded_objects)
             })
             .collect::<HashMap<ObjectType, Vec<loaded::Object>>>();
+
+        GameConfig::new(loaded_objects_by_type)
+    }
+}
+
+impl<'p, T: amethyst::State + 'static> amethyst::State for State<'p, T> {
+    fn on_start(&mut self, world: &mut World) {
+        // TODO: Start thread to load resources / assets.
+
+        let game_config = self.load_game_config(world);
+
+        world.add_resource(game_config);
     }
 
     fn fixed_update(&mut self, _world: &mut World) -> Trans {
