@@ -27,7 +27,21 @@ impl<'w> ObjectLoader<'w> {
         sprites_toml.read_to_end(&mut buffer)?;
 
         let sprites_definition = toml::from_slice::<SpritesDefinition>(&buffer)?;
-        let sprite_sheet_handles = sprites_definition
+        let sprite_sheet_handles = self.load_sprite_sheets(&sprites_definition);
+        let texture_handles = self.load_textures(sprites_definition);
+        let default_material = self.create_default_material(&texture_handles);
+
+        // TODO: Load animations.
+
+        self.store_textures_in_material_texture_set(texture_handles);
+
+        // TODO: Swap sprite_sheet_handles for animation handles
+        Ok(loaded::Object::new(default_material, sprite_sheet_handles))
+    }
+
+    /// Computes the Amethyst sprite sheets and returns the handles to the sprite sheets.
+    fn load_sprite_sheets(&self, sprites_definition: &SpritesDefinition) -> Vec<SpriteSheetHandle> {
+        sprites_definition
             .sheets
             .iter()
             .enumerate() // TODO: Pass in a calculated sprite index
@@ -41,28 +55,31 @@ impl<'w> ObjectLoader<'w> {
                     &self.world.read_resource::<AssetStorage<SpriteSheet>>(),
                 )
             })
-            .collect::<Vec<SpriteSheetHandle>>();
+            .collect::<Vec<SpriteSheetHandle>>()
+    }
 
-        let texture_handles = sprites_definition
+    /// Loads the sprite sheet images as textures and returns the texture handles.
+    fn load_textures(&self, sprites_definition: SpritesDefinition) -> Vec<TextureHandle> {
+        sprites_definition
             .sheets
             .into_iter()
             .map(|sheet_definition| texture::load(sheet_definition.path, &self.world))
-            .collect::<Vec<TextureHandle>>();
+            .collect::<Vec<TextureHandle>>()
+    }
 
-        // Create default material for the object
-        let default_material = {
-            let mat_defaults = self.world.read_resource::<MaterialDefaults>();
-            texture_handles.first().map_or_else(
-                || mat_defaults.0.clone(),
-                |first_texture| Material {
-                    albedo: first_texture.clone(),
-                    ..mat_defaults.0.clone()
-                },
-            )
-        };
+    /// Returns a material with the albedo set to the first sprite sheet texture.
+    fn create_default_material(&self, texture_handles: &Vec<TextureHandle>) -> Material {
+        let mat_defaults = self.world.read_resource::<MaterialDefaults>();
+        texture_handles.first().map_or_else(
+            || mat_defaults.0.clone(),
+            |first_texture| Material {
+                albedo: first_texture.clone(),
+                ..mat_defaults.0.clone()
+            },
+        )
+    }
 
-        // TODO: Load animations.
-
+    fn store_textures_in_material_texture_set(&self, texture_handles: Vec<TextureHandle>) {
         // TODO: Use calculated sprite index when registering sprite sheet texture
         texture_handles
             .into_iter()
@@ -72,8 +89,5 @@ impl<'w> ObjectLoader<'w> {
                     .write_resource::<MaterialTextureSet>()
                     .insert(index, texture_handle);
             });
-
-        // TODO: Swap sprite_sheet_handles for animation handles
-        Ok(loaded::Object::new(default_material, sprite_sheet_handles))
     }
 }
