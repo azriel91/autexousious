@@ -870,7 +870,9 @@ name = "game_play"
 version = "0.1.0"
 dependencies = [
  "amethyst 0.6.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/634/sprite-rendering-and-animation)",
+ "amethyst_animation 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/634/sprite-rendering-and-animation)",
  "application_ui 0.1.0",
+ "game_model 0.1.0",
  "log 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 

@@ -21,8 +21,8 @@ use std::process;
 use amethyst::core::transform::TransformBundle;
 use amethyst::input::InputBundle;
 use amethyst::prelude::*;
-use amethyst::renderer::{DisplayConfig, DrawFlat, Material, Pipeline, PosNormTex, RenderBundle,
-                         Stage};
+use amethyst::renderer::{ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex,
+                         RenderBundle, Stage, ALPHA};
 use amethyst::ui::{DrawUi, UiBundle};
 use amethyst_animation::AnimationBundle;
 use application::resource::dir::{self, assets_dir};
@@ -62,17 +62,21 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
 
         let pipe = Pipeline::build().with_stage(
             Stage::with_backbuffer()
-                .clear_target([0., 0., 0., 1.], 1.)
-                .with_pass(DrawFlat::<PosNormTex>::new())
+                .clear_target([0., 0., 0., 0.], 1.)
+                .with_pass(DrawFlat::<PosTex>::new().with_transparency(
+                    ColorMask::all(),
+                    ALPHA,
+                    None,
+                ))
                 .with_pass(DrawUi::new()),
         );
 
         // `InputBundle` provides `InputHandler<A, B>`, needed by the `UiBundle` for mouse events.
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
         app_builder = app_builder
+            .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
             .with_bundle(InputBundle::<String, String>::new())?
             .with_bundle(UiBundle::<String, String>::new())?
-            .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
             .with_bundle(ApplicationUiBundle::new())?
             // Provides sprite animation
             .with_bundle(AnimationBundle::<u32, Material>::new(
@@ -87,7 +91,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(game_mode_menu::Bundle)?;
     }
 
-    let mut app = app_builder.build().expect("Fatal error");
+    let mut app = app_builder.build()?;
 
     app.run();
 

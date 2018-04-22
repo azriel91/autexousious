@@ -1,7 +1,7 @@
 /// Types of in-game objects.
 ///
 /// In-game objects are those that can be interacted with.
-#[derive(Debug, Hash, PartialEq, Eq)]
+#[derive(Clone, Debug, Hash, PartialEq, Eq)]
 pub enum ObjectType {
     /// Player or AI controllable objects.
     Character,

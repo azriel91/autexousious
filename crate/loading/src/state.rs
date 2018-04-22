@@ -57,7 +57,9 @@ impl<'p, T: amethyst::State + 'static> State<'p, T> {
             })
             .collect::<HashMap<ObjectType, Vec<loaded::Object>>>();
 
-        GameConfig::new(loaded_objects_by_type)
+        let game_config = GameConfig::new(loaded_objects_by_type);
+        debug!("Game configuration: {:?}", &game_config);
+        game_config
     }
 }
 

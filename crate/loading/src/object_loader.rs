@@ -45,9 +45,8 @@ impl<'w> ObjectLoader<'w> {
 
         let sprite_sheets = self.load_sprite_sheets(&sprites_definition, texture_index_offset);
         let mesh = self.create_mesh(&sprites_definition);
-        let texture_handles = self.load_textures(sprites_definition);
+        let texture_handles = self.load_textures(&config_record, &sprites_definition);
         let default_material = self.create_default_material(&texture_handles);
-
         let animation_handles = self.load_animations(
             &config_record,
             &object_type,
@@ -142,11 +141,27 @@ impl<'w> ObjectLoader<'w> {
     }
 
     /// Loads the sprite sheet images as textures and returns the texture handles.
-    fn load_textures(&self, sprites_definition: SpritesDefinition) -> Vec<TextureHandle> {
+    fn load_textures(
+        &self,
+        config_record: &ConfigRecord,
+        sprites_definition: &SpritesDefinition,
+    ) -> Vec<TextureHandle> {
         sprites_definition
             .sheets
-            .into_iter()
-            .map(|sheet_definition| texture::load(sheet_definition.path, &self.world))
+            .iter()
+            .map(|sheet_definition| {
+                texture::load(
+                    // TODO: resilient code
+                    String::from(
+                        config_record
+                            .directory
+                            .join(&sheet_definition.path)
+                            .to_str()
+                            .unwrap(),
+                    ),
+                    &self.world,
+                )
+            })
             .collect::<Vec<TextureHandle>>()
     }
 
@@ -177,9 +192,14 @@ impl<'w> ObjectLoader<'w> {
             .into_iter()
             .enumerate()
             .for_each(|(index, texture_handle)| {
+                let texture_index = texture_index_offset + index;
+                debug!(
+                    "Storing texture handle: `{:?}` in MaterialTextureSet index: `{:?}`",
+                    texture_handle, texture_index
+                );
                 self.world
                     .write_resource::<MaterialTextureSet>()
-                    .insert(texture_index_offset + index, texture_handle);
+                    .insert(texture_index, texture_handle);
             });
     }
 

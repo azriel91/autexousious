@@ -5,5 +5,7 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 
 [dependencies]
 amethyst = { git = "https://github.com/azriel91/amethyst.git", branch = "feature/634/sprite-rendering-and-animation" }
+amethyst_animation = { git = "https://github.com/azriel91/amethyst.git", branch = "feature/634/sprite-rendering-and-animation" }
 application_ui = { path = "../application_ui" }
+game_model = { path = "../game_model" }
 log = "0.4"

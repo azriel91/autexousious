@@ -3,7 +3,7 @@ use amethyst::renderer::{Material, MeshHandle};
 use amethyst_animation::Animation;
 
 /// Represents an in-game object that has been loaded.
-#[derive(Constructor, Derivative)]
+#[derive(Constructor, Clone, Derivative)]
 #[derivative(Debug)]
 pub struct Object {
     /// Default material for entities of this object.
