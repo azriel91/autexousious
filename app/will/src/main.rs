@@ -45,7 +45,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
 
     let game_mode_menu_state = game_mode_menu::State::new();
     let loading_state = loading::State::new(&assets_dir, Box::new(game_mode_menu_state));
-    let state = RobotState::new(loading_state);
+    let state = RobotState::new(Box::new(loading_state));
 
     let mut app_builder = Application::build(assets_dir.clone(), state)?
         .with_bundle(ApplicationInputBundle::new())?

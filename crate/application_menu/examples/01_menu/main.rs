@@ -37,8 +37,8 @@ use amethyst::renderer::{DisplayConfig, Pipeline, RenderBundle, Stage};
 use amethyst::ui::{DrawUi, UiBundle};
 use application::resource::dir;
 use application::resource::find_in;
-use application_robot::RobotStateBuilder;
-use application_robot::state::FixedTimeoutIntercept;
+use application_robot::RobotState;
+use application_robot::state::{FixedTimeoutIntercept, Intercept};
 use application_ui::ApplicationUiBundle;
 use structopt::StructOpt;
 
@@ -70,13 +70,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_pass(DrawUi::new()),
     );
 
-    let mut state = RobotStateBuilder::default()
-        .delegate(Box::new(main_menu::State::new()))
-        .build()
-        .unwrap();
-
-    // TODO: Use setter method, pending <https://gitlab.com/azriel91/autexousious/issues/17>
-    state.intercepts = {
+    let intercepts: Vec<Rc<Intercept>> = {
         if let Some(timeout) = opt.timeout {
             vec![
                 Rc::new(FixedTimeoutIntercept::new(Duration::from_millis(timeout))),
@@ -85,6 +79,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             vec![]
         }
     };
+    let state = RobotState::new_with_intercepts(Box::new(main_menu::State::new()), intercepts);
 
     let mut app = Application::build("assets", state)?
         .with_bundle(InputBundle::<String, String>::new())?

@@ -6,7 +6,7 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 [dependencies]
 amethyst = { git = "https://github.com/azriel91/amethyst.git", branch = "feature/634/sprite-rendering-and-animation" }
 application_input = { path = "../application_input" }
-derive_builder = "0.5"
+derivative = "1.0"
 itertools = "0.7"
 
 [dev-dependencies]
