@@ -1,3 +1,4 @@
+use std::cell::RefCell;
 use std::rc::Rc;
 
 use amethyst::prelude::*;
@@ -14,11 +15,11 @@ use state::intercept::ApplicationEventIntercept;
 pub struct RobotState {
     /// Intercepts to track and control application behaviour.
     ///
-    /// Rc<Intercept> is a trait object, which does not implement Sized, needed by the generated
+    /// Rc<RefCell<Intercept>> is a trait object, which does not implement Sized, needed by the generated
     /// setter from the `Builder` derive, so we instead provide default intercepts, and functions
     /// to toggle the enablement of certain `Intercept`s.
     #[derivative(Debug = "ignore")]
-    pub intercepts: Vec<Rc<Intercept>>,
+    pub intercepts: Vec<Rc<RefCell<Intercept>>>,
     /// State to delegate behaviour to.
     #[derivative(Debug = "ignore")]
     pub delegate: Box<State>,
@@ -34,7 +35,10 @@ impl RobotState {
     }
 
     /// Returns a new application robot state with only the specified intercepts.
-    pub fn new_with_intercepts(delegate: Box<State>, intercepts: Vec<Rc<Intercept>>) -> Self {
+    pub fn new_with_intercepts(
+        delegate: Box<State>,
+        intercepts: Vec<Rc<RefCell<Intercept>>>,
+    ) -> Self {
         RobotState {
             intercepts,
             delegate,
@@ -44,13 +48,13 @@ impl RobotState {
     /// Returns the default intercepts for a `RobotState`.
     ///
     /// Currently this only includes the `ApplicationEventIntercept`.
-    pub fn default_intercepts() -> Vec<Rc<Intercept>> {
-        vec![Rc::new(ApplicationEventIntercept::new())]
+    pub fn default_intercepts() -> Vec<Rc<RefCell<Intercept>>> {
+        vec![Rc::new(RefCell::new(ApplicationEventIntercept::new()))]
     }
 
     fn fold_trans_begin<F>(&mut self, mut intercept_fn: F) -> Option<Trans>
     where
-        F: FnMut(&mut Rc<Intercept>) -> Option<Trans>,
+        F: FnMut(&mut Rc<RefCell<Intercept>>) -> Option<Trans>,
     {
         let mut trans_opt = self.intercepts
             .iter_mut()
@@ -85,9 +89,9 @@ impl RobotState {
     fn wrap_trans_state(&mut self, trans_state: Box<State>) -> Box<State> {
         let intercepts = self.intercepts
             .iter()
-            .filter(|intercept| intercept.is_transitive())
+            .filter(|intercept| intercept.borrow().is_transitive())
             .map(|intercept| intercept.clone())
-            .collect::<Vec<Rc<Intercept>>>();
+            .collect::<Vec<Rc<RefCell<Intercept>>>>();
         Box::new(RobotState {
             intercepts,
             delegate: trans_state,
@@ -96,7 +100,7 @@ impl RobotState {
 
     fn fold_trans_end<F>(&mut self, state_trans: Trans, mut intercept_fn: F) -> Trans
     where
-        F: FnMut(&mut Rc<Intercept>, &Trans) -> Option<Trans>,
+        F: FnMut(&mut Rc<RefCell<Intercept>>, &Trans) -> Option<Trans>,
     {
         let intercept_trans = {
             let state_trans_ref = &state_trans;
@@ -119,58 +123,56 @@ impl State for RobotState {
     fn on_start(&mut self, world: &mut World) {
         self.intercepts
             .iter_mut()
-            .for_each(|intercept| Rc::get_mut(intercept).unwrap().on_start_begin(world));
+            .for_each(|intercept| intercept.borrow_mut().on_start_begin(world));
 
         self.delegate.on_start(world);
 
         self.intercepts
             .iter_mut()
-            .for_each(|intercept| Rc::get_mut(intercept).unwrap().on_start_end(world));
+            .for_each(|intercept| intercept.borrow_mut().on_start_end(world));
     }
 
     fn on_stop(&mut self, world: &mut World) {
         self.intercepts
             .iter_mut()
-            .for_each(|intercept| Rc::get_mut(intercept).unwrap().on_stop_begin(world));
+            .for_each(|intercept| intercept.borrow_mut().on_stop_begin(world));
 
         self.delegate.on_stop(world);
 
         self.intercepts
             .iter_mut()
-            .for_each(|intercept| Rc::get_mut(intercept).unwrap().on_stop_end(world));
+            .for_each(|intercept| intercept.borrow_mut().on_stop_end(world));
     }
 
     fn on_pause(&mut self, world: &mut World) {
         self.intercepts
             .iter_mut()
-            .for_each(|intercept| Rc::get_mut(intercept).unwrap().on_pause_begin(world));
+            .for_each(|intercept| intercept.borrow_mut().on_pause_begin(world));
 
         self.delegate.on_pause(world);
 
         self.intercepts
             .iter_mut()
-            .for_each(|intercept| Rc::get_mut(intercept).unwrap().on_pause_end(world));
+            .for_each(|intercept| intercept.borrow_mut().on_pause_end(world));
     }
 
     fn on_resume(&mut self, world: &mut World) {
         self.intercepts
             .iter_mut()
-            .for_each(|intercept| Rc::get_mut(intercept).unwrap().on_resume_begin(world));
+            .for_each(|intercept| intercept.borrow_mut().on_resume_begin(world));
 
         self.delegate.on_resume(world);
 
         self.intercepts
             .iter_mut()
-            .for_each(|intercept| Rc::get_mut(intercept).unwrap().on_resume_end(world));
+            .for_each(|intercept| intercept.borrow_mut().on_resume_end(world));
     }
 
     // TODO: Pending <https://gitlab.com/azriel91/autexousious/issues/16>
     // kcov-ignore-start
     fn handle_event(&mut self, world: &mut World, mut event: Event) -> Trans {
         let intercept_trans = self.fold_trans_begin(|intercept| {
-            Rc::get_mut(intercept)
-                .unwrap()
-                .handle_event_begin(world, &mut event)
+            intercept.borrow_mut().handle_event_begin(world, &mut event)
         });
         if let Some(trans) = intercept_trans {
             return trans;
@@ -179,17 +181,14 @@ impl State for RobotState {
         let trans = self.delegate.handle_event(world, event);
 
         self.fold_trans_end(trans, |intercept, trans| {
-            Rc::get_mut(intercept)
-                .unwrap()
-                .handle_event_end(world, trans)
+            intercept.borrow_mut().handle_event_end(world, trans)
         })
     }
     // kcov-ignore-end
 
     fn fixed_update(&mut self, world: &mut World) -> Trans {
-        let intercept_trans = self.fold_trans_begin(|intercept| {
-            Rc::get_mut(intercept).unwrap().fixed_update_begin(world)
-        });
+        let intercept_trans =
+            self.fold_trans_begin(|intercept| intercept.borrow_mut().fixed_update_begin(world));
         if let Some(trans) = intercept_trans {
             return trans;
         }
@@ -197,15 +196,13 @@ impl State for RobotState {
         let trans = self.delegate.fixed_update(world);
 
         self.fold_trans_end(trans, |intercept, trans| {
-            Rc::get_mut(intercept)
-                .unwrap()
-                .fixed_update_end(world, trans)
+            intercept.borrow_mut().fixed_update_end(world, trans)
         })
     }
 
     fn update(&mut self, world: &mut World) -> Trans {
         let intercept_trans =
-            self.fold_trans_begin(|intercept| Rc::get_mut(intercept).unwrap().update_begin(world));
+            self.fold_trans_begin(|intercept| intercept.borrow_mut().update_begin(world));
         if let Some(trans) = intercept_trans {
             return trans;
         }
@@ -213,7 +210,7 @@ impl State for RobotState {
         let trans = self.delegate.update(world);
 
         self.fold_trans_end(trans, |intercept, trans| {
-            Rc::get_mut(intercept).unwrap().update_end(world, trans)
+            intercept.borrow_mut().update_end(world, trans)
         })
     }
 }
@@ -238,7 +235,7 @@ mod test {
 
     fn setup(
         invocations: Invocations,
-        intercepts: Vec<Rc<Intercept>>,
+        intercepts: Vec<Rc<RefCell<Intercept>>>,
     ) -> (RobotState, World, Invocations) {
         let robot_state = RobotState::new_with_intercepts(
             Box::new(MockState::new(invocations.clone(), Trans::None)),
@@ -256,71 +253,71 @@ mod test {
 
     fn setup_with_no_op_intercepts() -> (RobotState, World, Invocations) {
         let invocations = Rc::new(RefCell::new(vec![]));
-        let intercepts: Vec<Rc<Intercept>> = vec![
-            Rc::new(MockIntercept {
+        let intercepts: Vec<Rc<RefCell<Intercept>>> = vec![
+            Rc::new(RefCell::new(MockIntercept {
                 id: 0,
                 invocations: invocations.clone(),
                 trans_begin: None,
                 trans_end: None,
                 transitive: false,
-            }),
-            Rc::new(MockIntercept {
+            })),
+            Rc::new(RefCell::new(MockIntercept {
                 id: 1,
                 invocations: invocations.clone(),
                 trans_begin: None,
                 trans_end: None,
                 transitive: false,
-            }),
+            })),
         ];
         setup(invocations, intercepts)
     }
 
     fn setup_with_begin_intercepts() -> (RobotState, World, Invocations) {
         let invocations = Rc::new(RefCell::new(vec![]));
-        let intercepts: Vec<Rc<Intercept>> = vec![
-            Rc::new(MockIntercept {
+        let intercepts: Vec<Rc<RefCell<Intercept>>> = vec![
+            Rc::new(RefCell::new(MockIntercept {
                 id: 0,
                 invocations: invocations.clone(),
                 trans_begin: None,
                 trans_end: None,
                 transitive: false,
-            }),
-            Rc::new(MockIntercept {
+            })),
+            Rc::new(RefCell::new(MockIntercept {
                 id: 1,
                 invocations: invocations.clone(),
                 trans_begin: Some(Trans::Pop),
                 trans_end: None,
                 transitive: false,
-            }),
-            Rc::new(MockIntercept {
+            })),
+            Rc::new(RefCell::new(MockIntercept {
                 id: 2,
                 invocations: invocations.clone(),
                 trans_begin: Some(Trans::Quit),
                 trans_end: None,
                 transitive: false,
-            }),
+            })),
         ];
         setup(invocations, intercepts)
     }
 
     fn setup_with_push_intercepts() -> (RobotState, World, Invocations) {
         let invocations = Rc::new(RefCell::new(vec![]));
-        let intercepts: Vec<Rc<Intercept>> = vec![
-            Rc::new(MockIntercept {
+        let intercepts: Vec<Rc<RefCell<Intercept>>> = vec![
+            Rc::new(RefCell::new(MockIntercept {
                 id: 0,
                 invocations: invocations.clone(),
                 trans_begin: None,
                 trans_end: None,
                 transitive: false,
-            }),
-            Rc::new(MockIntercept {
+            })),
+            Rc::new(RefCell::new(MockIntercept {
                 id: 3,
                 invocations: invocations.clone(),
                 trans_begin: None,
                 trans_end: None,
                 transitive: true,
-            }),
-            Rc::new(MockIntercept {
+            })),
+            Rc::new(RefCell::new(MockIntercept {
                 id: 4,
                 invocations: invocations.clone(),
                 trans_begin: Some(Trans::Push(Box::new(MockState::new(
@@ -329,35 +326,35 @@ mod test {
                 )))),
                 trans_end: None,
                 transitive: false,
-            }),
+            })),
         ];
         setup(invocations, intercepts)
     }
 
     fn setup_with_end_intercepts() -> (RobotState, World, Invocations) {
         let invocations = Rc::new(RefCell::new(vec![]));
-        let intercepts: Vec<Rc<Intercept>> = vec![
-            Rc::new(MockIntercept {
+        let intercepts: Vec<Rc<RefCell<Intercept>>> = vec![
+            Rc::new(RefCell::new(MockIntercept {
                 id: 0,
                 invocations: invocations.clone(),
                 trans_begin: None,
                 trans_end: None,
                 transitive: false,
-            }),
-            Rc::new(MockIntercept {
+            })),
+            Rc::new(RefCell::new(MockIntercept {
                 id: 1,
                 invocations: invocations.clone(),
                 trans_begin: None,
                 trans_end: Some(Trans::Pop),
                 transitive: false,
-            }),
-            Rc::new(MockIntercept {
+            })),
+            Rc::new(RefCell::new(MockIntercept {
                 id: 2,
                 invocations: invocations.clone(),
                 trans_begin: None,
                 trans_end: Some(Trans::Quit),
                 transitive: false,
-            }),
+            })),
         ];
         setup(invocations, intercepts)
     }
@@ -665,13 +662,13 @@ mod test {
 
         assert_eq!(
             vec![
-                Invocation::HandleEventBegin(0),
-                Invocation::HandleEventBegin(3),
-                Invocation::HandleEventBegin(4),
+                Invocation::UpdateBegin(0),
+                Invocation::UpdateBegin(3),
+                Invocation::UpdateBegin(4),
                 // Push
-                Invocation::HandleEventBegin(3),
-                Invocation::HandleEvent,
-                Invocation::HandleEventEnd(3),
+                Invocation::UpdateBegin(3),
+                Invocation::Update,
+                Invocation::UpdateEnd(3),
             ],
             *invocations.borrow()
         );

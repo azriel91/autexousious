@@ -27,6 +27,7 @@ extern crate structopt_derive;
 mod main_menu;
 mod other;
 
+use std::cell::RefCell;
 use std::process;
 use std::rc::Rc;
 use std::time::Duration;
@@ -70,10 +71,12 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_pass(DrawUi::new()),
     );
 
-    let intercepts: Vec<Rc<Intercept>> = {
+    let intercepts: Vec<Rc<RefCell<Intercept>>> = {
         if let Some(timeout) = opt.timeout {
             vec![
-                Rc::new(FixedTimeoutIntercept::new(Duration::from_millis(timeout))),
+                Rc::new(RefCell::new(FixedTimeoutIntercept::new(
+                    Duration::from_millis(timeout),
+                ))),
             ]
         } else {
             vec![]
