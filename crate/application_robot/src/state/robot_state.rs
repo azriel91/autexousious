@@ -197,7 +197,7 @@ impl State for RobotState {
 
         self.fold_trans_end(trans, |intercept, trans| {
             intercept.borrow_mut().fixed_update_end(world, trans)
-        })
+        }) // kcov-ignore
     }
 
     fn update(&mut self, world: &mut World) -> Trans {
@@ -211,7 +211,7 @@ impl State for RobotState {
 
         self.fold_trans_end(trans, |intercept, trans| {
             intercept.borrow_mut().update_end(world, trans)
-        })
+        }) // kcov-ignore
     }
 }
 
@@ -326,7 +326,7 @@ mod test {
                 )))),
                 trans_end: None,
                 transitive: false,
-            })),
+            })), // kcov-ignore
         ];
         setup(invocations, intercepts)
     }
@@ -357,7 +357,69 @@ mod test {
                     Trans::None,
                 )))),
                 transitive: false,
+            })), // kcov-ignore
+        ];
+        setup(invocations, intercepts)
+    }
+
+    fn setup_with_switch_begin_intercepts() -> (RobotState, World, Invocations) {
+        let invocations = Rc::new(RefCell::new(vec![]));
+        let intercepts: Vec<Rc<RefCell<Intercept>>> = vec![
+            Rc::new(RefCell::new(MockIntercept {
+                id: 0,
+                invocations: invocations.clone(),
+                trans_begin: None,
+                trans_end: None,
+                transitive: false,
             })),
+            Rc::new(RefCell::new(MockIntercept {
+                id: 3,
+                invocations: invocations.clone(),
+                trans_begin: None,
+                trans_end: None,
+                transitive: true,
+            })),
+            Rc::new(RefCell::new(MockIntercept {
+                id: 5,
+                invocations: invocations.clone(),
+                trans_begin: Some(Trans::Switch(Box::new(MockState::new(
+                    invocations.clone(),
+                    Trans::None,
+                )))),
+                trans_end: None,
+                transitive: false,
+            })), // kcov-ignore
+        ];
+        setup(invocations, intercepts)
+    }
+
+    fn setup_with_switch_end_intercepts() -> (RobotState, World, Invocations) {
+        let invocations = Rc::new(RefCell::new(vec![]));
+        let intercepts: Vec<Rc<RefCell<Intercept>>> = vec![
+            Rc::new(RefCell::new(MockIntercept {
+                id: 0,
+                invocations: invocations.clone(),
+                trans_begin: None,
+                trans_end: None,
+                transitive: false,
+            })),
+            Rc::new(RefCell::new(MockIntercept {
+                id: 3,
+                invocations: invocations.clone(),
+                trans_begin: None,
+                trans_end: None,
+                transitive: true,
+            })),
+            Rc::new(RefCell::new(MockIntercept {
+                id: 5,
+                invocations: invocations.clone(),
+                trans_begin: None,
+                trans_end: Some(Trans::Switch(Box::new(MockState::new(
+                    invocations.clone(),
+                    Trans::None,
+                )))),
+                transitive: false,
+            })), // kcov-ignore
         ];
         setup(invocations, intercepts)
     }
@@ -678,7 +740,7 @@ mod test {
     );
 
     #[test]
-    fn intercept_begin_state_is_wrapped_with_robot_state_with_passed_on_transitive_intercepts() {
+    fn intercept_begin_push_state_is_wrapped_with_robot_state_with_transitive_intercepts() {
         let (mut state, mut world, invocations) = setup_with_push_begin_intercepts();
 
         let mut trans = state.update(&mut world);
@@ -706,7 +768,7 @@ mod test {
     }
 
     #[test]
-    fn intercept_end_state_is_wrapped_with_robot_state_with_passed_on_transitive_intercepts() {
+    fn intercept_end_push_state_is_wrapped_with_robot_state_with_transitive_intercepts() {
         let (mut state, mut world, invocations) = setup_with_push_end_intercepts();
 
         let mut trans = state.update(&mut world);
@@ -729,6 +791,66 @@ mod test {
                 Invocation::UpdateEnd(3),
                 Invocation::UpdateEnd(4),
                 // Push
+                Invocation::UpdateBegin(3),
+                Invocation::Update,
+                Invocation::UpdateEnd(3),
+            ],
+            *invocations.borrow()
+        );
+    }
+
+    #[test]
+    fn intercept_begin_switch_state_is_wrapped_with_robot_state_with_transitive_intercepts() {
+        let (mut state, mut world, invocations) = setup_with_switch_begin_intercepts();
+
+        let mut trans = state.update(&mut world);
+
+        let dummy_state = MockState::new(Rc::new(RefCell::new(vec![])), Trans::None);
+        let expected_trans = Trans::Switch(Box::new(dummy_state));
+        assert_eq_trans(&expected_trans, &trans);
+
+        if let Trans::Switch(ref mut pushed_state) = trans {
+            pushed_state.update(&mut world);
+        }
+
+        assert_eq!(
+            vec![
+                Invocation::UpdateBegin(0),
+                Invocation::UpdateBegin(3),
+                Invocation::UpdateBegin(5),
+                // Switch
+                Invocation::UpdateBegin(3),
+                Invocation::Update,
+                Invocation::UpdateEnd(3),
+            ],
+            *invocations.borrow()
+        );
+    }
+
+    #[test]
+    fn intercept_end_switch_state_is_wrapped_with_robot_state_with_transitive_intercepts() {
+        let (mut state, mut world, invocations) = setup_with_switch_end_intercepts();
+
+        let mut trans = state.update(&mut world);
+
+        let dummy_state = MockState::new(Rc::new(RefCell::new(vec![])), Trans::None);
+        let expected_trans = Trans::Switch(Box::new(dummy_state));
+        assert_eq_trans(&expected_trans, &trans);
+
+        if let Trans::Switch(ref mut pushed_state) = trans {
+            pushed_state.update(&mut world);
+        }
+
+        assert_eq!(
+            vec![
+                Invocation::UpdateBegin(0),
+                Invocation::UpdateBegin(3),
+                Invocation::UpdateBegin(5),
+                Invocation::Update,
+                Invocation::UpdateEnd(0),
+                Invocation::UpdateEnd(3),
+                Invocation::UpdateEnd(5),
+                // Switch
                 Invocation::UpdateBegin(3),
                 Invocation::Update,
                 Invocation::UpdateEnd(3),
