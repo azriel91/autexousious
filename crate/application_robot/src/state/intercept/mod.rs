@@ -101,5 +101,12 @@ pub trait Intercept: Debug {
     fn update_end(&mut self, _world: &mut World, _state_trans: &Trans) -> Option<Trans> {
         None
     }
+    /// Returns whether this intercept should be shared with `Trans::Push` and `Trans::Switch`ed
+    /// `State`s.
+    ///
+    /// Defaults to `false`.
+    fn is_transitive(&self) -> bool {
+        false
+    }
 }
 // kcov-ignore-end

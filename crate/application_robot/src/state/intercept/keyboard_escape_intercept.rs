@@ -4,7 +4,7 @@ use amethyst::renderer::{Event, KeyboardInput, VirtualKeyCode, WindowEvent};
 use state::Intercept;
 
 /// Exits when the `Escape` key is pressed.
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct KeyboardEscapeIntercept;
 
 impl Intercept for KeyboardEscapeIntercept {

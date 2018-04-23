@@ -28,6 +28,7 @@ mod main_menu;
 mod other;
 
 use std::process;
+use std::rc::Rc;
 use std::time::Duration;
 
 use amethyst::input::InputBundle;
@@ -78,7 +79,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     state.intercepts = {
         if let Some(timeout) = opt.timeout {
             vec![
-                Box::new(FixedTimeoutIntercept::new(Duration::from_millis(timeout))),
+                Rc::new(FixedTimeoutIntercept::new(Duration::from_millis(timeout))),
             ]
         } else {
             vec![]
