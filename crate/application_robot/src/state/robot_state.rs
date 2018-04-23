@@ -56,7 +56,7 @@ impl RobotState {
     where
         F: FnMut(&mut Rc<RefCell<Intercept>>) -> Option<Trans>,
     {
-        let mut trans_opt = self.intercepts
+        let trans_opt = self.intercepts
             .iter_mut()
             .fold_while(None, |trans, intercept| {
                 if trans.is_none() {
@@ -67,35 +67,7 @@ impl RobotState {
             })
             .into_inner();
 
-        // When returning a `Trans` with a `State`, wrap it with a `RobotState` with the transitive
-        // intercepts.
-        if trans_opt.is_some() {
-            let trans = trans_opt.unwrap();
-            trans_opt = match trans {
-                Trans::Push(state) => Some(Trans::Push(self.wrap_trans_state(state))),
-                Trans::Switch(state) => Some(Trans::Switch(self.wrap_trans_state(state))),
-                _ => Some(trans),
-            };
-        }
-        trans_opt
-    }
-
-    /// Returns the provided `trans_state` with a `RobotState` that shares this state's transitive
-    /// `Intercept`s.
-    ///
-    /// # Parameters
-    ///
-    /// * `trans_state`: `State` that should be wrapped in a `RobotState`.
-    fn wrap_trans_state(&mut self, trans_state: Box<State>) -> Box<State> {
-        let intercepts = self.intercepts
-            .iter()
-            .filter(|intercept| intercept.borrow().is_transitive())
-            .map(|intercept| intercept.clone())
-            .collect::<Vec<Rc<RefCell<Intercept>>>>();
-        Box::new(RobotState {
-            intercepts,
-            delegate: trans_state,
-        })
+        trans_opt.map(|trans| self.wrap_trans(trans))
     }
 
     fn fold_trans_end<F>(&mut self, state_trans: Trans, mut intercept_fn: F) -> Trans
@@ -115,7 +87,35 @@ impl RobotState {
                 })
                 .into_inner()
         };
-        intercept_trans.unwrap_or(state_trans)
+        self.wrap_trans(intercept_trans.unwrap_or(state_trans))
+    }
+
+    /// When returning a `Trans` with a `State`, wrap it with a `RobotState` with the transitive
+    /// intercepts.
+    fn wrap_trans(&mut self, trans: Trans) -> Trans {
+        match trans {
+            Trans::Push(state) => Trans::Push(self.wrap_trans_state(state)),
+            Trans::Switch(state) => Trans::Switch(self.wrap_trans_state(state)),
+            _ => trans,
+        }
+    }
+
+    /// Returns the provided `trans_state` with a `RobotState` that shares this state's transitive
+    /// `Intercept`s.
+    ///
+    /// # Parameters
+    ///
+    /// * `trans_state`: `State` that should be wrapped in a `RobotState`.
+    fn wrap_trans_state(&mut self, trans_state: Box<State>) -> Box<State> {
+        let intercepts = self.intercepts
+            .iter()
+            .filter(|intercept| intercept.borrow().is_transitive())
+            .map(|intercept| intercept.clone())
+            .collect::<Vec<Rc<RefCell<Intercept>>>>();
+        Box::new(RobotState {
+            intercepts,
+            delegate: trans_state,
+        })
     }
 }
 
@@ -300,7 +300,7 @@ mod test {
         setup(invocations, intercepts)
     }
 
-    fn setup_with_push_intercepts() -> (RobotState, World, Invocations) {
+    fn setup_with_push_begin_intercepts() -> (RobotState, World, Invocations) {
         let invocations = Rc::new(RefCell::new(vec![]));
         let intercepts: Vec<Rc<RefCell<Intercept>>> = vec![
             Rc::new(RefCell::new(MockIntercept {
@@ -325,6 +325,37 @@ mod test {
                     Trans::None,
                 )))),
                 trans_end: None,
+                transitive: false,
+            })),
+        ];
+        setup(invocations, intercepts)
+    }
+
+    fn setup_with_push_end_intercepts() -> (RobotState, World, Invocations) {
+        let invocations = Rc::new(RefCell::new(vec![]));
+        let intercepts: Vec<Rc<RefCell<Intercept>>> = vec![
+            Rc::new(RefCell::new(MockIntercept {
+                id: 0,
+                invocations: invocations.clone(),
+                trans_begin: None,
+                trans_end: None,
+                transitive: false,
+            })),
+            Rc::new(RefCell::new(MockIntercept {
+                id: 3,
+                invocations: invocations.clone(),
+                trans_begin: None,
+                trans_end: None,
+                transitive: true,
+            })),
+            Rc::new(RefCell::new(MockIntercept {
+                id: 4,
+                invocations: invocations.clone(),
+                trans_begin: None,
+                trans_end: Some(Trans::Push(Box::new(MockState::new(
+                    invocations.clone(),
+                    Trans::None,
+                )))),
                 transitive: false,
             })),
         ];
@@ -647,8 +678,8 @@ mod test {
     );
 
     #[test]
-    fn trans_push_state_is_wrapped_with_robot_state_with_passed_on_transitive_intercepts() {
-        let (mut state, mut world, invocations) = setup_with_push_intercepts();
+    fn intercept_begin_state_is_wrapped_with_robot_state_with_passed_on_transitive_intercepts() {
+        let (mut state, mut world, invocations) = setup_with_push_begin_intercepts();
 
         let mut trans = state.update(&mut world);
 
@@ -665,6 +696,38 @@ mod test {
                 Invocation::UpdateBegin(0),
                 Invocation::UpdateBegin(3),
                 Invocation::UpdateBegin(4),
+                // Push
+                Invocation::UpdateBegin(3),
+                Invocation::Update,
+                Invocation::UpdateEnd(3),
+            ],
+            *invocations.borrow()
+        );
+    }
+
+    #[test]
+    fn intercept_end_state_is_wrapped_with_robot_state_with_passed_on_transitive_intercepts() {
+        let (mut state, mut world, invocations) = setup_with_push_end_intercepts();
+
+        let mut trans = state.update(&mut world);
+
+        let dummy_state = MockState::new(Rc::new(RefCell::new(vec![])), Trans::None);
+        let expected_trans = Trans::Push(Box::new(dummy_state));
+        assert_eq_trans(&expected_trans, &trans);
+
+        if let Trans::Push(ref mut pushed_state) = trans {
+            pushed_state.update(&mut world);
+        }
+
+        assert_eq!(
+            vec![
+                Invocation::UpdateBegin(0),
+                Invocation::UpdateBegin(3),
+                Invocation::UpdateBegin(4),
+                Invocation::Update,
+                Invocation::UpdateEnd(0),
+                Invocation::UpdateEnd(3),
+                Invocation::UpdateEnd(4),
                 // Push
                 Invocation::UpdateBegin(3),
                 Invocation::Update,

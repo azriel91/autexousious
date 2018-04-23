@@ -58,6 +58,10 @@ impl Intercept for ApplicationEventIntercept {
     fn update_begin(&mut self, world: &mut World) -> Option<Trans> {
         self.handle_application_events(world)
     }
+
+    fn is_transitive(&self) -> bool {
+        true
+    }
 }
 
 #[cfg(test)]

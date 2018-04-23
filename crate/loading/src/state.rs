@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::fmt::Debug;
-use std::path::Path;
+use std::path::PathBuf;
 
 use amethyst;
 use amethyst::prelude::*;
@@ -14,17 +14,17 @@ use object_loader::ObjectLoader;
 /// `State` where resource loading takes place.
 #[derive(Derivative)]
 #[derivative(Debug)]
-pub struct State<'p, T: amethyst::State + 'static> {
+pub struct State<T: amethyst::State + 'static> {
     /// Path to the assets directory.
-    assets_dir: &'p Path,
+    assets_dir: PathBuf,
     /// The `State` that follows this one.
     #[derivative(Debug(bound = "T: Debug"))]
     next_state: Option<Box<T>>,
 }
 
-impl<'p, T: amethyst::State + 'static> State<'p, T> {
+impl<'p, T: amethyst::State + 'static> State<T> {
     /// Returns a new `State`
-    pub fn new(assets_dir: &'p Path, next_state: Box<T>) -> Self {
+    pub fn new(assets_dir: PathBuf, next_state: Box<T>) -> Self {
         State {
             assets_dir,
             next_state: Some(next_state),
@@ -63,7 +63,7 @@ impl<'p, T: amethyst::State + 'static> State<'p, T> {
     }
 }
 
-impl<'p, T: amethyst::State + 'static> amethyst::State for State<'p, T> {
+impl<'p, T: amethyst::State + 'static> amethyst::State for State<T> {
     fn on_start(&mut self, world: &mut World) {
         // TODO: Start thread to load resources / assets.
 

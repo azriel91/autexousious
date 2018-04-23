@@ -60,6 +60,10 @@ impl Intercept for FixedTimeoutIntercept {
     fn on_stop_begin(&mut self, _: &mut World) {
         self.start_instant = None;
     }
+
+    fn is_transitive(&self) -> bool {
+        true
+    }
 }
 
 #[cfg(test)]
