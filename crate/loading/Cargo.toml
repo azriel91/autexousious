@@ -1,11 +1,15 @@
 [package]
-name = "game_play"
+name = "loading"
 version = "0.1.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop" }
 amethyst_animation = { git = "https://github.com/amethyst/amethyst.git", branch = "develop" }
-application_ui = { path = "../application_ui" }
+derivative = "1.0"
+derive-error-chain = "0.11"
+error-chain = "0.11"
 game_model = { path = "../game_model" }
 log = "0.4"
+object_model = { path = "../object_model" }
+toml = "0.4"

@@ -1,18 +1,20 @@
 use amethyst;
+use amethyst::core::cgmath::{Matrix4, Vector3};
+use amethyst::core::transform::{GlobalTransform, Transform};
 use amethyst::ecs::Entity;
 use amethyst::prelude::*;
-use amethyst::renderer::{Event, KeyboardInput, ScreenDimensions, VirtualKeyCode, WindowEvent};
-use amethyst::ui::{Anchor, Anchored, FontHandle, UiText, UiTransform};
-
-const FONT_SIZE: f32 = 17.;
+use amethyst::renderer::{Camera, Event, KeyboardInput, Material, Projection, ScreenDimensions,
+                         VirtualKeyCode, WindowEvent};
+use amethyst_animation::{get_animation_set, AnimationCommand, EndControl};
+use game_model::config::GameConfig;
 
 /// `State` where game play takes place.
-///
-/// Current implementation is a place holder until this is properly developed.
 #[derive(Debug, Default)]
 pub struct State {
-    /// Holds the info label.
-    entity: Option<Entity>,
+    /// Holds the entities in game.
+    entities: Vec<Entity>,
+    /// Camera entity
+    camera: Option<Entity>,
 }
 
 impl State {
@@ -21,42 +23,103 @@ impl State {
         Default::default()
     }
 
-    fn initialize_informative(&mut self, world: &mut World) {
-        let font = read_font(world);
-
-        let screen_w = {
+    fn initialize_entities(&mut self, world: &mut World) {
+        let (width, height) = {
             let dim = world.read_resource::<ScreenDimensions>();
-            dim.width()
+            (dim.width(), dim.height())
         };
-        let text_w = screen_w / 2.;
-        let text_h = 50.;
-        let text_transform = UiTransform::new("info".to_string(), 20., 20., 1., text_w, text_h, 0);
 
-        let info_entity = world
-            .create_entity()
-            .with(text_transform)
-            .with(UiText::new(
-                font,
-                "Press [Escape] to return to the previous menu.".to_string(),
-                [1., 1., 1., 1.],
-                FONT_SIZE,
-            ))
-            .with(Anchored::new(Anchor::Middle))
-            .build();
+        // This `Transform` moves the sprites to the middle of the window
+        let mut common_transform = Transform::default();
+        common_transform.translation = Vector3::new(width / 2., height / 2., 0.);
 
-        self.entity.get_or_insert(info_entity);
+        // TODO: Instead of cloning, build up a `Vec<Component>`.
+        let loaded_objects_by_type = {
+            let game_config = world.read_resource::<GameConfig>();
+            &game_config.loaded_objects_by_type.clone()
+        };
+        loaded_objects_by_type.values().for_each(|objects| {
+            objects.iter().for_each(|object| {
+                let animation_handle = object.animations.first().unwrap().clone();
+                let entity = world
+                    .create_entity()
+                    // The default `Material`, whose textures will be swapped based on the animation.
+                    .with(object.default_material.clone())
+                    // The `Animation` defines the mutation of the `MaterialAnimation`.
+                    .with(animation_handle.clone())
+                    // Shift sprite to some part of the window
+                    .with(common_transform.clone())
+                    // This defines the coordinates in the world, where the sprites should be drawn
+                    // relative to the entity
+                    .with(object.mesh.clone())
+                    // Used by the engine to compute and store the rendered position.
+                    .with(GlobalTransform::default())
+                    .build();
+
+                // We also need to trigger the animation, not just attach it to the entity
+                let mut animation_control_set_storage = world.write();
+                let animation_set =
+                    get_animation_set::<u32, Material>(&mut animation_control_set_storage, entity);
+                let animation_id = 0;
+                animation_set.add_animation(
+                    animation_id,
+                    &animation_handle,
+                    EndControl::Loop(None),
+                    30., // Rate at which the animation plays
+                    AnimationCommand::Start,
+                );
+
+                self.entities.push(entity);
+            });
+        });
     }
 
-    fn terminate_informative(&mut self, world: &mut World) {
+    fn terminate_entities(&mut self, world: &mut World) {
+        self.entities.drain(..).for_each(|entity| {
+            world
+                .delete_entity(entity)
+                .expect("Failed to delete game entity.");
+        });
+    }
+
+    /// Initializes a camera to view the game.
+    fn initialize_camera(&mut self, world: &mut World) {
+        let (width, height) = {
+            let dim = world.read_resource::<ScreenDimensions>();
+            (dim.width(), dim.height())
+        };
+
+        let camera = world
+            .create_entity()
+            .with(Camera::from(Projection::orthographic(
+                0.0,
+                width,
+                height,
+                0.0,
+            )))
+            .with(GlobalTransform(Matrix4::from_translation(
+                Vector3::new(0.0, 0.0, 1.0).into(),
+            )))
+            .build();
+        self.camera = Some(camera);
+    }
+
+    /// Terminates the camera.
+    fn terminate_camera(&mut self, world: &mut World) {
         world
-            .delete_entity(self.entity.take().expect("Expected entity to be set."))
-            .expect("Failed to delete entity.");
+            .delete_entity(
+                self.camera
+                    .take()
+                    .expect("Expected camera entity to be set."),
+            )
+            .expect("Failed to delete camera entity.");
     }
 }
 
 impl amethyst::State for State {
     fn on_start(&mut self, world: &mut World) {
-        self.initialize_informative(world);
+        self.initialize_camera(world);
+        self.initialize_entities(world);
     }
 
     fn handle_event(&mut self, _: &mut World, event: Event) -> Trans {
@@ -80,13 +143,7 @@ impl amethyst::State for State {
     }
 
     fn on_stop(&mut self, world: &mut World) {
-        self.terminate_informative(world);
+        self.terminate_entities(world);
+        self.terminate_camera(world);
     }
-}
-
-fn read_font(world: &mut World) -> FontHandle {
-    use application_ui::FontVariant::Regular;
-    world
-        .read_resource_with_id::<FontHandle>(Regular.into())
-        .clone()
 }
