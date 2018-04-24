@@ -19,7 +19,7 @@ impl TextureLoader {
     pub(super) fn load_textures(
         world: &World,
         object_directory: &Path,
-        sprite_sheet_definitions: &Vec<SpriteSheetDefinition>,
+        sprite_sheet_definitions: &[SpriteSheetDefinition],
     ) -> Vec<TextureHandle> {
         sprite_sheet_definitions
             .iter()

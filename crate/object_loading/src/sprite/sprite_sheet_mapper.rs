@@ -13,7 +13,7 @@ impl SpriteSheetMapper {
     /// * `sprite_sheet_definitions`: List of metadata for sprite sheets to map.
     pub(super) fn map(
         texture_index_offset: usize,
-        sprite_sheet_definitions: &Vec<SpriteSheetDefinition>,
+        sprite_sheet_definitions: &[SpriteSheetDefinition],
     ) -> Vec<SpriteSheet> {
         sprite_sheet_definitions
             .iter()

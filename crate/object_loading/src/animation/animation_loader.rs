@@ -27,7 +27,7 @@ impl AnimationLoader {
         config_record: &ConfigRecord,
         object_type: &ObjectType,
         texture_index_offset: usize,
-        sprite_sheets: &Vec<SpriteSheet>,
+        sprite_sheets: &[SpriteSheet],
     ) -> Result<Vec<Handle<Animation<Material>>>> {
         let object_toml = IoUtils::read_file(&config_record.directory.join("object.toml"))?;
 

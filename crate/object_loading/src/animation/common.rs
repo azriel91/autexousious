@@ -16,7 +16,7 @@ use object_model::config::object::Sequence;
 pub(super) fn into_animation<SeqId>(
     world: &World,
     texture_index_offset: usize,
-    sprite_sheets: &Vec<SpriteSheet>,
+    sprite_sheets: &[SpriteSheet],
     sequence: &Sequence<SeqId>,
 ) -> Animation<Material> {
     let mut input = Vec::with_capacity(sequence.frames.len() + 1);
@@ -74,7 +74,7 @@ fn texture_sampler<SeqId>(
 }
 
 fn sprite_offset_sampler<SeqId>(
-    sprite_sheets: &Vec<SpriteSheet>,
+    sprite_sheets: &[SpriteSheet],
     sequence: &Sequence<SeqId>,
     input: Vec<f32>,
 ) -> Sampler<MaterialPrimitive> {

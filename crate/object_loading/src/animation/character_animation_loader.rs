@@ -24,8 +24,8 @@ impl CharacterAnimationLoader {
     pub(super) fn load(
         world: &World,
         texture_index_offset: usize,
-        sprite_sheets: &Vec<SpriteSheet>,
-        object_toml: &Vec<u8>,
+        sprite_sheets: &[SpriteSheet],
+        object_toml: &[u8],
     ) -> Result<Vec<Handle<Animation<Material>>>> {
         let character_definition = toml::from_slice::<CharacterDefinition>(object_toml)?;
         let object_definition = character_definition.object_definition;

@@ -11,7 +11,7 @@ impl MaterialCreator {
     ///
     /// * `world`: `World` that contains the `MaterialDefaults`.
     /// * `texture_handles`: Texture handles of loaded images.
-    pub(super) fn create_default(world: &World, texture_handles: &Vec<TextureHandle>) -> Material {
+    pub(super) fn create_default(world: &World, texture_handles: &[TextureHandle]) -> Material {
         let mat_defaults = world.read_resource::<MaterialDefaults>();
         texture_handles.first().map_or_else(
             || mat_defaults.0.clone(),
