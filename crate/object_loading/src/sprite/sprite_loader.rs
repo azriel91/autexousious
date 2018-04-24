@@ -35,7 +35,7 @@ impl SpriteLoader {
             world,
             &config_record.directory,
             &sprites_definition.sheets,
-        );
+        )?;
 
         let default_material = MaterialCreator::create_default(world, &texture_handles);
 

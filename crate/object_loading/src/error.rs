@@ -72,6 +72,6 @@ mod test {
 
     #[derive(Debug, Deserialize)]
     struct Data {
-        val: u32,
+        val: u32, // kcov-ignore
     }
 }
