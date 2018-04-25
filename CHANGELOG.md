@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+* Loads object sprites and animations.
+* Creates an entity per object.
+
 ## 0.1.0 (2018-03-24)
 
 **Will:**
