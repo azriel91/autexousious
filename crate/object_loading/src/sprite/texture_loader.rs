@@ -43,10 +43,11 @@ impl TextureLoader {
             let failed_to_load = texture_results
                 .iter()
                 .filter(|result| result.is_err())
-                .map(|result| result.as_ref().unwrap_err().as_str())
+                .map(|result| result.as_ref().unwrap_err().as_str()) // kcov-ignore
                 .collect::<Vec<&str>>();
 
             if !failed_to_load.is_empty() {
+                // kcov-ignore-start
                 let mut error_message = String::with_capacity(30 + failed_to_load.len() * 200);
                 error_message.push_str("Failed to load textures:\n\n");
                 failed_to_load.iter().for_each(|error| {
@@ -59,7 +60,7 @@ impl TextureLoader {
                 error!("{}", &error_message);
 
                 return Err(ErrorKind::Msg(error_message).into());
-            }
+            } // kcov-ignore-end
         }
 
         let texture_handles = texture_results

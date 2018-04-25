@@ -15,6 +15,7 @@ object_model = { path = "../object_model" }
 toml = "0.4"
 
 [dev-dependencies]
+application = { path = "../application" }
 serde = "1.0"
 serde_derive = "1.0"
 tempfile = "3.0"

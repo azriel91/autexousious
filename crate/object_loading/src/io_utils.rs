@@ -16,6 +16,7 @@ impl IoUtils {
     ///
     /// * `file_path`: `Path` to the file to read.
     pub(crate) fn read_file<'f>(file_path: &Path) -> Result<Vec<u8>> {
+        debug!("Reading file: {}", file_path.display());
         let mut file = File::open(file_path)?;
         let mut buffer = Vec::new();
         file.read_to_end(&mut buffer)?;

@@ -20,5 +20,5 @@ impl MaterialCreator {
                 ..mat_defaults.0.clone()
             },
         )
-    }
+    } // kcov-ignore
 }

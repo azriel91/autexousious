@@ -5,6 +5,9 @@
 
 extern crate amethyst;
 extern crate amethyst_animation;
+#[cfg(test)]
+#[macro_use]
+extern crate application;
 #[macro_use]
 extern crate derive_error_chain;
 #[macro_use]
