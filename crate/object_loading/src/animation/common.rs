@@ -21,7 +21,7 @@ pub(super) fn into_animation<SeqId>(
 ) -> Animation<Material> {
     let mut input = Vec::with_capacity(sequence.frames.len() + 1);
     let mut tick_counter = 0.;
-    for frame in sequence.frames.iter() {
+    for frame in &sequence.frames {
         input.push(tick_counter);
         tick_counter += 1. + frame.wait as f32;
     }
@@ -57,7 +57,7 @@ fn texture_sampler<SeqId>(
     let final_key_frame = {
         let last_frame = output.last();
         if last_frame.is_some() {
-            Some(last_frame.unwrap().clone())
+            Some(*last_frame.unwrap())
         } else {
             None
         }
@@ -86,7 +86,7 @@ fn sprite_offset_sampler<SeqId>(
     let final_key_frame = {
         let last_frame = output.last();
         if last_frame.is_some() {
-            Some(last_frame.unwrap().clone())
+            Some(*last_frame.unwrap())
         } else {
             None
         }

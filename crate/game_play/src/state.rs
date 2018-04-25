@@ -97,9 +97,11 @@ impl State {
                 height,
                 0.0,
             )))
-            .with(GlobalTransform(Matrix4::from_translation(
-                Vector3::new(0.0, 0.0, 1.0).into(),
-            )))
+            .with(GlobalTransform(Matrix4::from_translation(Vector3::new(
+                0.0,
+                0.0,
+                1.0,
+            ))))
             .build();
         self.camera = Some(camera);
     }

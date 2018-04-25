@@ -26,7 +26,7 @@ impl SpriteLoader {
         texture_index_offset: usize,
         config_record: &ConfigRecord,
     ) -> Result<(Vec<SpriteSheet>, MeshHandle, Material)> {
-        let sprites_definition = Self::load_sprites_definition(&config_record)?;
+        let sprites_definition = Self::load_sprites_definition(config_record)?;
 
         let sprite_sheets =
             SpriteSheetMapper::map(texture_index_offset, &sprites_definition.sheets);

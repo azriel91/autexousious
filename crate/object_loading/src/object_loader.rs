@@ -32,7 +32,7 @@ impl ObjectLoader {
         let texture_index_offset = self.texture_index_offset;
 
         let (sprite_sheets, mesh, default_material) =
-            SpriteLoader::load(&world, texture_index_offset, &config_record)?;
+            SpriteLoader::load(world, texture_index_offset, config_record)?;
 
         let animation_handles = AnimationLoader::load(
             world,

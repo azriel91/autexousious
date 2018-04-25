@@ -19,7 +19,7 @@ impl SpriteSheetMapper {
             .iter()
             .enumerate()
             .map(|(idx, definition)| {
-                Self::into_sprite_sheet(texture_index_offset + idx, definition)
+                Self::definition_to_sprite_sheet(texture_index_offset + idx, definition)
             })
             .collect::<Vec<SpriteSheet>>()
     }
@@ -30,7 +30,7 @@ impl SpriteSheetMapper {
     ///
     /// * `index`: Index of the sprite sheet's texture in the `MaterialTextureSet`.
     /// * `definition`: Definition of the sprite layout on the sprite sheet.
-    fn into_sprite_sheet(index: usize, definition: &SpriteSheetDefinition) -> SpriteSheet {
+    fn definition_to_sprite_sheet(index: usize, definition: &SpriteSheetDefinition) -> SpriteSheet {
         let mut sprites = Vec::with_capacity(definition.row_count * definition.column_count);
         let (offset_w, offset_h) = Self::offset_distances(definition);
         let (image_w, image_h) = (
