@@ -49,9 +49,7 @@ impl<'p, T: amethyst::State + 'static> State<T> {
                 let loaded_objects = config_records
                     .iter()
                     .filter_map(|config_record| {
-                        object_loader
-                            .load_object(world, &object_type, config_record)
-                            .ok()
+                        object_loader.load(world, &object_type, config_record).ok()
                     })
                     .collect::<Vec<loaded::Object>>();
 

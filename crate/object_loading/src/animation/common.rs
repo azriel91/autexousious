@@ -54,14 +54,7 @@ fn texture_sampler<SeqId>(
         .iter()
         .map(|frame| MaterialPrimitive::Texture(texture_index_offset + frame.sheet as usize))
         .collect::<Vec<MaterialPrimitive>>();
-    let final_key_frame = {
-        let last_frame = output.last();
-        if last_frame.is_some() {
-            Some(*last_frame.unwrap())
-        } else {
-            None
-        }
-    };
+    let final_key_frame = output.last().cloned();
     if final_key_frame.is_some() {
         output.push(final_key_frame.unwrap());
     }
@@ -83,14 +76,7 @@ fn sprite_offset_sampler<SeqId>(
         .iter()
         .map(|frame| (&sprite_sheets[frame.sheet].sprites[frame.sprite]).into())
         .collect::<Vec<MaterialPrimitive>>();
-    let final_key_frame = {
-        let last_frame = output.last();
-        if last_frame.is_some() {
-            Some(*last_frame.unwrap())
-        } else {
-            None
-        }
-    };
+    let final_key_frame = output.last().cloned();
     if final_key_frame.is_some() {
         output.push(final_key_frame.unwrap());
     }
