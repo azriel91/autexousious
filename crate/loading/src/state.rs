@@ -9,7 +9,7 @@ use game_model::config::index_configuration;
 use object_model::ObjectType;
 use object_model::loaded;
 
-use object_loader::ObjectLoader;
+use object_loading::ObjectLoader;
 
 /// `State` where resource loading takes place.
 #[derive(Derivative)]
@@ -35,7 +35,7 @@ impl<'p, T: amethyst::State + 'static> State<T> {
         let configuration_index = index_configuration(&self.assets_dir);
         debug!("Indexed configuration: {:?}", &configuration_index);
 
-        let mut object_loader = ObjectLoader::new(world);
+        let mut object_loader = ObjectLoader::new();
         let loaded_objects_by_type = ObjectType::variants()
             .into_iter()
             .filter_map(|object_type| {
@@ -49,7 +49,7 @@ impl<'p, T: amethyst::State + 'static> State<T> {
                 let loaded_objects = config_records
                     .iter()
                     .filter_map(|config_record| {
-                        object_loader.load_object(&object_type, config_record).ok()
+                        object_loader.load(world, &object_type, config_record).ok()
                     })
                     .collect::<Vec<loaded::Object>>();
 

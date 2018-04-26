@@ -1,0 +1,53 @@
+# Sheet number for reference
+# 0
+[[sheets]]
+
+  # Path to the sprite sheet.
+  path = "bat_grey.png"
+
+  # Width of each sprite.
+  sprite_w = 32.0
+
+  # Height of each sprite.
+  sprite_h = 32.0
+
+  # Number of rows in the sprite sheet (count vertically).
+  row_count = 1
+
+  # Number of columns in the sprite sheet (count horizontally).
+  column_count = 6
+
+  # Whether there is a 1 pixel border on the right and bottom of each sprite.
+  #
+  # Defaults to `true`.
+  #
+  # This is `false` to cover that case in automated testing. The `bat_brown.png` definition tests
+  # the default `true` case.
+  has_border = false
+
+  offsets = [
+    # The x and y values are the pixel offsets of the sprite relative to the entity's
+    # position in the world.
+    { x =   4, y = 20 }, # 0
+    { x =  36, y = 20 }, # 1
+    { x =  68, y =  6 }, # 2
+    { x = 100, y = 20 }, # 3
+    { x = 132, y = 20 }, # 4
+    { x = 176, y =  7 }, # 5
+  ]
+
+# 1
+[[sheets]]
+  path = "bat_brown.png"
+  sprite_w = 31.0
+  sprite_h = 31.0
+  row_count = 1
+  column_count = 6
+  offsets = [
+    { x =   4, y = 20 }, # 0
+    { x =  36, y = 20 }, # 1
+    { x =  68, y =  6 }, # 2
+    { x = 100, y = 20 }, # 3
+    { x = 132, y = 20 }, # 4
+    { x = 176, y =  7 }, # 5
+  ]

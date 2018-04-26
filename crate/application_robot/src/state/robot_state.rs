@@ -110,7 +110,7 @@ impl RobotState {
         let intercepts = self.intercepts
             .iter()
             .filter(|intercept| intercept.borrow().is_transitive())
-            .map(|intercept| intercept.clone())
+            .cloned()
             .collect::<Vec<Rc<RefCell<Intercept>>>>();
         Box::new(RobotState {
             intercepts,

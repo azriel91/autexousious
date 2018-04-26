@@ -29,7 +29,7 @@ pub fn index_configuration(assets_dir: &Path) -> ConfigIndex {
 
     let objects = type_config_dirs
         .get(&ConfigType::Object)
-        .map_or(HashMap::new(), into_object_model_records);
+        .map_or(HashMap::new(), |paths| into_object_model_records(paths));
 
     ConfigIndex { objects }
 }
@@ -86,7 +86,7 @@ fn into_type_config_dirs(config_dir: &PathBuf) -> Vec<(ConfigType, PathBuf)> {
 /// # Parameters
 ///
 /// * `paths`: Object configuration directories to traverse.
-fn into_object_model_records(paths: &Vec<PathBuf>) -> HashMap<ObjectType, Vec<ConfigRecord>> {
+fn into_object_model_records(paths: &[PathBuf]) -> HashMap<ObjectType, Vec<ConfigRecord>> {
     ObjectType::variants()
         .into_iter()
         .filter_map(|object_type| {
