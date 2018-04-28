@@ -1,5 +1,5 @@
 use amethyst::core::bundle::{ECSBundle, Result};
-use amethyst::ecs::{DispatcherBuilder, World};
+use amethyst::ecs::prelude::{DispatcherBuilder, World};
 use application_menu::MenuItem;
 
 use index::Index;
@@ -9,21 +9,17 @@ use index::Index;
 pub struct Bundle;
 
 impl<'a, 'b> ECSBundle<'a, 'b> for Bundle {
-    fn build(
-        self,
-        world: &mut World,
-        builder: DispatcherBuilder<'a, 'b>,
-    ) -> Result<DispatcherBuilder<'a, 'b>> {
+    fn build(self, world: &mut World, _: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
         world.register::<MenuItem<Index>>();
 
-        Ok(builder)
+        Ok(())
     }
 }
 
 #[cfg(test)]
 mod test {
     use amethyst::core::bundle::ECSBundle;
-    use amethyst::ecs::{DispatcherBuilder, World};
+    use amethyst::ecs::prelude::{DispatcherBuilder, World};
     use application_menu::MenuItem;
 
     use super::Bundle;
@@ -32,10 +28,10 @@ mod test {
     #[test]
     fn build_adds_application_event_channel_to_world() {
         let mut world = World::new();
-        let builder = DispatcherBuilder::new();
+        let mut builder = DispatcherBuilder::new();
 
         Bundle
-            .build(&mut world, builder)
+            .build(&mut world, &mut builder)
             .expect("game_mode_menu::Bundle#build() should succeed");
 
         // If the component was not registered, the next line will panic

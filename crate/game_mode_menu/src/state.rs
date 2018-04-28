@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use amethyst;
-use amethyst::ecs::Entity;
+use amethyst::ecs::prelude::*;
 use amethyst::prelude::*;
 use amethyst::shred::ParSeq;
 use amethyst::shrev::{EventChannel, ReaderId};
@@ -135,7 +135,7 @@ mod test {
     use std::mem::discriminant;
     use std::sync::Arc;
 
-    use amethyst::ecs::World;
+    use amethyst::ecs::prelude::World;
     use amethyst::prelude::*;
     use amethyst::shrev::EventChannel;
     use amethyst::ui::UiEvent;

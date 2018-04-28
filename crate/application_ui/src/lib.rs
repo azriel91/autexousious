@@ -116,6 +116,7 @@
 //!     use amethyst::renderer::{Event, KeyboardInput, ScreenDimensions, VirtualKeyCode,
 //!                              WindowEvent};
 //!     use amethyst::ui::{FontHandle, UiResize, UiText, UiTransform};
+//!     use application_ui::{FontVariant, Theme};
 //!
 //!     const FONT_SIZE: f32 = 25.;
 //!
@@ -147,14 +148,14 @@
 //! #     }
 //!
 //!     fn initialize_text(world: &mut World) {
-//!         let (font_regular, font_bold, font_italic, font_bold_italic) = read_fonts(world);
+//!         let theme = read_theme(world);
 //!
 //!         let mut fonts = vec![
 //!             // font, text to display, y_offset
-//!             (font_regular, "regular", 0.),
-//!             (font_bold, "bold", 50.),
-//!             (font_italic, "italic", 100.),
-//!             (font_bold_italic, "bold_italic", 150.),
+//!             (theme.get(&FontVariant::Regular).unwrap(), "regular", 0.),
+//!             (theme.get(&FontVariant::Bold).unwrap(), "bold", 50.),
+//!             (theme.get(&FontVariant::Italic).unwrap(), "italic", 100.),
+//!             (theme.get(&FontVariant::BoldItalic).unwrap(), "bold_italic", 150.),
 //!         ];
 //!
 //!         fonts.drain(..).for_each(|(font, text, y_offset)| {
@@ -188,18 +189,8 @@
 //!         });
 //!     }
 //!
-//!     type FH = FontHandle;
-//!     fn read_fonts(world: &mut World) -> (FH, FH, FH, FH) {
-//!         // Each of the enum variants corresponds to a font ID.
-//!         use application_ui::FontVariant::{Bold, BoldItalic, Italic, Regular};
-//!         (
-//!             // The `clone()` calls here are necessary to obtain the `FontHandle`, as the
-//!             // `read_resource_with_id(..)` function returns a `Fetch` wrapper around the type.
-//!             world.read_resource_with_id::<FH>(Regular.into()).clone(),
-//!             world.read_resource_with_id::<FH>(Bold.into()).clone(),
-//!             world.read_resource_with_id::<FH>(Italic.into()).clone(),
-//!             world.read_resource_with_id::<FH>(BoldItalic.into()).clone(),
-//!         )
+//!     fn read_theme(world: &mut World) -> Theme {
+//!         world.read_resource::<Theme>()
 //!     }
 //! }
 //! ```
@@ -213,12 +204,19 @@ extern crate amethyst;
 #[macro_use]
 extern crate application;
 #[macro_use]
+extern crate derive_more;
+#[macro_use]
 extern crate serde;
+extern crate strum;
+#[macro_use]
+extern crate strum_macros;
 
 pub use bundle::ApplicationUiBundle;
 pub use font_config::FontConfig;
 pub use font_variant::FontVariant;
+pub use theme::Theme;
 
 mod bundle;
 mod font_config;
 mod font_variant;
+mod theme;

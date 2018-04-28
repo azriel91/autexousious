@@ -1,11 +1,12 @@
 use std::fmt::{Debug, Error, Formatter};
 use std::ops::{Deref, DerefMut};
 
-use amethyst::ecs::Entity;
+use amethyst::ecs::prelude::*;
 use amethyst::prelude::World;
 use amethyst::renderer::ScreenDimensions;
 use amethyst::ui::{Anchor, Anchored, FontHandle, MouseReactive, UiText, UiTransform};
 use application_menu::MenuItem;
+use application_ui::{FontVariant, Theme};
 
 use index::Index;
 
@@ -66,9 +67,11 @@ impl MenuBuildFn {
     }
 
     fn read_font(world: &mut World) -> FontHandle {
-        use application_ui::FontVariant::Bold;
-        world
-            .read_resource_with_id::<FontHandle>(Bold.into())
+        let theme = world.read_resource::<Theme>();
+        theme
+            .fonts
+            .get(&FontVariant::Bold)
+            .expect("Failed to get Bold font handle")
             .clone()
     } // kcov-ignore
 }
@@ -103,11 +106,11 @@ impl DerefMut for MenuBuildFn {
 mod test {
     use std::env;
 
-    use amethyst::Result;
     use amethyst::input::InputBundle;
     use amethyst::prelude::*;
     use amethyst::renderer::{DisplayConfig, Pipeline, RenderBundle, Stage};
     use amethyst::ui::{DrawUi, UiBundle};
+    use amethyst::Result;
     use application::resource::dir;
     use application::resource::find_in;
     use application_ui::ApplicationUiBundle;

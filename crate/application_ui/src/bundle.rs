@@ -1,15 +1,17 @@
 //! ECS input bundle for custom events
+use std::collections::HashMap;
 
 use amethyst::assets::{AssetStorage, Loader};
 use amethyst::core::bundle::{ECSBundle, Result};
-use amethyst::ecs::{DispatcherBuilder, World};
-use amethyst::ui::{FontAsset, TtfFormat};
+use amethyst::ecs::prelude::{DispatcherBuilder, World};
+use amethyst::ui::{FontAsset, FontHandle, TtfFormat};
 use application::resource;
 use application::resource::dir;
 use application::resource::load_in;
 
-use font_config::FontConfig;
-use font_variant::FontVariant;
+use FontConfig;
+use FontVariant;
+use Theme;
 
 /// Bundle that loads application UI assets.
 ///
@@ -48,11 +50,7 @@ impl Default for ApplicationUiBundle {
 }
 
 impl<'a, 'b> ECSBundle<'a, 'b> for ApplicationUiBundle {
-    fn build(
-        self,
-        world: &mut World,
-        builder: DispatcherBuilder<'a, 'b>,
-    ) -> Result<DispatcherBuilder<'a, 'b>> {
+    fn build(self, world: &mut World, _: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
         let font_config: FontConfig = load_in(
             dir::RESOURCES,
             self.font_config_name,
@@ -61,38 +59,41 @@ impl<'a, 'b> ECSBundle<'a, 'b> for ApplicationUiBundle {
         )?;
 
         // Order is important, this must align with `font_variant::FontVariant`
-        let mut font_paths = vec![
+        let font_paths = vec![
             (FontVariant::Regular, font_config.regular),
             (FontVariant::Bold, font_config.bold),
             (FontVariant::Italic, font_config.italic),
             (FontVariant::BoldItalic, font_config.bold_italic),
         ];
 
-        font_paths.drain(..).for_each(|(font_variant, font_path)| {
-            let font_handle = {
-                // `world` is borrowed immutably in here for `loader` and `font_storage`
+        let fonts = font_paths
+            .into_iter()
+            .map(|(font_variant, font_path)| {
                 let loader = world.read_resource::<Loader>();
                 let font_storage = world.read_resource::<AssetStorage<FontAsset>>();
-                loader.load(font_path, TtfFormat, (), (), &font_storage)
-            };
+                let font_handle = loader.load(font_path, TtfFormat, (), (), &font_storage);
+                (font_variant, font_handle)
+            })
+            .collect::<HashMap<FontVariant, FontHandle>>();
 
-            // `world` is borrowed mutably here to add the font handle
-            world.add_resource_with_id(font_handle, font_variant.into());
-        });
+        world.add_resource(Theme::new(fonts));
 
-        Ok(builder)
+        Ok(())
     }
 }
 
 #[cfg(test)]
 mod test {
-    use amethyst::Result;
+    use amethyst::core::transform::TransformBundle;
     use amethyst::input::InputBundle;
     use amethyst::prelude::*;
-    use amethyst::ui::{FontHandle, UiBundle};
+    use amethyst::ui::UiBundle;
+    use amethyst::Result;
+    use strum::IntoEnumIterator;
 
     use super::ApplicationUiBundle;
-    use font_variant::FontVariant;
+    use FontVariant;
+    use Theme;
 
     fn setup<'a, 'b>(application_ui_bundle: ApplicationUiBundle) -> Result<Application<'a, 'b>> {
         // We need to instantiate an amethyst::Application because:
@@ -100,6 +101,7 @@ mod test {
         // * The `Loader` needs to be added to the world, and the code to do this is non-trivial
         // * The `AppBundle` in amethyst that does this is non-public
         Application::build(format!("{}/assets", env!("CARGO_MANIFEST_DIR")), MockState)?
+            .with_bundle(TransformBundle::new())?
             .with_bundle(InputBundle::<String, String>::new())?
             .with_bundle(UiBundle::<String, String>::new())?
             .with_bundle(application_ui_bundle)?
@@ -107,21 +109,15 @@ mod test {
     } // kcov-ignore
 
     #[test]
-    fn build_adds_font_to_world() {
+    fn build_adds_theme_with_fonts_to_world() {
         let app = setup(ApplicationUiBundle::new())
             .expect("Failed to build Application, check the bundle initialization code.");
 
         let world = &app.world;
 
-        // If the font was not added, the next line will panic
-        let _font_handle_regular =
-            world.read_resource_with_id::<FontHandle>(FontVariant::Regular as usize);
-        let _font_handle_bold =
-            world.read_resource_with_id::<FontHandle>(FontVariant::Bold as usize);
-        let _font_handle_italic =
-            world.read_resource_with_id::<FontHandle>(FontVariant::Italic as usize);
-        let _font_handle_bold_italic =
-            world.read_resource_with_id::<FontHandle>(FontVariant::BoldItalic as usize);
+        let theme = world.read_resource::<Theme>();
+        let fonts = &theme.fonts;
+        FontVariant::iter().for_each(|variant| assert!(fonts.contains_key(&variant)));
 
         // TODO: The following verification relies on https://github.com/redox-os/rusttype/issues/86
         // Need to import the hamcrest crate

@@ -1,5 +1,5 @@
 use amethyst::core::bundle::{ECSBundle, Result};
-use amethyst::ecs::{DispatcherBuilder, World};
+use amethyst::ecs::prelude::{DispatcherBuilder, World};
 use application_menu::MenuItem;
 
 use main_menu;
@@ -8,13 +8,9 @@ use main_menu;
 pub struct Bundle;
 
 impl<'a, 'b> ECSBundle<'a, 'b> for Bundle {
-    fn build(
-        self,
-        world: &mut World,
-        builder: DispatcherBuilder<'a, 'b>,
-    ) -> Result<DispatcherBuilder<'a, 'b>> {
+    fn build(self, world: &mut World, _: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
         world.register::<MenuItem<main_menu::Index>>();
 
-        Ok(builder)
+        Ok(())
     }
 }

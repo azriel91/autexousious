@@ -1,4 +1,4 @@
-use amethyst::ecs::{FetchMut, ReadStorage, System};
+use amethyst::ecs::prelude::{ReadStorage, System, Write};
 use amethyst::shrev::{EventChannel, ReaderId};
 use amethyst::ui::{UiEvent, UiEventType};
 use application_menu::{MenuEvent, MenuItem};
@@ -18,8 +18,8 @@ impl UiEventHandlerSystem {
 }
 
 type SystemData<'s> = (
-    FetchMut<'s, EventChannel<UiEvent>>,
-    FetchMut<'s, EventChannel<MenuEvent<main_menu::Index>>>,
+    Write<'s, EventChannel<UiEvent>>,
+    Write<'s, EventChannel<MenuEvent<main_menu::Index>>>,
     ReadStorage<'s, MenuItem<main_menu::Index>>,
 );
 

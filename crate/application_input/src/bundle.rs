@@ -1,7 +1,7 @@
 //! ECS input bundle for custom events
 
 use amethyst::core::bundle::{ECSBundle, Result};
-use amethyst::ecs::{DispatcherBuilder, World};
+use amethyst::ecs::prelude::{DispatcherBuilder, World};
 use amethyst::shrev::EventChannel;
 
 use event::ApplicationEvent;
@@ -21,21 +21,17 @@ impl ApplicationInputBundle {
 }
 
 impl<'a, 'b> ECSBundle<'a, 'b> for ApplicationInputBundle {
-    fn build(
-        self,
-        world: &mut World,
-        builder: DispatcherBuilder<'a, 'b>,
-    ) -> Result<DispatcherBuilder<'a, 'b>> {
+    fn build(self, world: &mut World, _: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
         world.add_resource(EventChannel::<ApplicationEvent>::with_capacity(100));
 
-        Ok(builder)
+        Ok(())
     }
 }
 
 #[cfg(test)]
 mod test {
     use amethyst::core::bundle::ECSBundle;
-    use amethyst::ecs::{DispatcherBuilder, World};
+    use amethyst::ecs::prelude::{DispatcherBuilder, World};
     use amethyst::shrev::EventChannel;
 
     use event::ApplicationEvent;
@@ -46,10 +42,10 @@ mod test {
     fn build_adds_application_event_channel_to_world() {
         let bundle = ApplicationInputBundle::new();
         let mut world = World::new();
-        let builder = DispatcherBuilder::new();
+        let mut builder = DispatcherBuilder::new();
 
         bundle
-            .build(&mut world, builder)
+            .build(&mut world, &mut builder)
             .expect("ApplicationInputBundle#build() should succeed");
 
         // If the event channel was not registered, the next line will panic

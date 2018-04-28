@@ -1,4 +1,4 @@
-use amethyst::ecs::{FetchMut, ReadStorage, System};
+use amethyst::ecs::prelude::{ReadStorage, System, Write};
 use amethyst::shrev::{EventChannel, ReaderId};
 use amethyst::ui::{UiEvent, UiEventType};
 use application_menu::{MenuEvent, MenuItem};
@@ -18,8 +18,8 @@ impl UiEventHandlerSystem {
 }
 
 type SystemData<'s> = (
-    FetchMut<'s, EventChannel<UiEvent>>,
-    FetchMut<'s, EventChannel<MenuEvent<Index>>>,
+    Write<'s, EventChannel<UiEvent>>,
+    Write<'s, EventChannel<MenuEvent<Index>>>,
     ReadStorage<'s, MenuItem<Index>>,
 );
 
@@ -52,7 +52,7 @@ impl<'s> System<'s> for UiEventHandlerSystem {
 mod test {
     use std::sync::Arc;
 
-    use amethyst::ecs::World;
+    use amethyst::ecs::prelude::World;
     use amethyst::shred::ParSeq;
     use amethyst::shrev::{EventChannel, ReaderId};
     use amethyst::ui::{UiEvent, UiEventType};

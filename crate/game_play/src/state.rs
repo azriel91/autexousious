@@ -1,7 +1,7 @@
 use amethyst;
 use amethyst::core::cgmath::{Matrix4, Vector3};
 use amethyst::core::transform::{GlobalTransform, Transform};
-use amethyst::ecs::Entity;
+use amethyst::ecs::prelude::*;
 use amethyst::prelude::*;
 use amethyst::renderer::{Camera, Event, KeyboardInput, Material, Projection, ScreenDimensions,
                          VirtualKeyCode, WindowEvent};
@@ -57,7 +57,7 @@ impl State {
                     .build();
 
                 // We also need to trigger the animation, not just attach it to the entity
-                let mut animation_control_set_storage = world.write();
+                let mut animation_control_set_storage = world.write_storage();
                 let animation_set =
                     get_animation_set::<u32, Material>(&mut animation_control_set_storage, entity);
                 let animation_id = 0;
@@ -92,15 +92,10 @@ impl State {
         let camera = world
             .create_entity()
             .with(Camera::from(Projection::orthographic(
-                0.0,
-                width,
-                height,
-                0.0,
+                0.0, width, height, 0.0,
             )))
             .with(GlobalTransform(Matrix4::from_translation(Vector3::new(
-                0.0,
-                0.0,
-                1.0,
+                0.0, 0.0, 1.0,
             ))))
             .build();
         self.camera = Some(camera);

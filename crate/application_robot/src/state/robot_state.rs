@@ -6,8 +6,8 @@ use amethyst::renderer::Event;
 use itertools::FoldWhile::{Continue, Done};
 use itertools::Itertools;
 
-use state::Intercept;
 use state::intercept::ApplicationEventIntercept;
+use state::Intercept;
 
 /// Wraps a delegate state with automation capabilities.
 #[derive(Derivative)]
@@ -221,7 +221,7 @@ mod test {
     use std::fmt::{self, Debug};
     use std::rc::Rc;
 
-    use amethyst::ecs::World;
+    use amethyst::ecs::prelude::World;
     use amethyst::prelude::*;
     use amethyst::renderer::{Event, WindowEvent};
     use debug_util_amethyst::{assert_eq_trans, display_trans};

@@ -32,14 +32,15 @@ use std::process;
 use std::rc::Rc;
 use std::time::Duration;
 
+use amethyst::core::transform::TransformBundle;
 use amethyst::input::InputBundle;
 use amethyst::prelude::*;
 use amethyst::renderer::{DisplayConfig, Pipeline, RenderBundle, Stage};
 use amethyst::ui::{DrawUi, UiBundle};
 use application::resource::dir;
 use application::resource::find_in;
-use application_robot::RobotState;
 use application_robot::state::{FixedTimeoutIntercept, Intercept};
+use application_robot::RobotState;
 use application_ui::ApplicationUiBundle;
 use structopt::StructOpt;
 
@@ -50,8 +51,9 @@ const TITLE: &str = "Example 01: Menu";
 struct Opt {
     #[structopt(short = "n", long = "no-run", help = "Don't run the Amethyst application")]
     no_run: bool,
-    #[structopt(short = "t", long = "timeout",
-                help = "Timeout to automatically close the application")]
+    #[structopt(
+        short = "t", long = "timeout", help = "Timeout to automatically close the application"
+    )]
     timeout: Option<u64>,
 }
 
@@ -73,11 +75,9 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
 
     let intercepts: Vec<Rc<RefCell<Intercept>>> = {
         if let Some(timeout) = opt.timeout {
-            vec![
-                Rc::new(RefCell::new(FixedTimeoutIntercept::new(
-                    Duration::from_millis(timeout),
-                ))),
-            ]
+            vec![Rc::new(RefCell::new(FixedTimeoutIntercept::new(
+                Duration::from_millis(timeout),
+            )))]
         } else {
             vec![]
         }
@@ -85,6 +85,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     let state = RobotState::new_with_intercepts(Box::new(main_menu::State::new()), intercepts);
 
     let mut app = Application::build("assets", state)?
+        .with_bundle(TransformBundle::new())?
         .with_bundle(InputBundle::<String, String>::new())?
         .with_bundle(UiBundle::<String, String>::new())?
         .with_bundle(RenderBundle::new(pipe, Some(display_config)))?

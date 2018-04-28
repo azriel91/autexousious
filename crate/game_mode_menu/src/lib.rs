@@ -17,8 +17,6 @@ extern crate game_play;
 #[macro_use]
 extern crate log;
 extern crate rayon;
-#[cfg(test)]
-extern crate rayon_core;
 
 pub use bundle::Bundle;
 pub use index::Index;

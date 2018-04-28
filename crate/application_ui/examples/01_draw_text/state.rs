@@ -1,6 +1,9 @@
+use amethyst::ecs::prelude::*;
 use amethyst::prelude::*;
 use amethyst::renderer::{Event, KeyboardInput, ScreenDimensions, VirtualKeyCode, WindowEvent};
-use amethyst::ui::{FontHandle, UiResize, UiText, UiTransform};
+use amethyst::shred::Fetch;
+use amethyst::ui::{UiResize, UiText, UiTransform};
+use application_ui::{FontVariant, Theme};
 
 const FONT_SIZE: f32 = 25.;
 
@@ -30,47 +33,53 @@ impl State for TextState {
 }
 
 fn initialize_text(world: &mut World) {
-    let (font_regular, font_bold, font_italic, font_bold_italic) = read_fonts(world);
+    let ui_text_components = {
+        let theme = read_theme(world);
 
-    let mut fonts = vec![
-        // font, text to display, y_offset
-        (font_regular, "regular", 0.),
-        (font_bold, "bold", 50.),
-        (font_italic, "italic", 100.),
-        (font_bold_italic, "bold_italic", 150.),
-    ];
+        let fonts = &theme.fonts;
+        let font_tuples = vec![
+            // font, text to display, y_offset
+            (fonts.get(&FontVariant::Regular).unwrap(), "regular", 0.),
+            (fonts.get(&FontVariant::Bold).unwrap(), "bold", 50.),
+            (fonts.get(&FontVariant::Italic).unwrap(), "italic", 100.),
+            (
+                fonts.get(&FontVariant::BoldItalic).unwrap(),
+                "bold_italic",
+                150.,
+            ),
+        ];
 
-    fonts.drain(..).for_each(|(font, text, y_offset)| {
-        let mut text_transform =
-            UiTransform::new(text.to_string(), 20., y_offset + 20., 1., 400., 100., 0);
-        let ui_text_size_fn = |_transform: &mut UiTransform, (_width, _height)| {};
-
-        {
+        let (screen_w, screen_h) = {
             let dim = world.read_resource::<ScreenDimensions>();
-            ui_text_size_fn(&mut text_transform, (dim.width(), dim.height()));
-        }
+            (dim.width(), dim.height())
+        };
 
+        font_tuples
+            .into_iter()
+            .map(|(font, text, y_offset)| {
+                let mut text_transform =
+                    UiTransform::new(text.to_string(), 20., y_offset + 20., 1., 400., 100., 0);
+                let ui_text_size_fn = |_transform: &mut UiTransform, (_width, _height)| {};
+                ui_text_size_fn(&mut text_transform, (screen_w, screen_h));
+
+                let ui_resize = UiResize(Box::new(ui_text_size_fn));
+                let ui_text =
+                    UiText::new(font.clone(), text.to_string(), [1., 1., 1., 1.], FONT_SIZE);
+                (text_transform, ui_text, ui_resize)
+            })
+            .collect::<Vec<(UiTransform, UiText, UiResize)>>()
+    };
+
+    for (text_transform, ui_text, ui_resize) in ui_text_components.into_iter() {
         world
             .create_entity()
             .with(text_transform)
-            .with(UiText::new(
-                font,
-                text.to_string(),
-                [1., 1., 1., 1.],
-                FONT_SIZE,
-            ))
-            .with(UiResize(Box::new(ui_text_size_fn)))
+            .with(ui_text)
+            .with(ui_resize)
             .build();
-    });
+    }
 }
 
-type FH = FontHandle;
-fn read_fonts(world: &mut World) -> (FH, FH, FH, FH) {
-    use application_ui::FontVariant::{Bold, BoldItalic, Italic, Regular};
-    (
-        world.read_resource_with_id::<FH>(Regular.into()).clone(),
-        world.read_resource_with_id::<FH>(Bold.into()).clone(),
-        world.read_resource_with_id::<FH>(Italic.into()).clone(),
-        world.read_resource_with_id::<FH>(BoldItalic.into()).clone(),
-    )
+fn read_theme<'w>(world: &'w World) -> Fetch<'w, Theme> {
+    world.read_resource::<Theme>()
 }

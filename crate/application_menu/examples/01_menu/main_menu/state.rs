@@ -1,12 +1,13 @@
 use std::sync::Arc;
 
 use amethyst;
-use amethyst::ecs::Entity;
+use amethyst::ecs::prelude::*;
 use amethyst::prelude::*;
 use amethyst::shred::ParSeq;
 use amethyst::shrev::{EventChannel, ReaderId};
 use amethyst::ui::{Anchor, Anchored, FontHandle, MouseReactive, UiText, UiTransform};
 use application_menu::{MenuEvent, MenuItem};
+use application_ui::{FontVariant, Theme};
 use rayon;
 
 use main_menu::{self, UiEventHandlerSystem};
@@ -48,7 +49,7 @@ impl State {
     }
 
     fn initialize_menu_items(&mut self, world: &mut World) {
-        let (_, font_bold, _, _) = read_fonts(world);
+        let font_bold = read_font(world);
 
         let mut item_indices = vec![main_menu::Index::StartGame, main_menu::Index::Exit];
         item_indices
@@ -140,13 +141,11 @@ impl amethyst::State for State {
     }
 }
 
-type FH = FontHandle;
-fn read_fonts(world: &mut World) -> (FH, FH, FH, FH) {
-    use application_ui::FontVariant::{Bold, BoldItalic, Italic, Regular};
-    (
-        world.read_resource_with_id::<FH>(Regular.into()).clone(),
-        world.read_resource_with_id::<FH>(Bold.into()).clone(),
-        world.read_resource_with_id::<FH>(Italic.into()).clone(),
-        world.read_resource_with_id::<FH>(BoldItalic.into()).clone(),
-    )
+fn read_font(world: &mut World) -> FontHandle {
+    let theme = world.read_resource::<Theme>();
+    theme
+        .fonts
+        .get(&FontVariant::Bold)
+        .expect("Failed to get Bold font handle")
+        .clone()
 }

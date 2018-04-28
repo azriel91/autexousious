@@ -74,10 +74,6 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         // `InputBundle` provides `InputHandler<A, B>`, needed by the `UiBundle` for mouse events.
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
         app_builder = app_builder
-            .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
-            .with_bundle(InputBundle::<String, String>::new())?
-            .with_bundle(UiBundle::<String, String>::new())?
-            .with_bundle(ApplicationUiBundle::new())?
             // Provides sprite animation
             .with_bundle(AnimationBundle::<u32, Material>::new(
                 "animation_control_system",
@@ -88,6 +84,10 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 TransformBundle::new()
                     .with_dep(&["animation_control_system", "sampler_interpolation_system"]),
             )?
+            .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
+            .with_bundle(InputBundle::<String, String>::new())?
+            .with_bundle(UiBundle::<String, String>::new())?
+            .with_bundle(ApplicationUiBundle::new())?
             .with_bundle(game_mode_menu::Bundle)?;
     }
 

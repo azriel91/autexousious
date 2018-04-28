@@ -1,5 +1,5 @@
 use amethyst;
-use amethyst::ecs::Entity;
+use amethyst::ecs::prelude::*;
 use amethyst::prelude::*;
 use amethyst::renderer::{Event, KeyboardInput, ScreenDimensions, VirtualKeyCode, WindowEvent};
 use amethyst::ui::{FontHandle, UiResize, UiText, UiTransform};
