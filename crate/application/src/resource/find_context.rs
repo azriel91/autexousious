@@ -22,15 +22,15 @@ pub struct FindContext {
 
 impl fmt::Display for FindContext {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
+        writeln!(
             f,
-            "Failed to find '{}' under any of the following directories:\n",
+            "Failed to find '{}' under any of the following directories:",
             self.conf_dir.join(&self.file_name).display()
         )?;
-        write!(f, "\n")?;
+        writeln!(f)?;
         for base_dir in &self.base_dirs {
-            write!(f, "* {}\n", base_dir.display())?;
+            writeln!(f, "* {}", base_dir.display())?;
         }
-        write!(f, "\n")
+        writeln!(f)
     }
 }
