@@ -57,8 +57,7 @@ mod test {
     use amethyst::shrev::{EventChannel, ReaderId};
     use amethyst::ui::{UiEvent, UiEventType};
     use application_menu::{MenuEvent, MenuItem};
-    use rayon::ThreadPool;
-    use rayon_core::ThreadPoolBuilder;
+    use rayon::{ThreadPool, ThreadPoolBuilder};
 
     use super::UiEventHandlerSystem;
     use index::Index;
@@ -78,7 +77,6 @@ mod test {
             menu_event_channel.register_reader()
         }; // kcov-ignore
 
-        // TODO: use rayon::ThreadPoolBuilder; https://github.com/amethyst/amethyst/pull/579
         let mut dispatcher = ParSeq::new(
             UiEventHandlerSystem::new(),
             Arc::new(ThreadPoolBuilder::new().build().unwrap()),

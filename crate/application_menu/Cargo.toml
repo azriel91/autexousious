@@ -13,7 +13,7 @@ application_ui = { path = "../application_ui" }
 assert_cli = "0.5"
 derivative = "1.0"
 log = "0.4"
-rayon = "0.8"
+rayon = "1.0"
 structopt = "0.1.6"
 structopt-derive = "0.1.6"
 

@@ -135,13 +135,13 @@ mod test {
     use std::mem::discriminant;
     use std::sync::Arc;
 
-    use amethyst::State as AmethystState;
     use amethyst::ecs::World;
     use amethyst::prelude::*;
     use amethyst::shrev::EventChannel;
     use amethyst::ui::UiEvent;
+    use amethyst::State as AmethystState;
     use application_menu::{MenuEvent, MenuItem};
-    use rayon_core::ThreadPoolBuilder;
+    use rayon::ThreadPoolBuilder;
 
     use super::State;
     use index::Index;
@@ -153,7 +153,6 @@ mod test {
 
     fn setup_with_menu_items(menu_build_fn: MenuBuildFn) -> (State, World) {
         let mut world = World::new();
-        // TODO: use rayon::ThreadPoolBuilder; https://github.com/amethyst/amethyst/pull/579
         world.add_resource(Arc::new(ThreadPoolBuilder::new().build().unwrap()));
         world.add_resource(EventChannel::<MenuEvent<Index>>::with_capacity(10));
         world.add_resource(EventChannel::<UiEvent>::with_capacity(10)); // needed by system
