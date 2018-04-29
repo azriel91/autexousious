@@ -18,11 +18,9 @@ extern crate game_play;
 extern crate log;
 extern crate rayon;
 
-pub use bundle::Bundle;
 pub use index::Index;
 pub use state::State;
 
-mod bundle;
 mod index;
 mod menu_build_fn;
 mod state;

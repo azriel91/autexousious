@@ -47,10 +47,12 @@ impl State {
     }
 
     fn initialize_dispatcher(&mut self, world: &mut World) {
-        self.dispatch = Some(ParSeq::new(
+        let mut dispatch = ParSeq::new(
             UiEventHandlerSystem::new(),
             world.read_resource::<Arc<rayon::ThreadPool>>().clone(),
-        ));
+        );
+        dispatch.setup(&mut world.res);
+        self.dispatch = Some(dispatch);
     }
 
     fn terminate_dispatcher(&mut self) {

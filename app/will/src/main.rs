@@ -27,7 +27,6 @@ use amethyst::ui::{DrawUi, UiBundle};
 use amethyst_animation::AnimationBundle;
 use application::resource::dir::{self, assets_dir};
 use application::resource::find_in;
-use application_input::ApplicationInputBundle;
 use application_robot::RobotState;
 use stdio_view::StdinSystem;
 use structopt::StructOpt;
@@ -46,9 +45,11 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     let loading_state = loading::State::new(assets_dir.clone(), Box::new(game_mode_menu_state));
     let state = RobotState::new(Box::new(loading_state));
 
-    let mut app_builder = Application::build(assets_dir, state)?
-        .with_bundle(ApplicationInputBundle::new())?
-        .with::<StdinSystem>(StdinSystem::new(), "StdinSystem", &[]);
+    let mut app_builder = Application::build(assets_dir, state)?.with::<StdinSystem>(
+        StdinSystem::new(),
+        "StdinSystem",
+        &[],
+    );
 
     if !opt.headless {
         let display_config = DisplayConfig::load(
@@ -85,8 +86,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             )?
             .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
             .with_bundle(InputBundle::<String, String>::new())?
-            .with_bundle(UiBundle::<String, String>::new())?
-            .with_bundle(game_mode_menu::Bundle)?;
+            .with_bundle(UiBundle::<String, String>::new())?;
     }
 
     let mut app = app_builder.build()?;

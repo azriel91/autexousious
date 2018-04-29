@@ -88,7 +88,6 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         .with_bundle(InputBundle::<String, String>::new())?
         .with_bundle(UiBundle::<String, String>::new())?
         .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
-        .with_bundle(main_menu::Bundle)?
         .build()
         .expect("Failed to build application.");
 

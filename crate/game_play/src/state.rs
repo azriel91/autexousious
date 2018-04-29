@@ -45,8 +45,6 @@ impl State {
                     .create_entity()
                     // The default `Material`, whose textures will be swapped based on the animation.
                     .with(object.default_material.clone())
-                    // The `Animation` defines the mutation of the `MaterialAnimation`.
-                    .with(animation_handle.clone())
                     // Shift sprite to some part of the window
                     .with(common_transform.clone())
                     // This defines the coordinates in the world, where the sprites should be drawn
