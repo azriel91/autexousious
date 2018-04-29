@@ -1,4 +1,4 @@
-use amethyst::ecs::prelude::{ReadStorage, System, Write};
+use amethyst::ecs::prelude::{ReadStorage, Resources, System, SystemData, Write};
 use amethyst::shrev::{EventChannel, ReaderId};
 use amethyst::ui::{UiEvent, UiEventType};
 use application_menu::{MenuEvent, MenuItem};
@@ -17,14 +17,14 @@ impl UiEventHandlerSystem {
     }
 }
 
-type SystemData<'s> = (
+type UiEventHandlerSystemData<'s> = (
     Write<'s, EventChannel<UiEvent>>,
     Write<'s, EventChannel<MenuEvent<main_menu::Index>>>,
     ReadStorage<'s, MenuItem<main_menu::Index>>,
 );
 
 impl<'s> System<'s> for UiEventHandlerSystem {
-    type SystemData = SystemData<'s>;
+    type SystemData = UiEventHandlerSystemData<'s>;
 
     fn run(&mut self, (mut ui_events, mut menu_events, menu_items): Self::SystemData) {
         if self.reader_id.is_none() {
@@ -45,5 +45,9 @@ impl<'s> System<'s> for UiEventHandlerSystem {
                 }
             }
         }
+    }
+
+    fn setup(&mut self, res: &mut Resources) {
+        Self::SystemData::setup(res);
     }
 }

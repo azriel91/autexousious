@@ -2,8 +2,8 @@ use amethyst::ecs::prelude::*;
 use amethyst::prelude::*;
 use amethyst::renderer::{Event, KeyboardInput, ScreenDimensions, VirtualKeyCode, WindowEvent};
 use amethyst::shred::Fetch;
-use amethyst::ui::{UiResize, UiText, UiTransform};
-use application_ui::{FontVariant, Theme};
+use amethyst::ui::{Anchor, Anchored, UiText, UiTransform};
+use application_ui::{FontVariant, Theme, ThemeLoader};
 
 const FONT_SIZE: f32 = 25.;
 
@@ -11,6 +11,7 @@ pub struct TextState;
 
 impl State for TextState {
     fn on_start(&mut self, world: &mut World) {
+        load_fonts(world);
         initialize_text(world);
     }
 
@@ -32,6 +33,10 @@ impl State for TextState {
     }
 }
 
+fn load_fonts(world: &mut World) {
+    ThemeLoader::load(world).expect("Failed to load fonts.");
+}
+
 fn initialize_text(world: &mut World) {
     let ui_text_components = {
         let theme = read_theme(world);
@@ -49,33 +54,36 @@ fn initialize_text(world: &mut World) {
             ),
         ];
 
-        let (screen_w, screen_h) = {
-            let dim = world.read_resource::<ScreenDimensions>();
-            (dim.width(), dim.height())
-        };
+        let screen_w = world.read_resource::<ScreenDimensions>().width();
+        let text_w = screen_w / 3.;
+        let text_h = 50.;
 
         font_tuples
             .into_iter()
             .map(|(font, text, y_offset)| {
-                let mut text_transform =
-                    UiTransform::new(text.to_string(), 20., y_offset + 20., 1., 400., 100., 0);
-                let ui_text_size_fn = |_transform: &mut UiTransform, (_width, _height)| {};
-                ui_text_size_fn(&mut text_transform, (screen_w, screen_h));
+                let text_transform = UiTransform::new(
+                    text.to_string(),
+                    text_w / 2. + 20.,
+                    text_h / 2. + y_offset + 20.,
+                    1.,
+                    text_w,
+                    text_h,
+                    0,
+                );
 
-                let ui_resize = UiResize(Box::new(ui_text_size_fn));
                 let ui_text =
                     UiText::new(font.clone(), text.to_string(), [1., 1., 1., 1.], FONT_SIZE);
-                (text_transform, ui_text, ui_resize)
+                (text_transform, ui_text)
             })
-            .collect::<Vec<(UiTransform, UiText, UiResize)>>()
+            .collect::<Vec<(UiTransform, UiText)>>()
     };
 
-    for (text_transform, ui_text, ui_resize) in ui_text_components.into_iter() {
+    for (text_transform, ui_text) in ui_text_components.into_iter() {
         world
             .create_entity()
             .with(text_transform)
             .with(ui_text)
-            .with(ui_resize)
+            .with(Anchored::new(Anchor::TopLeft))
             .build();
     }
 }

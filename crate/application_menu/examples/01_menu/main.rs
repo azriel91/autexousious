@@ -41,7 +41,6 @@ use application::resource::dir;
 use application::resource::find_in;
 use application_robot::state::{FixedTimeoutIntercept, Intercept};
 use application_robot::RobotState;
-use application_ui::ApplicationUiBundle;
 use structopt::StructOpt;
 
 const TITLE: &str = "Example 01: Menu";
@@ -89,7 +88,6 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         .with_bundle(InputBundle::<String, String>::new())?
         .with_bundle(UiBundle::<String, String>::new())?
         .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
-        .with_bundle(ApplicationUiBundle::new())?
         .with_bundle(main_menu::Bundle)?
         .build()
         .expect("Failed to build application.");

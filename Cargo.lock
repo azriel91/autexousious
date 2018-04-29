@@ -285,8 +285,10 @@ version = "0.2.0"
 dependencies = [
  "amethyst 0.6.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "application 0.2.0",
+ "application_robot 0.2.0",
  "assert_cli 0.5.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_more 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.43 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt-derive 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1143,6 +1145,7 @@ version = "0.2.0"
 dependencies = [
  "amethyst 0.6.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "amethyst_animation 0.1.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
+ "application_ui 0.2.0",
  "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_model 0.2.0",
  "log 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",

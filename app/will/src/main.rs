@@ -29,7 +29,6 @@ use application::resource::dir::{self, assets_dir};
 use application::resource::find_in;
 use application_input::ApplicationInputBundle;
 use application_robot::RobotState;
-use application_ui::ApplicationUiBundle;
 use stdio_view::StdinSystem;
 use structopt::StructOpt;
 
@@ -87,7 +86,6 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
             .with_bundle(InputBundle::<String, String>::new())?
             .with_bundle(UiBundle::<String, String>::new())?
-            .with_bundle(ApplicationUiBundle::new())?
             .with_bundle(game_mode_menu::Bundle)?;
     }
 

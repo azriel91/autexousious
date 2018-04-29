@@ -7,7 +7,7 @@ use amethyst::shred::ParSeq;
 use amethyst::shrev::{EventChannel, ReaderId};
 use amethyst::ui::{Anchor, Anchored, FontHandle, MouseReactive, UiText, UiTransform};
 use application_menu::{MenuEvent, MenuItem};
-use application_ui::{FontVariant, Theme};
+use application_ui::{FontVariant, Theme, ThemeLoader};
 use rayon;
 
 use main_menu::{self, UiEventHandlerSystem};
@@ -33,6 +33,10 @@ impl State {
         Default::default()
     }
 
+    fn load_theme(&self, world: &mut World) {
+        ThemeLoader::load(world).expect("Failed to load fonts.");
+    }
+
     fn initialize_menu_event_channel(&mut self, world: &mut World) {
         let mut menu_event_channel = EventChannel::<MenuEvent<main_menu::Index>>::with_capacity(20);
         let reader_id = menu_event_channel.register_reader();
@@ -51,20 +55,24 @@ impl State {
     fn initialize_menu_items(&mut self, world: &mut World) {
         let font_bold = read_font(world);
 
-        let mut item_indices = vec![main_menu::Index::StartGame, main_menu::Index::Exit];
+        let item_indices = vec![main_menu::Index::StartGame, main_menu::Index::Exit];
         item_indices
-            .drain(..)
+            .into_iter()
             .enumerate()
             .for_each(|(order, index)| {
-                let width = 400.;
-                let height = 100.;
+                let text_w = 400.;
+                let text_h = 50.;
+                let text_x = text_w / 2. + 20.;
+                let text_y = text_h / 2. + 20. + order as f32 * text_h;
+                debug!("({}, {}, {}, {})", text_x, text_y, text_w, text_h);
+
                 let text_transform = UiTransform::new(
                     index.title().to_string(),
-                    20. + (width / 2.),
-                    order as f32 * 50. + (height / 2.) + 20.,
+                    text_x,
+                    text_y,
                     1.,
-                    width,
-                    height,
+                    text_w,
+                    text_h,
                     0,
                 );
 
@@ -97,10 +105,14 @@ impl State {
 
 impl amethyst::State for State {
     fn on_start(&mut self, world: &mut World) {
-        self.dispatch = Some(ParSeq::new(
+        let mut dispatch = ParSeq::new(
             UiEventHandlerSystem::new(),
             world.read_resource::<Arc<rayon::ThreadPool>>().clone(),
-        ));
+        );
+        dispatch.setup(&mut world.res);
+        self.dispatch = Some(dispatch);
+
+        self.load_theme(world);
 
         self.initialize_menu_event_channel(world);
         self.initialize_menu_items(world);
