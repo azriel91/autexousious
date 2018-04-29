@@ -106,60 +106,67 @@ impl DerefMut for MenuBuildFn {
 mod test {
     use std::env;
 
+    use amethyst::core::transform::TransformBundle;
     use amethyst::input::InputBundle;
     use amethyst::prelude::*;
-    use amethyst::renderer::{DisplayConfig, Pipeline, RenderBundle, Stage};
-    use amethyst::ui::{DrawUi, UiBundle};
+    use amethyst::renderer::ScreenDimensions;
+    use amethyst::ui::UiBundle;
     use amethyst::Result;
-    use application::resource::dir;
-    use application::resource::find_in;
-    use application_ui::ApplicationUiBundle;
+    use application_ui::ThemeLoader;
 
     use super::MenuBuildFn;
-    use bundle::Bundle;
+    use GameModeMenuBundle;
 
-    fn setup<'a, 'b>() -> Result<Application<'a, 'b>> {
-        let display_config = DisplayConfig::load(
-            find_in(
-                dir::RESOURCES,
-                "display_config.ron",
-                Some(development_base_dirs!()),
-            ).unwrap(),
-        );
-
-        let pipe = Pipeline::build().with_stage(
-            Stage::with_backbuffer()
-                .clear_target([0., 0., 0., 1.], 1.)
-                .with_pass(DrawUi::new()),
-        );
-
+    fn setup<'a, 'b, F>(assertion_fn: Box<F>) -> Result<Application<'a, 'b>>
+    where
+        F: 'a + Fn(&mut World),
+    {
         // We need to instantiate an amethyst::Application because:
         //
         // * The `Loader` needs to be added to the world, and the code to do this is non-trivial
         // * The `AppBundle` in amethyst that does this is non-public
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
-        Application::build(format!("{}/assets", env!("CARGO_MANIFEST_DIR")), MockState)?
+        let mut app = Application::build(
+            format!("{}/assets", env!("CARGO_MANIFEST_DIR")),
+            MockState { assertion_fn },
+        )?.with_bundle(TransformBundle::new())?
             .with_bundle(InputBundle::<String, String>::new())?
             .with_bundle(UiBundle::<String, String>::new())?
-            // needed for ScreenDimensions
-            .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
-            .with_bundle(ApplicationUiBundle::new())?
-            .with_bundle(Bundle)?
-            .build()
+            .with_bundle(GameModeMenuBundle)?
+            .with_resource(ScreenDimensions::new(640, 480))
+            .build()?;
+
+        ThemeLoader::load(&mut app.world)?;
+
+        Ok(app)
     } // kcov-ignore
 
     #[test]
     fn initialize_menu_creates_entity_for_each_menu_index() {
-        let mut app = setup().expect("Failed to build Application.");
-        let mut menu_items = vec![];
+        let assertion_fn = |world: &mut World| {
+            let mut menu_items = vec![];
 
-        let mut mb_fn = MenuBuildFn::default();
-        (&mut *mb_fn)(&mut app.world, &mut menu_items);
+            let mut mb_fn = MenuBuildFn::default();
+            (&mut *mb_fn)(world, &mut menu_items);
 
-        assert_eq!(2, menu_items.len());
+            assert_eq!(2, menu_items.len());
+        };
+        setup(Box::new(assertion_fn))
+            .expect("Failed to build Application.")
+            .run(); // kcov-ignore
     }
 
     #[derive(Debug)]
-    struct MockState;
-    impl State for MockState {}
+    struct MockState<F: Fn(&mut World)> {
+        assertion_fn: Box<F>,
+    }
+    impl<F: Fn(&mut World)> State for MockState<F> {
+        fn on_start(&mut self, world: &mut World) {
+            (self.assertion_fn)(world);
+        }
+
+        fn fixed_update(&mut self, _world: &mut World) -> Trans {
+            Trans::Quit
+        }
+    }
 }

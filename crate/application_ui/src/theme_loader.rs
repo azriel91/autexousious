@@ -102,7 +102,7 @@ mod test {
 
         setup(Box::new(assertion_fn))
             .expect("Failed to build Application")
-            .run();
+            .run(); // kcov-ignore
     }
 
     #[test]
@@ -118,12 +118,12 @@ mod test {
                 }
             }
 
-            panic!("Expected resource `Find` error containing `non_existent.ron`");
+            panic!("Expected resource `Find` error containing `non_existent.ron`"); // kcov-ignore
         };
 
         setup(Box::new(assertion_fn))
             .expect("Failed to build Application")
-            .run();
+            .run(); // kcov-ignore
     }
 
     #[test]
@@ -138,13 +138,13 @@ mod test {
                 }
             }
 
-            panic!("Expected resource deserialization error");
+            panic!("Expected resource deserialization error"); // kcov-ignore
         };
 
         setup(Box::new(assertion_fn))
             .expect("Failed to build Application")
-            .run();
-    } // kcov-ignore
+            .run(); // kcov-ignore
+    }
 
     #[derive(Debug)]
     struct MockState<F: Fn(&mut World)> {
