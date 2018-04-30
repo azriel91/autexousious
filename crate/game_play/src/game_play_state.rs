@@ -1,4 +1,3 @@
-use amethyst;
 use amethyst::assets::Handle;
 use amethyst::core::cgmath::{Matrix4, Vector3};
 use amethyst::core::transform::{GlobalTransform, Transform};
@@ -11,15 +10,15 @@ use game_model::config::GameConfig;
 
 /// `State` where game play takes place.
 #[derive(Debug, Default)]
-pub struct State {
+pub struct GamePlayState {
     /// Holds the entities in game.
     entities: Vec<Entity>,
     /// Camera entity
     camera: Option<Entity>,
 }
 
-impl State {
-    /// Returns a new `game_play::State`.
+impl GamePlayState {
+    /// Returns a new `GamePlayState`.
     pub fn new() -> Self {
         Default::default()
     }
@@ -134,7 +133,7 @@ impl State {
     }
 }
 
-impl amethyst::State for State {
+impl State for GamePlayState {
     fn on_start(&mut self, world: &mut World) {
         self.initialize_camera(world);
         self.initialize_entities(world);
@@ -151,7 +150,7 @@ impl amethyst::State for State {
                         },
                     ..
                 } => {
-                    info!("Returning from `game_play::State`.");
+                    info!("Returning from `GamePlayState`.");
                     Trans::Pop
                 }
                 _ => Trans::None,

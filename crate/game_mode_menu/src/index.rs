@@ -1,5 +1,5 @@
 use amethyst::prelude::Trans;
-use game_play;
+use game_play::GamePlayState;
 
 /// Game mode menu indicies.
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -22,7 +22,7 @@ impl Index {
     /// Returns the transition when this index has been selected.
     pub fn trans(&self) -> Trans {
         match *self {
-            Index::StartGame => Trans::Push(Box::new(game_play::State::new())),
+            Index::StartGame => Trans::Push(Box::new(GamePlayState::new())),
             Index::Exit => Trans::Quit,
         }
     } // kcov-ignore
@@ -32,7 +32,7 @@ impl Index {
 mod test {
     use amethyst::prelude::*;
     use debug_util_amethyst::assert_eq_trans;
-    use game_play;
+    use game_play::GamePlayState;
 
     use super::Index;
 
@@ -49,7 +49,7 @@ mod test {
     #[test]
     fn start_game_trans_returns_push() {
         assert_eq_trans(
-            &Trans::Push(Box::new(game_play::State::new())),
+            &Trans::Push(Box::new(GamePlayState::new())),
             &Index::StartGame.trans(),
         );
     }

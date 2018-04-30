@@ -1,6 +1,5 @@
 use std::sync::Arc;
 
-use amethyst;
 use amethyst::ecs::prelude::*;
 use amethyst::prelude::*;
 use amethyst::shred::ParSeq;
@@ -20,7 +19,7 @@ use system::UiEventHandlerSystem;
 /// * Exit application.
 #[derive(Derivative, Default)]
 #[derivative(Debug)]
-pub struct State {
+pub struct GameModeMenuState {
     /// Dispatcher for UI handler system.
     #[derivative(Debug = "ignore")]
     dispatch: Option<ParSeq<Arc<rayon::ThreadPool>, UiEventHandlerSystem>>,
@@ -32,7 +31,7 @@ pub struct State {
     menu_event_reader: Option<ReaderId<MenuEvent<Index>>>,
 }
 
-impl State {
+impl GameModeMenuState {
     /// Returns a new game mode menu state.
     pub fn new() -> Self {
         Default::default()
@@ -40,7 +39,7 @@ impl State {
 
     #[cfg(test)]
     fn internal_new(menu_build_fn: MenuBuildFn) -> Self {
-        State {
+        GameModeMenuState {
             menu_build_fn,
             ..Default::default()
         } // kcov-ignore
@@ -89,7 +88,7 @@ impl State {
     }
 }
 
-impl amethyst::State for State {
+impl State for GameModeMenuState {
     fn on_start(&mut self, world: &mut World) {
         self.initialize_dispatcher(world);
         self.initialize_menu_event_channel(world);
@@ -141,26 +140,25 @@ mod test {
     use amethyst::prelude::*;
     use amethyst::shrev::EventChannel;
     use amethyst::ui::UiEvent;
-    use amethyst::State as AmethystState;
     use application_menu::{MenuEvent, MenuItem};
     use rayon::ThreadPoolBuilder;
 
-    use super::State;
+    use super::GameModeMenuState;
     use index::Index;
     use menu_build_fn::MenuBuildFn;
 
-    fn setup() -> (State, World) {
+    fn setup() -> (GameModeMenuState, World) {
         setup_with_menu_items(MenuBuildFn(Box::new(|_, _| {})))
     }
 
-    fn setup_with_menu_items(menu_build_fn: MenuBuildFn) -> (State, World) {
+    fn setup_with_menu_items(menu_build_fn: MenuBuildFn) -> (GameModeMenuState, World) {
         let mut world = World::new();
         world.add_resource(Arc::new(ThreadPoolBuilder::new().build().unwrap()));
         world.add_resource(EventChannel::<MenuEvent<Index>>::with_capacity(10));
         world.add_resource(EventChannel::<UiEvent>::with_capacity(10)); // needed by system
         world.register::<MenuItem<Index>>();
 
-        (State::internal_new(menu_build_fn), world)
+        (GameModeMenuState::internal_new(menu_build_fn), world)
     }
 
     #[test]

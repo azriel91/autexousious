@@ -10,6 +10,6 @@ extern crate game_model;
 #[macro_use]
 extern crate log;
 
-pub use state::State;
+pub use game_play_state::GamePlayState;
 
-mod state;
+mod game_play_state;

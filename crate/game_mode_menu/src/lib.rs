@@ -16,11 +16,11 @@ extern crate log;
 extern crate rayon;
 
 pub use game_mode_menu_bundle::GameModeMenuBundle;
+pub use game_mode_menu_state::GameModeMenuState;
 pub use index::Index;
-pub use state::State;
 
 mod game_mode_menu_bundle;
+mod game_mode_menu_state;
 mod index;
 mod menu_build_fn;
-mod state;
 mod system;
