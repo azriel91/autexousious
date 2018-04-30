@@ -1,14 +1,14 @@
 use std::sync::mpsc::{self, Receiver, TryRecvError};
 use std::thread;
 
-use amethyst::ecs::{FetchMut, System};
+use amethyst::ecs::prelude::{System, Write};
 use amethyst::shrev::EventChannel;
 use application_input::ApplicationEvent;
 
 use reader::{self, StdinReader};
 
 /// Type to fetch the application event channel.
-type EventChannelData<'a> = FetchMut<'a, EventChannel<ApplicationEvent>>;
+type EventChannelData<'a> = Write<'a, EventChannel<ApplicationEvent>>;
 
 /// Rendering system.
 #[derive(Debug)]
@@ -75,7 +75,7 @@ impl<'a> System<'a> for StdinSystem {
 mod test {
     use std::sync::mpsc::{self, Sender};
 
-    use amethyst::ecs::RunNow;
+    use amethyst::ecs::prelude::RunNow;
     use amethyst::shred::{Resources, SystemData};
     use amethyst::shrev::{EventChannel, ReaderId};
     use application_input::ApplicationEvent;
@@ -89,12 +89,12 @@ mod test {
         ReaderId<ApplicationEvent>,
     ) {
         let mut res = Resources::new();
-        res.add(EventChannel::<ApplicationEvent>::with_capacity(10));
+        res.insert(EventChannel::<ApplicationEvent>::with_capacity(10));
         let (tx, rx) = mpsc::channel();
         let stdin_system = StdinSystem::internal_new(rx, || {});
 
         let reader_id = {
-            let mut event_channel = EventChannelData::fetch(&res, 0);
+            let mut event_channel = EventChannelData::fetch(&res);
             event_channel.register_reader()
         }; // kcov-ignore
 
@@ -117,7 +117,7 @@ mod test {
         tx.send("exit".to_string()).unwrap();
         stdin_system.run_now(&res);
 
-        let event_channel = EventChannelData::fetch(&res, 0);
+        let event_channel = EventChannelData::fetch(&res);
 
         expect_event(
             &event_channel,
@@ -133,7 +133,7 @@ mod test {
         tx.send("abc".to_string()).unwrap();
         stdin_system.run_now(&res);
 
-        let event_channel = EventChannelData::fetch(&res, 0);
+        let event_channel = EventChannelData::fetch(&res);
         expect_event(&event_channel, &mut reader_id, None);
     } // kcov-ignore
 
@@ -144,7 +144,7 @@ mod test {
         // we don't call tx.send(..)
         stdin_system.run_now(&res);
 
-        let event_channel = EventChannelData::fetch(&res, 0);
+        let event_channel = EventChannelData::fetch(&res);
         expect_event(&event_channel, &mut reader_id, None);
     } // kcov-ignore
 
@@ -155,7 +155,7 @@ mod test {
         drop(tx); // ensure channel is disconnected
         stdin_system.run_now(&res);
 
-        let event_channel = EventChannelData::fetch(&res, 0);
+        let event_channel = EventChannelData::fetch(&res);
         expect_event(&event_channel, &mut reader_id, None);
     } // kcov-ignore
 }

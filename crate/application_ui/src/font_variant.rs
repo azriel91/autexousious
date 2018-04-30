@@ -1,32 +1,15 @@
+#![allow(missing_debug_implementations)] // derived `EnumIter` does not implement Debug
+
 /// Style variants of fonts.
-///
-/// we tell Rust to represent this as a `u8` as Amethyst uses `usize`s as IDs when registering
-/// resources in a `World`.
-///
-/// See:
-///
-/// * <https://stackoverflow.com/q/41648339/1576773>
-/// * <https://doc.rust-lang.org/nomicon/other-reprs.html>
-#[repr(usize)]
-#[derive(Debug)]
+#[warn(missing_docs)] // Pending <https://github.com/Peternator7/strum/issues/19>
+#[derive(Debug, Display, Eq, EnumIter, Hash, PartialEq)]
 pub enum FontVariant {
     /// For normal text.
-    Regular = 0,
+    Regular,
     /// For important text.
     Bold,
     /// For emphasized text.
     Italic,
     /// For important, emphasized text.
     BoldItalic,
-}
-
-impl From<FontVariant> for usize {
-    fn from(variant: FontVariant) -> usize {
-        match variant {
-            FontVariant::Bold => 0,
-            FontVariant::Italic => 1,
-            FontVariant::BoldItalic => 2,
-            FontVariant::Regular => 3,
-        }
-    } // kcov-ignore
 }

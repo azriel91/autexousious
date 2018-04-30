@@ -1,4 +1,4 @@
-use amethyst::ecs::{FetchMut, ReadStorage, System};
+use amethyst::ecs::prelude::{ReadStorage, Resources, System, SystemData, Write};
 use amethyst::shrev::{EventChannel, ReaderId};
 use amethyst::ui::{UiEvent, UiEventType};
 use application_menu::{MenuEvent, MenuItem};
@@ -17,14 +17,14 @@ impl UiEventHandlerSystem {
     }
 }
 
-type SystemData<'s> = (
-    FetchMut<'s, EventChannel<UiEvent>>,
-    FetchMut<'s, EventChannel<MenuEvent<Index>>>,
+type UiEventHandlerSystemData<'s> = (
+    Write<'s, EventChannel<UiEvent>>,
+    Write<'s, EventChannel<MenuEvent<Index>>>,
     ReadStorage<'s, MenuItem<Index>>,
 );
 
 impl<'s> System<'s> for UiEventHandlerSystem {
-    type SystemData = SystemData<'s>;
+    type SystemData = UiEventHandlerSystemData<'s>;
 
     fn run(&mut self, (mut ui_events, mut menu_events, menu_items): Self::SystemData) {
         if self.reader_id.is_none() {
@@ -46,19 +46,22 @@ impl<'s> System<'s> for UiEventHandlerSystem {
             }
         }
     }
+
+    fn setup(&mut self, res: &mut Resources) {
+        Self::SystemData::setup(res);
+    }
 }
 
 #[cfg(test)]
 mod test {
     use std::sync::Arc;
 
-    use amethyst::ecs::World;
+    use amethyst::ecs::prelude::World;
     use amethyst::shred::ParSeq;
     use amethyst::shrev::{EventChannel, ReaderId};
     use amethyst::ui::{UiEvent, UiEventType};
     use application_menu::{MenuEvent, MenuItem};
-    use rayon::ThreadPool;
-    use rayon_core::ThreadPoolBuilder;
+    use rayon::{ThreadPool, ThreadPoolBuilder};
 
     use super::UiEventHandlerSystem;
     use index::Index;
@@ -78,7 +81,6 @@ mod test {
             menu_event_channel.register_reader()
         }; // kcov-ignore
 
-        // TODO: use rayon::ThreadPoolBuilder; https://github.com/amethyst/amethyst/pull/579
         let mut dispatcher = ParSeq::new(
             UiEventHandlerSystem::new(),
             Arc::new(ThreadPoolBuilder::new().build().unwrap()),

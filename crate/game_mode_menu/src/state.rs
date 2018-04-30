@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use amethyst;
-use amethyst::ecs::Entity;
+use amethyst::ecs::prelude::*;
 use amethyst::prelude::*;
 use amethyst::shred::ParSeq;
 use amethyst::shrev::{EventChannel, ReaderId};
@@ -47,10 +47,12 @@ impl State {
     }
 
     fn initialize_dispatcher(&mut self, world: &mut World) {
-        self.dispatch = Some(ParSeq::new(
+        let mut dispatch = ParSeq::new(
             UiEventHandlerSystem::new(),
             world.read_resource::<Arc<rayon::ThreadPool>>().clone(),
-        ));
+        );
+        dispatch.setup(&mut world.res);
+        self.dispatch = Some(dispatch);
     }
 
     fn terminate_dispatcher(&mut self) {
@@ -135,13 +137,13 @@ mod test {
     use std::mem::discriminant;
     use std::sync::Arc;
 
-    use amethyst::State as AmethystState;
-    use amethyst::ecs::World;
+    use amethyst::ecs::prelude::World;
     use amethyst::prelude::*;
     use amethyst::shrev::EventChannel;
     use amethyst::ui::UiEvent;
+    use amethyst::State as AmethystState;
     use application_menu::{MenuEvent, MenuItem};
-    use rayon_core::ThreadPoolBuilder;
+    use rayon::ThreadPoolBuilder;
 
     use super::State;
     use index::Index;
@@ -153,7 +155,6 @@ mod test {
 
     fn setup_with_menu_items(menu_build_fn: MenuBuildFn) -> (State, World) {
         let mut world = World::new();
-        // TODO: use rayon::ThreadPoolBuilder; https://github.com/amethyst/amethyst/pull/579
         world.add_resource(Arc::new(ThreadPoolBuilder::new().build().unwrap()));
         world.add_resource(EventChannel::<MenuEvent<Index>>::with_capacity(10));
         world.add_resource(EventChannel::<UiEvent>::with_capacity(10)); // needed by system

@@ -4,10 +4,11 @@ use std::path::PathBuf;
 
 use amethyst;
 use amethyst::prelude::*;
-use game_model::config::GameConfig;
+use application_ui::ThemeLoader;
 use game_model::config::index_configuration;
-use object_model::ObjectType;
+use game_model::config::GameConfig;
 use object_model::loaded;
+use object_model::ObjectType;
 
 use object_loading::ObjectLoader;
 
@@ -31,7 +32,7 @@ impl<'p, T: amethyst::State + 'static> State<T> {
         }
     }
 
-    fn load_game_config(&mut self, world: &mut World) -> GameConfig {
+    fn load_game_config(&mut self, world: &mut World) {
         let configuration_index = index_configuration(&self.assets_dir);
         debug!("Indexed configuration: {:?}", &configuration_index);
 
@@ -59,23 +60,22 @@ impl<'p, T: amethyst::State + 'static> State<T> {
 
         let game_config = GameConfig::new(loaded_objects_by_type);
         debug!("Game configuration: {:?}", &game_config);
-        game_config
+
+        world.add_resource(game_config);
     }
 }
 
 impl<'p, T: amethyst::State + 'static> amethyst::State for State<T> {
     fn on_start(&mut self, world: &mut World) {
-        // TODO: Start thread to load resources / assets.
-
-        let game_config = self.load_game_config(world);
-
-        world.add_resource(game_config);
+        if let Err(e) = ThemeLoader::load(world) {
+            let err_msg = format!("Failed to load theme: {}", e);
+            error!("{}", &err_msg);
+            panic!(err_msg);
+        }
+        self.load_game_config(world);
     }
 
     fn fixed_update(&mut self, _world: &mut World) -> Trans {
-        // TODO: Check state of resource / asset loading.
-        // If it has loaded then `Trans::Switch`. Otherwise `Trans::None`
-
         Trans::Switch(
             self.next_state
                 .take()

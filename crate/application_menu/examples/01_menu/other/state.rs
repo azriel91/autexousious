@@ -1,8 +1,9 @@
 use amethyst;
-use amethyst::ecs::Entity;
+use amethyst::ecs::prelude::*;
 use amethyst::prelude::*;
 use amethyst::renderer::{Event, KeyboardInput, ScreenDimensions, VirtualKeyCode, WindowEvent};
-use amethyst::ui::{FontHandle, UiResize, UiText, UiTransform};
+use amethyst::ui::{Anchor, Anchored, FontHandle, UiText, UiTransform};
+use application_ui::{FontVariant, Theme};
 
 const FONT_SIZE: f32 = 17.;
 
@@ -20,13 +21,19 @@ impl State {
     fn initialize_informative(&mut self, world: &mut World) {
         let font_bold = read_font(world);
 
-        let mut text_transform = UiTransform::new("info".to_string(), 20., 20., 1., 400., 100., 0);
-        let ui_text_size_fn = |_transform: &mut UiTransform, (_width, _height)| {};
+        let screen_w = world.read_resource::<ScreenDimensions>().width();
+        let text_w = screen_w;
+        let text_h = 100.;
 
-        {
-            let dim = world.read_resource::<ScreenDimensions>();
-            ui_text_size_fn(&mut text_transform, (dim.width(), dim.height()));
-        }
+        let text_transform = UiTransform::new(
+            "info".to_string(),
+            text_w / 2. + 20.,
+            text_h / 2. + 20.,
+            1.,
+            text_w,
+            text_h,
+            0,
+        );
 
         let info_entity = world
             .create_entity()
@@ -37,7 +44,7 @@ impl State {
                 [1., 1., 1., 1.],
                 FONT_SIZE,
             ))
-            .with(UiResize(Box::new(ui_text_size_fn)))
+            .with(Anchored::new(Anchor::TopLeft))
             .build();
 
         self.entity.get_or_insert(info_entity);
@@ -81,5 +88,10 @@ impl amethyst::State for State {
 }
 
 fn read_font(world: &mut World) -> FontHandle {
-    world.read_resource::<FontHandle>().clone()
+    let theme = world.read_resource::<Theme>();
+    theme
+        .fonts
+        .get(&FontVariant::Bold)
+        .expect("Failed to get Bold font handle")
+        .clone()
 }

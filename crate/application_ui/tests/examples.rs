@@ -9,7 +9,7 @@ fn example_01_draw_text() {
 
     assert_cli::Assert::command(&example_command("01_draw_text"))
         .with_env(&environment)
-        .with_args(&["--no-run"])
+        .with_args(&["--timeout", "0"])
         .unwrap();
 }
 

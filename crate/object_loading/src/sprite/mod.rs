@@ -15,6 +15,7 @@ mod test {
     use std::path::{Path, PathBuf};
 
     use amethyst;
+    use amethyst::core::transform::TransformBundle;
     use amethyst::input::InputBundle;
     use amethyst::prelude::*;
     use amethyst::renderer::{ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex,
@@ -57,14 +58,18 @@ mod test {
         );
 
         let mut app = Application::build(assets_dir.clone(), TestState { assets_dir })?
-            .with_bundle(InputBundle::<String, String>::new())?
-            .with_bundle(UiBundle::<String, String>::new())?
-            .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
             // Needed to register `MaterialTextureSet`
             .with_bundle(AnimationBundle::<u32, Material>::new(
                 "animation_control_system",
                 "sampler_interpolation_system",
             ))?
+            .with_bundle(
+                TransformBundle::new()
+                    .with_dep(&["animation_control_system", "sampler_interpolation_system"]),
+            )?
+            .with_bundle(InputBundle::<String, String>::new())?
+            .with_bundle(UiBundle::<String, String>::new())?
+            .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
             .build()
             .expect("Failed to build application.");
 
