@@ -3,7 +3,6 @@
 //! Opens an empty window.
 
 extern crate amethyst;
-extern crate amethyst_animation;
 #[macro_use]
 extern crate application;
 extern crate application_input;
@@ -18,16 +17,17 @@ extern crate structopt_derive;
 
 use std::process;
 
+use amethyst::animation::AnimationBundle;
 use amethyst::core::transform::TransformBundle;
 use amethyst::input::InputBundle;
 use amethyst::prelude::*;
 use amethyst::renderer::{ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex,
                          RenderBundle, Stage, ALPHA};
 use amethyst::ui::{DrawUi, UiBundle};
-use amethyst_animation::AnimationBundle;
 use application::resource::dir::{self, assets_dir};
 use application::resource::find_in;
 use application_robot::RobotState;
+use game_mode_menu::GameModeMenuState;
 use stdio_view::StdinSystem;
 use structopt::StructOpt;
 
@@ -41,7 +41,7 @@ struct Opt {
 fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     let assets_dir = assets_dir(Some(development_base_dirs!()))?;
 
-    let game_mode_menu_state = game_mode_menu::State::new();
+    let game_mode_menu_state = GameModeMenuState::new();
     let loading_state = loading::State::new(assets_dir.clone(), Box::new(game_mode_menu_state));
     let state = RobotState::new(Box::new(loading_state));
 

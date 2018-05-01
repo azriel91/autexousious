@@ -900,7 +900,6 @@ name = "game_play"
 version = "0.2.0"
 dependencies = [
  "amethyst 0.6.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
- "amethyst_animation 0.1.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "application_ui 0.2.0",
  "game_model 0.2.0",
  "log 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1143,7 +1142,6 @@ name = "loading"
 version = "0.2.0"
 dependencies = [
  "amethyst 0.6.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
- "amethyst_animation 0.1.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "application_ui 0.2.0",
  "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_model 0.2.0",
@@ -1378,7 +1376,6 @@ name = "object_loading"
 version = "0.2.0"
 dependencies = [
  "amethyst 0.6.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
- "amethyst_animation 0.1.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "application 0.2.0",
  "derive-error-chain 0.11.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.4 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1397,7 +1394,6 @@ name = "object_model"
 version = "0.2.0"
 dependencies = [
  "amethyst 0.6.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
- "amethyst_animation 0.1.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_more 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.43 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2273,7 +2269,6 @@ name = "will"
 version = "0.2.0"
 dependencies = [
  "amethyst 0.6.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
- "amethyst_animation 0.1.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "application 0.2.0",
  "application_input 0.2.0",
  "application_robot 0.2.0",

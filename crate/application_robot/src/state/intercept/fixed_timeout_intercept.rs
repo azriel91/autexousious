@@ -32,10 +32,9 @@ impl FixedTimeoutIntercept {
     }
 
     fn pop_on_timeout(&mut self) -> Option<Trans> {
-        if self.start_instant
-            .as_ref()
-            .expect("Expected `self.start_instant` to be set.")
-            .elapsed() >= self.timeout
+        // If start_instant is none, then it must have been popped by one of the pushed `State`s.
+        if self.start_instant.is_none()
+            || self.start_instant.as_ref().unwrap().elapsed() >= self.timeout
         {
             Some(Trans::Pop)
         } else {
@@ -144,6 +143,26 @@ mod test {
 
         // Initialize start time
         intercept.on_start_end(&mut world);
+
+        assert_eq_opt_trans(
+            Some(Trans::Pop).as_ref(),
+            intercept.update_begin(&mut world).as_ref(),
+        ); // kcov-ignore
+    }
+
+    #[test]
+    fn pop_on_timeout_returns_trans_pop_if_start_time_is_empty() {
+        // This case happens when this intercept has been used by a State pushed by the wrapped
+        // state.
+        let (mut intercept, mut world) = setup(Duration::from_millis(0));
+
+        // Initialize start time
+        intercept.on_start_end(&mut world);
+
+        assert_eq_opt_trans(
+            Some(Trans::Pop).as_ref(),
+            intercept.update_begin(&mut world).as_ref(),
+        ); // kcov-ignore
 
         assert_eq_opt_trans(
             Some(Trans::Pop).as_ref(),

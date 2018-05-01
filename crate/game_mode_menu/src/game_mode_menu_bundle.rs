@@ -1,7 +1,7 @@
 use amethyst::core::bundle::{Result, SystemBundle};
 use amethyst::ecs::prelude::DispatcherBuilder;
 
-use system::UiEventHandlerSystem;
+use UiEventHandlerSystem;
 
 /// This bundle prepares the world for a menu.
 #[derive(Debug)]

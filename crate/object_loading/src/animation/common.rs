@@ -1,8 +1,8 @@
+use amethyst::animation::{Animation, InterpolationFunction, MaterialChannel, MaterialPrimitive,
+                          Sampler};
 use amethyst::assets::Loader;
 use amethyst::prelude::*;
 use amethyst::renderer::{Material, SpriteSheet};
-use amethyst_animation::{Animation, InterpolationFunction, MaterialChannel, MaterialPrimitive,
-                         Sampler};
 use object_model::config::object::Sequence;
 
 /// Maps a `Sequence` into an Amethyst `Animation`.

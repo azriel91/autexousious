@@ -1,6 +1,6 @@
+use amethyst::animation::Animation;
 use amethyst::assets::Handle;
 use amethyst::renderer::{Material, MeshHandle};
-use amethyst_animation::Animation;
 
 /// Represents an in-game object that has been loaded.
 #[derive(Constructor, Clone, Derivative)]

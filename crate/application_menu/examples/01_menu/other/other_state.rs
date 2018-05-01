@@ -1,4 +1,3 @@
-use amethyst;
 use amethyst::ecs::prelude::*;
 use amethyst::prelude::*;
 use amethyst::renderer::{Event, KeyboardInput, ScreenDimensions, VirtualKeyCode, WindowEvent};
@@ -8,12 +7,12 @@ use application_ui::{FontVariant, Theme};
 const FONT_SIZE: f32 = 17.;
 
 #[derive(Debug, Default)]
-pub struct State {
+pub struct OtherState {
     /// Holds the info label.
     entity: Option<Entity>,
 }
 
-impl State {
+impl OtherState {
     pub fn new() -> Self {
         Default::default()
     }
@@ -57,7 +56,7 @@ impl State {
     }
 }
 
-impl amethyst::State for State {
+impl State for OtherState {
     fn on_start(&mut self, world: &mut World) {
         self.initialize_informative(world);
     }
@@ -73,7 +72,7 @@ impl amethyst::State for State {
                         },
                     ..
                 } => {
-                    info!("Returning from `other::State`.");
+                    info!("Returning from `OtherState`.");
                     Trans::Pop
                 }
                 _ => Trans::None,

@@ -4,12 +4,11 @@
 //! Provides the `State` where the game play takes place.
 
 extern crate amethyst;
-extern crate amethyst_animation;
 extern crate application_ui;
 extern crate game_model;
 #[macro_use]
 extern crate log;
 
-pub use state::State;
+pub use game_play_state::GamePlayState;
 
-mod state;
+mod game_play_state;

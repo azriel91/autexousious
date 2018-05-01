@@ -43,6 +43,8 @@ use application_robot::state::{FixedTimeoutIntercept, Intercept};
 use application_robot::RobotState;
 use structopt::StructOpt;
 
+use main_menu::MainMenuState;
+
 const TITLE: &str = "Example 01: Menu";
 
 #[derive(StructOpt, Debug)]
@@ -81,7 +83,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             vec![]
         }
     };
-    let state = RobotState::new_with_intercepts(Box::new(main_menu::State::new()), intercepts);
+    let state = RobotState::new_with_intercepts(Box::new(MainMenuState::new()), intercepts);
 
     let mut app = Application::build("assets", state)?
         .with_bundle(TransformBundle::new())?
