@@ -6,6 +6,7 @@
 extern crate amethyst;
 extern crate application_menu;
 extern crate application_ui;
+extern crate character_selection;
 #[cfg(test)]
 extern crate debug_util_amethyst;
 #[macro_use]

@@ -8,6 +8,7 @@ extern crate application;
 extern crate application_input;
 extern crate application_robot;
 extern crate application_ui;
+extern crate character_selection;
 extern crate game_input;
 extern crate game_mode_menu;
 extern crate loading;
@@ -28,6 +29,7 @@ use amethyst::ui::{DrawUi, UiBundle};
 use application::resource::dir::{self, assets_dir};
 use application::resource::{self, find_in, load_in};
 use application_robot::RobotState;
+use character_selection::CharacterSelectionBundle;
 use game_input::{PlayerActionControl, PlayerAxisControl};
 use game_mode_menu::GameModeMenuState;
 use stdio_view::StdinSystem;
@@ -91,7 +93,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
             .with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new()
                 .with_bindings_from_file(&control_input_path))?
-            .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?;
+            .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?
+            .with_bundle(CharacterSelectionBundle::new())?;
     }
 
     let mut app = app_builder.build()?;

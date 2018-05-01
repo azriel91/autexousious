@@ -469,6 +469,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "character_selection"
+version = "0.3.0"
+dependencies = [
+ "amethyst 0.6.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
+ "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive-new 0.5.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "game_input 0.1.0",
+ "game_model 0.2.0",
+ "log 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "object_model 0.2.0",
+]
+
+[[package]]
 name = "clang-sys"
 version = "0.21.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -886,6 +899,7 @@ dependencies = [
  "amethyst 0.6.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "application_menu 0.2.0",
  "application_ui 0.2.0",
+ "character_selection 0.3.0",
  "debug_util_amethyst 0.2.0",
  "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_play 0.2.0",
@@ -2283,6 +2297,7 @@ dependencies = [
  "application_robot 0.2.0",
  "application_ui 0.2.0",
  "assert_cli 0.5.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "character_selection 0.3.0",
  "game_input 0.1.0",
  "game_mode_menu 0.2.0",
  "loading 0.2.0",

@@ -1,0 +1,27 @@
+use amethyst::ecs::prelude::*;
+use game_model::config::GameConfig;
+
+use CharacterSelection;
+
+/// Populates the `CharacterSelection` based on user input.
+#[derive(Debug, Default, new)]
+pub(crate) struct CharacterSelectionSystem;
+
+type CharacterSelectionSystemData<'s, 'c> = (Read<'s, GameConfig>, Write<'s, CharacterSelection>);
+
+impl<'s> System<'s> for CharacterSelectionSystem {
+    type SystemData = CharacterSelectionSystemData<'s, 's>;
+
+    fn run(&mut self, (_game_config, mut character_selection): Self::SystemData) {
+        // TODO: Update `CharacterSelection` with the user selected `character_object_index`.
+        let controller_id = 0;
+        let character_object_index = 0; // First loaded `Character`
+        character_selection
+            .entry(controller_id)
+            .or_insert(character_object_index);
+    }
+
+    fn setup(&mut self, res: &mut Resources) {
+        Self::SystemData::setup(res);
+    }
+}
