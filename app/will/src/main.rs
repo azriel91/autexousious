@@ -8,6 +8,7 @@ extern crate application;
 extern crate application_input;
 extern crate application_robot;
 extern crate application_ui;
+extern crate game_input;
 extern crate game_mode_menu;
 extern crate loading;
 extern crate stdio_view;
@@ -27,6 +28,7 @@ use amethyst::ui::{DrawUi, UiBundle};
 use application::resource::dir::{self, assets_dir};
 use application::resource::find_in;
 use application_robot::RobotState;
+use game_input::{PlayerActionControl, PlayerAxisControl};
 use game_mode_menu::GameModeMenuState;
 use stdio_view::StdinSystem;
 use structopt::StructOpt;
@@ -85,8 +87,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                     .with_dep(&["animation_control_system", "sampler_interpolation_system"]),
             )?
             .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
-            .with_bundle(InputBundle::<String, String>::new())?
-            .with_bundle(UiBundle::<String, String>::new())?;
+            .with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new())?
+            .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?;
     }
 
     let mut app = app_builder.build()?;
