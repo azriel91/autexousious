@@ -7,9 +7,9 @@ use amethyst::shrev::{EventChannel, ReaderId};
 use application_menu::MenuEvent;
 use rayon;
 
-use index::Index;
-use menu_build_fn::MenuBuildFn;
-use system::UiEventHandlerSystem;
+use Index;
+use MenuBuildFn;
+use UiEventHandlerSystem;
 
 /// Game mode selection state.
 ///
