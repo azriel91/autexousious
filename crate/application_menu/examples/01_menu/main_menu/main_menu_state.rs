@@ -1,6 +1,5 @@
 use std::sync::Arc;
 
-use amethyst;
 use amethyst::ecs::prelude::*;
 use amethyst::prelude::*;
 use amethyst::shred::ParSeq;
@@ -17,7 +16,7 @@ const FONT_SIZE: f32 = 25.;
 /// Main menu with options to start a game or exit.
 #[derive(Default, Derivative)]
 #[derivative(Debug)]
-pub struct State {
+pub struct MainMenuState {
     /// Dispatcher for UI handler system.
     #[derivative(Debug = "ignore")]
     dispatch: Option<ParSeq<Arc<rayon::ThreadPool>, UiEventHandlerSystem>>,
@@ -27,8 +26,8 @@ pub struct State {
     menu_items: Vec<Entity>,
 }
 
-impl State {
-    /// Returns a `State`
+impl MainMenuState {
+    /// Returns a `MainMenuState`
     pub fn new() -> Self {
         Default::default()
     }
@@ -103,7 +102,7 @@ impl State {
     }
 }
 
-impl amethyst::State for State {
+impl State for MainMenuState {
     fn on_start(&mut self, world: &mut World) {
         let mut dispatch = ParSeq::new(
             UiEventHandlerSystem::new(),

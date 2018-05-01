@@ -1,3 +1,3 @@
-pub use self::state::State;
+pub use self::other_state::OtherState;
 
-mod state;
+mod other_state;

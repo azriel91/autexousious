@@ -1,6 +1,6 @@
 use amethyst::prelude::Trans;
 
-use other;
+use other::OtherState;
 
 /// Indicies of main menu items.
 #[derive(Debug, Clone, Copy)]
@@ -22,7 +22,7 @@ impl Index {
 
     pub fn trans(&self) -> Trans {
         match *self {
-            Index::StartGame => Trans::Push(Box::new(other::State::new())),
+            Index::StartGame => Trans::Push(Box::new(OtherState::new())),
             Index::Exit => Trans::Quit,
         }
     }
