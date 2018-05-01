@@ -26,7 +26,7 @@ use amethyst::renderer::{ColorMask, DisplayConfig, DrawFlat, Material, Pipeline,
                          RenderBundle, Stage, ALPHA};
 use amethyst::ui::{DrawUi, UiBundle};
 use application::resource::dir::{self, assets_dir};
-use application::resource::find_in;
+use application::resource::{self, find_in, load_in};
 use application_robot::RobotState;
 use game_input::{PlayerActionControl, PlayerAxisControl};
 use game_mode_menu::GameModeMenuState;
@@ -54,13 +54,15 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     );
 
     if !opt.headless {
-        let display_config = DisplayConfig::load(
-            find_in(
-                dir::RESOURCES,
-                "display_config.ron",
-                Some(development_base_dirs!()),
-            ).unwrap(),
-        );
+        let display_config = load_in::<DisplayConfig, _>(
+            dir::RESOURCES,
+            "display_config.ron",
+            &resource::Format::Ron,
+            Some(development_base_dirs!()),
+        )?;
+
+        let control_input_path =
+            find_in(dir::RESOURCES, "input.ron", Some(development_base_dirs!()))?;
 
         let pipe = Pipeline::build().with_stage(
             Stage::with_backbuffer()
@@ -87,7 +89,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                     .with_dep(&["animation_control_system", "sampler_interpolation_system"]),
             )?
             .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
-            .with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new())?
+            .with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new()
+                .with_bindings_from_file(&control_input_path))?
             .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?;
     }
 
