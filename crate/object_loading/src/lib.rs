@@ -4,7 +4,6 @@
 //! Processes object configuration into the loaded object model.
 
 extern crate amethyst;
-extern crate amethyst_animation;
 #[cfg(test)]
 #[macro_use]
 extern crate application;

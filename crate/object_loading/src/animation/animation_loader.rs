@@ -1,13 +1,13 @@
+use amethyst::animation::Animation;
 use amethyst::assets::Handle;
 use amethyst::prelude::*;
 use amethyst::renderer::{Material, SpriteSheet};
-use amethyst_animation::Animation;
 use game_model::config::ConfigRecord;
 use object_model::ObjectType;
 
-use IoUtils;
 use animation::CharacterAnimationLoader;
 use error::Result;
+use IoUtils;
 
 #[derive(Debug)]
 pub(crate) struct AnimationLoader;

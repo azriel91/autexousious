@@ -1,7 +1,7 @@
+use amethyst::animation::Animation;
 use amethyst::assets::{Handle, Loader};
 use amethyst::prelude::*;
 use amethyst::renderer::{Material, SpriteSheet};
-use amethyst_animation::Animation;
 use object_model::config::CharacterDefinition;
 use toml;
 

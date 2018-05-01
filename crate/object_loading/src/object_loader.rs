@@ -57,13 +57,13 @@ mod test {
     use std::path::{Path, PathBuf};
 
     use amethyst;
+    use amethyst::animation::AnimationBundle;
     use amethyst::core::transform::TransformBundle;
     use amethyst::input::InputBundle;
     use amethyst::prelude::*;
     use amethyst::renderer::{ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex,
                              RenderBundle, Stage, ALPHA};
     use amethyst::ui::UiBundle;
-    use amethyst_animation::AnimationBundle;
     use application::resource::dir::{self, assets_dir};
     use application::resource::find_in;
     use game_model::config::ConfigRecord;

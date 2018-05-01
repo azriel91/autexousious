@@ -18,6 +18,7 @@ extern crate rayon;
 pub use game_mode_menu_bundle::GameModeMenuBundle;
 pub use game_mode_menu_state::GameModeMenuState;
 pub use index::Index;
+pub(crate) use menu_build_fn::MenuBuildFn;
 pub(crate) use ui_event_handler_system::UiEventHandlerSystem;
 
 mod game_mode_menu_bundle;

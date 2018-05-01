@@ -1,3 +1,4 @@
+use amethyst::animation::{get_animation_set, Animation, AnimationCommand, EndControl};
 use amethyst::assets::Handle;
 use amethyst::core::cgmath::{Matrix4, Vector3};
 use amethyst::core::transform::{GlobalTransform, Transform};
@@ -5,7 +6,6 @@ use amethyst::ecs::prelude::*;
 use amethyst::prelude::*;
 use amethyst::renderer::{Camera, Event, KeyboardInput, Material, MeshHandle, Projection,
                          ScreenDimensions, VirtualKeyCode, WindowEvent};
-use amethyst_animation::{get_animation_set, Animation, AnimationCommand, EndControl};
 use game_model::config::GameConfig;
 
 /// `State` where game play takes place.

@@ -13,7 +13,6 @@
 //! [spritesheet]: config/struct.SpriteSheetDefinition.html
 
 extern crate amethyst;
-extern crate amethyst_animation;
 #[macro_use]
 extern crate derivative;
 #[macro_use]

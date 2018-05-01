@@ -3,7 +3,6 @@
 //! Opens an empty window.
 
 extern crate amethyst;
-extern crate amethyst_animation;
 #[macro_use]
 extern crate application;
 extern crate application_input;
@@ -18,13 +17,13 @@ extern crate structopt_derive;
 
 use std::process;
 
+use amethyst::animation::AnimationBundle;
 use amethyst::core::transform::TransformBundle;
 use amethyst::input::InputBundle;
 use amethyst::prelude::*;
 use amethyst::renderer::{ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex,
                          RenderBundle, Stage, ALPHA};
 use amethyst::ui::{DrawUi, UiBundle};
-use amethyst_animation::AnimationBundle;
 use application::resource::dir::{self, assets_dir};
 use application::resource::find_in;
 use application_robot::RobotState;

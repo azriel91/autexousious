@@ -1,13 +1,13 @@
+use amethyst::animation::MaterialTextureSet;
 use amethyst::prelude::*;
 use amethyst::renderer::{Material, MeshHandle, SpriteSheet, TextureHandle};
-use amethyst_animation::MaterialTextureSet;
 use game_model::config::ConfigRecord;
 use object_model::config::SpritesDefinition;
 use toml;
 
-use IoUtils;
 use error::Result;
 use sprite::{MaterialCreator, SpriteMeshCreator, SpriteSheetMapper, TextureLoader};
+use IoUtils;
 
 /// Provides functionality to load sprites configuration and assets.
 #[derive(Debug)]
