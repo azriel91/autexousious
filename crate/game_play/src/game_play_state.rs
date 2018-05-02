@@ -6,7 +6,9 @@ use amethyst::ecs::prelude::*;
 use amethyst::prelude::*;
 use amethyst::renderer::{Camera, Event, KeyboardInput, Material, MeshHandle, Projection,
                          ScreenDimensions, VirtualKeyCode, WindowEvent};
+use character_selection::CharacterSelection;
 use game_model::config::GameConfig;
+use object_model::ObjectType;
 
 /// `State` where game play takes place.
 #[derive(Debug, Default)]
@@ -33,65 +35,66 @@ impl GamePlayState {
         let mut common_transform = Transform::default();
         common_transform.translation = Vector3::new(width / 2., height / 2., 0.);
 
-        let entities_components = {
+        let entity_components = {
             let game_config = world.read_resource::<GameConfig>();
+            let character_selection = world.read_resource::<CharacterSelection>();
             let loaded_objects_by_type = &game_config.loaded_objects_by_type;
-            loaded_objects_by_type
-                .values()
-                .map(|objects| {
-                    objects
-                        .iter()
-                        .map(|object| {
-                            (
-                                object.default_material.clone(),
-                                object.mesh.clone(),
-                                object.animations.first().unwrap().clone(),
-                            )
-                        })
-                        .collect::<Vec<(Material, MeshHandle, Handle<Animation<Material>>)>>()
+
+            character_selection
+                .iter()
+                .map(|(controller_id, object_index)| {
+                    let characters = loaded_objects_by_type
+                        .get(&ObjectType::Character)
+                        .expect("Failed to read `Character` objects");
+
+                    let error_msg = format!(
+                        "object_index: `{}` for controller `{}` is out of bounds.",
+                        object_index, controller_id
+                    );
+                    characters.get(*object_index).expect(&error_msg)
                 })
-                .collect::<Vec<Vec<(Material, MeshHandle, Handle<Animation<Material>>)>>>()
+                .map(|object| {
+                    (
+                        object.default_material.clone(),
+                        object.mesh.clone(),
+                        object.animations.first().unwrap().clone(),
+                    )
+                })
+                .collect::<Vec<(Material, MeshHandle, Handle<Animation<Material>>)>>()
         };
 
-        entities_components
+        entity_components
             .into_iter()
-            .for_each(|entity_components| {
-                entity_components
-                    .into_iter()
-                    .for_each(|(material, mesh, animation_handle)| {
-                        let entity = world
-                            .create_entity()
-                            // The default `Material`, whose textures will be swapped based on the
-                            // animation.
-                            .with(material)
-                            // Shift sprite to some part of the window
-                            .with(mesh)
-                            // Used by the engine to compute and store the rendered position.
-                            .with(common_transform.clone())
-                            // This defines the coordinates in the world, where the sprites should
-                            // be drawn relative to the entity
-                            .with(GlobalTransform::default())
-                            .build();
+            .for_each(|(material, mesh, animation_handle)| {
+                let entity = world
+                    .create_entity()
+                    // The default `Material`, whose textures will be swapped based on the
+                    // animation.
+                    .with(material)
+                    // Shift sprite to some part of the window
+                    .with(mesh)
+                    // Used by the engine to compute and store the rendered position.
+                    .with(common_transform.clone())
+                    // This defines the coordinates in the world, where the sprites should
+                    // be drawn relative to the entity
+                    .with(GlobalTransform::default())
+                    .build();
 
-                        // We also need to trigger the animation, not just attach it to the
-                        // entity
-                        let mut animation_control_set_storage = world.write_storage();
-                        let animation_set = get_animation_set::<u32, Material>(
-                            &mut animation_control_set_storage,
-                            entity,
-                        );
-                        let animation_id = 0;
-                        animation_set.add_animation(
-                            animation_id,
-                            &animation_handle,
-                            EndControl::Loop(None),
-                            30., // Rate at which the animation plays
-                            AnimationCommand::Start,
-                        );
+                // We also need to trigger the animation, not just attach it to the entity
+                let mut animation_control_set_storage = world.write_storage();
+                let animation_set =
+                    get_animation_set::<u32, Material>(&mut animation_control_set_storage, entity);
+                let animation_id = 0;
+                animation_set.add_animation(
+                    animation_id,
+                    &animation_handle,
+                    EndControl::Loop(None),
+                    30., // Rate at which the animation plays
+                    AnimationCommand::Start,
+                );
 
-                        self.entities.push(entity);
-                    })
-            });
+                self.entities.push(entity);
+            })
     }
 
     fn terminate_entities(&mut self, world: &mut World) {

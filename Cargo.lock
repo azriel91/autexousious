@@ -924,8 +924,10 @@ version = "0.2.0"
 dependencies = [
  "amethyst 0.6.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "application_ui 0.2.0",
+ "character_selection 0.3.0",
  "game_model 0.2.0",
  "log 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "object_model 0.2.0",
 ]
 
 [[package]]
