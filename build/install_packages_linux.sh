@@ -9,6 +9,9 @@ pkgs_desired=(
 
   # publishing
   jq
+
+  # cargo install-update
+  libssl-dev
 )
 
 # `apt_install` can be found at:
