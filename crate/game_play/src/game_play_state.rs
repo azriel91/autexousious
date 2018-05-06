@@ -4,11 +4,12 @@ use amethyst::core::cgmath::{Matrix4, Vector3};
 use amethyst::core::transform::{GlobalTransform, Transform};
 use amethyst::ecs::prelude::*;
 use amethyst::prelude::*;
-use amethyst::renderer::{Camera, Event, KeyboardInput, Material, MeshHandle, Projection,
-                         ScreenDimensions, VirtualKeyCode, WindowEvent};
+use amethyst::renderer::{
+    Camera, Event, KeyboardInput, Material, MeshHandle, Projection, ScreenDimensions,
+    VirtualKeyCode, WindowEvent,
+};
 use character_selection::CharacterSelection;
-use game_model::config::GameConfig;
-use object_model::ObjectType;
+use object_model::loaded;
 
 /// `State` where game play takes place.
 #[derive(Debug, Default)]
@@ -36,28 +37,23 @@ impl GamePlayState {
         common_transform.translation = Vector3::new(width / 2., height / 2., 0.);
 
         let entity_components = {
-            let game_config = world.read_resource::<GameConfig>();
+            let loaded_characters = world.read_resource::<Vec<loaded::Character>>();
             let character_selection = world.read_resource::<CharacterSelection>();
-            let loaded_objects_by_type = &game_config.loaded_objects_by_type;
 
             character_selection
                 .iter()
                 .map(|(controller_id, object_index)| {
-                    let characters = loaded_objects_by_type
-                        .get(&ObjectType::Character)
-                        .expect("Failed to read `Character` objects");
-
                     let error_msg = format!(
                         "object_index: `{}` for controller `{}` is out of bounds.",
                         object_index, controller_id
                     );
-                    characters.get(*object_index).expect(&error_msg)
+                    loaded_characters.get(*object_index).expect(&error_msg)
                 })
-                .map(|object| {
+                .map(|character| {
                     (
-                        object.default_material.clone(),
-                        object.mesh.clone(),
-                        object.animations.first().unwrap().clone(),
+                        character.object.default_material.clone(),
+                        character.object.mesh.clone(),
+                        character.object.animations.first().unwrap().clone(),
                     )
                 })
                 .collect::<Vec<(Material, MeshHandle, Handle<Animation<Material>>)>>()

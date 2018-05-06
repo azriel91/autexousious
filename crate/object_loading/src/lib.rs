@@ -27,10 +27,10 @@ extern crate toml;
 
 pub use error::{Error, ErrorKind};
 pub(crate) use io_utils::IoUtils;
-pub use object_loader::ObjectLoader;
+pub use object::{CharacterLoader, ObjectLoader};
 
 mod animation;
 mod error;
 mod io_utils;
-mod object_loader;
+mod object;
 mod sprite;

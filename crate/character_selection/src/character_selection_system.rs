@@ -1,5 +1,5 @@
 use amethyst::ecs::prelude::*;
-use game_model::config::GameConfig;
+use object_model::loaded;
 
 use CharacterSelection;
 
@@ -7,12 +7,15 @@ use CharacterSelection;
 #[derive(Debug, Default, new)]
 pub(crate) struct CharacterSelectionSystem;
 
-type CharacterSelectionSystemData<'s, 'c> = (Read<'s, GameConfig>, Write<'s, CharacterSelection>);
+type CharacterSelectionSystemData<'s, 'c> = (
+    Read<'s, Vec<loaded::Character>>,
+    Write<'s, CharacterSelection>,
+);
 
 impl<'s> System<'s> for CharacterSelectionSystem {
     type SystemData = CharacterSelectionSystemData<'s, 's>;
 
-    fn run(&mut self, (_game_config, mut character_selection): Self::SystemData) {
+    fn run(&mut self, (_characters, mut character_selection): Self::SystemData) {
         // TODO: Update `CharacterSelection` with the user selected `character_object_index`.
         let controller_id = 0;
         let character_object_index = 0; // First loaded `Character`

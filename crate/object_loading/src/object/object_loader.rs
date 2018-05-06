@@ -1,9 +1,9 @@
 use amethyst::prelude::*;
 use game_model::config::ConfigRecord;
+use object_model::config::ObjectDefinition;
 use object_model::loaded;
-use object_model::ObjectType;
 
-use animation::AnimationLoader;
+use animation::MaterialAnimationLoader;
 use error::Result;
 use sprite::SpriteLoader;
 
@@ -21,23 +21,22 @@ impl ObjectLoader {
     /// # Parameters
     ///
     /// * `world`: `World` to store the object's assets.
-    /// * `object_type`: Type of object, whether it is a character, weapon, etc.
     /// * `config_record`: Entry of the object's configuration.
-    pub fn load(
+    /// * `object_definition`: Object definition configuration.
+    pub fn load<SeqId>(
         &mut self,
         world: &World,
-        object_type: &ObjectType,
         config_record: &ConfigRecord,
+        object_definition: &ObjectDefinition<SeqId>,
     ) -> Result<loaded::Object> {
         let texture_index_offset = self.texture_index_offset;
 
         let (sprite_sheets, mesh, default_material) =
             SpriteLoader::load(world, texture_index_offset, config_record)?;
 
-        let animation_handles = AnimationLoader::load(
+        let animation_handles = MaterialAnimationLoader::load(
             world,
-            config_record,
-            object_type,
+            object_definition,
             texture_index_offset,
             &sprite_sheets,
         )?;
@@ -61,15 +60,18 @@ mod test {
     use amethyst::core::transform::TransformBundle;
     use amethyst::input::InputBundle;
     use amethyst::prelude::*;
-    use amethyst::renderer::{ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex,
-                             RenderBundle, Stage, ALPHA};
+    use amethyst::renderer::{
+        ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex, RenderBundle, Stage, ALPHA,
+    };
     use amethyst::ui::UiBundle;
     use application::resource::dir::{self, assets_dir};
     use application::resource::find_in;
     use game_model::config::ConfigRecord;
-    use object_model::ObjectType;
+    use object_model::config::CharacterDefinition;
+    use toml;
 
     use super::ObjectLoader;
+    use IoUtils;
 
     #[test]
     fn loads_object_assets() {
@@ -127,8 +129,18 @@ mod test {
             let mut bat_path = self.assets_dir.clone();
             bat_path.extend(Path::new("test/object/character/bat").iter());
             let config_record = ConfigRecord::new(bat_path);
+
+            let object_toml = IoUtils::read_file(&config_record.directory.join("object.toml"))
+                .expect("Failed to read object.toml");
+            let character_definition = toml::from_slice::<CharacterDefinition>(&object_toml)
+                .expect("Failed to parse object.toml into CharacterDefinition");
+
             let object = ObjectLoader::new()
-                .load(world, &ObjectType::Character, &config_record)
+                .load(
+                    world,
+                    &config_record,
+                    &character_definition.object_definition,
+                )
                 .expect("Failed to load object");
 
             assert_eq!(2, object.animations.len());
