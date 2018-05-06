@@ -54,7 +54,7 @@ if rustc --version | grep -qF 'nightly'; then
     compatible=$(is_clippy_nightly_compatible; echo $?)
     case "$compatible" in
       0) echo "Clippy is nightly compatible. No update required.";;
-      1) echo "Clippy needs recompilation with nightly."; cargo install clippy --force;;
+      1) echo "Clippy needs recompilation with nightly."; cargo install clippy --force --git https://github.com/rust-lang-nursery/rust-clippy.git;;
       *) echo "Unknown error while detecting clippy compatibility with Rustc. Read previous logs for details"; exit 1;;
     esac
   fi
