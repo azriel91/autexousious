@@ -1,5 +1,5 @@
 use amethyst::animation::{get_animation_set, Animation, AnimationCommand, EndControl};
-use amethyst::assets::Handle;
+use amethyst::assets::{AssetStorage, Handle};
 use amethyst::core::cgmath::{Matrix4, Vector3};
 use amethyst::core::transform::{GlobalTransform, Transform};
 use amethyst::ecs::prelude::*;
@@ -9,7 +9,7 @@ use amethyst::renderer::{
     VirtualKeyCode, WindowEvent,
 };
 use character_selection::CharacterSelection;
-use object_model::loaded;
+use object_model::loaded::{Character, CharacterHandle};
 
 /// `State` where game play takes place.
 #[derive(Debug, Default)]
@@ -37,7 +37,7 @@ impl GamePlayState {
         common_transform.translation = Vector3::new(width / 2., height / 2., 0.);
 
         let entity_components = {
-            let loaded_characters = world.read_resource::<Vec<loaded::Character>>();
+            let loaded_characters = world.read_resource::<Vec<CharacterHandle>>();
             let character_selection = world.read_resource::<CharacterSelection>();
 
             character_selection
@@ -49,21 +49,32 @@ impl GamePlayState {
                     );
                     loaded_characters.get(*object_index).expect(&error_msg)
                 })
-                .map(|character| {
+                .map(|character_handle| {
+                    let store = world.read_resource::<AssetStorage<Character>>();
+                    let character = store
+                        .get(character_handle)
+                        .expect("Expected character to be loaded.");
                     (
+                        character_handle.clone(),
                         character.object.default_material.clone(),
                         character.object.mesh.clone(),
                         character.object.animations.first().unwrap().clone(),
                     )
                 })
-                .collect::<Vec<(Material, MeshHandle, Handle<Animation<Material>>)>>()
+                .collect::<Vec<(
+                    CharacterHandle,
+                    Material,
+                    MeshHandle,
+                    Handle<Animation<Material>>,
+                )>>()
         };
 
-        entity_components
-            .into_iter()
-            .for_each(|(material, mesh, animation_handle)| {
+        entity_components.into_iter().for_each(
+            |(character_handle, material, mesh, animation_handle)| {
                 let entity = world
                     .create_entity()
+                    // Loaded `Character` for this entity.
+                    .with(character_handle)
                     // The default `Material`, whose textures will be swapped based on the
                     // animation.
                     .with(material)
@@ -90,7 +101,8 @@ impl GamePlayState {
                 );
 
                 self.entities.push(entity);
-            })
+            },
+        )
     }
 
     fn terminate_entities(&mut self, world: &mut World) {

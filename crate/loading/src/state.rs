@@ -5,10 +5,9 @@ use amethyst;
 use amethyst::prelude::*;
 use application_ui::ThemeLoader;
 use game_model::config::index_configuration;
-use object_model::loaded;
-use object_model::ObjectType;
-
 use object_loading::{CharacterLoader, ObjectLoader};
+use object_model::loaded::CharacterHandle;
+use object_model::ObjectType;
 
 /// `State` where resource loading takes place.
 #[derive(Derivative)]
@@ -54,7 +53,7 @@ impl<'p, T: amethyst::State + 'static> State<T> {
                             .filter_map(|config_record| {
                                 CharacterLoader::load(world, config_record, &mut object_loader).ok()
                             })
-                            .collect::<Vec<loaded::Character>>();
+                            .collect::<Vec<CharacterHandle>>();
 
                         world.add_resource(loaded_characters);
                     }

@@ -6,11 +6,18 @@
 extern crate amethyst;
 extern crate application_ui;
 extern crate character_selection;
+#[macro_use]
+extern crate derive_new;
 extern crate game_model;
 #[macro_use]
 extern crate log;
+extern crate game_input;
 extern crate object_model;
 
+pub(crate) use character_input_update_system::CharacterInputUpdateSystem;
+pub use game_play_bundle::GamePlayBundle;
 pub use game_play_state::GamePlayState;
 
+mod character_input_update_system;
+mod game_play_bundle;
 mod game_play_state;

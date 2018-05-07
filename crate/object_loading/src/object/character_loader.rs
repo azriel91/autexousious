@@ -1,7 +1,9 @@
-use amethyst::prelude::*;
+use amethyst::{assets::Loader, prelude::*};
 use game_model::config::ConfigRecord;
-use object_model::config::CharacterDefinition;
-use object_model::loaded::Character;
+use object_model::{
+    config::CharacterDefinition,
+    loaded::{Character, CharacterHandle},
+};
 use toml;
 
 use error::Result;
@@ -24,7 +26,7 @@ impl CharacterLoader {
         world: &World,
         config_record: &ConfigRecord,
         object_loader: &mut ObjectLoader,
-    ) -> Result<Character> {
+    ) -> Result<CharacterHandle> {
         let object_toml = IoUtils::read_file(&config_record.directory.join("object.toml"))?;
         let character_definition = toml::from_slice::<CharacterDefinition>(&object_toml)?;
 
@@ -33,7 +35,10 @@ impl CharacterLoader {
             config_record,
             &character_definition.object_definition,
         )?;
+        let character = Character::new(object, character_definition);
 
-        Ok(Character::new(object, character_definition))
+        let loader = world.read_resource::<Loader>();
+        let character_handle = loader.load_from_data(character, (), &world.read_resource());
+        Ok(character_handle)
     }
 }

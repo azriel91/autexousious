@@ -11,7 +11,9 @@ extern crate application_ui;
 extern crate character_selection;
 extern crate game_input;
 extern crate game_mode_menu;
+extern crate game_play;
 extern crate loading;
+extern crate object_loading;
 extern crate stdio_view;
 extern crate structopt;
 #[macro_use]
@@ -23,8 +25,9 @@ use amethyst::animation::AnimationBundle;
 use amethyst::core::transform::TransformBundle;
 use amethyst::input::InputBundle;
 use amethyst::prelude::*;
-use amethyst::renderer::{ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex,
-                         RenderBundle, Stage, ALPHA};
+use amethyst::renderer::{
+    ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex, RenderBundle, Stage, ALPHA,
+};
 use amethyst::ui::{DrawUi, UiBundle};
 use application::resource::dir::{self, assets_dir};
 use application::resource::{self, find_in, load_in};
@@ -32,6 +35,8 @@ use application_robot::RobotState;
 use character_selection::CharacterSelectionBundle;
 use game_input::{PlayerActionControl, PlayerAxisControl};
 use game_mode_menu::GameModeMenuState;
+use game_play::GamePlayBundle;
+use object_loading::ObjectLoadingBundle;
 use stdio_view::StdinSystem;
 use structopt::StructOpt;
 
@@ -94,7 +99,9 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new()
                 .with_bindings_from_file(&control_input_path))?
             .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?
-            .with_bundle(CharacterSelectionBundle::new())?;
+            .with_bundle(ObjectLoadingBundle::new())?
+            .with_bundle(CharacterSelectionBundle::new())?
+            .with_bundle(GamePlayBundle::new())?;
     }
 
     let mut app = app_builder.build()?;
