@@ -6,9 +6,9 @@
         (player: 0, axis: Z): (pos: Key(Down), neg: Key(Up)),
     },
     actions: {
-        (player: 0, action: Defend): Key(O),
-        (player: 0, action: Jump): Key(P),
-        (player: 0, action: Attack): Key(LBracket),
-        (player: 0, action: Special): Key(RBracket),
+        (player: 0, action: Defend): [Key(O)],
+        (player: 0, action: Jump): [Key(P)],
+        (player: 0, action: Attack): [Key(LBracket)],
+        (player: 0, action: Special): [Key(RBracket)],
     },
 )

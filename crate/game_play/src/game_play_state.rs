@@ -8,7 +8,7 @@ use amethyst::renderer::{
     Camera, Event, KeyboardInput, Material, MeshHandle, Projection, ScreenDimensions,
     VirtualKeyCode, WindowEvent,
 };
-use character_selection::CharacterSelection;
+use character_selection::{CharacterEntityControl, CharacterSelection};
 use object_model::loaded::{Character, CharacterHandle};
 
 /// `State` where game play takes place.
@@ -47,14 +47,18 @@ impl GamePlayState {
                         "object_index: `{}` for controller `{}` is out of bounds.",
                         object_index, controller_id
                     );
-                    loaded_characters.get(*object_index).expect(&error_msg)
+                    (
+                        CharacterEntityControl::new(*controller_id),
+                        loaded_characters.get(*object_index).expect(&error_msg),
+                    )
                 })
-                .map(|character_handle| {
+                .map(|(character_entity_control, character_handle)| {
                     let store = world.read_resource::<AssetStorage<Character>>();
                     let character = store
                         .get(character_handle)
                         .expect("Expected character to be loaded.");
                     (
+                        character_entity_control,
                         character_handle.clone(),
                         character.object.default_material.clone(),
                         character.object.mesh.clone(),
@@ -62,6 +66,7 @@ impl GamePlayState {
                     )
                 })
                 .collect::<Vec<(
+                    CharacterEntityControl,
                     CharacterHandle,
                     Material,
                     MeshHandle,
@@ -70,9 +75,11 @@ impl GamePlayState {
         };
 
         entity_components.into_iter().for_each(
-            |(character_handle, material, mesh, animation_handle)| {
+            |(character_entity_control, character_handle, material, mesh, animation_handle)| {
                 let entity = world
                     .create_entity()
+                    // Controller of this entity
+                    .with(character_entity_control)
                     // Loaded `Character` for this entity.
                     .with(character_handle)
                     // The default `Material`, whose textures will be swapped based on the

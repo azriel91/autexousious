@@ -4,5 +4,5 @@ use game_input::ControllerId;
 
 /// Stores the selected characters for each controller.
 ///
-/// The usize is the index of the selected `Object` in the loaded `GameConfig`.
+/// The usize is the index of the selected `Character` in the loaded `Character`s.
 pub type CharacterSelection = HashMap<ControllerId, usize>;

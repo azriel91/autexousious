@@ -2306,6 +2306,7 @@ dependencies = [
  "game_mode_menu 0.2.0",
  "game_play 0.2.0",
  "loading 0.2.0",
+ "log 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "object_loading 0.2.0",
  "stdio_view 0.2.0",
  "structopt 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)",

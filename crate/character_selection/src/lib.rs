@@ -14,11 +14,13 @@ extern crate game_model;
 extern crate log;
 extern crate object_model;
 
+pub use character_entity_control::CharacterEntityControl;
 pub use character_selection::CharacterSelection;
 pub use character_selection_bundle::CharacterSelectionBundle;
 pub use character_selection_state::CharacterSelectionState;
 pub(crate) use character_selection_system::CharacterSelectionSystem;
 
+mod character_entity_control;
 mod character_selection;
 mod character_selection_bundle;
 mod character_selection_state;
