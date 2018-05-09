@@ -48,7 +48,7 @@ impl<'s> System<'s> for CharacterInputUpdateSystem {
 
             // TODO: Use Pushdown automata to handle state
             if x_axis_value != Some(0.) || z_axis_value != Some(0.) {
-                let animation_handle = character.object.animations.get(1).unwrap().clone();
+                let animation_handle = &character.object.animations[1].clone();
 
                 // Start the animation
                 let animation_set =
@@ -63,7 +63,7 @@ impl<'s> System<'s> for CharacterInputUpdateSystem {
                     AnimationCommand::Start,
                 );
             } else if x_axis_value == Some(0.) && z_axis_value == Some(0.) {
-                let animation_handle = character.object.animations.get(0).unwrap().clone();
+                let animation_handle = &character.object.animations[0].clone();
 
                 // Start the animation
                 let animation_set =
