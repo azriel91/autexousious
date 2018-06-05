@@ -19,8 +19,9 @@ mod test {
     use amethyst::core::transform::TransformBundle;
     use amethyst::input::InputBundle;
     use amethyst::prelude::*;
-    use amethyst::renderer::{ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex,
-                             RenderBundle, Stage, ALPHA};
+    use amethyst::renderer::{
+        ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex, RenderBundle, Stage, ALPHA,
+    };
     use amethyst::ui::UiBundle;
     use application::resource::dir::{self, assets_dir};
     use application::resource::find_in;

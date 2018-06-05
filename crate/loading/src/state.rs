@@ -51,9 +51,15 @@ impl<'p, T: amethyst::State + 'static> State<T> {
                         let loaded_characters = config_records
                             .iter()
                             .filter_map(|config_record| {
+                                debug!(
+                                    "Loading character from: `{}`",
+                                    config_record.directory.display()
+                                );
                                 CharacterLoader::load(world, config_record, &mut object_loader).ok()
                             })
                             .collect::<Vec<CharacterHandle>>();
+
+                        debug!("Loaded character handles: `{:?}`", loaded_characters);
 
                         world.add_resource(loaded_characters);
                     }

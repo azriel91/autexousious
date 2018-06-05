@@ -36,14 +36,14 @@ pub fn index_configuration(assets_dir: &Path) -> ConfigIndex {
 
 /// Returns the top level game configuration directories within the `assets` directory.
 ///
-/// Currently this only contains the `default` directory. In the future it should be expanded to
-/// include the directories for downloaded configuration.
+/// Currently this contains the "default", "download", and "test" directories.
 ///
 /// # Parameters
 ///
 /// * `assets_dir`: Path to the assets directory.
 fn config_dirs(assets_dir: &Path) -> Vec<PathBuf> {
-    vec![DEFAULT_CONFIG_DIR, "download"]
+    // Prioritize the "test" directory
+    vec!["test", DEFAULT_CONFIG_DIR, "download"]
         .iter()
         .map(|dir_name| assets_dir.join(dir_name))
         .filter(|dir| dir.is_dir())

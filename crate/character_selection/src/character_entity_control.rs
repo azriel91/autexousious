@@ -1,15 +1,16 @@
-use amethyst::ecs::prelude::*;
+use amethyst::ecs::{prelude::*, storage::HashMapStorage};
 use game_input::ControllerId;
 
-/// Stores the controller ID for an entity.
+/// Stores the human controller ID for an entity.
+///
+/// We use a `HashMapStorage` because there wouldn't be that many entities that are controlled by
+/// human `Controller`s. We will use a different `Component` for AI controllers.
 #[derive(Debug, new)]
 pub struct CharacterEntityControl {
     /// ID of the controller that controls the character entity.
     pub controller_id: ControllerId,
 }
 
-// `DenseVecStorage` because presumably a fair number the entities on screen will be controlled by
-// `Controller`s, human or AI,
 impl Component for CharacterEntityControl {
-    type Storage = DenseVecStorage<Self>;
+    type Storage = HashMapStorage<Self>;
 }
