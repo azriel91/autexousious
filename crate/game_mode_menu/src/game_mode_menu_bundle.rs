@@ -49,7 +49,8 @@ mod test {
         let mut app = setup().expect("GameModeMenuBundle#build() should succeed");
 
         // If the system was not registered, this will panic
-        &mut app.world
+        &mut app
+            .world
             .create_entity()
             .with(MenuItem {
                 index: Index::StartGame,

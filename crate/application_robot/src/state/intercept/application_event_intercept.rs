@@ -32,7 +32,8 @@ impl ApplicationEventIntercept {
     fn handle_application_events(&mut self, world: &mut World) -> Option<Trans> {
         let app_event_channel = world.read_resource::<EventChannel<ApplicationEvent>>();
 
-        let mut reader_id = self.application_event_reader
+        let mut reader_id = self
+            .application_event_reader
             .as_mut()
             .expect("Expected reader to be set");
         let mut storage_iterator = app_event_channel.read(&mut reader_id);
