@@ -92,10 +92,12 @@ mod test {
 
     use super::{assets_dir_internal, ASSETS};
     use resource;
-    use resource::FindContext;
     use resource::dir::{DiscoveryContext, Error, ErrorKind};
+    use resource::FindContext;
 
+    // kcov-ignore-start
     fn assert_dir_discovery_error(
+        // kcov-ignore-end
         expected_context: DiscoveryContext,
         assets_dir: Result<PathBuf, Error>,
     ) {
@@ -114,7 +116,9 @@ mod test {
         }
     }
 
+    // kcov-ignore-start
     fn assert_discovery_resource_find_error(
+        // kcov-ignore-end
         expected_find_context: FindContext,
         assets_dir: Result<PathBuf, Error>,
     ) {
@@ -154,7 +158,9 @@ mod test {
         }; // kcov-ignore-end
     }
 
+    // kcov-ignore-start
     fn assert_discovery_resource_io_error(
+        // kcov-ignore-end
         expected_io_error: io::Error,
         assets_dir: Result<PathBuf, Error>,
     ) {
