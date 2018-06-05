@@ -3,8 +3,8 @@ use std::ffi;
 use std::io;
 use std::path::{Path, PathBuf};
 
-use resource::FindContext;
 use resource::error::Result;
+use resource::FindContext;
 
 /// Returns development-time base directories as a `Vec<::std::path::Path>`.
 ///
@@ -154,10 +154,10 @@ mod test {
     use std::path::PathBuf;
 
     use super::{find, find_in};
-    use resource::FindContext;
     use resource::dir;
     use resource::error::ErrorKind;
     use resource::test_support::{exe_dir, setup_temp_file};
+    use resource::FindContext;
 
     test_mutex!();
 

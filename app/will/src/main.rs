@@ -8,8 +8,14 @@ extern crate application;
 extern crate application_input;
 extern crate application_robot;
 extern crate application_ui;
+extern crate character_selection;
+extern crate game_input;
 extern crate game_mode_menu;
+extern crate game_play;
 extern crate loading;
+#[macro_use]
+extern crate log;
+extern crate object_loading;
 extern crate stdio_view;
 extern crate structopt;
 #[macro_use]
@@ -19,15 +25,20 @@ use std::process;
 
 use amethyst::animation::AnimationBundle;
 use amethyst::core::transform::TransformBundle;
-use amethyst::input::InputBundle;
+use amethyst::input::{Bindings, InputBundle};
 use amethyst::prelude::*;
-use amethyst::renderer::{ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex,
-                         RenderBundle, Stage, ALPHA};
+use amethyst::renderer::{
+    ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex, RenderBundle, Stage, ALPHA,
+};
 use amethyst::ui::{DrawUi, UiBundle};
 use application::resource::dir::{self, assets_dir};
-use application::resource::find_in;
+use application::resource::{self, load_in};
 use application_robot::RobotState;
+use character_selection::CharacterSelectionBundle;
+use game_input::{PlayerActionControl, PlayerAxisControl};
 use game_mode_menu::GameModeMenuState;
+use game_play::GamePlayBundle;
+use object_loading::ObjectLoadingBundle;
 use stdio_view::StdinSystem;
 use structopt::StructOpt;
 
@@ -52,13 +63,12 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     );
 
     if !opt.headless {
-        let display_config = DisplayConfig::load(
-            find_in(
-                dir::RESOURCES,
-                "display_config.ron",
-                Some(development_base_dirs!()),
-            ).unwrap(),
-        );
+        let display_config = load_in::<DisplayConfig, _>(
+            dir::RESOURCES,
+            "display_config.ron",
+            &resource::Format::Ron,
+            Some(development_base_dirs!()),
+        )?;
 
         let pipe = Pipeline::build().with_stage(
             Stage::with_backbuffer()
@@ -70,6 +80,16 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 ))
                 .with_pass(DrawUi::new()),
         );
+
+        // We parse it ourselves, because Amethyst silently fails if it fails to parse.
+        let input_bindings = load_in::<Bindings<PlayerAxisControl, PlayerActionControl>, _>(
+            dir::RESOURCES,
+            "input.ron",
+            &resource::Format::Ron,
+            Some(development_base_dirs!()),
+        )?;
+        debug!("Axes bindings: {:?}", &input_bindings.axes());
+        debug!("Action bindings: {:?}", &input_bindings.actions());
 
         // `InputBundle` provides `InputHandler<A, B>`, needed by the `UiBundle` for mouse events.
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
@@ -85,8 +105,12 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                     .with_dep(&["animation_control_system", "sampler_interpolation_system"]),
             )?
             .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
-            .with_bundle(InputBundle::<String, String>::new())?
-            .with_bundle(UiBundle::<String, String>::new())?;
+            .with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new()
+                .with_bindings(input_bindings))?
+            .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?
+            .with_bundle(ObjectLoadingBundle::new())?
+            .with_bundle(CharacterSelectionBundle::new())?
+            .with_bundle(GamePlayBundle::new())?;
     }
 
     let mut app = app_builder.build()?;

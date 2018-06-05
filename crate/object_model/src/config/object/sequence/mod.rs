@@ -15,7 +15,7 @@ mod frame;
 ///
 /// This carries the information necessary for an `Animation`, as well as the effects and
 /// interactions that happen during each frame of that animation.
-#[derive(Constructor, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Constructor, Debug, Deserialize, PartialEq)]
 pub struct Sequence<SeqId> {
     /// ID of the sequence.
     pub id: SeqId,

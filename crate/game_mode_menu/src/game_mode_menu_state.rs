@@ -117,7 +117,8 @@ impl State for GameModeMenuState {
 
         let menu_event_channel = world.read_resource::<EventChannel<MenuEvent<Index>>>();
 
-        let mut reader_id = self.menu_event_reader
+        let mut reader_id = self
+            .menu_event_reader
             .as_mut()
             .expect("Expected menu_event_reader to be set");
         let mut storage_iterator = menu_event_channel.read(&mut reader_id);

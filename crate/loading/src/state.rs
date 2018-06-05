@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::fmt::Debug;
 use std::path::PathBuf;
 
@@ -6,11 +5,9 @@ use amethyst;
 use amethyst::prelude::*;
 use application_ui::ThemeLoader;
 use game_model::config::index_configuration;
-use game_model::config::GameConfig;
-use object_model::loaded;
+use object_loading::{CharacterLoader, ObjectLoader};
+use object_model::loaded::CharacterHandle;
 use object_model::ObjectType;
-
-use object_loading::ObjectLoader;
 
 /// `State` where resource loading takes place.
 #[derive(Derivative)]
@@ -37,7 +34,8 @@ impl<'p, T: amethyst::State + 'static> State<T> {
         debug!("Indexed configuration: {:?}", &configuration_index);
 
         let mut object_loader = ObjectLoader::new();
-        let loaded_objects_by_type = ObjectType::variants()
+
+        ObjectType::variants()
             .into_iter()
             .filter_map(|object_type| {
                 configuration_index
@@ -45,23 +43,28 @@ impl<'p, T: amethyst::State + 'static> State<T> {
                     .get(&object_type)
                     .map(|config_records| (object_type, config_records))
             })
-            .map(|(object_type, config_records)| {
+            .for_each(|(object_type, config_records)| {
                 // config_records is the list of records for one object type
-                let loaded_objects = config_records
-                    .iter()
-                    .filter_map(|config_record| {
-                        object_loader.load(world, &object_type, config_record).ok()
-                    })
-                    .collect::<Vec<loaded::Object>>();
 
-                (object_type, loaded_objects)
-            })
-            .collect::<HashMap<ObjectType, Vec<loaded::Object>>>();
+                match object_type {
+                    ObjectType::Character => {
+                        let loaded_characters = config_records
+                            .iter()
+                            .filter_map(|config_record| {
+                                debug!(
+                                    "Loading character from: `{}`",
+                                    config_record.directory.display()
+                                );
+                                CharacterLoader::load(world, config_record, &mut object_loader).ok()
+                            })
+                            .collect::<Vec<CharacterHandle>>();
 
-        let game_config = GameConfig::new(loaded_objects_by_type);
-        debug!("Game configuration: {:?}", &game_config);
+                        debug!("Loaded character handles: `{:?}`", loaded_characters);
 
-        world.add_resource(game_config);
+                        world.add_resource(loaded_characters);
+                    }
+                };
+            });
     }
 }
 

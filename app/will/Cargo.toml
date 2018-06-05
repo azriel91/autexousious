@@ -10,8 +10,13 @@ application = { path = "../../crate/application" }
 application_input = { path = "../../crate/application_input" }
 application_robot = { path = "../../crate/application_robot" }
 application_ui = { path = "../../crate/application_ui" }
+character_selection = { path = "../../crate/character_selection" }
+game_input = { path = "../../crate/game_input" }
 game_mode_menu = { path = "../../crate/game_mode_menu" }
+game_play = { path = "../../crate/game_play" }
 loading = { path = "../../crate/loading" }
+log = "0.4"
+object_loading = { path = "../../crate/object_loading" }
 stdio_view = { path = "../../crate/stdio_view" }
 structopt = "0.1.6"
 structopt-derive = "0.1.6"

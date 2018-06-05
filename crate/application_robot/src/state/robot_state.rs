@@ -56,7 +56,8 @@ impl RobotState {
     where
         F: FnMut(&mut Rc<RefCell<Intercept>>) -> Option<Trans>,
     {
-        let trans_opt = self.intercepts
+        let trans_opt = self
+            .intercepts
             .iter_mut()
             .fold_while(None, |trans, intercept| {
                 if trans.is_none() {
@@ -107,7 +108,8 @@ impl RobotState {
     ///
     /// * `trans_state`: `State` that should be wrapped in a `RobotState`.
     fn wrap_trans_state(&mut self, trans_state: Box<State>) -> Box<State> {
-        let intercepts = self.intercepts
+        let intercepts = self
+            .intercepts
             .iter()
             .filter(|intercept| intercept.borrow().is_transitive())
             .cloned()

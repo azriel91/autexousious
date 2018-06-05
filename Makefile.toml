@@ -9,7 +9,7 @@ set -e
 
 if rustc --version | grep -qF 'nightly'; then
     # Rust fmt
-    cargo fmt --all -- --write-mode=diff
+    cargo fmt --all
 
     # Clippy - best practices
     [ "${CLIPPY_ENABLED}" = "false" ] || cargo clippy --all

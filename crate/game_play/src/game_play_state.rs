@@ -1,12 +1,15 @@
-use amethyst::animation::{get_animation_set, Animation, AnimationCommand, EndControl};
-use amethyst::assets::Handle;
-use amethyst::core::cgmath::{Matrix4, Vector3};
-use amethyst::core::transform::{GlobalTransform, Transform};
-use amethyst::ecs::prelude::*;
-use amethyst::prelude::*;
-use amethyst::renderer::{Camera, Event, KeyboardInput, Material, MeshHandle, Projection,
-                         ScreenDimensions, VirtualKeyCode, WindowEvent};
-use game_model::config::GameConfig;
+use amethyst::{
+    core::{
+        cgmath::{Matrix4, Vector3}, transform::{GlobalTransform, Transform},
+    },
+    ecs::prelude::*, prelude::*,
+    renderer::{
+        Camera, Event, KeyboardInput, Projection, ScreenDimensions, VirtualKeyCode, WindowEvent,
+    },
+};
+use character_selection::{CharacterEntityControl, CharacterSelection};
+
+use CharacterEntitySpawner;
 
 /// `State` where game play takes place.
 #[derive(Debug, Default)]
@@ -33,65 +36,33 @@ impl GamePlayState {
         let mut common_transform = Transform::default();
         common_transform.translation = Vector3::new(width / 2., height / 2., 0.);
 
-        let entities_components = {
-            let game_config = world.read_resource::<GameConfig>();
-            let loaded_objects_by_type = &game_config.loaded_objects_by_type;
-            loaded_objects_by_type
-                .values()
-                .map(|objects| {
-                    objects
-                        .iter()
-                        .map(|object| {
-                            (
-                                object.default_material.clone(),
-                                object.mesh.clone(),
-                                object.animations.first().unwrap().clone(),
-                            )
-                        })
-                        .collect::<Vec<(Material, MeshHandle, Handle<Animation<Material>>)>>()
+        // We need to collect this first because `world` needs to be borrowed immutably first, then
+        // mutably later.
+        let character_entities_to_spawn = {
+            let character_selection = world.read_resource::<CharacterSelection>();
+            character_selection
+                .iter()
+                .map(|(controller_id, character_index)| {
+                    (
+                        *character_index,
+                        CharacterEntityControl::new(*controller_id),
+                    )
                 })
-                .collect::<Vec<Vec<(Material, MeshHandle, Handle<Animation<Material>>)>>>()
+                .collect::<Vec<(usize, CharacterEntityControl)>>()
         };
 
-        entities_components
-            .into_iter()
-            .for_each(|entity_components| {
-                entity_components
-                    .into_iter()
-                    .for_each(|(material, mesh, animation_handle)| {
-                        let entity = world
-                            .create_entity()
-                            // The default `Material`, whose textures will be swapped based on the
-                            // animation.
-                            .with(material)
-                            // Shift sprite to some part of the window
-                            .with(mesh)
-                            // Used by the engine to compute and store the rendered position.
-                            .with(common_transform.clone())
-                            // This defines the coordinates in the world, where the sprites should
-                            // be drawn relative to the entity
-                            .with(GlobalTransform::default())
-                            .build();
+        character_entities_to_spawn.into_iter().for_each(
+            |(character_index, character_entity_control)| {
+                let entity = CharacterEntitySpawner::spawn_for_player(
+                    world,
+                    common_transform.clone(),
+                    character_index,
+                    character_entity_control,
+                );
 
-                        // We also need to trigger the animation, not just attach it to the
-                        // entity
-                        let mut animation_control_set_storage = world.write_storage();
-                        let animation_set = get_animation_set::<u32, Material>(
-                            &mut animation_control_set_storage,
-                            entity,
-                        );
-                        let animation_id = 0;
-                        animation_set.add_animation(
-                            animation_id,
-                            &animation_handle,
-                            EndControl::Loop(None),
-                            30., // Rate at which the animation plays
-                            AnimationCommand::Start,
-                        );
-
-                        self.entities.push(entity);
-                    })
-            });
+                self.entities.push(entity);
+            },
+        )
     }
 
     fn terminate_entities(&mut self, world: &mut World) {

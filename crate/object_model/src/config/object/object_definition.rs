@@ -7,7 +7,7 @@ use config::object::Sequence;
 /// [char_definition] for characters.
 ///
 /// [char_definition]: ../character/struct.CharacterDefinition.html
-#[derive(Constructor, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Constructor, Debug, Deserialize, PartialEq)]
 pub struct ObjectDefinition<SeqId> {
     /// Sequences of actions this object can perform.
     pub sequences: Vec<Sequence<SeqId>>,

@@ -45,11 +45,12 @@ mod test {
     } // kcov-ignore
 
     #[test]
-    fn build_adds_application_event_channel_to_world() {
+    fn bundle_should_allow_menu_items_to_be_created() {
         let mut app = setup().expect("GameModeMenuBundle#build() should succeed");
 
         // If the system was not registered, this will panic
-        &mut app.world
+        &mut app
+            .world
             .create_entity()
             .with(MenuItem {
                 index: Index::StartGame,
