@@ -1,11 +1,10 @@
-use amethyst::animation::{
-    Animation, InterpolationFunction, MaterialChannel, MaterialPrimitive, Sampler,
+use std::hash::Hash;
+
+use amethyst::{
+    animation::{Animation, InterpolationFunction, MaterialChannel, MaterialPrimitive, Sampler},
+    assets::{Handle, Loader}, prelude::*, renderer::{Material, SpriteSheet},
 };
-use amethyst::assets::{Handle, Loader};
-use amethyst::prelude::*;
-use amethyst::renderer::{Material, SpriteSheet};
-use object_model::config::object::Sequence;
-use object_model::config::ObjectDefinition;
+use object_model::config::{object::Sequence, ObjectDefinition};
 
 use error::Result;
 
@@ -22,7 +21,7 @@ impl MaterialAnimationLoader {
     /// * `object_definition`: Sequences of the `Object`
     /// * `texture_index_offset`: Offset of the texture IDs in the `MaterialTextureSet`.
     /// * `sprite_sheets`: `SpriteSheet`s that contain the texture coordinates for sprites.
-    pub(crate) fn load<SeqId>(
+    pub(crate) fn load<SeqId: Hash + Eq>(
         world: &World,
         object_definition: &ObjectDefinition<SeqId>,
         texture_index_offset: usize,
@@ -31,7 +30,7 @@ impl MaterialAnimationLoader {
         let animation_handles = object_definition
             .sequences
             .iter()
-            .map(|sequence| {
+            .map(|(_id, sequence)| {
                 Self::sequence_to_animation(world, texture_index_offset, sprite_sheets, sequence)
             })
             .map(|animation| {
@@ -51,7 +50,7 @@ impl MaterialAnimationLoader {
     /// * `texture_index_offset`: Offset of the texture IDs in the `MaterialTextureSet`.
     /// * `sprite_sheets`: `SpriteSheet`s that contain the texture coordinates for sprites.
     /// * `sequence`: `Sequence` to create the animation from.
-    fn sequence_to_animation<SeqId>(
+    fn sequence_to_animation<SeqId: Hash + Eq>(
         world: &World,
         texture_index_offset: usize,
         sprite_sheets: &[SpriteSheet],
@@ -82,7 +81,7 @@ impl MaterialAnimationLoader {
         }
     }
 
-    fn texture_sampler<SeqId>(
+    fn texture_sampler<SeqId: Hash + Eq>(
         texture_index_offset: usize,
         sequence: &Sequence<SeqId>,
         input: Vec<f32>,
@@ -104,7 +103,7 @@ impl MaterialAnimationLoader {
         }
     }
 
-    fn sprite_offset_sampler<SeqId>(
+    fn sprite_offset_sampler<SeqId: Hash + Eq>(
         sprite_sheets: &[SpriteSheet],
         sequence: &Sequence<SeqId>,
         input: Vec<f32>,

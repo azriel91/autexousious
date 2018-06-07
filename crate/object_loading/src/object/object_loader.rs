@@ -1,7 +1,8 @@
+use std::hash::Hash;
+
 use amethyst::prelude::*;
 use game_model::config::ConfigRecord;
-use object_model::config::ObjectDefinition;
-use object_model::loaded;
+use object_model::{config::ObjectDefinition, loaded};
 
 use animation::MaterialAnimationLoader;
 use error::Result;
@@ -23,7 +24,7 @@ impl ObjectLoader {
     /// * `world`: `World` to store the object's assets.
     /// * `config_record`: Entry of the object's configuration.
     /// * `object_definition`: Object definition configuration.
-    pub fn load<SeqId>(
+    pub fn load<SeqId: Hash + Eq>(
         &mut self,
         world: &World,
         config_record: &ConfigRecord,
