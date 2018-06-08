@@ -7,6 +7,8 @@
 //! because different object types have different valid sequence IDs, and we want to be able to
 //! define this at compile time rather than needing to process this at run time.
 
+use std::hash::Hash;
+
 pub use self::frame::Frame;
 
 mod frame;
@@ -16,9 +18,7 @@ mod frame;
 /// This carries the information necessary for an `Animation`, as well as the effects and
 /// interactions that happen during each frame of that animation.
 #[derive(Clone, Constructor, Debug, Deserialize, PartialEq)]
-pub struct Sequence<SeqId> {
-    /// ID of the sequence.
-    pub id: SeqId,
+pub struct Sequence<SeqId: Eq + Hash> {
     /// ID of the sequence to switch to after this one has completed.
     ///
     /// Note: This may not be immediately after the last frame of the sequence. For example, a
@@ -35,8 +35,7 @@ mod test {
     use super::{Frame, Sequence};
 
     const SEQUENCE_TOML: &str = r#"
-        id = "Boo"
-        next = "Moo"
+        next = "Boo"
         frames = [
           { sheet = 0, sprite = 4, wait = 2 },
           { sheet = 0, sprite = 5, wait = 2 },
@@ -60,13 +59,12 @@ mod test {
             Frame::new(0, 6, 2),
             Frame::new(0, 5, 2),
         ];
-        let expected = Sequence::new(TestSeqId::Boo, TestSeqId::Moo, frames);
+        let expected = Sequence::new(TestSeqId::Boo, frames);
         assert_eq!(expected, sequence);
     }
 
-    #[derive(Debug, Deserialize, PartialEq)]
+    #[derive(Debug, Deserialize, PartialEq, Eq, Hash)]
     enum TestSeqId {
         Boo,
-        Moo,
     }
 }

@@ -11,6 +11,7 @@ game_input = { path = "../game_input" }
 game_model = { path = "../game_model" }
 log = "0.4"
 object_model = { path = "../object_model" }
+object_play = { path = "../object_play" }
 
 [dev-dependencies]
 application = { path = "../application" }

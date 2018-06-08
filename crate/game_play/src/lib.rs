@@ -19,6 +19,7 @@ extern crate log;
 #[cfg(test)]
 extern crate object_loading;
 extern crate object_model;
+extern crate object_play;
 
 pub(crate) use character_entity_spawner::CharacterEntitySpawner;
 pub(crate) use character_input_update_system::CharacterInputUpdateSystem;

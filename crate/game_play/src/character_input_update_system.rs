@@ -1,11 +1,14 @@
-use amethyst::animation::{get_animation_set, AnimationCommand, AnimationControlSet, EndControl};
-use amethyst::assets::AssetStorage;
-use amethyst::ecs::prelude::*;
-use amethyst::input::InputHandler;
-use amethyst::renderer::Material;
+use amethyst::{
+    animation::AnimationControlSet, assets::AssetStorage, ecs::prelude::*, input::InputHandler,
+    renderer::Material,
+};
 use character_selection::CharacterEntityControl;
-use game_input::{Axis, PlayerActionControl, PlayerAxisControl};
-use object_model::loaded::{Character, CharacterHandle};
+use game_input::{Axis, ControlAction, PlayerActionControl, PlayerAxisControl};
+use object_model::{
+    config::object::character::SequenceId, entity::{CharacterInput, ObjectStatus},
+    loaded::{Character, CharacterHandle},
+};
+use object_play::CharacterSequenceHandler;
 
 /// Updates `Character` sequence based on input
 #[derive(Debug, Default, new)]
@@ -17,6 +20,7 @@ type CharacterInputUpdateSystemData<'s, 'c> = (
     ReadStorage<'s, CharacterEntityControl>,
     Read<'s, AssetStorage<Character>>,
     Read<'s, InputHandler<PlayerAxisControl, PlayerActionControl>>,
+    WriteStorage<'s, ObjectStatus<SequenceId>>,
     WriteStorage<'s, AnimationControlSet<u32, Material>>,
 );
 
@@ -31,11 +35,16 @@ impl<'s> System<'s> for CharacterInputUpdateSystem {
             control_storage,
             characters,
             control_input,
+            mut status_storage,
             mut animation_control_set_storage,
         ): Self::SystemData,
     ) {
-        for (entity, character_handle, character_entity_control) in
-            (&*entities, &handle_storage, &control_storage).join()
+        for (entity, character_handle, character_entity_control, mut status) in (
+            &*entities,
+            &handle_storage,
+            &control_storage,
+            &mut status_storage,
+        ).join()
         {
             let player = character_entity_control.controller_id;
 
@@ -46,37 +55,33 @@ impl<'s> System<'s> for CharacterInputUpdateSystem {
             let x_axis_value = control_input.axis_value(&PlayerAxisControl::new(player, Axis::X));
             let z_axis_value = control_input.axis_value(&PlayerAxisControl::new(player, Axis::Z));
 
-            // TODO: Use Pushdown automata to handle state
-            if x_axis_value != Some(0.) || z_axis_value != Some(0.) {
-                let animation_handle = &character.object.animations[1].clone();
+            let input = CharacterInput::new(
+                x_axis_value.unwrap_or(0.),
+                z_axis_value.unwrap_or(0.),
+                control_input
+                    .action_is_down(&PlayerActionControl::new(player, ControlAction::Defend))
+                    .unwrap_or(false),
+                control_input
+                    .action_is_down(&PlayerActionControl::new(player, ControlAction::Jump))
+                    .unwrap_or(false),
+                control_input
+                    .action_is_down(&PlayerActionControl::new(player, ControlAction::Attack))
+                    .unwrap_or(false),
+                control_input
+                    .action_is_down(&PlayerActionControl::new(player, ControlAction::Special))
+                    .unwrap_or(false),
+            );
+            let next_sequence = CharacterSequenceHandler::update(
+                &entity,
+                &mut animation_control_set_storage,
+                &input,
+                character,
+                &status.sequence_id,
+            );
 
-                // Start the animation
-                let animation_set =
-                    get_animation_set::<u32, Material>(&mut animation_control_set_storage, entity);
-                animation_set.abort(0);
-                let animation_id = 1;
-                animation_set.add_animation(
-                    animation_id,
-                    &animation_handle,
-                    EndControl::Loop(None),
-                    30., // Rate at which the animation plays
-                    AnimationCommand::Start,
-                );
-            } else if x_axis_value == Some(0.) && z_axis_value == Some(0.) {
-                let animation_handle = &character.object.animations[0].clone();
-
-                // Start the animation
-                let animation_set =
-                    get_animation_set::<u32, Material>(&mut animation_control_set_storage, entity);
-                animation_set.abort(1);
-                let animation_id = 0;
-                animation_set.add_animation(
-                    animation_id,
-                    &animation_handle,
-                    EndControl::Loop(None),
-                    30., // Rate at which the animation plays
-                    AnimationCommand::Start,
-                );
+            // Update the current sequence ID
+            if let Some(next_sequence) = next_sequence {
+                status.sequence_id = next_sequence;
             }
         }
     }

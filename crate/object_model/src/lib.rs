@@ -26,5 +26,6 @@ extern crate toml;
 pub use object_type::ObjectType;
 
 pub mod config;
+pub mod entity;
 pub mod loaded;
 mod object_type;

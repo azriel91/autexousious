@@ -8,6 +8,8 @@ mod sequence_id;
 
 #[cfg(test)]
 mod test {
+    use std::collections::HashMap;
+
     use toml;
 
     use super::{CharacterDefinition, SequenceId};
@@ -15,9 +17,8 @@ mod test {
     use config::object::{ObjectDefinition, Sequence};
 
     const OBJECT_TOML: &str = r#"
-        [[sequences]]
-          id = "Standing"
-          next = "Walking"
+        [sequences.stand]
+          next = "walk"
           frames = [
             { sheet = 0, sprite = 4, wait = 2 },
             { sheet = 0, sprite = 5, wait = 2 },
@@ -41,8 +42,10 @@ mod test {
             Frame::new(0, 6, 2),
             Frame::new(0, 5, 2),
         ];
-        let sequence = Sequence::new(SequenceId::Standing, SequenceId::Walking, frames);
-        let object_definition = ObjectDefinition::new(vec![sequence]);
+        let sequence = Sequence::new(SequenceId::Walk, frames);
+        let mut sequences = HashMap::new();
+        sequences.insert(SequenceId::Stand, sequence);
+        let object_definition = ObjectDefinition::new(sequences);
         let expected = CharacterDefinition::new(object_definition);
         assert_eq!(expected, char_definition);
     }
