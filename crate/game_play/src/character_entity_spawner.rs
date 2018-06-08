@@ -62,18 +62,17 @@ impl CharacterEntitySpawner {
             .with(character_entity_control)
             // Loaded `Character` for this entity.
             .with(character_handle)
-            // The default `Material`, whose textures will be swapped based on the
-            // animation.
+            // The default `Material`, whose textures will be swapped based on the animation.
             .with(material)
             // Shift sprite to some part of the window
             .with(mesh)
             // Location of the entity
             .with(transform)
+            // This defines the coordinates in the world, where the sprites should be drawn relative
+            // to the entity
+            .with(GlobalTransform::default())
             // Set the default sequence for the object
             .with(ObjectStatus::new(SequenceId::Stand))
-            // This defines the coordinates in the world, where the sprites should
-            // be drawn relative to the entity
-            .with(GlobalTransform::default())
             .build();
 
         // We also need to trigger the animation, not just attach it to the entity
@@ -98,12 +97,12 @@ mod test {
     use amethyst::{
         animation::AnimationBundle,
         core::{
-            cgmath::Vector3, transform::{Transform, TransformBundle},
+            cgmath::Vector3, transform::{GlobalTransform, Transform, TransformBundle},
         },
         input::InputBundle, prelude::*,
         renderer::{
-            ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex, RenderBundle, Stage,
-            ALPHA,
+            ColorMask, DisplayConfig, DrawFlat, Material, MeshHandle, Pipeline, PosTex,
+            RenderBundle, Stage, ALPHA,
         },
         ui::UiBundle, Result,
     };
@@ -113,6 +112,9 @@ mod test {
     use character_selection::CharacterEntityControl;
     use loading;
     use object_loading::ObjectLoadingBundle;
+    use object_model::{
+        config::object::character::SequenceId, entity::ObjectStatus, loaded::CharacterHandle,
+    };
 
     use super::CharacterEntitySpawner;
     use GamePlayBundle;
@@ -126,11 +128,27 @@ mod test {
             let controller_id = 0;
             let character_entity_control = CharacterEntityControl::new(controller_id);
 
-            CharacterEntitySpawner::spawn_for_player(
+            let entity = CharacterEntitySpawner::spawn_for_player(
                 world,
                 transform,
                 character_index,
                 character_entity_control,
+            );
+
+            assert!(
+                world
+                    .read_storage::<CharacterEntityControl>()
+                    .contains(entity)
+            );
+            assert!(world.read_storage::<CharacterHandle>().contains(entity));
+            assert!(world.read_storage::<Material>().contains(entity));
+            assert!(world.read_storage::<MeshHandle>().contains(entity));
+            assert!(world.read_storage::<Transform>().contains(entity));
+            assert!(world.read_storage::<GlobalTransform>().contains(entity));
+            assert!(
+                world
+                    .read_storage::<ObjectStatus<SequenceId>>()
+                    .contains(entity)
             );
         };
 
