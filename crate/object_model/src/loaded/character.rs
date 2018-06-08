@@ -25,8 +25,8 @@ impl Component for Character {
 }
 
 impl From<Character> for Result<Character> {
-    fn from(character_definition: Character) -> Result<Character> {
-        Ok(character_definition)
+    fn from(character: Character) -> Result<Character> {
+        Ok(character)
     }
 }
 

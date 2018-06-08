@@ -3,7 +3,10 @@ use amethyst::{
     core::transform::{GlobalTransform, Transform}, ecs::prelude::*, renderer::Material,
 };
 use character_selection::CharacterEntityControl;
-use object_model::loaded::{Character, CharacterHandle};
+use object_model::{
+    config::object::character::SequenceId, entity::ObjectStatus,
+    loaded::{Character, CharacterHandle},
+};
 
 /// Spawns character entities into the world.
 #[derive(Debug)]
@@ -66,6 +69,8 @@ impl CharacterEntitySpawner {
             .with(mesh)
             // Location of the entity
             .with(transform)
+            // Set the default sequence for the object
+            .with(ObjectStatus::new(SequenceId::Stand))
             // This defines the coordinates in the world, where the sprites should
             // be drawn relative to the entity
             .with(GlobalTransform::default())
