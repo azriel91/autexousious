@@ -1,6 +1,6 @@
 [package]
 name = "loading"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 
 [dependencies]
