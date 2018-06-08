@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.0 (master, unreleased)
+## 0.3.0 (2018-06-08)
 
 * Read controller configuration.
 * Update character sequence based on input.
