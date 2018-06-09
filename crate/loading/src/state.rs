@@ -5,7 +5,7 @@ use amethyst;
 use amethyst::prelude::*;
 use application_ui::ThemeLoader;
 use game_model::config::index_configuration;
-use object_loading::{CharacterLoader, ObjectLoader};
+use object_loading::CharacterLoader;
 use object_model::loaded::CharacterHandle;
 use object_model::ObjectType;
 
@@ -33,8 +33,6 @@ impl<'p, T: amethyst::State + 'static> State<T> {
         let configuration_index = index_configuration(&self.assets_dir);
         debug!("Indexed configuration: {:?}", &configuration_index);
 
-        let mut object_loader = ObjectLoader::new();
-
         ObjectType::variants()
             .into_iter()
             .filter_map(|object_type| {
@@ -55,7 +53,7 @@ impl<'p, T: amethyst::State + 'static> State<T> {
                                     "Loading character from: `{}`",
                                     config_record.directory.display()
                                 );
-                                CharacterLoader::load(world, config_record, &mut object_loader).ok()
+                                CharacterLoader::load(world, config_record).ok()
                             })
                             .collect::<Vec<CharacterHandle>>();
 

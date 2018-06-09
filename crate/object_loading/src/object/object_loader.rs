@@ -1,6 +1,6 @@
 use std::hash::Hash;
 
-use amethyst::prelude::*;
+use amethyst::{prelude::*, renderer::MaterialTextureSet};
 use game_model::config::ConfigRecord;
 use object_model::{config::ObjectDefinition, loaded};
 
@@ -9,12 +9,8 @@ use error::Result;
 use sprite::SpriteLoader;
 
 /// Loads assets specified by object configuration into the loaded object model.
-#[derive(Debug, Default, new)]
-pub struct ObjectLoader {
-    /// Offset for texture indices in the `MaterialTextureSet`
-    #[new(default)]
-    texture_index_offset: usize,
-}
+#[derive(Debug)]
+pub struct ObjectLoader;
 
 impl ObjectLoader {
     /// Returns the loaded `Object` referenced by the configuration record.
@@ -25,12 +21,11 @@ impl ObjectLoader {
     /// * `config_record`: Entry of the object's configuration.
     /// * `object_definition`: Object definition configuration.
     pub fn load<SeqId: Hash + Eq>(
-        &mut self,
         world: &World,
         config_record: &ConfigRecord,
         object_definition: &ObjectDefinition<SeqId>,
     ) -> Result<loaded::Object> {
-        let texture_index_offset = self.texture_index_offset;
+        let texture_index_offset = world.read_resource::<MaterialTextureSet>().len() as u64;
 
         let (sprite_sheets, mesh, default_material) =
             SpriteLoader::load(world, texture_index_offset, config_record)?;
@@ -41,8 +36,6 @@ impl ObjectLoader {
             texture_index_offset,
             &sprite_sheets,
         )?;
-
-        self.texture_index_offset += sprite_sheets.len();
 
         Ok(loaded::Object::new(
             default_material,

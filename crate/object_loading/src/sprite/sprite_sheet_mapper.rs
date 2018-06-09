@@ -12,14 +12,14 @@ impl SpriteSheetMapper {
     /// * `texture_index_offset`: Index offset for sprite sheet IDs.
     /// * `sprite_sheet_definitions`: List of metadata for sprite sheets to map.
     pub(super) fn map(
-        texture_index_offset: usize,
+        texture_index_offset: u64,
         sprite_sheet_definitions: &[SpriteSheetDefinition],
     ) -> Vec<SpriteSheet> {
         sprite_sheet_definitions
             .iter()
             .enumerate()
             .map(|(idx, definition)| {
-                Self::definition_to_sprite_sheet(texture_index_offset + idx, definition)
+                Self::definition_to_sprite_sheet(texture_index_offset + idx as u64, definition)
             })
             .collect::<Vec<SpriteSheet>>()
     }
@@ -28,9 +28,12 @@ impl SpriteSheetMapper {
     ///
     /// # Parameters:
     ///
-    /// * `index`: Index of the sprite sheet's texture in the `MaterialTextureSet`.
+    /// * `texture_id`: ID of the sprite sheet's texture in the `MaterialTextureSet`.
     /// * `definition`: Definition of the sprite layout on the sprite sheet.
-    fn definition_to_sprite_sheet(index: usize, definition: &SpriteSheetDefinition) -> SpriteSheet {
+    fn definition_to_sprite_sheet(
+        texture_id: u64,
+        definition: &SpriteSheetDefinition,
+    ) -> SpriteSheet {
         let mut sprites = Vec::with_capacity(definition.row_count * definition.column_count);
         let (offset_w, offset_h) = Self::offset_distances(definition);
         let (image_w, image_h) = (
@@ -68,7 +71,10 @@ impl SpriteSheetMapper {
             }
         }
 
-        SpriteSheet { index, sprites }
+        SpriteSheet {
+            texture_id,
+            sprites,
+        }
     }
 
     /// Returns the pixel offset distances per sprite.
