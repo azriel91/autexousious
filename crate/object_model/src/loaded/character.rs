@@ -1,4 +1,4 @@
-use amethyst::assets::{Asset, Handle, Result};
+use amethyst::assets::{Asset, Error, Handle, ProcessingState};
 use amethyst::ecs::prelude::*;
 
 use config::CharacterDefinition;
@@ -24,9 +24,9 @@ impl Component for Character {
     type Storage = DenseVecStorage<Self>;
 }
 
-impl From<Character> for Result<Character> {
-    fn from(character: Character) -> Result<Character> {
-        Ok(character)
+impl From<Character> for Result<ProcessingState<Character>, Error> {
+    fn from(character: Character) -> Result<ProcessingState<Character>, Error> {
+        Ok(ProcessingState::Loaded(character))
     }
 }
 
