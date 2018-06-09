@@ -125,7 +125,7 @@ mod test {
     struct TestState {
         assets_dir: PathBuf,
     }
-    impl State for TestState {
+    impl<'a, 'b> State<GameData<'a, 'b>> for TestState {
         fn on_start(&mut self, world: &mut World) {
             let mut bat_path = self.assets_dir.clone();
             bat_path.extend(Path::new("test/object/character/bat").iter());

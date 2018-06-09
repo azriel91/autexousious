@@ -31,7 +31,7 @@ impl FixedTimeoutIntercept {
         }
     }
 
-    fn pop_on_timeout(&mut self) -> Option<Trans> {
+    fn pop_on_timeout<T>(&mut self) -> Option<Trans<T>> {
         // If start_instant is none, then it must have been popped by one of the pushed `State`s.
         if self.start_instant.is_none()
             || self.start_instant.as_ref().unwrap().elapsed() >= self.timeout
@@ -43,20 +43,20 @@ impl FixedTimeoutIntercept {
     }
 }
 
-impl Intercept for FixedTimeoutIntercept {
-    fn on_start_end(&mut self, _: &mut World) {
+impl<T> Intercept<T> for FixedTimeoutIntercept {
+    fn on_start_end(&mut self) {
         self.start_instant = Some(Instant::now());
     }
 
-    fn fixed_update_begin(&mut self, _: &mut World) -> Option<Trans> {
+    fn fixed_update_begin(&mut self, _: &mut StateData<T>) -> Option<Trans<T>> {
         self.pop_on_timeout()
     }
 
-    fn update_begin(&mut self, _: &mut World) -> Option<Trans> {
+    fn update_begin(&mut self, _: &mut StateData<T>) -> Option<Trans<T>> {
         self.pop_on_timeout()
     }
 
-    fn on_stop_begin(&mut self, _: &mut World) {
+    fn on_stop_begin(&mut self, _: &mut StateData<T>) {
         self.start_instant = None;
     }
 
@@ -82,11 +82,11 @@ mod test {
 
     #[test]
     fn on_start_end_starts_timer() {
-        let (mut intercept, mut world) = setup(Duration::from_millis(0));
+        let (mut intercept, _world) = setup(Duration::from_millis(0));
 
         assert!(intercept.start_instant.is_none());
 
-        intercept.on_start_end(&mut world);
+        Intercept::<()>::on_start_end(&mut intercept);
 
         assert!(intercept.start_instant.is_some());
     }
@@ -95,11 +95,11 @@ mod test {
     fn on_stop_begin_clears_timer() {
         let (mut intercept, mut world) = setup(Duration::from_millis(0));
 
-        intercept.on_start_end(&mut world);
+        Intercept::<()>::on_start_end(&mut intercept);
 
         assert!(intercept.start_instant.is_some());
 
-        intercept.on_stop_begin(&mut world);
+        intercept.on_stop_begin(&mut StateData::new(&mut world, &mut ()));
 
         assert!(intercept.start_instant.is_none());
     }
@@ -109,9 +109,14 @@ mod test {
         let (mut intercept, mut world) = setup(Duration::from_millis(10000));
 
         // Initialize start time
-        intercept.on_start_end(&mut world);
+        Intercept::<()>::on_start_end(&mut intercept);
 
-        assert_eq_opt_trans(None, intercept.fixed_update_begin(&mut world).as_ref());
+        assert_eq_opt_trans(
+            None,
+            intercept
+                .fixed_update_begin(&mut StateData::new(&mut world, &mut ()))
+                .as_ref(),
+        );
     }
 
     #[test]
@@ -119,9 +124,14 @@ mod test {
         let (mut intercept, mut world) = setup(Duration::from_millis(10000));
 
         // Initialize start time
-        intercept.on_start_end(&mut world);
+        Intercept::<()>::on_start_end(&mut intercept);
 
-        assert_eq_opt_trans(None, intercept.update_begin(&mut world).as_ref());
+        assert_eq_opt_trans(
+            None,
+            intercept
+                .update_begin(&mut StateData::new(&mut world, &mut ()))
+                .as_ref(),
+        );
     }
 
     #[test]
@@ -129,11 +139,13 @@ mod test {
         let (mut intercept, mut world) = setup(Duration::from_millis(0));
 
         // Initialize start time
-        intercept.on_start_end(&mut world);
+        Intercept::<()>::on_start_end(&mut intercept);
 
         assert_eq_opt_trans(
             Some(Trans::Pop).as_ref(),
-            intercept.fixed_update_begin(&mut world).as_ref(),
+            intercept
+                .fixed_update_begin(&mut StateData::new(&mut world, &mut ()))
+                .as_ref(),
         ); // kcov-ignore
     }
 
@@ -142,11 +154,13 @@ mod test {
         let (mut intercept, mut world) = setup(Duration::from_millis(0));
 
         // Initialize start time
-        intercept.on_start_end(&mut world);
+        Intercept::<()>::on_start_end(&mut intercept);
 
         assert_eq_opt_trans(
             Some(Trans::Pop).as_ref(),
-            intercept.update_begin(&mut world).as_ref(),
+            intercept
+                .update_begin(&mut StateData::new(&mut world, &mut ()))
+                .as_ref(),
         ); // kcov-ignore
     }
 
@@ -157,16 +171,20 @@ mod test {
         let (mut intercept, mut world) = setup(Duration::from_millis(0));
 
         // Initialize start time
-        intercept.on_start_end(&mut world);
+        Intercept::<()>::on_start_end(&mut intercept);
 
         assert_eq_opt_trans(
             Some(Trans::Pop).as_ref(),
-            intercept.update_begin(&mut world).as_ref(),
+            intercept
+                .update_begin(&mut StateData::new(&mut world, &mut ()))
+                .as_ref(),
         ); // kcov-ignore
 
         assert_eq_opt_trans(
             Some(Trans::Pop).as_ref(),
-            intercept.update_begin(&mut world).as_ref(),
+            intercept
+                .update_begin(&mut StateData::new(&mut world, &mut ()))
+                .as_ref(),
         ); // kcov-ignore
     }
 }

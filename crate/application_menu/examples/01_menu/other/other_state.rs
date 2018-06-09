@@ -56,7 +56,7 @@ impl OtherState {
     }
 }
 
-impl State for OtherState {
+impl<'a, 'b> State<GameData<'a, 'b>> for OtherState {
     fn on_start(&mut self, world: &mut World) {
         self.initialize_informative(world);
     }

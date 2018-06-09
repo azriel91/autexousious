@@ -88,7 +88,7 @@ impl GameModeMenuState {
     }
 }
 
-impl State for GameModeMenuState {
+impl<'a, 'b> State<GameData<'a, 'b>> for GameModeMenuState {
     fn on_start(&mut self, world: &mut World) {
         self.initialize_dispatcher(world);
         self.initialize_menu_event_channel(world);

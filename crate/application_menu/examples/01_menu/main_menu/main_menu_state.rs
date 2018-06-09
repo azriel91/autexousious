@@ -102,7 +102,7 @@ impl MainMenuState {
     }
 }
 
-impl State for MainMenuState {
+impl<'a, 'b> State<GameData<'a, 'b>> for MainMenuState {
     fn on_start(&mut self, world: &mut World) {
         let mut dispatch = ParSeq::new(
             UiEventHandlerSystem::new(),

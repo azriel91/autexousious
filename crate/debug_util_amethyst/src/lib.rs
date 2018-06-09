@@ -27,14 +27,14 @@ use amethyst::prelude::*;
 /// # use debug_util_amethyst::display_trans;
 /// #
 /// # struct MyState;
-/// # impl State for MyState {}
+/// # impl<'a, 'b> State<GameData<'a, 'b>> for MyState {}
 /// #
 /// # fn main() {
 /// let trans = Trans::Push(Box::new(MyState));
 /// assert_eq!("Trans::Push", display_trans(&trans));
 /// # }
 /// ```
-pub fn display_trans(trans: &Trans) -> &str {
+pub fn display_trans<T>(trans: &Trans<T>) -> &str {
     match *trans {
         Trans::None => "Trans::None",
         Trans::Quit => "Trans::Quit",
@@ -66,7 +66,7 @@ pub fn display_trans(trans: &Trans) -> &str {
 /// #
 /// # fn main() {
 /// // ok
-/// assert_eq_trans(&Trans::None, &Trans::None);
+/// assert_eq_trans::<()>(&Trans::None, &Trans::None);
 /// # }
 /// ```
 ///
@@ -81,14 +81,14 @@ pub fn display_trans(trans: &Trans) -> &str {
 /// #
 /// # fn main() {
 /// // panic: Expected `Trans::None` but got `Trans::Pop`.
-/// assert_eq_trans(&Trans::None, &Trans::Pop);
+/// assert_eq_trans::<()>(&Trans::None, &Trans::Pop);
 /// # }
 /// ```
 ///
 /// # Panics
 ///
 /// When the expected and actual `Trans` differ.
-pub fn assert_eq_trans(expected: &Trans, actual: &Trans) {
+pub fn assert_eq_trans<T>(expected: &Trans<T>, actual: &Trans<T>) {
     assert_eq!(
         discriminant(expected),
         discriminant(actual),
@@ -120,8 +120,8 @@ pub fn assert_eq_trans(expected: &Trans, actual: &Trans) {
 /// # use debug_util_amethyst::assert_eq_opt_trans;
 /// #
 /// # fn main() {
-/// assert_eq_opt_trans(None, None);
-/// assert_eq_opt_trans(Some(Trans::None).as_ref(), Some(Trans::None).as_ref());
+/// assert_eq_opt_trans::<()>(None, None);
+/// assert_eq_opt_trans::<()>(Some(Trans::None).as_ref(), Some(Trans::None).as_ref());
 /// # }
 /// ```
 ///
@@ -136,14 +136,14 @@ pub fn assert_eq_trans(expected: &Trans, actual: &Trans) {
 /// #
 /// # fn main() {
 /// // panic: Expected `Some(Trans::None)` but got `Some(Trans::Pop)`.
-/// assert_eq_opt_trans(Some(Trans::None).as_ref(), Some(Trans::Pop).as_ref());
+/// assert_eq_opt_trans::<()>(Some(Trans::None).as_ref(), Some(Trans::Pop).as_ref());
 /// # }
 /// ```
 ///
 /// # Panics
 ///
 /// When the expected and actual `Trans` differ.
-pub fn assert_eq_opt_trans(expected: Option<&Trans>, actual: Option<&Trans>) {
+pub fn assert_eq_opt_trans<T>(expected: Option<&Trans<T>>, actual: Option<&Trans<T>>) {
     match expected {
         Some(expected) => match actual {
             Some(actual) => {
@@ -177,25 +177,31 @@ mod test {
         ($test_name:ident, $message:expr, $expected:expr, $actual:expr) => {
             #[test]
             #[should_panic(expected = $message)]
-            fn $test_name() {
-                assert_eq_opt_trans($expected, $actual);
+            fn $test_name<'a, 'b>() {
+                assert_eq_opt_trans::<GameData<'a, 'b>>($expected, $actual);
             } // kcov-ignore
         };
     }
 
     #[test]
-    fn display_trans_none() {
-        assert_eq!("Trans::None", display_trans(&Trans::None));
+    fn display_trans_none<'a, 'b>() {
+        assert_eq!(
+            "Trans::None",
+            display_trans::<GameData<'a, 'b>>(&Trans::None)
+        );
     }
 
     #[test]
-    fn display_trans_quit() {
-        assert_eq!("Trans::Quit", display_trans(&Trans::Quit));
+    fn display_trans_quit<'a, 'b>() {
+        assert_eq!(
+            "Trans::Quit",
+            display_trans::<GameData<'a, 'b>>(&Trans::Quit)
+        );
     }
 
     #[test]
-    fn display_trans_pop() {
-        assert_eq!("Trans::Pop", display_trans(&Trans::Pop));
+    fn display_trans_pop<'a, 'b>() {
+        assert_eq!("Trans::Pop", display_trans::<GameData<'a, 'b>>(&Trans::Pop));
     }
 
     #[test]
@@ -215,8 +221,8 @@ mod test {
     }
 
     #[test]
-    fn assert_eq_trans_does_not_panic_on_same_trans_discriminant() {
-        assert_eq_trans(&Trans::None, &Trans::None);
+    fn assert_eq_trans_does_not_panic_on_same_trans_discriminant<'a, 'b>() {
+        assert_eq_trans::<GameData<'a, 'b>>(&Trans::None, &Trans::None);
         assert_eq_trans(
             &Trans::Push(Box::new(MockState)),
             &Trans::Push(Box::new(MockState)),
@@ -230,13 +236,16 @@ mod test {
     } // kcov-ignore
 
     #[test]
-    fn assert_eq_opt_trans_does_not_panic_on_none_none() {
-        assert_eq_opt_trans(None, None);
+    fn assert_eq_opt_trans_does_not_panic_on_none_none<'a, 'b>() {
+        assert_eq_opt_trans::<GameData<'a, 'b>>(None, None);
     }
 
     #[test]
-    fn assert_eq_opt_trans_does_not_panic_on_same_discriminant() {
-        assert_eq_opt_trans(Some(Trans::None).as_ref(), Some(Trans::None).as_ref());
+    fn assert_eq_opt_trans_does_not_panic_on_same_discriminant<'a, 'b>() {
+        assert_eq_opt_trans::<GameData<'a, 'b>>(
+            Some(Trans::None).as_ref(),
+            Some(Trans::None).as_ref(),
+        );
         assert_eq_opt_trans(
             Some(Trans::Push(Box::new(MockState))).as_ref(),
             Some(Trans::Push(Box::new(MockState))).as_ref(),
@@ -265,5 +274,5 @@ mod test {
     );
 
     struct MockState;
-    impl State for MockState {}
+    impl<'a, 'b> State<GameData<'a, 'b>> for MockState {}
 }

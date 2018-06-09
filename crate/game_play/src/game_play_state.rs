@@ -104,7 +104,7 @@ impl GamePlayState {
     }
 }
 
-impl State for GamePlayState {
+impl<'a, 'b> State<GameData<'a, 'b>> for GamePlayState {
     fn on_start(&mut self, world: &mut World) {
         self.initialize_camera(world);
         self.initialize_entities(world);

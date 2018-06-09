@@ -9,7 +9,7 @@ const FONT_SIZE: f32 = 25.;
 
 pub struct TextState;
 
-impl State for TextState {
+impl<'a, 'b> State<GameData<'a, 'b>> for TextState {
     fn on_start(&mut self, world: &mut World) {
         load_fonts(world);
         initialize_text(world);

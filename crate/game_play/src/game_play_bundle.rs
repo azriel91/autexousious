@@ -52,5 +52,5 @@ mod test {
 
     #[derive(Debug)]
     struct MockState;
-    impl State for MockState {}
+    impl<'a, 'b> State<GameData<'a, 'b>> for MockState {}
 }
