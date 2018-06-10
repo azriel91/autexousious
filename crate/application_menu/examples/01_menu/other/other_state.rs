@@ -1,7 +1,7 @@
 use amethyst::ecs::prelude::*;
 use amethyst::prelude::*;
 use amethyst::renderer::{Event, KeyboardInput, ScreenDimensions, VirtualKeyCode, WindowEvent};
-use amethyst::ui::{Anchor, Anchored, FontHandle, UiText, UiTransform};
+use amethyst::ui::{Anchor, FontHandle, UiText, UiTransform};
 use application_ui::{FontVariant, Theme};
 
 const FONT_SIZE: f32 = 17.;
@@ -26,6 +26,7 @@ impl OtherState {
 
         let text_transform = UiTransform::new(
             "info".to_string(),
+            Anchor::TopLeft,
             text_w / 2. + 20.,
             text_h / 2. + 20.,
             1.,
@@ -43,7 +44,6 @@ impl OtherState {
                 [1., 1., 1., 1.],
                 FONT_SIZE,
             ))
-            .with(Anchored::new(Anchor::TopLeft))
             .build();
 
         self.entity.get_or_insert(info_entity);

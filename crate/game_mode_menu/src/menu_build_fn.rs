@@ -4,7 +4,7 @@ use std::ops::{Deref, DerefMut};
 use amethyst::ecs::prelude::*;
 use amethyst::prelude::World;
 use amethyst::renderer::ScreenDimensions;
-use amethyst::ui::{Anchor, Anchored, FontHandle, MouseReactive, UiText, UiTransform};
+use amethyst::ui::{Anchor, FontHandle, MouseReactive, UiText, UiTransform};
 use application_menu::MenuItem;
 use application_ui::{FontVariant, Theme};
 
@@ -40,6 +40,7 @@ impl MenuBuildFn {
             .for_each(|(order, index)| {
                 let text_transform = UiTransform::new(
                     index.title().to_string(),
+                    Anchor::Middle,
                     0.,
                     (order as f32 * text_h) - (total_items * text_h / 2.),
                     1.,
@@ -57,7 +58,6 @@ impl MenuBuildFn {
                         [1., 1., 1., 1.],
                         FONT_SIZE,
                     ))
-                    .with(Anchored::new(Anchor::Middle))
                     .with(MouseReactive)
                     .with(MenuItem { index })
                     .build();

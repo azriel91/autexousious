@@ -4,7 +4,7 @@ use amethyst::ecs::prelude::*;
 use amethyst::prelude::*;
 use amethyst::shred::ParSeq;
 use amethyst::shrev::{EventChannel, ReaderId};
-use amethyst::ui::{Anchor, Anchored, FontHandle, MouseReactive, UiText, UiTransform};
+use amethyst::ui::{Anchor, FontHandle, MouseReactive, UiText, UiTransform};
 use application_menu::{MenuEvent, MenuItem};
 use application_ui::{FontVariant, Theme, ThemeLoader};
 use rayon;
@@ -67,6 +67,7 @@ impl MainMenuState {
 
                 let text_transform = UiTransform::new(
                     index.title().to_string(),
+                    Anchor::TopLeft,
                     text_x,
                     text_y,
                     1.,
@@ -84,7 +85,6 @@ impl MainMenuState {
                         [1., 1., 1., 1.],
                         FONT_SIZE,
                     ))
-                    .with(Anchored::new(Anchor::TopLeft))
                     .with(MouseReactive)
                     .with(MenuItem { index })
                     .build();
