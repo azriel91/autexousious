@@ -33,14 +33,18 @@ mod test {
 
     use super::CharacterSelectionBundle;
 
-    fn setup<'a, 'b>() -> Result<Application<'a, 'b>> {
+    fn setup<'a, 'b>() -> Result<Application<'a, GameData<'a, 'b>>> {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
-        let app = Application::build(format!("{}/assets", env!("CARGO_MANIFEST_DIR")), MockState)?
+        let game_data = GameDataBuilder::default()
             .with_bundle(TransformBundle::new())?
             .with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new())?
             .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?
-            .with_bundle(CharacterSelectionBundle)?
-            .build()?;
+            .with_bundle(CharacterSelectionBundle)?;
+        let app = Application::new(
+            format!("{}/assets", env!("CARGO_MANIFEST_DIR")),
+            MockState,
+            game_data,
+        )?;
 
         Ok(app)
     } // kcov-ignore
