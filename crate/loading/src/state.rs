@@ -1,31 +1,43 @@
 use std::fmt::Debug;
+use std::marker::PhantomData;
 use std::path::PathBuf;
 
-use amethyst;
-use amethyst::prelude::*;
+use amethyst::{self, prelude::*};
 use application_ui::ThemeLoader;
 use game_model::config::index_configuration;
 use object_loading::CharacterLoader;
-use object_model::loaded::CharacterHandle;
-use object_model::ObjectType;
+use object_model::{loaded::CharacterHandle, ObjectType};
 
 /// `State` where resource loading takes place.
+///
+/// # Type Parameters
+///
+/// * `S`: State to return after loading is complete.
 #[derive(Derivative)]
 #[derivative(Debug)]
-pub struct State<T: amethyst::State + 'static> {
+pub struct State<'a, 'b, S>
+where
+    S: amethyst::State<GameData<'a, 'b>> + 'static,
+{
     /// Path to the assets directory.
     assets_dir: PathBuf,
     /// The `State` that follows this one.
-    #[derivative(Debug(bound = "T: Debug"))]
-    next_state: Option<Box<T>>,
+    #[derivative(Debug(bound = "S: Debug"))]
+    next_state: Option<Box<S>>,
+    /// Lifetime tracker.
+    state_data: PhantomData<amethyst::State<GameData<'a, 'b>>>,
 }
 
-impl<'p, T: amethyst::State + 'static> State<T> {
+impl<'a, 'b, S> State<'a, 'b, S>
+where
+    S: amethyst::State<GameData<'a, 'b>> + 'static,
+{
     /// Returns a new `State`
-    pub fn new(assets_dir: PathBuf, next_state: Box<T>) -> Self {
+    pub fn new(assets_dir: PathBuf, next_state: Box<S>) -> Self {
         State {
             assets_dir,
             next_state: Some(next_state),
+            state_data: PhantomData,
         }
     }
 
@@ -66,17 +78,25 @@ impl<'p, T: amethyst::State + 'static> State<T> {
     }
 }
 
-impl<'p, T: amethyst::State + 'static> amethyst::State for State<T> {
-    fn on_start(&mut self, world: &mut World) {
-        if let Err(e) = ThemeLoader::load(world) {
+impl<'a, 'b, S> amethyst::State<GameData<'a, 'b>> for State<'a, 'b, S>
+where
+    S: amethyst::State<GameData<'a, 'b>> + 'static,
+{
+    fn on_start(&mut self, mut data: StateData<GameData>) {
+        if let Err(e) = ThemeLoader::load(&mut data.world) {
             let err_msg = format!("Failed to load theme: {}", e);
             error!("{}", &err_msg);
             panic!(err_msg);
         }
-        self.load_game_config(world);
+        self.load_game_config(&mut data.world);
     }
 
-    fn fixed_update(&mut self, _world: &mut World) -> Trans {
+    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
+        data.data.update(&data.world);
+        Trans::None
+    }
+
+    fn fixed_update(&mut self, _data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
         Trans::Switch(
             self.next_state
                 .take()
