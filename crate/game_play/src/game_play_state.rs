@@ -2,10 +2,8 @@ use amethyst::{
     core::{
         cgmath::{Matrix4, Vector3}, transform::{GlobalTransform, Transform},
     },
-    ecs::prelude::*, prelude::*,
-    renderer::{
-        Camera, Event, KeyboardInput, Projection, ScreenDimensions, VirtualKeyCode, WindowEvent,
-    },
+    ecs::prelude::*, input::is_key, prelude::*,
+    renderer::{Camera, Event, Projection, ScreenDimensions, VirtualKeyCode},
 };
 use character_selection::{CharacterEntityControl, CharacterSelection};
 
@@ -105,33 +103,26 @@ impl GamePlayState {
 }
 
 impl<'a, 'b> State<GameData<'a, 'b>> for GamePlayState {
-    fn on_start(&mut self, world: &mut World) {
-        self.initialize_camera(world);
-        self.initialize_entities(world);
+    fn on_start(&mut self, mut data: StateData<GameData>) {
+        self.initialize_camera(&mut data.world);
+        self.initialize_entities(&mut data.world);
     }
 
-    fn handle_event(&mut self, _: &mut World, event: Event) -> Trans {
-        match event {
-            Event::WindowEvent { event, .. } => match event {
-                WindowEvent::KeyboardInput {
-                    input:
-                        KeyboardInput {
-                            virtual_keycode: Some(VirtualKeyCode::Escape),
-                            ..
-                        },
-                    ..
-                } => {
-                    info!("Returning from `GamePlayState`.");
-                    Trans::Pop
-                }
-                _ => Trans::None,
-            },
-            _ => Trans::None,
+    fn handle_event(
+        &mut self,
+        _data: StateData<GameData>,
+        event: Event,
+    ) -> Trans<GameData<'a, 'b>> {
+        if is_key(&event, VirtualKeyCode::Escape) {
+            info!("Returning from `GamePlayState`.");
+            Trans::Pop
+        } else {
+            Trans::None
         }
     }
 
-    fn on_stop(&mut self, world: &mut World) {
-        self.terminate_entities(world);
-        self.terminate_camera(world);
+    fn on_stop(&mut self, mut data: StateData<GameData>) {
+        self.terminate_entities(&mut data.world);
+        self.terminate_camera(&mut data.world);
     }
 }
