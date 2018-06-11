@@ -1,4 +1,3 @@
-use std::fmt::Debug;
 use std::marker::PhantomData;
 
 use amethyst::prelude::*;
@@ -14,43 +13,30 @@ use CharacterSelection;
 /// * `T`: Data type used by this state and the returned state (see `StateData`).
 #[derive(Derivative)]
 #[derivative(Debug)]
-pub struct CharacterSelectionState<F, S, T>
-where
-    F: Fn() -> Box<S>,
-    S: State<T> + 'static,
-{
+pub struct CharacterSelectionState<'a, 'b> {
     /// The `State` that follows this one.
-    #[derivative(Debug(bound = "F: Debug"))]
-    next_state_fn: Box<F>,
+    #[derivative(Debug = "ignore")]
+    next_state: Option<Box<State<GameData<'a, 'b>>>>,
     /// Data type used by this state and the returned state (see `StateData`).
-    state_data: PhantomData<T>,
+    state_data: PhantomData<GameData<'a, 'b>>,
 }
 
-impl<F, S, T> CharacterSelectionState<F, S, T>
-where
-    F: Fn() -> Box<S>,
-    S: State<T> + 'static,
-{
+impl<'a, 'b> CharacterSelectionState<'a, 'b> {
     /// Returns a new `CharacterSelectionState`
     ///
     /// # Parameters
     ///
-    /// * `next_state_fn`: Function that returns the `State` to transition to when characters have
-    ///     been selected
-    pub fn new(next_state_fn: Box<F>) -> Self {
+    /// * `next_state`: `State` to transition to when characters have been selected.
+    pub fn new(next_state: Box<State<GameData<'a, 'b>>>) -> Self {
         CharacterSelectionState {
-            next_state_fn,
+            next_state: Some(next_state),
             state_data: PhantomData,
         }
     }
 }
 
-impl<'a, 'b, F, S, T> State<T> for CharacterSelectionState<F, S, T>
-where
-    F: Fn() -> Box<S>,
-    S: State<T> + 'static,
-{
-    fn fixed_update(&mut self, data: StateData<T>) -> Trans<T> {
+impl<'a, 'b> State<GameData<'a, 'b>> for CharacterSelectionState<'a, 'b> {
+    fn fixed_update(&mut self, data: StateData<GameData<'a, 'b>>) -> Trans<GameData<'a, 'b>> {
         let selected_characters = data.world.read_resource::<CharacterSelection>();
         if selected_characters.is_empty() {
             Trans::None
@@ -58,7 +44,7 @@ where
             info!("selected_characters: `{:?}`", &*selected_characters);
 
             // TODO: `Trans:Push` when we have a proper character selection menu.
-            Trans::Switch((self.next_state_fn)())
+            Trans::Switch(self.next_state.take().unwrap())
         }
     }
 }

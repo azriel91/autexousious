@@ -1,4 +1,4 @@
-use amethyst::prelude::Trans;
+use amethyst::prelude::*;
 use character_selection::CharacterSelectionState;
 use game_play::GamePlayState;
 
@@ -21,12 +21,15 @@ impl Index {
     } // kcov-ignore
 
     /// Returns the transition when this index has been selected.
-    pub fn trans(&self) -> Trans {
+    pub fn trans<'a, 'b>(&self) -> Trans<GameData<'a, 'b>> {
         match *self {
             Index::StartGame => {
                 let character_selection_state =
-                    CharacterSelectionState::new(Box::new(|| Box::new(GamePlayState::new())));
-                Trans::Push(Box::new(character_selection_state))
+                    CharacterSelectionState::new(Box::new(GamePlayState::new()));
+                Trans::Push(Box::<State<GameData<'a, 'b>> + 'a>::new(
+                    character_selection_state,
+                ))
+                // Trans::Push(Box::new(GamePlayState::new()))
             }
             Index::Exit => Trans::Quit,
         }
