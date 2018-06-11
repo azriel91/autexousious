@@ -1,4 +1,4 @@
-use amethyst::prelude::Trans;
+use amethyst::prelude::*;
 
 use other::OtherState;
 
@@ -20,7 +20,7 @@ impl Index {
         }
     }
 
-    pub fn trans(&self) -> Trans {
+    pub fn trans<'a, 'b>(&self) -> Trans<GameData<'a, 'b>> {
         match *self {
             Index::StartGame => Trans::Push(Box::new(OtherState::new())),
             Index::Exit => Trans::Quit,

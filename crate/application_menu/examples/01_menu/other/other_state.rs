@@ -57,11 +57,11 @@ impl OtherState {
 }
 
 impl<'a, 'b> State<GameData<'a, 'b>> for OtherState {
-    fn on_start(&mut self, world: &mut World) {
-        self.initialize_informative(world);
+    fn on_start(&mut self, mut data: StateData<GameData>) {
+        self.initialize_informative(&mut data.world);
     }
 
-    fn handle_event(&mut self, _: &mut World, event: Event) -> Trans {
+    fn handle_event(&mut self, _: StateData<GameData>, event: Event) -> Trans<GameData<'a, 'b>> {
         match event {
             Event::WindowEvent { event, .. } => match event {
                 WindowEvent::KeyboardInput {
@@ -81,8 +81,13 @@ impl<'a, 'b> State<GameData<'a, 'b>> for OtherState {
         }
     }
 
-    fn on_stop(&mut self, world: &mut World) {
-        self.terminate_informative(world);
+    fn on_stop(&mut self, mut data: StateData<GameData>) {
+        self.terminate_informative(&mut data.world);
+    }
+
+    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
+        data.data.update(&data.world);
+        Trans::None
     }
 }
 

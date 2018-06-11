@@ -103,40 +103,43 @@ impl MainMenuState {
 }
 
 impl<'a, 'b> State<GameData<'a, 'b>> for MainMenuState {
-    fn on_start(&mut self, world: &mut World) {
+    fn on_start(&mut self, mut data: StateData<GameData>) {
         let mut dispatch = ParSeq::new(
             UiEventHandlerSystem::new(),
-            world.read_resource::<Arc<rayon::ThreadPool>>().clone(),
+            data.world.read_resource::<Arc<rayon::ThreadPool>>().clone(),
         );
-        dispatch.setup(&mut world.res);
+        ParSeq::setup(&mut dispatch, &mut data.world.res);
         self.dispatch = Some(dispatch);
 
-        self.load_theme(world);
+        self.load_theme(&mut data.world);
 
-        self.initialize_menu_event_channel(world);
-        self.initialize_menu_items(world);
+        self.initialize_menu_event_channel(&mut data.world);
+        self.initialize_menu_items(&mut data.world);
     }
 
-    fn on_stop(&mut self, world: &mut World) {
-        self.terminate_menu_items(world);
-        self.terminate_menu_event_channel(world);
+    fn on_stop(&mut self, mut data: StateData<GameData>) {
+        self.terminate_menu_items(&mut data.world);
+        self.terminate_menu_event_channel(&mut data.world);
 
         self.dispatch.take();
     }
 
     // Need to explicitly hide and show the menu items during pause and resume
-    fn on_resume(&mut self, world: &mut World) {
-        self.initialize_menu_items(world);
+    fn on_resume(&mut self, mut data: StateData<GameData>) {
+        self.initialize_menu_items(&mut data.world);
     }
 
-    fn on_pause(&mut self, world: &mut World) {
-        self.terminate_menu_items(world);
+    fn on_pause(&mut self, mut data: StateData<GameData>) {
+        self.terminate_menu_items(&mut data.world);
     }
 
-    fn update(&mut self, world: &mut World) -> Trans {
-        self.dispatch.as_mut().unwrap().dispatch(&world.res);
+    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
+        data.data.update(&data.world);
+        self.dispatch.as_mut().unwrap().dispatch(&data.world.res);
 
-        let menu_event_channel = world.read_resource::<EventChannel<MenuEvent<main_menu::Index>>>();
+        let menu_event_channel = &mut data
+            .world
+            .read_resource::<EventChannel<MenuEvent<main_menu::Index>>>();
 
         let mut reader_id = self
             .menu_event_reader
