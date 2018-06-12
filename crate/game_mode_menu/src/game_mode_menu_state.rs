@@ -87,7 +87,7 @@ impl GameModeMenuState {
     }
 }
 
-impl<'a, 'b> State<GameData<'a, 'b>> for GameModeMenuState {
+impl State<GameData<'static, 'static>> for GameModeMenuState {
     fn on_start(&mut self, mut data: StateData<GameData>) {
         self.initialize_dispatcher(&mut data.world);
         self.initialize_menu_event_channel(&mut data.world);
@@ -109,7 +109,7 @@ impl<'a, 'b> State<GameData<'a, 'b>> for GameModeMenuState {
         self.terminate_menu_items(&mut data.world);
     }
 
-    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
+    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'static, 'static>> {
         {
             self.dispatch.as_mut().unwrap().dispatch(&data.world.res);
         }

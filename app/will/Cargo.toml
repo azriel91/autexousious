@@ -26,3 +26,6 @@ assert_cli = "0.5"
 
 [build-dependencies]
 application = { path = "../../crate/application" }
+
+[features]
+nightly = ["amethyst/nightly",]

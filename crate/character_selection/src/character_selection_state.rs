@@ -1,3 +1,4 @@
+use std::fmt::Debug;
 use std::marker::PhantomData;
 
 use amethyst::prelude::*;
@@ -13,30 +14,43 @@ use CharacterSelection;
 /// * `T`: Data type used by this state and the returned state (see `StateData`).
 #[derive(Derivative)]
 #[derivative(Debug)]
-pub struct CharacterSelectionState<'a, 'b> {
+pub struct CharacterSelectionState<F, S, T>
+where
+    F: Fn() -> Box<S>,
+    S: State<T> + 'static,
+{
     /// The `State` that follows this one.
-    #[derivative(Debug = "ignore")]
-    next_state: Option<Box<State<GameData<'a, 'b>>>>,
+    #[derivative(Debug(bound = "F: Debug"))]
+    next_state_fn: Box<F>,
     /// Data type used by this state and the returned state (see `StateData`).
-    state_data: PhantomData<GameData<'a, 'b>>,
+    state_data: PhantomData<T>,
 }
 
-impl<'a, 'b> CharacterSelectionState<'a, 'b> {
+impl<F, S, T> CharacterSelectionState<F, S, T>
+where
+    F: Fn() -> Box<S>,
+    S: State<T> + 'static,
+{
     /// Returns a new `CharacterSelectionState`
     ///
     /// # Parameters
     ///
-    /// * `next_state`: `State` to transition to when characters have been selected.
-    pub fn new(next_state: Box<State<GameData<'a, 'b>>>) -> Self {
+    /// * `next_state_fn`: Function that returns the `State` to transition to when characters have
+    ///     been selected
+    pub fn new(next_state_fn: Box<F>) -> Self {
         CharacterSelectionState {
-            next_state: Some(next_state),
+            next_state_fn,
             state_data: PhantomData,
         }
     }
 }
 
-impl<'a, 'b> State<GameData<'a, 'b>> for CharacterSelectionState<'a, 'b> {
-    fn fixed_update(&mut self, data: StateData<GameData<'a, 'b>>) -> Trans<GameData<'a, 'b>> {
+impl<'a, 'b, F, S, T> State<T> for CharacterSelectionState<F, S, T>
+where
+    F: Fn() -> Box<S>,
+    S: State<T> + 'static,
+{
+    fn fixed_update(&mut self, data: StateData<T>) -> Trans<T> {
         let selected_characters = data.world.read_resource::<CharacterSelection>();
         if selected_characters.is_empty() {
             Trans::None
@@ -44,7 +58,7 @@ impl<'a, 'b> State<GameData<'a, 'b>> for CharacterSelectionState<'a, 'b> {
             info!("selected_characters: `{:?}`", &*selected_characters);
 
             // TODO: `Trans:Push` when we have a proper character selection menu.
-            Trans::Switch(self.next_state.take().unwrap())
+            Trans::Switch((self.next_state_fn)())
         }
     }
 }
