@@ -27,7 +27,7 @@ use amethyst::prelude::*;
 /// # use debug_util_amethyst::display_trans;
 /// #
 /// # struct MyState;
-/// # impl<'a, 'b> State<GameData<'a, 'b>> for MyState {}
+/// # impl State<GameData<'static, 'static>> for MyState {}
 /// #
 /// # fn main() {
 /// let trans = Trans::Push(Box::new(MyState));
@@ -177,31 +177,34 @@ mod test {
         ($test_name:ident, $message:expr, $expected:expr, $actual:expr) => {
             #[test]
             #[should_panic(expected = $message)]
-            fn $test_name<'a, 'b>() {
-                assert_eq_opt_trans::<GameData<'a, 'b>>($expected, $actual);
+            fn $test_name() {
+                assert_eq_opt_trans::<GameData<'static, 'static>>($expected, $actual);
             } // kcov-ignore
         };
     }
 
     #[test]
-    fn display_trans_none<'a, 'b>() {
+    fn display_trans_none() {
         assert_eq!(
             "Trans::None",
-            display_trans::<GameData<'a, 'b>>(&Trans::None)
+            display_trans::<GameData<'static, 'static>>(&Trans::None)
         );
     }
 
     #[test]
-    fn display_trans_quit<'a, 'b>() {
+    fn display_trans_quit() {
         assert_eq!(
             "Trans::Quit",
-            display_trans::<GameData<'a, 'b>>(&Trans::Quit)
+            display_trans::<GameData<'static, 'static>>(&Trans::Quit)
         );
     }
 
     #[test]
-    fn display_trans_pop<'a, 'b>() {
-        assert_eq!("Trans::Pop", display_trans::<GameData<'a, 'b>>(&Trans::Pop));
+    fn display_trans_pop() {
+        assert_eq!(
+            "Trans::Pop",
+            display_trans::<GameData<'static, 'static>>(&Trans::Pop)
+        );
     }
 
     #[test]
@@ -221,8 +224,8 @@ mod test {
     }
 
     #[test]
-    fn assert_eq_trans_does_not_panic_on_same_trans_discriminant<'a, 'b>() {
-        assert_eq_trans::<GameData<'a, 'b>>(&Trans::None, &Trans::None);
+    fn assert_eq_trans_does_not_panic_on_same_trans_discriminant() {
+        assert_eq_trans::<GameData<'static, 'static>>(&Trans::None, &Trans::None);
         assert_eq_trans(
             &Trans::Push(Box::new(MockState)),
             &Trans::Push(Box::new(MockState)),
@@ -236,13 +239,13 @@ mod test {
     } // kcov-ignore
 
     #[test]
-    fn assert_eq_opt_trans_does_not_panic_on_none_none<'a, 'b>() {
-        assert_eq_opt_trans::<GameData<'a, 'b>>(None, None);
+    fn assert_eq_opt_trans_does_not_panic_on_none_none() {
+        assert_eq_opt_trans::<GameData<'static, 'static>>(None, None);
     }
 
     #[test]
-    fn assert_eq_opt_trans_does_not_panic_on_same_discriminant<'a, 'b>() {
-        assert_eq_opt_trans::<GameData<'a, 'b>>(
+    fn assert_eq_opt_trans_does_not_panic_on_same_discriminant() {
+        assert_eq_opt_trans::<GameData<'static, 'static>>(
             Some(Trans::None).as_ref(),
             Some(Trans::None).as_ref(),
         );
@@ -274,5 +277,5 @@ mod test {
     );
 
     struct MockState;
-    impl<'a, 'b> State<GameData<'a, 'b>> for MockState {}
+    impl State<GameData<'static, 'static>> for MockState {}
 }
