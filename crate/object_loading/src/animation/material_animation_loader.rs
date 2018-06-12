@@ -24,7 +24,7 @@ impl MaterialAnimationLoader {
     pub(crate) fn load<SeqId: Hash + Eq>(
         world: &World,
         object_definition: &ObjectDefinition<SeqId>,
-        texture_index_offset: usize,
+        texture_index_offset: u64,
         sprite_sheets: &[SpriteSheet],
     ) -> Result<Vec<Handle<Animation<Material>>>> {
         let animation_handles = object_definition
@@ -52,7 +52,7 @@ impl MaterialAnimationLoader {
     /// * `sequence`: `Sequence` to create the animation from.
     fn sequence_to_animation<SeqId: Hash + Eq>(
         world: &World,
-        texture_index_offset: usize,
+        texture_index_offset: u64,
         sprite_sheets: &[SpriteSheet],
         sequence: &Sequence<SeqId>,
     ) -> Animation<Material> {
@@ -82,14 +82,14 @@ impl MaterialAnimationLoader {
     }
 
     fn texture_sampler<SeqId: Hash + Eq>(
-        texture_index_offset: usize,
+        texture_index_offset: u64,
         sequence: &Sequence<SeqId>,
         input: Vec<f32>,
     ) -> Sampler<MaterialPrimitive> {
         let mut output = sequence
             .frames
             .iter()
-            .map(|frame| MaterialPrimitive::Texture(texture_index_offset + frame.sheet as usize))
+            .map(|frame| MaterialPrimitive::Texture(texture_index_offset + frame.sheet as u64))
             .collect::<Vec<MaterialPrimitive>>();
         let final_key_frame = output.last().cloned();
         if final_key_frame.is_some() {

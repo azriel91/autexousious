@@ -1,6 +1,5 @@
-use amethyst::animation::MaterialTextureSet;
 use amethyst::prelude::*;
-use amethyst::renderer::{Material, MeshHandle, SpriteSheet, TextureHandle};
+use amethyst::renderer::{Material, MaterialTextureSet, MeshHandle, SpriteSheet, TextureHandle};
 use game_model::config::ConfigRecord;
 use object_model::config::SpritesDefinition;
 use toml;
@@ -23,7 +22,7 @@ impl SpriteLoader {
     /// * `config_record`: Configuration record of the object for which to load sprites.
     pub fn load(
         world: &World,
-        texture_index_offset: usize,
+        texture_index_offset: u64,
         config_record: &ConfigRecord,
     ) -> Result<(Vec<SpriteSheet>, MeshHandle, Material)> {
         let sprites_definition = Self::load_sprites_definition(config_record)?;
@@ -64,14 +63,14 @@ impl SpriteLoader {
     /// * `texture_handles`: Texture handles to store.
     fn store_textures_in_material_texture_set(
         world: &World,
-        texture_index_offset: usize,
+        texture_index_offset: u64,
         texture_handles: Vec<TextureHandle>,
     ) {
         texture_handles
             .into_iter()
             .enumerate()
             .for_each(|(index, texture_handle)| {
-                let texture_index = texture_index_offset + index;
+                let texture_index = texture_index_offset + index as u64;
                 debug!(
                     "Storing texture handle: `{:?}` in MaterialTextureSet index: `{:?}`",
                     texture_handle, texture_index

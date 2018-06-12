@@ -7,8 +7,12 @@ use state::Intercept;
 #[derive(Clone, Debug, Default)]
 pub struct KeyboardEscapeIntercept;
 
-impl Intercept for KeyboardEscapeIntercept {
-    fn handle_event_begin(&mut self, _world: &mut World, event: &mut Event) -> Option<Trans> {
+impl<T> Intercept<T> for KeyboardEscapeIntercept {
+    fn handle_event_begin(
+        &mut self,
+        _data: &mut StateData<T>,
+        event: &mut Event,
+    ) -> Option<Trans<T>> {
         if let Event::WindowEvent { ref event, .. } = *event {
             match *event {
                 WindowEvent::KeyboardInput {
@@ -19,7 +23,7 @@ impl Intercept for KeyboardEscapeIntercept {
                         },
                     ..
                 }
-                | WindowEvent::Closed => Some(Trans::Quit),
+                | WindowEvent::CloseRequested => Some(Trans::Quit),
                 _ => None,
             }
         } else {

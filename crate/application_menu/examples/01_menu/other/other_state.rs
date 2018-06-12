@@ -1,7 +1,7 @@
 use amethyst::ecs::prelude::*;
 use amethyst::prelude::*;
 use amethyst::renderer::{Event, KeyboardInput, ScreenDimensions, VirtualKeyCode, WindowEvent};
-use amethyst::ui::{Anchor, Anchored, FontHandle, UiText, UiTransform};
+use amethyst::ui::{Anchor, FontHandle, UiText, UiTransform};
 use application_ui::{FontVariant, Theme};
 
 const FONT_SIZE: f32 = 17.;
@@ -26,6 +26,7 @@ impl OtherState {
 
         let text_transform = UiTransform::new(
             "info".to_string(),
+            Anchor::TopLeft,
             text_w / 2. + 20.,
             text_h / 2. + 20.,
             1.,
@@ -43,7 +44,6 @@ impl OtherState {
                 [1., 1., 1., 1.],
                 FONT_SIZE,
             ))
-            .with(Anchored::new(Anchor::TopLeft))
             .build();
 
         self.entity.get_or_insert(info_entity);
@@ -56,12 +56,12 @@ impl OtherState {
     }
 }
 
-impl State for OtherState {
-    fn on_start(&mut self, world: &mut World) {
-        self.initialize_informative(world);
+impl<'a, 'b> State<GameData<'a, 'b>> for OtherState {
+    fn on_start(&mut self, mut data: StateData<GameData>) {
+        self.initialize_informative(&mut data.world);
     }
 
-    fn handle_event(&mut self, _: &mut World, event: Event) -> Trans {
+    fn handle_event(&mut self, _: StateData<GameData>, event: Event) -> Trans<GameData<'a, 'b>> {
         match event {
             Event::WindowEvent { event, .. } => match event {
                 WindowEvent::KeyboardInput {
@@ -81,8 +81,13 @@ impl State for OtherState {
         }
     }
 
-    fn on_stop(&mut self, world: &mut World) {
-        self.terminate_informative(world);
+    fn on_stop(&mut self, mut data: StateData<GameData>) {
+        self.terminate_informative(&mut data.world);
+    }
+
+    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
+        data.data.update(&data.world);
+        Trans::None
     }
 }
 

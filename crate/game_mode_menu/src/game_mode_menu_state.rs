@@ -1,9 +1,8 @@
 use std::sync::Arc;
 
-use amethyst::ecs::prelude::*;
-use amethyst::prelude::*;
-use amethyst::shred::ParSeq;
-use amethyst::shrev::{EventChannel, ReaderId};
+use amethyst::{
+    ecs::prelude::*, prelude::*, shred::ParSeq, shrev::{EventChannel, ReaderId},
+};
 use application_menu::MenuEvent;
 use rayon;
 
@@ -88,34 +87,35 @@ impl GameModeMenuState {
     }
 }
 
-impl State for GameModeMenuState {
-    fn on_start(&mut self, world: &mut World) {
-        self.initialize_dispatcher(world);
-        self.initialize_menu_event_channel(world);
-        self.initialize_menu_items(world);
+impl State<GameData<'static, 'static>> for GameModeMenuState {
+    fn on_start(&mut self, mut data: StateData<GameData>) {
+        self.initialize_dispatcher(&mut data.world);
+        self.initialize_menu_event_channel(&mut data.world);
+        self.initialize_menu_items(&mut data.world);
     }
 
-    fn on_stop(&mut self, world: &mut World) {
-        self.terminate_menu_items(world);
-        self.terminate_menu_event_channel(world);
+    fn on_stop(&mut self, mut data: StateData<GameData>) {
+        self.terminate_menu_items(&mut data.world);
+        self.terminate_menu_event_channel(&mut data.world);
         self.terminate_dispatcher();
     }
 
     // Need to explicitly hide and show the menu items during pause and resume
-    fn on_resume(&mut self, world: &mut World) {
-        self.initialize_menu_items(world);
+    fn on_resume(&mut self, mut data: StateData<GameData>) {
+        self.initialize_menu_items(&mut data.world);
     }
 
-    fn on_pause(&mut self, world: &mut World) {
-        self.terminate_menu_items(world);
+    fn on_pause(&mut self, mut data: StateData<GameData>) {
+        self.terminate_menu_items(&mut data.world);
     }
 
-    fn update(&mut self, world: &mut World) -> Trans {
+    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'static, 'static>> {
+        data.data.update(&data.world);
         {
-            self.dispatch.as_mut().unwrap().dispatch(&world.res);
+            self.dispatch.as_mut().unwrap().dispatch(&data.world.res);
         }
 
-        let menu_event_channel = world.read_resource::<EventChannel<MenuEvent<Index>>>();
+        let menu_event_channel = data.world.read_resource::<EventChannel<MenuEvent<Index>>>();
 
         let mut reader_id = self
             .menu_event_reader
@@ -148,38 +148,52 @@ mod test {
     use index::Index;
     use menu_build_fn::MenuBuildFn;
 
-    fn setup() -> (GameModeMenuState, World) {
+    fn setup<'a, 'b>() -> (GameModeMenuState, World, GameData<'a, 'b>) {
         setup_with_menu_items(MenuBuildFn(Box::new(|_, _| {})))
     }
 
-    fn setup_with_menu_items(menu_build_fn: MenuBuildFn) -> (GameModeMenuState, World) {
+    fn setup_with_menu_items<'a, 'b>(
+        menu_build_fn: MenuBuildFn,
+    ) -> (GameModeMenuState, World, GameData<'a, 'b>) {
         let mut world = World::new();
         world.add_resource(Arc::new(ThreadPoolBuilder::new().build().unwrap()));
         world.add_resource(EventChannel::<MenuEvent<Index>>::with_capacity(10));
         world.add_resource(EventChannel::<UiEvent>::with_capacity(10)); // needed by system
         world.register::<MenuItem<Index>>();
 
-        (GameModeMenuState::internal_new(menu_build_fn), world)
+        let game_data = GameDataBuilder::default().build(&mut world);
+
+        (
+            GameModeMenuState::internal_new(menu_build_fn),
+            world,
+            game_data,
+        )
     }
 
     #[test]
     fn on_start_initializes_dispatcher() {
-        let (mut state, mut world) = setup();
+        let (mut state, mut world, mut data) = setup();
 
         assert!(state.dispatch.is_none());
 
-        state.on_start(&mut world);
+        state.on_start(StateData {
+            world: &mut world,
+            data: &mut data,
+        });
 
         assert!(state.dispatch.is_some());
     }
 
     #[test]
     fn on_start_initializes_menu_event_channel_reader() {
-        let (mut state, mut world) = setup();
+        let (mut state, mut world, mut data) = setup();
 
         assert!(state.menu_event_reader.is_none());
 
-        state.on_start(&mut world);
+        state.on_start(StateData {
+            world: &mut world,
+            data: &mut data,
+        });
 
         assert!(state.menu_event_reader.is_some());
         let menu_event_channel = world.read_resource::<EventChannel<MenuEvent<Index>>>();
@@ -189,111 +203,156 @@ mod test {
 
     #[test]
     fn on_start_initializes_menu_items() {
-        let (mut state, mut world) = setup_with_menu_items(MenuBuildFn(Box::new(
+        let (mut state, mut world, mut data) = setup_with_menu_items(MenuBuildFn(Box::new(
             |world, menu_items| menu_items.push(world.create_entity().build()),
         )));
 
         assert!(state.menu_items.is_empty());
 
-        state.on_start(&mut world);
+        state.on_start(StateData {
+            world: &mut world,
+            data: &mut data,
+        });
 
         assert_eq!(1, state.menu_items.len());
     }
 
     #[test]
     fn on_stop_terminates_dispatcher() {
-        let (mut state, mut world) = setup();
+        let (mut state, mut world, mut data) = setup();
 
-        state.on_start(&mut world);
+        state.on_start(StateData {
+            world: &mut world,
+            data: &mut data,
+        });
 
         assert!(state.dispatch.is_some());
 
-        state.on_stop(&mut world);
+        state.on_stop(StateData {
+            world: &mut world,
+            data: &mut data,
+        });
 
         assert!(state.dispatch.is_none());
     }
 
     #[test]
     fn on_stop_terminates_menu_event_channel_reader() {
-        let (mut state, mut world) = setup();
+        let (mut state, mut world, mut data) = setup();
 
-        state.on_start(&mut world);
+        state.on_start(StateData {
+            world: &mut world,
+            data: &mut data,
+        });
 
         assert!(state.menu_event_reader.is_some());
 
-        state.on_stop(&mut world);
+        state.on_stop(StateData {
+            world: &mut world,
+            data: &mut data,
+        });
 
         assert!(state.menu_event_reader.is_none());
     }
 
     #[test]
     fn on_stop_terminates_menu_items() {
-        let (mut state, mut world) = setup_with_menu_items(MenuBuildFn(Box::new(
+        let (mut state, mut world, mut data) = setup_with_menu_items(MenuBuildFn(Box::new(
             |world, menu_items| menu_items.push(world.create_entity().build()),
         )));
 
-        state.on_start(&mut world);
+        state.on_start(StateData {
+            world: &mut world,
+            data: &mut data,
+        });
 
         assert_eq!(1, state.menu_items.len());
 
-        state.on_stop(&mut world);
+        state.on_stop(StateData {
+            world: &mut world,
+            data: &mut data,
+        });
 
         assert!(state.menu_items.is_empty());
     }
 
     #[test]
     fn on_pause_terminates_menu_items() {
-        let (mut state, mut world) = setup_with_menu_items(MenuBuildFn(Box::new(
+        let (mut state, mut world, mut data) = setup_with_menu_items(MenuBuildFn(Box::new(
             |world, menu_items| menu_items.push(world.create_entity().build()),
         )));
 
-        state.on_start(&mut world);
+        state.on_start(StateData {
+            world: &mut world,
+            data: &mut data,
+        });
 
         assert_eq!(1, state.menu_items.len());
 
-        state.on_pause(&mut world);
+        state.on_pause(StateData {
+            world: &mut world,
+            data: &mut data,
+        });
 
         assert!(state.menu_items.is_empty());
     }
 
     #[test]
     fn on_resume_initializes_menu_items() {
-        let (mut state, mut world) = setup_with_menu_items(MenuBuildFn(Box::new(
+        let (mut state, mut world, mut data) = setup_with_menu_items(MenuBuildFn(Box::new(
             |world, menu_items| menu_items.push(world.create_entity().build()),
         )));
 
-        state.on_start(&mut world);
+        state.on_start(StateData {
+            world: &mut world,
+            data: &mut data,
+        });
 
         assert_eq!(1, state.menu_items.len());
 
-        state.on_pause(&mut world);
+        state.on_pause(StateData {
+            world: &mut world,
+            data: &mut data,
+        });
 
         assert!(state.menu_items.is_empty());
 
-        state.on_resume(&mut world);
+        state.on_resume(StateData {
+            world: &mut world,
+            data: &mut data,
+        });
 
         assert_eq!(1, state.menu_items.len());
     }
 
     #[test]
     fn update_returns_trans_none_when_no_application_or_menu_event_exists() {
-        let (mut state, mut world) = setup();
+        let (mut state, mut world, mut data) = setup();
 
         // register reader
-        state.on_start(&mut world);
+        state.on_start(StateData {
+            world: &mut world,
+            data: &mut data,
+        });
 
         assert_eq!(
             discriminant(&Trans::None),
-            discriminant(&state.update(&mut world))
+            discriminant(&state.update(StateData {
+                world: &mut world,
+                data: &mut data,
+            }))
         );
     }
 
     #[test]
     fn update_returns_trans_quit_on_close_menu_event() {
-        let (mut state, mut world) = setup();
+        let (mut state, mut world, mut data) = setup();
 
         // register reader
-        state.on_start(&mut world);
+        state.on_start(StateData {
+            world: &mut world,
+            data: &mut data,
+        });
 
         {
             let mut menu_event_channel = world.write_resource::<EventChannel<MenuEvent<Index>>>();
@@ -302,7 +361,10 @@ mod test {
 
         assert_eq!(
             discriminant(&Trans::Quit),
-            discriminant(&state.update(&mut world))
+            discriminant(&state.update(StateData {
+                world: &mut world,
+                data: &mut data,
+            }))
         );
     }
 }

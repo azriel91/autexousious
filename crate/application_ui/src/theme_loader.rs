@@ -70,22 +70,19 @@ mod test {
     use FontVariant;
     use Theme;
 
-    fn setup<'a, 'b, F>(assertion_fn: Box<F>) -> Result<Application<'a, 'b>>
+    fn setup<'a, 'b, F>(assertion_fn: Box<F>) -> Result<Application<'a, GameData<'a, 'b>>>
     where
         F: 'a + Fn(&mut World),
     {
-        // We need to instantiate an amethyst::Application because:
-        //
-        // * The `Loader` needs to be added to the world, and the code to do this is non-trivial
-        // * `Application` in amethyst does this
+        let game_data = GameDataBuilder::default()
+            .with_bundle(TransformBundle::new())?
+            .with_bundle(InputBundle::<String, String>::new())?
+            .with_bundle(UiBundle::<String, String>::new())?;
         Application::build(
             format!("{}/assets", env!("CARGO_MANIFEST_DIR")),
             MockState { assertion_fn },
-        )?.with_bundle(TransformBundle::new())?
-            .with_bundle(InputBundle::<String, String>::new())?
-            .with_bundle(UiBundle::<String, String>::new())?
-            .with_resource(ScreenDimensions::new(640, 480))
-            .build()
+        )?.with_resource(ScreenDimensions::new(640, 480, 1.))
+            .build(game_data)
     } // kcov-ignore
 
     #[test]
@@ -150,12 +147,12 @@ mod test {
     struct MockState<F: Fn(&mut World)> {
         assertion_fn: Box<F>,
     }
-    impl<F: Fn(&mut World)> State for MockState<F> {
-        fn on_start(&mut self, world: &mut World) {
-            (self.assertion_fn)(world);
+    impl<'a, 'b, F: Fn(&mut World)> State<GameData<'a, 'b>> for MockState<F> {
+        fn on_start(&mut self, mut data: StateData<GameData>) {
+            (self.assertion_fn)(&mut data.world);
         }
 
-        fn fixed_update(&mut self, _world: &mut World) -> Trans {
+        fn fixed_update(&mut self, _data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
             Trans::Quit
         }
     }

@@ -62,7 +62,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_pass(DrawUi::new()),
     );
 
-    let intercepts: Vec<Rc<RefCell<Intercept>>> = {
+    let intercepts: Vec<Rc<RefCell<Intercept<GameData>>>> = {
         if let Some(timeout) = opt.timeout {
             vec![Rc::new(RefCell::new(FixedTimeoutIntercept::new(
                 Duration::from_millis(timeout),
@@ -73,13 +73,12 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     };
     let state = RobotState::new_with_intercepts(Box::new(TextState), intercepts);
 
-    let mut app = Application::build("assets", state)?
+    let game_data = GameDataBuilder::default()
         .with_bundle(TransformBundle::new())?
         .with_bundle(InputBundle::<String, String>::new())?
         .with_bundle(UiBundle::<String, String>::new())?
-        .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
-        .build()
-        .expect("Failed to build application.");
+        .with_bundle(RenderBundle::new(pipe, Some(display_config)))?;
+    let mut app = Application::new("assets", state, game_data)?;
 
     if !opt.no_run {
         app.run();

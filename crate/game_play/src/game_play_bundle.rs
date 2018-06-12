@@ -24,25 +24,26 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 mod test {
     use std::env;
 
-    use amethyst::core::transform::TransformBundle;
-    use amethyst::input::InputBundle;
-    use amethyst::prelude::*;
-    use amethyst::ui::UiBundle;
-    use amethyst::Result;
+    use amethyst::{
+        core::transform::TransformBundle, input::InputBundle, prelude::*, ui::UiBundle, Result,
+    };
     use game_input::{PlayerActionControl, PlayerAxisControl};
 
     use super::GamePlayBundle;
 
-    fn setup<'a, 'b>() -> Result<Application<'a, 'b>> {
+    fn setup<'a, 'b>() -> Result<Application<'a, GameData<'a, 'b>>> {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
-        let app = Application::build(format!("{}/assets", env!("CARGO_MANIFEST_DIR")), MockState)?
+
+        let game_data = GameDataBuilder::default()
             .with_bundle(TransformBundle::new())?
             .with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new())?
             .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?
-            .with_bundle(GamePlayBundle)?
-            .build()?;
-
-        Ok(app)
+            .with_bundle(GamePlayBundle)?;
+        Application::new(
+            format!("{}/assets", env!("CARGO_MANIFEST_DIR")),
+            MockState,
+            game_data,
+        )
     } // kcov-ignore
 
     #[test]
@@ -52,5 +53,5 @@ mod test {
 
     #[derive(Debug)]
     struct MockState;
-    impl State for MockState {}
+    impl<'a, 'b> State<GameData<'a, 'b>> for MockState {}
 }

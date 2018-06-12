@@ -1,6 +1,6 @@
 use std::hash::Hash;
 
-use amethyst::prelude::*;
+use amethyst::{prelude::*, renderer::MaterialTextureSet};
 use game_model::config::ConfigRecord;
 use object_model::{config::ObjectDefinition, loaded};
 
@@ -9,12 +9,8 @@ use error::Result;
 use sprite::SpriteLoader;
 
 /// Loads assets specified by object configuration into the loaded object model.
-#[derive(Debug, Default, new)]
-pub struct ObjectLoader {
-    /// Offset for texture indices in the `MaterialTextureSet`
-    #[new(default)]
-    texture_index_offset: usize,
-}
+#[derive(Debug)]
+pub struct ObjectLoader;
 
 impl ObjectLoader {
     /// Returns the loaded `Object` referenced by the configuration record.
@@ -25,12 +21,11 @@ impl ObjectLoader {
     /// * `config_record`: Entry of the object's configuration.
     /// * `object_definition`: Object definition configuration.
     pub fn load<SeqId: Hash + Eq>(
-        &mut self,
         world: &World,
         config_record: &ConfigRecord,
         object_definition: &ObjectDefinition<SeqId>,
     ) -> Result<loaded::Object> {
-        let texture_index_offset = self.texture_index_offset;
+        let texture_index_offset = world.read_resource::<MaterialTextureSet>().len() as u64;
 
         let (sprite_sheets, mesh, default_material) =
             SpriteLoader::load(world, texture_index_offset, config_record)?;
@@ -41,8 +36,6 @@ impl ObjectLoader {
             texture_index_offset,
             &sprite_sheets,
         )?;
-
-        self.texture_index_offset += sprite_sheets.len();
 
         Ok(loaded::Object::new(
             default_material,
@@ -56,17 +49,18 @@ impl ObjectLoader {
 mod test {
     use std::path::{Path, PathBuf};
 
-    use amethyst;
-    use amethyst::animation::AnimationBundle;
-    use amethyst::core::transform::TransformBundle;
-    use amethyst::input::InputBundle;
-    use amethyst::prelude::*;
-    use amethyst::renderer::{
-        ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex, RenderBundle, Stage, ALPHA,
+    use amethyst::{
+        self, animation::AnimationBundle, core::transform::TransformBundle, input::InputBundle,
+        prelude::*,
+        renderer::{
+            ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex, RenderBundle, Stage,
+            ALPHA,
+        },
+        ui::UiBundle,
     };
-    use amethyst::ui::UiBundle;
-    use application::resource::dir::{self, assets_dir};
-    use application::resource::find_in;
+    use application::resource::{
+        dir::{self, assets_dir}, find_in,
+    };
     use game_model::config::ConfigRecord;
     use object_model::config::CharacterDefinition;
     use toml;
@@ -100,8 +94,7 @@ mod test {
                 )),
         );
 
-        let mut app = Application::build(assets_dir.clone(), TestState { assets_dir })?
-            // Needed to register `MaterialTextureSet`
+        let game_data = GameDataBuilder::default()
             .with_bundle(AnimationBundle::<u32, Material>::new(
                 "animation_control_system",
                 "sampler_interpolation_system",
@@ -112,8 +105,9 @@ mod test {
             )?
             .with_bundle(InputBundle::<String, String>::new())?
             .with_bundle(UiBundle::<String, String>::new())?
-            .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
-            .build()
+            .with_bundle(RenderBundle::new(pipe, Some(display_config)))?;
+        let mut app = Application::build(assets_dir.clone(), TestState { assets_dir })?
+            .build(game_data)
             .expect("Failed to build application.");
 
         app.run();
@@ -125,8 +119,8 @@ mod test {
     struct TestState {
         assets_dir: PathBuf,
     }
-    impl State for TestState {
-        fn on_start(&mut self, world: &mut World) {
+    impl<'a, 'b> State<GameData<'a, 'b>> for TestState {
+        fn on_start(&mut self, mut data: StateData<GameData>) {
             let mut bat_path = self.assets_dir.clone();
             bat_path.extend(Path::new("test/object/character/bat").iter());
             let config_record = ConfigRecord::new(bat_path);
@@ -136,18 +130,16 @@ mod test {
             let character_definition = toml::from_slice::<CharacterDefinition>(&object_toml)
                 .expect("Failed to parse object.toml into CharacterDefinition");
 
-            let object = ObjectLoader::new()
-                .load(
-                    world,
-                    &config_record,
-                    &character_definition.object_definition,
-                )
-                .expect("Failed to load object");
+            let object = ObjectLoader::load(
+                &mut data.world,
+                &config_record,
+                &character_definition.object_definition,
+            ).expect("Failed to load object");
 
             assert_eq!(2, object.animations.len());
         }
 
-        fn update(&mut self, _: &mut World) -> Trans {
+        fn update(&mut self, _data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
             Trans::Quit
         }
     }

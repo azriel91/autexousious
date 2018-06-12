@@ -39,7 +39,7 @@ use game_input::{PlayerActionControl, PlayerAxisControl};
 use game_mode_menu::GameModeMenuState;
 use game_play::GamePlayBundle;
 use object_loading::ObjectLoadingBundle;
-use stdio_view::StdinSystem;
+use stdio_view::StdioViewBundle;
 use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
@@ -56,12 +56,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     let loading_state = loading::State::new(assets_dir.clone(), Box::new(game_mode_menu_state));
     let state = RobotState::new(Box::new(loading_state));
 
-    let mut app_builder = Application::build(assets_dir, state)?.with::<StdinSystem>(
-        StdinSystem::new(),
-        "StdinSystem",
-        &[],
-    );
-
+    let mut game_data = GameDataBuilder::default();
     if !opt.headless {
         let display_config = load_in::<DisplayConfig, _>(
             dir::RESOURCES,
@@ -93,7 +88,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
 
         // `InputBundle` provides `InputHandler<A, B>`, needed by the `UiBundle` for mouse events.
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
-        app_builder = app_builder
+        game_data = game_data
             // Provides sprite animation
             .with_bundle(AnimationBundle::<u32, Material>::new(
                 "animation_control_system",
@@ -108,12 +103,13 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new()
                 .with_bindings(input_bindings))?
             .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?
+            .with_bundle(StdioViewBundle::new())?
             .with_bundle(ObjectLoadingBundle::new())?
             .with_bundle(CharacterSelectionBundle::new())?
             .with_bundle(GamePlayBundle::new())?;
     }
 
-    let mut app = app_builder.build()?;
+    let mut app = Application::new(assets_dir, state, game_data)?;
 
     app.run();
 

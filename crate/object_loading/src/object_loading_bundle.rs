@@ -21,38 +21,42 @@ impl<'a, 'b> SystemBundle<'a, 'b> for ObjectLoadingBundle {
 mod test {
     use std::env;
 
-    use amethyst::assets::AssetStorage;
-    use amethyst::prelude::*;
-    use amethyst::Result;
-    use object_model::loaded::Character;
-    use object_model::ObjectType;
+    use amethyst::{assets::AssetStorage, prelude::*, Result};
+    use object_model::{loaded::Character, ObjectType};
 
     use super::ObjectLoadingBundle;
 
-    fn setup<'a, 'b>() -> Result<Application<'a, 'b>> {
+    fn setup<'a, 'b>() -> Result<Application<'a, GameData<'a, 'b>>> {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
+
+        let game_data = GameDataBuilder::default().with_bundle(ObjectLoadingBundle)?;
         let app = Application::build(format!("{}/assets", env!("CARGO_MANIFEST_DIR")), MockState)?
-            .with_bundle(ObjectLoadingBundle)?
-            .build()?;
+            .build(game_data)?;
 
         Ok(app)
     } // kcov-ignore
 
     #[test]
     fn bundle_build_adds_character_processor() {
-        let app = setup().expect("ObjectLoadingBundle#build() should succeed");
-
-        ObjectType::variants().iter().for_each(|object_type| {
-            match *object_type {
-                ObjectType::Character => {
-                    // Next line will panic if the Processor wasn't added
-                    app.world.read_resource::<AssetStorage<Character>>();
-                }
-            }
-        });
+        setup()
+            .expect("ObjectLoadingBundle#build() should succeed")
+            .run(); // kcov-ignore
     }
 
     #[derive(Debug)]
     struct MockState;
-    impl State for MockState {}
+    impl<'a, 'b> State<GameData<'a, 'b>> for MockState {
+        fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
+            ObjectType::variants().iter().for_each(|object_type| {
+                match *object_type {
+                    ObjectType::Character => {
+                        // Next line will panic if the Processor wasn't added
+                        data.world.read_resource::<AssetStorage<Character>>();
+                    }
+                }
+            });
+
+            Trans::Quit
+        }
+    }
 }

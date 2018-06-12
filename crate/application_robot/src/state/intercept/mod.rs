@@ -19,33 +19,37 @@ use amethyst::renderer::Event;
 /// so they may record application state or override the behaviour of the state.
 ///
 /// [state]: https://docs.rs/amethyst/0.6.0/amethyst/trait.State.html
-pub trait Intercept: Debug {
+pub trait Intercept<T>: Debug {
     /// Invoked before the delegate state's `on_start(..)` invocation.
-    fn on_start_begin(&mut self, _world: &mut World) {}
+    fn on_start_begin(&mut self, _data: &mut StateData<T>) {}
     /// Invoked after the delegate state's `on_start(..)` invocation.
-    fn on_start_end(&mut self, _world: &mut World) {}
+    fn on_start_end(&mut self) {}
     /// Invoked before the delegate state's `on_stop(..)` invocation.
-    fn on_stop_begin(&mut self, _world: &mut World) {}
+    fn on_stop_begin(&mut self, _data: &mut StateData<T>) {}
     /// Invoked after the delegate state's `on_stop(..)` invocation.
-    fn on_stop_end(&mut self, _world: &mut World) {}
+    fn on_stop_end(&mut self) {}
     /// Invoked before the delegate state's `on_pause(..)` invocation.
-    fn on_pause_begin(&mut self, _world: &mut World) {}
+    fn on_pause_begin(&mut self, _data: &mut StateData<T>) {}
     /// Invoked after the delegate state's `on_pause(..)` invocation.
-    fn on_pause_end(&mut self, _world: &mut World) {}
+    fn on_pause_end(&mut self) {}
     /// Invoked before the delegate state's `on_resume(..)` invocation.
-    fn on_resume_begin(&mut self, _world: &mut World) {}
+    fn on_resume_begin(&mut self, _data: &mut StateData<T>) {}
     /// Invoked after the delegate state's `on_resume(..)` invocation.
-    fn on_resume_end(&mut self, _world: &mut World) {}
+    fn on_resume_end(&mut self) {}
     /// Optionally returns a `Trans` to override the delegate state behaviour.
     ///
     /// Invoked before the delegate state's `handle_event(..)` invocation.
     ///
     /// # Parameters:
     ///
-    /// * `world`: The ECS `World`.
-    /// * `event`: `Event` received by the application. Mutable so the `Intercept` may alter
+    /// * `data`: `StateData` for the application `State`
+    /// * `event`: `Event` rec.eived by the application. Mutable so the `Intercept` may alter
     ///             behaviour.
-    fn handle_event_begin(&mut self, _world: &mut World, _event: &mut Event) -> Option<Trans> {
+    fn handle_event_begin(
+        &mut self,
+        _data: &mut StateData<T>,
+        _event: &mut Event,
+    ) -> Option<Trans<T>> {
         None
     }
     /// Optionally returns a `Trans` to override the delegate state behaviour.
@@ -54,9 +58,8 @@ pub trait Intercept: Debug {
     ///
     /// # Parameters:
     ///
-    /// * `world`: The ECS `World`.
     /// * `state_trans`: `Trans` that was returned by the delegate `State`
-    fn handle_event_end(&mut self, _world: &mut World, _state_trans: &Trans) -> Option<Trans> {
+    fn handle_event_end(&mut self, _state_trans: &Trans<T>) -> Option<Trans<T>> {
         None
     }
     /// Optionally returns a `Trans` to override the delegate state behaviour.
@@ -65,8 +68,8 @@ pub trait Intercept: Debug {
     ///
     /// # Parameters:
     ///
-    /// * `world`: The ECS `World`.
-    fn fixed_update_begin(&mut self, _world: &mut World) -> Option<Trans> {
+    /// * `data`: `StateData` for the application `State`.
+    fn fixed_update_begin(&mut self, _data: &mut StateData<T>) -> Option<Trans<T>> {
         None
     }
     /// Optionally returns a `Trans` to override the delegate state behaviour.
@@ -75,9 +78,8 @@ pub trait Intercept: Debug {
     ///
     /// # Parameters:
     ///
-    /// * `world`: The ECS `World`.
     /// * `state_trans`: `Trans` that was returned by the delegate `State`
-    fn fixed_update_end(&mut self, _world: &mut World, _state_trans: &Trans) -> Option<Trans> {
+    fn fixed_update_end(&mut self, _state_trans: &Trans<T>) -> Option<Trans<T>> {
         None
     }
     /// Optionally returns a `Trans` to override the delegate state behaviour.
@@ -86,8 +88,8 @@ pub trait Intercept: Debug {
     ///
     /// # Parameters:
     ///
-    /// * `world`: The ECS `World`.
-    fn update_begin(&mut self, _world: &mut World) -> Option<Trans> {
+    /// * `data`: `StateData` for the application `State`.
+    fn update_begin(&mut self, _data: &mut StateData<T>) -> Option<Trans<T>> {
         None
     }
     /// Optionally returns a `Trans` to override the delegate state behaviour.
@@ -96,9 +98,8 @@ pub trait Intercept: Debug {
     ///
     /// # Parameters:
     ///
-    /// * `world`: The ECS `World`.
     /// * `state_trans`: `Trans` that was returned by the delegate `State`
-    fn update_end(&mut self, _world: &mut World, _state_trans: &Trans) -> Option<Trans> {
+    fn update_end(&mut self, _state_trans: &Trans<T>) -> Option<Trans<T>> {
         None
     }
     /// Returns whether this intercept should be shared with `Trans::Push` and `Trans::Switch`ed

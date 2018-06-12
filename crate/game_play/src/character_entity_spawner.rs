@@ -159,19 +159,16 @@ mod test {
     where
         F: 'static + Fn(&mut World),
     {
-        setup_application(assertion_fn)?.run();
-
-        Ok(())
-    }
-
-    fn setup_application<'a, 'b, F>(assertion_fn: Box<F>) -> Result<Application<'a, 'b>>
-    where
-        F: 'static + Fn(&mut World),
-    {
         let assets_dir = assets_dir(Some(development_base_dirs!()))?;
         let test_state = TestState { assertion_fn };
         let loading_state = loading::State::new(assets_dir.clone(), Box::new(test_state));
 
+        Application::new(assets_dir, loading_state, setup_game_data()?)?.run();
+
+        Ok(())
+    }
+
+    fn setup_game_data<'a, 'b>() -> Result<GameDataBuilder<'a, 'b>> {
         let pipeline = Pipeline::build().with_stage(
             Stage::with_backbuffer()
                 .clear_target([0., 0., 0., 0.], 1.)
@@ -182,10 +179,7 @@ mod test {
                 )),
         );
 
-        Application::build(
-            assets_dir,
-            loading_state,
-        )?
+        GameDataBuilder::default()
             // Provides sprite animation
             .with_bundle(AnimationBundle::<u32, Material>::new(
                 "animation_control_system",
@@ -200,8 +194,7 @@ mod test {
             .with_bundle(InputBundle::<String, String>::new())?
             .with_bundle(UiBundle::<String, String>::new())?
             .with_bundle(ObjectLoadingBundle::new())?
-            .with_bundle(GamePlayBundle)? // Needed for `CharacterEntityControl`
-            .build()
+            .with_bundle(GamePlayBundle) // Needed for `CharacterEntityControl`
     } // kcov-ignore
 
     fn display_config() -> Result<DisplayConfig> {
@@ -217,15 +210,20 @@ mod test {
     struct TestState<F: Fn(&mut World)> {
         assertion_fn: Box<F>,
     }
-    impl<F: Fn(&mut World)> State for TestState<F> {
-        fn fixed_update(&mut self, world: &mut World) -> Trans {
+    impl<'a, 'b, F: Fn(&mut World)> State<GameData<'a, 'b>> for TestState<F> {
+        fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
+            data.data.update(&data.world);
+            Trans::None
+        }
+
+        fn fixed_update(&mut self, mut data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
             // This needs to be in `fixed_update`:
             //
             // > Loading some assets requires a renderer tick @azriel91 because only the rendering
             // > thread can load them
             // >
             // > - Xaeroxe
-            (self.assertion_fn)(world);
+            (self.assertion_fn)(&mut data.world);
 
             Trans::Quit
         }

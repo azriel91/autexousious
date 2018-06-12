@@ -1,5 +1,6 @@
-use amethyst::core::bundle::{Result, SystemBundle};
-use amethyst::ecs::prelude::DispatcherBuilder;
+use amethyst::{
+    core::bundle::{Result, SystemBundle}, ecs::prelude::DispatcherBuilder,
+};
 
 use UiEventHandlerSystem;
 
@@ -22,24 +23,27 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameModeMenuBundle {
 mod test {
     use std::env;
 
-    use amethyst::core::transform::TransformBundle;
-    use amethyst::input::InputBundle;
-    use amethyst::prelude::*;
-    use amethyst::ui::UiBundle;
-    use amethyst::Result;
+    use amethyst::{
+        core::transform::TransformBundle, input::InputBundle, prelude::*, ui::UiBundle, Result,
+    };
     use application_menu::MenuItem;
 
     use super::GameModeMenuBundle;
     use index::Index;
 
-    fn setup<'a, 'b>() -> Result<Application<'a, 'b>> {
+    fn setup<'a, 'b>() -> Result<Application<'a, GameData<'a, 'b>>> {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
-        let app = Application::build(format!("{}/assets", env!("CARGO_MANIFEST_DIR")), MockState)?
+
+        let game_data = GameDataBuilder::default()
             .with_bundle(TransformBundle::new())?
             .with_bundle(InputBundle::<String, String>::new())?
             .with_bundle(UiBundle::<String, String>::new())?
-            .with_bundle(GameModeMenuBundle)?
-            .build()?;
+            .with_bundle(GameModeMenuBundle)?;
+        let app = Application::new(
+            format!("{}/assets", env!("CARGO_MANIFEST_DIR")),
+            MockState,
+            game_data,
+        )?;
 
         Ok(app)
     } // kcov-ignore
@@ -49,16 +53,21 @@ mod test {
         let mut app = setup().expect("GameModeMenuBundle#build() should succeed");
 
         // If the system was not registered, this will panic
-        &mut app
-            .world
-            .create_entity()
-            .with(MenuItem {
-                index: Index::StartGame,
-            })
-            .build();
+        app.run();
     }
 
     #[derive(Debug)]
     struct MockState;
-    impl State for MockState {}
+    impl<'a, 'b> State<GameData<'a, 'b>> for MockState {
+        fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
+            data.world
+                .create_entity()
+                .with(MenuItem {
+                    index: Index::StartGame,
+                })
+                .build();
+
+            Trans::Quit
+        }
+    }
 }

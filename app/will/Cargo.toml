@@ -18,11 +18,14 @@ loading = { path = "../../crate/loading" }
 log = "0.4"
 object_loading = { path = "../../crate/object_loading" }
 stdio_view = { path = "../../crate/stdio_view" }
-structopt = "0.1.6"
-structopt-derive = "0.1.6"
+structopt = "0.2"
+structopt-derive = "0.2"
 
 [dev-dependencies]
 assert_cli = "0.5"
 
 [build-dependencies]
 application = { path = "../../crate/application" }
+
+[features]
+nightly = ["amethyst/nightly",]

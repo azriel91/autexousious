@@ -5,12 +5,16 @@
 
 extern crate amethyst;
 extern crate application_input;
+#[macro_use]
+extern crate derive_new;
 extern crate console;
 extern crate fern;
 #[macro_use]
 extern crate log;
 
 pub use stdin_system::StdinSystem;
+pub use stdio_view_bundle::StdioViewBundle;
 
 pub(crate) mod reader;
 mod stdin_system;
+mod stdio_view_bundle;

@@ -14,17 +14,18 @@ mod texture_loader;
 mod test {
     use std::path::{Path, PathBuf};
 
-    use amethyst;
-    use amethyst::animation::AnimationBundle;
-    use amethyst::core::transform::TransformBundle;
-    use amethyst::input::InputBundle;
-    use amethyst::prelude::*;
-    use amethyst::renderer::{
-        ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex, RenderBundle, Stage, ALPHA,
+    use amethyst::{
+        self, animation::AnimationBundle, core::transform::TransformBundle, input::InputBundle,
+        prelude::*,
+        renderer::{
+            ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex, RenderBundle, Stage,
+            ALPHA,
+        },
+        ui::UiBundle,
     };
-    use amethyst::ui::UiBundle;
-    use application::resource::dir::{self, assets_dir};
-    use application::resource::find_in;
+    use application::resource::{
+        dir::{self, assets_dir}, find_in,
+    };
     use game_model::config::ConfigRecord;
 
     use super::SpriteLoader;
@@ -58,7 +59,7 @@ mod test {
                 )),
         );
 
-        let mut app = Application::build(assets_dir.clone(), TestState { assets_dir })?
+        let game_data = GameDataBuilder::default()
             // Needed to register `MaterialTextureSet`
             .with_bundle(AnimationBundle::<u32, Material>::new(
                 "animation_control_system",
@@ -70,8 +71,9 @@ mod test {
             )?
             .with_bundle(InputBundle::<String, String>::new())?
             .with_bundle(UiBundle::<String, String>::new())?
-            .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
-            .build()
+            .with_bundle(RenderBundle::new(pipe, Some(display_config)))?;
+        let mut app = Application::build(assets_dir.clone(), TestState { assets_dir })?
+            .build(game_data)
             .expect("Failed to build application.");
 
         app.run();
@@ -83,20 +85,20 @@ mod test {
     struct TestState {
         assets_dir: PathBuf,
     }
-    impl State for TestState {
-        fn on_start(&mut self, world: &mut World) {
+    impl<'a, 'b> State<GameData<'a, 'b>> for TestState {
+        fn on_start(&mut self, mut data: StateData<GameData>) {
             let texture_index_offset = 0;
             let mut bat_path = self.assets_dir.clone();
             bat_path.extend(Path::new("test/object/character/bat").iter());
             let config_record = ConfigRecord::new(bat_path);
-            let result = SpriteLoader::load(world, texture_index_offset, &config_record);
+            let result = SpriteLoader::load(&mut data.world, texture_index_offset, &config_record);
 
             if let Err(e) = result {
                 panic!("Failed to load sprites: {:?}", e); // kcov-ignore
             } // kcov-ignore
         }
 
-        fn update(&mut self, _: &mut World) -> Trans {
+        fn update(&mut self, _data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
             Trans::Quit
         }
     }
