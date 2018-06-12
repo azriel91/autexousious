@@ -8,8 +8,6 @@ use state::Intercept;
 ///
 /// This pops the stack after the fixed timeout, regardless of the state changes that occur from
 /// the underlying delegate.
-///
-/// TODO: implement wrapping state from `Trans::Push` with another `FixedTimeoutIntercept`.
 #[derive(Debug)]
 pub struct FixedTimeoutIntercept {
     /// Total duration that the delegate state should run for.
@@ -116,7 +114,7 @@ mod test {
             intercept
                 .fixed_update_begin(&mut StateData::new(&mut world, &mut ()))
                 .as_ref(),
-        );
+        ); // kcov-ignore
     }
 
     #[test]
@@ -131,7 +129,7 @@ mod test {
             intercept
                 .update_begin(&mut StateData::new(&mut world, &mut ()))
                 .as_ref(),
-        );
+        ); // kcov-ignore
     }
 
     #[test]

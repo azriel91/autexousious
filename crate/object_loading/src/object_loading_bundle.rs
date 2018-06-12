@@ -40,7 +40,7 @@ mod test {
     fn bundle_build_adds_character_processor() {
         setup()
             .expect("ObjectLoadingBundle#build() should succeed")
-            .run();
+            .run(); // kcov-ignore
     }
 
     #[derive(Debug)]

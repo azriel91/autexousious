@@ -24,7 +24,7 @@ impl Index {
     pub fn trans(&self) -> Trans<GameData<'static, 'static>> {
         match *self {
             Index::StartGame => {
-                let next_state_fn = || Box::new(GamePlayState::new());
+                let next_state_fn = || Box::new(GamePlayState::new()); // kcov-ignore
                 let character_selection_state =
                     Box::new(CharacterSelectionState::new(Box::new(next_state_fn)));
                 Trans::Push(character_selection_state)

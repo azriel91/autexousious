@@ -1,8 +1,9 @@
 use std::sync::mpsc::{self, Receiver, TryRecvError};
 use std::thread;
 
-use amethyst::ecs::prelude::{System, Write};
-use amethyst::shrev::EventChannel;
+use amethyst::{
+    ecs::prelude::{System, Write}, shrev::EventChannel,
+};
 use application_input::ApplicationEvent;
 
 use reader::{self, StdinReader};
@@ -19,7 +20,9 @@ pub struct StdinSystem {
 
 impl StdinSystem {
     /// Returns a new StdinSystem that listens to stdin on a separate thread.
+    // kcov-ignore-start
     pub fn new() -> Self {
+        // kcov-ignore-end
         Self::default()
     }
 

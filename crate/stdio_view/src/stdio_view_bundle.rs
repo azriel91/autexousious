@@ -42,7 +42,7 @@ mod test {
     fn bundle_should_add_stdin_system_to_dispatcher() {
         setup()
             .expect("StdioViewBundle#build() should succeed")
-            .run();
+            .run(); // kcov-ignore
     }
 
     #[derive(Debug)]
