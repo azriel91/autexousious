@@ -49,7 +49,7 @@ impl Default for StdinSystem {
                 .expect("Failed to spawn StdinReader thread.");
         };
         Self::internal_new(rx, reader_spawn_fn)
-    }
+    } // kcov-ignore
 }
 
 impl<'a> System<'a> for StdinSystem {

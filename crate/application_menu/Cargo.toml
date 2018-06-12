@@ -14,8 +14,8 @@ assert_cli = "0.5"
 derivative = "1.0"
 log = "0.4"
 rayon = "1.0"
-structopt = "0.1.6"
-structopt-derive = "0.1.6"
+structopt = "0.2"
+structopt-derive = "0.2"
 
 [[example]]
 name = "01_menu"

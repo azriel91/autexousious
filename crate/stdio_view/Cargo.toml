@@ -10,3 +10,9 @@ console = "0.6"
 derive-new = "0.5"
 fern = "0.5"
 log = "0.4"
+
+[dev-dependencies]
+application_robot = { path = "../application_robot" }
+assert_cli = "0.6"
+structopt = "0.2"
+structopt-derive = "0.2"
