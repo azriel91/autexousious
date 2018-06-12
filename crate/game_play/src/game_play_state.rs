@@ -125,4 +125,9 @@ impl<'a, 'b> State<GameData<'a, 'b>> for GamePlayState {
         self.terminate_entities(&mut data.world);
         self.terminate_camera(&mut data.world);
     }
+
+    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
+        data.data.update(&data.world);
+        Trans::None
+    }
 }

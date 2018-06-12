@@ -11,25 +11,24 @@ use CharacterSelection;
 ///
 /// * `F`: Function to construct the state to return after character selection is complete.
 /// * `S`: State to return.
-/// * `T`: Data type used by this state and the returned state (see `StateData`).
 #[derive(Derivative)]
 #[derivative(Debug)]
-pub struct CharacterSelectionState<F, S, T>
+pub struct CharacterSelectionState<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
-    S: State<T> + 'static,
+    S: State<GameData<'a, 'b>> + 'static,
 {
     /// The `State` that follows this one.
     #[derivative(Debug(bound = "F: Debug"))]
     next_state_fn: Box<F>,
     /// Data type used by this state and the returned state (see `StateData`).
-    state_data: PhantomData<T>,
+    state_data: PhantomData<GameData<'a, 'b>>,
 }
 
-impl<F, S, T> CharacterSelectionState<F, S, T>
+impl<'a, 'b, F, S> CharacterSelectionState<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
-    S: State<T> + 'static,
+    S: State<GameData<'a, 'b>> + 'static,
 {
     /// Returns a new `CharacterSelectionState`
     ///
@@ -45,12 +44,14 @@ where
     }
 }
 
-impl<'a, 'b, F, S, T> State<T> for CharacterSelectionState<F, S, T>
+impl<'a, 'b, F, S> State<GameData<'a, 'b>> for CharacterSelectionState<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
-    S: State<T> + 'static,
+    S: State<GameData<'a, 'b>> + 'static,
 {
-    fn fixed_update(&mut self, data: StateData<T>) -> Trans<T> {
+    fn fixed_update(&mut self, data: StateData<GameData<'a, 'b>>) -> Trans<GameData<'a, 'b>> {
+        data.data.update(&data.world);
+
         let selected_characters = data.world.read_resource::<CharacterSelection>();
         if selected_characters.is_empty() {
             Trans::None

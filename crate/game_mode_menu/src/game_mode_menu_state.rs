@@ -110,6 +110,7 @@ impl State<GameData<'static, 'static>> for GameModeMenuState {
     }
 
     fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'static, 'static>> {
+        data.data.update(&data.world);
         {
             self.dispatch.as_mut().unwrap().dispatch(&data.world.res);
         }
