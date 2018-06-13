@@ -1,5 +1,6 @@
 use amethyst::{
-    core::bundle::{Result, SystemBundle}, ecs::prelude::*,
+    core::bundle::{Result, SystemBundle},
+    ecs::prelude::*,
 };
 
 use StdinSystem;

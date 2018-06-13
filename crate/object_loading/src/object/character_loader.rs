@@ -1,7 +1,8 @@
 use amethyst::{assets::Loader, prelude::*};
 use game_model::config::ConfigRecord;
 use object_model::{
-    config::CharacterDefinition, loaded::{Character, CharacterHandle},
+    config::CharacterDefinition,
+    loaded::{Character, CharacterHandle},
 };
 use toml;
 

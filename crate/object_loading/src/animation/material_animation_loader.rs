@@ -2,7 +2,9 @@ use std::hash::Hash;
 
 use amethyst::{
     animation::{Animation, InterpolationFunction, MaterialChannel, MaterialPrimitive, Sampler},
-    assets::{Handle, Loader}, prelude::*, renderer::{Material, SpriteSheet},
+    assets::{Handle, Loader},
+    prelude::*,
+    renderer::{Material, SpriteSheet},
 };
 use object_model::config::{object::Sequence, ObjectDefinition};
 

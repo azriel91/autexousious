@@ -1,5 +1,6 @@
 use amethyst::{
-    core::bundle::{Result, SystemBundle}, ecs::prelude::DispatcherBuilder,
+    core::bundle::{Result, SystemBundle},
+    ecs::prelude::DispatcherBuilder,
 };
 
 use UiEventHandlerSystem;

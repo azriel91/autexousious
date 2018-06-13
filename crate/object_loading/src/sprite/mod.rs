@@ -15,7 +15,10 @@ mod test {
     use std::path::{Path, PathBuf};
 
     use amethyst::{
-        self, animation::AnimationBundle, core::transform::TransformBundle, input::InputBundle,
+        self,
+        animation::AnimationBundle,
+        core::transform::TransformBundle,
+        input::InputBundle,
         prelude::*,
         renderer::{
             ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex, RenderBundle, Stage,
@@ -24,7 +27,8 @@ mod test {
         ui::UiBundle,
     };
     use application::resource::{
-        dir::{self, assets_dir}, find_in,
+        dir::{self, assets_dir},
+        find_in,
     };
     use game_model::config::ConfigRecord;
 

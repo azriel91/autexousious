@@ -1,10 +1,14 @@
 use amethyst::{
-    animation::{get_animation_set, AnimationCommand, EndControl}, assets::AssetStorage,
-    core::transform::{GlobalTransform, Transform}, ecs::prelude::*, renderer::Material,
+    animation::{get_animation_set, AnimationCommand, EndControl},
+    assets::AssetStorage,
+    core::transform::{GlobalTransform, Transform},
+    ecs::prelude::*,
+    renderer::Material,
 };
 use character_selection::CharacterEntityControl;
 use object_model::{
-    config::object::character::SequenceId, entity::ObjectStatus,
+    config::object::character::SequenceId,
+    entity::ObjectStatus,
     loaded::{Character, CharacterHandle},
 };
 
@@ -97,17 +101,22 @@ mod test {
     use amethyst::{
         animation::AnimationBundle,
         core::{
-            cgmath::Vector3, transform::{GlobalTransform, Transform, TransformBundle},
+            cgmath::Vector3,
+            transform::{GlobalTransform, Transform, TransformBundle},
         },
-        input::InputBundle, prelude::*,
+        input::InputBundle,
+        prelude::*,
         renderer::{
             ColorMask, DisplayConfig, DrawFlat, Material, MeshHandle, Pipeline, PosTex,
             RenderBundle, Stage, ALPHA,
         },
-        ui::UiBundle, Result,
+        ui::UiBundle,
+        Result,
     };
     use application::resource::{
-        self, dir::{self, assets_dir}, load_in,
+        self,
+        dir::{self, assets_dir},
+        load_in,
     };
     use character_selection::CharacterEntityControl;
     use loading;
