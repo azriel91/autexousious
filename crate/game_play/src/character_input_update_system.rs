@@ -5,7 +5,8 @@ use amethyst::{
 use character_selection::CharacterEntityControl;
 use game_input::{Axis, ControlAction, PlayerActionControl, PlayerAxisControl};
 use object_model::{
-    config::object::character::SequenceId, entity::{CharacterInput, ObjectStatus},
+    config::object::character::SequenceId,
+    entity::{CharacterInput, ObjectStatus},
     loaded::{Character, CharacterHandle},
 };
 use object_play::CharacterSequenceHandler;

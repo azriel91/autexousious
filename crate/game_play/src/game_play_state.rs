@@ -1,8 +1,11 @@
 use amethyst::{
     core::{
-        cgmath::{Matrix4, Vector3}, transform::{GlobalTransform, Transform},
+        cgmath::{Matrix4, Vector3},
+        transform::{GlobalTransform, Transform},
     },
-    ecs::prelude::*, input::is_key, prelude::*,
+    ecs::prelude::*,
+    input::is_key,
+    prelude::*,
     renderer::{Camera, Event, Projection, ScreenDimensions, VirtualKeyCode},
 };
 use character_selection::{CharacterEntityControl, CharacterSelection};

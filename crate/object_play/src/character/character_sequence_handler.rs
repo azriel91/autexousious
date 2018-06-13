@@ -1,5 +1,7 @@
 use amethyst::{
-    animation::AnimationControlSet, ecs::{prelude::*, storage::WriteStorage}, renderer::Material,
+    animation::AnimationControlSet,
+    ecs::{prelude::*, storage::WriteStorage},
+    renderer::Material,
 };
 use object_model::{
     config::object::character::SequenceId, entity::CharacterInput, loaded::Character,

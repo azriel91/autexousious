@@ -1,7 +1,10 @@
 use std::sync::Arc;
 
 use amethyst::{
-    ecs::prelude::*, prelude::*, shred::ParSeq, shrev::{EventChannel, ReaderId},
+    ecs::prelude::*,
+    prelude::*,
+    shred::ParSeq,
+    shrev::{EventChannel, ReaderId},
 };
 use application_menu::MenuEvent;
 use rayon;

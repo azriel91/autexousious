@@ -1,6 +1,9 @@
 use amethyst::{
-    ecs::prelude::*, input::{is_close_requested, is_key}, prelude::*,
-    renderer::{Event, ScreenDimensions, VirtualKeyCode}, shred::Fetch,
+    ecs::prelude::*,
+    input::{is_close_requested, is_key},
+    prelude::*,
+    renderer::{Event, ScreenDimensions, VirtualKeyCode},
+    shred::Fetch,
     ui::{Anchor, UiText, UiTransform},
 };
 use application_ui::{FontVariant, Theme, ThemeLoader};

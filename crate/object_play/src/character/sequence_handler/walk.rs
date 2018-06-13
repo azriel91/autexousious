@@ -1,6 +1,7 @@
 use amethyst::{
     animation::{get_animation_set, AnimationCommand, AnimationControlSet, EndControl},
-    ecs::prelude::*, renderer::Material,
+    ecs::prelude::*,
+    renderer::Material,
 };
 use object_model::{
     config::object::character::SequenceId, entity::CharacterInput, loaded::Character,

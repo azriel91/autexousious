@@ -2,7 +2,8 @@ use std::sync::mpsc::{self, Receiver, TryRecvError};
 use std::thread;
 
 use amethyst::{
-    ecs::prelude::{System, Write}, shrev::EventChannel,
+    ecs::prelude::{System, Write},
+    shrev::EventChannel,
 };
 use application_input::ApplicationEvent;
 
