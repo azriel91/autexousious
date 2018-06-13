@@ -31,6 +31,8 @@ impl CharacterEntitySpawner {
         character_index: usize,
         character_entity_control: CharacterEntityControl,
     ) -> Entity {
+        let first_sequence_id = SequenceId::default();
+
         let (character_handle, material, mesh, animation_handle) = {
             let loaded_characters = world.read_resource::<Vec<CharacterHandle>>();
 
@@ -57,7 +59,7 @@ impl CharacterEntitySpawner {
                 character
                     .object
                     .animations
-                    .first()
+                    .get(&first_sequence_id)
                     .expect("Expected character to have at least one sequence.")
                     .clone(),
             ) // kcov-ignore
@@ -79,16 +81,15 @@ impl CharacterEntitySpawner {
             // to the entity
             .with(GlobalTransform::default())
             // Set the default sequence for the object
-            .with(ObjectStatus::new(SequenceId::Stand))
+            .with(ObjectStatus::new(first_sequence_id))
             .build();
 
         // We also need to trigger the animation, not just attach it to the entity
         let mut animation_control_set_storage = world.write_storage();
         let animation_set =
-            get_animation_set::<u32, Material>(&mut animation_control_set_storage, entity);
-        let animation_id = 0;
+            get_animation_set::<SequenceId, Material>(&mut animation_control_set_storage, entity);
         animation_set.add_animation(
-            animation_id,
+            first_sequence_id,
             &animation_handle,
             EndControl::Loop(None),
             30., // Rate at which the animation plays

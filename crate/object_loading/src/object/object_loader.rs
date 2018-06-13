@@ -20,11 +20,11 @@ impl ObjectLoader {
     /// * `world`: `World` to store the object's assets.
     /// * `config_record`: Entry of the object's configuration.
     /// * `object_definition`: Object definition configuration.
-    pub fn load<SeqId: Hash + Eq>(
+    pub fn load<SeqId: Copy + Eq + Hash>(
         world: &World,
         config_record: &ConfigRecord,
         object_definition: &ObjectDefinition<SeqId>,
-    ) -> Result<loaded::Object> {
+    ) -> Result<loaded::Object<SeqId>> {
         let texture_index_offset = world.read_resource::<MaterialTextureSet>().len() as u64;
 
         let (sprite_sheets, mesh, default_material) =

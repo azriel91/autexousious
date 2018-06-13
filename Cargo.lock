@@ -2499,6 +2499,7 @@ dependencies = [
  "loading 0.3.0",
  "log 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "object_loading 0.3.0",
+ "object_model 0.3.0",
  "stdio_view 0.3.0",
  "structopt 0.2.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt-derive 0.2.10 (registry+https://github.com/rust-lang/crates.io-index)",

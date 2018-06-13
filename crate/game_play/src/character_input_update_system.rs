@@ -22,7 +22,7 @@ type CharacterInputUpdateSystemData<'s, 'c> = (
     Read<'s, AssetStorage<Character>>,
     Read<'s, InputHandler<PlayerAxisControl, PlayerActionControl>>,
     WriteStorage<'s, ObjectStatus<SequenceId>>,
-    WriteStorage<'s, AnimationControlSet<u32, Material>>,
+    WriteStorage<'s, AnimationControlSet<SequenceId, Material>>,
 );
 
 impl<'s> System<'s> for CharacterInputUpdateSystem {
