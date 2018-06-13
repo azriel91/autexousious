@@ -21,11 +21,13 @@ extern crate object_loading;
 extern crate object_model;
 extern crate object_play;
 
+pub(crate) use animation_runner::AnimationRunner;
 pub(crate) use character_entity_spawner::CharacterEntitySpawner;
 pub(crate) use character_input_update_system::CharacterInputUpdateSystem;
 pub use game_play_bundle::GamePlayBundle;
 pub use game_play_state::GamePlayState;
 
+mod animation_runner;
 mod character_entity_spawner;
 mod character_input_update_system;
 mod game_play_bundle;

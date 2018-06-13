@@ -18,7 +18,7 @@ mod frame;
 /// This carries the information necessary for an `Animation`, as well as the effects and
 /// interactions that happen during each frame of that animation.
 #[derive(Clone, Constructor, Debug, Deserialize, PartialEq)]
-pub struct Sequence<SeqId: Copy + Eq + Hash> {
+pub struct Sequence<SeqId: Copy + Eq + Hash + Send + Sync> {
     /// ID of the sequence to switch to after this one has completed.
     ///
     /// Note: This may not be immediately after the last frame of the sequence. For example, a

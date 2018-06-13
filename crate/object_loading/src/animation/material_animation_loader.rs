@@ -24,7 +24,7 @@ impl MaterialAnimationLoader {
     /// * `object_definition`: Sequences of the `Object`
     /// * `texture_index_offset`: Offset of the texture IDs in the `MaterialTextureSet`.
     /// * `sprite_sheets`: `SpriteSheet`s that contain the texture coordinates for sprites.
-    pub(crate) fn load<SeqId: Copy + Eq + Hash>(
+    pub(crate) fn load<SeqId: Copy + Eq + Hash + Send + Sync>(
         world: &World,
         object_definition: &ObjectDefinition<SeqId>,
         texture_index_offset: u64,
@@ -62,7 +62,7 @@ impl MaterialAnimationLoader {
     /// * `texture_index_offset`: Offset of the texture IDs in the `MaterialTextureSet`.
     /// * `sprite_sheets`: `SpriteSheet`s that contain the texture coordinates for sprites.
     /// * `sequence`: `Sequence` to create the animation from.
-    fn sequence_to_animation<SeqId: Copy + Eq + Hash>(
+    fn sequence_to_animation<SeqId: Copy + Eq + Hash + Send + Sync>(
         world: &World,
         texture_index_offset: u64,
         sprite_sheets: &[SpriteSheet],
@@ -93,7 +93,7 @@ impl MaterialAnimationLoader {
         }
     }
 
-    fn texture_sampler<SeqId: Copy + Eq + Hash>(
+    fn texture_sampler<SeqId: Copy + Eq + Hash + Send + Sync>(
         texture_index_offset: u64,
         sequence: &Sequence<SeqId>,
         input: Vec<f32>,
@@ -115,7 +115,7 @@ impl MaterialAnimationLoader {
         }
     }
 
-    fn sprite_offset_sampler<SeqId: Copy + Eq + Hash>(
+    fn sprite_offset_sampler<SeqId: Copy + Eq + Hash + Send + Sync>(
         sprite_sheets: &[SpriteSheet],
         sequence: &Sequence<SeqId>,
         input: Vec<f32>,

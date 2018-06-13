@@ -20,7 +20,7 @@ impl ObjectLoader {
     /// * `world`: `World` to store the object's assets.
     /// * `config_record`: Entry of the object's configuration.
     /// * `object_definition`: Object definition configuration.
-    pub fn load<SeqId: Copy + Eq + Hash>(
+    pub fn load<SeqId: Copy + Eq + Hash + Send + Sync>(
         world: &World,
         config_record: &ConfigRecord,
         object_definition: &ObjectDefinition<SeqId>,

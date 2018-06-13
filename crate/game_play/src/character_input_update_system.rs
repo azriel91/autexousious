@@ -1,5 +1,8 @@
 use amethyst::{
-    animation::AnimationControlSet, assets::AssetStorage, ecs::prelude::*, input::InputHandler,
+    animation::{get_animation_set, AnimationControlSet},
+    assets::AssetStorage,
+    ecs::prelude::*,
+    input::InputHandler,
     renderer::Material,
 };
 use character_selection::CharacterEntityControl;
@@ -10,6 +13,8 @@ use object_model::{
     loaded::{Character, CharacterHandle},
 };
 use object_play::CharacterSequenceHandler;
+
+use AnimationRunner;
 
 /// Updates `Character` sequence based on input
 #[derive(Debug, Default, new)]
@@ -82,7 +87,30 @@ impl<'s> System<'s> for CharacterInputUpdateSystem {
 
             // Update the current sequence ID
             if let Some(next_sequence) = next_sequence {
+                let current_sequence = status.sequence_id;
                 status.sequence_id = next_sequence;
+
+                let animation_handle = &character
+                    .object
+                    .animations
+                    .get(&next_sequence)
+                    .unwrap_or_else(|| {
+                        panic!(
+                            "Failed to get animation for sequence: `{:?}`",
+                            next_sequence
+                        )
+                    })
+                    .clone();
+
+                let mut animation_set =
+                    get_animation_set(&mut animation_control_set_storage, entity);
+
+                AnimationRunner::swap(
+                    &mut animation_set,
+                    &animation_handle,
+                    &current_sequence,
+                    &next_sequence,
+                );
             }
         }
     }

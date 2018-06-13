@@ -11,7 +11,7 @@ use config::object::Sequence;
 ///
 /// [char_definition]: ../character/struct.CharacterDefinition.html
 #[derive(Clone, Constructor, Debug, Deserialize, PartialEq)]
-pub struct ObjectDefinition<SeqId: Copy + Eq + Hash> {
+pub struct ObjectDefinition<SeqId: Copy + Eq + Hash + Send + Sync> {
     /// Sequences of actions this object can perform.
     pub sequences: HashMap<SeqId, Sequence<SeqId>>,
 }

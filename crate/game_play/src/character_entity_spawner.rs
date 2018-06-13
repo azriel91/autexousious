@@ -1,5 +1,5 @@
 use amethyst::{
-    animation::{get_animation_set, AnimationCommand, EndControl},
+    animation::get_animation_set,
     assets::AssetStorage,
     core::transform::{GlobalTransform, Transform},
     ecs::prelude::*,
@@ -11,6 +11,8 @@ use object_model::{
     entity::ObjectStatus,
     loaded::{Character, CharacterHandle},
 };
+
+use AnimationRunner;
 
 /// Spawns character entities into the world.
 #[derive(Debug)]
@@ -86,15 +88,10 @@ impl CharacterEntitySpawner {
 
         // We also need to trigger the animation, not just attach it to the entity
         let mut animation_control_set_storage = world.write_storage();
-        let animation_set =
+        let mut animation_set =
             get_animation_set::<SequenceId, Material>(&mut animation_control_set_storage, entity);
-        animation_set.add_animation(
-            first_sequence_id,
-            &animation_handle,
-            EndControl::Loop(None),
-            30., // Rate at which the animation plays
-            AnimationCommand::Start,
-        );
+
+        AnimationRunner::start(&mut animation_set, &animation_handle, &first_sequence_id);
 
         entity
     }
