@@ -3,7 +3,7 @@ use config::sprite::SpriteOffset;
 /// Information about how sprites are laid out on the sprite sheet.
 ///
 /// This is used to calculate the texture coordinates of each sprite.
-#[derive(Debug, Deserialize)]
+#[derive(Constructor, Debug, Deserialize)]
 pub struct SpriteSheetDefinition {
     /// Path to the sprite sheet, relative to the object's directory.
     ///
@@ -33,36 +33,6 @@ pub struct SpriteSheetDefinition {
 }
 
 impl SpriteSheetDefinition {
-    /// Returns a new sprite sheet definition.
-    ///
-    /// # Parameters:
-    ///
-    /// * `path`: Path to the sprite sheet, relative to the object's directory.
-    /// * `sprite_w`: Width of each individual sprite on the sprite sheet.
-    /// * `sprite_h`: Height of each individual sprite on the sprite sheet.
-    /// * `row_count`: Number of rows in the sprite sheet.
-    /// * `column_count`: Number of columns in the sprite sheet.
-    /// * `has_border`: Whether or not there is a 1 pixel border between sprites.
-    pub fn new(
-        path: String,
-        sprite_w: f32,
-        sprite_h: f32,
-        row_count: usize,
-        column_count: usize,
-        has_border: bool,
-        offsets: Vec<SpriteOffset>,
-    ) -> Self {
-        SpriteSheetDefinition {
-            path,
-            sprite_w,
-            sprite_h,
-            row_count,
-            column_count,
-            has_border,
-            offsets,
-        }
-    }
-
     fn default_has_border() -> bool {
         true
     }
