@@ -16,6 +16,7 @@ extern crate loading;
 #[macro_use]
 extern crate log;
 extern crate object_loading;
+extern crate object_model;
 extern crate stdio_view;
 extern crate structopt;
 #[macro_use]
@@ -23,22 +24,27 @@ extern crate structopt_derive;
 
 use std::process;
 
-use amethyst::animation::AnimationBundle;
-use amethyst::core::transform::TransformBundle;
-use amethyst::input::{Bindings, InputBundle};
-use amethyst::prelude::*;
-use amethyst::renderer::{
-    ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex, RenderBundle, Stage, ALPHA,
+use amethyst::{
+    animation::AnimationBundle,
+    core::transform::TransformBundle,
+    input::{Bindings, InputBundle},
+    prelude::*,
+    renderer::{
+        ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex, RenderBundle, Stage, ALPHA,
+    },
+    ui::{DrawUi, UiBundle},
 };
-use amethyst::ui::{DrawUi, UiBundle};
-use application::resource::dir::{self, assets_dir};
-use application::resource::{self, load_in};
+use application::resource::{
+    dir::{self, assets_dir},
+    {self, load_in},
+};
 use application_robot::RobotState;
 use character_selection::CharacterSelectionBundle;
 use game_input::{PlayerActionControl, PlayerAxisControl};
 use game_mode_menu::GameModeMenuState;
 use game_play::GamePlayBundle;
 use object_loading::ObjectLoadingBundle;
+use object_model::config::object::character;
 use stdio_view::StdioViewBundle;
 use structopt::StructOpt;
 
@@ -90,14 +96,17 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
         game_data = game_data
             // Provides sprite animation
-            .with_bundle(AnimationBundle::<u32, Material>::new(
-                "animation_control_system",
-                "sampler_interpolation_system",
+            .with_bundle(AnimationBundle::<character::SequenceId, Material>::new(
+                "character_animation_control_system",
+                "character_sampler_interpolation_system",
             ))?
             // Handles transformations of textures
             .with_bundle(
                 TransformBundle::new()
-                    .with_dep(&["animation_control_system", "sampler_interpolation_system"]),
+                    .with_dep(&[
+                        "character_animation_control_system",
+                        "character_sampler_interpolation_system",
+                    ]),
             )?
             .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
             .with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new()

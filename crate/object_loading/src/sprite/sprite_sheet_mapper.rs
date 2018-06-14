@@ -79,9 +79,12 @@ impl SpriteSheetMapper {
 
     /// Returns the pixel offset distances per sprite.
     ///
-    /// This is simply the sprite width and height if there is no border between sprites, or 1 added to
-    /// the width and height if there is a border. There is no leading border on the left or top of the
-    /// leftmost and topmost sprites.
+    /// This is simply the sprite width and height if there is no border between sprites, or 1 added
+    /// to the width and height if there is a border. There is no leading border on the left or top
+    /// of the leftmost and topmost sprites.
+    ///
+    /// Be careful not to confuse this with the sprite offsets on the definition, which are the
+    /// offsets used to position the sprite relative to the entity in game.
     ///
     /// # Parameters
     ///
@@ -96,8 +99,8 @@ impl SpriteSheetMapper {
 
     /// Returns a set of vertices that make up a rectangular mesh of the given size.
     ///
-    /// This function expects pixel coordinates -- starting from the top left of the image. X increases
-    /// to the right, Y increases downwards.
+    /// This function expects pixel coordinates -- starting from the top left of the image. X
+    /// increases to the right, Y increases downwards.
     ///
     /// # Parameters
     ///
@@ -127,5 +130,121 @@ impl SpriteSheetMapper {
             right,
             bottom,
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use amethyst::renderer::SpriteSheet;
+    use object_model::config::{SpriteOffset, SpriteSheetDefinition};
+
+    use super::SpriteSheetMapper;
+
+    #[test]
+    fn map_multiple_sprite_sheet_definitions() {
+        let sprite_sheet_definitions = [sprite_sheet_definition(true), simple_definition()];
+
+        let sprites_0 = vec![
+            // Sprites bottom row
+            [0., 9. / 30., 20. / 40., 39. / 40.].into(),
+            [10. / 30., 19. / 30., 20. / 40., 39. / 40.].into(),
+            [20. / 30., 29. / 30., 20. / 40., 39. / 40.].into(),
+            // Sprites top row
+            [0., 9. / 30., 0., 19. / 40.].into(),
+            [10. / 30., 19. / 30., 0., 19. / 40.].into(),
+            [20. / 30., 29. / 30., 0., 19. / 40.].into(),
+        ];
+        let sprite_sheet_0 = SpriteSheet {
+            texture_id: 10,
+            sprites: sprites_0,
+        };
+        let sprite_sheet_1 = SpriteSheet {
+            texture_id: 11,
+            sprites: vec![[0., 19. / 20., 0., 29. / 30.].into()],
+        };
+
+        // TODO: Pending https://github.com/amethyst/amethyst/pull/789
+        // assert_eq!(
+        //     vec![sprite_sheet_0, sprite_sheet_1],
+        //     SpriteSheetMapper::map(10, &sprite_sheet_definitions)
+        // );
+
+        let sprite_sheets = SpriteSheetMapper::map(10, &sprite_sheet_definitions);
+        let mut ss_iter = sprite_sheets.iter();
+
+        let actual_0 = ss_iter
+            .next()
+            .expect("Expected first sprite sheet to exist.");
+        assert_eq!(sprite_sheet_0.texture_id, actual_0.texture_id);
+        assert_eq!(sprite_sheet_0.sprites, actual_0.sprites);
+        let actual_1 = ss_iter
+            .next()
+            .expect("Expected second sprite sheet to exist.");
+        assert_eq!(sprite_sheet_1.texture_id, actual_1.texture_id);
+        assert_eq!(sprite_sheet_1.sprites, actual_1.sprites);
+
+        assert!(ss_iter.next().is_none());
+    }
+
+    #[test]
+    fn map_sprite_sheet_definition_without_border() {
+        let sprite_sheet_definitions = [sprite_sheet_definition(false), simple_definition()];
+
+        let sprites_0 = vec![
+            // Sprites bottom row
+            [0., 10. / 30., 20. / 40., 40. / 40.].into(),
+            [10. / 30., 20. / 30., 20. / 40., 40. / 40.].into(),
+            [20. / 30., 30. / 30., 20. / 40., 40. / 40.].into(),
+            // Sprites top row
+            [0., 10. / 30., 0., 20. / 40.].into(),
+            [10. / 30., 20. / 30., 0., 20. / 40.].into(),
+            [20. / 30., 30. / 30., 0., 20. / 40.].into(),
+        ];
+        let sprite_sheet_0 = SpriteSheet {
+            texture_id: 10,
+            sprites: sprites_0,
+        };
+        let sprite_sheet_1 = SpriteSheet {
+            texture_id: 11,
+            sprites: vec![[0., 19. / 20., 0., 29. / 30.].into()],
+        };
+
+        // TODO: Pending https://github.com/amethyst/amethyst/pull/789
+        // assert_eq!(
+        //     vec![sprite_sheet_0, sprite_sheet_1],
+        //     SpriteSheetMapper::map(10, &sprite_sheet_definitions)
+        // );
+
+        let sprite_sheets = SpriteSheetMapper::map(10, &sprite_sheet_definitions);
+        let mut ss_iter = sprite_sheets.iter();
+
+        let actual_0 = ss_iter
+            .next()
+            .expect("Expected first sprite sheet to exist.");
+        assert_eq!(sprite_sheet_0.texture_id, actual_0.texture_id);
+        assert_eq!(sprite_sheet_0.sprites, actual_0.sprites);
+        let actual_1 = ss_iter
+            .next()
+            .expect("Expected second sprite sheet to exist.");
+        assert_eq!(sprite_sheet_1.texture_id, actual_1.texture_id);
+        assert_eq!(sprite_sheet_1.sprites, actual_1.sprites);
+
+        assert!(ss_iter.next().is_none());
+    }
+
+    fn simple_definition() -> SpriteSheetDefinition {
+        SpriteSheetDefinition::new("1.png".to_string(), 19., 29., 1, 1, true, offsets(1))
+    }
+
+    fn sprite_sheet_definition(with_border: bool) -> SpriteSheetDefinition {
+        if with_border {
+            SpriteSheetDefinition::new("0.png".to_string(), 9., 19., 2, 3, true, offsets(6))
+        } else {
+            SpriteSheetDefinition::new("0.png".to_string(), 10., 20., 2, 3, false, offsets(6))
+        }
+    }
+
+    fn offsets(n: usize) -> Vec<SpriteOffset> {
+        (0..n).map(|_| (0, 0).into()).collect()
     }
 }

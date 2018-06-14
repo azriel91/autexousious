@@ -1,7 +1,9 @@
-use amethyst::assets::{Asset, Error, Handle, ProcessingState};
-use amethyst::ecs::prelude::*;
+use amethyst::{
+    assets::{Asset, Error, Handle, ProcessingState},
+    ecs::prelude::*,
+};
 
-use config::CharacterDefinition;
+use config::{object::character::SequenceId, CharacterDefinition};
 use loaded::Object;
 
 /// Represents an in-game character that has been loaded.
@@ -9,7 +11,7 @@ use loaded::Object;
 #[derivative(Debug)]
 pub struct Character {
     /// Common loaded object data.
-    pub object: Object,
+    pub object: Object<SequenceId>,
     /// Character configuration
     pub definition: CharacterDefinition,
 }

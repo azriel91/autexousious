@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::hash::Hash;
 
 use amethyst::{
@@ -23,23 +24,32 @@ impl MaterialAnimationLoader {
     /// * `object_definition`: Sequences of the `Object`
     /// * `texture_index_offset`: Offset of the texture IDs in the `MaterialTextureSet`.
     /// * `sprite_sheets`: `SpriteSheet`s that contain the texture coordinates for sprites.
-    pub(crate) fn load<SeqId: Hash + Eq>(
+    pub(crate) fn load<SeqId: Copy + Eq + Hash + Send + Sync>(
         world: &World,
         object_definition: &ObjectDefinition<SeqId>,
         texture_index_offset: u64,
         sprite_sheets: &[SpriteSheet],
-    ) -> Result<Vec<Handle<Animation<Material>>>> {
+    ) -> Result<HashMap<SeqId, Handle<Animation<Material>>>> {
         let animation_handles = object_definition
             .sequences
             .iter()
-            .map(|(_id, sequence)| {
-                Self::sequence_to_animation(world, texture_index_offset, sprite_sheets, sequence)
+            .map(|(id, sequence)| {
+                (
+                    id,
+                    Self::sequence_to_animation(
+                        world,
+                        texture_index_offset,
+                        sprite_sheets,
+                        sequence,
+                    ),
+                )
             })
-            .map(|animation| {
+            .map(|(id, animation)| {
                 let loader = world.read_resource::<Loader>();
-                loader.load_from_data(animation, (), &world.read_resource())
+                let animation_handle = loader.load_from_data(animation, (), &world.read_resource());
+                (*id, animation_handle)
             })
-            .collect::<Vec<Handle<Animation<Material>>>>();
+            .collect::<HashMap<SeqId, Handle<Animation<Material>>>>();
 
         Ok(animation_handles)
     }
@@ -52,7 +62,7 @@ impl MaterialAnimationLoader {
     /// * `texture_index_offset`: Offset of the texture IDs in the `MaterialTextureSet`.
     /// * `sprite_sheets`: `SpriteSheet`s that contain the texture coordinates for sprites.
     /// * `sequence`: `Sequence` to create the animation from.
-    fn sequence_to_animation<SeqId: Hash + Eq>(
+    fn sequence_to_animation<SeqId: Copy + Eq + Hash + Send + Sync>(
         world: &World,
         texture_index_offset: u64,
         sprite_sheets: &[SpriteSheet],
@@ -83,7 +93,7 @@ impl MaterialAnimationLoader {
         }
     }
 
-    fn texture_sampler<SeqId: Hash + Eq>(
+    fn texture_sampler<SeqId: Copy + Eq + Hash + Send + Sync>(
         texture_index_offset: u64,
         sequence: &Sequence<SeqId>,
         input: Vec<f32>,
@@ -105,7 +115,7 @@ impl MaterialAnimationLoader {
         }
     }
 
-    fn sprite_offset_sampler<SeqId: Hash + Eq>(
+    fn sprite_offset_sampler<SeqId: Copy + Eq + Hash + Send + Sync>(
         sprite_sheets: &[SpriteSheet],
         sequence: &Sequence<SeqId>,
         input: Vec<f32>,

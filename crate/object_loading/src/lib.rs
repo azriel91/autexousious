@@ -17,6 +17,9 @@ extern crate game_model;
 extern crate log;
 extern crate object_model;
 #[cfg(test)]
+#[macro_use]
+extern crate pretty_assertions;
+#[cfg(test)]
 extern crate serde;
 #[cfg(test)]
 #[macro_use]
