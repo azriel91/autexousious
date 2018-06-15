@@ -163,27 +163,10 @@ mod test {
             sprites: vec![[0., 19. / 20., 0., 29. / 30.].into()],
         };
 
-        // TODO: Pending https://github.com/amethyst/amethyst/pull/789
-        // assert_eq!(
-        //     vec![sprite_sheet_0, sprite_sheet_1],
-        //     SpriteSheetMapper::map(10, &sprite_sheet_definitions)
-        // );
-
-        let sprite_sheets = SpriteSheetMapper::map(10, &sprite_sheet_definitions);
-        let mut ss_iter = sprite_sheets.iter();
-
-        let actual_0 = ss_iter
-            .next()
-            .expect("Expected first sprite sheet to exist.");
-        assert_eq!(sprite_sheet_0.texture_id, actual_0.texture_id);
-        assert_eq!(sprite_sheet_0.sprites, actual_0.sprites);
-        let actual_1 = ss_iter
-            .next()
-            .expect("Expected second sprite sheet to exist.");
-        assert_eq!(sprite_sheet_1.texture_id, actual_1.texture_id);
-        assert_eq!(sprite_sheet_1.sprites, actual_1.sprites);
-
-        assert!(ss_iter.next().is_none());
+        assert_eq!(
+            vec![sprite_sheet_0, sprite_sheet_1],
+            SpriteSheetMapper::map(10, &sprite_sheet_definitions)
+        );
     }
 
     #[test]
@@ -209,27 +192,10 @@ mod test {
             sprites: vec![[0., 19. / 20., 0., 29. / 30.].into()],
         };
 
-        // TODO: Pending https://github.com/amethyst/amethyst/pull/789
-        // assert_eq!(
-        //     vec![sprite_sheet_0, sprite_sheet_1],
-        //     SpriteSheetMapper::map(10, &sprite_sheet_definitions)
-        // );
-
-        let sprite_sheets = SpriteSheetMapper::map(10, &sprite_sheet_definitions);
-        let mut ss_iter = sprite_sheets.iter();
-
-        let actual_0 = ss_iter
-            .next()
-            .expect("Expected first sprite sheet to exist.");
-        assert_eq!(sprite_sheet_0.texture_id, actual_0.texture_id);
-        assert_eq!(sprite_sheet_0.sprites, actual_0.sprites);
-        let actual_1 = ss_iter
-            .next()
-            .expect("Expected second sprite sheet to exist.");
-        assert_eq!(sprite_sheet_1.texture_id, actual_1.texture_id);
-        assert_eq!(sprite_sheet_1.sprites, actual_1.sprites);
-
-        assert!(ss_iter.next().is_none());
+        assert_eq!(
+            vec![sprite_sheet_0, sprite_sheet_1],
+            SpriteSheetMapper::map(10, &sprite_sheet_definitions)
+        );
     }
 
     fn simple_definition() -> SpriteSheetDefinition {
