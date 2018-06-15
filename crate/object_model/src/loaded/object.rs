@@ -19,6 +19,8 @@ pub struct Object<SeqId: Copy + Eq + Hash + Send + Sync> {
     pub default_material: Material,
     /// Handle to the mesh to map the sprite texture to the screen.
     pub mesh: MeshHandle,
+    /// Handle to the left-facing mesh to map the sprite texture to the screen.
+    pub mesh_mirrored: MeshHandle,
     /// Handle to the animations that this object uses.
     ///
     /// This should be substituted with `loaded::Sequences` which will contain the animations.
