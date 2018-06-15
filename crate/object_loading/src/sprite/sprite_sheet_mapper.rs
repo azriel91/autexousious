@@ -163,7 +163,9 @@ mod test {
             sprites: vec![[0., 19. / 20., 0., 29. / 30.].into()],
         };
 
+        // kcov-ignore-start
         assert_eq!(
+            // kcov-ignore-end
             vec![sprite_sheet_0, sprite_sheet_1],
             SpriteSheetMapper::map(10, &sprite_sheet_definitions)
         );
@@ -192,7 +194,9 @@ mod test {
             sprites: vec![[0., 19. / 20., 0., 29. / 30.].into()],
         };
 
+        // kcov-ignore-start
         assert_eq!(
+            // kcov-ignore-end
             vec![sprite_sheet_0, sprite_sheet_1],
             SpriteSheetMapper::map(10, &sprite_sheet_definitions)
         );

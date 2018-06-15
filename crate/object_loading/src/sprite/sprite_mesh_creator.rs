@@ -177,7 +177,7 @@ mod test {
             [
                 SpriteMeshCreator::create_mesh(world, &sprites_definition()),
                 SpriteMeshCreator::create_mesh_mirrored(world, &sprites_definition()),
-            ]
+            ] // kcov-ignore
         };
         let assertion_fn = |world: &mut World, mesh_handles: [MeshHandle; 2]| {
             let store = world.read_resource::<AssetStorage<Mesh>>();
