@@ -156,6 +156,7 @@ impl SpriteMeshCreator {
 #[cfg(test)]
 mod test {
     use std::path::PathBuf;
+    use std::thread;
 
     use amethyst::{
         assets::AssetStorage,
@@ -258,15 +259,22 @@ mod test {
 
     fn run<T, F1, F2>(setup_fn: Box<F1>, assertion_fn: Box<F2>) -> Result<()>
     where
-        F1: Fn(&mut World) -> T,
-        F2: Fn(&mut World, T),
+        F1: Fn(&mut World) -> T + Send + 'static,
+        F2: Fn(&mut World, T) + Send + 'static,
     {
-        let assets_dir = assets_dir(Some(development_base_dirs!()))?;
-        let test_state = TestState::new(setup_fn, assertion_fn);
+        // Run in a sub thread due to mesa's threading issues with GL software rendering
+        // See: <https://users.rust-lang.org/t/trouble-identifying-cause-of-segfault/18096>
+        //
+        // TODO: Fix this in <https://gitlab.com/azriel91/autexousious/issues/38>
+        thread::spawn(|| -> Result<()> {
+            let assets_dir = assets_dir(Some(development_base_dirs!()))?;
+            let test_state = TestState::new(setup_fn, assertion_fn);
 
-        Application::new(assets_dir, test_state, setup_game_data()?)?.run();
+            Application::new(assets_dir, test_state, setup_game_data()?)?.run();
 
-        Ok(())
+            Ok(())
+        }).join()
+            .expect("Failed to run Amethyst application")
     }
 
     fn setup_game_data<'a, 'b>() -> Result<GameDataBuilder<'a, 'b>> {
