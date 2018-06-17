@@ -67,6 +67,7 @@ impl CharacterEntitySpawner {
             ) // kcov-ignore
         };
 
+        let mirrored = false;
         let entity = world
             .create_entity()
             // Controller of this entity
@@ -75,7 +76,7 @@ impl CharacterEntitySpawner {
             .with(character_handle)
             // The default `Material`, whose textures will be swapped based on the animation.
             .with(material)
-            // Shift sprite to some part of the window
+            // Coordinates to map the sprite texture to screen. This is the non-mirrored mesh.
             .with(mesh)
             // Location of the entity
             .with(transform)
@@ -83,7 +84,7 @@ impl CharacterEntitySpawner {
             // to the entity
             .with(GlobalTransform::default())
             // Set the default sequence for the object
-            .with(ObjectStatus::new(first_sequence_id))
+            .with(ObjectStatus::new(first_sequence_id, mirrored))
             .build();
 
         // We also need to trigger the animation, not just attach it to the entity
