@@ -99,6 +99,8 @@ impl CharacterEntitySpawner {
 
 #[cfg(test)]
 mod test {
+    use std::thread;
+
     use amethyst::{
         animation::AnimationBundle,
         core::{
@@ -162,20 +164,26 @@ mod test {
             );
         };
 
-        assert!(run(Box::new(assertion_fn)).is_ok())
+        assert!(run(Box::new(assertion_fn)).is_ok());
     }
 
     fn run<F>(assertion_fn: Box<F>) -> Result<()>
     where
-        F: 'static + Fn(&mut World),
+        F: Fn(&mut World) + Send + 'static,
     {
-        let assets_dir = assets_dir(Some(development_base_dirs!()))?;
-        let test_state = TestState { assertion_fn };
-        let loading_state = loading::State::new(assets_dir.clone(), Box::new(test_state));
+        // Run in a sub thread due to mesa's threading issues with GL software rendering
+        // See: <https://users.rust-lang.org/t/trouble-identifying-cause-of-segfault/18096>
+        //
+        // TODO: Fix this in <https://gitlab.com/azriel91/autexousious/issues/38>
+        thread::spawn(|| -> Result<()> {
+            let assets_dir = assets_dir(Some(development_base_dirs!()))?;
+            let test_state = TestState { assertion_fn };
+            let loading_state = loading::State::new(assets_dir.clone(), Box::new(test_state));
 
-        Application::new(assets_dir, loading_state, setup_game_data()?)?.run();
-
-        Ok(())
+            Application::new(assets_dir, loading_state, setup_game_data()?)?.run();
+            Ok(())
+        }).join()
+            .expect("Failed to run Amethyst application")
     }
 
     fn setup_game_data<'a, 'b>() -> Result<GameDataBuilder<'a, 'b>> {
