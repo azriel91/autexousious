@@ -22,8 +22,14 @@ impl AnimationRunner {
         current_sequence_id: &SeqId,
         next_sequence_id: &SeqId,
     ) {
-        // Abort the previous animation
-        animation_set.abort(*current_sequence_id);
+        // Remove the previous animation
+        //
+        // There is a note saying this should be used with care:
+        // <https://docs.rs/amethyst_animation/0.2.0/amethyst_animation/struct.AnimationControlSet.html#method.remove>
+        //
+        // However, if we use `#abort()`, the animation can freeze on the current animation instead
+        // of moving to the next sequence's animation.
+        animation_set.remove(*current_sequence_id);
 
         // Start the next animation
         Self::internal_start(animation_set, animation_handle, next_sequence_id);
