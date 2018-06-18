@@ -67,6 +67,7 @@ impl CharacterEntitySpawner {
             ) // kcov-ignore
         };
 
+        let mirrored = false;
         let entity = world
             .create_entity()
             // Controller of this entity
@@ -75,7 +76,7 @@ impl CharacterEntitySpawner {
             .with(character_handle)
             // The default `Material`, whose textures will be swapped based on the animation.
             .with(material)
-            // Shift sprite to some part of the window
+            // Coordinates to map the sprite texture to screen. This is the non-mirrored mesh.
             .with(mesh)
             // Location of the entity
             .with(transform)
@@ -83,7 +84,7 @@ impl CharacterEntitySpawner {
             // to the entity
             .with(GlobalTransform::default())
             // Set the default sequence for the object
-            .with(ObjectStatus::new(first_sequence_id))
+            .with(ObjectStatus::new(first_sequence_id, mirrored))
             .build();
 
         // We also need to trigger the animation, not just attach it to the entity
@@ -99,6 +100,8 @@ impl CharacterEntitySpawner {
 
 #[cfg(test)]
 mod test {
+    use std::thread;
+
     use amethyst::{
         animation::AnimationBundle,
         core::{
@@ -162,20 +165,26 @@ mod test {
             );
         };
 
-        assert!(run(Box::new(assertion_fn)).is_ok())
+        assert!(run(Box::new(assertion_fn)).is_ok());
     }
 
     fn run<F>(assertion_fn: Box<F>) -> Result<()>
     where
-        F: 'static + Fn(&mut World),
+        F: Fn(&mut World) + Send + 'static,
     {
-        let assets_dir = assets_dir(Some(development_base_dirs!()))?;
-        let test_state = TestState { assertion_fn };
-        let loading_state = loading::State::new(assets_dir.clone(), Box::new(test_state));
+        // Run in a sub thread due to mesa's threading issues with GL software rendering
+        // See: <https://users.rust-lang.org/t/trouble-identifying-cause-of-segfault/18096>
+        //
+        // TODO: Fix this in <https://gitlab.com/azriel91/autexousious/issues/38>
+        thread::spawn(|| -> Result<()> {
+            let assets_dir = assets_dir(Some(development_base_dirs!()))?;
+            let test_state = TestState { assertion_fn };
+            let loading_state = loading::State::new(assets_dir.clone(), Box::new(test_state));
 
-        Application::new(assets_dir, loading_state, setup_game_data()?)?.run();
-
-        Ok(())
+            Application::new(assets_dir, loading_state, setup_game_data()?)?.run();
+            Ok(())
+        }).join()
+            .expect("Failed to run Amethyst application")
     }
 
     fn setup_game_data<'a, 'b>() -> Result<GameDataBuilder<'a, 'b>> {

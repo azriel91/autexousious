@@ -28,12 +28,12 @@
   offsets = [
     # The x and y values are the pixel offsets of the sprite relative to the entity's
     # position in the world.
-    { x =   4, y = 20 }, # 0
-    { x =  36, y = 20 }, # 1
-    { x =  68, y =  6 }, # 2
-    { x = 100, y = 20 }, # 3
-    { x = 132, y = 20 }, # 4
-    { x = 176, y =  7 }, # 5
+    { x =  26, y = 19 }, # 0
+    { x =  58, y = 19 }, # 1
+    { x =  90, y =  6 }, # 2
+    { x = 122, y = 19 }, # 3
+    { x = 154, y = 19 }, # 4
+    { x = 175, y =  6 }, # 5
   ]
 
 # 1
@@ -44,10 +44,10 @@
   row_count = 1
   column_count = 6
   offsets = [
-    { x =   4, y = 20 }, # 0
-    { x =  36, y = 20 }, # 1
-    { x =  68, y =  6 }, # 2
-    { x = 100, y = 20 }, # 3
-    { x = 132, y = 20 }, # 4
-    { x = 176, y =  7 }, # 5
+    { x =  26, y = 19 }, # 0
+    { x =  58, y = 19 }, # 1
+    { x =  90, y =  6 }, # 2
+    { x = 122, y = 19 }, # 3
+    { x = 154, y = 19 }, # 4
+    { x = 175, y =  6 }, # 5
   ]

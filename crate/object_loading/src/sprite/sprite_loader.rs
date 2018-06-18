@@ -24,12 +24,13 @@ impl SpriteLoader {
         world: &World,
         texture_index_offset: u64,
         config_record: &ConfigRecord,
-    ) -> Result<(Vec<SpriteSheet>, MeshHandle, Material)> {
+    ) -> Result<(Vec<SpriteSheet>, MeshHandle, MeshHandle, Material)> {
         let sprites_definition = Self::load_sprites_definition(config_record)?;
 
         let sprite_sheets =
             SpriteSheetMapper::map(texture_index_offset, &sprites_definition.sheets);
         let mesh = SpriteMeshCreator::create_mesh(world, &sprites_definition);
+        let mesh_mirrored = SpriteMeshCreator::create_mesh_mirrored(world, &sprites_definition);
         let texture_handles = TextureLoader::load_textures(
             world,
             &config_record.directory,
@@ -40,7 +41,7 @@ impl SpriteLoader {
 
         Self::store_textures_in_material_texture_set(world, texture_index_offset, texture_handles);
 
-        Ok((sprite_sheets, mesh, default_material))
+        Ok((sprite_sheets, mesh, mesh_mirrored, default_material))
     }
 
     /// Loads the sprites definition from the object configuration directory.

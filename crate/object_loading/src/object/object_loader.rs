@@ -27,7 +27,7 @@ impl ObjectLoader {
     ) -> Result<loaded::Object<SeqId>> {
         let texture_index_offset = world.read_resource::<MaterialTextureSet>().len() as u64;
 
-        let (sprite_sheets, mesh, default_material) =
+        let (sprite_sheets, mesh, mesh_mirrored, default_material) =
             SpriteLoader::load(world, texture_index_offset, config_record)?;
 
         let animation_handles = MaterialAnimationLoader::load(
@@ -40,6 +40,7 @@ impl ObjectLoader {
         Ok(loaded::Object::new(
             default_material,
             mesh,
+            mesh_mirrored,
             animation_handles,
         ))
     }

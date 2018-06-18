@@ -3,7 +3,7 @@ use amethyst::{
     assets::AssetStorage,
     ecs::prelude::*,
     input::InputHandler,
-    renderer::Material,
+    renderer::{Material, MeshHandle},
 };
 use character_selection::CharacterEntityControl;
 use game_input::{Axis, ControlAction, PlayerActionControl, PlayerAxisControl};
@@ -27,6 +27,7 @@ type CharacterInputUpdateSystemData<'s, 'c> = (
     Read<'s, AssetStorage<Character>>,
     Read<'s, InputHandler<PlayerAxisControl, PlayerActionControl>>,
     WriteStorage<'s, ObjectStatus<SequenceId>>,
+    WriteStorage<'s, MeshHandle>,
     WriteStorage<'s, AnimationControlSet<SequenceId, Material>>,
 );
 
@@ -42,6 +43,7 @@ impl<'s> System<'s> for CharacterInputUpdateSystem {
             characters,
             control_input,
             mut status_storage,
+            mut mesh_handle_storage,
             mut animation_control_set_storage,
         ): Self::SystemData,
     ) {
@@ -77,27 +79,21 @@ impl<'s> System<'s> for CharacterInputUpdateSystem {
                     .action_is_down(&PlayerActionControl::new(player, ControlAction::Special))
                     .unwrap_or(false),
             );
-            let next_sequence = CharacterSequenceHandler::update(
-                &entity,
-                &mut animation_control_set_storage,
-                &input,
-                character,
-                &status.sequence_id,
-            );
+
+            // TODO: Calculate a delta from the current status and update
+            let status_update =
+                CharacterSequenceHandler::update(character, &input, &status.sequence_id);
 
             // Update the current sequence ID
-            if let Some(next_sequence) = next_sequence {
-                let current_sequence = status.sequence_id;
-                status.sequence_id = next_sequence;
-
+            if let Some(next_sequence_id) = status_update.sequence_id {
                 let animation_handle = &character
                     .object
                     .animations
-                    .get(&next_sequence)
+                    .get(&next_sequence_id)
                     .unwrap_or_else(|| {
                         panic!(
                             "Failed to get animation for sequence: `{:?}`",
-                            next_sequence
+                            next_sequence_id
                         )
                     })
                     .clone();
@@ -108,10 +104,24 @@ impl<'s> System<'s> for CharacterInputUpdateSystem {
                 AnimationRunner::swap(
                     &mut animation_set,
                     &animation_handle,
-                    &current_sequence,
-                    &next_sequence,
+                    &status.sequence_id,
+                    &next_sequence_id,
                 );
             }
+
+            if let Some(mirrored) = status_update.mirrored {
+                // Swap the current mesh with the appropriate mesh.
+                let mesh_handle = if mirrored {
+                    character.object.mesh_mirrored.clone()
+                } else {
+                    character.object.mesh.clone()
+                };
+                mesh_handle_storage
+                    .insert(entity, mesh_handle)
+                    .expect("Failed to replace mesh for character.");
+            }
+
+            *status += status_update;
         }
     }
 
