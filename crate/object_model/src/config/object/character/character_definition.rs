@@ -1,15 +1,16 @@
-use amethyst::assets::{Asset, Handle};
-use amethyst::ecs::prelude::*;
+use amethyst::{
+    assets::{Asset, Handle},
+    ecs::prelude::*,
+};
 
-use config::object::character::SequenceId;
-use config::object::ObjectDefinition;
+use config::object::{CharacterSequenceId, ObjectDefinition};
 
 /// Contains all of the sequences for an `Object`.
 #[derive(Clone, Constructor, Debug, Deserialize, PartialEq)]
 pub struct CharacterDefinition {
     /// Sequences of actions this object can perform.
     #[serde(flatten)]
-    pub object_definition: ObjectDefinition<SequenceId>,
+    pub object_definition: ObjectDefinition<CharacterSequenceId>,
 }
 
 impl Asset for CharacterDefinition {

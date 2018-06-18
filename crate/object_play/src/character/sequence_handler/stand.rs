@@ -1,5 +1,5 @@
 use object_model::{
-    config::object::character::SequenceId,
+    config::object::CharacterSequenceId,
     entity::{CharacterInput, ObjectStatusUpdate},
 };
 
@@ -9,9 +9,9 @@ use character::sequence_handler::SequenceHandler;
 pub(crate) struct Stand;
 
 impl SequenceHandler for Stand {
-    fn update(input: &CharacterInput) -> ObjectStatusUpdate<SequenceId> {
+    fn update(input: &CharacterInput) -> ObjectStatusUpdate<CharacterSequenceId> {
         let sequence_id = if input.x_axis_value != 0. || input.z_axis_value != 0. {
-            Some(SequenceId::Walk)
+            Some(CharacterSequenceId::Walk)
         } else {
             None
         };
@@ -30,7 +30,7 @@ impl SequenceHandler for Stand {
 
 #[cfg(test)]
 mod test {
-    use object_model::{config::object::character::SequenceId, entity::CharacterInput};
+    use object_model::{config::object::CharacterSequenceId, entity::CharacterInput};
 
     use super::Stand;
     use character::sequence_handler::SequenceHandler;
@@ -46,21 +46,30 @@ mod test {
     fn update_sequence_is_walk_when_x_axis_is_non_zero() {
         let input = CharacterInput::new(1., 0., false, false, false, false);
 
-        assert_eq!(Some(SequenceId::Walk), Stand::update(&input).sequence_id);
+        assert_eq!(
+            Some(CharacterSequenceId::Walk),
+            Stand::update(&input).sequence_id
+        );
     }
 
     #[test]
     fn update_sequence_is_walk_when_z_axis_is_non_zero() {
         let input = CharacterInput::new(0., 1., false, false, false, false);
 
-        assert_eq!(Some(SequenceId::Walk), Stand::update(&input).sequence_id);
+        assert_eq!(
+            Some(CharacterSequenceId::Walk),
+            Stand::update(&input).sequence_id
+        );
     }
 
     #[test]
     fn update_sequence_is_walk_when_x_and_z_axes_are_non_zero() {
         let input = CharacterInput::new(1., 1., false, false, false, false);
 
-        assert_eq!(Some(SequenceId::Walk), Stand::update(&input).sequence_id);
+        assert_eq!(
+            Some(CharacterSequenceId::Walk),
+            Stand::update(&input).sequence_id
+        );
     }
 
     #[test]

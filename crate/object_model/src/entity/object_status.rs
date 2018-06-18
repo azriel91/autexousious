@@ -7,7 +7,7 @@ use entity::ObjectStatusUpdate;
 
 /// Status of an object entity.
 ///
-/// We use a `DenseVecStorage` because all object entities have their own type of `SequenceId`.
+/// We use a `DenseVecStorage` because all object entities have their own type of `CharacterSequenceId`.
 #[derive(Constructor, Clone, Copy, Debug, PartialEq)]
 pub struct ObjectStatus<SeqId: Copy + Eq + Hash + Send + Sync> {
     /// ID of the current sequence the entity is on.
