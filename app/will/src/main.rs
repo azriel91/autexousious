@@ -44,7 +44,7 @@ use game_input::{PlayerActionControl, PlayerAxisControl};
 use game_mode_menu::GameModeMenuState;
 use game_play::GamePlayBundle;
 use object_loading::ObjectLoadingBundle;
-use object_model::config::object::character;
+use object_model::config::object::CharacterSequenceId;
 use stdio_view::StdioViewBundle;
 use structopt::StructOpt;
 
@@ -96,7 +96,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
         game_data = game_data
             // Provides sprite animation
-            .with_bundle(AnimationBundle::<character::SequenceId, Material>::new(
+            .with_bundle(AnimationBundle::<CharacterSequenceId, Material>::new(
                 "character_animation_control_system",
                 "character_sampler_interpolation_system",
             ))?

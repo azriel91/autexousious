@@ -3,7 +3,7 @@ use amethyst::{
     ecs::prelude::*,
 };
 
-use config::{object::character::SequenceId, CharacterDefinition};
+use config::{object::CharacterSequenceId, CharacterDefinition};
 use loaded::Object;
 
 /// Represents an in-game character that has been loaded.
@@ -11,7 +11,7 @@ use loaded::Object;
 #[derivative(Debug)]
 pub struct Character {
     /// Common loaded object data.
-    pub object: Object<SequenceId>,
+    pub object: Object<CharacterSequenceId>,
     /// Character configuration
     pub definition: CharacterDefinition,
 }

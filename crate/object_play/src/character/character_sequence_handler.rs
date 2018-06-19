@@ -1,5 +1,5 @@
 use object_model::{
-    config::object::character::SequenceId,
+    config::object::CharacterSequenceId,
     entity::{CharacterInput, ObjectStatusUpdate},
     loaded::Character,
 };
@@ -15,11 +15,11 @@ impl CharacterSequenceHandler {
     pub fn update(
         _character: &Character,
         input: &CharacterInput,
-        current_sequence_id: &SequenceId,
-    ) -> ObjectStatusUpdate<SequenceId> {
+        current_sequence_id: &CharacterSequenceId,
+    ) -> ObjectStatusUpdate<CharacterSequenceId> {
         match *current_sequence_id {
-            SequenceId::Stand => sequence_handler::Stand::update(input),
-            SequenceId::Walk => sequence_handler::Walk::update(input),
+            CharacterSequenceId::Stand => sequence_handler::Stand::update(input),
+            CharacterSequenceId::Walk => sequence_handler::Walk::update(input),
         }
 
         // TODO: overrides based on sequence configuration

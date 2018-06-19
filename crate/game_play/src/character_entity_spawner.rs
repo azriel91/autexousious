@@ -7,7 +7,7 @@ use amethyst::{
 };
 use character_selection::CharacterEntityControl;
 use object_model::{
-    config::object::character::SequenceId,
+    config::object::CharacterSequenceId,
     entity::ObjectStatus,
     loaded::{Character, CharacterHandle},
 };
@@ -33,7 +33,7 @@ impl CharacterEntitySpawner {
         character_index: usize,
         character_entity_control: CharacterEntityControl,
     ) -> Entity {
-        let first_sequence_id = SequenceId::default();
+        let first_sequence_id = CharacterSequenceId::default();
 
         let (character_handle, material, mesh, animation_handle) = {
             let loaded_characters = world.read_resource::<Vec<CharacterHandle>>();
@@ -89,8 +89,10 @@ impl CharacterEntitySpawner {
 
         // We also need to trigger the animation, not just attach it to the entity
         let mut animation_control_set_storage = world.write_storage();
-        let mut animation_set =
-            get_animation_set::<SequenceId, Material>(&mut animation_control_set_storage, entity);
+        let mut animation_set = get_animation_set::<CharacterSequenceId, Material>(
+            &mut animation_control_set_storage,
+            entity,
+        );
 
         AnimationRunner::start(&mut animation_set, &animation_handle, &first_sequence_id);
 
@@ -126,7 +128,7 @@ mod test {
     use loading;
     use object_loading::ObjectLoadingBundle;
     use object_model::{
-        config::object::character::SequenceId, entity::ObjectStatus, loaded::CharacterHandle,
+        config::object::CharacterSequenceId, entity::ObjectStatus, loaded::CharacterHandle,
     };
 
     use super::CharacterEntitySpawner;
@@ -160,7 +162,7 @@ mod test {
             assert!(world.read_storage::<GlobalTransform>().contains(entity));
             assert!(
                 world
-                    .read_storage::<ObjectStatus<SequenceId>>()
+                    .read_storage::<ObjectStatus<CharacterSequenceId>>()
                     .contains(entity)
             );
         };

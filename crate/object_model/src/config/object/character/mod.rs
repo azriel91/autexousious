@@ -1,10 +1,10 @@
 //! Configuration types for `Character`s.
 
 pub use self::character_definition::CharacterDefinition;
-pub use self::sequence_id::SequenceId;
+pub use self::character_sequence_id::CharacterSequenceId;
 
 mod character_definition;
-mod sequence_id;
+mod character_sequence_id;
 
 #[cfg(test)]
 mod test {
@@ -12,7 +12,7 @@ mod test {
 
     use toml;
 
-    use super::{CharacterDefinition, SequenceId};
+    use super::{CharacterDefinition, CharacterSequenceId};
     use config::object::sequence::Frame;
     use config::object::{ObjectDefinition, Sequence};
 
@@ -42,9 +42,9 @@ mod test {
             Frame::new(0, 6, 2),
             Frame::new(0, 5, 2),
         ];
-        let sequence = Sequence::new(SequenceId::Walk, frames);
+        let sequence = Sequence::new(CharacterSequenceId::Walk, frames);
         let mut sequences = HashMap::new();
-        sequences.insert(SequenceId::Stand, sequence);
+        sequences.insert(CharacterSequenceId::Stand, sequence);
         let object_definition = ObjectDefinition::new(sequences);
         let expected = CharacterDefinition::new(object_definition);
         assert_eq!(expected, char_definition);

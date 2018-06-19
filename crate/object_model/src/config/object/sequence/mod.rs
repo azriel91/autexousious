@@ -7,18 +7,18 @@
 //! because different object types have different valid sequence IDs, and we want to be able to
 //! define this at compile time rather than needing to process this at run time.
 
-use std::hash::Hash;
-
 pub use self::frame::Frame;
+pub use self::sequence_id::SequenceId;
 
 mod frame;
+mod sequence_id;
 
 /// Represents an independent action sequence of an object.
 ///
 /// This carries the information necessary for an `Animation`, as well as the effects and
 /// interactions that happen during each frame of that animation.
 #[derive(Clone, Constructor, Debug, Deserialize, PartialEq)]
-pub struct Sequence<SeqId: Copy + Eq + Hash + Send + Sync> {
+pub struct Sequence<SeqId: SequenceId> {
     /// ID of the sequence to switch to after this one has completed.
     ///
     /// Note: This may not be immediately after the last frame of the sequence. For example, a
@@ -32,7 +32,7 @@ pub struct Sequence<SeqId: Copy + Eq + Hash + Send + Sync> {
 mod test {
     use toml;
 
-    use super::{Frame, Sequence};
+    use super::{Frame, Sequence, SequenceId};
 
     const SEQUENCE_TOML: &str = r#"
         next = "Boo"
@@ -67,4 +67,5 @@ mod test {
     enum TestSeqId {
         Boo,
     }
+    impl SequenceId for TestSeqId {}
 }

@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::hash::Hash;
 
 use amethyst::{
     animation::Animation,
@@ -7,10 +6,12 @@ use amethyst::{
     renderer::{Material, MeshHandle},
 };
 
+use config::object::SequenceId;
+
 /// Represents an in-game object that has been loaded.
 #[derive(Constructor, Clone, Derivative)]
 #[derivative(Debug)]
-pub struct Object<SeqId: Copy + Eq + Hash + Send + Sync> {
+pub struct Object<SeqId: SequenceId> {
     /// Default material for entities of this object.
     ///
     /// Even though practically entities will be displayed with a certain animation at all times,

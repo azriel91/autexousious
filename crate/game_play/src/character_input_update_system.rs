@@ -8,7 +8,7 @@ use amethyst::{
 use character_selection::CharacterEntityControl;
 use game_input::{Axis, ControlAction, PlayerActionControl, PlayerAxisControl};
 use object_model::{
-    config::object::character::SequenceId,
+    config::object::CharacterSequenceId,
     entity::{CharacterInput, ObjectStatus},
     loaded::{Character, CharacterHandle},
 };
@@ -26,9 +26,9 @@ type CharacterInputUpdateSystemData<'s, 'c> = (
     ReadStorage<'s, CharacterEntityControl>,
     Read<'s, AssetStorage<Character>>,
     Read<'s, InputHandler<PlayerAxisControl, PlayerActionControl>>,
-    WriteStorage<'s, ObjectStatus<SequenceId>>,
+    WriteStorage<'s, ObjectStatus<CharacterSequenceId>>,
     WriteStorage<'s, MeshHandle>,
-    WriteStorage<'s, AnimationControlSet<SequenceId, Material>>,
+    WriteStorage<'s, AnimationControlSet<CharacterSequenceId, Material>>,
 );
 
 impl<'s> System<'s> for CharacterInputUpdateSystem {

@@ -1,5 +1,5 @@
 use object_model::{
-    config::object::character::SequenceId,
+    config::object::CharacterSequenceId,
     entity::{CharacterInput, ObjectStatusUpdate},
 };
 
@@ -9,9 +9,9 @@ use character::sequence_handler::SequenceHandler;
 pub(crate) struct Walk;
 
 impl SequenceHandler for Walk {
-    fn update(input: &CharacterInput) -> ObjectStatusUpdate<SequenceId> {
+    fn update(input: &CharacterInput) -> ObjectStatusUpdate<CharacterSequenceId> {
         let sequence_id = if input.x_axis_value == 0. && input.z_axis_value == 0. {
-            Some(SequenceId::Stand)
+            Some(CharacterSequenceId::Stand)
         } else {
             None
         };
@@ -30,7 +30,7 @@ impl SequenceHandler for Walk {
 
 #[cfg(test)]
 mod test {
-    use object_model::{config::object::character::SequenceId, entity::CharacterInput};
+    use object_model::{config::object::CharacterSequenceId, entity::CharacterInput};
 
     use super::Walk;
     use character::sequence_handler::SequenceHandler;
@@ -60,7 +60,10 @@ mod test {
     fn update_sequence_is_stand_when_x_and_z_axes_are_non_zero() {
         let input = CharacterInput::new(0., 0., false, false, false, false);
 
-        assert_eq!(Some(SequenceId::Stand), Walk::update(&input).sequence_id);
+        assert_eq!(
+            Some(CharacterSequenceId::Stand),
+            Walk::update(&input).sequence_id
+        );
     }
 
     #[test]

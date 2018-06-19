@@ -1,9 +1,9 @@
 //! Configuration types for objects.
 
-pub use self::character::CharacterDefinition;
+pub use self::character::{CharacterDefinition, CharacterSequenceId};
 pub use self::object_definition::ObjectDefinition;
-pub use self::sequence::Sequence;
+pub use self::sequence::{Frame, Sequence, SequenceId};
 
-pub mod character;
+mod character;
 mod object_definition;
-pub mod sequence;
+mod sequence;

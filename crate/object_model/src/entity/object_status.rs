@@ -1,26 +1,26 @@
-use std::hash::Hash;
 use std::ops::{Add, AddAssign};
 
 use amethyst::ecs::{prelude::*, storage::DenseVecStorage};
 
+use config::object::SequenceId;
 use entity::ObjectStatusUpdate;
 
 /// Status of an object entity.
 ///
-/// We use a `DenseVecStorage` because all object entities have their own type of `SequenceId`.
+/// We use a `DenseVecStorage` because all object entities have their own type of `CharacterSequenceId`.
 #[derive(Constructor, Clone, Copy, Debug, PartialEq)]
-pub struct ObjectStatus<SeqId: Copy + Eq + Hash + Send + Sync> {
+pub struct ObjectStatus<SeqId: SequenceId> {
     /// ID of the current sequence the entity is on.
     pub sequence_id: SeqId,
     /// Whether or not this object is facing left.
     pub mirrored: bool,
 }
 
-impl<SeqId: Copy + Eq + Hash + Send + Sync + 'static> Component for ObjectStatus<SeqId> {
+impl<SeqId: SequenceId + 'static> Component for ObjectStatus<SeqId> {
     type Storage = DenseVecStorage<Self>;
 }
 
-impl<SeqId: Copy + Eq + Hash + Send + Sync> Add<ObjectStatusUpdate<SeqId>> for ObjectStatus<SeqId> {
+impl<SeqId: SequenceId> Add<ObjectStatusUpdate<SeqId>> for ObjectStatus<SeqId> {
     type Output = Self;
 
     fn add(self, delta: ObjectStatusUpdate<SeqId>) -> Self {
@@ -31,9 +31,7 @@ impl<SeqId: Copy + Eq + Hash + Send + Sync> Add<ObjectStatusUpdate<SeqId>> for O
     }
 }
 
-impl<SeqId: Copy + Eq + Hash + Send + Sync> AddAssign<ObjectStatusUpdate<SeqId>>
-    for ObjectStatus<SeqId>
-{
+impl<SeqId: SequenceId> AddAssign<ObjectStatusUpdate<SeqId>> for ObjectStatus<SeqId> {
     fn add_assign(&mut self, delta: ObjectStatusUpdate<SeqId>) {
         *self = *self + delta;
     }
@@ -42,6 +40,7 @@ impl<SeqId: Copy + Eq + Hash + Send + Sync> AddAssign<ObjectStatusUpdate<SeqId>>
 #[cfg(test)]
 mod test {
     use super::ObjectStatus;
+    use config::object::SequenceId;
     use entity::ObjectStatusUpdate;
 
     #[test]
@@ -90,4 +89,5 @@ mod test {
         Boo,
         Moo,
     }
+    impl SequenceId for TestSeqId {}
 }

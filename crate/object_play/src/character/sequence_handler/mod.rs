@@ -1,5 +1,5 @@
 use object_model::{
-    config::object::character::SequenceId,
+    config::object::CharacterSequenceId,
     entity::{CharacterInput, ObjectStatusUpdate},
 };
 
@@ -12,5 +12,5 @@ mod walk;
 /// Traits that every sequence should define for its transition behaviour.
 pub(super) trait SequenceHandler {
     /// Updates behaviour in response to input.
-    fn update(input: &CharacterInput) -> ObjectStatusUpdate<SequenceId>;
+    fn update(input: &CharacterInput) -> ObjectStatusUpdate<CharacterSequenceId>;
 }
