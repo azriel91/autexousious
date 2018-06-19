@@ -1,3 +1,5 @@
+use config::object::SequenceId;
+
 /// Object Sequence IDs.
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq)]
 #[serde(rename_all = "snake_case")]
@@ -13,3 +15,5 @@ impl Default for CharacterSequenceId {
         CharacterSequenceId::Stand
     }
 }
+
+impl SequenceId for CharacterSequenceId {}

@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::hash::Hash;
 
 use amethyst::{
     animation::{Animation, InterpolationFunction, MaterialChannel, MaterialPrimitive, Sampler},
@@ -7,7 +6,10 @@ use amethyst::{
     prelude::*,
     renderer::{Material, SpriteSheet},
 };
-use object_model::config::{object::Sequence, ObjectDefinition};
+use object_model::config::{
+    object::{Sequence, SequenceId},
+    ObjectDefinition,
+};
 
 use error::Result;
 
@@ -24,7 +26,7 @@ impl MaterialAnimationLoader {
     /// * `object_definition`: Sequences of the `Object`
     /// * `texture_index_offset`: Offset of the texture IDs in the `MaterialTextureSet`.
     /// * `sprite_sheets`: `SpriteSheet`s that contain the texture coordinates for sprites.
-    pub(crate) fn load<SeqId: Copy + Eq + Hash + Send + Sync>(
+    pub(crate) fn load<SeqId: SequenceId>(
         world: &World,
         object_definition: &ObjectDefinition<SeqId>,
         texture_index_offset: u64,
@@ -62,7 +64,7 @@ impl MaterialAnimationLoader {
     /// * `texture_index_offset`: Offset of the texture IDs in the `MaterialTextureSet`.
     /// * `sprite_sheets`: `SpriteSheet`s that contain the texture coordinates for sprites.
     /// * `sequence`: `Sequence` to create the animation from.
-    fn sequence_to_animation<SeqId: Copy + Eq + Hash + Send + Sync>(
+    fn sequence_to_animation<SeqId: SequenceId>(
         world: &World,
         texture_index_offset: u64,
         sprite_sheets: &[SpriteSheet],
@@ -93,7 +95,7 @@ impl MaterialAnimationLoader {
         }
     }
 
-    fn texture_sampler<SeqId: Copy + Eq + Hash + Send + Sync>(
+    fn texture_sampler<SeqId: SequenceId>(
         texture_index_offset: u64,
         sequence: &Sequence<SeqId>,
         input: Vec<f32>,
@@ -115,7 +117,7 @@ impl MaterialAnimationLoader {
         }
     }
 
-    fn sprite_offset_sampler<SeqId: Copy + Eq + Hash + Send + Sync>(
+    fn sprite_offset_sampler<SeqId: SequenceId>(
         sprite_sheets: &[SpriteSheet],
         sequence: &Sequence<SeqId>,
         input: Vec<f32>,

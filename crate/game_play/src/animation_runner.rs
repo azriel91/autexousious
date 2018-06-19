@@ -2,13 +2,13 @@ use amethyst::{
     animation::{Animation, AnimationCommand, AnimationControlSet, AnimationSampling, EndControl},
     assets::Handle,
 };
-use std::hash::Hash;
+use object_model::config::object::SequenceId;
 
 #[derive(Debug)]
 pub struct AnimationRunner;
 
 impl AnimationRunner {
-    pub fn start<SeqId: Copy + Eq + Hash + Send + Sync, T: AnimationSampling>(
+    pub fn start<SeqId: SequenceId, T: AnimationSampling>(
         animation_set: &mut AnimationControlSet<SeqId, T>,
         animation_handle: &Handle<Animation<T>>,
         sequence_id: &SeqId,
@@ -16,7 +16,7 @@ impl AnimationRunner {
         Self::internal_start(animation_set, animation_handle, sequence_id);
     }
 
-    pub fn swap<SeqId: Copy + Eq + Hash + Send + Sync, T: AnimationSampling>(
+    pub fn swap<SeqId: SequenceId, T: AnimationSampling>(
         animation_set: &mut AnimationControlSet<SeqId, T>,
         animation_handle: &Handle<Animation<T>>,
         current_sequence_id: &SeqId,
@@ -35,7 +35,7 @@ impl AnimationRunner {
         Self::internal_start(animation_set, animation_handle, next_sequence_id);
     }
 
-    fn internal_start<SeqId: Copy + Eq + Hash + Send + Sync, T: AnimationSampling>(
+    fn internal_start<SeqId: SequenceId, T: AnimationSampling>(
         animation_set: &mut AnimationControlSet<SeqId, T>,
         animation_handle: &Handle<Animation<T>>,
         sequence_id: &SeqId,
