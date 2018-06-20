@@ -184,6 +184,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "amethyst_test_support"
+version = "0.4.0"
+dependencies = [
+ "amethyst 0.7.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
+ "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "amethyst_ui"
 version = "0.2.0"
 source = "git+https://github.com/amethyst/amethyst.git?branch=develop#00fa904612be5609121981a9663a7aea097e3a55"
