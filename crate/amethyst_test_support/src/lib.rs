@@ -19,6 +19,7 @@
 //!       `.update()` call before the resource is actually loaded.
 
 extern crate amethyst;
+extern crate boxfnonce;
 #[macro_use]
 extern crate derivative;
 
