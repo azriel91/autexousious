@@ -3,6 +3,7 @@ use std::thread;
 use amethyst::{core::SystemBundle, prelude::*, Result};
 use boxfnonce::SendBoxFnOnce;
 
+use AssertionState;
 use EmptyState;
 
 type BundleAddFn = SendBoxFnOnce<
@@ -16,7 +17,10 @@ type BundleAddFn = SendBoxFnOnce<
 /// This provides varying levels of setup so that users do not have to register common bundles.
 #[derive(Derivative, Default)]
 #[derivative(Debug)]
-pub struct AmethystApplication {
+pub struct AmethystApplication<F>
+where
+    F: Fn(&mut World) + Send,
+{
     /// Functions to add bundles to the game data.
     ///
     /// This is necessary because `System`s are not `Send`, and so we cannot send `GameDataBuilder`
@@ -24,14 +28,22 @@ pub struct AmethystApplication {
     /// segfault caused by mesa and the software GL renderer.
     #[derivative(Debug = "ignore")]
     bundle_add_fns: Vec<BundleAddFn>,
+    /// Assertion function to run.
+    assertion_fn: Option<F>,
 }
 
-impl AmethystApplication {
+impl<F> AmethystApplication<F>
+where
+    F: Fn(&mut World) + Send + 'static,
+{
     /// Start a with a blank Amethyst application.
     ///
     /// This does not register any bundles.
-    pub fn blank() -> AmethystApplication {
-        AmethystApplication::default()
+    pub fn blank() -> AmethystApplication<F> {
+        AmethystApplication {
+            bundle_add_fns: Vec::new(),
+            assertion_fn: None,
+        }
     }
 
     /// Adds a bundle to the list of bundles.
@@ -66,6 +78,25 @@ impl AmethystApplication {
         self
     }
 
+    /// Registers a function to assert an expected outcome.
+    ///
+    /// The function will be run in an [`AssertionState`](struct.AssertionState.html)
+    ///
+    /// # Parameters
+    ///
+    /// * `assertion_fn`: the function that asserts the expected state.
+    pub fn with_assertion(mut self, assertion_fn: F) -> Self {
+        if self.assertion_fn.is_some() {
+            panic!(
+                ".with_assertion(F) has previously been called. The current implementation only \
+                 supports one assertion function."
+            );
+        } else {
+            self.assertion_fn = Some(assertion_fn);
+        }
+        self
+    }
+
     /// Returns the built Application.
     ///
     /// If you are intending to call `.run()` on the `Application` in a test, be aware that on
@@ -77,9 +108,9 @@ impl AmethystApplication {
     /// separate thread and waits for it to end before returning.
     ///
     /// See <https://users.rust-lang.org/t/trouble-identifying-cause-of-segfault/18096>
-    pub fn build(self) -> Result<Application<'static, GameData<'static, 'static>>> {
+    pub fn build(mut self) -> Result<Application<'static, GameData<'static, 'static>>> {
         let assets_dir = format!("{}/assets", env!("CARGO_MANIFEST_DIR"));
-        let first_state = EmptyState;
+
         let game_data = self.bundle_add_fns.into_iter().fold(
             Ok(GameDataBuilder::default()),
             |game_data: Result<GameDataBuilder>, function: BundleAddFn| {
@@ -87,7 +118,15 @@ impl AmethystApplication {
             },
         )?;
 
-        Application::new(assets_dir, first_state, game_data)
+        if self.assertion_fn.is_some() {
+            Application::new(
+                assets_dir,
+                AssertionState::new(self.assertion_fn.take().unwrap()),
+                game_data,
+            )
+        } else {
+            Application::new(assets_dir, EmptyState, game_data)
+        }
     }
 
     /// Runs the application and returns `Ok(())` if nothing went wrong.
@@ -118,7 +157,7 @@ mod test {
     #[test]
     fn bundle_build_is_ok() {
         assert!(
-            AmethystApplication::blank()
+            AmethystApplication::<fn(&mut World)>::blank()
                 .with_bundle(BundleZero)
                 .run()
                 .is_ok()
@@ -128,13 +167,52 @@ mod test {
     #[test]
     fn load_multiple_bundles() {
         assert!(
-            AmethystApplication::blank()
+            AmethystApplication::<fn(&mut World)>::blank()
                 .with_bundle(BundleZero)
                 .with_bundle(BundleOne)
                 .run()
                 .is_ok()
         );
     }
+
+    #[test]
+    fn assertion_when_resource_is_registered_succeeds() {
+        let assertion_fn = |world: &mut World| {
+            // Panics if `ApplicationResource` was not registered.
+            world.read_resource::<ApplicationResource>();
+        };
+        assert!(
+            AmethystApplication::blank()
+                .with_bundle(BundleZero)
+                .with_bundle(BundleOne)
+                .with_assertion(assertion_fn)
+                .run()
+                .is_ok()
+        );
+    }
+
+    #[test]
+    #[should_panic(expected = "Failed to run Amethyst application")]
+    fn assertion_when_resource_is_not_registered_fails() {
+        let assertion_fn = |world: &mut World| {
+            // Panics if `ApplicationResource` was not registered.
+            world.read_resource::<ApplicationResource>();
+        };
+
+        assert!(
+            AmethystApplication::blank()
+                    // without BundleOne
+                    .with_assertion(assertion_fn)
+                    .run()
+                    .is_ok()
+        );
+    }
+
+    // === Resources === //
+    #[derive(Debug, Default)]
+    struct ApplicationResource;
+
+    // === Systems === //
 
     #[derive(Debug)]
     struct SystemZero;
@@ -145,10 +223,13 @@ mod test {
 
     #[derive(Debug)]
     struct SystemOne;
+    type SystemOneData<'s> = Read<'s, ApplicationResource>;
     impl<'s> System<'s> for SystemOne {
-        type SystemData = ();
+        type SystemData = SystemOneData<'s>;
         fn run(&mut self, _: Self::SystemData) {}
     }
+
+    // === Bundles === //
 
     #[derive(Debug)]
     struct BundleZero;

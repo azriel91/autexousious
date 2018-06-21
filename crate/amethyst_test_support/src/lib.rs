@@ -22,10 +22,12 @@ extern crate amethyst;
 extern crate boxfnonce;
 #[macro_use]
 extern crate derivative;
+#[macro_use]
+extern crate derive_new;
 
 pub use amethyst_application::AmethystApplication;
-pub use empty_state::EmptyState;
+pub use state::{AssertionState, EmptyState};
 
 mod amethyst_application;
-mod empty_state;
 pub mod prelude;
+mod state;
