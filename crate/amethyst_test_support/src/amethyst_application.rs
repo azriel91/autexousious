@@ -1,3 +1,4 @@
+use std::marker::PhantomData;
 use std::thread;
 
 use amethyst::{core::SystemBundle, prelude::*, Result};
@@ -16,16 +17,19 @@ type BundleAddFn = SendBoxFnOnce<
 // assertion function such as `AmethystApplication::<fn(&mut World)>`.
 //
 // See <https://stackoverflow.com/questions/37310941/default-generic-parameter>
-type AssertFnPlaceholder = &'static fn(&mut World);
+type FnAssertPlaceholder = &'static fn(&mut World);
+type StatePlaceholder = EmptyState;
 
 /// Builder for an Amethyst application.
 ///
 /// This provides varying levels of setup so that users do not have to register common bundles.
 #[derive(Derivative, Default)]
 #[derivative(Debug)]
-pub struct AmethystApplication<F = AssertFnPlaceholder>
+pub struct AmethystApplication<S, T, FnAssert = FnAssertPlaceholder>
 where
-    F: Fn(&mut World) + Send,
+    S: State<T> + Send,
+    T: Send,
+    FnAssert: Fn(&mut World) + Send,
 {
     /// Functions to add bundles to the game data.
     ///
@@ -35,24 +39,32 @@ where
     #[derivative(Debug = "ignore")]
     bundle_add_fns: Vec<BundleAddFn>,
     /// Assertion function to run.
-    assertion_fn: Option<F>,
+    assertion_fn: Option<FnAssert>,
+    /// User registered state to use for the application.
+    first_state: Option<S>,
+    /// State data.
+    state_data: PhantomData<T>,
 }
 
-impl AmethystApplication<AssertFnPlaceholder> {
+impl AmethystApplication<StatePlaceholder, (), FnAssertPlaceholder> {
     /// Start a with a blank Amethyst application.
     ///
     /// This does not register any bundles.
-    pub fn blank() -> AmethystApplication<AssertFnPlaceholder> {
+    pub fn blank() -> AmethystApplication<StatePlaceholder, (), FnAssertPlaceholder> {
         AmethystApplication {
             bundle_add_fns: Vec::new(),
             assertion_fn: None,
+            first_state: None,
+            state_data: PhantomData,
         }
     }
 }
 
-impl<F> AmethystApplication<F>
+impl<S, T, FnAssert> AmethystApplication<S, T, FnAssert>
 where
-    F: Fn(&mut World) + Send + 'static,
+    S: State<T> + Send + 'static,
+    T: Send + 'static,
+    FnAssert: Fn(&mut World) + Send + 'static,
 {
     /// Adds a bundle to the list of bundles.
     ///
@@ -92,10 +104,13 @@ where
     ///
     /// # Parameters
     ///
-    /// * `assertion_fn`: the function that asserts the expected state.
-    pub fn with_assertion<AF>(self, assertion_fn: AF) -> AmethystApplication<AF>
+    /// * `assertion_fn`: Function that asserts the expected state.
+    pub fn with_assertion<FnAssertLocal>(
+        self,
+        assertion_fn: FnAssertLocal,
+    ) -> AmethystApplication<S, T, FnAssertLocal>
     where
-        AF: Fn(&mut World) + Send,
+        FnAssertLocal: Fn(&mut World) + Send,
     {
         if self.assertion_fn.is_some() {
             panic!(
@@ -106,8 +121,30 @@ where
             AmethystApplication {
                 bundle_add_fns: self.bundle_add_fns,
                 assertion_fn: Some(assertion_fn),
+                first_state: self.first_state,
+                state_data: self.state_data,
             }
         }
+    }
+
+    /// Sets the state for the Amethyst application.
+    ///
+    /// # Parameters
+    ///
+    /// * `state`: `State` to use.
+    pub fn with_state(mut self, state: S) -> Self
+    where
+        S: State<T>,
+    {
+        if self.first_state.is_some() {
+            panic!(
+                ".with_state(S) has previously been called. The current implementation only \
+                 supports one starting state."
+            );
+        } else {
+            self.first_state = Some(state);
+        }
+        self
     }
 
     /// Returns the built Application.
@@ -189,9 +226,8 @@ mod test {
     }
 
     #[test]
-    fn assertion_when_resource_is_registered_succeeds() {
+    fn assertion_when_resource_is_added_succeeds() {
         let assertion_fn = |world: &mut World| {
-            // Panics if `ApplicationResource` was not registered.
             world.read_resource::<ApplicationResource>();
         };
         assert!(
@@ -206,9 +242,9 @@ mod test {
 
     #[test]
     #[should_panic(expected = "Failed to run Amethyst application")]
-    fn assertion_when_resource_is_not_registered_fails() {
+    fn assertion_when_resource_is_not_added_fails() {
         let assertion_fn = |world: &mut World| {
-            // Panics if `ApplicationResource` was not registered.
+            // Panics if `ApplicationResource` was not added.
             world.read_resource::<ApplicationResource>();
         };
 
@@ -226,7 +262,6 @@ mod test {
     struct ApplicationResource;
 
     // === Systems === //
-
     #[derive(Debug)]
     struct SystemZero;
     impl<'s> System<'s> for SystemZero {
@@ -243,7 +278,6 @@ mod test {
     }
 
     // === Bundles === //
-
     #[derive(Debug)]
     struct BundleZero;
     impl<'a, 'b> SystemBundle<'a, 'b> for BundleZero {
