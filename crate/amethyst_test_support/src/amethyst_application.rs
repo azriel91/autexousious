@@ -12,12 +12,18 @@ type BundleAddFn = SendBoxFnOnce<
     Result<GameDataBuilder<'static, 'static>>,
 >;
 
+// Hack for ergonomics so users don't have to specify the type parameter if they don't specify an
+// assertion function such as `AmethystApplication::<fn(&mut World)>`.
+//
+// See <https://stackoverflow.com/questions/37310941/default-generic-parameter>
+type AssertFnPlaceholder = &'static fn(&mut World);
+
 /// Builder for an Amethyst application.
 ///
 /// This provides varying levels of setup so that users do not have to register common bundles.
 #[derive(Derivative, Default)]
 #[derivative(Debug)]
-pub struct AmethystApplication<F>
+pub struct AmethystApplication<F = AssertFnPlaceholder>
 where
     F: Fn(&mut World) + Send,
 {
@@ -32,20 +38,22 @@ where
     assertion_fn: Option<F>,
 }
 
-impl<F> AmethystApplication<F>
-where
-    F: Fn(&mut World) + Send + 'static,
-{
+impl AmethystApplication<AssertFnPlaceholder> {
     /// Start a with a blank Amethyst application.
     ///
     /// This does not register any bundles.
-    pub fn blank() -> AmethystApplication<F> {
+    pub fn blank() -> AmethystApplication<AssertFnPlaceholder> {
         AmethystApplication {
             bundle_add_fns: Vec::new(),
             assertion_fn: None,
         }
     }
+}
 
+impl<F> AmethystApplication<F>
+where
+    F: Fn(&mut World) + Send + 'static,
+{
     /// Adds a bundle to the list of bundles.
     ///
     /// # Parameters
@@ -85,16 +93,21 @@ where
     /// # Parameters
     ///
     /// * `assertion_fn`: the function that asserts the expected state.
-    pub fn with_assertion(mut self, assertion_fn: F) -> Self {
+    pub fn with_assertion<AF>(self, assertion_fn: AF) -> AmethystApplication<AF>
+    where
+        AF: Fn(&mut World) + Send,
+    {
         if self.assertion_fn.is_some() {
             panic!(
                 ".with_assertion(F) has previously been called. The current implementation only \
                  supports one assertion function."
             );
         } else {
-            self.assertion_fn = Some(assertion_fn);
+            AmethystApplication {
+                bundle_add_fns: self.bundle_add_fns,
+                assertion_fn: Some(assertion_fn),
+            }
         }
-        self
     }
 
     /// Returns the built Application.
@@ -157,7 +170,7 @@ mod test {
     #[test]
     fn bundle_build_is_ok() {
         assert!(
-            AmethystApplication::<fn(&mut World)>::blank()
+            AmethystApplication::blank()
                 .with_bundle(BundleZero)
                 .run()
                 .is_ok()
@@ -167,7 +180,7 @@ mod test {
     #[test]
     fn load_multiple_bundles() {
         assert!(
-            AmethystApplication::<fn(&mut World)>::blank()
+            AmethystApplication::blank()
                 .with_bundle(BundleZero)
                 .with_bundle(BundleOne)
                 .run()
