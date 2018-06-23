@@ -256,6 +256,7 @@ mod test {
 
     use super::AmethystApplication;
     use AssertionState;
+    use EmptyState;
 
     #[test]
     fn bundle_build_is_ok() {
@@ -312,7 +313,7 @@ mod test {
     }
 
     #[test]
-    fn assertion_with_loading_state_with_add_resource_succeeds() {
+    fn assertion_switch_with_loading_state_with_add_resource_succeeds() {
         let first_state_fn = || {
             let assertion_fn = |world: &mut World| {
                 world.read_resource::<LoadResource>();
@@ -332,8 +333,26 @@ mod test {
     }
 
     #[test]
+    fn assertion_push_with_loading_state_with_add_resource_succeeds() {
+        // Alternative to embedding the `AssertionState` is to switch to an `EmptyState` but still
+        // provide the assertion function
+        let first_state_fn = || LoadingState::new(EmptyState);
+        let assertion_fn = |world: &mut World| {
+            world.read_resource::<LoadResource>();
+        };
+
+        assert!(
+            AmethystApplication::blank()
+                .with_state(first_state_fn)
+                .with_assertion(assertion_fn)
+                .run()
+                .is_ok()
+        );
+    }
+
+    #[test]
     #[should_panic(expected = "Failed to run Amethyst application")]
-    fn assertion_with_loading_state_without_add_resource_should_panic() {
+    fn assertion_switch_with_loading_state_without_add_resource_should_panic() {
         let first_state_fn = || {
             let assertion_fn = |world: &mut World| {
                 world.read_resource::<LoadResource>();
@@ -345,6 +364,25 @@ mod test {
         assert!(
             AmethystApplication::blank()
                 .with_state(first_state_fn)
+                .run()
+                .is_ok()
+        );
+    }
+
+    #[test]
+    #[should_panic(expected = "Failed to run Amethyst application")]
+    fn assertion_push_with_loading_state_without_add_resource_should_panic() {
+        // Alternative to embedding the `AssertionState` is to switch to an `EmptyState` but still
+        // provide the assertion function
+        let first_state_fn = || SwitchState::new(EmptyState);
+        let assertion_fn = |world: &mut World| {
+            world.read_resource::<LoadResource>();
+        };
+
+        assert!(
+            AmethystApplication::blank()
+                .with_state(first_state_fn)
+                .with_assertion(assertion_fn)
                 .run()
                 .is_ok()
         );
