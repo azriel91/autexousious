@@ -5,6 +5,7 @@ use amethyst::{core::SystemBundle, prelude::*, Result};
 use boxfnonce::SendBoxFnOnce;
 
 use AssertionState;
+use EffectState;
 use EmptyState;
 
 type BundleAddFn = SendBoxFnOnce<
@@ -19,6 +20,7 @@ type BundleAddFn = SendBoxFnOnce<
 // See <https://stackoverflow.com/questions/37310941/default-generic-parameter>
 type StatePlaceholder = EmptyState;
 type FnStatePlaceholder = &'static fn() -> StatePlaceholder;
+type FnEffectPlaceholder = &'static fn(&mut World);
 type FnAssertPlaceholder = &'static fn(&mut World);
 
 /// Builder for an Amethyst application.
@@ -26,10 +28,11 @@ type FnAssertPlaceholder = &'static fn(&mut World);
 /// This provides varying levels of setup so that users do not have to register common bundles.
 #[derive(Derivative, Default)]
 #[derivative(Debug)]
-pub struct AmethystApplication<S, T, FnState, FnAssert = FnAssertPlaceholder>
+pub struct AmethystApplication<S, T, FnState, FnEffect, FnAssert>
 where
     S: State<T>,
     FnState: Fn() -> S + Send,
+    FnEffect: Fn(&mut World) + Send,
     FnAssert: Fn(&mut World) + Send,
 {
     /// Functions to add bundles to the game data.
@@ -39,10 +42,12 @@ where
     /// segfault caused by mesa and the software GL renderer.
     #[derivative(Debug = "ignore")]
     bundle_add_fns: Vec<BundleAddFn>,
-    /// Assertion function to run.
-    assertion_fn: Option<FnAssert>,
     /// Function to create user specified state to use for the application.
     first_state_fn: Option<FnState>,
+    /// Effect function to run.
+    effect_fn: Option<FnEffect>,
+    /// Assertion function to run.
+    assertion_fn: Option<FnAssert>,
     /// State data.
     state_data: PhantomData<T>,
 }
@@ -52,6 +57,7 @@ impl
         StatePlaceholder,
         GameData<'static, 'static>,
         FnStatePlaceholder,
+        FnEffectPlaceholder,
         FnAssertPlaceholder,
     >
 {
@@ -62,21 +68,25 @@ impl
         StatePlaceholder,
         GameData<'static, 'static>,
         FnStatePlaceholder,
+        FnEffectPlaceholder,
         FnAssertPlaceholder,
     > {
         AmethystApplication {
             bundle_add_fns: Vec::new(),
-            assertion_fn: None,
             first_state_fn: None,
+            effect_fn: None,
+            assertion_fn: None,
             state_data: PhantomData,
         }
     }
 }
 
-impl<S, FnState, FnAssert> AmethystApplication<S, GameData<'static, 'static>, FnState, FnAssert>
+impl<S, FnState, FnEffect, FnAssert>
+    AmethystApplication<S, GameData<'static, 'static>, FnState, FnEffect, FnAssert>
 where
     S: State<GameData<'static, 'static>> + 'static,
     FnState: Fn() -> S + Send + 'static,
+    FnEffect: Fn(&mut World) + Send + 'static,
     FnAssert: Fn(&mut World) + Send + 'static,
 {
     /// Returns the built Application.
@@ -91,7 +101,12 @@ where
     ///
     /// See <https://users.rust-lang.org/t/trouble-identifying-cause-of-segfault/18096>
     pub fn build(self) -> Result<Application<'static, GameData<'static, 'static>>> {
-        let params = (self.bundle_add_fns, self.assertion_fn, self.first_state_fn);
+        let params = (
+            self.bundle_add_fns,
+            self.first_state_fn,
+            self.effect_fn,
+            self.assertion_fn,
+        );
         Self::internal_build(params)
     }
 
@@ -100,10 +115,11 @@ where
     // However, `Self` has `PhantomData<T>`, which means we cannot send `self` to a thread. Instead
     // we have to take all of the other fields and send those through.
     fn internal_build(
-        (bundle_add_fns, mut assertion_fn, first_state_fn): (
+        (bundle_add_fns, first_state_fn, effect_fn, mut assertion_fn): (
             Vec<BundleAddFn>,
-            Option<FnAssert>,
             Option<FnState>,
+            Option<FnEffect>,
+            Option<FnAssert>,
         ),
     ) -> Result<Application<'static, GameData<'static, 'static>>> {
         let assets_dir = format!("{}/assets", env!("CARGO_MANIFEST_DIR"));
@@ -120,6 +136,9 @@ where
             if first_state_fn.is_some() {
                 let assertion_state = assertion_state.with_stack_state((first_state_fn.unwrap())());
                 Application::new(assets_dir, assertion_state, game_data)
+            } else if effect_fn.is_some() {
+                let first_state = EffectState::new(effect_fn.unwrap(), assertion_state);
+                Application::new(assets_dir, first_state, game_data)
             } else {
                 Application::new(assets_dir, assertion_state, game_data)
             }
@@ -135,7 +154,12 @@ where
     /// This method should be called instead of the `.build()` method if the application is to be
     /// run, as this avoids a segfault on Linux when using the GL software renderer.
     pub fn run(self) -> Result<()> {
-        let params = (self.bundle_add_fns, self.assertion_fn, self.first_state_fn);
+        let params = (
+            self.bundle_add_fns,
+            self.first_state_fn,
+            self.effect_fn,
+            self.assertion_fn,
+        );
 
         // Run in a sub thread due to mesa's threading issues with GL software rendering
         // See: <https://users.rust-lang.org/t/trouble-identifying-cause-of-segfault/18096>
@@ -148,10 +172,11 @@ where
     }
 }
 
-impl<S, T, FnState, FnAssert> AmethystApplication<S, T, FnState, FnAssert>
+impl<S, T, FnState, FnEffect, FnAssert> AmethystApplication<S, T, FnState, FnEffect, FnAssert>
 where
     S: State<T> + 'static,
     FnState: Fn() -> S + Send + 'static,
+    FnEffect: Fn(&mut World) + Send + 'static,
     FnAssert: Fn(&mut World) + Send + 'static,
 {
     /// Adds a bundle to the list of bundles.
@@ -193,10 +218,40 @@ where
     /// # Parameters
     ///
     /// * `assertion_fn`: Function that asserts the expected state.
+    pub fn with_effect<FnEffectLocal>(
+        self,
+        effect_fn: FnEffectLocal,
+    ) -> AmethystApplication<S, T, FnState, FnEffectLocal, FnAssert>
+    where
+        FnEffectLocal: Fn(&mut World) + Send,
+    {
+        if self.effect_fn.is_some() {
+            panic!(
+                ".with_effect(F) has previously been called. The current implementation only \
+                 supports one effect function."
+            );
+        } else {
+            AmethystApplication {
+                bundle_add_fns: self.bundle_add_fns,
+                first_state_fn: self.first_state_fn,
+                effect_fn: Some(effect_fn),
+                assertion_fn: self.assertion_fn,
+                state_data: self.state_data,
+            }
+        }
+    }
+
+    /// Registers a function to assert an expected outcome.
+    ///
+    /// The function will be run in an [`AssertionState`](struct.AssertionState.html)
+    ///
+    /// # Parameters
+    ///
+    /// * `assertion_fn`: Function that asserts the expected state.
     pub fn with_assertion<FnAssertLocal>(
         self,
         assertion_fn: FnAssertLocal,
-    ) -> AmethystApplication<S, T, FnState, FnAssertLocal>
+    ) -> AmethystApplication<S, T, FnState, FnEffect, FnAssertLocal>
     where
         FnAssertLocal: Fn(&mut World) + Send,
     {
@@ -208,8 +263,9 @@ where
         } else {
             AmethystApplication {
                 bundle_add_fns: self.bundle_add_fns,
-                assertion_fn: Some(assertion_fn),
                 first_state_fn: self.first_state_fn,
+                effect_fn: self.effect_fn,
+                assertion_fn: Some(assertion_fn),
                 state_data: self.state_data,
             }
         }
@@ -223,7 +279,7 @@ where
     pub fn with_state<SLocal, TLocal, FnStateLocal>(
         self,
         state: FnStateLocal,
-    ) -> AmethystApplication<SLocal, TLocal, FnStateLocal, FnAssert>
+    ) -> AmethystApplication<SLocal, TLocal, FnStateLocal, FnEffect, FnAssert>
     where
         SLocal: State<TLocal>,
         FnStateLocal: Fn() -> SLocal + Send,
@@ -236,8 +292,9 @@ where
         } else {
             AmethystApplication {
                 bundle_add_fns: self.bundle_add_fns,
-                assertion_fn: self.assertion_fn,
                 first_state_fn: Some(state),
+                effect_fn: None,
+                assertion_fn: self.assertion_fn,
                 state_data: PhantomData,
             }
         }
@@ -249,6 +306,8 @@ mod test {
     use std::marker::PhantomData;
 
     use amethyst::{
+        self,
+        assets::{self, Asset, AssetStorage, Handle, Loader, ProcessingState, Processor},
         core::bundle::{self, SystemBundle},
         ecs::prelude::*,
         prelude::*,
@@ -388,6 +447,34 @@ mod test {
         );
     }
 
+    #[test]
+    fn game_data_must_update_before_assertion() {
+        let effect_fn = |world: &mut World| {
+            let handles = vec![
+                AssetZeroLoader::load(world, AssetZero(10)).unwrap(),
+                AssetZeroLoader::load(world, AssetZero(20)).unwrap(),
+            ];
+
+            world.add_resource::<Vec<AssetZeroHandle>>(handles);
+        };
+        let assertion_fn = |world: &mut World| {
+            let asset_zero_handles = world.read_resource::<Vec<AssetZeroHandle>>();
+
+            let store = world.read_resource::<AssetStorage<AssetZero>>();
+            assert_eq!(Some(&AssetZero(10)), store.get(&asset_zero_handles[0]));
+            assert_eq!(Some(&AssetZero(20)), store.get(&asset_zero_handles[1]));
+        };
+
+        assert!(
+            AmethystApplication::blank()
+                .with_bundle(BundleAsset)
+                .with_effect(effect_fn)
+                .with_assertion(assertion_fn)
+                .run()
+                .is_ok()
+        );
+    }
+
     // === Resources === //
     #[derive(Debug, Default)]
     struct ApplicationResource;
@@ -502,6 +589,46 @@ mod test {
             builder.add(SystemOne, "system_one", &["system_zero"]);
             builder.add(SystemNonDefault, "system_non_default", &[]);
             Ok(())
+        }
+    }
+
+    #[derive(Debug)]
+    struct BundleAsset;
+    impl<'a, 'b> SystemBundle<'a, 'b> for BundleAsset {
+        fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> bundle::Result<()> {
+            builder.add(Processor::<AssetZero>::new(), "asset_zero_processor", &[]);
+            Ok(())
+        }
+    }
+
+    // === Assets === //
+    #[derive(Debug, PartialEq)]
+    struct AssetZero(u32);
+    impl Asset for AssetZero {
+        const NAME: &'static str = "amethyst_test_support::AssetZero";
+        type Data = Self;
+        type HandleStorage = VecStorage<Handle<Self>>;
+    }
+    impl Component for AssetZero {
+        type Storage = DenseVecStorage<Self>;
+    }
+    impl From<AssetZero> for Result<ProcessingState<AssetZero>, assets::Error> {
+        fn from(asset_zero: AssetZero) -> Result<ProcessingState<AssetZero>, assets::Error> {
+            Ok(ProcessingState::Loaded(asset_zero))
+        }
+    }
+    type AssetZeroHandle = Handle<AssetZero>;
+
+    // === System delegates === //
+    struct AssetZeroLoader;
+    impl AssetZeroLoader {
+        fn load(world: &World, asset_zero: AssetZero) -> Result<AssetZeroHandle, amethyst::Error> {
+            let loader = world.read_resource::<Loader>();
+            Ok(loader.load_from_data(
+                asset_zero,
+                (),
+                &world.read_resource::<AssetStorage<AssetZero>>(),
+            ))
         }
     }
 }

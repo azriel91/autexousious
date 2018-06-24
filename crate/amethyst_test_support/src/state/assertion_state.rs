@@ -3,6 +3,7 @@ use std::marker::PhantomData;
 use amethyst::prelude::*;
 
 use EmptyState;
+use GameUpdate;
 
 /// Runs an assertion function in `.update()` then returns `Trans::Pop`.
 #[derive(Debug)]
@@ -60,8 +61,10 @@ impl<F, S, T> State<T> for AssertionState<F, S, T>
 where
     F: Fn(&mut World),
     S: State<T> + 'static,
+    T: GameUpdate,
 {
     fn update(&mut self, mut data: StateData<T>) -> Trans<T> {
+        data.data.update(&data.world);
         if let Some(stack_state) = self.stack_state.take() {
             return Trans::Push(Box::new(stack_state));
         }
