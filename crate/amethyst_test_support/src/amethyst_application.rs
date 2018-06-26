@@ -160,6 +160,10 @@ where
     // We take a function that constructs `S`, and the function itself is `Send`.
     // However, `Self` has `PhantomData<T>`, which means we cannot send `self` to a thread. Instead
     // we have to take all of the other fields and send those through.
+    //
+    // Need to `#[allow(type_complexity)]` because the type declaration would have unused type
+    // parameters which causes a compilation failure.
+    #[allow(unknown_lints, type_complexity)]
     fn build_internal(
         (bundle_add_fns, resource_add_fns, first_state_fn, effect_fn, mut assertion_fn): (
             Vec<BundleAddFn>,
