@@ -1,7 +1,15 @@
 use std::marker::PhantomData;
 use std::thread;
 
-use amethyst::{core::SystemBundle, prelude::*, Result};
+use amethyst::{
+    core::{transform::TransformBundle, SystemBundle},
+    input::InputBundle,
+    prelude::*,
+    renderer::ScreenDimensions,
+    shred::Resource,
+    ui::UiBundle,
+    Result,
+};
 use boxfnonce::SendBoxFnOnce;
 
 use AssertionState;
@@ -13,6 +21,19 @@ type BundleAddFn = SendBoxFnOnce<
     (GameDataBuilder<'static, 'static>,),
     Result<GameDataBuilder<'static, 'static>>,
 >;
+// Hack: Ideally we want a `SendBoxFnOnce`. However implementing it got too crazy:
+//
+// * When taking in `ApplicationBuilder<SLocal>` as a parameter, I couldn't get the type parameters
+//   to be happy. `SLocal` had to change depending on the first state, but it couldn't be
+//   consolidated with `T`.
+// * When using `SendBoxFnOnce<'w, (&'w mut World,)>`, the lifetime parameter for the function and
+//   the `World` could not agree &mdash; you can't coerce a `SendBoxFnOnce<'longer>` into a
+//   `SendBoxFnOnce<'shorter>`, which was necessary to indicate the length of the borrow of `World`
+//   for the function is not the `'w` needed to store the function in `AmethystApplication`.
+//   In addition, it requires the `World` (and hence the `ApplicationBuilder`) to be instantiated
+//   in a scope greater than the `AmethystApplication`'s lifetime, which detracts from the
+//   ergonomics of this test harness.
+type FnResourceAdd = Box<FnMut(&mut World) + Send>;
 
 // Hacks for ergonomics so users don't have to specify the type parameter if they don't specify an
 // assertion function such as `AmethystApplication::<fn(&mut World)>`.
@@ -42,6 +63,13 @@ where
     /// segfault caused by mesa and the software GL renderer.
     #[derivative(Debug = "ignore")]
     bundle_add_fns: Vec<BundleAddFn>,
+    /// Functions to add bundles to the game data.
+    ///
+    /// This is necessary because `System`s are not `Send`, and so we cannot send `GameDataBuilder`
+    /// across a thread boundary, necessary to run the `Application` in a sub thread to avoid a
+    /// segfault caused by mesa and the software GL renderer.
+    #[derivative(Debug = "ignore")]
+    resource_add_fns: Vec<FnResourceAdd>,
     /// Function to create user specified state to use for the application.
     first_state_fn: Option<FnState>,
     /// Effect function to run.
@@ -61,9 +89,7 @@ impl
         FnAssertPlaceholder,
     >
 {
-    /// Start a with a blank Amethyst application.
-    ///
-    /// This does not register any bundles.
+    /// Returns an Amethyst application without any bundles.
     pub fn blank() -> AmethystApplication<
         StatePlaceholder,
         GameData<'static, 'static>,
@@ -73,11 +99,30 @@ impl
     > {
         AmethystApplication {
             bundle_add_fns: Vec::new(),
+            resource_add_fns: Vec::new(),
             first_state_fn: None,
             effect_fn: None,
             assertion_fn: None,
             state_data: PhantomData,
         }
+    }
+
+    /// Returns an Amethyst application with the Transform, Input, and UI bundles.
+    ///
+    /// This also adds a `ScreenDimensions` resource to the `World` so that UI calculations can be
+    /// done.
+    pub fn base() -> AmethystApplication<
+        StatePlaceholder,
+        GameData<'static, 'static>,
+        FnStatePlaceholder,
+        FnEffectPlaceholder,
+        FnAssertPlaceholder,
+    > {
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_bundle(InputBundle::<String, String>::new())
+            .with_bundle(UiBundle::<String, String>::new())
+            .with_resource(ScreenDimensions::new(1280, 800, 1.))
     }
 }
 
@@ -103,27 +148,27 @@ where
     pub fn build(self) -> Result<Application<'static, GameData<'static, 'static>>> {
         let params = (
             self.bundle_add_fns,
+            self.resource_add_fns,
             self.first_state_fn,
             self.effect_fn,
             self.assertion_fn,
         );
-        Self::internal_build(params)
+        Self::build_internal(params)
     }
 
     // Hack to get around `S` or `T` not being `Send`
     // We take a function that constructs `S`, and the function itself is `Send`.
     // However, `Self` has `PhantomData<T>`, which means we cannot send `self` to a thread. Instead
     // we have to take all of the other fields and send those through.
-    fn internal_build(
-        (bundle_add_fns, first_state_fn, effect_fn, mut assertion_fn): (
+    fn build_internal(
+        (bundle_add_fns, resource_add_fns, first_state_fn, effect_fn, mut assertion_fn): (
             Vec<BundleAddFn>,
+            Vec<FnResourceAdd>,
             Option<FnState>,
             Option<FnEffect>,
             Option<FnAssert>,
         ),
     ) -> Result<Application<'static, GameData<'static, 'static>>> {
-        let assets_dir = format!("{}/assets", env!("CARGO_MANIFEST_DIR"));
-
         let game_data = bundle_add_fns.into_iter().fold(
             Ok(GameDataBuilder::default()),
             |game_data: Result<GameDataBuilder>, function: BundleAddFn| {
@@ -135,17 +180,40 @@ where
             let assertion_state = AssertionState::new(assertion_fn.take().unwrap());
             if first_state_fn.is_some() {
                 let assertion_state = assertion_state.with_stack_state((first_state_fn.unwrap())());
-                Application::new(assets_dir, assertion_state, game_data)
+                Self::build_application(assertion_state, game_data, resource_add_fns)
             } else if effect_fn.is_some() {
                 let first_state = EffectState::new(effect_fn.unwrap(), assertion_state);
-                Application::new(assets_dir, first_state, game_data)
+                Self::build_application(first_state, game_data, resource_add_fns)
             } else {
-                Application::new(assets_dir, assertion_state, game_data)
+                Self::build_application(assertion_state, game_data, resource_add_fns)
             }
         } else if let Some(first_state_fn) = first_state_fn {
-            Application::new(assets_dir, first_state_fn(), game_data)
+            Self::build_application(first_state_fn(), game_data, resource_add_fns)
         } else {
-            Application::new(assets_dir, EmptyState, game_data)
+            Self::build_application(EmptyState, game_data, resource_add_fns)
+        }
+    }
+
+    fn build_application<SLocal>(
+        first_state: SLocal,
+        game_data: GameDataBuilder<'static, 'static>,
+        resource_add_fns: Vec<FnResourceAdd>,
+    ) -> Result<Application<'static, GameData<'static, 'static>>>
+    where
+        SLocal: State<GameData<'static, 'static>> + 'static,
+    {
+        let assets_dir = format!("{}/assets", env!("CARGO_MANIFEST_DIR"));
+        let mut application_builder = Application::build(assets_dir, first_state)?;
+        {
+            let world = &mut application_builder.world;
+            Self::resource_add_to_world(resource_add_fns, world);
+        }
+        application_builder.build(game_data)
+    }
+
+    fn resource_add_to_world(resource_add_fns: Vec<FnResourceAdd>, world: &mut World) {
+        for mut function in resource_add_fns {
+            function(world);
         }
     }
 
@@ -156,6 +224,7 @@ where
     pub fn run(self) -> Result<()> {
         let params = (
             self.bundle_add_fns,
+            self.resource_add_fns,
             self.first_state_fn,
             self.effect_fn,
             self.assertion_fn,
@@ -164,7 +233,7 @@ where
         // Run in a sub thread due to mesa's threading issues with GL software rendering
         // See: <https://users.rust-lang.org/t/trouble-identifying-cause-of-segfault/18096>
         thread::spawn(|| -> Result<()> {
-            Self::internal_build(params)?.run();
+            Self::build_internal(params)?.run();
 
             Ok(())
         }).join()
@@ -211,6 +280,72 @@ where
         self
     }
 
+    /// Adds a resource to the `World`.
+    ///
+    /// # Parameters
+    ///
+    /// * `resource`: Bundle to add.
+    pub fn with_resource<R>(mut self, resource: R) -> Self
+    where
+        R: Resource,
+    {
+        let mut resource_opt = Some(resource);
+        self.resource_add_fns
+            .push(Box::new(move |world: &mut World| {
+                let resource = resource_opt.take();
+                if resource.is_some() {
+                    world.add_resource(resource.unwrap());
+                }
+            }));
+        self
+    }
+
+    /// Sets the state for the Amethyst application.
+    ///
+    /// **NOTE:** This must be called before any calls to `.with_resource()`, as complexities with
+    /// type parameters disallows us to store earlier resource registrations.
+    ///
+    /// **NOTE:** This function is exclusive of `.with_effect()`, as each of them are ways to test
+    /// an effect before an assertion.
+    ///
+    /// # Parameters
+    ///
+    /// * `state`: `State` to use.
+    pub fn with_state<SLocal, TLocal, FnStateLocal>(
+        self,
+        state: FnStateLocal,
+    ) -> AmethystApplication<SLocal, TLocal, FnStateLocal, FnEffect, FnAssert>
+    where
+        SLocal: State<TLocal>,
+        FnStateLocal: Fn() -> SLocal + Send,
+    {
+        if self.first_state_fn.is_some() {
+            panic!(
+                "`.with_state(S)` has previously been called. The current implementation only \
+                 supports one starting state."
+            );
+        } else if self.effect_fn.is_some() {
+            panic!(
+                "`.with_state(S)` called after `.with_effect(F)`. These are mutually exclusive \
+                 methods of testing effects, so you can only call one but not both."
+            );
+        } else if !self.resource_add_fns.is_empty() {
+            panic!(
+                "`.with_state(S)` called after `.with_resource(R)`. Due to complex generics, you \
+                 can only register resources after `.with_state(S)`."
+            );
+        } else {
+            AmethystApplication {
+                bundle_add_fns: self.bundle_add_fns,
+                resource_add_fns: Vec::new(),
+                first_state_fn: Some(state),
+                effect_fn: None,
+                assertion_fn: self.assertion_fn,
+                state_data: PhantomData,
+            }
+        }
+    }
+
     /// Registers a function to assert an expected outcome.
     ///
     /// The function will be run in an [`AssertionState`](struct.AssertionState.html)
@@ -227,12 +362,13 @@ where
     {
         if self.effect_fn.is_some() {
             panic!(
-                ".with_effect(F) has previously been called. The current implementation only \
+                "`.with_effect(F)` has previously been called. The current implementation only \
                  supports one effect function."
             );
         } else {
             AmethystApplication {
                 bundle_add_fns: self.bundle_add_fns,
+                resource_add_fns: self.resource_add_fns,
                 first_state_fn: self.first_state_fn,
                 effect_fn: Some(effect_fn),
                 assertion_fn: self.assertion_fn,
@@ -257,45 +393,17 @@ where
     {
         if self.assertion_fn.is_some() {
             panic!(
-                ".with_assertion(F) has previously been called. The current implementation only \
+                "`.with_assertion(F)` has previously been called. The current implementation only \
                  supports one assertion function."
             );
         } else {
             AmethystApplication {
                 bundle_add_fns: self.bundle_add_fns,
+                resource_add_fns: self.resource_add_fns,
                 first_state_fn: self.first_state_fn,
                 effect_fn: self.effect_fn,
                 assertion_fn: Some(assertion_fn),
                 state_data: self.state_data,
-            }
-        }
-    }
-
-    /// Sets the state for the Amethyst application.
-    ///
-    /// # Parameters
-    ///
-    /// * `state`: `State` to use.
-    pub fn with_state<SLocal, TLocal, FnStateLocal>(
-        self,
-        state: FnStateLocal,
-    ) -> AmethystApplication<SLocal, TLocal, FnStateLocal, FnEffect, FnAssert>
-    where
-        SLocal: State<TLocal>,
-        FnStateLocal: Fn() -> SLocal + Send,
-    {
-        if self.first_state_fn.is_some() {
-            panic!(
-                ".with_state(S) has previously been called. The current implementation only \
-                 supports one starting state."
-            );
-        } else {
-            AmethystApplication {
-                bundle_add_fns: self.bundle_add_fns,
-                first_state_fn: Some(state),
-                effect_fn: None,
-                assertion_fn: self.assertion_fn,
-                state_data: PhantomData,
             }
         }
     }
@@ -311,6 +419,8 @@ mod test {
         core::bundle::{self, SystemBundle},
         ecs::prelude::*,
         prelude::*,
+        renderer::ScreenDimensions,
+        ui::FontAsset,
     };
 
     use super::AmethystApplication;
@@ -469,6 +579,24 @@ mod test {
             AmethystApplication::blank()
                 .with_bundle(BundleAsset)
                 .with_effect(effect_fn)
+                .with_assertion(assertion_fn)
+                .run()
+                .is_ok()
+        );
+    }
+
+    #[test]
+    fn base_application_can_load_ui() {
+        let assertion_fn = |world: &mut World| {
+            // Next line would panic if `UiBundle` wasn't added.
+            world.read_resource::<AssetStorage<FontAsset>>();
+            // `.base()` should add `ScreenDimensions` as this is necessary for `UiBundle` to
+            // initialize properly.
+            world.read_resource::<ScreenDimensions>();
+        };
+
+        assert!(
+            AmethystApplication::base()
                 .with_assertion(assertion_fn)
                 .run()
                 .is_ok()
