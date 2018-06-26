@@ -17,7 +17,7 @@
   printf "\n"
 
 .install_update_cargo_subcommands: &install_update_cargo_subcommands >-
-  cargo install-update -i cargo-update
+  cargo install-update -i cargo-update hull
 
 # === CI Stages === #
 
@@ -96,7 +96,9 @@ nightly:conformance:
 linux:debug:
   <<: *linux_job_common
   script:
-    - time cargo build --all-targets
+    - time cargo test --all --no-run
+    - time cargo build --all
+    - time hull each -- cargo build --examples
     - source xvfb_start
     - time cargo test --all
     - source xvfb_stop
@@ -110,7 +112,9 @@ linux:debug:
 linux:release:
   <<: *linux_job_common
   script:
-    - time cargo build --all-targets --release
+    - time cargo test --all --no-run --release
+    - time cargo build --all --release
+    - time hull each -- cargo build --examples --release
     - source xvfb_start
     - time cargo test --all --release
     - source xvfb_stop
@@ -133,18 +137,23 @@ linux:release:
   before_script:
     - cargo --version -v
     - rustc --version -v
+    - *install_update_cargo_subcommands
 
 windows:debug:
   <<: *windows_job_common
   script:
-    - cargo build --all-targets
+    - cargo test --all --no-run
+    - cargo build --all
+    - hull each -- cargo build --examples
     - cargo test --all
 
 windows:release:
   <<: *windows_job_common
   script:
-    - cargo build --all-targets --release
-    - cargo test --all --release
+    - cargo test --all --no-run --release
+    - cargo build --all --release
+    - hull each -- cargo build --examples --release
+    - cargo test --all
     - .\build\publish_prepare_app.bat
   artifacts:
     name: windows-x86_64
