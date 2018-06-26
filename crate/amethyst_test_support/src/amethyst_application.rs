@@ -165,7 +165,7 @@ where
     // parameters which causes a compilation failure.
     #[allow(unknown_lints, type_complexity)]
     fn build_internal(
-        (bundle_add_fns, resource_add_fns, first_state_fn, effect_fn, mut assertion_fn): (
+        (bundle_add_fns, resource_add_fns, first_state_fn, effect_fn, assertion_fn): (
             Vec<BundleAddFn>,
             Vec<FnResourceAdd>,
             Option<FnState>,
@@ -180,11 +180,19 @@ where
             },
         )?;
 
+        // eww
         if assertion_fn.is_some() {
-            let assertion_state = AssertionState::new(assertion_fn.take().unwrap());
+            let assertion_state = AssertionState::new(assertion_fn.unwrap());
             if first_state_fn.is_some() {
-                let assertion_state = assertion_state.with_stack_state((first_state_fn.unwrap())());
-                Self::build_application(assertion_state, game_data, resource_add_fns)
+                let first_state = first_state_fn.unwrap()();
+                if effect_fn.is_some() {
+                    let effect_state = EffectState::new(effect_fn.unwrap(), assertion_state)
+                        .with_stack_state(first_state);
+                    Self::build_application(effect_state, game_data, resource_add_fns)
+                } else {
+                    let assertion_state = assertion_state.with_stack_state(first_state);
+                    Self::build_application(assertion_state, game_data, resource_add_fns)
+                }
             } else if effect_fn.is_some() {
                 let first_state = EffectState::new(effect_fn.unwrap(), assertion_state);
                 Self::build_application(first_state, game_data, resource_add_fns)
@@ -192,7 +200,17 @@ where
                 Self::build_application(assertion_state, game_data, resource_add_fns)
             }
         } else if let Some(first_state_fn) = first_state_fn {
-            Self::build_application(first_state_fn(), game_data, resource_add_fns)
+            let first_state = first_state_fn();
+            if effect_fn.is_some() {
+                // There's a first state and an effect function, but no assertion function.
+                // Perhaps we should warn the user that assertions should be registered using
+                // `.with_assertion(F)`.
+                let effect_state =
+                    EffectState::new(effect_fn.unwrap(), EmptyState).with_stack_state(first_state);
+                Self::build_application(effect_state, game_data, resource_add_fns)
+            } else {
+                Self::build_application(first_state, game_data, resource_add_fns)
+            }
         } else {
             Self::build_application(EmptyState, game_data, resource_add_fns)
         }
@@ -210,15 +228,11 @@ where
         let mut application_builder = Application::build(assets_dir, first_state)?;
         {
             let world = &mut application_builder.world;
-            Self::resource_add_to_world(resource_add_fns, world);
+            for mut function in resource_add_fns {
+                function(world);
+            }
         }
         application_builder.build(game_data)
-    }
-
-    fn resource_add_to_world(resource_add_fns: Vec<FnResourceAdd>, world: &mut World) {
-        for mut function in resource_add_fns {
-            function(world);
-        }
     }
 
     /// Runs the application and returns `Ok(())` if nothing went wrong.
@@ -328,22 +342,17 @@ where
                 "`.with_state(S)` has previously been called. The current implementation only \
                  supports one starting state."
             );
-        } else if self.effect_fn.is_some() {
-            panic!(
-                "`.with_state(S)` called after `.with_effect(F)`. These are mutually exclusive \
-                 methods of testing effects, so you can only call one but not both."
-            );
         } else if !self.resource_add_fns.is_empty() {
             panic!(
-                "`.with_state(S)` called after `.with_resource(R)`. Due to complex generics, you \
-                 can only register resources after `.with_state(S)`."
+                "`.with_state(S)` called after `.with_resource(R)`. Due to restrictions on type \
+                 parameter specification, you must register resources after `.with_state(S)`."
             );
         } else {
             AmethystApplication {
                 bundle_add_fns: self.bundle_add_fns,
                 resource_add_fns: Vec::new(),
                 first_state_fn: Some(state),
-                effect_fn: None,
+                effect_fn: self.effect_fn,
                 assertion_fn: self.assertion_fn,
                 state_data: PhantomData,
             }
@@ -590,6 +599,34 @@ mod test {
     }
 
     #[test]
+    fn state_runs_before_effect() {
+        let first_state_fn = || LoadingState::new(EmptyState);
+        let effect_fn = |world: &mut World| {
+            // If `LoadingState` is not run before this, this will panic
+            world.read_resource::<LoadResource>();
+
+            let handles = vec![AssetZeroLoader::load(world, AssetZero(10)).unwrap()];
+            world.add_resource(handles);
+        };
+        let assertion_fn = |world: &mut World| {
+            let asset_zero_handles = world.read_resource::<Vec<AssetZeroHandle>>();
+
+            let store = world.read_resource::<AssetStorage<AssetZero>>();
+            assert_eq!(Some(&AssetZero(10)), store.get(&asset_zero_handles[0]));
+        };
+
+        assert!(
+            AmethystApplication::blank()
+                .with_bundle(BundleAsset)
+                .with_state(first_state_fn)
+                .with_effect(effect_fn)
+                .with_assertion(assertion_fn)
+                .run()
+                .is_ok()
+        );
+    }
+
+    #[test]
     fn base_application_can_load_ui() {
         let assertion_fn = |world: &mut World| {
             // Next line would panic if `UiBundle` wasn't added.
@@ -605,6 +642,40 @@ mod test {
                 .run()
                 .is_ok()
         );
+    }
+
+    // Incorrect usage tests
+
+    #[test]
+    #[should_panic(expected = "`.with_assertion(F)` has previously been called.")]
+    fn with_assertion_invoked_twice_should_panic() {
+        AmethystApplication::blank()
+            .with_assertion(|_world: &mut World| {})
+            .with_assertion(|_world: &mut World| {});
+    }
+
+    #[test]
+    #[should_panic(expected = "`.with_effect(F)` has previously been called.")]
+    fn with_effect_invoked_twice_should_panic() {
+        AmethystApplication::blank()
+            .with_effect(|_world: &mut World| {})
+            .with_effect(|_world: &mut World| {});
+    }
+
+    #[test]
+    #[should_panic(expected = "`.with_state(S)` has previously been called.")]
+    fn with_state_invoked_twice_should_panic() {
+        AmethystApplication::blank()
+            .with_state::<_, (), _>(|| EmptyState)
+            .with_state::<_, (), _>(|| EmptyState);
+    }
+
+    #[test]
+    #[should_panic(expected = "`.with_state(S)` called after `.with_resource(R)`.")]
+    fn with_state_invoked_after_with_resource_should_panic() {
+        AmethystApplication::blank()
+            .with_resource(ApplicationResource)
+            .with_state::<_, (), _>(|| EmptyState);
     }
 
     // === Resources === //
