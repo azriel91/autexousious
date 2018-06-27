@@ -137,6 +137,7 @@ linux:release:
   before_script:
     - cargo --version -v
     - rustc --version -v
+    - .\build\install_cargo_update.bat
     - *install_update_cargo_subcommands
 
 windows:debug:
