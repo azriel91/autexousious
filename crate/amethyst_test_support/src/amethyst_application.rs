@@ -2,12 +2,16 @@ use std::marker::PhantomData;
 use std::thread;
 
 use amethyst::{
+    animation::AnimationBundle,
     core::{transform::TransformBundle, SystemBundle},
     input::InputBundle,
     prelude::*,
-    renderer::ScreenDimensions,
+    renderer::{
+        ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex, RenderBundle,
+        ScreenDimensions, Stage, ALPHA,
+    },
     shred::Resource,
-    ui::UiBundle,
+    ui::{DrawUi, UiBundle},
     Result,
 };
 use boxfnonce::SendBoxFnOnce;
@@ -107,7 +111,7 @@ impl
         }
     }
 
-    /// Returns an Amethyst application with the Transform, Input, and UI bundles.
+    /// Returns an application with the Transform, Input, and UI bundles.
     ///
     /// This also adds a `ScreenDimensions` resource to the `World` so that UI calculations can be
     /// done.
@@ -123,6 +127,71 @@ impl
             .with_bundle(InputBundle::<String, String>::new())
             .with_bundle(UiBundle::<String, String>::new())
             .with_resource(ScreenDimensions::new(1280, 800, 1.))
+    }
+
+    /// Returns an application with the Animation, Transform, Input, UI, and Render bundles.
+    ///
+    /// **Note:** The type parameters for the Animation, Input, and UI bundles are [stringly-typed]
+    /// (http://wiki.c2.com/?StringlyTyped). It is recommended that you use proper type parameters
+    /// and register the bundles yourself if the unit you are testing uses them.
+    ///
+    /// # Parameters
+    ///
+    /// * `test_name`: Name of the test, used to populate the window title.
+    /// * `visibility`: Whether the window should be visible.
+    pub fn render_base<'name, N>(
+        test_name: N,
+        visibility: bool,
+    ) -> AmethystApplication<
+        StatePlaceholder,
+        GameData<'static, 'static>,
+        FnStatePlaceholder,
+        FnEffectPlaceholder,
+        FnAssertPlaceholder,
+    >
+    where
+        N: Into<&'name str>,
+    {
+        // TODO: We can default to the function name once this RFC is implemented:
+        // <https://github.com/rust-lang/rfcs/issues/1743>
+        // <https://github.com/rust-lang/rfcs/pull/1719>
+        let title = test_name.into().to_string();
+        let render_bundle_fn = move || {
+            let display_config = DisplayConfig {
+                title,
+                fullscreen: false,
+                dimensions: Some((800, 600)),
+                min_dimensions: Some((400, 300)),
+                max_dimensions: None,
+                vsync: false,
+                multisampling: 0, // Must be multiple of 2, use 0 to disable
+                visibility,
+            };
+            let pipe = Pipeline::build().with_stage(
+                Stage::with_backbuffer()
+                    .clear_target([0., 0., 0., 0.], 1.)
+                    .with_pass(DrawFlat::<PosTex>::new().with_transparency(
+                        ColorMask::all(),
+                        ALPHA,
+                        None,
+                    ))
+                    .with_pass(DrawUi::new()),
+            );
+            RenderBundle::new(pipe, Some(display_config))
+        };
+
+        AmethystApplication::blank()
+            .with_bundle(AnimationBundle::<u32, Material>::new(
+                "animation_control_system",
+                "sampler_interpolation_system",
+            ))
+            .with_bundle(
+                TransformBundle::new()
+                    .with_dep(&["animation_control_system", "sampler_interpolation_system"]),
+            )
+            .with_bundle(InputBundle::<String, String>::new())
+            .with_bundle(UiBundle::<String, String>::new())
+            .with_bundle_fn(render_bundle_fn)
     }
 }
 
@@ -298,6 +367,27 @@ where
         self
     }
 
+    /// Adds a bundle to the list of bundles.
+    ///
+    /// This provides an alternative to `.with_bundle(B)` where `B` is `!Send`. The function that
+    /// instantiates the bundle must be `Send`.
+    ///
+    /// # Parameters
+    ///
+    /// * `bundle_function`: Function to instantiate the Bundle.
+    pub fn with_bundle_fn<FnBundle, B>(mut self, bundle_function: FnBundle) -> Self
+    where
+        FnBundle: FnOnce() -> B + Send + 'static,
+        B: SystemBundle<'static, 'static> + 'static,
+    {
+        self.bundle_add_fns.push(SendBoxFnOnce::from(
+            move |game_data: GameDataBuilder<'static, 'static>| {
+                game_data.with_bundle(bundle_function())
+            },
+        ));
+        self
+    }
+
     /// Adds a resource to the `World`.
     ///
     /// # Parameters
@@ -428,16 +518,20 @@ mod test {
 
     use amethyst::{
         self,
+        animation::{
+            Animation, InterpolationFunction, MaterialChannel, MaterialPrimitive, Sampler,
+        },
         assets::{self, Asset, AssetStorage, Handle, Loader, ProcessingState, Processor},
         core::bundle::{self, SystemBundle},
         ecs::prelude::*,
         prelude::*,
-        renderer::ScreenDimensions,
+        renderer::{Material, ScreenDimensions},
         ui::FontAsset,
     };
 
     use super::AmethystApplication;
     use AssertionState;
+    use EffectReturn;
     use EmptyState;
 
     #[test]
@@ -638,6 +732,62 @@ mod test {
 
         assert!(
             AmethystApplication::base()
+                .with_assertion(assertion_fn)
+                .run()
+                .is_ok()
+        );
+    }
+
+    #[test]
+    fn render_base_application_can_load_material_animations() {
+        let effect_fn = |world: &mut World| {
+            // Load the animation.
+            let animation_handle = {
+                let texture_sampler = Sampler {
+                    input: vec![0.0],
+                    output: vec![MaterialPrimitive::Texture(0)],
+                    function: InterpolationFunction::Step,
+                };
+                let sprite_offset_sampler = Sampler {
+                    input: vec![0.0],
+                    output: vec![MaterialPrimitive::Offset((0.0, 1.0), (1.0, 0.0))],
+                    function: InterpolationFunction::Step,
+                };
+
+                let loader = world.read_resource::<Loader>();
+                let texture_animation_handle =
+                    loader.load_from_data(texture_sampler, (), &world.read_resource());
+                let sampler_animation_handle =
+                    loader.load_from_data(sprite_offset_sampler, (), &world.read_resource());
+
+                let animation = Animation::<Material> {
+                    nodes: vec![
+                        (0, MaterialChannel::AlbedoTexture, texture_animation_handle),
+                        (0, MaterialChannel::AlbedoOffset, sampler_animation_handle),
+                    ],
+                };
+
+                loader.load_from_data::<Animation<Material>, ()>(
+                    animation,
+                    (),
+                    &world.read_resource(),
+                )
+            };
+            world.add_resource(EffectReturn(animation_handle));
+        };
+        let assertion_fn = |world: &mut World| {
+            // Read the animation.
+            let animation_handle = &world
+                .read_resource::<EffectReturn<Handle<Animation<Material>>>>()
+                .0;
+
+            let store = world.read_resource::<AssetStorage<Animation<Material>>>();
+            assert!(store.get(animation_handle).is_some());
+        };
+
+        assert!(
+            AmethystApplication::render_base("render_base_application_can_load_materials", false)
+                .with_effect(effect_fn)
                 .with_assertion(assertion_fn)
                 .run()
                 .is_ok()

@@ -24,10 +24,12 @@ extern crate boxfnonce;
 extern crate derivative;
 
 pub use amethyst_application::AmethystApplication;
+pub use effect_return::EffectReturn;
 pub use game_update::GameUpdate;
 pub use state::{AssertionState, EffectState, EmptyState};
 
 mod amethyst_application;
+mod effect_return;
 mod game_update;
 pub mod prelude;
 mod state;
