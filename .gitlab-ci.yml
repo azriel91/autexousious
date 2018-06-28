@@ -17,7 +17,7 @@
   printf "\n"
 
 .install_update_cargo_subcommands: &install_update_cargo_subcommands >-
-  cargo install-update -i cargo-update hull
+  cargo install-update -i cargo-update
 
 # === CI Stages === #
 
@@ -97,8 +97,8 @@ linux:debug:
   <<: *linux_job_common
   script:
     - time cargo test --all --no-run
+    - time cargo build --examples
     - time cargo build --all
-    - time hull each -- cargo build --examples
     - source xvfb_start
     - time cargo test --all
     - source xvfb_stop
@@ -113,8 +113,8 @@ linux:release:
   <<: *linux_job_common
   script:
     - time cargo test --all --no-run --release
+    - time cargo build --examples --release
     - time cargo build --all --release
-    - time hull each -- cargo build --examples --release
     - source xvfb_start
     - time cargo test --all --release
     - source xvfb_stop
@@ -144,16 +144,16 @@ windows:debug:
   <<: *windows_job_common
   script:
     - cargo test --all --no-run
+    - cargo build --examples
     - cargo build --all
-    - hull each -- cargo build --examples
     - cargo test --all
 
 windows:release:
   <<: *windows_job_common
   script:
     - cargo test --all --no-run --release
+    - cargo build --examples --release
     - cargo build --all --release
-    - hull each -- cargo build --examples --release
     - cargo test --all
     - .\build\publish_prepare_app.bat
   artifacts:
