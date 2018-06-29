@@ -22,14 +22,18 @@ extern crate amethyst;
 extern crate boxfnonce;
 #[macro_use]
 extern crate derivative;
+#[macro_use]
+extern crate derive_new;
 
 pub use amethyst_application::AmethystApplication;
 pub use effect_return::EffectReturn;
 pub use game_update::GameUpdate;
 pub use state::{AssertionState, EffectState, EmptyState};
+pub(crate) use system_injection_bundle::SystemInjectionBundle;
 
 mod amethyst_application;
 mod effect_return;
 mod game_update;
 pub mod prelude;
 mod state;
+mod system_injection_bundle;

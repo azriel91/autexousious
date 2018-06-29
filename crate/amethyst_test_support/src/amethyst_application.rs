@@ -4,6 +4,7 @@ use std::thread;
 use amethyst::{
     animation::AnimationBundle,
     core::{transform::TransformBundle, SystemBundle},
+    ecs::prelude::*,
     input::InputBundle,
     prelude::*,
     renderer::{
@@ -19,6 +20,7 @@ use boxfnonce::SendBoxFnOnce;
 use AssertionState;
 use EffectState;
 use EmptyState;
+use SystemInjectionBundle;
 
 type BundleAddFn = SendBoxFnOnce<
     'static,
@@ -449,6 +451,23 @@ where
         }
     }
 
+    /// Registers a `System` to be tested in this application.
+    ///
+    /// # Parameters
+    ///
+    /// * `system`: The `System` to be tested.
+    pub fn with_system<SysLocal>(
+        self,
+        system: SysLocal,
+        name: &'static str,
+        deps: &'static [&'static str],
+    ) -> AmethystApplication<S, T, FnState, FnEffect, FnAssert>
+    where
+        SysLocal: for<'sys_local> System<'sys_local> + Send + 'static,
+    {
+        self.with_bundle_fn(move || SystemInjectionBundle::new(system, name, deps))
+    }
+
     /// Registers a function to assert an expected outcome.
     ///
     /// The function will be run in an [`AssertionState`](struct.AssertionState.html)
@@ -794,6 +813,42 @@ mod test {
         );
     }
 
+    #[test]
+    fn system_increases_component_value_by_one() {
+        let effect_fn = |world: &mut World| {
+            let entity = world.create_entity().with(ComponentZero(0)).build();
+
+            world.add_resource(EffectReturn(entity));
+        };
+        let assertion_fn = |world: &mut World| {
+            let entity = world.read_resource::<EffectReturn<Entity>>().0.clone();
+
+            let component_zero_storage = world.read_storage::<ComponentZero>();
+            let component_zero = component_zero_storage
+                .get(entity)
+                .expect("Entity should have a `ComponentZero` component.");
+
+            // If the system ran, the value in the `ComponentZero` should be 1.
+            assert_eq!(1, component_zero.0);
+        };
+
+        assert!(
+            AmethystApplication::blank()
+                .with_system(SystemEffect, "system_effect", &[])
+                .with_effect(effect_fn)
+                .with_assertion(assertion_fn)
+                .run()
+                .is_ok()
+        );
+    }
+
+    #[test]
+    fn with_system_invoked_twice_should_not_panic() {
+        AmethystApplication::blank()
+            .with_system(SystemZero, "zero", &[])
+            .with_system(SystemOne, "one", &["zero"]);
+    }
+
     // Incorrect usage tests
 
     #[test]
@@ -925,6 +980,18 @@ mod test {
         }
     }
 
+    #[derive(Debug)]
+    struct SystemEffect;
+    type SystemEffectData<'s> = WriteStorage<'s, ComponentZero>;
+    impl<'s> System<'s> for SystemEffect {
+        type SystemData = SystemEffectData<'s>;
+        fn run(&mut self, mut component_zero_storage: Self::SystemData) {
+            for mut component_zero in (&mut component_zero_storage).join() {
+                component_zero.0 += 1
+            }
+        }
+    }
+
     // === Bundles === //
     #[derive(Debug)]
     struct BundleZero;
@@ -983,5 +1050,11 @@ mod test {
                 &world.read_resource::<AssetStorage<AssetZero>>(),
             ))
         }
+    }
+
+    // === Components === //
+    struct ComponentZero(pub i32);
+    impl Component for ComponentZero {
+        type Storage = DenseVecStorage<Self>;
     }
 }
