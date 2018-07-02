@@ -37,3 +37,43 @@ impl CharacterLoader {
         Ok(character_handle)
     }
 }
+
+#[cfg(test)]
+mod test {
+    use std::path::Path;
+
+    use amethyst::assets::AssetStorage;
+    use amethyst_test_support::prelude::*;
+    use application::resource::dir::assets_dir;
+    use game_model::config::ConfigRecord;
+    use object_model::loaded::{Character, CharacterHandle};
+
+    use super::CharacterLoader;
+    use ObjectLoadingBundle;
+
+    #[test]
+    fn loads_character() {
+        assert!(
+            AmethystApplication::render_base("loads_character", false)
+                .with_bundle(ObjectLoadingBundle)
+                .with_effect(|world| {
+                    let mut bat_path = assets_dir(Some(development_base_dirs!())).unwrap();
+                    bat_path.extend(Path::new("test/object/character/bat").iter());
+                    let config_record = ConfigRecord::new(bat_path);
+
+                    let character_handle = CharacterLoader::load(world, &config_record)
+                        .expect("Failed to load character");
+
+                    world.add_resource(EffectReturn(character_handle));
+                })
+                .with_assertion(|world| {
+                    let character_handle =
+                        &world.read_resource::<EffectReturn<CharacterHandle>>().0;
+                    let store = world.read_resource::<AssetStorage<Character>>();
+                    assert!(store.get(character_handle).is_some());
+                })
+                .run()
+                .is_ok()
+        );
+    }
+}
