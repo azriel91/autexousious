@@ -1,8 +1,10 @@
 use std::collections::HashMap;
 
-use amethyst::assets::{AssetStorage, Loader};
-use amethyst::prelude::*;
-use amethyst::ui::{FontAsset, FontHandle, TtfFormat};
+use amethyst::{
+    assets::{AssetStorage, Loader},
+    prelude::*,
+    ui::{FontAsset, FontHandle, TtfFormat},
+};
 use application::resource::{self, dir, load_in};
 
 use FontConfig;
@@ -57,12 +59,8 @@ impl ThemeLoader {
 
 #[cfg(test)]
 mod test {
-    use amethyst::core::transform::TransformBundle;
-    use amethyst::input::InputBundle;
-    use amethyst::prelude::*;
-    use amethyst::renderer::ScreenDimensions;
-    use amethyst::ui::UiBundle;
-    use amethyst::Result;
+    use amethyst::{prelude::*, renderer::ScreenDimensions};
+    use amethyst_test_support::prelude::*;
     use application::resource;
     use strum::IntoEnumIterator;
 
@@ -70,24 +68,9 @@ mod test {
     use FontVariant;
     use Theme;
 
-    fn setup<'a, 'b, F>(assertion_fn: Box<F>) -> Result<Application<'a, GameData<'a, 'b>>>
-    where
-        F: 'a + Fn(&mut World),
-    {
-        let game_data = GameDataBuilder::default()
-            .with_bundle(TransformBundle::new())?
-            .with_bundle(InputBundle::<String, String>::new())?
-            .with_bundle(UiBundle::<String, String>::new())?;
-        Application::build(
-            format!("{}/assets", env!("CARGO_MANIFEST_DIR")),
-            MockState { assertion_fn },
-        )?.with_resource(ScreenDimensions::new(640, 480, 1.))
-            .build(game_data)
-    } // kcov-ignore
-
     #[test]
     fn build_adds_theme_with_fonts_to_world() {
-        let assertion_fn = |world: &mut World| {
+        let assertion = |world: &mut World| {
             ThemeLoader::load_internal(world, "font_config.ron").unwrap();
 
             let theme = world.read_resource::<Theme>();
@@ -97,14 +80,18 @@ mod test {
             FontVariant::iter().for_each(|variant| assert!(fonts.contains_key(&variant)));
         };
 
-        setup(Box::new(assertion_fn))
-            .expect("Failed to build Application")
-            .run(); // kcov-ignore
+        assert!(
+            AmethystApplication::base()
+                .with_assertion(assertion)
+                .with_resource(ScreenDimensions::new(640, 480, 1.))
+                .run()
+                .is_ok()
+        );
     }
 
     #[test]
     fn fails_with_useful_error_when_font_config_does_not_exist() {
-        let assertion_fn = |world: &mut World| {
+        let assertion = |world: &mut World| {
             if let Err(e) = ThemeLoader::load_internal(world, "non_existent.ron") {
                 match *e.kind() {
                     resource::ErrorKind::Find(ref find_context) => {
@@ -118,14 +105,18 @@ mod test {
             panic!("Expected resource `Find` error containing `non_existent.ron`"); // kcov-ignore
         };
 
-        setup(Box::new(assertion_fn))
-            .expect("Failed to build Application")
-            .run(); // kcov-ignore
+        assert!(
+            AmethystApplication::base()
+                .with_assertion(assertion)
+                .with_resource(ScreenDimensions::new(640, 480, 1.))
+                .run()
+                .is_ok()
+        );
     }
 
     #[test]
     fn fails_with_useful_error_when_font_config_fails_to_parse() {
-        let assertion_fn = |world: &mut World| {
+        let assertion = |world: &mut World| {
             if let Err(e) = ThemeLoader::load_internal(world, "bad_config.ron") {
                 match *e.kind() {
                     resource::ErrorKind::RonDeserialization(ref _ron_error) => {
@@ -138,22 +129,12 @@ mod test {
             panic!("Expected resource deserialization error"); // kcov-ignore
         };
 
-        setup(Box::new(assertion_fn))
-            .expect("Failed to build Application")
-            .run(); // kcov-ignore
-    }
-
-    #[derive(Debug)]
-    struct MockState<F: Fn(&mut World)> {
-        assertion_fn: Box<F>,
-    }
-    impl<'a, 'b, F: Fn(&mut World)> State<GameData<'a, 'b>> for MockState<F> {
-        fn on_start(&mut self, mut data: StateData<GameData>) {
-            (self.assertion_fn)(&mut data.world);
-        }
-
-        fn fixed_update(&mut self, _data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
-            Trans::Quit
-        }
+        assert!(
+            AmethystApplication::base()
+                .with_assertion(assertion)
+                .with_resource(ScreenDimensions::new(640, 480, 1.))
+                .run()
+                .is_ok()
+        );
     }
 }
