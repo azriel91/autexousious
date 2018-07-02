@@ -1,4 +1,5 @@
 use std::marker::PhantomData;
+use std::sync::Mutex;
 use std::thread;
 
 use amethyst::{
@@ -50,6 +51,13 @@ type FnStatePlaceholder = &'static fn() -> StatePlaceholder;
 type FnEffectPlaceholder = &'static fn(&mut World);
 type FnAssertPlaceholder = &'static fn(&mut World);
 
+// Use a mutex to prevent multiple tests that open GL windows from running simultaneously, due to
+// race conditions causing failures in X.
+// <https://github.com/tomaka/glutin/issues/1038>
+lazy_static! {
+    static ref X11_GL_MUTEX: Mutex<()> = Mutex::new(());
+}
+
 /// Builder for an Amethyst application.
 ///
 /// This provides varying levels of setup so that users do not have to register common bundles.
@@ -84,6 +92,8 @@ where
     assertion_fn: Option<FnAssert>,
     /// State data.
     state_data: PhantomData<T>,
+    /// Whether or not this application uses the `RenderBundle`.
+    render: bool,
 }
 
 impl
@@ -110,6 +120,7 @@ impl
             effect_fn: None,
             assertion_fn: None,
             state_data: PhantomData,
+            render: false,
         }
     }
 
@@ -194,6 +205,7 @@ impl
             .with_bundle(InputBundle::<String, String>::new())
             .with_bundle(UiBundle::<String, String>::new())
             .with_bundle_fn(render_bundle_fn)
+            .mark_render()
     }
 }
 
@@ -319,10 +331,31 @@ where
             self.assertion_fn,
         );
 
+        let render = self.render;
+
         // Run in a sub thread due to mesa's threading issues with GL software rendering
         // See: <https://users.rust-lang.org/t/trouble-identifying-cause-of-segfault/18096>
-        thread::spawn(|| -> Result<()> {
-            Self::build_internal(params)?.run();
+        thread::spawn(move || -> Result<()> {
+            if render {
+                let guard = X11_GL_MUTEX.lock().unwrap();
+
+                // Note: if this panics, the Mutex is poisoned.
+                // Unfortunately we cannot catch panics, as the application is `!UnwindSafe`
+                //
+                // We have to build the application after acquiring the lock because the window is
+                // already instantiated during the build.
+                //
+                // The mutex greatly reduces, but does not eliminate X11 window initialization
+                // errors from happening:
+                //
+                // * <https://github.com/tomaka/glutin/issues/1034> can still happen
+                // * <https://github.com/tomaka/glutin/issues/1038> may be completely removed
+                Self::build_internal(params)?.run();
+
+                drop(guard);
+            } else {
+                Self::build_internal(params)?.run();
+            }
 
             Ok(())
         }).join()
@@ -338,6 +371,10 @@ where
     FnAssert: Fn(&mut World) + Send + 'static,
 {
     /// Adds a bundle to the list of bundles.
+    ///
+    /// **Note:** If you are adding the `RenderBundle`, you need to use `.with_bundle_fn(F)` as the
+    /// `Pipeline` type used by the bundle is `!Send`. Furthermore, you must also invoke
+    /// `.mark_render()` to avoid a race condition that causes render tests to fail.
     ///
     /// # Parameters
     ///
@@ -373,6 +410,9 @@ where
     ///
     /// This provides an alternative to `.with_bundle(B)` where `B` is `!Send`. The function that
     /// instantiates the bundle must be `Send`.
+    ///
+    /// **Note:** If you are adding the `RenderBundle`, you must also invoke `.mark_render()` to
+    /// avoid a race condition that causes render tests to fail.
     ///
     /// # Parameters
     ///
@@ -447,6 +487,7 @@ where
                 effect_fn: self.effect_fn,
                 assertion_fn: self.assertion_fn,
                 state_data: PhantomData,
+                render: self.render,
             }
         }
     }
@@ -495,6 +536,7 @@ where
                 effect_fn: Some(effect_fn),
                 assertion_fn: self.assertion_fn,
                 state_data: self.state_data,
+                render: self.render,
             }
         }
     }
@@ -526,8 +568,18 @@ where
                 effect_fn: self.effect_fn,
                 assertion_fn: Some(assertion_fn),
                 state_data: self.state_data,
+                render: self.render,
             }
         }
+    }
+
+    /// Marks that this application uses the `RenderBundle`.
+    ///
+    /// This is used to avoid a window initialization race condition that causes tests to fail.
+    /// See <https://github.com/tomaka/glutin/issues/1038>.
+    pub fn mark_render(mut self) -> Self {
+        self.render = true;
+        self
     }
 }
 

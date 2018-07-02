@@ -292,6 +292,8 @@ extern crate boxfnonce;
 extern crate derivative;
 #[macro_use]
 extern crate derive_new;
+#[macro_use]
+extern crate lazy_static;
 
 pub use amethyst_application::AmethystApplication;
 pub use effect_return::EffectReturn;
