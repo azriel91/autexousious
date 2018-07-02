@@ -978,6 +978,7 @@ name = "game_play"
 version = "0.3.0"
 dependencies = [
  "amethyst 0.7.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
+ "amethyst_test_support 0.4.0",
  "application 0.3.0",
  "character_selection 0.3.0",
  "derive-new 0.5.4 (registry+https://github.com/rust-lang/crates.io-index)",
