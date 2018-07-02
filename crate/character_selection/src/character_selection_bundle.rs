@@ -1,5 +1,7 @@
-use amethyst::core::bundle::{Result, SystemBundle};
-use amethyst::ecs::prelude::*;
+use amethyst::{
+    core::bundle::{Result, SystemBundle},
+    ecs::prelude::*,
+};
 
 use CharacterSelectionSystem;
 
@@ -24,37 +26,24 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionBundle {
 mod test {
     use std::env;
 
-    use amethyst::core::transform::TransformBundle;
-    use amethyst::input::InputBundle;
-    use amethyst::prelude::*;
-    use amethyst::ui::UiBundle;
-    use amethyst::Result;
+    use amethyst::{core::transform::TransformBundle, input::InputBundle, ui::UiBundle};
+    use amethyst_test_support::prelude::*;
     use game_input::{PlayerActionControl, PlayerAxisControl};
 
     use super::CharacterSelectionBundle;
 
-    fn setup<'a, 'b>() -> Result<Application<'a, GameData<'a, 'b>>> {
-        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
-        let game_data = GameDataBuilder::default()
-            .with_bundle(TransformBundle::new())?
-            .with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new())?
-            .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?
-            .with_bundle(CharacterSelectionBundle)?;
-        let app = Application::new(
-            format!("{}/assets", env!("CARGO_MANIFEST_DIR")),
-            MockState,
-            game_data,
-        )?;
-
-        Ok(app)
-    } // kcov-ignore
-
     #[test]
     fn bundle_build_should_succeed() {
-        setup().expect("CharacterSelectionBundle#build() should succeed");
-    }
+        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
-    #[derive(Debug)]
-    struct MockState;
-    impl<'a, 'b> State<GameData<'a, 'b>> for MockState {}
+        assert!(
+            AmethystApplication::blank()
+                .with_bundle(TransformBundle::new())
+                .with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new())
+                .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())
+                .with_bundle(CharacterSelectionBundle)
+                .run()
+                .is_ok()
+        );
+    }
 }
