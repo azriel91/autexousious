@@ -79,9 +79,11 @@ impl<'a> System<'a> for StdinSystem {
 mod test {
     use std::sync::mpsc::{self, Sender};
 
-    use amethyst::ecs::prelude::RunNow;
-    use amethyst::shred::{Resources, SystemData};
-    use amethyst::shrev::{EventChannel, ReaderId};
+    use amethyst::{
+        ecs::prelude::RunNow,
+        shred::{Resources, SystemData},
+        shrev::{EventChannel, ReaderId},
+    };
     use application_input::ApplicationEvent;
 
     use super::{EventChannelData, StdinSystem};

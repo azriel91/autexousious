@@ -13,6 +13,10 @@ log = "0.4"
 
 [dev-dependencies]
 application_robot = { path = "../application_robot" }
+amethyst_test_support = { path = "../amethyst_test_support" }
 assert_cli = "0.6"
 structopt = "0.2"
 structopt-derive = "0.2"
+
+[features]
+nightly = ["amethyst/nightly", "amethyst_test_support/nightly"]
