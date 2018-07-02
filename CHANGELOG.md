@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+* Mirror sprites when entity is facing left.
+* Created test harness to make it easier to test logic.
+
 ## 0.3.0 (2018-06-08)
 
 * Read controller configuration.
