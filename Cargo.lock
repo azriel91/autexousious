@@ -307,6 +307,7 @@ name = "application_ui"
 version = "0.3.0"
 dependencies = [
  "amethyst 0.7.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
+ "amethyst_test_support 0.4.0",
  "application 0.3.0",
  "application_robot 0.3.0",
  "assert_cli 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -492,6 +493,7 @@ name = "character_selection"
 version = "0.3.0"
 dependencies = [
  "amethyst 0.7.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
+ "amethyst_test_support 0.4.0",
  "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input 0.1.0",
@@ -950,6 +952,7 @@ name = "game_mode_menu"
 version = "0.3.0"
 dependencies = [
  "amethyst 0.7.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
+ "amethyst_test_support 0.4.0",
  "application_menu 0.3.0",
  "application_ui 0.3.0",
  "character_selection 0.3.0",
@@ -976,6 +979,7 @@ name = "game_play"
 version = "0.3.0"
 dependencies = [
  "amethyst 0.7.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
+ "amethyst_test_support 0.4.0",
  "application 0.3.0",
  "character_selection 0.3.0",
  "derive-new 0.5.4 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1499,6 +1503,7 @@ name = "object_loading"
 version = "0.3.0"
 dependencies = [
  "amethyst 0.7.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
+ "amethyst_test_support 0.4.0",
  "application 0.3.0",
  "derive-error-chain 0.11.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.4 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2017,6 +2022,7 @@ name = "stdio_view"
 version = "0.3.0"
 dependencies = [
  "amethyst 0.7.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
+ "amethyst_test_support 0.4.0",
  "application_input 0.3.0",
  "application_robot 0.3.0",
  "assert_cli 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",

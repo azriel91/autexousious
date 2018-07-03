@@ -106,61 +106,36 @@ impl DerefMut for MenuBuildFn {
 mod test {
     use std::env;
 
-    use amethyst::{
-        core::transform::TransformBundle, input::InputBundle, prelude::*,
-        renderer::ScreenDimensions, ui::UiBundle, Result,
-    };
+    use amethyst::{prelude::*, renderer::ScreenDimensions};
+    use amethyst_test_support::prelude::*;
     use application_ui::ThemeLoader;
 
     use super::MenuBuildFn;
     use GameModeMenuBundle;
 
-    fn setup<'a, 'b, F>(assertion_fn: Box<F>) -> Result<Application<'a, GameData<'a, 'b>>>
-    where
-        F: 'a + Fn(&mut World) -> Result<()>,
-    {
-        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
-
-        let game_data = GameDataBuilder::default()
-            .with_bundle(TransformBundle::new())?
-            .with_bundle(InputBundle::<String, String>::new())?
-            .with_bundle(UiBundle::<String, String>::new())?
-            .with_bundle(GameModeMenuBundle)?;
-        Application::build(
-            format!("{}/assets", env!("CARGO_MANIFEST_DIR")),
-            MockState { assertion_fn },
-        )?.with_resource(ScreenDimensions::new(640, 480, 1.))
-            .build(game_data)
-    } // kcov-ignore
-
     #[test]
     fn initialize_menu_creates_entity_for_each_menu_index() {
-        let assertion_fn = |world: &mut World| -> Result<()> {
-            ThemeLoader::load(world)?;
+        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
+
+        let assertion = |world: &mut World| {
+            ThemeLoader::load(world).expect("Failed to load theme.");
             let mut menu_items = vec![];
 
             let mut mb_fn = MenuBuildFn::default();
             (&mut *mb_fn)(world, &mut menu_items);
 
             assert_eq!(2, menu_items.len());
-            Ok(())
         };
-        setup(Box::new(assertion_fn))
-            .expect("Failed to build Application.")
-            .run(); // kcov-ignore
-    }
 
-    #[derive(Debug)]
-    struct MockState<F: Fn(&mut World) -> Result<()>> {
-        assertion_fn: Box<F>,
-    }
-    impl<'a, 'b, F: Fn(&mut World) -> Result<()>> State<GameData<'a, 'b>> for MockState<F> {
-        fn update(&mut self, mut data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
-            data.data.update(&data.world);
-
-            assert!((self.assertion_fn)(&mut data.world).is_ok());
-
-            Trans::Quit
-        }
+        // kcov-ignore-start
+        assert!(
+            // kcov-ignore-end
+            AmethystApplication::base()
+                .with_bundle(GameModeMenuBundle)
+                .with_resource(ScreenDimensions::new(640, 480, 1.))
+                .with_assertion(assertion)
+                .run()
+                .is_ok()
+        );
     }
 }

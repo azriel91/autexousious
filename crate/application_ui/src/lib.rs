@@ -49,6 +49,8 @@
 //! text in regular, bold, italic, and bold italic fonts.
 
 extern crate amethyst;
+#[cfg(test)]
+extern crate amethyst_test_support;
 #[macro_use]
 extern crate application;
 #[macro_use]

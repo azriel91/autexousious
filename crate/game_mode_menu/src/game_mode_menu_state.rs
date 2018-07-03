@@ -140,16 +140,13 @@ mod test {
     use std::mem::discriminant;
     use std::sync::Arc;
 
-    use amethyst::ecs::prelude::World;
-    use amethyst::prelude::*;
-    use amethyst::shrev::EventChannel;
-    use amethyst::ui::UiEvent;
+    use amethyst::{ecs::prelude::World, prelude::*, shrev::EventChannel, ui::UiEvent};
     use application_menu::{MenuEvent, MenuItem};
     use rayon::ThreadPoolBuilder;
 
     use super::GameModeMenuState;
-    use index::Index;
-    use menu_build_fn::MenuBuildFn;
+    use Index;
+    use MenuBuildFn;
 
     fn setup<'a, 'b>() -> (GameModeMenuState, World, GameData<'a, 'b>) {
         setup_with_menu_items(MenuBuildFn(Box::new(|_, _| {})))

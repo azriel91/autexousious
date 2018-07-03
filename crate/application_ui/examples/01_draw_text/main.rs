@@ -25,14 +25,18 @@ use std::process;
 use std::rc::Rc;
 use std::time::Duration;
 
-use amethyst::core::transform::TransformBundle;
-use amethyst::input::InputBundle;
-use amethyst::prelude::*;
-use amethyst::renderer::{DisplayConfig, Pipeline, RenderBundle, Stage};
-use amethyst::ui::{DrawUi, UiBundle};
+use amethyst::{
+    core::transform::TransformBundle,
+    input::InputBundle,
+    prelude::*,
+    renderer::{DisplayConfig, Pipeline, RenderBundle, Stage},
+    ui::{DrawUi, UiBundle},
+};
 use application::resource::{self, dir, load_in};
-use application_robot::state::{FixedTimeoutIntercept, Intercept};
-use application_robot::RobotState;
+use application_robot::{
+    state::{FixedTimeoutIntercept, Intercept},
+    RobotState,
+};
 use structopt::StructOpt;
 
 use state::TextState;

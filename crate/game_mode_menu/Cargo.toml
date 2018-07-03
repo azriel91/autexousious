@@ -14,4 +14,8 @@ log = "0.4"
 rayon = "1.0"
 
 [dev-dependencies]
+amethyst_test_support = { path = "../amethyst_test_support" }
 debug_util_amethyst = { path = "../debug_util_amethyst" }
+
+[features]
+nightly = ["amethyst/nightly", "amethyst_test_support/nightly"]

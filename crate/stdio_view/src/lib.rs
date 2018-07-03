@@ -4,6 +4,8 @@
 //! System that integrates with standard I/O so that the application can be controlled headlessly.
 
 extern crate amethyst;
+#[cfg(test)]
+extern crate amethyst_test_support;
 extern crate application_input;
 #[macro_use]
 extern crate derive_new;

@@ -1,5 +1,7 @@
-use amethyst::core::bundle::{Result, SystemBundle};
-use amethyst::ecs::prelude::*;
+use amethyst::{
+    core::bundle::{Result, SystemBundle},
+    ecs::prelude::*,
+};
 
 use CharacterInputUpdateSystem;
 
@@ -24,34 +26,26 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 mod test {
     use std::env;
 
-    use amethyst::{
-        core::transform::TransformBundle, input::InputBundle, prelude::*, ui::UiBundle, Result,
-    };
+    use amethyst::{core::transform::TransformBundle, input::InputBundle, ui::UiBundle};
+    use amethyst_test_support::prelude::*;
     use game_input::{PlayerActionControl, PlayerAxisControl};
 
     use super::GamePlayBundle;
 
-    fn setup<'a, 'b>() -> Result<Application<'a, GameData<'a, 'b>>> {
-        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
-
-        let game_data = GameDataBuilder::default()
-            .with_bundle(TransformBundle::new())?
-            .with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new())?
-            .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?
-            .with_bundle(GamePlayBundle)?;
-        Application::new(
-            format!("{}/assets", env!("CARGO_MANIFEST_DIR")),
-            MockState,
-            game_data,
-        )
-    } // kcov-ignore
-
     #[test]
     fn bundle_build_should_succeed() {
-        setup().expect("GamePlayBundle#build() should succeed");
-    }
+        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
-    #[derive(Debug)]
-    struct MockState;
-    impl<'a, 'b> State<GameData<'a, 'b>> for MockState {}
+        // kcov-ignore-start
+        assert!(
+            // kcov-ignore-end
+            AmethystApplication::blank()
+                .with_bundle(TransformBundle::new())
+                .with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new())
+                .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())
+                .with_bundle(GamePlayBundle)
+                .run()
+                .is_ok()
+        );
+    }
 }

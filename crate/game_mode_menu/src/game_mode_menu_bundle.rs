@@ -24,51 +24,33 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameModeMenuBundle {
 mod test {
     use std::env;
 
-    use amethyst::{
-        core::transform::TransformBundle, input::InputBundle, prelude::*, ui::UiBundle, Result,
-    };
+    use amethyst_test_support::prelude::*;
     use application_menu::MenuItem;
 
     use super::GameModeMenuBundle;
-    use index::Index;
-
-    fn setup<'a, 'b>() -> Result<Application<'a, GameData<'a, 'b>>> {
-        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
-
-        let game_data = GameDataBuilder::default()
-            .with_bundle(TransformBundle::new())?
-            .with_bundle(InputBundle::<String, String>::new())?
-            .with_bundle(UiBundle::<String, String>::new())?
-            .with_bundle(GameModeMenuBundle)?;
-        let app = Application::new(
-            format!("{}/assets", env!("CARGO_MANIFEST_DIR")),
-            MockState,
-            game_data,
-        )?;
-
-        Ok(app)
-    } // kcov-ignore
+    use Index;
 
     #[test]
     fn bundle_should_allow_menu_items_to_be_created() {
-        let mut app = setup().expect("GameModeMenuBundle#build() should succeed");
+        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
-        // If the system was not registered, this will panic
-        app.run();
-    }
-
-    #[derive(Debug)]
-    struct MockState;
-    impl<'a, 'b> State<GameData<'a, 'b>> for MockState {
-        fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
-            data.world
-                .create_entity()
-                .with(MenuItem {
-                    index: Index::StartGame,
+        // kcov-ignore-start
+        assert!(
+            // kcov-ignore-end
+            AmethystApplication::base()
+                .with_bundle(GameModeMenuBundle)
+                // kcov-ignore-start
+                .with_effect(|world| {
+                    world
+                        .create_entity()
+                        .with(MenuItem {
+                            index: Index::StartGame,
+                        })
+                        .build();
                 })
-                .build();
-
-            Trans::Quit
-        }
+                // kcov-ignore-end
+                .run()
+                .is_ok()
+        );
     }
 }

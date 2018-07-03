@@ -39,12 +39,14 @@ impl CharacterEntitySpawner {
             let loaded_characters = world.read_resource::<Vec<CharacterHandle>>();
 
             let character_handle = loaded_characters.get(character_index).unwrap_or_else(|| {
+                // kcov-ignore-start
                 let error_msg = format!(
                     "Attempted to spawn character at index: `{}` for `{:?}`, \
                      but index is out of bounds.",
                     character_index, &character_entity_control
                 );
                 panic!(error_msg)
+                // kcov-ignore-end
             });
 
             debug!("Retrieving character with handle: `{:?}`", character_handle);
