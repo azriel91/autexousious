@@ -1,5 +1,7 @@
+use amethyst::ecs::prelude::*;
+
 /// Input for a character entity.
-#[derive(Constructor, Debug)]
+#[derive(Clone, Copy, Constructor, Debug, Default, PartialEq)]
 pub struct CharacterInput {
     /// X axis input value.
     ///
@@ -21,4 +23,8 @@ pub struct CharacterInput {
     pub attack: bool,
     /// Whether the `Special` button is pressed.
     pub special: bool,
+}
+
+impl Component for CharacterInput {
+    type Storage = VecStorage<Self>;
 }
