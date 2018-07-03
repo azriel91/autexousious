@@ -28,9 +28,11 @@ pub(crate) use character_entity_spawner::CharacterEntitySpawner;
 pub(crate) use character_input_update_system::CharacterInputUpdateSystem;
 pub use game_play_bundle::GamePlayBundle;
 pub use game_play_state::GamePlayState;
+pub(crate) use system::ObjectTransformUpdateSystem;
 
 mod animation_runner;
 mod character_entity_spawner;
 mod character_input_update_system;
 mod game_play_bundle;
 mod game_play_state;
+mod system;

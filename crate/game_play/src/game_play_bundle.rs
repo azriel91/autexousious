@@ -4,6 +4,7 @@ use amethyst::{
 };
 
 use CharacterInputUpdateSystem;
+use ObjectTransformUpdateSystem;
 
 /// Adds the `CharacterInputUpdateSystem` to the `World` with id `"character_input_update_system"`.
 ///
@@ -17,6 +18,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             CharacterInputUpdateSystem::new(),
             "character_input_update_system",
             &["input_system"],
+        );
+        builder.add(
+            ObjectTransformUpdateSystem::new(),
+            "object_transform_update_system",
+            &["character_input_update_system"],
         );
         Ok(())
     }

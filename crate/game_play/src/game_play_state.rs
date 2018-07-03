@@ -1,7 +1,7 @@
 use amethyst::{
     core::{
         cgmath::{Matrix4, Vector3},
-        transform::{GlobalTransform, Transform},
+        transform::GlobalTransform,
     },
     ecs::prelude::*,
     input::is_key,
@@ -9,6 +9,7 @@ use amethyst::{
     renderer::{Camera, Event, Projection, ScreenDimensions, VirtualKeyCode},
 };
 use character_selection::{CharacterEntityControl, CharacterSelection};
+use object_model::entity::Position;
 
 use CharacterEntitySpawner;
 
@@ -33,9 +34,8 @@ impl GamePlayState {
             (dim.width(), dim.height())
         };
 
-        // This `Transform` moves the sprites to the middle of the window
-        let mut common_transform = Transform::default();
-        common_transform.translation = Vector3::new(width / 2., height / 2., 0.);
+        // This `Position` moves the entity to the middle of a "screen wide" map.
+        let position = Position::new(width / 2., height / 2., 0.);
 
         // We need to collect this first because `world` needs to be borrowed immutably first, then
         // mutably later.
@@ -56,7 +56,7 @@ impl GamePlayState {
             |(character_index, character_entity_control)| {
                 let entity = CharacterEntitySpawner::spawn_for_player(
                     world,
-                    common_transform.clone(),
+                    position,
                     character_index,
                     character_entity_control,
                 );
