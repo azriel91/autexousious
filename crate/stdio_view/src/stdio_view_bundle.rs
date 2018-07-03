@@ -29,12 +29,16 @@ mod test {
     #[test]
     fn bundle_should_add_stdin_system_to_dispatcher() {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_bundle(StdioViewBundle)
+                // kcov-ignore-start
                 .with_effect(|world| {
                     world.read_resource::<EventChannel<ApplicationEvent>>();
                 })
+                // kcov-ignore-end
                 .run()
                 .is_ok()
         );

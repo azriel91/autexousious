@@ -34,9 +34,12 @@ mod test {
     fn bundle_should_allow_menu_items_to_be_created() {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::base()
                 .with_bundle(GameModeMenuBundle)
+                // kcov-ignore-start
                 .with_effect(|world| {
                     world
                         .create_entity()
@@ -45,6 +48,7 @@ mod test {
                         })
                         .build();
                 })
+                // kcov-ignore-end
                 .run()
                 .is_ok()
         );

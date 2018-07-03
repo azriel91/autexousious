@@ -18,6 +18,7 @@ pub struct StdinReader {
 }
 
 impl StdinReader {
+    // kcov-ignore-start
     /// Returns a StdinReader.
     ///
     /// # Parameters:
@@ -28,7 +29,6 @@ impl StdinReader {
     }
 
     /// Signals this reader to read from stdin.
-    // kcov-ignore-start
     pub fn start(&self) {
         let mut term = Term::stdout();
         let prompt = format!("{}: ", style(">>").blue().bold());

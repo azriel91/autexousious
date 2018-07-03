@@ -36,7 +36,9 @@ mod test {
     fn bundle_build_should_succeed() {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_bundle(TransformBundle::new())
                 .with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new())

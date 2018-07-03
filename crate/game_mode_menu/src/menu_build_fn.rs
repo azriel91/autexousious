@@ -127,7 +127,9 @@ mod test {
             assert_eq!(2, menu_items.len());
         };
 
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::base()
                 .with_bundle(GameModeMenuBundle)
                 .with_resource(ScreenDimensions::new(640, 480, 1.))

@@ -80,7 +80,9 @@ mod test {
             FontVariant::iter().for_each(|variant| assert!(fonts.contains_key(&variant)));
         };
 
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::base()
                 .with_assertion(assertion)
                 .with_resource(ScreenDimensions::new(640, 480, 1.))
@@ -105,7 +107,9 @@ mod test {
             panic!("Expected resource `Find` error containing `non_existent.ron`"); // kcov-ignore
         };
 
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::base()
                 .with_assertion(assertion)
                 .with_resource(ScreenDimensions::new(640, 480, 1.))
@@ -129,7 +133,9 @@ mod test {
             panic!("Expected resource deserialization error"); // kcov-ignore
         };
 
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::base()
                 .with_assertion(assertion)
                 .with_resource(ScreenDimensions::new(640, 480, 1.))
