@@ -1,14 +1,17 @@
 use amethyst::{
     animation::get_animation_set,
     assets::AssetStorage,
-    core::transform::{GlobalTransform, Transform},
+    core::{
+        cgmath::Vector3,
+        transform::{GlobalTransform, Transform},
+    },
     ecs::prelude::*,
     renderer::Material,
 };
 use character_selection::CharacterEntityControl;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::ObjectStatus,
+    entity::{Kinematics, ObjectStatus},
     loaded::{Character, CharacterHandle},
 };
 
@@ -24,12 +27,12 @@ impl CharacterEntitySpawner {
     /// # Parameters
     ///
     /// * `world`: `World` to spawn the character into.
-    /// * `transform`: Position of the entity in the world.
+    /// * `kinematics`: Kinematics of the entity in game.
     /// * `character_index`: Index of the character to spawn.
     /// * `character_entity_control`: `Component` that links the character entity to the controller.
     pub(crate) fn spawn_for_player(
         world: &mut World,
-        transform: Transform,
+        kinematics: Kinematics<f32>,
         character_index: usize,
         character_entity_control: CharacterEntityControl,
     ) -> Entity {
@@ -69,6 +72,10 @@ impl CharacterEntitySpawner {
             ) // kcov-ignore
         };
 
+        let position = &kinematics.position;
+        let mut transform = Transform::default();
+        transform.translation = Vector3::new(position.x, position.y + position.z, 0.);
+
         let mirrored = false;
         let entity = world
             .create_entity()
@@ -80,7 +87,9 @@ impl CharacterEntitySpawner {
             .with(material)
             // Coordinates to map the sprite texture to screen. This is the non-mirrored mesh.
             .with(mesh)
-            // Location of the entity
+            // Kinematics of the entity in game.
+            .with(kinematics)
+            // Render location of the entity on screen.
             .with(transform)
             // This defines the coordinates in the world, where the sprites should be drawn relative
             // to the entity
@@ -108,10 +117,7 @@ mod test {
 
     use amethyst::{
         animation::AnimationBundle,
-        core::{
-            cgmath::Vector3,
-            transform::{GlobalTransform, Transform, TransformBundle},
-        },
+        core::transform::{GlobalTransform, Transform, TransformBundle},
         input::InputBundle,
         prelude::*,
         renderer::{
@@ -130,7 +136,9 @@ mod test {
     use loading;
     use object_loading::ObjectLoadingBundle;
     use object_model::{
-        config::object::CharacterSequenceId, entity::ObjectStatus, loaded::CharacterHandle,
+        config::object::CharacterSequenceId,
+        entity::{Kinematics, ObjectStatus, Position, Velocity},
+        loaded::CharacterHandle,
     };
 
     use super::CharacterEntitySpawner;
@@ -139,15 +147,15 @@ mod test {
     #[test]
     fn spawn_for_player_creates_entity_with_object_components() {
         let assertion_fn = |world: &mut World| {
-            let mut transform = Transform::default();
-            transform.translation = Vector3::new(100., -10., -20.);
+            let position = Position::new(100., -10., -20.);
+            let kinematics = Kinematics::new(position, Velocity::default());
             let character_index = 0;
             let controller_id = 0;
             let character_entity_control = CharacterEntityControl::new(controller_id);
 
             let entity = CharacterEntitySpawner::spawn_for_player(
                 world,
-                transform,
+                kinematics,
                 character_index,
                 character_entity_control,
             );
@@ -160,6 +168,7 @@ mod test {
             assert!(world.read_storage::<CharacterHandle>().contains(entity));
             assert!(world.read_storage::<Material>().contains(entity));
             assert!(world.read_storage::<MeshHandle>().contains(entity));
+            assert!(world.read_storage::<Kinematics<f32>>().contains(entity));
             assert!(world.read_storage::<Transform>().contains(entity));
             assert!(world.read_storage::<GlobalTransform>().contains(entity));
             assert!(

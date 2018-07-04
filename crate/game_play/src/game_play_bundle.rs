@@ -4,6 +4,10 @@ use amethyst::{
 };
 
 use CharacterInputUpdateSystem;
+use CharacterKinematicsSystem;
+use CharacterSequenceUpdateSystem;
+use ObjectKinematicsUpdateSystem;
+use ObjectTransformUpdateSystem;
 
 /// Adds the `CharacterInputUpdateSystem` to the `World` with id `"character_input_update_system"`.
 ///
@@ -13,10 +17,32 @@ pub struct GamePlayBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
+        // TODO: Custom derive to get snake_cased name
+        // See <https://docs.rs/named_type/0.1.3/named_type/>
         builder.add(
             CharacterInputUpdateSystem::new(),
             "character_input_update_system",
             &["input_system"],
+        );
+        builder.add(
+            CharacterSequenceUpdateSystem::new(),
+            "character_sequence_update_system",
+            &["character_input_update_system"],
+        );
+        builder.add(
+            CharacterKinematicsSystem::new(),
+            "character_kinematics_system",
+            &["character_sequence_update_system"],
+        );
+        builder.add(
+            ObjectKinematicsUpdateSystem::new(),
+            "object_kinematics_update_system",
+            &["character_kinematics_system"],
+        );
+        builder.add(
+            ObjectTransformUpdateSystem::new(),
+            "object_transform_update_system",
+            &["object_kinematics_update_system"],
         );
         Ok(())
     }
