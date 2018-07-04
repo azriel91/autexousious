@@ -4,7 +4,9 @@ use amethyst::{
 };
 
 use CharacterInputUpdateSystem;
+use CharacterKinematicsSystem;
 use CharacterSequenceUpdateSystem;
+use ObjectKinematicsUpdateSystem;
 use ObjectTransformUpdateSystem;
 
 /// Adds the `CharacterInputUpdateSystem` to the `World` with id `"character_input_update_system"`.
@@ -28,9 +30,19 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &["character_input_update_system"],
         );
         builder.add(
+            CharacterKinematicsSystem::new(),
+            "character_kinematics_system",
+            &["character_sequence_update_system"],
+        );
+        builder.add(
+            ObjectKinematicsUpdateSystem::new(),
+            "object_kinematics_update_system",
+            &["character_kinematics_system"],
+        );
+        builder.add(
             ObjectTransformUpdateSystem::new(),
             "object_transform_update_system",
-            &["character_sequence_update_system"],
+            &["object_kinematics_update_system"],
         );
         Ok(())
     }

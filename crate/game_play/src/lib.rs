@@ -28,7 +28,8 @@ pub(crate) use character_entity_spawner::CharacterEntitySpawner;
 pub use game_play_bundle::GamePlayBundle;
 pub use game_play_state::GamePlayState;
 pub(crate) use system::{
-    CharacterInputUpdateSystem, CharacterSequenceUpdateSystem, ObjectTransformUpdateSystem,
+    CharacterInputUpdateSystem, CharacterKinematicsSystem, CharacterSequenceUpdateSystem,
+    ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
 };
 
 mod animation_runner;
