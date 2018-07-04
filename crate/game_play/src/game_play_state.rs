@@ -9,7 +9,7 @@ use amethyst::{
     renderer::{Camera, Event, Projection, ScreenDimensions, VirtualKeyCode},
 };
 use character_selection::{CharacterEntityControl, CharacterSelection};
-use object_model::entity::Position;
+use object_model::entity::{Kinematics, Position, Velocity};
 
 use CharacterEntitySpawner;
 
@@ -36,6 +36,7 @@ impl GamePlayState {
 
         // This `Position` moves the entity to the middle of a "screen wide" map.
         let position = Position::new(width / 2., height / 2., 0.);
+        let kinematics = Kinematics::new(position, Velocity::default());
 
         // We need to collect this first because `world` needs to be borrowed immutably first, then
         // mutably later.
@@ -56,7 +57,7 @@ impl GamePlayState {
             |(character_index, character_entity_control)| {
                 let entity = CharacterEntitySpawner::spawn_for_player(
                     world,
-                    position,
+                    kinematics,
                     character_index,
                     character_entity_control,
                 );

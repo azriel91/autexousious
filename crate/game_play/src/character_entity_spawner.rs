@@ -11,7 +11,7 @@ use amethyst::{
 use character_selection::CharacterEntityControl;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{ObjectStatus, Position},
+    entity::{Kinematics, ObjectStatus},
     loaded::{Character, CharacterHandle},
 };
 
@@ -27,12 +27,12 @@ impl CharacterEntitySpawner {
     /// # Parameters
     ///
     /// * `world`: `World` to spawn the character into.
-    /// * `position`: Position of the entity in game.
+    /// * `kinematics`: Kinematics of the entity in game.
     /// * `character_index`: Index of the character to spawn.
     /// * `character_entity_control`: `Component` that links the character entity to the controller.
     pub(crate) fn spawn_for_player(
         world: &mut World,
-        position: Position,
+        kinematics: Kinematics<f32>,
         character_index: usize,
         character_entity_control: CharacterEntityControl,
     ) -> Entity {
@@ -72,6 +72,7 @@ impl CharacterEntitySpawner {
             ) // kcov-ignore
         };
 
+        let position = &kinematics.position;
         let mut transform = Transform::default();
         transform.translation = Vector3::new(position.x, position.y + position.z, 0.);
 
@@ -86,8 +87,8 @@ impl CharacterEntitySpawner {
             .with(material)
             // Coordinates to map the sprite texture to screen. This is the non-mirrored mesh.
             .with(mesh)
-            // Position of the entity in game.
-            .with(position)
+            // Kinematics of the entity in game.
+            .with(kinematics)
             // Render location of the entity on screen.
             .with(transform)
             // This defines the coordinates in the world, where the sprites should be drawn relative
@@ -136,7 +137,7 @@ mod test {
     use object_loading::ObjectLoadingBundle;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{ObjectStatus, Position},
+        entity::{Kinematics, ObjectStatus, Position, Velocity},
         loaded::CharacterHandle,
     };
 
@@ -147,13 +148,14 @@ mod test {
     fn spawn_for_player_creates_entity_with_object_components() {
         let assertion_fn = |world: &mut World| {
             let position = Position::new(100., -10., -20.);
+            let kinematics = Kinematics::new(position, Velocity::default());
             let character_index = 0;
             let controller_id = 0;
             let character_entity_control = CharacterEntityControl::new(controller_id);
 
             let entity = CharacterEntitySpawner::spawn_for_player(
                 world,
-                position,
+                kinematics,
                 character_index,
                 character_entity_control,
             );
@@ -166,7 +168,7 @@ mod test {
             assert!(world.read_storage::<CharacterHandle>().contains(entity));
             assert!(world.read_storage::<Material>().contains(entity));
             assert!(world.read_storage::<MeshHandle>().contains(entity));
-            assert!(world.read_storage::<Position>().contains(entity));
+            assert!(world.read_storage::<Kinematics<f32>>().contains(entity));
             assert!(world.read_storage::<Transform>().contains(entity));
             assert!(world.read_storage::<GlobalTransform>().contains(entity));
             assert!(

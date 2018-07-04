@@ -4,11 +4,11 @@
 //! entity.
 
 pub use self::character::CharacterInput;
+pub use self::kinematic::{Kinematics, Position, Velocity};
 pub use self::object_status::ObjectStatus;
 pub use self::object_status_update::ObjectStatusUpdate;
-pub use self::position::Position;
 
 mod character;
+mod kinematic;
 mod object_status;
 mod object_status_update;
-mod position;
