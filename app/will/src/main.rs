@@ -23,10 +23,11 @@ extern crate structopt;
 extern crate structopt_derive;
 
 use std::process;
+use std::time::Duration;
 
 use amethyst::{
     animation::AnimationBundle,
-    core::transform::TransformBundle,
+    core::{frame_limiter::FrameRateLimitStrategy, transform::TransformBundle},
     input::{Bindings, InputBundle},
     prelude::*,
     renderer::{
@@ -118,7 +119,12 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(GamePlayBundle::new())?;
     }
 
-    let mut app = Application::new(assets_dir, state, game_data)?;
+    let mut app = Application::build(assets_dir, state)?
+        .with_frame_limit(
+            FrameRateLimitStrategy::SleepAndYield(Duration::from_micros(1000)),
+            60,
+        )
+        .build(game_data)?;
 
     app.run();
 
