@@ -9,14 +9,15 @@ use amethyst::{
     input::InputBundle,
     prelude::*,
     renderer::{
-        ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex, RenderBundle,
-        ScreenDimensions, Stage, ALPHA,
+        ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PipelineBuilder, PosTex,
+        RenderBundle, ScreenDimensions, Stage, StageBuilder, ALPHA,
     },
     shred::Resource,
     ui::{DrawUi, UiBundle},
     Result,
 };
 use boxfnonce::SendBoxFnOnce;
+use hetseq::Queue;
 
 use AssertionState;
 use EffectState;
@@ -50,6 +51,21 @@ type StatePlaceholder = EmptyState;
 type FnStatePlaceholder = &'static fn() -> StatePlaceholder;
 type FnEffectPlaceholder = &'static fn(&mut World);
 type FnAssertPlaceholder = &'static fn(&mut World);
+
+type DefaultPipeline = PipelineBuilder<
+    Queue<(
+        Queue<()>,
+        StageBuilder<Queue<(Queue<(Queue<()>, DrawFlat<PosTex>)>, DrawUi)>>,
+    )>,
+>;
+
+/// Screen width used in predefined display configuration.
+pub const SCREEN_WIDTH: u32 = 800;
+/// Screen height used in predefined display configuration.
+pub const SCREEN_HEIGHT: u32 = 600;
+/// The ratio between the backing framebuffer resolution and the window size in screen pixels.
+/// This is typically one for a normal display and two for a retina display.
+pub const HIDPI: f32 = 1.;
 
 // Use a mutex to prevent multiple tests that open GL windows from running simultaneously, due to
 // race conditions causing failures in X.
@@ -139,19 +155,21 @@ impl
             .with_bundle(TransformBundle::new())
             .with_bundle(InputBundle::<String, String>::new())
             .with_bundle(UiBundle::<String, String>::new())
-            .with_resource(ScreenDimensions::new(1280, 800, 1.))
+            .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
     }
 
     /// Returns an application with the Animation, Transform, Input, UI, and Render bundles.
     ///
     /// **Note:** The type parameters for the Animation, Input, and UI bundles are [stringly-typed]
-    /// (http://wiki.c2.com/?StringlyTyped). It is recommended that you use proper type parameters
-    /// and register the bundles yourself if the unit you are testing uses them.
+    /// [stringly]. It is recommended that you use proper type parameters and register the bundles
+    /// yourself if the unit you are testing uses them.
     ///
     /// # Parameters
     ///
     /// * `test_name`: Name of the test, used to populate the window title.
     /// * `visibility`: Whether the window should be visible.
+    ///
+    /// [stringly]: http://wiki.c2.com/?StringlyTyped
     pub fn render_base<'name, N>(
         test_name: N,
         visibility: bool,
@@ -165,34 +183,6 @@ impl
     where
         N: Into<&'name str>,
     {
-        // TODO: We can default to the function name once this RFC is implemented:
-        // <https://github.com/rust-lang/rfcs/issues/1743>
-        // <https://github.com/rust-lang/rfcs/pull/1719>
-        let title = test_name.into().to_string();
-        let render_bundle_fn = move || {
-            let display_config = DisplayConfig {
-                title,
-                fullscreen: false,
-                dimensions: Some((800, 600)),
-                min_dimensions: Some((400, 300)),
-                max_dimensions: None,
-                vsync: false,
-                multisampling: 0, // Must be multiple of 2, use 0 to disable
-                visibility,
-            };
-            let pipe = Pipeline::build().with_stage(
-                Stage::with_backbuffer()
-                    .clear_target([0., 0., 0., 0.], 1.)
-                    .with_pass(DrawFlat::<PosTex>::new().with_transparency(
-                        ColorMask::all(),
-                        ALPHA,
-                        None,
-                    ))
-                    .with_pass(DrawUi::new()),
-            );
-            RenderBundle::new(pipe, Some(display_config))
-        };
-
         AmethystApplication::blank()
             .with_bundle(AnimationBundle::<u32, Material>::new(
                 "animation_control_system",
@@ -204,8 +194,7 @@ impl
             )
             .with_bundle(InputBundle::<String, String>::new())
             .with_bundle(UiBundle::<String, String>::new())
-            .with_bundle_fn(render_bundle_fn)
-            .mark_render()
+            .with_render_bundle(test_name, visibility)
     }
 }
 
@@ -414,6 +403,9 @@ where
     /// **Note:** If you are adding the `RenderBundle`, you must also invoke `.mark_render()` to
     /// avoid a race condition that causes render tests to fail.
     ///
+    /// **Note:** There is a `.with_render_bundle()` convenience function if you just need the
+    /// `RenderBundle` with predefined parameters.
+    ///
     /// # Parameters
     ///
     /// * `bundle_function`: Function to instantiate the Bundle.
@@ -428,6 +420,33 @@ where
             },
         ));
         self
+    }
+
+    /// Registers the `RenderBundle` with this application.
+    ///
+    /// This is a convenience function that registers the `RenderBundle` using the predefined
+    /// [`display_config`][disp] and [`pipeline`][pipe].
+    ///
+    /// # Parameters
+    ///
+    /// * `title`: Window title.
+    /// * `visibility`: Whether the window should be visible.
+    ///
+    /// [disp]: #method.display_config
+    /// [pipe]: #method.pipeline
+    pub fn with_render_bundle<'name, N>(self, title: N, visibility: bool) -> Self
+    where
+        N: Into<&'name str>,
+    {
+        // TODO: We can default to the function name once this RFC is implemented:
+        // <https://github.com/rust-lang/rfcs/issues/1743>
+        // <https://github.com/rust-lang/rfcs/pull/1719>
+        let title = title.into().to_string();
+
+        let display_config = Self::display_config(title, visibility);
+        let render_bundle_fn = move || RenderBundle::new(Self::pipeline(), Some(display_config));
+
+        self.with_bundle_fn(render_bundle_fn).mark_render()
     }
 
     /// Adds a resource to the `World`.
@@ -575,11 +594,69 @@ where
 
     /// Marks that this application uses the `RenderBundle`.
     ///
+    /// **Note:** There is a `.with_render_bundle()` convenience function if you just need the
+    /// `RenderBundle` with predefined parameters.
+    ///
     /// This is used to avoid a window initialization race condition that causes tests to fail.
     /// See <https://github.com/tomaka/glutin/issues/1038>.
     pub fn mark_render(mut self) -> Self {
         self.render = true;
         self
+    }
+
+    /// Convenience function that returns a `DisplayConfig`.
+    ///
+    /// The configuration uses the following parameters:
+    ///
+    /// * `title`: As provided.
+    /// * `fullscreen`: `false`
+    /// * `dimensions`: `Some((800, 600))`
+    /// * `min_dimensions`: `Some((400, 300))`
+    /// * `max_dimensions`: `None`
+    /// * `vsync`: `true`
+    /// * `multisampling`: `0` (disabled)
+    /// * `visibility`: As provided.
+    ///
+    /// This is exposed to allow external crates a convenient way of obtaining display
+    /// configuration.
+    ///
+    /// # Parameters
+    ///
+    /// * `title`: Window title.
+    /// * `visibility`: Whether the window should be visible.
+    pub fn display_config(title: String, visibility: bool) -> DisplayConfig {
+        DisplayConfig {
+            title,
+            fullscreen: false,
+            dimensions: Some((SCREEN_WIDTH, SCREEN_HEIGHT)),
+            min_dimensions: Some((SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)),
+            max_dimensions: None,
+            vsync: true,
+            multisampling: 0, // Must be multiple of 2, use 0 to disable
+            visibility,
+        }
+    }
+
+    /// Convenience function that returns a `PipelineBuilder`.
+    ///
+    /// The pipeline is built from the following:
+    ///
+    /// * Black clear target.
+    /// * `DrawFlat::<PosTex>` pass with transparency.
+    /// * `DrawUi` pass.
+    ///
+    /// This is exposed to allow external crates a convenient way of obtaining a render pipeline.
+    pub fn pipeline() -> DefaultPipeline {
+        Pipeline::build().with_stage(
+            Stage::with_backbuffer()
+                .clear_target([0., 0., 0., 0.], 1.)
+                .with_pass(DrawFlat::<PosTex>::new().with_transparency(
+                    ColorMask::all(),
+                    ALPHA,
+                    None,
+                ))
+                .with_pass(DrawUi::new()),
+        )
     }
 }
 
@@ -589,14 +666,11 @@ mod test {
 
     use amethyst::{
         self,
-        animation::{
-            Animation, InterpolationFunction, MaterialChannel, MaterialPrimitive, Sampler,
-        },
         assets::{self, Asset, AssetStorage, Handle, Loader, ProcessingState, Processor},
         core::bundle::{self, SystemBundle},
         ecs::prelude::*,
         prelude::*,
-        renderer::{Material, ScreenDimensions},
+        renderer::ScreenDimensions,
         ui::FontAsset,
     };
 
@@ -604,6 +678,7 @@ mod test {
     use AssertionState;
     use EffectReturn;
     use EmptyState;
+    use MaterialAnimationFixture;
 
     #[test]
     fn bundle_build_is_ok() {
@@ -811,55 +886,12 @@ mod test {
 
     #[test]
     fn render_base_application_can_load_material_animations() {
-        let effect_fn = |world: &mut World| {
-            // Load the animation.
-            let animation_handle = {
-                let texture_sampler = Sampler {
-                    input: vec![0.0],
-                    output: vec![MaterialPrimitive::Texture(0)],
-                    function: InterpolationFunction::Step,
-                };
-                let sprite_offset_sampler = Sampler {
-                    input: vec![0.0],
-                    output: vec![MaterialPrimitive::Offset((0.0, 1.0), (1.0, 0.0))],
-                    function: InterpolationFunction::Step,
-                };
-
-                let loader = world.read_resource::<Loader>();
-                let texture_animation_handle =
-                    loader.load_from_data(texture_sampler, (), &world.read_resource());
-                let sampler_animation_handle =
-                    loader.load_from_data(sprite_offset_sampler, (), &world.read_resource());
-
-                let animation = Animation::<Material> {
-                    nodes: vec![
-                        (0, MaterialChannel::AlbedoTexture, texture_animation_handle),
-                        (0, MaterialChannel::AlbedoOffset, sampler_animation_handle),
-                    ],
-                };
-
-                loader.load_from_data::<Animation<Material>, ()>(
-                    animation,
-                    (),
-                    &world.read_resource(),
-                )
-            };
-            world.add_resource(EffectReturn(animation_handle));
-        };
-        let assertion_fn = |world: &mut World| {
-            // Read the animation.
-            let animation_handle = &world
-                .read_resource::<EffectReturn<Handle<Animation<Material>>>>()
-                .0;
-
-            let store = world.read_resource::<AssetStorage<Animation<Material>>>();
-            assert!(store.get(animation_handle).is_some());
-        };
-
         assert!(
-            AmethystApplication::render_base("render_base_application_can_load_materials", false)
-                .with_effect(effect_fn)
-                .with_assertion(assertion_fn)
+            AmethystApplication::render_base(
+                "render_base_application_can_load_material_animations",
+                false
+            ).with_effect(MaterialAnimationFixture::effect)
+                .with_assertion(MaterialAnimationFixture::assertion)
                 .run()
                 .is_ok()
         );
