@@ -5,3 +5,4 @@ pub use AssertionState;
 pub use EffectReturn;
 pub use EffectState;
 pub use EmptyState;
+pub use SchedulerState;

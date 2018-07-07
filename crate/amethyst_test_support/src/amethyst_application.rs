@@ -22,6 +22,7 @@ use hetseq::Queue;
 use AssertionState;
 use EffectState;
 use EmptyState;
+use SchedulerState;
 use SystemInjectionBundle;
 
 type BundleAddFn = SendBoxFnOnce<
@@ -257,40 +258,17 @@ where
             },
         )?;
 
-        // eww
+        let mut states = Vec::<Box<State<GameData<'static, 'static>>>>::new();
         if assertion_fn.is_some() {
-            let assertion_state = AssertionState::new(assertion_fn.unwrap());
-            if first_state_fn.is_some() {
-                let first_state = first_state_fn.unwrap()();
-                if effect_fn.is_some() {
-                    let effect_state = EffectState::new(effect_fn.unwrap(), assertion_state)
-                        .with_stack_state(first_state);
-                    Self::build_application(effect_state, game_data, resource_add_fns)
-                } else {
-                    let assertion_state = assertion_state.with_stack_state(first_state);
-                    Self::build_application(assertion_state, game_data, resource_add_fns)
-                }
-            } else if effect_fn.is_some() {
-                let first_state = EffectState::new(effect_fn.unwrap(), assertion_state);
-                Self::build_application(first_state, game_data, resource_add_fns)
-            } else {
-                Self::build_application(assertion_state, game_data, resource_add_fns)
-            }
-        } else if let Some(first_state_fn) = first_state_fn {
-            let first_state = first_state_fn();
-            if effect_fn.is_some() {
-                // There's a first state and an effect function, but no assertion function.
-                // Perhaps we should warn the user that assertions should be registered using
-                // `.with_assertion(F)`.
-                let effect_state =
-                    EffectState::new(effect_fn.unwrap(), EmptyState).with_stack_state(first_state);
-                Self::build_application(effect_state, game_data, resource_add_fns)
-            } else {
-                Self::build_application(first_state, game_data, resource_add_fns)
-            }
-        } else {
-            Self::build_application(EmptyState, game_data, resource_add_fns)
+            states.push(Box::new(AssertionState::new(assertion_fn.unwrap())));
         }
+        if effect_fn.is_some() {
+            states.push(Box::new(EffectState::new(effect_fn.unwrap())));
+        }
+        if first_state_fn.is_some() {
+            states.push(Box::new(first_state_fn.unwrap()()));
+        }
+        Self::build_application(SchedulerState::new(states), game_data, resource_add_fns)
     }
 
     fn build_application<SLocal>(
