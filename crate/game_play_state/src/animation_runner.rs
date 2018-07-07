@@ -4,10 +4,20 @@ use amethyst::{
 };
 use object_model::config::object::SequenceId;
 
+/// Starts, stops, and swaps animation control sets.
+///
+/// The animation control sets are generic, so they are not limited to `Material` (texture) animations.
 #[derive(Debug)]
 pub struct AnimationRunner;
 
 impl AnimationRunner {
+    /// Starts an animation control set.
+    ///
+    /// # Parameters
+    ///
+    /// * `animation_set`: Animation control set to start.
+    /// * `animation_handle`: Handle to the animation to include in the set.
+    /// * `sequence_id`: ID to track the animation control set.
     pub fn start<SeqId: SequenceId, T: AnimationSampling>(
         animation_set: &mut AnimationControlSet<SeqId, T>,
         animation_handle: &Handle<Animation<T>>,
@@ -16,6 +26,14 @@ impl AnimationRunner {
         Self::internal_start(animation_set, animation_handle, sequence_id);
     }
 
+    /// Stops an existing animation control set and starts another.
+    ///
+    /// # Parameters
+    ///
+    /// * `animation_set`: Animation control set to start.
+    /// * `animation_handle`: Handle to the animation to include in the set.
+    /// * `current_sequence_id`: ID of the animation control set to stop.
+    /// * `next_sequence_id`: ID to track the animation control set.
     pub fn swap<SeqId: SequenceId, T: AnimationSampling>(
         animation_set: &mut AnimationControlSet<SeqId, T>,
         animation_handle: &Handle<Animation<T>>,

@@ -1,6 +1,6 @@
 use amethyst::prelude::*;
 use character_selection::CharacterSelectionState;
-use game_play::GamePlayState;
+use game_play_state::GamePlayState;
 
 /// Game mode menu indicies.
 #[derive(Debug, Clone, Copy, PartialEq)]

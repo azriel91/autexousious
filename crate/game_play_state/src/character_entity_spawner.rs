@@ -113,25 +113,13 @@ impl CharacterEntitySpawner {
 
 #[cfg(test)]
 mod test {
-    use std::thread;
-
     use amethyst::{
-        animation::AnimationBundle,
-        core::transform::{GlobalTransform, Transform, TransformBundle},
-        input::InputBundle,
-        prelude::*,
-        renderer::{
-            ColorMask, DisplayConfig, DrawFlat, Material, MeshHandle, Pipeline, PosTex,
-            RenderBundle, Stage, ALPHA,
-        },
-        ui::UiBundle,
-        Result,
+        animation::AnimationControlSet,
+        core::transform::{GlobalTransform, Transform},
+        ecs::prelude::*,
+        renderer::{Material, MeshHandle},
     };
-    use application::resource::{
-        self,
-        dir::{self, assets_dir},
-        load_in,
-    };
+    use amethyst_test_support::prelude::*;
     use character_selection::CharacterEntityControl;
     use loading;
     use object_loading::ObjectLoadingBundle;
@@ -142,11 +130,10 @@ mod test {
     };
 
     use super::CharacterEntitySpawner;
-    use GamePlayBundle;
 
     #[test]
     fn spawn_for_player_creates_entity_with_object_components() {
-        let assertion_fn = |world: &mut World| {
+        let assertion = |world: &mut World| {
             let position = Position::new(100., -10., -20.);
             let kinematics = Kinematics::new(position, Velocity::default());
             let character_index = 0;
@@ -178,86 +165,34 @@ mod test {
             );
         };
 
-        assert!(run(Box::new(assertion_fn)).is_ok());
-    }
-
-    fn run<F>(assertion_fn: Box<F>) -> Result<()>
-    where
-        F: Fn(&mut World) + Send + 'static,
-    {
-        // Run in a sub thread due to mesa's threading issues with GL software rendering
-        // See: <https://users.rust-lang.org/t/trouble-identifying-cause-of-segfault/18096>
-        //
-        // TODO: Fix this in <https://gitlab.com/azriel91/autexousious/issues/38>
-        thread::spawn(|| -> Result<()> {
-            let assets_dir = assets_dir(Some(development_base_dirs!()))?;
-            let test_state = TestState { assertion_fn };
-            let loading_state = loading::State::new(assets_dir.clone(), Box::new(test_state));
-
-            Application::new(assets_dir, loading_state, setup_game_data()?)?.run();
-            Ok(())
-        }).join()
-            .expect("Failed to run Amethyst application")
-    }
-
-    fn setup_game_data<'a, 'b>() -> Result<GameDataBuilder<'a, 'b>> {
-        let pipeline = Pipeline::build().with_stage(
-            Stage::with_backbuffer()
-                .clear_target([0., 0., 0., 0.], 1.)
-                .with_pass(DrawFlat::<PosTex>::new().with_transparency(
-                    ColorMask::all(),
-                    ALPHA,
-                    None,
-                )),
+        assert!(
+            AmethystApplication::render_base(
+                "spawn_for_player_creates_entity_with_object_components",
+                false
+            ).with_state(|| loading::State::new(
+                AmethystApplication::assets_dir().into(),
+                Box::new(EmptyState),
+            ))
+                .with_assertion(assertion)
+                .with_bundle(ObjectLoadingBundle::new())
+                .with_system(TestSystem, "test_system", &[])
+                .run()
+                .is_ok()
         );
-
-        GameDataBuilder::default()
-            // Provides sprite animation
-            .with_bundle(AnimationBundle::<u32, Material>::new(
-                "animation_control_system",
-                "sampler_interpolation_system",
-            ))?
-            // Handles transformations of textures
-            .with_bundle(
-                TransformBundle::new()
-                    .with_dep(&["animation_control_system", "sampler_interpolation_system"]),
-            )?
-            .with_bundle(RenderBundle::new(pipeline, Some(display_config()?)))?
-            .with_bundle(InputBundle::<String, String>::new())?
-            .with_bundle(UiBundle::<String, String>::new())?
-            .with_bundle(ObjectLoadingBundle::new())?
-            .with_bundle(GamePlayBundle) // Needed for `CharacterEntityControl`
-    } // kcov-ignore
-
-    fn display_config() -> Result<DisplayConfig> {
-        Ok(load_in::<DisplayConfig, _>(
-            dir::RESOURCES,
-            "display_config.ron",
-            &resource::Format::Ron,
-            Some(development_base_dirs!()),
-        )?)
     }
 
+    // Sets up storages for the various `Component`.
     #[derive(Debug)]
-    struct TestState<F: Fn(&mut World)> {
-        assertion_fn: Box<F>,
-    }
-    impl<'a, 'b, F: Fn(&mut World)> State<GameData<'a, 'b>> for TestState<F> {
-        fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
-            data.data.update(&data.world);
-            Trans::None
-        }
-
-        fn fixed_update(&mut self, mut data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
-            // This needs to be in `fixed_update`:
-            //
-            // > Loading some assets requires a renderer tick @azriel91 because only the rendering
-            // > thread can load them
-            // >
-            // > - Xaeroxe
-            (self.assertion_fn)(&mut data.world);
-
-            Trans::Quit
-        }
+    struct TestSystem;
+    type TestSystemData<'s> = (
+        ReadStorage<'s, CharacterEntityControl>,
+        ReadStorage<'s, CharacterHandle>,
+        ReadStorage<'s, Kinematics<f32>>,
+        ReadStorage<'s, ObjectStatus<CharacterSequenceId>>,
+        ReadStorage<'s, AnimationControlSet<CharacterSequenceId, Material>>,
+    );
+    impl<'s> System<'s> for TestSystem {
+        type SystemData = TestSystemData<'s>;
+        fn run(&mut self, _: Self::SystemData) {}
     }
 }

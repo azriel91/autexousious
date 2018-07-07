@@ -196,6 +196,11 @@ impl
             .with_bundle(UiBundle::<String, String>::new())
             .with_render_bundle(test_name, visibility)
     }
+
+    /// Returns a `String` to `<crate_dir>/assets`.
+    pub fn assets_dir() -> String {
+        format!("{}/assets", env!("CARGO_MANIFEST_DIR"))
+    }
 }
 
 impl<S, FnState, FnEffect, FnAssert>
@@ -296,8 +301,8 @@ where
     where
         SLocal: State<GameData<'static, 'static>> + 'static,
     {
-        let assets_dir = format!("{}/assets", env!("CARGO_MANIFEST_DIR"));
-        let mut application_builder = Application::build(assets_dir, first_state)?;
+        let mut application_builder =
+            Application::build(AmethystApplication::assets_dir(), first_state)?;
         {
             let world = &mut application_builder.world;
             for mut function in resource_add_fns {
