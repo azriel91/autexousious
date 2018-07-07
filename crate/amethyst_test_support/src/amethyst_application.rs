@@ -19,9 +19,8 @@ use amethyst::{
 use boxfnonce::SendBoxFnOnce;
 use hetseq::Queue;
 
-use AssertionState;
-use EffectState;
 use EmptyState;
+use FunctionState;
 use SchedulerState;
 use SystemInjectionBundle;
 
@@ -260,10 +259,10 @@ where
 
         let mut states = Vec::<Box<State<GameData<'static, 'static>>>>::new();
         if assertion_fn.is_some() {
-            states.push(Box::new(AssertionState::new(assertion_fn.unwrap())));
+            states.push(Box::new(FunctionState::new(assertion_fn.unwrap())));
         }
         if effect_fn.is_some() {
-            states.push(Box::new(EffectState::new(effect_fn.unwrap())));
+            states.push(Box::new(FunctionState::new(effect_fn.unwrap())));
         }
         if first_state_fn.is_some() {
             states.push(Box::new(first_state_fn.unwrap()()));
@@ -511,13 +510,13 @@ where
         self.with_bundle_fn(move || SystemInjectionBundle::new(system, name, deps))
     }
 
-    /// Registers a function to assert an expected outcome.
+    /// Registers a function that executes a desired effect.
     ///
-    /// The function will be run in an [`AssertionState`](struct.AssertionState.html)
+    /// The function will be run in a [`FunctionState`](struct.FunctionState.html)
     ///
     /// # Parameters
     ///
-    /// * `assertion_fn`: Function that asserts the expected state.
+    /// * `effect_fn`: Function that executes an effect.
     pub fn with_effect<FnEffectLocal>(
         self,
         effect_fn: FnEffectLocal,
@@ -545,7 +544,7 @@ where
 
     /// Registers a function to assert an expected outcome.
     ///
-    /// The function will be run in an [`AssertionState`](struct.AssertionState.html)
+    /// The function will be run in a [`FunctionState`](struct.FunctionState.html)
     ///
     /// # Parameters
     ///
@@ -658,9 +657,9 @@ mod test {
     };
 
     use super::AmethystApplication;
-    use AssertionState;
     use EffectReturn;
     use EmptyState;
+    use FunctionState;
     use MaterialAnimationFixture;
 
     #[test]
@@ -725,7 +724,7 @@ mod test {
             };
 
             // Necessary if the State being tested is a loading state that returns `Trans::Switch`
-            let assertion_state = AssertionState::new(assertion_fn);
+            let assertion_state = FunctionState::new(assertion_fn);
             LoadingState::new(assertion_state)
         };
 
@@ -739,7 +738,7 @@ mod test {
 
     #[test]
     fn assertion_push_with_loading_state_with_add_resource_succeeds() {
-        // Alternative to embedding the `AssertionState` is to switch to an `EmptyState` but still
+        // Alternative to embedding the `FunctionState` is to switch to an `EmptyState` but still
         // provide the assertion function
         let first_state_fn = || LoadingState::new(EmptyState);
         let assertion_fn = |world: &mut World| {
@@ -763,7 +762,7 @@ mod test {
                 world.read_resource::<LoadResource>();
             };
 
-            SwitchState::new(AssertionState::new(assertion_fn))
+            SwitchState::new(FunctionState::new(assertion_fn))
         };
 
         assert!(
@@ -777,7 +776,7 @@ mod test {
     #[test]
     #[should_panic(expected = "Failed to run Amethyst application")]
     fn assertion_push_with_loading_state_without_add_resource_should_panic() {
-        // Alternative to embedding the `AssertionState` is to switch to an `EmptyState` but still
+        // Alternative to embedding the `FunctionState` is to switch to an `EmptyState` but still
         // provide the assertion function
         let first_state_fn = || SwitchState::new(EmptyState);
         let assertion_fn = |world: &mut World| {
