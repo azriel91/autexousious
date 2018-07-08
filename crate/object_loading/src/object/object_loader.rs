@@ -62,7 +62,9 @@ mod test {
 
     #[test]
     fn loads_object_assets() {
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::render_base("loads_object_assets", false)
                 .with_assertion(|world| {
                     let mut bat_path = assets_dir(Some(development_base_dirs!())).unwrap();

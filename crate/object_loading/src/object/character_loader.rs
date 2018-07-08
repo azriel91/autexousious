@@ -53,7 +53,9 @@ mod test {
 
     #[test]
     fn loads_character() {
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::render_base("loads_character", false)
                 .with_bundle(ObjectLoadingBundle)
                 .with_effect(|world| {

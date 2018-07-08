@@ -22,7 +22,9 @@ mod test {
 
     #[test]
     fn loads_sprite_sheets_textures_and_mesh() {
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::render_base("loads_sprite_sheets_textures_and_mesh", false)
                 .with_assertion(|world| {
                     let texture_index_offset = 0;

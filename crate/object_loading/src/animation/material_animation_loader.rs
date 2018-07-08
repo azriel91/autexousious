@@ -242,7 +242,9 @@ mod test {
             assert_eq!(InterpolationFunction::Step, offset_sampler.function);
         };
 
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::render_base("loads_material_animations", false)
                 .with_effect(effect)
                 .with_assertion(assertion)

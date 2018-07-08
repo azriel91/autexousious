@@ -169,7 +169,9 @@ mod test {
             );
         };
 
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::render_base(
                 "spawn_for_player_creates_entity_with_object_components",
                 false
