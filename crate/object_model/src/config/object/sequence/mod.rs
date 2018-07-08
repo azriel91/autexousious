@@ -17,7 +17,7 @@ mod sequence_id;
 ///
 /// This carries the information necessary for an `Animation`, as well as the effects and
 /// interactions that happen during each frame of that animation.
-#[derive(Clone, Constructor, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize, PartialEq, new)]
 pub struct Sequence<SeqId: SequenceId> {
     /// ID of the sequence to switch to after this one has completed.
     ///

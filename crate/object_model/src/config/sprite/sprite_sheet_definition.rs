@@ -3,7 +3,7 @@ use config::sprite::SpriteOffset;
 /// Information about how sprites are laid out on the sprite sheet.
 ///
 /// This is used to calculate the texture coordinates of each sprite.
-#[derive(Constructor, Debug, Deserialize)]
+#[derive(Debug, Deserialize, new)]
 pub struct SpriteSheetDefinition {
     /// Path to the sprite sheet, relative to the object's directory.
     ///
