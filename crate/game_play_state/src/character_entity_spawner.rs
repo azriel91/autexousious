@@ -113,6 +113,8 @@ impl CharacterEntitySpawner {
 
 #[cfg(test)]
 mod test {
+    use std::env;
+
     use amethyst::{
         animation::AnimationControlSet,
         core::transform::{GlobalTransform, Transform},
@@ -133,6 +135,8 @@ mod test {
 
     #[test]
     fn spawn_for_player_creates_entity_with_object_components() {
+        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
+
         let assertion = |world: &mut World| {
             let position = Position::new(100., -10., -20.);
             let kinematics = Kinematics::new(position, Velocity::default());
