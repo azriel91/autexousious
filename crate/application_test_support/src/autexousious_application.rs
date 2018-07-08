@@ -14,6 +14,7 @@ use object_model::config::object::CharacterSequenceId;
 
 // Copied from `amethyst_test_support`
 type StatePlaceholder = EmptyState;
+type FnSetupPlaceholder = &'static fn(&mut World);
 type FnStatePlaceholder = &'static fn() -> StatePlaceholder;
 type FnEffectPlaceholder = &'static fn(&mut World);
 type FnAssertPlaceholder = &'static fn(&mut World);
@@ -33,6 +34,7 @@ impl AutexousiousApplication {
     pub fn base() -> AmethystApplication<
         StatePlaceholder,
         GameData<'static, 'static>,
+        FnSetupPlaceholder,
         FnStatePlaceholder,
         FnEffectPlaceholder,
         FnAssertPlaceholder,
@@ -60,6 +62,7 @@ impl AutexousiousApplication {
     ) -> AmethystApplication<
         StatePlaceholder,
         GameData<'static, 'static>,
+        FnSetupPlaceholder,
         FnStatePlaceholder,
         FnEffectPlaceholder,
         FnAssertPlaceholder,
@@ -97,6 +100,7 @@ impl AutexousiousApplication {
     ) -> AmethystApplication<
         StatePlaceholder,
         GameData<'static, 'static>,
+        FnSetupPlaceholder,
         FnStatePlaceholder,
         FnEffectPlaceholder,
         FnAssertPlaceholder,

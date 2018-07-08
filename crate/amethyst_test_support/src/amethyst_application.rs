@@ -48,6 +48,7 @@ type FnResourceAdd = Box<FnMut(&mut World) + Send>;
 //
 // See <https://stackoverflow.com/questions/37310941/default-generic-parameter>
 type StatePlaceholder = EmptyState;
+type FnSetupPlaceholder = &'static fn(&mut World);
 type FnStatePlaceholder = &'static fn() -> StatePlaceholder;
 type FnEffectPlaceholder = &'static fn(&mut World);
 type FnAssertPlaceholder = &'static fn(&mut World);
@@ -79,9 +80,10 @@ lazy_static! {
 /// This provides varying levels of setup so that users do not have to register common bundles.
 #[derive(Derivative, Default)]
 #[derivative(Debug)]
-pub struct AmethystApplication<S, T, FnState, FnEffect, FnAssert>
+pub struct AmethystApplication<S, T, FnSetup, FnState, FnEffect, FnAssert>
 where
     S: State<T>,
+    FnSetup: Fn(&mut World) + Send,
     FnState: Fn() -> S + Send,
     FnEffect: Fn(&mut World) + Send,
     FnAssert: Fn(&mut World) + Send,
@@ -100,8 +102,10 @@ where
     /// segfault caused by mesa and the software GL renderer.
     #[derivative(Debug = "ignore")]
     resource_add_fns: Vec<FnResourceAdd>,
+    /// Setup function to run.
+    setup_fn: Option<FnSetup>,
     /// Function to create user specified state to use for the application.
-    first_state_fn: Option<FnState>,
+    state_fn: Option<FnState>,
     /// Effect function to run.
     effect_fn: Option<FnEffect>,
     /// Assertion function to run.
@@ -116,6 +120,7 @@ impl
     AmethystApplication<
         StatePlaceholder,
         GameData<'static, 'static>,
+        FnSetupPlaceholder,
         FnStatePlaceholder,
         FnEffectPlaceholder,
         FnAssertPlaceholder,
@@ -125,6 +130,7 @@ impl
     pub fn blank() -> AmethystApplication<
         StatePlaceholder,
         GameData<'static, 'static>,
+        FnSetupPlaceholder,
         FnStatePlaceholder,
         FnEffectPlaceholder,
         FnAssertPlaceholder,
@@ -132,7 +138,8 @@ impl
         AmethystApplication {
             bundle_add_fns: Vec::new(),
             resource_add_fns: Vec::new(),
-            first_state_fn: None,
+            setup_fn: None,
+            state_fn: None,
             effect_fn: None,
             assertion_fn: None,
             state_data: PhantomData,
@@ -147,6 +154,7 @@ impl
     pub fn base() -> AmethystApplication<
         StatePlaceholder,
         GameData<'static, 'static>,
+        FnSetupPlaceholder,
         FnStatePlaceholder,
         FnEffectPlaceholder,
         FnAssertPlaceholder,
@@ -176,6 +184,7 @@ impl
     ) -> AmethystApplication<
         StatePlaceholder,
         GameData<'static, 'static>,
+        FnSetupPlaceholder,
         FnStatePlaceholder,
         FnEffectPlaceholder,
         FnAssertPlaceholder,
@@ -203,10 +212,11 @@ impl
     }
 }
 
-impl<S, FnState, FnEffect, FnAssert>
-    AmethystApplication<S, GameData<'static, 'static>, FnState, FnEffect, FnAssert>
+impl<S, FnSetup, FnState, FnEffect, FnAssert>
+    AmethystApplication<S, GameData<'static, 'static>, FnSetup, FnState, FnEffect, FnAssert>
 where
     S: State<GameData<'static, 'static>> + 'static,
+    FnSetup: Fn(&mut World) + Send + 'static,
     FnState: Fn() -> S + Send + 'static,
     FnEffect: Fn(&mut World) + Send + 'static,
     FnAssert: Fn(&mut World) + Send + 'static,
@@ -226,7 +236,8 @@ where
         let params = (
             self.bundle_add_fns,
             self.resource_add_fns,
-            self.first_state_fn,
+            self.setup_fn,
+            self.state_fn,
             self.effect_fn,
             self.assertion_fn,
         );
@@ -242,9 +253,10 @@ where
     // parameters which causes a compilation failure.
     #[allow(unknown_lints, type_complexity)]
     fn build_internal(
-        (bundle_add_fns, resource_add_fns, first_state_fn, effect_fn, assertion_fn): (
+        (bundle_add_fns, resource_add_fns, setup_fn, state_fn, effect_fn, assertion_fn): (
             Vec<BundleAddFn>,
             Vec<FnResourceAdd>,
+            Option<FnSetup>,
             Option<FnState>,
             Option<FnEffect>,
             Option<FnAssert>,
@@ -264,8 +276,11 @@ where
         if effect_fn.is_some() {
             states.push(Box::new(FunctionState::new(effect_fn.unwrap())));
         }
-        if first_state_fn.is_some() {
-            states.push(Box::new(first_state_fn.unwrap()()));
+        if state_fn.is_some() {
+            states.push(Box::new(state_fn.unwrap()()));
+        }
+        if setup_fn.is_some() {
+            states.push(Box::new(FunctionState::new(setup_fn.unwrap())));
         }
         Self::build_application(SchedulerState::new(states), game_data, resource_add_fns)
     }
@@ -297,7 +312,8 @@ where
         let params = (
             self.bundle_add_fns,
             self.resource_add_fns,
-            self.first_state_fn,
+            self.setup_fn,
+            self.state_fn,
             self.effect_fn,
             self.assertion_fn,
         );
@@ -334,9 +350,11 @@ where
     }
 }
 
-impl<S, T, FnState, FnEffect, FnAssert> AmethystApplication<S, T, FnState, FnEffect, FnAssert>
+impl<S, T, FnSetup, FnState, FnEffect, FnAssert>
+    AmethystApplication<S, T, FnSetup, FnState, FnEffect, FnAssert>
 where
     S: State<T> + 'static,
+    FnSetup: Fn(&mut World) + Send + 'static,
     FnState: Fn() -> S + Send + 'static,
     FnEffect: Fn(&mut World) + Send + 'static,
     FnAssert: Fn(&mut World) + Send + 'static,
@@ -465,12 +483,12 @@ where
     pub fn with_state<SLocal, TLocal, FnStateLocal>(
         self,
         state: FnStateLocal,
-    ) -> AmethystApplication<SLocal, TLocal, FnStateLocal, FnEffect, FnAssert>
+    ) -> AmethystApplication<SLocal, TLocal, FnSetup, FnStateLocal, FnEffect, FnAssert>
     where
         SLocal: State<TLocal>,
         FnStateLocal: Fn() -> SLocal + Send,
     {
-        if self.first_state_fn.is_some() {
+        if self.state_fn.is_some() {
             panic!(
                 "`.with_state(S)` has previously been called. The current implementation only \
                  supports one starting state."
@@ -484,7 +502,8 @@ where
             AmethystApplication {
                 bundle_add_fns: self.bundle_add_fns,
                 resource_add_fns: Vec::new(),
-                first_state_fn: Some(state),
+                setup_fn: self.setup_fn,
+                state_fn: Some(state),
                 effect_fn: self.effect_fn,
                 assertion_fn: self.assertion_fn,
                 state_data: PhantomData,
@@ -503,16 +522,50 @@ where
         system: SysLocal,
         name: &'static str,
         deps: &'static [&'static str],
-    ) -> AmethystApplication<S, T, FnState, FnEffect, FnAssert>
+    ) -> AmethystApplication<S, T, FnSetup, FnState, FnEffect, FnAssert>
     where
         SysLocal: for<'sys_local> System<'sys_local> + Send + 'static,
     {
         self.with_bundle_fn(move || SystemInjectionBundle::new(system, name, deps))
     }
 
+    /// Registers a function that sets up the `World`.
+    ///
+    /// The function will be run before the state registered with `.with_state(S)`.
+    ///
+    /// # Parameters
+    ///
+    /// * `setup_fn`: Function that executes an effect.
+    pub fn with_setup<FnSetupLocal>(
+        self,
+        setup_fn: FnSetupLocal,
+    ) -> AmethystApplication<S, T, FnSetupLocal, FnState, FnEffect, FnAssert>
+    where
+        FnSetupLocal: Fn(&mut World) + Send,
+    {
+        if self.setup_fn.is_some() {
+            panic!(
+                "`.with_setup(F)` has previously been called. The current implementation only \
+                 supports one setup function."
+            );
+        } else {
+            AmethystApplication {
+                bundle_add_fns: self.bundle_add_fns,
+                resource_add_fns: self.resource_add_fns,
+                setup_fn: Some(setup_fn),
+                state_fn: self.state_fn,
+                effect_fn: self.effect_fn,
+                assertion_fn: self.assertion_fn,
+                state_data: self.state_data,
+                render: self.render,
+            }
+        }
+    }
+
     /// Registers a function that executes a desired effect.
     ///
-    /// The function will be run in a [`FunctionState`](struct.FunctionState.html)
+    /// The function will be run after the state registered with `.with_state(S)`, but before the
+    /// function registered with `.with_assertion(F)`.
     ///
     /// # Parameters
     ///
@@ -520,7 +573,7 @@ where
     pub fn with_effect<FnEffectLocal>(
         self,
         effect_fn: FnEffectLocal,
-    ) -> AmethystApplication<S, T, FnState, FnEffectLocal, FnAssert>
+    ) -> AmethystApplication<S, T, FnSetup, FnState, FnEffectLocal, FnAssert>
     where
         FnEffectLocal: Fn(&mut World) + Send,
     {
@@ -533,7 +586,8 @@ where
             AmethystApplication {
                 bundle_add_fns: self.bundle_add_fns,
                 resource_add_fns: self.resource_add_fns,
-                first_state_fn: self.first_state_fn,
+                setup_fn: self.setup_fn,
+                state_fn: self.state_fn,
                 effect_fn: Some(effect_fn),
                 assertion_fn: self.assertion_fn,
                 state_data: self.state_data,
@@ -544,7 +598,8 @@ where
 
     /// Registers a function to assert an expected outcome.
     ///
-    /// The function will be run in a [`FunctionState`](struct.FunctionState.html)
+    /// The function will be run as the final `State` in the application, given none of the
+    /// previous states return `Trans::Quit`.
     ///
     /// # Parameters
     ///
@@ -552,7 +607,7 @@ where
     pub fn with_assertion<FnAssertLocal>(
         self,
         assertion_fn: FnAssertLocal,
-    ) -> AmethystApplication<S, T, FnState, FnEffect, FnAssertLocal>
+    ) -> AmethystApplication<S, T, FnSetup, FnState, FnEffect, FnAssertLocal>
     where
         FnAssertLocal: Fn(&mut World) + Send,
     {
@@ -565,7 +620,8 @@ where
             AmethystApplication {
                 bundle_add_fns: self.bundle_add_fns,
                 resource_add_fns: self.resource_add_fns,
-                first_state_fn: self.first_state_fn,
+                setup_fn: self.setup_fn,
+                state_fn: self.state_fn,
                 effect_fn: self.effect_fn,
                 assertion_fn: Some(assertion_fn),
                 state_data: self.state_data,
@@ -718,7 +774,7 @@ mod test {
 
     #[test]
     fn assertion_switch_with_loading_state_with_add_resource_succeeds() {
-        let first_state_fn = || {
+        let state_fn = || {
             let assertion_fn = |world: &mut World| {
                 world.read_resource::<LoadResource>();
             };
@@ -730,7 +786,7 @@ mod test {
 
         assert!(
             AmethystApplication::blank()
-                .with_state(first_state_fn)
+                .with_state(state_fn)
                 .run()
                 .is_ok()
         );
@@ -740,14 +796,14 @@ mod test {
     fn assertion_push_with_loading_state_with_add_resource_succeeds() {
         // Alternative to embedding the `FunctionState` is to switch to an `EmptyState` but still
         // provide the assertion function
-        let first_state_fn = || LoadingState::new(EmptyState);
+        let state_fn = || LoadingState::new(EmptyState);
         let assertion_fn = |world: &mut World| {
             world.read_resource::<LoadResource>();
         };
 
         assert!(
             AmethystApplication::blank()
-                .with_state(first_state_fn)
+                .with_state(state_fn)
                 .with_assertion(assertion_fn)
                 .run()
                 .is_ok()
@@ -757,7 +813,7 @@ mod test {
     #[test]
     #[should_panic(expected = "Failed to run Amethyst application")]
     fn assertion_switch_with_loading_state_without_add_resource_should_panic() {
-        let first_state_fn = || {
+        let state_fn = || {
             let assertion_fn = |world: &mut World| {
                 world.read_resource::<LoadResource>();
             };
@@ -767,7 +823,7 @@ mod test {
 
         assert!(
             AmethystApplication::blank()
-                .with_state(first_state_fn)
+                .with_state(state_fn)
                 .run()
                 .is_ok()
         );
@@ -778,14 +834,14 @@ mod test {
     fn assertion_push_with_loading_state_without_add_resource_should_panic() {
         // Alternative to embedding the `FunctionState` is to switch to an `EmptyState` but still
         // provide the assertion function
-        let first_state_fn = || SwitchState::new(EmptyState);
+        let state_fn = || SwitchState::new(EmptyState);
         let assertion_fn = |world: &mut World| {
             world.read_resource::<LoadResource>();
         };
 
         assert!(
             AmethystApplication::blank()
-                .with_state(first_state_fn)
+                .with_state(state_fn)
                 .with_assertion(assertion_fn)
                 .run()
                 .is_ok()
@@ -821,8 +877,15 @@ mod test {
     }
 
     #[test]
-    fn state_runs_before_effect() {
-        let first_state_fn = || LoadingState::new(EmptyState);
+    fn execution_order_is_setup_state_effect_assertion() {
+        struct Setup;
+        let setup_fn = |world: &mut World| world.add_resource(Setup);
+        let state_fn = || {
+            LoadingState::new(FunctionState::new(|world| {
+                // Panics if setup is not run before this.
+                world.read_resource::<Setup>();
+            }))
+        };
         let effect_fn = |world: &mut World| {
             // If `LoadingState` is not run before this, this will panic
             world.read_resource::<LoadResource>();
@@ -840,7 +903,8 @@ mod test {
         assert!(
             AmethystApplication::blank()
                 .with_bundle(BundleAsset)
-                .with_state(first_state_fn)
+                .with_setup(setup_fn)
+                .with_state(state_fn)
                 .with_effect(effect_fn)
                 .with_assertion(assertion_fn)
                 .run()
@@ -918,19 +982,27 @@ mod test {
     // Incorrect usage tests
 
     #[test]
-    #[should_panic(expected = "`.with_assertion(F)` has previously been called.")]
-    fn with_assertion_invoked_twice_should_panic() {
+    #[should_panic(expected = "`.with_setup(F)` has previously been called.")]
+    fn with_setup_invoked_twice_should_panic() {
         AmethystApplication::blank()
-            .with_assertion(|_world: &mut World| {})
-            .with_assertion(|_world: &mut World| {});
+            .with_setup(|_world| {})
+            .with_setup(|_world| {});
     }
 
     #[test]
     #[should_panic(expected = "`.with_effect(F)` has previously been called.")]
     fn with_effect_invoked_twice_should_panic() {
         AmethystApplication::blank()
-            .with_effect(|_world: &mut World| {})
-            .with_effect(|_world: &mut World| {});
+            .with_effect(|_world| {})
+            .with_effect(|_world| {});
+    }
+
+    #[test]
+    #[should_panic(expected = "`.with_assertion(F)` has previously been called.")]
+    fn with_assertion_invoked_twice_should_panic() {
+        AmethystApplication::blank()
+            .with_assertion(|_world| {})
+            .with_assertion(|_world| {});
     }
 
     #[test]
