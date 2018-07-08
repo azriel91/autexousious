@@ -8,6 +8,7 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop
 boxfnonce = "0.1"
 derivative = "1.0"
 derive-new = "0.5"
+hetseq = "0.1"
 lazy_static = "1.0"
 
 [features]

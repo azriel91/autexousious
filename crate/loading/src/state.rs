@@ -93,10 +93,6 @@ where
 
     fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
         data.data.update(&data.world);
-        Trans::None
-    }
-
-    fn fixed_update(&mut self, _data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
         Trans::Switch(
             self.next_state
                 .take()

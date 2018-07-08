@@ -9,7 +9,7 @@ application_menu = { path = "../application_menu" }
 application_ui = { path = "../application_ui" }
 character_selection = { path = "../../crate/character_selection" }
 derivative = "1.0"
-game_play = { path = "../game_play" }
+game_play_state = { path = "../../crate/game_play_state" }
 log = "0.4"
 rayon = "1.0"
 

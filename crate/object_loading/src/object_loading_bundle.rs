@@ -29,7 +29,9 @@ mod test {
 
     #[test]
     fn bundle_build_adds_character_processor() {
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_bundle(ObjectLoadingBundle)
                 .with_assertion(|world| {

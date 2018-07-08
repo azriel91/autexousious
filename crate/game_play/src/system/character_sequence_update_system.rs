@@ -4,14 +4,13 @@ use amethyst::{
     ecs::prelude::*,
     renderer::{Material, MeshHandle},
 };
+use game_play_state::AnimationRunner;
 use object_model::{
     config::object::CharacterSequenceId,
     entity::{CharacterInput, ObjectStatus},
     loaded::{Character, CharacterHandle},
 };
 use object_play::CharacterSequenceHandler;
-
-use AnimationRunner;
 
 /// Updates `Character` sequence based on input
 #[derive(Debug, Default, new)]

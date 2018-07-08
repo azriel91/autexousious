@@ -9,18 +9,19 @@ use amethyst::{
     input::InputBundle,
     prelude::*,
     renderer::{
-        ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex, RenderBundle,
-        ScreenDimensions, Stage, ALPHA,
+        ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PipelineBuilder, PosTex,
+        RenderBundle, ScreenDimensions, Stage, StageBuilder, ALPHA,
     },
     shred::Resource,
     ui::{DrawUi, UiBundle},
     Result,
 };
 use boxfnonce::SendBoxFnOnce;
+use hetseq::Queue;
 
-use AssertionState;
-use EffectState;
 use EmptyState;
+use FunctionState;
+use SchedulerState;
 use SystemInjectionBundle;
 
 type BundleAddFn = SendBoxFnOnce<
@@ -47,9 +48,25 @@ type FnResourceAdd = Box<FnMut(&mut World) + Send>;
 //
 // See <https://stackoverflow.com/questions/37310941/default-generic-parameter>
 type StatePlaceholder = EmptyState;
+type FnSetupPlaceholder = &'static fn(&mut World);
 type FnStatePlaceholder = &'static fn() -> StatePlaceholder;
 type FnEffectPlaceholder = &'static fn(&mut World);
 type FnAssertPlaceholder = &'static fn(&mut World);
+
+type DefaultPipeline = PipelineBuilder<
+    Queue<(
+        Queue<()>,
+        StageBuilder<Queue<(Queue<(Queue<()>, DrawFlat<PosTex>)>, DrawUi)>>,
+    )>,
+>;
+
+/// Screen width used in predefined display configuration.
+pub const SCREEN_WIDTH: u32 = 800;
+/// Screen height used in predefined display configuration.
+pub const SCREEN_HEIGHT: u32 = 600;
+/// The ratio between the backing framebuffer resolution and the window size in screen pixels.
+/// This is typically one for a normal display and two for a retina display.
+pub const HIDPI: f32 = 1.;
 
 // Use a mutex to prevent multiple tests that open GL windows from running simultaneously, due to
 // race conditions causing failures in X.
@@ -63,9 +80,10 @@ lazy_static! {
 /// This provides varying levels of setup so that users do not have to register common bundles.
 #[derive(Derivative, Default)]
 #[derivative(Debug)]
-pub struct AmethystApplication<S, T, FnState, FnEffect, FnAssert>
+pub struct AmethystApplication<S, T, FnSetup, FnState, FnEffect, FnAssert>
 where
     S: State<T>,
+    FnSetup: Fn(&mut World) + Send,
     FnState: Fn() -> S + Send,
     FnEffect: Fn(&mut World) + Send,
     FnAssert: Fn(&mut World) + Send,
@@ -84,8 +102,10 @@ where
     /// segfault caused by mesa and the software GL renderer.
     #[derivative(Debug = "ignore")]
     resource_add_fns: Vec<FnResourceAdd>,
+    /// Setup function to run.
+    setup_fn: Option<FnSetup>,
     /// Function to create user specified state to use for the application.
-    first_state_fn: Option<FnState>,
+    state_fn: Option<FnState>,
     /// Effect function to run.
     effect_fn: Option<FnEffect>,
     /// Assertion function to run.
@@ -100,6 +120,7 @@ impl
     AmethystApplication<
         StatePlaceholder,
         GameData<'static, 'static>,
+        FnSetupPlaceholder,
         FnStatePlaceholder,
         FnEffectPlaceholder,
         FnAssertPlaceholder,
@@ -109,6 +130,7 @@ impl
     pub fn blank() -> AmethystApplication<
         StatePlaceholder,
         GameData<'static, 'static>,
+        FnSetupPlaceholder,
         FnStatePlaceholder,
         FnEffectPlaceholder,
         FnAssertPlaceholder,
@@ -116,7 +138,8 @@ impl
         AmethystApplication {
             bundle_add_fns: Vec::new(),
             resource_add_fns: Vec::new(),
-            first_state_fn: None,
+            setup_fn: None,
+            state_fn: None,
             effect_fn: None,
             assertion_fn: None,
             state_data: PhantomData,
@@ -131,6 +154,7 @@ impl
     pub fn base() -> AmethystApplication<
         StatePlaceholder,
         GameData<'static, 'static>,
+        FnSetupPlaceholder,
         FnStatePlaceholder,
         FnEffectPlaceholder,
         FnAssertPlaceholder,
@@ -139,25 +163,28 @@ impl
             .with_bundle(TransformBundle::new())
             .with_bundle(InputBundle::<String, String>::new())
             .with_bundle(UiBundle::<String, String>::new())
-            .with_resource(ScreenDimensions::new(1280, 800, 1.))
+            .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
     }
 
     /// Returns an application with the Animation, Transform, Input, UI, and Render bundles.
     ///
     /// **Note:** The type parameters for the Animation, Input, and UI bundles are [stringly-typed]
-    /// (http://wiki.c2.com/?StringlyTyped). It is recommended that you use proper type parameters
-    /// and register the bundles yourself if the unit you are testing uses them.
+    /// [stringly]. It is recommended that you use proper type parameters and register the bundles
+    /// yourself if the unit you are testing uses them.
     ///
     /// # Parameters
     ///
     /// * `test_name`: Name of the test, used to populate the window title.
     /// * `visibility`: Whether the window should be visible.
+    ///
+    /// [stringly]: http://wiki.c2.com/?StringlyTyped
     pub fn render_base<'name, N>(
         test_name: N,
         visibility: bool,
     ) -> AmethystApplication<
         StatePlaceholder,
         GameData<'static, 'static>,
+        FnSetupPlaceholder,
         FnStatePlaceholder,
         FnEffectPlaceholder,
         FnAssertPlaceholder,
@@ -165,34 +192,6 @@ impl
     where
         N: Into<&'name str>,
     {
-        // TODO: We can default to the function name once this RFC is implemented:
-        // <https://github.com/rust-lang/rfcs/issues/1743>
-        // <https://github.com/rust-lang/rfcs/pull/1719>
-        let title = test_name.into().to_string();
-        let render_bundle_fn = move || {
-            let display_config = DisplayConfig {
-                title,
-                fullscreen: false,
-                dimensions: Some((800, 600)),
-                min_dimensions: Some((400, 300)),
-                max_dimensions: None,
-                vsync: false,
-                multisampling: 0, // Must be multiple of 2, use 0 to disable
-                visibility,
-            };
-            let pipe = Pipeline::build().with_stage(
-                Stage::with_backbuffer()
-                    .clear_target([0., 0., 0., 0.], 1.)
-                    .with_pass(DrawFlat::<PosTex>::new().with_transparency(
-                        ColorMask::all(),
-                        ALPHA,
-                        None,
-                    ))
-                    .with_pass(DrawUi::new()),
-            );
-            RenderBundle::new(pipe, Some(display_config))
-        };
-
         AmethystApplication::blank()
             .with_bundle(AnimationBundle::<u32, Material>::new(
                 "animation_control_system",
@@ -204,15 +203,20 @@ impl
             )
             .with_bundle(InputBundle::<String, String>::new())
             .with_bundle(UiBundle::<String, String>::new())
-            .with_bundle_fn(render_bundle_fn)
-            .mark_render()
+            .with_render_bundle(test_name, visibility)
+    }
+
+    /// Returns a `String` to `<crate_dir>/assets`.
+    pub fn assets_dir() -> String {
+        format!("{}/assets", env!("CARGO_MANIFEST_DIR"))
     }
 }
 
-impl<S, FnState, FnEffect, FnAssert>
-    AmethystApplication<S, GameData<'static, 'static>, FnState, FnEffect, FnAssert>
+impl<S, FnSetup, FnState, FnEffect, FnAssert>
+    AmethystApplication<S, GameData<'static, 'static>, FnSetup, FnState, FnEffect, FnAssert>
 where
     S: State<GameData<'static, 'static>> + 'static,
+    FnSetup: Fn(&mut World) + Send + 'static,
     FnState: Fn() -> S + Send + 'static,
     FnEffect: Fn(&mut World) + Send + 'static,
     FnAssert: Fn(&mut World) + Send + 'static,
@@ -232,7 +236,8 @@ where
         let params = (
             self.bundle_add_fns,
             self.resource_add_fns,
-            self.first_state_fn,
+            self.setup_fn,
+            self.state_fn,
             self.effect_fn,
             self.assertion_fn,
         );
@@ -248,9 +253,10 @@ where
     // parameters which causes a compilation failure.
     #[allow(unknown_lints, type_complexity)]
     fn build_internal(
-        (bundle_add_fns, resource_add_fns, first_state_fn, effect_fn, assertion_fn): (
+        (bundle_add_fns, resource_add_fns, setup_fn, state_fn, effect_fn, assertion_fn): (
             Vec<BundleAddFn>,
             Vec<FnResourceAdd>,
+            Option<FnSetup>,
             Option<FnState>,
             Option<FnEffect>,
             Option<FnAssert>,
@@ -263,40 +269,20 @@ where
             },
         )?;
 
-        // eww
+        let mut states = Vec::<Box<State<GameData<'static, 'static>>>>::new();
         if assertion_fn.is_some() {
-            let assertion_state = AssertionState::new(assertion_fn.unwrap());
-            if first_state_fn.is_some() {
-                let first_state = first_state_fn.unwrap()();
-                if effect_fn.is_some() {
-                    let effect_state = EffectState::new(effect_fn.unwrap(), assertion_state)
-                        .with_stack_state(first_state);
-                    Self::build_application(effect_state, game_data, resource_add_fns)
-                } else {
-                    let assertion_state = assertion_state.with_stack_state(first_state);
-                    Self::build_application(assertion_state, game_data, resource_add_fns)
-                }
-            } else if effect_fn.is_some() {
-                let first_state = EffectState::new(effect_fn.unwrap(), assertion_state);
-                Self::build_application(first_state, game_data, resource_add_fns)
-            } else {
-                Self::build_application(assertion_state, game_data, resource_add_fns)
-            }
-        } else if let Some(first_state_fn) = first_state_fn {
-            let first_state = first_state_fn();
-            if effect_fn.is_some() {
-                // There's a first state and an effect function, but no assertion function.
-                // Perhaps we should warn the user that assertions should be registered using
-                // `.with_assertion(F)`.
-                let effect_state =
-                    EffectState::new(effect_fn.unwrap(), EmptyState).with_stack_state(first_state);
-                Self::build_application(effect_state, game_data, resource_add_fns)
-            } else {
-                Self::build_application(first_state, game_data, resource_add_fns)
-            }
-        } else {
-            Self::build_application(EmptyState, game_data, resource_add_fns)
+            states.push(Box::new(FunctionState::new(assertion_fn.unwrap())));
         }
+        if effect_fn.is_some() {
+            states.push(Box::new(FunctionState::new(effect_fn.unwrap())));
+        }
+        if state_fn.is_some() {
+            states.push(Box::new(state_fn.unwrap()()));
+        }
+        if setup_fn.is_some() {
+            states.push(Box::new(FunctionState::new(setup_fn.unwrap())));
+        }
+        Self::build_application(SchedulerState::new(states), game_data, resource_add_fns)
     }
 
     fn build_application<SLocal>(
@@ -307,8 +293,8 @@ where
     where
         SLocal: State<GameData<'static, 'static>> + 'static,
     {
-        let assets_dir = format!("{}/assets", env!("CARGO_MANIFEST_DIR"));
-        let mut application_builder = Application::build(assets_dir, first_state)?;
+        let mut application_builder =
+            Application::build(AmethystApplication::assets_dir(), first_state)?;
         {
             let world = &mut application_builder.world;
             for mut function in resource_add_fns {
@@ -326,7 +312,8 @@ where
         let params = (
             self.bundle_add_fns,
             self.resource_add_fns,
-            self.first_state_fn,
+            self.setup_fn,
+            self.state_fn,
             self.effect_fn,
             self.assertion_fn,
         );
@@ -363,9 +350,11 @@ where
     }
 }
 
-impl<S, T, FnState, FnEffect, FnAssert> AmethystApplication<S, T, FnState, FnEffect, FnAssert>
+impl<S, T, FnSetup, FnState, FnEffect, FnAssert>
+    AmethystApplication<S, T, FnSetup, FnState, FnEffect, FnAssert>
 where
     S: State<T> + 'static,
+    FnSetup: Fn(&mut World) + Send + 'static,
     FnState: Fn() -> S + Send + 'static,
     FnEffect: Fn(&mut World) + Send + 'static,
     FnAssert: Fn(&mut World) + Send + 'static,
@@ -414,6 +403,9 @@ where
     /// **Note:** If you are adding the `RenderBundle`, you must also invoke `.mark_render()` to
     /// avoid a race condition that causes render tests to fail.
     ///
+    /// **Note:** There is a `.with_render_bundle()` convenience function if you just need the
+    /// `RenderBundle` with predefined parameters.
+    ///
     /// # Parameters
     ///
     /// * `bundle_function`: Function to instantiate the Bundle.
@@ -428,6 +420,33 @@ where
             },
         ));
         self
+    }
+
+    /// Registers the `RenderBundle` with this application.
+    ///
+    /// This is a convenience function that registers the `RenderBundle` using the predefined
+    /// [`display_config`][disp] and [`pipeline`][pipe].
+    ///
+    /// # Parameters
+    ///
+    /// * `title`: Window title.
+    /// * `visibility`: Whether the window should be visible.
+    ///
+    /// [disp]: #method.display_config
+    /// [pipe]: #method.pipeline
+    pub fn with_render_bundle<'name, N>(self, title: N, visibility: bool) -> Self
+    where
+        N: Into<&'name str>,
+    {
+        // TODO: We can default to the function name once this RFC is implemented:
+        // <https://github.com/rust-lang/rfcs/issues/1743>
+        // <https://github.com/rust-lang/rfcs/pull/1719>
+        let title = title.into().to_string();
+
+        let display_config = Self::display_config(title, visibility);
+        let render_bundle_fn = move || RenderBundle::new(Self::pipeline(), Some(display_config));
+
+        self.with_bundle_fn(render_bundle_fn).mark_render()
     }
 
     /// Adds a resource to the `World`.
@@ -464,12 +483,12 @@ where
     pub fn with_state<SLocal, TLocal, FnStateLocal>(
         self,
         state: FnStateLocal,
-    ) -> AmethystApplication<SLocal, TLocal, FnStateLocal, FnEffect, FnAssert>
+    ) -> AmethystApplication<SLocal, TLocal, FnSetup, FnStateLocal, FnEffect, FnAssert>
     where
         SLocal: State<TLocal>,
         FnStateLocal: Fn() -> SLocal + Send,
     {
-        if self.first_state_fn.is_some() {
+        if self.state_fn.is_some() {
             panic!(
                 "`.with_state(S)` has previously been called. The current implementation only \
                  supports one starting state."
@@ -483,7 +502,8 @@ where
             AmethystApplication {
                 bundle_add_fns: self.bundle_add_fns,
                 resource_add_fns: Vec::new(),
-                first_state_fn: Some(state),
+                setup_fn: self.setup_fn,
+                state_fn: Some(state),
                 effect_fn: self.effect_fn,
                 assertion_fn: self.assertion_fn,
                 state_data: PhantomData,
@@ -502,24 +522,58 @@ where
         system: SysLocal,
         name: &'static str,
         deps: &'static [&'static str],
-    ) -> AmethystApplication<S, T, FnState, FnEffect, FnAssert>
+    ) -> AmethystApplication<S, T, FnSetup, FnState, FnEffect, FnAssert>
     where
         SysLocal: for<'sys_local> System<'sys_local> + Send + 'static,
     {
         self.with_bundle_fn(move || SystemInjectionBundle::new(system, name, deps))
     }
 
-    /// Registers a function to assert an expected outcome.
+    /// Registers a function that sets up the `World`.
     ///
-    /// The function will be run in an [`AssertionState`](struct.AssertionState.html)
+    /// The function will be run before the state registered with `.with_state(S)`.
     ///
     /// # Parameters
     ///
-    /// * `assertion_fn`: Function that asserts the expected state.
+    /// * `setup_fn`: Function that executes an effect.
+    pub fn with_setup<FnSetupLocal>(
+        self,
+        setup_fn: FnSetupLocal,
+    ) -> AmethystApplication<S, T, FnSetupLocal, FnState, FnEffect, FnAssert>
+    where
+        FnSetupLocal: Fn(&mut World) + Send,
+    {
+        if self.setup_fn.is_some() {
+            panic!(
+                "`.with_setup(F)` has previously been called. The current implementation only \
+                 supports one setup function."
+            );
+        } else {
+            AmethystApplication {
+                bundle_add_fns: self.bundle_add_fns,
+                resource_add_fns: self.resource_add_fns,
+                setup_fn: Some(setup_fn),
+                state_fn: self.state_fn,
+                effect_fn: self.effect_fn,
+                assertion_fn: self.assertion_fn,
+                state_data: self.state_data,
+                render: self.render,
+            }
+        }
+    }
+
+    /// Registers a function that executes a desired effect.
+    ///
+    /// The function will be run after the state registered with `.with_state(S)`, but before the
+    /// function registered with `.with_assertion(F)`.
+    ///
+    /// # Parameters
+    ///
+    /// * `effect_fn`: Function that executes an effect.
     pub fn with_effect<FnEffectLocal>(
         self,
         effect_fn: FnEffectLocal,
-    ) -> AmethystApplication<S, T, FnState, FnEffectLocal, FnAssert>
+    ) -> AmethystApplication<S, T, FnSetup, FnState, FnEffectLocal, FnAssert>
     where
         FnEffectLocal: Fn(&mut World) + Send,
     {
@@ -532,7 +586,8 @@ where
             AmethystApplication {
                 bundle_add_fns: self.bundle_add_fns,
                 resource_add_fns: self.resource_add_fns,
-                first_state_fn: self.first_state_fn,
+                setup_fn: self.setup_fn,
+                state_fn: self.state_fn,
                 effect_fn: Some(effect_fn),
                 assertion_fn: self.assertion_fn,
                 state_data: self.state_data,
@@ -543,7 +598,8 @@ where
 
     /// Registers a function to assert an expected outcome.
     ///
-    /// The function will be run in an [`AssertionState`](struct.AssertionState.html)
+    /// The function will be run as the final `State` in the application, given none of the
+    /// previous states return `Trans::Quit`.
     ///
     /// # Parameters
     ///
@@ -551,7 +607,7 @@ where
     pub fn with_assertion<FnAssertLocal>(
         self,
         assertion_fn: FnAssertLocal,
-    ) -> AmethystApplication<S, T, FnState, FnEffect, FnAssertLocal>
+    ) -> AmethystApplication<S, T, FnSetup, FnState, FnEffect, FnAssertLocal>
     where
         FnAssertLocal: Fn(&mut World) + Send,
     {
@@ -564,7 +620,8 @@ where
             AmethystApplication {
                 bundle_add_fns: self.bundle_add_fns,
                 resource_add_fns: self.resource_add_fns,
-                first_state_fn: self.first_state_fn,
+                setup_fn: self.setup_fn,
+                state_fn: self.state_fn,
                 effect_fn: self.effect_fn,
                 assertion_fn: Some(assertion_fn),
                 state_data: self.state_data,
@@ -575,11 +632,69 @@ where
 
     /// Marks that this application uses the `RenderBundle`.
     ///
+    /// **Note:** There is a `.with_render_bundle()` convenience function if you just need the
+    /// `RenderBundle` with predefined parameters.
+    ///
     /// This is used to avoid a window initialization race condition that causes tests to fail.
     /// See <https://github.com/tomaka/glutin/issues/1038>.
     pub fn mark_render(mut self) -> Self {
         self.render = true;
         self
+    }
+
+    /// Convenience function that returns a `DisplayConfig`.
+    ///
+    /// The configuration uses the following parameters:
+    ///
+    /// * `title`: As provided.
+    /// * `fullscreen`: `false`
+    /// * `dimensions`: `Some((800, 600))`
+    /// * `min_dimensions`: `Some((400, 300))`
+    /// * `max_dimensions`: `None`
+    /// * `vsync`: `true`
+    /// * `multisampling`: `0` (disabled)
+    /// * `visibility`: As provided.
+    ///
+    /// This is exposed to allow external crates a convenient way of obtaining display
+    /// configuration.
+    ///
+    /// # Parameters
+    ///
+    /// * `title`: Window title.
+    /// * `visibility`: Whether the window should be visible.
+    pub fn display_config(title: String, visibility: bool) -> DisplayConfig {
+        DisplayConfig {
+            title,
+            fullscreen: false,
+            dimensions: Some((SCREEN_WIDTH, SCREEN_HEIGHT)),
+            min_dimensions: Some((SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)),
+            max_dimensions: None,
+            vsync: true,
+            multisampling: 0, // Must be multiple of 2, use 0 to disable
+            visibility,
+        }
+    }
+
+    /// Convenience function that returns a `PipelineBuilder`.
+    ///
+    /// The pipeline is built from the following:
+    ///
+    /// * Black clear target.
+    /// * `DrawFlat::<PosTex>` pass with transparency.
+    /// * `DrawUi` pass.
+    ///
+    /// This is exposed to allow external crates a convenient way of obtaining a render pipeline.
+    pub fn pipeline() -> DefaultPipeline {
+        Pipeline::build().with_stage(
+            Stage::with_backbuffer()
+                .clear_target([0., 0., 0., 0.], 1.)
+                .with_pass(DrawFlat::<PosTex>::new().with_transparency(
+                    ColorMask::all(),
+                    ALPHA,
+                    None,
+                ))
+                .with_pass(DrawUi::new()),
+        )
     }
 }
 
@@ -589,21 +704,19 @@ mod test {
 
     use amethyst::{
         self,
-        animation::{
-            Animation, InterpolationFunction, MaterialChannel, MaterialPrimitive, Sampler,
-        },
         assets::{self, Asset, AssetStorage, Handle, Loader, ProcessingState, Processor},
         core::bundle::{self, SystemBundle},
         ecs::prelude::*,
         prelude::*,
-        renderer::{Material, ScreenDimensions},
+        renderer::ScreenDimensions,
         ui::FontAsset,
     };
 
     use super::AmethystApplication;
-    use AssertionState;
     use EffectReturn;
     use EmptyState;
+    use FunctionState;
+    use MaterialAnimationFixture;
 
     #[test]
     fn bundle_build_is_ok() {
@@ -661,19 +774,19 @@ mod test {
 
     #[test]
     fn assertion_switch_with_loading_state_with_add_resource_succeeds() {
-        let first_state_fn = || {
+        let state_fn = || {
             let assertion_fn = |world: &mut World| {
                 world.read_resource::<LoadResource>();
             };
 
             // Necessary if the State being tested is a loading state that returns `Trans::Switch`
-            let assertion_state = AssertionState::new(assertion_fn);
+            let assertion_state = FunctionState::new(assertion_fn);
             LoadingState::new(assertion_state)
         };
 
         assert!(
             AmethystApplication::blank()
-                .with_state(first_state_fn)
+                .with_state(state_fn)
                 .run()
                 .is_ok()
         );
@@ -681,16 +794,16 @@ mod test {
 
     #[test]
     fn assertion_push_with_loading_state_with_add_resource_succeeds() {
-        // Alternative to embedding the `AssertionState` is to switch to an `EmptyState` but still
+        // Alternative to embedding the `FunctionState` is to switch to an `EmptyState` but still
         // provide the assertion function
-        let first_state_fn = || LoadingState::new(EmptyState);
+        let state_fn = || LoadingState::new(EmptyState);
         let assertion_fn = |world: &mut World| {
             world.read_resource::<LoadResource>();
         };
 
         assert!(
             AmethystApplication::blank()
-                .with_state(first_state_fn)
+                .with_state(state_fn)
                 .with_assertion(assertion_fn)
                 .run()
                 .is_ok()
@@ -700,17 +813,17 @@ mod test {
     #[test]
     #[should_panic(expected = "Failed to run Amethyst application")]
     fn assertion_switch_with_loading_state_without_add_resource_should_panic() {
-        let first_state_fn = || {
+        let state_fn = || {
             let assertion_fn = |world: &mut World| {
                 world.read_resource::<LoadResource>();
             };
 
-            SwitchState::new(AssertionState::new(assertion_fn))
+            SwitchState::new(FunctionState::new(assertion_fn))
         };
 
         assert!(
             AmethystApplication::blank()
-                .with_state(first_state_fn)
+                .with_state(state_fn)
                 .run()
                 .is_ok()
         );
@@ -719,16 +832,16 @@ mod test {
     #[test]
     #[should_panic(expected = "Failed to run Amethyst application")]
     fn assertion_push_with_loading_state_without_add_resource_should_panic() {
-        // Alternative to embedding the `AssertionState` is to switch to an `EmptyState` but still
+        // Alternative to embedding the `FunctionState` is to switch to an `EmptyState` but still
         // provide the assertion function
-        let first_state_fn = || SwitchState::new(EmptyState);
+        let state_fn = || SwitchState::new(EmptyState);
         let assertion_fn = |world: &mut World| {
             world.read_resource::<LoadResource>();
         };
 
         assert!(
             AmethystApplication::blank()
-                .with_state(first_state_fn)
+                .with_state(state_fn)
                 .with_assertion(assertion_fn)
                 .run()
                 .is_ok()
@@ -764,8 +877,15 @@ mod test {
     }
 
     #[test]
-    fn state_runs_before_effect() {
-        let first_state_fn = || LoadingState::new(EmptyState);
+    fn execution_order_is_setup_state_effect_assertion() {
+        struct Setup;
+        let setup_fn = |world: &mut World| world.add_resource(Setup);
+        let state_fn = || {
+            LoadingState::new(FunctionState::new(|world| {
+                // Panics if setup is not run before this.
+                world.read_resource::<Setup>();
+            }))
+        };
         let effect_fn = |world: &mut World| {
             // If `LoadingState` is not run before this, this will panic
             world.read_resource::<LoadResource>();
@@ -783,7 +903,8 @@ mod test {
         assert!(
             AmethystApplication::blank()
                 .with_bundle(BundleAsset)
-                .with_state(first_state_fn)
+                .with_setup(setup_fn)
+                .with_state(state_fn)
                 .with_effect(effect_fn)
                 .with_assertion(assertion_fn)
                 .run()
@@ -811,55 +932,12 @@ mod test {
 
     #[test]
     fn render_base_application_can_load_material_animations() {
-        let effect_fn = |world: &mut World| {
-            // Load the animation.
-            let animation_handle = {
-                let texture_sampler = Sampler {
-                    input: vec![0.0],
-                    output: vec![MaterialPrimitive::Texture(0)],
-                    function: InterpolationFunction::Step,
-                };
-                let sprite_offset_sampler = Sampler {
-                    input: vec![0.0],
-                    output: vec![MaterialPrimitive::Offset((0.0, 1.0), (1.0, 0.0))],
-                    function: InterpolationFunction::Step,
-                };
-
-                let loader = world.read_resource::<Loader>();
-                let texture_animation_handle =
-                    loader.load_from_data(texture_sampler, (), &world.read_resource());
-                let sampler_animation_handle =
-                    loader.load_from_data(sprite_offset_sampler, (), &world.read_resource());
-
-                let animation = Animation::<Material> {
-                    nodes: vec![
-                        (0, MaterialChannel::AlbedoTexture, texture_animation_handle),
-                        (0, MaterialChannel::AlbedoOffset, sampler_animation_handle),
-                    ],
-                };
-
-                loader.load_from_data::<Animation<Material>, ()>(
-                    animation,
-                    (),
-                    &world.read_resource(),
-                )
-            };
-            world.add_resource(EffectReturn(animation_handle));
-        };
-        let assertion_fn = |world: &mut World| {
-            // Read the animation.
-            let animation_handle = &world
-                .read_resource::<EffectReturn<Handle<Animation<Material>>>>()
-                .0;
-
-            let store = world.read_resource::<AssetStorage<Animation<Material>>>();
-            assert!(store.get(animation_handle).is_some());
-        };
-
         assert!(
-            AmethystApplication::render_base("render_base_application_can_load_materials", false)
-                .with_effect(effect_fn)
-                .with_assertion(assertion_fn)
+            AmethystApplication::render_base(
+                "render_base_application_can_load_material_animations",
+                false
+            ).with_effect(MaterialAnimationFixture::effect)
+                .with_assertion(MaterialAnimationFixture::assertion)
                 .run()
                 .is_ok()
         );
@@ -904,19 +982,27 @@ mod test {
     // Incorrect usage tests
 
     #[test]
-    #[should_panic(expected = "`.with_assertion(F)` has previously been called.")]
-    fn with_assertion_invoked_twice_should_panic() {
+    #[should_panic(expected = "`.with_setup(F)` has previously been called.")]
+    fn with_setup_invoked_twice_should_panic() {
         AmethystApplication::blank()
-            .with_assertion(|_world: &mut World| {})
-            .with_assertion(|_world: &mut World| {});
+            .with_setup(|_world| {})
+            .with_setup(|_world| {});
     }
 
     #[test]
     #[should_panic(expected = "`.with_effect(F)` has previously been called.")]
     fn with_effect_invoked_twice_should_panic() {
         AmethystApplication::blank()
-            .with_effect(|_world: &mut World| {})
-            .with_effect(|_world: &mut World| {});
+            .with_effect(|_world| {})
+            .with_effect(|_world| {});
+    }
+
+    #[test]
+    #[should_panic(expected = "`.with_assertion(F)` has previously been called.")]
+    fn with_assertion_invoked_twice_should_panic() {
+        AmethystApplication::blank()
+            .with_assertion(|_world| {})
+            .with_assertion(|_world| {});
     }
 
     #[test]

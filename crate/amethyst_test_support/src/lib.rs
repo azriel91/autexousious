@@ -292,17 +292,20 @@ extern crate boxfnonce;
 extern crate derivative;
 #[macro_use]
 extern crate derive_new;
+extern crate hetseq;
 #[macro_use]
 extern crate lazy_static;
 
-pub use amethyst_application::AmethystApplication;
+pub use amethyst_application::{AmethystApplication, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
 pub use effect_return::EffectReturn;
+pub use fixture::MaterialAnimationFixture;
 pub use game_update::GameUpdate;
-pub use state::{AssertionState, EffectState, EmptyState};
+pub use state::{EmptyState, FunctionState, SchedulerState};
 pub(crate) use system_injection_bundle::SystemInjectionBundle;
 
 mod amethyst_application;
 mod effect_return;
+mod fixture;
 mod game_update;
 pub mod prelude;
 mod state;
