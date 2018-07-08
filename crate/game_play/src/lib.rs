@@ -6,12 +6,16 @@
 extern crate amethyst;
 #[cfg(test)]
 extern crate amethyst_test_support;
+#[cfg(test)]
+extern crate application_test_support;
 extern crate character_selection;
 #[macro_use]
 extern crate derive_new;
 extern crate game_input;
 extern crate game_model;
 extern crate game_play_state;
+#[cfg(test)]
+extern crate loading;
 #[cfg(test)]
 extern crate object_loading;
 extern crate object_model;

@@ -50,3 +50,91 @@ impl<'s> System<'s> for CharacterInputUpdateSystem {
         }
     }
 }
+
+#[cfg(test)]
+mod test {
+    use std::env;
+
+    use amethyst::{animation::AnimationControlSet, ecs::prelude::*, renderer::Material};
+    use amethyst_test_support::*;
+    use application_test_support::AutexousiousApplication;
+    use character_selection::CharacterEntityControl;
+    use game_play_state::GamePlayState;
+    use loading;
+    use object_model::{
+        config::object::CharacterSequenceId,
+        entity::{CharacterInput, Kinematics, ObjectStatus},
+        loaded::CharacterHandle,
+    };
+
+    use super::CharacterInputUpdateSystem;
+
+    #[test]
+    #[ignore]
+    fn maintains_character_sequence_when_next_sequence_is_none() {
+        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
+
+        let setup = |world: &mut World| {
+            // Create entity with CharacterEntityControl
+            let controller_id = 0;
+            let entity = world
+                .create_entity()
+                .with(CharacterEntityControl::new(controller_id))
+                .build();
+
+            world.add_resource(EffectReturn(entity));
+        };
+
+        let load_and_play_state = || {
+            loading::State::new(
+                AmethystApplication::assets_dir().into(),
+                Box::new(GamePlayState::new()),
+            )
+        };
+
+        let assertion = |world: &mut World| {
+            let entity = world.read_resource::<EffectReturn<Entity>>().0;
+            let store = world.read_storage::<CharacterInput>();
+            assert_eq!(
+                Some(&CharacterInput::new(0., 0., false, false, false, false)),
+                store.get(entity)
+            );
+        };
+
+        assert!(
+            AutexousiousApplication::game_base(
+                "maintains_character_sequence_when_next_sequence_is_none",
+                false
+            ).with_system(TestSystem, "test_system", &[])
+                .with_system(
+                    CharacterInputUpdateSystem::new(),
+                    "character_input_update_system",
+                    &[]
+                )
+                .with_setup(setup)
+                .with_state(load_and_play_state)
+                .with_assertion(assertion)
+                .run()
+                .is_ok()
+        );
+    }
+
+    // Sets up storages for the various `Component`.
+    #[derive(Debug)]
+    struct TestSystem;
+    type TestSystemData<'s> = (
+        ReadStorage<'s, CharacterHandle>,
+        ReadStorage<'s, Kinematics<f32>>,
+        ReadStorage<'s, ObjectStatus<CharacterSequenceId>>,
+        ReadStorage<'s, AnimationControlSet<CharacterSequenceId, Material>>,
+    );
+    impl<'s> System<'s> for TestSystem {
+        type SystemData = TestSystemData<'s>;
+        fn run(&mut self, _: Self::SystemData) {
+            panic!(
+                "TODO: Stop the `GamePlayState` after one cycle, but not delete the entities so \
+                 that we can do the assertion."
+            );
+        }
+    }
+}

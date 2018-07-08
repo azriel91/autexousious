@@ -15,6 +15,8 @@ object_play = { path = "../object_play" }
 
 [dev-dependencies]
 amethyst_test_support = { path = "../amethyst_test_support" }
+application_test_support = { path = "../application_test_support" }
+loading = { path = "../loading" }
 object_loading = { path = "../object_loading" }
 
 [features]
