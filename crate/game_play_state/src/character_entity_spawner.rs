@@ -11,7 +11,7 @@ use amethyst::{
 use character_selection::CharacterEntityControl;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{Kinematics, ObjectStatus},
+    entity::{CharacterStatus, Kinematics, ObjectStatus},
     loaded::{Character, CharacterHandle},
 };
 
@@ -83,6 +83,8 @@ impl CharacterEntitySpawner {
             .with(character_entity_control)
             // Loaded `Character` for this entity.
             .with(character_handle)
+            // Character specific status attributes.
+            .with(CharacterStatus::default())
             // The default `Material`, whose textures will be swapped based on the animation.
             .with(material)
             // Coordinates to map the sprite texture to screen. This is the non-mirrored mesh.
@@ -127,7 +129,7 @@ mod test {
     use object_loading::ObjectLoadingBundle;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{Kinematics, ObjectStatus, Position, Velocity},
+        entity::{CharacterStatus, Kinematics, ObjectStatus, Position, Velocity},
         loaded::CharacterHandle,
     };
 
@@ -157,6 +159,7 @@ mod test {
                     .contains(entity)
             );
             assert!(world.read_storage::<CharacterHandle>().contains(entity));
+            assert!(world.read_storage::<CharacterStatus>().contains(entity));
             assert!(world.read_storage::<Material>().contains(entity));
             assert!(world.read_storage::<MeshHandle>().contains(entity));
             assert!(world.read_storage::<Kinematics<f32>>().contains(entity));
@@ -193,6 +196,7 @@ mod test {
     type TestSystemData<'s> = (
         ReadStorage<'s, CharacterEntityControl>,
         ReadStorage<'s, CharacterHandle>,
+        ReadStorage<'s, CharacterStatus>,
         ReadStorage<'s, Kinematics<f32>>,
         ReadStorage<'s, ObjectStatus<CharacterSequenceId>>,
         ReadStorage<'s, AnimationControlSet<CharacterSequenceId, Material>>,
