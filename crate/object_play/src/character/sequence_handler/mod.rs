@@ -1,6 +1,6 @@
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{CharacterInput, ObjectStatusUpdate},
+    entity::{CharacterInput, CharacterStatus, ObjectStatusUpdate},
 };
 
 pub(super) use self::stand::Stand;
@@ -12,5 +12,13 @@ mod walk;
 /// Traits that every sequence should define for its transition behaviour.
 pub(super) trait SequenceHandler {
     /// Updates behaviour in response to input.
-    fn update(input: &CharacterInput) -> ObjectStatusUpdate<CharacterSequenceId>;
+    ///
+    /// # Parameters
+    ///
+    /// * `input`: Controller input for the character.
+    /// * `character_status`: Character specific status attributes.
+    fn update(
+        input: &CharacterInput,
+        character_status: &mut CharacterStatus,
+    ) -> ObjectStatusUpdate<CharacterSequenceId>;
 }

@@ -7,7 +7,7 @@ use amethyst::{
 use game_play_state::AnimationRunner;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{CharacterInput, ObjectStatus},
+    entity::{CharacterInput, CharacterStatus, ObjectStatus},
     loaded::{Character, CharacterHandle},
 };
 use object_play::CharacterSequenceHandler;
@@ -21,6 +21,7 @@ type CharacterSequenceUpdateSystemData<'s, 'c> = (
     Read<'s, AssetStorage<Character>>,
     ReadStorage<'s, CharacterHandle>,
     ReadStorage<'s, CharacterInput>,
+    WriteStorage<'s, CharacterStatus>,
     WriteStorage<'s, ObjectStatus<CharacterSequenceId>>,
     WriteStorage<'s, MeshHandle>,
     WriteStorage<'s, AnimationControlSet<CharacterSequenceId, Material>>,
@@ -36,25 +37,32 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             characters,
             handle_storage,
             character_input_storage,
-            mut status_storage,
+            mut character_status_storage,
+            mut object_status_storage,
             mut mesh_handle_storage,
             mut animation_control_set_storage,
         ): Self::SystemData,
     ) {
-        for (entity, character_handle, character_input, mut status) in (
-            &*entities,
-            &handle_storage,
-            &character_input_storage,
-            &mut status_storage,
-        ).join()
+        for (entity, character_handle, character_input, mut character_status, mut object_status) in
+            (
+                &*entities,
+                &handle_storage,
+                &character_input_storage,
+                &mut character_status_storage,
+                &mut object_status_storage,
+            ).join()
         {
             let character = characters
                 .get(character_handle)
                 .expect("Expected character to be loaded.");
 
-            // TODO: Calculate a delta from the current status and update
-            let status_update =
-                CharacterSequenceHandler::update(character, &character_input, &status.sequence_id);
+            // TODO: Calculate a delta from the current object_status and update
+            let status_update = CharacterSequenceHandler::update(
+                character,
+                &character_input,
+                &object_status.sequence_id,
+                &mut character_status,
+            );
 
             // Update the current sequence ID
             if let Some(next_sequence_id) = status_update.sequence_id {
@@ -76,7 +84,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                 AnimationRunner::swap(
                     &mut animation_set,
                     &animation_handle,
-                    &status.sequence_id,
+                    &object_status.sequence_id,
                     &next_sequence_id,
                 );
             }
@@ -93,7 +101,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                     .expect("Failed to replace mesh for character.");
             }
 
-            *status += status_update;
+            *object_status += status_update;
         }
     }
 }
