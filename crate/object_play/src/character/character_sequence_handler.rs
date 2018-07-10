@@ -1,10 +1,10 @@
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{CharacterInput, CharacterStatus, ObjectStatusUpdate},
+    entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate},
     loaded::Character,
 };
 
-use character::sequence_handler::{SequenceHandler, Stand, Walk};
+use character::sequence_handler::{Run, SequenceHandler, Stand, Walk};
 
 /// Defines behaviour for a character in game.
 #[derive(Debug)]
@@ -15,12 +15,12 @@ impl CharacterSequenceHandler {
     pub fn update(
         _character: &Character,
         input: &CharacterInput,
-        current_sequence_id: &CharacterSequenceId,
-        character_status: &mut CharacterStatus,
-    ) -> ObjectStatusUpdate<CharacterSequenceId> {
-        let sequence_handler = match *current_sequence_id {
+        character_status: &CharacterStatus,
+    ) -> CharacterStatusUpdate {
+        let sequence_handler = match character_status.object_status.sequence_id {
             CharacterSequenceId::Stand => Stand::update,
             CharacterSequenceId::Walk => Walk::update,
+            CharacterSequenceId::Run => Run::update,
         };
 
         sequence_handler(input, character_status)

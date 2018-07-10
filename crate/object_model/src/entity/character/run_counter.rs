@@ -4,22 +4,15 @@ pub enum RunCounter {
     /// Used when there has not been any X axis input for the number of ticks defined by
     /// [`RESET_TICK_COUNT`](#enum.const.RESET_TICK_COUNT).
     Unused,
-    /// Used when there is input on the X axis in the positive direction.
-    RightIncrease(u32),
-    /// Used when input on the X axis in the positive direction has exceeded. [`RESET_TICK_COUNT`]
+    /// Used while the character is walking and there is input on the X axis.
+    Increase(u32),
+    /// Used when input on the X axis in the same direction has exceeded. [`RESET_TICK_COUNT`]
     /// (#enum.const.RESET_TICK_COUNT) ticks.
-    RightExceeded,
-    /// Used when there is no input on the X axis, where previously there was in the positive
-    /// direction, which was released within (#enum.const.RESET_TICK_COUNT) ticks.
-    RightDecrease(u32),
-    /// Used when there is input on the X axis in the negative direction.
-    LeftIncrease(u32),
-    /// Used when input on the X axis in the negative direction has exceeded. [`RESET_TICK_COUNT`]
-    /// (#enum.const.RESET_TICK_COUNT) ticks.
-    LeftExceeded,
-    /// Used when there is no input on the X axis, where previously there was in the negative
-    /// direction, which was released within (#enum.const.RESET_TICK_COUNT) ticks.
-    LeftDecrease(u32),
+    Exceeded,
+    /// Used in the `Stand`ing state, while there is no input on the X axis, where previously the
+    /// character was `Walk`ing and reverted to `Stand`ing within (#enum.const.RESET_TICK_COUNT)
+    /// ticks.
+    Decrease(u32),
 }
 
 impl RunCounter {

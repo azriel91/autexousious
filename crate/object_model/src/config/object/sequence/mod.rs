@@ -67,5 +67,10 @@ mod test {
     enum TestSeqId {
         Boo,
     }
+    impl Default for TestSeqId {
+        fn default() -> Self {
+            TestSeqId::Boo
+        }
+    }
     impl SequenceId for TestSeqId {}
 }

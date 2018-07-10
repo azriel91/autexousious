@@ -1,11 +1,10 @@
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{CharacterInput, CharacterStatus, ObjectStatusUpdate},
-};
+use object_model::entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate};
 
+pub(super) use self::run::Run;
 pub(super) use self::stand::Stand;
 pub(super) use self::walk::Walk;
 
+mod run;
 mod stand;
 mod walk;
 
@@ -17,8 +16,5 @@ pub(super) trait SequenceHandler {
     ///
     /// * `input`: Controller input for the character.
     /// * `character_status`: Character specific status attributes.
-    fn update(
-        input: &CharacterInput,
-        character_status: &mut CharacterStatus,
-    ) -> ObjectStatusUpdate<CharacterSequenceId>;
+    fn update(input: &CharacterInput, character_status: &CharacterStatus) -> CharacterStatusUpdate;
 }

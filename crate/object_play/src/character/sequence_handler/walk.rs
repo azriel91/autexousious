@@ -1,6 +1,8 @@
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{CharacterInput, CharacterStatus, ObjectStatusUpdate},
+    entity::{
+        CharacterInput, CharacterStatus, CharacterStatusUpdate, ObjectStatusUpdate, RunCounter,
+    },
 };
 
 use character::sequence_handler::SequenceHandler;
@@ -9,25 +11,55 @@ use character::sequence_handler::SequenceHandler;
 pub(crate) struct Walk;
 
 impl SequenceHandler for Walk {
-    fn update(
-        input: &CharacterInput,
-        _character_status: &mut CharacterStatus,
-    ) -> ObjectStatusUpdate<CharacterSequenceId> {
-        let sequence_id = if input.x_axis_value == 0. && input.z_axis_value == 0. {
-            Some(CharacterSequenceId::Stand)
-        } else {
-            None
+    fn update(input: &CharacterInput, character_status: &CharacterStatus) -> CharacterStatusUpdate {
+        let (run_counter, mut sequence_id, mirrored) = {
+            let mirrored = character_status.object_status.mirrored;
+
+            use object_model::entity::RunCounter::*;
+
+            // TODO: Refactor
+            if input.x_axis_value == 0. {
+                let run_counter = match character_status.run_counter {
+                    Unused => None,
+                    Exceeded | Decrease(0) => Some(Unused),
+                    Decrease(ticks) => Some(Decrease(ticks - 1)),
+                    Increase(_) => Some(Decrease(RunCounter::RESET_TICK_COUNT)),
+                };
+                (run_counter, Some(CharacterSequenceId::Stand), None)
+            } else if input.x_axis_value > 0. {
+                match (character_status.run_counter, mirrored) {
+                    (Unused, _) | (Decrease(_), true) | (Increase(_), true) => (
+                        Some(Increase(RunCounter::RESET_TICK_COUNT)),
+                        Some(CharacterSequenceId::Walk),
+                        Some(false),
+                    ),
+                    (Decrease(_), false) => (Some(Unused), Some(CharacterSequenceId::Run), None),
+                    (Increase(0), false) => (Some(Exceeded), None, None),
+                    (Increase(ticks), false) => (Some(Increase(ticks - 1)), None, None),
+                    (Exceeded, _) => (None, None, None),
+                }
+            } else {
+                // input.x_axis_value < 0.
+                match (character_status.run_counter, mirrored) {
+                    (Unused, _) | (Decrease(_), false) | (Increase(_), false) => (
+                        Some(Increase(RunCounter::RESET_TICK_COUNT)),
+                        Some(CharacterSequenceId::Walk),
+                        Some(true),
+                    ),
+                    (Decrease(_), true) => (Some(Unused), Some(CharacterSequenceId::Run), None),
+                    (Increase(0), true) => (Some(Exceeded), None, None),
+                    (Increase(ticks), true) => (Some(Increase(ticks - 1)), None, None),
+                    (Exceeded, _) => (None, None, None),
+                }
+            }
         };
 
-        let mirrored = if input.x_axis_value < 0. {
-            Some(true)
-        } else if input.x_axis_value > 0. {
-            Some(false)
-        } else {
-            None
-        };
+        // If we are about to stand, but have z axis input, then we walk instead
+        if sequence_id == Some(CharacterSequenceId::Stand) && input.z_axis_value != 0. {
+            sequence_id = None;
+        }
 
-        ObjectStatusUpdate::new(sequence_id, mirrored)
+        CharacterStatusUpdate::new(run_counter, ObjectStatusUpdate::new(sequence_id, mirrored))
     }
 }
 
@@ -35,79 +67,256 @@ impl SequenceHandler for Walk {
 mod test {
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{CharacterInput, CharacterStatus},
+        entity::{
+            CharacterInput, CharacterStatus, CharacterStatusUpdate, ObjectStatus,
+            ObjectStatusUpdate, RunCounter,
+        },
     };
 
     use super::Walk;
     use character::sequence_handler::SequenceHandler;
 
     #[test]
-    fn update_sequence_is_none_when_x_and_z_axes_are_non_zero() {
-        let input = CharacterInput::new(1., 1., false, false, false, false);
-
-        assert_eq!(
-            None,
-            Walk::update(&input, &mut CharacterStatus::default()).sequence_id
-        );
-    }
-
-    #[test]
-    fn update_sequence_is_none_when_x_axis_is_non_zero() {
-        let input = CharacterInput::new(1., 0., false, false, false, false);
-
-        assert_eq!(
-            None,
-            Walk::update(&input, &mut CharacterStatus::default()).sequence_id
-        );
-    }
-
-    #[test]
-    fn update_sequence_is_none_when_z_axis_is_non_zero() {
-        let input = CharacterInput::new(0., 1., false, false, false, false);
-
-        assert_eq!(
-            None,
-            Walk::update(&input, &mut CharacterStatus::default()).sequence_id
-        );
-    }
-
-    #[test]
-    fn update_sequence_is_stand_when_x_and_z_axes_are_non_zero() {
+    fn reverts_to_stand_when_no_input() {
         let input = CharacterInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            Some(CharacterSequenceId::Stand),
-            Walk::update(&input, &mut CharacterStatus::default()).sequence_id
+            CharacterStatusUpdate::new(
+                Some(RunCounter::Decrease(RunCounter::RESET_TICK_COUNT)),
+                ObjectStatusUpdate::new(Some(CharacterSequenceId::Stand), None)
+            ),
+            Walk::update(
+                &input,
+                &CharacterStatus::new(
+                    RunCounter::Increase(10),
+                    ObjectStatus::new(CharacterSequenceId::Walk, false)
+                )
+            )
         );
     }
 
     #[test]
-    fn update_mirrored_is_none_when_x_axis_is_zero() {
+    fn reverts_to_stand_with_run_counter_unused_when_no_input_and_run_counter_exceeded() {
         let input = CharacterInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            None,
-            Walk::update(&input, &mut CharacterStatus::default()).mirrored
+            CharacterStatusUpdate::new(
+                Some(RunCounter::Unused),
+                ObjectStatusUpdate::new(Some(CharacterSequenceId::Stand), None)
+            ),
+            Walk::update(
+                &input,
+                &CharacterStatus::new(
+                    RunCounter::Exceeded,
+                    ObjectStatus::new(CharacterSequenceId::Walk, false)
+                )
+            )
         );
     }
 
     #[test]
-    fn update_mirrored_is_false_when_x_axis_is_above_zero() {
+    fn decrements_run_counter_when_x_axis_positive_non_mirror() {
         let input = CharacterInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
-            Some(false),
-            Walk::update(&input, &mut CharacterStatus::default()).mirrored
+            CharacterStatusUpdate::new(
+                Some(RunCounter::Increase(10)),
+                ObjectStatusUpdate::new(None, None)
+            ),
+            Walk::update(
+                &input,
+                &CharacterStatus::new(
+                    RunCounter::Increase(11),
+                    ObjectStatus::new(CharacterSequenceId::Walk, false)
+                )
+            )
         );
     }
 
     #[test]
-    fn update_mirrored_is_true_when_z_axis_is_below_zero() {
+    fn run_counter_exceeded_when_x_axis_positive_non_mirror_and_exceeds_tick_count() {
+        let input = CharacterInput::new(1., 0., false, false, false, false);
+
+        assert_eq!(
+            CharacterStatusUpdate::new(
+                Some(RunCounter::Exceeded),
+                ObjectStatusUpdate::new(None, None)
+            ),
+            Walk::update(
+                &input,
+                &CharacterStatus::new(
+                    RunCounter::Increase(0),
+                    ObjectStatus::new(CharacterSequenceId::Walk, false)
+                )
+            )
+        );
+    }
+
+    #[test]
+    fn decrements_run_counter_when_x_axis_negative_mirror() {
         let input = CharacterInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
-            Some(true),
-            Walk::update(&input, &mut CharacterStatus::default()).mirrored
+            CharacterStatusUpdate::new(
+                Some(RunCounter::Increase(10)),
+                ObjectStatusUpdate::new(None, None)
+            ),
+            Walk::update(
+                &input,
+                &CharacterStatus::new(
+                    RunCounter::Increase(11),
+                    ObjectStatus::new(CharacterSequenceId::Walk, true)
+                )
+            )
+        );
+    }
+
+    #[test]
+    fn run_counter_exceeded_when_x_axis_negative_mirror_and_exceeds_tick_count() {
+        let input = CharacterInput::new(-1., 0., false, false, false, false);
+
+        assert_eq!(
+            CharacterStatusUpdate::new(
+                Some(RunCounter::Exceeded),
+                ObjectStatusUpdate::new(None, None)
+            ),
+            Walk::update(
+                &input,
+                &CharacterStatus::new(
+                    RunCounter::Increase(0),
+                    ObjectStatus::new(CharacterSequenceId::Walk, true)
+                )
+            )
+        );
+    }
+
+    #[test]
+    fn run_counter_decrease_when_x_axis_zero_z_axis_positive_and_run_counter_increase() {
+        let input = CharacterInput::new(0., 1., false, false, false, false);
+
+        assert_eq!(
+            CharacterStatusUpdate::new(
+                Some(RunCounter::Decrease(RunCounter::RESET_TICK_COUNT)),
+                ObjectStatusUpdate::new(None, None)
+            ),
+            Walk::update(
+                &input,
+                &CharacterStatus::new(
+                    RunCounter::Increase(0),
+                    ObjectStatus::new(CharacterSequenceId::Walk, false)
+                )
+            )
+        );
+    }
+
+    #[test]
+    fn walk_non_mirror_when_x_axis_positive_mirror() {
+        let input = CharacterInput::new(1., 0., false, false, false, false);
+
+        assert_eq!(
+            CharacterStatusUpdate::new(
+                Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
+                ObjectStatusUpdate::new(Some(CharacterSequenceId::Walk), Some(false))
+            ),
+            Walk::update(
+                &input,
+                &CharacterStatus::new(
+                    RunCounter::Increase(11),
+                    ObjectStatus::new(CharacterSequenceId::Walk, true)
+                )
+            )
+        );
+    }
+
+    #[test]
+    fn walk_mirror_when_x_axis_negative_non_mirror() {
+        let input = CharacterInput::new(-1., 0., false, false, false, false);
+
+        assert_eq!(
+            CharacterStatusUpdate::new(
+                Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
+                ObjectStatusUpdate::new(Some(CharacterSequenceId::Walk), Some(true))
+            ),
+            Walk::update(
+                &input,
+                &CharacterStatus::new(
+                    RunCounter::Increase(11),
+                    ObjectStatus::new(CharacterSequenceId::Walk, false)
+                )
+            )
+        );
+    }
+
+    #[test]
+    fn walk_when_z_axis_non_zero() {
+        let input = CharacterInput::new(0., 1., false, false, false, false);
+
+        assert_eq!(
+            CharacterStatusUpdate::new(
+                Some(RunCounter::Decrease(RunCounter::RESET_TICK_COUNT)),
+                ObjectStatusUpdate::new(None, None)
+            ),
+            Walk::update(
+                &input,
+                &CharacterStatus::new(
+                    RunCounter::Increase(0),
+                    ObjectStatus::new(CharacterSequenceId::Walk, false)
+                )
+            )
+        );
+
+        let input = CharacterInput::new(0., -1., false, false, false, false);
+
+        assert_eq!(
+            CharacterStatusUpdate::new(
+                Some(RunCounter::Decrease(RunCounter::RESET_TICK_COUNT)),
+                ObjectStatusUpdate::new(None, None)
+            ),
+            Walk::update(
+                &input,
+                &CharacterStatus::new(
+                    RunCounter::Increase(0),
+                    ObjectStatus::new(CharacterSequenceId::Walk, false)
+                )
+            )
+        );
+    }
+
+    #[test]
+    fn run_when_x_axis_positive_and_run_counter_decrease_non_mirror() {
+        let input = CharacterInput::new(1., -1., false, false, false, false);
+
+        assert_eq!(
+            CharacterStatusUpdate::new(
+                Some(RunCounter::Unused),
+                ObjectStatusUpdate::new(Some(CharacterSequenceId::Run), None)
+            ),
+            Walk::update(
+                &input,
+                &CharacterStatus::new(
+                    RunCounter::Decrease(10),
+                    ObjectStatus::new(CharacterSequenceId::Walk, false)
+                )
+            )
+        );
+    }
+
+    #[test]
+    fn run_when_x_axis_negative_and_run_counter_decrease_mirror() {
+        let input = CharacterInput::new(-1., -1., false, false, false, false);
+
+        assert_eq!(
+            CharacterStatusUpdate::new(
+                Some(RunCounter::Unused),
+                ObjectStatusUpdate::new(Some(CharacterSequenceId::Run), None)
+            ),
+            Walk::update(
+                &input,
+                &CharacterStatus::new(
+                    RunCounter::Decrease(10),
+                    ObjectStatus::new(CharacterSequenceId::Walk, true)
+                )
+            )
         );
     }
 }

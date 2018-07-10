@@ -43,6 +43,7 @@
   sprite_h = 31.0
   row_count = 1
   column_count = 6
+  has_border = true
   offsets = [
     { x =  26, y = 19 }, # 0
     { x =  58, y = 19 }, # 1

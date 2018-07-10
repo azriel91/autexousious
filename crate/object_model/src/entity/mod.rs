@@ -3,7 +3,7 @@
 //! This differs from the `loaded` types as these may contain mutable state that are specific to an
 //! entity.
 
-pub use self::character::{CharacterInput, CharacterStatus, RunCounter};
+pub use self::character::{CharacterInput, CharacterStatus, CharacterStatusUpdate, RunCounter};
 pub use self::kinematic::{Kinematics, Position, Velocity};
 pub use self::object_status::ObjectStatus;
 pub use self::object_status_update::ObjectStatusUpdate;
