@@ -10,7 +10,11 @@ use character::sequence_handler::SequenceHandler;
 pub(crate) struct Run;
 
 impl SequenceHandler for Run {
-    fn update(input: &CharacterInput, character_status: &CharacterStatus) -> CharacterStatusUpdate {
+    fn update(
+        input: &CharacterInput,
+        character_status: &CharacterStatus,
+        sequence_ended: bool,
+    ) -> CharacterStatusUpdate {
         // Should always be `RunCounter::Unused`
         let run_counter = None;
         // Don't change facing direction
@@ -20,7 +24,11 @@ impl SequenceHandler for Run {
         let sequence_id = if (input.x_axis_value < 0. && object_status.mirrored)
             || (input.x_axis_value > 0. && !object_status.mirrored)
         {
-            None
+            if sequence_ended {
+                Some(CharacterSequenceId::Run)
+            } else {
+                None
+            }
         } else {
             Some(CharacterSequenceId::StopRun)
         };
@@ -56,7 +64,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Run, false)
-                )
+                ),
+                false
             )
         );
     }
@@ -72,7 +81,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Run, false)
-                )
+                ),
+                false
             )
         );
     }
@@ -88,9 +98,34 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Run, true)
-                )
+                ),
+                false
             )
         );
+    }
+
+    #[test]
+    fn restarts_run_when_sequence_ended() {
+        vec![(1., false), (-1., true)]
+            .into_iter()
+            .for_each(|(x_input, mirrored)| {
+                let input = CharacterInput::new(x_input, 0., false, false, false, false);
+
+                assert_eq!(
+                    CharacterStatusUpdate::new(
+                        None,
+                        ObjectStatusUpdate::new(Some(CharacterSequenceId::Run), None)
+                    ),
+                    Run::update(
+                        &input,
+                        &CharacterStatus::new(
+                            RunCounter::Unused,
+                            ObjectStatus::new(CharacterSequenceId::Run, mirrored)
+                        ),
+                        true
+                    )
+                );
+            });
     }
 
     #[test]
@@ -107,7 +142,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Run, false)
-                )
+                ),
+                false
             )
         );
     }
@@ -126,7 +162,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Run, true)
-                )
+                ),
+                false
             )
         );
     }
@@ -142,7 +179,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Run, false)
-                )
+                ),
+                false
             )
         );
 
@@ -155,7 +193,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Run, false)
-                )
+                ),
+                false
             )
         );
     }

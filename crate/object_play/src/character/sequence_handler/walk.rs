@@ -11,7 +11,11 @@ use character::sequence_handler::SequenceHandler;
 pub(crate) struct Walk;
 
 impl SequenceHandler for Walk {
-    fn update(input: &CharacterInput, character_status: &CharacterStatus) -> CharacterStatusUpdate {
+    fn update(
+        input: &CharacterInput,
+        character_status: &CharacterStatus,
+        sequence_ended: bool,
+    ) -> CharacterStatusUpdate {
         let (run_counter, mut sequence_id, mirrored) = {
             let mirrored = character_status.object_status.mirrored;
 
@@ -46,6 +50,11 @@ impl SequenceHandler for Walk {
             sequence_id = None;
         }
 
+        // If we're maintaining the `Walk` state, and have reached the end of the sequence, restart.
+        if sequence_id.is_none() && sequence_ended {
+            sequence_id = Some(CharacterSequenceId::Walk);
+        }
+
         CharacterStatusUpdate::new(run_counter, ObjectStatusUpdate::new(sequence_id, mirrored))
     }
 }
@@ -77,7 +86,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Increase(10),
                     ObjectStatus::new(CharacterSequenceId::Walk, false)
-                )
+                ),
+                false
             )
         );
     }
@@ -96,7 +106,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Exceeded,
                     ObjectStatus::new(CharacterSequenceId::Walk, false)
-                )
+                ),
+                false
             )
         );
     }
@@ -115,7 +126,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Increase(11),
                     ObjectStatus::new(CharacterSequenceId::Walk, false)
-                )
+                ),
+                false
             )
         );
     }
@@ -134,7 +146,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Increase(0),
                     ObjectStatus::new(CharacterSequenceId::Walk, false)
-                )
+                ),
+                false
             )
         );
     }
@@ -153,7 +166,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Increase(11),
                     ObjectStatus::new(CharacterSequenceId::Walk, true)
-                )
+                ),
+                false
             )
         );
     }
@@ -172,7 +186,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Increase(0),
                     ObjectStatus::new(CharacterSequenceId::Walk, true)
-                )
+                ),
+                false
             )
         );
     }
@@ -191,7 +206,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Increase(0),
                     ObjectStatus::new(CharacterSequenceId::Walk, false)
-                )
+                ),
+                false
             )
         );
     }
@@ -210,7 +226,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Increase(11),
                     ObjectStatus::new(CharacterSequenceId::Walk, true)
-                )
+                ),
+                false
             )
         );
     }
@@ -229,7 +246,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Increase(11),
                     ObjectStatus::new(CharacterSequenceId::Walk, false)
-                )
+                ),
+                false
             )
         );
     }
@@ -248,7 +266,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Increase(0),
                     ObjectStatus::new(CharacterSequenceId::Walk, false)
-                )
+                ),
+                false
             )
         );
 
@@ -264,9 +283,55 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Increase(0),
                     ObjectStatus::new(CharacterSequenceId::Walk, false)
-                )
+                ),
+                false
             )
         );
+    }
+
+    #[test]
+    fn restarts_walk_when_sequence_ended() {
+        vec![(0., 1.), (0., -1.)]
+            .into_iter()
+            .for_each(|(x_input, z_input)| {
+                let input = CharacterInput::new(x_input, z_input, false, false, false, false);
+
+                assert_eq!(
+                    CharacterStatusUpdate::new(
+                        Some(RunCounter::Decrease(RunCounter::RESET_TICK_COUNT)),
+                        ObjectStatusUpdate::new(Some(CharacterSequenceId::Walk), None)
+                    ),
+                    Walk::update(
+                        &input,
+                        &CharacterStatus::new(
+                            RunCounter::Increase(0),
+                            ObjectStatus::new(CharacterSequenceId::Walk, false)
+                        ),
+                        true
+                    )
+                );
+            });
+
+        vec![(1., 1., false), (-1., -1., true)]
+            .into_iter()
+            .for_each(|(x_input, z_input, mirrored)| {
+                let input = CharacterInput::new(x_input, z_input, false, false, false, false);
+
+                assert_eq!(
+                    CharacterStatusUpdate::new(
+                        Some(RunCounter::Increase(0)),
+                        ObjectStatusUpdate::new(Some(CharacterSequenceId::Walk), None)
+                    ),
+                    Walk::update(
+                        &input,
+                        &CharacterStatus::new(
+                            RunCounter::Increase(1),
+                            ObjectStatus::new(CharacterSequenceId::Walk, mirrored)
+                        ),
+                        true
+                    )
+                );
+            });
     }
 
     #[test]
@@ -283,7 +348,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Decrease(10),
                     ObjectStatus::new(CharacterSequenceId::Walk, false)
-                )
+                ),
+                false
             )
         );
     }
@@ -302,7 +368,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Decrease(10),
                     ObjectStatus::new(CharacterSequenceId::Walk, true)
-                )
+                ),
+                false
             )
         );
     }

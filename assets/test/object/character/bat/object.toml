@@ -2,11 +2,9 @@
 # `object_loader.rs`.
 
 [sequences.stand]
-  next = "stand"
   frames = [{ sheet = 0, sprite = 5, wait = 1 }]
 
 [sequences.walk]
-  next = "walk"
   frames = [
     { sheet = 0, sprite = 0, wait =  2 },
     { sheet = 0, sprite = 1, wait =  2 },
@@ -16,7 +14,6 @@
   ]
 
 [sequences.run]
-  next = "run"
   frames = [
     { sheet = 1, sprite = 0, wait =  2 },
     { sheet = 1, sprite = 1, wait =  2 },
@@ -26,7 +23,6 @@
   ]
 
 [sequences.stop_run]
-  next = "stand"
   frames = [
     { sheet = 1, sprite = 0, wait =  2 },
     { sheet = 1, sprite = 1, wait =  2 },
