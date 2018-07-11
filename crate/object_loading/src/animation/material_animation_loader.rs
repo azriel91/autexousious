@@ -260,7 +260,7 @@ mod test {
             Frame::new(1, 0, 2), // TU: 1 to 4
             Frame::new(0, 0, 1), // TU: 4 to 6
         ];
-        let sequence = Sequence::new(TestSeqId::Boo, frames);
+        let sequence = Sequence::new(Some(TestSeqId::Boo), frames);
         let mut sequences = HashMap::new();
         sequences.insert(TestSeqId::Boo, sequence);
         ObjectDefinition::new(sequences)

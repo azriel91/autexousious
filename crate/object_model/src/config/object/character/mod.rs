@@ -42,7 +42,7 @@ mod test {
             Frame::new(0, 6, 2),
             Frame::new(0, 5, 2),
         ];
-        let sequence = Sequence::new(CharacterSequenceId::Walk, frames);
+        let sequence = Sequence::new(Some(CharacterSequenceId::Walk), frames);
         let mut sequences = HashMap::new();
         sequences.insert(CharacterSequenceId::Stand, sequence);
         let object_definition = ObjectDefinition::new(sequences);

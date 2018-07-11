@@ -1,5 +1,5 @@
 use amethyst::{
-    animation::{get_animation_set, AnimationControlSet},
+    animation::{get_animation_set, AnimationControlSet, ControlState},
     assets::AssetStorage,
     ecs::prelude::*,
     renderer::{Material, MeshHandle},
@@ -52,9 +52,25 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                 .get(character_handle)
                 .expect("Expected character to be loaded.");
 
+            let mut animation_set = get_animation_set(&mut animation_control_set_storage, entity);
+
             // TODO: Calculate a delta from the current status and update
-            let status_update =
-                CharacterSequenceHandler::update(character, &character_input, &character_status);
+            let sequence_ended = {
+                animation_set
+                    .animations
+                    .iter()
+                    .find(|&&(ref id, ref _control)| {
+                        id == &character_status.object_status.sequence_id
+                    })
+                    .map_or(true, |(_id, control)| control.state == ControlState::Done)
+            };
+
+            let status_update = CharacterSequenceHandler::update(
+                character,
+                &character_input,
+                &character_status,
+                sequence_ended,
+            );
 
             // Update the current sequence ID
             if let Some(next_sequence_id) = status_update.object_status.sequence_id {
@@ -69,9 +85,6 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                         )
                     })
                     .clone();
-
-                let mut animation_set =
-                    get_animation_set(&mut animation_control_set_storage, entity);
 
                 AnimationRunner::swap(
                     &mut animation_set,

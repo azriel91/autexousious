@@ -57,7 +57,11 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                     kinematics.velocity[2] = character_input.z_axis_value as f32 * -1.5;
                 }
                 CharacterSequenceId::StopRun => {
-                    kinematics.velocity[0] = character_input.x_axis_value as f32 * 2.;
+                    kinematics.velocity[0] = if status.object_status.mirrored {
+                        -2.
+                    } else {
+                        2.
+                    };
                     kinematics.velocity[2] = character_input.z_axis_value as f32 * -0.5;
                 }
             };
