@@ -32,28 +32,15 @@ impl SequenceHandler for Stand {
                     _ => unreachable!(),
                 };
                 (run_counter, None, None)
-            } else if input.x_axis_value > 0. {
-                match (character_status.run_counter, mirrored) {
-                    (Unused, true) | (Decrease(_), true) => (
-                        Some(Increase(RunCounter::RESET_TICK_COUNT)),
-                        Some(CharacterSequenceId::Walk),
-                        Some(false),
-                    ),
-                    (Unused, false) => (
-                        Some(Increase(RunCounter::RESET_TICK_COUNT)),
-                        Some(CharacterSequenceId::Walk),
-                        None,
-                    ),
-                    (Decrease(_), false) => (Some(Unused), Some(CharacterSequenceId::Run), None),
-                    _ => unreachable!(),
-                }
             } else {
-                // input.x_axis_value < 0.
-                match (character_status.run_counter, mirrored) {
+                let same_direction =
+                    input.x_axis_value > 0. && !mirrored || input.x_axis_value < 0. && mirrored;
+
+                match (character_status.run_counter, same_direction) {
                     (Unused, false) | (Decrease(_), false) => (
                         Some(Increase(RunCounter::RESET_TICK_COUNT)),
                         Some(CharacterSequenceId::Walk),
-                        Some(true),
+                        Some(!mirrored),
                     ),
                     (Unused, true) => (
                         Some(Increase(RunCounter::RESET_TICK_COUNT)),

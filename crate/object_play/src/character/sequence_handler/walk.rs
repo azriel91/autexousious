@@ -16,8 +16,6 @@ impl SequenceHandler for Walk {
             let mirrored = character_status.object_status.mirrored;
 
             use object_model::entity::RunCounter::*;
-
-            // TODO: Refactor
             if input.x_axis_value == 0. {
                 let run_counter = match character_status.run_counter {
                     Unused => None,
@@ -26,25 +24,14 @@ impl SequenceHandler for Walk {
                     Increase(_) => Some(Decrease(RunCounter::RESET_TICK_COUNT)),
                 };
                 (run_counter, Some(CharacterSequenceId::Stand), None)
-            } else if input.x_axis_value > 0. {
-                match (character_status.run_counter, mirrored) {
-                    (Unused, _) | (Decrease(_), true) | (Increase(_), true) => (
-                        Some(Increase(RunCounter::RESET_TICK_COUNT)),
-                        Some(CharacterSequenceId::Walk),
-                        Some(false),
-                    ),
-                    (Decrease(_), false) => (Some(Unused), Some(CharacterSequenceId::Run), None),
-                    (Increase(0), false) => (Some(Exceeded), None, None),
-                    (Increase(ticks), false) => (Some(Increase(ticks - 1)), None, None),
-                    (Exceeded, _) => (None, None, None),
-                }
             } else {
-                // input.x_axis_value < 0.
-                match (character_status.run_counter, mirrored) {
+                let same_direction =
+                    input.x_axis_value > 0. && !mirrored || input.x_axis_value < 0. && mirrored;
+                match (character_status.run_counter, same_direction) {
                     (Unused, _) | (Decrease(_), false) | (Increase(_), false) => (
                         Some(Increase(RunCounter::RESET_TICK_COUNT)),
                         Some(CharacterSequenceId::Walk),
-                        Some(true),
+                        Some(!mirrored),
                     ),
                     (Decrease(_), true) => (Some(Unused), Some(CharacterSequenceId::Run), None),
                     (Increase(0), true) => (Some(Exceeded), None, None),
