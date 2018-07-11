@@ -1,3 +1,6 @@
+# When updating this file, remember to update the number of expected animations in
+# `object_loader.rs`.
+
 [sequences.stand]
   next = "stand"
   frames = [{ sheet = 0, sprite = 5, wait = 1 }]
@@ -13,6 +16,16 @@
   ]
 
 [sequences.run]
+  next = "stop_run"
+  frames = [
+    { sheet = 1, sprite = 0, wait =  2 },
+    { sheet = 1, sprite = 1, wait =  2 },
+    { sheet = 1, sprite = 2, wait =  2 },
+    { sheet = 1, sprite = 3, wait =  2 },
+    { sheet = 1, sprite = 4, wait =  2 },
+  ]
+
+[sequences.stop_run]
   next = "stand"
   frames = [
     { sheet = 1, sprite = 0, wait =  2 },
@@ -20,4 +33,5 @@
     { sheet = 1, sprite = 2, wait =  2 },
     { sheet = 1, sprite = 3, wait =  2 },
     { sheet = 1, sprite = 4, wait =  2 },
+    { sheet = 1, sprite = 5, wait =  20 },
   ]

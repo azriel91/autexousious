@@ -5,13 +5,12 @@ use object_model::{
 
 use character::sequence_handler::SequenceHandler;
 
+/// Hold forward to run, release to stop running.
 #[derive(Debug)]
 pub(crate) struct Run;
 
 impl SequenceHandler for Run {
     fn update(input: &CharacterInput, character_status: &CharacterStatus) -> CharacterStatusUpdate {
-        // Hold forward to run, release means stop running
-
         // Should always be `RunCounter::Unused`
         let run_counter = None;
         // Don't change facing direction
@@ -23,7 +22,7 @@ impl SequenceHandler for Run {
         {
             None
         } else {
-            Some(CharacterSequenceId::Stand) // TODO: StopRun
+            Some(CharacterSequenceId::StopRun)
         };
 
         CharacterStatusUpdate::new(run_counter, ObjectStatusUpdate::new(sequence_id, mirrored))
@@ -44,13 +43,13 @@ mod test {
     use character::sequence_handler::SequenceHandler;
 
     #[test]
-    fn reverts_to_stand_when_no_input() {
+    fn reverts_to_stop_run_when_no_input() {
         let input = CharacterInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate::new(
                 None,
-                ObjectStatusUpdate::new(Some(CharacterSequenceId::Stand), None)
+                ObjectStatusUpdate::new(Some(CharacterSequenceId::StopRun), None)
             ),
             Run::update(
                 &input,
@@ -95,13 +94,13 @@ mod test {
     }
 
     #[test]
-    fn reverts_to_stand_when_x_axis_negative_and_non_mirrored() {
+    fn reverts_to_stop_run_when_x_axis_negative_and_non_mirrored() {
         let input = CharacterInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate::new(
                 None,
-                ObjectStatusUpdate::new(Some(CharacterSequenceId::Stand), None)
+                ObjectStatusUpdate::new(Some(CharacterSequenceId::StopRun), None)
             ),
             Run::update(
                 &input,
@@ -114,13 +113,13 @@ mod test {
     }
 
     #[test]
-    fn reverts_to_stand_when_x_axis_positive_and_mirrored() {
+    fn reverts_to_stop_run_when_x_axis_positive_and_mirrored() {
         let input = CharacterInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate::new(
                 None,
-                ObjectStatusUpdate::new(Some(CharacterSequenceId::Stand), None)
+                ObjectStatusUpdate::new(Some(CharacterSequenceId::StopRun), None)
             ),
             Run::update(
                 &input,
