@@ -10,6 +10,8 @@ pub enum CharacterSequenceId {
     Walk,
     /// Running sequence.
     Run,
+    /// Stop running sequence.
+    StopRun,
 }
 
 impl Default for CharacterSequenceId {

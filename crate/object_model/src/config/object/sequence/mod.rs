@@ -23,7 +23,7 @@ pub struct Sequence<SeqId: SequenceId> {
     ///
     /// Note: This may not be immediately after the last frame of the sequence. For example, a
     /// character that is in mid-air should remain in the last frame until it lands on the ground.
-    pub next: SeqId,
+    pub next: Option<SeqId>,
     /// Key frames in the animation sequence.
     pub frames: Vec<Frame>,
 }
@@ -45,6 +45,9 @@ mod test {
           { sheet = 0, sprite = 5, wait = 2 },
         ]
     "#;
+    const SEQUENCE_TOML_2: &str = r#"
+        frames = []
+    "#;
 
     #[test]
     fn deserialize_sequence() {
@@ -59,7 +62,16 @@ mod test {
             Frame::new(0, 6, 2),
             Frame::new(0, 5, 2),
         ];
-        let expected = Sequence::new(TestSeqId::Boo, frames);
+        let expected = Sequence::new(Some(TestSeqId::Boo), frames);
+        assert_eq!(expected, sequence);
+    }
+
+    #[test]
+    fn deserialize_empty_sequence() {
+        let sequence = toml::from_str::<Sequence<TestSeqId>>(SEQUENCE_TOML_2)
+            .expect("Failed to deserialize sequence.");
+
+        let expected = Sequence::new(None, vec![]);
         assert_eq!(expected, sequence);
     }
 

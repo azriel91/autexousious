@@ -11,7 +11,11 @@ use character::sequence_handler::SequenceHandler;
 pub(crate) struct Stand;
 
 impl SequenceHandler for Stand {
-    fn update(input: &CharacterInput, character_status: &CharacterStatus) -> CharacterStatusUpdate {
+    fn update(
+        input: &CharacterInput,
+        character_status: &CharacterStatus,
+        sequence_ended: bool,
+    ) -> CharacterStatusUpdate {
         let (run_counter, mut sequence_id, mirrored) = {
             let mirrored = character_status.object_status.mirrored;
 
@@ -31,7 +35,12 @@ impl SequenceHandler for Stand {
                     Decrease(ticks) => Some(Decrease(ticks - 1)),
                     _ => unreachable!(),
                 };
-                (run_counter, None, None)
+                let sequence_id = if sequence_ended {
+                    Some(CharacterSequenceId::Stand)
+                } else {
+                    None
+                };
+                (run_counter, sequence_id, None)
             } else {
                 let same_direction =
                     input.x_axis_value > 0. && !mirrored || input.x_axis_value < 0. && mirrored;
@@ -86,7 +95,28 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Stand, true)
-                )
+                ),
+                false
+            )
+        );
+    }
+
+    #[test]
+    fn restarts_stand_when_no_input_and_sequence_end() {
+        let input = CharacterInput::new(0., 0., false, false, false, false);
+
+        assert_eq!(
+            CharacterStatusUpdate::new(
+                None,
+                ObjectStatusUpdate::new(Some(CharacterSequenceId::Stand), None)
+            ),
+            Stand::update(
+                &input,
+                &CharacterStatus::new(
+                    RunCounter::Unused,
+                    ObjectStatus::new(CharacterSequenceId::Stand, true)
+                ),
+                true
             )
         );
     }
@@ -105,7 +135,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Decrease(1),
                     ObjectStatus::new(CharacterSequenceId::Stand, true)
-                )
+                ),
+                false
             )
         );
     }
@@ -124,7 +155,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Decrease(0),
                     ObjectStatus::new(CharacterSequenceId::Stand, true)
-                )
+                ),
+                false
             )
         );
     }
@@ -143,7 +175,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Stand, true)
-                )
+                ),
+                false
             )
         );
 
@@ -158,7 +191,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Stand, false)
-                )
+                ),
+                false
             )
         );
     }
@@ -177,7 +211,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Stand, false)
-                )
+                ),
+                false
             )
         );
 
@@ -192,7 +227,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Stand, true)
-                )
+                ),
+                false
             )
         );
     }
@@ -211,7 +247,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Decrease(10),
                     ObjectStatus::new(CharacterSequenceId::Stand, true)
-                )
+                ),
+                false
             )
         );
     }
@@ -230,7 +267,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Stand, false)
-                )
+                ),
+                false
             )
         );
     }
@@ -249,7 +287,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Decrease(10),
                     ObjectStatus::new(CharacterSequenceId::Stand, false)
-                )
+                ),
+                false
             )
         );
     }
@@ -268,7 +307,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Decrease(10),
                     ObjectStatus::new(CharacterSequenceId::Stand, true)
-                )
+                ),
+                false
             )
         );
     }
@@ -287,7 +327,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Decrease(10),
                     ObjectStatus::new(CharacterSequenceId::Stand, true)
-                )
+                ),
+                false
             )
         );
     }
@@ -306,7 +347,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Decrease(10),
                     ObjectStatus::new(CharacterSequenceId::Stand, false)
-                )
+                ),
+                false
             )
         );
     }
