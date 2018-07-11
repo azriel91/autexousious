@@ -9,7 +9,7 @@ use amethyst::{
 use config::object::SequenceId;
 
 /// Represents an in-game object that has been loaded.
-#[derive(Constructor, Clone, Derivative)]
+#[derive(Clone, Derivative, new)]
 #[derivative(Debug)]
 pub struct Object<SeqId: SequenceId> {
     /// Default material for entities of this object.

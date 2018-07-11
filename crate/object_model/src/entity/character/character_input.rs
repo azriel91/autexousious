@@ -1,7 +1,7 @@
 use amethyst::ecs::prelude::*;
 
 /// Input for a character entity.
-#[derive(Clone, Copy, Constructor, Debug, Default, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, new)]
 pub struct CharacterInput {
     /// X axis input value.
     ///

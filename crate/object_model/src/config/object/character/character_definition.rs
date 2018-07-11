@@ -6,7 +6,7 @@ use amethyst::{
 use config::object::{CharacterSequenceId, ObjectDefinition};
 
 /// Contains all of the sequences for an `Object`.
-#[derive(Clone, Constructor, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize, PartialEq, new)]
 pub struct CharacterDefinition {
     /// Sequences of actions this object can perform.
     #[serde(flatten)]

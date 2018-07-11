@@ -2,7 +2,7 @@
 ///
 /// A positive x value shifts the sprite to the left by that many pixels.
 /// A positive y value shifts the sprite upwards by that many pixels.
-#[derive(Constructor, Debug, Deserialize)]
+#[derive(Debug, Deserialize, new)]
 pub struct SpriteOffset {
     /// Number of pixels to shift the sprite to the left, relative to the entity's position.
     pub x: i32,

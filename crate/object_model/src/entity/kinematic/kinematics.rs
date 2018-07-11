@@ -3,7 +3,7 @@ use amethyst::ecs::prelude::*;
 use entity::{Position, Velocity};
 
 /// Grouping of motion attributes.
-#[derive(Clone, Copy, Constructor, Debug, Default, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, new)]
 pub struct Kinematics<S>
 where
     S: Send + Sync + 'static,

@@ -8,6 +8,8 @@ pub enum CharacterSequenceId {
     Stand,
     /// Walking sequence.
     Walk,
+    /// Running sequence.
+    Run,
 }
 
 impl Default for CharacterSequenceId {

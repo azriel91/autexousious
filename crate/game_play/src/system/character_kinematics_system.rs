@@ -1,7 +1,7 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{CharacterInput, Kinematics, ObjectStatus},
+    entity::{CharacterInput, CharacterStatus, Kinematics},
     loaded::{Character, CharacterHandle},
 };
 
@@ -13,7 +13,7 @@ type CharacterKinematicsSystemData<'s, 'c> = (
     Read<'s, AssetStorage<Character>>,
     ReadStorage<'s, CharacterHandle>,
     ReadStorage<'s, CharacterInput>,
-    ReadStorage<'s, ObjectStatus<CharacterSequenceId>>,
+    ReadStorage<'s, CharacterStatus>,
     WriteStorage<'s, Kinematics<f32>>,
 );
 
@@ -43,14 +43,18 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                 .get(character_handle)
                 .expect("Expected character to be loaded.");
 
-            match status.sequence_id {
+            match status.object_status.sequence_id {
+                CharacterSequenceId::Stand => {
+                    kinematics.velocity[0] = 0.;
+                    kinematics.velocity[2] = 0.;
+                }
                 CharacterSequenceId::Walk => {
                     kinematics.velocity[0] = character_input.x_axis_value as f32 * 3.5;
                     kinematics.velocity[2] = character_input.z_axis_value as f32 * -2.;
                 }
-                CharacterSequenceId::Stand => {
-                    kinematics.velocity[0] = 0.;
-                    kinematics.velocity[2] = 0.;
+                CharacterSequenceId::Run => {
+                    kinematics.velocity[0] = character_input.x_axis_value as f32 * 6.;
+                    kinematics.velocity[2] = character_input.z_axis_value as f32 * -1.5;
                 }
             };
         }

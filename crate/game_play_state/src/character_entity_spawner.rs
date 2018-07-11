@@ -11,7 +11,7 @@ use amethyst::{
 use character_selection::CharacterEntityControl;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{Kinematics, ObjectStatus},
+    entity::{CharacterStatus, Kinematics},
     loaded::{Character, CharacterHandle},
 };
 
@@ -36,7 +36,8 @@ impl CharacterEntitySpawner {
         character_index: usize,
         character_entity_control: CharacterEntityControl,
     ) -> Entity {
-        let first_sequence_id = CharacterSequenceId::default();
+        let character_status = CharacterStatus::default();
+        let first_sequence_id = &character_status.object_status.sequence_id;
 
         let (character_handle, material, mesh, animation_handle) = {
             let loaded_characters = world.read_resource::<Vec<CharacterHandle>>();
@@ -66,7 +67,7 @@ impl CharacterEntitySpawner {
                 character
                     .object
                     .animations
-                    .get(&first_sequence_id)
+                    .get(first_sequence_id)
                     .expect("Expected character to have at least one sequence.")
                     .clone(),
             ) // kcov-ignore
@@ -76,13 +77,14 @@ impl CharacterEntitySpawner {
         let mut transform = Transform::default();
         transform.translation = Vector3::new(position.x, position.y + position.z, 0.);
 
-        let mirrored = false;
         let entity = world
             .create_entity()
             // Controller of this entity
             .with(character_entity_control)
             // Loaded `Character` for this entity.
             .with(character_handle)
+            // Character and object status attributes.
+            .with(character_status)
             // The default `Material`, whose textures will be swapped based on the animation.
             .with(material)
             // Coordinates to map the sprite texture to screen. This is the non-mirrored mesh.
@@ -94,8 +96,6 @@ impl CharacterEntitySpawner {
             // This defines the coordinates in the world, where the sprites should be drawn relative
             // to the entity
             .with(GlobalTransform::default())
-            // Set the default sequence for the object
-            .with(ObjectStatus::new(first_sequence_id, mirrored))
             .build();
 
         // We also need to trigger the animation, not just attach it to the entity
@@ -105,7 +105,7 @@ impl CharacterEntitySpawner {
             entity,
         );
 
-        AnimationRunner::start(&mut animation_set, &animation_handle, &first_sequence_id);
+        AnimationRunner::start(&mut animation_set, &animation_handle, first_sequence_id);
 
         entity
     }
@@ -127,7 +127,7 @@ mod test {
     use object_loading::ObjectLoadingBundle;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{Kinematics, ObjectStatus, Position, Velocity},
+        entity::{CharacterStatus, Kinematics, Position, Velocity},
         loaded::CharacterHandle,
     };
 
@@ -157,16 +157,12 @@ mod test {
                     .contains(entity)
             );
             assert!(world.read_storage::<CharacterHandle>().contains(entity));
+            assert!(world.read_storage::<CharacterStatus>().contains(entity));
             assert!(world.read_storage::<Material>().contains(entity));
             assert!(world.read_storage::<MeshHandle>().contains(entity));
             assert!(world.read_storage::<Kinematics<f32>>().contains(entity));
             assert!(world.read_storage::<Transform>().contains(entity));
             assert!(world.read_storage::<GlobalTransform>().contains(entity));
-            assert!(
-                world
-                    .read_storage::<ObjectStatus<CharacterSequenceId>>()
-                    .contains(entity)
-            );
         };
 
         // kcov-ignore-start
@@ -193,8 +189,8 @@ mod test {
     type TestSystemData<'s> = (
         ReadStorage<'s, CharacterEntityControl>,
         ReadStorage<'s, CharacterHandle>,
+        ReadStorage<'s, CharacterStatus>,
         ReadStorage<'s, Kinematics<f32>>,
-        ReadStorage<'s, ObjectStatus<CharacterSequenceId>>,
         ReadStorage<'s, AnimationControlSet<CharacterSequenceId, Material>>,
     );
     impl<'s> System<'s> for TestSystem {

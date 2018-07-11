@@ -9,7 +9,7 @@ use config::object::{Sequence, SequenceId};
 /// [char_definition] for characters.
 ///
 /// [char_definition]: ../character/struct.CharacterDefinition.html
-#[derive(Clone, Constructor, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize, PartialEq, new)]
 pub struct ObjectDefinition<SeqId: SequenceId> {
     /// Sequences of actions this object can perform.
     pub sequences: HashMap<SeqId, Sequence<SeqId>>,

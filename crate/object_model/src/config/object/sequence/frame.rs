@@ -7,7 +7,7 @@
 /// * **Effects:** Sound(s) to play.
 /// * **Spawning:** Spawning additional object(s).
 /// * **Weapon:** Where an active weapon should be.
-#[derive(Clone, Constructor, Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize, PartialEq, new)]
 pub struct Frame {
     /// Sprite sheet number.
     ///

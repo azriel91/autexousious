@@ -7,8 +7,8 @@ use entity::ObjectStatusUpdate;
 
 /// Status of an object entity.
 ///
-/// We use a `DenseVecStorage` because all object entities have their own type of `CharacterSequenceId`.
-#[derive(Constructor, Clone, Copy, Debug, PartialEq)]
+/// We use a `DenseVecStorage` because all object entities have their own type of `SequenceId`.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, new)]
 pub struct ObjectStatus<SeqId: SequenceId> {
     /// ID of the current sequence the entity is on.
     pub sequence_id: SeqId,
@@ -39,9 +39,10 @@ impl<SeqId: SequenceId> AddAssign<ObjectStatusUpdate<SeqId>> for ObjectStatus<Se
 
 #[cfg(test)]
 mod test {
-    use super::ObjectStatus;
     use config::object::SequenceId;
     use entity::ObjectStatusUpdate;
+
+    use super::ObjectStatus;
 
     #[test]
     fn add_retains_values_if_no_delta() {
@@ -88,6 +89,11 @@ mod test {
     enum TestSeqId {
         Boo,
         Moo,
+    }
+    impl Default for TestSeqId {
+        fn default() -> Self {
+            TestSeqId::Boo
+        }
     }
     impl SequenceId for TestSeqId {}
 }
