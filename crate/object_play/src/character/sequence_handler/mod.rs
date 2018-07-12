@@ -1,10 +1,16 @@
 use object_model::entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate};
 
+pub(super) use self::airborne::Airborne;
+pub(super) use self::airborne_land::AirborneLand;
+pub(super) use self::jump::Jump;
 pub(super) use self::run::Run;
 pub(super) use self::stand::Stand;
 pub(super) use self::stop_run::StopRun;
 pub(super) use self::walk::Walk;
 
+mod airborne;
+mod airborne_land;
+mod jump;
 mod run;
 mod stand;
 mod stop_run;

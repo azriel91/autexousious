@@ -85,7 +85,7 @@ mod test {
                     ).expect("Failed to load object");
 
                     // See bat/object.toml
-                    assert_eq!(4, object.animations.len());
+                    assert_eq!(7, object.animations.len());
                 })
                 .run()
                 .is_ok()

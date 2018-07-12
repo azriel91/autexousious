@@ -12,6 +12,12 @@ pub enum CharacterSequenceId {
     Run,
     /// Stop running sequence.
     StopRun,
+    /// Character is jumping.
+    Jump,
+    /// Character is airborne.
+    Airborne,
+    /// Character landed from being airborne.
+    AirborneLand,
 }
 
 impl Default for CharacterSequenceId {

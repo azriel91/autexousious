@@ -30,3 +30,27 @@
     { sheet = 1, sprite = 3, wait =  2 },
     { sheet = 1, sprite = 4, wait =  2 },
   ]
+
+[sequences.jump]
+  frames = [
+    { sheet = 0, sprite = 0, wait = 1 },
+    { sheet = 0, sprite = 1, wait = 1 },
+    { sheet = 0, sprite = 2, wait = 1 },
+    { sheet = 0, sprite = 3, wait = 1 },
+    { sheet = 0, sprite = 4, wait = 1 },
+  ]
+
+[sequences.airborne]
+  frames = [
+    { sheet = 1, sprite = 3, wait = 1 },
+    { sheet = 1, sprite = 4, wait = 1 },
+  ]
+
+[sequences.airborne_land]
+  frames = [
+    { sheet = 0, sprite = 4, wait = 0 },
+    { sheet = 0, sprite = 3, wait = 0 },
+    { sheet = 0, sprite = 2, wait = 0 },
+    { sheet = 0, sprite = 1, wait = 0 },
+    { sheet = 0, sprite = 0, wait = 0 },
+  ]

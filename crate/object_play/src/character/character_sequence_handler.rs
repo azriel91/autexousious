@@ -4,7 +4,9 @@ use object_model::{
     loaded::Character,
 };
 
-use character::sequence_handler::{Run, SequenceHandler, Stand, StopRun, Walk};
+use character::sequence_handler::{
+    Airborne, AirborneLand, Jump, Run, SequenceHandler, Stand, StopRun, Walk,
+};
 
 /// Defines behaviour for a character in game.
 #[derive(Debug)]
@@ -30,6 +32,9 @@ impl CharacterSequenceHandler {
             CharacterSequenceId::Walk => Walk::update,
             CharacterSequenceId::Run => Run::update,
             CharacterSequenceId::StopRun => StopRun::update,
+            CharacterSequenceId::Jump => Jump::update,
+            CharacterSequenceId::Airborne => Airborne::update,
+            CharacterSequenceId::AirborneLand => AirborneLand::update,
         };
 
         // Pass sequence_ended through to sequence handlers, which lets them decide to loop the

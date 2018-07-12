@@ -5,7 +5,9 @@ use object_model::{
     loaded::{Character, CharacterHandle},
 };
 
-/// Updates `Character` sequence based on input
+/// Updates `Character` kinematics based on sequence.
+///
+/// This does not
 #[derive(Debug, Default, new)]
 pub(crate) struct CharacterKinematicsSystem;
 
@@ -63,6 +65,15 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                         2.
                     };
                     kinematics.velocity[2] = character_input.z_axis_value as f32 * -0.5;
+                }
+                CharacterSequenceId::Jump => {
+                    // TODO: Store flag in CharacterSequenceUpdateSystem for when a sequence has
+                    // just started. Probably in `ObjectStatus`, as it will be used for other
+                    // object types as well.
+                }
+                CharacterSequenceId::Airborne => {}
+                CharacterSequenceId::AirborneLand => {
+                    kinematics.velocity[1] = 0.;
                 }
             };
         }
