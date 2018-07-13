@@ -30,8 +30,8 @@ mod test {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus,
-            ObjectStatusUpdate,
+            CharacterInput, CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics,
+            ObjectStatus, ObjectStatusUpdate,
         },
     };
 
@@ -51,6 +51,7 @@ mod test {
                 &CharacterStatus {
                     object_status: ObjectStatus {
                         sequence_id: CharacterSequenceId::JumpDescend,
+                        grounding: Grounding::Airborne,
                         ..Default::default()
                     },
                     ..Default::default()
@@ -81,6 +82,7 @@ mod test {
                     object_status: ObjectStatus {
                         sequence_id: CharacterSequenceId::JumpDescend,
                         sequence_state: SequenceState::End,
+                        grounding: Grounding::Airborne,
                         ..Default::default()
                     },
                     ..Default::default()
