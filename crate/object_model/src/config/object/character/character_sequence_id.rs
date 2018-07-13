@@ -14,8 +14,13 @@ pub enum CharacterSequenceId {
     Run,
     /// Stop running sequence.
     StopRun,
-    /// Character is jumping.
+    /// Character is about to jump.
     Jump,
+    /// Character is moving upwards from jumping.
+    ///
+    /// This is distinct from the `Airborne` state as it is where the jump velocity is effective,
+    /// and characters may have different animations and attacks when moving upwards from a jump.
+    JumpAscend,
     /// Character is airborne.
     Airborne,
     /// Character landed from being airborne.

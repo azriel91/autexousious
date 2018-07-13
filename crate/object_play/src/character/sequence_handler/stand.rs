@@ -24,6 +24,25 @@ impl SequenceHandler for Stand {
                 _ => {}
             };
 
+            // TODO: Don't handle action buttons in `SequenceHandler`s. Instead, each sequence has
+            // default sequence update IDs for each action button, which are overridden by
+            // configuration.
+            if input.jump {
+                let run_counter = if character_status.run_counter == Unused {
+                    None
+                } else {
+                    Some(Unused)
+                };
+                return CharacterStatusUpdate::new(
+                    run_counter,
+                    ObjectStatusUpdate::new(
+                        Some(CharacterSequenceId::Jump),
+                        Some(SequenceState::Begin),
+                        None,
+                    ),
+                );
+            }
+
             if input.x_axis_value == 0. {
                 let run_counter = match character_status.run_counter {
                     Unused => None,
@@ -387,5 +406,36 @@ mod test {
                 )
             )
         );
+    }
+
+    #[test]
+    fn jump_when_jump_is_pressed() {
+        vec![(0., 0.), (1., 0.), (-1., 0.), (0., 1.)]
+            .into_iter()
+            .for_each(|(x_input, z_input)| {
+                let input = CharacterInput::new(x_input, z_input, false, true, false, false);
+
+                assert_eq!(
+                    CharacterStatusUpdate::new(
+                        Some(RunCounter::Unused),
+                        ObjectStatusUpdate::new(
+                            Some(CharacterSequenceId::Jump),
+                            Some(SequenceState::Begin),
+                            None
+                        )
+                    ),
+                    Stand::update(
+                        &input,
+                        &CharacterStatus::new(
+                            RunCounter::Decrease(1),
+                            ObjectStatus::new(
+                                CharacterSequenceId::Stand,
+                                SequenceState::Ongoing,
+                                false
+                            )
+                        )
+                    )
+                );
+            });
     }
 }

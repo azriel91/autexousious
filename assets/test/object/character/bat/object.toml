@@ -40,6 +40,12 @@
     { sheet = 0, sprite = 4, wait = 1 },
   ]
 
+[sequences.jump_ascend]
+  frames = [
+    { sheet = 1, sprite = 3, wait = 1 },
+    { sheet = 1, sprite = 4, wait = 1 },
+  ]
+
 [sequences.airborne]
   frames = [
     { sheet = 1, sprite = 3, wait = 1 },

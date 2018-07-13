@@ -1,13 +1,11 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
 use object_model::{
-    config::object::CharacterSequenceId,
+    config::object::{CharacterSequenceId, SequenceState},
     entity::{CharacterInput, CharacterStatus, Kinematics},
     loaded::{Character, CharacterHandle},
 };
 
 /// Updates `Character` kinematics based on sequence.
-///
-/// This does not
 #[derive(Debug, Default, new)]
 pub(crate) struct CharacterKinematicsSystem;
 
@@ -66,10 +64,11 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                     };
                     kinematics.velocity[2] = character_input.z_axis_value as f32 * -0.5;
                 }
-                CharacterSequenceId::Jump => {
-                    // TODO: Store flag in CharacterSequenceUpdateSystem for when a sequence has
-                    // just started. Probably in `ObjectStatus`, as it will be used for other
-                    // object types as well.
+                CharacterSequenceId::Jump => {}
+                CharacterSequenceId::JumpAscend => {
+                    if status.object_status.sequence_state == SequenceState::Begin {
+                        kinematics.velocity[1] = 5.;
+                    }
                 }
                 CharacterSequenceId::Airborne => {}
                 CharacterSequenceId::AirborneLand => {

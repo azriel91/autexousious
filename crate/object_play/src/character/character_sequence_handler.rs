@@ -5,7 +5,7 @@ use object_model::{
 };
 
 use character::sequence_handler::{
-    Airborne, AirborneLand, Jump, Run, SequenceHandler, Stand, StopRun, Walk,
+    Airborne, AirborneLand, Jump, JumpAscend, Run, SequenceHandler, Stand, StopRun, Walk,
 };
 
 /// Defines behaviour for a character in game.
@@ -32,6 +32,7 @@ impl CharacterSequenceHandler {
             CharacterSequenceId::Run => Run::update,
             CharacterSequenceId::StopRun => StopRun::update,
             CharacterSequenceId::Jump => Jump::update,
+            CharacterSequenceId::JumpAscend => JumpAscend::update,
             CharacterSequenceId::Airborne => Airborne::update,
             CharacterSequenceId::AirborneLand => AirborneLand::update,
         };
