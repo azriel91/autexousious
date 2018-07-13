@@ -15,9 +15,9 @@ impl SequenceHandler for JumpAscend {
         kinematics: &Kinematics<f32>,
     ) -> CharacterStatusUpdate {
         let mut update = CharacterStatusUpdate::default();
-        // Switch to airborne when Y axis velocity is no longer upwards.
+        // Switch to jump_descend when Y axis velocity is no longer upwards.
         if kinematics.velocity[1] <= 0. {
-            update.object_status.sequence_id = Some(CharacterSequenceId::Airborne);
+            update.object_status.sequence_id = Some(CharacterSequenceId::JumpDescend);
             update.object_status.sequence_state = Some(SequenceState::Begin);
         } else if character_status.object_status.sequence_state == SequenceState::End {
             update.object_status.sequence_id = Some(CharacterSequenceId::JumpAscend);
@@ -91,7 +91,7 @@ mod test {
     }
 
     #[test]
-    fn switches_to_airborne_when_y_velocity_is_zero_or_downwards() {
+    fn switches_to_jump_descend_when_y_velocity_is_zero_or_downwards() {
         let input = CharacterInput::new(0., 0., false, false, false, false);
         let mut downwards_kinematics = Kinematics::default();
         downwards_kinematics.velocity[1] = -1.;
@@ -103,7 +103,7 @@ mod test {
                     CharacterStatusUpdate::new(
                         None,
                         ObjectStatusUpdate::new(
-                            Some(CharacterSequenceId::Airborne),
+                            Some(CharacterSequenceId::JumpDescend),
                             Some(SequenceState::Begin),
                             None
                         )

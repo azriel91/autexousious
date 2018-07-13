@@ -20,13 +20,16 @@ pub enum CharacterSequenceId {
     JumpOff,
     /// Character is moving upwards from jumping.
     ///
-    /// This is distinct from the `Airborne` state as it is where the jump velocity is effective,
-    /// and characters may have different animations and attacks when moving upwards from a jump.
+    /// This is distinct from the `JumpDescend` state as this is when the jump velocity is
+    /// effective, and characters may have different animations and attacks when moving upwards from
+    /// a jump.
     JumpAscend,
-    /// Character is airborne.
-    Airborne,
-    /// Character landed from being airborne.
-    AirborneLand,
+    /// Character is descending from a jump.
+    ///
+    /// This sequence may also be used when the character has walked off a platform.
+    JumpDescend,
+    /// Character landed from jumping.
+    JumpDescendLand,
 }
 
 impl SequenceId for CharacterSequenceId {}

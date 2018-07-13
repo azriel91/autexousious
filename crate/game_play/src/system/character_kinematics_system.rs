@@ -76,10 +76,10 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                 CharacterSequenceId::JumpAscend => {
                     kinematics.velocity[1] += -1.7;
                 }
-                CharacterSequenceId::Airborne => {
+                CharacterSequenceId::JumpDescend => {
                     kinematics.velocity[1] += -1.7;
                 }
-                CharacterSequenceId::AirborneLand => {
+                CharacterSequenceId::JumpDescendLand => {
                     kinematics.velocity[1] = 0.;
                 }
             };

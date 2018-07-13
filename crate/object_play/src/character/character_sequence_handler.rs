@@ -5,7 +5,8 @@ use object_model::{
 };
 
 use character::sequence_handler::{
-    Airborne, AirborneLand, Jump, JumpAscend, JumpOff, Run, SequenceHandler, Stand, StopRun, Walk,
+    Jump, JumpAscend, JumpDescend, JumpDescendLand, JumpOff, Run, SequenceHandler, Stand, StopRun,
+    Walk,
 };
 
 /// Defines behaviour for a character in game.
@@ -36,8 +37,8 @@ impl CharacterSequenceHandler {
             CharacterSequenceId::Jump => Jump::update,
             CharacterSequenceId::JumpOff => JumpOff::update,
             CharacterSequenceId::JumpAscend => JumpAscend::update,
-            CharacterSequenceId::Airborne => Airborne::update,
-            CharacterSequenceId::AirborneLand => AirborneLand::update,
+            CharacterSequenceId::JumpDescend => JumpDescend::update,
+            CharacterSequenceId::JumpDescendLand => JumpDescendLand::update,
         };
 
         let mut status_update = sequence_handler(character_input, character_status, kinematics);

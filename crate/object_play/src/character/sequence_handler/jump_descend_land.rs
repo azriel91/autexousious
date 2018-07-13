@@ -6,9 +6,9 @@ use object_model::{
 use character::sequence_handler::SequenceHandler;
 
 #[derive(Debug)]
-pub(crate) struct Airborne;
+pub(crate) struct JumpDescendLand;
 
-impl SequenceHandler for Airborne {
+impl SequenceHandler for JumpDescendLand {
     fn update(
         _character_input: &CharacterInput,
         character_status: &CharacterStatus,
@@ -16,7 +16,7 @@ impl SequenceHandler for Airborne {
     ) -> CharacterStatusUpdate {
         let mut update = CharacterStatusUpdate::default();
         if character_status.object_status.sequence_state == SequenceState::End {
-            update.object_status.sequence_id = Some(CharacterSequenceId::Airborne);
+            update.object_status.sequence_id = Some(CharacterSequenceId::Stand);
             update.object_status.sequence_state = Some(SequenceState::Begin);
         }
 
@@ -34,7 +34,7 @@ mod test {
         },
     };
 
-    use super::Airborne;
+    use super::JumpDescendLand;
     use character::sequence_handler::SequenceHandler;
 
     #[test]
@@ -43,11 +43,15 @@ mod test {
 
         assert_eq!(
             CharacterStatusUpdate::new(None, ObjectStatusUpdate::new(None, None, None)),
-            Airborne::update(
+            JumpDescendLand::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Airborne, SequenceState::Ongoing, false)
+                    ObjectStatus::new(
+                        CharacterSequenceId::JumpDescendLand,
+                        SequenceState::Ongoing,
+                        false
+                    )
                 ),
                 &Kinematics::default()
             )
@@ -55,23 +59,27 @@ mod test {
     }
 
     #[test]
-    fn restarts_airborne_when_sequence_ends() {
+    fn reverts_to_stand_when_sequence_ended() {
         let input = CharacterInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate::new(
                 None,
                 ObjectStatusUpdate::new(
-                    Some(CharacterSequenceId::Airborne),
+                    Some(CharacterSequenceId::Stand),
                     Some(SequenceState::Begin),
                     None
                 )
             ),
-            Airborne::update(
+            JumpDescendLand::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Airborne, SequenceState::End, false)
+                    ObjectStatus::new(
+                        CharacterSequenceId::JumpDescendLand,
+                        SequenceState::End,
+                        false
+                    )
                 ),
                 &Kinematics::default()
             )

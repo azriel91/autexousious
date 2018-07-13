@@ -57,13 +57,13 @@
     { sheet = 1, sprite = 4, wait = 1 },
   ]
 
-[sequences.airborne]
+[sequences.jump_descend]
   frames = [
     { sheet = 1, sprite = 3, wait = 1 },
     { sheet = 1, sprite = 4, wait = 1 },
   ]
 
-[sequences.airborne_land]
+[sequences.jump_descend_land]
   frames = [
     { sheet = 0, sprite = 4, wait = 0 },
     { sheet = 0, sprite = 3, wait = 0 },
