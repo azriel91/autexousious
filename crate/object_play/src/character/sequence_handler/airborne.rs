@@ -1,6 +1,6 @@
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate},
+    entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics},
 };
 
 use character::sequence_handler::SequenceHandler;
@@ -12,6 +12,7 @@ impl SequenceHandler for Airborne {
     fn update(
         _character_input: &CharacterInput,
         character_status: &CharacterStatus,
+        _kinematics: &Kinematics<f32>,
     ) -> CharacterStatusUpdate {
         let mut update = CharacterStatusUpdate::default();
         if character_status.object_status.sequence_state == SequenceState::End {
@@ -28,7 +29,7 @@ mod test {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterInput, CharacterStatus, CharacterStatusUpdate, ObjectStatus,
+            CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus,
             ObjectStatusUpdate, RunCounter,
         },
     };
@@ -47,7 +48,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Airborne, SequenceState::Ongoing, false)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -70,7 +72,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Airborne, SequenceState::End, false)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }

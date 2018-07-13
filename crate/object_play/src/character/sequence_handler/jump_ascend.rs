@@ -1,6 +1,6 @@
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate},
+    entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics},
 };
 
 use character::sequence_handler::SequenceHandler;
@@ -12,6 +12,7 @@ impl SequenceHandler for JumpAscend {
     fn update(
         _character_input: &CharacterInput,
         character_status: &CharacterStatus,
+        _kinematics: &Kinematics<f32>,
     ) -> CharacterStatusUpdate {
         let mut update = CharacterStatusUpdate::default();
         // TODO: Read Kinematics and switch to airborne when Y axis velocity is downwards.
@@ -29,7 +30,7 @@ mod test {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterInput, CharacterStatus, CharacterStatusUpdate, ObjectStatus,
+            CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus,
             ObjectStatusUpdate, RunCounter,
         },
     };
@@ -47,8 +48,13 @@ mod test {
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::JumpAscend, SequenceState::Ongoing, false)
-                )
+                    ObjectStatus::new(
+                        CharacterSequenceId::JumpAscend,
+                        SequenceState::Ongoing,
+                        false
+                    )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -71,7 +77,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::JumpAscend, SequenceState::End, false)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }

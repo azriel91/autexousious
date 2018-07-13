@@ -1,7 +1,8 @@
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
     entity::{
-        CharacterInput, CharacterStatus, CharacterStatusUpdate, ObjectStatusUpdate, RunCounter,
+        CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
+        RunCounter,
     },
 };
 
@@ -11,7 +12,11 @@ use character::sequence_handler::SequenceHandler;
 pub(crate) struct Walk;
 
 impl SequenceHandler for Walk {
-    fn update(input: &CharacterInput, character_status: &CharacterStatus) -> CharacterStatusUpdate {
+    fn update(
+        input: &CharacterInput,
+        character_status: &CharacterStatus,
+        _kinematics: &Kinematics<f32>,
+    ) -> CharacterStatusUpdate {
         let (run_counter, mut sequence_id, mirrored) = {
             let mirrored = character_status.object_status.mirrored;
 
@@ -71,7 +76,7 @@ mod test {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterInput, CharacterStatus, CharacterStatusUpdate, ObjectStatus,
+            CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus,
             ObjectStatusUpdate, RunCounter,
         },
     };
@@ -97,7 +102,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Increase(10),
                     ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, false)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -120,7 +126,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Exceeded,
                     ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, false)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -139,7 +146,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Increase(11),
                     ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, false)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -158,7 +166,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Increase(0),
                     ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, false)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -177,7 +186,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Increase(11),
                     ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, true)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -196,7 +206,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Increase(0),
                     ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, true)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -215,7 +226,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Increase(0),
                     ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, false)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -238,7 +250,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Increase(11),
                     ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, true)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -261,7 +274,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Increase(11),
                     ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, false)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -280,7 +294,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Increase(0),
                     ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, false)
-                )
+                ),
+                &Kinematics::default()
             )
         );
 
@@ -296,7 +311,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Increase(0),
                     ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, false)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -322,7 +338,8 @@ mod test {
                         &CharacterStatus::new(
                             RunCounter::Increase(0),
                             ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::End, false)
-                        )
+                        ),
+                        &Kinematics::default()
                     )
                 );
             });
@@ -350,7 +367,8 @@ mod test {
                                 SequenceState::End,
                                 mirrored
                             )
-                        )
+                        ),
+                        &Kinematics::default()
                     )
                 );
             });
@@ -374,7 +392,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Decrease(10),
                     ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, false)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -397,7 +416,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Decrease(10),
                     ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, true)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }

@@ -1,6 +1,8 @@
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate, ObjectStatusUpdate},
+    entity::{
+        CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
+    },
 };
 
 use character::sequence_handler::SequenceHandler;
@@ -10,7 +12,11 @@ use character::sequence_handler::SequenceHandler;
 pub(crate) struct Run;
 
 impl SequenceHandler for Run {
-    fn update(input: &CharacterInput, character_status: &CharacterStatus) -> CharacterStatusUpdate {
+    fn update(
+        input: &CharacterInput,
+        character_status: &CharacterStatus,
+        _kinematics: &Kinematics<f32>,
+    ) -> CharacterStatusUpdate {
         // Should always be `RunCounter::Unused`
         let run_counter = None;
         // Don't change facing direction
@@ -44,7 +50,7 @@ mod test {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterInput, CharacterStatus, CharacterStatusUpdate, ObjectStatus,
+            CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus,
             ObjectStatusUpdate, RunCounter,
         },
     };
@@ -70,7 +76,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Run, SequenceState::Ongoing, false)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -86,7 +93,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Run, SequenceState::Ongoing, false)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -102,7 +110,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Run, SequenceState::Ongoing, true)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -132,7 +141,8 @@ mod test {
                                 SequenceState::End,
                                 mirrored
                             )
-                        )
+                        ),
+                        &Kinematics::default()
                     )
                 );
             });
@@ -156,7 +166,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Run, SequenceState::Ongoing, false)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -179,7 +190,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Run, SequenceState::Ongoing, true)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -195,7 +207,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Run, SequenceState::Ongoing, false)
-                )
+                ),
+                &Kinematics::default()
             )
         );
 
@@ -208,7 +221,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Run, SequenceState::Ongoing, false)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }

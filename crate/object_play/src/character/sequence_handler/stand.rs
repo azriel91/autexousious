@@ -1,7 +1,8 @@
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
     entity::{
-        CharacterInput, CharacterStatus, CharacterStatusUpdate, ObjectStatusUpdate, RunCounter,
+        CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
+        RunCounter,
     },
 };
 
@@ -11,7 +12,11 @@ use character::sequence_handler::SequenceHandler;
 pub(crate) struct Stand;
 
 impl SequenceHandler for Stand {
-    fn update(input: &CharacterInput, character_status: &CharacterStatus) -> CharacterStatusUpdate {
+    fn update(
+        input: &CharacterInput,
+        character_status: &CharacterStatus,
+        _kinematics: &Kinematics<f32>,
+    ) -> CharacterStatusUpdate {
         let (run_counter, mut sequence_id, mirrored) = {
             let mirrored = character_status.object_status.mirrored;
 
@@ -101,7 +106,7 @@ mod test {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterInput, CharacterStatus, CharacterStatusUpdate, ObjectStatus,
+            CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus,
             ObjectStatusUpdate, RunCounter,
         },
     };
@@ -120,7 +125,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Stand, SequenceState::Ongoing, true)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -143,7 +149,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Stand, SequenceState::End, true)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -162,7 +169,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Decrease(1),
                     ObjectStatus::new(CharacterSequenceId::Stand, SequenceState::Ongoing, true)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -181,7 +189,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Decrease(0),
                     ObjectStatus::new(CharacterSequenceId::Stand, SequenceState::Ongoing, true)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -204,7 +213,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Stand, SequenceState::Ongoing, true)
-                )
+                ),
+                &Kinematics::default()
             )
         );
 
@@ -223,7 +233,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Stand, SequenceState::Ongoing, false)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -246,7 +257,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Stand, SequenceState::Ongoing, false)
-                )
+                ),
+                &Kinematics::default()
             )
         );
 
@@ -265,7 +277,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Stand, SequenceState::Ongoing, true)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -288,7 +301,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Decrease(10),
                     ObjectStatus::new(CharacterSequenceId::Stand, SequenceState::Ongoing, true)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -311,7 +325,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Unused,
                     ObjectStatus::new(CharacterSequenceId::Stand, SequenceState::Ongoing, false)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -334,7 +349,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Decrease(10),
                     ObjectStatus::new(CharacterSequenceId::Stand, SequenceState::Ongoing, false)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -357,7 +373,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Decrease(10),
                     ObjectStatus::new(CharacterSequenceId::Stand, SequenceState::Ongoing, true)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -380,7 +397,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Decrease(10),
                     ObjectStatus::new(CharacterSequenceId::Stand, SequenceState::Ongoing, true)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -403,7 +421,8 @@ mod test {
                 &CharacterStatus::new(
                     RunCounter::Decrease(10),
                     ObjectStatus::new(CharacterSequenceId::Stand, SequenceState::Ongoing, false)
-                )
+                ),
+                &Kinematics::default()
             )
         );
     }
@@ -433,7 +452,8 @@ mod test {
                                 SequenceState::Ongoing,
                                 false
                             )
-                        )
+                        ),
+                        &Kinematics::default()
                     )
                 );
             });

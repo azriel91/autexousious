@@ -1,4 +1,4 @@
-use object_model::entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate};
+use object_model::entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics};
 
 pub(super) use self::airborne::Airborne;
 pub(super) use self::airborne_land::AirborneLand;
@@ -26,9 +26,11 @@ pub(super) trait SequenceHandler {
     ///
     /// * `character_input`: Controller input for the character.
     /// * `character_status`: Character specific status attributes.
+    /// * `kinematics`: Kinematics of the character.
     fn update(
         _character_input: &CharacterInput,
         _character_status: &CharacterStatus,
+        _kinematics: &Kinematics<f32>,
     ) -> CharacterStatusUpdate {
         CharacterStatusUpdate::default()
     }
@@ -37,7 +39,7 @@ pub(super) trait SequenceHandler {
 #[cfg(test)]
 mod test {
     use object_model::entity::{
-        CharacterInput, CharacterStatus, CharacterStatusUpdate, ObjectStatusUpdate,
+        CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
     };
 
     use super::SequenceHandler;
@@ -57,7 +59,11 @@ mod test {
                 run_counter,
                 ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored)
             ),
-            Sit::update(&CharacterInput::default(), &CharacterStatus::default())
+            Sit::update(
+                &CharacterInput::default(),
+                &CharacterStatus::default(),
+                &Kinematics::default()
+            )
         );
     }
 

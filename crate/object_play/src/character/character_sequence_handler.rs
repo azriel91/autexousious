@@ -1,6 +1,6 @@
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate},
+    entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics},
     loaded::Character,
 };
 
@@ -21,10 +21,12 @@ impl CharacterSequenceHandler {
     /// * `character_input`: Controller input for the character.
     /// * `character_status`: Character specific status attributes.
     /// * `sequence_ended`: Whether the current sequence has ended.
+    /// * `kinematics`: Kinematics of the character.
     pub fn update(
         character: &Character,
         character_input: &CharacterInput,
         character_status: &CharacterStatus,
+        kinematics: &Kinematics<f32>,
     ) -> CharacterStatusUpdate {
         let sequence_handler = match character_status.object_status.sequence_id {
             CharacterSequenceId::Stand => Stand::update,
@@ -37,7 +39,7 @@ impl CharacterSequenceHandler {
             CharacterSequenceId::AirborneLand => AirborneLand::update,
         };
 
-        let mut status_update = sequence_handler(character_input, character_status);
+        let mut status_update = sequence_handler(character_input, character_status, kinematics);
 
         // Check if it's at the end of the sequence before switching to next.
         if character_status.object_status.sequence_state == SequenceState::End {
