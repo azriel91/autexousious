@@ -67,10 +67,14 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                 CharacterSequenceId::Jump => {}
                 CharacterSequenceId::JumpAscend => {
                     if status.object_status.sequence_state == SequenceState::Begin {
-                        kinematics.velocity[1] = 5.;
+                        kinematics.velocity[1] = 17.;
+                    } else {
+                        kinematics.velocity[1] += -1.7;
                     }
                 }
-                CharacterSequenceId::Airborne => {}
+                CharacterSequenceId::Airborne => {
+                    kinematics.velocity[1] += -1.7;
+                }
                 CharacterSequenceId::AirborneLand => {
                     kinematics.velocity[1] = 0.;
                 }
