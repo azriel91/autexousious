@@ -1,5 +1,5 @@
 use object_model::{
-    config::object::CharacterSequenceId,
+    config::object::{CharacterSequenceId, SequenceState},
     entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate},
 };
 
@@ -11,12 +11,12 @@ pub(crate) struct AirborneLand;
 impl SequenceHandler for AirborneLand {
     fn update(
         _character_input: &CharacterInput,
-        _character_status: &CharacterStatus,
-        sequence_ended: bool,
+        character_status: &CharacterStatus,
     ) -> CharacterStatusUpdate {
         let mut update = CharacterStatusUpdate::default();
-        if sequence_ended {
-            update.object_status.sequence_id = Some(CharacterSequenceId::Stand)
+        if character_status.object_status.sequence_state == SequenceState::End {
+            update.object_status.sequence_id = Some(CharacterSequenceId::Stand);
+            update.object_status.sequence_state = Some(SequenceState::Begin);
         }
 
         update
@@ -26,7 +26,7 @@ impl SequenceHandler for AirborneLand {
 #[cfg(test)]
 mod test {
     use object_model::{
-        config::object::CharacterSequenceId,
+        config::object::{CharacterSequenceId, SequenceState},
         entity::{
             CharacterInput, CharacterStatus, CharacterStatusUpdate, ObjectStatus,
             ObjectStatusUpdate, RunCounter,
@@ -41,14 +41,17 @@ mod test {
         let input = CharacterInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(None, ObjectStatusUpdate::new(None, None)),
+            CharacterStatusUpdate::new(None, ObjectStatusUpdate::new(None, None, None)),
             AirborneLand::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::AirborneLand, false)
-                ),
-                false
+                    ObjectStatus::new(
+                        CharacterSequenceId::AirborneLand,
+                        SequenceState::Ongoing,
+                        false
+                    )
+                )
             )
         );
     }
@@ -60,15 +63,18 @@ mod test {
         assert_eq!(
             CharacterStatusUpdate::new(
                 None,
-                ObjectStatusUpdate::new(Some(CharacterSequenceId::Stand), None)
+                ObjectStatusUpdate::new(
+                    Some(CharacterSequenceId::Stand),
+                    Some(SequenceState::Begin),
+                    None
+                )
             ),
             AirborneLand::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::AirborneLand, false)
-                ),
-                true
+                    ObjectStatus::new(CharacterSequenceId::AirborneLand, SequenceState::End, false)
+                )
             )
         );
     }

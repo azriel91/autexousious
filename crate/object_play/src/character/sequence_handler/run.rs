@@ -1,5 +1,5 @@
 use object_model::{
-    config::object::CharacterSequenceId,
+    config::object::{CharacterSequenceId, SequenceState},
     entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate, ObjectStatusUpdate},
 };
 
@@ -10,37 +10,39 @@ use character::sequence_handler::SequenceHandler;
 pub(crate) struct Run;
 
 impl SequenceHandler for Run {
-    fn update(
-        input: &CharacterInput,
-        character_status: &CharacterStatus,
-        sequence_ended: bool,
-    ) -> CharacterStatusUpdate {
+    fn update(input: &CharacterInput, character_status: &CharacterStatus) -> CharacterStatusUpdate {
         // Should always be `RunCounter::Unused`
         let run_counter = None;
         // Don't change facing direction
         let mirrored = None;
 
         let object_status = &character_status.object_status;
-        let sequence_id = if (input.x_axis_value < 0. && object_status.mirrored)
+        let (sequence_id, sequence_state) = if (input.x_axis_value < 0. && object_status.mirrored)
             || (input.x_axis_value > 0. && !object_status.mirrored)
         {
-            if sequence_ended {
-                Some(CharacterSequenceId::Run)
+            if character_status.object_status.sequence_state == SequenceState::End {
+                (Some(CharacterSequenceId::Run), Some(SequenceState::Begin))
             } else {
-                None
+                (None, None)
             }
         } else {
-            Some(CharacterSequenceId::StopRun)
+            (
+                Some(CharacterSequenceId::StopRun),
+                Some(SequenceState::Begin),
+            )
         };
 
-        CharacterStatusUpdate::new(run_counter, ObjectStatusUpdate::new(sequence_id, mirrored))
+        CharacterStatusUpdate::new(
+            run_counter,
+            ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored),
+        )
     }
 }
 
 #[cfg(test)]
 mod test {
     use object_model::{
-        config::object::CharacterSequenceId,
+        config::object::{CharacterSequenceId, SequenceState},
         entity::{
             CharacterInput, CharacterStatus, CharacterStatusUpdate, ObjectStatus,
             ObjectStatusUpdate, RunCounter,
@@ -57,15 +59,18 @@ mod test {
         assert_eq!(
             CharacterStatusUpdate::new(
                 None,
-                ObjectStatusUpdate::new(Some(CharacterSequenceId::StopRun), None)
+                ObjectStatusUpdate::new(
+                    Some(CharacterSequenceId::StopRun),
+                    Some(SequenceState::Begin),
+                    None
+                )
             ),
             Run::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Run, false)
-                ),
-                false
+                    ObjectStatus::new(CharacterSequenceId::Run, SequenceState::Ongoing, false)
+                )
             )
         );
     }
@@ -75,14 +80,13 @@ mod test {
         let input = CharacterInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(None, ObjectStatusUpdate::new(None, None)),
+            CharacterStatusUpdate::new(None, ObjectStatusUpdate::new(None, None, None)),
             Run::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Run, false)
-                ),
-                false
+                    ObjectStatus::new(CharacterSequenceId::Run, SequenceState::Ongoing, false)
+                )
             )
         );
     }
@@ -92,14 +96,13 @@ mod test {
         let input = CharacterInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(None, ObjectStatusUpdate::new(None, None)),
+            CharacterStatusUpdate::new(None, ObjectStatusUpdate::new(None, None, None)),
             Run::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Run, true)
-                ),
-                false
+                    ObjectStatus::new(CharacterSequenceId::Run, SequenceState::Ongoing, true)
+                )
             )
         );
     }
@@ -114,15 +117,22 @@ mod test {
                 assert_eq!(
                     CharacterStatusUpdate::new(
                         None,
-                        ObjectStatusUpdate::new(Some(CharacterSequenceId::Run), None)
+                        ObjectStatusUpdate::new(
+                            Some(CharacterSequenceId::Run),
+                            Some(SequenceState::Begin),
+                            None
+                        )
                     ),
                     Run::update(
                         &input,
                         &CharacterStatus::new(
                             RunCounter::Unused,
-                            ObjectStatus::new(CharacterSequenceId::Run, mirrored)
-                        ),
-                        true
+                            ObjectStatus::new(
+                                CharacterSequenceId::Run,
+                                SequenceState::End,
+                                mirrored
+                            )
+                        )
                     )
                 );
             });
@@ -135,15 +145,18 @@ mod test {
         assert_eq!(
             CharacterStatusUpdate::new(
                 None,
-                ObjectStatusUpdate::new(Some(CharacterSequenceId::StopRun), None)
+                ObjectStatusUpdate::new(
+                    Some(CharacterSequenceId::StopRun),
+                    Some(SequenceState::Begin),
+                    None
+                )
             ),
             Run::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Run, false)
-                ),
-                false
+                    ObjectStatus::new(CharacterSequenceId::Run, SequenceState::Ongoing, false)
+                )
             )
         );
     }
@@ -155,15 +168,18 @@ mod test {
         assert_eq!(
             CharacterStatusUpdate::new(
                 None,
-                ObjectStatusUpdate::new(Some(CharacterSequenceId::StopRun), None)
+                ObjectStatusUpdate::new(
+                    Some(CharacterSequenceId::StopRun),
+                    Some(SequenceState::Begin),
+                    None
+                )
             ),
             Run::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Run, true)
-                ),
-                false
+                    ObjectStatus::new(CharacterSequenceId::Run, SequenceState::Ongoing, true)
+                )
             )
         );
     }
@@ -173,28 +189,26 @@ mod test {
         let input = CharacterInput::new(1., 1., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(None, ObjectStatusUpdate::new(None, None)),
+            CharacterStatusUpdate::new(None, ObjectStatusUpdate::new(None, None, None)),
             Run::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Run, false)
-                ),
-                false
+                    ObjectStatus::new(CharacterSequenceId::Run, SequenceState::Ongoing, false)
+                )
             )
         );
 
         let input = CharacterInput::new(1., -1., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(None, ObjectStatusUpdate::new(None, None)),
+            CharacterStatusUpdate::new(None, ObjectStatusUpdate::new(None, None, None)),
             Run::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Run, false)
-                ),
-                false
+                    ObjectStatus::new(CharacterSequenceId::Run, SequenceState::Ongoing, false)
+                )
             )
         );
     }

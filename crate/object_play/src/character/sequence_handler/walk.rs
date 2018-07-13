@@ -1,5 +1,5 @@
 use object_model::{
-    config::object::CharacterSequenceId,
+    config::object::{CharacterSequenceId, SequenceState},
     entity::{
         CharacterInput, CharacterStatus, CharacterStatusUpdate, ObjectStatusUpdate, RunCounter,
     },
@@ -11,11 +11,7 @@ use character::sequence_handler::SequenceHandler;
 pub(crate) struct Walk;
 
 impl SequenceHandler for Walk {
-    fn update(
-        input: &CharacterInput,
-        character_status: &CharacterStatus,
-        sequence_ended: bool,
-    ) -> CharacterStatusUpdate {
+    fn update(input: &CharacterInput, character_status: &CharacterStatus) -> CharacterStatusUpdate {
         let (run_counter, mut sequence_id, mirrored) = {
             let mirrored = character_status.object_status.mirrored;
 
@@ -51,18 +47,29 @@ impl SequenceHandler for Walk {
         }
 
         // If we're maintaining the `Walk` state, and have reached the end of the sequence, restart.
-        if sequence_id.is_none() && sequence_ended {
+        if sequence_id.is_none()
+            && character_status.object_status.sequence_state == SequenceState::End
+        {
             sequence_id = Some(CharacterSequenceId::Walk);
         }
 
-        CharacterStatusUpdate::new(run_counter, ObjectStatusUpdate::new(sequence_id, mirrored))
+        let sequence_state = if sequence_id.is_some() {
+            Some(SequenceState::Begin)
+        } else {
+            None
+        };
+
+        CharacterStatusUpdate::new(
+            run_counter,
+            ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored),
+        )
     }
 }
 
 #[cfg(test)]
 mod test {
     use object_model::{
-        config::object::CharacterSequenceId,
+        config::object::{CharacterSequenceId, SequenceState},
         entity::{
             CharacterInput, CharacterStatus, CharacterStatusUpdate, ObjectStatus,
             ObjectStatusUpdate, RunCounter,
@@ -79,15 +86,18 @@ mod test {
         assert_eq!(
             CharacterStatusUpdate::new(
                 Some(RunCounter::Decrease(RunCounter::RESET_TICK_COUNT)),
-                ObjectStatusUpdate::new(Some(CharacterSequenceId::Stand), None)
+                ObjectStatusUpdate::new(
+                    Some(CharacterSequenceId::Stand),
+                    Some(SequenceState::Begin),
+                    None
+                )
             ),
             Walk::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Increase(10),
-                    ObjectStatus::new(CharacterSequenceId::Walk, false)
-                ),
-                false
+                    ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, false)
+                )
             )
         );
     }
@@ -99,15 +109,18 @@ mod test {
         assert_eq!(
             CharacterStatusUpdate::new(
                 Some(RunCounter::Unused),
-                ObjectStatusUpdate::new(Some(CharacterSequenceId::Stand), None)
+                ObjectStatusUpdate::new(
+                    Some(CharacterSequenceId::Stand),
+                    Some(SequenceState::Begin),
+                    None
+                )
             ),
             Walk::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Exceeded,
-                    ObjectStatus::new(CharacterSequenceId::Walk, false)
-                ),
-                false
+                    ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, false)
+                )
             )
         );
     }
@@ -119,15 +132,14 @@ mod test {
         assert_eq!(
             CharacterStatusUpdate::new(
                 Some(RunCounter::Increase(10)),
-                ObjectStatusUpdate::new(None, None)
+                ObjectStatusUpdate::new(None, None, None)
             ),
             Walk::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Increase(11),
-                    ObjectStatus::new(CharacterSequenceId::Walk, false)
-                ),
-                false
+                    ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, false)
+                )
             )
         );
     }
@@ -139,15 +151,14 @@ mod test {
         assert_eq!(
             CharacterStatusUpdate::new(
                 Some(RunCounter::Exceeded),
-                ObjectStatusUpdate::new(None, None)
+                ObjectStatusUpdate::new(None, None, None)
             ),
             Walk::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Increase(0),
-                    ObjectStatus::new(CharacterSequenceId::Walk, false)
-                ),
-                false
+                    ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, false)
+                )
             )
         );
     }
@@ -159,15 +170,14 @@ mod test {
         assert_eq!(
             CharacterStatusUpdate::new(
                 Some(RunCounter::Increase(10)),
-                ObjectStatusUpdate::new(None, None)
+                ObjectStatusUpdate::new(None, None, None)
             ),
             Walk::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Increase(11),
-                    ObjectStatus::new(CharacterSequenceId::Walk, true)
-                ),
-                false
+                    ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, true)
+                )
             )
         );
     }
@@ -179,15 +189,14 @@ mod test {
         assert_eq!(
             CharacterStatusUpdate::new(
                 Some(RunCounter::Exceeded),
-                ObjectStatusUpdate::new(None, None)
+                ObjectStatusUpdate::new(None, None, None)
             ),
             Walk::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Increase(0),
-                    ObjectStatus::new(CharacterSequenceId::Walk, true)
-                ),
-                false
+                    ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, true)
+                )
             )
         );
     }
@@ -199,15 +208,14 @@ mod test {
         assert_eq!(
             CharacterStatusUpdate::new(
                 Some(RunCounter::Decrease(RunCounter::RESET_TICK_COUNT)),
-                ObjectStatusUpdate::new(None, None)
+                ObjectStatusUpdate::new(None, None, None)
             ),
             Walk::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Increase(0),
-                    ObjectStatus::new(CharacterSequenceId::Walk, false)
-                ),
-                false
+                    ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, false)
+                )
             )
         );
     }
@@ -219,15 +227,18 @@ mod test {
         assert_eq!(
             CharacterStatusUpdate::new(
                 Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
-                ObjectStatusUpdate::new(Some(CharacterSequenceId::Walk), Some(false))
+                ObjectStatusUpdate::new(
+                    Some(CharacterSequenceId::Walk),
+                    Some(SequenceState::Begin),
+                    Some(false)
+                )
             ),
             Walk::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Increase(11),
-                    ObjectStatus::new(CharacterSequenceId::Walk, true)
-                ),
-                false
+                    ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, true)
+                )
             )
         );
     }
@@ -239,15 +250,18 @@ mod test {
         assert_eq!(
             CharacterStatusUpdate::new(
                 Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
-                ObjectStatusUpdate::new(Some(CharacterSequenceId::Walk), Some(true))
+                ObjectStatusUpdate::new(
+                    Some(CharacterSequenceId::Walk),
+                    Some(SequenceState::Begin),
+                    Some(true)
+                )
             ),
             Walk::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Increase(11),
-                    ObjectStatus::new(CharacterSequenceId::Walk, false)
-                ),
-                false
+                    ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, false)
+                )
             )
         );
     }
@@ -259,15 +273,14 @@ mod test {
         assert_eq!(
             CharacterStatusUpdate::new(
                 Some(RunCounter::Decrease(RunCounter::RESET_TICK_COUNT)),
-                ObjectStatusUpdate::new(None, None)
+                ObjectStatusUpdate::new(None, None, None)
             ),
             Walk::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Increase(0),
-                    ObjectStatus::new(CharacterSequenceId::Walk, false)
-                ),
-                false
+                    ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, false)
+                )
             )
         );
 
@@ -276,15 +289,14 @@ mod test {
         assert_eq!(
             CharacterStatusUpdate::new(
                 Some(RunCounter::Decrease(RunCounter::RESET_TICK_COUNT)),
-                ObjectStatusUpdate::new(None, None)
+                ObjectStatusUpdate::new(None, None, None)
             ),
             Walk::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Increase(0),
-                    ObjectStatus::new(CharacterSequenceId::Walk, false)
-                ),
-                false
+                    ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, false)
+                )
             )
         );
     }
@@ -299,15 +311,18 @@ mod test {
                 assert_eq!(
                     CharacterStatusUpdate::new(
                         Some(RunCounter::Decrease(RunCounter::RESET_TICK_COUNT)),
-                        ObjectStatusUpdate::new(Some(CharacterSequenceId::Walk), None)
+                        ObjectStatusUpdate::new(
+                            Some(CharacterSequenceId::Walk),
+                            Some(SequenceState::Begin),
+                            None
+                        )
                     ),
                     Walk::update(
                         &input,
                         &CharacterStatus::new(
                             RunCounter::Increase(0),
-                            ObjectStatus::new(CharacterSequenceId::Walk, false)
-                        ),
-                        true
+                            ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::End, false)
+                        )
                     )
                 );
             });
@@ -320,15 +335,22 @@ mod test {
                 assert_eq!(
                     CharacterStatusUpdate::new(
                         Some(RunCounter::Increase(0)),
-                        ObjectStatusUpdate::new(Some(CharacterSequenceId::Walk), None)
+                        ObjectStatusUpdate::new(
+                            Some(CharacterSequenceId::Walk),
+                            Some(SequenceState::Begin),
+                            None
+                        )
                     ),
                     Walk::update(
                         &input,
                         &CharacterStatus::new(
                             RunCounter::Increase(1),
-                            ObjectStatus::new(CharacterSequenceId::Walk, mirrored)
-                        ),
-                        true
+                            ObjectStatus::new(
+                                CharacterSequenceId::Walk,
+                                SequenceState::End,
+                                mirrored
+                            )
+                        )
                     )
                 );
             });
@@ -341,15 +363,18 @@ mod test {
         assert_eq!(
             CharacterStatusUpdate::new(
                 Some(RunCounter::Unused),
-                ObjectStatusUpdate::new(Some(CharacterSequenceId::Run), None)
+                ObjectStatusUpdate::new(
+                    Some(CharacterSequenceId::Run),
+                    Some(SequenceState::Begin),
+                    None
+                )
             ),
             Walk::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Decrease(10),
-                    ObjectStatus::new(CharacterSequenceId::Walk, false)
-                ),
-                false
+                    ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, false)
+                )
             )
         );
     }
@@ -361,15 +386,18 @@ mod test {
         assert_eq!(
             CharacterStatusUpdate::new(
                 Some(RunCounter::Unused),
-                ObjectStatusUpdate::new(Some(CharacterSequenceId::Run), None)
+                ObjectStatusUpdate::new(
+                    Some(CharacterSequenceId::Run),
+                    Some(SequenceState::Begin),
+                    None
+                )
             ),
             Walk::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Decrease(10),
-                    ObjectStatus::new(CharacterSequenceId::Walk, true)
-                ),
-                false
+                    ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::Ongoing, true)
+                )
             )
         );
     }

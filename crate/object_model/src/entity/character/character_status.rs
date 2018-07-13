@@ -39,7 +39,7 @@ impl AddAssign<CharacterStatusUpdate> for CharacterStatus {
 
 #[cfg(test)]
 mod test {
-    use config::object::CharacterSequenceId;
+    use config::object::{CharacterSequenceId, SequenceState};
     use entity::{CharacterStatusUpdate, ObjectStatus, ObjectStatusUpdate, RunCounter};
 
     use super::CharacterStatus;
@@ -77,13 +77,17 @@ mod test {
         let status = CharacterStatus::new(RunCounter::Increase(10), ObjectStatus::default());
         let update = CharacterStatusUpdate::new(
             Some(RunCounter::Increase(9)),
-            ObjectStatusUpdate::new(Some(CharacterSequenceId::Walk), Some(true)),
+            ObjectStatusUpdate::new(
+                Some(CharacterSequenceId::Walk),
+                Some(SequenceState::End),
+                Some(true),
+            ),
         );
 
         assert_eq!(
             CharacterStatus::new(
                 RunCounter::Increase(9),
-                ObjectStatus::new(CharacterSequenceId::Walk, true)
+                ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::End, true)
             ),
             status + update
         );
@@ -94,14 +98,18 @@ mod test {
         let mut status = CharacterStatus::new(RunCounter::Increase(10), ObjectStatus::default());
         let update = CharacterStatusUpdate::new(
             Some(RunCounter::Increase(9)),
-            ObjectStatusUpdate::new(Some(CharacterSequenceId::Walk), Some(true)),
+            ObjectStatusUpdate::new(
+                Some(CharacterSequenceId::Walk),
+                Some(SequenceState::End),
+                Some(true),
+            ),
         );
 
         status += update;
         assert_eq!(
             CharacterStatus::new(
                 RunCounter::Increase(9),
-                ObjectStatus::new(CharacterSequenceId::Walk, true)
+                ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::End, true)
             ),
             status
         );

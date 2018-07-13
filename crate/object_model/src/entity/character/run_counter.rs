@@ -1,8 +1,10 @@
 /// States used to track X axis input over time to determine when a character should run.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Derivative, PartialEq, Eq)]
+#[derivative(Default)]
 pub enum RunCounter {
     /// Used when there has not been any X axis input for the number of ticks defined by
     /// [`RESET_TICK_COUNT`](#enum.const.RESET_TICK_COUNT).
+    #[derivative(Default)]
     Unused,
     /// Used while the character is walking and there is input on the X axis.
     Increase(u32),
@@ -19,10 +21,4 @@ impl RunCounter {
     /// Number of ticks that the run counter will wait for X axis input to be released / re-pressed
     /// to cause the character to run.
     pub const RESET_TICK_COUNT: u32 = 15;
-}
-
-impl Default for RunCounter {
-    fn default() -> Self {
-        RunCounter::Unused
-    }
 }

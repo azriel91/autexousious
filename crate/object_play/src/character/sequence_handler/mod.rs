@@ -24,11 +24,9 @@ pub(super) trait SequenceHandler {
     ///
     /// * `character_input`: Controller input for the character.
     /// * `character_status`: Character specific status attributes.
-    /// * `sequence_ended`: Whether the current sequence has ended.
     fn update(
         _character_input: &CharacterInput,
         _character_status: &CharacterStatus,
-        _sequence_ended: bool,
     ) -> CharacterStatusUpdate {
         CharacterStatusUpdate::default()
     }
@@ -44,19 +42,20 @@ mod test {
 
     #[test]
     fn default_update_is_empty() {
-        // Should be `RunCounter::Unused`.
+        // No update to run counter.
         let run_counter = None;
+        // No calculated next sequence.
+        let sequence_id = None;
+        // No update to sequence state.
+        let sequence_state = None;
         // Don't change facing direction.
         let mirrored = None;
-        // Use configured next sequence.
-        let sequence_id = None;
         assert_eq!(
-            CharacterStatusUpdate::new(run_counter, ObjectStatusUpdate::new(sequence_id, mirrored)),
-            Sit::update(
-                &CharacterInput::default(),
-                &CharacterStatus::default(),
-                false
-            )
+            CharacterStatusUpdate::new(
+                run_counter,
+                ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored)
+            ),
+            Sit::update(&CharacterInput::default(), &CharacterStatus::default())
         );
     }
 

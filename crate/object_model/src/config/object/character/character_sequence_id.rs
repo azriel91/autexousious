@@ -1,10 +1,12 @@
 use config::object::SequenceId;
 
 /// Object Sequence IDs.
-#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq)]
+#[derive(Clone, Copy, Debug, Derivative, Deserialize, Eq, Hash, PartialEq)]
+#[derivative(Default)]
 #[serde(rename_all = "snake_case")]
 pub enum CharacterSequenceId {
     /// Default sequence for characters.
+    #[derivative(Default)]
     Stand,
     /// Walking sequence.
     Walk,
@@ -18,12 +20,6 @@ pub enum CharacterSequenceId {
     Airborne,
     /// Character landed from being airborne.
     AirborneLand,
-}
-
-impl Default for CharacterSequenceId {
-    fn default() -> Self {
-        CharacterSequenceId::Stand
-    }
 }
 
 impl SequenceId for CharacterSequenceId {}

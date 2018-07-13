@@ -9,9 +9,11 @@
 
 pub use self::frame::Frame;
 pub use self::sequence_id::SequenceId;
+pub use self::sequence_state::SequenceState;
 
 mod frame;
 mod sequence_id;
+mod sequence_state;
 
 /// Represents an independent action sequence of an object.
 ///
@@ -75,14 +77,11 @@ mod test {
         assert_eq!(expected, sequence);
     }
 
-    #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Hash)]
+    #[derive(Clone, Copy, Debug, Derivative, Deserialize, PartialEq, Eq, Hash)]
+    #[derivative(Default)]
     enum TestSeqId {
+        #[derivative(Default)]
         Boo,
-    }
-    impl Default for TestSeqId {
-        fn default() -> Self {
-            TestSeqId::Boo
-        }
     }
     impl SequenceId for TestSeqId {}
 }

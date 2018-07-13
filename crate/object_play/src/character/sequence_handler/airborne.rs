@@ -1,5 +1,5 @@
 use object_model::{
-    config::object::CharacterSequenceId,
+    config::object::{CharacterSequenceId, SequenceState},
     entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate},
 };
 
@@ -11,12 +11,12 @@ pub(crate) struct Airborne;
 impl SequenceHandler for Airborne {
     fn update(
         _character_input: &CharacterInput,
-        _character_status: &CharacterStatus,
-        sequence_ended: bool,
+        character_status: &CharacterStatus,
     ) -> CharacterStatusUpdate {
         let mut update = CharacterStatusUpdate::default();
-        if sequence_ended {
-            update.object_status.sequence_id = Some(CharacterSequenceId::Airborne)
+        if character_status.object_status.sequence_state == SequenceState::End {
+            update.object_status.sequence_id = Some(CharacterSequenceId::Airborne);
+            update.object_status.sequence_state = Some(SequenceState::Begin);
         }
 
         update
@@ -26,7 +26,7 @@ impl SequenceHandler for Airborne {
 #[cfg(test)]
 mod test {
     use object_model::{
-        config::object::CharacterSequenceId,
+        config::object::{CharacterSequenceId, SequenceState},
         entity::{
             CharacterInput, CharacterStatus, CharacterStatusUpdate, ObjectStatus,
             ObjectStatusUpdate, RunCounter,
@@ -41,14 +41,13 @@ mod test {
         let input = CharacterInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(None, ObjectStatusUpdate::new(None, None)),
+            CharacterStatusUpdate::new(None, ObjectStatusUpdate::new(None, None, None)),
             Airborne::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Airborne, false)
-                ),
-                false
+                    ObjectStatus::new(CharacterSequenceId::Airborne, SequenceState::Ongoing, false)
+                )
             )
         );
     }
@@ -60,15 +59,18 @@ mod test {
         assert_eq!(
             CharacterStatusUpdate::new(
                 None,
-                ObjectStatusUpdate::new(Some(CharacterSequenceId::Airborne), None)
+                ObjectStatusUpdate::new(
+                    Some(CharacterSequenceId::Airborne),
+                    Some(SequenceState::Begin),
+                    None
+                )
             ),
             Airborne::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Airborne, false)
-                ),
-                true
+                    ObjectStatus::new(CharacterSequenceId::Airborne, SequenceState::End, false)
+                )
             )
         );
     }

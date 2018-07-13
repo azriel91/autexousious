@@ -1,5 +1,5 @@
 use object_model::{
-    config::object::CharacterSequenceId,
+    config::object::{CharacterSequenceId, SequenceState},
     entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate},
     loaded::Character,
 };
@@ -25,7 +25,6 @@ impl CharacterSequenceHandler {
         character: &Character,
         character_input: &CharacterInput,
         character_status: &CharacterStatus,
-        sequence_ended: bool,
     ) -> CharacterStatusUpdate {
         let sequence_handler = match character_status.object_status.sequence_id {
             CharacterSequenceId::Stand => Stand::update,
@@ -37,12 +36,10 @@ impl CharacterSequenceHandler {
             CharacterSequenceId::AirborneLand => AirborneLand::update,
         };
 
-        // Pass sequence_ended through to sequence handlers, which lets them decide to loop the
-        // sequence when it has finished.
-        let mut status_update = sequence_handler(character_input, character_status, sequence_ended);
+        let mut status_update = sequence_handler(character_input, character_status);
 
         // Check if it's at the end of the sequence before switching to next.
-        if sequence_ended {
+        if character_status.object_status.sequence_state == SequenceState::End {
             let current_sequence_id = &character_status.object_status.sequence_id;
             let current_sequence = character
                 .definition

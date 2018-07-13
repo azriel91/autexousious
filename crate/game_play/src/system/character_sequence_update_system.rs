@@ -6,7 +6,7 @@ use amethyst::{
 };
 use game_play_state::AnimationRunner;
 use object_model::{
-    config::object::CharacterSequenceId,
+    config::object::{CharacterSequenceId, SequenceState},
     entity::{CharacterInput, CharacterStatus},
     loaded::{Character, CharacterHandle},
 };
@@ -54,7 +54,11 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
 
             let mut animation_set = get_animation_set(&mut animation_control_set_storage, entity);
 
-            // TODO: Calculate a delta from the current status and update
+            // Mark sequence as `Ongoing` for subsequent tick.
+            if character_status.object_status.sequence_state == SequenceState::Begin {
+                character_status.object_status.sequence_state = SequenceState::Ongoing;
+            }
+
             let sequence_ended = {
                 animation_set
                     .animations
@@ -64,14 +68,14 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                     })
                     .map_or(true, |(_id, control)| control.state == ControlState::Done)
             };
+            if sequence_ended {
+                character_status.object_status.sequence_state = SequenceState::End;
+            }
 
-            let status_update = CharacterSequenceHandler::update(
-                character,
-                &character_input,
-                &character_status,
-                sequence_ended,
-            );
+            let status_update =
+                CharacterSequenceHandler::update(character, &character_input, &character_status);
 
+            // TODO: Calculate a delta from the current status and update
             // Update the current sequence ID
             if let Some(next_sequence_id) = status_update.object_status.sequence_id {
                 let animation_handle = &character

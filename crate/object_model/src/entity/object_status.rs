@@ -2,7 +2,7 @@ use std::ops::{Add, AddAssign};
 
 use amethyst::ecs::{prelude::*, storage::DenseVecStorage};
 
-use config::object::SequenceId;
+use config::object::{SequenceId, SequenceState};
 use entity::ObjectStatusUpdate;
 
 /// Status of an object entity.
@@ -12,6 +12,8 @@ use entity::ObjectStatusUpdate;
 pub struct ObjectStatus<SeqId: SequenceId> {
     /// ID of the current sequence the entity is on.
     pub sequence_id: SeqId,
+    /// Whether the sequence just started, is ongoing, or has ended.
+    pub sequence_state: SequenceState,
     /// Whether or not this object is facing left.
     pub mirrored: bool,
 }
@@ -26,6 +28,7 @@ impl<SeqId: SequenceId> Add<ObjectStatusUpdate<SeqId>> for ObjectStatus<SeqId> {
     fn add(self, delta: ObjectStatusUpdate<SeqId>) -> Self {
         ObjectStatus {
             sequence_id: delta.sequence_id.unwrap_or(self.sequence_id),
+            sequence_state: delta.sequence_state.unwrap_or(self.sequence_state),
             mirrored: delta.mirrored.unwrap_or(self.mirrored),
         }
     }
@@ -39,61 +42,88 @@ impl<SeqId: SequenceId> AddAssign<ObjectStatusUpdate<SeqId>> for ObjectStatus<Se
 
 #[cfg(test)]
 mod test {
-    use config::object::SequenceId;
+    use config::object::{SequenceId, SequenceState};
     use entity::ObjectStatusUpdate;
 
     use super::ObjectStatus;
 
     #[test]
     fn add_retains_values_if_no_delta() {
-        let status = ObjectStatus::new(TestSeqId::Boo, false);
-        let delta = ObjectStatusUpdate::new(None, None);
+        let status = ObjectStatus::new(TestSeqId::Boo, SequenceState::End, false);
+        let delta = ObjectStatusUpdate::new(None, None, None);
 
-        assert_eq!(ObjectStatus::new(TestSeqId::Boo, false), status + delta);
+        assert_eq!(
+            ObjectStatus::new(TestSeqId::Boo, SequenceState::End, false),
+            status + delta
+        );
     }
 
     #[test]
     fn add_updates_sequence_id_if_present() {
-        let status = ObjectStatus::new(TestSeqId::Boo, false);
-        let delta = ObjectStatusUpdate::new(Some(TestSeqId::Moo), None);
+        let status = ObjectStatus::new(TestSeqId::Boo, SequenceState::End, false);
+        let delta = ObjectStatusUpdate::new(Some(TestSeqId::Moo), None, None);
 
-        assert_eq!(ObjectStatus::new(TestSeqId::Moo, false), status + delta);
+        assert_eq!(
+            ObjectStatus::new(TestSeqId::Moo, SequenceState::End, false),
+            status + delta
+        );
+    }
+
+    #[test]
+    fn add_updates_sequence_state_if_present() {
+        let status = ObjectStatus::new(TestSeqId::Boo, SequenceState::Ongoing, false);
+        let delta = ObjectStatusUpdate::new(None, Some(SequenceState::End), None);
+
+        assert_eq!(
+            ObjectStatus::new(TestSeqId::Boo, SequenceState::End, false),
+            status + delta
+        );
     }
 
     #[test]
     fn add_updates_mirrored_if_present() {
-        let status = ObjectStatus::new(TestSeqId::Boo, false);
-        let delta = ObjectStatusUpdate::new(None, Some(true));
+        let status = ObjectStatus::new(TestSeqId::Boo, SequenceState::End, false);
+        let delta = ObjectStatusUpdate::new(None, None, Some(true));
 
-        assert_eq!(ObjectStatus::new(TestSeqId::Boo, true), status + delta);
+        assert_eq!(
+            ObjectStatus::new(TestSeqId::Boo, SequenceState::End, true),
+            status + delta
+        );
     }
 
     #[test]
     fn add_retains_mirrored_when_delta_value_is_same() {
-        let status = ObjectStatus::new(TestSeqId::Boo, true);
-        let delta = ObjectStatusUpdate::new(None, Some(true));
+        let status = ObjectStatus::new(TestSeqId::Boo, SequenceState::End, true);
+        let delta = ObjectStatusUpdate::new(None, Some(SequenceState::End), Some(true));
 
-        assert_eq!(ObjectStatus::new(TestSeqId::Boo, true), status + delta);
+        assert_eq!(
+            ObjectStatus::new(TestSeqId::Boo, SequenceState::End, true),
+            status + delta
+        );
     }
 
     #[test]
     fn add_assign_updates_fields_if_present() {
-        let mut status = ObjectStatus::new(TestSeqId::Boo, false);
-        let delta = ObjectStatusUpdate::new(Some(TestSeqId::Moo), Some(true));
+        let mut status = ObjectStatus::new(TestSeqId::Boo, SequenceState::Begin, false);
+        let delta = ObjectStatusUpdate::new(
+            Some(TestSeqId::Moo),
+            Some(SequenceState::Ongoing),
+            Some(true),
+        );
 
         status += delta;
-        assert_eq!(ObjectStatus::new(TestSeqId::Moo, true), status);
+        assert_eq!(
+            ObjectStatus::new(TestSeqId::Moo, SequenceState::Ongoing, true),
+            status
+        );
     }
 
-    #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Hash)]
+    #[derive(Clone, Copy, Debug, Derivative, Deserialize, PartialEq, Eq, Hash)]
+    #[derivative(Default)]
     enum TestSeqId {
+        #[derivative(Default)]
         Boo,
         Moo,
-    }
-    impl Default for TestSeqId {
-        fn default() -> Self {
-            TestSeqId::Boo
-        }
     }
     impl SequenceId for TestSeqId {}
 }
