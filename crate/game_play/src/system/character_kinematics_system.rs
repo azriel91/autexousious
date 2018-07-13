@@ -65,12 +65,16 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                     kinematics.velocity[2] = character_input.z_axis_value as f32 * -0.5;
                 }
                 CharacterSequenceId::Jump => {}
-                CharacterSequenceId::JumpAscend => {
+                CharacterSequenceId::JumpOff => {
                     if status.object_status.sequence_state == SequenceState::Begin {
                         kinematics.velocity[1] = 17.;
                     } else {
+                        // TODO: Add gravity in a separate system.
                         kinematics.velocity[1] += -1.7;
                     }
+                }
+                CharacterSequenceId::JumpAscend => {
+                    kinematics.velocity[1] += -1.7;
                 }
                 CharacterSequenceId::Airborne => {
                     kinematics.velocity[1] += -1.7;

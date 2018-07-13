@@ -31,13 +31,24 @@
     { sheet = 1, sprite = 4, wait =  2 },
   ]
 
+# There are 3 sequences for jumping up:
+#
+# * `jump`: The character squats and gets ready to jump.
+# * `jump_off`: The character jumps up. This is where lift off happens.
+# * `jump_ascend`: The character is moving upwards, but has not yet reached the peak of its jump.
 [sequences.jump]
   frames = [
-    { sheet = 0, sprite = 0, wait = 1 },
-    { sheet = 0, sprite = 1, wait = 1 },
-    { sheet = 0, sprite = 2, wait = 1 },
-    { sheet = 0, sprite = 3, wait = 1 },
-    { sheet = 0, sprite = 4, wait = 1 },
+    { sheet = 0, sprite = 0, wait = 0 },
+    { sheet = 0, sprite = 1, wait = 0 },
+    { sheet = 0, sprite = 2, wait = 0 },
+    { sheet = 0, sprite = 3, wait = 0 },
+    { sheet = 0, sprite = 4, wait = 0 },
+  ]
+
+[sequences.jump_off]
+  frames = [
+    { sheet = 1, sprite = 3, wait = 1 },
+    { sheet = 1, sprite = 4, wait = 1 },
   ]
 
 [sequences.jump_ascend]
