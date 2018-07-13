@@ -38,10 +38,18 @@ impl SequenceHandler for Run {
             )
         };
 
-        CharacterStatusUpdate::new(
+        // TODO: switch to `JumpDescend` when `Airborne`.
+        let grounding = None;
+
+        CharacterStatusUpdate {
             run_counter,
-            ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored),
-        )
+            object_status: ObjectStatusUpdate {
+                sequence_id,
+                sequence_state,
+                mirrored,
+                grounding,
+            },
+        }
     }
 }
 
@@ -51,7 +59,7 @@ mod test {
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
             CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus,
-            ObjectStatusUpdate, RunCounter,
+            ObjectStatusUpdate,
         },
     };
 
@@ -63,20 +71,24 @@ mod test {
         let input = CharacterInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(
-                None,
-                ObjectStatusUpdate::new(
-                    Some(CharacterSequenceId::StopRun),
-                    Some(SequenceState::Begin),
-                    None
-                )
-            ),
+            CharacterStatusUpdate {
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::StopRun),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
             Run::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Run, SequenceState::Ongoing, false)
-                ),
+                &CharacterStatus {
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::Run,
+                        mirrored: false,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
                 &Kinematics::default()
             )
         );
@@ -87,13 +99,17 @@ mod test {
         let input = CharacterInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(None, ObjectStatusUpdate::new(None, None, None)),
+            CharacterStatusUpdate::default(),
             Run::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Run, SequenceState::Ongoing, false)
-                ),
+                &CharacterStatus {
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::Run,
+                        mirrored: false,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
                 &Kinematics::default()
             )
         );
@@ -104,13 +120,17 @@ mod test {
         let input = CharacterInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(None, ObjectStatusUpdate::new(None, None, None)),
+            CharacterStatusUpdate::default(),
             Run::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Run, SequenceState::Ongoing, true)
-                ),
+                &CharacterStatus {
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::Run,
+                        mirrored: true,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
                 &Kinematics::default()
             )
         );
@@ -124,24 +144,25 @@ mod test {
                 let input = CharacterInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
-                    CharacterStatusUpdate::new(
-                        None,
-                        ObjectStatusUpdate::new(
-                            Some(CharacterSequenceId::Run),
-                            Some(SequenceState::Begin),
-                            None
-                        )
-                    ),
+                    CharacterStatusUpdate {
+                        object_status: ObjectStatusUpdate {
+                            sequence_id: Some(CharacterSequenceId::Run),
+                            sequence_state: Some(SequenceState::Begin),
+                            ..Default::default()
+                        },
+                        ..Default::default()
+                    },
                     Run::update(
                         &input,
-                        &CharacterStatus::new(
-                            RunCounter::Unused,
-                            ObjectStatus::new(
-                                CharacterSequenceId::Run,
-                                SequenceState::End,
-                                mirrored
-                            )
-                        ),
+                        &CharacterStatus {
+                            object_status: ObjectStatus {
+                                sequence_id: CharacterSequenceId::Run,
+                                sequence_state: SequenceState::End,
+                                mirrored,
+                                ..Default::default()
+                            },
+                            ..Default::default()
+                        },
                         &Kinematics::default()
                     )
                 );
@@ -153,20 +174,24 @@ mod test {
         let input = CharacterInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(
-                None,
-                ObjectStatusUpdate::new(
-                    Some(CharacterSequenceId::StopRun),
-                    Some(SequenceState::Begin),
-                    None
-                )
-            ),
+            CharacterStatusUpdate {
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::StopRun),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
             Run::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Run, SequenceState::Ongoing, false)
-                ),
+                &CharacterStatus {
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::Run,
+                        mirrored: false,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
                 &Kinematics::default()
             )
         );
@@ -177,20 +202,24 @@ mod test {
         let input = CharacterInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(
-                None,
-                ObjectStatusUpdate::new(
-                    Some(CharacterSequenceId::StopRun),
-                    Some(SequenceState::Begin),
-                    None
-                )
-            ),
+            CharacterStatusUpdate {
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::StopRun),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
             Run::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Run, SequenceState::Ongoing, true)
-                ),
+                &CharacterStatus {
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::Run,
+                        mirrored: true,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
                 &Kinematics::default()
             )
         );
@@ -201,13 +230,17 @@ mod test {
         let input = CharacterInput::new(1., 1., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(None, ObjectStatusUpdate::new(None, None, None)),
+            CharacterStatusUpdate::default(),
             Run::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Run, SequenceState::Ongoing, false)
-                ),
+                &CharacterStatus {
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::Run,
+                        mirrored: false,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
                 &Kinematics::default()
             )
         );
@@ -215,13 +248,17 @@ mod test {
         let input = CharacterInput::new(1., -1., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(None, ObjectStatusUpdate::new(None, None, None)),
+            CharacterStatusUpdate::default(),
             Run::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Run, SequenceState::Ongoing, false)
-                ),
+                &CharacterStatus {
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::Run,
+                        mirrored: false,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
                 &Kinematics::default()
             )
         );

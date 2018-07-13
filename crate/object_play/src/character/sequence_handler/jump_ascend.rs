@@ -34,7 +34,7 @@ mod test {
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
             CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus,
-            ObjectStatusUpdate, RunCounter,
+            ObjectStatusUpdate,
         },
     };
 
@@ -48,17 +48,16 @@ mod test {
         kinematics.velocity[1] = 1.;
 
         assert_eq!(
-            CharacterStatusUpdate::new(None, ObjectStatusUpdate::new(None, None, None)),
+            CharacterStatusUpdate::default(),
             JumpAscend::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Unused,
-                    ObjectStatus::new(
-                        CharacterSequenceId::JumpAscend,
-                        SequenceState::Ongoing,
-                        false
-                    )
-                ),
+                &CharacterStatus {
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::JumpAscend,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
                 &kinematics
             )
         );
@@ -71,20 +70,24 @@ mod test {
         kinematics.velocity[1] = 1.;
 
         assert_eq!(
-            CharacterStatusUpdate::new(
-                None,
-                ObjectStatusUpdate::new(
-                    Some(CharacterSequenceId::JumpAscend),
-                    Some(SequenceState::Begin),
-                    None
-                )
-            ),
+            CharacterStatusUpdate {
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::JumpAscend),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
             JumpAscend::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::JumpAscend, SequenceState::End, false)
-                ),
+                &CharacterStatus {
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::JumpAscend,
+                        sequence_state: SequenceState::End,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
                 &kinematics
             )
         );
@@ -100,24 +103,24 @@ mod test {
             .into_iter()
             .for_each(|kinematics| {
                 assert_eq!(
-                    CharacterStatusUpdate::new(
-                        None,
-                        ObjectStatusUpdate::new(
-                            Some(CharacterSequenceId::JumpDescend),
-                            Some(SequenceState::Begin),
-                            None
-                        )
-                    ),
+                    CharacterStatusUpdate {
+                        object_status: ObjectStatusUpdate {
+                            sequence_id: Some(CharacterSequenceId::JumpDescend),
+                            sequence_state: Some(SequenceState::Begin),
+                            ..Default::default()
+                        },
+                        ..Default::default()
+                    },
                     JumpAscend::update(
                         &input,
-                        &CharacterStatus::new(
-                            RunCounter::Unused,
-                            ObjectStatus::new(
-                                CharacterSequenceId::JumpAscend,
-                                SequenceState::Ongoing,
-                                false
-                            )
-                        ),
+                        &CharacterStatus {
+                            object_status: ObjectStatus {
+                                sequence_id: CharacterSequenceId::JumpAscend,
+                                sequence_state: SequenceState::Ongoing,
+                                ..Default::default()
+                            },
+                            ..Default::default()
+                        },
                         &kinematics
                     )
                 );

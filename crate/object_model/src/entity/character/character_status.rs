@@ -40,7 +40,7 @@ impl AddAssign<CharacterStatusUpdate> for CharacterStatus {
 #[cfg(test)]
 mod test {
     use config::object::{CharacterSequenceId, SequenceState};
-    use entity::{CharacterStatusUpdate, ObjectStatus, ObjectStatusUpdate, RunCounter};
+    use entity::{CharacterStatusUpdate, Grounding, ObjectStatus, ObjectStatusUpdate, RunCounter};
 
     use super::CharacterStatus;
 
@@ -81,13 +81,19 @@ mod test {
                 Some(CharacterSequenceId::Walk),
                 Some(SequenceState::End),
                 Some(true),
+                Some(Grounding::Airborne),
             ),
         );
 
         assert_eq!(
             CharacterStatus::new(
                 RunCounter::Increase(9),
-                ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::End, true)
+                ObjectStatus::new(
+                    CharacterSequenceId::Walk,
+                    SequenceState::End,
+                    true,
+                    Grounding::Airborne
+                )
             ),
             status + update
         );
@@ -102,6 +108,7 @@ mod test {
                 Some(CharacterSequenceId::Walk),
                 Some(SequenceState::End),
                 Some(true),
+                Some(Grounding::Airborne),
             ),
         );
 
@@ -109,7 +116,12 @@ mod test {
         assert_eq!(
             CharacterStatus::new(
                 RunCounter::Increase(9),
-                ObjectStatus::new(CharacterSequenceId::Walk, SequenceState::End, true)
+                ObjectStatus::new(
+                    CharacterSequenceId::Walk,
+                    SequenceState::End,
+                    true,
+                    Grounding::Airborne
+                )
             ),
             status
         );

@@ -30,7 +30,7 @@ mod test {
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
             CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus,
-            ObjectStatusUpdate, RunCounter,
+            ObjectStatusUpdate,
         },
     };
 
@@ -42,13 +42,16 @@ mod test {
         let input = CharacterInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(None, ObjectStatusUpdate::new(None, None, None)),
+            CharacterStatusUpdate::default(),
             StopRun::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::StopRun, SequenceState::Ongoing, false)
-                ),
+                &CharacterStatus {
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::StopRun,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
                 &Kinematics::default()
             )
         );
@@ -59,20 +62,24 @@ mod test {
         let input = CharacterInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(
-                None,
-                ObjectStatusUpdate::new(
-                    Some(CharacterSequenceId::Stand),
-                    Some(SequenceState::Begin),
-                    None
-                )
-            ),
+            CharacterStatusUpdate {
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::Stand),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
             StopRun::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::StopRun, SequenceState::End, false)
-                ),
+                &CharacterStatus {
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::StopRun,
+                        sequence_state: SequenceState::End,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
                 &Kinematics::default()
             )
         );

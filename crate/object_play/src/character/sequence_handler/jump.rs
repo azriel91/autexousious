@@ -30,7 +30,7 @@ mod test {
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
             CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus,
-            ObjectStatusUpdate, RunCounter,
+            ObjectStatusUpdate,
         },
     };
 
@@ -42,13 +42,16 @@ mod test {
         let input = CharacterInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(None, ObjectStatusUpdate::new(None, None, None)),
+            CharacterStatusUpdate::default(),
             Jump::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Jump, SequenceState::Ongoing, false)
-                ),
+                &CharacterStatus {
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::Jump,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
                 &Kinematics::default()
             )
         );
@@ -57,23 +60,29 @@ mod test {
     #[test]
     fn switches_to_jump_off_when_sequence_ends() {
         let input = CharacterInput::new(0., 0., false, false, false, false);
+        let mut kinematics = Kinematics::default();
+        kinematics.velocity[1] = 1.;
 
         assert_eq!(
-            CharacterStatusUpdate::new(
-                None,
-                ObjectStatusUpdate::new(
-                    Some(CharacterSequenceId::JumpOff),
-                    Some(SequenceState::Begin),
-                    None
-                )
-            ),
+            CharacterStatusUpdate {
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::JumpOff),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
             Jump::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Jump, SequenceState::End, false)
-                ),
-                &Kinematics::default()
+                &CharacterStatus {
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::Jump,
+                        sequence_state: SequenceState::End,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
+                &kinematics
             )
         );
     }

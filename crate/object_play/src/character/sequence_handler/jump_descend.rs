@@ -31,7 +31,7 @@ mod test {
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
             CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus,
-            ObjectStatusUpdate, RunCounter,
+            ObjectStatusUpdate,
         },
     };
 
@@ -41,20 +41,21 @@ mod test {
     #[test]
     fn no_update_when_sequence_not_ended() {
         let input = CharacterInput::new(0., 0., false, false, false, false);
+        let mut kinematics = Kinematics::default();
+        kinematics.velocity[1] = -1.;
 
         assert_eq!(
-            CharacterStatusUpdate::new(None, ObjectStatusUpdate::new(None, None, None)),
+            CharacterStatusUpdate::default(),
             JumpDescend::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Unused,
-                    ObjectStatus::new(
-                        CharacterSequenceId::JumpDescend,
-                        SequenceState::Ongoing,
-                        false
-                    )
-                ),
-                &Kinematics::default()
+                &CharacterStatus {
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::JumpDescend,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
+                &kinematics
             )
         );
     }
@@ -62,23 +63,29 @@ mod test {
     #[test]
     fn restarts_jump_descend_when_sequence_ends() {
         let input = CharacterInput::new(0., 0., false, false, false, false);
+        let mut kinematics = Kinematics::default();
+        kinematics.velocity[1] = -1.;
 
         assert_eq!(
-            CharacterStatusUpdate::new(
-                None,
-                ObjectStatusUpdate::new(
-                    Some(CharacterSequenceId::JumpDescend),
-                    Some(SequenceState::Begin),
-                    None
-                )
-            ),
+            CharacterStatusUpdate {
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::JumpDescend),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
             JumpDescend::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::JumpDescend, SequenceState::End, false)
-                ),
-                &Kinematics::default()
+                &CharacterStatus {
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::JumpDescend,
+                        sequence_state: SequenceState::End,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
+                &kinematics
             )
         );
     }

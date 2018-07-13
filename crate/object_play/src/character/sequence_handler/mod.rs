@@ -54,12 +54,14 @@ mod test {
         let sequence_id = None;
         // No update to sequence state.
         let sequence_state = None;
-        // Don't change facing direction.
+        // No update to facing direction.
         let mirrored = None;
+        // No update to grounding.
+        let grounding = None;
         assert_eq!(
             CharacterStatusUpdate::new(
                 run_counter,
-                ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored)
+                ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored, grounding)
             ),
             Sit::update(
                 &CharacterInput::default(),
