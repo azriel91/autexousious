@@ -3,14 +3,14 @@ use object_model::{
     entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics},
 };
 
-use character::sequence_handler::SequenceHandler;
+use character::sequence_handler::{SequenceHandler, SequenceHandlerUtil};
 
 #[derive(Debug)]
 pub(crate) struct JumpAscend;
 
 impl SequenceHandler for JumpAscend {
     fn update(
-        _character_input: &CharacterInput,
+        character_input: &CharacterInput,
         character_status: &CharacterStatus,
         kinematics: &Kinematics<f32>,
     ) -> CharacterStatusUpdate {
@@ -22,6 +22,14 @@ impl SequenceHandler for JumpAscend {
         } else if character_status.object_status.sequence_state == SequenceState::End {
             update.object_status.sequence_id = Some(CharacterSequenceId::JumpAscend);
             update.object_status.sequence_state = Some(SequenceState::Begin);
+        }
+
+        // Switch direction if user is pressing the opposite way.
+        if SequenceHandlerUtil::input_opposes_direction(
+            character_input,
+            character_status.object_status.mirrored,
+        ) {
+            update.object_status.mirrored = Some(!character_status.object_status.mirrored);
         }
 
         update
@@ -120,6 +128,40 @@ mod test {
                                 sequence_id: CharacterSequenceId::JumpAscend,
                                 sequence_state: SequenceState::Ongoing,
                                 grounding: Grounding::Airborne,
+                                ..Default::default()
+                            },
+                            ..Default::default()
+                        },
+                        &kinematics
+                    )
+                );
+            });
+    }
+
+    #[test]
+    fn switches_mirror_when_pressing_opposite_direction() {
+        vec![(-1., false), (1., true)]
+            .into_iter()
+            .for_each(|(x_input, mirrored)| {
+                let input = CharacterInput::new(x_input, 0., false, false, false, false);
+                let mut kinematics = Kinematics::default();
+                kinematics.velocity[1] = 1.;
+
+                assert_eq!(
+                    CharacterStatusUpdate {
+                        object_status: ObjectStatusUpdate {
+                            mirrored: Some(!mirrored),
+                            ..Default::default()
+                        },
+                        ..Default::default()
+                    },
+                    JumpAscend::update(
+                        &input,
+                        &CharacterStatus {
+                            object_status: ObjectStatus {
+                                sequence_id: CharacterSequenceId::JumpAscend,
+                                grounding: Grounding::Airborne,
+                                mirrored,
                                 ..Default::default()
                             },
                             ..Default::default()

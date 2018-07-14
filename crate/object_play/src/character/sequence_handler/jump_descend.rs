@@ -3,14 +3,14 @@ use object_model::{
     entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics},
 };
 
-use character::sequence_handler::SequenceHandler;
+use character::sequence_handler::{SequenceHandler, SequenceHandlerUtil};
 
 #[derive(Debug)]
 pub(crate) struct JumpDescend;
 
 impl SequenceHandler for JumpDescend {
     fn update(
-        _character_input: &CharacterInput,
+        character_input: &CharacterInput,
         character_status: &CharacterStatus,
         _kinematics: &Kinematics<f32>,
     ) -> CharacterStatusUpdate {
@@ -19,6 +19,14 @@ impl SequenceHandler for JumpDescend {
         if character_status.object_status.sequence_state == SequenceState::End {
             update.object_status.sequence_id = Some(CharacterSequenceId::JumpDescend);
             update.object_status.sequence_state = Some(SequenceState::Begin);
+        }
+
+        // Switch direction if user is pressing the opposite way.
+        if SequenceHandlerUtil::input_opposes_direction(
+            character_input,
+            character_status.object_status.mirrored,
+        ) {
+            update.object_status.mirrored = Some(!character_status.object_status.mirrored);
         }
 
         update
@@ -90,5 +98,39 @@ mod test {
                 &kinematics
             )
         );
+    }
+
+    #[test]
+    fn switches_mirror_when_pressing_opposite_direction() {
+        vec![(-1., false), (1., true)]
+            .into_iter()
+            .for_each(|(x_input, mirrored)| {
+                let input = CharacterInput::new(x_input, 0., false, false, false, false);
+                let mut kinematics = Kinematics::default();
+                kinematics.velocity[1] = 1.;
+
+                assert_eq!(
+                    CharacterStatusUpdate {
+                        object_status: ObjectStatusUpdate {
+                            mirrored: Some(!mirrored),
+                            ..Default::default()
+                        },
+                        ..Default::default()
+                    },
+                    JumpDescend::update(
+                        &input,
+                        &CharacterStatus {
+                            object_status: ObjectStatus {
+                                sequence_id: CharacterSequenceId::JumpDescend,
+                                grounding: Grounding::Airborne,
+                                mirrored,
+                                ..Default::default()
+                            },
+                            ..Default::default()
+                        },
+                        &kinematics
+                    )
+                );
+            });
     }
 }

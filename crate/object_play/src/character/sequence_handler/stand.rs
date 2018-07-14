@@ -6,7 +6,7 @@ use object_model::{
     },
 };
 
-use character::sequence_handler::SequenceHandler;
+use character::sequence_handler::{SequenceHandler, SequenceHandlerUtil};
 
 #[derive(Debug)]
 pub(crate) struct Stand;
@@ -64,9 +64,7 @@ impl SequenceHandler for Stand {
                     };
                 (run_counter, sequence_id, None)
             } else {
-                let same_direction =
-                    input.x_axis_value > 0. && !mirrored || input.x_axis_value < 0. && mirrored;
-
+                let same_direction = SequenceHandlerUtil::input_matches_direction(input, mirrored);
                 match (character_status.run_counter, same_direction) {
                     (Unused, false) | (Decrease(_), false) => (
                         Some(Increase(RunCounter::RESET_TICK_COUNT)),
