@@ -46,16 +46,12 @@ impl CharacterSequenceHandler {
         // Check if it's at the end of the sequence before switching to next.
         if character_status.object_status.sequence_state == SequenceState::End {
             let current_sequence_id = &character_status.object_status.sequence_id;
-            let current_sequence = character
-                .definition
-                .object_definition
-                .sequences
-                .get(current_sequence_id)
-                .unwrap();
+            let current_sequence =
+                &character.definition.object_definition.sequences[current_sequence_id];
 
             // `next` from configuration overrides the state handler transition.
             if current_sequence.next.is_some() {
-                status_update.object_status.sequence_id = current_sequence.next.clone();
+                status_update.object_status.sequence_id = current_sequence.next;
             }
         }
 
