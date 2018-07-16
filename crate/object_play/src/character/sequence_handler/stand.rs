@@ -1,8 +1,8 @@
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
     entity::{
-        CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
-        RunCounter,
+        CharacterInput, CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics,
+        ObjectStatusUpdate, RunCounter,
     },
 };
 
@@ -42,6 +42,25 @@ impl SequenceHandler for Stand {
                     run_counter,
                     ObjectStatusUpdate::new(
                         Some(CharacterSequenceId::Jump),
+                        Some(SequenceState::Begin),
+                        None,
+                        None,
+                    ),
+                );
+            }
+
+            // TODO: Extract common logic for "on ground" bits and use it in various on ground
+            // states.
+            if character_status.object_status.grounding == Grounding::Airborne {
+                let run_counter = if character_status.run_counter == Unused {
+                    None
+                } else {
+                    Some(Unused)
+                };
+                return CharacterStatusUpdate::new(
+                    run_counter,
+                    ObjectStatusUpdate::new(
+                        Some(CharacterSequenceId::JumpDescend),
                         Some(SequenceState::Begin),
                         None,
                         None,
@@ -162,6 +181,34 @@ mod test {
                     object_status: ObjectStatus {
                         sequence_id: CharacterSequenceId::Stand,
                         sequence_state: SequenceState::End,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
+                &Kinematics::default()
+            )
+        );
+    }
+
+    #[test]
+    fn switches_to_jump_descend_when_airborne() {
+        let input = CharacterInput::new(1., 0., false, false, false, false);
+
+        assert_eq!(
+            CharacterStatusUpdate {
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::JumpDescend),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
+            Stand::update(
+                &input,
+                &CharacterStatus {
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::Stand,
+                        grounding: Grounding::Airborne,
                         ..Default::default()
                     },
                     ..Default::default()
