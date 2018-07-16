@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.0 (2018-07-20)
 
 * Implemented jump.
 * Implemented double tap to run.
