@@ -39,8 +39,8 @@ impl AddAssign<CharacterStatusUpdate> for CharacterStatus {
 
 #[cfg(test)]
 mod test {
-    use config::object::CharacterSequenceId;
-    use entity::{CharacterStatusUpdate, ObjectStatus, ObjectStatusUpdate, RunCounter};
+    use config::object::{CharacterSequenceId, SequenceState};
+    use entity::{CharacterStatusUpdate, Grounding, ObjectStatus, ObjectStatusUpdate, RunCounter};
 
     use super::CharacterStatus;
 
@@ -77,13 +77,23 @@ mod test {
         let status = CharacterStatus::new(RunCounter::Increase(10), ObjectStatus::default());
         let update = CharacterStatusUpdate::new(
             Some(RunCounter::Increase(9)),
-            ObjectStatusUpdate::new(Some(CharacterSequenceId::Walk), Some(true)),
+            ObjectStatusUpdate::new(
+                Some(CharacterSequenceId::Walk),
+                Some(SequenceState::End),
+                Some(true),
+                Some(Grounding::Airborne),
+            ),
         );
 
         assert_eq!(
             CharacterStatus::new(
                 RunCounter::Increase(9),
-                ObjectStatus::new(CharacterSequenceId::Walk, true)
+                ObjectStatus::new(
+                    CharacterSequenceId::Walk,
+                    SequenceState::End,
+                    true,
+                    Grounding::Airborne
+                )
             ),
             status + update
         );
@@ -94,14 +104,24 @@ mod test {
         let mut status = CharacterStatus::new(RunCounter::Increase(10), ObjectStatus::default());
         let update = CharacterStatusUpdate::new(
             Some(RunCounter::Increase(9)),
-            ObjectStatusUpdate::new(Some(CharacterSequenceId::Walk), Some(true)),
+            ObjectStatusUpdate::new(
+                Some(CharacterSequenceId::Walk),
+                Some(SequenceState::End),
+                Some(true),
+                Some(Grounding::Airborne),
+            ),
         );
 
         status += update;
         assert_eq!(
             CharacterStatus::new(
                 RunCounter::Increase(9),
-                ObjectStatus::new(CharacterSequenceId::Walk, true)
+                ObjectStatus::new(
+                    CharacterSequenceId::Walk,
+                    SequenceState::End,
+                    true,
+                    Grounding::Airborne
+                )
             ),
             status
         );

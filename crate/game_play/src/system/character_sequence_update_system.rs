@@ -6,8 +6,8 @@ use amethyst::{
 };
 use game_play_state::AnimationRunner;
 use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{CharacterInput, CharacterStatus},
+    config::object::{CharacterSequenceId, SequenceState},
+    entity::{CharacterInput, CharacterStatus, Kinematics},
     loaded::{Character, CharacterHandle},
 };
 use object_play::CharacterSequenceHandler;
@@ -21,6 +21,7 @@ type CharacterSequenceUpdateSystemData<'s, 'c> = (
     Read<'s, AssetStorage<Character>>,
     ReadStorage<'s, CharacterHandle>,
     ReadStorage<'s, CharacterInput>,
+    ReadStorage<'s, Kinematics<f32>>,
     WriteStorage<'s, CharacterStatus>,
     WriteStorage<'s, MeshHandle>,
     WriteStorage<'s, AnimationControlSet<CharacterSequenceId, Material>>,
@@ -36,25 +37,34 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             characters,
             handle_storage,
             character_input_storage,
+            kinematics_storage,
             mut character_status_storage,
             mut mesh_handle_storage,
             mut animation_control_set_storage,
         ): Self::SystemData,
     ) {
-        for (entity, character_handle, character_input, mut character_status) in (
-            &*entities,
-            &handle_storage,
-            &character_input_storage,
-            &mut character_status_storage,
-        ).join()
+        for (entity, character_handle, character_input, kinematics, mut character_status) in
+            (
+                &*entities,
+                &handle_storage,
+                &character_input_storage,
+                &kinematics_storage,
+                &mut character_status_storage,
+            ).join()
         {
             let character = characters
                 .get(character_handle)
                 .expect("Expected character to be loaded.");
 
+            // TODO: Is it faster if we update the character statuses first, then calculate the
+            // sequence updates in parallel?
             let mut animation_set = get_animation_set(&mut animation_control_set_storage, entity);
 
-            // TODO: Calculate a delta from the current status and update
+            // Mark sequence as `Ongoing` for subsequent tick.
+            if character_status.object_status.sequence_state == SequenceState::Begin {
+                character_status.object_status.sequence_state = SequenceState::Ongoing;
+            }
+
             let sequence_ended = {
                 animation_set
                     .animations
@@ -64,14 +74,18 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                     })
                     .map_or(true, |(_id, control)| control.state == ControlState::Done)
             };
+            if sequence_ended {
+                character_status.object_status.sequence_state = SequenceState::End;
+            }
 
             let status_update = CharacterSequenceHandler::update(
                 character,
                 &character_input,
                 &character_status,
-                sequence_ended,
+                &kinematics,
             );
 
+            // TODO: Calculate a delta from the current status and update
             // Update the current sequence ID
             if let Some(next_sequence_id) = status_update.object_status.sequence_id {
                 let animation_handle = &character

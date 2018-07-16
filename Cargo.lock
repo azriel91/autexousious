@@ -1000,6 +1000,7 @@ dependencies = [
  "game_model 0.3.0",
  "game_play_state 0.4.0",
  "loading 0.3.0",
+ "map_model 0.4.0",
  "object_loading 0.3.0",
  "object_model 0.3.0",
  "object_play 0.3.0",
@@ -1014,6 +1015,7 @@ dependencies = [
  "character_selection 0.3.0",
  "loading 0.3.0",
  "log 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "map_model 0.4.0",
  "object_loading 0.3.0",
  "object_model 0.3.0",
 ]
@@ -1286,6 +1288,7 @@ dependencies = [
  "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_model 0.3.0",
  "log 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "map_model 0.4.0",
  "object_loading 0.3.0",
  "object_model 0.3.0",
  "toml 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1322,6 +1325,17 @@ version = "0.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "libc 0.2.42 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "map_model"
+version = "0.4.0"
+dependencies = [
+ "amethyst 0.7.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
+ "derive-new 0.5.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde 1.0.66 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_derive 1.0.66 (registry+https://github.com/rust-lang/crates.io-index)",
+ "toml 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

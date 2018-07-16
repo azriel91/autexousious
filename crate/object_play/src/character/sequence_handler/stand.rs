@@ -1,11 +1,12 @@
 use object_model::{
-    config::object::CharacterSequenceId,
+    config::object::{CharacterSequenceId, SequenceState},
     entity::{
-        CharacterInput, CharacterStatus, CharacterStatusUpdate, ObjectStatusUpdate, RunCounter,
+        CharacterInput, CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics,
+        ObjectStatusUpdate, RunCounter,
     },
 };
 
-use character::sequence_handler::SequenceHandler;
+use character::sequence_handler::{SequenceHandler, SequenceHandlerUtil};
 
 #[derive(Debug)]
 pub(crate) struct Stand;
@@ -14,7 +15,7 @@ impl SequenceHandler for Stand {
     fn update(
         input: &CharacterInput,
         character_status: &CharacterStatus,
-        sequence_ended: bool,
+        _kinematics: &Kinematics<f32>,
     ) -> CharacterStatusUpdate {
         let (run_counter, mut sequence_id, mirrored) = {
             let mirrored = character_status.object_status.mirrored;
@@ -28,6 +29,45 @@ impl SequenceHandler for Stand {
                 _ => {}
             };
 
+            // TODO: Don't handle action buttons in `SequenceHandler`s. Instead, each sequence has
+            // default sequence update IDs for each action button, which are overridden by
+            // configuration.
+            if input.jump {
+                let run_counter = if character_status.run_counter == Unused {
+                    None
+                } else {
+                    Some(Unused)
+                };
+                return CharacterStatusUpdate::new(
+                    run_counter,
+                    ObjectStatusUpdate::new(
+                        Some(CharacterSequenceId::Jump),
+                        Some(SequenceState::Begin),
+                        None,
+                        None,
+                    ),
+                );
+            }
+
+            // TODO: Extract common logic for "on ground" bits and use it in various on ground
+            // states.
+            if character_status.object_status.grounding == Grounding::Airborne {
+                let run_counter = if character_status.run_counter == Unused {
+                    None
+                } else {
+                    Some(Unused)
+                };
+                return CharacterStatusUpdate::new(
+                    run_counter,
+                    ObjectStatusUpdate::new(
+                        Some(CharacterSequenceId::JumpDescend),
+                        Some(SequenceState::Begin),
+                        None,
+                        None,
+                    ),
+                );
+            }
+
             if input.x_axis_value == 0. {
                 let run_counter = match character_status.run_counter {
                     Unused => None,
@@ -35,16 +75,15 @@ impl SequenceHandler for Stand {
                     Decrease(ticks) => Some(Decrease(ticks - 1)),
                     _ => unreachable!(),
                 };
-                let sequence_id = if sequence_ended {
-                    Some(CharacterSequenceId::Stand)
-                } else {
-                    None
-                };
+                let sequence_id =
+                    if character_status.object_status.sequence_state == SequenceState::End {
+                        Some(CharacterSequenceId::Stand)
+                    } else {
+                        None
+                    };
                 (run_counter, sequence_id, None)
             } else {
-                let same_direction =
-                    input.x_axis_value > 0. && !mirrored || input.x_axis_value < 0. && mirrored;
-
+                let same_direction = SequenceHandlerUtil::input_matches_direction(input, mirrored);
                 match (character_status.run_counter, same_direction) {
                     (Unused, false) | (Decrease(_), false) => (
                         Some(Increase(RunCounter::RESET_TICK_COUNT)),
@@ -67,17 +106,34 @@ impl SequenceHandler for Stand {
             sequence_id = Some(CharacterSequenceId::Walk);
         }
 
-        CharacterStatusUpdate::new(run_counter, ObjectStatusUpdate::new(sequence_id, mirrored))
+        let sequence_state = if sequence_id.is_some() {
+            Some(SequenceState::Begin)
+        } else {
+            None
+        };
+
+        // TODO: switch to `JumpDescend` when `Airborne`.
+        let grounding = None;
+
+        CharacterStatusUpdate {
+            run_counter,
+            object_status: ObjectStatusUpdate {
+                sequence_id,
+                sequence_state,
+                mirrored,
+                grounding,
+            },
+        }
     }
 }
 
 #[cfg(test)]
 mod test {
     use object_model::{
-        config::object::CharacterSequenceId,
+        config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterInput, CharacterStatus, CharacterStatusUpdate, ObjectStatus,
-            ObjectStatusUpdate, RunCounter,
+            CharacterInput, CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics,
+            ObjectStatus, ObjectStatusUpdate, RunCounter,
         },
     };
 
@@ -89,14 +145,19 @@ mod test {
         let input = CharacterInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(None, ObjectStatusUpdate::new(None, None)),
+            CharacterStatusUpdate::default(),
             Stand::update(
                 &input,
                 &CharacterStatus::new(
                     RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Stand, true)
+                    ObjectStatus::new(
+                        CharacterSequenceId::Stand,
+                        SequenceState::Ongoing,
+                        true,
+                        Grounding::OnGround
+                    )
                 ),
-                false
+                &Kinematics::default()
             )
         );
     }
@@ -106,17 +167,53 @@ mod test {
         let input = CharacterInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(
-                None,
-                ObjectStatusUpdate::new(Some(CharacterSequenceId::Stand), None)
-            ),
+            CharacterStatusUpdate {
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::Stand),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
             Stand::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Stand, true)
-                ),
-                true
+                &CharacterStatus {
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::Stand,
+                        sequence_state: SequenceState::End,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
+                &Kinematics::default()
+            )
+        );
+    }
+
+    #[test]
+    fn switches_to_jump_descend_when_airborne() {
+        let input = CharacterInput::new(1., 0., false, false, false, false);
+
+        assert_eq!(
+            CharacterStatusUpdate {
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::JumpDescend),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
+            Stand::update(
+                &input,
+                &CharacterStatus {
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::Stand,
+                        grounding: Grounding::Airborne,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
+                &Kinematics::default()
             )
         );
     }
@@ -126,17 +223,17 @@ mod test {
         let input = CharacterInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(
-                Some(RunCounter::Decrease(0)),
-                ObjectStatusUpdate::new(None, None)
-            ),
+            CharacterStatusUpdate {
+                run_counter: Some(RunCounter::Decrease(0)),
+                ..Default::default()
+            },
             Stand::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Decrease(1),
-                    ObjectStatus::new(CharacterSequenceId::Stand, true)
-                ),
-                false
+                &CharacterStatus {
+                    run_counter: RunCounter::Decrease(1),
+                    ..Default::default()
+                },
+                &Kinematics::default()
             )
         );
     }
@@ -146,17 +243,17 @@ mod test {
         let input = CharacterInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(
-                Some(RunCounter::Unused),
-                ObjectStatusUpdate::new(None, None)
-            ),
+            CharacterStatusUpdate {
+                run_counter: Some(RunCounter::Unused),
+                ..Default::default()
+            },
             Stand::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Decrease(0),
-                    ObjectStatus::new(CharacterSequenceId::Stand, true)
-                ),
-                false
+                &CharacterStatus {
+                    run_counter: RunCounter::Decrease(0),
+                    ..Default::default()
+                },
+                &Kinematics::default()
             )
         );
     }
@@ -166,33 +263,48 @@ mod test {
         let input = CharacterInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(
-                Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
-                ObjectStatusUpdate::new(Some(CharacterSequenceId::Walk), Some(false))
-            ),
+            CharacterStatusUpdate {
+                run_counter: Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::Walk),
+                    sequence_state: Some(SequenceState::Begin),
+                    mirrored: Some(false),
+                    ..Default::default()
+                }
+            },
             Stand::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Stand, true)
-                ),
-                false
+                &CharacterStatus {
+                    object_status: ObjectStatus {
+                        mirrored: true,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
+                &Kinematics::default()
             )
         );
 
         // Already facing right
         assert_eq!(
-            CharacterStatusUpdate::new(
-                Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
-                ObjectStatusUpdate::new(Some(CharacterSequenceId::Walk), None)
-            ),
+            CharacterStatusUpdate {
+                run_counter: Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::Walk),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                }
+            },
             Stand::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Stand, false)
-                ),
-                false
+                &CharacterStatus {
+                    object_status: ObjectStatus {
+                        mirrored: false,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
+                &Kinematics::default()
             )
         );
     }
@@ -202,33 +314,48 @@ mod test {
         let input = CharacterInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(
-                Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
-                ObjectStatusUpdate::new(Some(CharacterSequenceId::Walk), Some(true))
-            ),
+            CharacterStatusUpdate {
+                run_counter: Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::Walk),
+                    sequence_state: Some(SequenceState::Begin),
+                    mirrored: Some(true),
+                    ..Default::default()
+                }
+            },
             Stand::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Stand, false)
-                ),
-                false
+                &CharacterStatus {
+                    object_status: ObjectStatus {
+                        mirrored: false,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
+                &Kinematics::default()
             )
         );
 
         // Already facing left
         assert_eq!(
-            CharacterStatusUpdate::new(
-                Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
-                ObjectStatusUpdate::new(Some(CharacterSequenceId::Walk), None)
-            ),
+            CharacterStatusUpdate {
+                run_counter: Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::Walk),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                }
+            },
             Stand::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Stand, true)
-                ),
-                false
+                &CharacterStatus {
+                    object_status: ObjectStatus {
+                        mirrored: true,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
+                &Kinematics::default()
             )
         );
     }
@@ -238,17 +365,21 @@ mod test {
         let input = CharacterInput::new(0., 1., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(
-                Some(RunCounter::Decrease(9)),
-                ObjectStatusUpdate::new(Some(CharacterSequenceId::Walk), None)
-            ),
+            CharacterStatusUpdate {
+                run_counter: Some(RunCounter::Decrease(9)),
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::Walk),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                }
+            },
             Stand::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Decrease(10),
-                    ObjectStatus::new(CharacterSequenceId::Stand, true)
-                ),
-                false
+                &CharacterStatus {
+                    run_counter: RunCounter::Decrease(10),
+                    ..Default::default()
+                },
+                &Kinematics::default()
             )
         );
     }
@@ -258,17 +389,24 @@ mod test {
         let input = CharacterInput::new(1., 1., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(
-                Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
-                ObjectStatusUpdate::new(Some(CharacterSequenceId::Walk), None)
-            ),
+            CharacterStatusUpdate {
+                run_counter: Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::Walk),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                }
+            },
             Stand::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Unused,
-                    ObjectStatus::new(CharacterSequenceId::Stand, false)
-                ),
-                false
+                &CharacterStatus {
+                    object_status: ObjectStatus {
+                        mirrored: false,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
+                &Kinematics::default()
             )
         );
     }
@@ -278,17 +416,24 @@ mod test {
         let input = CharacterInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(
-                Some(RunCounter::Unused),
-                ObjectStatusUpdate::new(Some(CharacterSequenceId::Run), None)
-            ),
+            CharacterStatusUpdate {
+                run_counter: Some(RunCounter::Unused),
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::Run),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                }
+            },
             Stand::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Decrease(10),
-                    ObjectStatus::new(CharacterSequenceId::Stand, false)
-                ),
-                false
+                &CharacterStatus {
+                    run_counter: RunCounter::Decrease(10),
+                    object_status: ObjectStatus {
+                        mirrored: false,
+                        ..Default::default()
+                    },
+                },
+                &Kinematics::default()
             )
         );
     }
@@ -298,17 +443,25 @@ mod test {
         let input = CharacterInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(
-                Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
-                ObjectStatusUpdate::new(Some(CharacterSequenceId::Walk), Some(false))
-            ),
+            CharacterStatusUpdate {
+                run_counter: Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::Walk),
+                    sequence_state: Some(SequenceState::Begin),
+                    mirrored: Some(false),
+                    ..Default::default()
+                }
+            },
             Stand::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Decrease(10),
-                    ObjectStatus::new(CharacterSequenceId::Stand, true)
-                ),
-                false
+                &CharacterStatus {
+                    run_counter: RunCounter::Decrease(10),
+                    object_status: ObjectStatus {
+                        mirrored: true,
+                        ..Default::default()
+                    },
+                },
+                &Kinematics::default()
             )
         );
     }
@@ -318,17 +471,24 @@ mod test {
         let input = CharacterInput::new(-1., 1., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(
-                Some(RunCounter::Unused),
-                ObjectStatusUpdate::new(Some(CharacterSequenceId::Run), None)
-            ),
+            CharacterStatusUpdate {
+                run_counter: Some(RunCounter::Unused),
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::Run),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                }
+            },
             Stand::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Decrease(10),
-                    ObjectStatus::new(CharacterSequenceId::Stand, true)
-                ),
-                false
+                &CharacterStatus {
+                    run_counter: RunCounter::Decrease(10),
+                    object_status: ObjectStatus {
+                        mirrored: true,
+                        ..Default::default()
+                    },
+                },
+                &Kinematics::default()
             )
         );
     }
@@ -338,18 +498,54 @@ mod test {
         let input = CharacterInput::new(-1., -1., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::new(
-                Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
-                ObjectStatusUpdate::new(Some(CharacterSequenceId::Walk), Some(true))
-            ),
+            CharacterStatusUpdate {
+                run_counter: Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::Walk),
+                    sequence_state: Some(SequenceState::Begin),
+                    mirrored: Some(true),
+                    ..Default::default()
+                }
+            },
             Stand::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Decrease(10),
-                    ObjectStatus::new(CharacterSequenceId::Stand, false)
-                ),
-                false
+                &CharacterStatus {
+                    run_counter: RunCounter::Decrease(10),
+                    object_status: ObjectStatus {
+                        mirrored: false,
+                        ..Default::default()
+                    },
+                },
+                &Kinematics::default()
             )
         );
+    }
+
+    #[test]
+    fn jump_when_jump_is_pressed() {
+        vec![(0., 0.), (1., 0.), (-1., 0.), (0., 1.)]
+            .into_iter()
+            .for_each(|(x_input, z_input)| {
+                let input = CharacterInput::new(x_input, z_input, false, true, false, false);
+
+                assert_eq!(
+                    CharacterStatusUpdate {
+                        run_counter: Some(RunCounter::Unused),
+                        object_status: ObjectStatusUpdate {
+                            sequence_id: Some(CharacterSequenceId::Jump),
+                            sequence_state: Some(SequenceState::Begin),
+                            ..Default::default()
+                        }
+                    },
+                    Stand::update(
+                        &input,
+                        &CharacterStatus {
+                            run_counter: RunCounter::Decrease(0),
+                            ..Default::default()
+                        },
+                        &Kinematics::default()
+                    )
+                );
+            });
     }
 }

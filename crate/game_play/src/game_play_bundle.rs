@@ -3,6 +3,7 @@ use amethyst::{
     ecs::prelude::*,
 };
 
+use CharacterGroundingSystem;
 use CharacterInputUpdateSystem;
 use CharacterKinematicsSystem;
 use CharacterSequenceUpdateSystem;
@@ -40,9 +41,14 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &["character_kinematics_system"],
         );
         builder.add(
+            CharacterGroundingSystem::new(),
+            "character_grounding_system",
+            &["object_kinematics_update_system"],
+        );
+        builder.add(
             ObjectTransformUpdateSystem::new(),
             "object_transform_update_system",
-            &["object_kinematics_update_system"],
+            &["character_grounding_system"],
         );
         Ok(())
     }

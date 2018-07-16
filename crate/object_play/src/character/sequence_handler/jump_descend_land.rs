@@ -6,9 +6,9 @@ use object_model::{
 use character::sequence_handler::SequenceHandler;
 
 #[derive(Debug)]
-pub(crate) struct StopRun;
+pub(crate) struct JumpDescendLand;
 
-impl SequenceHandler for StopRun {
+impl SequenceHandler for JumpDescendLand {
     fn update(
         _character_input: &CharacterInput,
         character_status: &CharacterStatus,
@@ -34,7 +34,7 @@ mod test {
         },
     };
 
-    use super::StopRun;
+    use super::JumpDescendLand;
     use character::sequence_handler::SequenceHandler;
 
     #[test]
@@ -43,11 +43,11 @@ mod test {
 
         assert_eq!(
             CharacterStatusUpdate::default(),
-            StopRun::update(
+            JumpDescendLand::update(
                 &input,
                 &CharacterStatus {
                     object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::StopRun,
+                        sequence_id: CharacterSequenceId::JumpDescendLand,
                         ..Default::default()
                     },
                     ..Default::default()
@@ -70,11 +70,11 @@ mod test {
                 },
                 ..Default::default()
             },
-            StopRun::update(
+            JumpDescendLand::update(
                 &input,
                 &CharacterStatus {
                     object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::StopRun,
+                        sequence_id: CharacterSequenceId::JumpDescendLand,
                         sequence_state: SequenceState::End,
                         ..Default::default()
                     },

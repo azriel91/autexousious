@@ -6,9 +6,9 @@ use object_model::{
 use character::sequence_handler::SequenceHandler;
 
 #[derive(Debug)]
-pub(crate) struct StopRun;
+pub(crate) struct Jump;
 
-impl SequenceHandler for StopRun {
+impl SequenceHandler for Jump {
     fn update(
         _character_input: &CharacterInput,
         character_status: &CharacterStatus,
@@ -16,7 +16,7 @@ impl SequenceHandler for StopRun {
     ) -> CharacterStatusUpdate {
         let mut update = CharacterStatusUpdate::default();
         if character_status.object_status.sequence_state == SequenceState::End {
-            update.object_status.sequence_id = Some(CharacterSequenceId::Stand);
+            update.object_status.sequence_id = Some(CharacterSequenceId::JumpOff);
             update.object_status.sequence_state = Some(SequenceState::Begin);
         }
 
@@ -34,7 +34,7 @@ mod test {
         },
     };
 
-    use super::StopRun;
+    use super::Jump;
     use character::sequence_handler::SequenceHandler;
 
     #[test]
@@ -43,11 +43,11 @@ mod test {
 
         assert_eq!(
             CharacterStatusUpdate::default(),
-            StopRun::update(
+            Jump::update(
                 &input,
                 &CharacterStatus {
                     object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::StopRun,
+                        sequence_id: CharacterSequenceId::Jump,
                         ..Default::default()
                     },
                     ..Default::default()
@@ -58,29 +58,31 @@ mod test {
     }
 
     #[test]
-    fn reverts_to_stand_when_sequence_ended() {
+    fn switches_to_jump_off_when_sequence_ends() {
         let input = CharacterInput::new(0., 0., false, false, false, false);
+        let mut kinematics = Kinematics::default();
+        kinematics.velocity[1] = 1.;
 
         assert_eq!(
             CharacterStatusUpdate {
                 object_status: ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Stand),
+                    sequence_id: Some(CharacterSequenceId::JumpOff),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
                 },
                 ..Default::default()
             },
-            StopRun::update(
+            Jump::update(
                 &input,
                 &CharacterStatus {
                     object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::StopRun,
+                        sequence_id: CharacterSequenceId::Jump,
                         sequence_state: SequenceState::End,
                         ..Default::default()
                     },
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &kinematics
             )
         );
     }

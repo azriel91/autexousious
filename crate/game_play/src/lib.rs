@@ -16,6 +16,7 @@ extern crate game_model;
 extern crate game_play_state;
 #[cfg(test)]
 extern crate loading;
+extern crate map_model;
 #[cfg(test)]
 extern crate object_loading;
 extern crate object_model;
@@ -23,8 +24,8 @@ extern crate object_play;
 
 pub use game_play_bundle::GamePlayBundle;
 pub(crate) use system::{
-    CharacterInputUpdateSystem, CharacterKinematicsSystem, CharacterSequenceUpdateSystem,
-    ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
+    CharacterGroundingSystem, CharacterInputUpdateSystem, CharacterKinematicsSystem,
+    CharacterSequenceUpdateSystem, ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
 };
 
 mod game_play_bundle;

@@ -2,9 +2,13 @@ use std::fmt::Debug;
 use std::marker::PhantomData;
 use std::path::PathBuf;
 
-use amethyst::{self, prelude::*};
+use amethyst::{self, assets::Loader, prelude::*, renderer::ScreenDimensions};
 use application_ui::ThemeLoader;
 use game_model::config::index_configuration;
+use map_model::{
+    config::{MapBounds, MapDefinition, MapHeader},
+    loaded::{Map, MapHandle, Margins},
+};
 use object_loading::CharacterLoader;
 use object_model::{loaded::CharacterHandle, ObjectType};
 
@@ -75,6 +79,34 @@ where
                     }
                 };
             });
+
+        Self::load_maps(world);
+    }
+
+    fn load_maps(world: &mut World) {
+        // TODO: Load map from configuration
+
+        let (width, height) = {
+            let dim = world.read_resource::<ScreenDimensions>();
+            (dim.width(), dim.height())
+        };
+
+        let bounds = MapBounds::new(0, 0, 0, width as u32, height as u32, 200);
+        let header = MapHeader::new("Blank Screen".to_string(), bounds);
+        let definition = MapDefinition::new(header);
+        let margins = Margins::from(definition.header.bounds);
+        let map = Map::new(definition, margins);
+
+        let map_handle: MapHandle = {
+            let loader = world.read_resource::<Loader>();
+            loader.load_from_data(map, (), &world.read_resource())
+        };
+
+        let loaded_maps = vec![map_handle];
+
+        debug!("Loaded map handles: `{:?}`", loaded_maps);
+
+        world.add_resource(loaded_maps);
     }
 }
 

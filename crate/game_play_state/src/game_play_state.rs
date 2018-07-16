@@ -1,4 +1,5 @@
 use amethyst::{
+    assets::AssetStorage,
     core::{
         cgmath::{Matrix4, Vector3},
         transform::GlobalTransform,
@@ -9,6 +10,7 @@ use amethyst::{
     renderer::{Camera, Event, Projection, ScreenDimensions, VirtualKeyCode},
 };
 use character_selection::{CharacterEntityControl, CharacterSelection};
+use map_model::loaded::{Map, MapHandle};
 use object_model::entity::{Kinematics, Position, Velocity};
 
 use CharacterEntitySpawner;
@@ -29,10 +31,30 @@ impl GamePlayState {
     }
 
     fn initialize_entities(&mut self, world: &mut World) {
+        // Add map entity.
+        let map_handle = world
+            .read_resource::<Vec<MapHandle>>()
+            .first()
+            .expect("Expected at least one map to be loaded.")
+            .clone();
+
+        // Used to determine where to spawn characters.
         let (width, height) = {
-            let dim = world.read_resource::<ScreenDimensions>();
-            (dim.width(), dim.height())
+            let map_store = world.read_resource::<AssetStorage<Map>>();
+            map_store.get(&map_handle).map_or_else(
+                || (800., 600.),
+                |map| {
+                    let bounds = &map.definition.header.bounds;
+                    (bounds.width as f32, bounds.height as f32)
+                },
+            )
+
+            // TODO: Wait for maps to be loaded in `loading::State`
+            // .expect("Expected map to be loaded.");
         };
+
+        let map_entity = world.create_entity().with(map_handle).build();
+        self.entities.push(map_entity);
 
         // This `Position` moves the entity to the middle of a "screen wide" map.
         let position = Position::new(width / 2., height / 2., 0.);
@@ -64,7 +86,7 @@ impl GamePlayState {
 
                 self.entities.push(entity);
             },
-        )
+        );
     }
 
     fn terminate_entities(&mut self, world: &mut World) {

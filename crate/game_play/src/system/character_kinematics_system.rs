@@ -1,15 +1,15 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
 use object_model::{
-    config::object::CharacterSequenceId,
+    config::object::{CharacterSequenceId, SequenceState},
     entity::{CharacterInput, CharacterStatus, Kinematics},
     loaded::{Character, CharacterHandle},
 };
 
-/// Updates `Character` sequence based on input
+/// Updates `Character` kinematics based on sequence.
 #[derive(Debug, Default, new)]
 pub(crate) struct CharacterKinematicsSystem;
 
-type CharacterKinematicsSystemData<'s, 'c> = (
+type CharacterKinematicsSystemData<'s> = (
     Read<'s, AssetStorage<Character>>,
     ReadStorage<'s, CharacterHandle>,
     ReadStorage<'s, CharacterInput>,
@@ -18,7 +18,7 @@ type CharacterKinematicsSystemData<'s, 'c> = (
 );
 
 impl<'s> System<'s> for CharacterKinematicsSystem {
-    type SystemData = CharacterKinematicsSystemData<'s, 's>;
+    type SystemData = CharacterKinematicsSystemData<'s>;
 
     fn run(
         &mut self,
@@ -63,6 +63,17 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                         2.
                     };
                     kinematics.velocity[2] = character_input.z_axis_value as f32 * -0.5;
+                }
+                CharacterSequenceId::Jump => {}
+                CharacterSequenceId::JumpOff => {
+                    if status.object_status.sequence_state == SequenceState::Begin {
+                        kinematics.velocity[1] = 17.;
+                    }
+                }
+                CharacterSequenceId::JumpAscend => {}
+                CharacterSequenceId::JumpDescend => {}
+                CharacterSequenceId::JumpDescendLand => {
+                    kinematics.velocity[1] = 0.;
                 }
             };
         }

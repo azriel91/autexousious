@@ -1,11 +1,23 @@
-use object_model::entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate};
+use object_model::entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics};
 
+pub(super) use self::jump::Jump;
+pub(super) use self::jump_ascend::JumpAscend;
+pub(super) use self::jump_descend::JumpDescend;
+pub(super) use self::jump_descend_land::JumpDescendLand;
+pub(super) use self::jump_off::JumpOff;
 pub(super) use self::run::Run;
+pub(super) use self::sequence_handler_util::SequenceHandlerUtil;
 pub(super) use self::stand::Stand;
 pub(super) use self::stop_run::StopRun;
 pub(super) use self::walk::Walk;
 
+mod jump;
+mod jump_ascend;
+mod jump_descend;
+mod jump_descend_land;
+mod jump_off;
 mod run;
+mod sequence_handler_util;
 mod stand;
 mod stop_run;
 mod walk;
@@ -18,11 +30,11 @@ pub(super) trait SequenceHandler {
     ///
     /// * `character_input`: Controller input for the character.
     /// * `character_status`: Character specific status attributes.
-    /// * `sequence_ended`: Whether the current sequence has ended.
+    /// * `kinematics`: Kinematics of the character.
     fn update(
         _character_input: &CharacterInput,
         _character_status: &CharacterStatus,
-        _sequence_ended: bool,
+        _kinematics: &Kinematics<f32>,
     ) -> CharacterStatusUpdate {
         CharacterStatusUpdate::default()
     }
@@ -31,25 +43,32 @@ pub(super) trait SequenceHandler {
 #[cfg(test)]
 mod test {
     use object_model::entity::{
-        CharacterInput, CharacterStatus, CharacterStatusUpdate, ObjectStatusUpdate,
+        CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
     };
 
     use super::SequenceHandler;
 
     #[test]
     fn default_update_is_empty() {
-        // Should be `RunCounter::Unused`.
+        // No update to run counter.
         let run_counter = None;
-        // Don't change facing direction.
-        let mirrored = None;
-        // Use configured next sequence.
+        // No calculated next sequence.
         let sequence_id = None;
+        // No update to sequence state.
+        let sequence_state = None;
+        // No update to facing direction.
+        let mirrored = None;
+        // No update to grounding.
+        let grounding = None;
         assert_eq!(
-            CharacterStatusUpdate::new(run_counter, ObjectStatusUpdate::new(sequence_id, mirrored)),
+            CharacterStatusUpdate::new(
+                run_counter,
+                ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored, grounding)
+            ),
             Sit::update(
                 &CharacterInput::default(),
                 &CharacterStatus::default(),
-                false
+                &Kinematics::default()
             )
         );
     }
