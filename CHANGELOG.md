@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* Implemented jump.
+* Implemented double tap to run.
 * Mirror sprites when entity is facing left.
 * Created test harness to make it easier to test logic.
 
