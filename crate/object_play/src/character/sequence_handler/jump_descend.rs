@@ -1,6 +1,6 @@
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics},
+    entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics},
 };
 
 use character::sequence_handler::{SequenceHandler, SequenceHandlerUtil};
@@ -15,8 +15,10 @@ impl SequenceHandler for JumpDescend {
         _kinematics: &Kinematics<f32>,
     ) -> CharacterStatusUpdate {
         let mut update = CharacterStatusUpdate::default();
-        // TODO: Check if character is on ground, and if so, switch to `JumpDescendLand`.
-        if character_status.object_status.sequence_state == SequenceState::End {
+        if character_status.object_status.grounding == Grounding::OnGround {
+            update.object_status.sequence_id = Some(CharacterSequenceId::JumpDescendLand);
+            update.object_status.sequence_state = Some(SequenceState::Begin);
+        } else if character_status.object_status.sequence_state == SequenceState::End {
             update.object_status.sequence_id = Some(CharacterSequenceId::JumpDescend);
             update.object_status.sequence_state = Some(SequenceState::Begin);
         }
@@ -91,6 +93,36 @@ mod test {
                         sequence_id: CharacterSequenceId::JumpDescend,
                         sequence_state: SequenceState::End,
                         grounding: Grounding::Airborne,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
+                &kinematics
+            )
+        );
+    }
+
+    #[test]
+    fn jump_descend_land_when_on_ground() {
+        let input = CharacterInput::new(0., 0., false, false, false, false);
+        let mut kinematics = Kinematics::default();
+        kinematics.velocity[1] = -1.;
+
+        assert_eq!(
+            CharacterStatusUpdate {
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::JumpDescendLand),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
+            JumpDescend::update(
+                &input,
+                &CharacterStatus {
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::JumpDescend,
+                        grounding: Grounding::OnGround,
                         ..Default::default()
                     },
                     ..Default::default()

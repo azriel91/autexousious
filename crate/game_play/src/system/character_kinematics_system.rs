@@ -9,7 +9,7 @@ use object_model::{
 #[derive(Debug, Default, new)]
 pub(crate) struct CharacterKinematicsSystem;
 
-type CharacterKinematicsSystemData<'s, 'c> = (
+type CharacterKinematicsSystemData<'s> = (
     Read<'s, AssetStorage<Character>>,
     ReadStorage<'s, CharacterHandle>,
     ReadStorage<'s, CharacterInput>,
@@ -18,7 +18,7 @@ type CharacterKinematicsSystemData<'s, 'c> = (
 );
 
 impl<'s> System<'s> for CharacterKinematicsSystem {
-    type SystemData = CharacterKinematicsSystemData<'s, 's>;
+    type SystemData = CharacterKinematicsSystemData<'s>;
 
     fn run(
         &mut self,
@@ -68,17 +68,10 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                 CharacterSequenceId::JumpOff => {
                     if status.object_status.sequence_state == SequenceState::Begin {
                         kinematics.velocity[1] = 17.;
-                    } else {
-                        // TODO: Add gravity in a separate system.
-                        kinematics.velocity[1] += -1.7;
                     }
                 }
-                CharacterSequenceId::JumpAscend => {
-                    kinematics.velocity[1] += -1.7;
-                }
-                CharacterSequenceId::JumpDescend => {
-                    kinematics.velocity[1] += -1.7;
-                }
+                CharacterSequenceId::JumpAscend => {}
+                CharacterSequenceId::JumpDescend => {}
                 CharacterSequenceId::JumpDescendLand => {
                     kinematics.velocity[1] = 0.;
                 }

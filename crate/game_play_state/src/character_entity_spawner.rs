@@ -117,6 +117,7 @@ mod test {
 
     use amethyst::{
         animation::AnimationControlSet,
+        assets::AssetStorage,
         core::transform::{GlobalTransform, Transform},
         ecs::prelude::*,
         renderer::{Material, MeshHandle},
@@ -124,6 +125,7 @@ mod test {
     use amethyst_test_support::prelude::*;
     use character_selection::CharacterEntityControl;
     use loading;
+    use map_model::loaded::Map;
     use object_loading::ObjectLoadingBundle;
     use object_model::{
         config::object::CharacterSequenceId,
@@ -187,6 +189,7 @@ mod test {
     #[derive(Debug)]
     struct TestSystem;
     type TestSystemData<'s> = (
+        Read<'s, AssetStorage<Map>>,
         ReadStorage<'s, CharacterEntityControl>,
         ReadStorage<'s, CharacterHandle>,
         ReadStorage<'s, CharacterStatus>,

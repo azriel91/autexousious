@@ -8,9 +8,10 @@ extern crate application_ui;
 #[macro_use]
 extern crate derivative;
 extern crate game_model;
-extern crate object_loading;
 #[macro_use]
 extern crate log;
+extern crate map_model;
+extern crate object_loading;
 extern crate object_model;
 extern crate toml;
 
