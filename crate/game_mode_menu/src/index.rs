@@ -13,16 +13,16 @@ pub enum Index {
 
 impl Index {
     /// Returns a human readable string of this menu item.
-    pub fn title(&self) -> &str {
-        match *self {
+    pub fn title(self) -> &'static str {
+        match self {
             Index::StartGame => "Start Game",
             Index::Exit => "Exit",
         }
     } // kcov-ignore
 
     /// Returns the transition when this index has been selected.
-    pub fn trans(&self) -> Trans<GameData<'static, 'static>> {
-        match *self {
+    pub fn trans(self) -> Trans<GameData<'static, 'static>> {
+        match self {
             Index::StartGame => {
                 let next_state_fn = || Box::new(GamePlayState::new()); // kcov-ignore
                 let character_selection_state =
