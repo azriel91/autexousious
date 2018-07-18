@@ -58,7 +58,8 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
 
             // TODO: Is it faster if we update the character statuses first, then calculate the
             // sequence updates in parallel?
-            let mut animation_set = get_animation_set(&mut animation_control_set_storage, entity);
+            let mut animation_set = get_animation_set(&mut animation_control_set_storage, entity)
+                .expect("Animation should exist as entity should be valid.");
 
             // Mark sequence as `Ongoing` for subsequent tick.
             if character_status.object_status.sequence_state == SequenceState::Begin {

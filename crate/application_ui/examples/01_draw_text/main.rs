@@ -44,15 +44,22 @@ use state::TextState;
 #[derive(StructOpt, Debug)]
 #[structopt(name = "Example 01: Draw Text")]
 struct Opt {
-    #[structopt(long = "no-run", help = "Initialize, but don't run the Amethyst application")]
+    #[structopt(
+        long = "no-run",
+        help = "Initialize, but don't run the Amethyst application"
+    )]
     no_run: bool,
     #[structopt(
-        short = "t", long = "timeout", help = "Timeout to automatically close the application"
+        short = "t",
+        long = "timeout",
+        help = "Timeout to automatically close the application"
     )]
     timeout: Option<u64>,
 }
 
 fn run(opt: &Opt) -> Result<(), amethyst::Error> {
+    amethyst::start_logger(Default::default());
+
     let display_config = load_in::<DisplayConfig, _>(
         dir::RESOURCES,
         "display_config.ron",

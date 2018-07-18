@@ -5,7 +5,7 @@ use amethyst::{
         transform::GlobalTransform,
     },
     ecs::prelude::*,
-    input::is_key,
+    input::is_key_down,
     prelude::*,
     renderer::{Camera, Event, Projection, ScreenDimensions, VirtualKeyCode},
 };
@@ -139,7 +139,7 @@ impl<'a, 'b> State<GameData<'a, 'b>> for GamePlayState {
         _data: StateData<GameData>,
         event: Event,
     ) -> Trans<GameData<'a, 'b>> {
-        if is_key(&event, VirtualKeyCode::Escape) {
+        if is_key_down(&event, VirtualKeyCode::Escape) {
             info!("Returning from `GamePlayState`.");
             Trans::Pop
         } else {

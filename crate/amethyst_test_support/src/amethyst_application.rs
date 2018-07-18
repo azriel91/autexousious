@@ -3,6 +3,7 @@ use std::sync::Mutex;
 use std::thread;
 
 use amethyst::{
+    self,
     animation::AnimationBundle,
     core::{transform::TransformBundle, SystemBundle},
     ecs::prelude::*,
@@ -323,6 +324,8 @@ where
         // Run in a sub thread due to mesa's threading issues with GL software rendering
         // See: <https://users.rust-lang.org/t/trouble-identifying-cause-of-segfault/18096>
         thread::spawn(move || -> Result<()> {
+            amethyst::start_logger(Default::default());
+
             if render {
                 let guard = X11_GL_MUTEX.lock().unwrap();
 

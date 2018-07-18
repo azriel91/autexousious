@@ -34,6 +34,7 @@ use amethyst::{
         ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex, RenderBundle, Stage, ALPHA,
     },
     ui::{DrawUi, UiBundle},
+    LogLevelFilter, LoggerConfig,
 };
 use application::resource::{
     dir::{self, assets_dir},
@@ -50,13 +51,22 @@ use stdio_view::StdioViewBundle;
 use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
-#[structopt(name = "Free Will")]
+#[structopt(name = "Will")]
 struct Opt {
     #[structopt(long = "headless", help = "Run headlessly (no GUI)")]
     headless: bool,
 }
 
 fn run(opt: &Opt) -> Result<(), amethyst::Error> {
+    amethyst::start_logger(LoggerConfig {
+        level_filter: if cfg!(debug_assertions) {
+            LogLevelFilter::Debug
+        } else {
+            LogLevelFilter::Info
+        },
+        ..Default::default()
+    });
+
     let assets_dir = assets_dir(Some(development_base_dirs!()))?;
 
     let game_mode_menu_state = GameModeMenuState::new();

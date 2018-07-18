@@ -103,7 +103,7 @@ impl CharacterEntitySpawner {
         let mut animation_set = get_animation_set::<CharacterSequenceId, Material>(
             &mut animation_control_set_storage,
             entity,
-        );
+        ).expect("Animation should exist as new entity should be valid.");
 
         AnimationRunner::start(&mut animation_set, &animation_handle, first_sequence_id);
 
