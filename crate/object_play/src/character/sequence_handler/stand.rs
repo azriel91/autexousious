@@ -73,7 +73,7 @@ impl SequenceHandler for Stand {
                     Unused => None,
                     Decrease(0) => Some(Unused),
                     Decrease(ticks) => Some(Decrease(ticks - 1)),
-                    _ => unreachable!(),
+                    _ => unreachable!(), // kcov-ignore
                 };
                 let sequence_id =
                     if character_status.object_status.sequence_state == SequenceState::End {
@@ -96,7 +96,7 @@ impl SequenceHandler for Stand {
                         None,
                     ),
                     (Decrease(_), true) => (Some(Unused), Some(CharacterSequenceId::Run), None),
-                    _ => unreachable!(),
+                    _ => unreachable!(), // kcov-ignore
                 }
             }
         };
@@ -219,6 +219,34 @@ mod test {
     }
 
     #[test]
+    fn switches_run_counter_to_unused_when_airborne() {
+        let input = CharacterInput::new(1., 0., false, false, false, false);
+
+        assert_eq!(
+            CharacterStatusUpdate {
+                run_counter: Some(RunCounter::Unused),
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::JumpDescend),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                },
+            },
+            Stand::update(
+                &input,
+                &CharacterStatus {
+                    run_counter: RunCounter::Decrease(10),
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::Stand,
+                        grounding: Grounding::Airborne,
+                        ..Default::default()
+                    },
+                },
+                &Kinematics::default()
+            )
+        );
+    }
+
+    #[test]
     fn decrements_run_counter_when_no_input() {
         let input = CharacterInput::new(0., 0., false, false, false, false);
 
@@ -257,6 +285,36 @@ mod test {
             )
         );
     }
+
+    #[test]
+    #[should_panic(expected = "Invalid run_counter state")]
+    fn panics_when_run_counter_exceeded() {
+        let input = CharacterInput::new(0., 0., false, false, false, false);
+
+        Stand::update(
+            &input,
+            &CharacterStatus {
+                run_counter: RunCounter::Exceeded,
+                ..Default::default()
+            },
+            &Kinematics::default(),
+        );
+    } // kcov-ignore
+
+    #[test]
+    #[should_panic(expected = "Invalid run_counter state")]
+    fn panics_when_run_counter_increase() {
+        let input = CharacterInput::new(0., 0., false, false, false, false);
+
+        Stand::update(
+            &input,
+            &CharacterStatus {
+                run_counter: RunCounter::Increase(10),
+                ..Default::default()
+            },
+            &Kinematics::default(),
+        );
+    } // kcov-ignore
 
     #[test]
     fn walk_non_mirror_when_x_axis_is_positive() {
@@ -530,22 +588,39 @@ mod test {
 
                 assert_eq!(
                     CharacterStatusUpdate {
-                        run_counter: Some(RunCounter::Unused),
                         object_status: ObjectStatusUpdate {
                             sequence_id: Some(CharacterSequenceId::Jump),
                             sequence_state: Some(SequenceState::Begin),
                             ..Default::default()
-                        }
-                    },
-                    Stand::update(
-                        &input,
-                        &CharacterStatus {
-                            run_counter: RunCounter::Decrease(0),
-                            ..Default::default()
                         },
-                        &Kinematics::default()
-                    )
+                        ..Default::default()
+                    },
+                    Stand::update(&input, &CharacterStatus::default(), &Kinematics::default())
                 );
             });
+    }
+
+    #[test]
+    fn switches_run_counter_to_unused_when_jump() {
+        let input = CharacterInput::new(0., 0., false, true, false, false);
+
+        assert_eq!(
+            CharacterStatusUpdate {
+                run_counter: Some(RunCounter::Unused),
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::Jump),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                }
+            },
+            Stand::update(
+                &input,
+                &CharacterStatus {
+                    run_counter: RunCounter::Decrease(0),
+                    ..Default::default()
+                },
+                &Kinematics::default()
+            )
+        );
     }
 }

@@ -1,4 +1,4 @@
-#![deny(missing_docs)]
+#![deny(missing_docs)] // kcov-ignore
 #![deny(missing_debug_implementations)]
 
 //! Behaviour logic for object types.
