@@ -81,14 +81,14 @@ nightly:conformance:
     - build/install_packages_linux.sh
     - build/install_cargo_update.sh
     - *install_update_cargo_subcommands
-    - cargo install-update -i cargo-make
+    - cargo install-update -i cargo-make hull
     - rm -rf ./target
 
 linux:debug:
   <<: *linux_job_common
   script:
     - time cargo test --all --no-run
-    - time cargo build --examples
+    - time hull each -- cargo build --examples
     - time cargo build --all
     - source xvfb_start
     - time cargo test --all
@@ -104,7 +104,7 @@ linux:release:
   <<: *linux_job_common
   script:
     - time cargo test --all --no-run --release
-    - time cargo build --examples --release
+    - time hull each -- cargo build --examples --release
     - time cargo build --all --release
     - source xvfb_start
     - time cargo test --all --release
@@ -128,12 +128,13 @@ linux:release:
   before_script:
     - cargo --version -v
     - rustc --version -v
+    - cargo install-update -i hull
 
 windows:debug:
   <<: *windows_job_common
   script:
     - cargo test --all --no-run
-    - cargo build --examples
+    - hull each -- cargo build --examples
     - cargo build --all
     - cargo test --all
 
@@ -141,7 +142,7 @@ windows:release:
   <<: *windows_job_common
   script:
     - cargo test --all --no-run --release
-    - cargo build --examples --release
+    - hull each -- cargo build --examples --release
     - cargo build --all --release
     - cargo test --all
     - .\build\publish_prepare_app.bat
