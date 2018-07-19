@@ -61,15 +61,6 @@ nightly:conformance:
 
     # Security audit and license checks
     - cargo install-update -i cargo-make cargo-audit cargo-license
-
-    # Nightly - Rustfmt and Clippy
-    - |
-      # Install rustfmt and clippy
-
-      # Needed for gitlab-ci
-      test -z "${USER}" && export USER=build
-      build/install_rustfmt.sh
-      build/install_clippy.sh
   script:
     # Code quality, security vulnerability checks, license compatibility
     - cargo make --no-workspace conformance
