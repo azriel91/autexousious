@@ -104,9 +104,9 @@ linux:debug:
     - source xvfb_stop
   after_script:
     - source xvfb_start
-    - cargo make --no-workspace workspace-coverage
+    - build/workspace_coverage.sh
     - source xvfb_stop
-    - grep -F merged_files ./target/coverage/index.json | grep -o '"covered":"[0-9]\+\.[0-9]\+"'
+    - grep -F merged_files ./target/coverage/merged/index.json | grep -o '"covered":"[0-9]\+\.[0-9]\+"'
   coverage: '/"covered":"\d+\.\d+"/'
 
 linux:release:

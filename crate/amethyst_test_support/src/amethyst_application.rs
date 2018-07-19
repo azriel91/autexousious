@@ -145,7 +145,7 @@ impl
             assertion_fn: None,
             state_data: PhantomData,
             render: false,
-        }
+        } // kcov-ignore
     }
 
     /// Returns an application with the Transform, Input, and UI bundles.
@@ -511,7 +511,7 @@ where
                 assertion_fn: self.assertion_fn,
                 state_data: PhantomData,
                 render: self.render,
-            }
+            } // kcov-ignore
         }
     }
 
@@ -723,7 +723,9 @@ mod test {
 
     #[test]
     fn bundle_build_is_ok() {
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_bundle(BundleZero)
                 .run()
@@ -733,7 +735,9 @@ mod test {
 
     #[test]
     fn load_multiple_bundles() {
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_bundle(BundleZero)
                 .with_bundle(BundleOne)
@@ -748,7 +752,9 @@ mod test {
             world.read_resource::<ApplicationResource>();
             world.read_resource::<ApplicationResourceNonDefault>();
         };
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_bundle(BundleZero)
                 .with_bundle(BundleOne)
@@ -764,16 +770,18 @@ mod test {
         let assertion_fn = |world: &mut World| {
             // Panics if `ApplicationResource` was not added.
             world.read_resource::<ApplicationResource>();
-        };
+        }; // kcov-ignore
 
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::blank()
                     // without BundleOne
                     .with_assertion(assertion_fn)
                     .run()
                     .is_ok()
         );
-    }
+    } // kcov-ignore
 
     #[test]
     fn assertion_switch_with_loading_state_with_add_resource_succeeds() {
@@ -787,7 +795,9 @@ mod test {
             LoadingState::new(assertion_state)
         };
 
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_state(state_fn)
                 .run()
@@ -804,7 +814,9 @@ mod test {
             world.read_resource::<LoadResource>();
         };
 
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_state(state_fn)
                 .with_assertion(assertion_fn)
@@ -819,18 +831,20 @@ mod test {
         let state_fn = || {
             let assertion_fn = |world: &mut World| {
                 world.read_resource::<LoadResource>();
-            };
+            }; // kcov-ignore
 
             SwitchState::new(FunctionState::new(assertion_fn))
         };
 
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_state(state_fn)
                 .run()
                 .is_ok()
         );
-    }
+    } // kcov-ignore
 
     #[test]
     #[should_panic(expected = "Failed to run Amethyst application")]
@@ -840,16 +854,18 @@ mod test {
         let state_fn = || SwitchState::new(EmptyState);
         let assertion_fn = |world: &mut World| {
             world.read_resource::<LoadResource>();
-        };
+        }; // kcov-ignore
 
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_state(state_fn)
                 .with_assertion(assertion_fn)
                 .run()
                 .is_ok()
         );
-    }
+    } // kcov-ignore
 
     #[test]
     fn game_data_must_update_before_assertion() {
@@ -869,7 +885,9 @@ mod test {
             assert_eq!(Some(&AssetZero(20)), store.get(&asset_zero_handles[1]));
         };
 
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_bundle(BundleAsset)
                 .with_effect(effect_fn)
@@ -903,7 +921,9 @@ mod test {
             assert_eq!(Some(&AssetZero(10)), store.get(&asset_zero_handles[0]));
         };
 
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_bundle(BundleAsset)
                 .with_setup(setup_fn)
@@ -925,7 +945,9 @@ mod test {
             world.read_resource::<ScreenDimensions>();
         };
 
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::base()
                 .with_assertion(assertion_fn)
                 .run()
@@ -935,7 +957,9 @@ mod test {
 
     #[test]
     fn render_base_application_can_load_material_animations() {
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::render_base(
                 "render_base_application_can_load_material_animations",
                 false
@@ -965,7 +989,9 @@ mod test {
             assert_eq!(1, component_zero.0);
         };
 
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_system(SystemEffect, "system_effect", &[])
                 .with_effect(effect_fn)
@@ -990,7 +1016,7 @@ mod test {
         AmethystApplication::blank()
             .with_setup(|_world| {})
             .with_setup(|_world| {});
-    }
+    } // kcov-ignore
 
     #[test]
     #[should_panic(expected = "`.with_effect(F)` has previously been called.")]
@@ -998,7 +1024,7 @@ mod test {
         AmethystApplication::blank()
             .with_effect(|_world| {})
             .with_effect(|_world| {});
-    }
+    } // kcov-ignore
 
     #[test]
     #[should_panic(expected = "`.with_assertion(F)` has previously been called.")]
@@ -1006,7 +1032,7 @@ mod test {
         AmethystApplication::blank()
             .with_assertion(|_world| {})
             .with_assertion(|_world| {});
-    }
+    } // kcov-ignore
 
     #[test]
     #[should_panic(expected = "`.with_state(S)` has previously been called.")]
@@ -1014,7 +1040,7 @@ mod test {
         AmethystApplication::blank()
             .with_state::<_, (), _>(|| EmptyState)
             .with_state::<_, (), _>(|| EmptyState);
-    }
+    } // kcov-ignore
 
     #[test]
     #[should_panic(expected = "`.with_state(S)` called after `.with_resource(R)`.")]
@@ -1022,7 +1048,7 @@ mod test {
         AmethystApplication::blank()
             .with_resource(ApplicationResource)
             .with_state::<_, (), _>(|| EmptyState);
-    }
+    } // kcov-ignore
 
     // === Resources === //
     #[derive(Debug, Default)]
