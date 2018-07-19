@@ -14,7 +14,10 @@ pub enum ErrorKind {
     Io(io::Error),
 
     /// Error when failing to find a configuration file
-    #[error_chain(foreign, display = r#"|e| write!(f, "toml::de::Error: '{}'", e)"#)]
+    #[error_chain(
+        foreign,
+        display = r#"|e| write!(f, "toml::de::Error: '{}'", e)"#
+    )]
     TomlDeserialization(toml::de::Error),
 }
 // kcov-ignore-end

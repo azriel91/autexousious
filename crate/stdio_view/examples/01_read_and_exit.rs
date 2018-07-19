@@ -26,7 +26,9 @@ struct EmptyState;
 #[structopt(name = "Example 01: Read and Exit")]
 struct Opt {
     #[structopt(
-        short = "t", long = "timeout", help = "Timeout to automatically close the application"
+        short = "t",
+        long = "timeout",
+        help = "Timeout to automatically close the application"
     )]
     timeout: Option<u64>,
 }
