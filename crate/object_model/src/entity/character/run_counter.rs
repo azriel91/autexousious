@@ -14,7 +14,7 @@ pub enum RunCounter {
     /// Used in the `Stand`ing state, while there is no input on the X axis, where previously the
     /// character was `Walk`ing and reverted to `Stand`ing within (#enum.const.RESET_TICK_COUNT)
     /// ticks.
-    Decrease(u32),
+    Decrease(u32), // kcov-ignore
 }
 
 impl RunCounter {

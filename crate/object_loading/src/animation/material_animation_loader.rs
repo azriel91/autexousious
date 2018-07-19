@@ -206,18 +206,15 @@ mod test {
 
             let texture_sampler = texture_sampler.unwrap();
             assert_eq!(vec![0.0, 1.0, 4.0, 6.0], texture_sampler.input);
-            assert_eq!(4, texture_sampler.output.len());
-            // Sad, `MaterialPrimitive` doesn't derive `PartialEq`
-            // TODO: Pending <https://github.com/amethyst/amethyst/pull/809>
-            // assert_eq!(
-            //     vec![
-            //         MaterialPrimitive::Texture(10),
-            //         MaterialPrimitive::Texture(11),
-            //         MaterialPrimitive::Texture(10),
-            //         MaterialPrimitive::Texture(10),
-            //     ],
-            //     texture_sampler.output
-            // );
+            assert_eq!(
+                vec![
+                    MaterialPrimitive::Texture(10),
+                    MaterialPrimitive::Texture(11),
+                    MaterialPrimitive::Texture(10),
+                    MaterialPrimitive::Texture(10),
+                ],
+                texture_sampler.output
+            );
             assert_eq!(InterpolationFunction::Step, texture_sampler.function);
 
             let offset_sampler_handle = &node_1.2;
@@ -228,17 +225,15 @@ mod test {
 
             let offset_sampler = offset_sampler.unwrap();
             assert_eq!(vec![0.0, 1.0, 4.0, 6.0], offset_sampler.input);
-            assert_eq!(4, offset_sampler.output.len());
-            // TODO: Pending <https://github.com/amethyst/amethyst/pull/809>
-            // assert_eq!(
-            //     vec![
-            //         MaterialPrimitive::Offset((0., 0.5), (1., 0.5)),
-            //         MaterialPrimitive::Offset((1., 0.75), (0.5, 0.75)),
-            //         MaterialPrimitive::Offset((0., 0.5), (1., 0.5)),
-            //         MaterialPrimitive::Offset((0., 0.5), (1., 0.5)),
-            //     ],
-            //     offset_sampler.output
-            // );
+            assert_eq!(
+                vec![
+                    MaterialPrimitive::Offset((0., 0.5), (1., 0.5)),
+                    MaterialPrimitive::Offset((1., 0.75), (0.5, 0.75)),
+                    MaterialPrimitive::Offset((0., 0.5), (1., 0.5)),
+                    MaterialPrimitive::Offset((0., 0.5), (1., 0.5)),
+                ],
+                offset_sampler.output
+            );
             assert_eq!(InterpolationFunction::Step, offset_sampler.function);
         };
 

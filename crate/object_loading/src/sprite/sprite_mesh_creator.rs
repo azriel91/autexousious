@@ -155,38 +155,41 @@ impl SpriteMeshCreator {
 
 #[cfg(test)]
 mod test {
-    use std::path::PathBuf;
-    use std::thread;
-
     use amethyst::{
         assets::AssetStorage,
         prelude::*,
-        renderer::{ColorMask, DrawFlat, Mesh, MeshHandle, PosTex, ALPHA},
-        Result,
+        renderer::{Mesh, MeshHandle, PosTex},
     };
-    use application::resource::{
-        dir::{self, assets_dir},
-        find_in,
-    };
+    use amethyst_test_support::prelude::*;
     use object_model::config::{SpriteOffset, SpriteSheetDefinition, SpritesDefinition};
 
     use super::SpriteMeshCreator;
 
     #[test]
     fn loads_created_meshes_into_world() {
-        let setup_fn = |world: &mut World| -> [MeshHandle; 2] {
-            [
+        let setup = |world: &mut World| {
+            let mesh_handles: [MeshHandle; 2] = [
                 SpriteMeshCreator::create_mesh(world, &sprites_definition()),
                 SpriteMeshCreator::create_mesh_mirrored(world, &sprites_definition()),
-            ] // kcov-ignore
+            ];
+            world.add_resource(EffectReturn(mesh_handles));
         };
-        let assertion_fn = |world: &mut World, mesh_handles: [MeshHandle; 2]| {
+        let assertion = |world: &mut World| {
+            let mesh_handles = &world.read_resource::<EffectReturn<[MeshHandle; 2]>>().0;
             let store = world.read_resource::<AssetStorage<Mesh>>();
             assert!(store.get(&mesh_handles[0]).is_some());
             assert!(store.get(&mesh_handles[1]).is_some());
         };
 
-        assert!(run(Box::new(setup_fn), Box::new(assertion_fn)).is_ok())
+        // kcov-ignore-start
+        assert!(
+            // kcov-ignore-end
+            AmethystApplication::render_base("loads_created_meshes_into_world", false)
+                .with_setup(setup)
+                .with_assertion(assertion)
+                .run()
+                .is_ok()
+        )
     }
 
     #[test]
@@ -257,42 +260,6 @@ mod test {
         );
     }
 
-    fn run<T, F1, F2>(setup_fn: Box<F1>, assertion_fn: Box<F2>) -> Result<()>
-    where
-        F1: Fn(&mut World) -> T + Send + 'static,
-        F2: Fn(&mut World, T) + Send + 'static,
-    {
-        // Run in a sub thread due to mesa's threading issues with GL software rendering
-        // See: <https://users.rust-lang.org/t/trouble-identifying-cause-of-segfault/18096>
-        //
-        // TODO: Fix this in <https://gitlab.com/azriel91/autexousious/issues/38>
-        thread::spawn(|| -> Result<()> {
-            let assets_dir = assets_dir(Some(development_base_dirs!()))?;
-            let test_state = TestState::new(setup_fn, assertion_fn);
-
-            Application::new(assets_dir, test_state, setup_game_data()?)?.run();
-
-            Ok(())
-        }).join()
-            .expect("Failed to run Amethyst application")
-    }
-
-    fn setup_game_data<'a, 'b>() -> Result<GameDataBuilder<'a, 'b>> {
-        GameDataBuilder::default().with_basic_renderer(
-            display_config()?,
-            DrawFlat::<PosTex>::new().with_transparency(ColorMask::all(), ALPHA, None),
-            false,
-        )
-    }
-
-    fn display_config() -> Result<PathBuf> {
-        Ok(find_in(
-            dir::RESOURCES,
-            "display_config.ron",
-            Some(development_base_dirs!()),
-        )?)
-    }
-
     fn sprites_definition() -> SpritesDefinition {
         SpritesDefinition::new(vec![sprite_sheet_definition()])
     }
@@ -303,54 +270,5 @@ mod test {
 
     fn offsets(n: usize) -> Vec<SpriteOffset> {
         (0..n).map(|_| (0, 0).into()).collect()
-    }
-
-    #[derive(Debug)]
-    struct TestState<T, F1, F2>
-    where
-        F1: Fn(&mut World) -> T,
-        F2: Fn(&mut World, T),
-    {
-        first_run: bool,
-        setup_output: Option<T>,
-        setup_fn: Box<F1>,
-        assertion_fn: Box<F2>,
-    }
-    impl<T, F1, F2> TestState<T, F1, F2>
-    where
-        F1: Fn(&mut World) -> T,
-        F2: Fn(&mut World, T),
-    {
-        fn new(setup_fn: Box<F1>, assertion_fn: Box<F2>) -> Self {
-            TestState {
-                first_run: true,
-                setup_output: None,
-                setup_fn,
-                assertion_fn,
-            }
-        }
-    }
-    impl<'a, 'b, T, F1, F2> State<GameData<'a, 'b>> for TestState<T, F1, F2>
-    where
-        F1: Fn(&mut World) -> T,
-        F2: Fn(&mut World, T),
-    {
-        fn update(&mut self, mut data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
-            data.data.update(&data.world);
-
-            if self.first_run {
-                self.first_run = false;
-                self.setup_output = Some((self.setup_fn)(&mut data.world));
-                Trans::None
-            } else {
-                (self.assertion_fn)(
-                    &mut data.world,
-                    self.setup_output
-                        .take()
-                        .expect("Expected setup_output to be populated."),
-                );
-                Trans::Quit
-            }
-        }
     }
 }

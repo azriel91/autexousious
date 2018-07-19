@@ -31,7 +31,7 @@ impl MenuBuildFn {
         let text_w = screen_w / 3.;
         let text_h = 50.;
 
-        // TODO: Use UI Buttons: https://github.com/amethyst/amethyst/issues/577
+        // TODO: Use UI Buttons: https://github.com/amethyst/amethyst/pull/798
         let mut item_indices = vec![Index::StartGame, Index::Exit];
         let total_items = item_indices.len() as f32;
         item_indices

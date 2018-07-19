@@ -130,7 +130,9 @@ mod test {
     // experience for higher level crates).
     #[test]
     fn base_uses_strong_types_for_input_and_ui_bundles() {
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AutexousiousApplication::base()
                 .with_assertion(|world| {
                     // Panics if the type parameters used are not these ones.
@@ -144,7 +146,9 @@ mod test {
 
     #[test]
     fn render_base_uses_strong_types_for_input_and_ui_bundles() {
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AutexousiousApplication::render_base(
                 "render_base_uses_strong_types_for_input_and_ui_bundles",
                 false
@@ -160,7 +164,9 @@ mod test {
 
     #[test]
     fn render_base_application_can_load_material_animations() {
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AutexousiousApplication::render_base(
                 "render_base_application_can_load_material_animations",
                 false

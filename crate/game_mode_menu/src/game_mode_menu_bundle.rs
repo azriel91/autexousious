@@ -1,6 +1,6 @@
 use amethyst::{
     core::bundle::{Result, SystemBundle},
-    ecs::prelude::DispatcherBuilder,
+    ecs::prelude::*,
 };
 
 use UiEventHandlerSystem;
@@ -24,6 +24,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameModeMenuBundle {
 mod test {
     use std::env;
 
+    use amethyst::prelude::*;
     use amethyst_test_support::prelude::*;
     use application_menu::MenuItem;
 

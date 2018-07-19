@@ -33,7 +33,19 @@ pub struct SpriteSheetDefinition {
 }
 
 impl SpriteSheetDefinition {
+    // kcov-ignore-start
     fn default_has_border() -> bool {
+        // kcov-ignore-end
         true
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::SpriteSheetDefinition;
+
+    #[test]
+    fn default_has_border_is_true() {
+        assert!(SpriteSheetDefinition::default_has_border());
     }
 }

@@ -53,15 +53,23 @@ const TITLE: &str = "Example 01: Menu";
 #[derive(StructOpt, Debug)]
 #[structopt(name = "Example 01: Menu")]
 struct Opt {
-    #[structopt(short = "n", long = "no-run", help = "Don't run the Amethyst application")]
+    #[structopt(
+        short = "n",
+        long = "no-run",
+        help = "Don't run the Amethyst application"
+    )]
     no_run: bool,
     #[structopt(
-        short = "t", long = "timeout", help = "Timeout to automatically close the application"
+        short = "t",
+        long = "timeout",
+        help = "Timeout to automatically close the application"
     )]
     timeout: Option<u64>,
 }
 
 fn run(opt: &Opt) -> Result<(), amethyst::Error> {
+    amethyst::start_logger(Default::default());
+
     let mut display_config = DisplayConfig::load(
         find_in(
             dir::RESOURCES,

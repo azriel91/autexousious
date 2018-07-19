@@ -5,7 +5,7 @@ pkgs_desired=(
   libasound2-dev
 
   # enigo
-  libxtst-dev
+  libxdo-dev
 
   # publishing
   jq

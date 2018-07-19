@@ -1,6 +1,6 @@
 use amethyst::{
     ecs::prelude::*,
-    input::{is_close_requested, is_key},
+    input::{is_close_requested, is_key_down},
     prelude::*,
     renderer::{Event, ScreenDimensions, VirtualKeyCode},
     shred::Fetch,
@@ -23,7 +23,7 @@ impl<'a, 'b> State<GameData<'a, 'b>> for TextState {
         _data: StateData<GameData>,
         event: Event,
     ) -> Trans<GameData<'a, 'b>> {
-        if is_close_requested(&event) || is_key(&event, VirtualKeyCode::Escape) {
+        if is_close_requested(&event) || is_key_down(&event, VirtualKeyCode::Escape) {
             Trans::Quit
         } else {
             Trans::None

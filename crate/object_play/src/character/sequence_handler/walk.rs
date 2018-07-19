@@ -146,7 +146,7 @@ mod test {
     }
 
     #[test]
-    fn decrements_run_counter_when_x_axis_positive_non_mirror() {
+    fn decrements_increase_run_counter_when_x_axis_positive_non_mirror() {
         let input = CharacterInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
@@ -194,7 +194,7 @@ mod test {
     }
 
     #[test]
-    fn decrements_run_counter_when_x_axis_negative_mirror() {
+    fn decrements_increase_run_counter_when_x_axis_negative_mirror() {
         let input = CharacterInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
@@ -256,6 +256,50 @@ mod test {
                     run_counter: RunCounter::Increase(0),
                     object_status: ObjectStatus {
                         sequence_id: CharacterSequenceId::Walk,
+                        ..Default::default()
+                    }
+                },
+                &Kinematics::default()
+            )
+        );
+    }
+
+    #[test]
+    fn decrements_decrease_run_counter_when_z_axis_non_zero() {
+        let input = CharacterInput::new(0., 1., false, false, false, false);
+
+        assert_eq!(
+            CharacterStatusUpdate {
+                run_counter: Some(RunCounter::Decrease(10)),
+                ..Default::default()
+            },
+            Walk::update(
+                &input,
+                &CharacterStatus {
+                    run_counter: RunCounter::Decrease(11),
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::Walk,
+                        ..Default::default()
+                    }
+                },
+                &Kinematics::default()
+            )
+        );
+    }
+
+    #[test]
+    fn no_change_to_run_counter_when_exceeded() {
+        let input = CharacterInput::new(1., 1., false, false, false, false);
+
+        assert_eq!(
+            CharacterStatusUpdate::default(),
+            Walk::update(
+                &input,
+                &CharacterStatus {
+                    run_counter: RunCounter::Exceeded,
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::Walk,
+                        mirrored: false,
                         ..Default::default()
                     }
                 },

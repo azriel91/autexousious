@@ -1,6 +1,8 @@
-use amethyst::ecs::prelude::{ReadStorage, Resources, System, SystemData, Write};
-use amethyst::shrev::{EventChannel, ReaderId};
-use amethyst::ui::{UiEvent, UiEventType};
+use amethyst::{
+    ecs::prelude::*,
+    shrev::{EventChannel, ReaderId},
+    ui::{UiEvent, UiEventType},
+};
 use application_menu::{MenuEvent, MenuItem};
 
 use index::Index;
@@ -56,10 +58,12 @@ impl<'s> System<'s> for UiEventHandlerSystem {
 mod test {
     use std::sync::Arc;
 
-    use amethyst::ecs::prelude::World;
-    use amethyst::shred::ParSeq;
-    use amethyst::shrev::{EventChannel, ReaderId};
-    use amethyst::ui::{UiEvent, UiEventType};
+    use amethyst::{
+        ecs::prelude::*,
+        shred::ParSeq,
+        shrev::{EventChannel, ReaderId},
+        ui::{UiEvent, UiEventType},
+    };
     use application_menu::{MenuEvent, MenuItem};
     use rayon::{ThreadPool, ThreadPoolBuilder};
 

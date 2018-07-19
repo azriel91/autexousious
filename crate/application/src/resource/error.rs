@@ -24,7 +24,10 @@ pub enum ErrorKind {
     Io(io::Error),
 
     /// Error when failing to find a configuration file
-    #[error_chain(foreign, display = r#"|e| write!(f, "ron::de::Error: '{}'", e)"#)]
+    #[error_chain(
+        foreign,
+        display = r#"|e| write!(f, "ron::de::Error: '{}'", e)"#
+    )]
     RonDeserialization(ron::de::Error),
 }
 // kcov-ignore-end

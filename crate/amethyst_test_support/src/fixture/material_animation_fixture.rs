@@ -24,12 +24,12 @@ impl MaterialAnimationFixture {
                 input: vec![0.0],
                 output: vec![MaterialPrimitive::Texture(0)],
                 function: InterpolationFunction::Step,
-            };
+            }; // kcov-ignore
             let sprite_offset_sampler = Sampler {
                 input: vec![0.0],
                 output: vec![MaterialPrimitive::Offset((0.0, 1.0), (1.0, 0.0))],
                 function: InterpolationFunction::Step,
-            };
+            }; // kcov-ignore
 
             let loader = world.read_resource::<Loader>();
             let texture_animation_handle =
