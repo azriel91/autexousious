@@ -144,7 +144,7 @@ windows:release:
     - cargo test --all --no-run --release
     - hull each -- cargo build --examples --release
     - cargo build --all --release
-    - cargo test --all
+    - cargo test --all --release
     - .\build\publish_prepare_app.bat
   artifacts:
     name: windows-x86_64
