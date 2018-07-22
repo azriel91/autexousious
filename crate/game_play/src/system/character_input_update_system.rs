@@ -4,7 +4,7 @@ use game_input::{Axis, ControlAction, PlayerActionControl, PlayerAxisControl};
 use object_model::entity::CharacterInput;
 
 /// Updates `Character` sequence based on input
-#[derive(Debug, Default, new)]
+#[derive(Debug, Default, TypeName, new)]
 pub(crate) struct CharacterInputUpdateSystem;
 
 type CharacterInputUpdateSystemData<'s> = (
@@ -66,6 +66,7 @@ mod test {
         entity::{CharacterInput, Kinematics, ObjectStatus},
         loaded::CharacterHandle,
     };
+    use typename::TypeName;
 
     use super::CharacterInputUpdateSystem;
 
@@ -105,10 +106,10 @@ mod test {
             AutexousiousApplication::game_base(
                 "maintains_character_sequence_when_next_sequence_is_none",
                 false
-            ).with_system(TestSystem, "test_system", &[])
+            ).with_system(TestSystem, TestSystem::type_name(), &[])
                 .with_system(
                     CharacterInputUpdateSystem::new(),
-                    "character_input_update_system",
+                    CharacterInputUpdateSystem::type_name(),
                     &[]
                 )
                 .with_setup(setup)
@@ -120,7 +121,7 @@ mod test {
     }
 
     // Sets up storages for the various `Component`.
-    #[derive(Debug)]
+    #[derive(Debug, TypeName)]
     struct TestSystem;
     type TestSystemData<'s> = (
         ReadStorage<'s, CharacterHandle>,

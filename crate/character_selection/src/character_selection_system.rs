@@ -4,7 +4,7 @@ use object_model::loaded;
 use CharacterSelection;
 
 /// Populates the `CharacterSelection` based on user input.
-#[derive(Debug, Default, new)]
+#[derive(Debug, Default, TypeName, new)]
 pub(crate) struct CharacterSelectionSystem;
 
 type CharacterSelectionSystemData<'s, 'c> = (

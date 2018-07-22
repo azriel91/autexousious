@@ -3,7 +3,7 @@ use map_model::loaded::{Map, MapHandle, Margins};
 use object_model::entity::{CharacterStatus, Grounding, Kinematics};
 
 /// Updates `Character` kinematics based on sequence.
-#[derive(Debug, Default, new)]
+#[derive(Debug, Default, TypeName, new)]
 pub(crate) struct CharacterGroundingSystem;
 
 type CharacterGroundingSystemData<'s> = (

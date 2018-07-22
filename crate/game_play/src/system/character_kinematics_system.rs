@@ -6,7 +6,7 @@ use object_model::{
 };
 
 /// Updates `Character` kinematics based on sequence.
-#[derive(Debug, Default, new)]
+#[derive(Debug, Default, TypeName, new)]
 pub(crate) struct CharacterKinematicsSystem;
 
 type CharacterKinematicsSystemData<'s> = (

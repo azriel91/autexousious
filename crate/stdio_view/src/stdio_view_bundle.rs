@@ -2,16 +2,17 @@ use amethyst::{
     core::bundle::{Result, SystemBundle},
     ecs::prelude::*,
 };
+use typename::TypeName;
 
 use StdinSystem;
 
-/// Adds the `StdinSystem` to the `World` with id `"stdin_system"`.
+/// Adds the `StdinSystem` to the `World`.
 #[derive(Debug, new)]
 pub struct StdioViewBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for StdioViewBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
-        builder.add(StdinSystem::new(), "stdin_system", &[]);
+        builder.add(StdinSystem::new(), &StdinSystem::type_name(), &[]);
         Ok(())
     }
 }

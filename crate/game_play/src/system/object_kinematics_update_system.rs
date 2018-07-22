@@ -4,7 +4,7 @@ use object_model::entity::Kinematics;
 /// Updates each entity's `Position` based on their `Velocity` in game.
 ///
 /// This system should be run after all other systems that affect kinematics have run.
-#[derive(Debug, Default, new)]
+#[derive(Debug, Default, TypeName, new)]
 pub(crate) struct ObjectKinematicsUpdateSystem;
 
 type ObjectKinematicsUpdateSystemData<'s> = WriteStorage<'s, Kinematics<f32>>;
@@ -24,6 +24,7 @@ mod test {
     use amethyst::ecs::prelude::*;
     use amethyst_test_support::*;
     use object_model::entity::{Kinematics, Position, Velocity};
+    use typename::TypeName;
 
     use super::ObjectKinematicsUpdateSystem;
 
@@ -61,7 +62,7 @@ mod test {
             AmethystApplication::base()
                 .with_system(
                     ObjectKinematicsUpdateSystem::new(),
-                    "object_kinematics_update_system",
+                    ObjectKinematicsUpdateSystem::type_name(),
                     &[]
                 )
                 .with_setup(setup)

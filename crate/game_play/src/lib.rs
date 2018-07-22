@@ -21,6 +21,9 @@ extern crate map_model;
 extern crate object_loading;
 extern crate object_model;
 extern crate object_play;
+extern crate typename;
+#[macro_use]
+extern crate typename_derive;
 
 pub use game_play_bundle::GamePlayBundle;
 pub(crate) use system::{
