@@ -13,7 +13,7 @@ use object_model::{
 use object_play::CharacterSequenceHandler;
 
 /// Updates `Character` sequence based on input
-#[derive(Debug, Default, new)]
+#[derive(Debug, Default, TypeName, new)]
 pub(crate) struct CharacterSequenceUpdateSystem;
 
 type CharacterSequenceUpdateSystemData<'s, 'c> = (

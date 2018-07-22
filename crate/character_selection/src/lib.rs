@@ -15,6 +15,9 @@ extern crate game_model;
 #[macro_use]
 extern crate log;
 extern crate object_model;
+extern crate typename;
+#[macro_use]
+extern crate typename_derive;
 
 pub use character_entity_control::CharacterEntityControl;
 pub use character_selection::CharacterSelection;

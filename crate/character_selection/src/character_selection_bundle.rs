@@ -2,10 +2,11 @@ use amethyst::{
     core::bundle::{Result, SystemBundle},
     ecs::prelude::*,
 };
+use typename::TypeName;
 
 use CharacterSelectionSystem;
 
-/// Adds the `CharacterSelectionSystem` to the `World` with id `"character_selection_system"`.
+/// Adds the `CharacterSelectionSystem` to the `World`.
 ///
 /// The Amethyst `InputBundle` must be added before this bundle.
 #[derive(Debug, new)]
@@ -15,7 +16,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
         builder.add(
             CharacterSelectionSystem::new(),
-            "character_selection_system",
+            &CharacterSelectionSystem::type_name(),
             &["input_system"],
         );
         Ok(())

@@ -4,7 +4,7 @@ use object_model::entity::Kinematics;
 /// Updates each entity's `Transform` based on their `Position` in game.
 ///
 /// This system should be run after all other systems that affect kinematics have run.
-#[derive(Debug, Default, new)]
+#[derive(Debug, Default, TypeName, new)]
 pub(crate) struct ObjectTransformUpdateSystem;
 
 type ObjectTransformUpdateSystemData<'s> = (
@@ -32,6 +32,7 @@ mod test {
     };
     use amethyst_test_support::*;
     use object_model::entity::{Kinematics, Position, Velocity};
+    use typename::TypeName;
 
     use super::ObjectTransformUpdateSystem;
 
@@ -70,7 +71,7 @@ mod test {
             AmethystApplication::base()
                 .with_system(
                     ObjectTransformUpdateSystem::new(),
-                    "object_transform_update_system",
+                    ObjectTransformUpdateSystem::type_name(),
                     &[]
                 )
                 .with_setup(setup)

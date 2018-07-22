@@ -132,6 +132,7 @@ mod test {
         entity::{CharacterStatus, Kinematics, Position, Velocity},
         loaded::CharacterHandle,
     };
+    use typename::TypeName;
 
     use super::CharacterEntitySpawner;
 
@@ -179,14 +180,14 @@ mod test {
             ))
                 .with_assertion(assertion)
                 .with_bundle(ObjectLoadingBundle::new())
-                .with_system(TestSystem, "test_system", &[])
+                .with_system(TestSystem, TestSystem::type_name(), &[])
                 .run()
                 .is_ok()
         );
     }
 
     // Sets up storages for the various `Component`.
-    #[derive(Debug)]
+    #[derive(Debug, TypeName)]
     struct TestSystem;
     type TestSystemData<'s> = (
         Read<'s, AssetStorage<Map>>,

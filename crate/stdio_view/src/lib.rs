@@ -13,6 +13,9 @@ extern crate console;
 extern crate fern;
 #[macro_use]
 extern crate log;
+extern crate typename;
+#[macro_use]
+extern crate typename_derive;
 
 pub use stdin_system::StdinSystem;
 pub use stdio_view_bundle::StdioViewBundle;

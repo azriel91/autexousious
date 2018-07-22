@@ -13,7 +13,7 @@ use reader::{self, StdinReader};
 type EventChannelData<'a> = Write<'a, EventChannel<ApplicationEvent>>;
 
 /// Rendering system.
-#[derive(Debug)]
+#[derive(Debug, TypeName)]
 pub struct StdinSystem {
     /// Channel receiver for output/input messages for this system.
     rx: Receiver<String>,

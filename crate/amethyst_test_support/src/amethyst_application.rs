@@ -520,15 +520,21 @@ where
     /// # Parameters
     ///
     /// * `system`: The `System` to be tested.
-    pub fn with_system<SysLocal>(
+    pub fn with_system<N, SysLocal>(
         self,
         system: SysLocal,
-        name: &'static str,
-        deps: &'static [&'static str],
+        name: N,
+        deps: &[N],
     ) -> AmethystApplication<S, T, FnSetup, FnState, FnEffect, FnAssert>
     where
+        N: Into<String> + Clone,
         SysLocal: for<'sys_local> System<'sys_local> + Send + 'static,
     {
+        let name = name.into();
+        let deps = deps
+            .iter()
+            .map(|dep| dep.clone().into())
+            .collect::<Vec<String>>();
         self.with_bundle_fn(move || SystemInjectionBundle::new(system, name, deps))
     }
 

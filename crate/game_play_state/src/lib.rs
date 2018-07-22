@@ -19,6 +19,11 @@ extern crate map_model;
 #[cfg(test)]
 extern crate object_loading;
 extern crate object_model;
+#[cfg(test)]
+extern crate typename;
+#[cfg(test)]
+#[macro_use]
+extern crate typename_derive;
 
 pub use animation_runner::AnimationRunner;
 pub(crate) use character_entity_spawner::CharacterEntitySpawner;

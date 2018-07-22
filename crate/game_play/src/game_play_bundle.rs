@@ -2,6 +2,7 @@ use amethyst::{
     core::bundle::{Result, SystemBundle},
     ecs::prelude::*,
 };
+use typename::TypeName;
 
 use CharacterGroundingSystem;
 use CharacterInputUpdateSystem;
@@ -10,7 +11,7 @@ use CharacterSequenceUpdateSystem;
 use ObjectKinematicsUpdateSystem;
 use ObjectTransformUpdateSystem;
 
-/// Adds the `CharacterInputUpdateSystem` to the `World` with id `"character_input_update_system"`.
+/// Adds the object type update systems to the provided dispatcher.
 ///
 /// The Amethyst `InputBundle` must be added before this bundle.
 #[derive(Debug, new)]
@@ -18,37 +19,36 @@ pub struct GamePlayBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
-        // TODO: Custom derive to get snake_cased name
-        // See <https://docs.rs/named_type/0.1.3/named_type/>
         builder.add(
             CharacterInputUpdateSystem::new(),
-            "character_input_update_system",
+            &CharacterInputUpdateSystem::type_name(),
+            // TODO: Pending <https://gitlab.com/azriel91/autexousious/issues/53>
             &["input_system"],
         );
         builder.add(
             CharacterSequenceUpdateSystem::new(),
-            "character_sequence_update_system",
-            &["character_input_update_system"],
+            &CharacterSequenceUpdateSystem::type_name(),
+            &[&CharacterInputUpdateSystem::type_name()],
         );
         builder.add(
             CharacterKinematicsSystem::new(),
-            "character_kinematics_system",
-            &["character_sequence_update_system"],
+            &CharacterKinematicsSystem::type_name(),
+            &[&CharacterSequenceUpdateSystem::type_name()],
         );
         builder.add(
             ObjectKinematicsUpdateSystem::new(),
-            "object_kinematics_update_system",
-            &["character_kinematics_system"],
+            &ObjectKinematicsUpdateSystem::type_name(),
+            &[&CharacterKinematicsSystem::type_name()],
         );
         builder.add(
             CharacterGroundingSystem::new(),
-            "character_grounding_system",
-            &["object_kinematics_update_system"],
+            &CharacterGroundingSystem::type_name(),
+            &[&ObjectKinematicsUpdateSystem::type_name()],
         );
         builder.add(
             ObjectTransformUpdateSystem::new(),
-            "object_transform_update_system",
-            &["character_grounding_system"],
+            &ObjectTransformUpdateSystem::type_name(),
+            &[&CharacterGroundingSystem::type_name()],
         );
         Ok(())
     }
