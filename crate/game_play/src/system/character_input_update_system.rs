@@ -61,6 +61,7 @@ mod test {
     use character_selection::CharacterEntityControl;
     use game_play_state::GamePlayState;
     use loading;
+    use map_loading::MapLoadingBundle;
     use object_model::{
         config::object::CharacterSequenceId,
         entity::{CharacterInput, Kinematics, ObjectStatus},
@@ -107,6 +108,7 @@ mod test {
                 "maintains_character_sequence_when_next_sequence_is_none",
                 false
             ).with_system(TestSystem, TestSystem::type_name(), &[])
+                .with_bundle(MapLoadingBundle::new())
                 .with_system(
                     CharacterInputUpdateSystem::new(),
                     CharacterInputUpdateSystem::type_name(),

@@ -19,6 +19,10 @@ use object_model::{loaded::CharacterHandle, ObjectType};
 
 /// `State` where resource loading takes place.
 ///
+/// If you use this `State`, you **MUST** ensure that both the `ObjectLoadingBundle` and
+/// `MapLoadingBundle`s are included in the application dispatcher that this `State` delegates to
+/// to load the assets.
+///
 /// # Type Parameters
 ///
 /// * `S`: State to return after loading is complete.
@@ -142,6 +146,11 @@ where
                     .expect("Expected `next_state` to be set"),
             )
         } else {
+            warn!(
+                "If loading never completes, please ensure that you have registered both the \
+                 `ObjectLoadingBundle` and `MapLoadingBundle`s to the application dispatcher, as \
+                 those provide the necessary `System`s to process the loaded assets."
+            );
             debug!(
                 "Loading progress: {}/{}",
                 self.progress_counter.num_finished(),
