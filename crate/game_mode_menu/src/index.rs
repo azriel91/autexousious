@@ -1,6 +1,7 @@
 use amethyst::prelude::*;
 use character_selection::CharacterSelectionState;
 use game_play_state::GamePlayState;
+use map_selection::MapSelectionState;
 
 /// Game mode menu indicies.
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -24,9 +25,12 @@ impl Index {
     pub fn trans(self) -> Trans<GameData<'static, 'static>> {
         match self {
             Index::StartGame => {
-                let next_state_fn = || Box::new(GamePlayState::new()); // kcov-ignore
+                let game_play_fn = || Box::new(GamePlayState::new()); // kcov-ignore
+                let map_selection_fn =
+                    move || Box::new(MapSelectionState::new(Box::new(game_play_fn)));
+
                 let character_selection_state =
-                    Box::new(CharacterSelectionState::new(Box::new(next_state_fn)));
+                    Box::new(CharacterSelectionState::new(Box::new(map_selection_fn)));
                 Trans::Push(character_selection_state)
             }
             Index::Exit => Trans::Quit,

@@ -2,7 +2,12 @@ use std::fmt::Debug;
 use std::marker::PhantomData;
 use std::path::PathBuf;
 
-use amethyst::{self, assets::Loader, prelude::*, renderer::ScreenDimensions};
+use amethyst::{
+    self,
+    assets::{AssetStorage, Loader, ProgressCounter},
+    prelude::*,
+    renderer::ScreenDimensions,
+};
 use application_ui::ThemeLoader;
 use game_model::config::index_configuration;
 use map_model::{
@@ -13,6 +18,10 @@ use object_loading::CharacterLoader;
 use object_model::{loaded::CharacterHandle, ObjectType};
 
 /// `State` where resource loading takes place.
+///
+/// If you use this `State`, you **MUST** ensure that both the `ObjectLoadingBundle` and
+/// `MapLoadingBundle`s are included in the application dispatcher that this `State` delegates to
+/// to load the assets.
 ///
 /// # Type Parameters
 ///
@@ -28,6 +37,9 @@ where
     /// The `State` that follows this one.
     #[derivative(Debug(bound = "S: Debug"))]
     next_state: Option<Box<S>>,
+    /// Tracks loaded assets.
+    #[derivative(Debug = "ignore")]
+    progress_counter: ProgressCounter,
     /// Lifetime tracker.
     state_data: PhantomData<amethyst::State<GameData<'a, 'b>>>,
 }
@@ -41,6 +53,7 @@ where
         State {
             assets_dir,
             next_state: Some(next_state),
+            progress_counter: ProgressCounter::new(),
             state_data: PhantomData,
         }
     }
@@ -80,10 +93,10 @@ where
                 };
             });
 
-        Self::load_maps(world);
+        self.load_maps(world);
     }
 
-    fn load_maps(world: &mut World) {
+    fn load_maps(&mut self, world: &mut World) {
         // TODO: Load map from configuration
 
         let (width, height) = {
@@ -91,7 +104,8 @@ where
             (dim.width(), dim.height())
         };
 
-        let bounds = MapBounds::new(0, 0, 0, width as u32, height as u32, 200);
+        let depth = 200;
+        let bounds = MapBounds::new(0, 0, 0, width as u32, height as u32 - depth, depth);
         let header = MapHeader::new("Blank Screen".to_string(), bounds);
         let definition = MapDefinition::new(header);
         let margins = Margins::from(definition.header.bounds);
@@ -99,7 +113,7 @@ where
 
         let map_handle: MapHandle = {
             let loader = world.read_resource::<Loader>();
-            loader.load_from_data(map, (), &world.read_resource())
+            loader.load_from_data(map, &mut self.progress_counter, &world.read_resource())
         };
 
         let loaded_maps = vec![map_handle];
@@ -125,10 +139,31 @@ where
 
     fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
         data.data.update(&data.world);
-        Trans::Switch(
-            self.next_state
-                .take()
-                .expect("Expected `next_state` to be set"),
-        )
+
+        if self.progress_counter.is_complete() {
+            Trans::Switch(
+                self.next_state
+                    .take()
+                    .expect("Expected `next_state` to be set"),
+            )
+        } else {
+            warn!(
+                "If loading never completes, please ensure that you have registered both the \
+                 `ObjectLoadingBundle` and `MapLoadingBundle`s to the application dispatcher, as \
+                 those provide the necessary `System`s to process the loaded assets."
+            );
+            debug!(
+                "Loading progress: {}/{}",
+                self.progress_counter.num_finished(),
+                self.progress_counter.num_assets()
+            );
+            let map_store = data.world.read_resource::<AssetStorage<Map>>();
+            let map_handles = data.world.read_resource::<Vec<MapHandle>>();
+            map_handles.iter().for_each(|handle| {
+                map_store.get(handle);
+            });
+
+            Trans::None
+        }
     }
 }

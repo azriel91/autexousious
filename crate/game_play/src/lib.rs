@@ -16,7 +16,10 @@ extern crate game_model;
 extern crate game_play_state;
 #[cfg(test)]
 extern crate loading;
+#[cfg(test)]
+extern crate map_loading;
 extern crate map_model;
+extern crate map_selection;
 #[cfg(test)]
 extern crate object_loading;
 extern crate object_model;

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* Prevent characters from moving outside map margins.
 * Use `typename` to derive `System` names.
 
 ## 0.4.0 (2018-07-20)

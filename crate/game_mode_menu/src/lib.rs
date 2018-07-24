@@ -16,6 +16,7 @@ extern crate derivative;
 extern crate game_play_state;
 #[macro_use]
 extern crate log;
+extern crate map_selection;
 extern crate rayon;
 
 pub use game_mode_menu_bundle::GameModeMenuBundle;

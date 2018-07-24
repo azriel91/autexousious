@@ -15,7 +15,10 @@ extern crate character_selection;
 extern crate loading;
 #[macro_use]
 extern crate log;
+#[cfg(test)]
+extern crate map_loading;
 extern crate map_model;
+extern crate map_selection;
 #[cfg(test)]
 extern crate object_loading;
 extern crate object_model;

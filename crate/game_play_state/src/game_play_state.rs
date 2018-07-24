@@ -10,7 +10,8 @@ use amethyst::{
     renderer::{Camera, Event, Projection, ScreenDimensions, VirtualKeyCode},
 };
 use character_selection::{CharacterEntityControl, CharacterSelection};
-use map_model::loaded::{Map, MapHandle};
+use map_model::loaded::Map;
+use map_selection::MapSelection;
 use object_model::entity::{Kinematics, Position, Velocity};
 
 use CharacterEntitySpawner;
@@ -33,28 +34,23 @@ impl GamePlayState {
     fn initialize_entities(&mut self, world: &mut World) {
         // Add map entity.
         let map_handle = world
-            .read_resource::<Vec<MapHandle>>()
-            .first()
-            .expect("Expected at least one map to be loaded.")
+            .read_resource::<MapSelection>()
+            .map_handle
+            .as_ref()
+            .expect("Expected map to be selected.")
             .clone();
 
         // Used to determine where to spawn characters.
         let (width, height) = {
             let map_store = world.read_resource::<AssetStorage<Map>>();
-            map_store.get(&map_handle).map_or_else(
-                || (800., 600.),
-                |map| {
+            map_store
+                .get(&map_handle)
+                .map(|map| {
                     let bounds = &map.definition.header.bounds;
                     (bounds.width as f32, bounds.height as f32)
-                },
-            )
-
-            // TODO: Wait for maps to be loaded in `loading::State`
-            // .expect("Expected map to be loaded.");
+                })
+                .expect("Expected map to be loaded.")
         };
-
-        let map_entity = world.create_entity().with(map_handle).build();
-        self.entities.push(map_entity);
 
         // This `Position` moves the entity to the middle of a "screen wide" map.
         let position = Position::new(width / 2., height / 2., 0.);
