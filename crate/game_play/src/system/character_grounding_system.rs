@@ -1,5 +1,5 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
-use map_model::loaded::{Map, MapHandle, Margins};
+use map_model::loaded::{Map, MapHandle};
 use object_model::entity::{CharacterStatus, Grounding, Kinematics};
 
 /// Updates `Character` kinematics based on sequence.
@@ -23,7 +23,7 @@ impl<'s> System<'s> for CharacterGroundingSystem {
         let map_handle = &map_handle_storage.join().next();
         if map_handle.is_none() {
             // Game is not running.
-            // TODO: Use custom `GameData`
+            // TODO: Use custom `GameData` / state specific dispatcher
             return;
         }
 
@@ -31,10 +31,9 @@ impl<'s> System<'s> for CharacterGroundingSystem {
         let map_margins = {
             // TODO: Use custom `GameData`, which allows use to use
             // `.expect("Expected map to be loaded.")`
-            maps.get(&map_handle).map_or_else(
-                || Margins::new(0., 800., 0., 600., 0., 200.),
-                |map| map.margins,
-            )
+            maps.get(&map_handle)
+                .map(|map| map.margins)
+                .expect("Expected map to be loaded.")
         };
 
         for (mut kinematics, mut status) in (&mut kinematics_storage, &mut status_storage).join() {

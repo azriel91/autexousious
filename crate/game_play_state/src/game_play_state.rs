@@ -41,16 +41,13 @@ impl GamePlayState {
         // Used to determine where to spawn characters.
         let (width, height) = {
             let map_store = world.read_resource::<AssetStorage<Map>>();
-            map_store.get(&map_handle).map_or_else(
-                || (800., 600.),
-                |map| {
+            map_store
+                .get(&map_handle)
+                .map(|map| {
                     let bounds = &map.definition.header.bounds;
                     (bounds.width as f32, bounds.height as f32)
-                },
-            )
-
-            // TODO: Wait for maps to be loaded in `loading::State`
-            // .expect("Expected map to be loaded.");
+                })
+                .expect("Expected map to be loaded.")
         };
 
         let map_entity = world.create_entity().with(map_handle).build();

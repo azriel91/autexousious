@@ -125,6 +125,7 @@ mod test {
     use amethyst_test_support::prelude::*;
     use character_selection::CharacterEntityControl;
     use loading;
+    use map_loading::MapLoadingBundle;
     use map_model::loaded::Map;
     use object_loading::ObjectLoadingBundle;
     use object_model::{
@@ -179,6 +180,7 @@ mod test {
                 Box::new(EmptyState),
             ))
                 .with_assertion(assertion)
+                .with_bundle(MapLoadingBundle::new())
                 .with_bundle(ObjectLoadingBundle::new())
                 .with_system(TestSystem, TestSystem::type_name(), &[])
                 .run()

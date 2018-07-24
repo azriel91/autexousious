@@ -1,0 +1,12 @@
+[package]
+name = "map_loading"
+version = "0.5.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+
+[dependencies]
+amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop" }
+derive-new = "0.5"
+map_model = { path = "../map_model" }
+
+[dev-dependencies]
+amethyst_test_support = { path = "../amethyst_test_support" }
