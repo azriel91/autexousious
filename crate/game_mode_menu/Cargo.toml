@@ -11,6 +11,7 @@ character_selection = { path = "../../crate/character_selection" }
 derivative = "1.0"
 game_play_state = { path = "../../crate/game_play_state" }
 log = "0.4"
+map_selection = { path = "../../crate/map_selection" }
 rayon = "1.0"
 
 [dev-dependencies]
