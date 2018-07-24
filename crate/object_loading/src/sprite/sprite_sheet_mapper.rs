@@ -34,11 +34,12 @@ impl SpriteSheetMapper {
         texture_id: u64,
         definition: &SpriteSheetDefinition,
     ) -> SpriteSheet {
-        let mut sprites = Vec::with_capacity(definition.row_count * definition.column_count);
+        let mut sprites =
+            Vec::with_capacity((definition.row_count * definition.column_count) as usize);
         let (offset_w, offset_h) = Self::offset_distances(definition);
         let (image_w, image_h) = (
-            offset_w * definition.column_count as f32,
-            offset_h * definition.row_count as f32,
+            offset_w * definition.column_count,
+            offset_h * definition.row_count,
         );
 
         // Push the rows in reverse order because the texture coordinates are treated as beginning
@@ -53,15 +54,15 @@ impl SpriteSheetMapper {
                 // 10 11 12 13 14
                 // 15 16 17 18 19
 
-                let offset_x = offset_w * col as f32;
-                let offset_y = offset_h * row as f32;
+                let offset_x = offset_w * col as u32;
+                let offset_y = offset_h * row as u32;
                 let sprite = Self::create_sprite(
-                    image_w,
-                    image_h,
-                    offset_x,
-                    offset_y,
-                    offset_x + definition.sprite_w,
-                    offset_y + definition.sprite_h,
+                    image_w as f32,
+                    image_h as f32,
+                    offset_x as f32,
+                    offset_y as f32,
+                    (offset_x + definition.sprite_w) as f32,
+                    (offset_y + definition.sprite_h) as f32,
                     definition.has_border,
                 );
 
@@ -90,9 +91,9 @@ impl SpriteSheetMapper {
     /// # Parameters
     ///
     /// * `definition`: Sprite sheet definition.
-    fn offset_distances(definition: &SpriteSheetDefinition) -> (f32, f32) {
+    fn offset_distances(definition: &SpriteSheetDefinition) -> (u32, u32) {
         if definition.has_border {
-            (definition.sprite_w + 1., definition.sprite_h + 1.)
+            (definition.sprite_w + 1, definition.sprite_h + 1)
         } else {
             (definition.sprite_w, definition.sprite_h)
         }
@@ -211,14 +212,14 @@ mod test {
     }
 
     fn simple_definition() -> SpriteSheetDefinition {
-        SpriteSheetDefinition::new("1.png".to_string(), 19., 29., 1, 1, true, offsets(1))
+        SpriteSheetDefinition::new("1.png".to_string(), 19, 29, 1, 1, true, offsets(1))
     }
 
     fn sprite_sheet_definition(with_border: bool) -> SpriteSheetDefinition {
         if with_border {
-            SpriteSheetDefinition::new("0.png".to_string(), 9., 19., 2, 3, true, offsets(6))
+            SpriteSheetDefinition::new("0.png".to_string(), 9, 19, 2, 3, true, offsets(6))
         } else {
-            SpriteSheetDefinition::new("0.png".to_string(), 10., 20., 2, 3, false, offsets(6))
+            SpriteSheetDefinition::new("0.png".to_string(), 10, 20, 2, 3, false, offsets(6))
         }
     }
 

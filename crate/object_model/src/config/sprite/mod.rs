@@ -16,8 +16,8 @@ mod test {
         [[sheets]]
         # 0
         path         = "heat_defense.png"
-        sprite_w     = 79.0
-        sprite_h     = 79.0
+        sprite_w     = 79
+        sprite_h     = 79
         row_count    = 1
         column_count = 2
         offsets = [
@@ -28,8 +28,8 @@ mod test {
         [[sheets]]
         # 1
         path         = "heat_defense.png"
-        sprite_w     = 79.0
-        sprite_h     = 79.0
+        sprite_w     = 79
+        sprite_h     = 79
         row_count    = 2
         column_count = 3
         offsets = [
@@ -64,8 +64,8 @@ mod test {
             [[sheets]]
             # 0
             path         = "heat_defense.png"
-            sprite_w     = 79.0
-            sprite_h     = 79.0
+            sprite_w     = 79
+            sprite_h     = 79
             row_count    = 1
             column_count = 2
             offsets = [

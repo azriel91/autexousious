@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* Updated sprites configuration to take in `u32` instead of `f32` for sprite dimensions.
 * Prevent characters from moving outside map margins.
 * Use `typename` to derive `System` names.
 

@@ -52,7 +52,7 @@ impl SpriteMeshCreator {
                 .sheets
                 .first()
                 .map_or((1., 1.), |sheet_def| {
-                    (sheet_def.sprite_w, sheet_def.sprite_h)
+                    (sheet_def.sprite_w as f32, sheet_def.sprite_h as f32)
                 })
         };
 
@@ -265,7 +265,7 @@ mod test {
     }
 
     fn sprite_sheet_definition() -> SpriteSheetDefinition {
-        SpriteSheetDefinition::new("0.png".to_string(), 9., 19., 2, 3, true, offsets(6))
+        SpriteSheetDefinition::new("0.png".to_string(), 9, 19, 2, 3, true, offsets(6))
     }
 
     fn offsets(n: usize) -> Vec<SpriteOffset> {
