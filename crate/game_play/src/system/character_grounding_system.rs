@@ -36,6 +36,14 @@ impl<'s> System<'s> for CharacterGroundingSystem {
         };
 
         for (mut kinematics, mut status) in (&mut kinematics_storage, &mut status_storage).join() {
+            // X axis
+            if kinematics.position[0] < map_margins.left {
+                kinematics.position[0] = map_margins.left;
+            } else if kinematics.position[0] > map_margins.right {
+                kinematics.position[0] = map_margins.right;
+            }
+
+            // Y axis
             if kinematics.position[1] > map_margins.bottom {
                 kinematics.velocity[1] += -1.7;
                 status.object_status.grounding = Grounding::Airborne;
@@ -43,6 +51,13 @@ impl<'s> System<'s> for CharacterGroundingSystem {
                 kinematics.position[1] = map_margins.bottom;
                 kinematics.velocity[1] = 0.;
                 status.object_status.grounding = Grounding::OnGround;
+            }
+
+            // Z axis
+            if kinematics.position[2] < map_margins.back {
+                kinematics.position[2] = map_margins.back;
+            } else if kinematics.position[2] > map_margins.front {
+                kinematics.position[2] = map_margins.front;
             }
         }
     }

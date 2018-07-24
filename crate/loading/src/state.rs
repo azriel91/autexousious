@@ -104,7 +104,8 @@ where
             (dim.width(), dim.height())
         };
 
-        let bounds = MapBounds::new(0, 0, 0, width as u32, height as u32, 200);
+        let depth = 200;
+        let bounds = MapBounds::new(0, 0, 0, width as u32, height as u32 - depth, depth);
         let header = MapHeader::new("Blank Screen".to_string(), bounds);
         let definition = MapDefinition::new(header);
         let margins = Margins::from(definition.header.bounds);
