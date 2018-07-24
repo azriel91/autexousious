@@ -58,7 +58,7 @@ mod test {
     fn test_map() -> Map {
         let bounds = MapBounds::new(0, 0, 0, 800, 600, 200);
         let header = MapHeader::new("Test Map".to_string(), bounds);
-        let definition = MapDefinition::new(header);
+        let definition = MapDefinition::new(header, Vec::new());
         let margins = Margins::from(definition.header.bounds);
         Map::new(definition, margins)
     }

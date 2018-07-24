@@ -107,7 +107,8 @@ where
         let depth = 200;
         let bounds = MapBounds::new(0, 0, 0, width as u32, height as u32 - depth, depth);
         let header = MapHeader::new("Blank Screen".to_string(), bounds);
-        let definition = MapDefinition::new(header);
+        let layers = Vec::new();
+        let definition = MapDefinition::new(header, layers);
         let margins = Margins::from(definition.header.bounds);
         let map = Map::new(definition, margins);
 
