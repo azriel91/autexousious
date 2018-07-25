@@ -2,7 +2,7 @@ use amethyst::renderer::{Sprite, SpriteSheet};
 use object_model::config::SpriteSheetDefinition;
 
 #[derive(Debug)]
-pub(super) struct SpriteSheetMapper;
+pub(crate) struct SpriteSheetMapper;
 
 impl SpriteSheetMapper {
     /// Maps `SpriteSheetDefinition`s into Amethyst `SpriteSheet`s and returns their handles.
@@ -11,7 +11,7 @@ impl SpriteSheetMapper {
     ///
     /// * `texture_index_offset`: Index offset for sprite sheet IDs.
     /// * `sprite_sheet_definitions`: List of metadata for sprite sheets to map.
-    pub(super) fn map(
+    pub(crate) fn map(
         texture_index_offset: u64,
         sprite_sheet_definitions: &[SpriteSheetDefinition],
     ) -> Vec<SpriteSheet> {

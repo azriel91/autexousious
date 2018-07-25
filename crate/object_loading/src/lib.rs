@@ -25,6 +25,7 @@ extern crate serde;
 #[cfg(test)]
 #[macro_use]
 extern crate serde_derive;
+extern crate sprite_loading;
 #[cfg(test)]
 extern crate tempfile;
 
@@ -34,4 +35,3 @@ pub use object_loading_bundle::ObjectLoadingBundle;
 mod animation;
 mod object;
 mod object_loading_bundle;
-mod sprite;

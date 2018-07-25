@@ -1614,6 +1614,7 @@ dependencies = [
  "pretty_assertions 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.70 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_derive 1.0.70 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sprite_loading 0.5.0",
  "tempfile 3.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -2104,6 +2105,18 @@ dependencies = [
  "shred-derive 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "shrev 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "specs 0.12.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "sprite_loading"
+version = "0.5.0"
+dependencies = [
+ "amethyst 0.7.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
+ "amethyst_test_support 0.4.0",
+ "application 0.4.0",
+ "game_model 0.4.0",
+ "log 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "object_model 0.4.0",
 ]
 
 [[package]]

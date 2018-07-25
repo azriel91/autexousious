@@ -9,7 +9,7 @@ use application::{self, ErrorKind};
 use object_model::config::SpriteSheetDefinition;
 
 #[derive(Debug)]
-pub(super) struct TextureLoader;
+pub(crate) struct TextureLoader;
 
 impl TextureLoader {
     /// Loads the sprite sheet images as textures and returns the texture handles.
@@ -19,7 +19,7 @@ impl TextureLoader {
     /// * `world`: `World` to store the sprite sheet textures.
     /// * `object_directory`: Object configuration base directory.
     /// * `sprite_sheet_definitions`: List of metadata for sprite sheets to load.
-    pub(super) fn load_textures(
+    pub(crate) fn load_textures(
         world: &World,
         object_directory: &Path,
         sprite_sheet_definitions: &[SpriteSheetDefinition],

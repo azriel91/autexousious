@@ -6,11 +6,14 @@ use application::{load_in, Format, Result};
 use game_model::config::ConfigRecord;
 use object_model::config::SpritesDefinition;
 
-use sprite::{MaterialCreator, SpriteMeshCreator, SpriteSheetMapper, TextureLoader};
+use MaterialCreator;
+use SpriteMeshCreator;
+use SpriteSheetMapper;
+use TextureLoader;
 
 /// Provides functionality to load sprites configuration and assets.
 #[derive(Debug)]
-pub(crate) struct SpriteLoader;
+pub struct SpriteLoader;
 
 impl SpriteLoader {
     /// Loads and returns sprite assets for an object.

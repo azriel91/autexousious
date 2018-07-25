@@ -5,9 +5,9 @@ use object_model::{
     config::{object::SequenceId, ObjectDefinition},
     loaded,
 };
+use sprite_loading::SpriteLoader;
 
 use animation::MaterialAnimationLoader;
-use sprite::SpriteLoader;
 
 /// Loads assets specified by object configuration into the loaded object model.
 #[derive(Debug)]
@@ -27,6 +27,11 @@ impl ObjectLoader {
         object_definition: &ObjectDefinition<SeqId>,
     ) -> Result<loaded::Object<SeqId>> {
         let texture_index_offset = world.read_resource::<MaterialTextureSet>().len() as u64;
+
+        debug!(
+            "Loading object assets in `{}`",
+            config_record.directory.display()
+        );
 
         let (sprite_sheets, mesh, mesh_mirrored, default_material) =
             SpriteLoader::load(world, texture_index_offset, config_record)?;
@@ -52,8 +57,7 @@ mod test {
     use std::path::Path;
 
     use amethyst_test_support::AmethystApplication;
-    use application::resource::dir::assets_dir;
-    use application::{load_in, Format};
+    use application::{load_in, resource::dir::assets_dir, Format};
     use game_model::config::ConfigRecord;
     use object_model::config::CharacterDefinition;
 
