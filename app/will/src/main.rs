@@ -80,7 +80,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         let display_config = load_in::<DisplayConfig, _>(
             dir::RESOURCES,
             "display_config.ron",
-            &resource::Format::Ron,
+            resource::Format::Ron,
             Some(development_base_dirs!()),
         )?;
 
@@ -99,7 +99,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         let input_bindings = load_in::<Bindings<PlayerAxisControl, PlayerActionControl>, _>(
             dir::RESOURCES,
             "input.ron",
-            &resource::Format::Ron,
+            resource::Format::Ron,
             Some(development_base_dirs!()),
         )?;
         debug!("Axes bindings: {:?}", &input_bindings.axes());

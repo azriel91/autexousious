@@ -23,7 +23,7 @@ impl CharacterLoader {
         let character_definition = load_in::<CharacterDefinition, _>(
             &config_record.directory,
             "object.toml",
-            &Format::Toml,
+            Format::Toml,
             None,
         )?;
 

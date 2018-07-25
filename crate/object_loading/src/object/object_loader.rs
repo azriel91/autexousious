@@ -74,7 +74,7 @@ mod test {
                         load_in::<CharacterDefinition, _>(
                             &config_record.directory,
                             "object.toml",
-                            &Format::Toml,
+                            Format::Toml,
                             None,
                         ).expect("Failed to load object.toml into CharacterDefinition");
 

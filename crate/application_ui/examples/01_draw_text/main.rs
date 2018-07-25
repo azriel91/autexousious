@@ -63,7 +63,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     let display_config = load_in::<DisplayConfig, _>(
         dir::RESOURCES,
         "display_config.ron",
-        &resource::Format::Ron,
+        resource::Format::Ron,
         Some(development_base_dirs!()),
     )?;
 

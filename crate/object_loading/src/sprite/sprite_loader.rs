@@ -28,7 +28,7 @@ impl SpriteLoader {
         let sprites_definition = load_in::<SpritesDefinition, _>(
             &config_record.directory,
             "sprites.toml",
-            &Format::Toml,
+            Format::Toml,
             None,
         )?;
 

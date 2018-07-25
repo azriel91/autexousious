@@ -5,7 +5,10 @@ use amethyst::{
     prelude::*,
     ui::{FontAsset, FontHandle, TtfFormat},
 };
-use application::resource::{self, dir, load_in};
+use application::{
+    resource::{self, dir, load_in},
+    Format,
+};
 
 use FontConfig;
 use FontVariant;
@@ -30,7 +33,7 @@ impl ThemeLoader {
         let font_config: FontConfig = load_in(
             dir::RESOURCES,
             font_config_name,
-            &resource::Format::Ron,
+            Format::Ron,
             Some(development_base_dirs!()),
         )?;
 
