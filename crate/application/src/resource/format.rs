@@ -3,4 +3,6 @@
 pub enum Format {
     /// [Rusty Object Notation](https://crates.io/crates/ron).
     Ron,
+    /// [Tom's Obvious Minimal Language](https://crates.io/crates/toml).
+    Toml,
 }

@@ -1,12 +1,12 @@
-use amethyst::prelude::*;
-use amethyst::renderer::{Material, MaterialTextureSet, MeshHandle, SpriteSheet, TextureHandle};
+use amethyst::{
+    prelude::*,
+    renderer::{Material, MaterialTextureSet, MeshHandle, SpriteSheet, TextureHandle},
+};
+use application::{load_in, Format, Result};
 use game_model::config::ConfigRecord;
 use object_model::config::SpritesDefinition;
-use toml;
 
-use error::Result;
 use sprite::{MaterialCreator, SpriteMeshCreator, SpriteSheetMapper, TextureLoader};
-use IoUtils;
 
 /// Provides functionality to load sprites configuration and assets.
 #[derive(Debug)]
@@ -25,7 +25,12 @@ impl SpriteLoader {
         texture_index_offset: u64,
         config_record: &ConfigRecord,
     ) -> Result<(Vec<SpriteSheet>, MeshHandle, MeshHandle, Material)> {
-        let sprites_definition = Self::load_sprites_definition(config_record)?;
+        let sprites_definition = load_in::<SpritesDefinition, _>(
+            &config_record.directory,
+            "sprites.toml",
+            &Format::Toml,
+            None,
+        )?;
 
         let sprite_sheets =
             SpriteSheetMapper::map(texture_index_offset, &sprites_definition.sheets);
@@ -42,17 +47,6 @@ impl SpriteLoader {
         Self::store_textures_in_material_texture_set(world, texture_index_offset, texture_handles);
 
         Ok((sprite_sheets, mesh, mesh_mirrored, default_material))
-    }
-
-    /// Loads the sprites definition from the object configuration directory.
-    ///
-    /// # Parameters
-    ///
-    /// * `config_record`: the configuration record of the object to load sprites for.
-    fn load_sprites_definition(config_record: &ConfigRecord) -> Result<SpritesDefinition> {
-        let file_path = config_record.directory.join("sprites.toml");
-        let sprites_toml = IoUtils::read_file(&file_path)?;
-        Ok(toml::from_slice::<SpritesDefinition>(&sprites_toml)?)
     }
 
     /// Stores the texture handles into the global `MaterialTextureSet`.

@@ -1,4 +1,5 @@
 use amethyst::{prelude::*, renderer::MaterialTextureSet};
+use application::Result;
 use game_model::config::ConfigRecord;
 use object_model::{
     config::{object::SequenceId, ObjectDefinition},
@@ -6,7 +7,6 @@ use object_model::{
 };
 
 use animation::MaterialAnimationLoader;
-use error::Result;
 use sprite::SpriteLoader;
 
 /// Loads assets specified by object configuration into the loaded object model.
@@ -53,12 +53,11 @@ mod test {
 
     use amethyst_test_support::AmethystApplication;
     use application::resource::dir::assets_dir;
+    use application::{load_in, Format};
     use game_model::config::ConfigRecord;
     use object_model::config::CharacterDefinition;
-    use toml;
 
     use super::ObjectLoader;
-    use IoUtils;
 
     #[test]
     fn loads_object_assets() {
@@ -71,12 +70,13 @@ mod test {
                     bat_path.extend(Path::new("test/object/character/bat").iter());
                     let config_record = ConfigRecord::new(bat_path);
 
-                    let object_toml = IoUtils::read_file(
-                        &config_record.directory.join("object.toml"),
-                    ).expect("Failed to read object.toml");
                     let character_definition =
-                        toml::from_slice::<CharacterDefinition>(&object_toml)
-                            .expect("Failed to parse object.toml into CharacterDefinition");
+                        load_in::<CharacterDefinition, _>(
+                            &config_record.directory,
+                            "object.toml",
+                            &Format::Toml,
+                            None,
+                        ).expect("Failed to load object.toml into CharacterDefinition");
 
                     let object = ObjectLoader::load(
                         world,

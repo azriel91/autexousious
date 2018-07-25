@@ -2,20 +2,22 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
 
-use error::Result;
+use resource::error::Result;
 
+/// One-liner functions to interact with files.
 #[derive(Debug)]
-pub(crate) struct IoUtils;
+pub struct IoUtils;
 
 impl IoUtils {
     /// Returns the contents of specified file.
     ///
-    /// Care must be taken to ensure the file is not large, as this does not do any file size checking.
+    /// Care must be taken to ensure the file is not large, as this does not do any file size
+    /// checking.
     ///
     /// # Parameters
     ///
     /// * `file_path`: `Path` to the file to read.
-    pub(crate) fn read_file(file_path: &Path) -> Result<Vec<u8>> {
+    pub fn read_file(file_path: &Path) -> Result<Vec<u8>> {
         debug!("Reading file: {}", file_path.display());
         let mut file = File::open(file_path)?;
         let mut buffer = Vec::new();
@@ -32,7 +34,7 @@ mod test {
     use tempfile::NamedTempFile;
 
     use super::IoUtils;
-    use error::ErrorKind;
+    use ErrorKind;
 
     #[test]
     fn reads_file_to_bytes() {

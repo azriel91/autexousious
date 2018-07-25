@@ -41,6 +41,8 @@ extern crate error_chain;
 #[cfg(test)]
 #[macro_use]
 extern crate lazy_static;
+#[macro_use]
+extern crate log;
 #[cfg(test)]
 #[macro_use]
 extern crate pretty_assertions;
@@ -52,5 +54,10 @@ extern crate serde;
 extern crate serde;
 #[cfg(test)]
 extern crate tempfile;
+extern crate toml;
+
+pub use resource::{
+    find, find_in, load, load_in, Error, ErrorKind, FindContext, Format, IoUtils, Result,
+};
 
 pub mod resource;

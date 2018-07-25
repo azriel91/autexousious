@@ -6,12 +6,11 @@ use amethyst::{
     prelude::*,
     renderer::{Material, SpriteSheet},
 };
+use application::Result;
 use object_model::config::{
     object::{Sequence, SequenceId},
     ObjectDefinition,
 };
-
-use error::Result;
 
 /// Loads `Animation`s from character sequences.
 #[derive(Debug)]

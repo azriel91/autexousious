@@ -266,10 +266,12 @@ dependencies = [
  "derive_more 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "error-chain 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "pretty_assertions 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "ron 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.70 (registry+https://github.com/rust-lang/crates.io-index)",
  "tempfile 3.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "toml 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -1605,9 +1607,7 @@ dependencies = [
  "amethyst 0.7.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "amethyst_test_support 0.4.0",
  "application 0.4.0",
- "derive-error-chain 0.11.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
- "error-chain 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_model 0.4.0",
  "log 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "object_model 0.4.0",
@@ -1615,7 +1615,6 @@ dependencies = [
  "serde 1.0.70 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_derive 1.0.70 (registry+https://github.com/rust-lang/crates.io-index)",
  "tempfile 3.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "toml 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

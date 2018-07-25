@@ -1,11 +1,12 @@
 use std::path::Path;
 
-use amethyst::assets::{AssetStorage, Loader};
-use amethyst::prelude::*;
-use amethyst::renderer::{PngFormat, Texture, TextureHandle};
+use amethyst::{
+    assets::{AssetStorage, Loader},
+    prelude::*,
+    renderer::{PngFormat, Texture, TextureHandle},
+};
+use application::{self, ErrorKind};
 use object_model::config::SpriteSheetDefinition;
-
-use error::{self, ErrorKind};
 
 #[derive(Debug)]
 pub(super) struct TextureLoader;
@@ -22,7 +23,7 @@ impl TextureLoader {
         world: &World,
         object_directory: &Path,
         sprite_sheet_definitions: &[SpriteSheetDefinition],
-    ) -> error::Result<Vec<TextureHandle>> {
+    ) -> application::Result<Vec<TextureHandle>> {
         let texture_results = sprite_sheet_definitions
             .iter()
             .map(|sheet_definition| {
