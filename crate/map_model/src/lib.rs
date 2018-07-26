@@ -12,6 +12,11 @@ extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 #[cfg(test)]
+#[macro_use]
+extern crate pretty_assertions;
+extern crate sprite_loading;
+extern crate sprite_model;
+#[cfg(test)]
 extern crate toml;
 
 pub mod config;

@@ -1,9 +1,11 @@
 //! User defined configuration types for sprites.
 
+pub use self::sprite_frame::SpriteFrame;
 pub use self::sprite_offset::SpriteOffset;
 pub use self::sprite_sheet_definition::SpriteSheetDefinition;
 pub use self::sprites_definition::SpritesDefinition;
 
+mod sprite_frame;
 mod sprite_offset;
 mod sprite_sheet_definition;
 mod sprites_definition;

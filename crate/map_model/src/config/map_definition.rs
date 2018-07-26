@@ -13,6 +13,7 @@ pub struct MapDefinition {
 
 #[cfg(test)]
 mod test {
+    use sprite_model::config::SpriteFrame;
     use toml;
 
     use super::MapDefinition;
@@ -30,16 +31,15 @@ mod test {
         bounds = { x = 1, y = 2, z = 3, width = 800, height = 600, depth = 200 }
 
         [[layer]]
-        path     = "image_0.png"
-        width    = 800
-        height   = 198
         position = { x = 1, y = 4 } # missing z
+        frames = [
+          { sheet = 0, sprite = 0, wait = 7 },
+          { sheet = 0, sprite = 1, wait = 7 },
+        ]
 
         [[layer]]
-        path     = "image_1.png"
-        width    = 50
-        height   = 40
         position = { x = -1, y = -2, z = -3 }
+        frames = [{ sheet = 0, sprite = 0, wait = 1 }]
     "#;
 
     #[test]
@@ -60,8 +60,11 @@ mod test {
 
         let bounds = MapBounds::new(1, 2, 3, 800, 600, 200);
         let header = MapHeader::new("Layered Map".to_string(), bounds);
-        let layer_0 = Layer::new("image_0.png".to_string(), 800, 198, Position::new(1, 4, 0));
-        let layer_1 = Layer::new("image_1.png".to_string(), 50, 40, Position::new(-1, -2, -3));
+        let layer_0 = Layer::new(
+            Position::new(1, 4, 0),
+            vec![SpriteFrame::new(0, 0, 7), SpriteFrame::new(0, 1, 7)],
+        );
+        let layer_1 = Layer::new(Position::new(-1, -2, -3), vec![SpriteFrame::new(0, 0, 1)]);
         let layers = vec![layer_0, layer_1];
         let expected = MapDefinition::new(header, layers);
         assert_eq!(expected, map_definition);
