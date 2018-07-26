@@ -60,10 +60,12 @@ impl CharacterEntitySpawner {
                 .get(character_handle)
                 .expect("Expected character to be loaded.");
 
+            let sprite_material_mesh = &character.object.sprite_material_mesh;
+
             (
                 character_handle.clone(),
-                character.object.default_material.clone(),
-                character.object.mesh.clone(),
+                sprite_material_mesh.default_material.clone(),
+                sprite_material_mesh.mesh.clone(),
                 character
                     .object
                     .animations

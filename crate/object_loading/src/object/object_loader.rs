@@ -31,7 +31,7 @@ impl ObjectLoader {
             config_record.directory.display()
         );
 
-        let (sprite_sheets, mesh, mesh_mirrored, default_material) =
+        let (sprite_sheets, sprite_material_mesh) =
             SpriteLoader::load(world, texture_index_offset, &config_record.directory)?;
 
         let animation_handles = MaterialAnimationLoader::load_into_map(
@@ -41,12 +41,7 @@ impl ObjectLoader {
             &sprite_sheets,
         );
 
-        Ok(loaded::Object::new(
-            default_material,
-            mesh,
-            mesh_mirrored,
-            animation_handles,
-        ))
+        Ok(loaded::Object::new(sprite_material_mesh, animation_handles))
     }
 }
 

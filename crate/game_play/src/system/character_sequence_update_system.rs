@@ -112,9 +112,9 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             if let Some(mirrored) = status_update.object_status.mirrored {
                 // Swap the current mesh with the appropriate mesh.
                 let mesh_handle = if mirrored {
-                    character.object.mesh_mirrored.clone()
+                    character.object.sprite_material_mesh.mesh_mirrored.clone()
                 } else {
-                    character.object.mesh.clone()
+                    character.object.sprite_material_mesh.mesh.clone()
                 };
                 mesh_handle_storage
                     .insert(entity, mesh_handle)

@@ -2,10 +2,10 @@ use std::path::Path;
 
 use amethyst::{
     prelude::*,
-    renderer::{Material, MaterialTextureSet, MeshHandle, SpriteSheet, TextureHandle},
+    renderer::{MaterialTextureSet, SpriteSheet, TextureHandle},
 };
 use application::{load_in, Format, Result};
-use sprite_model::config::SpritesDefinition;
+use sprite_model::{config::SpritesDefinition, loaded::SpriteMaterialMesh};
 
 use MaterialCreator;
 use SpriteMeshCreator;
@@ -28,22 +28,23 @@ impl SpriteLoader {
         world: &World,
         texture_index_offset: u64,
         sprites_base_dir: &Path,
-    ) -> Result<(Vec<SpriteSheet>, MeshHandle, MeshHandle, Material)> {
+    ) -> Result<(Vec<SpriteSheet>, SpriteMaterialMesh)> {
         let sprites_definition =
             load_in::<SpritesDefinition, _>(sprites_base_dir, "sprites.toml", Format::Toml, None)?;
 
         let sprite_sheets =
             SpriteSheetMapper::map(texture_index_offset, &sprites_definition.sheets);
+
         let mesh = SpriteMeshCreator::create_mesh(world, &sprites_definition);
         let mesh_mirrored = SpriteMeshCreator::create_mesh_mirrored(world, &sprites_definition);
         let texture_handles =
             TextureLoader::load_textures(world, sprites_base_dir, &sprites_definition.sheets)?;
-
         let default_material = MaterialCreator::create_default(world, &texture_handles);
+        let sprite_material_mesh = SpriteMaterialMesh::new(default_material, mesh, mesh_mirrored);
 
         Self::store_textures_in_material_texture_set(world, texture_index_offset, texture_handles);
 
-        Ok((sprite_sheets, mesh, mesh_mirrored, default_material))
+        Ok((sprite_sheets, sprite_material_mesh))
     }
 
     /// Stores the texture handles into the global `MaterialTextureSet`.

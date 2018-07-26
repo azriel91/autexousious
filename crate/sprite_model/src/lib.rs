@@ -5,10 +5,10 @@
 //!
 //! These are used by other types that use sprites such as the various object types and map
 //! layers.
-//!
-//! Currently this crate only provides a `config` module as the `loaded` forms are provided by
-//! Amethyst.
 
+extern crate amethyst;
+#[macro_use]
+extern crate derivative;
 #[macro_use]
 extern crate derive_new;
 extern crate serde;
@@ -18,3 +18,4 @@ extern crate serde_derive;
 extern crate toml;
 
 pub mod config;
+pub mod loaded;
