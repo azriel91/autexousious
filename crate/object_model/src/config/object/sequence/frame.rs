@@ -1,3 +1,5 @@
+use sprite_loading::AnimationFrame;
+
 /// Animation and interaction information to use on this frame.
 ///
 /// Frames are the level of detail that should carry the following information:
@@ -20,4 +22,18 @@ pub struct Frame {
     pub sprite: usize,
     /// Number of ticks to wait before the sequence switches to the next frame.
     pub wait: u32,
+}
+
+impl AnimationFrame for Frame {
+    fn texture_index(&self) -> usize {
+        self.sheet
+    }
+
+    fn sprite_index(&self) -> usize {
+        self.sprite
+    }
+
+    fn wait(&self) -> u32 {
+        self.wait
+    }
 }

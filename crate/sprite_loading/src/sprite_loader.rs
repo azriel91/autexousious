@@ -1,9 +1,10 @@
+use std::path::Path;
+
 use amethyst::{
     prelude::*,
     renderer::{Material, MaterialTextureSet, MeshHandle, SpriteSheet, TextureHandle},
 };
 use application::{load_in, Format, Result};
-use game_model::config::ConfigRecord;
 use sprite_model::config::SpritesDefinition;
 
 use MaterialCreator;
@@ -26,24 +27,17 @@ impl SpriteLoader {
     pub fn load(
         world: &World,
         texture_index_offset: u64,
-        config_record: &ConfigRecord,
+        sprites_base_dir: &Path,
     ) -> Result<(Vec<SpriteSheet>, MeshHandle, MeshHandle, Material)> {
-        let sprites_definition = load_in::<SpritesDefinition, _>(
-            &config_record.directory,
-            "sprites.toml",
-            Format::Toml,
-            None,
-        )?;
+        let sprites_definition =
+            load_in::<SpritesDefinition, _>(sprites_base_dir, "sprites.toml", Format::Toml, None)?;
 
         let sprite_sheets =
             SpriteSheetMapper::map(texture_index_offset, &sprites_definition.sheets);
         let mesh = SpriteMeshCreator::create_mesh(world, &sprites_definition);
         let mesh_mirrored = SpriteMeshCreator::create_mesh_mirrored(world, &sprites_definition);
-        let texture_handles = TextureLoader::load_textures(
-            world,
-            &config_record.directory,
-            &sprites_definition.sheets,
-        )?;
+        let texture_handles =
+            TextureLoader::load_textures(world, sprites_base_dir, &sprites_definition.sheets)?;
 
         let default_material = MaterialCreator::create_default(world, &texture_handles);
 

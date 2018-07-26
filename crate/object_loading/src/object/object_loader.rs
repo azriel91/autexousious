@@ -5,9 +5,7 @@ use object_model::{
     config::{object::SequenceId, ObjectDefinition},
     loaded,
 };
-use sprite_loading::SpriteLoader;
-
-use animation::MaterialAnimationLoader;
+use sprite_loading::{MaterialAnimationLoader, SpriteLoader};
 
 /// Loads assets specified by object configuration into the loaded object model.
 #[derive(Debug)]
@@ -34,14 +32,14 @@ impl ObjectLoader {
         );
 
         let (sprite_sheets, mesh, mesh_mirrored, default_material) =
-            SpriteLoader::load(world, texture_index_offset, config_record)?;
+            SpriteLoader::load(world, texture_index_offset, &config_record.directory)?;
 
-        let animation_handles = MaterialAnimationLoader::load(
+        let animation_handles = MaterialAnimationLoader::load_into_map(
             world,
-            object_definition,
+            &object_definition.sequences,
             texture_index_offset,
             &sprite_sheets,
-        )?;
+        );
 
         Ok(loaded::Object::new(
             default_material,

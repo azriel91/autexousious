@@ -22,9 +22,6 @@ extern crate object_model;
 extern crate pretty_assertions;
 #[cfg(test)]
 extern crate serde;
-#[cfg(test)]
-#[macro_use]
-extern crate serde_derive;
 extern crate sprite_loading;
 #[cfg(test)]
 extern crate tempfile;
@@ -32,6 +29,5 @@ extern crate tempfile;
 pub use object::{CharacterLoader, ObjectLoader};
 pub use object_loading_bundle::ObjectLoadingBundle;
 
-mod animation;
 mod object;
 mod object_loading_bundle;

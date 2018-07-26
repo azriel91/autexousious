@@ -11,6 +11,8 @@ pub use self::frame::Frame;
 pub use self::sequence_id::SequenceId;
 pub use self::sequence_state::SequenceState;
 
+use sprite_loading::AnimationSequence;
+
 mod frame;
 mod sequence_id;
 mod sequence_state;
@@ -28,6 +30,13 @@ pub struct Sequence<SeqId: SequenceId> {
     pub next: Option<SeqId>,
     /// Key frames in the animation sequence.
     pub frames: Vec<Frame>,
+}
+
+impl<SeqId: SequenceId> AnimationSequence for Sequence<SeqId> {
+    type Frame = Frame;
+    fn frames(&self) -> &[Frame] {
+        &self.frames
+    }
 }
 
 #[cfg(test)]

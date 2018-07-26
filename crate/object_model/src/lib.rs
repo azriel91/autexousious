@@ -15,6 +15,7 @@ extern crate derive_new;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
+extern crate sprite_loading;
 #[cfg(test)]
 extern crate toml;
 
