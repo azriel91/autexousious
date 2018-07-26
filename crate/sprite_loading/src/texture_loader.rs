@@ -6,7 +6,7 @@ use amethyst::{
     renderer::{PngFormat, Texture, TextureHandle},
 };
 use application::{self, ErrorKind};
-use object_model::config::SpriteSheetDefinition;
+use sprite_model::config::SpriteSheetDefinition;
 
 #[derive(Debug)]
 pub(crate) struct TextureLoader;

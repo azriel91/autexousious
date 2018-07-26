@@ -3,7 +3,7 @@ use amethyst::{
     prelude::*,
     renderer::{Mesh, MeshHandle, PosTex},
 };
-use object_model::config::SpritesDefinition;
+use sprite_model::config::SpritesDefinition;
 
 /// Provides functionality to create meshes used to render an object.
 #[derive(Debug)]
@@ -161,7 +161,7 @@ mod test {
         renderer::{Mesh, MeshHandle, PosTex},
     };
     use amethyst_test_support::prelude::*;
-    use object_model::config::{SpriteOffset, SpriteSheetDefinition, SpritesDefinition};
+    use sprite_model::config::{SpriteOffset, SpriteSheetDefinition, SpritesDefinition};
 
     use super::SpriteMeshCreator;
 

@@ -1,5 +1,5 @@
 use amethyst::renderer::{Sprite, SpriteSheet};
-use object_model::config::SpriteSheetDefinition;
+use sprite_model::config::SpriteSheetDefinition;
 
 #[derive(Debug)]
 pub(crate) struct SpriteSheetMapper;
@@ -145,7 +145,7 @@ impl SpriteSheetMapper {
 #[cfg(test)]
 mod test {
     use amethyst::renderer::SpriteSheet;
-    use object_model::config::{SpriteOffset, SpriteSheetDefinition};
+    use sprite_model::config::{SpriteOffset, SpriteSheetDefinition};
 
     use super::SpriteSheetMapper;
 

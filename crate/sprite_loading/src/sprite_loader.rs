@@ -4,7 +4,7 @@ use amethyst::{
 };
 use application::{load_in, Format, Result};
 use game_model::config::ConfigRecord;
-use object_model::config::SpritesDefinition;
+use sprite_model::config::SpritesDefinition;
 
 use MaterialCreator;
 use SpriteMeshCreator;

@@ -1,4 +1,4 @@
-use config::sprite::SpriteSheetDefinition;
+use config::SpriteSheetDefinition;
 
 /// Configuration type for all sprite sheet definitions for an object.
 #[derive(Debug, Deserialize, new)]

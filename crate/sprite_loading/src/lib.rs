@@ -39,7 +39,7 @@ extern crate application;
 extern crate game_model;
 #[macro_use]
 extern crate log;
-extern crate object_model;
+extern crate sprite_model;
 
 pub(crate) use material_creator::MaterialCreator;
 pub use sprite_loader::SpriteLoader;
