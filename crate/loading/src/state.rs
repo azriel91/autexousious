@@ -9,7 +9,8 @@ use amethyst::{
     renderer::ScreenDimensions,
 };
 use application_ui::ThemeLoader;
-use game_model::config::index_configuration;
+use game_model::config::{index_configuration, ConfigIndex};
+use map_loading::MapLoader;
 use map_model::{
     config::{MapBounds, MapDefinition, MapHeader},
     loaded::{Map, MapHandle, Margins},
@@ -93,12 +94,17 @@ where
                 };
             });
 
-        self.load_maps(world);
+        self.load_maps(world, &configuration_index);
     }
 
-    fn load_maps(&mut self, world: &mut World) {
-        // TODO: Load map from configuration
+    fn load_maps(&mut self, world: &mut World, configuration_index: &ConfigIndex) {
+        let mut loaded_maps = configuration_index
+            .maps
+            .iter()
+            .filter_map(|config_record| MapLoader::load(world, &config_record.directory).ok())
+            .collect::<Vec<MapHandle>>();
 
+        // Default Blank Map
         let (width, height) = {
             let dim = world.read_resource::<ScreenDimensions>();
             (dim.width(), dim.height())
@@ -110,14 +116,14 @@ where
         let layers = Vec::new();
         let definition = MapDefinition::new(header, layers);
         let margins = Margins::from(definition.header.bounds);
-        let map = Map::new(definition, margins);
+        let map = Map::new(definition, margins, None, None);
 
         let map_handle: MapHandle = {
             let loader = world.read_resource::<Loader>();
             loader.load_from_data(map, &mut self.progress_counter, &world.read_resource())
         };
 
-        let loaded_maps = vec![map_handle];
+        loaded_maps.push(map_handle);
 
         debug!("Loaded map handles: `{:?}`", loaded_maps);
 

@@ -54,7 +54,13 @@ mod test {
                         .expect("Expected map to be loaded");
 
                     // See fade/map.toml
-                    assert_eq!(2, map.animations.len());
+                    assert_eq!(
+                        2,
+                        map.animations
+                            .as_ref()
+                            .expect("Expected test/map/fade map to contain animations.")
+                            .len()
+                    );
                 })
                 .run()
                 .is_ok()

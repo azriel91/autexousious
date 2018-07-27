@@ -3,8 +3,10 @@ use std::fs::ReadDir;
 use std::io;
 use std::path::{Path, PathBuf};
 
+use heck::SnakeCase;
 use itertools::Itertools;
 use object_model::ObjectType;
+use strum::IntoEnumIterator;
 
 use config::{ConfigIndex, ConfigRecord, ConfigType};
 
@@ -29,9 +31,12 @@ pub fn index_configuration(assets_dir: &Path) -> ConfigIndex {
 
     let objects = type_config_dirs
         .get(&ConfigType::Object)
-        .map_or(HashMap::new(), |paths| into_object_model_records(paths));
+        .map_or_else(HashMap::new, |paths| into_object_model_records(paths));
+    let maps = type_config_dirs
+        .get(&ConfigType::Map)
+        .map_or_else(Vec::new, |paths| filter_config_records(paths));
 
-    ConfigIndex { objects }
+    ConfigIndex { objects, maps }
 }
 
 /// Returns the top level game configuration directories within the `assets` directory.
@@ -56,15 +61,15 @@ fn config_dirs(assets_dir: &Path) -> Vec<PathBuf> {
 ///
 /// ```text
 /// {
-///     ConfigType::Object: PathBuf::from("assets/objects"),
-///     ConfigType::Map: PathBuf::from("assets/maps"),
+///     ConfigType::Object: PathBuf::from("assets/object"),
+///     ConfigType::Map: PathBuf::from("assets/map"),
 /// }
 /// ```
 fn into_type_config_dirs(config_dir: &PathBuf) -> Vec<(ConfigType, PathBuf)> {
-    ConfigType::variants()
-        .into_iter()
+    ConfigType::iter()
         .map(|config_type| {
-            let type_config_dir = config_dir.join(&config_type.name());
+            // TODO: Snake case pending <https://github.com/Peternator7/strum/issues/21>
+            let type_config_dir = config_dir.join(&config_type.to_string().to_snake_case());
             (config_type, type_config_dir)
         })
         .filter(|&(ref _config_type, ref dir)| dir.is_dir())
@@ -85,57 +90,62 @@ fn into_type_config_dirs(config_dir: &PathBuf) -> Vec<(ConfigType, PathBuf)> {
 ///
 /// # Parameters
 ///
-/// * `paths`: Object configuration directories to traverse.
-fn into_object_model_records(paths: &[PathBuf]) -> HashMap<ObjectType, Vec<ConfigRecord>> {
+/// * `object_type_dirs_groups`: Object configuration directories to traverse.
+fn into_object_model_records(
+    object_type_dirs_groups: &[PathBuf],
+) -> HashMap<ObjectType, Vec<ConfigRecord>> {
     ObjectType::variants()
         .into_iter()
         .filter_map(|object_type| {
             // Discover object type configuration directories
             // i.e. "assets/default/object/<object_type>"
-            let object_type_dir = paths
+            let object_type_dirs = object_type_dirs_groups
                 .iter()
                 .map(|object_dir| object_dir.join(&object_type.name()))
                 .filter(|path| path.is_dir())
                 .collect::<Vec<PathBuf>>();
 
-            if object_type_dir.is_empty() {
+            if object_type_dirs.is_empty() {
                 return None;
             }
 
             // Loop through all of the object type configuration directories, and list their child
             // directories. Each of these should be an object configuration directory.
-            let object_model_records = object_type_dir
-                .iter()
-                .filter_map(into_read_dir_opt)
-                .map(|read_dir| {
-                    read_dir
-                        .filter_map(|entry| entry.ok())
-                        .filter_map(|entry| {
-                            let metadata = entry.metadata().ok()?;
-                            if metadata.is_dir() {
-                                Some(entry.path())
-                            } else {
-                                None
-                            }
-                        })
-                        .collect::<Vec<PathBuf>>()
-                })
-                .flat_map(into_config_records)
-                .collect::<Vec<ConfigRecord>>();
+            let object_model_records = filter_config_records(&object_type_dirs);
 
             Some((object_type, object_model_records))
         })
         .collect::<HashMap<ObjectType, Vec<ConfigRecord>>>()
 }
 
-fn into_config_records(paths: Vec<PathBuf>) -> Vec<ConfigRecord> {
+fn filter_config_records(paths: &[PathBuf]) -> Vec<ConfigRecord> {
     paths
-        .into_iter()
-        .map(ConfigRecord::new)
+        .iter()
+        .filter_map(into_read_dir_opt)
+        .map(|read_dir| {
+            read_dir
+                .filter_map(|entry| entry.ok())
+                .filter_map(|entry| {
+                    let metadata = entry.metadata().ok()?;
+                    if metadata.is_dir() {
+                        Some(entry.path())
+                    } else {
+                        None
+                    }
+                })
+                .collect::<Vec<PathBuf>>()
+        })
+        // Flat map groups the same "type" of configuration type across default / download / test
+        // together.
+        .flat_map(into_config_records)
         .collect::<Vec<ConfigRecord>>()
 }
 
-/// Returns `Some(ReadDir)` if successfully reading the directory.
+fn into_config_records(paths: Vec<PathBuf>) -> impl Iterator<Item = ConfigRecord> {
+    paths.into_iter().map(ConfigRecord::new)
+}
+
+/// Returns `Some(ReadDir)` if the directory is successfully read.
 ///
 /// If it fails, an error is logged and this returns `None`.
 ///

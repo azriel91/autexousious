@@ -10,6 +10,7 @@ extern crate derivative;
 extern crate game_model;
 #[macro_use]
 extern crate log;
+extern crate map_loading;
 extern crate map_model;
 extern crate object_loading;
 extern crate object_model;

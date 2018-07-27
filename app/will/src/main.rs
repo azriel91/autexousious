@@ -113,12 +113,18 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 "character_animation_control_system",
                 "character_sampler_interpolation_system",
             ))?
+            .with_bundle(AnimationBundle::<u32, Material>::new(
+                "animation_control_system",
+                "sampler_interpolation_system",
+            ))?
             // Handles transformations of textures
             .with_bundle(
                 TransformBundle::new()
                     .with_dep(&[
                         "character_animation_control_system",
                         "character_sampler_interpolation_system",
+                        "animation_control_system",
+                        "sampler_interpolation_system",
                     ]),
             )?
             .with_bundle(RenderBundle::new(pipe, Some(display_config)))?

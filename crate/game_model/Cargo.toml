@@ -5,9 +5,12 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 
 [dependencies]
 derive_more = "0.11"
+heck = "0.3"
 itertools = "~0.7.8"
 log = "0.4"
 object_model = { path = "../object_model" }
+strum = "0.10"
+strum_macros = "0.10"
 
 [dev-dependencies]
 tempfile = "3.0"

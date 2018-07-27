@@ -104,8 +104,8 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                 AnimationRunner::swap(
                     &mut animation_set,
                     &animation_handle,
-                    &character_status.object_status.sequence_id,
-                    &next_sequence_id,
+                    character_status.object_status.sequence_id,
+                    next_sequence_id,
                 );
             }
 

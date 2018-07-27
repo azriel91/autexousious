@@ -16,10 +16,10 @@ pub struct Map {
     pub definition: MapDefinition,
     /// Coordinates of the limits of the playable area.
     pub margins: Margins,
-    /// Default material for entities of this object.
-    pub sprite_material_mesh: SpriteMaterialMesh,
-    /// Handle to the animations that this object uses.
-    pub animations: Vec<Handle<Animation<Material>>>,
+    /// Default material for layer entities.
+    pub sprite_material_mesh: Option<SpriteMaterialMesh>,
+    /// Handle to the animations for this map's layers.
+    pub animations: Option<Vec<Handle<Animation<Material>>>>,
 }
 
 impl Asset for Map {

@@ -37,7 +37,7 @@ impl CharacterEntitySpawner {
         character_entity_control: CharacterEntityControl,
     ) -> Entity {
         let character_status = CharacterStatus::default();
-        let first_sequence_id = &character_status.object_status.sequence_id;
+        let first_sequence_id = character_status.object_status.sequence_id;
 
         let (character_handle, material, mesh, animation_handle) = {
             let loaded_characters = world.read_resource::<Vec<CharacterHandle>>();
@@ -69,7 +69,7 @@ impl CharacterEntitySpawner {
                 character
                     .object
                     .animations
-                    .get(first_sequence_id)
+                    .get(&first_sequence_id)
                     .expect("Expected character to have at least one sequence.")
                     .clone(),
             ) // kcov-ignore

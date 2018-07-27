@@ -1,7 +1,7 @@
 use std::path::Path;
 
 use amethyst::{assets::Loader, prelude::*, renderer::MaterialTextureSet};
-use application::{load_in, Format, Result};
+use application::{load_in, ErrorKind, Format, Result};
 use map_model::{
     config::MapDefinition,
     loaded::{Map, MapHandle, Margins},
@@ -24,15 +24,29 @@ impl MapLoader {
 
         let map_definition = load_in::<MapDefinition, _>(base_dir, "map.toml", Format::Toml, None)?;
         let texture_index_offset = world.read_resource::<MaterialTextureSet>().len() as u64;
-        let (sprite_sheets, sprite_material_mesh) =
-            SpriteLoader::load(world, texture_index_offset, base_dir)?;
 
-        let animation_handles = MaterialAnimationLoader::load_into_vec(
-            world,
-            map_definition.layers.iter(),
-            texture_index_offset,
-            &sprite_sheets,
-        );
+        let sprite_load_result = SpriteLoader::load(world, texture_index_offset, base_dir);
+        let sprite_info = match sprite_load_result {
+            Ok(sprite_info) => Ok(Some(sprite_info)),
+            Err(e) => match e.kind() {
+                ErrorKind::Find(..) => Ok(None),
+                _ => Err(e),
+            },
+        }?;
+
+        let (sprite_material_mesh, animation_handles) = {
+            if let Some((sprite_sheets, sprite_material_mesh)) = sprite_info {
+                let animation_handles = MaterialAnimationLoader::load_into_vec(
+                    world,
+                    map_definition.layers.iter(),
+                    texture_index_offset,
+                    &sprite_sheets,
+                );
+                (Some(sprite_material_mesh), Some(animation_handles))
+            } else {
+                (None, None)
+            }
+        };
 
         let margins = Margins::from(map_definition.header.bounds);
 

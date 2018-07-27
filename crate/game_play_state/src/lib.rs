@@ -31,7 +31,9 @@ extern crate typename_derive;
 pub use animation_runner::AnimationRunner;
 pub(crate) use character_entity_spawner::CharacterEntitySpawner;
 pub use game_play_state::GamePlayState;
+pub(crate) use map_layer_entity_spawner::MapLayerEntitySpawner;
 
 mod animation_runner;
 mod character_entity_spawner;
 mod game_play_state;
+mod map_layer_entity_spawner;
