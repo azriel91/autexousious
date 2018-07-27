@@ -22,7 +22,32 @@ impl AnimationRunner {
         animation_handle: &Handle<Animation<T>>,
         sequence_id: SeqId,
     ) {
-        Self::internal_start(animation_set, animation_handle, sequence_id);
+        Self::internal_start(
+            animation_set,
+            animation_handle,
+            sequence_id,
+            EndControl::Stay,
+        );
+    }
+
+    /// Starts and loops an animation control set.
+    ///
+    /// # Parameters
+    ///
+    /// * `animation_set`: Animation control set to start.
+    /// * `animation_handle`: Handle to the animation to include in the set.
+    /// * `sequence_id`: ID to track the animation control set.
+    pub fn start_loop<SeqId: PartialEq + Copy, T: AnimationSampling>(
+        animation_set: &mut AnimationControlSet<SeqId, T>,
+        animation_handle: &Handle<Animation<T>>,
+        sequence_id: SeqId,
+    ) {
+        Self::internal_start(
+            animation_set,
+            animation_handle,
+            sequence_id,
+            EndControl::Loop(None),
+        );
     }
 
     /// Stops an existing animation control set and starts another.
@@ -42,18 +67,24 @@ impl AnimationRunner {
         animation_set.abort(current_sequence_id);
 
         // Start the next animation
-        Self::internal_start(animation_set, animation_handle, next_sequence_id);
+        Self::internal_start(
+            animation_set,
+            animation_handle,
+            next_sequence_id,
+            EndControl::Stay,
+        );
     }
 
     fn internal_start<SeqId: PartialEq + Copy, T: AnimationSampling>(
         animation_set: &mut AnimationControlSet<SeqId, T>,
         animation_handle: &Handle<Animation<T>>,
         sequence_id: SeqId,
+        end_control: EndControl,
     ) {
         animation_set.add_animation(
             sequence_id,
             &animation_handle,
-            EndControl::Stay,
+            end_control,
             30., // Rate at which the animation plays
             AnimationCommand::Start,
         );

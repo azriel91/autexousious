@@ -41,7 +41,8 @@ impl GamePlayState {
             .expect("Expected map to be selected.")
             .clone();
 
-        MapLayerEntitySpawner::spawn(world, &map_handle);
+        self.entities
+            .append(&mut MapLayerEntitySpawner::spawn(world, &map_handle));
 
         // Used to determine where to spawn characters.
         let (width, height) = {

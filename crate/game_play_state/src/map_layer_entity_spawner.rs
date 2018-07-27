@@ -1,6 +1,6 @@
 use amethyst::{
-    animation::{get_animation_set, Animation},
-    assets::{AssetStorage, Handle},
+    animation::get_animation_set,
+    assets::AssetStorage,
     core::{
         cgmath::Vector3,
         transform::{GlobalTransform, Transform},
@@ -25,8 +25,8 @@ impl MapLayerEntitySpawner {
     ///
     /// * `world`: `World` to spawn the character into.
     /// * `map_handle`: Handle of the map whose layers to spawn.
-    pub(crate) fn spawn(world: &mut World, map_handle: &MapHandle) {
-        let layers_entity_components = {
+    pub(crate) fn spawn(world: &mut World, map_handle: &MapHandle) -> Vec<Entity> {
+        let components_and_animation = {
             let map_store = world.read_resource::<AssetStorage<Map>>();
             let map = map_store
                 .get(map_handle)
@@ -39,13 +39,14 @@ impl MapLayerEntitySpawner {
                     .sprite_material_mesh
                     .as_ref()
                     .expect("Expected SpriteMaterialMesh to be present when there are animations.");
-                let map_animations = map_animations.as_ref().unwrap();
+
+                let map_animations = map_animations.as_ref().unwrap().clone();
+
                 let components = map
                     .definition
                     .layers
                     .iter()
-                    .zip(map_animations.iter())
-                    .map(|(layer, animation_handle)| {
+                    .map(|layer| {
                         let position = layer.position;
                         let mut transform = Transform::default();
                         transform.translation =
@@ -55,41 +56,49 @@ impl MapLayerEntitySpawner {
                             transform,
                             sprite_material_mesh.default_material.clone(),
                             sprite_material_mesh.mesh.clone(),
-                            animation_handle.clone(),
                         )
                     })
-                    .collect::<Vec<(Transform, Material, MeshHandle, Handle<Animation<Material>>)>>(
-                    );
-                Some(components)
+                    .collect::<Vec<(Transform, Material, MeshHandle)>>();
+
+                Some((components, map_animations))
             } else {
                 None
             }
         };
 
-        if let Some(layers_entity_components) = layers_entity_components {
-            layers_entity_components.into_iter().for_each(
-                |(transform, material, mesh, animation_handle)| {
-                    let entity = world
+        if let Some((layers_entity_components, map_animations)) = components_and_animation {
+            let entities = layers_entity_components
+                .into_iter()
+                .map(|(transform, material, mesh)| {
+                    world
                         .create_entity()
                         .with(transform)
                         .with(material)
                         .with(mesh)
-                        .with(animation_handle.clone())
                         .with(GlobalTransform::default())
-                        .build();
+                        .build()
+                })
+                .collect::<Vec<_>>();
 
+            entities
+                .iter()
+                .zip(map_animations.iter())
+                .for_each(|(entity, animation_handle)| {
                     // We also need to trigger the animation, not just attach it to the entity
                     let animation_id = 0;
                     let mut animation_control_set_storage = world.write_storage();
                     let mut animation_set =
                         get_animation_set::<u32, Material>(
                             &mut animation_control_set_storage,
-                            entity,
+                            *entity,
                         ).expect("Animation should exist as new entity should be valid.");
 
-                    AnimationRunner::start(&mut animation_set, &animation_handle, animation_id);
-                },
-            );
+                    AnimationRunner::start_loop(&mut animation_set, animation_handle, animation_id);
+                });
+
+            entities
+        } else {
+            vec![]
         }
     }
 }

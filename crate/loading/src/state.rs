@@ -83,7 +83,13 @@ where
                                     "Loading character from: `{}`",
                                     config_record.directory.display()
                                 );
-                                CharacterLoader::load(world, config_record).ok()
+                                let result = CharacterLoader::load(world, config_record);
+
+                                if let Err(ref e) = result {
+                                    error!("Failed to load character. Reason: \n\n```\n{}\n```", e);
+                                }
+
+                                result.ok()
                             })
                             .collect::<Vec<CharacterHandle>>();
 

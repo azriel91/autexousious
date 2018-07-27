@@ -1,6 +1,6 @@
 (
   title: "Will",
-  dimensions: Some((1024, 768)),
+  dimensions: Some((800, 600)),
   max_dimensions: None,
   min_dimensions: None,
   fullscreen: false,
