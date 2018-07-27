@@ -16,7 +16,6 @@ game_mode_menu = { path = "../../crate/game_mode_menu" }
 game_play = { path = "../../crate/game_play" }
 loading = { path = "../../crate/loading" }
 map_loading = { path = "../../crate/map_loading" }
-map_play = { path = "../../crate/map_play" }
 log = "0.4"
 object_loading = { path = "../../crate/object_loading" }
 object_model = { path = "../../crate/object_model" }

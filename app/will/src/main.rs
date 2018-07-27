@@ -16,7 +16,6 @@ extern crate loading;
 #[macro_use]
 extern crate log;
 extern crate map_loading;
-extern crate map_play;
 extern crate object_loading;
 extern crate object_model;
 extern crate stdio_view;
@@ -48,7 +47,6 @@ use game_input::{PlayerActionControl, PlayerAxisControl};
 use game_mode_menu::GameModeMenuState;
 use game_play::GamePlayBundle;
 use map_loading::MapLoadingBundle;
-use map_play::MapPlayBundle;
 use object_loading::ObjectLoadingBundle;
 use object_model::config::object::CharacterSequenceId;
 use stdio_view::StdioViewBundle;
@@ -135,7 +133,6 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?
             .with_bundle(StdioViewBundle::new())?
             .with_bundle(MapLoadingBundle::new())?
-            .with_bundle(MapPlayBundle::new())?
             .with_bundle(ObjectLoadingBundle::new())?
             .with_bundle(CharacterSelectionBundle::new())?
             .with_bundle(GamePlayBundle::new())?;
