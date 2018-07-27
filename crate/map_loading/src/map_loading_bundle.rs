@@ -20,46 +20,44 @@ impl<'a, 'b> SystemBundle<'a, 'b> for MapLoadingBundle {
 
 #[cfg(test)]
 mod test {
-    use amethyst::assets::{AssetStorage, Loader};
+    use std::path::Path;
+
+    use amethyst::assets::AssetStorage;
     use amethyst_test_support::prelude::*;
-    use map_model::{
-        config::{MapBounds, MapDefinition, MapHeader},
-        loaded::{Map, MapHandle, Margins},
-    };
+    use application::resource::dir::assets_dir;
+    use map_model::loaded::{Map, MapHandle};
 
     use super::MapLoadingBundle;
+    use MapLoader;
 
     #[test]
     fn bundle_build_adds_map_processor() {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::blank()
-                .with_bundle(MapLoadingBundle::new())
+            AmethystApplication::render_base("loads_map_assets", false)
+                .with_bundle(MapLoadingBundle)
                 .with_effect(|world| {
-                    let map = test_map();
-                    let map_handle: MapHandle = {
-                        let loader = world.read_resource::<Loader>();
-                        loader.load_from_data(map, (), &world.read_resource())
-                    };
+                    let mut map_path = assets_dir(Some(development_base_dirs!()))
+                        .expect("Expected to find `assets` directory in crate root.");
+                    map_path.extend(Path::new("test/map/fade").iter());
+
+                    let map_handle = MapLoader::load(world, &map_path).expect("Failed to load map");
+
                     world.add_resource(EffectReturn(map_handle));
                 })
                 .with_assertion(|world| {
                     let map_handle = world.read_resource::<EffectReturn<MapHandle>>().0.clone();
-                    let store = world.read_resource::<AssetStorage<Map>>();
+                    let map_store = world.read_resource::<AssetStorage<Map>>();
+                    let map = map_store
+                        .get(&map_handle)
+                        .expect("Expected map to be loaded");
 
-                    assert_eq!(Some(&test_map()), store.get(&map_handle));
+                    // See fade/map.toml
+                    assert_eq!(2, map.animations.len());
                 })
                 .run()
                 .is_ok()
         );
-    }
-
-    fn test_map() -> Map {
-        let bounds = MapBounds::new(0, 0, 0, 800, 600, 200);
-        let header = MapHeader::new("Test Map".to_string(), bounds);
-        let definition = MapDefinition::new(header, Vec::new());
-        let margins = Margins::from(definition.header.bounds);
-        Map::new(definition, margins)
     }
 }

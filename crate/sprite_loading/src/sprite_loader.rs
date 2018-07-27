@@ -19,18 +19,23 @@ pub struct SpriteLoader;
 impl SpriteLoader {
     /// Loads and returns sprite assets for an object.
     ///
+    /// The sprites base directory is expected to contain:
+    ///
+    /// * `sprites.toml`: Configuration file that defines what sprites to load.
+    /// * Sprite sheets: The images that contain the sprites.
+    ///
     /// # Parameters
     ///
     /// * `world`: `World` to store the loaded assets.
     /// * `texture_index_offset`: Index offset for sprite sheets and textures.
-    /// * `config_record`: Configuration record of the object for which to load sprites.
+    /// * `base_dir`: Base directory from which to load sprites.
     pub fn load(
         world: &World,
         texture_index_offset: u64,
-        sprites_base_dir: &Path,
+        base_dir: &Path,
     ) -> Result<(Vec<SpriteSheet>, SpriteMaterialMesh)> {
         let sprites_definition =
-            load_in::<SpritesDefinition, _>(sprites_base_dir, "sprites.toml", Format::Toml, None)?;
+            load_in::<SpritesDefinition, _>(base_dir, "sprites.toml", Format::Toml, None)?;
 
         let sprite_sheets =
             SpriteSheetMapper::map(texture_index_offset, &sprites_definition.sheets);
@@ -38,7 +43,7 @@ impl SpriteLoader {
         let mesh = SpriteMeshCreator::create_mesh(world, &sprites_definition);
         let mesh_mirrored = SpriteMeshCreator::create_mesh_mirrored(world, &sprites_definition);
         let texture_handles =
-            TextureLoader::load_textures(world, sprites_base_dir, &sprites_definition.sheets)?;
+            TextureLoader::load_textures(world, base_dir, &sprites_definition.sheets)?;
         let default_material = MaterialCreator::create_default(world, &texture_handles);
         let sprite_material_mesh = SpriteMaterialMesh::new(default_material, mesh, mesh_mirrored);
 

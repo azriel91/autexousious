@@ -3,7 +3,8 @@
 
 //! Types used to represent maps and their configuration.
 //!
-//! Currently this is barebones and just allows us to define the bounds of a map for a game.
+//! This allows us to define the bounds of a map for a game, as well as image layers to render. In
+//! contrast to `Object`s, an entity should be created for each map `Layer`.
 
 extern crate amethyst;
 #[macro_use]

@@ -268,7 +268,7 @@ mod test {
         SpriteSheetDefinition::new("0.png".to_string(), 9, 19, 2, 3, true, offsets(6))
     }
 
-    fn offsets(n: usize) -> Vec<SpriteOffset> {
-        (0..n).map(|_| (0, 0).into()).collect()
+    fn offsets(n: usize) -> Option<Vec<SpriteOffset>> {
+        Some((0..n).map(|_| (0, 0).into()).collect())
     }
 }

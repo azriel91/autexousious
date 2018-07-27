@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* Sprite offsets are optional when declaring sprite sheets.
 * Updated sprites configuration to take in `u32` instead of `f32` for sprite dimensions.
 * Prevent characters from moving outside map margins.
 * Use `typename` to derive `System` names.

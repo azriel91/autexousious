@@ -1,7 +1,7 @@
 use amethyst::renderer::{Material, MeshHandle};
 
 /// Material and mesh rendering information for an entity whose sprites have been loaded.
-#[derive(Clone, Derivative, new)]
+#[derive(Clone, Derivative, PartialEq, new)]
 #[derivative(Debug)]
 pub struct SpriteMaterialMesh {
     /// Default material for entities that are rendered using sprites.

@@ -80,7 +80,8 @@ mod test {
         let sprites_definition = toml::from_str::<SpritesDefinition>(sprites_toml)
             .expect("Failed to deserialize sprites definition.");
 
-        assert_eq!(-35, sprites_definition.sheets[0].offsets[0].x);
-        assert_eq!(-79, sprites_definition.sheets[0].offsets[1].y);
+        let offsets = sprites_definition.sheets[0].offsets.as_ref().unwrap();
+        assert_eq!(-35, offsets[0].x);
+        assert_eq!(-79, offsets[1].y);
     }
 }

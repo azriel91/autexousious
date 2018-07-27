@@ -1,7 +1,10 @@
 use amethyst::{
+    animation::Animation,
     assets::{Asset, Error, Handle, ProcessingState},
     ecs::prelude::*,
+    renderer::Material,
 };
+use sprite_model::loaded::SpriteMaterialMesh;
 
 use config::MapDefinition;
 use loaded::Margins;
@@ -13,6 +16,10 @@ pub struct Map {
     pub definition: MapDefinition,
     /// Coordinates of the limits of the playable area.
     pub margins: Margins,
+    /// Default material for entities of this object.
+    pub sprite_material_mesh: SpriteMaterialMesh,
+    /// Handle to the animations that this object uses.
+    pub animations: Vec<Handle<Animation<Material>>>,
 }
 
 impl Asset for Map {

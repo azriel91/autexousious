@@ -1,0 +1,17 @@
+[header]
+name   = "Fade"
+bounds = { x = 1, y = 2, z = 3, width = 800, height = 400, depth = 200 }
+
+[[layer]]
+# Sky
+position = { x = 0, y = 0, z = 0 }
+frames = [{ sheet = 0, sprite = 0, wait = 10 }]
+
+[[layer]]
+# Ground
+position = { x = 0, y = 400, z = 0 }
+frames = [
+  { sheet = 1, sprite = 0, wait = 7 },
+  { sheet = 1, sprite = 1, wait = 7 },
+  { sheet = 1, sprite = 2, wait = 7 },
+]

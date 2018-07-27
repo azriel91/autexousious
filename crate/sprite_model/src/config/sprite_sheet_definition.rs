@@ -29,7 +29,7 @@ pub struct SpriteSheetDefinition {
     ///
     /// A positive x value shifts the sprite to the left by that many pixels.
     /// A positive y value shifts the sprite upwards by that many pixels.
-    pub offsets: Vec<SpriteOffset>,
+    pub offsets: Option<Vec<SpriteOffset>>,
 }
 
 impl SpriteSheetDefinition {
