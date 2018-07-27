@@ -104,17 +104,17 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                 AnimationRunner::swap(
                     &mut animation_set,
                     &animation_handle,
-                    &character_status.object_status.sequence_id,
-                    &next_sequence_id,
+                    character_status.object_status.sequence_id,
+                    next_sequence_id,
                 );
             }
 
             if let Some(mirrored) = status_update.object_status.mirrored {
                 // Swap the current mesh with the appropriate mesh.
                 let mesh_handle = if mirrored {
-                    character.object.mesh_mirrored.clone()
+                    character.object.sprite_material_mesh.mesh_mirrored.clone()
                 } else {
-                    character.object.mesh.clone()
+                    character.object.sprite_material_mesh.mesh.clone()
                 };
                 mesh_handle_storage
                     .insert(entity, mesh_handle)

@@ -9,6 +9,7 @@ application_ui = { path = "../application_ui" }
 derivative = "1.0"
 game_model = { path = "../game_model" }
 log = "0.4"
+map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }
 object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }

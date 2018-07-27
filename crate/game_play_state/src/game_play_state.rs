@@ -15,6 +15,7 @@ use map_selection::MapSelection;
 use object_model::entity::{Kinematics, Position, Velocity};
 
 use CharacterEntitySpawner;
+use MapLayerEntitySpawner;
 
 /// `State` where game play takes place.
 #[derive(Debug, Default)]
@@ -32,13 +33,16 @@ impl GamePlayState {
     }
 
     fn initialize_entities(&mut self, world: &mut World) {
-        // Add map entity.
+        // Add map layer entities.
         let map_handle = world
             .read_resource::<MapSelection>()
             .map_handle
             .as_ref()
             .expect("Expected map to be selected.")
             .clone();
+
+        self.entities
+            .append(&mut MapLayerEntitySpawner::spawn(world, &map_handle));
 
         // Used to determine where to spawn characters.
         let (width, height) = {

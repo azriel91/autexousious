@@ -30,10 +30,14 @@
 
 #[macro_use]
 extern crate derive_more;
+extern crate heck;
 extern crate itertools;
 #[macro_use]
 extern crate log;
 extern crate object_model;
+extern crate strum;
+#[macro_use]
+extern crate strum_macros;
 #[cfg(test)]
 extern crate tempfile;
 

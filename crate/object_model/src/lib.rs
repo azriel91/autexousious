@@ -5,12 +5,7 @@
 //!
 //! Object types are listed in the [`ObjectType`][obj_type] enum.
 //!
-//! Configuration types used by most (if not all) objects:
-//!
-//! * [`SpriteSheetDefinition`][spritesheet]: Defines how sprites are laid out on sprite sheets.
-//!
 //! [obj_type]: enum.ObjectType.html
-//! [spritesheet]: config/struct.SpriteSheetDefinition.html
 
 extern crate amethyst;
 #[macro_use]
@@ -20,6 +15,8 @@ extern crate derive_new;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
+extern crate sprite_loading;
+extern crate sprite_model;
 #[cfg(test)]
 extern crate toml;
 

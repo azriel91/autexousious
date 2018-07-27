@@ -2,12 +2,15 @@ use std::ffi;
 use std::fs::File;
 use std::path::{Path, PathBuf};
 
-use ron::de::from_reader;
+use ron;
 use serde::Deserialize;
+use toml;
 
+use find;
+use find_in;
 use resource::error::Result;
-use resource::find::{find, find_in};
-use resource::format::Format;
+use Format;
+use IoUtils;
 
 /// Loads and returns the data from the specified file.
 ///
@@ -15,7 +18,7 @@ use resource::format::Format;
 ///
 /// * `file_name`: Name of the file to search for relative to the executable.
 /// * `format`: File format.
-pub fn load<T>(file_name: &str, format: &Format) -> Result<T>
+pub fn load<T>(file_name: &str, format: Format) -> Result<T>
 where
     for<'de> T: Deserialize<'de>,
 {
@@ -61,7 +64,7 @@ where
 /// let config: Config = match load_in(
 ///     dir::RESOURCES,
 ///     "config.ron",
-///     &resource::Format::Ron,
+///     resource::Format::Ron,
 ///     Some(development_base_dirs!()))
 /// {
 ///     Ok(path) => path,
@@ -73,7 +76,7 @@ where
 pub fn load_in<T, P>(
     conf_dir: P,
     file_name: &str,
-    format: &Format,
+    format: Format,
     additional_base_dirs: Option<Vec<PathBuf>>,
 ) -> Result<T>
 where
@@ -84,14 +87,20 @@ where
     load_internal(file_path, format)
 }
 
-fn load_internal<T, P>(file_path: P, format: &Format) -> Result<T>
+fn load_internal<T, P>(file_path: P, format: Format) -> Result<T>
 where
     for<'de> T: Deserialize<'de>,
     P: AsRef<Path> + AsRef<ffi::OsStr>,
 {
-    let file_reader = File::open(file_path)?;
-    match *format {
-        Format::Ron => Ok(from_reader(file_reader)?),
+    match format {
+        Format::Ron => {
+            let file_reader = File::open(file_path)?;
+            Ok(ron::de::from_reader(file_reader)?)
+        }
+        Format::Toml => {
+            let toml_contents = IoUtils::read_file(file_path.as_ref())?;
+            Ok(toml::from_slice(&toml_contents)?)
+        }
     }
 }
 
@@ -101,6 +110,7 @@ mod test {
 
     use ron;
     use ron::de::ParseError;
+    use toml;
 
     use super::{load, load_in};
     use resource::dir;
@@ -111,21 +121,21 @@ mod test {
     test_mutex!();
 
     test! {
-        fn load_in_returns_resource_when_file_exists_and_parses_successfully() {
+        fn load_in_ron_returns_resource_when_file_exists_and_parses_successfully() {
             let (temp_dir, resource_path) = setup_temp_file(
                 dir::RESOURCES,
                 "test__load_config",
                 ".ron",
-                Some("Data(123)"),
+                Some("Data(val: 123)"),
             );
             let temp_dir = temp_dir.unwrap();
 
             assert_eq!(
-                Data(123),
+                Data { val: 123 },
                 load_in(
                     &temp_dir.path(),
                     "test__load_config.ron",
-                    &Format::Ron,
+                    Format::Ron,
                     Some(development_base_dirs!())
                 ).unwrap()
             );
@@ -136,13 +146,13 @@ mod test {
     }
 
     test! {
-        fn load_returns_resource_when_file_exists_and_parses_successfully() {
+        fn load_ron_returns_resource_when_file_exists_and_parses_successfully() {
             let (_, resource_path) =
-                setup_temp_file("", "test__load_config", ".ron", Some("Data(123)"));
+                setup_temp_file("", "test__load_config", ".ron", Some("Data(val: 123)"));
 
             assert_eq!(
-                Data(123),
-                load("test__load_config.ron", &Format::Ron).unwrap()
+                Data { val: 123 },
+                load("test__load_config.ron", Format::Ron).unwrap()
             );
 
             resource_path.close().unwrap();
@@ -150,13 +160,13 @@ mod test {
     }
 
     test! {
-        fn load_in_returns_error_when_file_does_not_exist() {
+        fn load_in_ron_returns_error_when_file_does_not_exist() {
             // We don't setup_temp_file(..);
 
             let load_result = load_in::<Data, _>(
                 "",
                 "test__load_config.ron",
-                &Format::Ron,
+                Format::Ron,
                 None,
             );
 
@@ -176,11 +186,11 @@ mod test {
     }
 
     test! {
-        fn load_returns_error_when_file_does_not_exist() {
+        fn load_ron_returns_error_when_file_does_not_exist() {
             // We don't setup_temp_file(..);
 
             if let &ErrorKind::Find(ref find_context) =
-                load::<Data>("test__load_config.ron", &Format::Ron).unwrap_err().kind()
+                load::<Data>("test__load_config.ron", Format::Ron).unwrap_err().kind()
             {
                 let mut base_dirs = vec![exe_dir()];
                 let expected = FindContext {
@@ -197,15 +207,14 @@ mod test {
     }
 
     test! {
-        fn load_returns_error_when_file_fails_to_parse() {
+        fn load_ron_returns_error_when_file_fails_to_parse() {
             let (_, resource_path) = setup_temp_file(
                 "",
                 "test__load_config",
                 ".ron",
                 Some("I'm parsable. Unparsable."),
             );
-
-            let load_result = load::<Data>("test__load_config.ron", &Format::Ron);
+            let load_result = load::<Data>("test__load_config.ron", Format::Ron);
             resource_path.close().unwrap();
 
             // We cannot use `assert_eq!` because `ron::parse::Position` is private
@@ -219,6 +228,51 @@ mod test {
         }
     }
 
+    test! {
+        fn load_in_toml_returns_resource_when_file_exists_and_parses_successfully() {
+            let (temp_dir, resource_path) = setup_temp_file(
+                dir::RESOURCES,
+                "test__load_config",
+                ".toml",
+                Some("val = 123"),
+            );
+            let temp_dir = temp_dir.unwrap();
+
+            assert_eq!(
+                Data { val: 123 },
+                load_in(
+                    &temp_dir.path(),
+                    "test__load_config.toml",
+                    Format::Toml,
+                    Some(development_base_dirs!())
+                ).unwrap()
+            );
+
+            resource_path.close().unwrap();
+            temp_dir.close().unwrap();
+        }
+    }
+
+    test! {
+        fn load_toml_returns_error_when_file_fails_to_parse() {
+            let (_, resource_path) = setup_temp_file(
+                "",
+                "test__load_config",
+                ".toml",
+                Some("I'm parsable. Unparsable."),
+            );
+            let load_result = load::<Data>("test__load_config.toml", Format::Toml);
+            resource_path.close().unwrap();
+
+            match load_result.expect_err("Expected parse failure.").kind() {
+                &ErrorKind::TomlDeserialization(toml::de::Error { .. }) => (),
+                _ => panic!("Expected TomlDeserialization error"), // kcov-ignore
+            };
+        }
+    }
+
     #[derive(Debug, Deserialize, PartialEq)]
-    struct Data(i32);
+    struct Data {
+        val: i32,
+    }
 }

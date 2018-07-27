@@ -1,4 +1,4 @@
-use config::sprite::SpriteOffset;
+use config::SpriteOffset;
 
 /// Information about how sprites are laid out on the sprite sheet.
 ///
@@ -11,17 +11,17 @@ pub struct SpriteSheetDefinition {
     /// we store a `PathBuf`, it would need to re-allocate another `String`.
     pub path: String,
     /// Width of each individual sprite on the sprite sheet.
-    pub sprite_w: f32,
+    pub sprite_w: u32,
     /// Height of each individual sprite on the sprite sheet.
-    pub sprite_h: f32,
+    pub sprite_h: u32,
     /// Number of rows in the sprite sheet.
     ///
     /// This is the number of sprites counting down the sheet.
-    pub row_count: usize,
+    pub row_count: u32,
     /// Number of columns in the sprite sheet.
     ///
     /// This is the number of sprites counting across the sheet.
-    pub column_count: usize,
+    pub column_count: u32,
     /// Whether or not there is a 1 pixel border between sprites.
     #[serde(default = "SpriteSheetDefinition::default_has_border")]
     pub has_border: bool,
@@ -29,7 +29,7 @@ pub struct SpriteSheetDefinition {
     ///
     /// A positive x value shifts the sprite to the left by that many pixels.
     /// A positive y value shifts the sprite upwards by that many pixels.
-    pub offsets: Vec<SpriteOffset>,
+    pub offsets: Option<Vec<SpriteOffset>>,
 }
 
 impl SpriteSheetDefinition {

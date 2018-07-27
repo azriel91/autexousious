@@ -5,8 +5,11 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop" }
+application = { path = "../application" }
 derive-new = "0.5"
+log = "0.4"
 map_model = { path = "../map_model" }
+sprite_loading = { path = "../sprite_loading" }
 
 [dev-dependencies]
 amethyst_test_support = { path = "../amethyst_test_support" }

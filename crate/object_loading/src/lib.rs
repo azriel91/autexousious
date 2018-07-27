@@ -6,14 +6,13 @@
 extern crate amethyst;
 #[cfg(test)]
 extern crate amethyst_test_support;
+#[cfg(not(test))]
+extern crate application;
 #[cfg(test)]
 #[macro_use]
 extern crate application;
 #[macro_use]
-extern crate derive_error_chain;
-#[macro_use]
 extern crate derive_new;
-extern crate error_chain;
 extern crate game_model;
 #[macro_use]
 extern crate log;
@@ -23,21 +22,12 @@ extern crate object_model;
 extern crate pretty_assertions;
 #[cfg(test)]
 extern crate serde;
-#[cfg(test)]
-#[macro_use]
-extern crate serde_derive;
+extern crate sprite_loading;
 #[cfg(test)]
 extern crate tempfile;
-extern crate toml;
 
-pub use error::{Error, ErrorKind};
-pub(crate) use io_utils::IoUtils;
 pub use object::{CharacterLoader, ObjectLoader};
 pub use object_loading_bundle::ObjectLoadingBundle;
 
-mod animation;
-mod error;
-mod io_utils;
 mod object;
 mod object_loading_bundle;
-mod sprite;

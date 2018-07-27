@@ -1,7 +1,11 @@
+//! User defined configuration types for sprites.
+
+pub use self::sprite_frame::SpriteFrame;
 pub use self::sprite_offset::SpriteOffset;
 pub use self::sprite_sheet_definition::SpriteSheetDefinition;
 pub use self::sprites_definition::SpritesDefinition;
 
+mod sprite_frame;
 mod sprite_offset;
 mod sprite_sheet_definition;
 mod sprites_definition;
@@ -16,8 +20,8 @@ mod test {
         [[sheets]]
         # 0
         path         = "heat_defense.png"
-        sprite_w     = 79.0
-        sprite_h     = 79.0
+        sprite_w     = 79
+        sprite_h     = 79
         row_count    = 1
         column_count = 2
         offsets = [
@@ -28,8 +32,8 @@ mod test {
         [[sheets]]
         # 1
         path         = "heat_defense.png"
-        sprite_w     = 79.0
-        sprite_h     = 79.0
+        sprite_w     = 79
+        sprite_h     = 79
         row_count    = 2
         column_count = 3
         offsets = [
@@ -64,8 +68,8 @@ mod test {
             [[sheets]]
             # 0
             path         = "heat_defense.png"
-            sprite_w     = 79.0
-            sprite_h     = 79.0
+            sprite_w     = 79
+            sprite_h     = 79
             row_count    = 1
             column_count = 2
             offsets = [
@@ -76,7 +80,8 @@ mod test {
         let sprites_definition = toml::from_str::<SpritesDefinition>(sprites_toml)
             .expect("Failed to deserialize sprites definition.");
 
-        assert_eq!(-35, sprites_definition.sheets[0].offsets[0].x);
-        assert_eq!(-79, sprites_definition.sheets[0].offsets[1].y);
+        let offsets = sprites_definition.sheets[0].offsets.as_ref().unwrap();
+        assert_eq!(-35, offsets[0].x);
+        assert_eq!(-79, offsets[1].y);
     }
 }

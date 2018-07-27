@@ -1,15 +1,15 @@
-# Sheet number for reference
-# 0
 [[sheets]]
+  # Sheet number for reference
+  # 0
 
   # Path to the sprite sheet.
   path = "bat_grey.png"
 
   # Width of each sprite.
-  sprite_w = 32.0
+  sprite_w = 32
 
   # Height of each sprite.
-  sprite_h = 32.0
+  sprite_h = 32
 
   # Number of rows in the sprite sheet (count vertically).
   row_count = 1
@@ -36,11 +36,11 @@
     { x = 175, y =  6 }, # 5
   ]
 
-# 1
 [[sheets]]
+  # 1
   path = "bat_brown.png"
-  sprite_w = 31.0
-  sprite_h = 31.0
+  sprite_w = 31
+  sprite_h = 31
   row_count = 1
   column_count = 6
   has_border = true

@@ -3,7 +3,7 @@ use amethyst::{
     prelude::*,
     renderer::{Mesh, MeshHandle, PosTex},
 };
-use object_model::config::SpritesDefinition;
+use sprite_model::config::SpritesDefinition;
 
 /// Provides functionality to create meshes used to render an object.
 #[derive(Debug)]
@@ -52,7 +52,7 @@ impl SpriteMeshCreator {
                 .sheets
                 .first()
                 .map_or((1., 1.), |sheet_def| {
-                    (sheet_def.sprite_w, sheet_def.sprite_h)
+                    (sheet_def.sprite_w as f32, sheet_def.sprite_h as f32)
                 })
         };
 
@@ -161,7 +161,7 @@ mod test {
         renderer::{Mesh, MeshHandle, PosTex},
     };
     use amethyst_test_support::prelude::*;
-    use object_model::config::{SpriteOffset, SpriteSheetDefinition, SpritesDefinition};
+    use sprite_model::config::{SpriteOffset, SpriteSheetDefinition, SpritesDefinition};
 
     use super::SpriteMeshCreator;
 
@@ -265,10 +265,10 @@ mod test {
     }
 
     fn sprite_sheet_definition() -> SpriteSheetDefinition {
-        SpriteSheetDefinition::new("0.png".to_string(), 9., 19., 2, 3, true, offsets(6))
+        SpriteSheetDefinition::new("0.png".to_string(), 9, 19, 2, 3, true, offsets(6))
     }
 
-    fn offsets(n: usize) -> Vec<SpriteOffset> {
-        (0..n).map(|_| (0, 0).into()).collect()
+    fn offsets(n: usize) -> Option<Vec<SpriteOffset>> {
+        Some((0..n).map(|_| (0, 0).into()).collect())
     }
 }

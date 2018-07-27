@@ -1,58 +1,55 @@
-use amethyst::prelude::*;
-use amethyst::renderer::{Material, MaterialTextureSet, MeshHandle, SpriteSheet, TextureHandle};
-use game_model::config::ConfigRecord;
-use object_model::config::SpritesDefinition;
-use toml;
+use std::path::Path;
 
-use error::Result;
-use sprite::{MaterialCreator, SpriteMeshCreator, SpriteSheetMapper, TextureLoader};
-use IoUtils;
+use amethyst::{
+    prelude::*,
+    renderer::{MaterialTextureSet, SpriteSheet, TextureHandle},
+};
+use application::{load_in, Format, Result};
+use sprite_model::{config::SpritesDefinition, loaded::SpriteMaterialMesh};
+
+use MaterialCreator;
+use SpriteMeshCreator;
+use SpriteSheetMapper;
+use TextureLoader;
 
 /// Provides functionality to load sprites configuration and assets.
 #[derive(Debug)]
-pub(crate) struct SpriteLoader;
+pub struct SpriteLoader;
 
 impl SpriteLoader {
     /// Loads and returns sprite assets for an object.
+    ///
+    /// The sprites base directory is expected to contain:
+    ///
+    /// * `sprites.toml`: Configuration file that defines what sprites to load.
+    /// * Sprite sheets: The images that contain the sprites.
     ///
     /// # Parameters
     ///
     /// * `world`: `World` to store the loaded assets.
     /// * `texture_index_offset`: Index offset for sprite sheets and textures.
-    /// * `config_record`: Configuration record of the object for which to load sprites.
+    /// * `base_dir`: Base directory from which to load sprites.
     pub fn load(
         world: &World,
         texture_index_offset: u64,
-        config_record: &ConfigRecord,
-    ) -> Result<(Vec<SpriteSheet>, MeshHandle, MeshHandle, Material)> {
-        let sprites_definition = Self::load_sprites_definition(config_record)?;
+        base_dir: &Path,
+    ) -> Result<(Vec<SpriteSheet>, SpriteMaterialMesh)> {
+        let sprites_definition =
+            load_in::<SpritesDefinition, _>(base_dir, "sprites.toml", Format::Toml, None)?;
 
         let sprite_sheets =
             SpriteSheetMapper::map(texture_index_offset, &sprites_definition.sheets);
+
         let mesh = SpriteMeshCreator::create_mesh(world, &sprites_definition);
         let mesh_mirrored = SpriteMeshCreator::create_mesh_mirrored(world, &sprites_definition);
-        let texture_handles = TextureLoader::load_textures(
-            world,
-            &config_record.directory,
-            &sprites_definition.sheets,
-        )?;
-
+        let texture_handles =
+            TextureLoader::load_textures(world, base_dir, &sprites_definition.sheets)?;
         let default_material = MaterialCreator::create_default(world, &texture_handles);
+        let sprite_material_mesh = SpriteMaterialMesh::new(default_material, mesh, mesh_mirrored);
 
         Self::store_textures_in_material_texture_set(world, texture_index_offset, texture_handles);
 
-        Ok((sprite_sheets, mesh, mesh_mirrored, default_material))
-    }
-
-    /// Loads the sprites definition from the object configuration directory.
-    ///
-    /// # Parameters
-    ///
-    /// * `config_record`: the configuration record of the object to load sprites for.
-    fn load_sprites_definition(config_record: &ConfigRecord) -> Result<SpritesDefinition> {
-        let file_path = config_record.directory.join("sprites.toml");
-        let sprites_toml = IoUtils::read_file(&file_path)?;
-        Ok(toml::from_slice::<SpritesDefinition>(&sprites_toml)?)
+        Ok((sprite_sheets, sprite_material_mesh))
     }
 
     /// Stores the texture handles into the global `MaterialTextureSet`.
