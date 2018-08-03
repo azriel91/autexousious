@@ -18,7 +18,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionBundle {
             CharacterSelectionSystem::new(),
             &CharacterSelectionSystem::type_name(),
             &["input_system"],
-        );
+        ); // kcov-ignore
         Ok(())
     }
 }

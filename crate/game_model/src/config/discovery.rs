@@ -222,6 +222,14 @@ mod test {
     }
 
     #[test]
+    fn empty_map_directory_returns_empty_map_vec() {
+        let assets_dir = tempdir().unwrap();
+        fs::create_dir_all(assets_dir.path().join("default/map")).unwrap();
+
+        assert_eq!(0, index_configuration(&assets_dir.path()).maps.len());
+    }
+
+    #[test]
     fn empty_object_type_directory_returns_empty_object_records() {
         let assets_dir = tempdir().unwrap();
         fs::create_dir_all(assets_dir.path().join("default/object/character")).unwrap();
@@ -249,7 +257,7 @@ mod test {
     }
 
     #[test]
-    fn multiple_config_dirs_are_merged() {
+    fn multiple_object_config_dirs_are_merged() {
         let assets_dir = tempdir().unwrap();
         let path_char_a = assets_dir.path().join("default/object/character/char_a");
         let path_char_b = assets_dir.path().join("download/object/character/char_b");
@@ -264,6 +272,20 @@ mod test {
             index_configuration(&assets_dir.path())
                 .objects
                 .get(&ObjectType::Character)
+        );
+    }
+
+    #[test]
+    fn multiple_map_config_dirs_are_merged() {
+        let assets_dir = tempdir().unwrap();
+        let path_map_a = assets_dir.path().join("default/map/map_a");
+        let path_map_b = assets_dir.path().join("download/map/map_b");
+        fs::create_dir_all(&path_map_a).unwrap();
+        fs::create_dir_all(&path_map_b).unwrap();
+
+        assert_eq!(
+            vec![ConfigRecord::new(path_map_a), ConfigRecord::new(path_map_b)],
+            index_configuration(&assets_dir.path()).maps
         );
     }
 

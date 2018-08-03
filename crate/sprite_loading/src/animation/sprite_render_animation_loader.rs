@@ -224,7 +224,7 @@ mod test {
                 sprite_sheet_index_offset,
             );
             world.add_resource(EffectReturn(animation_handles));
-        };
+        }; // kcov-ignore
         let assertion = |world: &mut World| {
             let animation_handles = &world
                 .read_resource::<EffectReturn<HashMap<TestSequenceId, Handle<Animation<SpriteRender>>>>>(

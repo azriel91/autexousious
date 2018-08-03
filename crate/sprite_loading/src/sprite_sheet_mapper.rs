@@ -292,6 +292,29 @@ mod test {
         );
     }
 
+    #[test]
+    fn offsets_defaults_to_zero_if_none() {
+        let sprite_sheet_definitions = [no_offsets_definition()];
+
+        let sprite_sheet = SpriteSheet {
+            texture_id: 10,
+            sprites: vec![
+                (
+                    (19., 29.),
+                    [0., 0.],
+                    [0.5 / 20., 18.5 / 20., 1.5 / 30., 29.5 / 30.],
+                ).into(),
+            ],
+        };
+
+        // kcov-ignore-start
+        assert_eq!(
+            // kcov-ignore-end
+            vec![sprite_sheet],
+            SpriteSheetMapper::map(10, &sprite_sheet_definitions)
+        );
+    }
+
     fn simple_definition() -> SpriteSheetDefinition {
         SpriteSheetDefinition::new("1.png".to_string(), 19, 29, 1, 1, true, offsets(1))
     }
@@ -302,6 +325,10 @@ mod test {
         } else {
             SpriteSheetDefinition::new("0.png".to_string(), 10, 20, 2, 3, false, offsets(6))
         }
+    }
+
+    fn no_offsets_definition() -> SpriteSheetDefinition {
+        SpriteSheetDefinition::new("1.png".to_string(), 19, 29, 1, 1, true, None)
     }
 
     fn offsets(n: usize) -> Option<Vec<SpriteOffset>> {
