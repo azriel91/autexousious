@@ -33,24 +33,25 @@ extern crate application;
 #[cfg(test)]
 #[macro_use]
 extern crate application;
+#[cfg(test)]
+#[macro_use]
+extern crate derive_new;
 #[macro_use]
 extern crate log;
 #[cfg(test)]
 #[macro_use]
-extern crate derive_new;
+extern crate pretty_assertions;
 extern crate sprite_model;
 
-pub use animation::{AnimationFrame, AnimationSequence, MaterialAnimationLoader};
-pub(crate) use material_creator::MaterialCreator;
+pub use animation::{AnimationFrame, AnimationSequence, SpriteRenderAnimationLoader};
 pub use sprite_loader::SpriteLoader;
-pub(crate) use sprite_mesh_creator::SpriteMeshCreator;
+pub(crate) use sprite_sheet_loader::SpriteSheetLoader;
 pub(crate) use sprite_sheet_mapper::SpriteSheetMapper;
 pub(crate) use texture_loader::TextureLoader;
 
 mod animation;
-mod material_creator;
 mod sprite_loader;
-mod sprite_mesh_creator;
+mod sprite_sheet_loader;
 mod sprite_sheet_mapper;
 mod texture_loader;
 

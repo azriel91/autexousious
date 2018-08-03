@@ -298,7 +298,7 @@ extern crate lazy_static;
 
 pub use amethyst_application::{AmethystApplication, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
 pub use effect_return::EffectReturn;
-pub use fixture::MaterialAnimationFixture;
+pub use fixture::{MaterialAnimationFixture, SpriteRenderAnimationFixture};
 pub use game_update::GameUpdate;
 pub use state::{EmptyState, FunctionState, SchedulerState};
 pub(crate) use system_injection_bundle::SystemInjectionBundle;

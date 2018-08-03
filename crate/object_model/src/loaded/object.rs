@@ -1,7 +1,10 @@
 use std::collections::HashMap;
 
-use amethyst::{animation::Animation, assets::Handle, renderer::Material};
-use sprite_model::loaded::SpriteMaterialMesh;
+use amethyst::{
+    animation::Animation,
+    assets::Handle,
+    renderer::{SpriteRender, SpriteSheetHandle},
+};
 
 use config::object::SequenceId;
 
@@ -9,10 +12,8 @@ use config::object::SequenceId;
 #[derive(Clone, Derivative, new)]
 #[derivative(Debug)]
 pub struct Object<SeqId: SequenceId> {
-    /// Default material for entities of this object.
-    pub sprite_material_mesh: SpriteMaterialMesh,
-    /// Handle to the animations that this object uses.
-    ///
-    /// This should be substituted with `loaded::Sequences` which will contain the animations.
-    pub animations: HashMap<SeqId, Handle<Animation<Material>>>,
+    /// Handle to the default sprite sheet to use for the character.
+    pub default_sprite_sheet: SpriteSheetHandle,
+    /// Handle to the sprite animations that this object uses.
+    pub animations: HashMap<SeqId, Handle<Animation<SpriteRender>>>,
 }

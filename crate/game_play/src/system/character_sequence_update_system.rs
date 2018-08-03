@@ -2,7 +2,7 @@ use amethyst::{
     animation::{get_animation_set, AnimationControlSet, ControlState},
     assets::AssetStorage,
     ecs::prelude::*,
-    renderer::{Material, MeshHandle},
+    renderer::SpriteRender,
 };
 use game_play_state::AnimationRunner;
 use object_model::{
@@ -23,8 +23,8 @@ type CharacterSequenceUpdateSystemData<'s, 'c> = (
     ReadStorage<'s, CharacterInput>,
     ReadStorage<'s, Kinematics<f32>>,
     WriteStorage<'s, CharacterStatus>,
-    WriteStorage<'s, MeshHandle>,
-    WriteStorage<'s, AnimationControlSet<CharacterSequenceId, Material>>,
+    WriteStorage<'s, SpriteRender>,
+    WriteStorage<'s, AnimationControlSet<CharacterSequenceId, SpriteRender>>,
 );
 
 impl<'s> System<'s> for CharacterSequenceUpdateSystem {
@@ -39,18 +39,25 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             character_input_storage,
             kinematics_storage,
             mut character_status_storage,
-            mut mesh_handle_storage,
+            mut sprite_render_storage,
             mut animation_control_set_storage,
         ): Self::SystemData,
     ) {
-        for (entity, character_handle, character_input, kinematics, mut character_status) in
-            (
-                &*entities,
-                &handle_storage,
-                &character_input_storage,
-                &kinematics_storage,
-                &mut character_status_storage,
-            ).join()
+        for (
+            entity,
+            character_handle,
+            character_input,
+            kinematics,
+            mut character_status,
+            mut sprite_render,
+        ) in (
+            &*entities,
+            &handle_storage,
+            &character_input_storage,
+            &kinematics_storage,
+            &mut character_status_storage,
+            &mut sprite_render_storage,
+        ).join()
         {
             let character = characters
                 .get(character_handle)
@@ -110,15 +117,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             }
 
             if let Some(mirrored) = status_update.object_status.mirrored {
-                // Swap the current mesh with the appropriate mesh.
-                let mesh_handle = if mirrored {
-                    character.object.sprite_material_mesh.mesh_mirrored.clone()
-                } else {
-                    character.object.sprite_material_mesh.mesh.clone()
-                };
-                mesh_handle_storage
-                    .insert(entity, mesh_handle)
-                    .expect("Failed to replace mesh for character.");
+                sprite_render.flip_horizontal = mirrored;
             }
 
             *character_status += status_update;

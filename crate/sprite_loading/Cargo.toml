@@ -12,3 +12,4 @@ sprite_model = { path = "../sprite_model" }
 [dev-dependencies]
 amethyst_test_support = { path = "../amethyst_test_support" }
 derive-new = "0.5"
+pretty_assertions = "0.5"

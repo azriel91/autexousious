@@ -4,5 +4,7 @@
 //! crates.
 
 pub use self::material_animation_fixture::MaterialAnimationFixture;
+pub use self::sprite_render_animation_fixture::SpriteRenderAnimationFixture;
 
 mod material_animation_fixture;
+mod sprite_render_animation_fixture;

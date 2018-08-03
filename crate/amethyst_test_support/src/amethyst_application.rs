@@ -11,7 +11,7 @@ use amethyst::{
     prelude::*,
     renderer::{
         ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PipelineBuilder, PosTex,
-        RenderBundle, ScreenDimensions, Stage, StageBuilder, ALPHA,
+        RenderBundle, ScreenDimensions, SpriteRender, Stage, StageBuilder, ALPHA,
     },
     shred::Resource,
     ui::{DrawUi, UiBundle},
@@ -195,13 +195,19 @@ impl
     {
         AmethystApplication::blank()
             .with_bundle(AnimationBundle::<u32, Material>::new(
-                "animation_control_system",
-                "sampler_interpolation_system",
+                "material_animation_control_system",
+                "material_sampler_interpolation_system",
             ))
-            .with_bundle(
-                TransformBundle::new()
-                    .with_dep(&["animation_control_system", "sampler_interpolation_system"]),
-            )
+            .with_bundle(AnimationBundle::<u32, SpriteRender>::new(
+                "sprite_render_animation_control_system",
+                "sprite_render_sampler_interpolation_system",
+            ))
+            .with_bundle(TransformBundle::new().with_dep(&[
+                "material_animation_control_system",
+                "material_sampler_interpolation_system",
+                "sprite_render_animation_control_system",
+                "sprite_render_sampler_interpolation_system",
+            ]))
             .with_bundle(InputBundle::<String, String>::new())
             .with_bundle(UiBundle::<String, String>::new())
             .with_render_bundle(test_name, visibility)
@@ -726,6 +732,7 @@ mod test {
     use EmptyState;
     use FunctionState;
     use MaterialAnimationFixture;
+    use SpriteRenderAnimationFixture;
 
     #[test]
     fn bundle_build_is_ok() {
@@ -971,6 +978,21 @@ mod test {
                 false
             ).with_effect(MaterialAnimationFixture::effect)
                 .with_assertion(MaterialAnimationFixture::assertion)
+                .run()
+                .is_ok()
+        );
+    }
+
+    #[test]
+    fn render_base_application_can_load_sprite_render_animations() {
+        // kcov-ignore-start
+        assert!(
+            // kcov-ignore-end
+            AmethystApplication::render_base(
+                "render_base_application_can_load_sprite_render_animations",
+                false
+            ).with_effect(SpriteRenderAnimationFixture::effect)
+                .with_assertion(SpriteRenderAnimationFixture::assertion)
                 .run()
                 .is_ok()
         );

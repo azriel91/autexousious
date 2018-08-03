@@ -3,7 +3,7 @@ use amethyst::{
     core::transform::TransformBundle,
     input::InputBundle,
     prelude::*,
-    renderer::{Material, ScreenDimensions},
+    renderer::{ScreenDimensions, SpriteRender},
     ui::UiBundle,
 };
 use amethyst_test_support::{prelude::*, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
@@ -71,7 +71,7 @@ impl AutexousiousApplication {
         N: Into<&'name str>,
     {
         AmethystApplication::blank()
-            .with_bundle(AnimationBundle::<CharacterSequenceId, Material>::new(
+            .with_bundle(AnimationBundle::<CharacterSequenceId, SpriteRender>::new(
                 "character_animation_control_system",
                 "character_sampler_interpolation_system",
             ))
@@ -117,7 +117,7 @@ impl AutexousiousApplication {
 #[cfg(test)]
 mod test {
     use amethyst::{input::InputHandler, ui::MouseReactive};
-    use amethyst_test_support::MaterialAnimationFixture;
+    use amethyst_test_support::SpriteRenderAnimationFixture;
     use game_input::{PlayerActionControl, PlayerAxisControl};
 
     use super::AutexousiousApplication;
@@ -163,15 +163,15 @@ mod test {
     }
 
     #[test]
-    fn render_base_application_can_load_material_animations() {
+    fn render_base_application_can_load_sprite_render_animations() {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
             AutexousiousApplication::render_base(
-                "render_base_application_can_load_material_animations",
+                "render_base_application_can_load_sprite_render_animations",
                 false
-            ).with_effect(MaterialAnimationFixture::effect)
-                .with_assertion(MaterialAnimationFixture::assertion)
+            ).with_effect(SpriteRenderAnimationFixture::effect)
+                .with_assertion(SpriteRenderAnimationFixture::assertion)
                 .run()
                 .is_ok()
         );

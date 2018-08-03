@@ -32,7 +32,7 @@ use amethyst::{
     input::{Bindings, InputBundle},
     prelude::*,
     renderer::{
-        ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PosTex, RenderBundle, Stage, ALPHA,
+        ColorMask, DisplayConfig, DrawSprite, Pipeline, RenderBundle, SpriteRender, Stage, ALPHA,
     },
     ui::{DrawUi, UiBundle},
     LogLevelFilter, LoggerConfig,
@@ -87,11 +87,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         let pipe = Pipeline::build().with_stage(
             Stage::with_backbuffer()
                 .clear_target([0., 0., 0., 0.], 1.)
-                .with_pass(DrawFlat::<PosTex>::new().with_transparency(
-                    ColorMask::all(),
-                    ALPHA,
-                    None,
-                ))
+                .with_pass(DrawSprite::new().with_transparency(ColorMask::all(), ALPHA, None))
                 .with_pass(DrawUi::new()),
         );
 
@@ -109,11 +105,11 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
         game_data = game_data
             // Provides sprite animation
-            .with_bundle(AnimationBundle::<CharacterSequenceId, Material>::new(
+            .with_bundle(AnimationBundle::<CharacterSequenceId, SpriteRender>::new(
                 "character_animation_control_system",
                 "character_sampler_interpolation_system",
             ))?
-            .with_bundle(AnimationBundle::<u32, Material>::new(
+            .with_bundle(AnimationBundle::<u32, SpriteRender>::new(
                 "animation_control_system",
                 "sampler_interpolation_system",
             ))?

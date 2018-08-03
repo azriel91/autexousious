@@ -1,25 +1,25 @@
-use amethyst::renderer::{Sprite, SpriteSheet};
+use amethyst::renderer::{Sprite, SpriteSheet, TextureCoordinates};
 use sprite_model::config::SpriteSheetDefinition;
 
 #[derive(Debug)]
 pub(crate) struct SpriteSheetMapper;
 
 impl SpriteSheetMapper {
-    /// Maps `SpriteSheetDefinition`s into Amethyst `SpriteSheet`s and returns their handles.
+    /// Returns Amethyst `SpriteSheet`s mapped from `SpriteSheetDefinition`s.
     ///
     /// # Parameters
     ///
-    /// * `texture_index_offset`: Index offset for sprite sheet IDs.
+    /// * `sprite_sheet_index_offset`: Index offset for sprite sheet IDs.
     /// * `sprite_sheet_definitions`: List of metadata for sprite sheets to map.
     pub(crate) fn map(
-        texture_index_offset: u64,
+        sprite_sheet_index_offset: u64,
         sprite_sheet_definitions: &[SpriteSheetDefinition],
     ) -> Vec<SpriteSheet> {
         sprite_sheet_definitions
             .iter()
             .enumerate()
             .map(|(idx, definition)| {
-                Self::definition_to_sprite_sheet(texture_index_offset + idx as u64, definition)
+                Self::definition_to_sprite_sheet(sprite_sheet_index_offset + idx as u64, definition)
             })
             .collect::<Vec<SpriteSheet>>()
     }
@@ -42,10 +42,9 @@ impl SpriteSheetMapper {
             offset_h * definition.row_count,
         );
 
-        // Push the rows in reverse order because the texture coordinates are treated as beginning
-        // from the bottom of the image, whereas for this example I want the top left sprite to be
-        // the first sprite
-        for row in (0..definition.row_count).rev() {
+        let sprite_offsets = definition.offsets.as_ref();
+
+        for row in 0..definition.row_count {
             for col in 0..definition.column_count {
                 // Sprites are numbered in the following pattern:
                 //
@@ -56,14 +55,28 @@ impl SpriteSheetMapper {
 
                 let offset_x = offset_w * col as u32;
                 let offset_y = offset_h * row as u32;
+                let offsets = sprite_offsets.map_or_else(
+                    || [0.; 2],
+                    |sprite_offsets| {
+                        let sprite_index = (row * definition.column_count + col) as usize;
+                        let sprite_offset = &sprite_offsets[sprite_index];
+
+                        [
+                            (sprite_offset.x - offset_x as i32) as f32,
+                            // Negate the Y value because we want to shift the sprite up, whereas
+                            // the offset in Amethyst is to shift it down.
+                            (offset_y as i32 - sprite_offset.y) as f32,
+                        ]
+                    },
+                );
                 let sprite = Self::create_sprite(
                     image_w as f32,
                     image_h as f32,
+                    definition.sprite_w as f32,
+                    definition.sprite_h as f32,
                     offset_x as f32,
                     offset_y as f32,
-                    (offset_x + definition.sprite_w) as f32,
-                    (offset_y + definition.sprite_h) as f32,
-                    definition.has_border,
+                    offsets,
                 );
 
                 let sprite_number = row * definition.column_count + col;
@@ -108,36 +121,44 @@ impl SpriteSheetMapper {
     ///
     /// * `image_w`: Width of the full sprite sheet.
     /// * `image_h`: Height of the full sprite sheet.
+    /// * `sprite_w`: Width of the sprite.
+    /// * `sprite_h`: Height of the sprite.
     /// * `pixel_left`: Pixel X coordinate of the left side of the sprite.
     /// * `pixel_top`: Pixel Y coordinate of the top of the sprite.
-    /// * `pixel_right`: Pixel X coordinate of the right side of the sprite.
-    /// * `pixel_bottom`: Pixel Y coordinate of the bottom of the sprite.
-    /// * `has_border`: Whether or not there is a 1 pixel border between sprites.
     fn create_sprite(
         image_w: f32,
         image_h: f32,
+        sprite_w: f32,
+        sprite_h: f32,
         pixel_left: f32,
         pixel_top: f32,
-        pixel_right: f32,
-        pixel_bottom: f32,
-        has_border: bool,
+        offsets: [f32; 2],
     ) -> Sprite {
-        // Texture coordinates are expressed as fractions of the position on the image.
-        let left = pixel_left / image_w;
-        let right = pixel_right / image_w;
+        let pixel_right = pixel_left + sprite_w;
+        let pixel_bottom = pixel_top + sprite_h;
 
-        // Need to correct the texture coordinates as the Y axis is flipped.
-        let (top, bottom) = if has_border {
-            ((pixel_top + 1.) / image_h, (pixel_bottom + 1.) / image_h)
-        } else {
-            (pixel_top / image_h, pixel_bottom / image_h)
+        // Texture coordinates are expressed as fractions of the position on the image.
+        // Y axis texture coordinates start at the bottom of the image, so we have to invert them.
+        //
+        // The 0.5 offsets is to get pixel perfection. See
+        // <http://www.mindcontrol.org/~hplus/graphics/opengl-pixel-perfect.html>
+        let left = (pixel_left + 0.5) / image_w;
+        let right = (pixel_right - 0.5) / image_w;
+        let top = (image_h - (pixel_top + 0.5)) / image_h;
+        let bottom = (image_h - (pixel_bottom - 0.5)) / image_h;
+
+        let tex_coords = TextureCoordinates {
+            left,
+            right,
+            top,
+            bottom,
         };
 
         Sprite {
-            left,
-            top,
-            right,
-            bottom,
+            width: sprite_w,
+            height: sprite_h,
+            offsets,
+            tex_coords,
         }
     }
 }
@@ -154,14 +175,38 @@ mod test {
         let sprite_sheet_definitions = [sprite_sheet_definition(true), simple_definition()];
 
         let sprites_0 = vec![
-            // Sprites bottom row
-            [0., 9. / 30., 21. / 40., 40. / 40.].into(),
-            [10. / 30., 19. / 30., 21. / 40., 40. / 40.].into(),
-            [20. / 30., 29. / 30., 21. / 40., 40. / 40.].into(),
             // Sprites top row
-            [0., 9. / 30., 1. / 40., 20. / 40.].into(),
-            [10. / 30., 19. / 30., 1. / 40., 20. / 40.].into(),
-            [20. / 30., 29. / 30., 1. / 40., 20. / 40.].into(),
+            (
+                (9., 19.),
+                [0., 0.],
+                [0.5 / 30., 8.5 / 30., 21.5 / 40., 39.5 / 40.],
+            ).into(),
+            (
+                (9., 19.),
+                [-9., -1.],
+                [10.5 / 30., 18.5 / 30., 21.5 / 40., 39.5 / 40.],
+            ).into(),
+            (
+                (9., 19.),
+                [-18., -2.],
+                [20.5 / 30., 28.5 / 30., 21.5 / 40., 39.5 / 40.],
+            ).into(),
+            // Sprites bottom row
+            (
+                (9., 19.),
+                [3., 17.],
+                [0.5 / 30., 8.5 / 30., 1.5 / 40., 19.5 / 40.],
+            ).into(),
+            (
+                (9., 19.),
+                [-6., 16.],
+                [10.5 / 30., 18.5 / 30., 1.5 / 40., 19.5 / 40.],
+            ).into(),
+            (
+                (9., 19.),
+                [-15., 15.],
+                [20.5 / 30., 28.5 / 30., 1.5 / 40., 19.5 / 40.],
+            ).into(),
         ];
         let sprite_sheet_0 = SpriteSheet {
             texture_id: 10,
@@ -169,7 +214,13 @@ mod test {
         };
         let sprite_sheet_1 = SpriteSheet {
             texture_id: 11,
-            sprites: vec![[0., 19. / 20., 1. / 30., 30. / 30.].into()],
+            sprites: vec![
+                (
+                    (19., 29.),
+                    [0., 0.],
+                    [0.5 / 20., 18.5 / 20., 1.5 / 30., 29.5 / 30.],
+                ).into(),
+            ],
         };
 
         // kcov-ignore-start
@@ -185,14 +236,38 @@ mod test {
         let sprite_sheet_definitions = [sprite_sheet_definition(false), simple_definition()];
 
         let sprites_0 = vec![
-            // Sprites bottom row
-            [0., 10. / 30., 20. / 40., 40. / 40.].into(),
-            [10. / 30., 20. / 30., 20. / 40., 40. / 40.].into(),
-            [20. / 30., 30. / 30., 20. / 40., 40. / 40.].into(),
             // Sprites top row
-            [0., 10. / 30., 0., 20. / 40.].into(),
-            [10. / 30., 20. / 30., 0., 20. / 40.].into(),
-            [20. / 30., 30. / 30., 0., 20. / 40.].into(),
+            (
+                (10., 20.),
+                [0., 0.],
+                [0.5 / 30., 9.5 / 30., 20.5 / 40., 39.5 / 40.],
+            ).into(),
+            (
+                (10., 20.),
+                [-9., -1.],
+                [10.5 / 30., 19.5 / 30., 20.5 / 40., 39.5 / 40.],
+            ).into(),
+            (
+                (10., 20.),
+                [-18., -2.],
+                [20.5 / 30., 29.5 / 30., 20.5 / 40., 39.5 / 40.],
+            ).into(),
+            // Sprites bottom row
+            (
+                (10., 20.),
+                [3., 17.],
+                [0.5 / 30., 9.5 / 30., 0.5 / 40., 19.5 / 40.],
+            ).into(),
+            (
+                (10., 20.),
+                [-6., 16.],
+                [10.5 / 30., 19.5 / 30., 0.5 / 40., 19.5 / 40.],
+            ).into(),
+            (
+                (10., 20.),
+                [-15., 15.],
+                [20.5 / 30., 29.5 / 30., 0.5 / 40., 19.5 / 40.],
+            ).into(),
         ];
         let sprite_sheet_0 = SpriteSheet {
             texture_id: 10,
@@ -200,7 +275,13 @@ mod test {
         };
         let sprite_sheet_1 = SpriteSheet {
             texture_id: 11,
-            sprites: vec![[0., 19. / 20., 1. / 30., 30. / 30.].into()],
+            sprites: vec![
+                (
+                    (19., 29.),
+                    [0., 0.],
+                    [0.5 / 20., 18.5 / 20., 1.5 / 30., 29.5 / 30.],
+                ).into(),
+            ],
         };
 
         // kcov-ignore-start
@@ -224,6 +305,6 @@ mod test {
     }
 
     fn offsets(n: usize) -> Option<Vec<SpriteOffset>> {
-        Some((0..n).map(|_| (0, 0).into()).collect())
+        Some((0..n).map(|i| (i as i32, i as i32).into()).collect())
     }
 }
