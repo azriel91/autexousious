@@ -31,9 +31,9 @@ where
             &self
                 .system_dependencies
                 .iter()
-                .map(|dep| dep.as_str())
+                .map(|dep| dep.as_str()) // kcov-ignore
                 .collect::<Vec<&str>>(),
-        );
+        ); // kcov-ignore
         Ok(())
     }
 }

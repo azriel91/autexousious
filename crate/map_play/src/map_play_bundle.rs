@@ -19,7 +19,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for MapPlayBundle {
             &MapAnimationUpdateSystem::type_name(),
             // TODO: Pending <https://gitlab.com/azriel91/autexousious/issues/53>
             &[],
-        );
+        ); // kcov-ignore
         Ok(())
     }
 }

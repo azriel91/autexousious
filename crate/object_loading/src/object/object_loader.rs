@@ -1,11 +1,11 @@
-use amethyst::{prelude::*, renderer::MaterialTextureSet};
+use amethyst::{prelude::*, renderer::SpriteSheetSet};
 use application::Result;
 use game_model::config::ConfigRecord;
 use object_model::{
     config::{object::SequenceId, ObjectDefinition},
     loaded,
 };
-use sprite_loading::{MaterialAnimationLoader, SpriteLoader};
+use sprite_loading::{SpriteLoader, SpriteRenderAnimationLoader};
 
 /// Loads assets specified by object configuration into the loaded object model.
 #[derive(Debug)]
@@ -24,24 +24,27 @@ impl ObjectLoader {
         config_record: &ConfigRecord,
         object_definition: &ObjectDefinition<SeqId>,
     ) -> Result<loaded::Object<SeqId>> {
-        let texture_index_offset = world.read_resource::<MaterialTextureSet>().len() as u64;
+        let sprite_sheet_index_offset = world.read_resource::<SpriteSheetSet>().len() as u64;
 
         debug!(
             "Loading object assets in `{}`",
             config_record.directory.display()
         );
 
-        let (sprite_sheets, sprite_material_mesh) =
-            SpriteLoader::load(world, texture_index_offset, &config_record.directory)?;
+        let (sprite_sheet_handles, _texture_handles) =
+            SpriteLoader::load(world, sprite_sheet_index_offset, &config_record.directory)?;
+        let sprite_sheet_handle = sprite_sheet_handles
+            .into_iter()
+            .next()
+            .expect("Expected character to have at least one sprite sheet.");
 
-        let animation_handles = MaterialAnimationLoader::load_into_map(
+        let animation_handles = SpriteRenderAnimationLoader::load_into_map(
             world,
             &object_definition.sequences,
-            texture_index_offset,
-            &sprite_sheets,
+            sprite_sheet_index_offset,
         );
 
-        Ok(loaded::Object::new(sprite_material_mesh, animation_handles))
+        Ok(loaded::Object::new(sprite_sheet_handle, animation_handles))
     }
 }
 

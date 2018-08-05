@@ -6,7 +6,7 @@ use amethyst::{
         transform::{GlobalTransform, Transform},
     },
     ecs::prelude::*,
-    renderer::Material,
+    renderer::SpriteRender,
 };
 use character_selection::CharacterEntityControl;
 use object_model::{
@@ -39,7 +39,7 @@ impl CharacterEntitySpawner {
         let character_status = CharacterStatus::default();
         let first_sequence_id = character_status.object_status.sequence_id;
 
-        let (character_handle, material, mesh, animation_handle) = {
+        let (character_handle, sprite_render, animation_handle) = {
             let loaded_characters = world.read_resource::<Vec<CharacterHandle>>();
 
             let character_handle = loaded_characters.get(character_index).unwrap_or_else(|| {
@@ -59,20 +59,22 @@ impl CharacterEntitySpawner {
             let character = store
                 .get(character_handle)
                 .expect("Expected character to be loaded.");
+            let object = &character.object;
 
-            let sprite_material_mesh = &character.object.sprite_material_mesh;
+            let sprite_render = SpriteRender {
+                sprite_sheet: object.default_sprite_sheet.clone(),
+                sprite_number: 0,
+                flip_horizontal: false,
+                flip_vertical: false,
+            };
 
-            (
-                character_handle.clone(),
-                sprite_material_mesh.default_material.clone(),
-                sprite_material_mesh.mesh.clone(),
-                character
-                    .object
-                    .animations
-                    .get(&first_sequence_id)
-                    .expect("Expected character to have at least one sequence.")
-                    .clone(),
-            ) // kcov-ignore
+            let animation_handle = object
+                .animations
+                .get(&first_sequence_id)
+                .expect("Expected character to have at least one sequence.")
+                .clone();
+
+            (character_handle.clone(), sprite_render, animation_handle)
         };
 
         let position = &kinematics.position;
@@ -87,10 +89,8 @@ impl CharacterEntitySpawner {
             .with(character_handle)
             // Character and object status attributes.
             .with(character_status)
-            // The default `Material`, whose textures will be swapped based on the animation.
-            .with(material)
-            // Coordinates to map the sprite texture to screen. This is the non-mirrored mesh.
-            .with(mesh)
+            // The starting pose
+            .with(sprite_render)
             // Kinematics of the entity in game.
             .with(kinematics)
             // Render location of the entity on screen.
@@ -102,7 +102,7 @@ impl CharacterEntitySpawner {
 
         // We also need to trigger the animation, not just attach it to the entity
         let mut animation_control_set_storage = world.write_storage();
-        let mut animation_set = get_animation_set::<CharacterSequenceId, Material>(
+        let mut animation_set = get_animation_set::<CharacterSequenceId, SpriteRender>(
             &mut animation_control_set_storage,
             entity,
         ).expect("Animation should exist as new entity should be valid.");
@@ -122,7 +122,7 @@ mod test {
         assets::AssetStorage,
         core::transform::{GlobalTransform, Transform},
         ecs::prelude::*,
-        renderer::{Material, MeshHandle},
+        renderer::SpriteRender,
     };
     use amethyst_test_support::prelude::*;
     use character_selection::CharacterEntityControl;
@@ -164,8 +164,7 @@ mod test {
             );
             assert!(world.read_storage::<CharacterHandle>().contains(entity));
             assert!(world.read_storage::<CharacterStatus>().contains(entity));
-            assert!(world.read_storage::<Material>().contains(entity));
-            assert!(world.read_storage::<MeshHandle>().contains(entity));
+            assert!(world.read_storage::<SpriteRender>().contains(entity));
             assert!(world.read_storage::<Kinematics<f32>>().contains(entity));
             assert!(world.read_storage::<Transform>().contains(entity));
             assert!(world.read_storage::<GlobalTransform>().contains(entity));
@@ -199,7 +198,7 @@ mod test {
         ReadStorage<'s, CharacterHandle>,
         ReadStorage<'s, CharacterStatus>,
         ReadStorage<'s, Kinematics<f32>>,
-        ReadStorage<'s, AnimationControlSet<CharacterSequenceId, Material>>,
+        ReadStorage<'s, AnimationControlSet<CharacterSequenceId, SpriteRender>>,
     );
     impl<'s> System<'s> for TestSystem {
         type SystemData = TestSystemData<'s>;

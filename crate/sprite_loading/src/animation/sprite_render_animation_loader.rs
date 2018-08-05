@@ -2,10 +2,12 @@ use std::collections::HashMap;
 use std::hash::Hash;
 
 use amethyst::{
-    animation::{Animation, InterpolationFunction, MaterialChannel, MaterialPrimitive, Sampler},
+    animation::{
+        Animation, InterpolationFunction, Sampler, SpriteRenderChannel, SpriteRenderPrimitive,
+    },
     assets::{Handle, Loader},
     prelude::*,
-    renderer::{Material, SpriteSheet},
+    renderer::SpriteRender,
 };
 
 use AnimationFrame;
@@ -13,64 +15,58 @@ use AnimationSequence;
 
 /// Loads `Animation`s from character sequences.
 #[derive(Debug)]
-pub struct MaterialAnimationLoader;
+pub struct SpriteRenderAnimationLoader;
 
-impl MaterialAnimationLoader {
-    /// Loads `Material` animations and returns a hash map of their handles by sequence ID.
+impl SpriteRenderAnimationLoader {
+    /// Loads `SpriteRender` animations and returns a hash map of their handles by sequence ID.
     ///
     /// # Parameters
     ///
     /// * `world`: `World` to load animations into.
     /// * `sequences`: Sequences of the animation.
-    /// * `texture_index_offset`: Offset of the texture IDs in the `MaterialTextureSet`.
-    /// * `sprite_sheets`: `SpriteSheet`s that contain the texture coordinates for sprites.
+    /// * `sprite_sheet_index_offset`: Offset of the sprite sheet IDs in the `SpriteSheetSet`.
     pub fn load_into_map<'seq, SequenceId, Sequence, Frame>(
         world: &'seq World,
         sequences: &HashMap<SequenceId, Sequence>,
-        texture_index_offset: u64,
-        sprite_sheets: &'seq [SpriteSheet],
-    ) -> HashMap<SequenceId, Handle<Animation<Material>>>
+        sprite_sheet_index_offset: u64,
+    ) -> HashMap<SequenceId, Handle<Animation<SpriteRender>>>
     where
         SequenceId: Copy + Eq + Hash + 'seq,
         Frame: AnimationFrame,
         Sequence: AnimationSequence<Frame = Frame> + 'seq,
     {
-        Self::load(world, sequences.iter(), texture_index_offset, sprite_sheets)
+        Self::load(world, sequences.iter(), sprite_sheet_index_offset)
             .map(|(id, handle)| (*id, handle))
-            .collect::<HashMap<SequenceId, Handle<Animation<Material>>>>()
+            .collect::<HashMap<SequenceId, Handle<Animation<SpriteRender>>>>()
     }
 
-    /// Loads `Material` animations and returns a vector of their handles in order.
+    /// Loads `SpriteRender` animations and returns a vector of their handles in order.
     ///
     /// # Parameters
     ///
     /// * `world`: `World` to load animations into.
     /// * `sequences`: Sequences of the animation.
-    /// * `texture_index_offset`: Offset of the texture IDs in the `MaterialTextureSet`.
-    /// * `sprite_sheets`: `SpriteSheet`s that contain the texture coordinates for sprites.
+    /// * `sprite_sheet_index_offset`: Offset of the sprite sheet IDs in the `SpriteSheetSet`.
     pub fn load_into_vec<'seq, Sequences, Sequence, Frame>(
         world: &'seq World,
         sequences: Sequences,
-        texture_index_offset: u64,
-        sprite_sheets: &'seq [SpriteSheet],
-    ) -> Vec<Handle<Animation<Material>>>
+        sprite_sheet_index_offset: u64,
+    ) -> Vec<Handle<Animation<SpriteRender>>>
     where
         Sequences: Iterator<Item = &'seq Sequence>,
         Frame: AnimationFrame,
         Sequence: AnimationSequence<Frame = Frame> + 'seq,
     {
         sequences
-            .map(|sequence| {
-                Self::sequence_to_animation(world, texture_index_offset, sprite_sheets, sequence)
-            })
+            .map(|sequence| Self::sequence_to_animation(world, sprite_sheet_index_offset, sequence))
             .map(|animation| {
                 let loader = world.read_resource::<Loader>();
                 loader.load_from_data(animation, (), &world.read_resource())
             })
-            .collect::<Vec<Handle<Animation<Material>>>>()
+            .collect::<Vec<Handle<Animation<SpriteRender>>>>()
     }
 
-    /// Loads `Material` animations and returns an iterator to their handles by sequence ID.
+    /// Loads `SpriteRender` animations and returns an iterator to their handles by sequence ID.
     ///
     /// The caller is responsible for collecting the elements into the desired collection type.
     ///
@@ -78,14 +74,12 @@ impl MaterialAnimationLoader {
     ///
     /// * `world`: `World` to load animations into.
     /// * `sequences`: Sequences of the animation.
-    /// * `texture_index_offset`: Offset of the texture IDs in the `MaterialTextureSet`.
-    /// * `sprite_sheets`: `SpriteSheet`s that contain the texture coordinates for sprites.
+    /// * `sprite_sheet_index_offset`: Offset of the sprite sheet IDs in the `SpriteSheetSet`.
     pub fn load<'seq, Sequences, SequenceId, Sequence, Frame>(
         world: &'seq World,
         sequences: Sequences,
-        texture_index_offset: u64,
-        sprite_sheets: &'seq [SpriteSheet],
-    ) -> impl Iterator<Item = (&'seq SequenceId, Handle<Animation<Material>>)>
+        sprite_sheet_index_offset: u64,
+    ) -> impl Iterator<Item = (&'seq SequenceId, Handle<Animation<SpriteRender>>)>
     where
         Sequences: Iterator<Item = (&'seq SequenceId, &'seq Sequence)>,
         SequenceId: 'seq,
@@ -96,12 +90,7 @@ impl MaterialAnimationLoader {
             .map(move |(id, sequence)| {
                 (
                     id,
-                    Self::sequence_to_animation(
-                        world,
-                        texture_index_offset,
-                        sprite_sheets,
-                        sequence,
-                    ),
+                    Self::sequence_to_animation(world, sprite_sheet_index_offset, sequence),
                 )
             })
             .map(move |(id, animation)| {
@@ -116,15 +105,13 @@ impl MaterialAnimationLoader {
     /// # Parameters
     ///
     /// * `world`: `World` to store the `Animation`s.
-    /// * `texture_index_offset`: Offset of the texture IDs in the `MaterialTextureSet`.
-    /// * `sprite_sheets`: `SpriteSheet`s that contain the texture coordinates for sprites.
+    /// * `sprite_sheet_index_offset`: Offset of the sprite sheet IDs in the `SpriteSheetSet`.
     /// * `sequence`: `Sequence` to create the animation from.
     fn sequence_to_animation<Sequence: AnimationSequence<Frame = F>, F: AnimationFrame>(
         world: &World,
-        texture_index_offset: u64,
-        sprite_sheets: &[SpriteSheet],
+        sprite_sheet_index_offset: u64,
         sequence: &Sequence,
-    ) -> Animation<Material> {
+    ) -> Animation<SpriteRender> {
         let frames = sequence.frames();
         let mut input = Vec::with_capacity(frames.len() + 1);
         let mut tick_counter = 0.;
@@ -134,35 +121,46 @@ impl MaterialAnimationLoader {
         }
         input.push(tick_counter);
 
-        let texture_sampler = Self::texture_sampler(texture_index_offset, sequence, input.clone());
-        let sprite_offset_sampler = Self::sprite_offset_sampler(sprite_sheets, sequence, input);
+        let sprite_sheet_sampler =
+            Self::sprite_sheet_sampler(sprite_sheet_index_offset, sequence, input.clone());
+        let sprite_index_sampler = Self::sprite_index_sampler(sequence, input);
 
         let loader = world.read_resource::<Loader>();
-        let texture_sampler_handle =
-            loader.load_from_data(texture_sampler, (), &world.read_resource());
-        let offset_sampler_handle =
-            loader.load_from_data(sprite_offset_sampler, (), &world.read_resource());
+        let sprite_sheet_sampler_handle =
+            loader.load_from_data(sprite_sheet_sampler, (), &world.read_resource());
+        let sprite_index_sampler_handle =
+            loader.load_from_data(sprite_index_sampler, (), &world.read_resource());
 
         Animation {
             nodes: vec![
-                (0, MaterialChannel::AlbedoTexture, texture_sampler_handle),
-                (0, MaterialChannel::AlbedoOffset, offset_sampler_handle),
+                (
+                    0,
+                    SpriteRenderChannel::SpriteSheet,
+                    sprite_sheet_sampler_handle,
+                ),
+                (
+                    0,
+                    SpriteRenderChannel::SpriteIndex,
+                    sprite_index_sampler_handle,
+                ),
             ],
         }
     }
 
-    fn texture_sampler<Sequence: AnimationSequence<Frame = F>, F: AnimationFrame>(
-        texture_index_offset: u64,
+    fn sprite_sheet_sampler<Sequence: AnimationSequence<Frame = F>, F: AnimationFrame>(
+        sprite_sheet_index_offset: u64,
         sequence: &Sequence,
         input: Vec<f32>,
-    ) -> Sampler<MaterialPrimitive> {
+    ) -> Sampler<SpriteRenderPrimitive> {
         let mut output = sequence
             .frames()
             .iter()
             .map(|frame: &F| {
-                MaterialPrimitive::Texture(texture_index_offset + frame.texture_index() as u64)
+                SpriteRenderPrimitive::SpriteSheet(
+                    sprite_sheet_index_offset + frame.texture_index() as u64,
+                )
             })
-            .collect::<Vec<MaterialPrimitive>>();
+            .collect::<Vec<SpriteRenderPrimitive>>();
         let final_key_frame = output.last().cloned();
         if final_key_frame.is_some() {
             output.push(final_key_frame.unwrap());
@@ -175,18 +173,15 @@ impl MaterialAnimationLoader {
         }
     }
 
-    fn sprite_offset_sampler<Sequence: AnimationSequence<Frame = F>, F: AnimationFrame>(
-        sprite_sheets: &[SpriteSheet],
+    fn sprite_index_sampler<Sequence: AnimationSequence<Frame = F>, F: AnimationFrame>(
         sequence: &Sequence,
         input: Vec<f32>,
-    ) -> Sampler<MaterialPrimitive> {
+    ) -> Sampler<SpriteRenderPrimitive> {
         let mut output = sequence
             .frames()
             .iter()
-            .map(|frame: &F| {
-                (&sprite_sheets[frame.texture_index()].sprites[frame.sprite_index()]).into()
-            })
-            .collect::<Vec<MaterialPrimitive>>();
+            .map(|frame: &F| SpriteRenderPrimitive::SpriteIndex(frame.sprite_index()))
+            .collect::<Vec<SpriteRenderPrimitive>>();
         let final_key_frame = output.last().cloned();
         if final_key_frame.is_some() {
             output.push(final_key_frame.unwrap());
@@ -206,35 +201,33 @@ mod test {
 
     use amethyst::{
         animation::{
-            Animation, InterpolationFunction, MaterialChannel, MaterialPrimitive, Sampler,
+            Animation, InterpolationFunction, Sampler, SpriteRenderChannel, SpriteRenderPrimitive,
         },
         assets::{AssetStorage, Handle},
         prelude::*,
-        renderer::{Material, SpriteSheet},
+        renderer::SpriteRender,
     };
     use amethyst_test_support::prelude::*;
 
-    use super::MaterialAnimationLoader;
+    use super::SpriteRenderAnimationLoader;
     use AnimationFrame;
     use AnimationSequence;
 
     #[test]
-    fn loads_material_animations_into_map() {
+    fn loads_sprite_render_animations_into_map() {
         let effect = |world: &mut World| {
-            let texture_index_offset = 10;
+            let sprite_sheet_index_offset = 10;
             let test_sequences = test_sequences();
-            let sprite_sheets = sprite_sheets();
-            let animation_handles = MaterialAnimationLoader::load_into_map(
+            let animation_handles = SpriteRenderAnimationLoader::load_into_map(
                 world,
                 &test_sequences,
-                texture_index_offset,
-                &sprite_sheets,
+                sprite_sheet_index_offset,
             );
             world.add_resource(EffectReturn(animation_handles));
-        };
+        }; // kcov-ignore
         let assertion = |world: &mut World| {
             let animation_handles = &world
-                .read_resource::<EffectReturn<HashMap<TestSequenceId, Handle<Animation<Material>>>>>(
+                .read_resource::<EffectReturn<HashMap<TestSequenceId, Handle<Animation<SpriteRender>>>>>(
                 )
                 .0;
 
@@ -245,7 +238,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::render_base("loads_material_animations_into_map", false)
+            AmethystApplication::render_base("loads_sprite_render_animations_into_map", false)
                 .with_effect(effect)
                 .with_assertion(assertion)
                 .run()
@@ -254,22 +247,20 @@ mod test {
     }
 
     #[test]
-    fn loads_material_animations_into_vec() {
+    fn loads_sprite_render_animations_into_vec() {
         let effect = |world: &mut World| {
-            let texture_index_offset = 10;
+            let sprite_sheet_index_offset = 10;
             let test_sequences = test_sequences();
-            let sprite_sheets = sprite_sheets();
-            let animation_handles = MaterialAnimationLoader::load_into_vec(
+            let animation_handles = SpriteRenderAnimationLoader::load_into_vec(
                 world,
                 test_sequences.values(),
-                texture_index_offset,
-                &sprite_sheets,
+                sprite_sheet_index_offset,
             );
             world.add_resource(EffectReturn(animation_handles));
         };
         let assertion = |world: &mut World| {
             let animation_handles = &world
-                .read_resource::<EffectReturn<Vec<Handle<Animation<Material>>>>>()
+                .read_resource::<EffectReturn<Vec<Handle<Animation<SpriteRender>>>>>()
                 .0;
 
             // Verify animation is loaded
@@ -279,7 +270,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::render_base("loads_material_animations_into_vec", false)
+            AmethystApplication::render_base("loads_sprite_render_animations_into_vec", false)
                 .with_effect(effect)
                 .with_assertion(assertion)
                 .run()
@@ -289,12 +280,12 @@ mod test {
 
     fn verify_animation_handle(
         world: &World,
-        animation_handle: Option<&Handle<Animation<Material>>>,
+        animation_handle: Option<&Handle<Animation<SpriteRender>>>,
     ) {
         assert!(animation_handle.is_some());
 
         let animation_handle = animation_handle.unwrap();
-        let animation_store = world.read_resource::<AssetStorage<Animation<Material>>>();
+        let animation_store = world.read_resource::<AssetStorage<Animation<SpriteRender>>>();
         let animation = animation_store.get(animation_handle);
         assert!(animation.is_some());
 
@@ -303,76 +294,63 @@ mod test {
 
         let node_0 = &animation.nodes[0];
         assert_eq!(0, node_0.0);
-        assert_eq!(MaterialChannel::AlbedoTexture, node_0.1);
+        assert_eq!(SpriteRenderChannel::SpriteSheet, node_0.1);
 
         let node_1 = &animation.nodes[1];
         assert_eq!(0, node_1.0);
-        assert_eq!(MaterialChannel::AlbedoOffset, node_1.1);
+        assert_eq!(SpriteRenderChannel::SpriteIndex, node_1.1);
 
         // Verify animation samplers
-        let texture_sampler_handle = &node_0.2;
-        let texture_sampler_store =
-            world.read_resource::<AssetStorage<Sampler<MaterialPrimitive>>>();
-        let texture_sampler = texture_sampler_store.get(texture_sampler_handle);
-        assert!(texture_sampler.is_some());
+        let sprite_sheet_sampler_handle = &node_0.2;
+        let sprite_sheet_sampler_store =
+            world.read_resource::<AssetStorage<Sampler<SpriteRenderPrimitive>>>();
+        let sprite_sheet_sampler = sprite_sheet_sampler_store.get(sprite_sheet_sampler_handle);
+        assert!(sprite_sheet_sampler.is_some());
 
-        let texture_sampler = texture_sampler.unwrap();
-        assert_eq!(vec![0.0, 1.0, 4.0, 6.0], texture_sampler.input);
+        let sprite_sheet_sampler = sprite_sheet_sampler.unwrap();
+        assert_eq!(vec![0.0, 1.0, 4.0, 6.0], sprite_sheet_sampler.input);
         assert_eq!(
             vec![
-                MaterialPrimitive::Texture(10),
-                MaterialPrimitive::Texture(11),
-                MaterialPrimitive::Texture(10),
-                MaterialPrimitive::Texture(10),
+                SpriteRenderPrimitive::SpriteSheet(10),
+                SpriteRenderPrimitive::SpriteSheet(11),
+                SpriteRenderPrimitive::SpriteSheet(10),
+                SpriteRenderPrimitive::SpriteSheet(10),
             ],
-            texture_sampler.output
+            sprite_sheet_sampler.output
         );
-        assert_eq!(InterpolationFunction::Step, texture_sampler.function);
+        assert_eq!(InterpolationFunction::Step, sprite_sheet_sampler.function);
 
-        let offset_sampler_handle = &node_1.2;
-        let offset_sampler_store =
-            world.read_resource::<AssetStorage<Sampler<MaterialPrimitive>>>();
-        let offset_sampler = offset_sampler_store.get(offset_sampler_handle);
-        assert!(offset_sampler.is_some());
+        let sprite_index_sampler_handle = &node_1.2;
+        let sprite_index_sampler_store =
+            world.read_resource::<AssetStorage<Sampler<SpriteRenderPrimitive>>>();
+        let sprite_index_sampler = sprite_index_sampler_store.get(sprite_index_sampler_handle);
+        assert!(sprite_index_sampler.is_some());
 
-        let offset_sampler = offset_sampler.unwrap();
-        assert_eq!(vec![0.0, 1.0, 4.0, 6.0], offset_sampler.input);
+        let sprite_index_sampler = sprite_index_sampler.unwrap();
+        assert_eq!(vec![0.0, 1.0, 4.0, 6.0], sprite_index_sampler.input);
         assert_eq!(
             vec![
-                MaterialPrimitive::Offset((0., 0.5), (1., 0.5)),
-                MaterialPrimitive::Offset((1., 0.75), (0.5, 0.75)),
-                MaterialPrimitive::Offset((0., 0.5), (1., 0.5)),
-                MaterialPrimitive::Offset((0., 0.5), (1., 0.5)),
+                SpriteRenderPrimitive::SpriteIndex(1),
+                SpriteRenderPrimitive::SpriteIndex(2),
+                SpriteRenderPrimitive::SpriteIndex(3),
+                SpriteRenderPrimitive::SpriteIndex(3),
             ],
-            offset_sampler.output
+            sprite_index_sampler.output
         );
-        assert_eq!(InterpolationFunction::Step, offset_sampler.function);
+        assert_eq!(InterpolationFunction::Step, sprite_index_sampler.function);
     }
 
     fn test_sequences() -> HashMap<TestSequenceId, TestSequence> {
         // Sheet, Sprite, Wait
         let frames = vec![
-            TestFrame::new(0, 0, 0), // TU: 0 to 1
-            TestFrame::new(1, 0, 2), // TU: 1 to 4
-            TestFrame::new(0, 0, 1), // TU: 4 to 6
+            TestFrame::new(0, 1, 0), // TU: 0 to 1
+            TestFrame::new(1, 2, 2), // TU: 1 to 4
+            TestFrame::new(0, 3, 1), // TU: 4 to 6
         ];
         let sequence = TestSequence::new(frames);
         let mut sequences = HashMap::new();
         sequences.insert(TestSequenceId::Boo, sequence);
         sequences
-    }
-
-    fn sprite_sheets() -> Vec<SpriteSheet> {
-        vec![
-            SpriteSheet {
-                texture_id: 10,
-                sprites: vec![[0., 0.5, 1., 0.5].into()],
-            },
-            SpriteSheet {
-                texture_id: 11,
-                sprites: vec![[1., 0.75, 0.5, 0.75].into()],
-            },
-        ]
     }
 
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]

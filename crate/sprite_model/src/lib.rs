@@ -8,8 +8,6 @@
 
 extern crate amethyst;
 #[macro_use]
-extern crate derivative;
-#[macro_use]
 extern crate derive_new;
 extern crate serde;
 #[macro_use]
@@ -18,4 +16,3 @@ extern crate serde_derive;
 extern crate toml;
 
 pub mod config;
-pub mod loaded;

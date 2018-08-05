@@ -27,7 +27,7 @@ impl Index {
             Index::StartGame => {
                 let game_play_fn = || Box::new(GamePlayState::new()); // kcov-ignore
                 let map_selection_fn =
-                    move || Box::new(MapSelectionState::new(Box::new(game_play_fn)));
+                    move || Box::new(MapSelectionState::new(Box::new(game_play_fn))); // kcov-ignore
 
                 let character_selection_state =
                     Box::new(CharacterSelectionState::new(Box::new(map_selection_fn)));

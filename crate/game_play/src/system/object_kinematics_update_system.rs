@@ -64,7 +64,7 @@ mod test {
                     ObjectKinematicsUpdateSystem::new(),
                     ObjectKinematicsUpdateSystem::type_name(),
                     &[]
-                )
+                ) // kcov-ignore
                 .with_setup(setup)
                 .with_assertion(assertion)
                 .run()

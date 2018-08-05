@@ -14,7 +14,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameModeMenuBundle {
         builder.add(
             UiEventHandlerSystem::new(),
             "",
-            &["ui_system", "ui_mouse_system"],
+            &["ui_keyboard_system", "ui_mouse_system"],
         );
         Ok(())
     }

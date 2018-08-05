@@ -6,7 +6,7 @@ use amethyst::{
         transform::{GlobalTransform, Transform},
     },
     ecs::prelude::*,
-    renderer::{Material, MeshHandle},
+    renderer::SpriteRender,
 };
 use map_model::loaded::{Map, MapHandle};
 
@@ -33,12 +33,11 @@ impl MapLayerEntitySpawner {
                 .expect("Expected map to be loaded.");
 
             // Spawn map layer entities
-            let map_animations = &map.animations;
+            let map_animations = &map.animation_handles;
             if map_animations.is_some() {
-                let sprite_material_mesh = map
-                    .sprite_material_mesh
-                    .as_ref()
-                    .expect("Expected SpriteMaterialMesh to be present when there are animations.");
+                let sprite_sheet_handles = map.sprite_sheet_handles.as_ref().expect(
+                    "Expected sprite_sheet_handles to be present when there are animations.",
+                );
 
                 let map_animations = map_animations.as_ref().unwrap().clone();
 
@@ -46,19 +45,23 @@ impl MapLayerEntitySpawner {
                     .definition
                     .layers
                     .iter()
-                    .map(|layer| {
+                    .zip(sprite_sheet_handles.iter())
+                    .map(|(layer, sprite_sheet_handle)| {
                         let position = layer.position;
                         let mut transform = Transform::default();
                         transform.translation =
                             Vector3::new(position.x as f32, position.y as f32, position.z as f32);
 
-                        (
-                            transform,
-                            sprite_material_mesh.default_material.clone(),
-                            sprite_material_mesh.mesh.clone(),
-                        )
+                        let sprite_render = SpriteRender {
+                            sprite_sheet: sprite_sheet_handle.clone(),
+                            sprite_number: 0,
+                            flip_horizontal: false,
+                            flip_vertical: false,
+                        };
+
+                        (transform, sprite_render.clone())
                     })
-                    .collect::<Vec<(Transform, Material, MeshHandle)>>();
+                    .collect::<Vec<(Transform, SpriteRender)>>();
 
                 Some((components, map_animations))
             } else {
@@ -69,12 +72,11 @@ impl MapLayerEntitySpawner {
         if let Some((layers_entity_components, map_animations)) = components_and_animation {
             let entities = layers_entity_components
                 .into_iter()
-                .map(|(transform, material, mesh)| {
+                .map(|(transform, sprite_render)| {
                     world
                         .create_entity()
                         .with(transform)
-                        .with(material)
-                        .with(mesh)
+                        .with(sprite_render)
                         .with(GlobalTransform::default())
                         .build()
                 })
@@ -88,7 +90,7 @@ impl MapLayerEntitySpawner {
                     let animation_id = 0;
                     let mut animation_control_set_storage = world.write_storage();
                     let mut animation_set =
-                        get_animation_set::<u32, Material>(
+                        get_animation_set::<u32, SpriteRender>(
                             &mut animation_control_set_storage,
                             *entity,
                         ).expect("Animation should exist as new entity should be valid.");

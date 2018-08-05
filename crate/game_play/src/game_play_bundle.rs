@@ -24,32 +24,32 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &CharacterInputUpdateSystem::type_name(),
             // TODO: Pending <https://gitlab.com/azriel91/autexousious/issues/53>
             &["input_system"],
-        );
+        ); // kcov-ignore
         builder.add(
             CharacterSequenceUpdateSystem::new(),
             &CharacterSequenceUpdateSystem::type_name(),
             &[&CharacterInputUpdateSystem::type_name()],
-        );
+        ); // kcov-ignore
         builder.add(
             CharacterKinematicsSystem::new(),
             &CharacterKinematicsSystem::type_name(),
             &[&CharacterSequenceUpdateSystem::type_name()],
-        );
+        ); // kcov-ignore
         builder.add(
             ObjectKinematicsUpdateSystem::new(),
             &ObjectKinematicsUpdateSystem::type_name(),
             &[&CharacterKinematicsSystem::type_name()],
-        );
+        ); // kcov-ignore
         builder.add(
             CharacterGroundingSystem::new(),
             &CharacterGroundingSystem::type_name(),
             &[&ObjectKinematicsUpdateSystem::type_name()],
-        );
+        ); // kcov-ignore
         builder.add(
             ObjectTransformUpdateSystem::new(),
             &ObjectTransformUpdateSystem::type_name(),
             &[&CharacterGroundingSystem::type_name()],
-        );
+        ); // kcov-ignore
         Ok(())
     }
 }
