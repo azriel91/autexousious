@@ -179,13 +179,12 @@ mod test {
             ).with_state(|| loading::State::new(
                 AmethystApplication::assets_dir().into(),
                 Box::new(EmptyState),
-            ))
-                .with_assertion(assertion)
-                .with_bundle(MapLoadingBundle::new())
-                .with_bundle(ObjectLoadingBundle::new())
-                .with_system(TestSystem, TestSystem::type_name(), &[])
-                .run()
-                .is_ok()
+            )).with_assertion(assertion)
+            .with_bundle(MapLoadingBundle::new())
+            .with_bundle(ObjectLoadingBundle::new())
+            .with_system(TestSystem, TestSystem::type_name(), &[])
+            .run()
+            .is_ok()
         );
     }
 

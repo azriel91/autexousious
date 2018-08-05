@@ -17,6 +17,7 @@ amethyst_test_support = { path = "../amethyst_test_support" }
 pretty_assertions = "0.5"
 serde = "1.0"
 serde_derive = "1.0"
+strum = "0.10"
 tempfile = "3.0"
 
 [features]

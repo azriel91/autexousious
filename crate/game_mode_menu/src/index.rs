@@ -1,6 +1,8 @@
 use amethyst::prelude::*;
+use amethyst_test_support::SchedulerState;
 use character_selection::CharacterSelectionState;
-use game_play_state::GamePlayState;
+use game_loading::GameLoadingState;
+use game_play::GamePlayState;
 use map_selection::MapSelectionState;
 
 /// Game mode menu indicies.
@@ -25,13 +27,18 @@ impl Index {
     pub fn trans(self) -> Trans<GameData<'static, 'static>> {
         match self {
             Index::StartGame => {
-                let game_play_fn = || Box::new(GamePlayState::new()); // kcov-ignore
+                let game_loading_fn = || Box::new(GameLoadingState::new()); // kcov-ignore
                 let map_selection_fn =
-                    move || Box::new(MapSelectionState::new(Box::new(game_play_fn))); // kcov-ignore
+                    move || Box::new(MapSelectionState::new(Box::new(game_loading_fn))); // kcov-ignore
 
                 let character_selection_state =
                     Box::new(CharacterSelectionState::new(Box::new(map_selection_fn)));
-                Trans::Push(character_selection_state)
+
+                let states: Vec<Box<State<GameData>>> =
+                    vec![Box::new(GamePlayState::new()), character_selection_state];
+                let scheduler_state = Box::new(SchedulerState::new(states));
+
+                Trans::Push(scheduler_state)
             }
             Index::Exit => Trans::Quit,
         }

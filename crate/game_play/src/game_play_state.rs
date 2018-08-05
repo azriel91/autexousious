@@ -1,0 +1,105 @@
+use amethyst::{
+    core::{
+        cgmath::{Matrix4, Vector3},
+        transform::GlobalTransform,
+    },
+    ecs::prelude::*,
+    input::is_key_down,
+    prelude::*,
+    renderer::{Camera, Event, Projection, ScreenDimensions, VirtualKeyCode},
+};
+use game_model::play::GameEntities;
+
+/// `State` where game play takes place.
+#[derive(Derivative, Default, new)]
+#[derivative(Debug)]
+pub struct GamePlayState {
+    /// State specific dispatcher.
+    #[derivative(Debug = "ignore")]
+    #[new(default)]
+    dispatcher: Option<Dispatcher<'static, 'static>>,
+    /// Camera entity
+    #[new(default)]
+    camera: Option<Entity>,
+}
+
+impl GamePlayState {
+    fn terminate_entities(&mut self, world: &mut World) {
+        // This `allow` is needed because rustc evaluates that `game_entities` does not live long
+        // enough when entities is constructed, so we need to bind entities to a variable.
+        //
+        // However, that triggers the clippy lint that we're binding and then returning. Pending:
+        //
+        // * <https://github.com/rust-lang-nursery/rust-clippy/issues/1524>
+        // * <https://github.com/rust-lang-nursery/rust-clippy/issues/2904>
+        #[allow(unknown_lints)]
+        #[allow(let_and_return)]
+        let entities = {
+            let mut game_entities = world.write_resource::<GameEntities>();
+            let entities = game_entities.drain().collect::<Vec<Entity>>();
+
+            entities
+        };
+        entities.into_iter().for_each(|entity| {
+            world
+                .delete_entity(entity)
+                .expect("Failed to delete game entity.");
+        });
+    }
+
+    /// Initializes a camera to view the game.
+    fn initialize_camera(&mut self, world: &mut World) {
+        let (width, height) = {
+            let dim = world.read_resource::<ScreenDimensions>();
+            (dim.width(), dim.height())
+        };
+
+        let camera = world
+            .create_entity()
+            .with(Camera::from(Projection::orthographic(
+                0.0, width, height, 0.0,
+            ))).with(GlobalTransform(Matrix4::from_translation(Vector3::new(
+                0.0, 0.0, 1.0,
+            )))).build();
+        self.camera = Some(camera);
+    }
+
+    /// Terminates the camera.
+    fn terminate_camera(&mut self, world: &mut World) {
+        world
+            .delete_entity(
+                self.camera
+                    .take()
+                    .expect("Expected camera entity to be set."),
+            ).expect("Failed to delete camera entity.");
+    }
+}
+
+impl<'a, 'b> State<GameData<'a, 'b>> for GamePlayState {
+    fn on_start(&mut self, mut data: StateData<GameData>) {
+        self.initialize_camera(&mut data.world);
+    }
+
+    fn handle_event(
+        &mut self,
+        _data: StateData<GameData>,
+        event: Event,
+    ) -> Trans<GameData<'a, 'b>> {
+        if is_key_down(&event, VirtualKeyCode::Escape) {
+            info!("Returning from `GamePlayState`.");
+            Trans::Pop
+        } else {
+            Trans::None
+        }
+    }
+
+    fn on_stop(&mut self, mut data: StateData<GameData>) {
+        self.terminate_entities(&mut data.world);
+        self.terminate_camera(&mut data.world);
+    }
+
+    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
+        data.data.update(&data.world);
+        Trans::None
+    }
+}

@@ -24,6 +24,7 @@ mod test {
     use amethyst::assets::AssetStorage;
     use amethyst_test_support::AmethystApplication;
     use object_model::{loaded::Character, ObjectType};
+    use strum::IntoEnumIterator;
 
     use super::ObjectLoadingBundle;
 
@@ -35,16 +36,15 @@ mod test {
             AmethystApplication::blank()
                 .with_bundle(ObjectLoadingBundle)
                 .with_assertion(|world| {
-                    ObjectType::variants().iter().for_each(|object_type| {
-                        match *object_type {
+                    ObjectType::iter().for_each(|object_type| {
+                        match object_type {
                             ObjectType::Character => {
                                 // Next line will panic if the Processor wasn't added
                                 world.read_resource::<AssetStorage<Character>>();
                             }
                         }
                     });
-                })
-                .run()
+                }).run()
                 .is_ok()
         );
     }

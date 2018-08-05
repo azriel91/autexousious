@@ -17,6 +17,9 @@ extern crate serde;
 extern crate serde_derive;
 extern crate sprite_loading;
 extern crate sprite_model;
+extern crate strum;
+#[macro_use]
+extern crate strum_macros;
 #[cfg(test)]
 extern crate toml;
 

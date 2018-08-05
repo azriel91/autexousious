@@ -94,14 +94,13 @@ fn into_type_config_dirs(config_dir: &PathBuf) -> Vec<(ConfigType, PathBuf)> {
 fn into_object_model_records(
     object_type_dirs_groups: &[PathBuf],
 ) -> HashMap<ObjectType, Vec<ConfigRecord>> {
-    ObjectType::variants()
-        .into_iter()
+    ObjectType::iter()
         .filter_map(|object_type| {
             // Discover object type configuration directories
             // i.e. "assets/default/object/<object_type>"
             let object_type_dirs = object_type_dirs_groups
                 .iter()
-                .map(|object_dir| object_dir.join(&object_type.name()))
+                .map(|object_dir| object_dir.join(&object_type.to_string().to_snake_case()))
                 .filter(|path| path.is_dir())
                 .collect::<Vec<PathBuf>>();
 
