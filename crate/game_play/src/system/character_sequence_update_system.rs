@@ -17,7 +17,7 @@ use game_loading::AnimationRunner;
 #[derive(Debug, Default, TypeName, new)]
 pub(crate) struct CharacterSequenceUpdateSystem;
 
-type CharacterSequenceUpdateSystemData<'s, 'c> = (
+type CharacterSequenceUpdateSystemData<'s> = (
     Entities<'s>,
     Read<'s, AssetStorage<Character>>,
     ReadStorage<'s, CharacterHandle>,
@@ -29,7 +29,7 @@ type CharacterSequenceUpdateSystemData<'s, 'c> = (
 );
 
 impl<'s> System<'s> for CharacterSequenceUpdateSystem {
-    type SystemData = CharacterSequenceUpdateSystemData<'s, 's>;
+    type SystemData = CharacterSequenceUpdateSystemData<'s>;
 
     fn run(
         &mut self,
