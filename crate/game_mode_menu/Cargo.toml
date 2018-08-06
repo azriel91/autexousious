@@ -5,7 +5,6 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 
 [dependencies]
 amethyst = { git = "https://github.com/azriel91/amethyst.git", branch = "feature/829/sprite-render-pass" }
-amethyst_test_support = { path = "../amethyst_test_support" }
 application_menu = { path = "../application_menu" }
 application_ui = { path = "../application_ui" }
 character_selection = { path = "../../crate/character_selection" }
@@ -17,6 +16,7 @@ map_selection = { path = "../../crate/map_selection" }
 rayon = "1.0"
 
 [dev-dependencies]
+amethyst_test_support = { path = "../amethyst_test_support" }
 debug_util_amethyst = { path = "../debug_util_amethyst" }
 
 [features]

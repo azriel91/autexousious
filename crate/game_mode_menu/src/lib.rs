@@ -4,6 +4,7 @@
 //! Menu to allow the user to select game mode.
 
 extern crate amethyst;
+#[cfg(test)]
 extern crate amethyst_test_support;
 extern crate application_menu;
 extern crate application_ui;

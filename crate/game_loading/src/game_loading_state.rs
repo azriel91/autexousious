@@ -1,4 +1,6 @@
 use std::collections::HashMap;
+use std::fmt::Debug;
+use std::marker::PhantomData;
 
 use amethyst::{
     assets::AssetStorage,
@@ -22,9 +24,23 @@ use MapLayerEntitySpawner;
 /// `State` where game play takes place.
 #[derive(Derivative, Default, new)]
 #[derivative(Debug)]
-pub struct GameLoadingState;
+pub struct GameLoadingState<'a, 'b, F, S>
+where
+    F: Fn() -> Box<S>,
+    S: State<GameData<'a, 'b>> + 'static,
+{
+    /// The `State` that follows this one.
+    #[derivative(Debug(bound = "F: Debug"))]
+    next_state_fn: Box<F>,
+    /// Data type used by this state and the returned state (see `StateData`).
+    state_data: PhantomData<GameData<'a, 'b>>,
+}
 
-impl GameLoadingState {
+impl<'a, 'b, F, S> GameLoadingState<'a, 'b, F, S>
+where
+    F: Fn() -> Box<S>,
+    S: State<GameData<'a, 'b>> + 'static,
+{
     /// Initializes map layers and returns the entities along with the map's width and height.
     ///
     /// # Parameters
@@ -115,7 +131,11 @@ impl GameLoadingState {
     }
 }
 
-impl<'a, 'b> State<GameData<'a, 'b>> for GameLoadingState {
+impl<'a, 'b, F, S> State<GameData<'a, 'b>> for GameLoadingState<'a, 'b, F, S>
+where
+    F: Fn() -> Box<S>,
+    S: State<GameData<'a, 'b>> + 'static,
+{
     fn on_start(&mut self, mut data: StateData<GameData>) {
         self.initialize_entities(&mut data.world);
     }
@@ -137,7 +157,7 @@ impl<'a, 'b> State<GameData<'a, 'b>> for GameLoadingState {
         data.data.update(&data.world);
 
         // TODO: use systems to spawn entities instead of doing it on_start.
-
-        Trans::Pop
+        // TODO: `Trans:Push` when we have a proper map selection menu.
+        Trans::Switch((self.next_state_fn)())
     }
 }
