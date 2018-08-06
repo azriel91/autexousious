@@ -32,6 +32,10 @@ where
     /// The `State` that follows this one.
     #[derivative(Debug(bound = "F: Debug"))]
     next_state_fn: Box<F>,
+    /// State specific dispatcher.
+    #[derivative(Debug = "ignore")]
+    #[new(default)]
+    dispatcher: Option<Dispatcher<'static, 'static>>,
     /// Data type used by this state and the returned state (see `StateData`).
     state_data: PhantomData<GameData<'a, 'b>>,
 }
@@ -41,6 +45,18 @@ where
     F: Fn() -> Box<S>,
     S: State<GameData<'a, 'b>> + 'static,
 {
+    /// Sets up the dispatcher for this state.
+    ///
+    /// # Parameters
+    ///
+    /// * `world`: `World` to operate on.
+    fn initialize_dispatcher(&mut self, world: &mut World) {
+        let dispatcher_builder = DispatcherBuilder::new();
+        let mut dispatcher = dispatcher_builder.build();
+        dispatcher.setup(&mut world.res);
+        self.dispatcher = Some(dispatcher);
+    }
+
     /// Initializes map layers and returns the entities along with the map's width and height.
     ///
     /// # Parameters
@@ -129,6 +145,11 @@ where
 
         world.add_resource(game_entities);
     }
+
+    /// Terminates the dispatcher.
+    fn terminate_dispatcher(&mut self) {
+        self.dispatcher = None;
+    }
 }
 
 impl<'a, 'b, F, S> State<GameData<'a, 'b>> for GameLoadingState<'a, 'b, F, S>
@@ -137,7 +158,12 @@ where
     S: State<GameData<'a, 'b>> + 'static,
 {
     fn on_start(&mut self, mut data: StateData<GameData>) {
+        self.initialize_dispatcher(&mut data.world);
         self.initialize_entities(&mut data.world);
+    }
+
+    fn on_stop(&mut self, _data: StateData<GameData<'a, 'b>>) {
+        self.terminate_dispatcher();
     }
 
     fn handle_event(
@@ -155,6 +181,7 @@ where
 
     fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
         data.data.update(&data.world);
+        self.dispatcher.as_mut().unwrap().dispatch(&data.world.res);
 
         // TODO: use systems to spawn entities instead of doing it on_start.
         // TODO: `Trans:Push` when we have a proper map selection menu.
