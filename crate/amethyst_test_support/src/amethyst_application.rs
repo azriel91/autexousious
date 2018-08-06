@@ -22,7 +22,7 @@ use hetseq::Queue;
 
 use EmptyState;
 use FunctionState;
-use SchedulerState;
+use SequencerState;
 use SystemInjectionBundle;
 
 type BundleAddFn = SendBoxFnOnce<
@@ -197,18 +197,15 @@ impl
             .with_bundle(AnimationBundle::<u32, Material>::new(
                 "material_animation_control_system",
                 "material_sampler_interpolation_system",
-            ))
-            .with_bundle(AnimationBundle::<u32, SpriteRender>::new(
+            )).with_bundle(AnimationBundle::<u32, SpriteRender>::new(
                 "sprite_render_animation_control_system",
                 "sprite_render_sampler_interpolation_system",
-            ))
-            .with_bundle(TransformBundle::new().with_dep(&[
+            )).with_bundle(TransformBundle::new().with_dep(&[
                 "material_animation_control_system",
                 "material_sampler_interpolation_system",
                 "sprite_render_animation_control_system",
                 "sprite_render_sampler_interpolation_system",
-            ]))
-            .with_bundle(InputBundle::<String, String>::new())
+            ])).with_bundle(InputBundle::<String, String>::new())
             .with_bundle(UiBundle::<String, String>::new())
             .with_render_bundle(test_name, visibility)
     }
@@ -289,7 +286,7 @@ where
         if setup_fn.is_some() {
             states.push(Box::new(FunctionState::new(setup_fn.unwrap())));
         }
-        Self::build_application(SchedulerState::new(states), game_data, resource_add_fns)
+        Self::build_application(SequencerState::new(states), game_data, resource_add_fns)
     }
 
     fn build_application<SLocal>(
@@ -355,7 +352,7 @@ where
 
             Ok(())
         }).join()
-            .expect("Failed to run Amethyst application")
+        .expect("Failed to run Amethyst application")
     }
 }
 
@@ -707,8 +704,7 @@ where
                     ColorMask::all(),
                     ALPHA,
                     None,
-                ))
-                .with_pass(DrawUi::new()),
+                )).with_pass(DrawUi::new()),
         )
     }
 }
@@ -977,9 +973,9 @@ mod test {
                 "render_base_application_can_load_material_animations",
                 false
             ).with_effect(MaterialAnimationFixture::effect)
-                .with_assertion(MaterialAnimationFixture::assertion)
-                .run()
-                .is_ok()
+            .with_assertion(MaterialAnimationFixture::assertion)
+            .run()
+            .is_ok()
         );
     }
 
@@ -992,9 +988,9 @@ mod test {
                 "render_base_application_can_load_sprite_render_animations",
                 false
             ).with_effect(SpriteRenderAnimationFixture::effect)
-                .with_assertion(SpriteRenderAnimationFixture::assertion)
-                .run()
-                .is_ok()
+            .with_assertion(SpriteRenderAnimationFixture::assertion)
+            .run()
+            .is_ok()
         );
     }
 

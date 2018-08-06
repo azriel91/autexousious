@@ -300,7 +300,7 @@ pub use amethyst_application::{AmethystApplication, HIDPI, SCREEN_HEIGHT, SCREEN
 pub use effect_return::EffectReturn;
 pub use fixture::{MaterialAnimationFixture, SpriteRenderAnimationFixture};
 pub use game_update::GameUpdate;
-pub use state::{EmptyState, FunctionState, SchedulerState};
+pub use state::{EmptyState, FunctionState, SequencerState};
 pub(crate) use system_injection_bundle::SystemInjectionBundle;
 
 mod amethyst_application;

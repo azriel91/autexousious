@@ -1,5 +1,5 @@
 use amethyst::prelude::*;
-use amethyst_test_support::SchedulerState;
+use amethyst_test_support::SequencerState;
 use character_selection::CharacterSelectionState;
 use game_loading::GameLoadingState;
 use game_play::GamePlayState;
@@ -36,9 +36,9 @@ impl Index {
 
                 let states: Vec<Box<State<GameData>>> =
                     vec![Box::new(GamePlayState::new()), character_selection_state];
-                let scheduler_state = Box::new(SchedulerState::new(states));
+                let sequencer_state = Box::new(SequencerState::new(states));
 
-                Trans::Push(scheduler_state)
+                Trans::Push(sequencer_state)
             }
             Index::Exit => Trans::Quit,
         }
