@@ -969,6 +969,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "game_loading"
+version = "0.5.0"
+dependencies = [
+ "amethyst 0.7.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/829/sprite-render-pass)",
+ "amethyst_test_support 0.4.0",
+ "character_selection 0.4.0",
+ "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "game_model 0.4.0",
+ "loading 0.4.0",
+ "log 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "map_loading 0.5.0",
+ "map_model 0.4.0",
+ "map_selection 0.5.0",
+ "object_loading 0.4.0",
+ "object_model 0.4.0",
+ "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typename_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "game_mode_menu"
 version = "0.4.0"
 dependencies = [
@@ -979,7 +1000,8 @@ dependencies = [
  "character_selection 0.4.0",
  "debug_util_amethyst 0.4.0",
  "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "game_play_state 0.4.0",
+ "game_loading 0.5.0",
+ "game_play 0.4.0",
  "log 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_selection 0.5.0",
  "rayon 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -989,7 +1011,8 @@ dependencies = [
 name = "game_model"
 version = "0.4.0"
 dependencies = [
- "derive_more 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "amethyst 0.7.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/829/sprite-render-pass)",
+ "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "heck 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "itertools 0.7.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1007,28 +1030,11 @@ dependencies = [
  "amethyst_test_support 0.4.0",
  "application_test_support 0.4.0",
  "character_selection 0.4.0",
+ "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input 0.4.0",
+ "game_loading 0.5.0",
  "game_model 0.4.0",
- "game_play_state 0.4.0",
- "loading 0.4.0",
- "map_loading 0.5.0",
- "map_model 0.4.0",
- "map_selection 0.5.0",
- "object_loading 0.4.0",
- "object_model 0.4.0",
- "object_play 0.4.0",
- "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "typename_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "game_play_state"
-version = "0.4.0"
-dependencies = [
- "amethyst 0.7.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/829/sprite-render-pass)",
- "amethyst_test_support 0.4.0",
- "character_selection 0.4.0",
  "loading 0.4.0",
  "log 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_loading 0.5.0",
@@ -1036,6 +1042,7 @@ dependencies = [
  "map_selection 0.5.0",
  "object_loading 0.4.0",
  "object_model 0.4.0",
+ "object_play 0.4.0",
  "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -1328,6 +1335,7 @@ dependencies = [
  "map_model 0.4.0",
  "object_loading 0.4.0",
  "object_model 0.4.0",
+ "strum 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "toml 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -1646,6 +1654,7 @@ dependencies = [
  "serde 1.0.70 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_derive 1.0.70 (registry+https://github.com/rust-lang/crates.io-index)",
  "sprite_loading 0.5.0",
+ "strum 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "tempfile 3.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -1660,6 +1669,8 @@ dependencies = [
  "serde_derive 1.0.70 (registry+https://github.com/rust-lang/crates.io-index)",
  "sprite_loading 0.5.0",
  "sprite_model 0.5.0",
+ "strum 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "toml 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 

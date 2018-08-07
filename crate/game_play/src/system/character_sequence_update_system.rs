@@ -4,7 +4,6 @@ use amethyst::{
     ecs::prelude::*,
     renderer::SpriteRender,
 };
-use game_play_state::AnimationRunner;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
     entity::{CharacterInput, CharacterStatus, Kinematics},
@@ -12,11 +11,13 @@ use object_model::{
 };
 use object_play::CharacterSequenceHandler;
 
+use game_loading::AnimationRunner;
+
 /// Updates `Character` sequence based on input
 #[derive(Debug, Default, TypeName, new)]
 pub(crate) struct CharacterSequenceUpdateSystem;
 
-type CharacterSequenceUpdateSystemData<'s, 'c> = (
+type CharacterSequenceUpdateSystemData<'s> = (
     Entities<'s>,
     Read<'s, AssetStorage<Character>>,
     ReadStorage<'s, CharacterHandle>,
@@ -28,7 +29,7 @@ type CharacterSequenceUpdateSystemData<'s, 'c> = (
 );
 
 impl<'s> System<'s> for CharacterSequenceUpdateSystem {
-    type SystemData = CharacterSequenceUpdateSystemData<'s, 's>;
+    type SystemData = CharacterSequenceUpdateSystemData<'s>;
 
     fn run(
         &mut self,
@@ -57,7 +58,8 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             &kinematics_storage,
             &mut character_status_storage,
             &mut sprite_render_storage,
-        ).join()
+        )
+            .join()
         {
             let character = characters
                 .get(character_handle)
@@ -79,8 +81,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                     .iter()
                     .find(|&&(ref id, ref _control)| {
                         id == &character_status.object_status.sequence_id
-                    })
-                    .map_or(true, |(_id, control)| control.state == ControlState::Done)
+                    }).map_or(true, |(_id, control)| control.state == ControlState::Done)
             };
             if sequence_ended {
                 character_status.object_status.sequence_state = SequenceState::End;
@@ -105,8 +106,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                             "Failed to get animation for sequence: `{:?}`",
                             next_sequence_id
                         )
-                    })
-                    .clone();
+                    }).clone();
 
                 AnimationRunner::swap(
                     &mut animation_set,

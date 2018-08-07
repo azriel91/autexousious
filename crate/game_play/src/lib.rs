@@ -1,7 +1,10 @@
 #![deny(missing_docs)]
 #![deny(missing_debug_implementations)]
 
-//! Provides the `State` where the game play takes place.
+//! Provides the state and systems for game play.
+//!
+//! Note that game entities are spawned in the `GameLoadingState` provided by the `game_loading`
+//! crate.
 
 extern crate amethyst;
 #[cfg(test)]
@@ -10,12 +13,16 @@ extern crate amethyst_test_support;
 extern crate application_test_support;
 extern crate character_selection;
 #[macro_use]
+extern crate derivative;
+#[macro_use]
 extern crate derive_new;
 extern crate game_input;
+extern crate game_loading;
 extern crate game_model;
-extern crate game_play_state;
 #[cfg(test)]
 extern crate loading;
+#[macro_use]
+extern crate log;
 #[cfg(test)]
 extern crate map_loading;
 extern crate map_model;
@@ -29,10 +36,12 @@ extern crate typename;
 extern crate typename_derive;
 
 pub use game_play_bundle::GamePlayBundle;
+pub use game_play_state::GamePlayState;
 pub(crate) use system::{
     CharacterGroundingSystem, CharacterInputUpdateSystem, CharacterKinematicsSystem,
     CharacterSequenceUpdateSystem, ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
 };
 
 mod game_play_bundle;
+mod game_play_state;
 mod system;

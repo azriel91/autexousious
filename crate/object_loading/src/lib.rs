@@ -24,6 +24,8 @@ extern crate pretty_assertions;
 extern crate serde;
 extern crate sprite_loading;
 #[cfg(test)]
+extern crate strum;
+#[cfg(test)]
 extern crate tempfile;
 
 pub use object::{CharacterLoader, ObjectLoader};

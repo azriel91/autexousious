@@ -1,7 +1,7 @@
 #![deny(missing_docs)]
 #![deny(missing_debug_implementations)]
 
-//! Provides the `State` where the game play takes place.
+//! Provides the `State` where loading of game entities takes place.
 //!
 //! This is split from the `game_play` crate as it allows the `application_test_support` crate to
 //! depend on this crate and spawn objects for use by other crates. The `game_play` crate can then
@@ -11,6 +11,11 @@ extern crate amethyst;
 #[cfg(test)]
 extern crate amethyst_test_support;
 extern crate character_selection;
+#[macro_use]
+extern crate derivative;
+#[macro_use]
+extern crate derive_new;
+extern crate game_model;
 #[cfg(test)]
 extern crate loading;
 #[macro_use]
@@ -22,18 +27,21 @@ extern crate map_selection;
 #[cfg(test)]
 extern crate object_loading;
 extern crate object_model;
-#[cfg(test)]
 extern crate typename;
-#[cfg(test)]
 #[macro_use]
 extern crate typename_derive;
 
 pub use animation_runner::AnimationRunner;
-pub(crate) use character_entity_spawner::CharacterEntitySpawner;
-pub use game_play_state::GamePlayState;
-pub(crate) use map_layer_entity_spawner::MapLayerEntitySpawner;
+pub(crate) use game_loading_bundle::GameLoadingBundle;
+pub use game_loading_state::GameLoadingState;
+pub use spawn::{
+    CharacterComponentStorages, CharacterEntitySpawner, MapLayerComponentStorages,
+    MapLayerEntitySpawner, MapSpawningResources, ObjectComponentStorages, ObjectSpawningResources,
+};
+pub(crate) use system::{CharacterSelectionSpawningSystem, MapSelectionSpawningSystem};
 
 mod animation_runner;
-mod character_entity_spawner;
-mod game_play_state;
-mod map_layer_entity_spawner;
+mod game_loading_bundle;
+mod game_loading_state;
+mod spawn;
+mod system;

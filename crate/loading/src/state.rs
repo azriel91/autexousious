@@ -17,6 +17,7 @@ use map_model::{
 };
 use object_loading::CharacterLoader;
 use object_model::{loaded::CharacterHandle, ObjectType};
+use strum::IntoEnumIterator;
 
 /// `State` where resource loading takes place.
 ///
@@ -63,15 +64,13 @@ where
         let configuration_index = index_configuration(&self.assets_dir);
         debug!("Indexed configuration: {:?}", &configuration_index);
 
-        ObjectType::variants()
-            .into_iter()
+        ObjectType::iter()
             .filter_map(|object_type| {
                 configuration_index
                     .objects
                     .get(&object_type)
                     .map(|config_records| (object_type, config_records))
-            })
-            .for_each(|(object_type, config_records)| {
+            }).for_each(|(object_type, config_records)| {
                 // config_records is the list of records for one object type
 
                 match object_type {
@@ -90,8 +89,7 @@ where
                                 }
 
                                 result.ok()
-                            })
-                            .collect::<Vec<CharacterHandle>>();
+                            }).collect::<Vec<CharacterHandle>>();
 
                         debug!("Loaded character handles: `{:?}`", loaded_characters);
 

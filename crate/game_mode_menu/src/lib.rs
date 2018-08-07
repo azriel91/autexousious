@@ -13,7 +13,8 @@ extern crate character_selection;
 extern crate debug_util_amethyst;
 #[macro_use]
 extern crate derivative;
-extern crate game_play_state;
+extern crate game_loading;
+extern crate game_play;
 #[macro_use]
 extern crate log;
 extern crate map_selection;

@@ -14,6 +14,7 @@ extern crate map_loading;
 extern crate map_model;
 extern crate object_loading;
 extern crate object_model;
+extern crate strum;
 extern crate toml;
 
 pub use state::State;

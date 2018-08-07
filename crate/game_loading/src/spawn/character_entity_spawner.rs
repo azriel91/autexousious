@@ -1,11 +1,11 @@
 use amethyst::{
-    animation::get_animation_set,
+    animation::{get_animation_set, AnimationControlSet},
     assets::AssetStorage,
     core::{
         cgmath::Vector3,
         transform::{GlobalTransform, Transform},
     },
-    ecs::prelude::*,
+    ecs::{prelude::*, world::EntitiesRes},
     renderer::SpriteRender,
 };
 use character_selection::CharacterEntityControl;
@@ -16,10 +16,13 @@ use object_model::{
 };
 
 use AnimationRunner;
+use CharacterComponentStorages;
+use ObjectComponentStorages;
+use ObjectSpawningResources;
 
 /// Spawns character entities into the world.
 #[derive(Debug)]
-pub(crate) struct CharacterEntitySpawner;
+pub struct CharacterEntitySpawner;
 
 impl CharacterEntitySpawner {
     /// Spawns a player controlled character entity.
@@ -30,8 +33,62 @@ impl CharacterEntitySpawner {
     /// * `kinematics`: Kinematics of the entity in game.
     /// * `character_index`: Index of the character to spawn.
     /// * `character_entity_control`: `Component` that links the character entity to the controller.
-    pub(crate) fn spawn_for_player(
+    pub fn spawn_world(
         world: &mut World,
+        kinematics: Kinematics<f32>,
+        character_index: usize,
+        character_entity_control: CharacterEntityControl,
+    ) -> Entity {
+        let entities = &*world.read_resource::<EntitiesRes>();
+        let loaded_character_handles = &*world.read_resource::<Vec<CharacterHandle>>();
+        let loaded_characters = &*world.read_resource::<AssetStorage<Character>>();
+        Self::spawn_system(
+            &(entities, loaded_character_handles, loaded_characters),
+            &mut (
+                world.write_storage::<CharacterEntityControl>(),
+                world.write_storage::<CharacterHandle>(),
+                world.write_storage::<CharacterStatus>(),
+            ), // kcov-ignore
+            &mut (
+                world.write_storage::<SpriteRender>(),
+                world.write_storage::<Kinematics<f32>>(),
+                world.write_storage::<Transform>(),
+                world.write_storage::<GlobalTransform>(),
+                world.write_storage::<AnimationControlSet<CharacterSequenceId, SpriteRender>>(),
+            ), // kcov-ignore
+            kinematics,
+            character_index,
+            character_entity_control,
+        )
+    }
+
+    /// Spawns a player controlled character entity.
+    ///
+    /// # Parameters
+    ///
+    /// * `object_spawning_resources`: Resources to construct the character with.
+    /// * `character_component_storages`: Character specific `Component` storages.
+    /// * `object_component_storages`: Common object `Component` storages.
+    /// * `kinematics`: Kinematics of the entity in game.
+    /// * `character_index`: Index of the character to spawn.
+    /// * `character_entity_control`: `Component` that links the character entity to the controller.
+    pub fn spawn_system<'res, 's>(
+        (entities, loaded_character_handles, loaded_characters): &ObjectSpawningResources<
+            'res,
+            Character,
+        >,
+        (
+            ref mut character_entity_control_storage,
+            ref mut character_handle_storage,
+            ref mut character_status_storage,
+        ): &mut CharacterComponentStorages<'s>,
+        (
+            ref mut sprite_render_storage,
+            ref mut kinematics_storage,
+            ref mut transform_storage,
+            ref mut global_transform_storage,
+            ref mut animation_control_set_storage,
+        ): &mut ObjectComponentStorages<'s, CharacterSequenceId>,
         kinematics: Kinematics<f32>,
         character_index: usize,
         character_entity_control: CharacterEntityControl,
@@ -40,23 +97,22 @@ impl CharacterEntitySpawner {
         let first_sequence_id = character_status.object_status.sequence_id;
 
         let (character_handle, sprite_render, animation_handle) = {
-            let loaded_characters = world.read_resource::<Vec<CharacterHandle>>();
-
-            let character_handle = loaded_characters.get(character_index).unwrap_or_else(|| {
-                // kcov-ignore-start
-                let error_msg = format!(
-                    "Attempted to spawn character at index: `{}` for `{:?}`, \
-                     but index is out of bounds.",
-                    character_index, &character_entity_control
-                );
-                panic!(error_msg)
-                // kcov-ignore-end
-            });
+            let character_handle = loaded_character_handles
+                .get(character_index)
+                .unwrap_or_else(|| {
+                    // kcov-ignore-start
+                    let error_msg = format!(
+                        "Attempted to spawn character at index: `{}` for `{:?}`, \
+                         but index is out of bounds.",
+                        character_index, &character_entity_control
+                    );
+                    panic!(error_msg)
+                    // kcov-ignore-end
+                });
 
             debug!("Retrieving character with handle: `{:?}`", character_handle);
 
-            let store = world.read_resource::<AssetStorage<Character>>();
-            let character = store
+            let character = loaded_characters
                 .get(character_handle)
                 .expect("Expected character to be loaded.");
             let object = &character.object;
@@ -75,35 +131,47 @@ impl CharacterEntitySpawner {
                 .clone();
 
             (character_handle.clone(), sprite_render, animation_handle)
-        };
+        }; // kcov-ignore
 
         let position = &kinematics.position;
         let mut transform = Transform::default();
         transform.translation = Vector3::new(position.x, position.y + position.z, 0.);
 
-        let entity = world
-            .create_entity()
-            // Controller of this entity
-            .with(character_entity_control)
-            // Loaded `Character` for this entity.
-            .with(character_handle)
-            // Character and object status attributes.
-            .with(character_status)
-            // The starting pose
-            .with(sprite_render)
-            // Kinematics of the entity in game.
-            .with(kinematics)
-            // Render location of the entity on screen.
-            .with(transform)
-            // This defines the coordinates in the world, where the sprites should be drawn relative
-            // to the entity
-            .with(GlobalTransform::default())
-            .build();
+        let entity = entities.create();
+
+        // Controller of this entity
+        character_entity_control_storage
+            .insert(entity, character_entity_control)
+            .expect("Failed to insert character_entity_control component.");
+        // Loaded `Character` for this entity.
+        character_handle_storage
+            .insert(entity, character_handle)
+            .expect("Failed to insert character_handle component.");
+        // Character and object status attributes.
+        character_status_storage
+            .insert(entity, character_status)
+            .expect("Failed to insert character_status component.");
+        // The starting pose
+        sprite_render_storage
+            .insert(entity, sprite_render)
+            .expect("Failed to insert sprite_render component.");
+        // Kinematics of the entity in game.
+        kinematics_storage
+            .insert(entity, kinematics)
+            .expect("Failed to insert kinematics component.");
+        // Render location of the entity on screen.
+        transform_storage
+            .insert(entity, transform)
+            .expect("Failed to insert transform component.");
+        // This defines the coordinates in the world, where the sprites should be drawn relative
+        // to the entity
+        global_transform_storage
+            .insert(entity, GlobalTransform::default())
+            .expect("Failed to insert global_transform component.");;
 
         // We also need to trigger the animation, not just attach it to the entity
-        let mut animation_control_set_storage = world.write_storage();
         let mut animation_set = get_animation_set::<CharacterSequenceId, SpriteRender>(
-            &mut animation_control_set_storage,
+            animation_control_set_storage,
             entity,
         ).expect("Animation should exist as new entity should be valid.");
 
@@ -150,7 +218,7 @@ mod test {
             let controller_id = 0;
             let character_entity_control = CharacterEntityControl::new(controller_id);
 
-            let entity = CharacterEntitySpawner::spawn_for_player(
+            let entity = CharacterEntitySpawner::spawn_world(
                 world,
                 kinematics,
                 character_index,
@@ -179,13 +247,12 @@ mod test {
             ).with_state(|| loading::State::new(
                 AmethystApplication::assets_dir().into(),
                 Box::new(EmptyState),
-            ))
-                .with_assertion(assertion)
-                .with_bundle(MapLoadingBundle::new())
-                .with_bundle(ObjectLoadingBundle::new())
-                .with_system(TestSystem, TestSystem::type_name(), &[])
-                .run()
-                .is_ok()
+            )).with_assertion(assertion)
+            .with_bundle(MapLoadingBundle::new())
+            .with_bundle(ObjectLoadingBundle::new())
+            .with_system(TestSystem, TestSystem::type_name(), &[])
+            .run()
+            .is_ok()
         );
     }
 
