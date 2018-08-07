@@ -48,7 +48,7 @@ mod tests {
             base_dirs: vec![PathBuf::from("/base/zero"), PathBuf::from("/base/one")],
             conf_dir: PathBuf::from("resources"),
             file_name: "input.ron".to_string(),
-        };
+        }; // kcov-ignore
 
         assert_eq!(
             "\

@@ -48,14 +48,14 @@ impl CharacterEntitySpawner {
                 world.write_storage::<CharacterEntityControl>(),
                 world.write_storage::<CharacterHandle>(),
                 world.write_storage::<CharacterStatus>(),
-            ),
+            ), // kcov-ignore
             &mut (
                 world.write_storage::<SpriteRender>(),
                 world.write_storage::<Kinematics<f32>>(),
                 world.write_storage::<Transform>(),
                 world.write_storage::<GlobalTransform>(),
                 world.write_storage::<AnimationControlSet<CharacterSequenceId, SpriteRender>>(),
-            ),
+            ), // kcov-ignore
             kinematics,
             character_index,
             character_entity_control,
@@ -131,7 +131,7 @@ impl CharacterEntitySpawner {
                 .clone();
 
             (character_handle.clone(), sprite_render, animation_handle)
-        };
+        }; // kcov-ignore
 
         let position = &kinematics.position;
         let mut transform = Transform::default();
