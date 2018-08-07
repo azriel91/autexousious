@@ -8,5 +8,8 @@ use amethyst::{
 /// # Type Parameters:
 ///
 /// * `Obj`: Loaded form of the object, such as `Character`.
-pub type ObjectSpawningResources<'s, Obj> =
-    (&'s EntitiesRes, &'s Vec<Handle<Obj>>, &'s AssetStorage<Obj>);
+pub type ObjectSpawningResources<'res, Obj> = (
+    &'res EntitiesRes,
+    &'res Vec<Handle<Obj>>,
+    &'res AssetStorage<Obj>,
+);

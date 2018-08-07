@@ -115,7 +115,7 @@ where
         character_entities_to_spawn
             .into_iter()
             .map(|(character_index, character_entity_control)| {
-                CharacterEntitySpawner::spawn_for_player(
+                CharacterEntitySpawner::spawn_world(
                     world,
                     kinematics,
                     character_index,

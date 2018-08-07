@@ -27,9 +27,7 @@ extern crate map_selection;
 #[cfg(test)]
 extern crate object_loading;
 extern crate object_model;
-#[cfg(test)]
 extern crate typename;
-#[cfg(test)]
 #[macro_use]
 extern crate typename_derive;
 
@@ -43,3 +41,4 @@ pub use spawn::{
 mod animation_runner;
 mod game_loading_state;
 mod spawn;
+mod system;

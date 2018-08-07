@@ -35,23 +35,23 @@ impl CharacterEntitySpawner {
     /// * `character_entity_control`: `Component` that links the character entity to the controller.
     #[allow(unknown_lints)]
     #[allow(let_and_return)]
-    pub fn spawn_for_player(
+    pub fn spawn_world(
         world: &mut World,
         kinematics: Kinematics<f32>,
         character_index: usize,
         character_entity_control: CharacterEntityControl,
     ) -> Entity {
-        let entities = world.read_resource::<EntitiesRes>();
-        let loaded_character_handles = world.read_resource::<Vec<CharacterHandle>>();
-        let loaded_characters = world.read_resource::<AssetStorage<Character>>();
+        let entities = &*world.read_resource::<EntitiesRes>();
+        let loaded_character_handles = &*world.read_resource::<Vec<CharacterHandle>>();
+        let loaded_characters = &*world.read_resource::<AssetStorage<Character>>();
         let entity = Self::spawn_system(
-            (&*entities, &*loaded_character_handles, &*loaded_characters),
-            (
+            &(entities, loaded_character_handles, loaded_characters),
+            &mut (
                 world.write_storage::<CharacterEntityControl>(),
                 world.write_storage::<CharacterHandle>(),
                 world.write_storage::<CharacterStatus>(),
             ),
-            (
+            &mut (
                 world.write_storage::<SpriteRender>(),
                 world.write_storage::<Kinematics<f32>>(),
                 world.write_storage::<Transform>(),
@@ -73,23 +73,23 @@ impl CharacterEntitySpawner {
     /// * `kinematics`: Kinematics of the entity in game.
     /// * `character_index`: Index of the character to spawn.
     /// * `character_entity_control`: `Component` that links the character entity to the controller.
-    pub fn spawn_system<'s>(
-        (entities, loaded_character_handles, loaded_characters): ObjectSpawningResources<
-            's,
+    pub fn spawn_system<'res, 's>(
+        (entities, loaded_character_handles, loaded_characters): &ObjectSpawningResources<
+            'res,
             Character,
         >,
         (
-            mut character_entity_control_storage,
-            mut character_handle_storage,
-            mut character_status_storage,
-        ): CharacterComponentStorages<'s>,
+            ref mut character_entity_control_storage,
+            ref mut character_handle_storage,
+            ref mut character_status_storage,
+        ): &mut CharacterComponentStorages<'s>,
         (
-            mut sprite_render_storage,
-            mut kinematics_storage,
-            mut transform_storage,
-            mut global_transform_storage,
-            mut animation_control_set_storage,
-        ): ObjectComponentStorages<'s, CharacterSequenceId>,
+            ref mut sprite_render_storage,
+            ref mut kinematics_storage,
+            ref mut transform_storage,
+            ref mut global_transform_storage,
+            ref mut animation_control_set_storage,
+        ): &mut ObjectComponentStorages<'s, CharacterSequenceId>,
         kinematics: Kinematics<f32>,
         character_index: usize,
         character_entity_control: CharacterEntityControl,
@@ -172,7 +172,7 @@ impl CharacterEntitySpawner {
 
         // We also need to trigger the animation, not just attach it to the entity
         let mut animation_set = get_animation_set::<CharacterSequenceId, SpriteRender>(
-            &mut animation_control_set_storage,
+            animation_control_set_storage,
             entity,
         ).expect("Animation should exist as new entity should be valid.");
 
