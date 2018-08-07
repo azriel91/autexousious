@@ -52,6 +52,11 @@ where
     /// * `world`: `World` to operate on.
     fn initialize_dispatcher(&mut self, world: &mut World) {
         let dispatcher_builder = DispatcherBuilder::new();
+        // dispatcher_builder.add(
+        //     MapSelectionSystem::new(),
+        //     &MapSelectionSystem::type_name(),
+        //     &[],
+        // );
         let mut dispatcher = dispatcher_builder.build();
         dispatcher.setup(&mut world.res);
         self.dispatcher = Some(dispatcher);
@@ -70,7 +75,7 @@ where
             .expect("Expected map to be selected.")
             .clone();
 
-        let map_layers = MapLayerEntitySpawner::spawn(world, &map_handle);
+        let map_layers = MapLayerEntitySpawner::spawn_world(world, &map_handle);
 
         // Used to determine where to spawn characters.
         let (width, height) = {

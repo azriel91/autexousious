@@ -32,13 +32,16 @@ extern crate typename;
 extern crate typename_derive;
 
 pub use animation_runner::AnimationRunner;
+pub(crate) use game_loading_bundle::GameLoadingBundle;
 pub use game_loading_state::GameLoadingState;
 pub use spawn::{
-    CharacterComponentStorages, CharacterEntitySpawner, MapLayerEntitySpawner,
-    ObjectComponentStorages, ObjectSpawningResources,
+    CharacterComponentStorages, CharacterEntitySpawner, MapLayerComponentStorages,
+    MapLayerEntitySpawner, MapSpawningResources, ObjectComponentStorages, ObjectSpawningResources,
 };
+pub(crate) use system::CharacterSelectionSpawningSystem;
 
 mod animation_runner;
+mod game_loading_bundle;
 mod game_loading_state;
 mod spawn;
 mod system;

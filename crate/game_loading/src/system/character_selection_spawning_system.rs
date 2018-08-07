@@ -65,14 +65,14 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
         let object_spawning_resources =
             (&*entities, &*loaded_character_handles, &*loaded_characters);
 
-        character_selection
+        let character_entities = character_selection
             .iter()
             .map(|(controller_id, character_index)| {
                 (
                     CharacterEntityControl::new(*controller_id),
                     *character_index,
                 )
-            }).for_each(|(character_entity_control, character_index)| {
+            }).map(|(character_entity_control, character_index)| {
                 CharacterEntitySpawner::spawn_system(
                     &object_spawning_resources,
                     &mut character_component_storages,
@@ -80,7 +80,7 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
                     kinematics,
                     character_index,
                     character_entity_control,
-                );
-            });
+                )
+            }).collect::<Vec<Entity>>();
     }
 }

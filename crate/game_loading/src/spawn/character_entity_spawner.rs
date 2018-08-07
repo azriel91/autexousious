@@ -33,8 +33,6 @@ impl CharacterEntitySpawner {
     /// * `kinematics`: Kinematics of the entity in game.
     /// * `character_index`: Index of the character to spawn.
     /// * `character_entity_control`: `Component` that links the character entity to the controller.
-    #[allow(unknown_lints)]
-    #[allow(let_and_return)]
     pub fn spawn_world(
         world: &mut World,
         kinematics: Kinematics<f32>,
@@ -44,7 +42,7 @@ impl CharacterEntitySpawner {
         let entities = &*world.read_resource::<EntitiesRes>();
         let loaded_character_handles = &*world.read_resource::<Vec<CharacterHandle>>();
         let loaded_characters = &*world.read_resource::<AssetStorage<Character>>();
-        let entity = Self::spawn_system(
+        Self::spawn_system(
             &(entities, loaded_character_handles, loaded_characters),
             &mut (
                 world.write_storage::<CharacterEntityControl>(),
@@ -61,15 +59,16 @@ impl CharacterEntitySpawner {
             kinematics,
             character_index,
             character_entity_control,
-        );
-
-        entity
+        )
     }
 
     /// Spawns a player controlled character entity.
     ///
     /// # Parameters
     ///
+    /// * `object_spawning_resources`: Resources to construct the character with.
+    /// * `character_component_storages`: Character specific `Component` storages.
+    /// * `object_component_storages`: Common object `Component` storages.
     /// * `kinematics`: Kinematics of the entity in game.
     /// * `character_index`: Index of the character to spawn.
     /// * `character_entity_control`: `Component` that links the character entity to the controller.
@@ -219,7 +218,7 @@ mod test {
             let controller_id = 0;
             let character_entity_control = CharacterEntityControl::new(controller_id);
 
-            let entity = CharacterEntitySpawner::spawn_for_player(
+            let entity = CharacterEntitySpawner::spawn_world(
                 world,
                 kinematics,
                 character_index,
