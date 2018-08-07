@@ -14,7 +14,7 @@ use AnimationRunner;
 
 /// Spawns map layer entities into the world.
 #[derive(Debug)]
-pub(crate) struct MapLayerEntitySpawner;
+pub struct MapLayerEntitySpawner;
 
 impl MapLayerEntitySpawner {
     /// Spawns entities for each of the layers in a map.
@@ -25,7 +25,7 @@ impl MapLayerEntitySpawner {
     ///
     /// * `world`: `World` to spawn the character into.
     /// * `map_handle`: Handle of the map whose layers to spawn.
-    pub(crate) fn spawn(world: &mut World, map_handle: &MapHandle) -> Vec<Entity> {
+    pub fn spawn(world: &mut World, map_handle: &MapHandle) -> Vec<Entity> {
         let components_and_animation = {
             let map_store = world.read_resource::<AssetStorage<Map>>();
             let map = map_store
@@ -60,8 +60,7 @@ impl MapLayerEntitySpawner {
                         };
 
                         (transform, sprite_render.clone())
-                    })
-                    .collect::<Vec<(Transform, SpriteRender)>>();
+                    }).collect::<Vec<(Transform, SpriteRender)>>();
 
                 Some((components, map_animations))
             } else {
@@ -79,8 +78,7 @@ impl MapLayerEntitySpawner {
                         .with(sprite_render)
                         .with(GlobalTransform::default())
                         .build()
-                })
-                .collect::<Vec<_>>();
+                }).collect::<Vec<_>>();
 
             entities
                 .iter()
@@ -89,11 +87,10 @@ impl MapLayerEntitySpawner {
                     // We also need to trigger the animation, not just attach it to the entity
                     let animation_id = 0;
                     let mut animation_control_set_storage = world.write_storage();
-                    let mut animation_set =
-                        get_animation_set::<u32, SpriteRender>(
-                            &mut animation_control_set_storage,
-                            *entity,
-                        ).expect("Animation should exist as new entity should be valid.");
+                    let mut animation_set = get_animation_set::<u32, SpriteRender>(
+                        &mut animation_control_set_storage,
+                        *entity,
+                    ).expect("Animation should exist as new entity should be valid.");
 
                     AnimationRunner::start_loop(&mut animation_set, animation_handle, animation_id);
                 });

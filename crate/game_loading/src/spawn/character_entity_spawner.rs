@@ -1,7 +1,6 @@
 use amethyst::{
     animation::{get_animation_set, AnimationControlSet},
     assets::AssetStorage,
-    assets::Handle,
     core::{
         cgmath::Vector3,
         transform::{GlobalTransform, Transform},
@@ -17,39 +16,13 @@ use object_model::{
 };
 
 use AnimationRunner;
-
-/// Resources needed to spawn a particular object.
-///
-/// # Type Parameters:
-///
-/// * `Obj`: Loaded form of the object, such as `Character`.
-type ObjectSpawningResources<'s, Obj> =
-    (&'s EntitiesRes, &'s Vec<Handle<Obj>>, &'s AssetStorage<Obj>);
-
-/// Character specific `Component` storages.
-///
-/// These are the storages for the components specific to character objects. See also
-/// `ObjectComponentStorages`.
-type CharacterComponentStorages<'s> = (
-    WriteStorage<'s, CharacterEntityControl>,
-    WriteStorage<'s, CharacterHandle>,
-    WriteStorage<'s, CharacterStatus>,
-);
-
-/// Common game object `Component` storages.
-///
-/// These are the storages for the components common to all game objects.
-type ObjectComponentStorages<'s, SeqId> = (
-    WriteStorage<'s, SpriteRender>,
-    WriteStorage<'s, Kinematics<f32>>,
-    WriteStorage<'s, Transform>,
-    WriteStorage<'s, GlobalTransform>,
-    WriteStorage<'s, AnimationControlSet<SeqId, SpriteRender>>,
-);
+use CharacterComponentStorages;
+use ObjectComponentStorages;
+use ObjectSpawningResources;
 
 /// Spawns character entities into the world.
 #[derive(Debug)]
-pub(crate) struct CharacterEntitySpawner;
+pub struct CharacterEntitySpawner;
 
 impl CharacterEntitySpawner {
     /// Spawns a player controlled character entity.
@@ -62,7 +35,7 @@ impl CharacterEntitySpawner {
     /// * `character_entity_control`: `Component` that links the character entity to the controller.
     #[allow(unknown_lints)]
     #[allow(let_and_return)]
-    pub(crate) fn spawn_for_player(
+    pub fn spawn_for_player(
         world: &mut World,
         kinematics: Kinematics<f32>,
         character_index: usize,
@@ -100,7 +73,7 @@ impl CharacterEntitySpawner {
     /// * `kinematics`: Kinematics of the entity in game.
     /// * `character_index`: Index of the character to spawn.
     /// * `character_entity_control`: `Component` that links the character entity to the controller.
-    pub(crate) fn spawn_system<'s>(
+    pub fn spawn_system<'s>(
         (entities, loaded_character_handles, loaded_characters): ObjectSpawningResources<
             's,
             Character,

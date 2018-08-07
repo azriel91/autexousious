@@ -34,11 +34,12 @@ extern crate typename;
 extern crate typename_derive;
 
 pub use animation_runner::AnimationRunner;
-pub(crate) use character_entity_spawner::CharacterEntitySpawner;
 pub use game_loading_state::GameLoadingState;
-pub(crate) use map_layer_entity_spawner::MapLayerEntitySpawner;
+pub use spawn::{
+    CharacterComponentStorages, CharacterEntitySpawner, MapLayerEntitySpawner,
+    ObjectComponentStorages, ObjectSpawningResources,
+};
 
 mod animation_runner;
-mod character_entity_spawner;
 mod game_loading_state;
-mod map_layer_entity_spawner;
+mod spawn;
