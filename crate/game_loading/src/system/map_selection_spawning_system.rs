@@ -31,6 +31,11 @@ impl<'s> System<'s> for MapSelectionSpawningSystem {
             mut game_entities,
         ): Self::SystemData,
 ){
+        if !game_entities.map_layers.is_empty() {
+            // Already populated
+            return;
+        }
+
         // Read map to determine bounds where the characters can be spawned.
         let map_handle = map_selection
             .map_handle

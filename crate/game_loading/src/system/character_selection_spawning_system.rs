@@ -47,6 +47,13 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             mut game_entities,
         ): Self::SystemData,
     ) {
+        if let Some(characters) = game_entities.objects.get(&ObjectType::Character) {
+            if !characters.is_empty() {
+                // Already populated
+                return;
+            }
+        }
+
         // Read map to determine bounds where the characters can be spawned.
         let map_handle = map_selection
             .map_handle
