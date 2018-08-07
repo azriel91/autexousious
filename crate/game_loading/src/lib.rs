@@ -38,7 +38,7 @@ pub use spawn::{
     CharacterComponentStorages, CharacterEntitySpawner, MapLayerComponentStorages,
     MapLayerEntitySpawner, MapSpawningResources, ObjectComponentStorages, ObjectSpawningResources,
 };
-pub(crate) use system::CharacterSelectionSpawningSystem;
+pub(crate) use system::{CharacterSelectionSpawningSystem, MapSelectionSpawningSystem};
 
 mod animation_runner;
 mod game_loading_bundle;

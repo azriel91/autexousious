@@ -5,6 +5,7 @@ use amethyst::{
 use typename::TypeName;
 
 use CharacterSelectionSpawningSystem;
+use MapSelectionSpawningSystem;
 
 /// Adds game loading systems to the provided dispatcher.
 #[derive(Debug, new)]
@@ -15,6 +16,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameLoadingBundle {
         builder.add(
             CharacterSelectionSpawningSystem::new(),
             &CharacterSelectionSpawningSystem::type_name(),
+            &[],
+        ); // kcov-ignore
+        builder.add(
+            MapSelectionSpawningSystem::new(),
+            &MapSelectionSpawningSystem::type_name(),
             &[],
         ); // kcov-ignore
         Ok(())

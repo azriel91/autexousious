@@ -1,11 +1,13 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
 use character_selection::{CharacterEntityControl, CharacterSelection};
+use game_model::play::GameEntities;
 use map_model::loaded::Map;
 use map_selection::MapSelection;
 use object_model::{
     config::object::CharacterSequenceId,
     entity::{Kinematics, Position, Velocity},
     loaded::{Character, CharacterHandle},
+    ObjectType,
 };
 
 use CharacterComponentStorages;
@@ -25,6 +27,7 @@ type CharacterSelectionSpawningSystemData<'s> = (
     Read<'s, AssetStorage<Character>>,
     CharacterComponentStorages<'s>,
     ObjectComponentStorages<'s, CharacterSequenceId>,
+    Write<'s, GameEntities>,
 );
 
 impl<'s> System<'s> for CharacterSelectionSpawningSystem {
@@ -41,6 +44,7 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             loaded_characters,
             mut character_component_storages,
             mut object_component_storages,
+            mut game_entities,
         ): Self::SystemData,
     ) {
         // Read map to determine bounds where the characters can be spawned.
@@ -82,5 +86,9 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
                     character_entity_control,
                 )
             }).collect::<Vec<Entity>>();
+
+        game_entities
+            .objects
+            .insert(ObjectType::Character, character_entities);
     }
 }

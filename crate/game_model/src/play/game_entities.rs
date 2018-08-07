@@ -4,7 +4,7 @@ use amethyst::ecs::prelude::*;
 use object_model::ObjectType;
 
 /// All entities for a game.
-#[derive(Clone, Debug, new)]
+#[derive(Clone, Debug, Default, new)]
 pub struct GameEntities {
     /// Map of object entities by object type.
     pub objects: HashMap<ObjectType, Vec<Entity>>,
