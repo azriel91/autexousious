@@ -20,6 +20,7 @@ impl<'s> System<'s> for ObjectTransformUpdateSystem {
             let position = &kinematics.position;
             transform.translation[0] = position.x;
             transform.translation[1] = position.y + position.z;
+            transform.translation[2] = position.z;
         }
     }
 }
@@ -60,7 +61,7 @@ mod test {
             let store = world.read_storage::<Transform>();
 
             let mut transform = Transform::default();
-            transform.translation = Vector3::new(-2., -4., 0.);
+            transform.translation = Vector3::new(-2., -4., -2.);
 
             assert_eq!(Some(&transform), store.get(entity));
         };

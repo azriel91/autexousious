@@ -6,7 +6,7 @@ use amethyst::{
         transform::{GlobalTransform, Transform},
     },
     ecs::{prelude::*, world::EntitiesRes},
-    renderer::SpriteRender,
+    renderer::{SpriteRender, Transparent},
 };
 use character_selection::CharacterEntityControl;
 use object_model::{
@@ -51,6 +51,7 @@ impl CharacterEntitySpawner {
             ), // kcov-ignore
             &mut (
                 world.write_storage::<SpriteRender>(),
+                world.write_storage::<Transparent>(),
                 world.write_storage::<Kinematics<f32>>(),
                 world.write_storage::<Transform>(),
                 world.write_storage::<GlobalTransform>(),
@@ -84,6 +85,7 @@ impl CharacterEntitySpawner {
         ): &mut CharacterComponentStorages<'s>,
         (
             ref mut sprite_render_storage,
+            ref mut transparent_storage,
             ref mut kinematics_storage,
             ref mut transform_storage,
             ref mut global_transform_storage,
@@ -136,6 +138,7 @@ impl CharacterEntitySpawner {
         let position = &kinematics.position;
         let mut transform = Transform::default();
         transform.translation = Vector3::new(position.x, position.y + position.z, 0.);
+        let global_transform = GlobalTransform::default();
 
         let entity = entities.create();
 
@@ -155,6 +158,10 @@ impl CharacterEntitySpawner {
         sprite_render_storage
             .insert(entity, sprite_render)
             .expect("Failed to insert sprite_render component.");
+        // Enable transparency for visibility sorting
+        transparent_storage
+            .insert(entity, Transparent)
+            .expect("Failed to insert transparent component.");
         // Kinematics of the entity in game.
         kinematics_storage
             .insert(entity, kinematics)
@@ -166,7 +173,7 @@ impl CharacterEntitySpawner {
         // This defines the coordinates in the world, where the sprites should be drawn relative
         // to the entity
         global_transform_storage
-            .insert(entity, GlobalTransform::default())
+            .insert(entity, global_transform)
             .expect("Failed to insert global_transform component.");;
 
         // We also need to trigger the animation, not just attach it to the entity
