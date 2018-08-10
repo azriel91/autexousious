@@ -197,7 +197,7 @@ mod test {
         assets::AssetStorage,
         core::transform::{GlobalTransform, Transform},
         ecs::prelude::*,
-        renderer::SpriteRender,
+        renderer::{SpriteRender, Transparent},
     };
     use amethyst_test_support::prelude::*;
     use character_selection::CharacterEntityControl;
@@ -271,6 +271,7 @@ mod test {
         ReadStorage<'s, CharacterEntityControl>,
         ReadStorage<'s, CharacterHandle>,
         ReadStorage<'s, CharacterStatus>,
+        ReadStorage<'s, Transparent>,
         ReadStorage<'s, Kinematics<f32>>,
         ReadStorage<'s, AnimationControlSet<CharacterSequenceId, SpriteRender>>,
     );

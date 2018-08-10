@@ -87,11 +87,12 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
 
         let pipe = Pipeline::build().with_stage(
             Stage::with_backbuffer()
-                .clear_target([0., 0., 0., 0.], std::f32::MAX)
+                .clear_target([0., 0., 0., 1.], 1000000.)
                 .with_pass(DrawSprite::new().with_transparency(
                     ColorMask::all(),
                     ALPHA,
                     Some(DepthMode::LessEqualWrite),
+                    // None,
                 )).with_pass(DrawUi::new()),
         );
 

@@ -60,17 +60,21 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             .as_ref()
             .expect("Expected map to be selected.");
 
-        let (width, height) = {
+        let (width, height, depth) = {
             loaded_maps
                 .get(map_handle)
                 .map(|map| {
                     let bounds = &map.definition.header.bounds;
-                    (bounds.width as f32, bounds.height as f32)
+                    (
+                        bounds.width as f32,
+                        bounds.height as f32,
+                        bounds.depth as f32,
+                    )
                 }).expect("Expected map to be loaded.")
         };
 
         // This `Position` moves the entity to the middle of a "screen wide" map.
-        let position = Position::new(width / 2., height / 2., 0.);
+        let position = Position::new(width / 2., height / 2., depth / 2.);
         let kinematics = Kinematics::new(position, Velocity::default());
 
         let object_spawning_resources =
