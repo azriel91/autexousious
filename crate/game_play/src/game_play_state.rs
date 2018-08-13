@@ -1,6 +1,6 @@
 use amethyst::{
     core::{
-        cgmath::{Matrix4, Vector3},
+        cgmath::{Matrix4, Ortho, Vector3},
         transform::GlobalTransform,
     },
     ecs::prelude::*,
@@ -54,13 +54,32 @@ impl GamePlayState {
             (dim.width(), dim.height())
         };
 
+        // Camera translation from origin.
+        //
+        // The Z coordinate of the camera is how far along it should be before it faces the
+        // entities. If an entity's Z coordinate is greater than the camera's Z coordinate, it will
+        // be culled.
+        //
+        // By using `::std::f32::MAX` here, we ensure that all entities will be in the camera's
+        // view.
+        let translation = Matrix4::from_translation(Vector3::new(0.0, 0.0, ::std::f32::MAX));
+        let global_transform = GlobalTransform(translation);
+
         let camera = world
             .create_entity()
-            .with(Camera::from(Projection::orthographic(
-                0.0, width, height, 0.0,
-            ))).with(GlobalTransform(Matrix4::from_translation(Vector3::new(
-                0.0, 0.0, 1.0,
-            )))).build();
+            .with(Camera::from(Projection::Orthographic(Ortho {
+                left: 0.0,
+                right: width,
+                top: height,
+                bottom: 0.0,
+                near: 0.0,
+                // The distance that the camera can see. Since the camera is moved to the maximum Z
+                // position, we also need to give it maximum Z viewing distance to ensure it can see
+                // all entities in front of it.
+                far: ::std::f32::MAX,
+            }))).with(global_transform)
+            .build();
+
         self.camera = Some(camera);
     }
 

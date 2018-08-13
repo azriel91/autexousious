@@ -32,7 +32,8 @@ use amethyst::{
     input::{Bindings, InputBundle},
     prelude::*,
     renderer::{
-        ColorMask, DisplayConfig, DrawSprite, Pipeline, RenderBundle, SpriteRender, Stage, ALPHA,
+        ColorMask, DepthMode, DisplayConfig, DrawSprite, Pipeline, RenderBundle, SpriteRender,
+        Stage, ALPHA,
     },
     ui::{DrawUi, UiBundle},
     LogLevelFilter, LoggerConfig,
@@ -86,9 +87,12 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
 
         let pipe = Pipeline::build().with_stage(
             Stage::with_backbuffer()
-                .clear_target([0., 0., 0., 0.], 1.)
-                .with_pass(DrawSprite::new().with_transparency(ColorMask::all(), ALPHA, None))
-                .with_pass(DrawUi::new()),
+                .clear_target([0., 0., 0., 1.], 0.)
+                .with_pass(DrawSprite::new().with_transparency(
+                    ColorMask::all(),
+                    ALPHA,
+                    Some(DepthMode::LessEqualWrite),
+                )).with_pass(DrawUi::new()),
         );
 
         // We parse it ourselves, because Amethyst silently fails if it fails to parse.
@@ -123,7 +127,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                         "sampler_interpolation_system",
                     ]),
             )?
-            .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
+            .with_bundle(RenderBundle::new(pipe, Some(display_config))
+                .with_sprite_visibility_sorting(&["transform_system"]))?
             .with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new()
                 .with_bindings(input_bindings))?
             .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?
@@ -138,8 +143,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         .with_frame_limit(
             FrameRateLimitStrategy::SleepAndYield(Duration::from_micros(1000)),
             60,
-        )
-        .build(game_data)?;
+        ).build(game_data)?;
 
     app.run();
 

@@ -14,13 +14,13 @@ pub(crate) struct GameLoadingBundle;
 impl<'a, 'b> SystemBundle<'a, 'b> for GameLoadingBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
         builder.add(
-            MapSelectionSpawningSystem::new(),
-            &MapSelectionSpawningSystem::type_name(),
+            CharacterSelectionSpawningSystem::new(),
+            &CharacterSelectionSpawningSystem::type_name(),
             &[],
         ); // kcov-ignore
         builder.add(
-            CharacterSelectionSpawningSystem::new(),
-            &CharacterSelectionSpawningSystem::type_name(),
+            MapSelectionSpawningSystem::new(),
+            &MapSelectionSpawningSystem::type_name(),
             &[],
         ); // kcov-ignore
         Ok(())

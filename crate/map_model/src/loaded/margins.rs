@@ -19,11 +19,13 @@ pub struct Margins {
 
 impl From<MapBounds> for Margins {
     fn from(map_bounds: MapBounds) -> Self {
+        // We add the depth to the bottom and top so that it visually shifts the origin of the z
+        // axis upwards on screen.
         Margins {
             left: map_bounds.x as f32,
             right: (map_bounds.x + map_bounds.width) as f32,
-            bottom: map_bounds.y as f32,
-            top: (map_bounds.y + map_bounds.height) as f32,
+            bottom: (map_bounds.y + map_bounds.depth) as f32,
+            top: (map_bounds.y + map_bounds.depth + map_bounds.height) as f32,
             back: map_bounds.z as f32,
             front: (map_bounds.z + map_bounds.depth) as f32,
         }
@@ -42,8 +44,8 @@ mod tests {
             Margins {
                 left: 1.,
                 right: 11.,
-                bottom: 2.,
-                top: 22.,
+                bottom: 32.,
+                top: 52.,
                 back: 3.,
                 front: 33.,
             },

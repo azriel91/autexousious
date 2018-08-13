@@ -17,9 +17,12 @@ impl<'s> System<'s> for ObjectTransformUpdateSystem {
 
     fn run(&mut self, (kinematics_storage, mut transform_storage): Self::SystemData) {
         for (kinematics, mut transform) in (&kinematics_storage, &mut transform_storage).join() {
+            // We subtract z from the y translation as the z axis increases "out of the screen".
+            // Entities that have a larger Z value are transformed downwards.
             let position = &kinematics.position;
             transform.translation[0] = position.x;
-            transform.translation[1] = position.y + position.z;
+            transform.translation[1] = position.y - position.z;
+            transform.translation[2] = position.z;
         }
     }
 }
@@ -40,7 +43,7 @@ mod test {
     fn updates_transform_with_x_and_yz() {
         let setup = |world: &mut World| {
             // Create entity with Kinematics
-            let position = Position::<f32>::new(-2., -2., -2.);
+            let position = Position::<f32>::new(-5., -3., -4.);
             let velocity = Velocity::default();
 
             let mut transform = Transform::default();
@@ -60,7 +63,7 @@ mod test {
             let store = world.read_storage::<Transform>();
 
             let mut transform = Transform::default();
-            transform.translation = Vector3::new(-2., -4., 0.);
+            transform.translation = Vector3::new(-5., 1., -4.);
 
             assert_eq!(Some(&transform), store.get(entity));
         };

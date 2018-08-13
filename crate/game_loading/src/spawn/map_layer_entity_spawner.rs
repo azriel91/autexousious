@@ -6,7 +6,7 @@ use amethyst::{
         transform::{GlobalTransform, Transform},
     },
     ecs::{prelude::*, world::EntitiesRes},
-    renderer::SpriteRender,
+    renderer::{SpriteRender, Transparent},
 };
 use map_model::loaded::{Map, MapHandle};
 
@@ -34,6 +34,7 @@ impl MapLayerEntitySpawner {
             &(entities, loaded_maps),
             &mut (
                 world.write_storage::<SpriteRender>(),
+                world.write_storage::<Transparent>(),
                 world.write_storage::<Transform>(),
                 world.write_storage::<GlobalTransform>(),
                 world.write_storage::<AnimationControlSet<u32, SpriteRender>>(),
@@ -53,6 +54,7 @@ impl MapLayerEntitySpawner {
         (entities, loaded_maps): &MapSpawningResources<'res>,
         (
             ref mut sprite_render_storage,
+            ref mut transparent_storage,
             ref mut transform_storage,
             ref mut global_transform_storage,
             ref mut animation_control_set_storage,
@@ -105,15 +107,20 @@ impl MapLayerEntitySpawner {
                 .into_iter()
                 .map(|(transform, sprite_render)| {
                     let entity = entities.create();
+                    let global_transform = GlobalTransform::default();
 
                     sprite_render_storage
                         .insert(entity, sprite_render)
                         .expect("Failed to insert sprite_render component.");
+                    // Enable transparency for visibility sorting
+                    transparent_storage
+                        .insert(entity, Transparent)
+                        .expect("Failed to insert transparent component.");
                     transform_storage
                         .insert(entity, transform)
                         .expect("Failed to insert transform component.");
                     global_transform_storage
-                        .insert(entity, GlobalTransform::default())
+                        .insert(entity, global_transform)
                         .expect("Failed to insert global_transform component.");
 
                     entity
