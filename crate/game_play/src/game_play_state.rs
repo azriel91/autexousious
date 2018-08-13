@@ -54,20 +54,16 @@ impl GamePlayState {
             (dim.width(), dim.height())
         };
 
-        // Flip Z axis so that it is looking towards the screen, and positive Z values are visible.
-        // If we don't do this, the camera is facing out of the screen, and so everything will be
-        // behind the camera, and hence not drawn.
-        let z_flip = Matrix4::from_nonuniform_scale(1., 1., -1.);
-        // Camera is at origin.
+        // Camera translation from origin.
         //
-        // TODO: Using visibility sorting causes layers and objects to render strangely -- the depth
-        // buffer uses the entity's z axis value to determine if the pixels should be drawn, whereas
-        // the visibility sorting uses the distance from the camera, which is based on all X, Y, and
-        // Z axes values. This means, if, in world coordinates, if an object entity moves further
-        // away from the camera entity compared to a layer entity, the layer entity's sprite will
-        // not be rendered behind the object entity's sprite.
-        let translation = Matrix4::from_translation(Vector3::new(0.0, 0.0, 0.0));
-        let global_transform = GlobalTransform(translation * z_flip);
+        // The Z coordinate of the camera is how far along it should be before it faces the
+        // entities. If an entity's Z coordinate is greater than the camera's Z coordinate, it will
+        // be culled.
+        //
+        // By using `::std::f32::MAX` here, we ensure that all entities will be in the camera's
+        // view.
+        let translation = Matrix4::from_translation(Vector3::new(0.0, 0.0, ::std::f32::MAX));
+        let global_transform = GlobalTransform(translation);
 
         let camera = world
             .create_entity()
@@ -77,7 +73,10 @@ impl GamePlayState {
                 top: height,
                 bottom: 0.0,
                 near: 0.0,
-                far: 20000.,
+                // The distance that the camera can see. Since the camera is moved to the maximum Z
+                // position, we also need to give it maximum Z viewing distance to ensure it can see
+                // all entities in front of it.
+                far: ::std::f32::MAX,
             }))).with(global_transform)
             .build();
 

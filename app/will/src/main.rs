@@ -87,12 +87,11 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
 
         let pipe = Pipeline::build().with_stage(
             Stage::with_backbuffer()
-                .clear_target([0., 0., 0., 1.], 1000000.)
+                .clear_target([0., 0., 0., 1.], 0.)
                 .with_pass(DrawSprite::new().with_transparency(
                     ColorMask::all(),
                     ALPHA,
                     Some(DepthMode::LessEqualWrite),
-                    // None,
                 )).with_pass(DrawUi::new()),
         );
 
@@ -129,7 +128,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                     ]),
             )?
             .with_bundle(RenderBundle::new(pipe, Some(display_config))
-                .with_visibility_sorting(&["transform_system"]))?
+                .with_sprite_visibility_sorting(&["transform_system"]))?
             .with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new()
                 .with_bindings(input_bindings))?
             .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?

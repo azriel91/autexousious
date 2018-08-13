@@ -50,11 +50,11 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                 }
                 CharacterSequenceId::Walk => {
                     kinematics.velocity[0] = character_input.x_axis_value as f32 * 3.5;
-                    kinematics.velocity[2] = character_input.z_axis_value as f32 * -2.;
+                    kinematics.velocity[2] = character_input.z_axis_value as f32 * 2.;
                 }
                 CharacterSequenceId::Run => {
                     kinematics.velocity[0] = character_input.x_axis_value as f32 * 6.;
-                    kinematics.velocity[2] = character_input.z_axis_value as f32 * -1.5;
+                    kinematics.velocity[2] = character_input.z_axis_value as f32 * 1.5;
                 }
                 CharacterSequenceId::StopRun => {
                     kinematics.velocity[0] = if status.object_status.mirrored {
@@ -62,7 +62,7 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                     } else {
                         2.
                     };
-                    kinematics.velocity[2] = character_input.z_axis_value as f32 * -0.5;
+                    kinematics.velocity[2] = character_input.z_axis_value as f32 * 0.5;
                 }
                 CharacterSequenceId::Jump => {}
                 CharacterSequenceId::JumpOff => {
