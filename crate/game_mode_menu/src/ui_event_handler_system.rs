@@ -126,8 +126,7 @@ mod test {
                 .map(|event_type| UiEvent {
                     event_type,
                     target: entity,
-                })
-                .collect::<Vec<UiEvent>>();
+                }).collect::<Vec<UiEvent>>();
             ui_event_channel.iter_write(ui_events.into_iter());
         }
 
@@ -147,8 +146,7 @@ mod test {
                 .create_entity()
                 .with(MenuItem {
                     index: Index::StartGame,
-                })
-                .build();
+                }).build();
 
             let mut ui_event_channel = world.write_resource::<EventChannel<UiEvent>>();
             ui_event_channel.single_write(UiEvent {

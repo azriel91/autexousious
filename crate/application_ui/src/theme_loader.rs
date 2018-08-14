@@ -51,8 +51,7 @@ impl ThemeLoader {
                 let font_storage = world.read_resource::<AssetStorage<FontAsset>>();
                 let font_handle = loader.load(font_path, TtfFormat, (), (), &font_storage);
                 (font_variant, font_handle)
-            })
-            .collect::<HashMap<FontVariant, FontHandle>>();
+            }).collect::<HashMap<FontVariant, FontHandle>>();
 
         world.add_resource(Theme::new(fonts));
 

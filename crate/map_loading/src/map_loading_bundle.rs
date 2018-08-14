@@ -45,8 +45,7 @@ mod test {
                     let map_handle = MapLoader::load(world, &map_path).expect("Failed to load map");
 
                     world.add_resource(EffectReturn(map_handle));
-                })
-                .with_assertion(|world| {
+                }).with_assertion(|world| {
                     let map_handle = world.read_resource::<EffectReturn<MapHandle>>().0.clone();
                     let map_store = world.read_resource::<AssetStorage<Map>>();
                     let map = map_store
@@ -61,8 +60,7 @@ mod test {
                             .expect("Expected test/map/fade map to contain animations.")
                             .len()
                     );
-                })
-                .run()
+                }).run()
                 .is_ok()
         );
     }

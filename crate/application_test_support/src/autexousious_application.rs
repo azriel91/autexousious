@@ -74,12 +74,10 @@ impl AutexousiousApplication {
             .with_bundle(AnimationBundle::<CharacterSequenceId, SpriteRender>::new(
                 "character_animation_control_system",
                 "character_sampler_interpolation_system",
-            ))
-            .with_bundle(TransformBundle::new().with_dep(&[
+            )).with_bundle(TransformBundle::new().with_dep(&[
                 "character_animation_control_system",
                 "character_sampler_interpolation_system",
-            ]))
-            .with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new())
+            ])).with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new())
             .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())
             .with_render_bundle(test_name, visibility)
     }
@@ -138,8 +136,7 @@ mod test {
                     // Panics if the type parameters used are not these ones.
                     world.read_resource::<InputHandler<PlayerAxisControl, PlayerActionControl>>();
                     world.read_storage::<MouseReactive>();
-                })
-                .run()
+                }).run()
                 .is_ok()
         );
     }
@@ -156,9 +153,8 @@ mod test {
                 // Panics if the type parameters used are not these ones.
                 world.read_resource::<InputHandler<PlayerAxisControl, PlayerActionControl>>();
                 world.read_storage::<MouseReactive>();
-            })
-                .run()
-                .is_ok()
+            }).run()
+            .is_ok()
         );
     }
 
@@ -171,9 +167,9 @@ mod test {
                 "render_base_application_can_load_sprite_render_animations",
                 false
             ).with_effect(SpriteRenderAnimationFixture::effect)
-                .with_assertion(SpriteRenderAnimationFixture::assertion)
-                .run()
-                .is_ok()
+            .with_assertion(SpriteRenderAnimationFixture::assertion)
+            .run()
+            .is_ok()
         );
     }
 }

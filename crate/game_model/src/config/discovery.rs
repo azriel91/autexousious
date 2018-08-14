@@ -71,8 +71,7 @@ fn into_type_config_dirs(config_dir: &PathBuf) -> Vec<(ConfigType, PathBuf)> {
             // TODO: Snake case pending <https://github.com/Peternator7/strum/issues/21>
             let type_config_dir = config_dir.join(&config_type.to_string().to_snake_case());
             (config_type, type_config_dir)
-        })
-        .filter(|&(ref _config_type, ref dir)| dir.is_dir())
+        }).filter(|&(ref _config_type, ref dir)| dir.is_dir())
         .collect::<Vec<(_, _)>>()
 }
 
@@ -113,8 +112,7 @@ fn into_object_model_records(
             let object_model_records = filter_config_records(&object_type_dirs);
 
             Some((object_type, object_model_records))
-        })
-        .collect::<HashMap<ObjectType, Vec<ConfigRecord>>>()
+        }).collect::<HashMap<ObjectType, Vec<ConfigRecord>>>()
 }
 
 fn filter_config_records(paths: &[PathBuf]) -> Vec<ConfigRecord> {

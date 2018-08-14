@@ -35,7 +35,8 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
             &character_input_storage,
             &status_storage,
             &mut kinematics_storage,
-        ).join()
+        )
+            .join()
         {
             // TODO: Character stats should be configuration.
             // Use the stats from the character definition.

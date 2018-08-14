@@ -108,17 +108,16 @@ mod test {
                 "maintains_character_sequence_when_next_sequence_is_none",
                 false
             ).with_system(TestSystem, TestSystem::type_name(), &[])
-                .with_bundle(MapLoadingBundle::new())
-                .with_system(
-                    CharacterInputUpdateSystem::new(),
-                    CharacterInputUpdateSystem::type_name(),
-                    &[]
-                )
-                .with_setup(setup)
-                .with_state(load_and_play_state)
-                .with_assertion(assertion)
-                .run()
-                .is_ok()
+            .with_bundle(MapLoadingBundle::new())
+            .with_system(
+                CharacterInputUpdateSystem::new(),
+                CharacterInputUpdateSystem::type_name(),
+                &[]
+            ).with_setup(setup)
+            .with_state(load_and_play_state)
+            .with_assertion(assertion)
+            .run()
+            .is_ok()
         );
     }
 

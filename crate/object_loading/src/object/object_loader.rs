@@ -70,13 +70,12 @@ mod test {
                     bat_path.extend(Path::new("test/object/character/bat").iter());
                     let config_record = ConfigRecord::new(bat_path);
 
-                    let character_definition =
-                        load_in::<CharacterDefinition, _>(
-                            &config_record.directory,
-                            "object.toml",
-                            Format::Toml,
-                            None,
-                        ).expect("Failed to load object.toml into CharacterDefinition");
+                    let character_definition = load_in::<CharacterDefinition, _>(
+                        &config_record.directory,
+                        "object.toml",
+                        Format::Toml,
+                        None,
+                    ).expect("Failed to load object.toml into CharacterDefinition");
 
                     let object = ObjectLoader::load(
                         world,
@@ -86,8 +85,7 @@ mod test {
 
                     // See bat/object.toml
                     assert_eq!(9, object.animations.len());
-                })
-                .run()
+                }).run()
                 .is_ok()
         );
     }
