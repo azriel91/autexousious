@@ -60,7 +60,7 @@ mod test {
     use application_test_support::AutexousiousApplication;
     use character_selection::CharacterEntityControl;
     use game_play_state::GamePlayState;
-    use loading;
+    use loading::LoadingState;
     use map_loading::MapLoadingBundle;
     use object_model::{
         config::object::CharacterSequenceId,
@@ -88,7 +88,7 @@ mod test {
         };
 
         let load_and_play_state = || {
-            loading::State::new(
+            LoadingState::new(
                 AmethystApplication::assets_dir().into(),
                 Box::new(GamePlayState::new()),
             )

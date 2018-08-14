@@ -201,7 +201,7 @@ mod test {
     };
     use amethyst_test_support::prelude::*;
     use character_selection::CharacterEntityControl;
-    use loading;
+    use loading::LoadingState;
     use map_loading::MapLoadingBundle;
     use map_model::loaded::Map;
     use object_loading::ObjectLoadingBundle;
@@ -251,7 +251,7 @@ mod test {
             AmethystApplication::render_base(
                 "spawn_for_player_creates_entity_with_object_components",
                 false
-            ).with_state(|| loading::State::new(
+            ).with_state(|| LoadingState::new(
                 AmethystApplication::assets_dir().into(),
                 Box::new(EmptyState),
             )).with_assertion(assertion)

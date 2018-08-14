@@ -3,7 +3,6 @@ use std::marker::PhantomData;
 use std::path::PathBuf;
 
 use amethyst::{
-    self,
     assets::{AssetStorage, Loader, ProgressCounter},
     prelude::*,
     renderer::ScreenDimensions,
@@ -30,9 +29,9 @@ use strum::IntoEnumIterator;
 /// * `S`: State to return after loading is complete.
 #[derive(Derivative)]
 #[derivative(Debug)]
-pub struct State<'a, 'b, S>
+pub struct LoadingState<'a, 'b, S>
 where
-    S: amethyst::State<GameData<'a, 'b>> + 'static,
+    S: State<GameData<'a, 'b>> + 'static,
 {
     /// Path to the assets directory.
     assets_dir: PathBuf,
@@ -43,16 +42,16 @@ where
     #[derivative(Debug = "ignore")]
     progress_counter: ProgressCounter,
     /// Lifetime tracker.
-    state_data: PhantomData<amethyst::State<GameData<'a, 'b>>>,
+    state_data: PhantomData<State<GameData<'a, 'b>>>,
 }
 
-impl<'a, 'b, S> State<'a, 'b, S>
+impl<'a, 'b, S> LoadingState<'a, 'b, S>
 where
-    S: amethyst::State<GameData<'a, 'b>> + 'static,
+    S: State<GameData<'a, 'b>> + 'static,
 {
     /// Returns a new `State`
     pub fn new(assets_dir: PathBuf, next_state: Box<S>) -> Self {
-        State {
+        LoadingState {
             assets_dir,
             next_state: Some(next_state),
             progress_counter: ProgressCounter::new(),
@@ -135,9 +134,9 @@ where
     }
 }
 
-impl<'a, 'b, S> amethyst::State<GameData<'a, 'b>> for State<'a, 'b, S>
+impl<'a, 'b, S> State<GameData<'a, 'b>> for LoadingState<'a, 'b, S>
 where
-    S: amethyst::State<GameData<'a, 'b>> + 'static,
+    S: State<GameData<'a, 'b>> + 'static,
 {
     fn on_start(&mut self, mut data: StateData<GameData>) {
         if let Err(e) = ThemeLoader::load(&mut data.world) {

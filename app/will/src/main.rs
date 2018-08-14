@@ -47,6 +47,7 @@ use character_selection::CharacterSelectionBundle;
 use game_input::{PlayerActionControl, PlayerAxisControl};
 use game_mode_menu::GameModeMenuState;
 use game_play::GamePlayBundle;
+use loading::LoadingState;
 use map_loading::MapLoadingBundle;
 use object_loading::ObjectLoadingBundle;
 use object_model::config::object::CharacterSequenceId;
@@ -73,7 +74,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     let assets_dir = assets_dir(Some(development_base_dirs!()))?;
 
     let game_mode_menu_state = GameModeMenuState::new();
-    let loading_state = loading::State::new(assets_dir.clone(), Box::new(game_mode_menu_state));
+    let loading_state = LoadingState::new(assets_dir.clone(), Box::new(game_mode_menu_state));
     let state = RobotState::new(Box::new(loading_state));
 
     let mut game_data = GameDataBuilder::default();
