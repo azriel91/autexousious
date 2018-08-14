@@ -1,3 +1,4 @@
+use std::hash::Hash;
 use std::marker::PhantomData;
 use std::sync::Mutex;
 use std::thread;
@@ -152,26 +153,28 @@ impl
     ///
     /// This also adds a `ScreenDimensions` resource to the `World` so that UI calculations can be
     /// done.
-    pub fn base() -> AmethystApplication<
+    pub fn ui_base<AX, AC>() -> AmethystApplication<
         StatePlaceholder,
         GameData<'static, 'static>,
         FnSetupPlaceholder,
         FnStatePlaceholder,
         FnEffectPlaceholder,
         FnAssertPlaceholder,
-    > {
+    >
+    where
+        AX: Hash + Eq + Clone + Send + Sync + 'static,
+        AC: Hash + Eq + Clone + Send + Sync + 'static,
+    {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(InputBundle::<String, String>::new())
-            .with_bundle(UiBundle::<String, String>::new())
+            .with_ui_bundles::<AX, AC>()
             .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
     }
 
-    /// Returns an application with the Animation, Transform, Input, UI, and Render bundles.
+    /// Returns an application with the Animation, Transform, and Render bundles.
     ///
-    /// **Note:** The type parameters for the Animation, Input, and UI bundles are [stringly-typed]
-    /// [stringly]. It is recommended that you use proper type parameters and register the bundles
-    /// yourself if the unit you are testing uses them.
+    /// If you requite `InputBundle` and `UiBundle`, you can call the `with_ui_bundles::<AX, AC>()`
+    /// method.
     ///
     /// # Parameters
     ///
@@ -205,9 +208,7 @@ impl
                 "material_sampler_interpolation_system",
                 "sprite_render_animation_control_system",
                 "sprite_render_sampler_interpolation_system",
-            ])).with_bundle(InputBundle::<String, String>::new())
-            .with_bundle(UiBundle::<String, String>::new())
-            .with_render_bundle(test_name, visibility)
+            ])).with_render_bundle(test_name, visibility)
     }
 
     /// Returns a `String` to `<crate_dir>/assets`.
@@ -426,6 +427,24 @@ where
             },
         ));
         self
+    }
+
+    /// Registers `InputBundle` and `UiBundle` with this application.
+    ///
+    /// This method is provided to avoid [stringly-typed][stringly] parameters for the Input and UI
+    /// bundles. We recommended that you use strong types instead of `<String, String>`.
+    ///
+    /// # Type Parameters
+    ///
+    /// * `AX`: Type representing the movement axis.
+    /// * `AC`: Type representing actions.
+    pub fn with_ui_bundles<AX, AC>(self) -> Self
+    where
+        AX: Hash + Eq + Clone + Send + Sync + 'static,
+        AC: Hash + Eq + Clone + Send + Sync + 'static,
+    {
+        self.with_bundle(InputBundle::<AX, AC>::new())
+            .with_bundle(UiBundle::<AX, AC>::new())
     }
 
     /// Registers the `RenderBundle` with this application.
@@ -957,7 +976,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::base()
+            AmethystApplication::ui_base::<String, String>()
                 .with_assertion(assertion_fn)
                 .run()
                 .is_ok()

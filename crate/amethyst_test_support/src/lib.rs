@@ -97,9 +97,13 @@
 //!     AmethystApplication::blank();
 //!
 //!     // Start with the Transform, Input, and UI bundles
-//!     AmethystApplication::base();
+//!     // The type parameters here are the Axis and Action types for the `InputBundle` and
+//!     // `UiBundle`.
+//!     AmethystApplication::base::<String, String>();
 //!
-//!     // Start with the Animation, Transform, Input, UI, and Render bundles.
+//!     // Start with the Animation, Transform, and Render bundles.
+//!     // If you want the Input and UI bundles, you can use the `.with_ui_bundles::<AX, AC>()`
+//!     // method.
 //!     let visibility = false; // Whether the window should be shown
 //!     AmethystApplication::render_base("test_name", visibility);
 //! }
@@ -131,7 +135,7 @@
 //!     };
 //!
 //!     let visibility = false; // Whether the window should be shown
-//!     AmethystApplication::render_base("test_name", visibility)
+//!     AmethystApplication::render_base::<String, String, _>("test_name", visibility)
 //!         .with_bundle(MyBundle::new()) // Can be invoked multiple times.
 //!         .with_bundle_fn(|| MyNonSendBundle::new()) // Can be invoked multiple times.
 //!         .with_state(|| MyState::new()) // Must be before any calls to `.with_resource(R)`.

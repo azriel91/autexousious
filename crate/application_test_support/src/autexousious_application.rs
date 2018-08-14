@@ -1,12 +1,8 @@
 use amethyst::{
-    animation::AnimationBundle,
-    core::transform::TransformBundle,
-    input::InputBundle,
-    prelude::*,
-    renderer::{ScreenDimensions, SpriteRender},
-    ui::UiBundle,
+    animation::AnimationBundle, core::transform::TransformBundle, prelude::*,
+    renderer::SpriteRender,
 };
-use amethyst_test_support::{prelude::*, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
+use amethyst_test_support::prelude::*;
 use character_selection::CharacterSelectionBundle;
 use game_input::{PlayerActionControl, PlayerAxisControl};
 use object_loading::ObjectLoadingBundle;
@@ -29,9 +25,9 @@ impl AutexousiousApplication {
     /// This also adds a `ScreenDimensions` resource to the `World` so that UI calculations can be
     /// done.
     ///
-    /// The difference between this and `AmethystApplication::base()` is the type parameters to the
-    /// Input and UI bundles are the `PlayerAxisControl` and `PlayerActionControl`.
-    pub fn base() -> AmethystApplication<
+    /// This has the same effect as calling `AmethystApplication::base::<PlayerAxisControl,
+    /// PlayerActionControl>()`.
+    pub fn ui_base() -> AmethystApplication<
         StatePlaceholder,
         GameData<'static, 'static>,
         FnSetupPlaceholder,
@@ -39,14 +35,10 @@ impl AutexousiousApplication {
         FnEffectPlaceholder,
         FnAssertPlaceholder,
     > {
-        AmethystApplication::blank()
-            .with_bundle(TransformBundle::new())
-            .with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new())
-            .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())
-            .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
+        AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
     }
 
-    /// Returns an application with the Animation, Transform, Input, UI, and Render bundles.
+    /// Returns an application with the Animation, Transform, and Render bundles.
     ///
     /// The difference between this and `AmethystApplication::render_base()` is the type parameters
     /// to the Input and UI bundles are the `PlayerAxisControl` and `PlayerActionControl`, and the
@@ -70,6 +62,8 @@ impl AutexousiousApplication {
     where
         N: Into<&'name str>,
     {
+        // Unfortunately we cannot re-use `AmethystApplication::render_base` because we need to
+        // specify the `TransformBundle`'s dependencies.
         AmethystApplication::blank()
             .with_bundle(AnimationBundle::<CharacterSequenceId, SpriteRender>::new(
                 "character_animation_control_system",
@@ -77,9 +71,7 @@ impl AutexousiousApplication {
             )).with_bundle(TransformBundle::new().with_dep(&[
                 "character_animation_control_system",
                 "character_sampler_interpolation_system",
-            ])).with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new())
-            .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())
-            .with_render_bundle(test_name, visibility)
+            ])).with_render_bundle(test_name, visibility)
     }
 
     /// Returns an application with the Animation, Transform, Input, UI, and Render bundles.
@@ -106,7 +98,8 @@ impl AutexousiousApplication {
     where
         N: Into<&'name str>,
     {
-        AmethystApplication::render_base(test_name, visibility)
+        AutexousiousApplication::render_base(test_name, visibility)
+            .with_ui_bundles::<PlayerAxisControl, PlayerActionControl>()
             .with_bundle(ObjectLoadingBundle::new())
             .with_bundle(CharacterSelectionBundle::new())
     }
@@ -127,34 +120,17 @@ mod test {
     // `autexousious_test_support` crate would be depending on *that crate* (for better dev
     // experience for higher level crates).
     #[test]
-    fn base_uses_strong_types_for_input_and_ui_bundles() {
+    fn ui_base_uses_strong_types_for_input_and_ui_bundles() {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AutexousiousApplication::base()
+            AutexousiousApplication::ui_base()
                 .with_assertion(|world| {
                     // Panics if the type parameters used are not these ones.
                     world.read_resource::<InputHandler<PlayerAxisControl, PlayerActionControl>>();
                     world.read_storage::<MouseReactive>();
                 }).run()
                 .is_ok()
-        );
-    }
-
-    #[test]
-    fn render_base_uses_strong_types_for_input_and_ui_bundles() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::render_base(
-                "render_base_uses_strong_types_for_input_and_ui_bundles",
-                false
-            ).with_assertion(|world| {
-                // Panics if the type parameters used are not these ones.
-                world.read_resource::<InputHandler<PlayerAxisControl, PlayerActionControl>>();
-                world.read_storage::<MouseReactive>();
-            }).run()
-            .is_ok()
         );
     }
 
@@ -169,6 +145,23 @@ mod test {
             ).with_effect(SpriteRenderAnimationFixture::effect)
             .with_assertion(SpriteRenderAnimationFixture::assertion)
             .run()
+            .is_ok()
+        );
+    }
+
+    #[test]
+    fn game_base_uses_strong_types_for_input_and_ui_bundles() {
+        // kcov-ignore-start
+        assert!(
+            // kcov-ignore-end
+            AutexousiousApplication::game_base(
+                "game_base_uses_strong_types_for_input_and_ui_bundles",
+                false
+            ).with_assertion(|world| {
+                // Panics if the type parameters used are not these ones.
+                world.read_resource::<InputHandler<PlayerAxisControl, PlayerActionControl>>();
+                world.read_storage::<MouseReactive>();
+            }).run()
             .is_ok()
         );
     }
