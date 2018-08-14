@@ -59,7 +59,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::base()
+            AmethystApplication::ui_base::<String, String>()
                 .with_system(
                     ObjectKinematicsUpdateSystem::new(),
                     ObjectKinematicsUpdateSystem::type_name(),

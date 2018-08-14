@@ -85,7 +85,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::base()
+            AmethystApplication::ui_base::<String, String>()
                 .with_assertion(assertion)
                 .with_resource(ScreenDimensions::new(640, 480, 1.))
                 .run()
@@ -112,7 +112,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::base()
+            AmethystApplication::ui_base::<String, String>()
                 .with_assertion(assertion)
                 .with_resource(ScreenDimensions::new(640, 480, 1.))
                 .run()
@@ -138,7 +138,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::base()
+            AmethystApplication::ui_base::<String, String>()
                 .with_assertion(assertion)
                 .with_resource(ScreenDimensions::new(640, 480, 1.))
                 .run()

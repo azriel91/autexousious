@@ -38,7 +38,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::base()
+            AmethystApplication::ui_base::<String, String>()
                 .with_bundle(GameModeMenuBundle)
                 // kcov-ignore-start
                 .with_effect(|world| {
