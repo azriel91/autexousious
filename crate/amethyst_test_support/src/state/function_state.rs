@@ -3,18 +3,16 @@ use amethyst::prelude::*;
 use GameUpdate;
 
 /// Runs a function in `.update()` then `Pop`s itself.
-#[derive(Debug, new)]
-pub struct FunctionState<F>
-where
-    F: Fn(&mut World),
-{
+#[derive(Derivative, new)]
+#[derivative(Debug)]
+pub struct FunctionState {
     /// Function to run in `update`.
-    function: F,
+    #[derivative(Debug = "ignore")]
+    function: Box<Fn(&mut World)>,
 }
 
-impl<F, T> State<T> for FunctionState<F>
+impl<T> State<T> for FunctionState
 where
-    F: Fn(&mut World),
     T: GameUpdate,
 {
     fn update(&mut self, mut data: StateData<T>) -> Trans<T> {
