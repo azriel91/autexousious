@@ -13,12 +13,6 @@ use map_loading::MapLoadingBundle;
 use object_loading::ObjectLoadingBundle;
 use object_model::config::object::CharacterSequenceId;
 
-// Copied from `amethyst_test_support`
-type StatePlaceholder = EmptyState;
-type FnStatePlaceholder = &'static fn() -> StatePlaceholder;
-type FnEffectPlaceholder = &'static fn(&mut World);
-type FnAssertPlaceholder = &'static fn(&mut World);
-
 /// Baselines for building Amethyst applications with Autexousious types.
 #[derive(Debug)]
 pub struct AutexousiousApplication;
@@ -31,13 +25,7 @@ impl AutexousiousApplication {
     ///
     /// This has the same effect as calling `AmethystApplication::base::<PlayerAxisControl,
     /// PlayerActionControl>()`.
-    pub fn ui_base() -> AmethystApplication<
-        StatePlaceholder,
-        GameData<'static, 'static>,
-        FnStatePlaceholder,
-        FnEffectPlaceholder,
-        FnAssertPlaceholder,
-    > {
+    pub fn ui_base() -> AmethystApplication<GameData<'static, 'static>> {
         AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
     }
 
@@ -54,13 +42,7 @@ impl AutexousiousApplication {
     pub fn render_base<'name, N>(
         test_name: N,
         visibility: bool,
-    ) -> AmethystApplication<
-        StatePlaceholder,
-        GameData<'static, 'static>,
-        FnStatePlaceholder,
-        FnEffectPlaceholder,
-        FnAssertPlaceholder,
-    >
+    ) -> AmethystApplication<GameData<'static, 'static>>
     where
         N: Into<&'name str>,
     {
@@ -89,13 +71,7 @@ impl AutexousiousApplication {
     pub fn object_base<'name, N>(
         test_name: N,
         visibility: bool,
-    ) -> AmethystApplication<
-        StatePlaceholder,
-        GameData<'static, 'static>,
-        FnStatePlaceholder,
-        FnEffectPlaceholder,
-        FnAssertPlaceholder,
-    >
+    ) -> AmethystApplication<GameData<'static, 'static>>
     where
         N: Into<&'name str>,
     {
@@ -119,13 +95,7 @@ impl AutexousiousApplication {
     pub fn game_base<'name, N>(
         test_name: N,
         visibility: bool,
-    ) -> AmethystApplication<
-        StatePlaceholder,
-        GameData<'static, 'static>,
-        FnStatePlaceholder,
-        FnEffectPlaceholder,
-        FnAssertPlaceholder,
-    >
+    ) -> AmethystApplication<GameData<'static, 'static>>
     where
         N: Into<&'name str>,
     {
