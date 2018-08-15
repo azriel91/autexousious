@@ -1,10 +1,15 @@
+use std::path::Path;
+
 use amethyst::{
-    animation::AnimationBundle, core::transform::TransformBundle, prelude::*,
-    renderer::SpriteRender,
+    animation::AnimationBundle, assets::ProgressCounter, core::transform::TransformBundle,
+    prelude::*, renderer::SpriteRender,
 };
 use amethyst_test_support::prelude::*;
+use application::resource::dir::ASSETS;
 use character_selection::CharacterSelectionBundle;
 use game_input::{PlayerActionControl, PlayerAxisControl};
+use loading::AssetLoader;
+use map_loading::MapLoadingBundle;
 use object_loading::ObjectLoadingBundle;
 use object_model::config::object::CharacterSequenceId;
 
@@ -76,15 +81,15 @@ impl AutexousiousApplication {
 
     /// Returns an application with the Animation, Transform, Input, UI, and Render bundles.
     ///
-    /// The difference between this and `AmethystApplication::render_base()` is the type parameters
-    /// to the Input and UI bundles are the `PlayerAxisControl` and `PlayerActionControl`, and the
-    /// Animation bundle uses the object type sequence IDs for animation control sets.
+    /// This function does not load any game configuration as it is meant to be used to test types
+    /// that load game configuration. If you want test objects and maps to be loaded, please use the
+    /// `game_base` function.
     ///
     /// # Parameters
     ///
     /// * `test_name`: Name of the test, used to populate the window title.
     /// * `visibility`: Whether the window should be visible.
-    pub fn game_base<'name, N>(
+    pub fn object_base<'name, N>(
         test_name: N,
         visibility: bool,
     ) -> AmethystApplication<
@@ -100,16 +105,54 @@ impl AutexousiousApplication {
     {
         AutexousiousApplication::render_base(test_name, visibility)
             .with_ui_bundles::<PlayerAxisControl, PlayerActionControl>()
+            .with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
             .with_bundle(CharacterSelectionBundle::new())
+    }
+
+    /// Returns an application set up to load objects and maps.
+    ///
+    /// This function uses the setup state on `AmethystApplication`, so you cannot use the
+    /// `.with_setup(F)` function. However, you can wrap any setup you still need to do with a
+    /// `SequencerState` and `FunctionState`.
+    ///
+    /// # Parameters
+    ///
+    /// * `test_name`: Name of the test, used to populate the window title.
+    /// * `visibility`: Whether the window should be visible.
+    pub fn game_base<'name, N>(
+        test_name: N,
+        visibility: bool,
+    ) -> AmethystApplication<
+        StatePlaceholder,
+        GameData<'static, 'static>,
+        fn(&mut World), // <https://github.com/rust-lang/rust/issues/51233>
+        FnStatePlaceholder,
+        FnEffectPlaceholder,
+        FnAssertPlaceholder,
+    >
+    where
+        N: Into<&'name str>,
+    {
+        AutexousiousApplication::object_base(test_name, visibility).with_setup(|world| {
+            let mut progress_counter = ProgressCounter::new();
+            AssetLoader::load_game_config(
+                world,
+                &Path::new(env!("CARGO_MANIFEST_DIR")).join(ASSETS),
+                &mut progress_counter,
+            );
+            world.add_resource(progress_counter);
+        })
     }
 }
 
 #[cfg(test)]
 mod test {
-    use amethyst::{input::InputHandler, ui::MouseReactive};
+    use amethyst::{assets::ProgressCounter, input::InputHandler, ui::MouseReactive};
     use amethyst_test_support::SpriteRenderAnimationFixture;
     use game_input::{PlayerActionControl, PlayerAxisControl};
+    use map_model::loaded::MapHandle;
+    use object_model::loaded::CharacterHandle;
 
     use super::AutexousiousApplication;
 
@@ -150,17 +193,37 @@ mod test {
     }
 
     #[test]
-    fn game_base_uses_strong_types_for_input_and_ui_bundles() {
+    fn object_base_uses_strong_types_for_input_and_ui_bundles() {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AutexousiousApplication::game_base(
-                "game_base_uses_strong_types_for_input_and_ui_bundles",
+            AutexousiousApplication::object_base(
+                "object_base_uses_strong_types_for_input_and_ui_bundles",
                 false
             ).with_assertion(|world| {
                 // Panics if the type parameters used are not these ones.
                 world.read_resource::<InputHandler<PlayerAxisControl, PlayerActionControl>>();
                 world.read_storage::<MouseReactive>();
+            }).run()
+            .is_ok()
+        );
+    }
+
+    #[test]
+    fn game_base_loads_assets_from_self_crate_directory() {
+        // kcov-ignore-start
+        assert!(
+            // kcov-ignore-end
+            AutexousiousApplication::game_base(
+                "game_base_loads_assets_from_self_crate_directory",
+                false
+            ).with_assertion(|world| {
+                let progress_counter = &*world.read_resource::<ProgressCounter>();
+                assert!(progress_counter.is_complete());
+
+                // Panics if the resources have not been populated
+                world.read_resource::<Vec<MapHandle>>();
+                assert!(!world.read_resource::<Vec<CharacterHandle>>().is_empty());
             }).run()
             .is_ok()
         );

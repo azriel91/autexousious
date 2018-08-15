@@ -8,8 +8,13 @@
 
 extern crate amethyst;
 extern crate amethyst_test_support;
+extern crate application;
 extern crate character_selection;
 extern crate game_input;
+extern crate loading;
+extern crate map_loading;
+#[cfg(test)]
+extern crate map_model;
 extern crate object_loading;
 extern crate object_model;
 

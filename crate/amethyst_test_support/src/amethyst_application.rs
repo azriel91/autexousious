@@ -11,7 +11,7 @@ use amethyst::{
     input::InputBundle,
     prelude::*,
     renderer::{
-        ColorMask, DisplayConfig, DrawFlat, Material, Pipeline, PipelineBuilder, PosTex,
+        ColorMask, DepthMode, DisplayConfig, DrawSprite, Material, Pipeline, PipelineBuilder,
         RenderBundle, ScreenDimensions, SpriteRender, Stage, StageBuilder, ALPHA,
     },
     shred::Resource,
@@ -58,7 +58,7 @@ type FnAssertPlaceholder = &'static fn(&mut World);
 type DefaultPipeline = PipelineBuilder<
     Queue<(
         Queue<()>,
-        StageBuilder<Queue<(Queue<(Queue<()>, DrawFlat<PosTex>)>, DrawUi)>>,
+        StageBuilder<Queue<(Queue<(Queue<()>, DrawSprite)>, DrawUi)>>,
     )>,
 >;
 
@@ -496,11 +496,11 @@ where
 
     /// Sets the state for the Amethyst application.
     ///
+    /// If you use both this and `.with_effect(F)`, this `State` will run first followed by a state
+    /// that runs the effect function.
+    ///
     /// **NOTE:** This must be called before any calls to `.with_resource()`, as complexities with
     /// type parameters disallows us to store earlier resource registrations.
-    ///
-    /// **NOTE:** This function is exclusive of `.with_effect()`, as each of them are ways to test
-    /// an effect before an assertion.
     ///
     /// # Parameters
     ///
@@ -711,18 +711,18 @@ where
     /// The pipeline is built from the following:
     ///
     /// * Black clear target.
-    /// * `DrawFlat::<PosTex>` pass with transparency.
+    /// * `DrawSprite` pass with transparency.
     /// * `DrawUi` pass.
     ///
     /// This is exposed to allow external crates a convenient way of obtaining a render pipeline.
     pub fn pipeline() -> DefaultPipeline {
         Pipeline::build().with_stage(
             Stage::with_backbuffer()
-                .clear_target([0., 0., 0., 0.], 1.)
-                .with_pass(DrawFlat::<PosTex>::new().with_transparency(
+                .clear_target([0., 0., 0., 0.], 0.)
+                .with_pass(DrawSprite::new().with_transparency(
                     ColorMask::all(),
                     ALPHA,
-                    None,
+                    Some(DepthMode::LessEqualWrite),
                 )).with_pass(DrawUi::new()),
         )
     }

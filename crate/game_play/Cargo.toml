@@ -23,7 +23,6 @@ typename_derive = "0.1"
 amethyst_test_support = { path = "../amethyst_test_support" }
 application_test_support = { path = "../application_test_support" }
 loading = { path = "../loading" }
-map_loading = { path = "../map_loading" }
 object_loading = { path = "../object_loading" }
 
 [features]

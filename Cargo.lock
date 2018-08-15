@@ -317,8 +317,12 @@ version = "0.4.0"
 dependencies = [
  "amethyst 0.8.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/829/sprite-render-pass)",
  "amethyst_test_support 0.4.0",
+ "application 0.4.0",
  "character_selection 0.4.0",
  "game_input 0.4.0",
+ "loading 0.4.0",
+ "map_loading 0.5.0",
+ "map_model 0.4.0",
  "object_loading 0.4.0",
  "object_model 0.4.0",
 ]
@@ -1037,7 +1041,6 @@ dependencies = [
  "game_model 0.4.0",
  "loading 0.4.0",
  "log 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "map_loading 0.5.0",
  "map_model 0.4.0",
  "map_selection 0.5.0",
  "object_loading 0.4.0",
