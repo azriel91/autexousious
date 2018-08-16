@@ -1,3 +1,4 @@
+use std::env;
 use std::path::Path;
 
 use amethyst::{
@@ -98,6 +99,8 @@ impl AutexousiousApplication {
     where
         N: Into<&'name str>,
     {
+        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
+
         AutexousiousApplication::render_and_ui(test_name, visibility)
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
