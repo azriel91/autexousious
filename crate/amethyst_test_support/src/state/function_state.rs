@@ -3,6 +3,8 @@ use amethyst::prelude::*;
 use GameUpdate;
 
 /// Runs a function in `.update()` then `Pop`s itself.
+///
+/// The function is run before `GameUpdate#update(world)` is called.
 #[derive(Debug, new)]
 pub struct FunctionState<F>
 where
@@ -18,9 +20,9 @@ where
     T: GameUpdate,
 {
     fn update(&mut self, mut data: StateData<T>) -> Trans<T> {
-        data.data.update(&data.world);
-
         (self.function)(&mut data.world);
+
+        data.data.update(&data.world);
 
         Trans::Pop
     }
