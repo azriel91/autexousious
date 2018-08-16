@@ -872,7 +872,9 @@ mod test {
 
     #[test]
     fn with_setup_invoked_twice_should_run_in_specified_order() {
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_setup(|world| {
                     world.add_resource(ApplicationResource);
@@ -885,7 +887,9 @@ mod test {
 
     #[test]
     fn with_effect_invoked_twice_should_run_in_the_specified_order() {
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_effect(|world| {
                     world.add_resource(ApplicationResource);
@@ -898,7 +902,9 @@ mod test {
 
     #[test]
     fn with_assertion_invoked_twice_should_run_in_the_specified_order() {
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_assertion(|world| {
                     world.add_resource(ApplicationResource);
@@ -911,7 +917,9 @@ mod test {
 
     #[test]
     fn with_state_invoked_twice_should_run_in_the_specified_order() {
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_state(|| FunctionState::new(|world| {
                     world.add_resource(ApplicationResource);
@@ -924,7 +932,9 @@ mod test {
 
     #[test]
     fn setup_can_be_invoked_after_with_state() {
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_state(|| FunctionState::new(|world| {
                     world.add_resource(ApplicationResource);
@@ -937,7 +947,9 @@ mod test {
 
     #[test]
     fn with_state_invoked_after_with_resource_should_work() {
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_resource(ApplicationResource)
                 .with_state(|| FunctionState::new(|world| {

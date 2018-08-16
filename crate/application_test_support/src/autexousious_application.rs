@@ -246,7 +246,9 @@ mod test {
                     ObjectType::iter().for_each(|object_type| {
                         assert!(
                             game_entities.objects.get(&object_type).is_some(),
+                            // kcov-ignore-start
                             format!(
+                                // kcov-ignore-end
                                 "Expected at least one entity for the `{}` object type",
                                 object_type
                             )
