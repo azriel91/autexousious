@@ -7,8 +7,8 @@ use typename::TypeName;
 
 use MapSelection;
 use MapSelectionEvent;
+use MapSelectionStatus;
 use MapSelectionSystem;
-use SelectionStatus;
 
 /// `State` where map selection takes place.
 ///
@@ -41,7 +41,7 @@ where
 {
     fn reset_map_selection_state(&self, world: &mut World) {
         let mut map_selection = world.write_resource::<MapSelection>();
-        map_selection.selection_status = SelectionStatus::Pending;
+        map_selection.status = MapSelectionStatus::Pending;
     }
 }
 
@@ -77,7 +77,7 @@ where
         self.dispatcher.as_mut().unwrap().dispatch(&data.world.res);
 
         let map_selection = data.world.read_resource::<MapSelection>();
-        if map_selection.selection_status == SelectionStatus::Confirmed {
+        if map_selection.status == MapSelectionStatus::Confirmed {
             let store = data.world.read_resource::<AssetStorage<Map>>();
 
             let map_handle = map_selection

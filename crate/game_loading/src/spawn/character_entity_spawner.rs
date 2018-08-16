@@ -240,6 +240,7 @@ mod test {
             assert!(world.read_storage::<CharacterHandle>().contains(entity));
             assert!(world.read_storage::<CharacterStatus>().contains(entity));
             assert!(world.read_storage::<SpriteRender>().contains(entity));
+            assert!(world.read_storage::<Transparent>().contains(entity));
             assert!(world.read_storage::<Kinematics<f32>>().contains(entity));
             assert!(world.read_storage::<Transform>().contains(entity));
             assert!(world.read_storage::<GlobalTransform>().contains(entity));
@@ -251,13 +252,13 @@ mod test {
             AmethystApplication::render_base(
                 "spawn_for_player_creates_entity_with_object_components",
                 false
-            ).with_state(|| LoadingState::new(
+            ).with_bundle(MapLoadingBundle::new())
+            .with_bundle(ObjectLoadingBundle::new())
+            .with_system(TestSystem, TestSystem::type_name(), &[])
+            .with_state(|| LoadingState::new(
                 AmethystApplication::assets_dir().into(),
                 Box::new(EmptyState),
             )).with_assertion(assertion)
-            .with_bundle(MapLoadingBundle::new())
-            .with_bundle(ObjectLoadingBundle::new())
-            .with_system(TestSystem, TestSystem::type_name(), &[])
             .run()
             .is_ok()
         );

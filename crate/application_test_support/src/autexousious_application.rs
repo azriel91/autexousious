@@ -1,15 +1,18 @@
 use std::path::Path;
 
 use amethyst::{
-    animation::AnimationBundle, assets::ProgressCounter, core::transform::TransformBundle,
-    prelude::*, renderer::SpriteRender,
+    animation::AnimationBundle, core::transform::TransformBundle, prelude::*,
+    renderer::SpriteRender,
 };
-use amethyst_test_support::prelude::*;
+use amethyst_test_support::{prelude::*, EmptyState};
 use application::resource::dir::ASSETS;
-use character_selection::CharacterSelectionBundle;
+use character_selection::{CharacterSelection, CharacterSelectionBundle};
 use game_input::{PlayerActionControl, PlayerAxisControl};
-use loading::AssetLoader;
+use game_loading::GameLoadingState;
+use loading::LoadingState;
 use map_loading::MapLoadingBundle;
+use map_model::loaded::MapHandle;
+use map_selection::{MapSelection, MapSelectionStatus};
 use object_loading::ObjectLoadingBundle;
 use object_model::config::object::CharacterSequenceId;
 
@@ -58,7 +61,7 @@ impl AutexousiousApplication {
             ])).with_render_bundle(test_name, visibility)
     }
 
-    /// Returns an application with the Animation, Transform, Input, UI, and Render bundles.
+    /// Returns an application with Render, Input, and UI bundles loaded.
     ///
     /// This function does not load any game configuration as it is meant to be used to test types
     /// that load game configuration. If you want test objects and maps to be loaded, please use the
@@ -68,7 +71,7 @@ impl AutexousiousApplication {
     ///
     /// * `test_name`: Name of the test, used to populate the window title.
     /// * `visibility`: Whether the window should be visible.
-    pub fn object_base<'name, N>(
+    pub fn render_and_ui<'name, N>(
         test_name: N,
         visibility: bool,
     ) -> AmethystApplication<GameData<'static, 'static>>
@@ -77,16 +80,39 @@ impl AutexousiousApplication {
     {
         AutexousiousApplication::render_base(test_name, visibility)
             .with_ui_bundles::<PlayerAxisControl, PlayerActionControl>()
+    }
+
+    /// Returns an application with game configuration loaded.
+    ///
+    /// This function does not instantiate any game entities. If you want test entities (objects and
+    /// map) to be instantiated, please use the `game_base` function.
+    ///
+    /// # Parameters
+    ///
+    /// * `test_name`: Name of the test, used to populate the window title.
+    /// * `visibility`: Whether the window should be visible.
+    pub fn config_base<'name, N>(
+        test_name: N,
+        visibility: bool,
+    ) -> AmethystApplication<GameData<'static, 'static>>
+    where
+        N: Into<&'name str>,
+    {
+        AutexousiousApplication::render_and_ui(test_name, visibility)
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
             .with_bundle(CharacterSelectionBundle::new())
+            .with_state(|| {
+                LoadingState::new(
+                    Path::new(env!("CARGO_MANIFEST_DIR")).join(ASSETS),
+                    Box::new(EmptyState),
+                )
+            })
     }
 
-    /// Returns an application set up to load objects and maps.
+    /// Returns an application with game objects loaded.
     ///
-    /// This function uses the setup state on `AmethystApplication`, so you cannot use the
-    /// `.with_setup(F)` function. However, you can wrap any setup you still need to do with a
-    /// `SequencerState` and `FunctionState`.
+    /// TODO: Take in IDs of characters and maps to select.
     ///
     /// # Parameters
     ///
@@ -99,25 +125,41 @@ impl AutexousiousApplication {
     where
         N: Into<&'name str>,
     {
-        AutexousiousApplication::object_base(test_name, visibility).with_setup(|world| {
-            let mut progress_counter = ProgressCounter::new();
-            AssetLoader::load_game_config(
-                world,
-                &Path::new(env!("CARGO_MANIFEST_DIR")).join(ASSETS),
-                &mut progress_counter,
-            );
-            world.add_resource(progress_counter);
-        })
+        let mut character_selection = CharacterSelection::new();
+        let controller_id = 0;
+        let character_object_index = 0; // First loaded `Character`
+        character_selection
+            .entry(controller_id)
+            .or_insert(character_object_index);
+
+        let map_selection_fn = |world: &mut World| {
+            let first_map_handle = world
+                .read_resource::<Vec<MapHandle>>()
+                .first()
+                .expect("Expected at least one map to be loaded.")
+                .clone();
+            let map_selection =
+                MapSelection::new(MapSelectionStatus::Confirmed, Some(first_map_handle));
+
+            world.add_resource(map_selection);
+        };
+
+        AutexousiousApplication::config_base(test_name, visibility)
+            .with_resource(character_selection)
+            .with_setup(map_selection_fn)
+            .with_state(|| GameLoadingState::new(Box::new(|| Box::new(EmptyState))))
     }
 }
 
 #[cfg(test)]
 mod test {
-    use amethyst::{assets::ProgressCounter, input::InputHandler, ui::MouseReactive};
+    use amethyst::{input::InputHandler, ui::MouseReactive};
     use amethyst_test_support::SpriteRenderAnimationFixture;
     use game_input::{PlayerActionControl, PlayerAxisControl};
+    use game_model::play::GameEntities;
     use map_model::loaded::MapHandle;
-    use object_model::loaded::CharacterHandle;
+    use object_model::{loaded::CharacterHandle, ObjectType};
+    use strum::IntoEnumIterator;
 
     use super::AutexousiousApplication;
 
@@ -158,12 +200,12 @@ mod test {
     }
 
     #[test]
-    fn object_base_uses_strong_types_for_input_and_ui_bundles() {
+    fn render_and_ui_uses_strong_types_for_input_and_ui_bundles() {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AutexousiousApplication::object_base(
-                "object_base_uses_strong_types_for_input_and_ui_bundles",
+            AutexousiousApplication::render_and_ui(
+                "render_and_ui_uses_strong_types_for_input_and_ui_bundles",
                 false
             ).with_assertion(|world| {
                 // Panics if the type parameters used are not these ones.
@@ -175,22 +217,49 @@ mod test {
     }
 
     #[test]
-    fn game_base_loads_assets_from_self_crate_directory() {
+    fn config_base_loads_assets_from_self_crate_directory() {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AutexousiousApplication::game_base(
-                "game_base_loads_assets_from_self_crate_directory",
+            AutexousiousApplication::config_base(
+                "config_base_loads_assets_from_self_crate_directory",
                 false
             ).with_assertion(|world| {
-                let progress_counter = &*world.read_resource::<ProgressCounter>();
-                assert!(progress_counter.is_complete());
-
                 // Panics if the resources have not been populated
                 world.read_resource::<Vec<MapHandle>>();
                 assert!(!world.read_resource::<Vec<CharacterHandle>>().is_empty());
             }).run()
             .is_ok()
+        );
+    }
+
+    #[test]
+    fn game_base_loads_object_and_map_entities() {
+        // kcov-ignore-start
+        assert!(
+            // kcov-ignore-end
+            AutexousiousApplication::game_base("game_base_loads_object_and_map_entities", false)
+                .with_assertion(|world| {
+                    let game_entities = &*world.read_resource::<GameEntities>();
+
+                    // Ensure there is at least one entity per object type.
+                    ObjectType::iter().for_each(|object_type| {
+                        assert!(
+                            game_entities.objects.get(&object_type).is_some(),
+                            format!(
+                                "Expected at least one entity for the `{}` object type",
+                                object_type
+                            )
+                        );
+                    });
+
+                    // Ensure there is at least one map layer (map is loaded).
+                    assert!(
+                        !game_entities.map_layers.is_empty(),
+                        "Expected map to be loaded."
+                    );
+                }).run()
+                .is_ok()
         );
     }
 }

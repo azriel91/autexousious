@@ -103,7 +103,7 @@ mod test {
         };
 
         assert!(
-            AutexousiousApplication::object_base(
+            AutexousiousApplication::config_base(
                 "maintains_character_sequence_when_next_sequence_is_none",
                 false
             ).with_system(TestSystem, TestSystem::type_name(), &[])

@@ -3,7 +3,7 @@
 /// Not to be confused with the Amethyst `State`, this is used to track whether a map is chosen.
 #[derive(Clone, Copy, Debug, Derivative, PartialEq, Eq)]
 #[derivative(Default)]
-pub(crate) enum SelectionStatus {
+pub enum MapSelectionStatus {
     /// The `MapSelection` is still waiting for confirmation.
     #[derivative(Default)]
     Pending,

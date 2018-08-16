@@ -9,13 +9,17 @@ amethyst_test_support = { path = "../amethyst_test_support" }
 application = { path = "../application" }
 character_selection = { path = "../character_selection" }
 game_input = { path = "../game_input" }
+game_loading = { path = "../game_loading" }
 loading = { path = "../loading" }
 map_loading = { path = "../map_loading" }
+map_model = { path = "../map_model" }
+map_selection = { path = "../map_selection" }
 object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
 
 [dev-dependencies]
-map_model = { path = "../map_model" }
+game_model = { path = "../game_model" }
+strum = "0.10"
 
 [features]
 nightly = ["amethyst/nightly"]

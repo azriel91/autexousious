@@ -27,7 +27,6 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionBundle {
 mod test {
     use std::env;
 
-    use amethyst::{core::transform::TransformBundle, input::InputBundle, ui::UiBundle};
     use amethyst_test_support::prelude::*;
     use game_input::{PlayerActionControl, PlayerAxisControl};
 

@@ -11,12 +11,17 @@ extern crate amethyst_test_support;
 extern crate application;
 extern crate character_selection;
 extern crate game_input;
+extern crate game_loading;
+#[cfg(test)]
+extern crate game_model;
 extern crate loading;
 extern crate map_loading;
-#[cfg(test)]
 extern crate map_model;
+extern crate map_selection;
 extern crate object_loading;
 extern crate object_model;
+#[cfg(test)]
+extern crate strum;
 
 pub use autexousious_application::AutexousiousApplication;
 
