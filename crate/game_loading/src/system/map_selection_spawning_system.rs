@@ -147,7 +147,8 @@ mod tests {
 
                 let first_map_handle = world
                     .read_resource::<Vec<MapHandle>>()
-                    .first()
+                    // TODO: <https://gitlab.com/azriel91/autexousious/issues/57>
+                    .get(1) // assets/test/map/fade
                     .expect("Expected at least one map to be loaded.")
                     .clone();
                 let map_selection =

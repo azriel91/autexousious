@@ -35,7 +35,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::render_base("loads_map_assets", false)
+            AmethystApplication::render_base("bundle_build_adds_map_processor", false)
                 .with_bundle(MapLoadingBundle)
                 .with_effect(|world| {
                     let mut map_path = assets_dir(Some(development_base_dirs!()))

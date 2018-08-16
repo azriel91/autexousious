@@ -136,13 +136,14 @@ impl AutexousiousApplication {
             .or_insert(character_object_index);
 
         let map_selection_fn = |world: &mut World| {
-            let first_map_handle = world
+            // TODO: <https://gitlab.com/azriel91/autexousious/issues/57>
+            let fade_map_handle = world
                 .read_resource::<Vec<MapHandle>>()
-                .first()
+                .get(1)
                 .expect("Expected at least one map to be loaded.")
                 .clone();
             let map_selection =
-                MapSelection::new(MapSelectionStatus::Confirmed, Some(first_map_handle));
+                MapSelection::new(MapSelectionStatus::Confirmed, Some(fade_map_handle));
 
             world.add_resource(map_selection);
         };

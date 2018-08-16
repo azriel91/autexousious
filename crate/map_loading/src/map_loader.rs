@@ -62,4 +62,47 @@ impl MapLoader {
     }
 }
 
-// Covered by `MapLoadingBundle` test
+#[cfg(test)]
+mod tests {
+    use std::path::Path;
+
+    use amethyst::assets::AssetStorage;
+    use amethyst_test_support::prelude::*;
+    use application::resource::dir::assets_dir;
+    use map_model::loaded::{Map, MapHandle};
+
+    use super::MapLoader;
+    use MapLoadingBundle;
+
+    // Successful case covered by `MapLoadingBundle` test
+
+    #[test]
+    fn loads_map_without_sprites() {
+        // kcov-ignore-start
+        assert!(
+            // kcov-ignore-end
+            AmethystApplication::render_base("loads_map_without_sprites", false)
+                .with_bundle(MapLoadingBundle)
+                .with_effect(|world| {
+                    let mut map_path = assets_dir(Some(development_base_dirs!()))
+                        .expect("Expected to find `assets` directory in crate root.");
+                    map_path.extend(Path::new("test/map/empty").iter());
+
+                    let map_handle =
+                        MapLoader::load(world, &map_path).expect("Failed to load map.");
+
+                    world.add_resource(EffectReturn(map_handle));
+                }).with_assertion(|world| {
+                    let map_handle = world.read_resource::<EffectReturn<MapHandle>>().0.clone();
+                    let map_store = world.read_resource::<AssetStorage<Map>>();
+                    let map = map_store
+                        .get(&map_handle)
+                        .expect("Expected map to be loaded.");
+
+                    // See empty/map.toml
+                    assert!(map.animation_handles.is_none());
+                }).run()
+                .is_ok()
+        );
+    }
+}
