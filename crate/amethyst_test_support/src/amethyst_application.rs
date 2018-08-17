@@ -474,7 +474,10 @@ where
     /// # Parameters
     ///
     /// * `func`: Function to execute.
-    pub fn with_fn(self, func: fn(&mut World)) -> Self {
+    pub fn with_fn<F>(self, func: F) -> Self
+    where
+        F: Fn(&mut World) + Send + Sync + 'static,
+    {
         self.with_state(move || FunctionState::new(func))
     }
 
@@ -485,7 +488,10 @@ where
     /// # Parameters
     ///
     /// * `setup_fn`: Function to execute.
-    pub fn with_setup(self, setup_fn: fn(&mut World)) -> Self {
+    pub fn with_setup<F>(self, setup_fn: F) -> Self
+    where
+        F: Fn(&mut World) + Send + Sync + 'static,
+    {
         self.with_fn(setup_fn)
     }
 
@@ -496,7 +502,10 @@ where
     /// # Parameters
     ///
     /// * `effect_fn`: Function that executes an effect.
-    pub fn with_effect(self, effect_fn: fn(&mut World)) -> Self {
+    pub fn with_effect<F>(self, effect_fn: F) -> Self
+    where
+        F: Fn(&mut World) + Send + Sync + 'static,
+    {
         self.with_fn(effect_fn)
     }
 
@@ -507,7 +516,10 @@ where
     /// # Parameters
     ///
     /// * `assertion_fn`: Function that asserts the expected state.
-    pub fn with_assertion(self, assertion_fn: fn(&mut World)) -> Self {
+    pub fn with_assertion<F>(self, assertion_fn: F) -> Self
+    where
+        F: Fn(&mut World) + Send + Sync + 'static,
+    {
         self.with_fn(assertion_fn)
     }
 
