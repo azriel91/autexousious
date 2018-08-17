@@ -197,6 +197,7 @@ impl CharacterEntitySpawner {
 #[cfg(test)]
 mod test {
     use std::env;
+    use std::path::Path;
 
     use amethyst::{
         animation::AnimationControlSet,
@@ -206,6 +207,7 @@ mod test {
         renderer::{SpriteRender, Transparent},
     };
     use amethyst_test_support::prelude::*;
+    use application::resource::dir::ASSETS;
     use character_selection::CharacterEntityControl;
     use loading::LoadingState;
     use map_loading::MapLoadingBundle;
@@ -263,7 +265,7 @@ mod test {
             .with_bundle(ObjectLoadingBundle::new())
             .with_system(TestSystem, TestSystem::type_name(), &[])
             .with_state(|| LoadingState::new(
-                AmethystApplication::assets_dir().into(),
+                Path::new(env!("CARGO_MANIFEST_DIR")).join(ASSETS),
                 Box::new(EmptyState),
             )).with_assertion(assertion)
             .run()

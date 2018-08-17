@@ -188,10 +188,10 @@ mod tests {
                 false
             ).with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
-            .with_state(|| {
-                let assets_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join(ASSETS);
-                LoadingState::new(assets_dir, Box::new(EmptyState))
-            }).with_setup(|world| {
+            .with_state(|| LoadingState::new(
+                Path::new(env!("CARGO_MANIFEST_DIR")).join(ASSETS),
+                Box::new(EmptyState)
+            )).with_setup(|world| {
                 let first_map_handle = world
                     .read_resource::<Vec<MapHandle>>()
                     // TODO: <https://gitlab.com/azriel91/autexousious/issues/57>
