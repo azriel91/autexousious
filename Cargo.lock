@@ -1033,6 +1033,7 @@ version = "0.4.0"
 dependencies = [
  "amethyst 0.8.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/829/sprite-render-pass)",
  "amethyst_test_support 0.4.0",
+ "application 0.4.0",
  "application_test_support 0.4.0",
  "character_selection 0.4.0",
  "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
