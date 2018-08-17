@@ -20,9 +20,9 @@ where
     T: GameUpdate,
 {
     fn update(&mut self, mut data: StateData<T>) -> Trans<T> {
-        (self.function)(&mut data.world);
-
         data.data.update(&data.world);
+
+        (self.function)(&mut data.world);
 
         Trans::Pop
     }

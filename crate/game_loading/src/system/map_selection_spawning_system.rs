@@ -77,18 +77,18 @@ mod tests {
         assert!(
             AmethystApplication::render_base("returns_if_map_already_populated", false)
                 .with_bundle(MapLoadingBundle::new())
-                .with_system(
-                    MapSelectionSpawningSystem,
-                    MapSelectionSpawningSystem::type_name(),
-                    &[],
-                ).with_setup(|world| {
+                .with_setup(|world| {
                     let layer_entity = world.create_entity().build();
                     world.add_resource(GameEntities::new(
                         HashMap::new(),
                         vec![layer_entity.clone()],
                     ));
                     world.add_resource(EffectReturn(layer_entity));
-                }).with_assertion(|world| {
+                }).with_system_single(
+                    MapSelectionSpawningSystem,
+                    MapSelectionSpawningSystem::type_name(),
+                    &[],
+                ).with_assertion(|world| {
                     let layer_entity = &world.read_resource::<EffectReturn<Entity>>().0;
                     assert_eq!(
                         layer_entity,
@@ -132,19 +132,13 @@ mod tests {
                 "spawns_map_layers_when_they_havent_been_spawned",
                 false
             ).with_bundle(MapLoadingBundle::new())
-            .with_system(
-                MapSelectionSpawningSystem,
-                MapSelectionSpawningSystem::type_name(),
-                &[],
-            ).with_setup(|world| {
-                // We need to put all of the setup in one function because all of this needs to run
-                // before the system runs.
+            .with_setup(|world| {
                 let assets_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join(ASSETS);
                 let configuration_index = index_configuration(&assets_dir);
 
                 let mut progress_counter = ProgressCounter::new();
                 AssetLoader::load_maps(world, &mut progress_counter, &configuration_index);
-
+            }).with_setup(|world| {
                 let first_map_handle = world
                     .read_resource::<Vec<MapHandle>>()
                     // TODO: <https://gitlab.com/azriel91/autexousious/issues/57>
@@ -155,7 +149,11 @@ mod tests {
                     MapSelection::new(MapSelectionStatus::Confirmed, Some(first_map_handle));
 
                 world.add_resource(map_selection);
-            }).with_assertion(|world| {
+            }).with_system_single(
+                MapSelectionSpawningSystem,
+                MapSelectionSpawningSystem::type_name(),
+                &[],
+            ).with_assertion(|world| {
                 assert!(!world.read_resource::<GameEntities>().map_layers.is_empty());
             }).run()
             .is_ok()
