@@ -21,6 +21,7 @@ use amethyst::{
 use boxfnonce::SendBoxFnOnce;
 use hetseq::Queue;
 
+use CustomDispatcherStateBuilder;
 use FunctionState;
 use GameUpdate;
 use SequencerState;
@@ -44,7 +45,7 @@ type BundleAddFn = SendBoxFnOnce<
 //   in a scope greater than the `AmethystApplication`'s lifetime, which detracts from the
 //   ergonomics of this test harness.
 type FnResourceAdd = Box<FnMut(&mut World) + Send>;
-type FnState<T> = Box<Fn() -> Box<State<T>> + Send>;
+type FnState<T> = SendBoxFnOnce<'static, (), Box<State<T>>>;
 
 type DefaultPipeline = PipelineBuilder<
     Queue<(
@@ -192,7 +193,7 @@ impl AmethystApplication<GameData<'static, 'static>> {
         (bundle_add_fns, resource_add_fns, state_fns): (
             Vec<BundleAddFn>,
             Vec<FnResourceAdd>,
-            Vec<Box<Fn() -> Box<State<GameData<'static, 'static>>> + Send>>,
+            Vec<FnState<GameData<'static, 'static>>>,
         ),
     ) -> Result<Application<'static, GameData<'static, 'static>>> {
         let game_data = bundle_add_fns.into_iter().fold(
@@ -206,7 +207,7 @@ impl AmethystApplication<GameData<'static, 'static>> {
         state_fns
             .into_iter()
             .rev()
-            .for_each(|state_fn| states.push(state_fn()));
+            .for_each(|state_fn| states.push(state_fn.call()));
         Self::build_application(SequencerState::new(states), game_data, resource_add_fns)
     }
 
@@ -410,18 +411,21 @@ where
     pub fn with_state<S, FnStateLocal>(mut self, state_fn: FnStateLocal) -> Self
     where
         S: State<T> + 'static,
-        FnStateLocal: Fn() -> S + Send + Sync + 'static,
+        FnStateLocal: FnOnce() -> S + Send + Sync + 'static,
     {
-        self.state_fns
-            .push(Box::new(move || Box::new((state_fn)())));
+        // Box up the state
+        let closure = move || Box::new((state_fn)()) as Box<State<T>>;
+        self.state_fns.push(SendBoxFnOnce::from(closure));
         self
     }
 
-    /// Registers a `System` to be tested in this application.
+    /// Registers a `System` into this application's `GameData`.
     ///
     /// # Parameters
     ///
-    /// * `system`: The `System` to be tested.
+    /// * `system`: The `System` to register.
+    /// * `name`: Name to register the system with, used for dependency ordering.
+    /// * `deps`: Names of systems that must run before this system.
     pub fn with_system<N, SysLocal>(self, system: SysLocal, name: N, deps: &[N]) -> Self
     where
         N: Into<String> + Clone,
@@ -433,6 +437,36 @@ where
             .map(|dep| dep.clone().into())
             .collect::<Vec<String>>();
         self.with_bundle_fn(move || SystemInjectionBundle::new(system, name, deps))
+    }
+
+    /// Registers a `System` to run in a `CustomDispatcherState`.
+    ///
+    /// This will run the system once in a dedicated `State`, allowing you to inspect the effects of
+    /// the system after setting up the world to a desired state.
+    ///
+    /// # Parameters
+    ///
+    /// * `system`: The `System` to register.
+    /// * `name`: Name to register the system with, used for dependency ordering.
+    /// * `deps`: Names of systems that must run before this system.
+    pub fn with_system_single<N, SysLocal>(self, system: SysLocal, name: N, deps: &[N]) -> Self
+    where
+        N: Into<String> + Clone,
+        SysLocal: for<'sys_local> System<'sys_local> + Send + Sync + 'static,
+    {
+        let name = name.into();
+        let deps = deps
+            .iter()
+            .map(|dep| dep.clone().into())
+            .collect::<Vec<String>>();
+        self.with_state(move || {
+            CustomDispatcherStateBuilder::new()
+                .with(
+                    system,
+                    &name,
+                    &deps.iter().map(|dep| dep.as_ref()).collect::<Vec<&str>>(),
+                ).build()
+        })
     }
 
     /// Registers a function to run in the `World`.
