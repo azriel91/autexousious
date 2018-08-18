@@ -876,12 +876,46 @@ mod test {
     }
 
     #[test]
-    fn system_increases_component_value_by_one() {
+    fn with_system_runs_system_every_tick() {
         let effect_fn = |world: &mut World| {
             let entity = world.create_entity().with(ComponentZero(0)).build();
 
             world.add_resource(EffectReturn(entity));
         };
+
+        fn get_component_zero_value(world: &mut World) -> i32 {
+            let entity = world.read_resource::<EffectReturn<Entity>>().0.clone();
+
+            let component_zero_storage = world.read_storage::<ComponentZero>();
+            let component_zero = component_zero_storage
+                .get(entity)
+                .expect("Entity should have a `ComponentZero` component.");
+
+            component_zero.0
+        };
+
+        // kcov-ignore-start
+        assert!(
+            // kcov-ignore-end
+            AmethystApplication::blank()
+                .with_system(SystemEffect, "system_effect", &[])
+                .with_effect(effect_fn)
+                .with_assertion(|world| assert_eq!(1, get_component_zero_value(world)))
+                .with_assertion(|world| assert_eq!(2, get_component_zero_value(world)))
+                .run()
+                .is_ok()
+        );
+    }
+
+    #[test]
+    fn with_system_invoked_twice_should_not_panic() {
+        AmethystApplication::blank()
+            .with_system(SystemZero, "zero", &[])
+            .with_system(SystemOne, "one", &["zero"]);
+    }
+
+    #[test]
+    fn with_system_single_runs_system_once() {
         let assertion_fn = |world: &mut World| {
             let entity = world.read_resource::<EffectReturn<Entity>>().0.clone();
 
@@ -898,19 +932,17 @@ mod test {
         assert!(
             // kcov-ignore-end
             AmethystApplication::blank()
-                .with_system(SystemEffect, "system_effect", &[])
-                .with_effect(effect_fn)
+                .with_setup(|world| {
+                    world.register::<ComponentZero>();
+
+                    let entity = world.create_entity().with(ComponentZero(0)).build();
+                    world.add_resource(EffectReturn(entity));
+                }).with_system_single(SystemEffect, "system_effect", &[])
+                .with_assertion(assertion_fn)
                 .with_assertion(assertion_fn)
                 .run()
                 .is_ok()
         );
-    }
-
-    #[test]
-    fn with_system_invoked_twice_should_not_panic() {
-        AmethystApplication::blank()
-            .with_system(SystemZero, "zero", &[])
-            .with_system(SystemOne, "one", &["zero"]);
     }
 
     // Double usage tests
