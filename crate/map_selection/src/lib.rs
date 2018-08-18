@@ -21,11 +21,11 @@ extern crate typename_derive;
 pub use map_selection::MapSelection;
 pub use map_selection_event::MapSelectionEvent;
 pub use map_selection_state::MapSelectionState;
+pub use map_selection_status::MapSelectionStatus;
 pub(crate) use map_selection_system::MapSelectionSystem;
-pub(crate) use selection_status::SelectionStatus;
 
 mod map_selection;
 mod map_selection_event;
 mod map_selection_state;
+mod map_selection_status;
 mod map_selection_system;
-mod selection_status;

@@ -27,7 +27,6 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionBundle {
 mod test {
     use std::env;
 
-    use amethyst::{core::transform::TransformBundle, input::InputBundle, ui::UiBundle};
     use amethyst_test_support::prelude::*;
     use game_input::{PlayerActionControl, PlayerAxisControl};
 
@@ -40,10 +39,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::blank()
-                .with_bundle(TransformBundle::new())
-                .with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new())
-                .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())
+            AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
                 .with_bundle(CharacterSelectionBundle)
                 .run()
                 .is_ok()

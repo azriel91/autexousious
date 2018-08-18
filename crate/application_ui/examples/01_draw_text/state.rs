@@ -78,8 +78,7 @@ fn initialize_text(world: &mut World) {
                 let ui_text =
                     UiText::new(font.clone(), text.to_string(), [1., 1., 1., 1.], FONT_SIZE);
                 (text_transform, ui_text)
-            })
-            .collect::<Vec<(UiTransform, UiText)>>()
+            }).collect::<Vec<(UiTransform, UiText)>>()
     };
 
     for (text_transform, ui_text) in ui_text_components.into_iter() {

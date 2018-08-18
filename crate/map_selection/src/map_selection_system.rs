@@ -2,7 +2,7 @@ use amethyst::{ecs::prelude::*, shrev::EventChannel};
 
 use MapSelection;
 use MapSelectionEvent;
-use SelectionStatus;
+use MapSelectionStatus;
 
 /// Updates the `MapSelection` resource based on user selection.
 #[derive(Debug, Default, TypeName, new)]
@@ -24,7 +24,7 @@ impl<'s> System<'s> for MapSelectionSystem {
         let mut events = selection_event_channel.read(self.reader_id.as_mut().unwrap());
 
         if let Some(MapSelectionEvent { map_handle }) = events.next() {
-            map_selection.selection_status = SelectionStatus::Confirmed;
+            map_selection.status = MapSelectionStatus::Confirmed;
             map_selection.map_handle = Some(map_handle.clone());
 
             // Discard additional events, and log a message

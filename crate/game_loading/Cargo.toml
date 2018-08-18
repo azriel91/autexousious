@@ -18,6 +18,7 @@ typename_derive = "0.1"
 
 [dev-dependencies]
 amethyst_test_support = { path = "../amethyst_test_support" }
+application = { path = "../application" }
 loading = { path = "../loading" }
 map_loading = { path = "../map_loading" }
 object_loading = { path = "../object_loading" }

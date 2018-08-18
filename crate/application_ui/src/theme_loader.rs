@@ -51,8 +51,7 @@ impl ThemeLoader {
                 let font_storage = world.read_resource::<AssetStorage<FontAsset>>();
                 let font_handle = loader.load(font_path, TtfFormat, (), (), &font_storage);
                 (font_variant, font_handle)
-            })
-            .collect::<HashMap<FontVariant, FontHandle>>();
+            }).collect::<HashMap<FontVariant, FontHandle>>();
 
         world.add_resource(Theme::new(fonts));
 
@@ -86,7 +85,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::base()
+            AmethystApplication::ui_base::<String, String>()
                 .with_assertion(assertion)
                 .with_resource(ScreenDimensions::new(640, 480, 1.))
                 .run()
@@ -113,7 +112,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::base()
+            AmethystApplication::ui_base::<String, String>()
                 .with_assertion(assertion)
                 .with_resource(ScreenDimensions::new(640, 480, 1.))
                 .run()
@@ -139,7 +138,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::base()
+            AmethystApplication::ui_base::<String, String>()
                 .with_assertion(assertion)
                 .with_resource(ScreenDimensions::new(640, 480, 1.))
                 .run()

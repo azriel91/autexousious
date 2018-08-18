@@ -17,6 +17,8 @@ extern crate object_model;
 extern crate strum;
 extern crate toml;
 
-pub use state::State;
+pub use asset_loader::AssetLoader;
+pub use loading_state::LoadingState;
 
-mod state;
+mod asset_loader;
+mod loading_state;

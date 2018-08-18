@@ -43,8 +43,7 @@ impl OtherState {
                 "Press [Escape] to return to the previous menu.".to_string(),
                 [1., 1., 1., 1.],
                 FONT_SIZE,
-            ))
-            .build();
+            )).build();
 
         self.entity.get_or_insert(info_entity);
     }

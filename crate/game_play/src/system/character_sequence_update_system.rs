@@ -124,3 +124,127 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use amethyst::{assets::AssetStorage, ecs::prelude::*};
+    use application_test_support::AutexousiousApplication;
+    use map_model::loaded::Map;
+    use map_selection::MapSelection;
+    use object_model::{
+        config::object::{CharacterSequenceId, SequenceState},
+        entity::{CharacterInput, CharacterStatus, Grounding, Kinematics},
+    };
+    use typename::TypeName;
+
+    use super::CharacterSequenceUpdateSystem;
+
+    #[test]
+    fn updates_sequence_state_begin_to_ongoing() {
+        // kcov-ignore-start
+        assert!(
+            // kcov-ignore-end
+            AutexousiousApplication::game_base("updates_sequence_state_begin_to_ongoing", false)
+                .with_setup(|world| {
+                    world.exec(
+                        |(map_selection, maps, mut status_storage, mut kinematics_storage): (
+                            Read<MapSelection>,
+                            Read<AssetStorage<Map>>,
+                            WriteStorage<CharacterStatus>,
+                            WriteStorage<Kinematics<f32>>,
+                        )| {
+                            let map_handle = map_selection
+                                .map_handle
+                                .as_ref()
+                                .expect("Expected map to be selected.");
+                            let map = maps.get(map_handle).expect("Expected map to be loaded.");
+
+                            for (status, kinematics) in
+                                (&mut status_storage, &mut kinematics_storage).join()
+                            {
+                                status.object_status.grounding = Grounding::OnGround;
+                                status.object_status.sequence_id = CharacterSequenceId::Stand;
+                                status.object_status.sequence_state = SequenceState::Begin;
+
+                                kinematics.position[1] = map.margins.bottom;
+                            }
+                        },
+                    );
+                }).with_system_single(
+                    CharacterSequenceUpdateSystem::new(),
+                    CharacterSequenceUpdateSystem::type_name(),
+                    &[]
+                ).with_assertion(|world| {
+                    world.exec(|status_storage: ReadStorage<CharacterStatus>| {
+                        for status in status_storage.join() {
+                            assert_eq!(SequenceState::Ongoing, status.object_status.sequence_state);
+                        }
+                    });
+                }).run()
+                .is_ok()
+        );
+    }
+
+    #[test]
+    fn updates_walk_x_and_z_velocity() {
+        // kcov-ignore-start
+        assert!(
+            // kcov-ignore-end
+            AutexousiousApplication::game_base("updates_walk_x_and_z_velocity", false)
+                .with_setup(|world| {
+                    world.exec(
+                        |(
+                            map_selection,
+                            maps,
+                            mut character_input_storage,
+                            mut status_storage,
+                            mut kinematics_storage,
+                        ): (
+                            Read<MapSelection>,
+                            Read<AssetStorage<Map>>,
+                            WriteStorage<CharacterInput>,
+                            WriteStorage<CharacterStatus>,
+                            WriteStorage<Kinematics<f32>>,
+                        )| {
+                            let map_handle = map_selection
+                                .map_handle
+                                .as_ref()
+                                .expect("Expected map to be selected.");
+                            let map = maps.get(map_handle).expect("Expected map to be loaded.");
+
+                            for (character_input, status, kinematics) in (
+                                &mut character_input_storage,
+                                &mut status_storage,
+                                &mut kinematics_storage,
+                            )
+                                .join()
+                            {
+                                character_input.x_axis_value = -1.;
+                                character_input.z_axis_value = -1.;
+
+                                status.object_status.grounding = Grounding::OnGround;
+                                status.object_status.sequence_id = CharacterSequenceId::Stand;
+                                status.object_status.sequence_state = SequenceState::Ongoing;
+                                status.object_status.mirrored = false;
+
+                                kinematics.position[1] = map.margins.bottom;
+                            }
+                        },
+                    );
+                }).with_system_single(
+                    CharacterSequenceUpdateSystem::new(),
+                    CharacterSequenceUpdateSystem::type_name(),
+                    &[]
+                ).with_assertion(|world| {
+                    world.exec(|status_storage: ReadStorage<CharacterStatus>| {
+                        for status in status_storage.join() {
+                            assert_eq!(CharacterSequenceId::Walk, status.object_status.sequence_id);
+                            assert_eq!(SequenceState::Begin, status.object_status.sequence_state);
+                            assert!(status.object_status.mirrored);
+                        }
+                    });
+                }).run()
+                .is_ok()
+        );
+    }
+}

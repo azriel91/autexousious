@@ -1,6 +1,9 @@
 use amethyst::ecs::prelude::*;
 use character_selection::CharacterEntityControl;
-use object_model::{entity::CharacterStatus, loaded::CharacterHandle};
+use object_model::{
+    entity::{CharacterInput, CharacterStatus},
+    loaded::CharacterHandle,
+};
 
 /// Character specific `Component` storages.
 ///
@@ -8,6 +11,7 @@ use object_model::{entity::CharacterStatus, loaded::CharacterHandle};
 /// `ObjectComponentStorages`.
 pub type CharacterComponentStorages<'s> = (
     WriteStorage<'s, CharacterEntityControl>,
+    WriteStorage<'s, CharacterInput>,
     WriteStorage<'s, CharacterHandle>,
     WriteStorage<'s, CharacterStatus>,
 );

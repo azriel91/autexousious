@@ -80,8 +80,7 @@ mod test {
                     if let Err(e) = result {
                         panic!("Failed to load sprites: {:?}", e); // kcov-ignore
                     } // kcov-ignore
-                })
-                .run()
+                }).run()
                 .is_ok()
         );
     }

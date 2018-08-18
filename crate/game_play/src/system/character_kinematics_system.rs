@@ -35,7 +35,8 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
             &character_input_storage,
             &status_storage,
             &mut kinematics_storage,
-        ).join()
+        )
+            .join()
         {
             // TODO: Character stats should be configuration.
             // Use the stats from the character definition.
@@ -67,15 +68,429 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                 CharacterSequenceId::Jump => {}
                 CharacterSequenceId::JumpOff => {
                     if status.object_status.sequence_state == SequenceState::Begin {
+                        kinematics.velocity[0] = character_input.x_axis_value as f32 * 5.;
                         kinematics.velocity[1] = 17.;
+                        kinematics.velocity[2] = character_input.z_axis_value as f32 * 2.;
                     }
                 }
                 CharacterSequenceId::JumpAscend => {}
                 CharacterSequenceId::JumpDescend => {}
                 CharacterSequenceId::JumpDescendLand => {
+                    kinematics.velocity[0] /= 2.;
                     kinematics.velocity[1] = 0.;
+                    kinematics.velocity[2] /= 2.;
                 }
             };
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use amethyst::{assets::AssetStorage, ecs::prelude::*};
+    use application_test_support::AutexousiousApplication;
+    use map_model::loaded::Map;
+    use map_selection::MapSelection;
+    use object_model::{
+        config::object::CharacterSequenceId,
+        entity::{CharacterInput, CharacterStatus, Grounding, Kinematics},
+    };
+    use typename::TypeName;
+
+    use super::CharacterKinematicsSystem;
+
+    #[test]
+    fn stand_x_and_z_velocity_are_zero() {
+        // kcov-ignore-start
+        assert!(
+            // kcov-ignore-end
+            AutexousiousApplication::game_base("stand_x_and_z_velocity_are_zero", false)
+                .with_setup(|world| {
+                    world.exec(
+                        |(map_selection, maps, mut status_storage, mut kinematics_storage): (
+                            Read<MapSelection>,
+                            Read<AssetStorage<Map>>,
+                            WriteStorage<CharacterStatus>,
+                            WriteStorage<Kinematics<f32>>,
+                        )| {
+                            let map_handle = map_selection
+                                .map_handle
+                                .as_ref()
+                                .expect("Expected map to be selected.");
+                            let map = maps.get(map_handle).expect("Expected map to be loaded.");
+
+                            for (status, kinematics) in
+                                (&mut status_storage, &mut kinematics_storage).join()
+                            {
+                                status.object_status.sequence_id = CharacterSequenceId::Stand;
+                                status.object_status.grounding = Grounding::OnGround;
+
+                                kinematics.position[1] = map.margins.bottom;
+                                kinematics.velocity[0] = 3.;
+                                kinematics.velocity[1] = 0.;
+                                kinematics.velocity[2] = 3.;
+                            }
+                        },
+                    );
+                }).with_system_single(
+                    CharacterKinematicsSystem::new(),
+                    CharacterKinematicsSystem::type_name(),
+                    &[]
+                ).with_assertion(|world| {
+                    world.exec(
+                        |(status_storage, kinematics_storage): (
+                            ReadStorage<CharacterStatus>,
+                            ReadStorage<Kinematics<f32>>,
+                        )| {
+                            for (_, kinematics) in (&status_storage, &kinematics_storage).join() {
+                                assert_eq!(0., kinematics.velocity[0]);
+                                assert_eq!(0., kinematics.velocity[2]);
+                            }
+                        },
+                    );
+                }).run()
+                .is_ok()
+        );
+    }
+
+    #[test]
+    fn updates_walk_x_and_z_velocity() {
+        // kcov-ignore-start
+        assert!(
+            // kcov-ignore-end
+            AutexousiousApplication::game_base("updates_walk_x_and_z_velocity", false)
+                .with_setup(|world| {
+                    world.exec(
+                        |(
+                            map_selection,
+                            maps,
+                            mut character_input_storage,
+                            mut status_storage,
+                            mut kinematics_storage,
+                        ): (
+                            Read<MapSelection>,
+                            Read<AssetStorage<Map>>,
+                            WriteStorage<CharacterInput>,
+                            WriteStorage<CharacterStatus>,
+                            WriteStorage<Kinematics<f32>>,
+                        )| {
+                            let map_handle = map_selection
+                                .map_handle
+                                .as_ref()
+                                .expect("Expected map to be selected.");
+                            let map = maps.get(map_handle).expect("Expected map to be loaded.");
+
+                            for (character_input, status, kinematics) in (
+                                &mut character_input_storage,
+                                &mut status_storage,
+                                &mut kinematics_storage,
+                            )
+                                .join()
+                            {
+                                character_input.x_axis_value = 1.;
+                                character_input.z_axis_value = -1.;
+
+                                status.object_status.sequence_id = CharacterSequenceId::Walk;
+                                status.object_status.grounding = Grounding::OnGround;
+
+                                kinematics.position[1] = map.margins.bottom;
+                                kinematics.velocity[0] = 0.;
+                                kinematics.velocity[1] = 0.;
+                                kinematics.velocity[2] = 0.;
+                            }
+                        },
+                    );
+                }).with_system_single(
+                    CharacterKinematicsSystem::new(),
+                    CharacterKinematicsSystem::type_name(),
+                    &[]
+                ).with_assertion(|world| {
+                    world.exec(
+                        |(status_storage, kinematics_storage): (
+                            ReadStorage<CharacterStatus>,
+                            ReadStorage<Kinematics<f32>>,
+                        )| {
+                            for (_, kinematics) in (&status_storage, &kinematics_storage).join() {
+                                assert_eq!(3.5, kinematics.velocity[0]);
+                                assert_eq!(-2., kinematics.velocity[2]);
+                            }
+                        },
+                    );
+                }).run()
+                .is_ok()
+        );
+    }
+
+    #[test]
+    fn updates_run_x_and_z_velocity() {
+        // kcov-ignore-start
+        assert!(
+            // kcov-ignore-end
+            AutexousiousApplication::game_base("updates_run_x_and_z_velocity", false)
+                .with_setup(|world| {
+                    world.exec(
+                        |(
+                            map_selection,
+                            maps,
+                            mut character_input_storage,
+                            mut status_storage,
+                            mut kinematics_storage,
+                        ): (
+                            Read<MapSelection>,
+                            Read<AssetStorage<Map>>,
+                            WriteStorage<CharacterInput>,
+                            WriteStorage<CharacterStatus>,
+                            WriteStorage<Kinematics<f32>>,
+                        )| {
+                            let map_handle = map_selection
+                                .map_handle
+                                .as_ref()
+                                .expect("Expected map to be selected.");
+                            let map = maps.get(map_handle).expect("Expected map to be loaded.");
+
+                            for (character_input, status, kinematics) in (
+                                &mut character_input_storage,
+                                &mut status_storage,
+                                &mut kinematics_storage,
+                            )
+                                .join()
+                            {
+                                character_input.x_axis_value = 1.;
+                                character_input.z_axis_value = -1.;
+
+                                status.object_status.sequence_id = CharacterSequenceId::Run;
+                                status.object_status.grounding = Grounding::OnGround;
+
+                                kinematics.position[1] = map.margins.bottom;
+                                kinematics.velocity[0] = 0.;
+                                kinematics.velocity[1] = 0.;
+                                kinematics.velocity[2] = 0.;
+                            }
+                        },
+                    );
+                }).with_system_single(
+                    CharacterKinematicsSystem::new(),
+                    CharacterKinematicsSystem::type_name(),
+                    &[]
+                ).with_assertion(|world| {
+                    world.exec(
+                        |(status_storage, kinematics_storage): (
+                            ReadStorage<CharacterStatus>,
+                            ReadStorage<Kinematics<f32>>,
+                        )| {
+                            for (_, kinematics) in (&status_storage, &kinematics_storage).join() {
+                                assert_eq!(6., kinematics.velocity[0]);
+                                assert_eq!(-1.5, kinematics.velocity[2]);
+                            }
+                        },
+                    );
+                }).run()
+                .is_ok()
+        );
+    }
+
+    #[test]
+    fn updates_stop_run_x_and_z_velocity() {
+        vec![(false, 2.), (true, -2.)]
+            .into_iter()
+            .for_each(|(mirrored, vx)| {
+                let setup_fn = move |world: &mut World| {
+                    world.exec(
+                        |(
+                            map_selection,
+                            maps,
+                            mut character_input_storage,
+                            mut status_storage,
+                            mut kinematics_storage,
+                        ): (
+                            Read<MapSelection>,
+                            Read<AssetStorage<Map>>,
+                            WriteStorage<CharacterInput>,
+                            WriteStorage<CharacterStatus>,
+                            WriteStorage<Kinematics<f32>>,
+                        )| {
+                            let map_handle = map_selection
+                                .map_handle
+                                .as_ref()
+                                .expect("Expected map to be selected.");
+                            let map = maps.get(map_handle).expect("Expected map to be loaded.");
+
+                            for (character_input, status, kinematics) in (
+                                &mut character_input_storage,
+                                &mut status_storage,
+                                &mut kinematics_storage,
+                            )
+                                .join()
+                            {
+                                character_input.z_axis_value = 1.;
+
+                                status.object_status.sequence_id = CharacterSequenceId::StopRun;
+                                status.object_status.grounding = Grounding::OnGround;
+                                status.object_status.mirrored = mirrored;
+
+                                kinematics.position[1] = map.margins.bottom;
+                                kinematics.velocity[0] = 0.;
+                                kinematics.velocity[1] = 0.;
+                                kinematics.velocity[2] = 0.;
+                            }
+                        },
+                    );
+                };
+
+                let assertion_fn = move |world: &mut World| {
+                    world.exec(
+                        |(status_storage, kinematics_storage): (
+                            ReadStorage<CharacterStatus>,
+                            ReadStorage<Kinematics<f32>>,
+                        )| {
+                            for (_, kinematics) in (&status_storage, &kinematics_storage).join() {
+                                assert_eq!(vx, kinematics.velocity[0]);
+                                assert_eq!(0.5, kinematics.velocity[2]);
+                            }
+                        },
+                    );
+                };
+
+                // kcov-ignore-start
+                assert!(
+                    // kcov-ignore-end
+                    AutexousiousApplication::game_base(
+                        "updates_stop_run_x_and_z_velocity_non_mirrored",
+                        false
+                    ).with_setup(setup_fn)
+                    .with_system_single(
+                        CharacterKinematicsSystem::new(),
+                        CharacterKinematicsSystem::type_name(),
+                        &[]
+                    ).with_assertion(assertion_fn)
+                    .run()
+                    .is_ok()
+                );
+            });
+    }
+
+    #[test]
+    fn updates_jump_off_xyz_velocity() {
+        // kcov-ignore-start
+        assert!(
+            // kcov-ignore-end
+            AutexousiousApplication::game_base("updates_jump_off_xyz_velocity", false)
+                .with_setup(|world| {
+                    world.exec(
+                        |(
+                            map_selection,
+                            maps,
+                            mut character_input_storage,
+                            mut status_storage,
+                            mut kinematics_storage,
+                        ): (
+                            Read<MapSelection>,
+                            Read<AssetStorage<Map>>,
+                            WriteStorage<CharacterInput>,
+                            WriteStorage<CharacterStatus>,
+                            WriteStorage<Kinematics<f32>>,
+                        )| {
+                            let map_handle = map_selection
+                                .map_handle
+                                .as_ref()
+                                .expect("Expected map to be selected.");
+                            let map = maps.get(map_handle).expect("Expected map to be loaded.");
+
+                            for (character_input, status, kinematics) in (
+                                &mut character_input_storage,
+                                &mut status_storage,
+                                &mut kinematics_storage,
+                            )
+                                .join()
+                            {
+                                character_input.x_axis_value = -1.;
+                                character_input.z_axis_value = 1.;
+
+                                status.object_status.sequence_id = CharacterSequenceId::JumpOff;
+                                status.object_status.grounding = Grounding::OnGround;
+
+                                kinematics.position[1] = map.margins.bottom;
+                                kinematics.velocity[0] = 0.;
+                                kinematics.velocity[1] = 0.;
+                                kinematics.velocity[2] = 0.;
+                            }
+                        },
+                    );
+                }).with_system_single(
+                    CharacterKinematicsSystem::new(),
+                    CharacterKinematicsSystem::type_name(),
+                    &[]
+                ).with_assertion(|world| {
+                    world.exec(
+                        |(status_storage, kinematics_storage): (
+                            ReadStorage<CharacterStatus>,
+                            ReadStorage<Kinematics<f32>>,
+                        )| {
+                            for (_, kinematics) in (&status_storage, &kinematics_storage).join() {
+                                assert_eq!(-5., kinematics.velocity[0]);
+                                assert_eq!(17., kinematics.velocity[1]);
+                                assert_eq!(2., kinematics.velocity[2]);
+                            }
+                        },
+                    );
+                }).run()
+                .is_ok()
+        );
+    }
+
+    #[test]
+    fn updates_jump_descend_land_xyz_velocity() {
+        // kcov-ignore-start
+        assert!(
+            // kcov-ignore-end
+            AutexousiousApplication::game_base("updates_jump_descend_land_xyz_velocity", false)
+                .with_setup(|world| {
+                    world.exec(
+                        |(map_selection, maps, mut status_storage, mut kinematics_storage): (
+                            Read<MapSelection>,
+                            Read<AssetStorage<Map>>,
+                            WriteStorage<CharacterStatus>,
+                            WriteStorage<Kinematics<f32>>,
+                        )| {
+                            let map_handle = map_selection
+                                .map_handle
+                                .as_ref()
+                                .expect("Expected map to be selected.");
+                            let map = maps.get(map_handle).expect("Expected map to be loaded.");
+
+                            for (status, kinematics) in
+                                (&mut status_storage, &mut kinematics_storage).join()
+                            {
+                                status.object_status.sequence_id =
+                                    CharacterSequenceId::JumpDescendLand;
+                                status.object_status.grounding = Grounding::Airborne;
+
+                                kinematics.position[1] = map.margins.bottom;
+                                kinematics.velocity[0] = -6.;
+                                kinematics.velocity[1] = -10.;
+                                kinematics.velocity[2] = -4.;
+                            }
+                        },
+                    );
+                }).with_system_single(
+                    CharacterKinematicsSystem::new(),
+                    CharacterKinematicsSystem::type_name(),
+                    &[]
+                ).with_assertion(|world| {
+                    world.exec(
+                        |(status_storage, kinematics_storage): (
+                            ReadStorage<CharacterStatus>,
+                            ReadStorage<Kinematics<f32>>,
+                        )| {
+                            for (_, kinematics) in (&status_storage, &kinematics_storage).join() {
+                                assert_eq!(-3., kinematics.velocity[0]);
+                                assert_eq!(0., kinematics.velocity[1]);
+                                assert_eq!(-2., kinematics.velocity[2]);
+                            }
+                        },
+                    );
+                }).run()
+                .is_ok()
+        );
     }
 }

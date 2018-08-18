@@ -203,9 +203,10 @@ mod test {
 
     #[test]
     fn on_start_initializes_menu_items() {
-        let (mut state, mut world, mut data) = setup_with_menu_items(MenuBuildFn(Box::new(
-            |world, menu_items| menu_items.push(world.create_entity().build()),
-        )));
+        let (mut state, mut world, mut data) =
+            setup_with_menu_items(MenuBuildFn(Box::new(|world, menu_items| {
+                menu_items.push(world.create_entity().build())
+            })));
 
         assert!(state.menu_items.is_empty());
 
@@ -257,9 +258,10 @@ mod test {
 
     #[test]
     fn on_stop_terminates_menu_items() {
-        let (mut state, mut world, mut data) = setup_with_menu_items(MenuBuildFn(Box::new(
-            |world, menu_items| menu_items.push(world.create_entity().build()),
-        )));
+        let (mut state, mut world, mut data) =
+            setup_with_menu_items(MenuBuildFn(Box::new(|world, menu_items| {
+                menu_items.push(world.create_entity().build())
+            })));
 
         state.on_start(StateData {
             world: &mut world,
@@ -278,9 +280,10 @@ mod test {
 
     #[test]
     fn on_pause_terminates_menu_items() {
-        let (mut state, mut world, mut data) = setup_with_menu_items(MenuBuildFn(Box::new(
-            |world, menu_items| menu_items.push(world.create_entity().build()),
-        )));
+        let (mut state, mut world, mut data) =
+            setup_with_menu_items(MenuBuildFn(Box::new(|world, menu_items| {
+                menu_items.push(world.create_entity().build())
+            })));
 
         state.on_start(StateData {
             world: &mut world,
@@ -299,9 +302,10 @@ mod test {
 
     #[test]
     fn on_resume_initializes_menu_items() {
-        let (mut state, mut world, mut data) = setup_with_menu_items(MenuBuildFn(Box::new(
-            |world, menu_items| menu_items.push(world.create_entity().build()),
-        )));
+        let (mut state, mut world, mut data) =
+            setup_with_menu_items(MenuBuildFn(Box::new(|world, menu_items| {
+                menu_items.push(world.create_entity().build())
+            })));
 
         state.on_start(StateData {
             world: &mut world,

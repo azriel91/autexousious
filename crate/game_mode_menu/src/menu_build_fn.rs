@@ -57,8 +57,7 @@ impl MenuBuildFn {
                         index.title().to_string(),
                         [1., 1., 1., 1.],
                         FONT_SIZE,
-                    ))
-                    .with(MouseReactive)
+                    )).with(MouseReactive)
                     .with(MenuItem { index })
                     .build();
 
@@ -106,7 +105,7 @@ impl DerefMut for MenuBuildFn {
 mod test {
     use std::env;
 
-    use amethyst::{prelude::*, renderer::ScreenDimensions};
+    use amethyst::prelude::*;
     use amethyst_test_support::prelude::*;
     use application_ui::ThemeLoader;
 
@@ -130,9 +129,8 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::base()
+            AmethystApplication::ui_base::<String, String>()
                 .with_bundle(GameModeMenuBundle)
-                .with_resource(ScreenDimensions::new(640, 480, 1.))
                 .with_assertion(assertion)
                 .run()
                 .is_ok()

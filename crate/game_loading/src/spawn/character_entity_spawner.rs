@@ -11,7 +11,7 @@ use amethyst::{
 use character_selection::CharacterEntityControl;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{CharacterStatus, Kinematics},
+    entity::{CharacterInput, CharacterStatus, Kinematics},
     loaded::{Character, CharacterHandle},
 };
 
@@ -46,6 +46,7 @@ impl CharacterEntitySpawner {
             &(entities, loaded_character_handles, loaded_characters),
             &mut (
                 world.write_storage::<CharacterEntityControl>(),
+                world.write_storage::<CharacterInput>(),
                 world.write_storage::<CharacterHandle>(),
                 world.write_storage::<CharacterStatus>(),
             ), // kcov-ignore
@@ -80,6 +81,7 @@ impl CharacterEntitySpawner {
         >,
         (
             ref mut character_entity_control_storage,
+            ref mut character_input_storage,
             ref mut character_handle_storage,
             ref mut character_status_storage,
         ): &mut CharacterComponentStorages<'s>,
@@ -146,6 +148,10 @@ impl CharacterEntitySpawner {
         character_entity_control_storage
             .insert(entity, character_entity_control)
             .expect("Failed to insert character_entity_control component.");
+        // Controller of this entity
+        character_input_storage
+            .insert(entity, CharacterInput::default())
+            .expect("Failed to insert character_input component.");
         // Loaded `Character` for this entity.
         character_handle_storage
             .insert(entity, character_handle)
@@ -191,6 +197,7 @@ impl CharacterEntitySpawner {
 #[cfg(test)]
 mod test {
     use std::env;
+    use std::path::Path;
 
     use amethyst::{
         animation::AnimationControlSet,
@@ -200,14 +207,15 @@ mod test {
         renderer::{SpriteRender, Transparent},
     };
     use amethyst_test_support::prelude::*;
+    use application::resource::dir::ASSETS;
     use character_selection::CharacterEntityControl;
-    use loading;
+    use loading::LoadingState;
     use map_loading::MapLoadingBundle;
     use map_model::loaded::Map;
     use object_loading::ObjectLoadingBundle;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{CharacterStatus, Kinematics, Position, Velocity},
+        entity::{CharacterInput, CharacterStatus, Kinematics, Position, Velocity},
         loaded::CharacterHandle,
     };
     use typename::TypeName;
@@ -239,7 +247,9 @@ mod test {
             );
             assert!(world.read_storage::<CharacterHandle>().contains(entity));
             assert!(world.read_storage::<CharacterStatus>().contains(entity));
+            assert!(world.read_storage::<CharacterInput>().contains(entity));
             assert!(world.read_storage::<SpriteRender>().contains(entity));
+            assert!(world.read_storage::<Transparent>().contains(entity));
             assert!(world.read_storage::<Kinematics<f32>>().contains(entity));
             assert!(world.read_storage::<Transform>().contains(entity));
             assert!(world.read_storage::<GlobalTransform>().contains(entity));
@@ -251,13 +261,13 @@ mod test {
             AmethystApplication::render_base(
                 "spawn_for_player_creates_entity_with_object_components",
                 false
-            ).with_state(|| loading::State::new(
-                AmethystApplication::assets_dir().into(),
-                Box::new(EmptyState),
-            )).with_assertion(assertion)
-            .with_bundle(MapLoadingBundle::new())
+            ).with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
             .with_system(TestSystem, TestSystem::type_name(), &[])
+            .with_state(|| LoadingState::new(
+                Path::new(env!("CARGO_MANIFEST_DIR")).join(ASSETS),
+                Box::new(EmptyState),
+            )).with_assertion(assertion)
             .run()
             .is_ok()
         );
@@ -271,6 +281,7 @@ mod test {
         ReadStorage<'s, CharacterEntityControl>,
         ReadStorage<'s, CharacterHandle>,
         ReadStorage<'s, CharacterStatus>,
+        ReadStorage<'s, CharacterInput>,
         ReadStorage<'s, Transparent>,
         ReadStorage<'s, Kinematics<f32>>,
         ReadStorage<'s, AnimationControlSet<CharacterSequenceId, SpriteRender>>,

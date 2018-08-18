@@ -3,6 +3,8 @@ use amethyst::prelude::*;
 use GameUpdate;
 
 /// Runs a function in `.update()` then `Pop`s itself.
+///
+/// The function is run before `GameUpdate#update(world)` is called.
 #[derive(Debug, new)]
 pub struct FunctionState<F>
 where

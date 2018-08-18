@@ -84,8 +84,7 @@ impl MainMenuState {
                         index.title().to_string(),
                         [1., 1., 1., 1.],
                         FONT_SIZE,
-                    ))
-                    .with(MouseReactive)
+                    )).with(MouseReactive)
                     .with(MenuItem { index })
                     .build();
 
