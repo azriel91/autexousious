@@ -6,20 +6,20 @@ use object_model::{
     },
 };
 
-use character::sequence_handler::SequenceHandlerOpt;
+use character::sequence_handler::SequenceHandler;
 
 /// Returns a `Jump` update if jump is pressed.
 #[derive(Debug)]
 pub(crate) struct JumpCheck;
 
-impl SequenceHandlerOpt for JumpCheck {
+impl SequenceHandler for JumpCheck {
     fn update(
         input: &CharacterInput,
         character_status: &CharacterStatus,
         _kinematics: &Kinematics<f32>,
     ) -> Option<CharacterStatusUpdate> {
-        // TODO: Don't handle action buttons in `SequenceHandler`s. Instead, each sequence has
-        // default sequence update IDs for each action button, which are overridden by
+        // TODO: Don't handle action buttons in `CharacterSequenceHandler`s. Instead, each sequence
+        // has default sequence update IDs for each action button, which are overridden by
         // configuration.
         if input.jump {
             let run_counter = if character_status.run_counter == RunCounter::Unused {
@@ -53,7 +53,7 @@ mod tests {
     };
 
     use super::JumpCheck;
-    use character::sequence_handler::SequenceHandlerOpt;
+    use character::sequence_handler::SequenceHandler;
 
     #[test]
     fn returns_none_when_jump_is_not_pressed() {

@@ -6,13 +6,13 @@ use object_model::{
     },
 };
 
-use character::sequence_handler::SequenceHandlerOpt;
+use character::sequence_handler::SequenceHandler;
 
 /// Returns a `JumpDescend` update if the grounding is `Airborne`.
 #[derive(Debug)]
 pub(crate) struct AirborneCheck;
 
-impl SequenceHandlerOpt for AirborneCheck {
+impl SequenceHandler for AirborneCheck {
     fn update(
         _input: &CharacterInput,
         character_status: &CharacterStatus,
@@ -51,7 +51,7 @@ mod tests {
     };
 
     use super::AirborneCheck;
-    use character::sequence_handler::SequenceHandlerOpt;
+    use character::sequence_handler::SequenceHandler;
 
     #[test]
     fn returns_none_when_grounding_is_on_ground() {

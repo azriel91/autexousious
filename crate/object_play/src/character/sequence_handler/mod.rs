@@ -24,7 +24,7 @@ mod stop_run;
 mod walk;
 
 /// Sequence transition behaviour calculation.
-pub(super) trait SequenceHandler {
+pub(super) trait CharacterSequenceHandler {
     /// Returns the status update for a character based on current input or lack thereof.
     ///
     /// # Parameters
@@ -43,9 +43,9 @@ pub(super) trait SequenceHandler {
 
 /// Sequence transition behaviour calculation.
 ///
-/// This serves the same purpose as `SequenceHandler`, except it allows for chaining multiple
-/// calls together, useful for linking multiple common sequence handler logic blocks.
-pub(super) trait SequenceHandlerOpt {
+/// This serves the same purpose as `CharacterSequenceHandler`, except it allows for chaining
+/// multiple calls together, useful for linking multiple common sequence handler logic blocks.
+pub(super) trait SequenceHandler {
     /// Returns the status update for a character based on current input or lack thereof.
     ///
     /// Returns `Some(..)` when there is an update, `None` otherwise.
@@ -70,7 +70,7 @@ mod test {
         CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
     };
 
-    use super::{SequenceHandler, SequenceHandlerOpt};
+    use super::{CharacterSequenceHandler, SequenceHandler};
 
     #[test]
     fn sequence_handler_default_update_is_empty() {
@@ -110,8 +110,8 @@ mod test {
     }
 
     struct Sit;
-    impl SequenceHandler for Sit {}
+    impl CharacterSequenceHandler for Sit {}
 
     struct Sleep;
-    impl SequenceHandlerOpt for Sleep {}
+    impl SequenceHandler for Sleep {}
 }

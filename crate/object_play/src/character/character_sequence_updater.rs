@@ -5,8 +5,8 @@ use object_model::{
 };
 
 use character::sequence_handler::{
-    Jump, JumpAscend, JumpDescend, JumpDescendLand, JumpOff, Run, SequenceHandler, Stand, StopRun,
-    Walk,
+    CharacterSequenceHandler, Jump, JumpAscend, JumpDescend, JumpDescendLand, JumpOff, Run, Stand,
+    StopRun, Walk,
 };
 
 /// Defines behaviour for a character in game.

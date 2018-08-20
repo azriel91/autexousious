@@ -9,13 +9,13 @@ use character::sequence_handler::{
         util::RunCounterUpdater,
         SequenceRepeat,
     },
-    SequenceHandler, SequenceHandlerOpt,
+    CharacterSequenceHandler, SequenceHandler,
 };
 
 #[derive(Debug)]
 pub(crate) struct Stand;
 
-impl SequenceHandler for Stand {
+impl CharacterSequenceHandler for Stand {
     fn update(
         input: &CharacterInput,
         character_status: &CharacterStatus,
@@ -66,7 +66,7 @@ mod test {
     };
 
     use super::Stand;
-    use character::sequence_handler::SequenceHandler;
+    use character::sequence_handler::CharacterSequenceHandler;
 
     #[test]
     fn no_change_when_no_input() {

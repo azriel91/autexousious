@@ -6,12 +6,12 @@ use object_model::{
     },
 };
 
-use character::sequence_handler::{SequenceHandler, SequenceHandlerUtil};
+use character::sequence_handler::{CharacterSequenceHandler, SequenceHandlerUtil};
 
 #[derive(Debug)]
 pub(crate) struct Walk;
 
-impl SequenceHandler for Walk {
+impl CharacterSequenceHandler for Walk {
     fn update(
         input: &CharacterInput,
         character_status: &CharacterStatus,
@@ -89,7 +89,7 @@ mod test {
     };
 
     use super::Walk;
-    use character::sequence_handler::SequenceHandler;
+    use character::sequence_handler::CharacterSequenceHandler;
 
     #[test]
     fn reverts_to_stand_when_no_input() {

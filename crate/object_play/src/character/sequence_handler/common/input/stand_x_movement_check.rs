@@ -7,7 +7,7 @@ use object_model::{
 };
 
 use character::sequence_handler::{
-    common::util::RunCounterUpdater, SequenceHandlerOpt, SequenceHandlerUtil,
+    common::util::RunCounterUpdater, SequenceHandler, SequenceHandlerUtil,
 };
 
 /// Determines whether to swithc to the `Walk` or `Run` sequence based on X input.
@@ -16,7 +16,7 @@ use character::sequence_handler::{
 #[derive(Debug)]
 pub(crate) struct StandXMovementCheck;
 
-impl SequenceHandlerOpt for StandXMovementCheck {
+impl SequenceHandler for StandXMovementCheck {
     fn update(
         input: &CharacterInput,
         character_status: &CharacterStatus,
@@ -72,7 +72,7 @@ mod tests {
     };
 
     use super::StandXMovementCheck;
-    use character::sequence_handler::SequenceHandlerOpt;
+    use character::sequence_handler::SequenceHandler;
 
     #[test]
     fn no_change_when_no_x_input() {

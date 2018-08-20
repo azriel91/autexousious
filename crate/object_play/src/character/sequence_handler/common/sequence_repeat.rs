@@ -5,7 +5,7 @@ use object_model::{
     },
 };
 
-use character::sequence_handler::{common::util::RunCounterUpdater, SequenceHandlerOpt};
+use character::sequence_handler::{common::util::RunCounterUpdater, SequenceHandler};
 
 /// Determines whether to swithc to the `Walk` or `Run` sequence based on X input.
 ///
@@ -13,7 +13,7 @@ use character::sequence_handler::{common::util::RunCounterUpdater, SequenceHandl
 #[derive(Debug)]
 pub(crate) struct SequenceRepeat;
 
-impl SequenceHandlerOpt for SequenceRepeat {
+impl SequenceHandler for SequenceRepeat {
     fn update(
         input: &CharacterInput,
         character_status: &CharacterStatus,
@@ -48,7 +48,7 @@ mod tests {
     };
 
     use super::SequenceRepeat;
-    use character::sequence_handler::SequenceHandlerOpt;
+    use character::sequence_handler::SequenceHandler;
 
     #[test]
     fn no_change_when_sequence_begin() {

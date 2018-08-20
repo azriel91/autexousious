@@ -5,13 +5,13 @@ use object_model::{
     },
 };
 
-use character::sequence_handler::SequenceHandler;
+use character::sequence_handler::CharacterSequenceHandler;
 
 /// Hold forward to run, release to stop running.
 #[derive(Debug)]
 pub(crate) struct Run;
 
-impl SequenceHandler for Run {
+impl CharacterSequenceHandler for Run {
     fn update(
         input: &CharacterInput,
         character_status: &CharacterStatus,
@@ -64,7 +64,7 @@ mod test {
     };
 
     use super::Run;
-    use character::sequence_handler::SequenceHandler;
+    use character::sequence_handler::CharacterSequenceHandler;
 
     #[test]
     fn reverts_to_stop_run_when_no_input() {
