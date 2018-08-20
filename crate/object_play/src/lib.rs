@@ -5,6 +5,9 @@
 
 extern crate amethyst;
 extern crate object_model;
+#[cfg(test)]
+#[macro_use]
+extern crate pretty_assertions;
 
 pub use character::CharacterSequenceHandler;
 

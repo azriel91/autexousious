@@ -11,6 +11,7 @@ pub(super) use self::stand::Stand;
 pub(super) use self::stop_run::StopRun;
 pub(super) use self::walk::Walk;
 
+mod common;
 mod jump;
 mod jump_ascend;
 mod jump_descend;
@@ -22,9 +23,9 @@ mod stand;
 mod stop_run;
 mod walk;
 
-/// Traits that every sequence should define for its transition behaviour.
+/// Sequence transition behaviour calculation.
 pub(super) trait SequenceHandler {
-    /// Updates behaviour in response to input.
+    /// Returns the status update for a character based on current input or lack thereof.
     ///
     /// # Parameters
     ///
@@ -40,16 +41,39 @@ pub(super) trait SequenceHandler {
     }
 }
 
+/// Sequence transition behaviour calculation.
+///
+/// This serves the same purpose as `SequenceHandler`, except it allows for chaining multiple
+/// calls together, useful for linking multiple common sequence handler logic blocks.
+pub(super) trait SequenceHandlerOpt {
+    /// Returns the status update for a character based on current input or lack thereof.
+    ///
+    /// Returns `Some(..)` when there is an update, `None` otherwise.
+    ///
+    /// # Parameters
+    ///
+    /// * `character_input`: Controller input for the character.
+    /// * `character_status`: Character specific status attributes.
+    /// * `kinematics`: Kinematics of the character.
+    fn update(
+        _character_input: &CharacterInput,
+        _character_status: &CharacterStatus,
+        _kinematics: &Kinematics<f32>,
+    ) -> Option<CharacterStatusUpdate> {
+        None
+    }
+}
+
 #[cfg(test)]
 mod test {
     use object_model::entity::{
         CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
     };
 
-    use super::SequenceHandler;
+    use super::{SequenceHandler, SequenceHandlerOpt};
 
     #[test]
-    fn default_update_is_empty() {
+    fn sequence_handler_default_update_is_empty() {
         // No update to run counter.
         let run_counter = None;
         // No calculated next sequence.
@@ -73,6 +97,21 @@ mod test {
         );
     }
 
+    #[test]
+    fn sequence_handler_opt_default_update_is_none() {
+        assert_eq!(
+            None,
+            Sleep::update(
+                &CharacterInput::default(),
+                &CharacterStatus::default(),
+                &Kinematics::default()
+            )
+        );
+    }
+
     struct Sit;
     impl SequenceHandler for Sit {}
+
+    struct Sleep;
+    impl SequenceHandlerOpt for Sleep {}
 }
