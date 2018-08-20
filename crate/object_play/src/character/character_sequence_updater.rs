@@ -11,9 +11,9 @@ use character::sequence_handler::{
 
 /// Defines behaviour for a character in game.
 #[derive(Debug)]
-pub struct CharacterSequenceHandler;
+pub struct CharacterSequenceUpdater;
 
-impl CharacterSequenceHandler {
+impl CharacterSequenceUpdater {
     /// Handles behaviour transition (if any) based on input.
     ///
     /// # Parameters

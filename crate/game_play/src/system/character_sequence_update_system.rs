@@ -9,7 +9,7 @@ use object_model::{
     entity::{CharacterInput, CharacterStatus, Kinematics},
     loaded::{Character, CharacterHandle},
 };
-use object_play::CharacterSequenceHandler;
+use object_play::CharacterSequenceUpdater;
 
 use game_loading::AnimationRunner;
 
@@ -87,7 +87,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                 character_status.object_status.sequence_state = SequenceState::End;
             }
 
-            let status_update = CharacterSequenceHandler::update(
+            let status_update = CharacterSequenceUpdater::update(
                 character,
                 &character_input,
                 &character_status,

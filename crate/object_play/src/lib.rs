@@ -9,6 +9,6 @@ extern crate object_model;
 #[macro_use]
 extern crate pretty_assertions;
 
-pub use character::CharacterSequenceHandler;
+pub use character::CharacterSequenceUpdater;
 
 mod character;
