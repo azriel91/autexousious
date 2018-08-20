@@ -1,4 +1,9 @@
-use object_model::entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics};
+use object_model::{
+    config::object::CharacterSequenceId,
+    entity::{
+        CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
+    },
+};
 
 pub(super) use self::jump::Jump;
 pub(super) use self::jump_ascend::JumpAscend;
@@ -59,7 +64,7 @@ pub(super) trait SequenceHandler {
         _character_input: &CharacterInput,
         _character_status: &CharacterStatus,
         _kinematics: &Kinematics<f32>,
-    ) -> Option<CharacterStatusUpdate> {
+    ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
         None
     }
 }
@@ -73,7 +78,7 @@ mod test {
     use super::{CharacterSequenceHandler, SequenceHandler};
 
     #[test]
-    fn sequence_handler_default_update_is_empty() {
+    fn character_sequence_handler_default_update_is_empty() {
         // No update to run counter.
         let run_counter = None;
         // No calculated next sequence.
@@ -98,7 +103,7 @@ mod test {
     }
 
     #[test]
-    fn sequence_handler_opt_default_update_is_none() {
+    fn sequence_handler_default_update_is_none() {
         assert_eq!(
             None,
             Sleep::update(

@@ -30,7 +30,7 @@ impl CharacterSequenceHandler for Stand {
             _ => {}
         };
 
-        let status_update = [
+        let object_status_update = [
             AirborneCheck::update,
             JumpCheck::update,
             StandXMovementCheck::update,
@@ -42,15 +42,11 @@ impl CharacterSequenceHandler for Stand {
                 status_update.or_else(|| fn_update(input, character_status, kinematics))
             });
 
-        if let Some(status_update) = status_update {
-            return status_update;
-        }
-
         let run_counter = RunCounterUpdater::update(input, character_status);
 
         CharacterStatusUpdate {
             run_counter,
-            object_status: ObjectStatusUpdate::default(),
+            object_status: object_status_update.unwrap_or_else(ObjectStatusUpdate::default),
         }
     }
 }
