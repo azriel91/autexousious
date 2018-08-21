@@ -1,11 +1,9 @@
-use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
-    entity::{
-        CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
-    },
-};
+use object_model::entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics};
 
-use character::sequence_handler::CharacterSequenceHandler;
+use character::sequence_handler::{
+    common::{grounding::AirborneCheck, input::RunStopCheck},
+    CharacterSequenceHandler, SequenceHandler,
+};
 
 /// Hold forward to run, release to stop running.
 #[derive(Debug)]
@@ -15,41 +13,13 @@ impl CharacterSequenceHandler for Run {
     fn update(
         input: &CharacterInput,
         character_status: &CharacterStatus,
-        _kinematics: &Kinematics<f32>,
+        kinematics: &Kinematics<f32>,
     ) -> CharacterStatusUpdate {
-        // Should always be `RunCounter::Unused`
-        let run_counter = None;
-        // Don't change facing direction
-        let mirrored = None;
-
-        let object_status = &character_status.object_status;
-        let (sequence_id, sequence_state) = if (input.x_axis_value < 0. && object_status.mirrored)
-            || (input.x_axis_value > 0. && !object_status.mirrored)
-        {
-            if character_status.object_status.sequence_state == SequenceState::End {
-                (Some(CharacterSequenceId::Run), Some(SequenceState::Begin))
-            } else {
-                (None, None)
-            }
-        } else {
-            (
-                Some(CharacterSequenceId::StopRun),
-                Some(SequenceState::Begin),
-            )
-        };
-
-        // TODO: switch to `JumpDescend` when `Airborne`.
-        let grounding = None;
-
-        CharacterStatusUpdate {
-            run_counter,
-            object_status: ObjectStatusUpdate {
-                sequence_id,
-                sequence_state,
-                mirrored,
-                grounding,
-            },
-        }
+        [AirborneCheck::update, RunStopCheck::update]
+            .iter()
+            .fold(None, |status_update, fn_update| {
+                status_update.or_else(|| fn_update(input, character_status, kinematics))
+            }).unwrap_or_else(|| CharacterStatusUpdate::default())
     }
 }
 
@@ -58,13 +28,39 @@ mod test {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus,
-            ObjectStatusUpdate,
+            CharacterInput, CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics,
+            ObjectStatus, ObjectStatusUpdate,
         },
     };
 
     use super::Run;
     use character::sequence_handler::CharacterSequenceHandler;
+
+    #[test]
+    fn jump_descend_when_airborne() {
+        assert_eq!(
+            CharacterStatusUpdate {
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::JumpDescend),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
+            Run::update(
+                &CharacterInput::default(),
+                &CharacterStatus {
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::Run,
+                        grounding: Grounding::Airborne,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
+                &Kinematics::default()
+            )
+        );
+    }
 
     #[test]
     fn reverts_to_stop_run_when_no_input() {

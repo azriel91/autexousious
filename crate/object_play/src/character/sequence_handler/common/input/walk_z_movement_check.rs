@@ -2,7 +2,7 @@ use object_model::entity::{CharacterInput, CharacterStatus, CharacterStatusUpdat
 
 use character::sequence_handler::{common::SequenceRepeat, SequenceHandler};
 
-/// Determines whether to switch to the `Walk` sequence based on Z input.
+/// Determines whether to switch to the `Stand` sequence based on Z input.
 ///
 /// This should only be called from the Walk sequence handler.
 #[derive(Debug)]
