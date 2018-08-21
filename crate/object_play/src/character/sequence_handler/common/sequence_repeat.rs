@@ -5,7 +5,7 @@ use object_model::{
     },
 };
 
-use character::sequence_handler::{common::util::RunCounterUpdater, SequenceHandler};
+use character::sequence_handler::SequenceHandler;
 
 /// Determines whether to swithc to the `Walk` or `Run` sequence based on X input.
 ///
@@ -15,22 +15,25 @@ pub(crate) struct SequenceRepeat;
 
 impl SequenceHandler for SequenceRepeat {
     fn update(
-        input: &CharacterInput,
+        _input: &CharacterInput,
         character_status: &CharacterStatus,
         _kinematics: &Kinematics<f32>,
     ) -> Option<CharacterStatusUpdate> {
         if character_status.object_status.sequence_state == SequenceState::End {
-            let run_counter = RunCounterUpdater::update(input, character_status);
-
             let sequence_id = Some(character_status.object_status.sequence_id);
             let sequence_state = Some(SequenceState::Begin);
             let mirrored = None;
             let grounding = None;
 
-            Some(CharacterStatusUpdate::new(
-                run_counter,
-                ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored, grounding),
-            ))
+            Some(CharacterStatusUpdate {
+                object_status: ObjectStatusUpdate::new(
+                    sequence_id,
+                    sequence_state,
+                    mirrored,
+                    grounding,
+                ),
+                ..Default::default()
+            })
         } else {
             None
         }

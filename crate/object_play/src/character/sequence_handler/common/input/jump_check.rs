@@ -2,7 +2,6 @@ use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
     entity::{
         CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
-        RunCounter,
     },
 };
 
@@ -15,27 +14,22 @@ pub(crate) struct JumpCheck;
 impl SequenceHandler for JumpCheck {
     fn update(
         input: &CharacterInput,
-        character_status: &CharacterStatus,
+        _character_status: &CharacterStatus,
         _kinematics: &Kinematics<f32>,
     ) -> Option<CharacterStatusUpdate> {
         // TODO: Don't handle action buttons in `CharacterSequenceHandler`s. Instead, each sequence
         // has default sequence update IDs for each action button, which are overridden by
         // configuration.
         if input.jump {
-            let run_counter = if character_status.run_counter == RunCounter::Unused {
-                None
-            } else {
-                Some(RunCounter::Unused)
-            };
-            Some(CharacterStatusUpdate::new(
-                run_counter,
-                ObjectStatusUpdate::new(
+            Some(CharacterStatusUpdate {
+                object_status: ObjectStatusUpdate::new(
                     Some(CharacterSequenceId::Jump),
                     Some(SequenceState::Begin),
                     None,
                     None,
                 ),
-            ))
+                ..Default::default()
+            })
         } else {
             None
         }
@@ -48,7 +42,7 @@ mod tests {
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
             CharacterInput, CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics,
-            ObjectStatus, ObjectStatusUpdate, RunCounter,
+            ObjectStatus, ObjectStatusUpdate,
         },
     };
 
@@ -64,11 +58,11 @@ mod tests {
             JumpCheck::update(
                 &character_input,
                 &CharacterStatus {
-                    run_counter: RunCounter::Unused,
                     object_status: ObjectStatus {
                         sequence_id: CharacterSequenceId::Stand,
                         ..Default::default()
-                    }
+                    },
+                    ..Default::default()
                 },
                 &Kinematics::<f32>::default()
             )
@@ -97,34 +91,6 @@ mod tests {
                         ..Default::default()
                     },
                     ..Default::default()
-                },
-                &Kinematics::<f32>::default()
-            )
-        );
-    }
-
-    #[test]
-    fn switches_run_counter_to_unused_when_jump_is_pressed() {
-        let mut character_input = CharacterInput::default();
-        character_input.jump = true;
-        assert_eq!(
-            Some(CharacterStatusUpdate {
-                run_counter: Some(RunCounter::Unused),
-                object_status: ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Jump),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                },
-            }),
-            JumpCheck::update(
-                &character_input,
-                &CharacterStatus {
-                    run_counter: RunCounter::Decrease(1),
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::Stand,
-                        grounding: Grounding::Airborne,
-                        ..Default::default()
-                    },
                 },
                 &Kinematics::<f32>::default()
             )

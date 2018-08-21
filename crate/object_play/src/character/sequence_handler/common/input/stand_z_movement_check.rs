@@ -5,7 +5,7 @@ use object_model::{
     },
 };
 
-use character::sequence_handler::{common::util::RunCounterUpdater, SequenceHandler};
+use character::sequence_handler::SequenceHandler;
 
 /// Determines whether to swithc to the `Walk` or `Run` sequence based on X input.
 ///
@@ -16,21 +16,24 @@ pub(crate) struct StandZMovementCheck;
 impl SequenceHandler for StandZMovementCheck {
     fn update(
         input: &CharacterInput,
-        character_status: &CharacterStatus,
+        _character_status: &CharacterStatus,
         _kinematics: &Kinematics<f32>,
     ) -> Option<CharacterStatusUpdate> {
         if input.z_axis_value != 0. {
-            let run_counter = RunCounterUpdater::update(input, character_status);
-
             let sequence_id = Some(CharacterSequenceId::Walk);
             let sequence_state = Some(SequenceState::Begin);
             let mirrored = None;
             let grounding = None;
 
-            Some(CharacterStatusUpdate::new(
-                run_counter,
-                ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored, grounding),
-            ))
+            Some(CharacterStatusUpdate {
+                object_status: ObjectStatusUpdate::new(
+                    sequence_id,
+                    sequence_state,
+                    mirrored,
+                    grounding,
+                ),
+                ..Default::default()
+            })
         } else {
             None
         }
@@ -43,7 +46,6 @@ mod tests {
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
             CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
-            RunCounter,
         },
     };
 
@@ -65,24 +67,21 @@ mod tests {
     }
 
     #[test]
-    fn walk_when_z_axis_is_non_zero_and_decrements_tick_count() {
+    fn walk_when_z_axis_is_non_zero() {
         let input = CharacterInput::new(0., 1., false, false, false, false);
 
         assert_eq!(
             Some(CharacterStatusUpdate {
-                run_counter: Some(RunCounter::Decrease(9)),
                 object_status: ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::Walk),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
-                }
+                },
+                ..Default::default()
             }),
             StandZMovementCheck::update(
                 &input,
-                &CharacterStatus {
-                    run_counter: RunCounter::Decrease(10),
-                    ..Default::default()
-                },
+                &CharacterStatus::default(),
                 &Kinematics::default()
             )
         );

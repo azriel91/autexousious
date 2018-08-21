@@ -1,4 +1,4 @@
-use object_model::entity::{CharacterInput, CharacterStatus, RunCounter};
+use object_model::entity::{CharacterInput, CharacterStatus, Grounding, RunCounter};
 
 use character::sequence_handler::SequenceHandlerUtil;
 
@@ -11,6 +11,14 @@ impl RunCounterUpdater {
         input: &CharacterInput,
         character_status: &CharacterStatus,
     ) -> Option<RunCounter> {
+        if character_status.object_status.grounding != Grounding::OnGround || input.jump {
+            if character_status.run_counter == RunCounter::Unused {
+                return None;
+            } else {
+                return Some(RunCounter::Unused);
+            }
+        }
+
         use object_model::entity::RunCounter::*;
         if input.x_axis_value == 0. {
             match character_status.run_counter {
@@ -39,12 +47,92 @@ impl RunCounterUpdater {
 
 #[cfg(test)]
 mod tests {
-    use object_model::entity::{CharacterInput, CharacterStatus, ObjectStatus, RunCounter};
+    use object_model::entity::{
+        CharacterInput, CharacterStatus, Grounding, ObjectStatus, RunCounter,
+    };
 
     use super::RunCounterUpdater;
 
     #[test]
-    fn no_change_when_unused_and_no_x_input() {
+    fn none_when_grounding_is_airborne_and_unused() {
+        let input = CharacterInput::default();
+
+        assert_eq!(
+            None,
+            RunCounterUpdater::update(
+                &input,
+                &CharacterStatus {
+                    run_counter: RunCounter::Unused,
+                    object_status: ObjectStatus {
+                        grounding: Grounding::Airborne,
+                        ..Default::default()
+                    }
+                }
+            )
+        );
+    }
+
+    #[test]
+    fn unused_when_grounding_is_airborne() {
+        let input = CharacterInput::default();
+
+        assert_eq!(
+            Some(RunCounter::Unused),
+            RunCounterUpdater::update(
+                &input,
+                &CharacterStatus {
+                    run_counter: RunCounter::Increase(10),
+                    object_status: ObjectStatus {
+                        grounding: Grounding::Airborne,
+                        ..Default::default()
+                    }
+                }
+            )
+        );
+    }
+
+    #[test]
+    fn none_when_jump_is_pressed_and_unused() {
+        let mut input = CharacterInput::default();
+        input.jump = true;
+
+        assert_eq!(
+            None,
+            RunCounterUpdater::update(
+                &input,
+                &CharacterStatus {
+                    run_counter: RunCounter::Unused,
+                    object_status: ObjectStatus {
+                        grounding: Grounding::Airborne,
+                        ..Default::default()
+                    }
+                }
+            )
+        );
+    }
+
+    #[test]
+    fn unused_when_jump_is_pressed() {
+        let mut input = CharacterInput::default();
+        input.jump = true;
+
+        assert_eq!(
+            Some(RunCounter::Unused),
+            RunCounterUpdater::update(
+                &input,
+                &CharacterStatus {
+                    run_counter: RunCounter::Increase(10),
+                    object_status: ObjectStatus {
+                        grounding: Grounding::Airborne,
+                        ..Default::default()
+                    }
+                }
+            )
+        );
+    }
+
+    #[test]
+    fn none_when_unused_and_no_x_input() {
         let input = CharacterInput::default();
 
         assert_eq!(
@@ -252,7 +340,7 @@ mod tests {
     }
 
     #[test]
-    fn no_change_when_exceeded_and_input_same_direction() {
+    fn none_when_exceeded_and_input_same_direction() {
         vec![(1., false), (-1., true)]
             .into_iter()
             .for_each(|(x_input, mirrored)| {

@@ -30,6 +30,8 @@ impl CharacterSequenceHandler for Stand {
             _ => {}
         };
 
+        let run_counter = RunCounterUpdater::update(input, character_status);
+
         let status_update = [
             AirborneCheck::update,
             JumpCheck::update,
@@ -42,11 +44,10 @@ impl CharacterSequenceHandler for Stand {
                 status_update.or_else(|| fn_update(input, character_status, kinematics))
             });
 
-        if let Some(status_update) = status_update {
+        if let Some(mut status_update) = status_update {
+            status_update.run_counter = run_counter;
             return status_update;
         }
-
-        let run_counter = RunCounterUpdater::update(input, character_status);
 
         CharacterStatusUpdate {
             run_counter,
