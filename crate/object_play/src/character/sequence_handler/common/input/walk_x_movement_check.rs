@@ -6,19 +6,19 @@ use object_model::{
     },
 };
 
-use character::sequence_handler::{SequenceHandler, SequenceHandlerUtil};
+use character::sequence_handler::{common::SequenceRepeat, SequenceHandler, SequenceHandlerUtil};
 
 /// Determines whether to swithc to the `Walk` or `Run` sequence based on X input.
 ///
-/// This should only be called from the Stand sequence handler.
+/// This should only be called from the Walk sequence handler.
 #[derive(Debug)]
-pub(crate) struct StandXMovementCheck;
+pub(crate) struct WalkXMovementCheck;
 
-impl SequenceHandler for StandXMovementCheck {
+impl SequenceHandler for WalkXMovementCheck {
     fn update(
         input: &CharacterInput,
         character_status: &CharacterStatus,
-        _kinematics: &Kinematics<f32>,
+        kinematics: &Kinematics<f32>,
     ) -> Option<CharacterStatusUpdate> {
         if input.x_axis_value != 0. {
             let same_direction = SequenceHandlerUtil::input_matches_direction(
@@ -32,20 +32,27 @@ impl SequenceHandler for StandXMovementCheck {
                 Some(!character_status.object_status.mirrored)
             };
 
-            let sequence_id = match character_status.run_counter {
-                RunCounter::Unused => Some(CharacterSequenceId::Walk),
-                RunCounter::Decrease(_) => {
-                    if same_direction {
-                        Some(CharacterSequenceId::Run)
-                    } else {
-                        Some(CharacterSequenceId::Walk)
-                    }
+            let sequence_id = match (character_status.run_counter, same_direction) {
+                (RunCounter::Unused, _) | (RunCounter::Increase(_), false) => {
+                    Some(CharacterSequenceId::Walk)
                 }
-                _ => unreachable!(), // kcov-ignore
+                (RunCounter::Decrease(_), true) => Some(CharacterSequenceId::Run),
+                (RunCounter::Exceeded, _)
+                | (RunCounter::Decrease(_), false)
+                | (RunCounter::Increase(_), true) => None,
             };
 
-            let sequence_state = Some(SequenceState::Begin);
+            let sequence_state = if sequence_id.is_some() {
+                Some(SequenceState::Begin)
+            } else {
+                None
+            };
+
             let grounding = None;
+
+            if let (None, None) = (sequence_id, mirrored) {
+                return SequenceRepeat::update(input, character_status, kinematics);
+            }
 
             Some(CharacterStatusUpdate {
                 object_status: ObjectStatusUpdate::new(
@@ -57,6 +64,7 @@ impl SequenceHandler for StandXMovementCheck {
                 ..Default::default()
             })
         } else {
+            // The responsibility of switching to `Stand` is handled elsewhere.
             None
         }
     }
@@ -72,25 +80,31 @@ mod tests {
         },
     };
 
-    use super::StandXMovementCheck;
+    use super::WalkXMovementCheck;
     use character::sequence_handler::SequenceHandler;
 
     #[test]
-    fn no_change_when_no_x_input() {
+    fn none_when_no_input() {
         let input = CharacterInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
             None,
-            StandXMovementCheck::update(
+            WalkXMovementCheck::update(
                 &input,
-                &CharacterStatus::default(),
+                &CharacterStatus {
+                    run_counter: RunCounter::Increase(10),
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::Walk,
+                        ..Default::default()
+                    }
+                },
                 &Kinematics::default()
             )
         );
     }
 
     #[test]
-    fn walk_non_mirror_when_x_axis_is_positive() {
+    fn walk_non_mirror_when_x_axis_positive_mirror() {
         let input = CharacterInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
@@ -103,37 +117,15 @@ mod tests {
                 },
                 ..Default::default()
             }),
-            StandXMovementCheck::update(
+            WalkXMovementCheck::update(
                 &input,
                 &CharacterStatus {
+                    run_counter: RunCounter::Increase(11),
                     object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::Walk,
                         mirrored: true,
                         ..Default::default()
-                    },
-                    ..Default::default()
-                },
-                &Kinematics::default()
-            )
-        );
-
-        // Already facing right
-        assert_eq!(
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Walk),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }),
-            StandXMovementCheck::update(
-                &input,
-                &CharacterStatus {
-                    object_status: ObjectStatus {
-                        mirrored: false,
-                        ..Default::default()
-                    },
-                    ..Default::default()
+                    }
                 },
                 &Kinematics::default()
             )
@@ -141,7 +133,7 @@ mod tests {
     }
 
     #[test]
-    fn walk_mirror_when_x_axis_is_negative() {
+    fn walk_mirror_when_x_axis_negative_non_mirror() {
         let input = CharacterInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
@@ -154,37 +146,15 @@ mod tests {
                 },
                 ..Default::default()
             }),
-            StandXMovementCheck::update(
+            WalkXMovementCheck::update(
                 &input,
                 &CharacterStatus {
+                    run_counter: RunCounter::Increase(11),
                     object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::Walk,
                         mirrored: false,
                         ..Default::default()
-                    },
-                    ..Default::default()
-                },
-                &Kinematics::default()
-            )
-        );
-
-        // Already facing left
-        assert_eq!(
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Walk),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }),
-            StandXMovementCheck::update(
-                &input,
-                &CharacterStatus {
-                    object_status: ObjectStatus {
-                        mirrored: true,
-                        ..Default::default()
-                    },
-                    ..Default::default()
+                    }
                 },
                 &Kinematics::default()
             )
@@ -192,39 +162,8 @@ mod tests {
     }
 
     #[test]
-    fn run_when_run_counter_decrease_x_input_same_direction() {
+    fn restarts_walk_when_sequence_ended() {
         vec![(1., false), (-1., true)]
-            .into_iter()
-            .for_each(|(x_input, mirrored)| {
-                let input = CharacterInput::new(x_input, 0., false, false, false, false);
-
-                assert_eq!(
-                    Some(CharacterStatusUpdate {
-                        object_status: ObjectStatusUpdate {
-                            sequence_id: Some(CharacterSequenceId::Run),
-                            sequence_state: Some(SequenceState::Begin),
-                            ..Default::default()
-                        },
-                        ..Default::default()
-                    }),
-                    StandXMovementCheck::update(
-                        &input,
-                        &CharacterStatus {
-                            run_counter: RunCounter::Decrease(10),
-                            object_status: ObjectStatus {
-                                mirrored,
-                                ..Default::default()
-                            },
-                        },
-                        &Kinematics::default()
-                    )
-                );
-            });
-    }
-
-    #[test]
-    fn walk_when_run_counter_decrease_x_input_different_direction() {
-        vec![(1., true), (-1., false)]
             .into_iter()
             .for_each(|(x_input, mirrored)| {
                 let input = CharacterInput::new(x_input, 0., false, false, false, false);
@@ -234,23 +173,80 @@ mod tests {
                         object_status: ObjectStatusUpdate {
                             sequence_id: Some(CharacterSequenceId::Walk),
                             sequence_state: Some(SequenceState::Begin),
-                            mirrored: Some(!mirrored),
                             ..Default::default()
                         },
                         ..Default::default()
                     }),
-                    StandXMovementCheck::update(
+                    WalkXMovementCheck::update(
                         &input,
                         &CharacterStatus {
-                            run_counter: RunCounter::Decrease(10),
+                            run_counter: RunCounter::Increase(1),
                             object_status: ObjectStatus {
+                                sequence_id: CharacterSequenceId::Walk,
+                                sequence_state: SequenceState::End,
                                 mirrored,
                                 ..Default::default()
-                            },
+                            }
                         },
                         &Kinematics::default()
                     )
                 );
             });
+    }
+
+    #[test]
+    fn run_when_x_axis_positive_and_run_counter_decrease_non_mirror() {
+        let input = CharacterInput::new(1., -1., false, false, false, false);
+
+        assert_eq!(
+            Some(CharacterStatusUpdate {
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::Run),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                },
+                ..Default::default()
+            }),
+            WalkXMovementCheck::update(
+                &input,
+                &CharacterStatus {
+                    run_counter: RunCounter::Decrease(10),
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::Walk,
+                        mirrored: false,
+                        ..Default::default()
+                    }
+                },
+                &Kinematics::default()
+            )
+        );
+    }
+
+    #[test]
+    fn run_when_x_axis_negative_and_run_counter_decrease_mirror() {
+        let input = CharacterInput::new(-1., -1., false, false, false, false);
+
+        assert_eq!(
+            Some(CharacterStatusUpdate {
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::Run),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                },
+                ..Default::default()
+            }),
+            WalkXMovementCheck::update(
+                &input,
+                &CharacterStatus {
+                    run_counter: RunCounter::Decrease(10),
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::Walk,
+                        mirrored: true,
+                        ..Default::default()
+                    }
+                },
+                &Kinematics::default()
+            )
+        );
     }
 }

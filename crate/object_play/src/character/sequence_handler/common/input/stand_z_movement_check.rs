@@ -7,9 +7,9 @@ use object_model::{
 
 use character::sequence_handler::SequenceHandler;
 
-/// Determines whether to swithc to the `Walk` or `Run` sequence based on X input.
+/// Determines whether to switch to the `Walk` sequence based on Z input.
 ///
-/// This should only be called from the Stand or Walk sequence handlers.
+/// This should only be called from the Stand sequence handler.
 #[derive(Debug)]
 pub(crate) struct StandZMovementCheck;
 
