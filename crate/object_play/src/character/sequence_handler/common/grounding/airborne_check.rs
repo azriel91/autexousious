@@ -1,6 +1,9 @@
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterInput, CharacterStatus, Grounding, Kinematics, ObjectStatusUpdate},
+    entity::{
+        CharacterInput, CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics,
+        ObjectStatusUpdate, RunCounter,
+    },
 };
 
 use character::sequence_handler::SequenceHandler;
@@ -14,13 +17,22 @@ impl SequenceHandler for AirborneCheck {
         _input: &CharacterInput,
         character_status: &CharacterStatus,
         _kinematics: &Kinematics<f32>,
-    ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
+    ) -> Option<CharacterStatusUpdate> {
         if character_status.object_status.grounding == Grounding::Airborne {
-            Some(ObjectStatusUpdate::new(
-                Some(CharacterSequenceId::JumpDescend),
-                Some(SequenceState::Begin),
-                None,
-                None,
+            // TODO: Support merging updates
+            let run_counter = if character_status.run_counter == RunCounter::Unused {
+                None
+            } else {
+                Some(RunCounter::Unused)
+            };
+            Some(CharacterStatusUpdate::new(
+                run_counter,
+                ObjectStatusUpdate::new(
+                    Some(CharacterSequenceId::JumpDescend),
+                    Some(SequenceState::Begin),
+                    None,
+                    None,
+                ),
             ))
         } else {
             None
@@ -33,8 +45,8 @@ mod tests {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterInput, CharacterStatus, Grounding, Kinematics, ObjectStatus,
-            ObjectStatusUpdate, RunCounter,
+            CharacterInput, CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics,
+            ObjectStatus, ObjectStatusUpdate, RunCounter,
         },
     };
 
@@ -62,9 +74,12 @@ mod tests {
     #[test]
     fn switches_to_jump_descend_when_grounding_is_airborne() {
         assert_eq!(
-            Some(ObjectStatusUpdate {
-                sequence_id: Some(CharacterSequenceId::JumpDescend),
-                sequence_state: Some(SequenceState::Begin),
+            Some(CharacterStatusUpdate {
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::JumpDescend),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                },
                 ..Default::default()
             }),
             AirborneCheck::update(
@@ -76,6 +91,32 @@ mod tests {
                         ..Default::default()
                     },
                     ..Default::default()
+                },
+                &Kinematics::<f32>::default()
+            )
+        );
+    }
+
+    #[test]
+    fn switches_run_counter_to_unused_when_grounding_is_airborne() {
+        assert_eq!(
+            Some(CharacterStatusUpdate {
+                run_counter: Some(RunCounter::Unused),
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::JumpDescend),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                },
+            }),
+            AirborneCheck::update(
+                &CharacterInput::default(),
+                &CharacterStatus {
+                    run_counter: RunCounter::Decrease(1),
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::Stand,
+                        grounding: Grounding::Airborne,
+                        ..Default::default()
+                    },
                 },
                 &Kinematics::<f32>::default()
             )

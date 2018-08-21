@@ -1,9 +1,11 @@
 use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterInput, CharacterStatus, Kinematics, ObjectStatusUpdate},
+    config::object::SequenceState,
+    entity::{
+        CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
+    },
 };
 
-use character::sequence_handler::SequenceHandler;
+use character::sequence_handler::{common::util::RunCounterUpdater, SequenceHandler};
 
 /// Determines whether to swithc to the `Walk` or `Run` sequence based on X input.
 ///
@@ -13,21 +15,21 @@ pub(crate) struct SequenceRepeat;
 
 impl SequenceHandler for SequenceRepeat {
     fn update(
-        _input: &CharacterInput,
+        input: &CharacterInput,
         character_status: &CharacterStatus,
         _kinematics: &Kinematics<f32>,
-    ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
+    ) -> Option<CharacterStatusUpdate> {
         if character_status.object_status.sequence_state == SequenceState::End {
+            let run_counter = RunCounterUpdater::update(input, character_status);
+
             let sequence_id = Some(character_status.object_status.sequence_id);
             let sequence_state = Some(SequenceState::Begin);
             let mirrored = None;
             let grounding = None;
 
-            Some(ObjectStatusUpdate::new(
-                sequence_id,
-                sequence_state,
-                mirrored,
-                grounding,
+            Some(CharacterStatusUpdate::new(
+                run_counter,
+                ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored, grounding),
             ))
         } else {
             None
@@ -39,7 +41,10 @@ impl SequenceHandler for SequenceRepeat {
 mod tests {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
-        entity::{CharacterInput, CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate},
+        entity::{
+            CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus,
+            ObjectStatusUpdate,
+        },
     };
 
     use super::SequenceRepeat;
@@ -88,9 +93,12 @@ mod tests {
         let input = CharacterInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            Some(ObjectStatusUpdate {
-                sequence_id: Some(CharacterSequenceId::Walk),
-                sequence_state: Some(SequenceState::Begin),
+            Some(CharacterStatusUpdate {
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::Walk),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                },
                 ..Default::default()
             }),
             SequenceRepeat::update(

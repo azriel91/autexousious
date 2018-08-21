@@ -1,9 +1,11 @@
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterInput, CharacterStatus, Kinematics, ObjectStatusUpdate},
+    entity::{
+        CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
+    },
 };
 
-use character::sequence_handler::SequenceHandler;
+use character::sequence_handler::{common::util::RunCounterUpdater, SequenceHandler};
 
 /// Determines whether to swithc to the `Walk` or `Run` sequence based on X input.
 ///
@@ -14,20 +16,20 @@ pub(crate) struct StandZMovementCheck;
 impl SequenceHandler for StandZMovementCheck {
     fn update(
         input: &CharacterInput,
-        _character_status: &CharacterStatus,
+        character_status: &CharacterStatus,
         _kinematics: &Kinematics<f32>,
-    ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
+    ) -> Option<CharacterStatusUpdate> {
         if input.z_axis_value != 0. {
+            let run_counter = RunCounterUpdater::update(input, character_status);
+
             let sequence_id = Some(CharacterSequenceId::Walk);
             let sequence_state = Some(SequenceState::Begin);
             let mirrored = None;
             let grounding = None;
 
-            Some(ObjectStatusUpdate::new(
-                sequence_id,
-                sequence_state,
-                mirrored,
-                grounding,
+            Some(CharacterStatusUpdate::new(
+                run_counter,
+                ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored, grounding),
             ))
         } else {
             None
@@ -39,7 +41,10 @@ impl SequenceHandler for StandZMovementCheck {
 mod tests {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
-        entity::{CharacterInput, CharacterStatus, Kinematics, ObjectStatusUpdate, RunCounter},
+        entity::{
+            CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
+            RunCounter,
+        },
     };
 
     use super::StandZMovementCheck;
@@ -64,10 +69,13 @@ mod tests {
         let input = CharacterInput::new(0., 1., false, false, false, false);
 
         assert_eq!(
-            Some(ObjectStatusUpdate {
-                sequence_id: Some(CharacterSequenceId::Walk),
-                sequence_state: Some(SequenceState::Begin),
-                ..Default::default()
+            Some(CharacterStatusUpdate {
+                run_counter: Some(RunCounter::Decrease(9)),
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::Walk),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                }
             }),
             StandZMovementCheck::update(
                 &input,

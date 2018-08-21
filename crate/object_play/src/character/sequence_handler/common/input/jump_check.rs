@@ -1,6 +1,9 @@
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterInput, CharacterStatus, Kinematics, ObjectStatusUpdate},
+    entity::{
+        CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
+        RunCounter,
+    },
 };
 
 use character::sequence_handler::SequenceHandler;
@@ -12,18 +15,26 @@ pub(crate) struct JumpCheck;
 impl SequenceHandler for JumpCheck {
     fn update(
         input: &CharacterInput,
-        _character_status: &CharacterStatus,
+        character_status: &CharacterStatus,
         _kinematics: &Kinematics<f32>,
-    ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
+    ) -> Option<CharacterStatusUpdate> {
         // TODO: Don't handle action buttons in `CharacterSequenceHandler`s. Instead, each sequence
         // has default sequence update IDs for each action button, which are overridden by
         // configuration.
         if input.jump {
-            Some(ObjectStatusUpdate::new(
-                Some(CharacterSequenceId::Jump),
-                Some(SequenceState::Begin),
-                None,
-                None,
+            let run_counter = if character_status.run_counter == RunCounter::Unused {
+                None
+            } else {
+                Some(RunCounter::Unused)
+            };
+            Some(CharacterStatusUpdate::new(
+                run_counter,
+                ObjectStatusUpdate::new(
+                    Some(CharacterSequenceId::Jump),
+                    Some(SequenceState::Begin),
+                    None,
+                    None,
+                ),
             ))
         } else {
             None
@@ -36,8 +47,8 @@ mod tests {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterInput, CharacterStatus, Grounding, Kinematics, ObjectStatus,
-            ObjectStatusUpdate, RunCounter,
+            CharacterInput, CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics,
+            ObjectStatus, ObjectStatusUpdate, RunCounter,
         },
     };
 
@@ -69,9 +80,12 @@ mod tests {
         let mut character_input = CharacterInput::default();
         character_input.jump = true;
         assert_eq!(
-            Some(ObjectStatusUpdate {
-                sequence_id: Some(CharacterSequenceId::Jump),
-                sequence_state: Some(SequenceState::Begin),
+            Some(CharacterStatusUpdate {
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::Jump),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                },
                 ..Default::default()
             }),
             JumpCheck::update(
@@ -83,6 +97,34 @@ mod tests {
                         ..Default::default()
                     },
                     ..Default::default()
+                },
+                &Kinematics::<f32>::default()
+            )
+        );
+    }
+
+    #[test]
+    fn switches_run_counter_to_unused_when_jump_is_pressed() {
+        let mut character_input = CharacterInput::default();
+        character_input.jump = true;
+        assert_eq!(
+            Some(CharacterStatusUpdate {
+                run_counter: Some(RunCounter::Unused),
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::Jump),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                },
+            }),
+            JumpCheck::update(
+                &character_input,
+                &CharacterStatus {
+                    run_counter: RunCounter::Decrease(1),
+                    object_status: ObjectStatus {
+                        sequence_id: CharacterSequenceId::Stand,
+                        grounding: Grounding::Airborne,
+                        ..Default::default()
+                    },
                 },
                 &Kinematics::<f32>::default()
             )
