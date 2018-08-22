@@ -2,6 +2,7 @@ use amethyst::{
     core::{
         cgmath::{Matrix4, Ortho, Vector3},
         transform::GlobalTransform,
+        SystemBundle,
     },
     ecs::prelude::*,
     input::is_key_down,
@@ -9,6 +10,8 @@ use amethyst::{
     renderer::{Camera, Event, Projection, ScreenDimensions, VirtualKeyCode},
 };
 use game_model::play::GameEntities;
+
+use GamePlayBundle;
 
 /// `State` where game play takes place.
 #[derive(Derivative, Default, new)]
@@ -24,6 +27,28 @@ pub struct GamePlayState {
 }
 
 impl GamePlayState {
+    /// Sets up the dispatcher for this state.
+    ///
+    /// # Parameters
+    ///
+    /// * `world`: `World` to operate on.
+    fn initialize_dispatcher(&mut self, world: &mut World) {
+        let mut dispatcher_builder = DispatcherBuilder::new();
+
+        GamePlayBundle::new()
+            .build(&mut dispatcher_builder)
+            .expect("Failed to register `GamePlayBundle`.");
+
+        let mut dispatcher = dispatcher_builder.build();
+        dispatcher.setup(&mut world.res);
+        self.dispatcher = Some(dispatcher);
+    }
+
+    /// Terminates the dispatcher.
+    fn terminate_dispatcher(&mut self) {
+        self.dispatcher = None;
+    }
+
     fn terminate_entities(&mut self, world: &mut World) {
         // This `allow` is needed because rustc evaluates that `game_entities` does not live long
         // enough when entities is constructed, so we need to bind entities to a variable.
@@ -96,6 +121,7 @@ impl GamePlayState {
 
 impl<'a, 'b> State<GameData<'a, 'b>> for GamePlayState {
     fn on_start(&mut self, mut data: StateData<GameData>) {
+        self.initialize_dispatcher(&mut data.world);
         self.initialize_camera(&mut data.world);
     }
 
@@ -115,10 +141,15 @@ impl<'a, 'b> State<GameData<'a, 'b>> for GamePlayState {
     fn on_stop(&mut self, mut data: StateData<GameData>) {
         self.terminate_entities(&mut data.world);
         self.terminate_camera(&mut data.world);
+        self.terminate_dispatcher();
     }
 
     fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
+        // Note: The built-in dispatcher must be run before the state specific dispatcher as the
+        // `"input_system"` is registered in the main dispatcher, and is a dependency of the
+        // `CharacterInputUpdateSystem`.
         data.data.update(&data.world);
+        self.dispatcher.as_mut().unwrap().dispatch(&data.world.res);
         Trans::None
     }
 }

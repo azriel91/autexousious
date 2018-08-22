@@ -35,7 +35,7 @@ extern crate typename;
 #[macro_use]
 extern crate typename_derive;
 
-pub use game_play_bundle::GamePlayBundle;
+pub(crate) use game_play_bundle::GamePlayBundle;
 pub use game_play_state::GamePlayState;
 pub(crate) use system::{
     CharacterGroundingSystem, CharacterInputUpdateSystem, CharacterKinematicsSystem,
