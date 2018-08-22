@@ -29,7 +29,7 @@ use std::time::Duration;
 use amethyst::{
     animation::AnimationBundle,
     core::{frame_limiter::FrameRateLimitStrategy, transform::TransformBundle},
-    input::{Bindings, InputBundle},
+    input::InputBundle,
     prelude::*,
     renderer::{
         ColorMask, DepthMode, DisplayConfig, DrawSprite, Pipeline, RenderBundle, SpriteRender,
@@ -40,13 +40,12 @@ use amethyst::{
 };
 use application::resource::{
     dir::{self, assets_dir},
-    {self, load_in},
+    {self, find_in, load_in},
 };
 use application_robot::RobotState;
 use character_selection::CharacterSelectionBundle;
 use game_input::{PlayerActionControl, PlayerAxisControl};
 use game_mode_menu::GameModeMenuState;
-use game_play::GamePlayBundle;
 use loading::LoadingState;
 use map_loading::MapLoadingBundle;
 use object_loading::ObjectLoadingBundle;
@@ -96,15 +95,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 )).with_pass(DrawUi::new()),
         );
 
-        // We parse it ourselves, because Amethyst silently fails if it fails to parse.
-        let input_bindings = load_in::<Bindings<PlayerAxisControl, PlayerActionControl>, _>(
-            dir::RESOURCES,
-            "input.ron",
-            resource::Format::Ron,
-            Some(development_base_dirs!()),
-        )?;
-        debug!("Axes bindings: {:?}", &input_bindings.axes());
-        debug!("Action bindings: {:?}", &input_bindings.actions());
+        let input_bindings_path =
+            find_in(dir::RESOURCES, "input.ron", Some(development_base_dirs!()))?;
 
         // `InputBundle` provides `InputHandler<A, B>`, needed by the `UiBundle` for mouse events.
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
@@ -132,15 +124,15 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 .with_sprite_visibility_sorting(&["transform_system"])
                 .with_sprite_sheet_processor())?
             .with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new()
-                .with_bindings(input_bindings))?
+                .with_bindings_from_file(input_bindings_path)?)?
             .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?
             .with_bundle(StdioViewBundle::new())?
             .with_bundle(MapLoadingBundle::new())?
             .with_bundle(ObjectLoadingBundle::new())?
-            .with_bundle(CharacterSelectionBundle::new())?
-            .with_bundle(GamePlayBundle::new())?;
+            .with_bundle(CharacterSelectionBundle::new())?;
     }
 
+    info!("Building application.");
     let mut app = Application::build(assets_dir, state)?
         .with_frame_limit(
             FrameRateLimitStrategy::SleepAndYield(Duration::from_micros(1000)),

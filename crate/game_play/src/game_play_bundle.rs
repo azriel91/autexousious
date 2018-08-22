@@ -19,11 +19,12 @@ pub struct GamePlayBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
+        // Note: The `CharacterInputUpdateSystem` depends on the `"input_system"`. We rely on the
+        // main dispatcher to be run before the game play state dispatcher.
         builder.add(
             CharacterInputUpdateSystem::new(),
             &CharacterInputUpdateSystem::type_name(),
-            // TODO: Pending <https://gitlab.com/azriel91/autexousious/issues/53>
-            &["input_system"],
+            &[],
         ); // kcov-ignore
         builder.add(
             CharacterSequenceUpdateSystem::new(),

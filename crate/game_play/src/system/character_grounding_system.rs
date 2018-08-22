@@ -21,16 +21,13 @@ impl<'s> System<'s> for CharacterGroundingSystem {
         &mut self,
         (map_selection, maps, mut kinematics_storage, mut status_storage): Self::SystemData,
     ) {
-        let map_handle = map_selection.map_handle.as_ref();
-        if map_handle.is_none() {
-            // Game is not running.
-            // TODO: Use custom `GameData` / state specific dispatcher
-            return;
-        }
+        let map_handle = map_selection
+            .map_handle
+            .as_ref()
+            .expect("Expected map to be selected.");
 
-        let map_handle = map_handle.unwrap().clone();
         let map_margins = {
-            maps.get(&map_handle)
+            maps.get(map_handle)
                 .map(|map| map.margins)
                 .expect("Expected map to be loaded.")
         };
