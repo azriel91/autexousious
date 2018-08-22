@@ -14,6 +14,7 @@
 * Sprite offsets are optional when declaring sprite sheets. ([#47][#47])
 * Sprites are rendered using a dedicated sprite pass. ([#55][#55])
 * `stop_run` sequence has been renamed to `run_stop`. ([#49][#49])
+* Use state specific dispatcher for `GamePlayState`. ([#50][#50])
 
 ### Fixed
 
@@ -23,6 +24,7 @@
 [#47]: https://gitlab.com/azriel91/autexousious/issues/47
 [#48]: https://gitlab.com/azriel91/autexousious/issues/48
 [#49]: https://gitlab.com/azriel91/autexousious/issues/49
+[#50]: https://gitlab.com/azriel91/autexousious/issues/50
 [#52]: https://gitlab.com/azriel91/autexousious/issues/52
 [#55]: https://gitlab.com/azriel91/autexousious/issues/55
 
