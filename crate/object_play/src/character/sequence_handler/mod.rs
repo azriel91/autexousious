@@ -6,25 +6,26 @@ pub(super) use self::jump_descend::JumpDescend;
 pub(super) use self::jump_descend_land::JumpDescendLand;
 pub(super) use self::jump_off::JumpOff;
 pub(super) use self::run::Run;
+pub(super) use self::run_stop::RunStop;
 pub(super) use self::sequence_handler_util::SequenceHandlerUtil;
 pub(super) use self::stand::Stand;
-pub(super) use self::stop_run::StopRun;
 pub(super) use self::walk::Walk;
 
+mod common;
 mod jump;
 mod jump_ascend;
 mod jump_descend;
 mod jump_descend_land;
 mod jump_off;
 mod run;
+mod run_stop;
 mod sequence_handler_util;
 mod stand;
-mod stop_run;
 mod walk;
 
-/// Traits that every sequence should define for its transition behaviour.
-pub(super) trait SequenceHandler {
-    /// Updates behaviour in response to input.
+/// Sequence transition behaviour calculation.
+pub(super) trait CharacterSequenceHandler {
+    /// Returns the status update for a character based on current input or lack thereof.
     ///
     /// # Parameters
     ///
@@ -40,16 +41,39 @@ pub(super) trait SequenceHandler {
     }
 }
 
+/// Sequence transition behaviour calculation.
+///
+/// This serves the same purpose as `CharacterSequenceHandler`, except it allows for chaining
+/// multiple calls together, useful for linking multiple common sequence handler logic blocks.
+pub(super) trait SequenceHandler {
+    /// Returns the status update for a character based on current input or lack thereof.
+    ///
+    /// Returns `Some(..)` when there is an update, `None` otherwise.
+    ///
+    /// # Parameters
+    ///
+    /// * `character_input`: Controller input for the character.
+    /// * `character_status`: Character specific status attributes.
+    /// * `kinematics`: Kinematics of the character.
+    fn update(
+        _character_input: &CharacterInput,
+        _character_status: &CharacterStatus,
+        _kinematics: &Kinematics<f32>,
+    ) -> Option<CharacterStatusUpdate> {
+        None
+    }
+}
+
 #[cfg(test)]
 mod test {
     use object_model::entity::{
         CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
     };
 
-    use super::SequenceHandler;
+    use super::{CharacterSequenceHandler, SequenceHandler};
 
     #[test]
-    fn default_update_is_empty() {
+    fn sequence_handler_default_update_is_empty() {
         // No update to run counter.
         let run_counter = None;
         // No calculated next sequence.
@@ -73,6 +97,21 @@ mod test {
         );
     }
 
+    #[test]
+    fn sequence_handler_opt_default_update_is_none() {
+        assert_eq!(
+            None,
+            Sleep::update(
+                &CharacterInput::default(),
+                &CharacterStatus::default(),
+                &Kinematics::default()
+            )
+        );
+    }
+
     struct Sit;
-    impl SequenceHandler for Sit {}
+    impl CharacterSequenceHandler for Sit {}
+
+    struct Sleep;
+    impl SequenceHandler for Sleep {}
 }

@@ -1,79 +1,47 @@
-use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
-    entity::{
-        CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
-        RunCounter,
-    },
+use object_model::entity::{
+    CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
 };
 
-use character::sequence_handler::{SequenceHandler, SequenceHandlerUtil};
+use character::sequence_handler::{
+    common::{
+        grounding::AirborneCheck,
+        input::{JumpCheck, WalkNoMovementCheck, WalkXMovementCheck, WalkZMovementCheck},
+        util::RunCounterUpdater,
+    },
+    CharacterSequenceHandler, SequenceHandler,
+};
 
 #[derive(Debug)]
 pub(crate) struct Walk;
 
-impl SequenceHandler for Walk {
+impl CharacterSequenceHandler for Walk {
     fn update(
         input: &CharacterInput,
         character_status: &CharacterStatus,
-        _kinematics: &Kinematics<f32>,
+        kinematics: &Kinematics<f32>,
     ) -> CharacterStatusUpdate {
-        let (run_counter, mut sequence_id, mirrored) = {
-            let mirrored = character_status.object_status.mirrored;
+        let run_counter = RunCounterUpdater::update(input, character_status);
 
-            use object_model::entity::RunCounter::*;
-            if input.x_axis_value == 0. {
-                let run_counter = match character_status.run_counter {
-                    Unused => None,
-                    Exceeded | Decrease(0) => Some(Unused),
-                    Decrease(ticks) => Some(Decrease(ticks - 1)),
-                    Increase(_) => Some(Decrease(RunCounter::RESET_TICK_COUNT)),
-                };
-                (run_counter, Some(CharacterSequenceId::Stand), None)
-            } else {
-                let same_direction = SequenceHandlerUtil::input_matches_direction(input, mirrored);
-                match (character_status.run_counter, same_direction) {
-                    (Unused, _) | (Decrease(_), false) | (Increase(_), false) => (
-                        Some(Increase(RunCounter::RESET_TICK_COUNT)),
-                        Some(CharacterSequenceId::Walk),
-                        Some(!mirrored),
-                    ),
-                    (Decrease(_), true) => (Some(Unused), Some(CharacterSequenceId::Run), None),
-                    (Increase(0), true) => (Some(Exceeded), None, None),
-                    (Increase(ticks), true) => (Some(Increase(ticks - 1)), None, None),
-                    (Exceeded, _) => (None, None, None),
-                }
-            }
-        };
+        let status_update = [
+            AirborneCheck::update,
+            JumpCheck::update,
+            WalkNoMovementCheck::update,
+            WalkXMovementCheck::update,
+            WalkZMovementCheck::update,
+        ]
+            .iter()
+            .fold(None, |status_update, fn_update| {
+                status_update.or_else(|| fn_update(input, character_status, kinematics))
+            });
 
-        // If we are about to stand, but have z axis input, then we walk instead
-        if sequence_id == Some(CharacterSequenceId::Stand) && input.z_axis_value != 0. {
-            sequence_id = None;
+        if let Some(mut status_update) = status_update {
+            status_update.run_counter = run_counter;
+            return status_update;
         }
-
-        // If we're maintaining the `Walk` state, and have reached the end of the sequence, restart.
-        if sequence_id.is_none()
-            && character_status.object_status.sequence_state == SequenceState::End
-        {
-            sequence_id = Some(CharacterSequenceId::Walk);
-        }
-
-        let sequence_state = if sequence_id.is_some() {
-            Some(SequenceState::Begin)
-        } else {
-            None
-        };
-
-        // TODO: switch to `JumpDescend` when `Airborne`.
-        let grounding = None;
 
         CharacterStatusUpdate {
             run_counter,
-            object_status: ObjectStatusUpdate {
-                sequence_id,
-                sequence_state,
-                mirrored,
-                grounding,
-            },
+            object_status: ObjectStatusUpdate::default(),
         }
     }
 }
@@ -89,7 +57,7 @@ mod test {
     };
 
     use super::Walk;
-    use character::sequence_handler::SequenceHandler;
+    use character::sequence_handler::CharacterSequenceHandler;
 
     #[test]
     fn reverts_to_stand_when_no_input() {

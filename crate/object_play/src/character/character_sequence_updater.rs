@@ -5,15 +5,15 @@ use object_model::{
 };
 
 use character::sequence_handler::{
-    Jump, JumpAscend, JumpDescend, JumpDescendLand, JumpOff, Run, SequenceHandler, Stand, StopRun,
-    Walk,
+    CharacterSequenceHandler, Jump, JumpAscend, JumpDescend, JumpDescendLand, JumpOff, Run,
+    RunStop, Stand, Walk,
 };
 
 /// Defines behaviour for a character in game.
 #[derive(Debug)]
-pub struct CharacterSequenceHandler;
+pub struct CharacterSequenceUpdater;
 
-impl CharacterSequenceHandler {
+impl CharacterSequenceUpdater {
     /// Handles behaviour transition (if any) based on input.
     ///
     /// # Parameters
@@ -33,7 +33,7 @@ impl CharacterSequenceHandler {
             CharacterSequenceId::Stand => Stand::update,
             CharacterSequenceId::Walk => Walk::update,
             CharacterSequenceId::Run => Run::update,
-            CharacterSequenceId::StopRun => StopRun::update,
+            CharacterSequenceId::RunStop => RunStop::update,
             CharacterSequenceId::Jump => Jump::update,
             CharacterSequenceId::JumpOff => JumpOff::update,
             CharacterSequenceId::JumpAscend => JumpAscend::update,

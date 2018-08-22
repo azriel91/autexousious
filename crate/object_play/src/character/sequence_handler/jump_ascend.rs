@@ -3,12 +3,12 @@ use object_model::{
     entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics},
 };
 
-use character::sequence_handler::{SequenceHandler, SequenceHandlerUtil};
+use character::sequence_handler::{CharacterSequenceHandler, SequenceHandlerUtil};
 
 #[derive(Debug)]
 pub(crate) struct JumpAscend;
 
-impl SequenceHandler for JumpAscend {
+impl CharacterSequenceHandler for JumpAscend {
     fn update(
         character_input: &CharacterInput,
         character_status: &CharacterStatus,
@@ -47,7 +47,7 @@ mod test {
     };
 
     use super::JumpAscend;
-    use character::sequence_handler::SequenceHandler;
+    use character::sequence_handler::CharacterSequenceHandler;
 
     #[test]
     fn no_update_when_sequence_not_ended() {

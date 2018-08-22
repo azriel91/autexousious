@@ -1,128 +1,57 @@
-use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
-    entity::{
-        CharacterInput, CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics,
-        ObjectStatusUpdate, RunCounter,
-    },
+use object_model::entity::{
+    CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
 };
 
-use character::sequence_handler::{SequenceHandler, SequenceHandlerUtil};
+use character::sequence_handler::{
+    common::{
+        grounding::AirborneCheck,
+        input::{JumpCheck, StandXMovementCheck, StandZMovementCheck},
+        util::RunCounterUpdater,
+        SequenceRepeat,
+    },
+    CharacterSequenceHandler, SequenceHandler,
+};
 
 #[derive(Debug)]
 pub(crate) struct Stand;
 
-impl SequenceHandler for Stand {
+impl CharacterSequenceHandler for Stand {
     fn update(
         input: &CharacterInput,
         character_status: &CharacterStatus,
-        _kinematics: &Kinematics<f32>,
+        kinematics: &Kinematics<f32>,
     ) -> CharacterStatusUpdate {
-        let (run_counter, mut sequence_id, mirrored) = {
-            let mirrored = character_status.object_status.mirrored;
-
-            use object_model::entity::RunCounter::*;
-            match character_status.run_counter {
-                Exceeded | Increase(_) => panic!(
-                    "Invalid run_counter state during `Stand` sequence: `{:?}`",
-                    character_status.run_counter
-                ),
-                _ => {}
-            };
-
-            // TODO: Don't handle action buttons in `SequenceHandler`s. Instead, each sequence has
-            // default sequence update IDs for each action button, which are overridden by
-            // configuration.
-            if input.jump {
-                let run_counter = if character_status.run_counter == Unused {
-                    None
-                } else {
-                    Some(Unused)
-                };
-                return CharacterStatusUpdate::new(
-                    run_counter,
-                    ObjectStatusUpdate::new(
-                        Some(CharacterSequenceId::Jump),
-                        Some(SequenceState::Begin),
-                        None,
-                        None,
-                    ),
-                );
-            }
-
-            // TODO: Extract common logic for "on ground" bits and use it in various on ground
-            // states.
-            if character_status.object_status.grounding == Grounding::Airborne {
-                let run_counter = if character_status.run_counter == Unused {
-                    None
-                } else {
-                    Some(Unused)
-                };
-                return CharacterStatusUpdate::new(
-                    run_counter,
-                    ObjectStatusUpdate::new(
-                        Some(CharacterSequenceId::JumpDescend),
-                        Some(SequenceState::Begin),
-                        None,
-                        None,
-                    ),
-                );
-            }
-
-            if input.x_axis_value == 0. {
-                let run_counter = match character_status.run_counter {
-                    Unused => None,
-                    Decrease(0) => Some(Unused),
-                    Decrease(ticks) => Some(Decrease(ticks - 1)),
-                    _ => unreachable!(), // kcov-ignore
-                };
-                let sequence_id =
-                    if character_status.object_status.sequence_state == SequenceState::End {
-                        Some(CharacterSequenceId::Stand)
-                    } else {
-                        None
-                    };
-                (run_counter, sequence_id, None)
-            } else {
-                let same_direction = SequenceHandlerUtil::input_matches_direction(input, mirrored);
-                match (character_status.run_counter, same_direction) {
-                    (Unused, false) | (Decrease(_), false) => (
-                        Some(Increase(RunCounter::RESET_TICK_COUNT)),
-                        Some(CharacterSequenceId::Walk),
-                        Some(!mirrored),
-                    ),
-                    (Unused, true) => (
-                        Some(Increase(RunCounter::RESET_TICK_COUNT)),
-                        Some(CharacterSequenceId::Walk),
-                        None,
-                    ),
-                    (Decrease(_), true) => (Some(Unused), Some(CharacterSequenceId::Run), None),
-                    _ => unreachable!(), // kcov-ignore
-                }
-            }
+        use object_model::entity::RunCounter::*;
+        match character_status.run_counter {
+            Exceeded | Increase(_) => panic!(
+                "Invalid run_counter state during `Stand` sequence: `{:?}`",
+                character_status.run_counter
+            ),
+            _ => {}
         };
 
-        // If we aren't already running, then we can walk
-        if sequence_id.is_none() && input.z_axis_value != 0. {
-            sequence_id = Some(CharacterSequenceId::Walk);
+        let run_counter = RunCounterUpdater::update(input, character_status);
+
+        let status_update = [
+            AirborneCheck::update,
+            JumpCheck::update,
+            StandXMovementCheck::update,
+            StandZMovementCheck::update,
+            SequenceRepeat::update,
+        ]
+            .iter()
+            .fold(None, |status_update, fn_update| {
+                status_update.or_else(|| fn_update(input, character_status, kinematics))
+            });
+
+        if let Some(mut status_update) = status_update {
+            status_update.run_counter = run_counter;
+            return status_update;
         }
-
-        let sequence_state = if sequence_id.is_some() {
-            Some(SequenceState::Begin)
-        } else {
-            None
-        };
-
-        // TODO: switch to `JumpDescend` when `Airborne`.
-        let grounding = None;
 
         CharacterStatusUpdate {
             run_counter,
-            object_status: ObjectStatusUpdate {
-                sequence_id,
-                sequence_state,
-                mirrored,
-                grounding,
-            },
+            object_status: ObjectStatusUpdate::default(),
         }
     }
 }
@@ -138,7 +67,7 @@ mod test {
     };
 
     use super::Stand;
-    use character::sequence_handler::SequenceHandler;
+    use character::sequence_handler::CharacterSequenceHandler;
 
     #[test]
     fn no_change_when_no_input() {
@@ -267,7 +196,7 @@ mod test {
     }
 
     #[test]
-    fn switches_run_counter_to_unused_when_no_counter_runs_out() {
+    fn switches_run_counter_to_unused_when_counter_runs_out() {
         let input = CharacterInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
@@ -470,113 +399,66 @@ mod test {
     }
 
     #[test]
-    fn run_when_x_axis_is_positive_and_run_counter_decrease_non_mirror() {
-        let input = CharacterInput::new(1., 0., false, false, false, false);
+    fn run_when_run_counter_decrease_x_input_same_direction() {
+        vec![(1., false), (-1., true)]
+            .into_iter()
+            .for_each(|(x_input, mirrored)| {
+                let input = CharacterInput::new(x_input, 0., false, false, false, false);
 
-        assert_eq!(
-            CharacterStatusUpdate {
-                run_counter: Some(RunCounter::Unused),
-                object_status: ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Run),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            },
-            Stand::update(
-                &input,
-                &CharacterStatus {
-                    run_counter: RunCounter::Decrease(10),
-                    object_status: ObjectStatus {
-                        mirrored: false,
-                        ..Default::default()
+                assert_eq!(
+                    CharacterStatusUpdate {
+                        run_counter: Some(RunCounter::Unused),
+                        object_status: ObjectStatusUpdate {
+                            sequence_id: Some(CharacterSequenceId::Run),
+                            sequence_state: Some(SequenceState::Begin),
+                            ..Default::default()
+                        }
                     },
-                },
-                &Kinematics::default()
-            )
-        );
+                    Stand::update(
+                        &input,
+                        &CharacterStatus {
+                            run_counter: RunCounter::Decrease(10),
+                            object_status: ObjectStatus {
+                                mirrored,
+                                ..Default::default()
+                            },
+                        },
+                        &Kinematics::default()
+                    )
+                );
+            });
     }
 
     #[test]
-    fn walk_when_x_axis_is_positive_and_run_counter_decrease_mirror() {
-        let input = CharacterInput::new(1., 0., false, false, false, false);
+    fn walk_when_run_counter_decrease_x_input_different_direction() {
+        vec![(1., true), (-1., false)]
+            .into_iter()
+            .for_each(|(x_input, mirrored)| {
+                let input = CharacterInput::new(x_input, 0., false, false, false, false);
 
-        assert_eq!(
-            CharacterStatusUpdate {
-                run_counter: Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
-                object_status: ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Walk),
-                    sequence_state: Some(SequenceState::Begin),
-                    mirrored: Some(false),
-                    ..Default::default()
-                }
-            },
-            Stand::update(
-                &input,
-                &CharacterStatus {
-                    run_counter: RunCounter::Decrease(10),
-                    object_status: ObjectStatus {
-                        mirrored: true,
-                        ..Default::default()
+                assert_eq!(
+                    CharacterStatusUpdate {
+                        run_counter: Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
+                        object_status: ObjectStatusUpdate {
+                            sequence_id: Some(CharacterSequenceId::Walk),
+                            sequence_state: Some(SequenceState::Begin),
+                            mirrored: Some(!mirrored),
+                            ..Default::default()
+                        }
                     },
-                },
-                &Kinematics::default()
-            )
-        );
-    }
-
-    #[test]
-    fn run_when_x_axis_is_negative_and_run_counter_decrease_mirror() {
-        let input = CharacterInput::new(-1., 1., false, false, false, false);
-
-        assert_eq!(
-            CharacterStatusUpdate {
-                run_counter: Some(RunCounter::Unused),
-                object_status: ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Run),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            },
-            Stand::update(
-                &input,
-                &CharacterStatus {
-                    run_counter: RunCounter::Decrease(10),
-                    object_status: ObjectStatus {
-                        mirrored: true,
-                        ..Default::default()
-                    },
-                },
-                &Kinematics::default()
-            )
-        );
-    }
-
-    #[test]
-    fn walk_when_x_axis_is_negative_and_run_counter_decrease_non_mirror() {
-        let input = CharacterInput::new(-1., -1., false, false, false, false);
-
-        assert_eq!(
-            CharacterStatusUpdate {
-                run_counter: Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
-                object_status: ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Walk),
-                    sequence_state: Some(SequenceState::Begin),
-                    mirrored: Some(true),
-                    ..Default::default()
-                }
-            },
-            Stand::update(
-                &input,
-                &CharacterStatus {
-                    run_counter: RunCounter::Decrease(10),
-                    object_status: ObjectStatus {
-                        mirrored: false,
-                        ..Default::default()
-                    },
-                },
-                &Kinematics::default()
-            )
-        );
+                    Stand::update(
+                        &input,
+                        &CharacterStatus {
+                            run_counter: RunCounter::Decrease(10),
+                            object_status: ObjectStatus {
+                                mirrored,
+                                ..Default::default()
+                            },
+                        },
+                        &Kinematics::default()
+                    )
+                );
+            });
     }
 
     #[test]

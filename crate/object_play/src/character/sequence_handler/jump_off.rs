@@ -3,12 +3,12 @@ use object_model::{
     entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics},
 };
 
-use character::sequence_handler::SequenceHandler;
+use character::sequence_handler::CharacterSequenceHandler;
 
 #[derive(Debug)]
 pub(crate) struct JumpOff;
 
-impl SequenceHandler for JumpOff {
+impl CharacterSequenceHandler for JumpOff {
     fn update(
         _character_input: &CharacterInput,
         character_status: &CharacterStatus,
@@ -40,7 +40,7 @@ mod test {
     };
 
     use super::JumpOff;
-    use character::sequence_handler::SequenceHandler;
+    use character::sequence_handler::CharacterSequenceHandler;
 
     #[test]
     fn no_update_when_sequence_not_ended() {
