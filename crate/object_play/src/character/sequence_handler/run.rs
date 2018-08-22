@@ -63,13 +63,13 @@ mod test {
     }
 
     #[test]
-    fn reverts_to_stop_run_when_no_input() {
+    fn reverts_to_run_stop_when_no_input() {
         let input = CharacterInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate {
                 object_status: ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::StopRun),
+                    sequence_id: Some(CharacterSequenceId::RunStop),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
                 },
@@ -166,13 +166,13 @@ mod test {
     }
 
     #[test]
-    fn reverts_to_stop_run_when_x_axis_negative_and_non_mirrored() {
+    fn reverts_to_run_stop_when_x_axis_negative_and_non_mirrored() {
         let input = CharacterInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate {
                 object_status: ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::StopRun),
+                    sequence_id: Some(CharacterSequenceId::RunStop),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
                 },
@@ -194,13 +194,13 @@ mod test {
     }
 
     #[test]
-    fn reverts_to_stop_run_when_x_axis_positive_and_mirrored() {
+    fn reverts_to_run_stop_when_x_axis_positive_and_mirrored() {
         let input = CharacterInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate {
                 object_status: ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::StopRun),
+                    sequence_id: Some(CharacterSequenceId::RunStop),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
                 },

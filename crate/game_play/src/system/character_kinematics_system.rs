@@ -57,7 +57,7 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                     kinematics.velocity[0] = character_input.x_axis_value as f32 * 6.;
                     kinematics.velocity[2] = character_input.z_axis_value as f32 * 1.5;
                 }
-                CharacterSequenceId::StopRun => {
+                CharacterSequenceId::RunStop => {
                     kinematics.velocity[0] = if status.object_status.mirrored {
                         -2.
                     } else {
@@ -290,7 +290,7 @@ mod tests {
     }
 
     #[test]
-    fn updates_stop_run_x_and_z_velocity() {
+    fn updates_run_stop_x_and_z_velocity() {
         vec![(false, 2.), (true, -2.)]
             .into_iter()
             .for_each(|(mirrored, vx)| {
@@ -324,7 +324,7 @@ mod tests {
                             {
                                 character_input.z_axis_value = 1.;
 
-                                status.object_status.sequence_id = CharacterSequenceId::StopRun;
+                                status.object_status.sequence_id = CharacterSequenceId::RunStop;
                                 status.object_status.grounding = Grounding::OnGround;
                                 status.object_status.mirrored = mirrored;
 
@@ -355,7 +355,7 @@ mod tests {
                 assert!(
                     // kcov-ignore-end
                     AutexousiousApplication::game_base(
-                        "updates_stop_run_x_and_z_velocity_non_mirrored",
+                        "updates_run_stop_x_and_z_velocity_non_mirrored",
                         false
                     ).with_setup(setup_fn)
                     .with_system_single(

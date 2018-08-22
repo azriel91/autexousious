@@ -22,7 +22,7 @@
     { sheet = 1, sprite = 4, wait = 2 },
   ]
 
-[sequences.stop_run]
+[sequences.run_stop]
   frames = [
     { sheet = 1, sprite = 0, wait = 2 },
     { sheet = 1, sprite = 1, wait = 2 },

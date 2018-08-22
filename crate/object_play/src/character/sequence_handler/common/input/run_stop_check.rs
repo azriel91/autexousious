@@ -7,7 +7,7 @@ use object_model::{
 
 use character::sequence_handler::{common::SequenceRepeat, SequenceHandler, SequenceHandlerUtil};
 
-/// Determines whether to switch to the `StopRun` sequence based on X input.
+/// Determines whether to switch to the `RunStop` sequence based on X input.
 ///
 /// This should only be called from the Walk sequence handler.
 #[derive(Debug)]
@@ -27,7 +27,7 @@ impl SequenceHandler for RunStopCheck {
         } else {
             Some(CharacterStatusUpdate {
                 object_status: ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::StopRun),
+                    sequence_id: Some(CharacterSequenceId::RunStop),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
                 },
@@ -82,7 +82,7 @@ mod tests {
         assert_eq!(
             Some(CharacterStatusUpdate {
                 object_status: ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::StopRun),
+                    sequence_id: Some(CharacterSequenceId::RunStop),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
                 },
@@ -113,7 +113,7 @@ mod tests {
                 assert_eq!(
                     Some(CharacterStatusUpdate {
                         object_status: ObjectStatusUpdate {
-                            sequence_id: Some(CharacterSequenceId::StopRun),
+                            sequence_id: Some(CharacterSequenceId::RunStop),
                             sequence_state: Some(SequenceState::Begin),
                             ..Default::default()
                         },

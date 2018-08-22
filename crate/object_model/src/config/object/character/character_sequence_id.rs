@@ -12,8 +12,8 @@ pub enum CharacterSequenceId {
     Walk,
     /// Running sequence.
     Run,
-    /// Stop running sequence.
-    StopRun,
+    /// Running stop sequence.
+    RunStop,
     /// Character is about to jump.
     Jump,
     /// Character has just jumped off the ground.

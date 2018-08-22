@@ -8,9 +8,9 @@ use character::sequence_handler::{
 };
 
 #[derive(Debug)]
-pub(crate) struct StopRun;
+pub(crate) struct RunStop;
 
-impl CharacterSequenceHandler for StopRun {
+impl CharacterSequenceHandler for RunStop {
     fn update(
         character_input: &CharacterInput,
         character_status: &CharacterStatus,
@@ -37,7 +37,7 @@ mod test {
         },
     };
 
-    use super::StopRun;
+    use super::RunStop;
     use character::sequence_handler::CharacterSequenceHandler;
 
     #[test]
@@ -51,11 +51,11 @@ mod test {
                 },
                 ..Default::default()
             },
-            StopRun::update(
+            RunStop::update(
                 &CharacterInput::default(),
                 &CharacterStatus {
                     object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::StopRun,
+                        sequence_id: CharacterSequenceId::RunStop,
                         grounding: Grounding::Airborne,
                         ..Default::default()
                     },
@@ -72,11 +72,11 @@ mod test {
 
         assert_eq!(
             CharacterStatusUpdate::default(),
-            StopRun::update(
+            RunStop::update(
                 &input,
                 &CharacterStatus {
                     object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::StopRun,
+                        sequence_id: CharacterSequenceId::RunStop,
                         ..Default::default()
                     },
                     ..Default::default()
@@ -99,11 +99,11 @@ mod test {
                 },
                 ..Default::default()
             },
-            StopRun::update(
+            RunStop::update(
                 &input,
                 &CharacterStatus {
                     object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::StopRun,
+                        sequence_id: CharacterSequenceId::RunStop,
                         sequence_state: SequenceState::End,
                         ..Default::default()
                     },

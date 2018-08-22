@@ -6,9 +6,9 @@ pub(super) use self::jump_descend::JumpDescend;
 pub(super) use self::jump_descend_land::JumpDescendLand;
 pub(super) use self::jump_off::JumpOff;
 pub(super) use self::run::Run;
+pub(super) use self::run_stop::RunStop;
 pub(super) use self::sequence_handler_util::SequenceHandlerUtil;
 pub(super) use self::stand::Stand;
-pub(super) use self::stop_run::StopRun;
 pub(super) use self::walk::Walk;
 
 mod common;
@@ -18,9 +18,9 @@ mod jump_descend;
 mod jump_descend_land;
 mod jump_off;
 mod run;
+mod run_stop;
 mod sequence_handler_util;
 mod stand;
-mod stop_run;
 mod walk;
 
 /// Sequence transition behaviour calculation.
