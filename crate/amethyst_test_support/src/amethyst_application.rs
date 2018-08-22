@@ -378,7 +378,9 @@ where
         let title = title.into().to_string();
 
         let display_config = Self::display_config(title, visibility);
-        let render_bundle_fn = move || RenderBundle::new(Self::pipeline(), Some(display_config));
+        let render_bundle_fn = move || {
+            RenderBundle::new(Self::pipeline(), Some(display_config)).with_sprite_sheet_processor()
+        };
 
         self.with_bundle_fn(render_bundle_fn).mark_render()
     }

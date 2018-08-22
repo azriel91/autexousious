@@ -129,7 +129,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                     ]),
             )?
             .with_bundle(RenderBundle::new(pipe, Some(display_config))
-                .with_sprite_visibility_sorting(&["transform_system"]))?
+                .with_sprite_visibility_sorting(&["transform_system"])
+                .with_sprite_sheet_processor())?
             .with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new()
                 .with_bindings(input_bindings))?
             .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?

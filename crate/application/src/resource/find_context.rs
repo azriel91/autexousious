@@ -61,6 +61,7 @@ mod tests {
         ); // kcov-ignore
     }
 
+    #[test]
     #[cfg(windows)]
     fn display_outputs_nice_markdown() {
         let find_context = FindContext {
