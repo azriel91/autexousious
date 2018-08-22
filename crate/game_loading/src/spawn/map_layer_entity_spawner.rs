@@ -1,10 +1,7 @@
 use amethyst::{
     animation::{get_animation_set, AnimationControlSet},
     assets::AssetStorage,
-    core::{
-        cgmath::Vector3,
-        transform::{GlobalTransform, Transform},
-    },
+    core::{cgmath::Vector3, transform::Transform},
     ecs::{prelude::*, world::EntitiesRes},
     renderer::{SpriteRender, Transparent},
 };
@@ -36,7 +33,6 @@ impl MapLayerEntitySpawner {
                 world.write_storage::<SpriteRender>(),
                 world.write_storage::<Transparent>(),
                 world.write_storage::<Transform>(),
-                world.write_storage::<GlobalTransform>(),
                 world.write_storage::<AnimationControlSet<u32, SpriteRender>>(),
             ),
             map_handle,
@@ -56,7 +52,6 @@ impl MapLayerEntitySpawner {
             ref mut sprite_render_storage,
             ref mut transparent_storage,
             ref mut transform_storage,
-            ref mut global_transform_storage,
             ref mut animation_control_set_storage,
         ): &mut MapLayerComponentStorages<'s>,
         map_handle: &MapHandle,
@@ -107,7 +102,6 @@ impl MapLayerEntitySpawner {
                 .into_iter()
                 .map(|(transform, sprite_render)| {
                     let entity = entities.create();
-                    let global_transform = GlobalTransform::default();
 
                     sprite_render_storage
                         .insert(entity, sprite_render)
@@ -119,9 +113,6 @@ impl MapLayerEntitySpawner {
                     transform_storage
                         .insert(entity, transform)
                         .expect("Failed to insert transform component.");
-                    global_transform_storage
-                        .insert(entity, global_transform)
-                        .expect("Failed to insert global_transform component.");
 
                     entity
                 }).collect::<Vec<_>>();

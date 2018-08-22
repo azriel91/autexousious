@@ -1,10 +1,7 @@
 use amethyst::{
     animation::{get_animation_set, AnimationControlSet},
     assets::AssetStorage,
-    core::{
-        cgmath::Vector3,
-        transform::{GlobalTransform, Transform},
-    },
+    core::{cgmath::Vector3, transform::Transform},
     ecs::{prelude::*, world::EntitiesRes},
     renderer::{SpriteRender, Transparent},
 };
@@ -55,7 +52,6 @@ impl CharacterEntitySpawner {
                 world.write_storage::<Transparent>(),
                 world.write_storage::<Kinematics<f32>>(),
                 world.write_storage::<Transform>(),
-                world.write_storage::<GlobalTransform>(),
                 world.write_storage::<AnimationControlSet<CharacterSequenceId, SpriteRender>>(),
             ), // kcov-ignore
             kinematics,
@@ -90,7 +86,6 @@ impl CharacterEntitySpawner {
             ref mut transparent_storage,
             ref mut kinematics_storage,
             ref mut transform_storage,
-            ref mut global_transform_storage,
             ref mut animation_control_set_storage,
         ): &mut ObjectComponentStorages<'s, CharacterSequenceId>,
         kinematics: Kinematics<f32>,
@@ -140,7 +135,6 @@ impl CharacterEntitySpawner {
         let position = &kinematics.position;
         let mut transform = Transform::default();
         transform.translation = Vector3::new(position.x, position.y + position.z, 0.);
-        let global_transform = GlobalTransform::default();
 
         let entity = entities.create();
 
@@ -176,11 +170,6 @@ impl CharacterEntitySpawner {
         transform_storage
             .insert(entity, transform)
             .expect("Failed to insert transform component.");
-        // This defines the coordinates in the world, where the sprites should be drawn relative
-        // to the entity
-        global_transform_storage
-            .insert(entity, global_transform)
-            .expect("Failed to insert global_transform component.");;
 
         // We also need to trigger the animation, not just attach it to the entity
         let mut animation_set = get_animation_set::<CharacterSequenceId, SpriteRender>(
@@ -202,7 +191,7 @@ mod test {
     use amethyst::{
         animation::AnimationControlSet,
         assets::AssetStorage,
-        core::transform::{GlobalTransform, Transform},
+        core::transform::Transform,
         ecs::prelude::*,
         renderer::{SpriteRender, Transparent},
     };
@@ -252,7 +241,6 @@ mod test {
             assert!(world.read_storage::<Transparent>().contains(entity));
             assert!(world.read_storage::<Kinematics<f32>>().contains(entity));
             assert!(world.read_storage::<Transform>().contains(entity));
-            assert!(world.read_storage::<GlobalTransform>().contains(entity));
         };
 
         // kcov-ignore-start
