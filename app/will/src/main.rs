@@ -8,10 +8,8 @@ extern crate application;
 extern crate application_input;
 extern crate application_robot;
 extern crate application_ui;
-extern crate character_selection;
 extern crate game_input;
 extern crate game_mode_menu;
-extern crate game_play;
 extern crate loading;
 #[macro_use]
 extern crate log;
@@ -43,7 +41,6 @@ use application::resource::{
     {self, find_in, load_in},
 };
 use application_robot::RobotState;
-use character_selection::CharacterSelectionBundle;
 use game_input::{PlayerActionControl, PlayerAxisControl};
 use game_mode_menu::GameModeMenuState;
 use loading::LoadingState;
@@ -128,8 +125,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?
             .with_bundle(StdioViewBundle::new())?
             .with_bundle(MapLoadingBundle::new())?
-            .with_bundle(ObjectLoadingBundle::new())?
-            .with_bundle(CharacterSelectionBundle::new())?;
+            .with_bundle(ObjectLoadingBundle::new())?;
     }
 
     info!("Building application.");

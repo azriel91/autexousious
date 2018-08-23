@@ -10,14 +10,14 @@ use CharacterSelectionSystem;
 ///
 /// The Amethyst `InputBundle` must be added before this bundle.
 #[derive(Debug, new)]
-pub struct CharacterSelectionBundle;
+pub(crate) struct CharacterSelectionBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
         builder.add(
             CharacterSelectionSystem::new(),
             &CharacterSelectionSystem::type_name(),
-            &["input_system"],
+            &[],
         ); // kcov-ignore
         Ok(())
     }
