@@ -9,15 +9,16 @@ application_menu = { path = "../application_menu" }
 application_ui = { path = "../application_ui" }
 character_selection = { path = "../../crate/character_selection" }
 derivative = "1.0"
+derive-new = "0.5"
 game_loading = { path = "../../crate/game_loading" }
 game_play = { path = "../../crate/game_play" }
 log = "0.4"
 map_selection = { path = "../../crate/map_selection" }
-rayon = "1.0"
 
 [dev-dependencies]
 amethyst_test_support = { path = "../amethyst_test_support" }
 debug_util_amethyst = { path = "../debug_util_amethyst" }
+rayon = "1.0"
 
 [features]
 nightly = ["amethyst/nightly", "amethyst_test_support/nightly"]

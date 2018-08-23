@@ -1,17 +1,14 @@
-use std::sync::Arc;
-
 use amethyst::{
+    core::SystemBundle,
     ecs::prelude::*,
     prelude::*,
-    shred::ParSeq,
     shrev::{EventChannel, ReaderId},
 };
 use application_menu::MenuEvent;
-use rayon;
 
+use GameModeMenuBundle;
 use Index;
 use MenuBuildFn;
-use UiEventHandlerSystem;
 
 /// Game mode selection state.
 ///
@@ -22,9 +19,9 @@ use UiEventHandlerSystem;
 #[derive(Derivative, Default)]
 #[derivative(Debug)]
 pub struct GameModeMenuState {
-    /// Dispatcher for UI handler system.
+    /// State specific dispatcher.
     #[derivative(Debug = "ignore")]
-    dispatch: Option<ParSeq<Arc<rayon::ThreadPool>, UiEventHandlerSystem>>,
+    dispatcher: Option<Dispatcher<'static, 'static>>,
     /// Function used to build the menu.
     menu_build_fn: MenuBuildFn,
     /// Menu item entities, which we create / delete when the state is run / paused
@@ -48,16 +45,19 @@ impl GameModeMenuState {
     }
 
     fn initialize_dispatcher(&mut self, world: &mut World) {
-        let mut dispatch = ParSeq::new(
-            UiEventHandlerSystem::new(),
-            world.read_resource::<Arc<rayon::ThreadPool>>().clone(),
-        );
-        dispatch.setup(&mut world.res);
-        self.dispatch = Some(dispatch);
+        let mut dispatcher_builder = DispatcherBuilder::new();
+
+        GameModeMenuBundle::new()
+            .build(&mut dispatcher_builder)
+            .expect("Failed to register `GameModeMenuBundle`.");
+
+        let mut dispatcher = dispatcher_builder.build();
+        dispatcher.setup(&mut world.res);
+        self.dispatcher = Some(dispatcher);
     }
 
     fn terminate_dispatcher(&mut self) {
-        self.dispatch.take();
+        self.dispatcher = None;
     }
 
     fn initialize_menu_event_channel(&mut self, world: &mut World) {
@@ -114,9 +114,7 @@ impl State<GameData<'static, 'static>> for GameModeMenuState {
 
     fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'static, 'static>> {
         data.data.update(&data.world);
-        {
-            self.dispatch.as_mut().unwrap().dispatch(&data.world.res);
-        }
+        self.dispatcher.as_mut().unwrap().dispatch(&data.world.res);
 
         let menu_event_channel = data.world.read_resource::<EventChannel<MenuEvent<Index>>>();
 
@@ -174,14 +172,14 @@ mod test {
     fn on_start_initializes_dispatcher() {
         let (mut state, mut world, mut data) = setup();
 
-        assert!(state.dispatch.is_none());
+        assert!(state.dispatcher.is_none());
 
         state.on_start(StateData {
             world: &mut world,
             data: &mut data,
         });
 
-        assert!(state.dispatch.is_some());
+        assert!(state.dispatcher.is_some());
     }
 
     #[test]
@@ -227,14 +225,14 @@ mod test {
             data: &mut data,
         });
 
-        assert!(state.dispatch.is_some());
+        assert!(state.dispatcher.is_some());
 
         state.on_stop(StateData {
             world: &mut world,
             data: &mut data,
         });
 
-        assert!(state.dispatch.is_none());
+        assert!(state.dispatcher.is_none());
     }
 
     #[test]

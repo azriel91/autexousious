@@ -13,14 +13,17 @@ extern crate character_selection;
 extern crate debug_util_amethyst;
 #[macro_use]
 extern crate derivative;
-extern crate game_loading;
-extern crate game_play;
+#[macro_use]
+extern crate derive_new;
 #[macro_use]
 extern crate log;
+extern crate game_loading;
+extern crate game_play;
 extern crate map_selection;
+#[cfg(test)]
 extern crate rayon;
 
-pub use game_mode_menu_bundle::GameModeMenuBundle;
+pub(crate) use game_mode_menu_bundle::GameModeMenuBundle;
 pub use game_mode_menu_state::GameModeMenuState;
 pub use index::Index;
 pub(crate) use menu_build_fn::MenuBuildFn;

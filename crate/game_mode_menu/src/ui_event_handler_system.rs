@@ -20,18 +20,15 @@ impl UiEventHandlerSystem {
 }
 
 type UiEventHandlerSystemData<'s> = (
-    Write<'s, EventChannel<UiEvent>>,
-    Write<'s, EventChannel<MenuEvent<Index>>>,
+    Read<'s, EventChannel<UiEvent>>,
     ReadStorage<'s, MenuItem<Index>>,
+    Write<'s, EventChannel<MenuEvent<Index>>>,
 );
 
 impl<'s> System<'s> for UiEventHandlerSystem {
     type SystemData = UiEventHandlerSystemData<'s>;
 
-    fn run(&mut self, (mut ui_events, mut menu_events, menu_items): Self::SystemData) {
-        if self.reader_id.is_none() {
-            self.reader_id = Some(ui_events.register_reader());
-        }
+    fn run(&mut self, (ui_events, menu_items, mut menu_events): Self::SystemData) {
         for ev in ui_events.read(self.reader_id.as_mut().unwrap()) {
             if let UiEvent {
                 event_type: UiEventType::Click,
@@ -51,139 +48,153 @@ impl<'s> System<'s> for UiEventHandlerSystem {
 
     fn setup(&mut self, res: &mut Resources) {
         Self::SystemData::setup(res);
+        self.reader_id = Some(res.fetch_mut::<EventChannel<UiEvent>>().register_reader());
     }
 }
 
 #[cfg(test)]
 mod test {
-    use std::sync::Arc;
-
     use amethyst::{
         ecs::prelude::*,
-        shred::ParSeq,
         shrev::{EventChannel, ReaderId},
         ui::{UiEvent, UiEventType},
     };
+    use amethyst_test_support::prelude::*;
     use application_menu::{MenuEvent, MenuItem};
-    use rayon::{ThreadPool, ThreadPoolBuilder};
 
     use super::UiEventHandlerSystem;
     use index::Index;
 
-    fn setup() -> (
-        ParSeq<Arc<ThreadPool>, UiEventHandlerSystem>,
-        World,
-        ReaderId<MenuEvent<Index>>,
-    ) {
-        let mut world = World::new();
-        world.add_resource(EventChannel::<MenuEvent<Index>>::with_capacity(10));
-        world.add_resource(EventChannel::<UiEvent>::with_capacity(10)); // needed by system
-        world.register::<MenuItem<Index>>();
+    fn setup_menu_event_reader(world: &mut World) {
+        let menu_event_channel_reader = world
+            .write_resource::<EventChannel<MenuEvent<Index>>>()
+            .register_reader();
 
-        let menu_event_channel_reader = {
-            let mut menu_event_channel = world.write_resource::<EventChannel<MenuEvent<Index>>>();
-            menu_event_channel.register_reader()
-        }; // kcov-ignore
-
-        let mut dispatcher = ParSeq::new(
-            UiEventHandlerSystem::new(),
-            Arc::new(ThreadPoolBuilder::new().build().unwrap()),
-        );
-        dispatcher.dispatch(&mut world.res); // Get system to register reader ID
-
-        (dispatcher, world, menu_event_channel_reader)
+        world.add_resource(EffectReturn(menu_event_channel_reader));
     }
 
     #[test]
     fn run_without_ui_events_does_not_send_menu_event() {
-        let (mut dispatcher, mut world, mut menu_event_channel_reader) = setup();
+        assert!(
+            AmethystApplication::ui_base::<String, String>()
+                .with_system(UiEventHandlerSystem::new(), "", &[])
+                .with_setup(setup_menu_event_reader)
+                .with_assertion(|world| {
+                    let mut menu_event_channel_reader = &mut world
+                        .write_resource::<EffectReturn<ReaderId<MenuEvent<Index>>>>()
+                        .0;
 
-        // We don't write any UI events
-
-        dispatcher.dispatch(&mut world.res);
-
-        let menu_event_channel = world.read_resource::<EventChannel<MenuEvent<Index>>>();
-        let mut menu_event_iter = menu_event_channel.read(&mut menu_event_channel_reader);
-        assert_eq!(None, menu_event_iter.next());
+                    let menu_event_channel =
+                        world.read_resource::<EventChannel<MenuEvent<Index>>>();
+                    let mut menu_event_iter =
+                        menu_event_channel.read(&mut menu_event_channel_reader);
+                    assert_eq!(None, menu_event_iter.next());
+                }).run()
+                .is_ok()
+        );
     }
 
     #[test]
     fn run_with_non_click_ui_event_does_not_send_menu_event() {
-        let (mut dispatcher, mut world, mut menu_event_channel_reader) = setup();
+        assert!(
+            AmethystApplication::ui_base::<String, String>()
+                .with_system(UiEventHandlerSystem::new(), "", &[])
+                .with_setup(setup_menu_event_reader)
+                .with_setup(|world| {
+                    let entity = world.create_entity().build();
+                    let mut ui_event_channel = world.write_resource::<EventChannel<UiEvent>>();
 
-        {
-            let entity = world.create_entity().build();
-            let mut ui_event_channel = world.write_resource::<EventChannel<UiEvent>>();
+                    let ui_event_types = vec![
+                        UiEventType::ClickStart,
+                        UiEventType::ClickStop,
+                        UiEventType::HoverStart,
+                        UiEventType::HoverStop,
+                    ];
+                    let ui_events = ui_event_types
+                        .into_iter()
+                        .map(|event_type| UiEvent {
+                            event_type,
+                            target: entity,
+                        }).collect::<Vec<UiEvent>>();
+                    ui_event_channel.iter_write(ui_events.into_iter());
+                }).with_assertion(|world| {
+                    let mut menu_event_channel_reader = &mut world
+                        .write_resource::<EffectReturn<ReaderId<MenuEvent<Index>>>>()
+                        .0;
 
-            let mut ui_event_types = vec![
-                UiEventType::ClickStart,
-                UiEventType::ClickStop,
-                UiEventType::HoverStart,
-                UiEventType::HoverStop,
-            ];
-            let ui_events = ui_event_types
-                .drain(..)
-                .map(|event_type| UiEvent {
-                    event_type,
-                    target: entity,
-                }).collect::<Vec<UiEvent>>();
-            ui_event_channel.iter_write(ui_events.into_iter());
-        }
-
-        dispatcher.dispatch(&mut world.res);
-
-        let menu_event_channel = world.read_resource::<EventChannel<MenuEvent<Index>>>();
-        let mut menu_event_iter = menu_event_channel.read(&mut menu_event_channel_reader);
-        assert_eq!(None, menu_event_iter.next());
+                    let menu_event_channel =
+                        world.read_resource::<EventChannel<MenuEvent<Index>>>();
+                    let mut menu_event_iter =
+                        menu_event_channel.read(&mut menu_event_channel_reader);
+                    assert_eq!(None, menu_event_iter.next());
+                }).run()
+                .is_ok()
+        );
     }
 
     #[test]
     fn run_with_click_ui_event_sends_select_menu_event() {
-        let (mut dispatcher, mut world, mut menu_event_channel_reader) = setup();
+        assert!(
+            AmethystApplication::ui_base::<String, String>()
+                .with_system(UiEventHandlerSystem::new(), "", &[])
+                .with_setup(setup_menu_event_reader)
+                .with_setup(|world| {
+                    let entity = world
+                        .create_entity()
+                        .with(MenuItem {
+                            index: Index::StartGame,
+                        }).build();
 
-        {
-            let entity = world
-                .create_entity()
-                .with(MenuItem {
-                    index: Index::StartGame,
-                }).build();
+                    let mut ui_event_channel = world.write_resource::<EventChannel<UiEvent>>();
+                    ui_event_channel.single_write(UiEvent {
+                        event_type: UiEventType::Click,
+                        target: entity,
+                    });
+                }).with_assertion(|world| {
+                    let mut menu_event_channel_reader = &mut world
+                        .write_resource::<EffectReturn<ReaderId<MenuEvent<Index>>>>()
+                        .0;
 
-            let mut ui_event_channel = world.write_resource::<EventChannel<UiEvent>>();
-            ui_event_channel.single_write(UiEvent {
-                event_type: UiEventType::Click,
-                target: entity,
-            });
-        } // kcov-ignore
-
-        dispatcher.dispatch(&mut world.res);
-
-        let menu_event_channel = world.read_resource::<EventChannel<MenuEvent<Index>>>();
-        let mut menu_event_iter = menu_event_channel.read(&mut menu_event_channel_reader);
-        assert_eq!(
-            Some(&MenuEvent::Select(Index::StartGame)),
-            menu_event_iter.next()
+                    let menu_event_channel =
+                        world.read_resource::<EventChannel<MenuEvent<Index>>>();
+                    let mut menu_event_iter =
+                        menu_event_channel.read(&mut menu_event_channel_reader);
+                    assert_eq!(
+                        Some(&MenuEvent::Select(Index::StartGame)),
+                        menu_event_iter.next()
+                    );
+                    assert_eq!(None, menu_event_iter.next());
+                }).run()
+                .is_ok()
         );
-        assert_eq!(None, menu_event_iter.next());
     }
 
     #[test]
     fn run_with_click_ui_event_on_non_menu_item_does_not_send_menu_event() {
-        let (mut dispatcher, mut world, mut menu_event_channel_reader) = setup();
+        assert!(
+            AmethystApplication::ui_base::<String, String>()
+                .with_system(UiEventHandlerSystem::new(), "", &[])
+                .with_setup(setup_menu_event_reader)
+                .with_setup(|world| {
+                    let entity = world.create_entity().build();
 
-        {
-            let entity = world.create_entity().build();
+                    let mut ui_event_channel = world.write_resource::<EventChannel<UiEvent>>();
+                    ui_event_channel.single_write(UiEvent {
+                        event_type: UiEventType::Click,
+                        target: entity,
+                    });
+                }).with_assertion(|world| {
+                    let mut menu_event_channel_reader = &mut world
+                        .write_resource::<EffectReturn<ReaderId<MenuEvent<Index>>>>()
+                        .0;
 
-            let mut ui_event_channel = world.write_resource::<EventChannel<UiEvent>>();
-            ui_event_channel.single_write(UiEvent {
-                event_type: UiEventType::Click,
-                target: entity,
-            });
-        } // kcov-ignore
-
-        dispatcher.dispatch(&mut world.res);
-
-        let menu_event_channel = world.read_resource::<EventChannel<MenuEvent<Index>>>();
-        let mut menu_event_iter = menu_event_channel.read(&mut menu_event_channel_reader);
-        assert_eq!(None, menu_event_iter.next());
+                    let menu_event_channel =
+                        world.read_resource::<EventChannel<MenuEvent<Index>>>();
+                    let mut menu_event_iter =
+                        menu_event_channel.read(&mut menu_event_channel_reader);
+                    assert_eq!(None, menu_event_iter.next());
+                }).run()
+                .is_ok()
+        );
     }
 }
