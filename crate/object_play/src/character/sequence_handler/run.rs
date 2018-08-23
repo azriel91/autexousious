@@ -1,4 +1,4 @@
-use object_model::entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics};
+use object_model::entity::{CharacterStatus, CharacterStatusUpdate, ControllerInput, Kinematics};
 
 use character::sequence_handler::{
     common::{grounding::AirborneCheck, input::RunStopCheck},
@@ -11,7 +11,7 @@ pub(crate) struct Run;
 
 impl CharacterSequenceHandler for Run {
     fn update(
-        input: &CharacterInput,
+        input: &ControllerInput,
         character_status: &CharacterStatus,
         kinematics: &Kinematics<f32>,
     ) -> CharacterStatusUpdate {
@@ -28,7 +28,7 @@ mod test {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterInput, CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics,
+            CharacterStatus, CharacterStatusUpdate, ControllerInput, Grounding, Kinematics,
             ObjectStatus, ObjectStatusUpdate,
         },
     };
@@ -48,7 +48,7 @@ mod test {
                 ..Default::default()
             },
             Run::update(
-                &CharacterInput::default(),
+                &ControllerInput::default(),
                 &CharacterStatus {
                     object_status: ObjectStatus {
                         sequence_id: CharacterSequenceId::Run,
@@ -64,7 +64,7 @@ mod test {
 
     #[test]
     fn reverts_to_run_stop_when_no_input() {
-        let input = CharacterInput::new(0., 0., false, false, false, false);
+        let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate {
@@ -92,7 +92,7 @@ mod test {
 
     #[test]
     fn keeps_running_when_x_axis_positive_and_non_mirrored() {
-        let input = CharacterInput::new(1., 0., false, false, false, false);
+        let input = ControllerInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate::default(),
@@ -113,7 +113,7 @@ mod test {
 
     #[test]
     fn keeps_running_when_x_axis_negative_and_mirrored() {
-        let input = CharacterInput::new(-1., 0., false, false, false, false);
+        let input = ControllerInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate::default(),
@@ -137,7 +137,7 @@ mod test {
         vec![(1., false), (-1., true)]
             .into_iter()
             .for_each(|(x_input, mirrored)| {
-                let input = CharacterInput::new(x_input, 0., false, false, false, false);
+                let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
                     CharacterStatusUpdate {
@@ -167,7 +167,7 @@ mod test {
 
     #[test]
     fn reverts_to_run_stop_when_x_axis_negative_and_non_mirrored() {
-        let input = CharacterInput::new(-1., 0., false, false, false, false);
+        let input = ControllerInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate {
@@ -195,7 +195,7 @@ mod test {
 
     #[test]
     fn reverts_to_run_stop_when_x_axis_positive_and_mirrored() {
-        let input = CharacterInput::new(1., 0., false, false, false, false);
+        let input = ControllerInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate {
@@ -223,7 +223,7 @@ mod test {
 
     #[test]
     fn keeps_running_when_x_axis_positive_z_axis_non_zero_and_non_mirrored() {
-        let input = CharacterInput::new(1., 1., false, false, false, false);
+        let input = ControllerInput::new(1., 1., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate::default(),
@@ -241,7 +241,7 @@ mod test {
             )
         );
 
-        let input = CharacterInput::new(1., -1., false, false, false, false);
+        let input = ControllerInput::new(1., -1., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate::default(),

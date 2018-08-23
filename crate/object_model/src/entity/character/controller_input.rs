@@ -2,7 +2,7 @@ use amethyst::ecs::prelude::*;
 
 /// Input for a character entity.
 #[derive(Clone, Copy, Debug, Default, PartialEq, new)]
-pub struct CharacterInput {
+pub struct ControllerInput {
     /// X axis input value.
     ///
     /// * 0.0 if neither or both left and right buttons are pressed.
@@ -25,6 +25,6 @@ pub struct CharacterInput {
     pub special: bool,
 }
 
-impl Component for CharacterInput {
+impl Component for ControllerInput {
     type Storage = VecStorage<Self>;
 }

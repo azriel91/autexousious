@@ -8,7 +8,7 @@ use amethyst::{
 use character_selection::CharacterEntityControl;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{CharacterInput, CharacterStatus, Kinematics},
+    entity::{CharacterStatus, ControllerInput, Kinematics},
     loaded::{Character, CharacterHandle},
 };
 
@@ -43,7 +43,7 @@ impl CharacterEntitySpawner {
             &(entities, loaded_character_handles, loaded_characters),
             &mut (
                 world.write_storage::<CharacterEntityControl>(),
-                world.write_storage::<CharacterInput>(),
+                world.write_storage::<ControllerInput>(),
                 world.write_storage::<CharacterHandle>(),
                 world.write_storage::<CharacterStatus>(),
             ), // kcov-ignore
@@ -77,7 +77,7 @@ impl CharacterEntitySpawner {
         >,
         (
             ref mut character_entity_control_storage,
-            ref mut character_input_storage,
+            ref mut controller_input_storage,
             ref mut character_handle_storage,
             ref mut character_status_storage,
         ): &mut CharacterComponentStorages<'s>,
@@ -143,9 +143,9 @@ impl CharacterEntitySpawner {
             .insert(entity, character_entity_control)
             .expect("Failed to insert character_entity_control component.");
         // Controller of this entity
-        character_input_storage
-            .insert(entity, CharacterInput::default())
-            .expect("Failed to insert character_input component.");
+        controller_input_storage
+            .insert(entity, ControllerInput::default())
+            .expect("Failed to insert controller_input component.");
         // Loaded `Character` for this entity.
         character_handle_storage
             .insert(entity, character_handle)
@@ -204,7 +204,7 @@ mod test {
     use object_loading::ObjectLoadingBundle;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{CharacterInput, CharacterStatus, Kinematics, Position, Velocity},
+        entity::{CharacterStatus, ControllerInput, Kinematics, Position, Velocity},
         loaded::CharacterHandle,
     };
     use typename::TypeName;
@@ -236,7 +236,7 @@ mod test {
             );
             assert!(world.read_storage::<CharacterHandle>().contains(entity));
             assert!(world.read_storage::<CharacterStatus>().contains(entity));
-            assert!(world.read_storage::<CharacterInput>().contains(entity));
+            assert!(world.read_storage::<ControllerInput>().contains(entity));
             assert!(world.read_storage::<SpriteRender>().contains(entity));
             assert!(world.read_storage::<Transparent>().contains(entity));
             assert!(world.read_storage::<Kinematics<f32>>().contains(entity));
@@ -269,7 +269,7 @@ mod test {
         ReadStorage<'s, CharacterEntityControl>,
         ReadStorage<'s, CharacterHandle>,
         ReadStorage<'s, CharacterStatus>,
-        ReadStorage<'s, CharacterInput>,
+        ReadStorage<'s, ControllerInput>,
         ReadStorage<'s, Transparent>,
         ReadStorage<'s, Kinematics<f32>>,
         ReadStorage<'s, AnimationControlSet<CharacterSequenceId, SpriteRender>>,

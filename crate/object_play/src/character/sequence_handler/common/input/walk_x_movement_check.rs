@@ -1,7 +1,7 @@
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
     entity::{
-        CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
+        CharacterStatus, CharacterStatusUpdate, ControllerInput, Kinematics, ObjectStatusUpdate,
         RunCounter,
     },
 };
@@ -16,7 +16,7 @@ pub(crate) struct WalkXMovementCheck;
 
 impl SequenceHandler for WalkXMovementCheck {
     fn update(
-        input: &CharacterInput,
+        input: &ControllerInput,
         character_status: &CharacterStatus,
         kinematics: &Kinematics<f32>,
     ) -> Option<CharacterStatusUpdate> {
@@ -75,7 +75,7 @@ mod tests {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus,
+            CharacterStatus, CharacterStatusUpdate, ControllerInput, Kinematics, ObjectStatus,
             ObjectStatusUpdate, RunCounter,
         },
     };
@@ -85,7 +85,7 @@ mod tests {
 
     #[test]
     fn none_when_no_input() {
-        let input = CharacterInput::new(0., 0., false, false, false, false);
+        let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
             None,
@@ -105,7 +105,7 @@ mod tests {
 
     #[test]
     fn walk_non_mirror_when_x_axis_positive_mirror() {
-        let input = CharacterInput::new(1., 0., false, false, false, false);
+        let input = ControllerInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
             Some(CharacterStatusUpdate {
@@ -134,7 +134,7 @@ mod tests {
 
     #[test]
     fn walk_mirror_when_x_axis_negative_non_mirror() {
-        let input = CharacterInput::new(-1., 0., false, false, false, false);
+        let input = ControllerInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
             Some(CharacterStatusUpdate {
@@ -166,7 +166,7 @@ mod tests {
         vec![(1., false), (-1., true)]
             .into_iter()
             .for_each(|(x_input, mirrored)| {
-                let input = CharacterInput::new(x_input, 0., false, false, false, false);
+                let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
                     Some(CharacterStatusUpdate {
@@ -196,7 +196,7 @@ mod tests {
 
     #[test]
     fn run_when_x_axis_positive_and_run_counter_decrease_non_mirror() {
-        let input = CharacterInput::new(1., -1., false, false, false, false);
+        let input = ControllerInput::new(1., -1., false, false, false, false);
 
         assert_eq!(
             Some(CharacterStatusUpdate {
@@ -224,7 +224,7 @@ mod tests {
 
     #[test]
     fn run_when_x_axis_negative_and_run_counter_decrease_mirror() {
-        let input = CharacterInput::new(-1., -1., false, false, false, false);
+        let input = ControllerInput::new(-1., -1., false, false, false, false);
 
         assert_eq!(
             Some(CharacterStatusUpdate {

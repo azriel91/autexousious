@@ -1,4 +1,4 @@
-use object_model::entity::{CharacterInput, CharacterStatus, Grounding, RunCounter};
+use object_model::entity::{CharacterStatus, ControllerInput, Grounding, RunCounter};
 
 use character::sequence_handler::SequenceHandlerUtil;
 
@@ -8,7 +8,7 @@ pub(crate) struct RunCounterUpdater;
 
 impl RunCounterUpdater {
     pub(crate) fn update(
-        input: &CharacterInput,
+        input: &ControllerInput,
         character_status: &CharacterStatus,
     ) -> Option<RunCounter> {
         if character_status.object_status.grounding != Grounding::OnGround || input.jump {
@@ -48,14 +48,14 @@ impl RunCounterUpdater {
 #[cfg(test)]
 mod tests {
     use object_model::entity::{
-        CharacterInput, CharacterStatus, Grounding, ObjectStatus, RunCounter,
+        CharacterStatus, ControllerInput, Grounding, ObjectStatus, RunCounter,
     };
 
     use super::RunCounterUpdater;
 
     #[test]
     fn none_when_grounding_is_airborne_and_unused() {
-        let input = CharacterInput::default();
+        let input = ControllerInput::default();
 
         assert_eq!(
             None,
@@ -74,7 +74,7 @@ mod tests {
 
     #[test]
     fn unused_when_grounding_is_airborne() {
-        let input = CharacterInput::default();
+        let input = ControllerInput::default();
 
         assert_eq!(
             Some(RunCounter::Unused),
@@ -93,7 +93,7 @@ mod tests {
 
     #[test]
     fn none_when_jump_is_pressed_and_unused() {
-        let mut input = CharacterInput::default();
+        let mut input = ControllerInput::default();
         input.jump = true;
 
         assert_eq!(
@@ -113,7 +113,7 @@ mod tests {
 
     #[test]
     fn unused_when_jump_is_pressed() {
-        let mut input = CharacterInput::default();
+        let mut input = ControllerInput::default();
         input.jump = true;
 
         assert_eq!(
@@ -133,7 +133,7 @@ mod tests {
 
     #[test]
     fn none_when_unused_and_no_x_input() {
-        let input = CharacterInput::default();
+        let input = ControllerInput::default();
 
         assert_eq!(
             None,
@@ -149,7 +149,7 @@ mod tests {
 
     #[test]
     fn unused_when_counter_decrease_runs_out_and_no_x_input() {
-        let input = CharacterInput::default();
+        let input = ControllerInput::default();
 
         assert_eq!(
             Some(RunCounter::Unused),
@@ -165,7 +165,7 @@ mod tests {
 
     #[test]
     fn decrements_run_counter_when_decrease_and_no_x_input() {
-        let input = CharacterInput::default();
+        let input = ControllerInput::default();
 
         assert_eq!(
             Some(RunCounter::Decrease(0)),
@@ -181,7 +181,7 @@ mod tests {
 
     #[test]
     fn decrease_when_increase_and_no_x_input() {
-        let input = CharacterInput::new(0., 1., false, false, false, false);
+        let input = ControllerInput::new(0., 1., false, false, false, false);
 
         assert_eq!(
             Some(RunCounter::Decrease(RunCounter::RESET_TICK_COUNT)),
@@ -206,7 +206,7 @@ mod tests {
             .into_iter()
             .zip(mirrors.into_iter())
             .for_each(|(x_input, mirrored)| {
-                let input = CharacterInput::new(x_input, 0., false, false, false, false);
+                let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
                     Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
@@ -229,7 +229,7 @@ mod tests {
         vec![(1., true), (-1., false)]
             .into_iter()
             .for_each(|(x_input, mirrored)| {
-                let input = CharacterInput::new(x_input, 0., false, false, false, false);
+                let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
                     Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
@@ -252,7 +252,7 @@ mod tests {
         vec![(1., true), (-1., false)]
             .into_iter()
             .for_each(|(x_input, mirrored)| {
-                let input = CharacterInput::new(x_input, 0., false, false, false, false);
+                let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
                     Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
@@ -275,7 +275,7 @@ mod tests {
         vec![(1., false), (-1., true)]
             .into_iter()
             .for_each(|(x_input, mirrored)| {
-                let input = CharacterInput::new(x_input, 0., false, false, false, false);
+                let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
                     Some(RunCounter::Unused),
@@ -298,7 +298,7 @@ mod tests {
         vec![(1., false), (-1., true)]
             .into_iter()
             .for_each(|(x_input, mirrored)| {
-                let input = CharacterInput::new(x_input, 0., false, false, false, false);
+                let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
                     Some(RunCounter::Exceeded),
@@ -321,7 +321,7 @@ mod tests {
         vec![(1., false), (-1., true)]
             .into_iter()
             .for_each(|(x_input, mirrored)| {
-                let input = CharacterInput::new(x_input, 0., false, false, false, false);
+                let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
                     Some(RunCounter::Increase(10)),
@@ -344,7 +344,7 @@ mod tests {
         vec![(1., false), (-1., true)]
             .into_iter()
             .for_each(|(x_input, mirrored)| {
-                let input = CharacterInput::new(x_input, 0., false, false, false, false);
+                let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
                     None,

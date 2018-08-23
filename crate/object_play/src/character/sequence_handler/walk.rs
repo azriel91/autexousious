@@ -1,5 +1,5 @@
 use object_model::entity::{
-    CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
+    CharacterStatus, CharacterStatusUpdate, ControllerInput, Kinematics, ObjectStatusUpdate,
 };
 
 use character::sequence_handler::{
@@ -16,7 +16,7 @@ pub(crate) struct Walk;
 
 impl CharacterSequenceHandler for Walk {
     fn update(
-        input: &CharacterInput,
+        input: &ControllerInput,
         character_status: &CharacterStatus,
         kinematics: &Kinematics<f32>,
     ) -> CharacterStatusUpdate {
@@ -51,7 +51,7 @@ mod test {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus,
+            CharacterStatus, CharacterStatusUpdate, ControllerInput, Kinematics, ObjectStatus,
             ObjectStatusUpdate, RunCounter,
         },
     };
@@ -61,7 +61,7 @@ mod test {
 
     #[test]
     fn reverts_to_stand_when_no_input() {
-        let input = CharacterInput::new(0., 0., false, false, false, false);
+        let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate {
@@ -88,7 +88,7 @@ mod test {
 
     #[test]
     fn reverts_to_stand_with_run_counter_unused_when_no_input_and_run_counter_exceeded() {
-        let input = CharacterInput::new(0., 0., false, false, false, false);
+        let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate {
@@ -115,7 +115,7 @@ mod test {
 
     #[test]
     fn decrements_increase_run_counter_when_x_axis_positive_non_mirror() {
-        let input = CharacterInput::new(1., 0., false, false, false, false);
+        let input = ControllerInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate {
@@ -139,7 +139,7 @@ mod test {
 
     #[test]
     fn run_counter_exceeded_when_x_axis_positive_non_mirror_and_exceeds_tick_count() {
-        let input = CharacterInput::new(1., 0., false, false, false, false);
+        let input = ControllerInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate {
@@ -163,7 +163,7 @@ mod test {
 
     #[test]
     fn decrements_increase_run_counter_when_x_axis_negative_mirror() {
-        let input = CharacterInput::new(-1., 0., false, false, false, false);
+        let input = ControllerInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate {
@@ -187,7 +187,7 @@ mod test {
 
     #[test]
     fn run_counter_exceeded_when_x_axis_negative_mirror_and_exceeds_tick_count() {
-        let input = CharacterInput::new(-1., 0., false, false, false, false);
+        let input = ControllerInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate {
@@ -211,7 +211,7 @@ mod test {
 
     #[test]
     fn run_counter_decrease_when_x_axis_zero_z_axis_positive_and_run_counter_increase() {
-        let input = CharacterInput::new(0., 1., false, false, false, false);
+        let input = ControllerInput::new(0., 1., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate {
@@ -234,7 +234,7 @@ mod test {
 
     #[test]
     fn decrements_decrease_run_counter_when_z_axis_non_zero() {
-        let input = CharacterInput::new(0., 1., false, false, false, false);
+        let input = ControllerInput::new(0., 1., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate {
@@ -257,7 +257,7 @@ mod test {
 
     #[test]
     fn no_change_to_run_counter_when_exceeded() {
-        let input = CharacterInput::new(1., 1., false, false, false, false);
+        let input = ControllerInput::new(1., 1., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate::default(),
@@ -278,7 +278,7 @@ mod test {
 
     #[test]
     fn walk_non_mirror_when_x_axis_positive_mirror() {
-        let input = CharacterInput::new(1., 0., false, false, false, false);
+        let input = ControllerInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate {
@@ -307,7 +307,7 @@ mod test {
 
     #[test]
     fn walk_mirror_when_x_axis_negative_non_mirror() {
-        let input = CharacterInput::new(-1., 0., false, false, false, false);
+        let input = ControllerInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate {
@@ -336,7 +336,7 @@ mod test {
 
     #[test]
     fn walk_when_z_axis_non_zero() {
-        let input = CharacterInput::new(0., 1., false, false, false, false);
+        let input = ControllerInput::new(0., 1., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate {
@@ -356,7 +356,7 @@ mod test {
             )
         );
 
-        let input = CharacterInput::new(0., -1., false, false, false, false);
+        let input = ControllerInput::new(0., -1., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate {
@@ -382,7 +382,7 @@ mod test {
         vec![(0., 1.), (0., -1.)]
             .into_iter()
             .for_each(|(x_input, z_input)| {
-                let input = CharacterInput::new(x_input, z_input, false, false, false, false);
+                let input = ControllerInput::new(x_input, z_input, false, false, false, false);
 
                 assert_eq!(
                     CharacterStatusUpdate {
@@ -412,7 +412,7 @@ mod test {
         vec![(1., 1., false), (-1., -1., true)]
             .into_iter()
             .for_each(|(x_input, z_input, mirrored)| {
-                let input = CharacterInput::new(x_input, z_input, false, false, false, false);
+                let input = ControllerInput::new(x_input, z_input, false, false, false, false);
 
                 assert_eq!(
                     CharacterStatusUpdate {
@@ -442,7 +442,7 @@ mod test {
 
     #[test]
     fn run_when_x_axis_positive_and_run_counter_decrease_non_mirror() {
-        let input = CharacterInput::new(1., -1., false, false, false, false);
+        let input = ControllerInput::new(1., -1., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate {
@@ -470,7 +470,7 @@ mod test {
 
     #[test]
     fn run_when_x_axis_negative_and_run_counter_decrease_mirror() {
-        let input = CharacterInput::new(-1., -1., false, false, false, false);
+        let input = ControllerInput::new(-1., -1., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate {

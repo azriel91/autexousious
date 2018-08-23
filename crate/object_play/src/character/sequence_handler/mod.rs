@@ -1,4 +1,4 @@
-use object_model::entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics};
+use object_model::entity::{CharacterStatus, CharacterStatusUpdate, ControllerInput, Kinematics};
 
 pub(super) use self::jump::Jump;
 pub(super) use self::jump_ascend::JumpAscend;
@@ -29,11 +29,11 @@ pub(super) trait CharacterSequenceHandler {
     ///
     /// # Parameters
     ///
-    /// * `character_input`: Controller input for the character.
+    /// * `controller_input`: Controller input for the character.
     /// * `character_status`: Character specific status attributes.
     /// * `kinematics`: Kinematics of the character.
     fn update(
-        _character_input: &CharacterInput,
+        _controller_input: &ControllerInput,
         _character_status: &CharacterStatus,
         _kinematics: &Kinematics<f32>,
     ) -> CharacterStatusUpdate {
@@ -52,11 +52,11 @@ pub(super) trait SequenceHandler {
     ///
     /// # Parameters
     ///
-    /// * `character_input`: Controller input for the character.
+    /// * `controller_input`: Controller input for the character.
     /// * `character_status`: Character specific status attributes.
     /// * `kinematics`: Kinematics of the character.
     fn update(
-        _character_input: &CharacterInput,
+        _controller_input: &ControllerInput,
         _character_status: &CharacterStatus,
         _kinematics: &Kinematics<f32>,
     ) -> Option<CharacterStatusUpdate> {
@@ -67,7 +67,7 @@ pub(super) trait SequenceHandler {
 #[cfg(test)]
 mod test {
     use object_model::entity::{
-        CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
+        CharacterStatus, CharacterStatusUpdate, ControllerInput, Kinematics, ObjectStatusUpdate,
     };
 
     use super::{CharacterSequenceHandler, SequenceHandler};
@@ -90,7 +90,7 @@ mod test {
                 ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored, grounding)
             ),
             Sit::update(
-                &CharacterInput::default(),
+                &ControllerInput::default(),
                 &CharacterStatus::default(),
                 &Kinematics::default()
             )
@@ -102,7 +102,7 @@ mod test {
         assert_eq!(
             None,
             Sleep::update(
-                &CharacterInput::default(),
+                &ControllerInput::default(),
                 &CharacterStatus::default(),
                 &Kinematics::default()
             )

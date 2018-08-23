@@ -6,7 +6,7 @@ use amethyst::{
 };
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterInput, CharacterStatus, Kinematics},
+    entity::{CharacterStatus, ControllerInput, Kinematics},
     loaded::{Character, CharacterHandle},
 };
 use object_play::CharacterSequenceUpdater;
@@ -21,7 +21,7 @@ type CharacterSequenceUpdateSystemData<'s> = (
     Entities<'s>,
     Read<'s, AssetStorage<Character>>,
     ReadStorage<'s, CharacterHandle>,
-    ReadStorage<'s, CharacterInput>,
+    ReadStorage<'s, ControllerInput>,
     ReadStorage<'s, Kinematics<f32>>,
     WriteStorage<'s, CharacterStatus>,
     WriteStorage<'s, SpriteRender>,
@@ -37,7 +37,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             entities,
             characters,
             handle_storage,
-            character_input_storage,
+            controller_input_storage,
             kinematics_storage,
             mut character_status_storage,
             mut sprite_render_storage,
@@ -47,14 +47,14 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
         for (
             entity,
             character_handle,
-            character_input,
+            controller_input,
             kinematics,
             mut character_status,
             mut sprite_render,
         ) in (
             &*entities,
             &handle_storage,
-            &character_input_storage,
+            &controller_input_storage,
             &kinematics_storage,
             &mut character_status_storage,
             &mut sprite_render_storage,
@@ -89,7 +89,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
 
             let status_update = CharacterSequenceUpdater::update(
                 character,
-                &character_input,
+                &controller_input,
                 &character_status,
                 &kinematics,
             );
@@ -133,7 +133,7 @@ mod tests {
     use map_selection::MapSelection;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
-        entity::{CharacterInput, CharacterStatus, Grounding, Kinematics},
+        entity::{CharacterStatus, ControllerInput, Grounding, Kinematics},
     };
     use typename::TypeName;
 
@@ -196,13 +196,13 @@ mod tests {
                         |(
                             map_selection,
                             maps,
-                            mut character_input_storage,
+                            mut controller_input_storage,
                             mut status_storage,
                             mut kinematics_storage,
                         ): (
                             Read<MapSelection>,
                             Read<AssetStorage<Map>>,
-                            WriteStorage<CharacterInput>,
+                            WriteStorage<ControllerInput>,
                             WriteStorage<CharacterStatus>,
                             WriteStorage<Kinematics<f32>>,
                         )| {
@@ -212,15 +212,15 @@ mod tests {
                                 .expect("Expected map to be selected.");
                             let map = maps.get(map_handle).expect("Expected map to be loaded.");
 
-                            for (character_input, status, kinematics) in (
-                                &mut character_input_storage,
+                            for (controller_input, status, kinematics) in (
+                                &mut controller_input_storage,
                                 &mut status_storage,
                                 &mut kinematics_storage,
                             )
                                 .join()
                             {
-                                character_input.x_axis_value = -1.;
-                                character_input.z_axis_value = -1.;
+                                controller_input.x_axis_value = -1.;
+                                controller_input.z_axis_value = -1.;
 
                                 status.object_status.grounding = Grounding::OnGround;
                                 status.object_status.sequence_id = CharacterSequenceId::Stand;

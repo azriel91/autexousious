@@ -1,7 +1,7 @@
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
     entity::{
-        CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
+        CharacterStatus, CharacterStatusUpdate, ControllerInput, Kinematics, ObjectStatusUpdate,
     },
 };
 
@@ -15,7 +15,7 @@ pub(crate) struct StandZMovementCheck;
 
 impl SequenceHandler for StandZMovementCheck {
     fn update(
-        input: &CharacterInput,
+        input: &ControllerInput,
         _character_status: &CharacterStatus,
         _kinematics: &Kinematics<f32>,
     ) -> Option<CharacterStatusUpdate> {
@@ -45,7 +45,7 @@ mod tests {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
+            CharacterStatus, CharacterStatusUpdate, ControllerInput, Kinematics, ObjectStatusUpdate,
         },
     };
 
@@ -54,7 +54,7 @@ mod tests {
 
     #[test]
     fn no_change_when_no_z_input() {
-        let input = CharacterInput::new(0., 0., false, false, false, false);
+        let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
             None,
@@ -68,7 +68,7 @@ mod tests {
 
     #[test]
     fn walk_when_z_axis_is_non_zero() {
-        let input = CharacterInput::new(0., 1., false, false, false, false);
+        let input = ControllerInput::new(0., 1., false, false, false, false);
 
         assert_eq!(
             Some(CharacterStatusUpdate {

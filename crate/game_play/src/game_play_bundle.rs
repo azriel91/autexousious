@@ -5,9 +5,9 @@ use amethyst::{
 use typename::TypeName;
 
 use CharacterGroundingSystem;
-use CharacterInputUpdateSystem;
 use CharacterKinematicsSystem;
 use CharacterSequenceUpdateSystem;
+use ControllerInputUpdateSystem;
 use ObjectKinematicsUpdateSystem;
 use ObjectTransformUpdateSystem;
 
@@ -19,17 +19,17 @@ pub struct GamePlayBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
-        // Note: The `CharacterInputUpdateSystem` depends on the `"input_system"`. We rely on the
+        // Note: The `ControllerInputUpdateSystem` depends on the `"input_system"`. We rely on the
         // main dispatcher to be run before the game play state dispatcher.
         builder.add(
-            CharacterInputUpdateSystem::new(),
-            &CharacterInputUpdateSystem::type_name(),
+            ControllerInputUpdateSystem::new(),
+            &ControllerInputUpdateSystem::type_name(),
             &[],
         ); // kcov-ignore
         builder.add(
             CharacterSequenceUpdateSystem::new(),
             &CharacterSequenceUpdateSystem::type_name(),
-            &[&CharacterInputUpdateSystem::type_name()],
+            &[&ControllerInputUpdateSystem::type_name()],
         ); // kcov-ignore
         builder.add(
             CharacterKinematicsSystem::new(),
