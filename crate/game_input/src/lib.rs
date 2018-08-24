@@ -23,13 +23,17 @@ extern crate application;
 extern crate derivative;
 #[macro_use]
 extern crate derive_new;
-extern crate itertools;
+#[cfg(test)]
+#[macro_use]
+extern crate hamcrest;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 extern crate typename;
 #[macro_use]
 extern crate typename_derive;
+#[cfg(test)]
+extern crate winit;
 
 pub use axis::Axis;
 pub use component::{ControllerInput, InputControlled};

@@ -7,7 +7,6 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop" }
 derivative = "1.0"
 derive-new = "0.5"
-itertools = "0.7"
 serde = "1.0"
 serde_derive = "1.0"
 typename = "0.1"
@@ -16,3 +15,5 @@ typename_derive = "0.1"
 [dev-dependencies]
 application = { path = "../application" }
 amethyst_test_support = { path = "../amethyst_test_support" }
+hamcrest = "*"
+winit = "0.15"
