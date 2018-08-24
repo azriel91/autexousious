@@ -1,6 +1,7 @@
+use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, CharacterStatusUpdate, ControllerInput, Kinematics},
+    entity::{CharacterStatus, CharacterStatusUpdate, Kinematics},
 };
 
 use character::sequence_handler::{
@@ -29,11 +30,12 @@ impl CharacterSequenceHandler for RunStop {
 
 #[cfg(test)]
 mod test {
+    use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, CharacterStatusUpdate, ControllerInput, Grounding, Kinematics,
-            ObjectStatus, ObjectStatusUpdate,
+            CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatus,
+            ObjectStatusUpdate,
         },
     };
 

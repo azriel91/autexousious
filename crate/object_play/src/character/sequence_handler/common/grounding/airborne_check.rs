@@ -1,9 +1,7 @@
+use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{
-        CharacterStatus, CharacterStatusUpdate, ControllerInput, Grounding, Kinematics,
-        ObjectStatusUpdate,
-    },
+    entity::{CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatusUpdate},
 };
 
 use character::sequence_handler::SequenceHandler;
@@ -36,11 +34,12 @@ impl SequenceHandler for AirborneCheck {
 
 #[cfg(test)]
 mod tests {
+    use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, CharacterStatusUpdate, ControllerInput, Grounding, Kinematics,
-            ObjectStatus, ObjectStatusUpdate, RunCounter,
+            CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatus,
+            ObjectStatusUpdate, RunCounter,
         },
     };
 

@@ -1,6 +1,7 @@
+use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, CharacterStatusUpdate, ControllerInput, Grounding, Kinematics},
+    entity::{CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics},
 };
 
 use character::sequence_handler::{CharacterSequenceHandler, SequenceHandlerUtil};
@@ -37,11 +38,12 @@ impl CharacterSequenceHandler for JumpDescend {
 
 #[cfg(test)]
 mod test {
+    use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, CharacterStatusUpdate, ControllerInput, Grounding, Kinematics,
-            ObjectStatus, ObjectStatusUpdate,
+            CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatus,
+            ObjectStatusUpdate,
         },
     };
 

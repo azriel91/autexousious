@@ -1,4 +1,5 @@
-use object_model::entity::{CharacterStatus, CharacterStatusUpdate, ControllerInput, Kinematics};
+use game_input::ControllerInput;
+use object_model::entity::{CharacterStatus, CharacterStatusUpdate, Kinematics};
 
 use character::sequence_handler::{common::SequenceRepeat, SequenceHandler};
 
@@ -24,11 +25,12 @@ impl SequenceHandler for WalkZMovementCheck {
 
 #[cfg(test)]
 mod tests {
+    use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, CharacterStatusUpdate, ControllerInput, Kinematics, ObjectStatus,
-            ObjectStatusUpdate, RunCounter,
+            CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+            RunCounter,
         },
     };
 

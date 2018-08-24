@@ -1,7 +1,8 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
+use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, ControllerInput, Kinematics},
+    entity::{CharacterStatus, Kinematics},
     loaded::{Character, CharacterHandle},
 };
 
@@ -89,11 +90,12 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
 mod tests {
     use amethyst::{assets::AssetStorage, ecs::prelude::*};
     use application_test_support::AutexousiousApplication;
+    use game_input::ControllerInput;
     use map_model::loaded::Map;
     use map_selection::MapSelection;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{CharacterStatus, ControllerInput, Grounding, Kinematics},
+        entity::{CharacterStatus, Grounding, Kinematics},
     };
     use typename::TypeName;
 

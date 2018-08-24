@@ -1,9 +1,7 @@
+use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{
-        CharacterStatus, CharacterStatusUpdate, ControllerInput, Kinematics, ObjectStatusUpdate,
-        RunCounter,
-    },
+    entity::{CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate, RunCounter},
 };
 
 use character::sequence_handler::{SequenceHandler, SequenceHandlerUtil};
@@ -64,11 +62,12 @@ impl SequenceHandler for StandXMovementCheck {
 
 #[cfg(test)]
 mod tests {
+    use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, CharacterStatusUpdate, ControllerInput, Kinematics, ObjectStatus,
-            ObjectStatusUpdate, RunCounter,
+            CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+            RunCounter,
         },
     };
 

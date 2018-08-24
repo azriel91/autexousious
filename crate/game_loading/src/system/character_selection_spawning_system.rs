@@ -1,5 +1,6 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
-use character_selection::{CharacterEntityControl, CharacterSelection};
+use character_selection::CharacterSelection;
+use game_input::InputControlled;
 use game_model::play::GameEntities;
 use map_model::loaded::Map;
 use map_selection::MapSelection;
@@ -83,18 +84,15 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
         let character_entities = character_selection
             .iter()
             .map(|(controller_id, character_index)| {
-                (
-                    CharacterEntityControl::new(*controller_id),
-                    *character_index,
-                )
-            }).map(|(character_entity_control, character_index)| {
+                (InputControlled::new(*controller_id), *character_index)
+            }).map(|(input_controlled, character_index)| {
                 CharacterEntitySpawner::spawn_system(
                     &object_spawning_resources,
                     &mut character_component_storages,
                     &mut object_component_storages,
                     kinematics,
                     character_index,
-                    character_entity_control,
+                    input_controlled,
                 )
             }).collect::<Vec<Entity>>();
 

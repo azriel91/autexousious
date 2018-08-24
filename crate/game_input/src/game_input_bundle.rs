@@ -4,20 +4,24 @@ use amethyst::{
 };
 use typename::TypeName;
 
-use CharacterSelectionSystem;
+use ControllerInputUpdateSystem;
+use InputConfig;
 
-/// Adds the `CharacterSelectionSystem` to the `World`.
+/// Adds the game input update systems to the provided dispatcher.
 ///
 /// The Amethyst `InputBundle` must be added before this bundle.
 #[derive(Debug, new)]
-pub struct CharacterSelectionBundle;
+pub struct GameInputBundle {
+    /// All controller input configuration.
+    input_config: InputConfig,
+}
 
-impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionBundle {
+impl<'a, 'b> SystemBundle<'a, 'b> for GameInputBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
         builder.add(
-            CharacterSelectionSystem::new(),
-            &CharacterSelectionSystem::type_name(),
-            &[],
+            ControllerInputUpdateSystem::new(self.input_config),
+            &ControllerInputUpdateSystem::type_name(),
+            &["input_system"],
         ); // kcov-ignore
         Ok(())
     }
@@ -28,9 +32,11 @@ mod test {
     use std::env;
 
     use amethyst_test_support::prelude::*;
-    use game_input::{PlayerActionControl, PlayerAxisControl};
 
-    use super::CharacterSelectionBundle;
+    use super::GameInputBundle;
+    use InputConfig;
+    use PlayerActionControl;
+    use PlayerAxisControl;
 
     #[test]
     fn bundle_build_should_succeed() {
@@ -40,7 +46,7 @@ mod test {
         assert!(
             // kcov-ignore-end
             AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
-                .with_bundle(CharacterSelectionBundle)
+                .with_bundle(GameInputBundle::new(InputConfig::default()))
                 .run()
                 .is_ok()
         );

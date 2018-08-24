@@ -1,0 +1,33 @@
+// For a list of key codes, see <https://docs.rs/winit/0.15.1/winit/enum.VirtualKeyCode.html>
+InputConfig(
+    // Controllers are numbered using zero based indices, so player "one" is 0
+    controller_configs: [
+        // 0
+        ControllerConfig(
+            axes: {
+                X: Emulated(pos: Key(Right), neg: Key(Left)),
+                Z: Emulated(pos: Key(Down), neg: Key(Up)),
+            },
+            actions: {
+                Defend: Key(O),
+                Jump: Key(P),
+                Attack: Key(LBracket),
+                Special: Key(RBracket),
+            },
+        ),
+
+        // 1
+        ControllerConfig(
+            axes: {
+                X: Emulated(pos: Key(Right), neg: Key(Left)),
+                Z: Emulated(pos: Key(Down), neg: Key(Up)),
+            },
+            actions: {
+                Defend: Key(O),
+                Jump: Key(P),
+                Attack: Key(LBracket),
+                Special: Key(RBracket),
+            },
+        )
+    ],
+)

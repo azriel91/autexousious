@@ -4,6 +4,7 @@
 //! Behaviour logic for object types.
 
 extern crate amethyst;
+extern crate game_input;
 extern crate object_model;
 #[cfg(test)]
 #[macro_use]

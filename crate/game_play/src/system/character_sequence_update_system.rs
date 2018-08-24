@@ -4,9 +4,10 @@ use amethyst::{
     ecs::prelude::*,
     renderer::SpriteRender,
 };
+use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, ControllerInput, Kinematics},
+    entity::{CharacterStatus, Kinematics},
     loaded::{Character, CharacterHandle},
 };
 use object_play::CharacterSequenceUpdater;
@@ -129,11 +130,12 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
 mod tests {
     use amethyst::{assets::AssetStorage, ecs::prelude::*};
     use application_test_support::AutexousiousApplication;
+    use game_input::ControllerInput;
     use map_model::loaded::Map;
     use map_selection::MapSelection;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
-        entity::{CharacterStatus, ControllerInput, Grounding, Kinematics},
+        entity::{CharacterStatus, Grounding, Kinematics},
     };
     use typename::TypeName;
 

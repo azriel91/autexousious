@@ -1,6 +1,7 @@
+use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, CharacterStatusUpdate, ControllerInput, Kinematics},
+    entity::{CharacterStatus, CharacterStatusUpdate, Kinematics},
     loaded::Character,
 };
 

@@ -38,10 +38,10 @@ use amethyst::{
 };
 use application::resource::{
     dir::{self, assets_dir},
-    {self, find_in, load_in},
+    {self, load_in},
 };
 use application_robot::RobotState;
-use game_input::{PlayerActionControl, PlayerAxisControl};
+use game_input::{GameInputBundle, InputConfig, PlayerActionControl, PlayerAxisControl};
 use game_mode_menu::GameModeMenuState;
 use loading::LoadingState;
 use map_loading::MapLoadingBundle;
@@ -92,8 +92,12 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 )).with_pass(DrawUi::new()),
         );
 
-        let input_bindings_path =
-            find_in(dir::RESOURCES, "input.ron", Some(development_base_dirs!()))?;
+        let input_config = load_in::<InputConfig, _>(
+            dir::RESOURCES,
+            "input_config.ron",
+            resource::Format::Ron,
+            Some(development_base_dirs!()),
+        )?;
 
         // `InputBundle` provides `InputHandler<A, B>`, needed by the `UiBundle` for mouse events.
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
@@ -121,8 +125,9 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 .with_sprite_visibility_sorting(&["transform_system"])
                 .with_sprite_sheet_processor())?
             .with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new()
-                .with_bindings_from_file(input_bindings_path)?)?
+                .with_bindings((&input_config).into()))?
             .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?
+            .with_bundle(GameInputBundle::new(input_config))?
             .with_bundle(StdioViewBundle::new())?
             .with_bundle(MapLoadingBundle::new())?
             .with_bundle(ObjectLoadingBundle::new())?;

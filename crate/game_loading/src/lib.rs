@@ -17,6 +17,7 @@ extern crate character_selection;
 extern crate derivative;
 #[macro_use]
 extern crate derive_new;
+extern crate game_input;
 extern crate game_model;
 #[cfg(test)]
 extern crate loading;

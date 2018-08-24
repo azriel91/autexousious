@@ -1,4 +1,4 @@
-use object_model::entity::ControllerInput;
+use game_input::ControllerInput;
 
 #[derive(Debug)]
 pub struct SequenceHandlerUtil;
@@ -33,7 +33,7 @@ impl SequenceHandlerUtil {
 
 #[cfg(test)]
 mod tests {
-    use object_model::entity::ControllerInput;
+    use game_input::ControllerInput;
 
     use super::SequenceHandlerUtil;
 

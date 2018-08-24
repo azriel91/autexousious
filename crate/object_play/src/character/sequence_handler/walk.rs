@@ -1,5 +1,6 @@
+use game_input::ControllerInput;
 use object_model::entity::{
-    CharacterStatus, CharacterStatusUpdate, ControllerInput, Kinematics, ObjectStatusUpdate,
+    CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
 };
 
 use character::sequence_handler::{
@@ -48,11 +49,12 @@ impl CharacterSequenceHandler for Walk {
 
 #[cfg(test)]
 mod test {
+    use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, CharacterStatusUpdate, ControllerInput, Kinematics, ObjectStatus,
-            ObjectStatusUpdate, RunCounter,
+            CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+            RunCounter,
         },
     };
 

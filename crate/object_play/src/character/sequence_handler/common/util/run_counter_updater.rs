@@ -1,4 +1,5 @@
-use object_model::entity::{CharacterStatus, ControllerInput, Grounding, RunCounter};
+use game_input::ControllerInput;
+use object_model::entity::{CharacterStatus, Grounding, RunCounter};
 
 use character::sequence_handler::SequenceHandlerUtil;
 
@@ -47,9 +48,8 @@ impl RunCounterUpdater {
 
 #[cfg(test)]
 mod tests {
-    use object_model::entity::{
-        CharacterStatus, ControllerInput, Grounding, ObjectStatus, RunCounter,
-    };
+    use game_input::ControllerInput;
+    use object_model::entity::{CharacterStatus, Grounding, ObjectStatus, RunCounter};
 
     use super::RunCounterUpdater;
 

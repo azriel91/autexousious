@@ -1,4 +1,5 @@
-use object_model::entity::{CharacterStatus, CharacterStatusUpdate, ControllerInput, Kinematics};
+use game_input::ControllerInput;
+use object_model::entity::{CharacterStatus, CharacterStatusUpdate, Kinematics};
 
 use character::sequence_handler::{
     common::{grounding::AirborneCheck, input::RunStopCheck},
@@ -25,11 +26,12 @@ impl CharacterSequenceHandler for Run {
 
 #[cfg(test)]
 mod test {
+    use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, CharacterStatusUpdate, ControllerInput, Grounding, Kinematics,
-            ObjectStatus, ObjectStatusUpdate,
+            CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatus,
+            ObjectStatusUpdate,
         },
     };
 

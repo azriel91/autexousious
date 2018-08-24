@@ -39,7 +39,7 @@ pub(crate) use game_play_bundle::GamePlayBundle;
 pub use game_play_state::GamePlayState;
 pub(crate) use system::{
     CharacterGroundingSystem, CharacterKinematicsSystem, CharacterSequenceUpdateSystem,
-    ControllerInputUpdateSystem, ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
+    ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
 };
 
 mod game_play_bundle;

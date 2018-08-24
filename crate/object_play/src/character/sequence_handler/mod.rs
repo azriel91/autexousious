@@ -1,4 +1,5 @@
-use object_model::entity::{CharacterStatus, CharacterStatusUpdate, ControllerInput, Kinematics};
+use game_input::ControllerInput;
+use object_model::entity::{CharacterStatus, CharacterStatusUpdate, Kinematics};
 
 pub(super) use self::jump::Jump;
 pub(super) use self::jump_ascend::JumpAscend;
@@ -66,8 +67,9 @@ pub(super) trait SequenceHandler {
 
 #[cfg(test)]
 mod test {
+    use game_input::ControllerInput;
     use object_model::entity::{
-        CharacterStatus, CharacterStatusUpdate, ControllerInput, Kinematics, ObjectStatusUpdate,
+        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
     };
 
     use super::{CharacterSequenceHandler, SequenceHandler};

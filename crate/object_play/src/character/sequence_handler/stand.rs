@@ -1,5 +1,6 @@
+use game_input::ControllerInput;
 use object_model::entity::{
-    CharacterStatus, CharacterStatusUpdate, ControllerInput, Kinematics, ObjectStatusUpdate,
+    CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
 };
 
 use character::sequence_handler::{
@@ -58,11 +59,12 @@ impl CharacterSequenceHandler for Stand {
 
 #[cfg(test)]
 mod test {
+    use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, CharacterStatusUpdate, ControllerInput, Grounding, Kinematics,
-            ObjectStatus, ObjectStatusUpdate, RunCounter,
+            CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatus,
+            ObjectStatusUpdate, RunCounter,
         },
     };
 
