@@ -23,10 +23,14 @@ impl<'config> From<&'config InputConfig> for Bindings<PlayerAxisControl, PlayerA
             .flat_map(|(index, controller_config)| {
                 let controller_id = index as u32;
                 controller_config.axes.iter()
-                    .map(|(&axis, input_axis)| (PlayerAxisControl::new(controller_id, axis), input_axis.clone()))
+                    .map(|(&axis, input_axis)|
+                        (PlayerAxisControl::new(controller_id, axis), input_axis.clone())
+                    )
                     .collect::<Vec<(PlayerAxisControl, InputAxis)>>()
             })
-            .for_each(|(player_axis_control, input_axis)| {bindings.insert_axis(player_axis_control, input_axis);});
+            .for_each(|(player_axis_control, input_axis)| {
+                bindings.insert_axis(player_axis_control, input_axis);
+            });
 
         // Action controls
         input_config.controller_configs.iter()
@@ -35,10 +39,14 @@ impl<'config> From<&'config InputConfig> for Bindings<PlayerAxisControl, PlayerA
             .flat_map(|(index, controller_config)| {
                 let controller_id = index as u32;
                 controller_config.actions.iter()
-                    .map(|(&axis, input_button)| (PlayerActionControl::new(controller_id, axis), input_button.clone()))
+                    .map(|(&axis, input_button)|
+                        (PlayerActionControl::new(controller_id, axis), *input_button)
+                    )
                     .collect::<Vec<(PlayerActionControl, InputButton)>>()
             })
-            .for_each(|(player_action_control, input_button)| {bindings.insert_action_binding(player_action_control, input_button);});
+            .for_each(|(player_action_control, input_button)| {
+                bindings.insert_action_binding(player_action_control, input_button);
+            });
 
         bindings
     }
