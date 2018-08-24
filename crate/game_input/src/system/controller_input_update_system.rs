@@ -60,7 +60,8 @@ impl<'s> System<'s> for ControllerInputUpdateSystem {
     fn setup(&mut self, res: &mut Resources) {
         Self::SystemData::setup(res);
 
-        // TODO: figure out how to implement controller updates.
+        // TODO: figure out how to implement controller configuration updates, because we need to
+        // update the resource and what this system stores.
         res.insert(self.input_config.clone());
     }
 }
