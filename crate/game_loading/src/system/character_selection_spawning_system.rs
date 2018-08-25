@@ -1,5 +1,5 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
-use character_selection::CharacterSelection;
+use character_selection::CharacterSelections;
 use game_input::InputControlled;
 use game_model::play::GameEntities;
 use map_model::loaded::Map;
@@ -20,7 +20,7 @@ use ObjectComponentStorages;
 pub(crate) struct CharacterSelectionSpawningSystem;
 
 type CharacterSelectionSpawningSystemData<'s> = (
-    Read<'s, CharacterSelection>,
+    Read<'s, CharacterSelections>,
     Read<'s, MapSelection>,
     Read<'s, AssetStorage<Map>>,
     Entities<'s>,
@@ -111,7 +111,7 @@ mod tests {
     use amethyst::ecs::prelude::*;
     use amethyst_test_support::{prelude::*, EmptyState};
     use application::resource::dir::ASSETS;
-    use character_selection::CharacterSelection;
+    use character_selection::CharacterSelections;
     use game_model::play::GameEntities;
     use loading::LoadingState;
     use map_loading::MapLoadingBundle;
@@ -201,7 +201,7 @@ mod tests {
 
                 world.add_resource(map_selection);
             }).with_setup(|world| {
-                let mut character_selection = CharacterSelection::new();
+                let mut character_selection = CharacterSelections::new();
                 character_selection.insert(0, 0);
                 world.add_resource(character_selection);
             }).with_system_single(

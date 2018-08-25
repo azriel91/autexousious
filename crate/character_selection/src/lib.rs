@@ -19,12 +19,12 @@ extern crate typename;
 #[macro_use]
 extern crate typename_derive;
 
-pub use character_selection::CharacterSelection;
 pub use character_selection_bundle::CharacterSelectionBundle;
 pub use character_selection_state::CharacterSelectionState;
+pub use character_selections::CharacterSelections;
 pub(crate) use system::CharacterSelectionSystem;
 
-mod character_selection;
 mod character_selection_bundle;
 mod character_selection_state;
+mod character_selections;
 mod system;

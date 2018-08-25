@@ -3,8 +3,8 @@ use std::marker::PhantomData;
 
 use amethyst::{core::SystemBundle, ecs::prelude::*, prelude::*};
 
-use CharacterSelection;
 use CharacterSelectionBundle;
+use CharacterSelections;
 
 /// `State` where character selection takes place.
 ///
@@ -78,7 +78,7 @@ where
         data.data.update(&data.world);
         self.dispatcher.as_mut().unwrap().dispatch(&data.world.res);
 
-        let selected_characters = data.world.read_resource::<CharacterSelection>();
+        let selected_characters = data.world.read_resource::<CharacterSelections>();
         if selected_characters.is_empty() {
             Trans::None
         } else {

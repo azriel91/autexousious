@@ -7,7 +7,7 @@ use amethyst::{
 };
 use amethyst_test_support::{prelude::*, EmptyState};
 use application::resource::dir::ASSETS;
-use character_selection::{CharacterSelection, CharacterSelectionBundle};
+use character_selection::{CharacterSelectionBundle, CharacterSelections};
 use game_input::{PlayerActionControl, PlayerAxisControl};
 use game_loading::GameLoadingState;
 use loading::LoadingState;
@@ -128,7 +128,7 @@ impl AutexousiousApplication {
     where
         N: Into<&'name str>,
     {
-        let mut character_selection = CharacterSelection::new();
+        let mut character_selection = CharacterSelections::new();
         let controller_id = 0;
         let character_object_index = 0; // First loaded `Character`
         character_selection
