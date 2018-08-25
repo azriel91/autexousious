@@ -5,6 +5,7 @@ use amethyst::{
 use typename::TypeName;
 
 use CharacterSelectionSystem;
+use CharacterSelectionWidgetUiSystem;
 
 /// Adds the `CharacterSelectionSystem` to the `World`.
 ///
@@ -15,9 +16,14 @@ pub struct CharacterSelectionBundle;
 impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
         builder.add(
+            CharacterSelectionWidgetUiSystem::new(),
+            &CharacterSelectionWidgetUiSystem::type_name(),
+            &[],
+        ); // kcov-ignore
+        builder.add(
             CharacterSelectionSystem::new(),
             &CharacterSelectionSystem::type_name(),
-            &[],
+            &[&CharacterSelectionWidgetUiSystem::type_name()],
         ); // kcov-ignore
         Ok(())
     }
