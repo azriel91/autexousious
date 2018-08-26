@@ -5,48 +5,60 @@ use amethyst::{
 use typename::TypeName;
 
 use CharacterSelectionSystem;
-use CharacterSelectionWidgetUiSystem;
 
 /// Adds the `CharacterSelectionSystem` to the `World`.
 ///
 /// The Amethyst `InputBundle` must be added before this bundle.
 #[derive(Debug, new)]
-pub struct CharacterSelectionBundle;
+pub struct CharacterSelectionBundle {
+    /// System names that the `CharacterSelectionSystem` should depend on.
+    #[new(default)]
+    system_dependencies: Option<Vec<String>>,
+}
+
+impl CharacterSelectionBundle {
+    /// Specifies system dependencies for the `CharacterSelectionSystem`.
+    ///
+    /// # Parameters
+    ///
+    /// * `dependencies`: Names of the systems to depend on.
+    pub fn with_system_dependencies(&mut self, dependencies: &[String]) {
+        self.system_dependencies = Some(Vec::from(dependencies));
+    }
+}
 
 impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
-        builder.add(
-            CharacterSelectionWidgetUiSystem::new(),
-            &CharacterSelectionWidgetUiSystem::type_name(),
-            &[],
-        ); // kcov-ignore
+        let deps = self
+            .system_dependencies
+            .as_ref()
+            .map_or_else(Vec::new, |deps| {
+                deps.iter().map(|dep| dep.as_ref()).collect::<Vec<&str>>()
+            });
+
         builder.add(
             CharacterSelectionSystem::new(),
             &CharacterSelectionSystem::type_name(),
-            &[&CharacterSelectionWidgetUiSystem::type_name()],
+            &deps,
         ); // kcov-ignore
+
         Ok(())
     }
 }
 
 #[cfg(test)]
 mod test {
-    use std::env;
-
     use amethyst_test_support::prelude::*;
-    use game_input::{PlayerActionControl, PlayerAxisControl};
 
     use super::CharacterSelectionBundle;
 
     #[test]
     fn bundle_build_should_succeed() {
-        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
-
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
-                .with_bundle(CharacterSelectionBundle)
+            AmethystApplication::blank()
+                .with_bundle(CharacterSelectionBundle::new())
                 .run()
                 .is_ok()
         );

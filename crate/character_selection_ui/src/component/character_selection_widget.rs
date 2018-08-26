@@ -1,6 +1,6 @@
 use amethyst::ecs::prelude::{Component, DenseVecStorage};
+use character_selection::CharacterSelection;
 
-use CharacterSelection;
 use WidgetState;
 
 /// Component to tag entities that are character selection widgets.

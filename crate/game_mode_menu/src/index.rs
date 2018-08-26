@@ -1,5 +1,6 @@
 use amethyst::prelude::*;
-use character_selection::CharacterSelectionState;
+use character_selection::CharacterSelectionStateBuilder;
+use character_selection_ui::CharacterSelectionUiBundle;
 use game_loading::GameLoadingState;
 use game_play::GamePlayState;
 use map_selection::MapSelectionState;
@@ -31,8 +32,13 @@ impl Index {
                     move || Box::new(GameLoadingState::new(Box::new(game_play_fn))); // kcov-ignore
                 let map_selection_fn =
                     move || Box::new(MapSelectionState::new(Box::new(game_loading_fn))); // kcov-ignore
-                let character_selection_state =
-                    Box::new(CharacterSelectionState::new(Box::new(map_selection_fn)));
+                let character_selection_state = {
+                    let state = CharacterSelectionStateBuilder::new(Box::new(map_selection_fn))
+                        .with_bundle(CharacterSelectionUiBundle::new())
+                        .with_system_dependencies(CharacterSelectionUiBundle::system_names())
+                        .build();
+                    Box::new(state)
+                };
 
                 Trans::Push(character_selection_state)
             }

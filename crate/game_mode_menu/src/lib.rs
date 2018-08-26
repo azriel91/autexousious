@@ -9,6 +9,7 @@ extern crate amethyst_test_support;
 extern crate application_menu;
 extern crate application_ui;
 extern crate character_selection;
+extern crate character_selection_ui;
 #[cfg(test)]
 extern crate debug_util_amethyst;
 #[macro_use]

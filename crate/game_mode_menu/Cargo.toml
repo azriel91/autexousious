@@ -8,6 +8,7 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop
 application_menu = { path = "../application_menu" }
 application_ui = { path = "../application_ui" }
 character_selection = { path = "../../crate/character_selection" }
+character_selection_ui = { path = "../../crate/character_selection_ui" }
 derivative = "1.0"
 derive-new = "0.5"
 game_loading = { path = "../../crate/game_loading" }

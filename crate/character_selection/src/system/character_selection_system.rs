@@ -5,7 +5,7 @@ use CharacterSelections;
 
 /// Populates the `CharacterSelections` based on user input.
 #[derive(Debug, Default, TypeName, new)]
-pub(crate) struct CharacterSelectionSystem;
+pub struct CharacterSelectionSystem;
 
 type CharacterSelectionSystemData<'s, 'c> = (
     Read<'s, Vec<loaded::Character>>,

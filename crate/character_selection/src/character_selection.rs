@@ -6,5 +6,5 @@ pub enum CharacterSelection {
     #[derivative(Default)]
     Random,
     /// Character with a particular ID.
-    Id(u32),
+    Id(usize),
 }
