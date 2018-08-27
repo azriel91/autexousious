@@ -31,7 +31,7 @@ impl AutexousiousApplication {
     ///
     /// This has the same effect as calling `AmethystApplication::base::<PlayerAxisControl,
     /// PlayerActionControl>()`.
-    pub fn ui_base() -> AmethystApplication<GameData<'static, 'static>> {
+    pub fn ui_base() -> AmethystApplication<GameData<'static, 'static>, ()> {
         AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
     }
 
@@ -48,7 +48,7 @@ impl AutexousiousApplication {
     pub fn render_base<'name, N>(
         test_name: N,
         visibility: bool,
-    ) -> AmethystApplication<GameData<'static, 'static>>
+    ) -> AmethystApplication<GameData<'static, 'static>, ()>
     where
         N: Into<&'name str>,
     {
@@ -77,7 +77,7 @@ impl AutexousiousApplication {
     pub fn render_and_ui<'name, N>(
         test_name: N,
         visibility: bool,
-    ) -> AmethystApplication<GameData<'static, 'static>>
+    ) -> AmethystApplication<GameData<'static, 'static>, ()>
     where
         N: Into<&'name str>,
     {
@@ -97,7 +97,7 @@ impl AutexousiousApplication {
     pub fn config_base<'name, N>(
         test_name: N,
         visibility: bool,
-    ) -> AmethystApplication<GameData<'static, 'static>>
+    ) -> AmethystApplication<GameData<'static, 'static>, ()>
     where
         N: Into<&'name str>,
     {
@@ -126,7 +126,7 @@ impl AutexousiousApplication {
     pub fn game_base<'name, N>(
         test_name: N,
         visibility: bool,
-    ) -> AmethystApplication<GameData<'static, 'static>>
+    ) -> AmethystApplication<GameData<'static, 'static>, ()>
     where
         N: Into<&'name str>,
     {

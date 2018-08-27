@@ -2,7 +2,7 @@ use amethyst::{
     ecs::prelude::*,
     input::{is_close_requested, is_key_down},
     prelude::*,
-    renderer::{Event, ScreenDimensions, VirtualKeyCode},
+    renderer::{ScreenDimensions, VirtualKeyCode},
     shred::Fetch,
     ui::{Anchor, UiText, UiTransform},
 };
@@ -12,7 +12,10 @@ const FONT_SIZE: f32 = 25.;
 
 pub struct TextState;
 
-impl<'a, 'b> State<GameData<'a, 'b>> for TextState {
+impl<'a, 'b, E> State<GameData<'a, 'b>, E> for TextState
+where
+    E: Send + Sync + 'static,
+{
     fn on_start(&mut self, mut data: StateData<GameData>) {
         load_fonts(&mut data.world);
         initialize_text(&mut data.world);
@@ -21,16 +24,20 @@ impl<'a, 'b> State<GameData<'a, 'b>> for TextState {
     fn handle_event(
         &mut self,
         _data: StateData<GameData>,
-        event: Event,
-    ) -> Trans<GameData<'a, 'b>> {
-        if is_close_requested(&event) || is_key_down(&event, VirtualKeyCode::Escape) {
-            Trans::Quit
+        event: StateEvent<E>,
+    ) -> Trans<GameData<'a, 'b>, E> {
+        if let StateEvent::Window(event) = &event {
+            if is_close_requested(&event) || is_key_down(&event, VirtualKeyCode::Escape) {
+                Trans::Quit
+            } else {
+                Trans::None
+            }
         } else {
             Trans::None
         }
     }
 
-    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
+    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, E> {
         data.data.update(&data.world);
         Trans::None
     }

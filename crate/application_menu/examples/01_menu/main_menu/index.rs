@@ -20,7 +20,10 @@ impl Index {
         }
     }
 
-    pub fn trans<'a, 'b>(&self) -> Trans<GameData<'a, 'b>> {
+    pub fn trans<'a, 'b, E>(&self) -> Trans<GameData<'a, 'b>, E>
+    where
+        E: Send + Sync + 'static,
+    {
         match *self {
             Index::StartGame => Trans::Push(Box::new(OtherState::new())),
             Index::Exit => Trans::Quit,

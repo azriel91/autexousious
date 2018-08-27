@@ -1,7 +1,10 @@
-use amethyst::ecs::prelude::*;
-use amethyst::prelude::*;
-use amethyst::renderer::{Event, KeyboardInput, ScreenDimensions, VirtualKeyCode, WindowEvent};
-use amethyst::ui::{Anchor, FontHandle, UiText, UiTransform};
+use amethyst::{
+    ecs::prelude::*,
+    input::is_key_down,
+    prelude::*,
+    renderer::{ScreenDimensions, VirtualKeyCode},
+    ui::{Anchor, FontHandle, UiText, UiTransform},
+};
 use application_ui::{FontVariant, Theme};
 
 const FONT_SIZE: f32 = 17.;
@@ -55,28 +58,28 @@ impl OtherState {
     }
 }
 
-impl<'a, 'b> State<GameData<'a, 'b>> for OtherState {
+impl<'a, 'b, E> State<GameData<'a, 'b>, E> for OtherState
+where
+    E: Send + Sync + 'static,
+{
     fn on_start(&mut self, mut data: StateData<GameData>) {
         self.initialize_informative(&mut data.world);
     }
 
-    fn handle_event(&mut self, _: StateData<GameData>, event: Event) -> Trans<GameData<'a, 'b>> {
-        match event {
-            Event::WindowEvent { event, .. } => match event {
-                WindowEvent::KeyboardInput {
-                    input:
-                        KeyboardInput {
-                            virtual_keycode: Some(VirtualKeyCode::Escape),
-                            ..
-                        },
-                    ..
-                } => {
-                    info!("Returning from `OtherState`.");
-                    Trans::Pop
-                }
-                _ => Trans::None,
-            },
-            _ => Trans::None,
+    fn handle_event(
+        &mut self,
+        _: StateData<GameData>,
+        event: StateEvent<E>,
+    ) -> Trans<GameData<'a, 'b>, E> {
+        if let StateEvent::Window(event) = &event {
+            if is_key_down(&event, VirtualKeyCode::Escape) {
+                info!("Returning from `OtherState`.");
+                Trans::Pop
+            } else {
+                Trans::None
+            }
+        } else {
+            Trans::None
         }
     }
 
@@ -84,7 +87,7 @@ impl<'a, 'b> State<GameData<'a, 'b>> for OtherState {
         self.terminate_informative(&mut data.world);
     }
 
-    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
+    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, E> {
         data.data.update(&data.world);
         Trans::None
     }

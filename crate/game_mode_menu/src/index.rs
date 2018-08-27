@@ -24,7 +24,10 @@ impl Index {
     } // kcov-ignore
 
     /// Returns the transition when this index has been selected.
-    pub fn trans(self) -> Trans<GameData<'static, 'static>> {
+    pub fn trans<E>(self) -> Trans<GameData<'static, 'static>, E>
+    where
+        E: Send + Sync + 'static,
+    {
         match self {
             Index::StartGame => {
                 let game_play_fn = || Box::new(GamePlayState::new()); // kcov-ignore
@@ -71,10 +74,10 @@ mod test {
 
     #[test]
     fn exit_trans_returns_quit() {
-        assert_eq_trans(&Trans::Quit, &Index::Exit.trans());
+        assert_eq_trans(&Trans::Quit as &Trans<_, ()>, &Index::Exit.trans());
     }
 
     #[derive(Debug)]
     struct MockState;
-    impl<'a, 'b> State<GameData<'a, 'b>> for MockState {}
+    impl<'a, 'b> State<GameData<'a, 'b>, ()> for MockState {}
 }

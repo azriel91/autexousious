@@ -33,12 +33,12 @@ struct Opt {
     timeout: Option<u64>,
 }
 
-impl<'a, 'b> State<GameData<'a, 'b>> for EmptyState {
+impl<'a, 'b> State<GameData<'a, 'b>, ()> for EmptyState {
     fn on_start(&mut self, _data: StateData<GameData>) {
         println!("Reading from stdin. Type 'exit' to quit.");
     }
 
-    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
+    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, ()> {
         data.data.update(&data.world);
         Trans::None
     }

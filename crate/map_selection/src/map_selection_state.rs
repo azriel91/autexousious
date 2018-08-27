@@ -18,10 +18,11 @@ use MapSelectionSystem;
 /// * `S`: State to return.
 #[derive(Derivative, new)]
 #[derivative(Debug)]
-pub struct MapSelectionState<'a, 'b, F, S>
+pub struct MapSelectionState<'a, 'b, F, S, E>
 where
     F: Fn() -> Box<S>,
-    S: State<GameData<'a, 'b>> + 'static,
+    S: State<GameData<'a, 'b>, E> + 'static,
+    E: Send + Sync + 'static,
 {
     /// The `State` that follows this one.
     #[derivative(Debug(bound = "F: Debug"))]
@@ -31,13 +32,14 @@ where
     #[new(default)]
     dispatcher: Option<Dispatcher<'static, 'static>>,
     /// Data type used by this state and the returned state (see `StateData`).
-    state_data: PhantomData<GameData<'a, 'b>>,
+    state_data: PhantomData<(GameData<'a, 'b>, E)>,
 }
 
-impl<'a, 'b, F, S> MapSelectionState<'a, 'b, F, S>
+impl<'a, 'b, F, S, E> MapSelectionState<'a, 'b, F, S, E>
 where
     F: Fn() -> Box<S>,
-    S: State<GameData<'a, 'b>> + 'static,
+    S: State<GameData<'a, 'b>, E> + 'static,
+    E: Send + Sync + 'static,
 {
     fn reset_map_selection_state(&self, world: &mut World) {
         let mut map_selection = world.write_resource::<MapSelection>();
@@ -45,10 +47,11 @@ where
     }
 }
 
-impl<'a, 'b, F, S> State<GameData<'a, 'b>> for MapSelectionState<'a, 'b, F, S>
+impl<'a, 'b, F, S, E> State<GameData<'a, 'b>, E> for MapSelectionState<'a, 'b, F, S, E>
 where
     F: Fn() -> Box<S>,
-    S: State<GameData<'a, 'b>> + 'static,
+    S: State<GameData<'a, 'b>, E> + 'static,
+    E: Send + Sync + 'static,
 {
     fn on_start(&mut self, data: StateData<GameData<'a, 'b>>) {
         let mut dispatcher_builder = DispatcherBuilder::new();
@@ -72,7 +75,7 @@ where
         self.dispatcher = None;
     }
 
-    fn fixed_update(&mut self, data: StateData<GameData<'a, 'b>>) -> Trans<GameData<'a, 'b>> {
+    fn fixed_update(&mut self, data: StateData<GameData<'a, 'b>>) -> Trans<GameData<'a, 'b>, E> {
         data.data.update(&data.world);
         self.dispatcher.as_mut().unwrap().dispatch(&data.world.res);
 

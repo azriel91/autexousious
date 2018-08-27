@@ -70,7 +70,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     let assets_dir = assets_dir(Some(development_base_dirs!()))?;
 
     let game_mode_menu_state = GameModeMenuState::new();
-    let loading_state = LoadingState::new(assets_dir.clone(), Box::new(game_mode_menu_state));
+    let loading_state =
+        LoadingState::<_, ()>::new(assets_dir.clone(), Box::new(game_mode_menu_state));
     let state = RobotState::new(Box::new(loading_state));
 
     let mut game_data = GameDataBuilder::default();

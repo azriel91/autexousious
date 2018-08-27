@@ -16,14 +16,16 @@ use CharacterSelectionsState;
 ///
 /// * `F`: Function to construct the state to return after character selection is complete.
 /// * `S`: State to return.
+/// * `E`: Custom event type that states can respond to.
 ///
 /// [state_builder]: character_selection_state/struct.CharacterSelectionStateBuilder.html
 #[derive(Derivative, new)]
 #[derivative(Debug)]
-pub struct CharacterSelectionState<'a, 'b, F, S>
+pub struct CharacterSelectionState<'a, 'b, F, S, E>
 where
     F: Fn() -> Box<S>,
-    S: State<GameData<'a, 'b>> + 'static,
+    S: State<GameData<'a, 'b>, E> + 'static,
+    E: Send + Sync + 'static,
 {
     /// State specific dispatcher builder.
     #[derivative(Debug = "ignore")]
@@ -36,13 +38,14 @@ where
     #[derivative(Debug(bound = "F: Debug"))]
     next_state_fn: Box<F>,
     /// Data type used by this state and the returned state (see `StateData`).
-    game_data: PhantomData<GameData<'a, 'b>>,
+    game_data: PhantomData<(GameData<'a, 'b>, E)>,
 }
 
-impl<'a, 'b, F, S> CharacterSelectionState<'a, 'b, F, S>
+impl<'a, 'b, F, S, E> CharacterSelectionState<'a, 'b, F, S, E>
 where
     F: Fn() -> Box<S>,
-    S: State<GameData<'a, 'b>> + 'static,
+    S: State<GameData<'a, 'b>, E> + 'static,
+    E: Send + Sync + 'static,
 {
     /// Sets up the dispatcher for this state.
     ///
@@ -73,10 +76,11 @@ where
     }
 }
 
-impl<'a, 'b, F, S> State<GameData<'a, 'b>> for CharacterSelectionState<'a, 'b, F, S>
+impl<'a, 'b, F, S, E> State<GameData<'a, 'b>, E> for CharacterSelectionState<'a, 'b, F, S, E>
 where
     F: Fn() -> Box<S>,
-    S: State<GameData<'a, 'b>> + 'static,
+    S: State<GameData<'a, 'b>, E> + 'static,
+    E: Send + Sync + 'static,
 {
     fn on_start(&mut self, mut data: StateData<GameData<'a, 'b>>) {
         self.initialize_dispatcher(&mut data.world);
@@ -92,7 +96,7 @@ where
         character_selections.state = CharacterSelectionsState::Confirmed;
     }
 
-    fn fixed_update(&mut self, data: StateData<GameData<'a, 'b>>) -> Trans<GameData<'a, 'b>> {
+    fn fixed_update(&mut self, data: StateData<GameData<'a, 'b>>) -> Trans<GameData<'a, 'b>, E> {
         // Note: The built-in dispatcher must be run before the state specific dispatcher as the
         // `"input_system"` is registered in the main dispatcher, and is a dependency of the
         // `CharacterSelectionSystem`.
@@ -122,10 +126,11 @@ where
 /// * `S`: State to return.
 #[derive(Derivative, new)]
 #[derivative(Debug)]
-pub struct CharacterSelectionStateBuilder<'a, 'b, F, S>
+pub struct CharacterSelectionStateBuilder<'a, 'b, F, S, E>
 where
     F: Fn() -> Box<S>,
-    S: State<GameData<'a, 'b>> + 'static,
+    S: State<GameData<'a, 'b>, E> + 'static,
+    E: Send + Sync + 'static,
 {
     /// State specific dispatcher builder.
     #[derivative(Debug = "ignore")]
@@ -138,13 +143,14 @@ where
     #[derivative(Debug(bound = "F: Debug"))]
     next_state_fn: Box<F>,
     /// Data type used by the state and the returned state (see `StateData`).
-    game_data: PhantomData<GameData<'a, 'b>>,
+    game_data: PhantomData<(GameData<'a, 'b>, E)>,
 }
 
-impl<'a, 'b, F, S> CharacterSelectionStateBuilder<'a, 'b, F, S>
+impl<'a, 'b, F, S, E> CharacterSelectionStateBuilder<'a, 'b, F, S, E>
 where
     F: Fn() -> Box<S>,
-    S: State<GameData<'a, 'b>> + 'static,
+    S: State<GameData<'a, 'b>, E> + 'static,
+    E: Send + Sync + 'static,
 {
     /// Registers a bundle whose systems to run in the `CharacterSelectionState`.
     ///
@@ -169,7 +175,7 @@ where
     }
 
     /// Builds and returns the `CharacterSelectionState`.
-    pub fn build(mut self) -> CharacterSelectionState<'a, 'b, F, S> {
+    pub fn build(mut self) -> CharacterSelectionState<'a, 'b, F, S, E> {
         let mut bundle = CharacterSelectionBundle::new();
 
         if let Some(deps) = self.character_selection_system_dependencies {
