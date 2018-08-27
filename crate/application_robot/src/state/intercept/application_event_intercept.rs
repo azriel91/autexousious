@@ -29,7 +29,7 @@ impl ApplicationEventIntercept {
         self.application_event_reader.get_or_insert(reader_id);
     }
 
-    fn handle_application_events<T>(&mut self, world: &mut World) -> Option<Trans<T>> {
+    fn handle_application_events<T, E>(&mut self, world: &mut World) -> Option<Trans<T, E>> {
         let app_event_channel = world.read_resource::<EventChannel<ApplicationEvent>>();
 
         let mut reader_id = self
@@ -47,16 +47,19 @@ impl ApplicationEventIntercept {
     }
 }
 
-impl<T> Intercept<T> for ApplicationEventIntercept {
+impl<T, E> Intercept<T, E> for ApplicationEventIntercept
+where
+    E: Send + Sync + 'static,
+{
     fn on_start_begin(&mut self, data: &mut StateData<T>) {
         self.initialize_application_event_reader(data.world);
     }
 
-    fn fixed_update_begin(&mut self, data: &mut StateData<T>) -> Option<Trans<T>> {
+    fn fixed_update_begin(&mut self, data: &mut StateData<T>) -> Option<Trans<T, E>> {
         self.handle_application_events(data.world)
     }
 
-    fn update_begin(&mut self, data: &mut StateData<T>) -> Option<Trans<T>> {
+    fn update_begin(&mut self, data: &mut StateData<T>) -> Option<Trans<T, E>> {
         self.handle_application_events(data.world)
     }
 
@@ -89,7 +92,10 @@ mod test {
 
         assert!(intercept.application_event_reader.is_none());
 
-        intercept.on_start_begin(&mut StateData::new(&mut world, &mut ()));
+        <Intercept<(), ()>>::on_start_begin(
+            &mut intercept,
+            &mut StateData::new(&mut world, &mut ()),
+        );
 
         assert!(intercept.application_event_reader.is_some());
         let app_event_channel = world.read_resource::<EventChannel<ApplicationEvent>>();
@@ -102,7 +108,10 @@ mod test {
         let (mut intercept, mut world) = setup();
 
         // register reader
-        intercept.on_start_begin(&mut StateData::new(&mut world, &mut ()));
+        <Intercept<(), ()>>::on_start_begin(
+            &mut intercept,
+            &mut StateData::new(&mut world, &mut ()),
+        );
 
         {
             let mut app_event_channel = world.write_resource::<EventChannel<ApplicationEvent>>();
@@ -110,7 +119,7 @@ mod test {
         } // kcov-ignore
 
         assert_eq!(
-            discriminant(&Trans::Quit),
+            discriminant(&Trans::Quit as &Trans<(), ()>),
             discriminant(
                 &intercept
                     .fixed_update_begin(&mut StateData::new(&mut world, &mut ()))
@@ -124,7 +133,10 @@ mod test {
         let (mut intercept, mut world) = setup();
 
         // register reader
-        intercept.on_start_begin(&mut StateData::new(&mut world, &mut ()));
+        <Intercept<(), ()>>::on_start_begin(
+            &mut intercept,
+            &mut StateData::new(&mut world, &mut ()),
+        );
 
         {
             let mut app_event_channel = world.write_resource::<EventChannel<ApplicationEvent>>();
@@ -132,7 +144,7 @@ mod test {
         } // kcov-ignore
 
         assert_eq!(
-            discriminant(&Trans::Quit),
+            discriminant(&Trans::Quit as &Trans<(), ()>),
             discriminant(
                 &intercept
                     .update_begin(&mut StateData::new(&mut world, &mut ()))

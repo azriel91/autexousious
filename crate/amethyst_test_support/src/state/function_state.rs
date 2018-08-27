@@ -14,12 +14,13 @@ where
     function: F,
 }
 
-impl<F, T> State<T> for FunctionState<F>
+impl<F, T, E> State<T, E> for FunctionState<F>
 where
     F: Fn(&mut World),
     T: GameUpdate,
+    E: Send + Sync + 'static,
 {
-    fn update(&mut self, mut data: StateData<T>) -> Trans<T> {
+    fn update(&mut self, mut data: StateData<T>) -> Trans<T, E> {
         data.data.update(&data.world);
 
         (self.function)(&mut data.world);

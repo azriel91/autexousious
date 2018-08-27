@@ -1,5 +1,6 @@
+use amethyst::input::{is_close_requested, is_key_down};
 use amethyst::prelude::*;
-use amethyst::renderer::{Event, KeyboardInput, VirtualKeyCode, WindowEvent};
+use amethyst::renderer::VirtualKeyCode;
 
 use state::Intercept;
 
@@ -7,24 +8,20 @@ use state::Intercept;
 #[derive(Clone, Debug, Default)]
 pub struct KeyboardEscapeIntercept;
 
-impl<T> Intercept<T> for KeyboardEscapeIntercept {
+impl<T, E> Intercept<T, E> for KeyboardEscapeIntercept
+where
+    E: Send + Sync + 'static,
+{
     fn handle_event_begin(
         &mut self,
         _data: &mut StateData<T>,
-        event: &mut Event,
-    ) -> Option<Trans<T>> {
-        if let Event::WindowEvent { ref event, .. } = *event {
-            match *event {
-                WindowEvent::KeyboardInput {
-                    input:
-                        KeyboardInput {
-                            virtual_keycode: Some(VirtualKeyCode::Escape),
-                            ..
-                        },
-                    ..
-                }
-                | WindowEvent::CloseRequested => Some(Trans::Quit),
-                _ => None,
+        event: &mut StateEvent<E>,
+    ) -> Option<Trans<T, E>> {
+        if let StateEvent::Window(event) = &event {
+            if is_close_requested(&event) || is_key_down(&event, VirtualKeyCode::Escape) {
+                Some(Trans::Quit)
+            } else {
+                None
             }
         } else {
             // TODO: cover this case when there is support for dummy events #15

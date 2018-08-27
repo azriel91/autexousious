@@ -4,8 +4,11 @@ use amethyst::prelude::*;
 #[derive(Debug)]
 pub struct EmptyState;
 
-impl<T> State<T> for EmptyState {
-    fn update(&mut self, _data: StateData<T>) -> Trans<T> {
+impl<T, E> State<T, E> for EmptyState
+where
+    E: Send + Sync + 'static,
+{
+    fn update(&mut self, _data: StateData<T>) -> Trans<T, E> {
         Trans::Pop
     }
 }
