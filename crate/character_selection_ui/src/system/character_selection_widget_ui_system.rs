@@ -177,7 +177,9 @@ mod test {
 
     #[test]
     fn does_not_send_event_when_controller_input_empty() {
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AutexousiousApplication::config_base(
                 "does_not_send_event_when_controller_input_empty",
                 false
@@ -203,7 +205,9 @@ mod test {
         let mut controller_input = ControllerInput::default();
         controller_input.attack = true;
 
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AutexousiousApplication::config_base(
                 "updates_widget_inactive_to_character_select_when_input_attack",
                 false
@@ -235,7 +239,9 @@ mod test {
         let mut controller_input = ControllerInput::default();
         controller_input.attack = true;
 
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AutexousiousApplication::config_base(
                 "updates_widget_character_select_to_ready_and_sends_event_when_input_attack",
                 false
@@ -269,9 +275,11 @@ mod test {
         let mut controller_input = ControllerInput::default();
         controller_input.x_axis_value = -1.;
 
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AutexousiousApplication::config_base(
-                "selects_previous_character_when_input_left",
+                "selects_last_character_when_input_left_and_selection_random",
                 false
             ).with_setup(setup_components)
             .with_setup(setup_event_reader)
@@ -302,11 +310,91 @@ mod test {
     }
 
     #[test]
+    fn selects_first_character_when_input_right_and_selection_random() {
+        let mut controller_input = ControllerInput::default();
+        controller_input.x_axis_value = 1.;
+
+        // kcov-ignore-start
+        assert!(
+            // kcov-ignore-end
+            AutexousiousApplication::config_base(
+                "selects_first_character_when_input_right_and_selection_random",
+                false
+            ).with_setup(setup_components)
+            .with_setup(setup_event_reader)
+            .with_setup(move |world| setup_widget(
+                world,
+                WidgetState::CharacterSelect,
+                CharacterSelection::Random,
+                controller_input
+            )).with_system_single(
+                CharacterSelectionWidgetUiSystem::new(),
+                CharacterSelectionWidgetUiSystem::type_name(),
+                &[]
+            ).with_assertion(|world| assert_widget(
+                world,
+                CharacterSelectionWidget::new(
+                    WidgetState::CharacterSelect,
+                    CharacterSelection::Id(0)
+                )
+            )).with_assertion(|world| assert_events(
+                world,
+                vec![CharacterSelectionEvent::Select {
+                    controller_id: 123,
+                    character_selection: CharacterSelection::Id(0)
+                }]
+            )).run()
+            .is_ok()
+        );
+    }
+
+    #[test]
+    fn selects_random_when_input_right_and_selection_last_character() {
+        let mut controller_input = ControllerInput::default();
+        controller_input.x_axis_value = 1.;
+
+        // kcov-ignore-start
+        assert!(
+            // kcov-ignore-end
+            AutexousiousApplication::config_base(
+                "selects_random_when_input_right_and_selection_last_character",
+                false
+            ).with_setup(setup_components)
+            .with_setup(setup_event_reader)
+            .with_setup(move |world| setup_widget(
+                world,
+                WidgetState::CharacterSelect,
+                CharacterSelection::Id(0),
+                controller_input
+            )).with_system_single(
+                CharacterSelectionWidgetUiSystem::new(),
+                CharacterSelectionWidgetUiSystem::type_name(),
+                &[]
+            ).with_assertion(|world| assert_widget(
+                world,
+                CharacterSelectionWidget::new(
+                    WidgetState::CharacterSelect,
+                    CharacterSelection::Random
+                )
+            )).with_assertion(|world| assert_events(
+                world,
+                vec![CharacterSelectionEvent::Select {
+                    controller_id: 123,
+                    character_selection: CharacterSelection::Id(0)
+                }]
+            )).run()
+            .is_ok()
+        );
+    }
+
+    #[test]
     fn updates_widget_ready_to_character_select_and_sends_event_when_input_jump() {
         let mut controller_input = ControllerInput::default();
         controller_input.jump = true;
 
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AutexousiousApplication::config_base(
                 "updates_widget_ready_to_character_select_and_sends_event_when_input_jump",
                 false
@@ -340,7 +428,9 @@ mod test {
         let mut controller_input = ControllerInput::default();
         controller_input.jump = true;
 
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AutexousiousApplication::config_base(
                 "updates_widget_character_select_to_inactive_when_input_jump",
                 false
