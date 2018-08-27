@@ -1,32 +1,61 @@
-use amethyst::ecs::prelude::*;
-use object_model::loaded;
+use amethyst::{
+    ecs::prelude::*,
+    shrev::{EventChannel, ReaderId},
+};
 
+use CharacterSelection;
+use CharacterSelectionEvent;
 use CharacterSelections;
 
 /// Populates the `CharacterSelections` based on user input.
 #[derive(Debug, Default, TypeName, new)]
-pub struct CharacterSelectionSystem;
+pub struct CharacterSelectionSystem {
+    /// Reader ID for the `CharacterSelectionEvent` event channel.
+    #[new(default)]
+    reader_id: Option<ReaderId<CharacterSelectionEvent>>,
+}
 
-type CharacterSelectionSystemData<'s, 'c> = (
-    Read<'s, Vec<loaded::Character>>,
+type CharacterSelectionSystemData<'s> = (
+    Read<'s, EventChannel<CharacterSelectionEvent>>,
     Write<'s, CharacterSelections>,
 );
 
 impl<'s> System<'s> for CharacterSelectionSystem {
-    type SystemData = CharacterSelectionSystemData<'s, 's>;
+    type SystemData = CharacterSelectionSystemData<'s>;
 
-    // kcov-ignore-start
-    fn run(&mut self, (_characters, mut character_selection): Self::SystemData) {
-        // TODO: Update `CharacterSelections` with the user selected `character_object_index`.
-        let controller_id = 0;
-        let character_object_index = 0; // First loaded `Character`
-        character_selection
-            .entry(controller_id)
-            .or_insert(character_object_index);
+    fn run(&mut self, (character_selection_events, mut character_selections): Self::SystemData) {
+        character_selection_events
+            .read(
+                self.reader_id
+                    .as_mut()
+                    .expect("Expected to read `CharacterSelectionEvent`s."),
+            ).for_each(|ev| match ev {
+                CharacterSelectionEvent::Select {
+                    controller_id,
+                    character_selection,
+                } => {
+                    let character_id = match character_selection {
+                        CharacterSelection::Random => 0, // TODO: implement random
+                        CharacterSelection::Id(id) => *id,
+                    };
+                    character_selections
+                        .entry(*controller_id)
+                        .or_insert(character_id);
+                }
+                CharacterSelectionEvent::Deselect { controller_id } => {
+                    character_selections.remove(&controller_id);
+                }
+                CharacterSelectionEvent::Confirmed => {
+                    // TODO: Change CharacterSelections into a richer struct.
+                }
+            });
     }
-    // kcov-ignore-end
 
     fn setup(&mut self, res: &mut Resources) {
         Self::SystemData::setup(res);
+        self.reader_id = Some(
+            res.fetch_mut::<EventChannel<CharacterSelectionEvent>>()
+                .register_reader(),
+        );
     }
 }

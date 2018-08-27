@@ -17,4 +17,6 @@ pub enum CharacterSelectionEvent {
         /// ID of the controller of the selection.
         controller_id: ControllerId,
     },
+    /// Character selections have been confirmed.
+    Confirmed,
 }
