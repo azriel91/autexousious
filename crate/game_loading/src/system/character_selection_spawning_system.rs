@@ -37,7 +37,7 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
     fn run(
         &mut self,
         (
-            character_selection,
+            character_selections,
             map_selection,
             loaded_maps,
             entities,
@@ -81,7 +81,8 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
         let object_spawning_resources =
             (&*entities, &*loaded_character_handles, &*loaded_characters);
 
-        let character_entities = character_selection
+        let character_entities = character_selections
+            .selections
             .iter()
             .map(|(controller_id, character_index)| {
                 (InputControlled::new(*controller_id), *character_index)
@@ -201,9 +202,9 @@ mod tests {
 
                 world.add_resource(map_selection);
             }).with_setup(|world| {
-                let mut character_selection = CharacterSelections::new();
-                character_selection.insert(0, 0);
-                world.add_resource(character_selection);
+                let mut character_selections = CharacterSelections::default();
+                character_selections.selections.insert(0, 0);
+                world.add_resource(character_selections);
             }).with_system_single(
                 CharacterSelectionSpawningSystem,
                 CharacterSelectionSpawningSystem::type_name(),

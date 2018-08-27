@@ -5,6 +5,7 @@ use amethyst::{core::SystemBundle, ecs::prelude::*, prelude::*};
 
 use CharacterSelectionBundle;
 use CharacterSelections;
+use CharacterSelectionsState;
 
 /// `State` where character selection takes place.
 ///
@@ -87,14 +88,17 @@ where
         data.data.update(&data.world);
         self.dispatcher.as_mut().unwrap().dispatch(&data.world.res);
 
-        let selected_characters = data.world.read_resource::<CharacterSelections>();
-        if selected_characters.is_empty() {
-            Trans::None
-        } else {
-            info!("selected_characters: `{:?}`", &*selected_characters);
+        let character_selections = data.world.read_resource::<CharacterSelections>();
+        if character_selections.state == CharacterSelectionsState::Ready {
+            info!(
+                "character_selections: `{:?}`",
+                &character_selections.selections
+            );
 
             // TODO: `Trans:Push` when we have a proper character selection menu.
             Trans::Switch((self.next_state_fn)())
+        } else {
+            Trans::None
         }
     }
 }

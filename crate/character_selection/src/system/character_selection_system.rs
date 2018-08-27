@@ -39,11 +39,12 @@ impl<'s> System<'s> for CharacterSelectionSystem {
                         CharacterSelection::Id(id) => *id,
                     };
                     character_selections
+                        .selections
                         .entry(*controller_id)
                         .or_insert(character_id);
                 }
                 CharacterSelectionEvent::Deselect { controller_id } => {
-                    character_selections.remove(&controller_id);
+                    character_selections.selections.remove(&controller_id);
                 }
                 CharacterSelectionEvent::Confirmed => {
                     // TODO: Change CharacterSelections into a richer struct.
