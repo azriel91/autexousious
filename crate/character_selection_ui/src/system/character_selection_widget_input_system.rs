@@ -8,12 +8,12 @@ use WidgetState;
 
 /// System that processes controller input and generates `CharacterSelectionEvent`s.
 ///
-/// This is not private because consumers may use `CharacterSelectionWidgetUiSystem::type_name()` to
+/// This is not private because consumers may use `CharacterSelectionWidgetInputSystem::type_name()` to
 /// specify this as a dependency of another system.
 #[derive(Debug, Default, TypeName, new)]
-pub(crate) struct CharacterSelectionWidgetUiSystem;
+pub(crate) struct CharacterSelectionWidgetInputSystem;
 
-type CharacterSelectionWidgetUiSystemData<'s> = (
+type CharacterSelectionWidgetInputSystemData<'s> = (
     Read<'s, Vec<CharacterHandle>>,
     WriteStorage<'s, CharacterSelectionWidget>,
     ReadStorage<'s, InputControlled>,
@@ -21,7 +21,7 @@ type CharacterSelectionWidgetUiSystemData<'s> = (
     Write<'s, EventChannel<CharacterSelectionEvent>>,
 );
 
-impl CharacterSelectionWidgetUiSystem {
+impl CharacterSelectionWidgetInputSystem {
     fn handle_inactive(widget: &mut CharacterSelectionWidget, input: &ControllerInput) {
         if input.attack {
             widget.state = WidgetState::CharacterSelect;
@@ -115,8 +115,8 @@ impl CharacterSelectionWidgetUiSystem {
     }
 }
 
-impl<'s> System<'s> for CharacterSelectionWidgetUiSystem {
-    type SystemData = CharacterSelectionWidgetUiSystemData<'s>;
+impl<'s> System<'s> for CharacterSelectionWidgetInputSystem {
+    type SystemData = CharacterSelectionWidgetInputSystemData<'s>;
 
     fn run(
         &mut self,
@@ -171,7 +171,7 @@ mod test {
     use game_input::{ControllerInput, InputControlled};
     use typename::TypeName;
 
-    use super::{CharacterSelectionWidgetUiSystem, CharacterSelectionWidgetUiSystemData};
+    use super::{CharacterSelectionWidgetInputSystem, CharacterSelectionWidgetInputSystemData};
     use CharacterSelectionWidget;
     use WidgetState;
 
@@ -191,8 +191,8 @@ mod test {
                 CharacterSelection::Id(0),
                 ControllerInput::default()
             )).with_system_single(
-                CharacterSelectionWidgetUiSystem::new(),
-                CharacterSelectionWidgetUiSystem::type_name(),
+                CharacterSelectionWidgetInputSystem::new(),
+                CharacterSelectionWidgetInputSystem::type_name(),
                 &[]
             ).with_assertion(|world| assert_events(world, vec![]))
             .run()
@@ -219,8 +219,8 @@ mod test {
                 CharacterSelection::Random,
                 controller_input
             )).with_system_single(
-                CharacterSelectionWidgetUiSystem::new(),
-                CharacterSelectionWidgetUiSystem::type_name(),
+                CharacterSelectionWidgetInputSystem::new(),
+                CharacterSelectionWidgetInputSystem::type_name(),
                 &[]
             ).with_assertion(|world| assert_widget(
                 world,
@@ -253,8 +253,8 @@ mod test {
                 CharacterSelection::Id(0),
                 controller_input
             )).with_system_single(
-                CharacterSelectionWidgetUiSystem::new(),
-                CharacterSelectionWidgetUiSystem::type_name(),
+                CharacterSelectionWidgetInputSystem::new(),
+                CharacterSelectionWidgetInputSystem::type_name(),
                 &[]
             ).with_assertion(|world| assert_widget(
                 world,
@@ -289,8 +289,8 @@ mod test {
                 CharacterSelection::Random,
                 controller_input
             )).with_system_single(
-                CharacterSelectionWidgetUiSystem::new(),
-                CharacterSelectionWidgetUiSystem::type_name(),
+                CharacterSelectionWidgetInputSystem::new(),
+                CharacterSelectionWidgetInputSystem::type_name(),
                 &[]
             ).with_assertion(|world| assert_widget(
                 world,
@@ -328,8 +328,8 @@ mod test {
                 CharacterSelection::Random,
                 controller_input
             )).with_system_single(
-                CharacterSelectionWidgetUiSystem::new(),
-                CharacterSelectionWidgetUiSystem::type_name(),
+                CharacterSelectionWidgetInputSystem::new(),
+                CharacterSelectionWidgetInputSystem::type_name(),
                 &[]
             ).with_assertion(|world| assert_widget(
                 world,
@@ -367,8 +367,8 @@ mod test {
                 CharacterSelection::Id(0),
                 controller_input
             )).with_system_single(
-                CharacterSelectionWidgetUiSystem::new(),
-                CharacterSelectionWidgetUiSystem::type_name(),
+                CharacterSelectionWidgetInputSystem::new(),
+                CharacterSelectionWidgetInputSystem::type_name(),
                 &[]
             ).with_assertion(|world| assert_widget(
                 world,
@@ -406,8 +406,8 @@ mod test {
                 CharacterSelection::Id(0),
                 controller_input
             )).with_system_single(
-                CharacterSelectionWidgetUiSystem::new(),
-                CharacterSelectionWidgetUiSystem::type_name(),
+                CharacterSelectionWidgetInputSystem::new(),
+                CharacterSelectionWidgetInputSystem::type_name(),
                 &[]
             ).with_assertion(|world| assert_widget(
                 world,
@@ -442,8 +442,8 @@ mod test {
                 CharacterSelection::Id(0),
                 controller_input
             )).with_system_single(
-                CharacterSelectionWidgetUiSystem::new(),
-                CharacterSelectionWidgetUiSystem::type_name(),
+                CharacterSelectionWidgetInputSystem::new(),
+                CharacterSelectionWidgetInputSystem::type_name(),
                 &[]
             ).with_assertion(|world| assert_widget(
                 world,
@@ -455,7 +455,7 @@ mod test {
     }
 
     fn setup_components(world: &mut World) {
-        CharacterSelectionWidgetUiSystemData::setup(&mut world.res);
+        CharacterSelectionWidgetInputSystemData::setup(&mut world.res);
     }
 
     fn setup_event_reader(world: &mut World) {

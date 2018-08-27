@@ -4,7 +4,7 @@ use amethyst::{
 };
 use typename::TypeName;
 
-use CharacterSelectionWidgetUiSystem;
+use CharacterSelectionWidgetInputSystem;
 
 /// Adds the `CharacterSelectionSystem` to the `World`.
 ///
@@ -17,15 +17,15 @@ impl CharacterSelectionUiBundle {
     ///
     /// This allows consumers to specify the systems as dependencies.
     pub fn system_names() -> Vec<String> {
-        vec![CharacterSelectionWidgetUiSystem::type_name()]
+        vec![CharacterSelectionWidgetInputSystem::type_name()]
     }
 }
 
 impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionUiBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
         builder.add(
-            CharacterSelectionWidgetUiSystem::new(),
-            &CharacterSelectionWidgetUiSystem::type_name(),
+            CharacterSelectionWidgetInputSystem::new(),
+            &CharacterSelectionWidgetInputSystem::type_name(),
             &[],
         ); // kcov-ignore
         Ok(())

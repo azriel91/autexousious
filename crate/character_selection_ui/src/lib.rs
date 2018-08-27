@@ -27,7 +27,7 @@ extern crate typename_derive;
 
 pub use character_selection_ui_bundle::CharacterSelectionUiBundle;
 pub(crate) use component::{CharacterSelectionWidget, WidgetState};
-pub(crate) use system::CharacterSelectionWidgetUiSystem;
+pub(crate) use system::CharacterSelectionWidgetInputSystem;
 
 mod character_selection_ui_bundle;
 mod component;
