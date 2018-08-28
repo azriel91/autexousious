@@ -8,6 +8,7 @@ use character_selection::{CharacterSelectionEvent, CharacterSelections, Characte
 use game_input::{ControllerId, ControllerInput, InputConfig, InputControlled};
 
 use CharacterSelectionWidget;
+use WidgetState;
 
 const FONT_SIZE: f32 = 20.;
 
@@ -97,7 +98,7 @@ impl CharacterSelectionWidgetUiSystem {
 
                 let ui_text = UiText::new(
                     font.clone(),
-                    format!("{}", character_selection_widget.selection),
+                    "Inactive".to_string(),
                     [1., 1., 1., 1.],
                     FONT_SIZE,
                 );
@@ -121,7 +122,12 @@ impl CharacterSelectionWidgetUiSystem {
     ) {
         (character_selection_widgets, ui_texts)
             .join()
-            .for_each(|(widget, ui_text)| ui_text.text = format!("{}", widget.selection));
+            .for_each(|(widget, ui_text)| {
+                ui_text.text = match widget.state {
+                    WidgetState::Inactive => "Inactive".to_string(),
+                    _ => format!("{}", widget.selection),
+                }
+            });
     }
 
     fn terminate_ui(
