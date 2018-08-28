@@ -1,8 +1,14 @@
-use amethyst::ecs::prelude::*;
+use amethyst::{
+    ecs::prelude::*,
+    ui::{Anchor, UiText, UiTransform},
+};
+use application_ui::{FontVariant, Theme};
 use character_selection::{CharacterSelections, CharacterSelectionsState};
 use game_input::{ControllerId, ControllerInput, InputConfig, InputControlled};
 
 use CharacterSelectionWidget;
+
+const FONT_SIZE: f32 = 20.;
 
 /// System that creates and deletes `CharacterSelectionWidget` entities.
 ///
@@ -15,13 +21,24 @@ pub(crate) struct CharacterSelectionWidgetUiSystem {
     ui_initialized: bool,
 }
 
+type WidgetComponentStorages<'s> = (
+    WriteStorage<'s, CharacterSelectionWidget>,
+    WriteStorage<'s, InputControlled>,
+    WriteStorage<'s, ControllerInput>,
+);
+
+type WidgetUiResources<'s> = (
+    ReadExpect<'s, Theme>,
+    WriteStorage<'s, UiTransform>,
+    WriteStorage<'s, UiText>,
+);
+
 type CharacterSelectionWidgetUiSystemData<'s> = (
     Read<'s, CharacterSelections>,
     Read<'s, InputConfig>,
     Entities<'s>,
-    WriteStorage<'s, CharacterSelectionWidget>,
-    WriteStorage<'s, InputControlled>,
-    WriteStorage<'s, ControllerInput>,
+    WidgetComponentStorages<'s>,
+    WidgetUiResources<'s>,
 );
 
 impl CharacterSelectionWidgetUiSystem {
@@ -29,27 +46,74 @@ impl CharacterSelectionWidgetUiSystem {
         &mut self,
         input_config: &InputConfig,
         entities: &Entities,
-        character_selection_widgets: &mut WriteStorage<CharacterSelectionWidget>,
-        input_controlleds: &mut WriteStorage<InputControlled>,
-        controller_inputs: &mut WriteStorage<ControllerInput>,
-    ) {
+        (
+            character_selection_widgets,
+            input_controlleds,
+            controller_inputs
+        ): &mut WidgetComponentStorages,
+        (
+            theme,
+            ui_transforms,
+            ui_texts
+        ): &mut WidgetUiResources
+){
         if !self.ui_initialized {
             debug!("Initializing Character Selection UI.");
-            self.ui_initialized = true;
 
-            (0..input_config.controller_configs.len()).for_each(|index| {
+            self.ui_initialized = true;
+            let controller_count = input_config.controller_configs.len();
+
+            let text_w = 200.;
+            let text_h = 50.;
+
+            let font = theme
+                .fonts
+                .get(&FontVariant::Regular)
+                .expect("Failed to get regular font handle.");
+
+            (0..controller_count).for_each(|index| {
                 let controller_id = index as ControllerId;
+
+                let character_selection_widget = CharacterSelectionWidget::default();
+
+                let ui_transform = UiTransform::new(
+                    format!("CharacterSelectionWidget#{}", controller_id),
+                    Anchor::Middle,
+                    0.,
+                    (index as f32 * text_h) - (controller_count as f32 * text_h / 2.),
+                    1.,
+                    text_w,
+                    text_h,
+                    0,
+                );
+
+                let ui_text = UiText::new(
+                    font.clone(),
+                    format!("{}", character_selection_widget.selection),
+                    [1., 1., 1., 1.],
+                    FONT_SIZE,
+                );
 
                 entities
                     .build_entity()
-                    .with(
-                        CharacterSelectionWidget::default(),
-                        character_selection_widgets,
-                    ).with(InputControlled::new(controller_id), input_controlleds)
+                    .with(character_selection_widget, character_selection_widgets)
+                    .with(InputControlled::new(controller_id), input_controlleds)
                     .with(ControllerInput::default(), controller_inputs)
+                    .with(ui_transform, ui_transforms)
+                    .with(ui_text, ui_texts)
                     .build();
             });
         }
+    }
+
+    fn refresh_ui(
+        &mut self,
+        character_selection_widgets: &mut WriteStorage<CharacterSelectionWidget>,
+        ui_texts: &mut WriteStorage<UiText>,
+    ) {
+        (character_selection_widgets, ui_texts)
+            .join()
+            .for_each(|(widget, ui_text)| ui_text.text = format!("{}", widget.selection));
     }
 
     fn terminate_ui(
@@ -79,23 +143,24 @@ impl<'s> System<'s> for CharacterSelectionWidgetUiSystem {
             character_selections,
             input_config,
             entities,
-            mut character_selection_widgets,
-            mut input_controlleds,
-            mut controller_inputs,
+            mut widget_component_storages,
+            mut widget_ui_resources,
         ): Self::SystemData,
     ) {
         match character_selections.state {
-            CharacterSelectionsState::Waiting => self.initialize_ui(
-                &input_config,
-                &entities,
-                &mut character_selection_widgets,
-                &mut input_controlleds,
-                &mut controller_inputs,
-            ),
-            CharacterSelectionsState::Confirmed => {
-                self.terminate_ui(&entities, &mut character_selection_widgets)
+            CharacterSelectionsState::Waiting => {
+                self.initialize_ui(
+                    &input_config,
+                    &entities,
+                    &mut widget_component_storages,
+                    &mut widget_ui_resources,
+                );
+                self.refresh_ui(&mut widget_component_storages.0, &mut widget_ui_resources.2);
             }
-            _ => {}
+            CharacterSelectionsState::Ready => {
+                self.terminate_ui(&entities, &mut widget_component_storages.0)
+            }
+            _ => self.refresh_ui(&mut widget_component_storages.0, &mut widget_ui_resources.2),
         };
     }
 }

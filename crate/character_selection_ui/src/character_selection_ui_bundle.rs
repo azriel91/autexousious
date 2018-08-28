@@ -2,14 +2,16 @@ use amethyst::{
     core::bundle::{Result, SystemBundle},
     ecs::prelude::*,
 };
+use game_input::ControllerInput;
+use tracker::LastTrackerSystem;
 use typename::TypeName;
 
 use CharacterSelectionWidgetInputSystem;
 use CharacterSelectionWidgetUiSystem;
 
-/// Adds the `CharacterSelectionSystem` to the `World`.
+/// Adds the systems that set up and manage the `CharacterSelectionUi`.
 ///
-/// The Amethyst `InputBundle` must be added before this bundle.
+/// The `GameInputBundle` must be added before this bundle.
 #[derive(Debug, new)]
 pub struct CharacterSelectionUiBundle;
 
@@ -37,6 +39,18 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionUiBundle {
             &CharacterSelectionWidgetInputSystem::type_name(),
             &[&CharacterSelectionWidgetUiSystem::type_name()],
         ); // kcov-ignore
+
+        let controller_input_tracker_system =
+            LastTrackerSystem::<ControllerInput>::new(stringify!(game_input::ControllerInput));
+        let controller_input_tracker_system_name = controller_input_tracker_system.system_name();
+
+        // This depends on `&ControllerInputUpdateSystem::type_name()`, but since it runs in a
+        // separate dispatcher, we have to omit it from here.
+        builder.add(
+            controller_input_tracker_system,
+            &controller_input_tracker_system_name,
+            &[&CharacterSelectionWidgetInputSystem::type_name()],
+        ); // kcov-ignore
         Ok(())
     }
 }
@@ -46,7 +60,7 @@ mod test {
     use std::env;
 
     use amethyst_test_support::prelude::*;
-    use game_input::{PlayerActionControl, PlayerAxisControl};
+    use game_input::{GameInputBundle, InputConfig, PlayerActionControl, PlayerAxisControl};
 
     use super::CharacterSelectionUiBundle;
 
@@ -58,7 +72,8 @@ mod test {
         assert!(
             // kcov-ignore-end
             AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
-                .with_bundle(CharacterSelectionUiBundle)
+                .with_bundle(GameInputBundle::new(InputConfig::default()))
+                .with_bundle(CharacterSelectionUiBundle::new())
                 .run()
                 .is_ok()
         );

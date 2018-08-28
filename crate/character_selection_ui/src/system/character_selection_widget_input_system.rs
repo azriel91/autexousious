@@ -2,6 +2,7 @@ use amethyst::{ecs::prelude::*, shrev::EventChannel};
 use character_selection::{CharacterSelection, CharacterSelectionEvent};
 use game_input::{ControllerInput, InputControlled};
 use object_model::loaded::CharacterHandle;
+use tracker::Last;
 
 use CharacterSelectionWidget;
 use WidgetState;
@@ -17,6 +18,7 @@ type CharacterSelectionWidgetInputSystemData<'s> = (
     Read<'s, Vec<CharacterHandle>>,
     WriteStorage<'s, CharacterSelectionWidget>,
     ReadStorage<'s, InputControlled>,
+    ReadStorage<'s, Last<ControllerInput>>,
     ReadStorage<'s, ControllerInput>,
     Write<'s, EventChannel<CharacterSelectionEvent>>,
 );
@@ -25,9 +27,10 @@ impl CharacterSelectionWidgetInputSystem {
     fn handle_inactive(
         widget: &mut CharacterSelectionWidget,
         controlled: &InputControlled,
+        last_input: &Last<ControllerInput>,
         input: &ControllerInput,
     ) {
-        if input.attack {
+        if !last_input.attack && input.attack {
             debug!("Controller {} active.", controlled.controller_id);
             widget.state = WidgetState::CharacterSelect;
         }
@@ -37,13 +40,14 @@ impl CharacterSelectionWidgetInputSystem {
         character_handles: &[CharacterHandle],
         widget: &mut CharacterSelectionWidget,
         controlled: &InputControlled,
+        last_input: &Last<ControllerInput>,
         input: &ControllerInput,
         event_channel: &mut EventChannel<CharacterSelectionEvent>,
     ) {
-        if input.jump {
+        if !last_input.jump && input.jump {
             debug!("Controller {} inactive.", controlled.controller_id);
             widget.state = WidgetState::Inactive;
-        } else if input.attack {
+        } else if !last_input.attack && input.attack {
             debug!("Controller {} ready.", controlled.controller_id);
             widget.state = WidgetState::Ready;
 
@@ -57,9 +61,9 @@ impl CharacterSelectionWidgetInputSystem {
                 &character_selection_event
             );
             event_channel.single_write(character_selection_event);
-        } else if input.x_axis_value < 0. {
+        } else if last_input.x_axis_value == 0. && input.x_axis_value < 0. {
             Self::select_previous_character(character_handles, widget);
-        } else if input.x_axis_value > 0. {
+        } else if last_input.x_axis_value == 0. && input.x_axis_value > 0. {
             Self::select_next_character(character_handles, widget);
         }
     }
@@ -67,10 +71,11 @@ impl CharacterSelectionWidgetInputSystem {
     fn handle_ready(
         widget: &mut CharacterSelectionWidget,
         controlled: &InputControlled,
+        last_input: &Last<ControllerInput>,
         input: &ControllerInput,
         event_channel: &mut EventChannel<CharacterSelectionEvent>,
     ) {
-        if input.jump {
+        if !last_input.jump && input.jump {
             widget.state = WidgetState::CharacterSelect;
 
             let character_selection_event = CharacterSelectionEvent::Deselect {
@@ -138,31 +143,35 @@ impl<'s> System<'s> for CharacterSelectionWidgetInputSystem {
             character_handles,
             mut character_selection_widgets,
             input_controlleds,
+            last_controller_inputs,
             controller_inputs,
             mut character_selection_events,
         ): Self::SystemData,
     ) {
-        for (mut widget, input_controlled, input) in (
+        for (mut widget, input_controlled, last_input, input) in (
             &mut character_selection_widgets,
             &input_controlleds,
+            &last_controller_inputs,
             &controller_inputs,
         )
             .join()
         {
             match widget.state {
                 WidgetState::Inactive => {
-                    Self::handle_inactive(&mut widget, &input_controlled, &input)
+                    Self::handle_inactive(&mut widget, &input_controlled, &last_input, &input)
                 }
                 WidgetState::CharacterSelect => Self::handle_character_select(
                     &character_handles,
                     &mut widget,
                     &input_controlled,
+                    &last_input,
                     &input,
                     &mut character_selection_events,
                 ),
                 WidgetState::Ready => Self::handle_ready(
                     &mut widget,
                     &input_controlled,
+                    &last_input,
                     &input,
                     &mut character_selection_events,
                 ),
@@ -185,6 +194,7 @@ mod test {
     use application_test_support::AutexousiousApplication;
     use character_selection::{CharacterSelection, CharacterSelectionEvent};
     use game_input::{ControllerInput, InputControlled};
+    use tracker::Last;
     use typename::TypeName;
 
     use super::{CharacterSelectionWidgetInputSystem, CharacterSelectionWidgetInputSystemData};
@@ -495,6 +505,7 @@ mod test {
                 character_selection,
             )).with(InputControlled::new(123))
             .with(controller_input)
+            .with(Last(ControllerInput::default()))
             .build();
 
         world.add_resource(EffectReturn(widget));

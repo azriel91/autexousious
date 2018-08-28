@@ -8,6 +8,7 @@ extern crate amethyst;
 extern crate amethyst_test_support;
 #[cfg(test)]
 extern crate application_test_support;
+extern crate application_ui;
 extern crate character_selection;
 #[macro_use]
 extern crate derivative;
@@ -21,6 +22,7 @@ extern crate object_model;
 extern crate strum;
 #[macro_use]
 extern crate strum_macros;
+extern crate tracker;
 extern crate typename;
 #[macro_use]
 extern crate typename_derive;
