@@ -4,7 +4,7 @@ use character_selection::CharacterSelection;
 use WidgetState;
 
 /// Component to tag entities that are character selection widgets.
-#[derive(Copy, Clone, Debug, PartialEq, Eq, new)]
+#[derive(Copy, Clone, Debug, Default, PartialEq, Eq, new)]
 pub(crate) struct CharacterSelectionWidget {
     /// Character selection state.
     pub state: WidgetState,

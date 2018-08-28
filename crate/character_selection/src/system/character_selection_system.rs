@@ -6,6 +6,7 @@ use amethyst::{
 use CharacterSelection;
 use CharacterSelectionEvent;
 use CharacterSelections;
+use CharacterSelectionsState;
 
 /// Populates the `CharacterSelections` based on user input.
 #[derive(Debug, Default, TypeName, new)]
@@ -46,8 +47,8 @@ impl<'s> System<'s> for CharacterSelectionSystem {
                 CharacterSelectionEvent::Deselect { controller_id } => {
                     character_selections.selections.remove(&controller_id);
                 }
-                CharacterSelectionEvent::Confirmed => {
-                    // TODO: Change CharacterSelections into a richer struct.
+                CharacterSelectionEvent::Confirm => {
+                    character_selections.state = CharacterSelectionsState::Ready;
                 }
             });
     }

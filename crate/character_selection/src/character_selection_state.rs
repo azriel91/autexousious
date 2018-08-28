@@ -66,6 +66,11 @@ where
     fn terminate_dispatcher(&mut self) {
         self.dispatcher = None;
     }
+
+    fn initialize_character_selections(&mut self, world: &mut World) {
+        let mut character_selections = world.write_resource::<CharacterSelections>();
+        character_selections.state = CharacterSelectionsState::Waiting;
+    }
 }
 
 impl<'a, 'b, F, S> State<GameData<'a, 'b>> for CharacterSelectionState<'a, 'b, F, S>
@@ -75,10 +80,16 @@ where
 {
     fn on_start(&mut self, mut data: StateData<GameData<'a, 'b>>) {
         self.initialize_dispatcher(&mut data.world);
+        self.initialize_character_selections(&mut data.world);
     }
 
     fn on_stop(&mut self, _data: StateData<GameData<'a, 'b>>) {
         self.terminate_dispatcher();
+    }
+
+    fn on_resume(&mut self, data: StateData<GameData<'a, 'b>>) {
+        let mut character_selections = data.world.write_resource::<CharacterSelections>();
+        character_selections.state = CharacterSelectionsState::Confirmed;
     }
 
     fn fixed_update(&mut self, data: StateData<GameData<'a, 'b>>) -> Trans<GameData<'a, 'b>> {

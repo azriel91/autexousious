@@ -22,8 +22,13 @@ type CharacterSelectionWidgetInputSystemData<'s> = (
 );
 
 impl CharacterSelectionWidgetInputSystem {
-    fn handle_inactive(widget: &mut CharacterSelectionWidget, input: &ControllerInput) {
+    fn handle_inactive(
+        widget: &mut CharacterSelectionWidget,
+        controlled: &InputControlled,
+        input: &ControllerInput,
+    ) {
         if input.attack {
+            debug!("Controller {} active.", controlled.controller_id);
             widget.state = WidgetState::CharacterSelect;
         }
     }
@@ -36,8 +41,10 @@ impl CharacterSelectionWidgetInputSystem {
         event_channel: &mut EventChannel<CharacterSelectionEvent>,
     ) {
         if input.jump {
+            debug!("Controller {} inactive.", controlled.controller_id);
             widget.state = WidgetState::Inactive;
         } else if input.attack {
+            debug!("Controller {} ready.", controlled.controller_id);
             widget.state = WidgetState::Ready;
 
             // Send character selection event
@@ -65,10 +72,17 @@ impl CharacterSelectionWidgetInputSystem {
     ) {
         if input.jump {
             widget.state = WidgetState::CharacterSelect;
-            // Send character selection event
+
             let character_selection_event = CharacterSelectionEvent::Deselect {
                 controller_id: controlled.controller_id,
             };
+            debug!(
+                "Sending character selection event: {:?}",
+                &character_selection_event
+            );
+            event_channel.single_write(character_selection_event);
+        } else if input.attack {
+            let character_selection_event = CharacterSelectionEvent::Confirm;
             debug!(
                 "Sending character selection event: {:?}",
                 &character_selection_event
@@ -136,7 +150,9 @@ impl<'s> System<'s> for CharacterSelectionWidgetInputSystem {
             .join()
         {
             match widget.state {
-                WidgetState::Inactive => Self::handle_inactive(&mut widget, &input),
+                WidgetState::Inactive => {
+                    Self::handle_inactive(&mut widget, &input_controlled, &input)
+                }
                 WidgetState::CharacterSelect => Self::handle_character_select(
                     &character_handles,
                     &mut widget,

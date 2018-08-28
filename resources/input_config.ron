@@ -19,14 +19,14 @@ InputConfig(
         // 1
         ControllerConfig(
             axes: {
-                X: Emulated(pos: Key(Right), neg: Key(Left)),
-                Z: Emulated(pos: Key(Down), neg: Key(Up)),
+                X: Emulated(pos: Key(D), neg: Key(A)),
+                Z: Emulated(pos: Key(S), neg: Key(W)),
             },
             actions: {
-                Defend: Key(O),
-                Jump: Key(P),
-                Attack: Key(LBracket),
-                Special: Key(RBracket),
+                Defend: Key(Key1),
+                Jump: Key(Key2),
+                Attack: Key(Key3),
+                Special: Key(Key4),
             },
         )
     ],
