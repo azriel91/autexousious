@@ -30,14 +30,14 @@ impl CharacterSelectionUiBundle {
 impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionUiBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
         builder.add(
-            CharacterSelectionWidgetUiSystem::new(),
-            &CharacterSelectionWidgetUiSystem::type_name(),
+            CharacterSelectionWidgetInputSystem::new(),
+            &CharacterSelectionWidgetInputSystem::type_name(),
             &[],
         ); // kcov-ignore
         builder.add(
-            CharacterSelectionWidgetInputSystem::new(),
-            &CharacterSelectionWidgetInputSystem::type_name(),
-            &[&CharacterSelectionWidgetUiSystem::type_name()],
+            CharacterSelectionWidgetUiSystem::new(),
+            &CharacterSelectionWidgetUiSystem::type_name(),
+            &[&CharacterSelectionWidgetInputSystem::type_name()],
         ); // kcov-ignore
 
         let controller_input_tracker_system =
@@ -49,7 +49,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionUiBundle {
         builder.add(
             controller_input_tracker_system,
             &controller_input_tracker_system_name,
-            &[&CharacterSelectionWidgetInputSystem::type_name()],
+            &[&CharacterSelectionWidgetUiSystem::type_name()],
         ); // kcov-ignore
         Ok(())
     }

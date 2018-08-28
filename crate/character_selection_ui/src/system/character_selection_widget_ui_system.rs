@@ -1,9 +1,10 @@
 use amethyst::{
     ecs::prelude::*,
+    shrev::{EventChannel, ReaderId},
     ui::{Anchor, UiText, UiTransform},
 };
 use application_ui::{FontVariant, Theme};
-use character_selection::{CharacterSelections, CharacterSelectionsState};
+use character_selection::{CharacterSelectionEvent, CharacterSelections, CharacterSelectionsState};
 use game_input::{ControllerId, ControllerInput, InputConfig, InputControlled};
 
 use CharacterSelectionWidget;
@@ -19,6 +20,12 @@ pub(crate) struct CharacterSelectionWidgetUiSystem {
     /// Whether the UI is initialized.
     #[new(value = "false")]
     ui_initialized: bool,
+    /// Reader ID for the `CharacterSelectionEvent` event channel.
+    ///
+    /// This is used to determine to delete the UI entities, as the `CharacterSelectionsState` is
+    /// only updated by the `CharacterSelectionsSystem` which happens after this system runs.
+    #[new(default)]
+    reader_id: Option<ReaderId<CharacterSelectionEvent>>,
 }
 
 type WidgetComponentStorages<'s> = (
@@ -34,6 +41,7 @@ type WidgetUiResources<'s> = (
 );
 
 type CharacterSelectionWidgetUiSystemData<'s> = (
+    Read<'s, EventChannel<CharacterSelectionEvent>>,
     Read<'s, CharacterSelections>,
     Read<'s, InputConfig>,
     Entities<'s>,
@@ -140,6 +148,7 @@ impl<'s> System<'s> for CharacterSelectionWidgetUiSystem {
     fn run(
         &mut self,
         (
+            character_selection_events,
             character_selections,
             input_config,
             entities,
@@ -147,6 +156,19 @@ impl<'s> System<'s> for CharacterSelectionWidgetUiSystem {
             mut widget_ui_resources,
         ): Self::SystemData,
     ) {
+        // We need to do this because the `CharacterSelectionsState` is not updated until after this
+        // system has run, and so we don't actually get a chance to delete the UI entities.
+        if character_selection_events
+            .read(
+                self.reader_id
+                    .as_mut()
+                    .expect("Expected to read `CharacterSelectionEvent`s."),
+            ).any(|ev| CharacterSelectionEvent::Confirm == *ev)
+        {
+            self.terminate_ui(&entities, &mut widget_component_storages.0);
+            return;
+        }
+
         match character_selections.state {
             CharacterSelectionsState::Waiting => {
                 self.initialize_ui(
@@ -162,5 +184,13 @@ impl<'s> System<'s> for CharacterSelectionWidgetUiSystem {
             }
             _ => self.refresh_ui(&mut widget_component_storages.0, &mut widget_ui_resources.2),
         };
+    }
+
+    fn setup(&mut self, res: &mut Resources) {
+        Self::SystemData::setup(res);
+        self.reader_id = Some(
+            res.fetch_mut::<EventChannel<CharacterSelectionEvent>>()
+                .register_reader(),
+        );
     }
 }
