@@ -42,7 +42,7 @@ pub use control_action::ControlAction;
 pub use game_input_bundle::GameInputBundle;
 pub use player_action_control::PlayerActionControl;
 pub use player_axis_control::PlayerAxisControl;
-pub(crate) use system::ControllerInputUpdateSystem;
+pub use system::ControllerInputUpdateSystem;
 
 mod axis;
 mod component;

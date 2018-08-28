@@ -7,7 +7,7 @@ use {
 
 /// Updates `Character` sequence based on input
 #[derive(Debug, Default, TypeName, new)]
-pub(crate) struct ControllerInputUpdateSystem {
+pub struct ControllerInputUpdateSystem {
     /// All controller input configuration.
     input_config: InputConfig,
 }
