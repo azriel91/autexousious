@@ -13,7 +13,7 @@ pub struct ControllerConfig {
     /// Axis control configuration.
     // TODO: Pending <https://github.com/amethyst/amethyst/pull/904>
     #[derivative(Debug = "ignore")]
-    pub axes: HashMap<Axis, InputAxis>,
+    pub axes: HashMap<Axis, InputAxis>, // kcov-ignore
     /// Action control configuration.
-    pub actions: HashMap<ControlAction, Button>,
+    pub actions: HashMap<ControlAction, Button>, // kcov-ignore
 }

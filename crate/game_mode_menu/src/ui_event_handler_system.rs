@@ -68,7 +68,7 @@ mod test {
     fn setup_menu_event_reader(world: &mut World) {
         let menu_event_channel_reader = world
             .write_resource::<EventChannel<MenuEvent<Index>>>()
-            .register_reader();
+            .register_reader(); // kcov-ignore
 
         world.add_resource(EffectReturn(menu_event_channel_reader));
     }

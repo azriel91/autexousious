@@ -173,7 +173,7 @@ where
         let mut bundle = CharacterSelectionBundle::new();
 
         if let Some(deps) = self.character_selection_system_dependencies {
-            bundle.with_system_dependencies(&deps);
+            bundle = bundle.with_system_dependencies(&deps);
         }
 
         bundle

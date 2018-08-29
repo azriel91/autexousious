@@ -57,7 +57,7 @@ where
                         "Failed to insert `{}<{}>` component.",
                         Last::<T>::type_name(),
                         self.component_name
-                    ));
+                    )); // kcov-ignore
             });
     }
 }
@@ -74,7 +74,9 @@ mod test {
     fn inserts_last_component_with_cloned_value() {
         let system = LastTrackerSystem::<TestComponent>::new(stringify!(TestComponent));
         let system_name = system.system_name();
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_setup(setup_components)
                 .with_setup(|world| {

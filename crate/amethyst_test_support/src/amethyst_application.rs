@@ -459,7 +459,7 @@ where
         let name = name.into();
         let deps = deps
             .iter()
-            .map(|dep| dep.clone().into())
+            .map(|dep| dep.clone().into()) // kcov-ignore
             .collect::<Vec<String>>();
         self.with_state(move || {
             CustomDispatcherStateBuilder::new()
@@ -467,7 +467,7 @@ where
                     system,
                     &name,
                     &deps.iter().map(|dep| dep.as_ref()).collect::<Vec<&str>>(),
-                ).build()
+                ).build() // kcov-ignore
         })
     }
 

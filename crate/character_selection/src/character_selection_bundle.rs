@@ -22,8 +22,9 @@ impl CharacterSelectionBundle {
     /// # Parameters
     ///
     /// * `dependencies`: Names of the systems to depend on.
-    pub fn with_system_dependencies(&mut self, dependencies: &[String]) {
+    pub fn with_system_dependencies(mut self, dependencies: &[String]) -> Self {
         self.system_dependencies = Some(Vec::from(dependencies));
+        self
     }
 }
 
@@ -48,6 +49,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionBundle {
 
 #[cfg(test)]
 mod test {
+    use amethyst::core::transform::TransformBundle;
     use amethyst_test_support::prelude::*;
 
     use super::CharacterSelectionBundle;
@@ -58,8 +60,11 @@ mod test {
         assert!(
             // kcov-ignore-end
             AmethystApplication::blank()
-                .with_bundle(CharacterSelectionBundle::new())
-                .run()
+                .with_bundle(TransformBundle::new())
+                .with_bundle(
+                    CharacterSelectionBundle::new()
+                        .with_system_dependencies(&["transform_system".to_string()])
+                ).run()
                 .is_ok()
         );
     }
