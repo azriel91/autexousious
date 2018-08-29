@@ -5,16 +5,16 @@ use amethyst::{
 
 use UiEventHandlerSystem;
 
-/// This bundle prepares the world for a menu.
-#[derive(Debug)]
-pub struct GameModeMenuBundle;
+/// Registers the game mode menu `UiEventHandlerSystem` to the dispatcher.
+#[derive(Debug, new)]
+pub(crate) struct GameModeMenuBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for GameModeMenuBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
         builder.add(
             UiEventHandlerSystem::new(),
             "",
-            &["ui_keyboard_system", "ui_mouse_system"],
+            &[], // "ui_keyboard_system", "ui_mouse_system"
         );
         Ok(())
     }
@@ -32,7 +32,7 @@ mod test {
     use Index;
 
     #[test]
-    fn bundle_should_allow_menu_items_to_be_created() {
+    fn bundle_registration_enables_menu_items_to_be_created() {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
         // kcov-ignore-start

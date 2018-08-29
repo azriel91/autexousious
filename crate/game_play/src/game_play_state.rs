@@ -147,7 +147,7 @@ impl<'a, 'b> State<GameData<'a, 'b>> for GamePlayState {
     fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
         // Note: The built-in dispatcher must be run before the state specific dispatcher as the
         // `"input_system"` is registered in the main dispatcher, and is a dependency of the
-        // `CharacterInputUpdateSystem`.
+        // `ControllerInputUpdateSystem`.
         data.data.update(&data.world);
         self.dispatcher.as_mut().unwrap().dispatch(&data.world.res);
         Trans::None

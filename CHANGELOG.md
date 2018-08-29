@@ -8,6 +8,7 @@
 * Updated sprites configuration to take in `u32` instead of `f32` for sprite dimensions. ([#47][#47])
 * Prevent characters from moving outside map margins. ([#48][#48])
 * Use `typename` to derive `System` names. ([#52][#52])
+* Implemented rudimentary character selection menu. ([#51][#51])
 
 ### Changed
 
@@ -25,6 +26,7 @@
 [#48]: https://gitlab.com/azriel91/autexousious/issues/48
 [#49]: https://gitlab.com/azriel91/autexousious/issues/49
 [#50]: https://gitlab.com/azriel91/autexousious/issues/50
+[#51]: https://gitlab.com/azriel91/autexousious/issues/51
 [#52]: https://gitlab.com/azriel91/autexousious/issues/52
 [#55]: https://gitlab.com/azriel91/autexousious/issues/55
 

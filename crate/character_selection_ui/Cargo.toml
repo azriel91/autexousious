@@ -1,0 +1,27 @@
+[package]
+name = "character_selection_ui"
+version = "0.5.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+
+[dependencies]
+amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop" }
+application_ui = { path = "../application_ui" }
+character_selection = { path = "../character_selection" }
+derivative = "1.0"
+derive-new = "0.5"
+game_input = { path = "../game_input" }
+game_model = { path = "../game_model" }
+log = "0.4"
+object_model = { path = "../object_model" }
+strum = "0.10"
+strum_macros = "0.10"
+tracker = { path = "../tracker" }
+typename = "0.1"
+typename_derive = "0.1"
+
+[dev-dependencies]
+amethyst_test_support = { path = "../amethyst_test_support" }
+application_test_support = { path = "../application_test_support" }
+
+[features]
+nightly = ["amethyst/nightly", "amethyst_test_support/nightly"]

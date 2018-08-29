@@ -1,9 +1,7 @@
+use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{
-        CharacterInput, CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics,
-        ObjectStatusUpdate,
-    },
+    entity::{CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatusUpdate},
 };
 
 use character::sequence_handler::SequenceHandler;
@@ -14,7 +12,7 @@ pub(crate) struct AirborneCheck;
 
 impl SequenceHandler for AirborneCheck {
     fn update(
-        _input: &CharacterInput,
+        _input: &ControllerInput,
         character_status: &CharacterStatus,
         _kinematics: &Kinematics<f32>,
     ) -> Option<CharacterStatusUpdate> {
@@ -36,11 +34,12 @@ impl SequenceHandler for AirborneCheck {
 
 #[cfg(test)]
 mod tests {
+    use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterInput, CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics,
-            ObjectStatus, ObjectStatusUpdate, RunCounter,
+            CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatus,
+            ObjectStatusUpdate, RunCounter,
         },
     };
 
@@ -52,7 +51,7 @@ mod tests {
         assert_eq!(
             None,
             AirborneCheck::update(
-                &CharacterInput::default(),
+                &ControllerInput::default(),
                 &CharacterStatus {
                     run_counter: RunCounter::Unused,
                     object_status: ObjectStatus {
@@ -77,7 +76,7 @@ mod tests {
                 ..Default::default()
             }),
             AirborneCheck::update(
-                &CharacterInput::default(),
+                &ControllerInput::default(),
                 &CharacterStatus {
                     object_status: ObjectStatus {
                         sequence_id: CharacterSequenceId::Stand,

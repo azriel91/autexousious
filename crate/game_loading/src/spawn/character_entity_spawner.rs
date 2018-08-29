@@ -5,10 +5,10 @@ use amethyst::{
     ecs::{prelude::*, world::EntitiesRes},
     renderer::{SpriteRender, Transparent},
 };
-use character_selection::CharacterEntityControl;
+use game_input::{ControllerInput, InputControlled};
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{CharacterInput, CharacterStatus, Kinematics},
+    entity::{CharacterStatus, Kinematics},
     loaded::{Character, CharacterHandle},
 };
 
@@ -29,12 +29,12 @@ impl CharacterEntitySpawner {
     /// * `world`: `World` to spawn the character into.
     /// * `kinematics`: Kinematics of the entity in game.
     /// * `character_index`: Index of the character to spawn.
-    /// * `character_entity_control`: `Component` that links the character entity to the controller.
+    /// * `input_controlled`: `Component` that links the character entity to the controller.
     pub fn spawn_world(
         world: &mut World,
         kinematics: Kinematics<f32>,
         character_index: usize,
-        character_entity_control: CharacterEntityControl,
+        input_controlled: InputControlled,
     ) -> Entity {
         let entities = &*world.read_resource::<EntitiesRes>();
         let loaded_character_handles = &*world.read_resource::<Vec<CharacterHandle>>();
@@ -42,8 +42,8 @@ impl CharacterEntitySpawner {
         Self::spawn_system(
             &(entities, loaded_character_handles, loaded_characters),
             &mut (
-                world.write_storage::<CharacterEntityControl>(),
-                world.write_storage::<CharacterInput>(),
+                world.write_storage::<InputControlled>(),
+                world.write_storage::<ControllerInput>(),
                 world.write_storage::<CharacterHandle>(),
                 world.write_storage::<CharacterStatus>(),
             ), // kcov-ignore
@@ -56,7 +56,7 @@ impl CharacterEntitySpawner {
             ), // kcov-ignore
             kinematics,
             character_index,
-            character_entity_control,
+            input_controlled,
         )
     }
 
@@ -69,15 +69,15 @@ impl CharacterEntitySpawner {
     /// * `object_component_storages`: Common object `Component` storages.
     /// * `kinematics`: Kinematics of the entity in game.
     /// * `character_index`: Index of the character to spawn.
-    /// * `character_entity_control`: `Component` that links the character entity to the controller.
+    /// * `input_controlled`: `Component` that links the character entity to the controller.
     pub fn spawn_system<'res, 's>(
         (entities, loaded_character_handles, loaded_characters): &ObjectSpawningResources<
             'res,
             Character,
         >,
         (
-            ref mut character_entity_control_storage,
-            ref mut character_input_storage,
+            ref mut input_controlled_storage,
+            ref mut controller_input_storage,
             ref mut character_handle_storage,
             ref mut character_status_storage,
         ): &mut CharacterComponentStorages<'s>,
@@ -90,7 +90,7 @@ impl CharacterEntitySpawner {
         ): &mut ObjectComponentStorages<'s, CharacterSequenceId>,
         kinematics: Kinematics<f32>,
         character_index: usize,
-        character_entity_control: CharacterEntityControl,
+        input_controlled: InputControlled,
     ) -> Entity {
         let character_status = CharacterStatus::default();
         let first_sequence_id = character_status.object_status.sequence_id;
@@ -103,7 +103,7 @@ impl CharacterEntitySpawner {
                     let error_msg = format!(
                         "Attempted to spawn character at index: `{}` for `{:?}`, \
                          but index is out of bounds.",
-                        character_index, &character_entity_control
+                        character_index, &input_controlled
                     );
                     panic!(error_msg)
                     // kcov-ignore-end
@@ -139,13 +139,13 @@ impl CharacterEntitySpawner {
         let entity = entities.create();
 
         // Controller of this entity
-        character_entity_control_storage
-            .insert(entity, character_entity_control)
-            .expect("Failed to insert character_entity_control component.");
+        input_controlled_storage
+            .insert(entity, input_controlled)
+            .expect("Failed to insert input_controlled component.");
         // Controller of this entity
-        character_input_storage
-            .insert(entity, CharacterInput::default())
-            .expect("Failed to insert character_input component.");
+        controller_input_storage
+            .insert(entity, ControllerInput::default())
+            .expect("Failed to insert controller_input component.");
         // Loaded `Character` for this entity.
         character_handle_storage
             .insert(entity, character_handle)
@@ -197,14 +197,14 @@ mod test {
     };
     use amethyst_test_support::prelude::*;
     use application::resource::dir::ASSETS;
-    use character_selection::CharacterEntityControl;
+    use game_input::{ControllerInput, InputControlled};
     use loading::LoadingState;
     use map_loading::MapLoadingBundle;
     use map_model::loaded::Map;
     use object_loading::ObjectLoadingBundle;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{CharacterInput, CharacterStatus, Kinematics, Position, Velocity},
+        entity::{CharacterStatus, Kinematics, Position, Velocity},
         loaded::CharacterHandle,
     };
     use typename::TypeName;
@@ -220,23 +220,19 @@ mod test {
             let kinematics = Kinematics::new(position, Velocity::default());
             let character_index = 0;
             let controller_id = 0;
-            let character_entity_control = CharacterEntityControl::new(controller_id);
+            let input_controlled = InputControlled::new(controller_id);
 
             let entity = CharacterEntitySpawner::spawn_world(
                 world,
                 kinematics,
                 character_index,
-                character_entity_control,
+                input_controlled,
             );
 
-            assert!(
-                world
-                    .read_storage::<CharacterEntityControl>()
-                    .contains(entity)
-            );
+            assert!(world.read_storage::<InputControlled>().contains(entity));
             assert!(world.read_storage::<CharacterHandle>().contains(entity));
             assert!(world.read_storage::<CharacterStatus>().contains(entity));
-            assert!(world.read_storage::<CharacterInput>().contains(entity));
+            assert!(world.read_storage::<ControllerInput>().contains(entity));
             assert!(world.read_storage::<SpriteRender>().contains(entity));
             assert!(world.read_storage::<Transparent>().contains(entity));
             assert!(world.read_storage::<Kinematics<f32>>().contains(entity));
@@ -266,10 +262,10 @@ mod test {
     struct TestSystem;
     type TestSystemData<'s> = (
         Read<'s, AssetStorage<Map>>,
-        ReadStorage<'s, CharacterEntityControl>,
+        ReadStorage<'s, InputControlled>,
         ReadStorage<'s, CharacterHandle>,
         ReadStorage<'s, CharacterStatus>,
-        ReadStorage<'s, CharacterInput>,
+        ReadStorage<'s, ControllerInput>,
         ReadStorage<'s, Transparent>,
         ReadStorage<'s, Kinematics<f32>>,
         ReadStorage<'s, AnimationControlSet<CharacterSequenceId, SpriteRender>>,

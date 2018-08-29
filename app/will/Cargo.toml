@@ -10,10 +10,8 @@ application = { path = "../../crate/application" }
 application_input = { path = "../../crate/application_input" }
 application_robot = { path = "../../crate/application_robot" }
 application_ui = { path = "../../crate/application_ui" }
-character_selection = { path = "../../crate/character_selection" }
 game_input = { path = "../../crate/game_input" }
 game_mode_menu = { path = "../../crate/game_mode_menu" }
-game_play = { path = "../../crate/game_play" }
 loading = { path = "../../crate/loading" }
 map_loading = { path = "../../crate/map_loading" }
 log = "0.4"

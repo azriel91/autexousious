@@ -1,6 +1,7 @@
+use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics},
+    entity::{CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics},
 };
 
 use character::sequence_handler::{CharacterSequenceHandler, SequenceHandlerUtil};
@@ -10,7 +11,7 @@ pub(crate) struct JumpDescend;
 
 impl CharacterSequenceHandler for JumpDescend {
     fn update(
-        character_input: &CharacterInput,
+        controller_input: &ControllerInput,
         character_status: &CharacterStatus,
         _kinematics: &Kinematics<f32>,
     ) -> CharacterStatusUpdate {
@@ -25,7 +26,7 @@ impl CharacterSequenceHandler for JumpDescend {
 
         // Switch direction if user is pressing the opposite way.
         if SequenceHandlerUtil::input_opposes_direction(
-            character_input,
+            controller_input,
             character_status.object_status.mirrored,
         ) {
             update.object_status.mirrored = Some(!character_status.object_status.mirrored);
@@ -37,11 +38,12 @@ impl CharacterSequenceHandler for JumpDescend {
 
 #[cfg(test)]
 mod test {
+    use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterInput, CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics,
-            ObjectStatus, ObjectStatusUpdate,
+            CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatus,
+            ObjectStatusUpdate,
         },
     };
 
@@ -50,7 +52,7 @@ mod test {
 
     #[test]
     fn no_update_when_sequence_not_ended() {
-        let input = CharacterInput::new(0., 0., false, false, false, false);
+        let input = ControllerInput::new(0., 0., false, false, false, false);
         let mut kinematics = Kinematics::default();
         kinematics.velocity[1] = -1.;
 
@@ -73,7 +75,7 @@ mod test {
 
     #[test]
     fn restarts_jump_descend_when_sequence_ends() {
-        let input = CharacterInput::new(0., 0., false, false, false, false);
+        let input = ControllerInput::new(0., 0., false, false, false, false);
         let mut kinematics = Kinematics::default();
         kinematics.velocity[1] = -1.;
 
@@ -104,7 +106,7 @@ mod test {
 
     #[test]
     fn jump_descend_land_when_on_ground() {
-        let input = CharacterInput::new(0., 0., false, false, false, false);
+        let input = ControllerInput::new(0., 0., false, false, false, false);
         let mut kinematics = Kinematics::default();
         kinematics.velocity[1] = -1.;
 
@@ -137,7 +139,7 @@ mod test {
         vec![(-1., false), (1., true)]
             .into_iter()
             .for_each(|(x_input, mirrored)| {
-                let input = CharacterInput::new(x_input, 0., false, false, false, false);
+                let input = ControllerInput::new(x_input, 0., false, false, false, false);
                 let mut kinematics = Kinematics::default();
                 kinematics.velocity[1] = 1.;
 

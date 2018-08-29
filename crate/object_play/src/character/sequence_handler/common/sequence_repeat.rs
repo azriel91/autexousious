@@ -1,8 +1,7 @@
+use game_input::ControllerInput;
 use object_model::{
     config::object::SequenceState,
-    entity::{
-        CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
-    },
+    entity::{CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate},
 };
 
 use character::sequence_handler::SequenceHandler;
@@ -15,7 +14,7 @@ pub(crate) struct SequenceRepeat;
 
 impl SequenceHandler for SequenceRepeat {
     fn update(
-        _input: &CharacterInput,
+        _input: &ControllerInput,
         character_status: &CharacterStatus,
         _kinematics: &Kinematics<f32>,
     ) -> Option<CharacterStatusUpdate> {
@@ -42,11 +41,11 @@ impl SequenceHandler for SequenceRepeat {
 
 #[cfg(test)]
 mod tests {
+    use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus,
-            ObjectStatusUpdate,
+            CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
         },
     };
 
@@ -58,7 +57,7 @@ mod tests {
         assert_eq!(
             None,
             SequenceRepeat::update(
-                &CharacterInput::default(),
+                &ControllerInput::default(),
                 &CharacterStatus {
                     object_status: ObjectStatus {
                         sequence_id: CharacterSequenceId::Walk,
@@ -77,7 +76,7 @@ mod tests {
         assert_eq!(
             None,
             SequenceRepeat::update(
-                &CharacterInput::default(),
+                &ControllerInput::default(),
                 &CharacterStatus {
                     object_status: ObjectStatus {
                         sequence_id: CharacterSequenceId::Walk,
@@ -93,7 +92,7 @@ mod tests {
 
     #[test]
     fn restarts_sequence_when_no_input_and_sequence_end() {
-        let input = CharacterInput::new(0., 0., false, false, false, false);
+        let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
             Some(CharacterStatusUpdate {

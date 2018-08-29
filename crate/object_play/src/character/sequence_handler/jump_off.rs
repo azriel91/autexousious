@@ -1,6 +1,7 @@
+use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics},
+    entity::{CharacterStatus, CharacterStatusUpdate, Kinematics},
 };
 
 use character::sequence_handler::CharacterSequenceHandler;
@@ -10,7 +11,7 @@ pub(crate) struct JumpOff;
 
 impl CharacterSequenceHandler for JumpOff {
     fn update(
-        _character_input: &CharacterInput,
+        _controller_input: &ControllerInput,
         character_status: &CharacterStatus,
         kinematics: &Kinematics<f32>,
     ) -> CharacterStatusUpdate {
@@ -31,11 +32,11 @@ impl CharacterSequenceHandler for JumpOff {
 
 #[cfg(test)]
 mod test {
+    use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus,
-            ObjectStatusUpdate,
+            CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
         },
     };
 
@@ -44,7 +45,7 @@ mod test {
 
     #[test]
     fn no_update_when_sequence_not_ended() {
-        let input = CharacterInput::new(0., 0., false, false, false, false);
+        let input = ControllerInput::new(0., 0., false, false, false, false);
         let mut kinematics = Kinematics::default();
         kinematics.velocity[1] = 1.;
 
@@ -66,7 +67,7 @@ mod test {
 
     #[test]
     fn switches_to_jump_ascend_when_sequence_ends() {
-        let input = CharacterInput::new(0., 0., false, false, false, false);
+        let input = ControllerInput::new(0., 0., false, false, false, false);
         let mut kinematics = Kinematics::default();
         kinematics.velocity[1] = 1.;
 
@@ -96,7 +97,7 @@ mod test {
 
     #[test]
     fn switches_to_jump_descend_when_y_velocity_is_zero_or_downwards() {
-        let input = CharacterInput::new(0., 0., false, false, false, false);
+        let input = ControllerInput::new(0., 0., false, false, false, false);
         let mut downwards_kinematics = Kinematics::default();
         downwards_kinematics.velocity[1] = -1.;
 

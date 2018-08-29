@@ -1,8 +1,7 @@
+use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{
-        CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
-    },
+    entity::{CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate},
 };
 
 use character::sequence_handler::{common::SequenceRepeat, SequenceHandler, SequenceHandlerUtil};
@@ -15,7 +14,7 @@ pub(crate) struct RunStopCheck;
 
 impl SequenceHandler for RunStopCheck {
     fn update(
-        input: &CharacterInput,
+        input: &ControllerInput,
         character_status: &CharacterStatus,
         kinematics: &Kinematics<f32>,
     ) -> Option<CharacterStatusUpdate> {
@@ -39,11 +38,12 @@ impl SequenceHandler for RunStopCheck {
 
 #[cfg(test)]
 mod tests {
+    use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus,
-            ObjectStatusUpdate, RunCounter,
+            CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+            RunCounter,
         },
     };
 
@@ -55,7 +55,7 @@ mod tests {
         vec![(1., false), (-1., true)]
             .into_iter()
             .for_each(|(x_input, mirrored)| {
-                let input = CharacterInput::new(x_input, 0., false, false, false, false);
+                let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
                     None,
@@ -77,7 +77,7 @@ mod tests {
 
     #[test]
     fn run_stop_when_no_x_input() {
-        let input = CharacterInput::new(0., 1., false, false, false, false);
+        let input = ControllerInput::new(0., 1., false, false, false, false);
 
         assert_eq!(
             Some(CharacterStatusUpdate {
@@ -108,7 +108,7 @@ mod tests {
         vec![(1., true), (-1., false)]
             .into_iter()
             .for_each(|(x_input, mirrored)| {
-                let input = CharacterInput::new(x_input, 0., false, false, false, false);
+                let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
                     Some(CharacterStatusUpdate {
@@ -140,7 +140,7 @@ mod tests {
         vec![(1., false), (-1., true)]
             .into_iter()
             .for_each(|(x_input, mirrored)| {
-                let input = CharacterInput::new(x_input, 0., false, false, false, false);
+                let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
                     Some(CharacterStatusUpdate {

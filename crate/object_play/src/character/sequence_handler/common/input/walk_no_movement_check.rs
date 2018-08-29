@@ -1,8 +1,7 @@
+use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{
-        CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
-    },
+    entity::{CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate},
 };
 
 use character::sequence_handler::SequenceHandler;
@@ -15,7 +14,7 @@ pub(crate) struct WalkNoMovementCheck;
 
 impl SequenceHandler for WalkNoMovementCheck {
     fn update(
-        input: &CharacterInput,
+        input: &ControllerInput,
         _character_status: &CharacterStatus,
         _kinematics: &Kinematics<f32>,
     ) -> Option<CharacterStatusUpdate> {
@@ -36,11 +35,11 @@ impl SequenceHandler for WalkNoMovementCheck {
 
 #[cfg(test)]
 mod tests {
+    use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus,
-            ObjectStatusUpdate,
+            CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
         },
     };
 
@@ -49,7 +48,7 @@ mod tests {
 
     #[test]
     fn stand_when_no_input() {
-        let input = CharacterInput::new(0., 0., false, false, false, false);
+        let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
             Some(CharacterStatusUpdate {
@@ -77,7 +76,7 @@ mod tests {
     #[test]
     fn none_when_x_axis_non_zero() {
         vec![1., -1.].into_iter().for_each(|x_input| {
-            let input = CharacterInput::new(x_input, 0., false, false, false, false);
+            let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
             assert_eq!(
                 None,
@@ -99,7 +98,7 @@ mod tests {
     #[test]
     fn none_when_z_axis_non_zero() {
         vec![1., -1.].into_iter().for_each(|z_input| {
-            let input = CharacterInput::new(0., z_input, false, false, false, false);
+            let input = ControllerInput::new(0., z_input, false, false, false, false);
 
             assert_eq!(
                 None,

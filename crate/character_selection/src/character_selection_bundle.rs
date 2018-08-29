@@ -10,38 +10,61 @@ use CharacterSelectionSystem;
 ///
 /// The Amethyst `InputBundle` must be added before this bundle.
 #[derive(Debug, new)]
-pub struct CharacterSelectionBundle;
+pub struct CharacterSelectionBundle {
+    /// System names that the `CharacterSelectionSystem` should depend on.
+    #[new(default)]
+    system_dependencies: Option<Vec<String>>,
+}
+
+impl CharacterSelectionBundle {
+    /// Specifies system dependencies for the `CharacterSelectionSystem`.
+    ///
+    /// # Parameters
+    ///
+    /// * `dependencies`: Names of the systems to depend on.
+    pub fn with_system_dependencies(mut self, dependencies: &[String]) -> Self {
+        self.system_dependencies = Some(Vec::from(dependencies));
+        self
+    }
+}
 
 impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
+        let deps = self
+            .system_dependencies
+            .as_ref()
+            .map_or_else(Vec::new, |deps| {
+                deps.iter().map(|dep| dep.as_ref()).collect::<Vec<&str>>()
+            });
+
         builder.add(
             CharacterSelectionSystem::new(),
             &CharacterSelectionSystem::type_name(),
-            &["input_system"],
+            &deps,
         ); // kcov-ignore
+
         Ok(())
     }
 }
 
 #[cfg(test)]
 mod test {
-    use std::env;
-
+    use amethyst::core::transform::TransformBundle;
     use amethyst_test_support::prelude::*;
-    use game_input::{PlayerActionControl, PlayerAxisControl};
 
     use super::CharacterSelectionBundle;
 
     #[test]
     fn bundle_build_should_succeed() {
-        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
-
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
-                .with_bundle(CharacterSelectionBundle)
-                .run()
+            AmethystApplication::blank()
+                .with_bundle(TransformBundle::new())
+                .with_bundle(
+                    CharacterSelectionBundle::new()
+                        .with_system_dependencies(&["transform_system".to_string()])
+                ).run()
                 .is_ok()
         );
     }

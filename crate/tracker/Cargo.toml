@@ -1,0 +1,13 @@
+[package]
+name = "tracker"
+version = "0.5.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+
+[dependencies]
+amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop" }
+derive-new = "0.5"
+named_type = "0.1.4"
+named_type_derive = "0.1.4"
+
+[dev-dependencies]
+amethyst_test_support = { path = "../amethyst_test_support" }

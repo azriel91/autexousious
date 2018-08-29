@@ -1,7 +1,8 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
+use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterInput, CharacterStatus, Kinematics},
+    entity::{CharacterStatus, Kinematics},
     loaded::{Character, CharacterHandle},
 };
 
@@ -12,7 +13,7 @@ pub(crate) struct CharacterKinematicsSystem;
 type CharacterKinematicsSystemData<'s> = (
     Read<'s, AssetStorage<Character>>,
     ReadStorage<'s, CharacterHandle>,
-    ReadStorage<'s, CharacterInput>,
+    ReadStorage<'s, ControllerInput>,
     ReadStorage<'s, CharacterStatus>,
     WriteStorage<'s, Kinematics<f32>>,
 );
@@ -25,14 +26,14 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
         (
             characters,
             handle_storage,
-            character_input_storage,
+            controller_input_storage,
             status_storage,
             mut kinematics_storage,
         ): Self::SystemData,
     ) {
-        for (character_handle, character_input, status, mut kinematics) in (
+        for (character_handle, controller_input, status, mut kinematics) in (
             &handle_storage,
-            &character_input_storage,
+            &controller_input_storage,
             &status_storage,
             &mut kinematics_storage,
         )
@@ -50,12 +51,12 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                     kinematics.velocity[2] = 0.;
                 }
                 CharacterSequenceId::Walk => {
-                    kinematics.velocity[0] = character_input.x_axis_value as f32 * 3.5;
-                    kinematics.velocity[2] = character_input.z_axis_value as f32 * 2.;
+                    kinematics.velocity[0] = controller_input.x_axis_value as f32 * 3.5;
+                    kinematics.velocity[2] = controller_input.z_axis_value as f32 * 2.;
                 }
                 CharacterSequenceId::Run => {
-                    kinematics.velocity[0] = character_input.x_axis_value as f32 * 6.;
-                    kinematics.velocity[2] = character_input.z_axis_value as f32 * 1.5;
+                    kinematics.velocity[0] = controller_input.x_axis_value as f32 * 6.;
+                    kinematics.velocity[2] = controller_input.z_axis_value as f32 * 1.5;
                 }
                 CharacterSequenceId::RunStop => {
                     kinematics.velocity[0] = if status.object_status.mirrored {
@@ -63,14 +64,14 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                     } else {
                         2.
                     };
-                    kinematics.velocity[2] = character_input.z_axis_value as f32 * 0.5;
+                    kinematics.velocity[2] = controller_input.z_axis_value as f32 * 0.5;
                 }
                 CharacterSequenceId::Jump => {}
                 CharacterSequenceId::JumpOff => {
                     if status.object_status.sequence_state == SequenceState::Begin {
-                        kinematics.velocity[0] = character_input.x_axis_value as f32 * 5.;
+                        kinematics.velocity[0] = controller_input.x_axis_value as f32 * 5.;
                         kinematics.velocity[1] = 17.;
-                        kinematics.velocity[2] = character_input.z_axis_value as f32 * 2.;
+                        kinematics.velocity[2] = controller_input.z_axis_value as f32 * 2.;
                     }
                 }
                 CharacterSequenceId::JumpAscend => {}
@@ -89,11 +90,12 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
 mod tests {
     use amethyst::{assets::AssetStorage, ecs::prelude::*};
     use application_test_support::AutexousiousApplication;
+    use game_input::ControllerInput;
     use map_model::loaded::Map;
     use map_selection::MapSelection;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{CharacterInput, CharacterStatus, Grounding, Kinematics},
+        entity::{CharacterStatus, Grounding, Kinematics},
     };
     use typename::TypeName;
 
@@ -164,13 +166,13 @@ mod tests {
                         |(
                             map_selection,
                             maps,
-                            mut character_input_storage,
+                            mut controller_input_storage,
                             mut status_storage,
                             mut kinematics_storage,
                         ): (
                             Read<MapSelection>,
                             Read<AssetStorage<Map>>,
-                            WriteStorage<CharacterInput>,
+                            WriteStorage<ControllerInput>,
                             WriteStorage<CharacterStatus>,
                             WriteStorage<Kinematics<f32>>,
                         )| {
@@ -180,15 +182,15 @@ mod tests {
                                 .expect("Expected map to be selected.");
                             let map = maps.get(map_handle).expect("Expected map to be loaded.");
 
-                            for (character_input, status, kinematics) in (
-                                &mut character_input_storage,
+                            for (controller_input, status, kinematics) in (
+                                &mut controller_input_storage,
                                 &mut status_storage,
                                 &mut kinematics_storage,
                             )
                                 .join()
                             {
-                                character_input.x_axis_value = 1.;
-                                character_input.z_axis_value = -1.;
+                                controller_input.x_axis_value = 1.;
+                                controller_input.z_axis_value = -1.;
 
                                 status.object_status.sequence_id = CharacterSequenceId::Walk;
                                 status.object_status.grounding = Grounding::OnGround;
@@ -232,13 +234,13 @@ mod tests {
                         |(
                             map_selection,
                             maps,
-                            mut character_input_storage,
+                            mut controller_input_storage,
                             mut status_storage,
                             mut kinematics_storage,
                         ): (
                             Read<MapSelection>,
                             Read<AssetStorage<Map>>,
-                            WriteStorage<CharacterInput>,
+                            WriteStorage<ControllerInput>,
                             WriteStorage<CharacterStatus>,
                             WriteStorage<Kinematics<f32>>,
                         )| {
@@ -248,15 +250,15 @@ mod tests {
                                 .expect("Expected map to be selected.");
                             let map = maps.get(map_handle).expect("Expected map to be loaded.");
 
-                            for (character_input, status, kinematics) in (
-                                &mut character_input_storage,
+                            for (controller_input, status, kinematics) in (
+                                &mut controller_input_storage,
                                 &mut status_storage,
                                 &mut kinematics_storage,
                             )
                                 .join()
                             {
-                                character_input.x_axis_value = 1.;
-                                character_input.z_axis_value = -1.;
+                                controller_input.x_axis_value = 1.;
+                                controller_input.z_axis_value = -1.;
 
                                 status.object_status.sequence_id = CharacterSequenceId::Run;
                                 status.object_status.grounding = Grounding::OnGround;
@@ -299,13 +301,13 @@ mod tests {
                         |(
                             map_selection,
                             maps,
-                            mut character_input_storage,
+                            mut controller_input_storage,
                             mut status_storage,
                             mut kinematics_storage,
                         ): (
                             Read<MapSelection>,
                             Read<AssetStorage<Map>>,
-                            WriteStorage<CharacterInput>,
+                            WriteStorage<ControllerInput>,
                             WriteStorage<CharacterStatus>,
                             WriteStorage<Kinematics<f32>>,
                         )| {
@@ -315,14 +317,14 @@ mod tests {
                                 .expect("Expected map to be selected.");
                             let map = maps.get(map_handle).expect("Expected map to be loaded.");
 
-                            for (character_input, status, kinematics) in (
-                                &mut character_input_storage,
+                            for (controller_input, status, kinematics) in (
+                                &mut controller_input_storage,
                                 &mut status_storage,
                                 &mut kinematics_storage,
                             )
                                 .join()
                             {
-                                character_input.z_axis_value = 1.;
+                                controller_input.z_axis_value = 1.;
 
                                 status.object_status.sequence_id = CharacterSequenceId::RunStop;
                                 status.object_status.grounding = Grounding::OnGround;
@@ -380,13 +382,13 @@ mod tests {
                         |(
                             map_selection,
                             maps,
-                            mut character_input_storage,
+                            mut controller_input_storage,
                             mut status_storage,
                             mut kinematics_storage,
                         ): (
                             Read<MapSelection>,
                             Read<AssetStorage<Map>>,
-                            WriteStorage<CharacterInput>,
+                            WriteStorage<ControllerInput>,
                             WriteStorage<CharacterStatus>,
                             WriteStorage<Kinematics<f32>>,
                         )| {
@@ -396,15 +398,15 @@ mod tests {
                                 .expect("Expected map to be selected.");
                             let map = maps.get(map_handle).expect("Expected map to be loaded.");
 
-                            for (character_input, status, kinematics) in (
-                                &mut character_input_storage,
+                            for (controller_input, status, kinematics) in (
+                                &mut controller_input_storage,
                                 &mut status_storage,
                                 &mut kinematics_storage,
                             )
                                 .join()
                             {
-                                character_input.x_axis_value = -1.;
-                                character_input.z_axis_value = 1.;
+                                controller_input.x_axis_value = -1.;
+                                controller_input.z_axis_value = 1.;
 
                                 status.object_status.sequence_id = CharacterSequenceId::JumpOff;
                                 status.object_status.grounding = Grounding::OnGround;

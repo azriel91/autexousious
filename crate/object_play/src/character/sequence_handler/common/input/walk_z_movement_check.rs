@@ -1,4 +1,5 @@
-use object_model::entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics};
+use game_input::ControllerInput;
+use object_model::entity::{CharacterStatus, CharacterStatusUpdate, Kinematics};
 
 use character::sequence_handler::{common::SequenceRepeat, SequenceHandler};
 
@@ -10,7 +11,7 @@ pub(crate) struct WalkZMovementCheck;
 
 impl SequenceHandler for WalkZMovementCheck {
     fn update(
-        input: &CharacterInput,
+        input: &ControllerInput,
         character_status: &CharacterStatus,
         kinematics: &Kinematics<f32>,
     ) -> Option<CharacterStatusUpdate> {
@@ -24,11 +25,12 @@ impl SequenceHandler for WalkZMovementCheck {
 
 #[cfg(test)]
 mod tests {
+    use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus,
-            ObjectStatusUpdate, RunCounter,
+            CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+            RunCounter,
         },
     };
 
@@ -37,7 +39,7 @@ mod tests {
 
     #[test]
     fn none_when_no_z_input() {
-        let input = CharacterInput::new(0., 0., false, false, false, false);
+        let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
             None,
@@ -58,7 +60,7 @@ mod tests {
     #[test]
     fn no_change_when_z_axis_non_zero() {
         vec![1., -1.].into_iter().for_each(|z_input| {
-            let input = CharacterInput::new(0., z_input, false, false, false, false);
+            let input = ControllerInput::new(0., z_input, false, false, false, false);
 
             assert_eq!(
                 None,
@@ -80,7 +82,7 @@ mod tests {
     #[test]
     fn restarts_walk_when_sequence_ended() {
         vec![1., -1.].into_iter().for_each(|z_input| {
-            let input = CharacterInput::new(0., z_input, false, false, false, false);
+            let input = ControllerInput::new(0., z_input, false, false, false, false);
 
             assert_eq!(
                 Some(CharacterStatusUpdate {

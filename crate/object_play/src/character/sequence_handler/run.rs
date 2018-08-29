@@ -1,4 +1,5 @@
-use object_model::entity::{CharacterInput, CharacterStatus, CharacterStatusUpdate, Kinematics};
+use game_input::ControllerInput;
+use object_model::entity::{CharacterStatus, CharacterStatusUpdate, Kinematics};
 
 use character::sequence_handler::{
     common::{grounding::AirborneCheck, input::RunStopCheck},
@@ -11,7 +12,7 @@ pub(crate) struct Run;
 
 impl CharacterSequenceHandler for Run {
     fn update(
-        input: &CharacterInput,
+        input: &ControllerInput,
         character_status: &CharacterStatus,
         kinematics: &Kinematics<f32>,
     ) -> CharacterStatusUpdate {
@@ -19,17 +20,18 @@ impl CharacterSequenceHandler for Run {
             .iter()
             .fold(None, |status_update, fn_update| {
                 status_update.or_else(|| fn_update(input, character_status, kinematics))
-            }).unwrap_or_else(|| CharacterStatusUpdate::default())
+            }).unwrap_or_else(CharacterStatusUpdate::default)
     }
 }
 
 #[cfg(test)]
 mod test {
+    use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterInput, CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics,
-            ObjectStatus, ObjectStatusUpdate,
+            CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatus,
+            ObjectStatusUpdate,
         },
     };
 
@@ -48,7 +50,7 @@ mod test {
                 ..Default::default()
             },
             Run::update(
-                &CharacterInput::default(),
+                &ControllerInput::default(),
                 &CharacterStatus {
                     object_status: ObjectStatus {
                         sequence_id: CharacterSequenceId::Run,
@@ -64,7 +66,7 @@ mod test {
 
     #[test]
     fn reverts_to_run_stop_when_no_input() {
-        let input = CharacterInput::new(0., 0., false, false, false, false);
+        let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate {
@@ -92,7 +94,7 @@ mod test {
 
     #[test]
     fn keeps_running_when_x_axis_positive_and_non_mirrored() {
-        let input = CharacterInput::new(1., 0., false, false, false, false);
+        let input = ControllerInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate::default(),
@@ -113,7 +115,7 @@ mod test {
 
     #[test]
     fn keeps_running_when_x_axis_negative_and_mirrored() {
-        let input = CharacterInput::new(-1., 0., false, false, false, false);
+        let input = ControllerInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate::default(),
@@ -137,7 +139,7 @@ mod test {
         vec![(1., false), (-1., true)]
             .into_iter()
             .for_each(|(x_input, mirrored)| {
-                let input = CharacterInput::new(x_input, 0., false, false, false, false);
+                let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
                     CharacterStatusUpdate {
@@ -167,7 +169,7 @@ mod test {
 
     #[test]
     fn reverts_to_run_stop_when_x_axis_negative_and_non_mirrored() {
-        let input = CharacterInput::new(-1., 0., false, false, false, false);
+        let input = ControllerInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate {
@@ -195,7 +197,7 @@ mod test {
 
     #[test]
     fn reverts_to_run_stop_when_x_axis_positive_and_mirrored() {
-        let input = CharacterInput::new(1., 0., false, false, false, false);
+        let input = ControllerInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate {
@@ -223,7 +225,7 @@ mod test {
 
     #[test]
     fn keeps_running_when_x_axis_positive_z_axis_non_zero_and_non_mirrored() {
-        let input = CharacterInput::new(1., 1., false, false, false, false);
+        let input = ControllerInput::new(1., 1., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate::default(),
@@ -241,7 +243,7 @@ mod test {
             )
         );
 
-        let input = CharacterInput::new(1., -1., false, false, false, false);
+        let input = ControllerInput::new(1., -1., false, false, false, false);
 
         assert_eq!(
             CharacterStatusUpdate::default(),
