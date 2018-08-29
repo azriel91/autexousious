@@ -86,7 +86,7 @@ impl CharacterSelectionWidgetInputSystem {
                 &character_selection_event
             );
             event_channel.single_write(character_selection_event);
-        } else if input.attack {
+        } else if !last_input.attack && input.attack {
             let character_selection_event = CharacterSelectionEvent::Confirm;
             debug!(
                 "Sending character selection event: {:?}",
@@ -297,6 +297,34 @@ mod test {
     }
 
     #[test]
+    fn sends_confirm_event_when_widget_ready_and_input_attack() {
+        let mut controller_input = ControllerInput::default();
+        controller_input.attack = true;
+
+        // kcov-ignore-start
+        assert!(
+            // kcov-ignore-end
+            AutexousiousApplication::config_base(
+                "updates_widget_character_select_to_ready_and_sends_event_when_input_attack",
+                false
+            ).with_setup(setup_components)
+            .with_setup(setup_event_reader)
+            .with_setup(move |world| setup_widget(
+                world,
+                WidgetState::Ready,
+                CharacterSelection::Id(0),
+                controller_input
+            )).with_system_single(
+                CharacterSelectionWidgetInputSystem::new(),
+                CharacterSelectionWidgetInputSystem::type_name(),
+                &[]
+            ).with_assertion(|world| assert_events(world, vec![CharacterSelectionEvent::Confirm]))
+            .run()
+            .is_ok()
+        );
+    }
+
+    #[test]
     fn selects_last_character_when_input_left_and_selection_random() {
         let mut controller_input = ControllerInput::default();
         controller_input.x_axis_value = -1.;
@@ -487,7 +515,7 @@ mod test {
     fn setup_event_reader(world: &mut World) {
         let event_channel_reader = world
             .write_resource::<EventChannel<CharacterSelectionEvent>>()
-            .register_reader();
+            .register_reader(); // kcov-ignore
 
         world.add_resource(EffectReturn(event_channel_reader));
     }
