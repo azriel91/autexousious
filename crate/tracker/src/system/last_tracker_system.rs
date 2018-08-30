@@ -53,11 +53,15 @@ where
             .for_each(|(entity, component)| {
                 last_components
                     .insert(entity, Last(component.clone()))
-                    .expect(&format!(
-                        "Failed to insert `{}<{}>` component.",
-                        Last::<T>::type_name(),
-                        self.component_name
-                    )); // kcov-ignore
+                    .unwrap_or_else(|_| {
+                        // kcov-ignore-start
+                        panic!(
+                            "Failed to insert `{}<{}>` component.",
+                            Last::<T>::type_name(),
+                            self.component_name
+                        )
+                        // kcov-ignore-end
+                    });
             });
     }
 }
