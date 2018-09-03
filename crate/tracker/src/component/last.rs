@@ -4,7 +4,7 @@ use amethyst::ecs::prelude::*;
 use named_type::NamedType;
 
 /// Stores the last value of the component.
-#[derive(Debug, NamedType)]
+#[derive(Debug, NamedType)] // kcov-ignore
 pub struct Last<T: Component + Clone + Send + Sync>(pub T);
 
 impl<T> Component for Last<T>

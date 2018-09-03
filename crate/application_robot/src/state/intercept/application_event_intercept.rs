@@ -152,4 +152,11 @@ mod test {
             )
         );
     }
+
+    #[test]
+    fn intercept_is_transitive() {
+        assert!(<Intercept<(), ()>>::is_transitive(
+            &ApplicationEventIntercept::new()
+        ));
+    }
 }

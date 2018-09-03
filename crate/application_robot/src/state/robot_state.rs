@@ -1125,7 +1125,7 @@ mod test {
         fn_!(on_resume, Invocation::OnResume);
         fn_trans!(
             handle_event,
-            Invocation::HandleEvent;
+            Invocation::HandleEvent; // kcov-ignore
             [StateData<T>, StateEvent<E>]
         );
         fn_trans!(fixed_update, Invocation::FixedUpdate; [StateData<T>]);
