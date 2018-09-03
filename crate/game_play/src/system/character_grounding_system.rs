@@ -106,9 +106,9 @@ mod tests {
                             for (kinematics, _) in (&kinematics_storage, &status_storage).join() {
                                 assert_eq!(1., kinematics.position[0]);
 
-                                // Map margins are shifted by the depth. See
+                                // Map margins are shifted by z and depth. See
                                 // `map_model::loaded::Margins`
-                                assert_eq!(202., kinematics.position[1]);
+                                assert_eq!(205., kinematics.position[1]);
                                 assert_eq!(3., kinematics.position[2]);
                             }
                         },
@@ -151,9 +151,9 @@ mod tests {
                             for (kinematics, _) in (&kinematics_storage, &status_storage).join() {
                                 assert_eq!(801., kinematics.position[0]);
 
-                                // Map margins are shifted by the depth. See
+                                // Map margins are shifted by z and depth. See
                                 // `map_model::loaded::Margins`
-                                assert_eq!(602., kinematics.position[1]);
+                                assert_eq!(605., kinematics.position[1]);
                                 assert_eq!(203., kinematics.position[2]);
                             }
                         },
