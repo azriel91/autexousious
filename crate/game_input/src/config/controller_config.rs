@@ -6,13 +6,10 @@ use Axis;
 use ControlAction;
 
 /// Structure for each controller's configuration.
-// TODO: `PartialEq` pending <https://github.com/amethyst/amethyst/pull/904>
-#[derive(Clone, Derivative, Default, Serialize, Deserialize, new)]
+#[derive(Clone, Derivative, Default, PartialEq, Serialize, Deserialize, new)]
 #[derivative(Debug)]
 pub struct ControllerConfig {
     /// Axis control configuration.
-    // TODO: Pending <https://github.com/amethyst/amethyst/pull/904>
-    #[derivative(Debug = "ignore")]
     pub axes: HashMap<Axis, InputAxis>, // kcov-ignore
     /// Action control configuration.
     pub actions: HashMap<ControlAction, Button>, // kcov-ignore
