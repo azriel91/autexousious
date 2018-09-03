@@ -8,6 +8,7 @@ use state::Intercept;
 ///
 /// This pops the stack after the fixed timeout, regardless of the state changes that occur from
 /// the underlying delegate.
+// kcov-ignore-start
 #[derive(Debug)]
 pub struct FixedTimeoutIntercept {
     /// Total duration that the delegate state should run for.
@@ -15,6 +16,7 @@ pub struct FixedTimeoutIntercept {
     /// Instant that the clock started ticking.
     start_instant: Option<Instant>,
 }
+// kcov-ignore-end
 
 impl FixedTimeoutIntercept {
     /// Returns a new FixedTimeoutIntercept.
@@ -190,5 +192,12 @@ mod test {
                 .update_begin(&mut StateData::new(&mut world, &mut ()))
                 .as_ref(),
         ); // kcov-ignore
+    }
+
+    #[test]
+    fn intercept_is_transitive() {
+        assert!(<Intercept<(), ()>>::is_transitive(
+            &FixedTimeoutIntercept::new(Duration::from_millis(0))
+        ));
     }
 }

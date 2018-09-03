@@ -171,12 +171,6 @@ mod test {
 
     use super::AutexousiousApplication;
 
-    // TODO: Allow users to specify their own type parameters to `AmethystApplication::base()`.
-    //
-    // This will make the dev experience better for crates that need strong types for the Input and
-    // UI bundles, but are not able to depend on `AutexousiousApplication`, as the
-    // `autexousious_test_support` crate would be depending on *that crate* (for better dev
-    // experience for higher level crates).
     #[test]
     fn ui_base_uses_strong_types_for_input_and_ui_bundles() {
         // kcov-ignore-start

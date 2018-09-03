@@ -61,7 +61,7 @@ where
                             self.component_name
                         )
                         // kcov-ignore-end
-                    });
+                    }); // kcov-ignore
             });
     }
 }
