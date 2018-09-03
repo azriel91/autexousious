@@ -85,7 +85,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_pass(DrawUi::new()),
     );
 
-    let intercepts: Vec<Rc<RefCell<Intercept<GameData>>>> = {
+    let intercepts: Vec<Rc<RefCell<Intercept<GameData, ()>>>> = {
         if let Some(timeout) = opt.timeout {
             vec![Rc::new(RefCell::new(FixedTimeoutIntercept::new(
                 Duration::from_millis(timeout),

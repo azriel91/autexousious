@@ -7,7 +7,7 @@ use amethyst::{
     ecs::prelude::*,
     input::is_key_down,
     prelude::*,
-    renderer::{Camera, Event, Projection, ScreenDimensions, VirtualKeyCode},
+    renderer::{Camera, Projection, ScreenDimensions, VirtualKeyCode},
 };
 use game_model::play::GameEntities;
 
@@ -119,7 +119,10 @@ impl GamePlayState {
     }
 }
 
-impl<'a, 'b> State<GameData<'a, 'b>> for GamePlayState {
+impl<'a, 'b, E> State<GameData<'a, 'b>, E> for GamePlayState
+where
+    E: Send + Sync + 'static,
+{
     fn on_start(&mut self, mut data: StateData<GameData>) {
         self.initialize_dispatcher(&mut data.world);
         self.initialize_camera(&mut data.world);
@@ -128,11 +131,15 @@ impl<'a, 'b> State<GameData<'a, 'b>> for GamePlayState {
     fn handle_event(
         &mut self,
         _data: StateData<GameData>,
-        event: Event,
-    ) -> Trans<GameData<'a, 'b>> {
-        if is_key_down(&event, VirtualKeyCode::Escape) {
-            info!("Returning from `GamePlayState`.");
-            Trans::Pop
+        event: StateEvent<E>,
+    ) -> Trans<GameData<'a, 'b>, E> {
+        if let StateEvent::Window(event) = &event {
+            if is_key_down(&event, VirtualKeyCode::Escape) {
+                info!("Returning from `GamePlayState`.");
+                Trans::Pop
+            } else {
+                Trans::None
+            }
         } else {
             Trans::None
         }
@@ -144,7 +151,7 @@ impl<'a, 'b> State<GameData<'a, 'b>> for GamePlayState {
         self.terminate_dispatcher();
     }
 
-    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
+    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, E> {
         // Note: The built-in dispatcher must be run before the state specific dispatcher as the
         // `"input_system"` is registered in the main dispatcher, and is a dependency of the
         // `ControllerInputUpdateSystem`.

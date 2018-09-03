@@ -90,7 +90,10 @@ impl GameModeMenuState {
     }
 }
 
-impl State<GameData<'static, 'static>> for GameModeMenuState {
+impl<E> State<GameData<'static, 'static>, E> for GameModeMenuState
+where
+    E: Send + Sync + 'static,
+{
     fn on_start(&mut self, mut data: StateData<GameData>) {
         self.initialize_dispatcher(&mut data.world);
         self.initialize_menu_event_channel(&mut data.world);
@@ -112,7 +115,7 @@ impl State<GameData<'static, 'static>> for GameModeMenuState {
         self.terminate_menu_items(&mut data.world);
     }
 
-    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'static, 'static>> {
+    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'static, 'static>, E> {
         data.data.update(&data.world);
         self.dispatcher.as_mut().unwrap().dispatch(&data.world.res);
 
@@ -174,10 +177,13 @@ mod test {
 
         assert!(state.dispatcher.is_none());
 
-        state.on_start(StateData {
-            world: &mut world,
-            data: &mut data,
-        });
+        <State<_, ()>>::on_start(
+            &mut state,
+            StateData {
+                world: &mut world,
+                data: &mut data,
+            },
+        );
 
         assert!(state.dispatcher.is_some());
     }
@@ -188,10 +194,13 @@ mod test {
 
         assert!(state.menu_event_reader.is_none());
 
-        state.on_start(StateData {
-            world: &mut world,
-            data: &mut data,
-        });
+        <State<_, ()>>::on_start(
+            &mut state,
+            StateData {
+                world: &mut world,
+                data: &mut data,
+            },
+        );
 
         assert!(state.menu_event_reader.is_some());
         let menu_event_channel = world.read_resource::<EventChannel<MenuEvent<Index>>>();
@@ -208,10 +217,13 @@ mod test {
 
         assert!(state.menu_items.is_empty());
 
-        state.on_start(StateData {
-            world: &mut world,
-            data: &mut data,
-        });
+        <State<_, ()>>::on_start(
+            &mut state,
+            StateData {
+                world: &mut world,
+                data: &mut data,
+            },
+        );
 
         assert_eq!(1, state.menu_items.len());
     }
@@ -220,17 +232,23 @@ mod test {
     fn on_stop_terminates_dispatcher() {
         let (mut state, mut world, mut data) = setup();
 
-        state.on_start(StateData {
-            world: &mut world,
-            data: &mut data,
-        });
+        <State<_, ()>>::on_start(
+            &mut state,
+            StateData {
+                world: &mut world,
+                data: &mut data,
+            },
+        );
 
         assert!(state.dispatcher.is_some());
 
-        state.on_stop(StateData {
-            world: &mut world,
-            data: &mut data,
-        });
+        <State<_, ()>>::on_stop(
+            &mut state,
+            StateData {
+                world: &mut world,
+                data: &mut data,
+            },
+        );
 
         assert!(state.dispatcher.is_none());
     }
@@ -239,17 +257,23 @@ mod test {
     fn on_stop_terminates_menu_event_channel_reader() {
         let (mut state, mut world, mut data) = setup();
 
-        state.on_start(StateData {
-            world: &mut world,
-            data: &mut data,
-        });
+        <State<_, ()>>::on_start(
+            &mut state,
+            StateData {
+                world: &mut world,
+                data: &mut data,
+            },
+        );
 
         assert!(state.menu_event_reader.is_some());
 
-        state.on_stop(StateData {
-            world: &mut world,
-            data: &mut data,
-        });
+        <State<_, ()>>::on_stop(
+            &mut state,
+            StateData {
+                world: &mut world,
+                data: &mut data,
+            },
+        );
 
         assert!(state.menu_event_reader.is_none());
     }
@@ -261,17 +285,23 @@ mod test {
                 menu_items.push(world.create_entity().build())
             })));
 
-        state.on_start(StateData {
-            world: &mut world,
-            data: &mut data,
-        });
+        <State<_, ()>>::on_start(
+            &mut state,
+            StateData {
+                world: &mut world,
+                data: &mut data,
+            },
+        );
 
         assert_eq!(1, state.menu_items.len());
 
-        state.on_stop(StateData {
-            world: &mut world,
-            data: &mut data,
-        });
+        <State<_, ()>>::on_stop(
+            &mut state,
+            StateData {
+                world: &mut world,
+                data: &mut data,
+            },
+        );
 
         assert!(state.menu_items.is_empty());
     }
@@ -283,17 +313,23 @@ mod test {
                 menu_items.push(world.create_entity().build())
             })));
 
-        state.on_start(StateData {
-            world: &mut world,
-            data: &mut data,
-        });
+        <State<_, ()>>::on_start(
+            &mut state,
+            StateData {
+                world: &mut world,
+                data: &mut data,
+            },
+        );
 
         assert_eq!(1, state.menu_items.len());
 
-        state.on_pause(StateData {
-            world: &mut world,
-            data: &mut data,
-        });
+        <State<_, ()>>::on_pause(
+            &mut state,
+            StateData {
+                world: &mut world,
+                data: &mut data,
+            },
+        );
 
         assert!(state.menu_items.is_empty());
     }
@@ -305,24 +341,33 @@ mod test {
                 menu_items.push(world.create_entity().build())
             })));
 
-        state.on_start(StateData {
-            world: &mut world,
-            data: &mut data,
-        });
+        <State<_, ()>>::on_start(
+            &mut state,
+            StateData {
+                world: &mut world,
+                data: &mut data,
+            },
+        );
 
         assert_eq!(1, state.menu_items.len());
 
-        state.on_pause(StateData {
-            world: &mut world,
-            data: &mut data,
-        });
+        <State<_, ()>>::on_pause(
+            &mut state,
+            StateData {
+                world: &mut world,
+                data: &mut data,
+            },
+        );
 
         assert!(state.menu_items.is_empty());
 
-        state.on_resume(StateData {
-            world: &mut world,
-            data: &mut data,
-        });
+        <State<_, ()>>::on_resume(
+            &mut state,
+            StateData {
+                world: &mut world,
+                data: &mut data,
+            },
+        );
 
         assert_eq!(1, state.menu_items.len());
     }
@@ -332,13 +377,16 @@ mod test {
         let (mut state, mut world, mut data) = setup();
 
         // register reader
-        state.on_start(StateData {
-            world: &mut world,
-            data: &mut data,
-        });
+        <State<_, ()>>::on_start(
+            &mut state,
+            StateData {
+                world: &mut world,
+                data: &mut data,
+            },
+        );
 
         assert_eq!(
-            discriminant(&Trans::None),
+            discriminant(&Trans::None as &Trans<_, ()>),
             discriminant(&state.update(StateData {
                 world: &mut world,
                 data: &mut data,
@@ -351,10 +399,13 @@ mod test {
         let (mut state, mut world, mut data) = setup();
 
         // register reader
-        state.on_start(StateData {
-            world: &mut world,
-            data: &mut data,
-        });
+        <State<_, ()>>::on_start(
+            &mut state,
+            StateData {
+                world: &mut world,
+                data: &mut data,
+            },
+        );
 
         {
             let mut menu_event_channel = world.write_resource::<EventChannel<MenuEvent<Index>>>();
@@ -362,7 +413,7 @@ mod test {
         } // kcov-ignore
 
         assert_eq!(
-            discriminant(&Trans::Quit),
+            discriminant(&Trans::Quit as &Trans<_, ()>),
             discriminant(&state.update(StateData {
                 world: &mut world,
                 data: &mut data,

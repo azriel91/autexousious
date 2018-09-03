@@ -101,7 +101,10 @@ impl MainMenuState {
     }
 }
 
-impl<'a, 'b> State<GameData<'a, 'b>> for MainMenuState {
+impl<'a, 'b, E> State<GameData<'a, 'b>, E> for MainMenuState
+where
+    E: Send + Sync + 'static,
+{
     fn on_start(&mut self, mut data: StateData<GameData>) {
         let mut dispatch = ParSeq::new(
             UiEventHandlerSystem::new(),
@@ -132,7 +135,7 @@ impl<'a, 'b> State<GameData<'a, 'b>> for MainMenuState {
         self.terminate_menu_items(&mut data.world);
     }
 
-    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
+    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, E> {
         data.data.update(&data.world);
         self.dispatch.as_mut().unwrap().dispatch(&data.world.res);
 

@@ -9,7 +9,6 @@ mod keyboard_escape_intercept;
 use std::fmt::Debug;
 
 use amethyst::prelude::*;
-use amethyst::renderer::Event;
 
 // Ignore default implementation coverage.
 // kcov-ignore-start
@@ -19,7 +18,10 @@ use amethyst::renderer::Event;
 /// so they may record application state or override the behaviour of the state.
 ///
 /// [state]: https://docs.rs/amethyst/0.6.0/amethyst/trait.State.html
-pub trait Intercept<T>: Debug {
+pub trait Intercept<T, E>: Debug
+where
+    E: Send + Sync + 'static,
+{
     /// Invoked before the delegate state's `on_start(..)` invocation.
     fn on_start_begin(&mut self, _data: &mut StateData<T>) {}
     /// Invoked after the delegate state's `on_start(..)` invocation.
@@ -43,13 +45,13 @@ pub trait Intercept<T>: Debug {
     /// # Parameters:
     ///
     /// * `data`: `StateData` for the application `State`
-    /// * `event`: `Event` rec.eived by the application. Mutable so the `Intercept` may alter
+    /// * `event`: `Event` received by the application. Mutable so the `Intercept` may alter
     ///             behaviour.
     fn handle_event_begin(
         &mut self,
         _data: &mut StateData<T>,
-        _event: &mut Event,
-    ) -> Option<Trans<T>> {
+        _event: &mut StateEvent<E>,
+    ) -> Option<Trans<T, E>> {
         None
     }
     /// Optionally returns a `Trans` to override the delegate state behaviour.
@@ -59,7 +61,7 @@ pub trait Intercept<T>: Debug {
     /// # Parameters:
     ///
     /// * `state_trans`: `Trans` that was returned by the delegate `State`
-    fn handle_event_end(&mut self, _state_trans: &Trans<T>) -> Option<Trans<T>> {
+    fn handle_event_end(&mut self, _state_trans: &Trans<T, E>) -> Option<Trans<T, E>> {
         None
     }
     /// Optionally returns a `Trans` to override the delegate state behaviour.
@@ -69,7 +71,7 @@ pub trait Intercept<T>: Debug {
     /// # Parameters:
     ///
     /// * `data`: `StateData` for the application `State`.
-    fn fixed_update_begin(&mut self, _data: &mut StateData<T>) -> Option<Trans<T>> {
+    fn fixed_update_begin(&mut self, _data: &mut StateData<T>) -> Option<Trans<T, E>> {
         None
     }
     /// Optionally returns a `Trans` to override the delegate state behaviour.
@@ -79,7 +81,7 @@ pub trait Intercept<T>: Debug {
     /// # Parameters:
     ///
     /// * `state_trans`: `Trans` that was returned by the delegate `State`
-    fn fixed_update_end(&mut self, _state_trans: &Trans<T>) -> Option<Trans<T>> {
+    fn fixed_update_end(&mut self, _state_trans: &Trans<T, E>) -> Option<Trans<T, E>> {
         None
     }
     /// Optionally returns a `Trans` to override the delegate state behaviour.
@@ -89,7 +91,7 @@ pub trait Intercept<T>: Debug {
     /// # Parameters:
     ///
     /// * `data`: `StateData` for the application `State`.
-    fn update_begin(&mut self, _data: &mut StateData<T>) -> Option<Trans<T>> {
+    fn update_begin(&mut self, _data: &mut StateData<T>) -> Option<Trans<T, E>> {
         None
     }
     /// Optionally returns a `Trans` to override the delegate state behaviour.
@@ -99,7 +101,7 @@ pub trait Intercept<T>: Debug {
     /// # Parameters:
     ///
     /// * `state_trans`: `Trans` that was returned by the delegate `State`
-    fn update_end(&mut self, _state_trans: &Trans<T>) -> Option<Trans<T>> {
+    fn update_end(&mut self, _state_trans: &Trans<T, E>) -> Option<Trans<T, E>> {
         None
     }
     /// Returns whether this intercept should be shared with `Trans::Push` and `Trans::Switch`ed

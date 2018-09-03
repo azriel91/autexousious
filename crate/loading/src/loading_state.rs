@@ -16,11 +16,13 @@ use AssetLoader;
 /// # Type Parameters
 ///
 /// * `S`: State to return after loading is complete.
+/// * `E`: Custom event type that states can respond to.
 #[derive(Derivative)]
 #[derivative(Debug)]
-pub struct LoadingState<'a, 'b, S>
+pub struct LoadingState<'a, 'b, S, E>
 where
-    S: State<GameData<'a, 'b>> + 'static,
+    S: State<GameData<'a, 'b>, E> + 'static,
+    E: Send + Sync + 'static,
 {
     /// Path to the assets directory.
     assets_dir: PathBuf,
@@ -31,12 +33,13 @@ where
     #[derivative(Debug = "ignore")]
     progress_counter: ProgressCounter,
     /// Lifetime tracker.
-    state_data: PhantomData<State<GameData<'a, 'b>>>,
+    state_data: PhantomData<State<GameData<'a, 'b>, E>>,
 }
 
-impl<'a, 'b, S> LoadingState<'a, 'b, S>
+impl<'a, 'b, S, E> LoadingState<'a, 'b, S, E>
 where
-    S: State<GameData<'a, 'b>> + 'static,
+    S: State<GameData<'a, 'b>, E> + 'static,
+    E: Send + Sync + 'static,
 {
     /// Returns a new `State`
     pub fn new(assets_dir: PathBuf, next_state: Box<S>) -> Self {
@@ -49,9 +52,10 @@ where
     }
 }
 
-impl<'a, 'b, S> State<GameData<'a, 'b>> for LoadingState<'a, 'b, S>
+impl<'a, 'b, S, E> State<GameData<'a, 'b>, E> for LoadingState<'a, 'b, S, E>
 where
-    S: State<GameData<'a, 'b>> + 'static,
+    S: State<GameData<'a, 'b>, E> + 'static,
+    E: Send + Sync + 'static,
 {
     fn on_start(&mut self, mut data: StateData<GameData>) {
         if let Err(e) = ThemeLoader::load(&mut data.world) {
@@ -67,7 +71,7 @@ where
         );
     }
 
-    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
+    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, E> {
         data.data.update(&data.world);
 
         if self.progress_counter.is_complete() {

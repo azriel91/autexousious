@@ -45,7 +45,7 @@ type BundleAddFn = SendBoxFnOnce<
 //   in a scope greater than the `AmethystApplication`'s lifetime, which detracts from the
 //   ergonomics of this test harness.
 type FnResourceAdd = Box<FnMut(&mut World) + Send>;
-type FnState<T> = SendBoxFnOnce<'static, (), Box<State<T>>>;
+type FnState<T, E> = SendBoxFnOnce<'static, (), Box<State<T, E>>>;
 
 type DefaultPipeline = PipelineBuilder<
     Queue<(
@@ -72,9 +72,17 @@ lazy_static! {
 /// Builder for an Amethyst application.
 ///
 /// This provides varying levels of setup so that users do not have to register common bundles.
+///
+/// # Type Parameters
+///
+/// * `T`: Game data type that holds the common dispatcher.
+/// * `E`: Custom event type shared between states.
 #[derive(Derivative, Default)]
 #[derivative(Debug)]
-pub struct AmethystApplication<T> {
+pub struct AmethystApplication<T, E>
+where
+    E: Send + Sync + 'static,
+{
     /// Functions to add bundles to the game data.
     ///
     /// This is necessary because `System`s are not `Send`, and so we cannot send `GameDataBuilder`
@@ -91,16 +99,16 @@ pub struct AmethystApplication<T> {
     resource_add_fns: Vec<FnResourceAdd>,
     /// States to run, in user specified order.
     #[derivative(Debug = "ignore")]
-    state_fns: Vec<FnState<T>>,
-    /// State data.
-    state_data: PhantomData<T>,
+    state_fns: Vec<FnState<T, E>>,
+    /// Game data and event type.
+    state_data: PhantomData<(T, E)>,
     /// Whether or not this application uses the `RenderBundle`.
     render: bool,
 }
 
-impl AmethystApplication<GameData<'static, 'static>> {
+impl AmethystApplication<GameData<'static, 'static>, ()> {
     /// Returns an Amethyst application without any bundles.
-    pub fn blank() -> AmethystApplication<GameData<'static, 'static>> {
+    pub fn blank() -> AmethystApplication<GameData<'static, 'static>, ()> {
         AmethystApplication {
             bundle_add_fns: Vec::new(),
             resource_add_fns: Vec::new(),
@@ -114,7 +122,7 @@ impl AmethystApplication<GameData<'static, 'static>> {
     ///
     /// This also adds a `ScreenDimensions` resource to the `World` so that UI calculations can be
     /// done.
-    pub fn ui_base<AX, AC>() -> AmethystApplication<GameData<'static, 'static>>
+    pub fn ui_base<AX, AC>() -> AmethystApplication<GameData<'static, 'static>, ()>
     where
         AX: Hash + Eq + Clone + Send + Sync + 'static,
         AC: Hash + Eq + Clone + Send + Sync + 'static,
@@ -139,7 +147,7 @@ impl AmethystApplication<GameData<'static, 'static>> {
     pub fn render_base<'name, N>(
         test_name: N,
         visibility: bool,
-    ) -> AmethystApplication<GameData<'static, 'static>>
+    ) -> AmethystApplication<GameData<'static, 'static>, ()>
     where
         N: Into<&'name str>,
     {
@@ -164,7 +172,10 @@ impl AmethystApplication<GameData<'static, 'static>> {
     }
 }
 
-impl AmethystApplication<GameData<'static, 'static>> {
+impl<E> AmethystApplication<GameData<'static, 'static>, E>
+where
+    E: Clone + Send + Sync + 'static,
+{
     /// Returns the built Application.
     ///
     /// If you are intending to call `.run()` on the `Application` in a test, be aware that on
@@ -176,7 +187,7 @@ impl AmethystApplication<GameData<'static, 'static>> {
     /// separate thread and waits for it to end before returning.
     ///
     /// See <https://users.rust-lang.org/t/trouble-identifying-cause-of-segfault/18096>
-    pub fn build(self) -> Result<Application<'static, GameData<'static, 'static>>> {
+    pub fn build(self) -> Result<Application<'static, GameData<'static, 'static>, E>> {
         let params = (self.bundle_add_fns, self.resource_add_fns, self.state_fns);
         Self::build_internal(params)
     }
@@ -193,9 +204,9 @@ impl AmethystApplication<GameData<'static, 'static>> {
         (bundle_add_fns, resource_add_fns, state_fns): (
             Vec<BundleAddFn>,
             Vec<FnResourceAdd>,
-            Vec<FnState<GameData<'static, 'static>>>,
+            Vec<FnState<GameData<'static, 'static>, E>>,
         ),
-    ) -> Result<Application<'static, GameData<'static, 'static>>> {
+    ) -> Result<Application<'static, GameData<'static, 'static>, E>> {
         let game_data = bundle_add_fns.into_iter().fold(
             Ok(GameDataBuilder::default()),
             |game_data: Result<GameDataBuilder>, function: BundleAddFn| {
@@ -203,7 +214,7 @@ impl AmethystApplication<GameData<'static, 'static>> {
             },
         )?;
 
-        let mut states = Vec::<Box<State<GameData<'static, 'static>>>>::new();
+        let mut states = Vec::<Box<State<GameData<'static, 'static>, E>>>::new();
         state_fns
             .into_iter()
             .rev()
@@ -215,9 +226,9 @@ impl AmethystApplication<GameData<'static, 'static>> {
         first_state: SLocal,
         game_data: GameDataBuilder<'static, 'static>,
         resource_add_fns: Vec<FnResourceAdd>,
-    ) -> Result<Application<'static, GameData<'static, 'static>>>
+    ) -> Result<Application<'static, GameData<'static, 'static>, E>>
     where
-        SLocal: State<GameData<'static, 'static>> + 'static,
+        SLocal: State<GameData<'static, 'static>, E> + 'static,
     {
         let mut application_builder =
             Application::build(AmethystApplication::assets_dir(), first_state)?;
@@ -271,9 +282,10 @@ impl AmethystApplication<GameData<'static, 'static>> {
     }
 }
 
-impl<T> AmethystApplication<T>
+impl<T, E> AmethystApplication<T, E>
 where
     T: GameUpdate,
+    E: Send + Sync + 'static,
 {
     /// Adds a bundle to the list of bundles.
     ///
@@ -412,11 +424,11 @@ where
     /// * `state_fn`: `State` to use.
     pub fn with_state<S, FnStateLocal>(mut self, state_fn: FnStateLocal) -> Self
     where
-        S: State<T> + 'static,
+        S: State<T, E> + 'static,
         FnStateLocal: FnOnce() -> S + Send + Sync + 'static,
     {
         // Box up the state
-        let closure = move || Box::new((state_fn)()) as Box<State<T>>;
+        let closure = move || Box::new((state_fn)()) as Box<State<T, E>>;
         self.state_fns.push(SendBoxFnOnce::from(closure));
         self
     }
@@ -1048,16 +1060,18 @@ mod test {
     struct LoadResource;
 
     // === States === //
-    struct LoadingState<'a, 'b, S>
+    struct LoadingState<'a, 'b, S, E>
     where
-        S: State<GameData<'a, 'b>> + 'static,
+        S: State<GameData<'a, 'b>, E> + 'static,
+        E: Send + Sync + 'static,
     {
         next_state: Option<S>,
-        state_data: PhantomData<State<GameData<'a, 'b>>>,
+        state_data: PhantomData<State<GameData<'a, 'b>, E>>,
     }
-    impl<'a, 'b, S> LoadingState<'a, 'b, S>
+    impl<'a, 'b, S, E> LoadingState<'a, 'b, S, E>
     where
-        S: State<GameData<'a, 'b>> + 'static,
+        S: State<GameData<'a, 'b>, E> + 'static,
+        E: Send + Sync + 'static,
     {
         fn new(next_state: S) -> Self {
             LoadingState {
@@ -1066,27 +1080,30 @@ mod test {
             }
         }
     }
-    impl<'a, 'b, S> State<GameData<'a, 'b>> for LoadingState<'a, 'b, S>
+    impl<'a, 'b, S, E> State<GameData<'a, 'b>, E> for LoadingState<'a, 'b, S, E>
     where
-        S: State<GameData<'a, 'b>> + 'static,
+        S: State<GameData<'a, 'b>, E> + 'static,
+        E: Send + Sync + 'static,
     {
-        fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
+        fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, E> {
             data.data.update(&data.world);
             data.world.add_resource(LoadResource);
             Trans::Switch(Box::new(self.next_state.take().unwrap()))
         }
     }
 
-    struct SwitchState<S, T>
+    struct SwitchState<S, T, E>
     where
-        S: State<T>,
+        S: State<T, E>,
+        E: Send + Sync + 'static,
     {
         next_state: Option<S>,
-        state_data: PhantomData<T>,
+        state_data: PhantomData<(T, E)>,
     }
-    impl<S, T> SwitchState<S, T>
+    impl<S, T, E> SwitchState<S, T, E>
     where
-        S: State<T>,
+        S: State<T, E>,
+        E: Send + Sync + 'static,
     {
         fn new(next_state: S) -> Self {
             SwitchState {
@@ -1095,11 +1112,12 @@ mod test {
             }
         }
     }
-    impl<S, T> State<T> for SwitchState<S, T>
+    impl<S, T, E> State<T, E> for SwitchState<S, T, E>
     where
-        S: State<T> + 'static,
+        S: State<T, E> + 'static,
+        E: Send + Sync + 'static,
     {
-        fn update(&mut self, _data: StateData<T>) -> Trans<T> {
+        fn update(&mut self, _data: StateData<T>) -> Trans<T, E> {
             Trans::Switch(Box::new(self.next_state.take().unwrap()))
         }
     }

@@ -34,16 +34,18 @@
 //! # #[derive(Debug)]
 //! # struct LoadResource;
 //! #
-//! # struct LoadingState<'a, 'b, S>
+//! # struct LoadingState<'a, 'b, S, E>
 //! # where
-//! #     S: State<GameData<'a, 'b>> + 'static,
+//! #     S: State<GameData<'a, 'b>, E> + 'static,
+//! #     E: Send + Sync + 'static,
 //! # {
 //! #     next_state: Option<S>,
-//! #     state_data: PhantomData<State<GameData<'a, 'b>>>,
+//! #     state_data: PhantomData<State<GameData<'a, 'b>, E>>,
 //! # }
-//! # impl<'a, 'b, S> LoadingState<'a, 'b, S>
+//! # impl<'a, 'b, S, E> LoadingState<'a, 'b, S, E>
 //! # where
-//! #     S: State<GameData<'a, 'b>> + 'static,
+//! #     S: State<GameData<'a, 'b>, E> + 'static,
+//! #     E: Send + Sync + 'static,
 //! # {
 //! #     fn new(next_state: S) -> Self {
 //! #         LoadingState {
@@ -52,11 +54,12 @@
 //! #         }
 //! #     }
 //! # }
-//! # impl<'a, 'b, S> State<GameData<'a, 'b>> for LoadingState<'a, 'b, S>
+//! # impl<'a, 'b, S, E> State<GameData<'a, 'b>, E> for LoadingState<'a, 'b, S, E>
 //! # where
-//! #     S: State<GameData<'a, 'b>> + 'static,
+//! #     S: State<GameData<'a, 'b>, E> + 'static,
+//! #     E: Send + Sync + 'static,
 //! # {
-//! #     fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>> {
+//! #     fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, E> {
 //! #         data.data.update(&data.world);
 //! #         data.world.add_resource(LoadResource);
 //! #         Trans::Switch(Box::new(self.next_state.take().unwrap()))
@@ -86,7 +89,7 @@
 //! The Amethyst application is initialized with one of the following functions, each providing a
 //! different level of default bundles:
 //!
-//! ```rust,ignore
+//! ```rust,norun
 //! extern crate amethyst_test_support;
 //!
 //! use amethyst_test_support::prelude::*;
@@ -111,7 +114,7 @@
 //!
 //! Next, attach the logic you wish to test using the various `.with_*(..)` methods:
 //!
-//! ```rust,ignore
+//! ```rust,norun
 //! #[test]
 //! fn test_name() {
 //!     let effect = |world: &mut World| {
@@ -153,18 +156,13 @@
 //! Finally, call `.run()` to run the application. This returns `amethyst::Result<()>`, so you can
 //! wrap it in an `assert!(..);`:
 //!
-//! ```rust,ignore
+//! ```rust,norun
 //! #[test]
 //! fn test_name() {
-//!     let effect = // ...
-//!     let assertion = // ...
-//!
 //!     let visibility = false; // Whether the window should be shown
 //!     assert!(
 //!         AmethystApplication::render_base("test_name", visibility)
 //!             // ...
-//!             .with_effect(effect)
-//!             .with_assertion(assertion)
 //!             .run()
 //!             .is_ok()
 //!     );
