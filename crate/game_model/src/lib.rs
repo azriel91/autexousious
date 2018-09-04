@@ -62,11 +62,14 @@
 
 extern crate amethyst;
 #[macro_use]
+extern crate derive_builder;
+#[macro_use]
 extern crate derive_new;
 extern crate heck;
 extern crate itertools;
 #[macro_use]
 extern crate log;
+extern crate map_model;
 extern crate object_model;
 extern crate strum;
 #[macro_use]

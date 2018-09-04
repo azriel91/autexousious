@@ -6,9 +6,11 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 [dependencies]
 amethyst = { git = "https://github.com/azriel91/amethyst.git", branch = "bugfix/929/fix-sprite-position" }
 derive-new = "0.5"
+derive_builder = "0.5"
 heck = "0.3"
 itertools = "~0.7.8"
 log = "0.4"
+map_model = { path = "../map_model" }
 object_model = { path = "../object_model" }
 strum = "0.10"
 strum_macros = "0.10"
