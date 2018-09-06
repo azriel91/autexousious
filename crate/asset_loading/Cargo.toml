@@ -1,0 +1,20 @@
+[package]
+name = "asset_loading"
+version = "0.6.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+
+[dependencies]
+application = { path = "../application" }
+derive-new = "0.5"
+game_model = { path = "../game_model" }
+heck = "0.3"
+itertools = "~0.7.8"
+log = "0.4"
+map_model = { path = "../map_model" }
+object_model = { path = "../object_model" }
+strum = "0.10"
+
+[dev-dependencies]
+hamcrest = "*"
+pretty_assertions = "0.5"
+tempfile = "3.0"
