@@ -1,6 +1,6 @@
 use amethyst::{prelude::*, renderer::SpriteSheetSet};
 use application::Result;
-use game_model::config::ConfigRecord;
+use game_model::config::AssetRecord;
 use object_model::{
     config::{object::SequenceId, ObjectDefinition},
     loaded,
@@ -12,27 +12,27 @@ use sprite_loading::{SpriteLoader, SpriteRenderAnimationLoader};
 pub struct ObjectLoader;
 
 impl ObjectLoader {
-    /// Returns the loaded `Object` referenced by the configuration record.
+    /// Returns the loaded `Object` referenced by the asset record.
     ///
     /// # Parameters
     ///
     /// * `world`: `World` to store the object's assets.
-    /// * `config_record`: Entry of the object's configuration.
+    /// * `asset_record`: Entry of the object's configuration.
     /// * `object_definition`: Object definition configuration.
     pub fn load<SeqId: SequenceId>(
         world: &World,
-        config_record: &ConfigRecord,
+        asset_record: &AssetRecord,
         object_definition: &ObjectDefinition<SeqId>,
     ) -> Result<loaded::Object<SeqId>> {
         let sprite_sheet_index_offset = world.read_resource::<SpriteSheetSet>().len() as u64;
 
         debug!(
             "Loading object assets in `{}`",
-            config_record.directory.display()
+            asset_record.directory.display()
         );
 
         let (sprite_sheet_handles, _texture_handles) =
-            SpriteLoader::load(world, sprite_sheet_index_offset, &config_record.directory)?;
+            SpriteLoader::load(world, sprite_sheet_index_offset, &asset_record.directory)?;
         let sprite_sheet_handle = sprite_sheet_handles
             .into_iter()
             .next()
@@ -54,7 +54,7 @@ mod test {
 
     use amethyst_test_support::AmethystApplication;
     use application::{load_in, resource::dir::assets_dir, Format};
-    use game_model::config::{AssetRefBuilder, ConfigRecord};
+    use game_model::config::{AssetRecord, AssetRefBuilder};
     use object_model::config::CharacterDefinition;
 
     use super::ObjectLoader;
@@ -73,10 +73,10 @@ mod test {
                         .name("bat".to_string())
                         .build()
                         .expect("Failed to build `test/bat` asset ref.");
-                    let config_record = ConfigRecord::new(asset_ref, bat_path);
+                    let asset_record = AssetRecord::new(asset_ref, bat_path);
 
                     let character_definition = load_in::<CharacterDefinition, _>(
-                        &config_record.directory,
+                        &asset_record.directory,
                         "object.toml",
                         Format::Toml,
                         None,
@@ -84,7 +84,7 @@ mod test {
 
                     let object = ObjectLoader::load(
                         world,
-                        &config_record,
+                        &asset_record,
                         &character_definition.object_definition,
                     ).expect("Failed to load object");
 

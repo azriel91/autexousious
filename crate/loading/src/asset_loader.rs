@@ -39,7 +39,7 @@ impl AssetLoader {
     {
         let asset_index = AssetDiscovery::asset_index(assets_dir);
 
-        debug!("Indexed configuration: {:?}", &asset_index);
+        debug!("Indexed assets: {:?}", &asset_index);
 
         Self::load_objects(world, &asset_index);
         Self::load_maps(world, progress, &asset_index);
@@ -52,7 +52,7 @@ impl AssetLoader {
     ///
     /// # Parameters
     ///
-    /// * `world`: `World` to load the game assets into.
+    /// * `world`: `World` to load the object assets into.
     /// * `asset_index`: Index of all assets.
     pub fn load_objects(world: &mut World, asset_index: &AssetIndex) {
         ObjectType::iter()
@@ -60,19 +60,19 @@ impl AssetLoader {
                 asset_index
                     .objects
                     .get(&object_type)
-                    .map(|config_records| (object_type, config_records))
-            }).for_each(|(object_type, config_records)| {
-                // config_records is the list of records for one object type
+                    .map(|asset_records| (object_type, asset_records))
+            }).for_each(|(object_type, asset_records)| {
+                // asset_records is the list of records for one object type
                 match object_type {
                     ObjectType::Character => {
-                        let loaded_characters = config_records
+                        let loaded_characters = asset_records
                             .iter()
-                            .filter_map(|config_record| {
+                            .filter_map(|asset_record| {
                                 debug!(
                                     "Loading character from: `{}`",
-                                    config_record.directory.display()
+                                    asset_record.directory.display()
                                 );
-                                let result = CharacterLoader::load(world, config_record);
+                                let result = CharacterLoader::load(world, asset_record);
 
                                 if let Err(ref e) = result {
                                     error!("Failed to load character. Reason: \n\n```\n{}\n```", e);
@@ -89,14 +89,14 @@ impl AssetLoader {
             });
     }
 
-    /// Loads object configuration into the `World` from the specified assets directory.
+    /// Loads map configuration into the `World` from the specified assets directory.
     ///
-    /// When this function returns, the `World` will be populated with the `Vec<CharacterHandle>`
+    /// When this function returns, the `World` will be populated with the `Vec<MapHandle>`
     /// resource.
     ///
     /// # Parameters
     ///
-    /// * `world`: `World` to load the game assets into.
+    /// * `world`: `World` to load the map assets into.
     /// * `progress`: Tracker for loading progress.
     /// * `asset_index`: Index of all assets.
     pub fn load_maps<P>(world: &mut World, progress: P, asset_index: &AssetIndex)
@@ -106,7 +106,7 @@ impl AssetLoader {
         let mut loaded_maps = asset_index
             .maps
             .iter()
-            .filter_map(|config_record| MapLoader::load(world, &config_record.directory).ok())
+            .filter_map(|asset_record| MapLoader::load(world, &asset_record.directory).ok())
             .collect::<Vec<MapHandle>>();
 
         // Default Blank Map

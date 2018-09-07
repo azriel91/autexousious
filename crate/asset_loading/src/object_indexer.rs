@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::path::Path;
 
-use game_model::config::ConfigRecord;
+use game_model::config::AssetRecord;
 use heck::SnakeCase;
 use object_model::ObjectType;
 use strum::IntoEnumIterator;
@@ -13,7 +13,7 @@ use {AssetIndexingUtils, DirTraverse};
 pub struct ObjectIndexer;
 
 impl ObjectIndexer {
-    /// Returns `ConfigRecords` for each of the objects in the namespace.
+    /// Returns `AssetRecords` for each of the objects in the namespace.
     ///
     /// # Parameters
     ///
@@ -22,7 +22,7 @@ impl ObjectIndexer {
     pub fn index(
         namespace: &str,
         object_types_dir: &Path,
-    ) -> HashMap<ObjectType, Vec<ConfigRecord>> {
+    ) -> HashMap<ObjectType, Vec<AssetRecord>> {
         ObjectType::iter().fold(HashMap::new(), |mut objects_by_type, object_type| {
             let object_type_dir = object_types_dir.join(&object_type.to_string().to_snake_case());
             let object_dirs = DirTraverse::child_directories(&object_type_dir);
@@ -32,7 +32,7 @@ impl ObjectIndexer {
                 object_dirs
                     .into_iter()
                     .filter_map(|object_dir| {
-                        AssetIndexingUtils::into_config_record(namespace.to_string(), object_dir)
+                        AssetIndexingUtils::into_asset_record(namespace.to_string(), object_dir)
                     }).collect::<Vec<_>>(),
             );
 
@@ -47,7 +47,7 @@ mod tests {
     use std::io;
     use std::path::PathBuf;
 
-    use game_model::config::{AssetRefBuilder, ConfigRecord};
+    use game_model::config::{AssetRecord, AssetRefBuilder};
     use hamcrest::prelude::*;
     use object_model::ObjectType;
     use tempfile::tempdir;
@@ -55,7 +55,7 @@ mod tests {
     use super::ObjectIndexer;
 
     #[test]
-    fn returns_config_record_for_each_object() -> io::Result<()> {
+    fn returns_asset_record_for_each_object() -> io::Result<()> {
         let objects_tempdir = tempdir()?;
         let objects_dir = objects_tempdir.path();
 
@@ -73,16 +73,16 @@ mod tests {
         assert_that!(
             object_assets_records.get(&ObjectType::Character).unwrap(),
             contains(vec![
-                config_record("rara", "char_0", char_0_dir),
-                config_record("rara", "char_1", char_1_dir),
+                asset_record("rara", "char_0", char_0_dir),
+                asset_record("rara", "char_1", char_1_dir),
             ]).exactly()
         );
 
         Ok(())
     }
 
-    fn config_record(namespace: &str, name: &str, directory: PathBuf) -> ConfigRecord {
-        ConfigRecord {
+    fn asset_record(namespace: &str, name: &str, directory: PathBuf) -> AssetRecord {
+        AssetRecord {
             asset_ref: AssetRefBuilder::default()
                 .namespace(namespace.to_string())
                 .name(name.to_string())

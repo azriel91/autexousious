@@ -13,7 +13,7 @@ use sprite_loading::{SpriteLoader, SpriteRenderAnimationLoader};
 pub struct MapLoader;
 
 impl MapLoader {
-    /// Returns the loaded `Map` referenced by the configuration record.
+    /// Returns the loaded `Map` referenced by the asset record.
     ///
     /// # Parameters
     ///

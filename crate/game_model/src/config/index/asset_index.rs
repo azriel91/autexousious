@@ -2,13 +2,13 @@ use std::collections::HashMap;
 
 use object_model::ObjectType;
 
-use config::index::ConfigRecord;
+use config::index::AssetRecord;
 
-/// Index of all configuration records.
+/// Index of all assets.
 #[derive(Debug, Default, PartialEq)]
 pub struct AssetIndex {
     /// List of objects in the assets directories.
-    pub objects: HashMap<ObjectType, Vec<ConfigRecord>>,
+    pub objects: HashMap<ObjectType, Vec<AssetRecord>>,
     /// List of maps in the assets directories
-    pub maps: Vec<ConfigRecord>,
+    pub maps: Vec<AssetRecord>,
 }

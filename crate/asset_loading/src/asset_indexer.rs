@@ -41,7 +41,7 @@ mod tests {
     use std::io;
     use std::path::PathBuf;
 
-    use game_model::config::{AssetRefBuilder, ConfigRecord};
+    use game_model::config::{AssetRecord, AssetRefBuilder};
     use hamcrest::prelude::*;
     use object_model::ObjectType;
     use tempfile::tempdir;
@@ -83,23 +83,23 @@ mod tests {
         assert_that!(
             &asset_index.maps,
             contains(vec![
-                config_record("rara", "map_0", map_0_dir),
-                config_record("rara", "map_1", map_1_dir),
+                asset_record("rara", "map_0", map_0_dir),
+                asset_record("rara", "map_1", map_1_dir),
             ]).exactly()
         );
         assert_that!(
             asset_index.objects.get(&ObjectType::Character).unwrap(),
             contains(vec![
-                config_record("rara", "char_0", char_0_dir),
-                config_record("rara", "char_1", char_1_dir),
+                asset_record("rara", "char_0", char_0_dir),
+                asset_record("rara", "char_1", char_1_dir),
             ]).exactly()
         );
 
         Ok(())
     }
 
-    fn config_record(namespace: &str, name: &str, directory: PathBuf) -> ConfigRecord {
-        ConfigRecord {
+    fn asset_record(namespace: &str, name: &str, directory: PathBuf) -> AssetRecord {
+        AssetRecord {
             asset_ref: AssetRefBuilder::default()
                 .namespace(namespace.to_string())
                 .name(name.to_string())

@@ -7,14 +7,14 @@ use config::AssetRef;
 /// Includes:
 ///
 /// * Asset reference (see [`AssetRef`][asset_ref]).
-/// * Path to the asset configuration directory.
+/// * Path to the asset directory.
 ///
 /// [asset_ref]: config/struct.AssetRef.html
 #[derive(Clone, Debug, PartialEq, new)]
-pub struct ConfigRecord {
+pub struct AssetRecord {
     /// Asset reference.
     pub asset_ref: AssetRef,
-    /// Directory path of the configuration relative to the assets directory.
+    /// Directory path of the asset relative to the assets directory.
     ///
     /// e.g. "default/objects/characters/heat"
     pub directory: PathBuf,
