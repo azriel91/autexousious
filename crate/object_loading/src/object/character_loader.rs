@@ -44,7 +44,7 @@ mod test {
     use amethyst::assets::AssetStorage;
     use amethyst_test_support::prelude::*;
     use application::resource::dir::assets_dir;
-    use game_model::config::{AssetRecord, AssetRefBuilder};
+    use game_model::config::{AssetRecord, AssetSlugBuilder};
     use object_model::loaded::{Character, CharacterHandle};
 
     use super::CharacterLoader;
@@ -61,12 +61,12 @@ mod test {
                     let mut bat_path = assets_dir(Some(development_base_dirs!())).unwrap();
                     bat_path.extend(Path::new("test/object/character/bat").iter());
 
-                    let asset_ref = AssetRefBuilder::default()
+                    let asset_slug = AssetSlugBuilder::default()
                         .namespace("test".to_string())
                         .name("bat".to_string())
                         .build()
-                        .expect("Failed to build `test/bat` asset ref.");
-                    let asset_record = AssetRecord::new(asset_ref, bat_path);
+                        .expect("Failed to build `test/bat` asset slug.");
+                    let asset_record = AssetRecord::new(asset_slug, bat_path);
 
                     let character_handle = CharacterLoader::load(world, &asset_record)
                         .expect("Failed to load character.");

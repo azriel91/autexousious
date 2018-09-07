@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use application::resource::IoUtils;
-use game_model::config::{AssetRecord, AssetRefBuilder};
+use game_model::config::{AssetRecord, AssetSlugBuilder};
 
 /// Utility functions to make it easier to manage asset indexing.
 #[derive(Debug)]
@@ -18,11 +18,11 @@ impl AssetIndexingUtils {
         let mapping_result = IoUtils::basename(&path)
             .map_err(|e| format!("{}", e))
             .and_then(|name| {
-                AssetRefBuilder::default()
+                AssetSlugBuilder::default()
                     .namespace(namespace)
                     .name(name)
                     .build()
-            }).and_then(|asset_ref| Ok(AssetRecord::new(asset_ref, path)));
+            }).and_then(|asset_slug| Ok(AssetRecord::new(asset_slug, path)));
 
         match mapping_result {
             Ok(asset_record) => Some(asset_record),
@@ -39,7 +39,7 @@ impl AssetIndexingUtils {
 mod tests {
     use std::path::PathBuf;
 
-    use game_model::config::{AssetRecord, AssetRefBuilder};
+    use game_model::config::{AssetRecord, AssetSlugBuilder};
 
     use super::AssetIndexingUtils;
 
@@ -73,11 +73,11 @@ mod tests {
 
     fn asset_record(namespace: &str, name: &str, directory: PathBuf) -> AssetRecord {
         AssetRecord {
-            asset_ref: AssetRefBuilder::default()
+            asset_slug: AssetSlugBuilder::default()
                 .namespace(namespace.to_string())
                 .name(name.to_string())
                 .build()
-                .expect("Failed to build asset ref."),
+                .expect("Failed to build asset slug."),
             directory,
         }
     }

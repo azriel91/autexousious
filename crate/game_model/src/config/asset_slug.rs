@@ -3,7 +3,7 @@ use std::fmt;
 
 /// Namespaced reference to identify assets.
 ///
-/// This should be constructed using `AssetRefBuilder` as it performs validation on the values.
+/// This should be constructed using `AssetSlugBuilder` as it performs validation on the values.
 ///
 /// By convention, both the namespace and name should be lowercase and underscore separated. The
 /// text displayed on character screens is a separate concept called the display name, read from
@@ -17,29 +17,29 @@ use std::fmt;
 /// # Examples
 ///
 /// ```rust
-/// use game_model::config::{AssetRef, AssetRefBuilder};
+/// use game_model::config::{AssetSlug, AssetSlugBuilder};
 ///
 /// fn main() -> Result<(), String> {
-///     let asset_ref: AssetRef = AssetRefBuilder::default()
+///     let asset_slug: AssetSlug = AssetSlugBuilder::default()
 ///         .namespace("azriel91".to_string())
 ///         .name("iris".to_string())
 ///         .build()?;
 ///
-///     assert_eq!("azriel91/iris", format!("{}", asset_ref));
+///     assert_eq!("azriel91/iris", format!("{}", asset_slug));
 ///
 ///     Ok(())
 /// }
 /// ```
 #[derive(Builder, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[builder(build_fn(validate = "Self::validate"))]
-pub struct AssetRef {
+pub struct AssetSlug {
     /// Namespace of the asset, usually the username.
     pub namespace: String,
     /// Name of the asset, e.g. "iris".
     pub name: String,
 }
 
-impl AssetRefBuilder {
+impl AssetSlugBuilder {
     fn validate(&self) -> Result<(), String> {
         Self::validate_segment("Asset namespace", &self.namespace)
             .and_then(|_| Self::validate_segment("Asset name", &self.name))
@@ -84,7 +84,7 @@ impl AssetRefBuilder {
     }
 }
 
-impl fmt::Display for AssetRef {
+impl fmt::Display for AssetSlug {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}/{}", self.namespace, self.name)
     }
@@ -92,13 +92,13 @@ impl fmt::Display for AssetRef {
 
 #[cfg(test)]
 mod tests {
-    use super::AssetRefBuilder;
+    use super::AssetSlugBuilder;
 
     #[test]
     fn namespace_must_be_specified() {
         assert_eq!(
             Err("Asset namespace is a required value.".to_string()),
-            AssetRefBuilder::default().build()
+            AssetSlugBuilder::default().build()
         );
     }
 
@@ -106,7 +106,9 @@ mod tests {
     fn namespace_must_not_be_empty() {
         assert_eq!(
             Err("Asset namespace must not be empty.".to_string()),
-            AssetRefBuilder::default().namespace("".to_string()).build()
+            AssetSlugBuilder::default()
+                .namespace("".to_string())
+                .build()
         );
     }
 
@@ -114,7 +116,7 @@ mod tests {
     fn namespace_must_not_contain_control_character() {
         assert_eq!(
             Err("Asset namespace must not contain control character: `a\\u{9c}b`.".to_string()),
-            AssetRefBuilder::default()
+            AssetSlugBuilder::default()
                 .namespace("ab".to_string())
                 .build()
         );
@@ -124,7 +126,7 @@ mod tests {
     fn namespace_must_not_start_with_numeric_character() {
         assert_eq!(
             Err("Asset namespace must not start with numeric character: `1ab`.".to_string()),
-            AssetRefBuilder::default()
+            AssetSlugBuilder::default()
                 .namespace("1ab".to_string())
                 .build()
         );
@@ -134,7 +136,7 @@ mod tests {
     fn namespace_must_not_contain_whitespace() {
         assert_eq!(
             Err("Asset namespace must not contain whitespace: `a b`.".to_string()),
-            AssetRefBuilder::default()
+            AssetSlugBuilder::default()
                 .namespace("a b".to_string())
                 .build()
         );
@@ -144,7 +146,7 @@ mod tests {
     fn namespace_must_not_contain_forward_slash() {
         assert_eq!(
             Err("Asset namespace must not contain the '/' character: `a/b`.".to_string()),
-            AssetRefBuilder::default()
+            AssetSlugBuilder::default()
                 .namespace("a/b".to_string())
                 .build()
         );
@@ -154,7 +156,7 @@ mod tests {
     fn name_must_be_specified() {
         assert_eq!(
             Err("Asset name is a required value.".to_string()),
-            AssetRefBuilder::default()
+            AssetSlugBuilder::default()
                 .namespace("test".to_string())
                 .build()
         );
@@ -164,7 +166,7 @@ mod tests {
     fn name_must_not_be_empty() {
         assert_eq!(
             Err("Asset name must not be empty.".to_string()),
-            AssetRefBuilder::default()
+            AssetSlugBuilder::default()
                 .namespace("test".to_string())
                 .name("".to_string())
                 .build()
@@ -175,7 +177,7 @@ mod tests {
     fn name_must_not_contain_control_character() {
         assert_eq!(
             Err("Asset name must not contain control character: `a\\u{9c}b`.".to_string()),
-            AssetRefBuilder::default()
+            AssetSlugBuilder::default()
                 .namespace("test".to_string())
                 .name("ab".to_string())
                 .build()
@@ -186,7 +188,7 @@ mod tests {
     fn name_must_not_start_with_numeric_character() {
         assert_eq!(
             Err("Asset name must not start with numeric character: `1ab`.".to_string()),
-            AssetRefBuilder::default()
+            AssetSlugBuilder::default()
                 .namespace("test".to_string())
                 .name("1ab".to_string())
                 .build()
@@ -197,7 +199,7 @@ mod tests {
     fn name_must_not_contain_whitespace() {
         assert_eq!(
             Err("Asset name must not contain whitespace: `a b`.".to_string()),
-            AssetRefBuilder::default()
+            AssetSlugBuilder::default()
                 .namespace("test".to_string())
                 .name("a b".to_string())
                 .build()
@@ -208,7 +210,7 @@ mod tests {
     fn name_must_not_contain_forward_slash() {
         assert_eq!(
             Err("Asset name must not contain the '/' character: `a/b`.".to_string()),
-            AssetRefBuilder::default()
+            AssetSlugBuilder::default()
                 .namespace("test".to_string())
                 .name("a/b".to_string())
                 .build()
@@ -217,12 +219,12 @@ mod tests {
 
     #[test]
     fn namespace_and_name_can_contain_unicode() {
-        let asset_ref = AssetRefBuilder::default()
+        let asset_slug = AssetSlugBuilder::default()
             .namespace("忠犬".to_string())
             .name("ハチ公".to_string())
             .build();
 
-        assert!(asset_ref.is_ok());
-        assert_eq!("忠犬/ハチ公", format!("{}", asset_ref.unwrap()));
+        assert!(asset_slug.is_ok());
+        assert_eq!("忠犬/ハチ公", format!("{}", asset_slug.unwrap()));
     }
 }

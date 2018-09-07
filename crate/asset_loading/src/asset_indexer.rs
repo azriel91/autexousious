@@ -41,7 +41,7 @@ mod tests {
     use std::io;
     use std::path::PathBuf;
 
-    use game_model::config::{AssetRecord, AssetRefBuilder};
+    use game_model::config::{AssetRecord, AssetSlugBuilder};
     use hamcrest::prelude::*;
     use object_model::ObjectType;
     use tempfile::tempdir;
@@ -100,11 +100,11 @@ mod tests {
 
     fn asset_record(namespace: &str, name: &str, directory: PathBuf) -> AssetRecord {
         AssetRecord {
-            asset_ref: AssetRefBuilder::default()
+            asset_slug: AssetSlugBuilder::default()
                 .namespace(namespace.to_string())
                 .name(name.to_string())
                 .build()
-                .expect("Failed to build asset ref."),
+                .expect("Failed to build asset slug."),
             directory,
         }
     }
