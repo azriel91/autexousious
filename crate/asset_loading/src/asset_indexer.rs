@@ -1,4 +1,4 @@
-use game_model::config::{ConfigIndex, ConfigType};
+use game_model::config::{AssetIndex, ConfigType};
 use heck::SnakeCase;
 use strum::IntoEnumIterator;
 
@@ -9,29 +9,28 @@ use {MapIndexer, NamespaceDirectory, ObjectIndexer};
 pub struct AssetIndexer;
 
 impl AssetIndexer {
-    /// Returns a configuration index from a single namespace.
+    /// Returns an asset index for a single namespace.
     ///
     /// # Parameters
     ///
     /// * `namespace_dir`: Namespace directory to index.
-    pub fn index(namespace_dir: &NamespaceDirectory) -> ConfigIndex {
-        ConfigType::iter().fold(ConfigIndex::default(), |mut config_index, config_type| {
+    pub fn index(namespace_dir: &NamespaceDirectory) -> AssetIndex {
+        ConfigType::iter().fold(AssetIndex::default(), |mut asset_index, config_type| {
             let config_type_dir = namespace_dir
                 .path
                 .join(&config_type.to_string().to_snake_case());
 
             match config_type {
                 ConfigType::Object => {
-                    config_index.objects =
+                    asset_index.objects =
                         ObjectIndexer::index(&namespace_dir.namespace, &config_type_dir)
                 }
                 ConfigType::Map => {
-                    config_index.maps =
-                        MapIndexer::index(&namespace_dir.namespace, &config_type_dir)
+                    asset_index.maps = MapIndexer::index(&namespace_dir.namespace, &config_type_dir)
                 }
             };
 
-            config_index
+            asset_index
         })
     }
 }
@@ -51,7 +50,7 @@ mod tests {
     use NamespaceDirectory;
 
     #[test]
-    fn returns_config_index_of_maps_and_objects() -> io::Result<()> {
+    fn returns_asset_index_of_maps_and_objects() -> io::Result<()> {
         let namespace_tempdir = tempdir()?;
         let namespace_dir = namespace_tempdir.path();
 
@@ -76,20 +75,20 @@ mod tests {
                 result.and_then(|_| fs::create_dir(&dir))
             })?;
 
-        let config_index = AssetIndexer::index(&NamespaceDirectory::new(
+        let asset_index = AssetIndexer::index(&NamespaceDirectory::new(
             "rara".to_string(),
             namespace_dir.to_path_buf(),
         ));
 
         assert_that!(
-            &config_index.maps,
+            &asset_index.maps,
             contains(vec![
                 config_record("rara", "map_0", map_0_dir),
                 config_record("rara", "map_1", map_1_dir),
             ]).exactly()
         );
         assert_that!(
-            config_index.objects.get(&ObjectType::Character).unwrap(),
+            asset_index.objects.get(&ObjectType::Character).unwrap(),
             contains(vec![
                 config_record("rara", "char_0", char_0_dir),
                 config_record("rara", "char_1", char_1_dir),

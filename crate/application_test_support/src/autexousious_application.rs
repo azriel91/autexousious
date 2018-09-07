@@ -66,8 +66,8 @@ impl AutexousiousApplication {
 
     /// Returns an application with Render, Input, and UI bundles loaded.
     ///
-    /// This function does not load any game configuration as it is meant to be used to test types
-    /// that load game configuration. If you want test objects and maps to be loaded, please use the
+    /// This function does not load any game assets as it is meant to be used to test types
+    /// that load game assets. If you want test objects and maps to be loaded, please use the
     /// `game_base` function.
     ///
     /// # Parameters
@@ -85,7 +85,7 @@ impl AutexousiousApplication {
             .with_ui_bundles::<PlayerAxisControl, PlayerActionControl>()
     }
 
-    /// Returns an application with game configuration loaded.
+    /// Returns an application with game assets loaded.
     ///
     /// This function does not instantiate any game entities. If you want test entities (objects and
     /// map) to be instantiated, please use the `game_base` function.

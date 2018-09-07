@@ -2,7 +2,7 @@
 
 pub use self::asset_ref::{AssetRef, AssetRefBuilder};
 pub use self::config_type::ConfigType;
-pub use self::index::{ConfigIndex, ConfigRecord};
+pub use self::index::{AssetIndex, ConfigRecord};
 
 mod asset_ref;
 mod config_type;

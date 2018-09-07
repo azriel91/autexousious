@@ -6,7 +6,7 @@ use config::index::ConfigRecord;
 
 /// Index of all configuration records.
 #[derive(Debug, Default, PartialEq)]
-pub struct ConfigIndex {
+pub struct AssetIndex {
     /// List of objects in the assets directories.
     pub objects: HashMap<ObjectType, Vec<ConfigRecord>>,
     /// List of maps in the assets directories

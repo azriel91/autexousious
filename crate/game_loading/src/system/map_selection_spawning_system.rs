@@ -135,10 +135,10 @@ mod tests {
             ).with_bundle(MapLoadingBundle::new())
             .with_setup(|world| {
                 let assets_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join(ASSETS);
-                let configuration_index = AssetDiscovery::config_index(&assets_dir);
+                let asset_index = AssetDiscovery::asset_index(&assets_dir);
 
                 let mut progress_counter = ProgressCounter::new();
-                AssetLoader::load_maps(world, &mut progress_counter, &configuration_index);
+                AssetLoader::load_maps(world, &mut progress_counter, &asset_index);
             }).with_setup(|world| {
                 let first_map_handle = world
                     .read_resource::<Vec<MapHandle>>()

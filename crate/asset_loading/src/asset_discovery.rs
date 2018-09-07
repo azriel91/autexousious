@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use game_model::config::ConfigIndex;
+use game_model::config::AssetIndex;
 
 use {AssetIndexer, NamespaceDiscoverer};
 
@@ -9,18 +9,18 @@ use {AssetIndexer, NamespaceDiscoverer};
 pub struct AssetDiscovery;
 
 impl AssetDiscovery {
-    /// Returns the configuration index of the `assets` directory.
+    /// Returns the asset index of the `assets` directory.
     ///
     /// # Parameters
     ///
     /// * `assets_dir`: Path to the assets directory to index.
-    pub fn config_index(assets_dir: &Path) -> ConfigIndex {
+    pub fn asset_index(assets_dir: &Path) -> AssetIndex {
         let namespace_directories = NamespaceDiscoverer::discover(assets_dir);
         namespace_directories.iter().map(AssetIndexer::index).fold(
-            ConfigIndex::default(),
-            |mut combined, config_index| {
-                combined.maps.extend(config_index.maps);
-                combined.objects.extend(config_index.objects);
+            AssetIndex::default(),
+            |mut combined, asset_index| {
+                combined.maps.extend(asset_index.maps);
+                combined.objects.extend(asset_index.objects);
 
                 combined
             },
@@ -43,7 +43,7 @@ mod tests {
     use {ASSETS_DEFAULT_DIR, ASSETS_DOWNLOAD_DIR, ASSETS_TEST_DIR};
 
     #[test]
-    fn returns_merged_config_index() -> io::Result<()> {
+    fn returns_merged_asset_index() -> io::Result<()> {
         let assets_tempdir = tempdir()?;
         let assets_dir = assets_tempdir.path();
 
@@ -74,17 +74,17 @@ mod tests {
                 result.and_then(|_| fs::create_dir_all(&dir))
             })?;
 
-        let config_index = AssetDiscovery::config_index(&assets_dir);
+        let asset_index = AssetDiscovery::asset_index(&assets_dir);
 
         assert_that!(
-            &config_index.maps,
+            &asset_index.maps,
             contains(vec![
                 config_record(ASSETS_DEFAULT_DIR, "map_0", map_0_dir),
                 config_record(ASSETS_TEST_DIR, "map_1", map_1_dir),
             ]).exactly()
         );
         assert_that!(
-            config_index.objects.get(&ObjectType::Character).unwrap(),
+            asset_index.objects.get(&ObjectType::Character).unwrap(),
             contains(vec![config_record("user1", "char_0", char_0_dir),]).exactly()
         );
 

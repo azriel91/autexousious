@@ -6,7 +6,7 @@ use amethyst::{
     renderer::ScreenDimensions,
 };
 use asset_loading::AssetDiscovery;
-use game_model::config::ConfigIndex;
+use game_model::config::AssetIndex;
 use map_loading::MapLoader;
 use map_model::{
     config::{MapBounds, MapDefinition, MapHeader},
@@ -16,12 +16,12 @@ use object_loading::CharacterLoader;
 use object_model::{loaded::CharacterHandle, ObjectType};
 use strum::IntoEnumIterator;
 
-/// Provides functions to load game configuration.
+/// Provides functions to load game assets.
 #[derive(Debug)]
 pub struct AssetLoader;
 
 impl AssetLoader {
-    /// Loads game configuration into the `World` from the specified assets directory.
+    /// Loads game assets into the `World` from the specified assets directory.
     ///
     /// When this function returns, the `World` will be populated with the `Vec<CharacterHandle>`
     /// and `Vec<MapHandle>` resources.
@@ -30,19 +30,19 @@ impl AssetLoader {
     ///
     /// # Parameters
     ///
-    /// * `world`: `World` to load the game configuration into.
+    /// * `world`: `World` to load the game assets into.
     /// * `assets_dir`: Base directory containing all assets to load.
     /// * `progress`: Tracker for loading progress.
     pub fn load_game_config<P>(world: &mut World, assets_dir: &Path, progress: P)
     where
         P: Progress,
     {
-        let configuration_index = AssetDiscovery::config_index(assets_dir);
+        let asset_index = AssetDiscovery::asset_index(assets_dir);
 
-        debug!("Indexed configuration: {:?}", &configuration_index);
+        debug!("Indexed configuration: {:?}", &asset_index);
 
-        Self::load_objects(world, &configuration_index);
-        Self::load_maps(world, progress, &configuration_index);
+        Self::load_objects(world, &asset_index);
+        Self::load_maps(world, progress, &asset_index);
     }
 
     /// Loads object configuration into the `World` from the specified assets directory.
@@ -52,12 +52,12 @@ impl AssetLoader {
     ///
     /// # Parameters
     ///
-    /// * `world`: `World` to load the game configuration into.
-    /// * `configuration_index`: Index of all configuration assets.
-    pub fn load_objects(world: &mut World, configuration_index: &ConfigIndex) {
+    /// * `world`: `World` to load the game assets into.
+    /// * `asset_index`: Index of all assets.
+    pub fn load_objects(world: &mut World, asset_index: &AssetIndex) {
         ObjectType::iter()
             .filter_map(|object_type| {
-                configuration_index
+                asset_index
                     .objects
                     .get(&object_type)
                     .map(|config_records| (object_type, config_records))
@@ -96,14 +96,14 @@ impl AssetLoader {
     ///
     /// # Parameters
     ///
-    /// * `world`: `World` to load the game configuration into.
+    /// * `world`: `World` to load the game assets into.
     /// * `progress`: Tracker for loading progress.
-    /// * `configuration_index`: Index of all configuration assets.
-    pub fn load_maps<P>(world: &mut World, progress: P, configuration_index: &ConfigIndex)
+    /// * `asset_index`: Index of all assets.
+    pub fn load_maps<P>(world: &mut World, progress: P, asset_index: &AssetIndex)
     where
         P: Progress,
     {
-        let mut loaded_maps = configuration_index
+        let mut loaded_maps = asset_index
             .maps
             .iter()
             .filter_map(|config_record| MapLoader::load(world, &config_record.directory).ok())

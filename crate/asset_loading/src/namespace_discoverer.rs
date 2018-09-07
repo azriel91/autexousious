@@ -14,7 +14,7 @@ pub const ASSETS_DOWNLOAD_DIR: &str = "download";
 pub struct NamespaceDiscoverer;
 
 impl NamespaceDiscoverer {
-    /// Returns the namespace level game configuration directories within the `assets` directory.
+    /// Returns the namespace level directories within the `assets` directory.
     ///
     /// Currently this contains the following directories:
     ///
