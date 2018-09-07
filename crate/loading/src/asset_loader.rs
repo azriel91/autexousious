@@ -5,7 +5,8 @@ use amethyst::{
     prelude::*,
     renderer::ScreenDimensions,
 };
-use game_model::config::{index_configuration, ConfigIndex};
+use asset_loading::AssetDiscovery;
+use game_model::config::ConfigIndex;
 use map_loading::MapLoader;
 use map_model::{
     config::{MapBounds, MapDefinition, MapHeader},
@@ -36,7 +37,7 @@ impl AssetLoader {
     where
         P: Progress,
     {
-        let configuration_index = index_configuration(assets_dir);
+        let configuration_index = AssetDiscovery::config_index(assets_dir);
 
         debug!("Indexed configuration: {:?}", &configuration_index);
 

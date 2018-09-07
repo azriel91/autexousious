@@ -63,7 +63,8 @@ mod tests {
     use amethyst::{assets::ProgressCounter, ecs::prelude::*};
     use amethyst_test_support::prelude::*;
     use application::resource::dir::ASSETS;
-    use game_model::{config::index_configuration, play::GameEntities};
+    use asset_loading::AssetDiscovery;
+    use game_model::play::GameEntities;
     use loading::AssetLoader;
     use map_loading::MapLoadingBundle;
     use map_model::loaded::MapHandle;
@@ -134,7 +135,7 @@ mod tests {
             ).with_bundle(MapLoadingBundle::new())
             .with_setup(|world| {
                 let assets_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join(ASSETS);
-                let configuration_index = index_configuration(&assets_dir);
+                let configuration_index = AssetDiscovery::config_index(&assets_dir);
 
                 let mut progress_counter = ProgressCounter::new();
                 AssetLoader::load_maps(world, &mut progress_counter, &configuration_index);

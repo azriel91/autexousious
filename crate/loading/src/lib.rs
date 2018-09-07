@@ -5,6 +5,7 @@
 
 extern crate amethyst;
 extern crate application_ui;
+extern crate asset_loading;
 #[macro_use]
 extern crate derivative;
 extern crate game_model;

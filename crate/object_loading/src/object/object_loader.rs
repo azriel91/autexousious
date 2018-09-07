@@ -54,7 +54,7 @@ mod test {
 
     use amethyst_test_support::AmethystApplication;
     use application::{load_in, resource::dir::assets_dir, Format};
-    use game_model::config::ConfigRecord;
+    use game_model::config::{AssetRefBuilder, ConfigRecord};
     use object_model::config::CharacterDefinition;
 
     use super::ObjectLoader;
@@ -68,7 +68,12 @@ mod test {
                 .with_assertion(|world| {
                     let mut bat_path = assets_dir(Some(development_base_dirs!())).unwrap();
                     bat_path.extend(Path::new("test/object/character/bat").iter());
-                    let config_record = ConfigRecord::new(bat_path);
+                    let asset_ref = AssetRefBuilder::default()
+                        .namespace("test".to_string())
+                        .name("bat".to_string())
+                        .build()
+                        .expect("Failed to build `test/bat` asset ref.");
+                    let config_record = ConfigRecord::new(asset_ref, bat_path);
 
                     let character_definition = load_in::<CharacterDefinition, _>(
                         &config_record.directory,
