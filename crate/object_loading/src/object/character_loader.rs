@@ -21,7 +21,7 @@ impl CharacterLoader {
     /// * `asset_record`: Entry of the object's configuration.
     pub fn load(world: &World, asset_record: &AssetRecord) -> Result<CharacterHandle> {
         let character_definition = load_in::<CharacterDefinition, _>(
-            &asset_record.directory,
+            &asset_record.path,
             "object.toml",
             Format::Toml,
             None,

@@ -68,10 +68,7 @@ impl AssetLoader {
                         let loaded_characters = asset_records
                             .iter()
                             .filter_map(|asset_record| {
-                                debug!(
-                                    "Loading character from: `{}`",
-                                    asset_record.directory.display()
-                                );
+                                debug!("Loading character from: `{}`", asset_record.path.display());
                                 let result = CharacterLoader::load(world, asset_record);
 
                                 if let Err(ref e) = result {
@@ -106,7 +103,7 @@ impl AssetLoader {
         let mut loaded_maps = asset_index
             .maps
             .iter()
-            .filter_map(|asset_record| MapLoader::load(world, &asset_record.directory).ok())
+            .filter_map(|asset_record| MapLoader::load(world, &asset_record.path).ok())
             .collect::<Vec<MapHandle>>();
 
         // Default Blank Map

@@ -26,13 +26,10 @@ impl ObjectLoader {
     ) -> Result<loaded::Object<SeqId>> {
         let sprite_sheet_index_offset = world.read_resource::<SpriteSheetSet>().len() as u64;
 
-        debug!(
-            "Loading object assets in `{}`",
-            asset_record.directory.display()
-        );
+        debug!("Loading object assets in `{}`", asset_record.path.display());
 
         let (sprite_sheet_handles, _texture_handles) =
-            SpriteLoader::load(world, sprite_sheet_index_offset, &asset_record.directory)?;
+            SpriteLoader::load(world, sprite_sheet_index_offset, &asset_record.path)?;
         let sprite_sheet_handle = sprite_sheet_handles
             .into_iter()
             .next()
@@ -76,7 +73,7 @@ mod test {
                     let asset_record = AssetRecord::new(asset_slug, bat_path);
 
                     let character_definition = load_in::<CharacterDefinition, _>(
-                        &asset_record.directory,
+                        &asset_record.path,
                         "object.toml",
                         Format::Toml,
                         None,

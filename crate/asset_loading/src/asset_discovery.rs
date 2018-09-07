@@ -91,14 +91,14 @@ mod tests {
         Ok(())
     }
 
-    fn asset_record(namespace: &str, name: &str, directory: PathBuf) -> AssetRecord {
+    fn asset_record(namespace: &str, name: &str, path: PathBuf) -> AssetRecord {
         AssetRecord {
             asset_slug: AssetSlugBuilder::default()
                 .namespace(namespace.to_string())
                 .name(name.to_string())
                 .build()
                 .expect("Failed to build asset slug."),
-            directory,
+            path,
         }
     }
 }

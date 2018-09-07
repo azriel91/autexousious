@@ -14,8 +14,8 @@ use config::AssetSlug;
 pub struct AssetRecord {
     /// Human readable slug to the asset.
     pub asset_slug: AssetSlug,
-    /// Directory path of the asset relative to the assets directory.
+    /// Relative path of the asset to the assets directory.
     ///
     /// e.g. "default/objects/characters/heat"
-    pub directory: PathBuf,
+    pub path: PathBuf,
 }
