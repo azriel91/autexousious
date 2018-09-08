@@ -31,7 +31,7 @@ use std::fmt;
 /// }
 /// ```
 #[derive(Builder, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[builder(build_fn(validate = "Self::validate"))]
+#[builder(derive(Debug), build_fn(validate = "Self::validate"))]
 pub struct AssetSlug {
     /// Namespace of the asset, usually the username.
     pub namespace: String,
