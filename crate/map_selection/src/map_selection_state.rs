@@ -105,6 +105,7 @@ where
                 .world
                 .read_resource::<MapAssets>()
                 .values()
+                .skip(1) // Skip built-in map.
                 .next()
                 .expect("Expect at least one map to be loaded.")
                 .clone();
