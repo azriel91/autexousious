@@ -248,7 +248,6 @@ mod test {
     }
 
     #[test]
-    #[ignore]
     fn refreshes_ui_when_selections_select_random() {
         // kcov-ignore-start
         assert!(

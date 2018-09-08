@@ -16,7 +16,7 @@ pub enum CharacterSelection {
 impl fmt::Display for CharacterSelection {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            CharacterSelection::Random => write!(f, "{}", self.to_string()),
+            CharacterSelection::Random => write!(f, "Random"), // TODO: i18n
             CharacterSelection::Id(ref slug) => write!(f, "{}", slug),
         }
     }
