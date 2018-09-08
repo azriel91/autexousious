@@ -1,3 +1,5 @@
+#![allow(missing_debug_implementations)] // Needed for `lazy_static!` struct.
+
 use std::env;
 use std::path::Path;
 
