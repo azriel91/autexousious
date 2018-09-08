@@ -4,9 +4,11 @@ use application::resource::IoUtils;
 
 use {DirTraverse, NamespaceDirectory};
 
-/// Directory under `assets` with the default application configuration.
+/// Directory under `assets` with test application configuration.
 pub const ASSETS_TEST_DIR: &str = "test";
+/// Directory under `assets` with default application configuration.
 pub const ASSETS_DEFAULT_DIR: &str = "default";
+/// Directory under `assets` with downloaded application configuration.
 pub const ASSETS_DOWNLOAD_DIR: &str = "download";
 
 /// Discovers namespaces in the assets directory.

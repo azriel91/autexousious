@@ -1,10 +1,23 @@
+use std::fmt;
+
+use game_model::config::AssetSlug;
+
 /// Selected character ID or random for a particular controller.
-#[derive(Clone, Copy, Debug, Derivative, Display, PartialEq, Eq)]
+#[derive(Clone, Debug, Derivative, PartialEq, Eq)]
 #[derivative(Default)]
 pub enum CharacterSelection {
-    /// Random.
+    /// User has selected *Random*.
     #[derivative(Default)]
     Random,
-    /// Character with a particular ID.
-    Id(usize),
+    /// User has selected a character.
+    Id(AssetSlug),
+}
+
+impl fmt::Display for CharacterSelection {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            CharacterSelection::Random => write!(f, "{}", self.to_string()),
+            CharacterSelection::Id(ref slug) => write!(f, "{}", slug),
+        }
+    }
 }

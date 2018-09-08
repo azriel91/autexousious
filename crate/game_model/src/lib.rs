@@ -61,4 +61,5 @@ extern crate strum_macros;
 extern crate tempfile;
 
 pub mod config;
+pub mod loaded;
 pub mod play;

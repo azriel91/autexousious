@@ -64,7 +64,7 @@ where
             panic!(err_msg);
         }
 
-        AssetLoader::load_game_config(
+        AssetLoader::load(
             &mut data.world,
             &self.assets_dir,
             &mut self.progress_counter,

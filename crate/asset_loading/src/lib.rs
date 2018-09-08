@@ -32,8 +32,7 @@ pub use dir_traverse::DirTraverse;
 pub(crate) use map_indexer::MapIndexer;
 pub use namespace_directory::NamespaceDirectory;
 pub(crate) use namespace_discoverer::NamespaceDiscoverer;
-#[cfg(test)]
-pub(crate) use namespace_discoverer::{ASSETS_DEFAULT_DIR, ASSETS_DOWNLOAD_DIR, ASSETS_TEST_DIR};
+pub use namespace_discoverer::{ASSETS_DEFAULT_DIR, ASSETS_DOWNLOAD_DIR, ASSETS_TEST_DIR};
 pub(crate) use object_indexer::ObjectIndexer;
 
 mod asset_discovery;

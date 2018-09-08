@@ -21,6 +21,7 @@ typename_derive = "0.1"
 amethyst_test_support = { path = "../amethyst_test_support" }
 application = { path = "../application" }
 asset_loading = { path = "../asset_loading" }
+lazy_static = "1.1"
 loading = { path = "../loading" }
 map_loading = { path = "../map_loading" }
 object_loading = { path = "../object_loading" }

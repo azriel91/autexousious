@@ -63,15 +63,16 @@ mod tests {
     use amethyst::{assets::ProgressCounter, ecs::prelude::*};
     use amethyst_test_support::prelude::*;
     use application::resource::dir::ASSETS;
-    use asset_loading::AssetDiscovery;
-    use game_model::play::GameEntities;
+    use asset_loading::{AssetDiscovery, ASSETS_TEST_DIR};
+    use game_model::{config::AssetSlugBuilder, loaded::MapAssets, play::GameEntities};
     use loading::AssetLoader;
     use map_loading::MapLoadingBundle;
-    use map_model::loaded::MapHandle;
     use map_selection::{MapSelection, MapSelectionStatus};
     use typename::TypeName;
 
     use super::MapSelectionSpawningSystem;
+
+    const ASSETS_MAP_FADE_NAME: &str = "fade";
 
     #[test]
     fn returns_if_map_already_populated() {
@@ -138,16 +139,24 @@ mod tests {
                 let asset_index = AssetDiscovery::asset_index(&assets_dir);
 
                 let mut progress_counter = ProgressCounter::new();
-                AssetLoader::load_maps(world, &mut progress_counter, &asset_index);
+                AssetLoader::load_maps(world, &mut progress_counter, asset_index.maps);
             }).with_setup(|world| {
-                let first_map_handle = world
-                    .read_resource::<Vec<MapHandle>>()
-                    // TODO: <https://gitlab.com/azriel91/autexousious/issues/57>
-                    .get(1) // assets/test/map/fade
-                    .expect("Expected at least one map to be loaded.")
+                let fade_asset_slug = AssetSlugBuilder::default()
+                    .namespace(ASSETS_TEST_DIR.to_string())
+                    .name(ASSETS_MAP_FADE_NAME.to_string())
+                    .build()
+                    .expect(&format!(
+                        "Expected `{}/{}` asset slug to build.",
+                        ASSETS_TEST_DIR, ASSETS_MAP_FADE_NAME
+                    ));
+
+                let fade_map_handle = world
+                    .read_resource::<MapAssets>()
+                    .get(&fade_asset_slug)
+                    .expect(&format!("Expected `{}` map to be loaded.", fade_asset_slug))
                     .clone();
                 let map_selection =
-                    MapSelection::new(MapSelectionStatus::Confirmed, Some(first_map_handle));
+                    MapSelection::new(MapSelectionStatus::Confirmed, Some(fade_map_handle));
 
                 world.add_resource(map_selection);
             }).with_system_single(

@@ -18,6 +18,8 @@ typename_derive = "0.1"
 
 [dev-dependencies]
 amethyst_test_support = { path = "../amethyst_test_support" }
+asset_loading = { path = "../asset_loading" }
+lazy_static = "1.1"
 
 [features]
 nightly = ["amethyst/nightly", "amethyst_test_support/nightly"]
