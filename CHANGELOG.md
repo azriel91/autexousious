@@ -16,6 +16,7 @@
 * Sprites are rendered using a dedicated sprite pass. ([#55][#55])
 * `stop_run` sequence has been renamed to `run_stop`. ([#49][#49])
 * Use state specific dispatcher for `GamePlayState`. ([#50][#50])
+* Use `AssetSlug` (*namespace/name*) to reference assets. ([#57][#57])
 
 ### Fixed
 
@@ -29,6 +30,7 @@
 [#51]: https://gitlab.com/azriel91/autexousious/issues/51
 [#52]: https://gitlab.com/azriel91/autexousious/issues/52
 [#55]: https://gitlab.com/azriel91/autexousious/issues/55
+[#57]: https://gitlab.com/azriel91/autexousious/issues/57
 
 ## 0.4.0 (2018-07-20)
 
