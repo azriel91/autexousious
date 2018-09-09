@@ -14,7 +14,7 @@ impl AssetIndexingUtils {
     ///
     /// * `namespace`: Namespace of the asset.
     /// * `path`: Path to the asset directory.
-    pub fn to_asset_record(namespace: String, path: PathBuf) -> Option<AssetRecord> {
+    pub fn asset_record(namespace: String, path: PathBuf) -> Option<AssetRecord> {
         let mapping_result = IoUtils::basename(&path)
             .map_err(|e| format!("{}", e))
             .and_then(|name| {
@@ -50,7 +50,7 @@ mod tests {
         assert_eq!(
             // kcov-ignore-end
             Some(asset_record("user1", "asset", path.clone())),
-            AssetIndexingUtils::to_asset_record("user1".to_string(), path)
+            AssetIndexingUtils::asset_record("user1".to_string(), path)
         );
     }
 
@@ -58,7 +58,7 @@ mod tests {
     fn returns_none_when_namespace_invalid() {
         assert_eq!(
             None,
-            AssetIndexingUtils::to_asset_record(" invalid".to_string(), PathBuf::from("my/asset"))
+            AssetIndexingUtils::asset_record(" invalid".to_string(), PathBuf::from("my/asset"))
         );
     }
 
@@ -66,7 +66,7 @@ mod tests {
     fn returns_none_when_path_invalid() {
         assert_eq!(
             None,
-            AssetIndexingUtils::to_asset_record("user1".to_string(), PathBuf::from("/"))
+            AssetIndexingUtils::asset_record("user1".to_string(), PathBuf::from("/"))
         );
     }
 

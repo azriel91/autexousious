@@ -32,7 +32,7 @@ impl ObjectIndexer {
                 object_dirs
                     .into_iter()
                     .filter_map(|object_dir| {
-                        AssetIndexingUtils::to_asset_record(namespace.to_string(), object_dir)
+                        AssetIndexingUtils::asset_record(namespace.to_string(), object_dir)
                     }).collect::<Vec<_>>(),
             );
 
