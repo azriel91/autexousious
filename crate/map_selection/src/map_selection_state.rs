@@ -105,8 +105,7 @@ where
                 .world
                 .read_resource::<MapAssets>()
                 .values()
-                .skip(1) // Skip built-in map.
-                .next()
+                .nth(1) // Skip built-in map.
                 .expect("Expect at least one map to be loaded.")
                 .clone();
             selection_event_channel.single_write(MapSelectionEvent::new(map_handle));

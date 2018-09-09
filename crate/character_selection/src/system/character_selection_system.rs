@@ -55,7 +55,7 @@ impl<'s> System<'s> for CharacterSelectionSystem {
                     character_selections
                         .selections
                         .entry(*controller_id)
-                        .or_insert(character_slug.clone());
+                        .or_insert_with(|| character_slug.clone());
                 }
                 CharacterSelectionEvent::Deselect { controller_id } => {
                     character_selections.selections.remove(&controller_id);

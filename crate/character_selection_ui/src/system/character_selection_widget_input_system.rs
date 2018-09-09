@@ -117,8 +117,7 @@ impl CharacterSelectionWidgetInputSystem {
                         .keys()
                         .rev()
                         .skip_while(|slug| slug != &character_slug)
-                        .skip(1) // skip current selection
-                        .next();
+                        .nth(1); // skip current selection
 
                     if let Some(next_character_slug) = next_character_slug {
                         CharacterSelection::Id(next_character_slug.clone())
@@ -151,8 +150,7 @@ impl CharacterSelectionWidgetInputSystem {
                     let next_character_slug = character_assets
                         .keys()
                         .skip_while(|slug| slug != &character_slug)
-                        .skip(1) // skip current selection
-                        .next();
+                        .nth(1); // skip current selection
 
                     if let Some(next_character_slug) = next_character_slug {
                         CharacterSelection::Id(next_character_slug.clone())

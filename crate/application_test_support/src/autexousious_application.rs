@@ -37,10 +37,11 @@ lazy_static! {
             .namespace(ASSETS_TEST_DIR.to_string())
             .name(ASSETS_MAP_FADE_NAME.to_string())
             .build()
-            .expect(&format!(
-                "Expected `{}/{}` asset slug to build.",
+            .unwrap_or_else(|e| panic!(
+                "Expected `{}/{}` asset slug to build. Error: \n\n```\n{}\n```\n",
                 ASSETS_TEST_DIR,
-                ASSETS_MAP_FADE_NAME
+                ASSETS_MAP_FADE_NAME,
+                e
             ))
     };
     /// Slug of the "bat" character asset.
@@ -49,10 +50,11 @@ lazy_static! {
             .namespace(ASSETS_TEST_DIR.to_string())
             .name(ASSETS_CHAR_BAT_NAME.to_string())
             .build()
-            .expect(&format!(
-                "Expected `{}/{}` asset slug to build.",
+            .unwrap_or_else(|e| panic!(
+                "Expected `{}/{}` asset slug to build. Error: \n\n```\n{}\n```\n",
                 ASSETS_TEST_DIR,
-                ASSETS_CHAR_BAT_NAME
+                ASSETS_CHAR_BAT_NAME,
+                e
             ))
     };
 }
@@ -174,16 +176,14 @@ impl AutexousiousApplication {
         character_selections
             .selections
             .entry(controller_id)
-            .or_insert(ASSETS_CHAR_BAT_SLUG.clone());
+            .or_insert_with(|| ASSETS_CHAR_BAT_SLUG.clone());
 
         let map_selection_fn = |world: &mut World| {
             let fade_map_handle = world
                 .read_resource::<MapAssets>()
                 .get(&ASSETS_MAP_FADE_SLUG)
-                .expect(&format!(
-                    "Expected `{}` map to be loaded.",
-                    *ASSETS_MAP_FADE_SLUG
-                )).clone();
+                .unwrap_or_else(|| panic!("Expected `{}` map to be loaded.", *ASSETS_MAP_FADE_SLUG))
+                .clone();
 
             let map_selection =
                 MapSelection::new(MapSelectionStatus::Confirmed, Some(fade_map_handle));
