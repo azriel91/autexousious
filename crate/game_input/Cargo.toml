@@ -16,4 +16,4 @@ typename_derive = "0.1"
 application = { path = "../application" }
 amethyst_test_support = { path = "../amethyst_test_support" }
 hamcrest = "*"
-winit = "0.15"
+winit = "0.17"
