@@ -45,7 +45,7 @@ impl<'s> System<'s> for CharacterSelectionSystem {
                         // kcov-ignore-end
                         CharacterSelection::Random => {
                             // TODO: implement random
-                            character_assets
+                            character_assets // kcov-ignore
                                 .keys()
                                 .next()
                                 .expect("Expected at least one character to be loaded.")

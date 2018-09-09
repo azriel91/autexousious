@@ -225,7 +225,7 @@ mod test {
                 .expect(&format!(
                     "Expected `{}/{}` asset slug to build.",
                     ASSETS_TEST_DIR, ASSETS_CHAR_BAT_NAME
-                ));
+                )); // kcov-ignore
             let controller_id = 0;
             let input_controlled = InputControlled::new(controller_id);
 

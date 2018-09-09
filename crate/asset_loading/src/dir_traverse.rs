@@ -47,8 +47,8 @@ impl DirTraverse {
                 _ => {
                     error!(
                         "Failed to read directory: `{}`. Error: `{}`.",
-                        dir.display(),
-                        &io_err
+                        dir.display(), // kcov-ignore
+                        &io_err        // kcov-ignore
                     );
                     None
                 }
@@ -75,10 +75,15 @@ impl DirTraverse {
             } else {
                 None
             },
+            // kcov-ignore-start
+            // Not sure how to cause a failure to automatically test this. Tried:
+            //
+            // * Setting the file permissions to `0o200`, `0o100`, or `0o000`.
+            // * Removing the file after getting the `DirEntry`.
             Err(e) => {
                 warn!("Failed to read file type: `{}`.", e);
                 None
-            }
+            } // kcov-ignore-end
         }
     }
 }
@@ -116,7 +121,9 @@ mod tests {
         #[cfg(windows)]
         windows::fs::symlink_dir(external_dir, &child_symlink)?;
 
+        // kcov-ignore-start
         assert_that!(
+            // kcov-ignore-end
             &DirTraverse::child_directories(&assets_dir),
             contains(vec![child_dir, child_symlink]).exactly()
         );

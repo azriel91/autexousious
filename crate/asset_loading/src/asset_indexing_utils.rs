@@ -46,7 +46,9 @@ mod tests {
     #[test]
     fn returns_asset_record_when_namespace_and_path_valid() {
         let path = PathBuf::from("my/asset");
+        // kcov-ignore-start
         assert_eq!(
+            // kcov-ignore-end
             Some(asset_record("user1", "asset", path.clone())),
             AssetIndexingUtils::into_asset_record("user1".to_string(), path)
         );

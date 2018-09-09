@@ -87,7 +87,9 @@ mod tests {
                 asset_record("rara", "map_1", map_1_dir),
             ]).exactly()
         );
+        // kcov-ignore-start
         assert_that!(
+            // kcov-ignore-end
             asset_index.objects.get(&ObjectType::Character).unwrap(),
             contains(vec![
                 asset_record("rara", "char_0", char_0_dir),

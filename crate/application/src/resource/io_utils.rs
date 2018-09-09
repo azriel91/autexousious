@@ -58,7 +58,7 @@ impl IoUtils {
                     basename_os_str.to_string_lossy()
                 )))
                 // kcov-ignore-end
-            }
+            } // kcov-ignore
         } else {
             Err(Error::from(format!(
                 "Failed to determine basename component of path: `{}`.",

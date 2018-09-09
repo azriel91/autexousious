@@ -338,7 +338,7 @@ mod test {
                 .with_assertion(|world| assert_widget_text(
                     world,
                     &format!("{}", *ASSETS_CHAR_BAT_SLUG)
-                )).run()
+                )).run() // kcov-ignore
                 .is_ok()
         );
     }

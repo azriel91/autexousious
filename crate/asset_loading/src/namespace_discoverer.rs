@@ -35,10 +35,13 @@ impl NamespaceDiscoverer {
                 let basename = IoUtils::basename(&directory);
                 match basename {
                     Ok(namespace) => Some((namespace, directory)),
+                    // kcov-ignore-start
+                    // This case would require an invalid unicode path to be created on the file
+                    // system, which is unnecessarily difficult to do.
                     Err(e) => {
                         error!("Failed to read namespace directory. Error: `{}`", e);
                         None
-                    }
+                    } // kcov-ignore-end
                 }
             });
 

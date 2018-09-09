@@ -33,10 +33,12 @@ use std::fmt;
 #[derive(Builder, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[builder(derive(Debug), build_fn(validate = "Self::validate"))]
 pub struct AssetSlug {
+    // kcov-ignore-start
     /// Namespace of the asset, usually the username.
     pub namespace: String,
     /// Name of the asset, e.g. "iris".
     pub name: String,
+    // kcov-ignore-end
 }
 
 impl AssetSlugBuilder {
@@ -225,6 +227,10 @@ mod tests {
             .build();
 
         assert!(asset_slug.is_ok());
-        assert_eq!("忠犬/ハチ公", format!("{}", asset_slug.unwrap()));
+
+        let asset_slug = asset_slug.unwrap();
+        assert_eq!("忠犬", asset_slug.namespace);
+        assert_eq!("ハチ公", asset_slug.name);
+        assert_eq!("忠犬/ハチ公", format!("{}", asset_slug));
     }
 }

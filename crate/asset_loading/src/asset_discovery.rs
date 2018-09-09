@@ -83,7 +83,9 @@ mod tests {
                 asset_record(ASSETS_TEST_DIR, "map_1", map_1_dir),
             ]).exactly()
         );
+        // kcov-ignore-start
         assert_that!(
+            // kcov-ignore-end
             asset_index.objects.get(&ObjectType::Character).unwrap(),
             contains(vec![asset_record("user1", "char_0", char_0_dir),]).exactly()
         );

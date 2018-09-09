@@ -148,7 +148,7 @@ mod tests {
                     .expect(&format!(
                         "Expected `{}/{}` asset slug to build.",
                         ASSETS_TEST_DIR, ASSETS_MAP_FADE_NAME
-                    ));
+                    )); // kcov-ignore
 
                 let fade_map_handle = world
                     .read_resource::<MapAssets>()

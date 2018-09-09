@@ -70,7 +70,9 @@ mod tests {
 
         let object_assets_records = ObjectIndexer::index("rara", &objects_dir);
 
+        // kcov-ignore-start
         assert_that!(
+            // kcov-ignore-end
             object_assets_records.get(&ObjectType::Character).unwrap(),
             contains(vec![
                 asset_record("rara", "char_0", char_0_dir),
