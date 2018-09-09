@@ -6,6 +6,7 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 [dependencies]
 amethyst = { git = "https://github.com/azriel91/amethyst.git", branch = "bugfix/929/fix-sprite-position" }
 application_ui = { path = "../application_ui" }
+asset_loading = { path = "../asset_loading" }
 derivative = "1.0"
 game_model = { path = "../game_model" }
 log = "0.4"

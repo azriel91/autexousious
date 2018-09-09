@@ -1,8 +1,8 @@
 use std::fs::File;
 use std::io::prelude::*;
-use std::path::Path;
+use std::path::{Component, Path};
 
-use resource::error::Result;
+use resource::{Error, Result};
 
 /// One-liner functions to interact with files.
 #[derive(Debug)]
@@ -23,6 +23,48 @@ impl IoUtils {
         let mut buffer = Vec::new();
         file.read_to_end(&mut buffer)?;
         Ok(buffer)
+    }
+
+    /// Returns the basename of the path as a String.
+    ///
+    /// The path must contain at least one textual segment, for example:
+    ///
+    /// ```rust
+    /// use std::path::Path;
+    ///
+    /// use application::resource::IoUtils;
+    ///
+    /// # fn main() {
+    /// let path = Path::new("directory/child");
+    /// let basename = IoUtils::basename(path).unwrap();
+    ///
+    /// assert_eq!("child", basename);
+    /// # }
+    /// ```
+    pub fn basename(path: &Path) -> Result<String> {
+        let mut components = path.components();
+
+        // <https://doc.rust-lang.org/std/path/enum.Component.html>
+        if let Some(Component::Normal(basename_os_str)) = components.next_back() {
+            let basename_opt = basename_os_str.to_str();
+            if let Some(basename) = basename_opt {
+                Ok(basename.to_string())
+            } else {
+                // kcov-ignore-start
+                // We can't actually construct an invalid unicode path, but just in case we hit this
+                // in the wild, the code is here.
+                Err(Error::from(format!(
+                    "Failed to convert basename `{}` into String. It is not valid unicode.",
+                    basename_os_str.to_string_lossy()
+                )))
+                // kcov-ignore-end
+            } // kcov-ignore
+        } else {
+            Err(Error::from(format!(
+                "Failed to determine basename component of path: `{}`.",
+                path.display()
+            )))
+        }
     }
 }
 
@@ -57,6 +99,27 @@ mod test {
                 ErrorKind::Io(ref _io_error) => {}       // pass
                 _ => panic!("Expected `ErrorKind::Io`"), // kcov-ignore
             },
+        }
+    }
+
+    #[test]
+    fn basename_returns_basename_when_valid() {
+        let path = Path::new("directory/child");
+        let basename = IoUtils::basename(path).expect("Expected basename to be valid");
+
+        assert_eq!("child", basename);
+    }
+
+    #[test]
+    fn basename_returns_error_when_no_text_segment() {
+        let path = Path::new("/");
+        let error = IoUtils::basename(&path).expect_err("Expected basename to fail.");
+
+        match error.kind() {
+            ErrorKind::Msg(msg) => {
+                assert_eq!("Failed to determine basename component of path: `/`.", msg);
+            }
+            _ => panic!("Expected `ErrorKind::Msg`."), // kcov-ignore
         }
     }
 }

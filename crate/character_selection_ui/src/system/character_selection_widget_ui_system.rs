@@ -125,7 +125,7 @@ impl CharacterSelectionWidgetUiSystem {
             .for_each(|(widget, ui_text)| {
                 ui_text.text = match widget.state {
                     WidgetState::Inactive => "Inactive".to_string(),
-                    _ => format!("{:?}", widget.selection),
+                    _ => format!("{}", widget.selection),
                 }
             });
     }
@@ -212,7 +212,7 @@ mod test {
         ui::UiText,
         winit::VirtualKeyCode,
     };
-    use application_test_support::AutexousiousApplication;
+    use application_test_support::{AutexousiousApplication, ASSETS_CHAR_BAT_SLUG};
     use character_selection::{
         CharacterSelection, CharacterSelectionEvent, CharacterSelections, CharacterSelectionsState,
     };
@@ -252,44 +252,45 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AutexousiousApplication::config_base("refreshes_ui_when_selections_select_random", false)
-                .with_system(
-                    CharacterSelectionWidgetUiSystem::new(),
-                    CharacterSelectionWidgetUiSystem::type_name(),
-                    &[]
-                ) // kcov-ignore
+            AutexousiousApplication::config_base(
+                "refreshes_ui_when_selections_select_random",
+                false
+            ).with_system(
+                CharacterSelectionWidgetUiSystem::new(),
+                CharacterSelectionWidgetUiSystem::type_name(),
+                &[]
+            ) // kcov-ignore
+            // Set up UI
+            .with_resource(input_config())
+            .with_resource(CharacterSelections::default())
+            .with_assertion(|world| assert_widget_count(world, 2))
+            // Select character and send event
+            .with_effect(|world| {
+                let mut character_selections = CharacterSelections::default();
+                character_selections.state = CharacterSelectionsState::CharacterSelect;
+                world.add_resource(character_selections);
+            }).with_effect(|world| {
+                world.exec(|mut widgets: WriteStorage<CharacterSelectionWidget>| {
+                    let widget = (&mut widgets)
+                        .join()
+                        .next()
+                        .expect("Expected entity with `CharacterSelectionWidget` component.");
 
-                // Set up UI
-                .with_resource(input_config())
-                .with_resource(CharacterSelections::default())
-                .with_assertion(|world| assert_widget_count(world, 2))
+                    widget.state = WidgetState::CharacterSelect;
+                    widget.selection = CharacterSelection::Random;
+                });
 
-                // Select character and send event
-                .with_effect(|world| {
-                    let mut character_selections = CharacterSelections::default();
-                    character_selections.state = CharacterSelectionsState::CharacterSelect;
-                    world.add_resource(character_selections);
-                })
-                .with_effect(|world| {
-                    world.exec(|mut widgets: WriteStorage<CharacterSelectionWidget>| {
-                        let widget = (&mut widgets)
-                            .join()
-                            .next()
-                            .expect("Expected entity with `CharacterSelectionWidget` component.");
-
-                        widget.state = WidgetState::CharacterSelect;
-                        widget.selection = CharacterSelection::Random;
-                    });
-
-                    send_event(world, CharacterSelectionEvent::Select {
+                send_event(
+                    world,
+                    CharacterSelectionEvent::Select {
                         controller_id: 123,
                         character_selection: CharacterSelection::Random,
-                    })
-                })
-                .with_effect(|_| {}) // Need an extra update for the event to get through.
-                .with_assertion(|world| assert_widget_text(world, "Random"))
-                .run()
-                .is_ok()
+                    },
+                )
+            }).with_effect(|_| {}) // Need an extra update for the event to get through.
+            .with_assertion(|world| assert_widget_text(world, "Random"))
+            .run()
+            .is_ok()
         );
     }
 
@@ -304,19 +305,16 @@ mod test {
                     CharacterSelectionWidgetUiSystem::type_name(),
                     &[]
                 ) // kcov-ignore
-
                 // Set up UI
                 .with_resource(input_config())
                 .with_resource(CharacterSelections::default())
                 .with_assertion(|world| assert_widget_count(world, 2))
-
                 // Select character and send event
                 .with_effect(|world| {
                     let mut character_selections = CharacterSelections::default();
                     character_selections.state = CharacterSelectionsState::CharacterSelect;
                     world.add_resource(character_selections);
-                })
-                .with_effect(|world| {
+                }).with_effect(|world| {
                     world.exec(|mut widgets: WriteStorage<CharacterSelectionWidget>| {
                         let widget = (&mut widgets)
                             .join()
@@ -324,17 +322,23 @@ mod test {
                             .expect("Expected entity with `CharacterSelectionWidget` component.");
 
                         widget.state = WidgetState::CharacterSelect;
-                        widget.selection = CharacterSelection::Id(321);
+                        widget.selection = CharacterSelection::Id(ASSETS_CHAR_BAT_SLUG.clone());
                     });
 
-                    send_event(world, CharacterSelectionEvent::Select {
-                        controller_id: 123,
-                        character_selection: CharacterSelection::Id(321),
-                    })
-                })
-                .with_effect(|_| {}) // Need an extra update for the event to get through.
-                .with_assertion(|world| assert_widget_text(world, "Id(321)"))
-                .run()
+                    send_event(
+                        world,
+                        CharacterSelectionEvent::Select {
+                            controller_id: 123,
+                            character_selection: CharacterSelection::Id(
+                                ASSETS_CHAR_BAT_SLUG.clone(),
+                            ),
+                        },
+                    )
+                }).with_effect(|_| {}) // Need an extra update for the event to get through.
+                .with_assertion(|world| assert_widget_text(
+                    world,
+                    &format!("{}", *ASSETS_CHAR_BAT_SLUG)
+                )).run() // kcov-ignore
                 .is_ok()
         );
     }
@@ -350,19 +354,16 @@ mod test {
                     CharacterSelectionWidgetUiSystem::type_name(),
                     &[]
                 ) // kcov-ignore
-
                 // Set up UI
                 .with_resource(input_config())
                 .with_resource(CharacterSelections::default())
                 .with_assertion(|world| assert_widget_count(world, 2))
-
                 // Confirm selection and send event
                 .with_effect(|world| {
                     let mut character_selections = CharacterSelections::default();
                     character_selections.state = CharacterSelectionsState::Confirmed;
                     world.add_resource(character_selections);
-                })
-                .with_effect(|world| send_event(world, CharacterSelectionEvent::Confirm))
+                }).with_effect(|world| send_event(world, CharacterSelectionEvent::Confirm))
                 .with_effect(|_| {}) // Need an extra update for the event to get through.
                 .with_assertion(|world| assert_widget_count(world, 0))
                 .run()
@@ -409,7 +410,7 @@ mod test {
         });
     }
 
-    fn assert_widget_text(world: &mut World, text: &'static str) {
+    fn assert_widget_text(world: &mut World, text: &str) {
         world.exec(|ui_texts: ReadStorage<UiText>| {
             assert_eq!(
                 text,

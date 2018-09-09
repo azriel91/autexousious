@@ -1,10 +1,9 @@
-//! Contains types and functionality to index configuration on disk.
+//! Types representing asset configuration.
 
+pub use self::asset_slug::{AssetSlug, AssetSlugBuilder};
 pub use self::config_type::ConfigType;
-pub use self::discovery::index_configuration;
-pub use self::index::ConfigIndex;
-pub use self::index::ConfigRecord;
+pub use self::index::{AssetIndex, AssetRecord};
 
+mod asset_slug;
 mod config_type;
-mod discovery;
 mod index;

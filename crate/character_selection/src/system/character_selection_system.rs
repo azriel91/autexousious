@@ -2,6 +2,7 @@ use amethyst::{
     ecs::prelude::*,
     shrev::{EventChannel, ReaderId},
 };
+use game_model::loaded::CharacterAssets;
 
 use CharacterSelection;
 use CharacterSelectionEvent;
@@ -18,13 +19,17 @@ pub struct CharacterSelectionSystem {
 
 type CharacterSelectionSystemData<'s> = (
     Read<'s, EventChannel<CharacterSelectionEvent>>,
+    Read<'s, CharacterAssets>,
     Write<'s, CharacterSelections>,
 );
 
 impl<'s> System<'s> for CharacterSelectionSystem {
     type SystemData = CharacterSelectionSystemData<'s>;
 
-    fn run(&mut self, (character_selection_events, mut character_selections): Self::SystemData) {
+    fn run(
+        &mut self,
+        (character_selection_events, character_assets, mut character_selections): Self::SystemData,
+    ) {
         character_selection_events
             .read(
                 self.reader_id
@@ -36,15 +41,21 @@ impl<'s> System<'s> for CharacterSelectionSystem {
                     character_selection,
                 } => {
                     // kcov-ignore-start
-                    let character_id = match character_selection {
+                    let character_slug = match character_selection {
                         // kcov-ignore-end
-                        CharacterSelection::Random => 0, // TODO: implement random
-                        CharacterSelection::Id(id) => *id,
+                        CharacterSelection::Random => {
+                            // TODO: implement random
+                            character_assets // kcov-ignore
+                                .keys()
+                                .next()
+                                .expect("Expected at least one character to be loaded.")
+                        }
+                        CharacterSelection::Id(slug) => slug,
                     };
                     character_selections
                         .selections
                         .entry(*controller_id)
-                        .or_insert(character_id);
+                        .or_insert_with(|| character_slug.clone());
                 }
                 CharacterSelectionEvent::Deselect { controller_id } => {
                     character_selections.selections.remove(&controller_id);
@@ -68,7 +79,9 @@ impl<'s> System<'s> for CharacterSelectionSystem {
 mod tests {
     use amethyst::{ecs::prelude::*, shrev::EventChannel};
     use amethyst_test_support::prelude::*;
+    use asset_loading::ASSETS_TEST_DIR;
     use game_input::{PlayerActionControl, PlayerAxisControl};
+    use game_model::config::{AssetSlug, AssetSlugBuilder};
     use typename::TypeName;
 
     use super::CharacterSelectionSystem;
@@ -76,6 +89,23 @@ mod tests {
     use CharacterSelectionEvent;
     use CharacterSelections;
     use CharacterSelectionsState;
+
+    const ASSETS_CHAR_BAT_NAME: &str = "bat";
+
+    lazy_static! {
+        /// Slug of the "bat" character asset.
+        static ref ASSETS_CHAR_BAT_SLUG: AssetSlug = {
+            AssetSlugBuilder::default()
+                .namespace(ASSETS_TEST_DIR.to_string())
+                .name(ASSETS_CHAR_BAT_NAME.to_string())
+                .build()
+                .expect(&format!(
+                    "Expected `{}/{}` asset slug to build.",
+                    ASSETS_TEST_DIR,
+                    ASSETS_CHAR_BAT_NAME
+                ))
+        };
+    }
 
     #[test]
     fn inserts_character_selection_on_select_event() {
@@ -91,13 +121,13 @@ mod tests {
                     world,
                     CharacterSelectionEvent::Select {
                         controller_id: 123,
-                        character_selection: CharacterSelection::Id(321)
+                        character_selection: CharacterSelection::Id(ASSETS_CHAR_BAT_SLUG.clone())
                     }
                 )).with_assertion(|world| {
                     let character_selections = world.read_resource::<CharacterSelections>();
 
                     assert_eq!(
-                        Some(&(321 as usize)),
+                        Some(&*ASSETS_CHAR_BAT_SLUG),
                         character_selections.selections.get(&123)
                     );
                 }).run()
@@ -119,7 +149,7 @@ mod tests {
                     world
                         .write_resource::<CharacterSelections>()
                         .selections
-                        .insert(123, 321); // kcov-ignore
+                        .insert(123, ASSETS_CHAR_BAT_SLUG.clone()); // kcov-ignore
                 }).with_setup(|world| send_event(
                     world,
                     CharacterSelectionEvent::Deselect { controller_id: 123 }

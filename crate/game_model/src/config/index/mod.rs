@@ -1,5 +1,5 @@
-pub use self::config_index::ConfigIndex;
-pub use self::config_record::ConfigRecord;
+pub use self::asset_index::AssetIndex;
+pub use self::asset_record::AssetRecord;
 
-mod config_index;
-mod config_record;
+mod asset_index;
+mod asset_record;

@@ -1,3 +1,5 @@
+#![allow(missing_debug_implementations)] // Needed for `lazy_static!` struct.
+
 use std::env;
 use std::path::Path;
 
@@ -7,17 +9,55 @@ use amethyst::{
 };
 use amethyst_test_support::{prelude::*, EmptyState};
 use application::resource::dir::ASSETS;
+use asset_loading::ASSETS_TEST_DIR;
 use character_selection::{
     CharacterSelectionBundle, CharacterSelections, CharacterSelectionsState,
 };
 use game_input::{PlayerActionControl, PlayerAxisControl};
 use game_loading::GameLoadingState;
+use game_model::{
+    config::{AssetSlug, AssetSlugBuilder},
+    loaded::MapAssets,
+};
 use loading::LoadingState;
 use map_loading::MapLoadingBundle;
-use map_model::loaded::MapHandle;
 use map_selection::{MapSelection, MapSelectionStatus};
 use object_loading::ObjectLoadingBundle;
 use object_model::config::object::CharacterSequenceId;
+
+/// Name of the "fade" map asset.
+pub const ASSETS_MAP_FADE_NAME: &str = "fade";
+/// Name of the "bat" character asset.
+pub const ASSETS_CHAR_BAT_NAME: &str = "bat";
+
+lazy_static! {
+    /// Slug of the "fade" map asset.
+    pub static ref ASSETS_MAP_FADE_SLUG: AssetSlug = {
+        AssetSlugBuilder::default()
+            .namespace(ASSETS_TEST_DIR.to_string())
+            .name(ASSETS_MAP_FADE_NAME.to_string())
+            .build()
+            .unwrap_or_else(|e| panic!(
+                "Expected `{}/{}` asset slug to build. Error: \n\n```\n{}\n```\n",
+                ASSETS_TEST_DIR,
+                ASSETS_MAP_FADE_NAME,
+                e
+            ))
+    };
+    /// Slug of the "bat" character asset.
+    pub static ref ASSETS_CHAR_BAT_SLUG: AssetSlug = {
+        AssetSlugBuilder::default()
+            .namespace(ASSETS_TEST_DIR.to_string())
+            .name(ASSETS_CHAR_BAT_NAME.to_string())
+            .build()
+            .unwrap_or_else(|e| panic!(
+                "Expected `{}/{}` asset slug to build. Error: \n\n```\n{}\n```\n",
+                ASSETS_TEST_DIR,
+                ASSETS_CHAR_BAT_NAME,
+                e
+            ))
+    };
+}
 
 /// Baselines for building Amethyst applications with Autexousious types.
 #[derive(Debug)]
@@ -66,8 +106,8 @@ impl AutexousiousApplication {
 
     /// Returns an application with Render, Input, and UI bundles loaded.
     ///
-    /// This function does not load any game configuration as it is meant to be used to test types
-    /// that load game configuration. If you want test objects and maps to be loaded, please use the
+    /// This function does not load any game assets as it is meant to be used to test types
+    /// that load game assets. If you want test objects and maps to be loaded, please use the
     /// `game_base` function.
     ///
     /// # Parameters
@@ -85,7 +125,7 @@ impl AutexousiousApplication {
             .with_ui_bundles::<PlayerAxisControl, PlayerActionControl>()
     }
 
-    /// Returns an application with game configuration loaded.
+    /// Returns an application with game assets loaded.
     ///
     /// This function does not instantiate any game entities. If you want test entities (objects and
     /// map) to be instantiated, please use the `game_base` function.
@@ -133,19 +173,18 @@ impl AutexousiousApplication {
         let mut character_selections = CharacterSelections::default();
         character_selections.state = CharacterSelectionsState::Ready;
         let controller_id = 0;
-        let character_object_index = 0; // First loaded `Character`
         character_selections
             .selections
             .entry(controller_id)
-            .or_insert(character_object_index);
+            .or_insert_with(|| ASSETS_CHAR_BAT_SLUG.clone());
 
         let map_selection_fn = |world: &mut World| {
-            // TODO: <https://gitlab.com/azriel91/autexousious/issues/57>
             let fade_map_handle = world
-                .read_resource::<Vec<MapHandle>>()
-                .get(1)
-                .expect("Expected at least one map to be loaded.")
+                .read_resource::<MapAssets>()
+                .get(&ASSETS_MAP_FADE_SLUG)
+                .unwrap_or_else(|| panic!("Expected `{}` map to be loaded.", *ASSETS_MAP_FADE_SLUG))
                 .clone();
+
             let map_selection =
                 MapSelection::new(MapSelectionStatus::Confirmed, Some(fade_map_handle));
 
@@ -164,9 +203,9 @@ mod test {
     use amethyst::{input::InputHandler, ui::MouseReactive};
     use amethyst_test_support::SpriteRenderAnimationFixture;
     use game_input::{PlayerActionControl, PlayerAxisControl};
+    use game_model::loaded::{CharacterAssets, MapAssets};
     use game_model::play::GameEntities;
-    use map_model::loaded::MapHandle;
-    use object_model::{loaded::CharacterHandle, ObjectType};
+    use object_model::ObjectType;
     use strum::IntoEnumIterator;
 
     use super::AutexousiousApplication;
@@ -228,8 +267,8 @@ mod test {
                 false
             ).with_assertion(|world| {
                 // Panics if the resources have not been populated
-                world.read_resource::<Vec<MapHandle>>();
-                assert!(!world.read_resource::<Vec<CharacterHandle>>().is_empty());
+                world.read_resource::<MapAssets>();
+                assert!(!world.read_resource::<CharacterAssets>().is_empty());
             }).run()
             .is_ok()
         );
@@ -246,8 +285,10 @@ mod test {
 
                     // Ensure there is at least one entity per object type.
                     ObjectType::iter().for_each(|object_type| {
+                        let objects = game_entities.objects.get(&object_type);
+
                         assert!(
-                            game_entities.objects.get(&object_type).is_some(),
+                            objects.is_some(),
                             // kcov-ignore-start
                             format!(
                                 // kcov-ignore-end

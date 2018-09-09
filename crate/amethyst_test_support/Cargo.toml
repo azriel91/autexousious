@@ -9,7 +9,7 @@ boxfnonce = "0.1"
 derivative = "1.0"
 derive-new = "0.5"
 hetseq = "0.1"
-lazy_static = "1.0"
+lazy_static = "1.1"
 
 [features]
 nightly = ["amethyst/nightly"]

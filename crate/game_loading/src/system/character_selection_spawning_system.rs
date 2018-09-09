@@ -1,13 +1,13 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
 use character_selection::CharacterSelections;
 use game_input::InputControlled;
-use game_model::play::GameEntities;
+use game_model::{loaded::CharacterAssets, play::GameEntities};
 use map_model::loaded::Map;
 use map_selection::MapSelection;
 use object_model::{
     config::object::CharacterSequenceId,
     entity::{Kinematics, Position, Velocity},
-    loaded::{Character, CharacterHandle},
+    loaded::Character,
     ObjectType,
 };
 
@@ -24,7 +24,7 @@ type CharacterSelectionSpawningSystemData<'s> = (
     Read<'s, MapSelection>,
     Read<'s, AssetStorage<Map>>,
     Entities<'s>,
-    Read<'s, Vec<CharacterHandle>>,
+    Read<'s, CharacterAssets>,
     Read<'s, AssetStorage<Character>>,
     CharacterComponentStorages<'s>,
     ObjectComponentStorages<'s, CharacterSequenceId>,
@@ -41,7 +41,7 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             map_selection,
             loaded_maps,
             entities,
-            loaded_character_handles,
+            character_assets,
             loaded_characters,
             mut character_component_storages,
             mut object_component_storages,
@@ -78,21 +78,20 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
         let position = Position::new(width / 2., height / 2., depth / 2.);
         let kinematics = Kinematics::new(position, Velocity::default());
 
-        let object_spawning_resources =
-            (&*entities, &*loaded_character_handles, &*loaded_characters);
+        let object_spawning_resources = (&*entities, &*character_assets, &*loaded_characters);
 
         let character_entities = character_selections
             .selections
             .iter()
-            .map(|(controller_id, character_index)| {
-                (InputControlled::new(*controller_id), *character_index)
-            }).map(|(input_controlled, character_index)| {
+            .map(|(controller_id, character_slug)| {
+                (InputControlled::new(*controller_id), character_slug)
+            }).map(|(input_controlled, character_slug)| {
                 CharacterEntitySpawner::spawn_system(
                     &object_spawning_resources,
                     &mut character_component_storages,
                     &mut object_component_storages,
                     kinematics,
-                    character_index,
+                    &character_slug,
                     input_controlled,
                 )
             }).collect::<Vec<Entity>>();
@@ -112,17 +111,51 @@ mod tests {
     use amethyst::ecs::prelude::*;
     use amethyst_test_support::{prelude::*, EmptyState};
     use application::resource::dir::ASSETS;
+    use asset_loading::ASSETS_TEST_DIR;
     use character_selection::CharacterSelections;
-    use game_model::play::GameEntities;
+    use game_model::{
+        config::{AssetSlug, AssetSlugBuilder},
+        loaded::MapAssets,
+        play::GameEntities,
+    };
     use loading::LoadingState;
     use map_loading::MapLoadingBundle;
-    use map_model::loaded::MapHandle;
     use map_selection::{MapSelection, MapSelectionStatus};
     use object_loading::ObjectLoadingBundle;
     use object_model::ObjectType;
     use typename::TypeName;
 
     use super::CharacterSelectionSpawningSystem;
+
+    const ASSETS_MAP_FADE_NAME: &str = "fade";
+    const ASSETS_CHAR_BAT_NAME: &str = "bat";
+
+    lazy_static! {
+        /// Slug of the "fade" map asset.
+        static ref ASSETS_MAP_FADE_SLUG: AssetSlug = {
+            AssetSlugBuilder::default()
+                .namespace(ASSETS_TEST_DIR.to_string())
+                .name(ASSETS_MAP_FADE_NAME.to_string())
+                .build()
+                .expect(&format!(
+                    "Expected `{}/{}` asset slug to build.",
+                    ASSETS_TEST_DIR,
+                    ASSETS_MAP_FADE_NAME
+                ))
+        };
+        /// Slug of the "bat" character asset.
+        static ref ASSETS_CHAR_BAT_SLUG: AssetSlug = {
+            AssetSlugBuilder::default()
+                .namespace(ASSETS_TEST_DIR.to_string())
+                .name(ASSETS_CHAR_BAT_NAME.to_string())
+                .build()
+                .expect(&format!(
+                    "Expected `{}/{}` asset slug to build.",
+                    ASSETS_TEST_DIR,
+                    ASSETS_CHAR_BAT_NAME
+                ))
+        };
+    }
 
     #[test]
     fn returns_if_characters_already_populated() {
@@ -192,18 +225,21 @@ mod tests {
                 Box::new(EmptyState)
             )).with_setup(|world| {
                 let first_map_handle = world
-                    .read_resource::<Vec<MapHandle>>()
-                    // TODO: <https://gitlab.com/azriel91/autexousious/issues/57>
-                    .get(1) // assets/test/map/fade
-                    .expect("Expected at least one map to be loaded.")
-                    .clone();
+                    .read_resource::<MapAssets>()
+                    .get(&ASSETS_MAP_FADE_SLUG)
+                    .expect(&format!(
+                        "Expected `{}` map to be loaded.",
+                        *ASSETS_MAP_FADE_SLUG
+                    )).clone();
                 let map_selection =
                     MapSelection::new(MapSelectionStatus::Confirmed, Some(first_map_handle));
 
                 world.add_resource(map_selection);
             }).with_setup(|world| {
                 let mut character_selections = CharacterSelections::default();
-                character_selections.selections.insert(0, 0);
+                character_selections
+                    .selections
+                    .insert(0, ASSETS_CHAR_BAT_SLUG.clone());
                 world.add_resource(character_selections);
             }).with_system_single(
                 CharacterSelectionSpawningSystem,

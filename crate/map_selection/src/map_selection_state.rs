@@ -2,7 +2,8 @@ use std::fmt::Debug;
 use std::marker::PhantomData;
 
 use amethyst::{assets::AssetStorage, ecs::prelude::*, prelude::*, shrev::EventChannel};
-use map_model::loaded::{Map, MapHandle};
+use game_model::loaded::MapAssets;
+use map_model::loaded::Map;
 use typename::TypeName;
 
 use MapSelection;
@@ -102,8 +103,9 @@ where
                 .write_resource::<EventChannel<MapSelectionEvent>>();
             let map_handle = data
                 .world
-                .read_resource::<Vec<MapHandle>>()
-                .first()
+                .read_resource::<MapAssets>()
+                .values()
+                .nth(1) // Skip built-in map.
                 .expect("Expect at least one map to be loaded.")
                 .clone();
             selection_event_channel.single_write(MapSelectionEvent::new(map_handle));

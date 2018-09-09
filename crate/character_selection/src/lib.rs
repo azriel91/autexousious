@@ -1,17 +1,22 @@
 #![deny(missing_docs)]
 #![deny(missing_debug_implementations)]
 
-//! Menu to allow the user to select game mode.
+//! State where character selection takes place.
 
 extern crate amethyst;
 #[cfg(test)]
 extern crate amethyst_test_support;
+#[cfg(test)]
+extern crate asset_loading;
 #[macro_use]
 extern crate derivative;
 #[macro_use]
 extern crate derive_new;
 extern crate game_input;
 extern crate game_model;
+#[cfg(test)]
+#[macro_use]
+extern crate lazy_static;
 #[macro_use]
 extern crate log;
 extern crate object_model;
