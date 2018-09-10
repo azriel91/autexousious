@@ -42,6 +42,7 @@ extern crate typename_derive;
 pub use animation_runner::AnimationRunner;
 pub(crate) use game_loading_bundle::GameLoadingBundle;
 pub use game_loading_state::GameLoadingState;
+pub(crate) use game_loading_status::GameLoadingStatus;
 pub use spawn::{
     CharacterComponentStorages, CharacterEntitySpawner, MapLayerComponentStorages,
     MapLayerEntitySpawner, MapSpawningResources, ObjectComponentStorages, ObjectSpawningResources,
@@ -51,5 +52,6 @@ pub(crate) use system::{CharacterSelectionSpawningSystem, MapSelectionSpawningSy
 mod animation_runner;
 mod game_loading_bundle;
 mod game_loading_state;
+mod game_loading_status;
 mod spawn;
 mod system;

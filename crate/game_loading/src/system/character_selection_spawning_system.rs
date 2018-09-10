@@ -13,6 +13,7 @@ use object_model::{
 
 use CharacterComponentStorages;
 use CharacterEntitySpawner;
+use GameLoadingStatus;
 use ObjectComponentStorages;
 
 /// Spawns character entities based on the character selection.
@@ -20,6 +21,7 @@ use ObjectComponentStorages;
 pub(crate) struct CharacterSelectionSpawningSystem;
 
 type CharacterSelectionSpawningSystemData<'s> = (
+    Write<'s, GameLoadingStatus>,
     Read<'s, CharacterSelections>,
     Read<'s, MapSelection>,
     Read<'s, AssetStorage<Map>>,
@@ -37,6 +39,7 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
     fn run(
         &mut self,
         (
+            mut game_loading_status,
             character_selections,
             map_selection,
             loaded_maps,
@@ -48,11 +51,8 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             mut game_entities,
         ): Self::SystemData,
     ) {
-        if let Some(characters) = game_entities.objects.get(&ObjectType::Character) {
-            if !characters.is_empty() {
-                // Already populated
-                return;
-            }
+        if game_loading_status.characters_loaded {
+            return;
         }
 
         // Read map to determine bounds where the characters can be spawned.
@@ -99,6 +99,8 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
         game_entities
             .objects
             .insert(ObjectType::Character, character_entities);
+
+        game_loading_status.characters_loaded = true;
     }
 }
 
@@ -126,6 +128,7 @@ mod tests {
     use typename::TypeName;
 
     use super::CharacterSelectionSpawningSystem;
+    use GameLoadingStatus;
 
     const ASSETS_MAP_FADE_NAME: &str = "fade";
     const ASSETS_CHAR_BAT_NAME: &str = "bat";
@@ -158,12 +161,16 @@ mod tests {
     }
 
     #[test]
-    fn returns_if_characters_already_populated() {
+    fn returns_if_characters_already_loaded() {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::render_base("returns_if_characters_already_populated", false)
+            AmethystApplication::render_base("returns_if_characters_already_loaded", false)
                 .with_setup(|world| {
+                    let mut game_loading_status = GameLoadingStatus::new();
+                    game_loading_status.characters_loaded = true;
+                    world.add_resource(game_loading_status);
+
                     let char_entity = world.create_entity().build();
                     let mut objects = HashMap::new();
                     objects.insert(ObjectType::Character, vec![char_entity.clone()]);
@@ -254,6 +261,7 @@ mod tests {
                         .expect("Expected `ObjectType::Character` key in `GameEntities`.")
                         .is_empty()
                 );
+                assert!(world.read_resource::<GameLoadingStatus>().characters_loaded);
             }).run()
             .is_ok()
         );

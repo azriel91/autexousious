@@ -3,6 +3,7 @@ use game_model::play::GameEntities;
 use map_model::loaded::Map;
 use map_selection::MapSelection;
 
+use GameLoadingStatus;
 use MapLayerComponentStorages;
 use MapLayerEntitySpawner;
 
@@ -11,6 +12,7 @@ use MapLayerEntitySpawner;
 pub(crate) struct MapSelectionSpawningSystem;
 
 type MapSelectionSpawningSystemData<'s> = (
+    Write<'s, GameLoadingStatus>,
     Read<'s, MapSelection>,
     Read<'s, AssetStorage<Map>>,
     Entities<'s>,
@@ -24,15 +26,15 @@ impl<'s> System<'s> for MapSelectionSpawningSystem {
     fn run(
         &mut self,
         (
+            mut game_loading_status,
             map_selection,
             loaded_maps,
             entities,
             mut map_component_storages,
             mut game_entities,
         ): Self::SystemData,
-){
-        if !game_entities.map_layers.is_empty() {
-            // Already populated
+    ) {
+        if game_loading_status.map_loaded {
             return;
         }
 
@@ -51,6 +53,7 @@ impl<'s> System<'s> for MapSelectionSpawningSystem {
         );
 
         game_entities.map_layers = map_layer_entities;
+        game_loading_status.map_loaded = true;
     }
 }
 
@@ -64,22 +67,59 @@ mod tests {
     use amethyst_test_support::prelude::*;
     use application::resource::dir::ASSETS;
     use asset_loading::{AssetDiscovery, ASSETS_TEST_DIR};
-    use game_model::{config::AssetSlugBuilder, loaded::MapAssets, play::GameEntities};
+    use game_model::{
+        config::{AssetSlug, AssetSlugBuilder},
+        loaded::MapAssets,
+        play::GameEntities,
+    };
     use loading::AssetLoader;
     use map_loading::MapLoadingBundle;
     use map_selection::{MapSelection, MapSelectionStatus};
     use typename::TypeName;
 
     use super::MapSelectionSpawningSystem;
+    use GameLoadingStatus;
 
     const ASSETS_MAP_FADE_NAME: &str = "fade";
+    const ASSETS_MAP_EMPTY_NAME: &str = "empty";
+
+    lazy_static! {
+        /// Slug of the "fade" map asset.
+        static ref ASSETS_MAP_FADE_SLUG: AssetSlug = {
+            AssetSlugBuilder::default()
+                .namespace(ASSETS_TEST_DIR.to_string())
+                .name(ASSETS_MAP_FADE_NAME.to_string())
+                .build()
+                .expect(&format!(
+                    "Expected `{}/{}` asset slug to build.",
+                    ASSETS_TEST_DIR,
+                    ASSETS_MAP_FADE_NAME
+                ))
+        };
+        /// Slug of the "empty" map asset.
+        static ref ASSETS_MAP_EMPTY_SLUG: AssetSlug = {
+            AssetSlugBuilder::default()
+                .namespace(ASSETS_TEST_DIR.to_string())
+                .name(ASSETS_MAP_EMPTY_NAME.to_string())
+                .build()
+                .expect(&format!(
+                    "Expected `{}/{}` asset slug to build.",
+                    ASSETS_TEST_DIR,
+                    ASSETS_MAP_EMPTY_NAME
+                ))
+        };
+    }
 
     #[test]
-    fn returns_if_map_already_populated() {
+    fn returns_if_map_already_loaded() {
         assert!(
-            AmethystApplication::render_base("returns_if_map_already_populated", false)
+            AmethystApplication::render_base("returns_if_map_already_loaded", false)
                 .with_bundle(MapLoadingBundle::new())
                 .with_setup(|world| {
+                    let mut game_loading_status = GameLoadingStatus::new();
+                    game_loading_status.map_loaded = true;
+                    world.add_resource(game_loading_status);
+
                     let layer_entity = world.create_entity().build();
                     world.add_resource(GameEntities::new(
                         HashMap::new(),
@@ -141,20 +181,13 @@ mod tests {
                 let mut progress_counter = ProgressCounter::new();
                 AssetLoader::load_maps(world, &mut progress_counter, asset_index.maps);
             }).with_setup(|world| {
-                let fade_asset_slug = AssetSlugBuilder::default()
-                    .namespace(ASSETS_TEST_DIR.to_string())
-                    .name(ASSETS_MAP_FADE_NAME.to_string())
-                    .build()
-                    .expect(&format!(
-                        "Expected `{}/{}` asset slug to build.",
-                        ASSETS_TEST_DIR, ASSETS_MAP_FADE_NAME
-                    )); // kcov-ignore
-
                 let fade_map_handle = world
                     .read_resource::<MapAssets>()
-                    .get(&fade_asset_slug)
-                    .expect(&format!("Expected `{}` map to be loaded.", fade_asset_slug))
-                    .clone();
+                    .get(&*ASSETS_MAP_FADE_SLUG)
+                    .expect(&format!(
+                        "Expected `{}` map to be loaded.",
+                        *ASSETS_MAP_FADE_SLUG
+                    )).clone();
                 let map_selection =
                     MapSelection::new(MapSelectionStatus::Confirmed, Some(fade_map_handle));
 
@@ -165,6 +198,48 @@ mod tests {
                 &[],
             ).with_assertion(|world| {
                 assert!(!world.read_resource::<GameEntities>().map_layers.is_empty());
+                assert!(world.read_resource::<GameLoadingStatus>().map_loaded);
+            }).run()
+            .is_ok()
+        );
+    }
+
+    #[test]
+    fn spawns_map_that_has_no_layers() {
+        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
+
+        // kcov-ignore-start
+        assert!(
+            // kcov-ignore-end
+            AmethystApplication::render_base(
+                "spawns_map_layers_when_they_havent_been_spawned",
+                false
+            ).with_bundle(MapLoadingBundle::new())
+            .with_setup(|world| {
+                let assets_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join(ASSETS);
+                let asset_index = AssetDiscovery::asset_index(&assets_dir);
+
+                let mut progress_counter = ProgressCounter::new();
+                AssetLoader::load_maps(world, &mut progress_counter, asset_index.maps);
+            }).with_setup(|world| {
+                let empty_map_handle = world
+                    .read_resource::<MapAssets>()
+                    .get(&*ASSETS_MAP_EMPTY_SLUG)
+                    .expect(&format!(
+                        "Expected `{}` map to be loaded.",
+                        *ASSETS_MAP_EMPTY_SLUG
+                    )).clone();
+                let map_selection =
+                    MapSelection::new(MapSelectionStatus::Confirmed, Some(empty_map_handle));
+
+                world.add_resource(map_selection);
+            }).with_system_single(
+                MapSelectionSpawningSystem,
+                MapSelectionSpawningSystem::type_name(),
+                &[],
+            ).with_assertion(|world| {
+                assert!(world.read_resource::<GameEntities>().map_layers.is_empty());
+                assert!(world.read_resource::<GameLoadingStatus>().map_loaded);
             }).run()
             .is_ok()
         );
