@@ -13,3 +13,4 @@ sprite_loading = { path = "../sprite_loading" }
 
 [dev-dependencies]
 amethyst_test_support = { path = "../amethyst_test_support" }
+assets_test = { path = "../assets_test" }

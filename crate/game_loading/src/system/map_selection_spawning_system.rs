@@ -61,17 +61,12 @@ impl<'s> System<'s> for MapSelectionSpawningSystem {
 mod tests {
     use std::collections::HashMap;
     use std::env;
-    use std::path::Path;
 
     use amethyst::{assets::ProgressCounter, ecs::prelude::*};
     use amethyst_test_support::prelude::*;
-    use application::resource::dir::ASSETS;
-    use asset_loading::{AssetDiscovery, ASSETS_TEST_DIR};
-    use game_model::{
-        config::{AssetSlug, AssetSlugBuilder},
-        loaded::MapAssets,
-        play::GameEntities,
-    };
+    use asset_loading::AssetDiscovery;
+    use assets_test::{ASSETS_MAP_EMPTY_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
+    use game_model::{loaded::MapAssets, play::GameEntities};
     use loading::AssetLoader;
     use map_loading::MapLoadingBundle;
     use map_selection::{MapSelection, MapSelectionStatus};
@@ -79,36 +74,6 @@ mod tests {
 
     use super::MapSelectionSpawningSystem;
     use GameLoadingStatus;
-
-    const ASSETS_MAP_FADE_NAME: &str = "fade";
-    const ASSETS_MAP_EMPTY_NAME: &str = "empty";
-
-    lazy_static! {
-        /// Slug of the "fade" map asset.
-        static ref ASSETS_MAP_FADE_SLUG: AssetSlug = {
-            AssetSlugBuilder::default()
-                .namespace(ASSETS_TEST_DIR.to_string())
-                .name(ASSETS_MAP_FADE_NAME.to_string())
-                .build()
-                .expect(&format!(
-                    "Expected `{}/{}` asset slug to build.",
-                    ASSETS_TEST_DIR,
-                    ASSETS_MAP_FADE_NAME
-                ))
-        };
-        /// Slug of the "empty" map asset.
-        static ref ASSETS_MAP_EMPTY_SLUG: AssetSlug = {
-            AssetSlugBuilder::default()
-                .namespace(ASSETS_TEST_DIR.to_string())
-                .name(ASSETS_MAP_EMPTY_NAME.to_string())
-                .build()
-                .expect(&format!(
-                    "Expected `{}/{}` asset slug to build.",
-                    ASSETS_TEST_DIR,
-                    ASSETS_MAP_EMPTY_NAME
-                ))
-        };
-    }
 
     #[test]
     fn returns_if_map_already_loaded() {
@@ -175,8 +140,7 @@ mod tests {
                 false
             ).with_bundle(MapLoadingBundle::new())
             .with_setup(|world| {
-                let assets_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join(ASSETS);
-                let asset_index = AssetDiscovery::asset_index(&assets_dir);
+                let asset_index = AssetDiscovery::asset_index(&ASSETS_PATH);
 
                 let mut progress_counter = ProgressCounter::new();
                 AssetLoader::load_maps(world, &mut progress_counter, asset_index.maps);
@@ -216,8 +180,7 @@ mod tests {
                 false
             ).with_bundle(MapLoadingBundle::new())
             .with_setup(|world| {
-                let assets_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join(ASSETS);
-                let asset_index = AssetDiscovery::asset_index(&assets_dir);
+                let asset_index = AssetDiscovery::asset_index(&ASSETS_PATH);
 
                 let mut progress_counter = ProgressCounter::new();
                 AssetLoader::load_maps(world, &mut progress_counter, asset_index.maps);

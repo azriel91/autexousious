@@ -8,15 +8,14 @@ extern crate amethyst;
 extern crate amethyst_test_support;
 #[cfg(test)]
 extern crate asset_loading;
+#[cfg(test)]
+extern crate assets_test;
 #[macro_use]
 extern crate derivative;
 #[macro_use]
 extern crate derive_new;
 extern crate game_input;
 extern crate game_model;
-#[cfg(test)]
-#[macro_use]
-extern crate lazy_static;
 #[macro_use]
 extern crate log;
 extern crate object_model;

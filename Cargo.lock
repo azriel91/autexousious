@@ -322,13 +322,12 @@ version = "0.5.0"
 dependencies = [
  "amethyst 0.8.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "amethyst_test_support 0.5.0",
- "application 0.5.0",
  "asset_loading 0.6.0",
+ "assets_test 0.6.0",
  "character_selection 0.5.0",
  "game_input 0.5.0",
  "game_loading 0.5.0",
  "game_model 0.5.0",
- "lazy_static 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "loading 0.5.0",
  "map_loading 0.5.0",
  "map_model 0.5.0",
@@ -406,6 +405,26 @@ dependencies = [
  "pretty_assertions 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "tempfile 3.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "assets_built_in"
+version = "0.6.0"
+dependencies = [
+ "game_model 0.5.0",
+ "lazy_static 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "map_model 0.5.0",
+]
+
+[[package]]
+name = "assets_test"
+version = "0.6.0"
+dependencies = [
+ "game_model 0.5.0",
+ "heck 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "lazy_static 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "object_model 0.5.0",
+ "strum 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -544,11 +563,11 @@ dependencies = [
  "amethyst 0.8.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "amethyst_test_support 0.5.0",
  "asset_loading 0.6.0",
+ "assets_test 0.6.0",
  "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input 0.5.0",
  "game_model 0.5.0",
- "lazy_static 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "object_model 0.5.0",
  "strum 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -565,6 +584,7 @@ dependencies = [
  "amethyst_test_support 0.5.0",
  "application_test_support 0.5.0",
  "application_ui 0.5.0",
+ "assets_test 0.6.0",
  "character_selection 0.5.0",
  "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1096,14 +1116,13 @@ version = "0.5.0"
 dependencies = [
  "amethyst 0.8.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "amethyst_test_support 0.5.0",
- "application 0.5.0",
  "asset_loading 0.6.0",
+ "assets_test 0.6.0",
  "character_selection 0.5.0",
  "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input 0.5.0",
  "game_model 0.5.0",
- "lazy_static 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "loading 0.5.0",
  "log 0.4.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_loading 0.5.0",
@@ -1508,6 +1527,7 @@ dependencies = [
  "amethyst 0.8.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "application_ui 0.5.0",
  "asset_loading 0.6.0",
+ "assets_built_in 0.6.0",
  "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_model 0.5.0",
  "log 0.4.5 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1572,6 +1592,7 @@ dependencies = [
  "amethyst 0.8.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "amethyst_test_support 0.5.0",
  "application 0.5.0",
+ "assets_test 0.6.0",
  "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_model 0.5.0",
@@ -1892,6 +1913,7 @@ dependencies = [
  "amethyst 0.8.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "amethyst_test_support 0.5.0",
  "application 0.5.0",
+ "assets_test 0.6.0",
  "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_model 0.5.0",
  "log 0.4.5 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2451,6 +2473,7 @@ dependencies = [
  "amethyst 0.8.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "amethyst_test_support 0.5.0",
  "application 0.5.0",
+ "assets_test 0.6.0",
  "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "pretty_assertions 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",

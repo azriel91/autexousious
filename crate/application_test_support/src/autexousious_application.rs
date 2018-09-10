@@ -1,63 +1,24 @@
 #![allow(missing_debug_implementations)] // Needed for `lazy_static!` struct.
 
 use std::env;
-use std::path::Path;
 
 use amethyst::{
     animation::AnimationBundle, core::transform::TransformBundle, prelude::*,
     renderer::SpriteRender,
 };
 use amethyst_test_support::{prelude::*, EmptyState};
-use application::resource::dir::ASSETS;
-use asset_loading::ASSETS_TEST_DIR;
+use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
 use character_selection::{
     CharacterSelectionBundle, CharacterSelections, CharacterSelectionsState,
 };
 use game_input::{PlayerActionControl, PlayerAxisControl};
 use game_loading::GameLoadingState;
-use game_model::{
-    config::{AssetSlug, AssetSlugBuilder},
-    loaded::MapAssets,
-};
+use game_model::loaded::MapAssets;
 use loading::LoadingState;
 use map_loading::MapLoadingBundle;
 use map_selection::{MapSelection, MapSelectionStatus};
 use object_loading::ObjectLoadingBundle;
 use object_model::config::object::CharacterSequenceId;
-
-/// Name of the "fade" map asset.
-pub const ASSETS_MAP_FADE_NAME: &str = "fade";
-/// Name of the "bat" character asset.
-pub const ASSETS_CHAR_BAT_NAME: &str = "bat";
-
-lazy_static! {
-    /// Slug of the "fade" map asset.
-    pub static ref ASSETS_MAP_FADE_SLUG: AssetSlug = {
-        AssetSlugBuilder::default()
-            .namespace(ASSETS_TEST_DIR.to_string())
-            .name(ASSETS_MAP_FADE_NAME.to_string())
-            .build()
-            .unwrap_or_else(|e| panic!(
-                "Expected `{}/{}` asset slug to build. Error: \n\n```\n{}\n```\n",
-                ASSETS_TEST_DIR,
-                ASSETS_MAP_FADE_NAME,
-                e
-            ))
-    };
-    /// Slug of the "bat" character asset.
-    pub static ref ASSETS_CHAR_BAT_SLUG: AssetSlug = {
-        AssetSlugBuilder::default()
-            .namespace(ASSETS_TEST_DIR.to_string())
-            .name(ASSETS_CHAR_BAT_NAME.to_string())
-            .build()
-            .unwrap_or_else(|e| panic!(
-                "Expected `{}/{}` asset slug to build. Error: \n\n```\n{}\n```\n",
-                ASSETS_TEST_DIR,
-                ASSETS_CHAR_BAT_NAME,
-                e
-            ))
-    };
-}
 
 /// Baselines for building Amethyst applications with Autexousious types.
 #[derive(Debug)]
@@ -147,12 +108,7 @@ impl AutexousiousApplication {
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
             .with_bundle(CharacterSelectionBundle::new())
-            .with_state(|| {
-                LoadingState::new(
-                    Path::new(env!("CARGO_MANIFEST_DIR")).join(ASSETS),
-                    Box::new(EmptyState),
-                )
-            })
+            .with_state(|| LoadingState::new(ASSETS_PATH.clone(), Box::new(EmptyState)))
     }
 
     /// Returns an application with game objects loaded.

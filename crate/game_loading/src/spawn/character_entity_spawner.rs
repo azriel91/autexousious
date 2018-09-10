@@ -182,7 +182,6 @@ impl CharacterEntitySpawner {
 #[cfg(test)]
 mod test {
     use std::env;
-    use std::path::Path;
 
     use amethyst::{
         animation::AnimationControlSet,
@@ -192,10 +191,8 @@ mod test {
         renderer::{SpriteRender, Transparent},
     };
     use amethyst_test_support::prelude::*;
-    use application::resource::dir::ASSETS;
-    use asset_loading::ASSETS_TEST_DIR;
+    use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
     use game_input::{ControllerInput, InputControlled};
-    use game_model::config::AssetSlugBuilder;
     use loading::LoadingState;
     use map_loading::MapLoadingBundle;
     use map_model::loaded::Map;
@@ -209,8 +206,6 @@ mod test {
 
     use super::CharacterEntitySpawner;
 
-    const ASSETS_CHAR_BAT_NAME: &str = "bat";
-
     #[test]
     fn spawn_for_player_creates_entity_with_object_components() {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
@@ -218,21 +213,13 @@ mod test {
         let assertion = |world: &mut World| {
             let position = Position::new(100., -10., -20.);
             let kinematics = Kinematics::new(position, Velocity::default());
-            let character_slug = AssetSlugBuilder::default()
-                .namespace(ASSETS_TEST_DIR.to_string())
-                .name(ASSETS_CHAR_BAT_NAME.to_string())
-                .build()
-                .expect(&format!(
-                    "Expected `{}/{}` asset slug to build.",
-                    ASSETS_TEST_DIR, ASSETS_CHAR_BAT_NAME
-                )); // kcov-ignore
             let controller_id = 0;
             let input_controlled = InputControlled::new(controller_id);
 
             let entity = CharacterEntitySpawner::spawn_world(
                 world,
                 kinematics,
-                &character_slug,
+                &ASSETS_CHAR_BAT_SLUG,
                 input_controlled,
             );
 
@@ -255,10 +242,8 @@ mod test {
             ).with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
             .with_system(TestSystem, TestSystem::type_name(), &[])
-            .with_state(|| LoadingState::new(
-                Path::new(env!("CARGO_MANIFEST_DIR")).join(ASSETS),
-                Box::new(EmptyState),
-            )).with_assertion(assertion)
+            .with_state(|| LoadingState::new(ASSETS_PATH.clone(), Box::new(EmptyState),))
+            .with_assertion(assertion)
             .run()
             .is_ok()
         );

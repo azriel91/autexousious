@@ -11,9 +11,9 @@ extern crate amethyst;
 #[cfg(test)]
 extern crate amethyst_test_support;
 #[cfg(test)]
-extern crate application;
-#[cfg(test)]
 extern crate asset_loading;
+#[cfg(test)]
+extern crate assets_test;
 extern crate character_selection;
 #[macro_use]
 extern crate derivative;
@@ -21,9 +21,6 @@ extern crate derivative;
 extern crate derive_new;
 extern crate game_input;
 extern crate game_model;
-#[cfg(test)]
-#[macro_use]
-extern crate lazy_static;
 #[cfg(test)]
 extern crate loading;
 #[macro_use]

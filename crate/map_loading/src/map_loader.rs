@@ -64,17 +64,15 @@ impl MapLoader {
 
 #[cfg(test)]
 mod tests {
-    use std::path::Path;
-
     use amethyst::assets::AssetStorage;
     use amethyst_test_support::prelude::*;
-    use application::resource::dir::assets_dir;
+    use assets_test::ASSETS_MAP_EMPTY_PATH;
     use map_model::loaded::{Map, MapHandle};
 
     use super::MapLoader;
     use MapLoadingBundle;
 
-    // Successful case covered by `MapLoadingBundle` test
+    // Map with layers case covered by `MapLoadingBundle` test
 
     #[test]
     fn loads_map_without_sprites() {
@@ -84,12 +82,8 @@ mod tests {
             AmethystApplication::render_base("loads_map_without_sprites", false)
                 .with_bundle(MapLoadingBundle)
                 .with_effect(|world| {
-                    let mut map_path = assets_dir(Some(development_base_dirs!()))
-                        .expect("Expected to find `assets` directory in crate root.");
-                    map_path.extend(Path::new("test/map/empty").iter());
-
-                    let map_handle =
-                        MapLoader::load(world, &map_path).expect("Failed to load map.");
+                    let map_handle = MapLoader::load(world, &ASSETS_MAP_EMPTY_PATH)
+                        .expect("Failed to load map.");
 
                     world.add_resource(EffectReturn(map_handle));
                 }).with_assertion(|world| {

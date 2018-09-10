@@ -1,0 +1,9 @@
+[package]
+name = "assets_built_in"
+version = "0.6.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+
+[dependencies]
+game_model = { path = "../game_model" }
+lazy_static = "1.1"
+map_model = { path = "../map_model" }
