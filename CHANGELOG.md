@@ -11,8 +11,11 @@
 
 ### Fixed
 
+* Allow maps without layers. ([#72][#72])
+
 [#57]: https://gitlab.com/azriel91/autexousious/issues/57
 [#63]: https://gitlab.com/azriel91/autexousious/issues/63
+[#72]: https://gitlab.com/azriel91/autexousious/issues/72
 
 ## 0.5.0 (2018-08-31)
 
