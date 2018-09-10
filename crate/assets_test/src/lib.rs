@@ -1,5 +1,6 @@
 #![deny(missing_docs)]
-#![deny(missing_debug_implementations)]
+// We do not deny missing_debug_implementations because the `lazy_static!` macro generates a
+// non-debug implementation struct, and that macro is used widely throughout this crate.
 
 //! Provides assets for testing and asset slugs.
 //!
