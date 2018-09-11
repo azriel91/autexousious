@@ -212,7 +212,8 @@ mod test {
         ui::UiText,
         winit::VirtualKeyCode,
     };
-    use application_test_support::{AutexousiousApplication, ASSETS_CHAR_BAT_SLUG};
+    use application_test_support::AutexousiousApplication;
+    use assets_test::ASSETS_CHAR_BAT_SLUG;
     use character_selection::{
         CharacterSelection, CharacterSelectionEvent, CharacterSelections, CharacterSelectionsState,
     };

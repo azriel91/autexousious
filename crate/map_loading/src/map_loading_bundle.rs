@@ -20,11 +20,9 @@ impl<'a, 'b> SystemBundle<'a, 'b> for MapLoadingBundle {
 
 #[cfg(test)]
 mod test {
-    use std::path::Path;
-
     use amethyst::assets::AssetStorage;
     use amethyst_test_support::prelude::*;
-    use application::resource::dir::assets_dir;
+    use assets_test::{ASSETS_MAP_FADE_PATH, ASSETS_MAP_FADE_SLUG};
     use map_model::loaded::{Map, MapHandle};
 
     use super::MapLoadingBundle;
@@ -38,11 +36,8 @@ mod test {
             AmethystApplication::render_base("bundle_build_adds_map_processor", false)
                 .with_bundle(MapLoadingBundle)
                 .with_effect(|world| {
-                    let mut map_path = assets_dir(Some(development_base_dirs!()))
-                        .expect("Expected to find `assets` directory in crate root.");
-                    map_path.extend(Path::new("test/map/fade").iter());
-
-                    let map_handle = MapLoader::load(world, &map_path).expect("Failed to load map");
+                    let map_handle =
+                        MapLoader::load(world, &ASSETS_MAP_FADE_PATH).expect("Failed to load map");
 
                     world.add_resource(EffectReturn(map_handle));
                 }).with_assertion(|world| {
@@ -57,8 +52,10 @@ mod test {
                         2,
                         map.animation_handles
                             .as_ref()
-                            .expect("Expected test/map/fade map to contain animations.")
-                            .len()
+                            .expect(&format!(
+                                "Expected '{}' map to contain animations.",
+                                *ASSETS_MAP_FADE_SLUG
+                            )).len()
                     );
                 }).run()
                 .is_ok()

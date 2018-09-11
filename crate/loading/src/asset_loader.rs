@@ -4,18 +4,15 @@ use std::path::Path;
 use amethyst::{
     assets::{Loader, Progress},
     prelude::*,
-    renderer::ScreenDimensions,
 };
 use asset_loading::AssetDiscovery;
+use assets_built_in::{MAP_BLANK, MAP_BLANK_SLUG};
 use game_model::{
-    config::{AssetRecord, AssetSlugBuilder},
+    config::AssetRecord,
     loaded::{CharacterAssets, MapAssets},
 };
 use map_loading::MapLoader;
-use map_model::{
-    config::{MapBounds, MapDefinition, MapHeader},
-    loaded::{Map, MapHandle, Margins},
-};
+use map_model::loaded::MapHandle;
 use object_loading::CharacterLoader;
 use object_model::ObjectType;
 use strum::IntoEnumIterator;
@@ -127,31 +124,12 @@ impl AssetLoader {
                 }
             }).collect::<MapAssets>();
 
-        // Default Blank Map
-        let (width, height) = {
-            let dim = world.read_resource::<ScreenDimensions>();
-            (dim.width(), dim.height())
-        };
-
-        let depth = 200;
-        let bounds = MapBounds::new(0, 0, 0, width as u32, height as u32 - depth, depth);
-        let header = MapHeader::new("Blank Screen".to_string(), bounds);
-        let layers = Vec::new();
-        let definition = MapDefinition::new(header, layers);
-        let margins = Margins::from(definition.header.bounds);
-        let map = Map::new(definition, margins, None, None);
-
         let map_handle: MapHandle = {
             let loader = world.read_resource::<Loader>();
-            loader.load_from_data(map, progress, &world.read_resource())
+            loader.load_from_data(MAP_BLANK.clone(), progress, &world.read_resource())
         };
-        let asset_slug = AssetSlugBuilder::default()
-            .namespace("built-in".to_string())
-            .name("blank".to_string())
-            .build()
-            .expect("Expected hard coded asset slug to be valid.");
 
-        map_assets.insert(asset_slug, map_handle);
+        map_assets.insert(MAP_BLANK_SLUG.clone(), map_handle);
 
         debug!("Loaded map assets: `{:?}`", map_assets);
 

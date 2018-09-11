@@ -13,6 +13,7 @@ use object_model::{
 
 use CharacterComponentStorages;
 use CharacterEntitySpawner;
+use GameLoadingStatus;
 use ObjectComponentStorages;
 
 /// Spawns character entities based on the character selection.
@@ -20,6 +21,7 @@ use ObjectComponentStorages;
 pub(crate) struct CharacterSelectionSpawningSystem;
 
 type CharacterSelectionSpawningSystemData<'s> = (
+    Write<'s, GameLoadingStatus>,
     Read<'s, CharacterSelections>,
     Read<'s, MapSelection>,
     Read<'s, AssetStorage<Map>>,
@@ -37,6 +39,7 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
     fn run(
         &mut self,
         (
+            mut game_loading_status,
             character_selections,
             map_selection,
             loaded_maps,
@@ -48,11 +51,8 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             mut game_entities,
         ): Self::SystemData,
     ) {
-        if let Some(characters) = game_entities.objects.get(&ObjectType::Character) {
-            if !characters.is_empty() {
-                // Already populated
-                return;
-            }
+        if game_loading_status.characters_loaded {
+            return;
         }
 
         // Read map to determine bounds where the characters can be spawned.
@@ -99,6 +99,8 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
         game_entities
             .objects
             .insert(ObjectType::Character, character_entities);
+
+        game_loading_status.characters_loaded = true;
     }
 }
 
@@ -106,18 +108,12 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
 mod tests {
     use std::collections::HashMap;
     use std::env;
-    use std::path::Path;
 
     use amethyst::ecs::prelude::*;
     use amethyst_test_support::{prelude::*, EmptyState};
-    use application::resource::dir::ASSETS;
-    use asset_loading::ASSETS_TEST_DIR;
+    use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
     use character_selection::CharacterSelections;
-    use game_model::{
-        config::{AssetSlug, AssetSlugBuilder},
-        loaded::MapAssets,
-        play::GameEntities,
-    };
+    use game_model::{loaded::MapAssets, play::GameEntities};
     use loading::LoadingState;
     use map_loading::MapLoadingBundle;
     use map_selection::{MapSelection, MapSelectionStatus};
@@ -126,44 +122,19 @@ mod tests {
     use typename::TypeName;
 
     use super::CharacterSelectionSpawningSystem;
-
-    const ASSETS_MAP_FADE_NAME: &str = "fade";
-    const ASSETS_CHAR_BAT_NAME: &str = "bat";
-
-    lazy_static! {
-        /// Slug of the "fade" map asset.
-        static ref ASSETS_MAP_FADE_SLUG: AssetSlug = {
-            AssetSlugBuilder::default()
-                .namespace(ASSETS_TEST_DIR.to_string())
-                .name(ASSETS_MAP_FADE_NAME.to_string())
-                .build()
-                .expect(&format!(
-                    "Expected `{}/{}` asset slug to build.",
-                    ASSETS_TEST_DIR,
-                    ASSETS_MAP_FADE_NAME
-                ))
-        };
-        /// Slug of the "bat" character asset.
-        static ref ASSETS_CHAR_BAT_SLUG: AssetSlug = {
-            AssetSlugBuilder::default()
-                .namespace(ASSETS_TEST_DIR.to_string())
-                .name(ASSETS_CHAR_BAT_NAME.to_string())
-                .build()
-                .expect(&format!(
-                    "Expected `{}/{}` asset slug to build.",
-                    ASSETS_TEST_DIR,
-                    ASSETS_CHAR_BAT_NAME
-                ))
-        };
-    }
+    use GameLoadingStatus;
 
     #[test]
-    fn returns_if_characters_already_populated() {
+    fn returns_if_characters_already_loaded() {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::render_base("returns_if_characters_already_populated", false)
+            AmethystApplication::render_base("returns_if_characters_already_loaded", false)
                 .with_setup(|world| {
+                    let mut game_loading_status = GameLoadingStatus::new();
+                    game_loading_status.characters_loaded = true;
+                    world.add_resource(game_loading_status);
+
                     let char_entity = world.create_entity().build();
                     let mut objects = HashMap::new();
                     objects.insert(ObjectType::Character, vec![char_entity.clone()]);
@@ -220,10 +191,8 @@ mod tests {
                 false
             ).with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
-            .with_state(|| LoadingState::new(
-                Path::new(env!("CARGO_MANIFEST_DIR")).join(ASSETS),
-                Box::new(EmptyState)
-            )).with_setup(|world| {
+            .with_state(|| LoadingState::new(ASSETS_PATH.clone(), Box::new(EmptyState)))
+            .with_setup(|world| {
                 let first_map_handle = world
                     .read_resource::<MapAssets>()
                     .get(&ASSETS_MAP_FADE_SLUG)
@@ -254,6 +223,7 @@ mod tests {
                         .expect("Expected `ObjectType::Character` key in `GameEntities`.")
                         .is_empty()
                 );
+                assert!(world.read_resource::<GameLoadingStatus>().characters_loaded);
             }).run()
             .is_ok()
         );

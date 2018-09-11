@@ -221,7 +221,8 @@ mod test {
         shrev::{EventChannel, ReaderId},
     };
     use amethyst_test_support::prelude::*;
-    use application_test_support::{AutexousiousApplication, ASSETS_CHAR_BAT_SLUG};
+    use application_test_support::AutexousiousApplication;
+    use assets_test::ASSETS_CHAR_BAT_SLUG;
     use character_selection::{CharacterSelection, CharacterSelectionEvent};
     use game_input::{ControllerInput, InputControlled};
     use tracker::Last;

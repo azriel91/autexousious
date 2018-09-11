@@ -7,6 +7,7 @@ use amethyst::{
 use game_model::play::GameEntities;
 
 use GameLoadingBundle;
+use GameLoadingStatus;
 
 /// `State` where game play takes place.
 #[derive(Derivative, Default, new)]
@@ -55,10 +56,12 @@ where
     ///
     /// Since the population of `GameEntities` is used to determine whether the next state should be
     /// switched to, we need to clear it when the entities are stale.
-    fn clear_game_entities(&mut self, world: &mut World) {
+    fn reset_game_loading_status(&mut self, world: &mut World) {
         let mut game_entities = world.write_resource::<GameEntities>();
         game_entities.objects.clear();
         game_entities.map_layers.clear();
+
+        world.write_resource::<GameLoadingStatus>().reset();
     }
 
     /// Terminates the dispatcher.
@@ -75,7 +78,7 @@ where
 {
     fn on_start(&mut self, mut data: StateData<GameData>) {
         self.initialize_dispatcher(&mut data.world);
-        self.clear_game_entities(&mut data.world);
+        self.reset_game_loading_status(&mut data.world);
     }
 
     fn on_stop(&mut self, _data: StateData<GameData<'a, 'b>>) {
@@ -83,7 +86,7 @@ where
     }
 
     fn on_resume(&mut self, mut data: StateData<GameData>) {
-        self.clear_game_entities(&mut data.world);
+        self.reset_game_loading_status(&mut data.world);
     }
 
     fn handle_event(
@@ -107,8 +110,7 @@ where
         data.data.update(&data.world);
         self.dispatcher.as_mut().unwrap().dispatch(&data.world.res);
 
-        let game_entities = &data.world.read_resource::<GameEntities>();
-        if !game_entities.objects.is_empty() && !game_entities.map_layers.is_empty() {
+        if data.world.read_resource::<GameLoadingStatus>().loaded() {
             // TODO: `Trans:Push` when we have a proper map selection menu.
             Trans::Switch((self.next_state_fn)())
         } else {

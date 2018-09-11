@@ -47,11 +47,10 @@ impl ObjectLoader {
 
 #[cfg(test)]
 mod test {
-    use std::path::Path;
-
     use amethyst_test_support::AmethystApplication;
-    use application::{load_in, resource::dir::assets_dir, Format};
-    use game_model::config::{AssetRecord, AssetSlugBuilder};
+    use application::{load_in, Format};
+    use assets_test::{ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SLUG};
+    use game_model::config::AssetRecord;
     use object_model::config::CharacterDefinition;
 
     use super::ObjectLoader;
@@ -63,14 +62,10 @@ mod test {
             // kcov-ignore-end
             AmethystApplication::render_base("loads_object_assets", false)
                 .with_assertion(|world| {
-                    let mut bat_path = assets_dir(Some(development_base_dirs!())).unwrap();
-                    bat_path.extend(Path::new("test/object/character/bat").iter());
-                    let asset_slug = AssetSlugBuilder::default()
-                        .namespace("test".to_string())
-                        .name("bat".to_string())
-                        .build()
-                        .expect("Failed to build `test/bat` asset slug.");
-                    let asset_record = AssetRecord::new(asset_slug, bat_path);
+                    let asset_record = AssetRecord::new(
+                        ASSETS_CHAR_BAT_SLUG.clone(),
+                        ASSETS_CHAR_BAT_PATH.clone(),
+                    );
 
                     let character_definition = load_in::<CharacterDefinition, _>(
                         &asset_record.path,

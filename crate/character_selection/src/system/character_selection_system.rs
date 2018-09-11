@@ -79,9 +79,8 @@ impl<'s> System<'s> for CharacterSelectionSystem {
 mod tests {
     use amethyst::{ecs::prelude::*, shrev::EventChannel};
     use amethyst_test_support::prelude::*;
-    use asset_loading::ASSETS_TEST_DIR;
+    use assets_test::ASSETS_CHAR_BAT_SLUG;
     use game_input::{PlayerActionControl, PlayerAxisControl};
-    use game_model::config::{AssetSlug, AssetSlugBuilder};
     use typename::TypeName;
 
     use super::CharacterSelectionSystem;
@@ -89,23 +88,6 @@ mod tests {
     use CharacterSelectionEvent;
     use CharacterSelections;
     use CharacterSelectionsState;
-
-    const ASSETS_CHAR_BAT_NAME: &str = "bat";
-
-    lazy_static! {
-        /// Slug of the "bat" character asset.
-        static ref ASSETS_CHAR_BAT_SLUG: AssetSlug = {
-            AssetSlugBuilder::default()
-                .namespace(ASSETS_TEST_DIR.to_string())
-                .name(ASSETS_CHAR_BAT_NAME.to_string())
-                .build()
-                .expect(&format!(
-                    "Expected `{}/{}` asset slug to build.",
-                    ASSETS_TEST_DIR,
-                    ASSETS_CHAR_BAT_NAME
-                ))
-        };
-    }
 
     #[test]
     fn inserts_character_selection_on_select_event() {
