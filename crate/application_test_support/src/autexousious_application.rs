@@ -139,10 +139,8 @@ impl AutexousiousApplication {
                 .unwrap_or_else(|| panic!("Expected `{}` map to be loaded.", *ASSETS_MAP_FADE_SLUG))
                 .clone();
 
-            let map_selection =
-                MapSelection::new(MapSelectionStatus::Confirmed, Some(fade_map_handle));
-
-            world.add_resource(map_selection);
+            world.add_resource(MapSelection::new(Some(fade_map_handle)));
+            world.add_resource(MapSelectionStatus::Confirmed);
         };
 
         AutexousiousApplication::config_base(test_name, visibility)

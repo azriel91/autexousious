@@ -13,6 +13,7 @@ pub(crate) struct MapSelectionSystem {
 }
 
 type MapSelectionSystemData<'s, 'c> = (
+    Write<'s, MapSelectionStatus>,
     Read<'s, EventChannel<MapSelectionEvent>>,
     Write<'s, MapSelection>,
 );
@@ -20,11 +21,18 @@ type MapSelectionSystemData<'s, 'c> = (
 impl<'s> System<'s> for MapSelectionSystem {
     type SystemData = MapSelectionSystemData<'s, 's>;
 
-    fn run(&mut self, (selection_event_channel, mut map_selection): Self::SystemData) {
+    fn run(
+        &mut self,
+        (mut map_selection_status, selection_event_channel, mut map_selection): Self::SystemData,
+    ) {
+        if let MapSelectionStatus::Confirmed = *map_selection_status {
+            return;
+        }
+
         let mut events = selection_event_channel.read(self.reader_id.as_mut().unwrap());
 
         if let Some(MapSelectionEvent { map_handle }) = events.next() {
-            map_selection.status = MapSelectionStatus::Confirmed;
+            *map_selection_status = MapSelectionStatus::Confirmed;
             map_selection.map_handle = Some(map_handle.clone());
 
             // Discard additional events, and log a message

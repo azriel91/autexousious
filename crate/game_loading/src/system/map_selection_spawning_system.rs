@@ -152,10 +152,9 @@ mod tests {
                         "Expected `{}` map to be loaded.",
                         *ASSETS_MAP_FADE_SLUG
                     )).clone();
-                let map_selection =
-                    MapSelection::new(MapSelectionStatus::Confirmed, Some(fade_map_handle));
 
-                world.add_resource(map_selection);
+                world.add_resource(MapSelection::new(Some(fade_map_handle)));
+                world.add_resource(MapSelectionStatus::Confirmed);
             }).with_system_single(
                 MapSelectionSpawningSystem,
                 MapSelectionSpawningSystem::type_name(),
@@ -192,10 +191,9 @@ mod tests {
                         "Expected `{}` map to be loaded.",
                         *ASSETS_MAP_EMPTY_SLUG
                     )).clone();
-                let map_selection =
-                    MapSelection::new(MapSelectionStatus::Confirmed, Some(empty_map_handle));
 
-                world.add_resource(map_selection);
+                world.add_resource(MapSelection::new(Some(empty_map_handle)));
+                world.add_resource(MapSelectionStatus::Confirmed);
             }).with_system_single(
                 MapSelectionSpawningSystem,
                 MapSelectionSpawningSystem::type_name(),

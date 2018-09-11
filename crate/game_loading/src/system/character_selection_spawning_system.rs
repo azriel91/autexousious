@@ -200,10 +200,9 @@ mod tests {
                         "Expected `{}` map to be loaded.",
                         *ASSETS_MAP_FADE_SLUG
                     )).clone();
-                let map_selection =
-                    MapSelection::new(MapSelectionStatus::Confirmed, Some(first_map_handle));
 
-                world.add_resource(map_selection);
+                world.add_resource(MapSelection::new(Some(first_map_handle)));
+                world.add_resource(MapSelectionStatus::Confirmed);
             }).with_setup(|world| {
                 let mut character_selections = CharacterSelections::default();
                 character_selections

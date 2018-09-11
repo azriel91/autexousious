@@ -43,8 +43,8 @@ where
     E: Send + Sync + 'static,
 {
     fn reset_map_selection_state(&self, world: &mut World) {
-        let mut map_selection = world.write_resource::<MapSelection>();
-        map_selection.status = MapSelectionStatus::Pending;
+        let mut map_selection_status = world.write_resource::<MapSelectionStatus>();
+        *map_selection_status = MapSelectionStatus::Pending;
     }
 }
 
@@ -80,8 +80,9 @@ where
         data.data.update(&data.world);
         self.dispatcher.as_mut().unwrap().dispatch(&data.world.res);
 
-        let map_selection = data.world.read_resource::<MapSelection>();
-        if map_selection.status == MapSelectionStatus::Confirmed {
+        let map_selection_status = data.world.read_resource::<MapSelectionStatus>();
+        if *map_selection_status == MapSelectionStatus::Confirmed {
+            let map_selection = data.world.read_resource::<MapSelection>();
             let store = data.world.read_resource::<AssetStorage<Map>>();
 
             let map_handle = map_selection
