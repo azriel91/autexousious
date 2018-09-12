@@ -8,7 +8,7 @@ use object_model::entity::{CharacterStatus, Grounding, Kinematics};
 pub(crate) struct CharacterGroundingSystem;
 
 type CharacterGroundingSystemData<'s> = (
-    Read<'s, MapSelection>,
+    ReadExpect<'s, MapSelection>,
     Read<'s, AssetStorage<Map>>,
     WriteStorage<'s, Kinematics<f32>>,
     WriteStorage<'s, CharacterStatus>,
@@ -21,13 +21,8 @@ impl<'s> System<'s> for CharacterGroundingSystem {
         &mut self,
         (map_selection, maps, mut kinematics_storage, mut status_storage): Self::SystemData,
     ) {
-        let map_handle = map_selection
-            .map_handle
-            .as_ref()
-            .expect("Expected map to be selected.");
-
         let map_margins = {
-            maps.get(map_handle)
+            maps.get(map_selection.handle())
                 .map(|map| map.margins)
                 .expect("Expected map to be loaded.")
         };

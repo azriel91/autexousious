@@ -11,12 +11,12 @@ use character_selection::{
 };
 use game_input::{PlayerActionControl, PlayerAxisControl};
 use game_loading::GameLoadingState;
-use game_model::loaded::MapAssets;
 use loading::LoadingState;
 use map_loading::MapLoadingBundle;
-use map_selection::{MapSelection, MapSelectionStatus};
 use object_loading::ObjectLoadingBundle;
 use object_model::config::object::CharacterSequenceId;
+
+use SetupFunction;
 
 /// Baselines for building Amethyst applications with Autexousious types.
 #[derive(Debug)]
@@ -132,20 +132,9 @@ impl AutexousiousApplication {
             .entry(controller_id)
             .or_insert_with(|| ASSETS_CHAR_BAT_SLUG.clone());
 
-        let map_selection_fn = |world: &mut World| {
-            let fade_map_handle = world
-                .read_resource::<MapAssets>()
-                .get(&ASSETS_MAP_FADE_SLUG)
-                .unwrap_or_else(|| panic!("Expected `{}` map to be loaded.", *ASSETS_MAP_FADE_SLUG))
-                .clone();
-
-            world.add_resource(MapSelection::new(Some(fade_map_handle)));
-            world.add_resource(MapSelectionStatus::Confirmed);
-        };
-
         AutexousiousApplication::config_base(test_name, visibility)
             .with_resource(character_selections)
-            .with_setup(map_selection_fn)
+            .with_setup(SetupFunction::map_selection(ASSETS_MAP_FADE_SLUG.clone()))
             .with_state(|| GameLoadingState::new(Box::new(|| Box::new(EmptyState))))
     }
 }

@@ -22,8 +22,8 @@ pub(crate) struct CharacterSelectionSpawningSystem;
 
 type CharacterSelectionSpawningSystemData<'s> = (
     Write<'s, GameLoadingStatus>,
+    ReadExpect<'s, MapSelection>,
     Read<'s, CharacterSelections>,
-    Read<'s, MapSelection>,
     Read<'s, AssetStorage<Map>>,
     Entities<'s>,
     Read<'s, CharacterAssets>,
@@ -40,8 +40,8 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
         &mut self,
         (
             mut game_loading_status,
-            character_selections,
             map_selection,
+            character_selections,
             loaded_maps,
             entities,
             character_assets,
@@ -56,14 +56,9 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
         }
 
         // Read map to determine bounds where the characters can be spawned.
-        let map_handle = map_selection
-            .map_handle
-            .as_ref()
-            .expect("Expected map to be selected.");
-
         let (width, height, depth) = {
             loaded_maps
-                .get(map_handle)
+                .get(map_selection.handle())
                 .map(|map| {
                     let bounds = &map.definition.header.bounds;
                     (
@@ -113,7 +108,11 @@ mod tests {
     use amethyst_test_support::{prelude::*, EmptyState};
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
     use character_selection::CharacterSelections;
-    use game_model::{loaded::MapAssets, play::GameEntities};
+    use game_model::{
+        config::AssetSlug,
+        loaded::{MapAssets, SlugAndHandle},
+        play::GameEntities,
+    };
     use loading::LoadingState;
     use map_loading::MapLoadingBundle;
     use map_selection::{MapSelection, MapSelectionStatus};
@@ -130,6 +129,10 @@ mod tests {
         assert!(
             // kcov-ignore-end
             AmethystApplication::render_base("returns_if_characters_already_loaded", false)
+                .with_bundle(MapLoadingBundle::new())
+                .with_bundle(ObjectLoadingBundle::new())
+                .with_state(|| LoadingState::new(ASSETS_PATH.clone(), Box::new(EmptyState)))
+                .with_setup(map_selection(ASSETS_MAP_FADE_SLUG.clone()))
                 .with_setup(|world| {
                     let mut game_loading_status = GameLoadingStatus::new();
                     game_loading_status.characters_loaded = true;
@@ -163,22 +166,6 @@ mod tests {
         );
     }
 
-    // kcov-ignore-start
-    #[test]
-    #[ignore] // We can't test for panics because it poisons the test support Mutex
-    #[should_panic]
-    fn panics_when_map_selection_resource_not_present() {
-        AmethystApplication::render_base("panics_when_map_selection_resource_not_present", false)
-            .with_system(
-                CharacterSelectionSpawningSystem,
-                CharacterSelectionSpawningSystem::type_name(),
-                &[],
-            ).with_assertion(|_| {})
-            .run()
-            .ok();
-    }
-    // kcov-ignore-end
-
     #[test]
     fn spawns_characters_when_they_havent_been_spawned() {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
@@ -192,18 +179,8 @@ mod tests {
             ).with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
             .with_state(|| LoadingState::new(ASSETS_PATH.clone(), Box::new(EmptyState)))
+            .with_setup(map_selection(ASSETS_MAP_FADE_SLUG.clone()))
             .with_setup(|world| {
-                let first_map_handle = world
-                    .read_resource::<MapAssets>()
-                    .get(&ASSETS_MAP_FADE_SLUG)
-                    .expect(&format!(
-                        "Expected `{}` map to be loaded.",
-                        *ASSETS_MAP_FADE_SLUG
-                    )).clone();
-
-                world.add_resource(MapSelection::new(Some(first_map_handle)));
-                world.add_resource(MapSelectionStatus::Confirmed);
-            }).with_setup(|world| {
                 let mut character_selections = CharacterSelections::default();
                 character_selections
                     .selections
@@ -226,5 +203,29 @@ mod tests {
             }).run()
             .is_ok()
         );
+    }
+
+    /// Returns a function that adds a `MapSelection` and `MapSelectionStatus::Confirmed`.
+    ///
+    /// See `application_test_support::SetupFunction`.
+    ///
+    /// # Parameters
+    ///
+    /// * `slug`: Asset slug of the map to select.
+    fn map_selection(slug: AssetSlug) -> impl Fn(&mut World) {
+        move |world| {
+            let slug_and_handle = {
+                let map_handle = world
+                    .read_resource::<MapAssets>()
+                    .get(&slug)
+                    .unwrap_or_else(|| panic!("Expected `{}` to be loaded.", slug))
+                    .clone();
+
+                SlugAndHandle::from((slug.clone(), map_handle))
+            };
+
+            world.add_resource(MapSelection::Id(slug_and_handle));
+            world.add_resource(MapSelectionStatus::Confirmed);
+        }
     }
 }

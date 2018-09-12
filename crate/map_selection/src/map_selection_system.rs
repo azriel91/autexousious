@@ -1,5 +1,7 @@
 use amethyst::{ecs::prelude::*, shrev::EventChannel};
 
+use game_model::loaded::{MapAssets, SlugAndHandle};
+
 use MapSelection;
 use MapSelectionEvent;
 use MapSelectionStatus;
@@ -15,7 +17,7 @@ pub(crate) struct MapSelectionSystem {
 type MapSelectionSystemData<'s, 'c> = (
     Write<'s, MapSelectionStatus>,
     Read<'s, EventChannel<MapSelectionEvent>>,
-    Write<'s, MapSelection>,
+    WriteExpect<'s, MapSelection>,
 );
 
 impl<'s> System<'s> for MapSelectionSystem {
@@ -31,9 +33,12 @@ impl<'s> System<'s> for MapSelectionSystem {
 
         let mut events = selection_event_channel.read(self.reader_id.as_mut().unwrap());
 
-        if let Some(MapSelectionEvent { map_handle }) = events.next() {
+        if let Some(MapSelectionEvent::Select {
+            map_selection: selection,
+        }) = events.next()
+        {
             *map_selection_status = MapSelectionStatus::Confirmed;
-            map_selection.map_handle = Some(map_handle.clone());
+            *map_selection = selection.clone();
 
             // Discard additional events, and log a message
             let additional_events = events.count();
@@ -48,6 +53,17 @@ impl<'s> System<'s> for MapSelectionSystem {
 
     fn setup(&mut self, res: &mut Resources) {
         Self::SystemData::setup(res);
+
+        if res.try_fetch::<MapSelection>().is_none() {
+            let slug_and_handle = res
+                .fetch::<MapAssets>()
+                .iter()
+                .next()
+                .map(SlugAndHandle::from)
+                .expect("Expected at least one map to be loaded.");
+
+            res.insert(MapSelection::Random(slug_and_handle));
+        }
 
         let mut selection_event_channel = res.fetch_mut::<EventChannel<MapSelectionEvent>>();
         self.reader_id = Some(selection_event_channel.register_reader());

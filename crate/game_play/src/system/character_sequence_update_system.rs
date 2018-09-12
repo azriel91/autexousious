@@ -150,16 +150,14 @@ mod tests {
                 .with_setup(|world| {
                     world.exec(
                         |(map_selection, maps, mut status_storage, mut kinematics_storage): (
-                            Read<MapSelection>,
+                            ReadExpect<MapSelection>,
                             Read<AssetStorage<Map>>,
                             WriteStorage<CharacterStatus>,
                             WriteStorage<Kinematics<f32>>,
                         )| {
-                            let map_handle = map_selection
-                                .map_handle
-                                .as_ref()
-                                .expect("Expected map to be selected.");
-                            let map = maps.get(map_handle).expect("Expected map to be loaded.");
+                            let map = maps
+                                .get(map_selection.handle())
+                                .expect("Expected map to be loaded.");
 
                             for (status, kinematics) in
                                 (&mut status_storage, &mut kinematics_storage).join()
@@ -202,17 +200,15 @@ mod tests {
                             mut status_storage,
                             mut kinematics_storage,
                         ): (
-                            Read<MapSelection>,
+                            ReadExpect<MapSelection>,
                             Read<AssetStorage<Map>>,
                             WriteStorage<ControllerInput>,
                             WriteStorage<CharacterStatus>,
                             WriteStorage<Kinematics<f32>>,
                         )| {
-                            let map_handle = map_selection
-                                .map_handle
-                                .as_ref()
-                                .expect("Expected map to be selected.");
-                            let map = maps.get(map_handle).expect("Expected map to be loaded.");
+                            let map = maps
+                                .get(map_selection.handle())
+                                .expect("Expected map to be loaded.");
 
                             for (controller_input, status, kinematics) in (
                                 &mut controller_input_storage,

@@ -1,9 +1,8 @@
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
-use amethyst::{assets::AssetStorage, ecs::prelude::*, prelude::*, shrev::EventChannel};
-use game_model::loaded::MapAssets;
-use map_model::loaded::Map;
+use amethyst::{ecs::prelude::*, prelude::*, shrev::EventChannel};
+use game_model::loaded::{MapAssets, SlugAndHandle};
 use typename::TypeName;
 
 use MapSelection;
@@ -83,17 +82,8 @@ where
         let map_selection_status = data.world.read_resource::<MapSelectionStatus>();
         if *map_selection_status == MapSelectionStatus::Confirmed {
             let map_selection = data.world.read_resource::<MapSelection>();
-            let store = data.world.read_resource::<AssetStorage<Map>>();
 
-            let map_handle = map_selection
-                .map_handle
-                .as_ref()
-                .expect("Expected `Confirmed` map selection to contain map handle.");
-            let selected_map = store
-                .get(map_handle)
-                .expect("Expected selected map to be loaded.");
-
-            info!("Selected Map: `{:?}`", selected_map.definition.header.name);
+            info!("Map selection: `{}`", *map_selection);
 
             // TODO: `Trans:Push` when we have a proper map selection menu.
             Trans::Switch((self.next_state_fn)())
@@ -102,14 +92,16 @@ where
             let mut selection_event_channel = data
                 .world
                 .write_resource::<EventChannel<MapSelectionEvent>>();
-            let map_handle = data
+            let map_selection = data
                 .world
                 .read_resource::<MapAssets>()
-                .values()
+                .iter()
                 .nth(1) // Skip built-in map.
-                .expect("Expect at least one map to be loaded.")
-                .clone();
-            selection_event_channel.single_write(MapSelectionEvent::new(map_handle));
+                .map(SlugAndHandle::from)
+                .expect("Expect at least one map to be loaded.");
+            selection_event_channel.single_write(MapSelectionEvent::Select {
+                map_selection: MapSelection::Id(map_selection),
+            });
 
             Trans::None
         }

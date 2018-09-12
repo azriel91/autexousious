@@ -13,7 +13,7 @@ pub(crate) struct MapSelectionSpawningSystem;
 
 type MapSelectionSpawningSystemData<'s> = (
     Write<'s, GameLoadingStatus>,
-    Read<'s, MapSelection>,
+    ReadExpect<'s, MapSelection>,
     Read<'s, AssetStorage<Map>>,
     Entities<'s>,
     MapLayerComponentStorages<'s>,
@@ -38,18 +38,11 @@ impl<'s> System<'s> for MapSelectionSpawningSystem {
             return;
         }
 
-        // Read map to determine bounds where the characters can be spawned.
-        let map_handle = map_selection
-            .map_handle
-            .as_ref()
-            .expect("Expected map to be selected.");
-
         let map_spawning_resources = (&*entities, &*loaded_maps);
-
         let map_layer_entities = MapLayerEntitySpawner::spawn_system(
             &map_spawning_resources,
             &mut map_component_storages,
-            map_handle,
+            map_selection.handle(),
         );
 
         game_entities.map_layers = map_layer_entities;
@@ -66,7 +59,11 @@ mod tests {
     use amethyst_test_support::prelude::*;
     use asset_loading::AssetDiscovery;
     use assets_test::{ASSETS_MAP_EMPTY_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
-    use game_model::{loaded::MapAssets, play::GameEntities};
+    use game_model::{
+        config::AssetSlug,
+        loaded::{MapAssets, SlugAndHandle},
+        play::GameEntities,
+    };
     use loading::AssetLoader;
     use map_loading::MapLoadingBundle;
     use map_selection::{MapSelection, MapSelectionStatus};
@@ -80,6 +77,8 @@ mod tests {
         assert!(
             AmethystApplication::render_base("returns_if_map_already_loaded", false)
                 .with_bundle(MapLoadingBundle::new())
+                .with_setup(load_maps)
+                .with_setup(map_selection(ASSETS_MAP_EMPTY_SLUG.clone()))
                 .with_setup(|world| {
                     let mut game_loading_status = GameLoadingStatus::new();
                     game_loading_status.map_loaded = true;
@@ -111,23 +110,6 @@ mod tests {
         );
     }
 
-    // kcov-ignore-start
-    #[test]
-    #[ignore] // We can't test for panics because it poisons the test support Mutex
-    #[should_panic]
-    fn panics_when_map_selection_resource_not_present() {
-        AmethystApplication::render_base("panics_when_map_selection_resource_not_present", false)
-            .with_bundle(MapLoadingBundle::new())
-            .with_system(
-                MapSelectionSpawningSystem,
-                MapSelectionSpawningSystem::type_name(),
-                &[],
-            ).with_assertion(|_| {})
-            .run()
-            .ok();
-    }
-    // kcov-ignore-end
-
     #[test]
     fn spawns_map_layers_when_they_havent_been_spawned() {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
@@ -139,23 +121,9 @@ mod tests {
                 "spawns_map_layers_when_they_havent_been_spawned",
                 false
             ).with_bundle(MapLoadingBundle::new())
-            .with_setup(|world| {
-                let asset_index = AssetDiscovery::asset_index(&ASSETS_PATH);
-
-                let mut progress_counter = ProgressCounter::new();
-                AssetLoader::load_maps(world, &mut progress_counter, asset_index.maps);
-            }).with_setup(|world| {
-                let fade_map_handle = world
-                    .read_resource::<MapAssets>()
-                    .get(&*ASSETS_MAP_FADE_SLUG)
-                    .expect(&format!(
-                        "Expected `{}` map to be loaded.",
-                        *ASSETS_MAP_FADE_SLUG
-                    )).clone();
-
-                world.add_resource(MapSelection::new(Some(fade_map_handle)));
-                world.add_resource(MapSelectionStatus::Confirmed);
-            }).with_system_single(
+            .with_setup(load_maps)
+            .with_setup(map_selection(ASSETS_MAP_FADE_SLUG.clone()))
+            .with_system_single(
                 MapSelectionSpawningSystem,
                 MapSelectionSpawningSystem::type_name(),
                 &[],
@@ -178,23 +146,9 @@ mod tests {
                 "spawns_map_layers_when_they_havent_been_spawned",
                 false
             ).with_bundle(MapLoadingBundle::new())
-            .with_setup(|world| {
-                let asset_index = AssetDiscovery::asset_index(&ASSETS_PATH);
-
-                let mut progress_counter = ProgressCounter::new();
-                AssetLoader::load_maps(world, &mut progress_counter, asset_index.maps);
-            }).with_setup(|world| {
-                let empty_map_handle = world
-                    .read_resource::<MapAssets>()
-                    .get(&*ASSETS_MAP_EMPTY_SLUG)
-                    .expect(&format!(
-                        "Expected `{}` map to be loaded.",
-                        *ASSETS_MAP_EMPTY_SLUG
-                    )).clone();
-
-                world.add_resource(MapSelection::new(Some(empty_map_handle)));
-                world.add_resource(MapSelectionStatus::Confirmed);
-            }).with_system_single(
+            .with_setup(load_maps)
+            .with_setup(map_selection(ASSETS_MAP_EMPTY_SLUG.clone()))
+            .with_system_single(
                 MapSelectionSpawningSystem,
                 MapSelectionSpawningSystem::type_name(),
                 &[],
@@ -204,5 +158,36 @@ mod tests {
             }).run()
             .is_ok()
         );
+    }
+
+    fn load_maps(world: &mut World) {
+        let asset_index = AssetDiscovery::asset_index(&ASSETS_PATH);
+
+        let mut progress_counter = ProgressCounter::new();
+        AssetLoader::load_maps(world, &mut progress_counter, asset_index.maps);
+    }
+
+    /// Returns a function that adds a `MapSelection` and `MapSelectionStatus::Confirmed`.
+    ///
+    /// See `application_test_support::SetupFunction`.
+    ///
+    /// # Parameters
+    ///
+    /// * `slug`: Asset slug of the map to select.
+    fn map_selection(slug: AssetSlug) -> impl Fn(&mut World) {
+        move |world| {
+            let slug_and_handle = {
+                let map_handle = world
+                    .read_resource::<MapAssets>()
+                    .get(&slug)
+                    .unwrap_or_else(|| panic!("Expected `{}` to be loaded.", slug))
+                    .clone();
+
+                SlugAndHandle::from((slug.clone(), map_handle))
+            };
+
+            world.add_resource(MapSelection::Id(slug_and_handle));
+            world.add_resource(MapSelectionStatus::Confirmed);
+        }
     }
 }
