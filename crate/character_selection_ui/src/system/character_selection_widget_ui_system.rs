@@ -4,8 +4,11 @@ use amethyst::{
     ui::{Anchor, UiText, UiTransform},
 };
 use application_ui::{FontVariant, Theme};
-use character_selection::{CharacterSelectionEvent, CharacterSelections, CharacterSelectionsState};
+use character_selection::{
+    CharacterSelection, CharacterSelectionEvent, CharacterSelections, CharacterSelectionsState,
+};
 use game_input::{ControllerId, ControllerInput, InputConfig, InputControlled};
+use game_model::loaded::{CharacterAssets, SlugAndHandle};
 
 use CharacterSelectionWidget;
 use WidgetState;
@@ -44,6 +47,7 @@ type WidgetUiResources<'s> = (
 type CharacterSelectionWidgetUiSystemData<'s> = (
     Read<'s, EventChannel<CharacterSelectionEvent>>,
     Read<'s, CharacterSelections>,
+    Read<'s, CharacterAssets>,
     Read<'s, InputConfig>,
     Entities<'s>,
     WidgetComponentStorages<'s>,
@@ -53,6 +57,7 @@ type CharacterSelectionWidgetUiSystemData<'s> = (
 impl CharacterSelectionWidgetUiSystem {
     fn initialize_ui(
         &mut self,
+        character_assets: &CharacterAssets,
         input_config: &InputConfig,
         entities: &Entities,
         (
@@ -80,10 +85,18 @@ impl CharacterSelectionWidgetUiSystem {
                 .get(&FontVariant::Regular)
                 .expect("Failed to get regular font handle.");
 
+            let first_character = character_assets
+                .iter()
+                .next()
+                .expect("Expected at least one character to be loaded.");
+
             (0..controller_count).for_each(|index| {
                 let controller_id = index as ControllerId;
 
-                let character_selection_widget = CharacterSelectionWidget::default();
+                let character_selection_widget = CharacterSelectionWidget::new(
+                    WidgetState::default(),
+                    CharacterSelection::Random(SlugAndHandle::from(first_character)),
+                );
 
                 let ui_transform = UiTransform::new(
                     format!("CharacterSelectionWidget#{}", controller_id),
@@ -156,6 +169,7 @@ impl<'s> System<'s> for CharacterSelectionWidgetUiSystem {
         (
             character_selection_events,
             character_selections,
+            character_assets,
             input_config,
             entities,
             mut widget_component_storages,
@@ -178,6 +192,7 @@ impl<'s> System<'s> for CharacterSelectionWidgetUiSystem {
         match character_selections.state {
             CharacterSelectionsState::Waiting => {
                 self.initialize_ui(
+                    &character_assets,
                     &input_config,
                     &entities,
                     &mut widget_component_storages,
@@ -218,6 +233,7 @@ mod test {
         CharacterSelection, CharacterSelectionEvent, CharacterSelections, CharacterSelectionsState,
     };
     use game_input::{Axis, ControlAction, ControllerConfig, InputConfig};
+    use game_model::loaded::{CharacterAssets, SlugAndHandle};
     use typename::TypeName;
 
     use super::CharacterSelectionWidgetUiSystem;
@@ -271,21 +287,38 @@ mod test {
                 character_selections.state = CharacterSelectionsState::CharacterSelect;
                 world.add_resource(character_selections);
             }).with_effect(|world| {
-                world.exec(|mut widgets: WriteStorage<CharacterSelectionWidget>| {
-                    let widget = (&mut widgets)
-                        .join()
-                        .next()
-                        .expect("Expected entity with `CharacterSelectionWidget` component.");
+                world.exec(
+                    |(mut widgets, character_assets): (
+                        WriteStorage<CharacterSelectionWidget>,
+                        Read<CharacterAssets>,
+                    )| {
+                        let widget = (&mut widgets)
+                            .join()
+                            .next()
+                            .expect("Expected entity with `CharacterSelectionWidget` component.");
 
-                    widget.state = WidgetState::CharacterSelect;
-                    widget.selection = CharacterSelection::Random;
-                });
+                        let first_character = character_assets
+                            .iter()
+                            .next()
+                            .expect("Expected at least one character to be loaded.");
+
+                        widget.state = WidgetState::CharacterSelect;
+                        widget.selection = CharacterSelection::Random(first_character.into());
+                    },
+                );
+
+                let first_character = world
+                    .read_resource::<CharacterAssets>()
+                    .iter()
+                    .next()
+                    .expect("Expected at least one character to be loaded.")
+                    .into();
 
                 send_event(
                     world,
                     CharacterSelectionEvent::Select {
                         controller_id: 123,
-                        character_selection: CharacterSelection::Random,
+                        character_selection: CharacterSelection::Random(first_character),
                     },
                 )
             }).with_effect(|_| {}) // Need an extra update for the event to get through.
@@ -316,23 +349,33 @@ mod test {
                     character_selections.state = CharacterSelectionsState::CharacterSelect;
                     world.add_resource(character_selections);
                 }).with_effect(|world| {
-                    world.exec(|mut widgets: WriteStorage<CharacterSelectionWidget>| {
-                        let widget = (&mut widgets)
-                            .join()
-                            .next()
-                            .expect("Expected entity with `CharacterSelectionWidget` component.");
+                    world.exec(
+                        |(mut widgets, character_assets): (
+                            WriteStorage<CharacterSelectionWidget>,
+                            Read<CharacterAssets>,
+                        )| {
+                            let widget = (&mut widgets).join().next().expect(
+                                "Expected entity with `CharacterSelectionWidget` component.",
+                            );
 
-                        widget.state = WidgetState::CharacterSelect;
-                        widget.selection = CharacterSelection::Id(ASSETS_CHAR_BAT_SLUG.clone());
-                    });
+                            widget.state = WidgetState::CharacterSelect;
+                            widget.selection = CharacterSelection::Id(SlugAndHandle::from((
+                                &*character_assets,
+                                ASSETS_CHAR_BAT_SLUG.clone(),
+                            )));
+                        },
+                    );
+
+                    let bat_slug_and_handle = SlugAndHandle::from((
+                        &*world.read_resource::<CharacterAssets>(),
+                        ASSETS_CHAR_BAT_SLUG.clone(),
+                    ));
 
                     send_event(
                         world,
                         CharacterSelectionEvent::Select {
                             controller_id: 123,
-                            character_selection: CharacterSelection::Id(
-                                ASSETS_CHAR_BAT_SLUG.clone(),
-                            ),
+                            character_selection: CharacterSelection::Id(bat_slug_and_handle),
                         },
                     )
                 }).with_effect(|_| {}) // Need an extra update for the event to get through.

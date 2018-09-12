@@ -3,7 +3,7 @@ use game_input::ControllerId;
 use CharacterSelection;
 
 /// Event signalling a change in character selection state.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum CharacterSelectionEvent {
     /// Character has been selected.
     Select {

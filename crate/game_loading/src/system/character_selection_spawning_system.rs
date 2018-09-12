@@ -1,7 +1,7 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
 use character_selection::CharacterSelections;
 use game_input::InputControlled;
-use game_model::{loaded::CharacterAssets, play::GameEntities};
+use game_model::play::GameEntities;
 use map_model::loaded::Map;
 use map_selection::MapSelection;
 use object_model::{
@@ -26,7 +26,6 @@ type CharacterSelectionSpawningSystemData<'s> = (
     Read<'s, CharacterSelections>,
     Read<'s, AssetStorage<Map>>,
     Entities<'s>,
-    Read<'s, CharacterAssets>,
     Read<'s, AssetStorage<Character>>,
     CharacterComponentStorages<'s>,
     ObjectComponentStorages<'s, CharacterSequenceId>,
@@ -44,7 +43,6 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             character_selections,
             loaded_maps,
             entities,
-            character_assets,
             loaded_characters,
             mut character_component_storages,
             mut object_component_storages,
@@ -73,20 +71,20 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
         let position = Position::new(width / 2., height / 2., depth / 2.);
         let kinematics = Kinematics::new(position, Velocity::default());
 
-        let object_spawning_resources = (&*entities, &*character_assets, &*loaded_characters);
+        let object_spawning_resources = (&*entities, &*loaded_characters);
 
         let character_entities = character_selections
             .selections
             .iter()
-            .map(|(controller_id, character_slug)| {
-                (InputControlled::new(*controller_id), character_slug)
-            }).map(|(input_controlled, character_slug)| {
+            .map(|(controller_id, slug_and_handle)| {
+                (InputControlled::new(*controller_id), slug_and_handle)
+            }).map(|(input_controlled, slug_and_handle)| {
                 CharacterEntitySpawner::spawn_system(
                     &object_spawning_resources,
                     &mut character_component_storages,
                     &mut object_component_storages,
                     kinematics,
-                    &character_slug,
+                    &slug_and_handle,
                     input_controlled,
                 )
             }).collect::<Vec<Entity>>();
@@ -182,9 +180,10 @@ mod tests {
             .with_setup(map_selection(ASSETS_MAP_FADE_SLUG.clone()))
             .with_setup(|world| {
                 let mut character_selections = CharacterSelections::default();
-                character_selections
-                    .selections
-                    .insert(0, ASSETS_CHAR_BAT_SLUG.clone());
+                character_selections.selections.insert(
+                    0,
+                    SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone())),
+                );
                 world.add_resource(character_selections);
             }).with_system_single(
                 CharacterSelectionSpawningSystem,

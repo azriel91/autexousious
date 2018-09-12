@@ -9,7 +9,7 @@ use amethyst::{
 use config::object::SequenceId;
 
 /// Represents an in-game object that has been loaded.
-#[derive(Clone, Derivative, new)]
+#[derive(Clone, Derivative, PartialEq, new)]
 #[derivative(Debug)]
 pub struct Object<SeqId: SequenceId> {
     /// Handle to the default sprite sheet to use for the character.

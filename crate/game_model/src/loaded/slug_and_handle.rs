@@ -1,4 +1,6 @@
-use amethyst::assets::Handle;
+use std::collections::BTreeMap;
+
+use amethyst::{assets::Handle, prelude::*};
 
 use config::AssetSlug;
 
@@ -23,5 +25,28 @@ impl<'a, T> From<(&'a AssetSlug, &'a Handle<T>)> for SlugAndHandle<T> {
             slug: slug.clone(),
             handle: handle.clone(),
         }
+    }
+}
+
+impl<'a, T> From<(&'a BTreeMap<AssetSlug, Handle<T>>, AssetSlug)> for SlugAndHandle<T> {
+    fn from((slug_to_handles, slug): (&'a BTreeMap<AssetSlug, Handle<T>>, AssetSlug)) -> Self {
+        let handle = slug_to_handles
+            .get(&slug)
+            .unwrap_or_else(|| panic!("Expected `{}` to be loaded.", slug))
+            .clone();
+
+        SlugAndHandle::from((slug, handle))
+    }
+}
+
+impl<'a, T> From<(&'a World, AssetSlug)> for SlugAndHandle<T>
+where
+    T: Send + Sync + 'static,
+{
+    fn from((world, slug): (&'a World, AssetSlug)) -> Self {
+        SlugAndHandle::from((
+            &*world.read_resource::<BTreeMap<AssetSlug, Handle<T>>>(),
+            slug,
+        ))
     }
 }

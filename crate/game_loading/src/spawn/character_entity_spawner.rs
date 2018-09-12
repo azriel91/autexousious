@@ -6,7 +6,7 @@ use amethyst::{
     renderer::{SpriteRender, Transparent},
 };
 use game_input::{ControllerInput, InputControlled};
-use game_model::{config::AssetSlug, loaded::CharacterAssets};
+use game_model::loaded::SlugAndHandle;
 use object_model::{
     config::object::CharacterSequenceId,
     entity::{CharacterStatus, Kinematics},
@@ -29,19 +29,18 @@ impl CharacterEntitySpawner {
     ///
     /// * `world`: `World` to spawn the character into.
     /// * `kinematics`: Kinematics of the entity in game.
-    /// * `character_slug`: Slug of the character to spawn.
+    /// * `slug_and_handle`: Slug of the character to spawn.
     /// * `input_controlled`: `Component` that links the character entity to the controller.
     pub fn spawn_world(
         world: &mut World,
         kinematics: Kinematics<f32>,
-        character_slug: &AssetSlug,
+        slug_and_handle: &SlugAndHandle<Character>,
         input_controlled: InputControlled,
     ) -> Entity {
         let entities = &*world.read_resource::<EntitiesRes>();
-        let character_assets = &*world.read_resource::<CharacterAssets>();
         let loaded_characters = &*world.read_resource::<AssetStorage<Character>>();
         Self::spawn_system(
-            &(entities, character_assets, loaded_characters),
+            &(entities, loaded_characters),
             &mut (
                 world.write_storage::<InputControlled>(),
                 world.write_storage::<ControllerInput>(),
@@ -56,7 +55,7 @@ impl CharacterEntitySpawner {
                 world.write_storage::<AnimationControlSet<CharacterSequenceId, SpriteRender>>(),
             ), // kcov-ignore
             kinematics,
-            character_slug,
+            slug_and_handle,
             input_controlled,
         )
     }
@@ -69,10 +68,10 @@ impl CharacterEntitySpawner {
     /// * `character_component_storages`: Character specific `Component` storages.
     /// * `object_component_storages`: Common object `Component` storages.
     /// * `kinematics`: Kinematics of the entity in game.
-    /// * `character_slug`: Slug of the character to spawn.
+    /// * `slug_and_handle`: Slug and handle of the character to spawn.
     /// * `input_controlled`: `Component` that links the character entity to the controller.
     pub fn spawn_system<'res, 's>(
-        (entities, character_assets, loaded_characters): &ObjectSpawningResources<'res, Character>,
+        (entities, loaded_characters): &ObjectSpawningResources<'res, Character>,
         (
             ref mut input_controlled_storage,
             ref mut controller_input_storage,
@@ -87,29 +86,22 @@ impl CharacterEntitySpawner {
             ref mut animation_control_set_storage,
         ): &mut ObjectComponentStorages<'s, CharacterSequenceId>,
         kinematics: Kinematics<f32>,
-        character_slug: &AssetSlug,
+        slug_and_handle: &SlugAndHandle<Character>,
         input_controlled: InputControlled,
     ) -> Entity {
         let character_status = CharacterStatus::default();
         let first_sequence_id = character_status.object_status.sequence_id;
 
         let (character_handle, sprite_render, animation_handle) = {
-            let character_handle = character_assets.get(character_slug).unwrap_or_else(|| {
-                // kcov-ignore-start
-                let error_msg = format!(
-                    "Attempted to spawn character at index: `{}` for `{:?}`, \
-                     but index is out of bounds.",
-                    character_slug, &input_controlled
-                );
-                panic!(error_msg)
-                // kcov-ignore-end
-            });
-
-            debug!("Retrieving character with handle: `{:?}`", character_handle);
+            let SlugAndHandle {
+                ref slug,
+                ref handle,
+            } = slug_and_handle;
+            debug!("Spawning `{}`", slug);
 
             let character = loaded_characters
-                .get(character_handle)
-                .expect("Expected character to be loaded.");
+                .get(handle)
+                .unwrap_or_else(|| panic!("Expected `{}` character to be loaded.", slug));
             let object = &character.object;
 
             let sprite_render = SpriteRender {
@@ -125,7 +117,7 @@ impl CharacterEntitySpawner {
                 .expect("Expected character to have at least one sequence.")
                 .clone();
 
-            (character_handle.clone(), sprite_render, animation_handle)
+            (handle.clone(), sprite_render, animation_handle)
         }; // kcov-ignore
 
         let position = &kinematics.position;
@@ -193,6 +185,7 @@ mod test {
     use amethyst_test_support::prelude::*;
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
     use game_input::{ControllerInput, InputControlled};
+    use game_model::loaded::SlugAndHandle;
     use loading::LoadingState;
     use map_loading::MapLoadingBundle;
     use map_model::loaded::Map;
@@ -216,10 +209,11 @@ mod test {
             let controller_id = 0;
             let input_controlled = InputControlled::new(controller_id);
 
+            let slug_and_handle = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
             let entity = CharacterEntitySpawner::spawn_world(
                 world,
                 kinematics,
-                &ASSETS_CHAR_BAT_SLUG,
+                &slug_and_handle,
                 input_controlled,
             );
 

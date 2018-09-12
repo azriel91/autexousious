@@ -1,7 +1,8 @@
 use std::collections::HashMap;
 
 use game_input::ControllerId;
-use game_model::config::AssetSlug;
+use game_model::loaded::SlugAndHandle;
+use object_model::loaded::Character;
 
 use CharacterSelectionsState;
 
@@ -12,6 +13,6 @@ use CharacterSelectionsState;
 pub struct CharacterSelections {
     /// State of the selections.
     pub state: CharacterSelectionsState,
-    /// Map of controller ID to character slug.
-    pub selections: HashMap<ControllerId, AssetSlug>,
+    /// Map of controller ID to character slug and handle.
+    pub selections: HashMap<ControllerId, SlugAndHandle<Character>>,
 }

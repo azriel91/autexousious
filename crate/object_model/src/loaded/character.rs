@@ -7,7 +7,7 @@ use config::{object::CharacterSequenceId, CharacterDefinition};
 use loaded::Object;
 
 /// Represents an in-game character that has been loaded.
-#[derive(Clone, Derivative, new)]
+#[derive(Clone, Derivative, PartialEq, new)]
 #[derivative(Debug)]
 pub struct Character {
     /// Common loaded object data.
