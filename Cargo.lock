@@ -1108,6 +1108,8 @@ dependencies = [
  "hamcrest 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.78 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_derive 1.0.78 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "winit 0.17.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1639,6 +1641,29 @@ dependencies = [
  "game_model 0.5.0",
  "log 0.4.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_model 0.5.0",
+ "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typename_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "map_selection_ui"
+version = "0.6.0"
+dependencies = [
+ "amethyst 0.8.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
+ "amethyst_test_support 0.5.0",
+ "application_test_support 0.5.0",
+ "application_ui 0.5.0",
+ "assets_test 0.6.0",
+ "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "game_input 0.5.0",
+ "game_model 0.5.0",
+ "log 0.4.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "map_model 0.5.0",
+ "map_selection 0.5.0",
+ "strum 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "tracker 0.5.0",
  "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

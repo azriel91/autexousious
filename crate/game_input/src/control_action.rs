@@ -1,19 +1,18 @@
+#![allow(missing_debug_implementations)] // needed for `EnumIter`
+
 /// Control actions for characters.
-#[derive(Clone, Copy, Debug, Deserialize, Hash, PartialEq, Eq, Serialize)]
+#[derive(
+    Clone, Copy, Debug, Derivative, Deserialize, Display, EnumIter, Hash, PartialEq, Eq, Serialize,
+)]
+#[derivative(Default)]
 pub enum ControlAction {
     /// Defend button.
     Defend,
     /// Jump button.
     Jump,
     /// Attack button.
+    #[derivative(Default)]
     Attack,
     /// "Once off" special attacks or infrequent commands.
     Special,
-}
-
-// Required by Amethyst.
-impl Default for ControlAction {
-    fn default() -> Self {
-        ControlAction::Attack
-    }
 }

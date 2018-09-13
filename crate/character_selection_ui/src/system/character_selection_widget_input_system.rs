@@ -425,21 +425,21 @@ mod test {
                 CharacterSelectionWidgetInputSystem::type_name(),
                 &[]
             ).with_assertion(|world| {
-                let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
+                let last_char = last_character(world);
                 assert_widget(
                     world,
                     CharacterSelectionWidget::new(
                         WidgetState::CharacterSelect,
-                        CharacterSelection::Id(bat_snh),
+                        CharacterSelection::Id(last_char),
                     ),
                 )
             }).with_assertion(|world| {
-                let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
+                let last_char = last_character(world);
                 assert_events(
                     world,
                     vec![CharacterSelectionEvent::Select {
                         controller_id: 123,
-                        character_selection: CharacterSelection::Id(bat_snh),
+                        character_selection: CharacterSelection::Id(last_char),
                     }],
                 )
             }).run()
@@ -473,21 +473,21 @@ mod test {
                 CharacterSelectionWidgetInputSystem::type_name(),
                 &[]
             ).with_assertion(|world| {
-                let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
+                let first_char = first_character(world);
                 assert_widget(
                     world,
                     CharacterSelectionWidget::new(
                         WidgetState::CharacterSelect,
-                        CharacterSelection::Id(bat_snh),
+                        CharacterSelection::Id(first_char),
                     ),
                 )
             }).with_assertion(|world| {
-                let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
+                let first_char = first_character(world);
                 assert_events(
                     world,
                     vec![CharacterSelectionEvent::Select {
                         controller_id: 123,
-                        character_selection: CharacterSelection::Id(bat_snh),
+                        character_selection: CharacterSelection::Id(first_char),
                     }],
                 )
             }).run()
@@ -530,12 +530,12 @@ mod test {
                     ),
                 )
             }).with_assertion(|world| {
-                let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
+                let first_char = first_character(world);
                 assert_events(
                     world,
                     vec![CharacterSelectionEvent::Select {
                         controller_id: 123,
-                        character_selection: CharacterSelection::Id(bat_snh),
+                        character_selection: CharacterSelection::Id(first_char),
                     }],
                 )
             }).run()
@@ -630,6 +630,15 @@ mod test {
             .read_resource::<CharacterAssets>()
             .iter()
             .next()
+            .expect("Expected at least one character to be loaded.")
+            .into()
+    }
+
+    fn last_character(world: &mut World) -> SlugAndHandle<Character> {
+        world
+            .read_resource::<CharacterAssets>()
+            .iter()
+            .next_back()
             .expect("Expected at least one character to be loaded.")
             .into()
     }

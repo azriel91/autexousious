@@ -1,6 +1,7 @@
 use amethyst::ecs::prelude::*;
 
 /// Input for a character entity.
+// TODO: Map of actions and axes <https://gitlab.com/azriel91/autexousious/issues/73>.
 #[derive(Clone, Copy, Debug, Default, PartialEq, new)]
 pub struct ControllerInput {
     /// X axis input value.

@@ -366,7 +366,7 @@ mod test {
                         },
                     );
 
-                    let bat_slug_and_handle = SlugAndHandle::from((
+                    let bat_snh = SlugAndHandle::from((
                         &*world.read_resource::<CharacterAssets>(),
                         ASSETS_CHAR_BAT_SLUG.clone(),
                     ));
@@ -375,7 +375,7 @@ mod test {
                         world,
                         CharacterSelectionEvent::Select {
                             controller_id: 123,
-                            character_selection: CharacterSelection::Id(bat_slug_and_handle),
+                            character_selection: CharacterSelection::Id(bat_snh),
                         },
                     )
                 }).with_effect(|_| {}) // Need an extra update for the event to get through.
