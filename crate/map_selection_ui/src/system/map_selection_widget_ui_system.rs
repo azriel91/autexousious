@@ -121,7 +121,16 @@ impl MapSelectionWidgetUiSystem {
                 .build_entity()
                 .with(map_selection_widget, map_selection_widgets)
                 .with(SharedInputControlled, shared_input_controlleds)
-                .with(ControllerInput::default(), controller_inputs)
+                // Deliberately do not add `ControllerInput`:
+                //
+                // The first run of the `SharedControllerInputUpdateSystem` will automatically add
+                // this.
+                //
+                // If we add the component, and someone was holding Attack from the previous UI
+                // state, then the `LastTrackerSystem` will track that previously Attack wasn't
+                // pressed, and the UI logic assumes "it was just pressed" and selects the map.
+                // ---
+                // .with(ControllerInput::default(), controller_inputs)
                 .with(ui_transform, ui_transforms)
                 .with(ui_text, ui_texts)
                 .build();
