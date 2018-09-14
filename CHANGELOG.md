@@ -4,6 +4,8 @@
 
 ### Added
 
+* Map selection UI that allows users to select maps. ([#66][#66])
+
 ### Changed
 
 * Use `AssetSlug` (*namespace/name*) to reference assets. ([#57][#57])
@@ -15,6 +17,7 @@
 
 [#57]: https://gitlab.com/azriel91/autexousious/issues/57
 [#63]: https://gitlab.com/azriel91/autexousious/issues/63
+[#66]: https://gitlab.com/azriel91/autexousious/issues/66
 [#72]: https://gitlab.com/azriel91/autexousious/issues/72
 
 ## 0.5.0 (2018-08-31)
