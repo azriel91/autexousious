@@ -4,7 +4,9 @@ use amethyst::{
     ui::{Anchor, UiText, UiTransform},
 };
 use application_ui::{FontVariant, Theme};
-use game_input::{ControllerInput, SharedInputControlled};
+use game_input::{
+    ControllerId, ControllerInput, InputConfig, InputControlled, SharedInputControlled,
+};
 use game_model::loaded::{MapAssets, SlugAndHandle};
 use map_selection::{MapSelection, MapSelectionEvent, MapSelectionStatus};
 
@@ -28,6 +30,11 @@ pub(crate) struct MapSelectionWidgetUiSystem {
     /// only updated by the `MapSelectionsSystem` which happens after this system runs.
     #[new(default)]
     reader_id: Option<ReaderId<MapSelectionEvent>>,
+    /// Entities used for the UI.
+    ///
+    /// This includes not only the widget entity, but the entities used to receive input.
+    #[new(default)]
+    entities: Vec<Entity>,
 }
 
 type WidgetComponentStorages<'s> = (
@@ -42,11 +49,14 @@ type WidgetUiResources<'s> = (
     WriteStorage<'s, UiText>,
 );
 
+type InputControlledResources<'s> = (Read<'s, InputConfig>, WriteStorage<'s, InputControlled>);
+
 type MapSelectionWidgetUiSystemData<'s> = (
     Read<'s, EventChannel<MapSelectionEvent>>,
     Read<'s, MapSelectionStatus>,
     Read<'s, MapAssets>,
     Entities<'s>,
+    InputControlledResources<'s>,
     WidgetComponentStorages<'s>,
     WidgetUiResources<'s>,
 );
@@ -56,6 +66,10 @@ impl MapSelectionWidgetUiSystem {
         &mut self,
         map_assets: &MapAssets,
         entities: &Entities,
+        (
+            input_config,
+            input_controlleds,
+        ): &mut InputControlledResources,
         (
             map_selection_widgets,
             shared_input_controlleds,
@@ -103,7 +117,7 @@ impl MapSelectionWidgetUiSystem {
 
             let ui_text = UiText::new(font.clone(), String::from(""), [1., 1., 1., 1.], FONT_SIZE);
 
-            entities
+            let entity = entities
                 .build_entity()
                 .with(map_selection_widget, map_selection_widgets)
                 .with(SharedInputControlled, shared_input_controlleds)
@@ -111,6 +125,20 @@ impl MapSelectionWidgetUiSystem {
                 .with(ui_transform, ui_transforms)
                 .with(ui_text, ui_texts)
                 .build();
+
+            self.entities.push(entity);
+
+            let controller_entities_iter =
+                (0..input_config.controller_configs.len()).map(|index| {
+                    let controller_id = index as ControllerId;
+                    entities
+                        .build_entity()
+                        .with(InputControlled::new(controller_id), input_controlleds)
+                        .with(ControllerInput::default(), controller_inputs)
+                        .build()
+                });
+
+            self.entities.extend(controller_entities_iter);
         }
     }
 
@@ -126,19 +154,14 @@ impl MapSelectionWidgetUiSystem {
             });
     }
 
-    fn terminate_ui(
-        &mut self,
-        entities: &Entities,
-        map_selection_widgets: &mut WriteStorage<MapSelectionWidget>,
-    ) {
+    fn terminate_ui(&mut self, entities: &Entities) {
         if self.ui_initialized {
-            (&**entities, map_selection_widgets)
-                .join()
-                .for_each(|(entity, _widget)| {
-                    entities
-                        .delete(entity)
-                        .expect("Failed to delete `MapSelectionWidget` entity.")
-                });
+            self.entities.drain(..).for_each(|e| {
+                entities
+                    .delete(e)
+                    .expect("Failed to delete `MapSelectionUI` entity.")
+            });
+
             self.ui_initialized = false;
         }
     }
@@ -154,6 +177,7 @@ impl<'s> System<'s> for MapSelectionWidgetUiSystem {
             map_selection_status,
             map_assets,
             entities,
+            mut input_controlled_resources,
             mut widget_component_storages,
             mut widget_ui_resources,
         ): Self::SystemData,
@@ -168,7 +192,7 @@ impl<'s> System<'s> for MapSelectionWidgetUiSystem {
             ).next()
             .is_some()
         {
-            self.terminate_ui(&entities, &mut widget_component_storages.0);
+            self.terminate_ui(&entities);
             return;
         }
 
@@ -177,14 +201,13 @@ impl<'s> System<'s> for MapSelectionWidgetUiSystem {
                 self.initialize_ui(
                     &map_assets,
                     &entities,
+                    &mut input_controlled_resources,
                     &mut widget_component_storages,
                     &mut widget_ui_resources,
                 );
                 self.refresh_ui(&mut widget_component_storages.0, &mut widget_ui_resources.2);
             }
-            MapSelectionStatus::Confirmed => {
-                self.terminate_ui(&entities, &mut widget_component_storages.0)
-            }
+            MapSelectionStatus::Confirmed => self.terminate_ui(&entities),
         };
     }
 
@@ -199,9 +222,18 @@ impl<'s> System<'s> for MapSelectionWidgetUiSystem {
 
 #[cfg(test)]
 mod test {
-    use amethyst::{ecs::prelude::*, shrev::EventChannel, ui::UiText};
+    use std::collections::HashMap;
+
+    use amethyst::{
+        ecs::prelude::*,
+        input::{Axis as InputAxis, Button},
+        renderer::VirtualKeyCode,
+        shrev::EventChannel,
+        ui::UiText,
+    };
     use application_test_support::AutexousiousApplication;
     use assets_test::ASSETS_MAP_EMPTY_SLUG;
+    use game_input::{Axis, ControlAction, ControllerConfig, InputConfig};
     use game_model::loaded::{MapAssets, SlugAndHandle};
     use map_selection::{MapSelection, MapSelectionEvent, MapSelectionStatus};
     use typename::TypeName;
@@ -218,7 +250,8 @@ mod test {
             AutexousiousApplication::config_base(
                 "initializes_ui_when_map_selections_waiting",
                 false
-            ).with_setup(|world| {
+            ).with_resource(input_config())
+            .with_setup(|world| {
                 world.add_resource(MapSelectionStatus::Pending);
             }).with_system_single(
                 MapSelectionWidgetUiSystem::new(),
@@ -245,6 +278,7 @@ mod test {
                 &[]
             ) // kcov-ignore
             // Set up UI
+            .with_resource(input_config())
             .with_assertion(|world| assert_widget_count(world, 1))
             // Select map and send event
             .with_effect(|world| {
@@ -302,6 +336,7 @@ mod test {
                     &[]
                 ) // kcov-ignore
                 // Set up UI
+                .with_resource(input_config())
                 .with_assertion(|world| assert_widget_count(world, 1))
                 // Confirm selection and send event
                 .with_effect(|world| {
@@ -323,6 +358,33 @@ mod test {
                 .run()
                 .is_ok()
         );
+    }
+
+    fn input_config() -> InputConfig {
+        let controller_config_0 =
+            controller_config([VirtualKeyCode::A, VirtualKeyCode::D, VirtualKeyCode::Key1]);
+        let controller_config_1 = controller_config([
+            VirtualKeyCode::Left,
+            VirtualKeyCode::Right,
+            VirtualKeyCode::O,
+        ]);
+
+        let controller_configs = vec![controller_config_0, controller_config_1];
+        InputConfig::new(controller_configs)
+    }
+
+    fn controller_config(keys: [VirtualKeyCode; 3]) -> ControllerConfig {
+        let mut axes = HashMap::new();
+        axes.insert(
+            Axis::X,
+            InputAxis::Emulated {
+                neg: Button::Key(keys[0]),
+                pos: Button::Key(keys[1]),
+            },
+        );
+        let mut actions = HashMap::new();
+        actions.insert(ControlAction::Jump, Button::Key(keys[2]));
+        ControllerConfig::new(axes, actions)
     }
 
     fn send_event(world: &mut World, event: MapSelectionEvent) {

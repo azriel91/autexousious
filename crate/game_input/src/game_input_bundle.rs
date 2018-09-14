@@ -6,6 +6,7 @@ use typename::TypeName;
 
 use ControllerInputUpdateSystem;
 use InputConfig;
+use SharedControllerInputUpdateSystem;
 
 /// Adds the game input update systems to the provided dispatcher.
 ///
@@ -22,6 +23,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameInputBundle {
             ControllerInputUpdateSystem::new(self.input_config),
             &ControllerInputUpdateSystem::type_name(),
             &["input_system"],
+        ); // kcov-ignore
+        builder.add(
+            SharedControllerInputUpdateSystem::new(),
+            &SharedControllerInputUpdateSystem::type_name(),
+            &[&ControllerInputUpdateSystem::type_name()],
         ); // kcov-ignore
         Ok(())
     }
