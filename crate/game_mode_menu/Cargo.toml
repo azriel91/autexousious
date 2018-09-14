@@ -15,6 +15,7 @@ game_loading = { path = "../../crate/game_loading" }
 game_play = { path = "../../crate/game_play" }
 log = "0.4"
 map_selection = { path = "../../crate/map_selection" }
+map_selection_ui = { path = "../../crate/map_selection_ui" }
 
 [dev-dependencies]
 amethyst_test_support = { path = "../amethyst_test_support" }

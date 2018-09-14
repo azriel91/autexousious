@@ -29,6 +29,9 @@ extern crate hamcrest;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
+extern crate strum;
+#[macro_use]
+extern crate strum_macros;
 extern crate typename;
 #[macro_use]
 extern crate typename_derive;
@@ -36,13 +39,13 @@ extern crate typename_derive;
 extern crate winit;
 
 pub use axis::Axis;
-pub use component::{ControllerInput, InputControlled};
+pub use component::{ControllerInput, InputControlled, SharedInputControlled};
 pub use config::{ControllerConfig, InputConfig};
 pub use control_action::ControlAction;
 pub use game_input_bundle::GameInputBundle;
 pub use player_action_control::PlayerActionControl;
 pub use player_axis_control::PlayerAxisControl;
-pub use system::ControllerInputUpdateSystem;
+pub use system::{ControllerInputUpdateSystem, SharedControllerInputUpdateSystem};
 
 mod axis;
 mod component;

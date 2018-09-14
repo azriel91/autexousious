@@ -16,8 +16,14 @@ extern crate derivative;
 extern crate derive_new;
 extern crate game_input;
 extern crate game_model;
+#[cfg(test)]
+extern crate loading;
 #[macro_use]
 extern crate log;
+#[cfg(test)]
+extern crate map_loading;
+#[cfg(test)]
+extern crate object_loading;
 extern crate object_model;
 extern crate strum;
 #[macro_use]

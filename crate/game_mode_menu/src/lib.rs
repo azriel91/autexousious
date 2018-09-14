@@ -21,6 +21,7 @@ extern crate log;
 extern crate game_loading;
 extern crate game_play;
 extern crate map_selection;
+extern crate map_selection_ui;
 #[cfg(test)]
 extern crate rayon;
 

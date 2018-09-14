@@ -1,23 +1,32 @@
 use std::fmt;
 
-use game_model::config::AssetSlug;
+use game_model::loaded::SlugAndHandle;
+use object_model::loaded::{Character, CharacterHandle};
 
 /// Selected character ID or random for a particular controller.
-#[derive(Clone, Debug, Derivative, PartialEq, Eq)]
-#[derivative(Default)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum CharacterSelection {
     /// User has selected *Random*.
-    #[derivative(Default)]
-    Random,
+    Random(SlugAndHandle<Character>),
     /// User has selected a character.
-    Id(AssetSlug),
+    Id(SlugAndHandle<Character>),
+}
+
+impl CharacterSelection {
+    /// Returns the character handle of this `CharacterSelection`.
+    pub fn handle(&self) -> &CharacterHandle {
+        match self {
+            CharacterSelection::Random(SlugAndHandle { ref handle, .. })
+            | CharacterSelection::Id(SlugAndHandle { ref handle, .. }) => handle,
+        }
+    }
 }
 
 impl fmt::Display for CharacterSelection {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            CharacterSelection::Random => write!(f, "Random"), // TODO: i18n
-            CharacterSelection::Id(ref slug) => write!(f, "{}", slug),
+            CharacterSelection::Random(ref _slug_and_handle) => write!(f, "Random"), // TODO: i18n
+            CharacterSelection::Id(SlugAndHandle { ref slug, .. }) => write!(f, "{}", slug),
         }
     }
 }

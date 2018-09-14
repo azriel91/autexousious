@@ -20,6 +20,9 @@ typename_derive = "0.1"
 amethyst_test_support = { path = "../amethyst_test_support" }
 asset_loading = { path = "../asset_loading" }
 assets_test = { path = "../assets_test" }
+loading = { path = "../loading" }
+map_loading = { path = "../map_loading" }
+object_loading = { path = "../object_loading" }
 
 [features]
 nightly = ["amethyst/nightly", "amethyst_test_support/nightly"]

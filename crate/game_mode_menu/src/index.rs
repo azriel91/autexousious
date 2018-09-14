@@ -3,7 +3,8 @@ use character_selection::CharacterSelectionStateBuilder;
 use character_selection_ui::CharacterSelectionUiBundle;
 use game_loading::GameLoadingState;
 use game_play::GamePlayState;
-use map_selection::MapSelectionState;
+use map_selection::MapSelectionStateBuilder;
+use map_selection_ui::MapSelectionUiBundle;
 
 /// Game mode menu indicies.
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -33,8 +34,14 @@ impl Index {
                 let game_play_fn = || Box::new(GamePlayState::new()); // kcov-ignore
                 let game_loading_fn =
                     move || Box::new(GameLoadingState::new(Box::new(game_play_fn))); // kcov-ignore
-                let map_selection_fn =
-                    move || Box::new(MapSelectionState::new(Box::new(game_loading_fn))); // kcov-ignore
+                let map_selection_fn = move || {
+                    let state = MapSelectionStateBuilder::new(Box::new(game_loading_fn))
+                        .with_bundle(MapSelectionUiBundle::new())
+                        .with_system_dependencies(MapSelectionUiBundle::system_names())
+                        .build();
+
+                    Box::new(state)
+                };
                 let character_selection_state = {
                     let state = CharacterSelectionStateBuilder::new(Box::new(map_selection_fn))
                         .with_bundle(CharacterSelectionUiBundle::new())
