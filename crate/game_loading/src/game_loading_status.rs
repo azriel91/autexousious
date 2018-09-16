@@ -11,7 +11,7 @@ pub struct GameLoadingStatus {
 
 impl GameLoadingStatus {
     /// Returns whether all parts of game loading have been completed.
-    pub fn loaded(&self) -> bool {
+    pub fn loaded(self) -> bool {
         self.map_loaded && self.characters_loaded
     }
 

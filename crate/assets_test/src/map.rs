@@ -23,10 +23,11 @@ lazy_static! {
             .namespace(NAMESPACE_TEST.to_string())
             .name(ASSETS_MAP_FADE_NAME.to_string())
             .build()
-            .expect(&format!(
-                "Expected `{}/{}` asset slug to build.",
+            .unwrap_or_else(|e| panic!(
+                "Expected `{}/{}` asset slug to build. Error: \n\n```{}\n```\n",
                 NAMESPACE_TEST,
-                ASSETS_MAP_FADE_NAME
+                ASSETS_MAP_FADE_NAME,
+                e
             ))
     };
 
@@ -39,10 +40,11 @@ lazy_static! {
             .namespace(NAMESPACE_TEST.to_string())
             .name(ASSETS_MAP_EMPTY_NAME.to_string())
             .build()
-            .expect(&format!(
-                "Expected `{}/{}` asset slug to build.",
+            .unwrap_or_else(|e| panic!(
+                "Expected `{}/{}` asset slug to build. Error: \n\n```{}\n```\n",
                 NAMESPACE_TEST,
-                ASSETS_MAP_EMPTY_NAME
+                ASSETS_MAP_EMPTY_NAME,
+                e
             ))
     };
 
