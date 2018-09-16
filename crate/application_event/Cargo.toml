@@ -1,0 +1,9 @@
+[package]
+name = "application_event"
+version = "0.6.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+
+[dependencies]
+amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop" }
+character_selection = { path = "../character_selection" }
+map_selection = { path = "../map_selection" }

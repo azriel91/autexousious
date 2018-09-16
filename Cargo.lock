@@ -281,6 +281,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "application_event"
+version = "0.6.0"
+dependencies = [
+ "amethyst 0.8.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
+ "character_selection 0.5.0",
+ "map_selection 0.5.0",
+]
+
+[[package]]
 name = "application_input"
 version = "0.5.0"
 dependencies = [
