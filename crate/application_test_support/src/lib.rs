@@ -8,6 +8,7 @@
 
 extern crate amethyst;
 extern crate amethyst_test_support;
+extern crate application_event;
 extern crate asset_loading;
 extern crate assets_test;
 extern crate character_selection;

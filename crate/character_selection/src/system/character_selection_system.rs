@@ -68,6 +68,7 @@ mod tests {
 
     use amethyst::{ecs::prelude::*, shrev::EventChannel};
     use amethyst_test_support::prelude::*;
+    use application_event::AppEvent;
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
     use game_input::{PlayerActionControl, PlayerAxisControl};
     use game_model::loaded::SlugAndHandle;
@@ -90,9 +91,10 @@ mod tests {
         assert!(
             // kcov-ignore-end
             AmethystApplication::render_base("inserts_character_selection_on_select_event", false)
+                .with_custom_event_type::<AppEvent>()
                 .with_bundle(MapLoadingBundle::new())
                 .with_bundle(ObjectLoadingBundle::new())
-                .with_state(|| LoadingState::new(ASSETS_PATH.clone(), Box::new(EmptyState)))
+                .with_state(|| LoadingState::new(ASSETS_PATH.clone(), EmptyState))
                 .with_system(
                     CharacterSelectionSystem::new(),
                     CharacterSelectionSystem::type_name(),
@@ -133,9 +135,10 @@ mod tests {
             AmethystApplication::render_base(
                 "removes_character_selection_on_deselect_event",
                 false
-            ).with_bundle(MapLoadingBundle::new())
+            ).with_custom_event_type::<AppEvent>()
+            .with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
-            .with_state(|| LoadingState::new(ASSETS_PATH.clone(), Box::new(EmptyState)))
+            .with_state(|| LoadingState::new(ASSETS_PATH.clone(), EmptyState))
             .with_system(
                 CharacterSelectionSystem::new(),
                 CharacterSelectionSystem::type_name(),

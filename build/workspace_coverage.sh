@@ -28,10 +28,13 @@ for test_bin in $test_bins; do
   crate_coverage_dir="${coverage_dir}/${test_bin_name}"
   crate_coverage_dirs+=("${crate_coverage_dir}")
 
-  kcov --include-pattern="${crate_dir}/src/" \
-    "--exclude-line=${kcov_exclude_line}" \
-    "--exclude-region=${kcov_exclude_region}" \
-    "${crate_coverage_dir}" "${test_bin}"
+  (
+    export CARGO_MANIFEST_DIR="$crate_dir"
+    kcov --include-pattern="${crate_dir}/src/" \
+      "--exclude-line=${kcov_exclude_line}" \
+      "--exclude-region=${kcov_exclude_region}" \
+      "${crate_coverage_dir}" "${test_bin}"
+  )
 done
 
 rm -rf "${coverage_dir}/merged"

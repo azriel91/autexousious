@@ -289,6 +289,7 @@
 //!
 
 extern crate amethyst;
+extern crate amethyst_utils;
 extern crate boxfnonce;
 #[macro_use]
 extern crate derivative;

@@ -4,6 +4,7 @@ use amethyst::{
     prelude::*,
     shrev::{EventChannel, ReaderId},
 };
+use application_event::AppEvent;
 use application_menu::MenuEvent;
 
 use GameModeMenuBundle;
@@ -90,10 +91,7 @@ impl GameModeMenuState {
     }
 }
 
-impl<E> State<GameData<'static, 'static>, E> for GameModeMenuState
-where
-    E: Send + Sync + 'static,
-{
+impl State<GameData<'static, 'static>, AppEvent> for GameModeMenuState {
     fn on_start(&mut self, mut data: StateData<GameData>) {
         self.initialize_dispatcher(&mut data.world);
         self.initialize_menu_event_channel(&mut data.world);
@@ -115,7 +113,7 @@ where
         self.terminate_menu_items(&mut data.world);
     }
 
-    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'static, 'static>, E> {
+    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'static, 'static>, AppEvent> {
         data.data.update(&data.world);
         self.dispatcher.as_mut().unwrap().dispatch(&data.world.res);
 
@@ -177,7 +175,7 @@ mod test {
 
         assert!(state.dispatcher.is_none());
 
-        <State<_, ()>>::on_start(
+        <State<_, _>>::on_start(
             &mut state,
             StateData {
                 world: &mut world,
@@ -194,7 +192,7 @@ mod test {
 
         assert!(state.menu_event_reader.is_none());
 
-        <State<_, ()>>::on_start(
+        <State<_, _>>::on_start(
             &mut state,
             StateData {
                 world: &mut world,
@@ -217,7 +215,7 @@ mod test {
 
         assert!(state.menu_items.is_empty());
 
-        <State<_, ()>>::on_start(
+        <State<_, _>>::on_start(
             &mut state,
             StateData {
                 world: &mut world,
@@ -232,7 +230,7 @@ mod test {
     fn on_stop_terminates_dispatcher() {
         let (mut state, mut world, mut data) = setup();
 
-        <State<_, ()>>::on_start(
+        <State<_, _>>::on_start(
             &mut state,
             StateData {
                 world: &mut world,
@@ -242,7 +240,7 @@ mod test {
 
         assert!(state.dispatcher.is_some());
 
-        <State<_, ()>>::on_stop(
+        <State<_, _>>::on_stop(
             &mut state,
             StateData {
                 world: &mut world,
@@ -257,7 +255,7 @@ mod test {
     fn on_stop_terminates_menu_event_channel_reader() {
         let (mut state, mut world, mut data) = setup();
 
-        <State<_, ()>>::on_start(
+        <State<_, _>>::on_start(
             &mut state,
             StateData {
                 world: &mut world,
@@ -267,7 +265,7 @@ mod test {
 
         assert!(state.menu_event_reader.is_some());
 
-        <State<_, ()>>::on_stop(
+        <State<_, _>>::on_stop(
             &mut state,
             StateData {
                 world: &mut world,
@@ -285,7 +283,7 @@ mod test {
                 menu_items.push(world.create_entity().build())
             })));
 
-        <State<_, ()>>::on_start(
+        <State<_, _>>::on_start(
             &mut state,
             StateData {
                 world: &mut world,
@@ -295,7 +293,7 @@ mod test {
 
         assert_eq!(1, state.menu_items.len());
 
-        <State<_, ()>>::on_stop(
+        <State<_, _>>::on_stop(
             &mut state,
             StateData {
                 world: &mut world,
@@ -313,7 +311,7 @@ mod test {
                 menu_items.push(world.create_entity().build())
             })));
 
-        <State<_, ()>>::on_start(
+        <State<_, _>>::on_start(
             &mut state,
             StateData {
                 world: &mut world,
@@ -323,7 +321,7 @@ mod test {
 
         assert_eq!(1, state.menu_items.len());
 
-        <State<_, ()>>::on_pause(
+        <State<_, _>>::on_pause(
             &mut state,
             StateData {
                 world: &mut world,
@@ -341,7 +339,7 @@ mod test {
                 menu_items.push(world.create_entity().build())
             })));
 
-        <State<_, ()>>::on_start(
+        <State<_, _>>::on_start(
             &mut state,
             StateData {
                 world: &mut world,
@@ -351,7 +349,7 @@ mod test {
 
         assert_eq!(1, state.menu_items.len());
 
-        <State<_, ()>>::on_pause(
+        <State<_, _>>::on_pause(
             &mut state,
             StateData {
                 world: &mut world,
@@ -361,7 +359,7 @@ mod test {
 
         assert!(state.menu_items.is_empty());
 
-        <State<_, ()>>::on_resume(
+        <State<_, _>>::on_resume(
             &mut state,
             StateData {
                 world: &mut world,
@@ -377,7 +375,7 @@ mod test {
         let (mut state, mut world, mut data) = setup();
 
         // register reader
-        <State<_, ()>>::on_start(
+        <State<_, _>>::on_start(
             &mut state,
             StateData {
                 world: &mut world,
@@ -386,7 +384,7 @@ mod test {
         );
 
         assert_eq!(
-            discriminant(&Trans::None as &Trans<_, ()>),
+            discriminant(&Trans::None as &Trans<_, _>),
             discriminant(&state.update(StateData {
                 world: &mut world,
                 data: &mut data,
@@ -399,7 +397,7 @@ mod test {
         let (mut state, mut world, mut data) = setup();
 
         // register reader
-        <State<_, ()>>::on_start(
+        <State<_, _>>::on_start(
             &mut state,
             StateData {
                 world: &mut world,
@@ -413,7 +411,7 @@ mod test {
         } // kcov-ignore
 
         assert_eq!(
-            discriminant(&Trans::Quit as &Trans<_, ()>),
+            discriminant(&Trans::Quit as &Trans<_, _>),
             discriminant(&state.update(StateData {
                 world: &mut world,
                 data: &mut data,

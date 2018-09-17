@@ -196,6 +196,7 @@ name = "amethyst_test_support"
 version = "0.5.0"
 dependencies = [
  "amethyst 0.8.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
+ "amethyst_utils 0.3.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "boxfnonce 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -331,9 +332,6 @@ version = "0.6.0"
 dependencies = [
  "amethyst 0.8.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "application_event 0.6.0",
- "character_selection 0.5.0",
- "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -342,6 +340,7 @@ version = "0.5.0"
 dependencies = [
  "amethyst 0.8.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "amethyst_test_support 0.5.0",
+ "application_event 0.6.0",
  "asset_loading 0.6.0",
  "assets_test 0.6.0",
  "character_selection 0.5.0",
@@ -582,6 +581,7 @@ version = "0.5.0"
 dependencies = [
  "amethyst 0.8.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "amethyst_test_support 0.5.0",
+ "application_event 0.6.0",
  "asset_loading 0.6.0",
  "assets_test 0.6.0",
  "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1141,6 +1141,7 @@ version = "0.5.0"
 dependencies = [
  "amethyst 0.8.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "amethyst_test_support 0.5.0",
+ "application_event 0.6.0",
  "asset_loading 0.6.0",
  "assets_test 0.6.0",
  "character_selection 0.5.0",
@@ -1165,7 +1166,9 @@ version = "0.5.0"
 dependencies = [
  "amethyst 0.8.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "amethyst_test_support 0.5.0",
+ "application_event 0.6.0",
  "application_menu 0.5.0",
+ "application_state 0.6.0",
  "application_ui 0.5.0",
  "character_selection 0.5.0",
  "character_selection_ui 0.5.0",
@@ -1551,6 +1554,8 @@ name = "loading"
 version = "0.5.0"
 dependencies = [
  "amethyst 0.8.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
+ "application_event 0.6.0",
+ "application_state 0.6.0",
  "application_ui 0.5.0",
  "asset_loading 0.6.0",
  "assets_built_in 0.6.0",

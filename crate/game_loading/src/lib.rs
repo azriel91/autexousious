@@ -11,6 +11,8 @@ extern crate amethyst;
 #[cfg(test)]
 extern crate amethyst_test_support;
 #[cfg(test)]
+extern crate application_event;
+#[cfg(test)]
 extern crate asset_loading;
 #[cfg(test)]
 extern crate assets_test;
