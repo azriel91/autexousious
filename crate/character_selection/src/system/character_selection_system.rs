@@ -2,11 +2,9 @@ use amethyst::{
     ecs::prelude::*,
     shrev::{EventChannel, ReaderId},
 };
-
-use CharacterSelection;
-use CharacterSelectionEvent;
-use CharacterSelections;
-use CharacterSelectionsStatus;
+use character_selection_model::{
+    CharacterSelection, CharacterSelectionEvent, CharacterSelections, CharacterSelectionsStatus,
+};
 
 /// Populates the `CharacterSelections` based on user input.
 #[derive(Debug, Default, TypeName, new)]
@@ -78,6 +76,9 @@ mod tests {
     use amethyst_test_support::prelude::*;
     use application_event::AppEvent;
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
+    use character_selection_model::{
+        CharacterSelection, CharacterSelectionEvent, CharacterSelections, CharacterSelectionsStatus,
+    };
     use game_input::{PlayerActionControl, PlayerAxisControl};
     use game_model::loaded::SlugAndHandle;
     use loading::LoadingState;
@@ -86,10 +87,6 @@ mod tests {
     use typename::TypeName;
 
     use super::CharacterSelectionSystem;
-    use CharacterSelection;
-    use CharacterSelectionEvent;
-    use CharacterSelections;
-    use CharacterSelectionsStatus;
 
     #[test]
     fn inserts_character_selection_on_select_event() {

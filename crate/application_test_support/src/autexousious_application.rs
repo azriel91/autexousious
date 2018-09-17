@@ -7,9 +7,8 @@ use amethyst::{
 use amethyst_test_support::{prelude::*, EmptyState};
 use application_event::AppEvent;
 use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
-use character_selection::{
-    CharacterSelectionBundle, CharacterSelections, CharacterSelectionsStatus,
-};
+use character_selection::CharacterSelectionBundle;
+use character_selection_model::{CharacterSelections, CharacterSelectionsStatus};
 use game_input::{PlayerActionControl, PlayerAxisControl};
 use game_loading::GameLoadingState;
 use game_model::loaded::SlugAndHandle;

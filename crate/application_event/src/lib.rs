@@ -24,7 +24,7 @@
 //! * There are multiple event senders that are not catering for each other.
 
 extern crate amethyst;
-extern crate character_selection;
+extern crate character_selection_model;
 extern crate map_selection;
 
 pub use app_event::AppEvent;

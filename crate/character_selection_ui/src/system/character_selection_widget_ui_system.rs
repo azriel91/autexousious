@@ -4,7 +4,9 @@ use amethyst::{
     ui::{Anchor, UiText, UiTransform},
 };
 use application_ui::{FontVariant, Theme};
-use character_selection::{CharacterSelection, CharacterSelectionEvent, CharacterSelectionsStatus};
+use character_selection_model::{
+    CharacterSelection, CharacterSelectionEvent, CharacterSelectionsStatus,
+};
 use game_input::{ControllerId, ControllerInput, InputConfig, InputControlled};
 use game_model::loaded::{CharacterAssets, SlugAndHandle};
 
@@ -227,7 +229,7 @@ mod test {
     };
     use application_test_support::AutexousiousApplication;
     use assets_test::ASSETS_CHAR_BAT_SLUG;
-    use character_selection::{
+    use character_selection_model::{
         CharacterSelection, CharacterSelectionEvent, CharacterSelectionsStatus,
     };
     use game_input::{Axis, ControlAction, ControllerConfig, InputConfig};

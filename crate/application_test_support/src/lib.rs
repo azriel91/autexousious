@@ -12,6 +12,7 @@ extern crate application_event;
 extern crate asset_loading;
 extern crate assets_test;
 extern crate character_selection;
+extern crate character_selection_model;
 extern crate game_input;
 extern crate game_loading;
 extern crate game_model;

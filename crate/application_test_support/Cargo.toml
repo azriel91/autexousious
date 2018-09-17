@@ -10,6 +10,7 @@ application_event = { path = "../application_event" }
 asset_loading = { path = "../asset_loading" }
 assets_test = { path = "../assets_test" }
 character_selection = { path = "../character_selection" }
+character_selection_model = { path = "../character_selection_model" }
 game_input = { path = "../game_input" }
 game_loading = { path = "../game_loading" }
 game_model = { path = "../game_model" }

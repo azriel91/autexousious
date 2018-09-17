@@ -2,10 +2,9 @@ use std::fmt::Debug;
 use std::marker::PhantomData;
 
 use amethyst::{core::SystemBundle, ecs::prelude::*, prelude::*};
+use character_selection_model::{CharacterSelections, CharacterSelectionsStatus};
 
 use CharacterSelectionBundle;
-use CharacterSelections;
-use CharacterSelectionsStatus;
 
 /// `State` where character selection takes place.
 ///

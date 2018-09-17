@@ -5,7 +5,7 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop" }
-character_selection = { path = "../character_selection" }
+character_selection_model = { path = "../character_selection_model" }
 derivative = "1.0"
 derive-new = "0.5"
 game_input = { path = "../game_input" }

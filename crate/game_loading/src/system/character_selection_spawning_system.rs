@@ -1,5 +1,5 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
-use character_selection::CharacterSelections;
+use character_selection_model::CharacterSelections;
 use game_input::InputControlled;
 use game_model::play::GameEntities;
 use map_model::loaded::Map;
@@ -106,7 +106,7 @@ mod tests {
     use amethyst_test_support::{prelude::*, EmptyState};
     use application_event::AppEvent;
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
-    use character_selection::CharacterSelections;
+    use character_selection_model::CharacterSelections;
     use game_model::{
         config::AssetSlug,
         loaded::{MapAssets, SlugAndHandle},

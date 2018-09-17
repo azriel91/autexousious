@@ -1,4 +1,4 @@
-use character_selection::CharacterSelectionEvent;
+use character_selection_model::CharacterSelectionEvent;
 use map_selection::MapSelectionEvent;
 
 /// Type encompassing all state event types.
@@ -9,8 +9,8 @@ use map_selection::MapSelectionEvent;
 // variants here.
 #[derive(Clone, Debug, PartialEq)]
 pub enum AppEvent {
-    /// `character_selection` crate events.
+    /// `character_selection` events.
     CharacterSelection(CharacterSelectionEvent),
-    /// `map_selection` crate events.
+    /// `map_selection` events.
     MapSelection(MapSelectionEvent),
 }

@@ -16,7 +16,7 @@ extern crate application_event;
 extern crate asset_loading;
 #[cfg(test)]
 extern crate assets_test;
-extern crate character_selection;
+extern crate character_selection_model;
 #[macro_use]
 extern crate derivative;
 #[macro_use]
