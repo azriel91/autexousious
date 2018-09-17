@@ -19,12 +19,20 @@ pub struct CharacterSelectionSystem {
 type CharacterSelectionSystemData<'s> = (
     Read<'s, EventChannel<CharacterSelectionEvent>>,
     Write<'s, CharacterSelections>,
+    Write<'s, CharacterSelectionsStatus>,
 );
 
 impl<'s> System<'s> for CharacterSelectionSystem {
     type SystemData = CharacterSelectionSystemData<'s>;
 
-    fn run(&mut self, (character_selection_events, mut character_selections): Self::SystemData) {
+    fn run(
+        &mut self,
+        (
+            character_selection_events,
+            mut character_selections,
+            mut character_selections_status
+        ): Self::SystemData
+){
         character_selection_events
             .read(
                 self.reader_id
@@ -48,7 +56,7 @@ impl<'s> System<'s> for CharacterSelectionSystem {
                     character_selections.selections.remove(&controller_id);
                 }
                 CharacterSelectionEvent::Confirm => {
-                    character_selections.state = CharacterSelectionsStatus::Ready;
+                    *character_selections_status = CharacterSelectionsStatus::Ready;
                 }
             });
     }
@@ -175,9 +183,13 @@ mod tests {
                     &[]
                 ).with_setup(|world| send_event(world, CharacterSelectionEvent::Confirm))
                 .with_assertion(|world| {
-                    let character_selections = world.read_resource::<CharacterSelections>();
+                    let character_selections_status =
+                        world.read_resource::<CharacterSelectionsStatus>();
 
-                    assert_eq!(CharacterSelectionsStatus::Ready, character_selections.state);
+                    assert_eq!(
+                        CharacterSelectionsStatus::Ready,
+                        *character_selections_status
+                    );
                 }).run()
                 .is_ok()
         );

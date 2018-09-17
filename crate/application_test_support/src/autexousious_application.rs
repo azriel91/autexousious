@@ -131,7 +131,6 @@ impl AutexousiousApplication {
         AutexousiousApplication::config_base(test_name, visibility)
             .with_setup(|world| {
                 let mut character_selections = CharacterSelections::default();
-                character_selections.state = CharacterSelectionsStatus::Ready;
                 let controller_id = 0;
                 character_selections
                     .selections
@@ -141,6 +140,7 @@ impl AutexousiousApplication {
                     });
 
                 world.add_resource(character_selections);
+                world.add_resource(CharacterSelectionsStatus::Ready);
             }).with_setup(SetupFunction::map_selection(ASSETS_MAP_FADE_SLUG.clone()))
             .with_state(|| GameLoadingState::new(Box::new(|| Box::new(EmptyState))))
     }

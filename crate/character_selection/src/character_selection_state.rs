@@ -71,8 +71,8 @@ where
     }
 
     fn initialize_character_selections(&mut self, world: &mut World) {
-        let mut character_selections = world.write_resource::<CharacterSelections>();
-        character_selections.state = CharacterSelectionsStatus::Waiting;
+        let mut selections_status = world.write_resource::<CharacterSelectionsStatus>();
+        *selections_status = CharacterSelectionsStatus::Waiting;
     }
 }
 
@@ -92,8 +92,8 @@ where
     }
 
     fn on_resume(&mut self, data: StateData<GameData<'a, 'b>>) {
-        let mut character_selections = data.world.write_resource::<CharacterSelections>();
-        character_selections.state = CharacterSelectionsStatus::Confirmed;
+        let mut selections_status = data.world.write_resource::<CharacterSelectionsStatus>();
+        *selections_status = CharacterSelectionsStatus::Confirmed;
     }
 
     fn fixed_update(&mut self, data: StateData<GameData<'a, 'b>>) -> Trans<GameData<'a, 'b>, E> {
@@ -103,8 +103,9 @@ where
         data.data.update(&data.world);
         self.dispatcher.as_mut().unwrap().dispatch(&data.world.res);
 
-        let character_selections = data.world.read_resource::<CharacterSelections>();
-        if character_selections.state == CharacterSelectionsStatus::Ready {
+        let selections_status = data.world.read_resource::<CharacterSelectionsStatus>();
+        if *selections_status == CharacterSelectionsStatus::Ready {
+            let character_selections = data.world.read_resource::<CharacterSelections>();
             info!(
                 "character_selections: `{:?}`",
                 &character_selections.selections
