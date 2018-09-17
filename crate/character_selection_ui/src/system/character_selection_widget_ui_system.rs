@@ -5,7 +5,7 @@ use amethyst::{
 };
 use application_ui::{FontVariant, Theme};
 use character_selection::{
-    CharacterSelection, CharacterSelectionEvent, CharacterSelections, CharacterSelectionsState,
+    CharacterSelection, CharacterSelectionEvent, CharacterSelections, CharacterSelectionsStatus,
 };
 use game_input::{ControllerId, ControllerInput, InputConfig, InputControlled};
 use game_model::loaded::{CharacterAssets, SlugAndHandle};
@@ -26,7 +26,7 @@ pub(crate) struct CharacterSelectionWidgetUiSystem {
     ui_initialized: bool,
     /// Reader ID for the `CharacterSelectionEvent` event channel.
     ///
-    /// This is used to determine to delete the UI entities, as the `CharacterSelectionsState` is
+    /// This is used to determine to delete the UI entities, as the `CharacterSelectionsStatus` is
     /// only updated by the `CharacterSelectionsSystem` which happens after this system runs.
     #[new(default)]
     reader_id: Option<ReaderId<CharacterSelectionEvent>>,
@@ -176,8 +176,8 @@ impl<'s> System<'s> for CharacterSelectionWidgetUiSystem {
             mut widget_ui_resources,
         ): Self::SystemData,
     ) {
-        // We need to do this because the `CharacterSelectionsState` is not updated until after this
-        // system has run, and so we don't actually get a chance to delete the UI entities.
+        // We need to do this because the `CharacterSelectionsStatus` is not updated until after
+        // this system has run, and so we don't actually get a chance to delete the UI entities.
         if character_selection_events
             .read(
                 self.reader_id
@@ -190,7 +190,7 @@ impl<'s> System<'s> for CharacterSelectionWidgetUiSystem {
         }
 
         match character_selections.state {
-            CharacterSelectionsState::Waiting => {
+            CharacterSelectionsStatus::Waiting => {
                 self.initialize_ui(
                     &character_assets,
                     &input_config,
@@ -200,7 +200,7 @@ impl<'s> System<'s> for CharacterSelectionWidgetUiSystem {
                 );
                 self.refresh_ui(&mut widget_component_storages.0, &mut widget_ui_resources.2);
             }
-            CharacterSelectionsState::Ready => {
+            CharacterSelectionsStatus::Ready => {
                 self.terminate_ui(&entities, &mut widget_component_storages.0)
             }
             _ => self.refresh_ui(&mut widget_component_storages.0, &mut widget_ui_resources.2),
@@ -230,7 +230,7 @@ mod test {
     use application_test_support::AutexousiousApplication;
     use assets_test::ASSETS_CHAR_BAT_SLUG;
     use character_selection::{
-        CharacterSelection, CharacterSelectionEvent, CharacterSelections, CharacterSelectionsState,
+        CharacterSelection, CharacterSelectionEvent, CharacterSelections, CharacterSelectionsStatus,
     };
     use game_input::{Axis, ControlAction, ControllerConfig, InputConfig};
     use game_model::loaded::{CharacterAssets, SlugAndHandle};
@@ -250,7 +250,7 @@ mod test {
                 false
             ).with_setup(|world| {
                 let mut character_selections = CharacterSelections::default();
-                character_selections.state = CharacterSelectionsState::Waiting;
+                character_selections.state = CharacterSelectionsStatus::Waiting;
                 world.add_resource(character_selections);
             }).with_setup(|world| world.add_resource(input_config()))
             .with_system_single(
@@ -284,7 +284,7 @@ mod test {
             // Select character and send event
             .with_effect(|world| {
                 let mut character_selections = CharacterSelections::default();
-                character_selections.state = CharacterSelectionsState::CharacterSelect;
+                character_selections.state = CharacterSelectionsStatus::CharacterSelect;
                 world.add_resource(character_selections);
             }).with_effect(|world| {
                 world.exec(
@@ -346,7 +346,7 @@ mod test {
                 // Select character and send event
                 .with_effect(|world| {
                     let mut character_selections = CharacterSelections::default();
-                    character_selections.state = CharacterSelectionsState::CharacterSelect;
+                    character_selections.state = CharacterSelectionsStatus::CharacterSelect;
                     world.add_resource(character_selections);
                 }).with_effect(|world| {
                     world.exec(
@@ -405,7 +405,7 @@ mod test {
                 // Confirm selection and send event
                 .with_effect(|world| {
                     let mut character_selections = CharacterSelections::default();
-                    character_selections.state = CharacterSelectionsState::Confirmed;
+                    character_selections.state = CharacterSelectionsStatus::Confirmed;
                     world.add_resource(character_selections);
                 }).with_effect(|world| send_event(world, CharacterSelectionEvent::Confirm))
                 .with_effect(|_| {}) // Need an extra update for the event to get through.

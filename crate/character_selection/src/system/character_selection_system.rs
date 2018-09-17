@@ -6,7 +6,7 @@ use amethyst::{
 use CharacterSelection;
 use CharacterSelectionEvent;
 use CharacterSelections;
-use CharacterSelectionsState;
+use CharacterSelectionsStatus;
 
 /// Populates the `CharacterSelections` based on user input.
 #[derive(Debug, Default, TypeName, new)]
@@ -48,7 +48,7 @@ impl<'s> System<'s> for CharacterSelectionSystem {
                     character_selections.selections.remove(&controller_id);
                 }
                 CharacterSelectionEvent::Confirm => {
-                    character_selections.state = CharacterSelectionsState::Ready;
+                    character_selections.state = CharacterSelectionsStatus::Ready;
                 }
             });
     }
@@ -81,7 +81,7 @@ mod tests {
     use CharacterSelection;
     use CharacterSelectionEvent;
     use CharacterSelections;
-    use CharacterSelectionsState;
+    use CharacterSelectionsStatus;
 
     #[test]
     fn inserts_character_selection_on_select_event() {
@@ -164,7 +164,7 @@ mod tests {
     }
 
     #[test]
-    fn sets_character_selections_state_to_ready_on_confirm_event() {
+    fn sets_character_selections_status_to_ready_on_confirm_event() {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
@@ -177,7 +177,7 @@ mod tests {
                 .with_assertion(|world| {
                     let character_selections = world.read_resource::<CharacterSelections>();
 
-                    assert_eq!(CharacterSelectionsState::Ready, character_selections.state);
+                    assert_eq!(CharacterSelectionsStatus::Ready, character_selections.state);
                 }).run()
                 .is_ok()
         );

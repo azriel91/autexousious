@@ -1,7 +1,7 @@
 /// State of all character selections.
 #[derive(Clone, Copy, Debug, Derivative, Display, PartialEq, Eq)]
 #[derivative(Default)]
-pub enum CharacterSelectionsState {
+pub enum CharacterSelectionsStatus {
     /// No players have joined.
     #[derivative(Default)]
     Waiting,

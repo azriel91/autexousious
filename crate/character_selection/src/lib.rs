@@ -39,7 +39,7 @@ pub use character_selection_bundle::CharacterSelectionBundle;
 pub use character_selection_event::CharacterSelectionEvent;
 pub use character_selection_state::{CharacterSelectionState, CharacterSelectionStateBuilder};
 pub use character_selections::CharacterSelections;
-pub use character_selections_state::CharacterSelectionsState;
+pub use character_selections_status::CharacterSelectionsStatus;
 pub use system::CharacterSelectionSystem;
 
 mod character_selection;
@@ -47,5 +47,5 @@ mod character_selection_bundle;
 mod character_selection_event;
 mod character_selection_state;
 mod character_selections;
-mod character_selections_state;
+mod character_selections_status;
 mod system;

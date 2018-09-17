@@ -5,7 +5,7 @@ use amethyst::{core::SystemBundle, ecs::prelude::*, prelude::*};
 
 use CharacterSelectionBundle;
 use CharacterSelections;
-use CharacterSelectionsState;
+use CharacterSelectionsStatus;
 
 /// `State` where character selection takes place.
 ///
@@ -72,7 +72,7 @@ where
 
     fn initialize_character_selections(&mut self, world: &mut World) {
         let mut character_selections = world.write_resource::<CharacterSelections>();
-        character_selections.state = CharacterSelectionsState::Waiting;
+        character_selections.state = CharacterSelectionsStatus::Waiting;
     }
 }
 
@@ -93,7 +93,7 @@ where
 
     fn on_resume(&mut self, data: StateData<GameData<'a, 'b>>) {
         let mut character_selections = data.world.write_resource::<CharacterSelections>();
-        character_selections.state = CharacterSelectionsState::Confirmed;
+        character_selections.state = CharacterSelectionsStatus::Confirmed;
     }
 
     fn fixed_update(&mut self, data: StateData<GameData<'a, 'b>>) -> Trans<GameData<'a, 'b>, E> {
@@ -104,7 +104,7 @@ where
         self.dispatcher.as_mut().unwrap().dispatch(&data.world.res);
 
         let character_selections = data.world.read_resource::<CharacterSelections>();
-        if character_selections.state == CharacterSelectionsState::Ready {
+        if character_selections.state == CharacterSelectionsStatus::Ready {
             info!(
                 "character_selections: `{:?}`",
                 &character_selections.selections

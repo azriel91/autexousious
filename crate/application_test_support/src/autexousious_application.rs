@@ -8,7 +8,7 @@ use amethyst_test_support::{prelude::*, EmptyState};
 use application_event::AppEvent;
 use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
 use character_selection::{
-    CharacterSelectionBundle, CharacterSelections, CharacterSelectionsState,
+    CharacterSelectionBundle, CharacterSelections, CharacterSelectionsStatus,
 };
 use game_input::{PlayerActionControl, PlayerAxisControl};
 use game_loading::GameLoadingState;
@@ -131,7 +131,7 @@ impl AutexousiousApplication {
         AutexousiousApplication::config_base(test_name, visibility)
             .with_setup(|world| {
                 let mut character_selections = CharacterSelections::default();
-                character_selections.state = CharacterSelectionsState::Ready;
+                character_selections.state = CharacterSelectionsStatus::Ready;
                 let controller_id = 0;
                 character_selections
                     .selections
