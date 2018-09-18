@@ -26,7 +26,7 @@ extern crate loading;
 #[macro_use]
 extern crate log;
 extern crate map_model;
-extern crate map_selection;
+extern crate map_selection_model;
 #[cfg(test)]
 extern crate object_loading;
 extern crate object_model;

@@ -3,7 +3,7 @@ use character_selection_model::CharacterSelections;
 use game_input::InputControlled;
 use game_model::play::GameEntities;
 use map_model::loaded::Map;
-use map_selection::MapSelection;
+use map_selection_model::MapSelection;
 use object_model::{
     config::object::CharacterSequenceId,
     entity::{Kinematics, Position, Velocity},
@@ -114,7 +114,8 @@ mod tests {
     };
     use loading::LoadingState;
     use map_loading::MapLoadingBundle;
-    use map_selection::{MapSelection, MapSelectionStatus};
+    use map_selection::MapSelectionStatus;
+    use map_selection_model::MapSelection;
     use object_loading::ObjectLoadingBundle;
     use object_model::ObjectType;
     use typename::TypeName;

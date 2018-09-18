@@ -132,7 +132,7 @@ mod tests {
     use application_test_support::AutexousiousApplication;
     use game_input::ControllerInput;
     use map_model::loaded::Map;
-    use map_selection::MapSelection;
+    use map_selection_model::MapSelection;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{CharacterStatus, Grounding, Kinematics},

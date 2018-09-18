@@ -25,7 +25,7 @@
 
 extern crate amethyst;
 extern crate character_selection_model;
-extern crate map_selection;
+extern crate map_selection_model;
 
 pub use app_event::AppEvent;
 pub use from_app_event::FromAppEvent;

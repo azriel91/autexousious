@@ -21,21 +21,17 @@ extern crate loading;
 extern crate log;
 #[cfg(test)]
 extern crate map_loading;
-extern crate map_model;
+extern crate map_selection_model;
 extern crate typename;
 #[macro_use]
 extern crate typename_derive;
 
-pub use map_selection::MapSelection;
 pub use map_selection_bundle::MapSelectionBundle;
-pub use map_selection_event::MapSelectionEvent;
 pub use map_selection_state::{MapSelectionState, MapSelectionStateBuilder};
 pub use map_selection_status::MapSelectionStatus;
 pub(crate) use system::MapSelectionSystem;
 
-mod map_selection;
 mod map_selection_bundle;
-mod map_selection_event;
 mod map_selection_state;
 mod map_selection_status;
 mod system;

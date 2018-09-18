@@ -1,5 +1,5 @@
 use amethyst::ecs::prelude::{Component, HashMapStorage};
-use map_selection::MapSelection;
+use map_selection_model::MapSelection;
 
 use WidgetState;
 

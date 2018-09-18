@@ -1,7 +1,7 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
 use game_model::play::GameEntities;
 use map_model::loaded::Map;
-use map_selection::MapSelection;
+use map_selection_model::MapSelection;
 
 use GameLoadingStatus;
 use MapLayerComponentStorages;
@@ -66,7 +66,8 @@ mod tests {
     };
     use loading::AssetLoader;
     use map_loading::MapLoadingBundle;
-    use map_selection::{MapSelection, MapSelectionStatus};
+    use map_selection::MapSelectionStatus;
+    use map_selection_model::MapSelection;
     use typename::TypeName;
 
     use super::MapSelectionSpawningSystem;

@@ -1,5 +1,5 @@
 use character_selection_model::CharacterSelectionEvent;
-use map_selection::MapSelectionEvent;
+use map_selection_model::MapSelectionEvent;
 
 use AppEvent;
 

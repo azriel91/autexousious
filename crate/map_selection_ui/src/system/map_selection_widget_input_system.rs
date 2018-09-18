@@ -1,7 +1,7 @@
 use amethyst::{ecs::prelude::*, shrev::EventChannel};
 use game_input::ControllerInput;
 use game_model::loaded::{MapAssets, SlugAndHandle};
-use map_selection::{MapSelection, MapSelectionEvent};
+use map_selection_model::{MapSelection, MapSelectionEvent};
 use tracker::Last;
 
 use MapSelectionWidget;
@@ -161,7 +161,7 @@ mod test {
     use game_input::ControllerInput;
     use game_model::loaded::{MapAssets, SlugAndHandle};
     use map_model::loaded::Map;
-    use map_selection::{MapSelection, MapSelectionEvent};
+    use map_selection_model::{MapSelection, MapSelectionEvent};
     use tracker::Last;
     use typename::TypeName;
 

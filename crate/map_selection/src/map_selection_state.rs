@@ -2,8 +2,8 @@ use std::fmt::Debug;
 use std::marker::PhantomData;
 
 use amethyst::{core::SystemBundle, ecs::prelude::*, prelude::*};
+use map_selection_model::MapSelection;
 
-use MapSelection;
 use MapSelectionBundle;
 use MapSelectionStatus;
 

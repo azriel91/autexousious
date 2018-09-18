@@ -30,7 +30,9 @@ extern crate log;
 #[cfg(test)]
 extern crate map_loading;
 extern crate map_model;
+#[cfg(test)]
 extern crate map_selection;
+extern crate map_selection_model;
 #[cfg(test)]
 extern crate object_loading;
 extern crate object_model;

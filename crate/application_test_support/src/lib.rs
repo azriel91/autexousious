@@ -20,6 +20,7 @@ extern crate loading;
 extern crate map_loading;
 extern crate map_model;
 extern crate map_selection;
+extern crate map_selection_model;
 extern crate object_loading;
 extern crate object_model;
 #[cfg(test)]

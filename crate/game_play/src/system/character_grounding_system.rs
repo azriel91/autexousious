@@ -1,6 +1,6 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
 use map_model::loaded::Map;
-use map_selection::MapSelection;
+use map_selection_model::MapSelection;
 use object_model::entity::{CharacterStatus, Grounding, Kinematics};
 
 /// Updates `Character` kinematics based on sequence.

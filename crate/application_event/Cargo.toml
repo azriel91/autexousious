@@ -6,4 +6,4 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop" }
 character_selection_model = { path = "../character_selection_model" }
-map_selection = { path = "../map_selection" }
+map_selection_model = { path = "../map_selection_model" }

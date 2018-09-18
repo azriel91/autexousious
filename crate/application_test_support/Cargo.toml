@@ -18,6 +18,7 @@ loading = { path = "../loading" }
 map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }
 map_selection = { path = "../map_selection" }
+map_selection_model = { path = "../map_selection_model" }
 object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
 
