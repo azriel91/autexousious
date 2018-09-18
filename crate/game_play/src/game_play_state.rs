@@ -9,6 +9,7 @@ use amethyst::{
     prelude::*,
     renderer::{Camera, Projection, ScreenDimensions, VirtualKeyCode},
 };
+use application_event::AppEvent;
 use game_model::play::GameEntities;
 
 use GamePlayBundle;
@@ -119,10 +120,7 @@ impl GamePlayState {
     }
 }
 
-impl<'a, 'b, E> State<GameData<'a, 'b>, E> for GamePlayState
-where
-    E: Send + Sync + 'static,
-{
+impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
     fn on_start(&mut self, mut data: StateData<GameData>) {
         self.initialize_dispatcher(&mut data.world);
         self.initialize_camera(&mut data.world);
@@ -131,8 +129,8 @@ where
     fn handle_event(
         &mut self,
         _data: StateData<GameData>,
-        event: StateEvent<E>,
-    ) -> Trans<GameData<'a, 'b>, E> {
+        event: StateEvent<AppEvent>,
+    ) -> Trans<GameData<'a, 'b>, AppEvent> {
         if let StateEvent::Window(event) = &event {
             if is_key_down(&event, VirtualKeyCode::Escape) {
                 info!("Returning from `GamePlayState`.");
@@ -151,7 +149,7 @@ where
         self.terminate_dispatcher();
     }
 
-    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, E> {
+    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, AppEvent> {
         // Note: The built-in dispatcher must be run before the state specific dispatcher as the
         // `"input_system"` is registered in the main dispatcher, and is a dependency of the
         // `ControllerInputUpdateSystem`.
