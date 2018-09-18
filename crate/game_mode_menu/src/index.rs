@@ -30,8 +30,7 @@ impl Index {
         match self {
             Index::StartGame => {
                 let game_play_fn = || Box::new(GamePlayState::new()); // kcov-ignore
-                let game_loading_fn =
-                    move || Box::new(GameLoadingState::new(Box::new(game_play_fn))); // kcov-ignore
+                let game_loading_fn = move || Box::new(GameLoadingState::new(game_play_fn));
                 let map_selection_fn = move || {
                     let state = MapSelectionStateBuilder::new(game_loading_fn)
                         .with_bundle(MapSelectionUiBundle::new())

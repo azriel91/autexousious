@@ -1157,6 +1157,7 @@ dependencies = [
  "amethyst 0.8.0 (git+https://github.com/amethyst/amethyst.git?branch=develop)",
  "amethyst_test_support 0.5.0",
  "application_event 0.6.0",
+ "application_state 0.6.0",
  "asset_loading 0.6.0",
  "assets_test 0.6.0",
  "character_selection_model 0.6.0",
