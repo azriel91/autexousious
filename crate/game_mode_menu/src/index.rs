@@ -33,7 +33,7 @@ impl Index {
                 let game_loading_fn =
                     move || Box::new(GameLoadingState::new(Box::new(game_play_fn))); // kcov-ignore
                 let map_selection_fn = move || {
-                    let state = MapSelectionStateBuilder::new(Box::new(game_loading_fn))
+                    let state = MapSelectionStateBuilder::new(game_loading_fn)
                         .with_bundle(MapSelectionUiBundle::new())
                         .with_system_dependencies(MapSelectionUiBundle::system_names())
                         .build();
