@@ -1,0 +1,13 @@
+[package]
+name = "character_selection_model"
+version = "0.6.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+
+[dependencies]
+derivative = "1.0"
+derive-new = "0.5"
+game_input = { path = "../game_input" }
+game_model = { path = "../game_model" }
+object_model = { path = "../object_model" }
+strum = "0.10"
+strum_macros = "0.10"

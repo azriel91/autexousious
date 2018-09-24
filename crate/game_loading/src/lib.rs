@@ -10,11 +10,13 @@
 extern crate amethyst;
 #[cfg(test)]
 extern crate amethyst_test_support;
+extern crate application_event;
+extern crate application_state;
 #[cfg(test)]
 extern crate asset_loading;
 #[cfg(test)]
 extern crate assets_test;
-extern crate character_selection;
+extern crate character_selection_model;
 #[macro_use]
 extern crate derivative;
 #[macro_use]
@@ -28,7 +30,9 @@ extern crate log;
 #[cfg(test)]
 extern crate map_loading;
 extern crate map_model;
+#[cfg(test)]
 extern crate map_selection;
+extern crate map_selection_model;
 #[cfg(test)]
 extern crate object_loading;
 extern crate object_model;

@@ -18,6 +18,7 @@ use amethyst::{
     ui::{DrawUi, UiBundle},
     Result,
 };
+use amethyst_utils::application_root_dir;
 use boxfnonce::SendBoxFnOnce;
 use hetseq::Queue;
 
@@ -168,7 +169,7 @@ impl AmethystApplication<GameData<'static, 'static>, ()> {
 
     /// Returns a `String` to `<crate_dir>/assets`.
     pub fn assets_dir() -> String {
-        format!("{}/assets", env!("CARGO_MANIFEST_DIR"))
+        format!("{}/assets", application_root_dir())
     }
 }
 
@@ -287,6 +288,34 @@ where
     T: GameUpdate,
     E: Send + Sync + 'static,
 {
+    /// Use the specified custom event type instead of `()`.
+    ///
+    /// This **must** be invoked before any of the `.with_*()` function calls as the custom event
+    /// type parameter is changed, so we are unable to bring any of the existing parameters across.
+    ///
+    /// # Type Parameters
+    ///
+    /// * `ELocal`: Type used for custom events.
+    pub fn with_custom_event_type<ELocal>(self) -> AmethystApplication<T, ELocal>
+    where
+        ELocal: Send + Sync + 'static,
+    {
+        if !self.state_fns.is_empty() {
+            panic!(
+                "`{}` must be invoked **before** any other `.with_*()` \
+                 functions calls.",
+                stringify!(with_custom_event_type::<E>())
+            );
+        }
+        AmethystApplication {
+            bundle_add_fns: self.bundle_add_fns,
+            resource_add_fns: self.resource_add_fns,
+            state_fns: Vec::new(),
+            state_data: PhantomData,
+            render: self.render,
+        }
+    }
+
     /// Adds a bundle to the list of bundles.
     ///
     /// **Note:** If you are adding the `RenderBundle`, you need to use `.with_bundle_fn(F)` as the
@@ -680,10 +709,10 @@ mod test {
         assert!(
             // kcov-ignore-end
             AmethystApplication::blank()
-                    // without BundleOne
-                    .with_assertion(assertion_fn)
-                    .run()
-                    .is_ok()
+                // without BundleOne
+                .with_assertion(assertion_fn)
+                .run()
+                .is_ok()
         );
     } // kcov-ignore
 

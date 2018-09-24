@@ -2,11 +2,9 @@ use amethyst::{
     ecs::prelude::*,
     shrev::{EventChannel, ReaderId},
 };
-
-use CharacterSelection;
-use CharacterSelectionEvent;
-use CharacterSelections;
-use CharacterSelectionsState;
+use character_selection_model::{
+    CharacterSelection, CharacterSelectionEvent, CharacterSelections, CharacterSelectionsStatus,
+};
 
 /// Populates the `CharacterSelections` based on user input.
 #[derive(Debug, Default, TypeName, new)]
@@ -19,12 +17,20 @@ pub struct CharacterSelectionSystem {
 type CharacterSelectionSystemData<'s> = (
     Read<'s, EventChannel<CharacterSelectionEvent>>,
     Write<'s, CharacterSelections>,
+    Write<'s, CharacterSelectionsStatus>,
 );
 
 impl<'s> System<'s> for CharacterSelectionSystem {
     type SystemData = CharacterSelectionSystemData<'s>;
 
-    fn run(&mut self, (character_selection_events, mut character_selections): Self::SystemData) {
+    fn run(
+        &mut self,
+        (
+            character_selection_events,
+            mut character_selections,
+            mut character_selections_status
+        ): Self::SystemData
+){
         character_selection_events
             .read(
                 self.reader_id
@@ -48,7 +54,7 @@ impl<'s> System<'s> for CharacterSelectionSystem {
                     character_selections.selections.remove(&controller_id);
                 }
                 CharacterSelectionEvent::Confirm => {
-                    character_selections.state = CharacterSelectionsState::Ready;
+                    *character_selections_status = CharacterSelectionsStatus::Ready;
                 }
             });
     }
@@ -68,7 +74,11 @@ mod tests {
 
     use amethyst::{ecs::prelude::*, shrev::EventChannel};
     use amethyst_test_support::prelude::*;
+    use application_event::AppEvent;
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
+    use character_selection_model::{
+        CharacterSelection, CharacterSelectionEvent, CharacterSelections, CharacterSelectionsStatus,
+    };
     use game_input::{PlayerActionControl, PlayerAxisControl};
     use game_model::loaded::SlugAndHandle;
     use loading::LoadingState;
@@ -77,10 +87,6 @@ mod tests {
     use typename::TypeName;
 
     use super::CharacterSelectionSystem;
-    use CharacterSelection;
-    use CharacterSelectionEvent;
-    use CharacterSelections;
-    use CharacterSelectionsState;
 
     #[test]
     fn inserts_character_selection_on_select_event() {
@@ -90,9 +96,10 @@ mod tests {
         assert!(
             // kcov-ignore-end
             AmethystApplication::render_base("inserts_character_selection_on_select_event", false)
+                .with_custom_event_type::<AppEvent>()
                 .with_bundle(MapLoadingBundle::new())
                 .with_bundle(ObjectLoadingBundle::new())
-                .with_state(|| LoadingState::new(ASSETS_PATH.clone(), Box::new(EmptyState)))
+                .with_state(|| LoadingState::new(ASSETS_PATH.clone(), EmptyState))
                 .with_system(
                     CharacterSelectionSystem::new(),
                     CharacterSelectionSystem::type_name(),
@@ -133,9 +140,10 @@ mod tests {
             AmethystApplication::render_base(
                 "removes_character_selection_on_deselect_event",
                 false
-            ).with_bundle(MapLoadingBundle::new())
+            ).with_custom_event_type::<AppEvent>()
+            .with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
-            .with_state(|| LoadingState::new(ASSETS_PATH.clone(), Box::new(EmptyState)))
+            .with_state(|| LoadingState::new(ASSETS_PATH.clone(), EmptyState))
             .with_system(
                 CharacterSelectionSystem::new(),
                 CharacterSelectionSystem::type_name(),
@@ -161,7 +169,7 @@ mod tests {
     }
 
     #[test]
-    fn sets_character_selections_state_to_ready_on_confirm_event() {
+    fn sets_character_selections_status_to_ready_on_confirm_event() {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
@@ -172,9 +180,13 @@ mod tests {
                     &[]
                 ).with_setup(|world| send_event(world, CharacterSelectionEvent::Confirm))
                 .with_assertion(|world| {
-                    let character_selections = world.read_resource::<CharacterSelections>();
+                    let character_selections_status =
+                        world.read_resource::<CharacterSelectionsStatus>();
 
-                    assert_eq!(CharacterSelectionsState::Ready, character_selections.state);
+                    assert_eq!(
+                        CharacterSelectionsStatus::Ready,
+                        *character_selections_status
+                    );
                 }).run()
                 .is_ok()
         );

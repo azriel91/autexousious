@@ -21,10 +21,11 @@ lazy_static! {
             .namespace(NAMESPACE_TEST.to_string())
             .name(ASSETS_CHAR_BAT_NAME.to_string())
             .build()
-            .expect(&format!(
-                "Expected `{}/{}` asset slug to build.",
+            .unwrap_or_else(|e| panic!(
+                "Expected `{}/{}` asset slug to build. Error: \n\n```{}\n```\n",
                 NAMESPACE_TEST,
-                ASSETS_CHAR_BAT_NAME
+                ASSETS_CHAR_BAT_NAME,
+                e
             ))
     };
 

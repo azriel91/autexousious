@@ -1,9 +1,8 @@
 use amethyst::{ecs::prelude::*, shrev::EventChannel};
 
 use game_model::loaded::{MapAssets, SlugAndHandle};
+use map_selection_model::{MapSelection, MapSelectionEvent};
 
-use MapSelection;
-use MapSelectionEvent;
 use MapSelectionStatus;
 
 /// Updates the `MapSelection` resource based on user selection.
@@ -79,11 +78,10 @@ mod test {
     use game_model::loaded::SlugAndHandle;
     use loading::AssetLoader;
     use map_loading::MapLoadingBundle;
+    use map_selection_model::{MapSelection, MapSelectionEvent};
     use typename::TypeName;
 
     use super::{MapSelectionSystem, MapSelectionSystemData};
-    use MapSelection;
-    use MapSelectionEvent;
     use MapSelectionStatus;
 
     #[test]

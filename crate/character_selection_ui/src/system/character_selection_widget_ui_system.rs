@@ -4,8 +4,8 @@ use amethyst::{
     ui::{Anchor, UiText, UiTransform},
 };
 use application_ui::{FontVariant, Theme};
-use character_selection::{
-    CharacterSelection, CharacterSelectionEvent, CharacterSelections, CharacterSelectionsState,
+use character_selection_model::{
+    CharacterSelection, CharacterSelectionEvent, CharacterSelectionsStatus,
 };
 use game_input::{ControllerId, ControllerInput, InputConfig, InputControlled};
 use game_model::loaded::{CharacterAssets, SlugAndHandle};
@@ -26,7 +26,7 @@ pub(crate) struct CharacterSelectionWidgetUiSystem {
     ui_initialized: bool,
     /// Reader ID for the `CharacterSelectionEvent` event channel.
     ///
-    /// This is used to determine to delete the UI entities, as the `CharacterSelectionsState` is
+    /// This is used to determine to delete the UI entities, as the `CharacterSelectionsStatus` is
     /// only updated by the `CharacterSelectionsSystem` which happens after this system runs.
     #[new(default)]
     reader_id: Option<ReaderId<CharacterSelectionEvent>>,
@@ -46,7 +46,7 @@ type WidgetUiResources<'s> = (
 
 type CharacterSelectionWidgetUiSystemData<'s> = (
     Read<'s, EventChannel<CharacterSelectionEvent>>,
-    Read<'s, CharacterSelections>,
+    Read<'s, CharacterSelectionsStatus>,
     Read<'s, CharacterAssets>,
     Read<'s, InputConfig>,
     Entities<'s>,
@@ -168,7 +168,7 @@ impl<'s> System<'s> for CharacterSelectionWidgetUiSystem {
         &mut self,
         (
             character_selection_events,
-            character_selections,
+            character_selections_status,
             character_assets,
             input_config,
             entities,
@@ -176,8 +176,8 @@ impl<'s> System<'s> for CharacterSelectionWidgetUiSystem {
             mut widget_ui_resources,
         ): Self::SystemData,
     ) {
-        // We need to do this because the `CharacterSelectionsState` is not updated until after this
-        // system has run, and so we don't actually get a chance to delete the UI entities.
+        // We need to do this because the `CharacterSelectionsStatus` is not updated until after
+        // this system has run, and so we don't actually get a chance to delete the UI entities.
         if character_selection_events
             .read(
                 self.reader_id
@@ -189,8 +189,8 @@ impl<'s> System<'s> for CharacterSelectionWidgetUiSystem {
             return;
         }
 
-        match character_selections.state {
-            CharacterSelectionsState::Waiting => {
+        match *character_selections_status {
+            CharacterSelectionsStatus::Waiting => {
                 self.initialize_ui(
                     &character_assets,
                     &input_config,
@@ -200,7 +200,7 @@ impl<'s> System<'s> for CharacterSelectionWidgetUiSystem {
                 );
                 self.refresh_ui(&mut widget_component_storages.0, &mut widget_ui_resources.2);
             }
-            CharacterSelectionsState::Ready => {
+            CharacterSelectionsStatus::Ready => {
                 self.terminate_ui(&entities, &mut widget_component_storages.0)
             }
             _ => self.refresh_ui(&mut widget_component_storages.0, &mut widget_ui_resources.2),
@@ -229,8 +229,8 @@ mod test {
     };
     use application_test_support::AutexousiousApplication;
     use assets_test::ASSETS_CHAR_BAT_SLUG;
-    use character_selection::{
-        CharacterSelection, CharacterSelectionEvent, CharacterSelections, CharacterSelectionsState,
+    use character_selection_model::{
+        CharacterSelection, CharacterSelectionEvent, CharacterSelectionsStatus,
     };
     use game_input::{Axis, ControlAction, ControllerConfig, InputConfig};
     use game_model::loaded::{CharacterAssets, SlugAndHandle};
@@ -248,11 +248,8 @@ mod test {
             AutexousiousApplication::config_base(
                 "initializes_ui_when_character_selections_waiting",
                 false
-            ).with_setup(|world| {
-                let mut character_selections = CharacterSelections::default();
-                character_selections.state = CharacterSelectionsState::Waiting;
-                world.add_resource(character_selections);
-            }).with_setup(|world| world.add_resource(input_config()))
+            ).with_resource(CharacterSelectionsStatus::Waiting)
+            .with_setup(|world| world.add_resource(input_config()))
             .with_system_single(
                 CharacterSelectionWidgetUiSystem::new(),
                 CharacterSelectionWidgetUiSystem::type_name(),
@@ -278,15 +275,12 @@ mod test {
                 &[]
             ) // kcov-ignore
             // Set up UI
+            .with_resource(CharacterSelectionsStatus::Waiting)
             .with_resource(input_config())
-            .with_resource(CharacterSelections::default())
             .with_assertion(|world| assert_widget_count(world, 2))
             // Select character and send event
+            .with_effect(|world| world.add_resource(CharacterSelectionsStatus::CharacterSelect))
             .with_effect(|world| {
-                let mut character_selections = CharacterSelections::default();
-                character_selections.state = CharacterSelectionsState::CharacterSelect;
-                world.add_resource(character_selections);
-            }).with_effect(|world| {
                 world.exec(
                     |(mut widgets, character_assets): (
                         WriteStorage<CharacterSelectionWidget>,
@@ -341,14 +335,11 @@ mod test {
                 ) // kcov-ignore
                 // Set up UI
                 .with_resource(input_config())
-                .with_resource(CharacterSelections::default())
+                .with_resource(CharacterSelectionsStatus::Waiting)
                 .with_assertion(|world| assert_widget_count(world, 2))
                 // Select character and send event
+                .with_effect(|world| world.add_resource(CharacterSelectionsStatus::CharacterSelect))
                 .with_effect(|world| {
-                    let mut character_selections = CharacterSelections::default();
-                    character_selections.state = CharacterSelectionsState::CharacterSelect;
-                    world.add_resource(character_selections);
-                }).with_effect(|world| {
                     world.exec(
                         |(mut widgets, character_assets): (
                             WriteStorage<CharacterSelectionWidget>,
@@ -400,14 +391,11 @@ mod test {
                 ) // kcov-ignore
                 // Set up UI
                 .with_resource(input_config())
-                .with_resource(CharacterSelections::default())
+                .with_resource(CharacterSelectionsStatus::Waiting)
                 .with_assertion(|world| assert_widget_count(world, 2))
                 // Confirm selection and send event
-                .with_effect(|world| {
-                    let mut character_selections = CharacterSelections::default();
-                    character_selections.state = CharacterSelectionsState::Confirmed;
-                    world.add_resource(character_selections);
-                }).with_effect(|world| send_event(world, CharacterSelectionEvent::Confirm))
+                .with_effect(|world| world.add_resource(CharacterSelectionsStatus::Confirmed))
+                .with_effect(|world| send_event(world, CharacterSelectionEvent::Confirm))
                 .with_effect(|_| {}) // Need an extra update for the event to get through.
                 .with_assertion(|world| assert_widget_count(world, 0))
                 .run()

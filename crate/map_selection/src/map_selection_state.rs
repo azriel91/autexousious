@@ -2,8 +2,10 @@ use std::fmt::Debug;
 use std::marker::PhantomData;
 
 use amethyst::{core::SystemBundle, ecs::prelude::*, prelude::*};
+use application_event::AppEvent;
+use application_state::AppState;
+use map_selection_model::MapSelection;
 
-use MapSelection;
 use MapSelectionBundle;
 use MapSelectionStatus;
 
@@ -15,11 +17,10 @@ use MapSelectionStatus;
 /// * `S`: State to return.
 #[derive(Derivative, new)]
 #[derivative(Debug)]
-pub struct MapSelectionState<'a, 'b, F, S, E>
+pub struct MapSelectionState<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
-    S: State<GameData<'a, 'b>, E> + 'static,
-    E: Send + Sync + 'static,
+    S: AppState<'a, 'b> + 'static,
 {
     /// State specific dispatcher builder.
     #[derivative(Debug = "ignore")]
@@ -30,16 +31,13 @@ where
     dispatcher: Option<Dispatcher<'a, 'b>>,
     /// The `State` that follows this one.
     #[derivative(Debug(bound = "F: Debug"))]
-    next_state_fn: Box<F>,
-    /// Data type used by this state and the returned state (see `StateData`).
-    state_data: PhantomData<(GameData<'a, 'b>, E)>,
+    next_state_fn: F,
 }
 
-impl<'a, 'b, F, S, E> MapSelectionState<'a, 'b, F, S, E>
+impl<'a, 'b, F, S> MapSelectionState<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
-    S: State<GameData<'a, 'b>, E> + 'static,
-    E: Send + Sync + 'static,
+    S: AppState<'a, 'b> + 'static,
 {
     /// Sets up the dispatcher for this state.
     ///
@@ -70,11 +68,10 @@ where
     }
 }
 
-impl<'a, 'b, F, S, E> State<GameData<'a, 'b>, E> for MapSelectionState<'a, 'b, F, S, E>
+impl<'a, 'b, F, S> State<GameData<'a, 'b>, AppEvent> for MapSelectionState<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
-    S: State<GameData<'a, 'b>, E> + 'static,
-    E: Send + Sync + 'static,
+    S: AppState<'a, 'b> + 'static,
 {
     fn on_start(&mut self, mut data: StateData<GameData<'a, 'b>>) {
         self.initialize_dispatcher(&mut data.world);
@@ -89,7 +86,10 @@ where
         self.reset_map_selection_state(data.world);
     }
 
-    fn fixed_update(&mut self, data: StateData<GameData<'a, 'b>>) -> Trans<GameData<'a, 'b>, E> {
+    fn fixed_update(
+        &mut self,
+        data: StateData<GameData<'a, 'b>>,
+    ) -> Trans<GameData<'a, 'b>, AppEvent> {
         data.data.update(&data.world);
         self.dispatcher.as_mut().unwrap().dispatch(&data.world.res);
 
@@ -115,11 +115,10 @@ where
 /// * `S`: State to return.
 #[derive(Derivative, new)]
 #[derivative(Debug)]
-pub struct MapSelectionStateBuilder<'a, 'b, F, S, E>
+pub struct MapSelectionStateBuilder<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
-    S: State<GameData<'a, 'b>, E> + 'static,
-    E: Send + Sync + 'static,
+    S: AppState<'a, 'b> + 'static,
 {
     /// State specific dispatcher builder.
     #[derivative(Debug = "ignore")]
@@ -130,16 +129,15 @@ where
     map_selection_system_dependencies: Option<Vec<String>>,
     /// The `State` that follows this one.
     #[derivative(Debug(bound = "F: Debug"))]
-    next_state_fn: Box<F>,
+    next_state_fn: F,
     /// Data type used by the state and the returned state (see `StateData`).
-    game_data: PhantomData<(GameData<'a, 'b>, E)>,
+    game_data: PhantomData<(GameData<'a, 'b>, AppEvent)>,
 }
 
-impl<'a, 'b, F, S, E> MapSelectionStateBuilder<'a, 'b, F, S, E>
+impl<'a, 'b, F, S> MapSelectionStateBuilder<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
-    S: State<GameData<'a, 'b>, E> + 'static,
-    E: Send + Sync + 'static,
+    S: AppState<'a, 'b> + 'static,
 {
     /// Registers a bundle whose systems to run in the `MapSelectionState`.
     ///
@@ -164,7 +162,7 @@ where
     }
 
     /// Builds and returns the `MapSelectionState`.
-    pub fn build(mut self) -> MapSelectionState<'a, 'b, F, S, E> {
+    pub fn build(mut self) -> MapSelectionState<'a, 'b, F, S> {
         let mut bundle = MapSelectionBundle::new();
 
         if let Some(deps) = self.map_selection_system_dependencies {

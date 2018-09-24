@@ -1,4 +1,5 @@
 use amethyst::prelude::*;
+use application_event::AppEvent;
 use character_selection::CharacterSelectionStateBuilder;
 use character_selection_ui::CharacterSelectionUiBundle;
 use game_loading::GameLoadingState;
@@ -25,17 +26,13 @@ impl Index {
     } // kcov-ignore
 
     /// Returns the transition when this index has been selected.
-    pub fn trans<E>(self) -> Trans<GameData<'static, 'static>, E>
-    where
-        E: Send + Sync + 'static,
-    {
+    pub fn trans(self) -> Trans<GameData<'static, 'static>, AppEvent> {
         match self {
             Index::StartGame => {
                 let game_play_fn = || Box::new(GamePlayState::new()); // kcov-ignore
-                let game_loading_fn =
-                    move || Box::new(GameLoadingState::new(Box::new(game_play_fn))); // kcov-ignore
+                let game_loading_fn = move || Box::new(GameLoadingState::new(game_play_fn));
                 let map_selection_fn = move || {
-                    let state = MapSelectionStateBuilder::new(Box::new(game_loading_fn))
+                    let state = MapSelectionStateBuilder::new(game_loading_fn)
                         .with_bundle(MapSelectionUiBundle::new())
                         .with_system_dependencies(MapSelectionUiBundle::system_names())
                         .build();
@@ -43,7 +40,7 @@ impl Index {
                     Box::new(state)
                 };
                 let character_selection_state = {
-                    let state = CharacterSelectionStateBuilder::new(Box::new(map_selection_fn))
+                    let state = CharacterSelectionStateBuilder::new(map_selection_fn)
                         .with_bundle(CharacterSelectionUiBundle::new())
                         .with_system_dependencies(CharacterSelectionUiBundle::system_names())
                         .build();
@@ -60,6 +57,7 @@ impl Index {
 #[cfg(test)]
 mod test {
     use amethyst::prelude::*;
+    use application_event::AppEvent;
     use debug_util_amethyst::assert_eq_trans;
 
     use super::Index;
@@ -81,10 +79,10 @@ mod test {
 
     #[test]
     fn exit_trans_returns_quit() {
-        assert_eq_trans(&Trans::Quit as &Trans<_, ()>, &Index::Exit.trans());
+        assert_eq_trans(&Trans::Quit as &Trans<_, _>, &Index::Exit.trans());
     }
 
     #[derive(Debug)]
     struct MockState;
-    impl<'a, 'b> State<GameData<'a, 'b>, ()> for MockState {}
+    impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for MockState {}
 }

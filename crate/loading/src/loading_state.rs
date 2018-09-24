@@ -3,6 +3,8 @@ use std::marker::PhantomData;
 use std::path::PathBuf;
 
 use amethyst::{assets::ProgressCounter, prelude::*};
+use application_event::AppEvent;
+use application_state::AppState;
 use application_ui::ThemeLoader;
 
 use AssetLoader;
@@ -16,46 +18,42 @@ use AssetLoader;
 /// # Type Parameters
 ///
 /// * `S`: State to return after loading is complete.
-/// * `E`: Custom event type that states can respond to.
 #[derive(Derivative)]
 #[derivative(Debug)]
-pub struct LoadingState<'a, 'b, S, E>
+pub struct LoadingState<'a, 'b, S>
 where
-    S: State<GameData<'a, 'b>, E> + 'static,
-    E: Send + Sync + 'static,
+    S: AppState<'a, 'b>,
 {
     /// Path to the assets directory.
     assets_dir: PathBuf,
     /// The `State` that follows this one.
     #[derivative(Debug(bound = "S: Debug"))]
-    next_state: Option<Box<S>>,
+    next_state: Option<S>,
     /// Tracks loaded assets.
     #[derivative(Debug = "ignore")]
     progress_counter: ProgressCounter,
     /// Lifetime tracker.
-    state_data: PhantomData<State<GameData<'a, 'b>, E>>,
+    phantom_data: PhantomData<AppState<'a, 'b>>,
 }
 
-impl<'a, 'b, S, E> LoadingState<'a, 'b, S, E>
+impl<'a, 'b, S> LoadingState<'a, 'b, S>
 where
-    S: State<GameData<'a, 'b>, E> + 'static,
-    E: Send + Sync + 'static,
+    S: AppState<'a, 'b>,
 {
     /// Returns a new `State`
-    pub fn new(assets_dir: PathBuf, next_state: Box<S>) -> Self {
+    pub fn new(assets_dir: PathBuf, next_state: S) -> Self {
         LoadingState {
             assets_dir,
             next_state: Some(next_state),
             progress_counter: ProgressCounter::new(),
-            state_data: PhantomData,
+            phantom_data: PhantomData,
         }
     }
 }
 
-impl<'a, 'b, S, E> State<GameData<'a, 'b>, E> for LoadingState<'a, 'b, S, E>
+impl<'a, 'b, S> State<GameData<'a, 'b>, AppEvent> for LoadingState<'a, 'b, S>
 where
-    S: State<GameData<'a, 'b>, E> + 'static,
-    E: Send + Sync + 'static,
+    S: AppState<'a, 'b> + 'static,
 {
     fn on_start(&mut self, mut data: StateData<GameData>) {
         if let Err(e) = ThemeLoader::load(&mut data.world) {
@@ -71,15 +69,15 @@ where
         );
     }
 
-    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, E> {
+    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, AppEvent> {
         data.data.update(&data.world);
 
         if self.progress_counter.is_complete() {
-            Trans::Switch(
+            Trans::Switch(Box::new(
                 self.next_state
                     .take()
                     .expect("Expected `next_state` to be set"),
-            )
+            ))
         } else {
             warn!(
                 "If loading never completes, please ensure that you have registered both the \

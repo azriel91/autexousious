@@ -1,9 +1,11 @@
 #![deny(missing_docs)]
 #![deny(missing_debug_implementations)]
 
-//! Provides a wrapper `State` around resource loading.
+//! Provides a wrapper `State` around asset loading.
 
 extern crate amethyst;
+extern crate application_event;
+extern crate application_state;
 extern crate application_ui;
 extern crate asset_loading;
 extern crate assets_built_in;

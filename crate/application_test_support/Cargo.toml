@@ -6,9 +6,11 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop" }
 amethyst_test_support = { path = "../amethyst_test_support" }
+application_event = { path = "../application_event" }
 asset_loading = { path = "../asset_loading" }
 assets_test = { path = "../assets_test" }
 character_selection = { path = "../character_selection" }
+character_selection_model = { path = "../character_selection_model" }
 game_input = { path = "../game_input" }
 game_loading = { path = "../game_loading" }
 game_model = { path = "../game_model" }
@@ -16,6 +18,7 @@ loading = { path = "../loading" }
 map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }
 map_selection = { path = "../map_selection" }
+map_selection_model = { path = "../map_selection_model" }
 object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
 

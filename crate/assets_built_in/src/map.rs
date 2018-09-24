@@ -16,10 +16,11 @@ lazy_static! {
             .namespace(NAMESPACE_BUILT_IN.to_string())
             .name(MAP_BLANK_NAME.to_string())
             .build()
-            .expect(&format!(
-                "Expected `{}/{}` asset slug to build.",
+            .unwrap_or_else(|e| panic!(
+                "Expected `{}/{}` asset slug to build. Error: \n\n```{}\n```\n",
                 NAMESPACE_BUILT_IN,
-                MAP_BLANK_NAME
+                MAP_BLANK_NAME,
+                e
             ))
     };
 

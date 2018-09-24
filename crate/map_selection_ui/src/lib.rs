@@ -21,6 +21,7 @@ extern crate game_model;
 extern crate log;
 extern crate map_model;
 extern crate map_selection;
+extern crate map_selection_model;
 extern crate strum;
 #[macro_use]
 extern crate strum_macros;

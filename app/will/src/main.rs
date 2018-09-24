@@ -70,8 +70,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     let assets_dir = assets_dir(Some(development_base_dirs!()))?;
 
     let game_mode_menu_state = GameModeMenuState::new();
-    let loading_state =
-        LoadingState::<_, ()>::new(assets_dir.clone(), Box::new(game_mode_menu_state));
+    let loading_state = LoadingState::<_>::new(assets_dir.clone(), game_mode_menu_state);
     let state = RobotState::new(Box::new(loading_state));
 
     let mut game_data = GameDataBuilder::default();
@@ -107,27 +106,24 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(AnimationBundle::<CharacterSequenceId, SpriteRender>::new(
                 "character_animation_control_system",
                 "character_sampler_interpolation_system",
-            ))?
-            .with_bundle(AnimationBundle::<u32, SpriteRender>::new(
+            ))?.with_bundle(AnimationBundle::<u32, SpriteRender>::new(
                 "animation_control_system",
                 "sampler_interpolation_system",
             ))?
             // Handles transformations of textures
-            .with_bundle(
-                TransformBundle::new()
-                    .with_dep(&[
-                        "character_animation_control_system",
-                        "character_sampler_interpolation_system",
-                        "animation_control_system",
-                        "sampler_interpolation_system",
-                    ]),
-            )?
-            .with_bundle(RenderBundle::new(pipe, Some(display_config))
-                .with_sprite_visibility_sorting(&["transform_system"])
-                .with_sprite_sheet_processor())?
-            .with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new()
-                .with_bindings((&input_config).into()))?
-            .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?
+            .with_bundle(TransformBundle::new().with_dep(&[
+                "character_animation_control_system",
+                "character_sampler_interpolation_system",
+                "animation_control_system",
+                "sampler_interpolation_system",
+            ]))?.with_bundle(
+                RenderBundle::new(pipe, Some(display_config))
+                    .with_sprite_visibility_sorting(&["transform_system"])
+                    .with_sprite_sheet_processor(),
+            )?.with_bundle(
+                InputBundle::<PlayerAxisControl, PlayerActionControl>::new()
+                    .with_bindings((&input_config).into()),
+            )?.with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?
             .with_bundle(GameInputBundle::new(input_config))?
             .with_bundle(StdioViewBundle::new())?
             .with_bundle(MapLoadingBundle::new())?

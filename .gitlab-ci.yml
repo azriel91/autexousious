@@ -41,6 +41,7 @@ variables:
   # ---
   # CARGO_HOME: $CI_PROJECT_DIR/cargo
   RUST_BACKTRACE: 1
+  AMETHYST_LOG_LEVEL_FILTER: WARN
 
 nightly:conformance:
   stage: build_and_test # piggy backing so that it runs in parallel
@@ -88,8 +89,7 @@ linux:debug:
   <<: *linux_job_common
   script:
     - time cargo test --no-run
-    - time hull each -- cargo build --examples
-    - time cargo build
+    - time hull each -- cargo build --examples --bins
     - source xvfb_start
     - time cargo test
     - source xvfb_stop
@@ -104,8 +104,7 @@ linux:release:
   <<: *linux_job_common
   script:
     - time cargo test --no-run --release
-    - time hull each -- cargo build --examples --release
-    - time cargo build --release
+    - time hull each -- cargo build --examples --bins --release
     - source xvfb_start
     - time cargo test --release
     - source xvfb_stop
@@ -134,7 +133,7 @@ windows:debug:
   <<: *windows_job_common
   script:
     - cargo test --no-run
-    - hull each -- cargo build --examples
+    - hull each -- cargo build --examples --bins
     - cargo build
     - cargo test
 
@@ -142,7 +141,7 @@ windows:release:
   <<: *windows_job_common
   script:
     - cargo test --no-run --release
-    - hull each -- cargo build --examples --release
+    - hull each -- cargo build --examples --bins --release
     - cargo build --release
     - cargo test --release
     - .\build\publish_prepare_app.bat

@@ -1,5 +1,5 @@
 use amethyst::{ecs::prelude::*, shrev::EventChannel};
-use character_selection::{CharacterSelection, CharacterSelectionEvent};
+use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
 use game_input::{ControllerInput, InputControlled};
 use game_model::loaded::{CharacterAssets, SlugAndHandle};
 use tracker::Last;
@@ -241,7 +241,7 @@ mod test {
     use amethyst_test_support::prelude::*;
     use application_test_support::AutexousiousApplication;
     use assets_test::ASSETS_CHAR_BAT_SLUG;
-    use character_selection::{CharacterSelection, CharacterSelectionEvent};
+    use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
     use game_input::{ControllerInput, InputControlled};
     use game_model::loaded::{CharacterAssets, SlugAndHandle};
     use object_model::loaded::Character;

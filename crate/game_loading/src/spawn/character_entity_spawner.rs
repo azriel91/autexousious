@@ -183,6 +183,7 @@ mod test {
         renderer::{SpriteRender, Transparent},
     };
     use amethyst_test_support::prelude::*;
+    use application_event::AppEvent;
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
     use game_input::{ControllerInput, InputControlled};
     use game_model::loaded::SlugAndHandle;
@@ -233,10 +234,11 @@ mod test {
             AmethystApplication::render_base(
                 "spawn_for_player_creates_entity_with_object_components",
                 false
-            ).with_bundle(MapLoadingBundle::new())
+            ).with_custom_event_type::<AppEvent>()
+            .with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
             .with_system(TestSystem, TestSystem::type_name(), &[])
-            .with_state(|| LoadingState::new(ASSETS_PATH.clone(), Box::new(EmptyState),))
+            .with_state(|| LoadingState::new(ASSETS_PATH.clone(), EmptyState))
             .with_assertion(assertion)
             .run()
             .is_ok()

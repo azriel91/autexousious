@@ -1,9 +1,9 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
-use character_selection::CharacterSelections;
+use character_selection_model::CharacterSelections;
 use game_input::InputControlled;
 use game_model::play::GameEntities;
 use map_model::loaded::Map;
-use map_selection::MapSelection;
+use map_selection_model::MapSelection;
 use object_model::{
     config::object::CharacterSequenceId,
     entity::{Kinematics, Position, Velocity},
@@ -104,8 +104,9 @@ mod tests {
 
     use amethyst::ecs::prelude::*;
     use amethyst_test_support::{prelude::*, EmptyState};
+    use application_event::AppEvent;
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
-    use character_selection::CharacterSelections;
+    use character_selection_model::CharacterSelections;
     use game_model::{
         config::AssetSlug,
         loaded::{MapAssets, SlugAndHandle},
@@ -113,7 +114,8 @@ mod tests {
     };
     use loading::LoadingState;
     use map_loading::MapLoadingBundle;
-    use map_selection::{MapSelection, MapSelectionStatus};
+    use map_selection::MapSelectionStatus;
+    use map_selection_model::MapSelection;
     use object_loading::ObjectLoadingBundle;
     use object_model::ObjectType;
     use typename::TypeName;
@@ -127,9 +129,10 @@ mod tests {
         assert!(
             // kcov-ignore-end
             AmethystApplication::render_base("returns_if_characters_already_loaded", false)
+                .with_custom_event_type::<AppEvent>()
                 .with_bundle(MapLoadingBundle::new())
                 .with_bundle(ObjectLoadingBundle::new())
-                .with_state(|| LoadingState::new(ASSETS_PATH.clone(), Box::new(EmptyState)))
+                .with_state(|| LoadingState::new(ASSETS_PATH.clone(), EmptyState))
                 .with_setup(map_selection(ASSETS_MAP_FADE_SLUG.clone()))
                 .with_setup(|world| {
                     let mut game_loading_status = GameLoadingStatus::new();
@@ -174,9 +177,10 @@ mod tests {
             AmethystApplication::render_base(
                 "spawns_characters_when_they_havent_been_spawned",
                 false
-            ).with_bundle(MapLoadingBundle::new())
+            ).with_custom_event_type::<AppEvent>()
+            .with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
-            .with_state(|| LoadingState::new(ASSETS_PATH.clone(), Box::new(EmptyState)))
+            .with_state(|| LoadingState::new(ASSETS_PATH.clone(), EmptyState))
             .with_setup(map_selection(ASSETS_MAP_FADE_SLUG.clone()))
             .with_setup(|world| {
                 let mut character_selections = CharacterSelections::default();

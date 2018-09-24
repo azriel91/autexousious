@@ -8,7 +8,8 @@ use game_input::{
     ControllerId, ControllerInput, InputConfig, InputControlled, SharedInputControlled,
 };
 use game_model::loaded::{MapAssets, SlugAndHandle};
-use map_selection::{MapSelection, MapSelectionEvent, MapSelectionStatus};
+use map_selection::MapSelectionStatus;
+use map_selection_model::{MapSelection, MapSelectionEvent};
 
 use MapSelectionWidget;
 use WidgetState;
@@ -244,7 +245,8 @@ mod test {
     use assets_test::ASSETS_MAP_EMPTY_SLUG;
     use game_input::{Axis, ControlAction, ControllerConfig, InputConfig};
     use game_model::loaded::{MapAssets, SlugAndHandle};
-    use map_selection::{MapSelection, MapSelectionEvent, MapSelectionStatus};
+    use map_selection::MapSelectionStatus;
+    use map_selection_model::{MapSelection, MapSelectionEvent};
     use typename::TypeName;
 
     use super::MapSelectionWidgetUiSystem;

@@ -3,7 +3,8 @@ use game_model::{
     config::AssetSlug,
     loaded::{MapAssets, SlugAndHandle},
 };
-use map_selection::{MapSelection, MapSelectionStatus};
+use map_selection::MapSelectionStatus;
+use map_selection_model::MapSelection;
 
 /// Provides common functions that simplify state set up.
 #[derive(Debug)]

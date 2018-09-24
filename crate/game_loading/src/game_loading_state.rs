@@ -1,9 +1,10 @@
 use std::fmt::Debug;
-use std::marker::PhantomData;
 
 use amethyst::{
     core::SystemBundle, ecs::prelude::*, input::is_key_down, prelude::*, renderer::VirtualKeyCode,
 };
+use application_event::AppEvent;
+use application_state::AppState;
 use game_model::play::GameEntities;
 
 use GameLoadingBundle;
@@ -12,28 +13,24 @@ use GameLoadingStatus;
 /// `State` where game play takes place.
 #[derive(Derivative, Default, new)]
 #[derivative(Debug)]
-pub struct GameLoadingState<'a, 'b, F, S, E>
+pub struct GameLoadingState<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
-    S: State<GameData<'a, 'b>, E> + 'static,
-    E: Send + Sync + 'static,
+    S: AppState<'a, 'b> + 'static,
 {
-    /// The `State` that follows this one.
-    #[derivative(Debug(bound = "F: Debug"))]
-    next_state_fn: Box<F>,
     /// State specific dispatcher.
     #[derivative(Debug = "ignore")]
     #[new(default)]
-    dispatcher: Option<Dispatcher<'static, 'static>>,
-    /// Data type used by this state and the returned state (see `StateData`).
-    state_data: PhantomData<(GameData<'a, 'b>, E)>,
+    dispatcher: Option<Dispatcher<'a, 'b>>,
+    /// The `State` that follows this one.
+    #[derivative(Debug(bound = "F: Debug"))]
+    next_state_fn: F,
 }
 
-impl<'a, 'b, F, S, E> GameLoadingState<'a, 'b, F, S, E>
+impl<'a, 'b, F, S> GameLoadingState<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
-    S: State<GameData<'a, 'b>, E> + 'static,
-    E: Send + Sync + 'static,
+    S: AppState<'a, 'b> + 'static,
 {
     /// Sets up the dispatcher for this state.
     ///
@@ -70,11 +67,10 @@ where
     }
 }
 
-impl<'a, 'b, F, S, E> State<GameData<'a, 'b>, E> for GameLoadingState<'a, 'b, F, S, E>
+impl<'a, 'b, F, S> State<GameData<'a, 'b>, AppEvent> for GameLoadingState<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
-    S: State<GameData<'a, 'b>, E> + 'static,
-    E: Send + Sync + 'static,
+    S: AppState<'a, 'b> + 'static,
 {
     fn on_start(&mut self, mut data: StateData<GameData>) {
         self.initialize_dispatcher(&mut data.world);
@@ -92,8 +88,8 @@ where
     fn handle_event(
         &mut self,
         _data: StateData<GameData>,
-        event: StateEvent<E>,
-    ) -> Trans<GameData<'a, 'b>, E> {
+        event: StateEvent<AppEvent>,
+    ) -> Trans<GameData<'a, 'b>, AppEvent> {
         if let StateEvent::Window(event) = &event {
             if is_key_down(&event, VirtualKeyCode::Escape) {
                 info!("Returning from `GameLoadingState`.");
@@ -106,7 +102,7 @@ where
         }
     }
 
-    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, E> {
+    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, AppEvent> {
         data.data.update(&data.world);
         self.dispatcher.as_mut().unwrap().dispatch(&data.world.res);
 

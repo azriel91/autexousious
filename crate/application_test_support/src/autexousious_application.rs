@@ -5,10 +5,10 @@ use amethyst::{
     renderer::SpriteRender,
 };
 use amethyst_test_support::{prelude::*, EmptyState};
+use application_event::AppEvent;
 use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
-use character_selection::{
-    CharacterSelectionBundle, CharacterSelections, CharacterSelectionsState,
-};
+use character_selection::CharacterSelectionBundle;
+use character_selection_model::{CharacterSelections, CharacterSelectionsStatus};
 use game_input::{PlayerActionControl, PlayerAxisControl};
 use game_loading::GameLoadingState;
 use game_model::loaded::SlugAndHandle;
@@ -31,8 +31,9 @@ impl AutexousiousApplication {
     ///
     /// This has the same effect as calling `AmethystApplication::base::<PlayerAxisControl,
     /// PlayerActionControl>()`.
-    pub fn ui_base() -> AmethystApplication<GameData<'static, 'static>, ()> {
+    pub fn ui_base() -> AmethystApplication<GameData<'static, 'static>, AppEvent> {
         AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
+            .with_custom_event_type::<AppEvent>()
     }
 
     /// Returns an application with the Animation, Transform, and Render bundles.
@@ -48,13 +49,14 @@ impl AutexousiousApplication {
     pub fn render_base<'name, N>(
         test_name: N,
         visibility: bool,
-    ) -> AmethystApplication<GameData<'static, 'static>, ()>
+    ) -> AmethystApplication<GameData<'static, 'static>, AppEvent>
     where
         N: Into<&'name str>,
     {
         // Unfortunately we cannot re-use `AmethystApplication::render_base` because we need to
         // specify the `TransformBundle`'s dependencies.
         AmethystApplication::blank()
+            .with_custom_event_type::<AppEvent>()
             .with_bundle(AnimationBundle::<CharacterSequenceId, SpriteRender>::new(
                 "character_animation_control_system",
                 "character_sampler_interpolation_system",
@@ -77,7 +79,7 @@ impl AutexousiousApplication {
     pub fn render_and_ui<'name, N>(
         test_name: N,
         visibility: bool,
-    ) -> AmethystApplication<GameData<'static, 'static>, ()>
+    ) -> AmethystApplication<GameData<'static, 'static>, AppEvent>
     where
         N: Into<&'name str>,
     {
@@ -97,7 +99,7 @@ impl AutexousiousApplication {
     pub fn config_base<'name, N>(
         test_name: N,
         visibility: bool,
-    ) -> AmethystApplication<GameData<'static, 'static>, ()>
+    ) -> AmethystApplication<GameData<'static, 'static>, AppEvent>
     where
         N: Into<&'name str>,
     {
@@ -107,7 +109,7 @@ impl AutexousiousApplication {
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
             .with_bundle(CharacterSelectionBundle::new())
-            .with_state(|| LoadingState::new(ASSETS_PATH.clone(), Box::new(EmptyState)))
+            .with_state(|| LoadingState::new(ASSETS_PATH.clone(), EmptyState))
     }
 
     /// Returns an application with game objects loaded.
@@ -121,14 +123,13 @@ impl AutexousiousApplication {
     pub fn game_base<'name, N>(
         test_name: N,
         visibility: bool,
-    ) -> AmethystApplication<GameData<'static, 'static>, ()>
+    ) -> AmethystApplication<GameData<'static, 'static>, AppEvent>
     where
         N: Into<&'name str>,
     {
         AutexousiousApplication::config_base(test_name, visibility)
             .with_setup(|world| {
                 let mut character_selections = CharacterSelections::default();
-                character_selections.state = CharacterSelectionsState::Ready;
                 let controller_id = 0;
                 character_selections
                     .selections
@@ -136,8 +137,11 @@ impl AutexousiousApplication {
                     .or_insert_with(|| {
                         SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()))
                     });
+
+                world.add_resource(character_selections);
+                world.add_resource(CharacterSelectionsStatus::Ready);
             }).with_setup(SetupFunction::map_selection(ASSETS_MAP_FADE_SLUG.clone()))
-            .with_state(|| GameLoadingState::new(Box::new(|| Box::new(EmptyState))))
+            .with_state(|| GameLoadingState::new(|| Box::new(EmptyState)))
     }
 }
 
@@ -229,9 +233,12 @@ mod test {
                     // Ensure there is at least one entity per object type.
                     ObjectType::iter().for_each(|object_type| {
                         let objects = game_entities.objects.get(&object_type);
+                        let object_entities = objects.unwrap_or_else(|| {
+                            panic!("Expected entry for the `{}` object type.", object_type)
+                        });
 
                         assert!(
-                            objects.is_some(),
+                            !object_entities.is_empty(),
                             // kcov-ignore-start
                             format!(
                                 // kcov-ignore-end
