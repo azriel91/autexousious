@@ -8,17 +8,16 @@ extern crate amethyst;
 extern crate amethyst_test_support;
 extern crate application_event;
 extern crate application_input;
-extern crate character_selection_model;
 #[macro_use]
 extern crate derive_new;
 extern crate console;
 extern crate fern;
-extern crate game_model;
 extern crate itertools;
 #[macro_use]
 extern crate log;
-extern crate map_selection_model;
 extern crate shell_words;
+extern crate stdio_spi;
+extern crate structopt;
 extern crate strum;
 extern crate typename;
 #[macro_use]

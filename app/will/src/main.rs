@@ -8,6 +8,7 @@ extern crate application;
 extern crate application_input;
 extern crate application_robot;
 extern crate application_ui;
+extern crate character_selection_stdio;
 extern crate game_input;
 extern crate game_mode_menu;
 extern crate loading;
@@ -41,6 +42,7 @@ use application::resource::{
     {self, load_in},
 };
 use application_robot::RobotState;
+use character_selection_stdio::CharacterSelectionStdioBundle;
 use game_input::{GameInputBundle, InputConfig, PlayerActionControl, PlayerAxisControl};
 use game_mode_menu::GameModeMenuState;
 use loading::LoadingState;
@@ -126,6 +128,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             )?.with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?
             .with_bundle(GameInputBundle::new(input_config))?
             .with_bundle(StdioViewBundle::new())?
+            .with_bundle(CharacterSelectionStdioBundle::new())?
             .with_bundle(MapLoadingBundle::new())?
             .with_bundle(ObjectLoadingBundle::new())?;
     }

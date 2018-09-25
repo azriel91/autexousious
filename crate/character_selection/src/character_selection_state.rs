@@ -91,6 +91,26 @@ where
         *selections_status = CharacterSelectionsStatus::Confirmed;
     }
 
+    fn handle_event(
+        &mut self,
+        _data: StateData<GameData<'a, 'b>>,
+        event: StateEvent<AppEvent>,
+    ) -> Trans<GameData<'a, 'b>, AppEvent> {
+        match event {
+            StateEvent::Custom(app_event) => match app_event {
+                AppEvent::CharacterSelection(character_selection_event) => {
+                    info!(
+                        "Received character_selection_event: {:?}",
+                        character_selection_event
+                    );
+                }
+                _ => {}
+            },
+            _ => {}
+        }
+        Trans::None
+    }
+
     fn fixed_update(
         &mut self,
         data: StateData<GameData<'a, 'b>>,

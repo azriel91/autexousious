@@ -2,19 +2,16 @@ use std::sync::mpsc::{self, Receiver, TryRecvError};
 use std::thread;
 
 use amethyst::{ecs::prelude::*, shrev::EventChannel};
-use application_event::AppEvent;
 use application_input::ApplicationEvent;
-use game_model::loaded::{CharacterAssets, MapAssets};
+use stdio_spi::VariantAndTokens;
 
 use reader::{self, StdinReader};
 use IoAppEventUtils;
 
 /// Type to fetch the application event channel.
 type StdinSystemData<'s> = (
-    Read<'s, CharacterAssets>,
-    Read<'s, MapAssets>,
     Write<'s, EventChannel<ApplicationEvent>>,
-    Write<'s, EventChannel<AppEvent>>,
+    Write<'s, EventChannel<VariantAndTokens>>,
 );
 
 /// Rendering system.
@@ -61,14 +58,7 @@ impl Default for StdinSystem {
 impl<'s> System<'s> for StdinSystem {
     type SystemData = StdinSystemData<'s>;
 
-    fn run(
-        &mut self,
-        (
-            character_assets,
-            map_assets,
-            mut application_event_channel,
-            mut app_event_channel,
-): Self::SystemData){
+    fn run(&mut self, (mut application_event_channel, mut variant_channel): Self::SystemData) {
         match self.rx.try_recv() {
             Ok(input) => {
                 debug!("Input from StdinReader: `{:?}`.", &input);
@@ -78,12 +68,10 @@ impl<'s> System<'s> for StdinSystem {
                     return;
                 }
 
-                let resources = (&*character_assets, &*map_assets);
-                match IoAppEventUtils::handle_input(resources, input) {
-                    Ok(event) => {
-                        if let Some(event) = event {
-                            debug!("Sending event: {:?}", event);
-                            app_event_channel.single_write(event);
+                match IoAppEventUtils::input_to_variant_and_tokens(input) {
+                    Ok(variant_and_tokens) => {
+                        if let Some(variant_and_tokens) = variant_and_tokens {
+                            variant_channel.single_write(variant_and_tokens);
                         }
                     }
                     Err(e) => error!("Failed to parse input. Error: `{}`.", e),
@@ -109,11 +97,10 @@ mod test {
         shred::{Resources, SystemData},
         shrev::{EventChannel, ReaderId},
     };
-    use application_event::AppEvent;
     use application_input::ApplicationEvent;
-    use game_model::loaded::{CharacterAssets, MapAssets};
 
     use super::{StdinSystem, StdinSystemData};
+    use stdio_spi::VariantAndTokens;
 
     fn setup() -> (
         StdinSystem,
@@ -123,15 +110,13 @@ mod test {
     ) {
         let mut res = Resources::new();
         res.insert(EventChannel::<ApplicationEvent>::with_capacity(10));
-        res.insert(EventChannel::<AppEvent>::with_capacity(10));
-        res.insert(CharacterAssets::new());
-        res.insert(MapAssets::new());
+        res.insert(EventChannel::<VariantAndTokens>::with_capacity(10));
 
         let (tx, rx) = mpsc::channel();
         let stdin_system = StdinSystem::internal_new(rx, || {});
 
         let reader_id = {
-            let (_, _, mut event_channel, _) = StdinSystemData::fetch(&res);
+            let (mut event_channel, _) = StdinSystemData::fetch(&res);
             event_channel.register_reader()
         }; // kcov-ignore
 
@@ -154,7 +139,7 @@ mod test {
         tx.send("exit".to_string()).unwrap();
         stdin_system.run_now(&res);
 
-        let (_, _, event_channel, _) = StdinSystemData::fetch(&res);
+        let (event_channel, _) = StdinSystemData::fetch(&res);
 
         expect_event(
             &event_channel,
@@ -170,7 +155,7 @@ mod test {
         tx.send("abc".to_string()).unwrap();
         stdin_system.run_now(&res);
 
-        let (_, _, event_channel, _) = StdinSystemData::fetch(&res);
+        let (event_channel, _) = StdinSystemData::fetch(&res);
         expect_event(&event_channel, &mut reader_id, None);
     } // kcov-ignore
 
@@ -181,7 +166,7 @@ mod test {
         // we don't call tx.send(..)
         stdin_system.run_now(&res);
 
-        let (_, _, event_channel, _) = StdinSystemData::fetch(&res);
+        let (event_channel, _) = StdinSystemData::fetch(&res);
         expect_event(&event_channel, &mut reader_id, None);
     } // kcov-ignore
 
@@ -192,7 +177,7 @@ mod test {
         drop(tx); // ensure channel is disconnected
         stdin_system.run_now(&res);
 
-        let (_, _, event_channel, _) = StdinSystemData::fetch(&res);
+        let (event_channel, _) = StdinSystemData::fetch(&res);
         expect_event(&event_channel, &mut reader_id, None);
     } // kcov-ignore
 }
