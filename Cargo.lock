@@ -2689,7 +2689,7 @@ dependencies = [
 [[package]]
 name = "strum"
 version = "0.10.0"
-source = "git+https://github.com/azriel91/strum.git?branch=feature/33/derive-enum-variants#58ce968fd21d2904849e97e9415b9edbcdfa0551"
+source = "git+https://github.com/azriel91/strum.git?branch=feature/33/derive-enum-variants#f92a81a6d701d59ca3a29f7457229605b9491ad6"
 
 [[package]]
 name = "strum"
@@ -2700,7 +2700,7 @@ replace = "strum 0.10.0 (git+https://github.com/azriel91/strum.git?branch=featur
 [[package]]
 name = "strum_macros"
 version = "0.10.0"
-source = "git+https://github.com/azriel91/strum.git?branch=feature/33/derive-enum-variants#58ce968fd21d2904849e97e9415b9edbcdfa0551"
+source = "git+https://github.com/azriel91/strum.git?branch=feature/33/derive-enum-variants#f92a81a6d701d59ca3a29f7457229605b9491ad6"
 dependencies = [
  "heck 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "proc-macro2 0.4.19 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2787,7 +2787,7 @@ name = "syntex_fmt_macros"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "unicode-xid 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unicode-xid 0.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
