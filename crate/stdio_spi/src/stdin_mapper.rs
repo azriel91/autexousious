@@ -6,7 +6,9 @@ use Result;
 pub trait StdinMapper {
     /// Resource needed by the mapper to construct the state specific event.
     ///
-    /// TODO: Ideally we can have this be the `SystemData` of an ECS system. However, we cannot add
+    /// TODO: Pending <https://gitlab.com/azriel91/autexousious/issues/76>
+    ///
+    /// Ideally we can have this be the `SystemData` of an ECS system. However, we cannot add
     /// a `Resources: for<'res> SystemData<'res>` trait bound as generic associated types (GATs)
     /// are not yet implemented. See:
     ///
