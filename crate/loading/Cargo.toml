@@ -17,5 +17,5 @@ map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }
 object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
-strum = "0.10"
+strum = "0.11"
 toml = "0.4"

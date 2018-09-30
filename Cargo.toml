@@ -5,7 +5,3 @@ members = ["app/*", "crate/*"]
 # Slower compilation, but better performance of final executable.
 # <https://blog.rust-lang.org/2018/02/15/Rust-1.24.html#incremental-compilation>
 codegen-units = 1
-
-[replace]
-"strum:0.10.0" = { git = "https://github.com/azriel91/strum.git", branch = "feature/33/derive-enum-variants" }
-"strum_macros:0.10.0" = { git = "https://github.com/azriel91/strum.git", branch = "feature/33/derive-enum-variants" }

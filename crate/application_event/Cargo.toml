@@ -8,5 +8,5 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop
 character_selection_model = { path = "../character_selection_model" }
 derive_more = "0.12.0"
 map_selection_model = { path = "../map_selection_model" }
-strum = "0.10"
-strum_macros = "0.10"
+strum = "0.11"
+strum_macros = "0.11"
