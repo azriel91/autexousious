@@ -29,7 +29,8 @@ impl Index {
     pub fn trans(self) -> Trans<GameData<'static, 'static>, AppEvent> {
         match self {
             Index::StartGame => {
-                let game_play_fn = || Box::new(GamePlayState::new()); // kcov-ignore
+                // kcov-ignore-start
+                let game_play_fn = || Box::new(GamePlayState::new());
                 let game_loading_fn = move || Box::new(GameLoadingState::new(game_play_fn));
                 let map_selection_fn = move || {
                     let state = MapSelectionStateBuilder::new(game_loading_fn)
@@ -39,6 +40,7 @@ impl Index {
 
                     Box::new(state)
                 };
+                // kcov-ignore-end
                 let character_selection_state = {
                     let state = CharacterSelectionStateBuilder::new(map_selection_fn)
                         .with_bundle(CharacterSelectionUiBundle::new())

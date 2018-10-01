@@ -20,17 +20,17 @@ impl IoAppEventUtils {
 
     fn parse_error_to_string(input: &str, e: ParseError) -> String {
         format!(
-            "Error splitting input string. Error:\n\
+            "Error splitting input string. Input:\n\
              \n\
              ```\n\
              {}\n\
              ```\n\
              \n\
-             Input:\n\
+             Error:\n\
              ```\n\
-             {:?}\n\
+             {}\n\
              ```\n\n",
-            e, input
+            input, e
         )
     }
 
@@ -53,5 +53,59 @@ impl IoAppEventUtils {
                 AppEventVariant::iter().join(", ")
             )
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use application_event::AppEventVariant;
+
+    use super::IoAppEventUtils;
+
+    #[test]
+    fn maps_shell_words_error_to_readable_string() {
+        assert_eq!(
+            Err("Error splitting input string. Input:\n\
+                 \n\
+                 ```\n\
+                 single quote \"\n\
+                 ```\n\
+                 \n\
+                 Error:\n\
+                 ```\n\
+                 missing closing quote\n\
+                 ```\n\n"
+                .to_string()),
+            IoAppEventUtils::input_to_variant_and_tokens("single quote \"".to_string())
+        );
+    }
+
+    #[test]
+    fn returns_ok_none_when_input_is_empty() {
+        assert_eq!(
+            Ok(None),
+            IoAppEventUtils::input_to_variant_and_tokens("".to_string())
+        );
+    }
+
+    #[test]
+    fn returns_app_event_variants_and_all_tokens_when_input_matches_variant() {
+        assert_eq!(
+            Ok(Some((
+                AppEventVariant::CharacterSelection,
+                vec!["character_selection".to_string(), "confirm".to_string()]
+            ))),
+            IoAppEventUtils::input_to_variant_and_tokens("character_selection confirm".to_string())
+        );
+    }
+
+    #[test]
+    fn returns_useful_error_message_when_input_matches_variant() {
+        let result = IoAppEventUtils::input_to_variant_and_tokens("abc".to_string());
+        assert!(result.is_err());
+        assert!(result.unwrap_err().starts_with(
+            "Error parsing `abc` as an AppEventVariant. Error: `Matching variant not found`.\n\
+             Valid values are: "
+        ));
     }
 }

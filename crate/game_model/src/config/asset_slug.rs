@@ -255,18 +255,22 @@ mod tests {
 
     #[test]
     fn from_str_returns_ok_when_valid() {
+        // kcov-ignore-start
         assert_eq!(
+            // kcov-ignore-end
             Ok(AssetSlug {
                 namespace: "test".to_string(),
                 name: "name".to_string()
-            }),
+            }), // kcov-ignore
             AssetSlug::from_str("test/name")
         );
     }
 
     #[test]
     fn from_str_returns_err_when_too_few_segments() {
+        // kcov-ignore-start
         assert_eq!(
+            // kcov-ignore-end
             Err("Expected exactly one `/` in slug string: \"test\".".to_string()),
             AssetSlug::from_str("test")
         );
@@ -274,7 +278,9 @@ mod tests {
 
     #[test]
     fn from_str_returns_err_when_too_many_segments() {
+        // kcov-ignore-start
         assert_eq!(
+            // kcov-ignore-end
             Err("Expected exactly one `/` in slug string: \"test/abc/def\".".to_string()),
             AssetSlug::from_str("test/abc/def")
         );
@@ -282,7 +288,9 @@ mod tests {
 
     #[test]
     fn from_str_returns_err_from_builder_when_invalid() {
+        // kcov-ignore-start
         assert_eq!(
+            // kcov-ignore-end
             Err("Asset name must not contain whitespace: `a b`.".to_string()),
             AssetSlug::from_str("test/a b")
         );

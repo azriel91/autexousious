@@ -20,7 +20,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionStdioBundle {
             ),
             &MapperSystem::<CharacterSelectionEventStdinMapper>::type_name(),
             &[],
-        );
+        ); // kcov-ignore
         Ok(())
     }
 }

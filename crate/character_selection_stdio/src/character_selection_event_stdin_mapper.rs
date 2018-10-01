@@ -119,7 +119,9 @@ mod tests {
 
     #[test]
     fn maps_select_id_event() {
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AutexousiousApplication::config_base("maps_select_id_event", false)
                 .with_assertion(|world| {
                     let controller_id = 1;
@@ -149,7 +151,9 @@ mod tests {
 
     #[test]
     fn maps_select_random_event() {
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AutexousiousApplication::config_base("maps_select_random_event", false)
                 .with_assertion(|world| {
                     let controller_id = 1;

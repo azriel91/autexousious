@@ -53,7 +53,7 @@ impl StdinMapper for MapSelectionEventStdinMapper {
             MapSelectionEventArgs::Select { selection } => {
                 Self::map_select_event(map_assets, &selection)
             }
-        }
+        } // kcov-ignore
     }
 }
 
@@ -95,7 +95,9 @@ mod tests {
 
     #[test]
     fn maps_select_id_event() {
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AutexousiousApplication::config_base("maps_select_id_event", false)
                 .with_assertion(|world| {
                     let args = MapSelectionEventArgs::Select {
@@ -116,7 +118,9 @@ mod tests {
 
     #[test]
     fn maps_select_random_event() {
+        // kcov-ignore-start
         assert!(
+            // kcov-ignore-end
             AutexousiousApplication::config_base("maps_select_random_event", false)
                 .with_assertion(|world| {
                     let args = MapSelectionEventArgs::Select {

@@ -18,7 +18,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for MapSelectionStdioBundle {
             MapperSystem::<MapSelectionEventStdinMapper>::new(AppEventVariant::MapSelection),
             &MapperSystem::<MapSelectionEventStdinMapper>::type_name(),
             &[],
-        );
+        ); // kcov-ignore
         Ok(())
     }
 }
