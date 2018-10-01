@@ -1,9 +1,11 @@
 use std::fmt::Debug;
 
-use amethyst::{core::SystemBundle, ecs::prelude::*, prelude::*};
+use amethyst::{core::SystemBundle, ecs::prelude::*, prelude::*, shrev::EventChannel};
 use application_event::AppEvent;
 use application_state::AppState;
-use character_selection_model::{CharacterSelections, CharacterSelectionsStatus};
+use character_selection_model::{
+    CharacterSelectionEvent, CharacterSelections, CharacterSelectionsStatus,
+};
 
 use CharacterSelectionBundle;
 
@@ -93,16 +95,20 @@ where
 
     fn handle_event(
         &mut self,
-        _data: StateData<GameData<'a, 'b>>,
+        data: StateData<GameData<'a, 'b>>,
         event: StateEvent<AppEvent>,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
         match event {
             StateEvent::Custom(app_event) => match app_event {
                 AppEvent::CharacterSelection(character_selection_event) => {
-                    info!(
+                    debug!(
                         "Received character_selection_event: {:?}",
                         character_selection_event
                     );
+                    let mut channel = data
+                        .world
+                        .write_resource::<EventChannel<CharacterSelectionEvent>>();
+                    channel.single_write(character_selection_event);
                 }
                 _ => {}
             },

@@ -1,5 +1,6 @@
 use std::char;
 use std::fmt;
+use std::str::FromStr;
 
 /// Namespaced reference to identify assets.
 ///
@@ -92,9 +93,27 @@ impl fmt::Display for AssetSlug {
     }
 }
 
+impl FromStr for AssetSlug {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let segments: Vec<&str> = s.split("/").collect();
+        if segments.len() == 2 {
+            AssetSlugBuilder::default()
+                .namespace(segments[0].to_string())
+                .name(segments[1].to_string())
+                .build()
+        } else {
+            Err(format!("Expected exactly one `/` in slug string: {:?}.", s))
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use super::AssetSlugBuilder;
+    use std::str::FromStr;
+
+    use super::{AssetSlug, AssetSlugBuilder};
 
     #[test]
     fn namespace_must_be_specified() {
@@ -232,5 +251,40 @@ mod tests {
         assert_eq!("忠犬", asset_slug.namespace);
         assert_eq!("ハチ公", asset_slug.name);
         assert_eq!("忠犬/ハチ公", format!("{}", asset_slug));
+    }
+
+    #[test]
+    fn from_str_returns_ok_when_valid() {
+        assert_eq!(
+            Ok(AssetSlug {
+                namespace: "test".to_string(),
+                name: "name".to_string()
+            }),
+            AssetSlug::from_str("test/name")
+        );
+    }
+
+    #[test]
+    fn from_str_returns_err_when_too_few_segments() {
+        assert_eq!(
+            Err("Expected exactly one `/` in slug string: \"test\".".to_string()),
+            AssetSlug::from_str("test")
+        );
+    }
+
+    #[test]
+    fn from_str_returns_err_when_too_many_segments() {
+        assert_eq!(
+            Err("Expected exactly one `/` in slug string: \"test/abc/def\".".to_string()),
+            AssetSlug::from_str("test/abc/def")
+        );
+    }
+
+    #[test]
+    fn from_str_returns_err_from_builder_when_invalid() {
+        assert_eq!(
+            Err("Asset name must not contain whitespace: `a b`.".to_string()),
+            AssetSlug::from_str("test/a b")
+        );
     }
 }

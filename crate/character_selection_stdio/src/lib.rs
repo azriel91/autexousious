@@ -7,9 +7,14 @@ extern crate amethyst;
 #[cfg(test)]
 extern crate amethyst_test_support;
 extern crate application_event;
+#[cfg(test)]
+extern crate application_test_support;
+#[cfg(test)]
+extern crate assets_test;
 extern crate character_selection_model;
 #[macro_use]
 extern crate derive_new;
+extern crate game_input;
 extern crate game_model;
 extern crate stdio_spi;
 extern crate structopt;
