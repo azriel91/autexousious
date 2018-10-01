@@ -18,7 +18,6 @@ use CharacterSelectionBundle;
 ///
 /// * `F`: Function to construct the state to return after character selection is complete.
 /// * `S`: State to return.
-/// * `E`: Custom event type that states can respond to.
 ///
 /// [state_builder]: character_selection_state/struct.CharacterSelectionStateBuilder.html
 #[derive(Derivative, new)]
