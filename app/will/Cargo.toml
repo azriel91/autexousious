@@ -15,6 +15,7 @@ game_input = { path = "../../crate/game_input" }
 game_mode_menu = { path = "../../crate/game_mode_menu" }
 loading = { path = "../../crate/loading" }
 map_loading = { path = "../../crate/map_loading" }
+map_selection_stdio = { path = "../../crate/map_selection_stdio" }
 log = "0.4"
 object_loading = { path = "../../crate/object_loading" }
 object_model = { path = "../../crate/object_model" }
