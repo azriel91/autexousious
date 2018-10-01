@@ -166,7 +166,7 @@ mod tests {
 
         let mut progress_counter = ProgressCounter::new();
         AssetLoader::load_maps(world, &mut progress_counter, asset_index.maps);
-    }
+    } // kcov-ignore
 
     /// Returns a function that adds a `MapSelection` and `MapSelectionStatus::Confirmed`.
     ///

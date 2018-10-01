@@ -9,4 +9,4 @@ game_model = { path = "../game_model" }
 heck = "0.3"
 lazy_static = "1.1"
 object_model = { path = "../object_model" }
-strum = "0.10"
+strum = "0.11"

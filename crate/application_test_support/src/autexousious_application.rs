@@ -234,7 +234,9 @@ mod test {
                     ObjectType::iter().for_each(|object_type| {
                         let objects = game_entities.objects.get(&object_type);
                         let object_entities = objects.unwrap_or_else(|| {
+                            // kcov-ignore-start
                             panic!("Expected entry for the `{}` object type.", object_type)
+                            // kcov-ignore-end
                         });
 
                         assert!(

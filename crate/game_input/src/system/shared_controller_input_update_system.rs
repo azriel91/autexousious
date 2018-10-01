@@ -114,7 +114,7 @@ mod test {
                                     controller_input.x_axis_value = -1.;
                                     controller_input.z_axis_value = 1.;
                                 });
-                        },
+                        }, // kcov-ignore
                     );
                 }).with_assertion(|world| {
                     let entity = world.read_resource::<EffectReturn<Entity>>().0;
@@ -135,7 +135,7 @@ mod test {
                                     controller_input.x_axis_value = 1.;
                                     controller_input.z_axis_value = -1.;
                                 });
-                        },
+                        }, // kcov-ignore
                     );
                 }).with_assertion(|world| {
                     let entity = world.read_resource::<EffectReturn<Entity>>().0;

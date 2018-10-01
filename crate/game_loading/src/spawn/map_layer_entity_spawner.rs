@@ -92,7 +92,10 @@ impl MapLayerEntitySpawner {
                     }).collect::<Vec<(Transform, SpriteRender)>>();
 
                 Some((components, map_animations))
+
+            // kcov-ignore-start
             } else {
+                // kcov-ignore-end
                 None
             }
         };
@@ -132,7 +135,10 @@ impl MapLayerEntitySpawner {
                 });
 
             entities
+
+        // kcov-ignore-start
         } else {
+            // kcov-ignore-end
             vec![]
         }
     }

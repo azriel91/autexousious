@@ -1,9 +1,11 @@
 use std::fmt::Debug;
 
-use amethyst::{core::SystemBundle, ecs::prelude::*, prelude::*};
+use amethyst::{core::SystemBundle, ecs::prelude::*, prelude::*, shrev::EventChannel};
 use application_event::AppEvent;
 use application_state::AppState;
-use character_selection_model::{CharacterSelections, CharacterSelectionsStatus};
+use character_selection_model::{
+    CharacterSelectionEvent, CharacterSelections, CharacterSelectionsStatus,
+};
 
 use CharacterSelectionBundle;
 
@@ -16,7 +18,6 @@ use CharacterSelectionBundle;
 ///
 /// * `F`: Function to construct the state to return after character selection is complete.
 /// * `S`: State to return.
-/// * `E`: Custom event type that states can respond to.
 ///
 /// [state_builder]: character_selection_state/struct.CharacterSelectionStateBuilder.html
 #[derive(Derivative, new)]
@@ -89,6 +90,30 @@ where
     fn on_resume(&mut self, data: StateData<GameData<'a, 'b>>) {
         let mut selections_status = data.world.write_resource::<CharacterSelectionsStatus>();
         *selections_status = CharacterSelectionsStatus::Confirmed;
+    }
+
+    fn handle_event(
+        &mut self,
+        data: StateData<GameData<'a, 'b>>,
+        event: StateEvent<AppEvent>,
+    ) -> Trans<GameData<'a, 'b>, AppEvent> {
+        match event {
+            StateEvent::Custom(app_event) => match app_event {
+                AppEvent::CharacterSelection(character_selection_event) => {
+                    debug!(
+                        "Received character_selection_event: {:?}",
+                        character_selection_event
+                    );
+                    let mut channel = data
+                        .world
+                        .write_resource::<EventChannel<CharacterSelectionEvent>>();
+                    channel.single_write(character_selection_event);
+                }
+                _ => {}
+            },
+            _ => {}
+        }
+        Trans::None
     }
 
     fn fixed_update(

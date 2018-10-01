@@ -58,7 +58,7 @@ impl CharacterSelectionWidgetInputSystem {
             };
             debug!(
                 "Sending character selection event: {:?}",
-                &character_selection_event
+                &character_selection_event // kcov-ignore
             );
             event_channel.single_write(character_selection_event);
         } else if last_input.x_axis_value == 0. && input.x_axis_value < 0. {
@@ -83,14 +83,14 @@ impl CharacterSelectionWidgetInputSystem {
             };
             debug!(
                 "Sending character selection event: {:?}",
-                &character_selection_event
+                &character_selection_event // kcov-ignore
             );
             event_channel.single_write(character_selection_event);
         } else if !last_input.attack && input.attack {
             let character_selection_event = CharacterSelectionEvent::Confirm;
             debug!(
                 "Sending character selection event: {:?}",
-                &character_selection_event
+                &character_selection_event // kcov-ignore
             );
             event_channel.single_write(character_selection_event);
         }

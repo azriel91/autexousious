@@ -1,10 +1,10 @@
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
-use amethyst::{core::SystemBundle, ecs::prelude::*, prelude::*};
+use amethyst::{core::SystemBundle, ecs::prelude::*, prelude::*, shrev::EventChannel};
 use application_event::AppEvent;
 use application_state::AppState;
-use map_selection_model::MapSelection;
+use map_selection_model::{MapSelection, MapSelectionEvent};
 
 use MapSelectionBundle;
 use MapSelectionStatus;
@@ -84,6 +84,27 @@ where
 
     fn on_resume(&mut self, data: StateData<GameData<'a, 'b>>) {
         self.reset_map_selection_state(data.world);
+    }
+
+    fn handle_event(
+        &mut self,
+        data: StateData<GameData<'a, 'b>>,
+        event: StateEvent<AppEvent>,
+    ) -> Trans<GameData<'a, 'b>, AppEvent> {
+        match event {
+            StateEvent::Custom(app_event) => match app_event {
+                AppEvent::MapSelection(map_selection_event) => {
+                    debug!("Received map_selection_event: {:?}", map_selection_event);
+                    let mut channel = data
+                        .world
+                        .write_resource::<EventChannel<MapSelectionEvent>>();
+                    channel.single_write(map_selection_event);
+                }
+                _ => {}
+            },
+            _ => {}
+        }
+        Trans::None
     }
 
     fn fixed_update(

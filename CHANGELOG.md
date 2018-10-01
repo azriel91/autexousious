@@ -5,6 +5,8 @@
 ### Added
 
 * Map selection UI that allows users to select maps. ([#66][#66])
+* Character selection controllable via stdin. ([#67][#67])
+* Map selection controllable via stdin. ([#67][#67])
 
 ### Changed
 
@@ -18,6 +20,7 @@
 [#57]: https://gitlab.com/azriel91/autexousious/issues/57
 [#63]: https://gitlab.com/azriel91/autexousious/issues/63
 [#66]: https://gitlab.com/azriel91/autexousious/issues/66
+[#67]: https://gitlab.com/azriel91/autexousious/issues/67
 [#72]: https://gitlab.com/azriel91/autexousious/issues/72
 
 ## 0.5.0 (2018-08-31)
