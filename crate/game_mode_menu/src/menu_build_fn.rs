@@ -33,7 +33,7 @@ impl MenuBuildFn {
 
         // TODO: Use UI Buttons: https://github.com/amethyst/amethyst/pull/798
         let mut item_indices = vec![Index::StartGame, Index::Exit];
-        let total_items = item_indices.len() as f32;
+        let item_count = item_indices.len();
         item_indices
             .drain(..)
             .enumerate()
@@ -42,7 +42,7 @@ impl MenuBuildFn {
                     index.title().to_string(),
                     Anchor::Middle,
                     0.,
-                    (order as f32 * text_h) - (total_items * text_h / 2.),
+                    ((item_count - order) as f32 * text_h) - (item_count as f32 * text_h / 2.),
                     1.,
                     text_w,
                     text_h,

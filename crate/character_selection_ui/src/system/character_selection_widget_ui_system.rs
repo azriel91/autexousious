@@ -77,7 +77,7 @@ impl CharacterSelectionWidgetUiSystem {
             self.ui_initialized = true;
             let controller_count = input_config.controller_configs.len();
 
-            let text_w = 200.;
+            let text_w = 250.;
             let text_h = 50.;
 
             let font = theme
@@ -102,7 +102,8 @@ impl CharacterSelectionWidgetUiSystem {
                     format!("CharacterSelectionWidget#{}", controller_id),
                     Anchor::Middle,
                     0.,
-                    (index as f32 * text_h) - (controller_count as f32 * text_h / 2.),
+                    ((controller_count - index) as f32 * text_h)
+                        - (controller_count as f32 * text_h / 2.),
                     1.,
                     text_w,
                     text_h,
