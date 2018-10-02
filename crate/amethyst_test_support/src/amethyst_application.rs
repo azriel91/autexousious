@@ -61,7 +61,7 @@ pub const SCREEN_WIDTH: u32 = 800;
 pub const SCREEN_HEIGHT: u32 = 600;
 /// The ratio between the backing framebuffer resolution and the window size in screen pixels.
 /// This is typically one for a normal display and two for a retina display.
-pub const HIDPI: f32 = 1.;
+pub const HIDPI: f64 = 1.;
 
 // Use a mutex to prevent multiple tests that open GL windows from running simultaneously, due to
 // race conditions causing failures in X.

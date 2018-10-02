@@ -4,7 +4,7 @@ version = "0.5.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 
 [dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop" }
+amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 application = { path = "../application" }
 derive-new = "0.5"
 game_model = { path = "../game_model" }
