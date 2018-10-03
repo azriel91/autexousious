@@ -4,7 +4,7 @@ use std::path::PathBuf;
 
 use amethyst::{assets::ProgressCounter, prelude::*};
 use application_event::AppEvent;
-use application_state::AppState;
+use application_state::AutexState;
 use application_ui::ThemeLoader;
 
 use AssetLoader;
@@ -22,7 +22,7 @@ use AssetLoader;
 #[derivative(Debug)]
 pub struct LoadingState<'a, 'b, S>
 where
-    S: AppState<'a, 'b>,
+    S: AutexState<'a, 'b>,
 {
     /// Path to the assets directory.
     assets_dir: PathBuf,
@@ -33,12 +33,12 @@ where
     #[derivative(Debug = "ignore")]
     progress_counter: ProgressCounter,
     /// Lifetime tracker.
-    phantom_data: PhantomData<AppState<'a, 'b>>,
+    phantom_data: PhantomData<AutexState<'a, 'b>>,
 }
 
 impl<'a, 'b, S> LoadingState<'a, 'b, S>
 where
-    S: AppState<'a, 'b>,
+    S: AutexState<'a, 'b>,
 {
     /// Returns a new `State`
     pub fn new(assets_dir: PathBuf, next_state: S) -> Self {
@@ -53,7 +53,7 @@ where
 
 impl<'a, 'b, S> State<GameData<'a, 'b>, AppEvent> for LoadingState<'a, 'b, S>
 where
-    S: AppState<'a, 'b> + 'static,
+    S: AutexState<'a, 'b> + 'static,
 {
     fn on_start(&mut self, mut data: StateData<GameData>) {
         if let Err(e) = ThemeLoader::load(&mut data.world) {

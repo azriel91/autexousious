@@ -3,7 +3,7 @@ use std::marker::PhantomData;
 
 use amethyst::{core::SystemBundle, ecs::prelude::*, prelude::*, shrev::EventChannel};
 use application_event::AppEvent;
-use application_state::AppState;
+use application_state::AutexState;
 use map_selection_model::{MapSelection, MapSelectionEvent};
 
 use MapSelectionBundle;
@@ -20,7 +20,7 @@ use MapSelectionStatus;
 pub struct MapSelectionState<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
-    S: AppState<'a, 'b> + 'static,
+    S: AutexState<'a, 'b> + 'static,
 {
     /// State specific dispatcher builder.
     #[derivative(Debug = "ignore")]
@@ -37,7 +37,7 @@ where
 impl<'a, 'b, F, S> MapSelectionState<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
-    S: AppState<'a, 'b> + 'static,
+    S: AutexState<'a, 'b> + 'static,
 {
     /// Sets up the dispatcher for this state.
     ///
@@ -71,7 +71,7 @@ where
 impl<'a, 'b, F, S> State<GameData<'a, 'b>, AppEvent> for MapSelectionState<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
-    S: AppState<'a, 'b> + 'static,
+    S: AutexState<'a, 'b> + 'static,
 {
     fn on_start(&mut self, mut data: StateData<GameData<'a, 'b>>) {
         self.initialize_dispatcher(&mut data.world);
@@ -139,7 +139,7 @@ where
 pub struct MapSelectionStateBuilder<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
-    S: AppState<'a, 'b> + 'static,
+    S: AutexState<'a, 'b> + 'static,
 {
     /// State specific dispatcher builder.
     #[derivative(Debug = "ignore")]
@@ -158,7 +158,7 @@ where
 impl<'a, 'b, F, S> MapSelectionStateBuilder<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
-    S: AppState<'a, 'b> + 'static,
+    S: AutexState<'a, 'b> + 'static,
 {
     /// Registers a bundle whose systems to run in the `MapSelectionState`.
     ///

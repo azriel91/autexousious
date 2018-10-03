@@ -2,7 +2,7 @@ use std::fmt::Debug;
 
 use amethyst::{core::SystemBundle, ecs::prelude::*, prelude::*, shrev::EventChannel};
 use application_event::AppEvent;
-use application_state::AppState;
+use application_state::AutexState;
 use character_selection_model::{
     CharacterSelectionEvent, CharacterSelections, CharacterSelectionsStatus,
 };
@@ -25,7 +25,7 @@ use CharacterSelectionBundle;
 pub struct CharacterSelectionState<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
-    S: AppState<'a, 'b> + 'static,
+    S: AutexState<'a, 'b> + 'static,
 {
     /// State specific dispatcher builder.
     #[derivative(Debug = "ignore")]
@@ -42,7 +42,7 @@ where
 impl<'a, 'b, F, S> CharacterSelectionState<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
-    S: AppState<'a, 'b> + 'static,
+    S: AutexState<'a, 'b> + 'static,
 {
     /// Sets up the dispatcher for this state.
     ///
@@ -76,7 +76,7 @@ where
 impl<'a, 'b, F, S> State<GameData<'a, 'b>, AppEvent> for CharacterSelectionState<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
-    S: AppState<'a, 'b> + 'static,
+    S: AutexState<'a, 'b> + 'static,
 {
     fn on_start(&mut self, mut data: StateData<GameData<'a, 'b>>) {
         self.initialize_dispatcher(&mut data.world);
@@ -153,7 +153,7 @@ where
 pub struct CharacterSelectionStateBuilder<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
-    S: AppState<'a, 'b> + 'static,
+    S: AutexState<'a, 'b> + 'static,
 {
     /// State specific dispatcher builder.
     #[derivative(Debug = "ignore")]
@@ -170,7 +170,7 @@ where
 impl<'a, 'b, F, S> CharacterSelectionStateBuilder<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
-    S: AppState<'a, 'b> + 'static,
+    S: AutexState<'a, 'b> + 'static,
 {
     /// Registers a bundle whose systems to run in the `CharacterSelectionState`.
     ///
