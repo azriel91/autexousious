@@ -1,15 +1,43 @@
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
-use amethyst::{core::SystemBundle, ecs::prelude::*, prelude::*, shrev::EventChannel};
+use amethyst::{ecs::prelude::*, prelude::*, shrev::EventChannel};
 use application_event::AppEvent;
-use application_state::AutexState;
+use application_state::{AppState, AppStateBuilder, AutexState};
 use map_selection_model::{MapSelection, MapSelectionEvent};
 
-use MapSelectionBundle;
 use MapSelectionStatus;
 
 /// `State` where map selection takes place.
+///
+/// This state is not intended to be constructed directly, but through the
+/// [`MapSelectionStateBuilder`][state_builder].
+///
+/// # Type Parameters
+///
+/// * `F`: Function to construct the state to return after map selection is complete.
+/// * `S`: State to return.
+///
+/// [state_builder]: map_selection_state/struct.MapSelectionStateBuilder.html
+pub type MapSelectionState<'a, 'b, F, S> =
+    AppState<'a, 'b, MapSelectionStateDelegate<'a, 'b, F, S>>;
+
+/// Builder for a `MapSelectionState`.
+///
+/// `SystemBundle`s to run in the `MapSelectionState`'s dispatcher are registered on this
+/// builder.
+///
+/// # Type Parameters
+///
+/// * `F`: Function to construct the state to return after map selection is complete.
+/// * `S`: `State` to delegate to.
+pub type MapSelectionStateBuilder<'a, 'b, F, S> =
+    AppStateBuilder<'a, 'b, MapSelectionStateDelegate<'a, 'b, F, S>>;
+
+/// Delegate `State` for map selection.
+///
+/// This state is not intended to be used directly, but wrapped in an `AppState`. The
+/// `MapSelectionState` is an alias with this as a delegate state.
 ///
 /// # Type Parameters
 ///
@@ -17,69 +45,36 @@ use MapSelectionStatus;
 /// * `S`: State to return.
 #[derive(Derivative, new)]
 #[derivative(Debug)]
-pub struct MapSelectionState<'a, 'b, F, S>
+pub struct MapSelectionStateDelegate<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
     S: AutexState<'a, 'b> + 'static,
 {
-    /// State specific dispatcher builder.
-    #[derivative(Debug = "ignore")]
-    dispatcher_builder: Option<DispatcherBuilder<'a, 'b>>,
-    /// State specific dispatcher.
-    #[derivative(Debug = "ignore")]
-    #[new(default)]
-    dispatcher: Option<Dispatcher<'a, 'b>>,
     /// The `State` that follows this one.
     #[derivative(Debug(bound = "F: Debug"))]
     next_state_fn: F,
+    /// `PhantomData`.
+    marker: PhantomData<AutexState<'a, 'b>>,
 }
 
-impl<'a, 'b, F, S> MapSelectionState<'a, 'b, F, S>
+impl<'a, 'b, F, S> MapSelectionStateDelegate<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
     S: AutexState<'a, 'b> + 'static,
 {
-    /// Sets up the dispatcher for this state.
-    ///
-    /// # Parameters
-    ///
-    /// * `world`: `World` to operate on.
-    fn initialize_dispatcher(&mut self, world: &mut World) {
-        if self.dispatcher.is_none() {
-            let mut dispatcher = self
-                .dispatcher_builder
-                .take()
-                .expect(
-                    "Expected `dispatcher_builder` to exist when `dispatcher` is not yet built.",
-                ).build();
-            dispatcher.setup(&mut world.res);
-            self.dispatcher = Some(dispatcher);
-        }
-    }
-
-    /// Terminates the dispatcher.
-    fn terminate_dispatcher(&mut self) {
-        self.dispatcher = None;
-    }
-
     fn reset_map_selection_state(&self, world: &mut World) {
         let mut map_selection_status = world.write_resource::<MapSelectionStatus>();
         *map_selection_status = MapSelectionStatus::Pending;
     }
 }
 
-impl<'a, 'b, F, S> State<GameData<'a, 'b>, AppEvent> for MapSelectionState<'a, 'b, F, S>
+impl<'a, 'b, F, S> State<GameData<'a, 'b>, AppEvent> for MapSelectionStateDelegate<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
     S: AutexState<'a, 'b> + 'static,
 {
     fn on_start(&mut self, mut data: StateData<GameData<'a, 'b>>) {
-        self.initialize_dispatcher(&mut data.world);
         self.reset_map_selection_state(&mut data.world);
-    }
-
-    fn on_stop(&mut self, _data: StateData<GameData<'a, 'b>>) {
-        self.terminate_dispatcher();
     }
 
     fn on_resume(&mut self, data: StateData<GameData<'a, 'b>>) {
@@ -107,13 +102,7 @@ where
         Trans::None
     }
 
-    fn fixed_update(
-        &mut self,
-        data: StateData<GameData<'a, 'b>>,
-    ) -> Trans<GameData<'a, 'b>, AppEvent> {
-        data.data.update(&data.world);
-        self.dispatcher.as_mut().unwrap().dispatch(&data.world.res);
-
+    fn update(&mut self, data: StateData<GameData<'a, 'b>>) -> Trans<GameData<'a, 'b>, AppEvent> {
         let map_selection_status = data.world.read_resource::<MapSelectionStatus>();
         if *map_selection_status == MapSelectionStatus::Confirmed {
             let map_selection = data.world.read_resource::<MapSelection>();
@@ -125,75 +114,5 @@ where
         } else {
             Trans::None
         }
-    }
-}
-
-/// Builder for the `MapSelectionState`.
-///
-/// # Type Parameters
-///
-/// * `F`: Function to construct the state to return after map selection is complete.
-/// * `S`: State to return.
-#[derive(Derivative, new)]
-#[derivative(Debug)]
-pub struct MapSelectionStateBuilder<'a, 'b, F, S>
-where
-    F: Fn() -> Box<S>,
-    S: AutexState<'a, 'b> + 'static,
-{
-    /// State specific dispatcher builder.
-    #[derivative(Debug = "ignore")]
-    #[new(value = "DispatcherBuilder::new()")]
-    dispatcher_builder: DispatcherBuilder<'a, 'b>,
-    /// System names that the `MapSelectionSystem` should depend on.
-    #[new(default)]
-    map_selection_system_dependencies: Option<Vec<String>>,
-    /// The `State` that follows this one.
-    #[derivative(Debug(bound = "F: Debug"))]
-    next_state_fn: F,
-    /// Data type used by the state and the returned state (see `StateData`).
-    game_data: PhantomData<(GameData<'a, 'b>, AppEvent)>,
-}
-
-impl<'a, 'b, F, S> MapSelectionStateBuilder<'a, 'b, F, S>
-where
-    F: Fn() -> Box<S>,
-    S: AutexState<'a, 'b> + 'static,
-{
-    /// Registers a bundle whose systems to run in the `MapSelectionState`.
-    ///
-    /// # Parameters
-    ///
-    /// * `bundle`: Bundle to register.
-    pub fn with_bundle<B: SystemBundle<'a, 'b>>(mut self, bundle: B) -> Self {
-        bundle
-            .build(&mut self.dispatcher_builder)
-            .expect("Failed to register bundle for `MapSelectionState`.");
-        self
-    }
-
-    /// Specifies system dependencies for the `MapSelectionSystem`.
-    ///
-    /// # Parameters
-    ///
-    /// * `dependencies`: Names of the systems to depend on.
-    pub fn with_system_dependencies(mut self, dependencies: Vec<String>) -> Self {
-        self.map_selection_system_dependencies = Some(dependencies);
-        self
-    }
-
-    /// Builds and returns the `MapSelectionState`.
-    pub fn build(mut self) -> MapSelectionState<'a, 'b, F, S> {
-        let mut bundle = MapSelectionBundle::new();
-
-        if let Some(deps) = self.map_selection_system_dependencies {
-            bundle = bundle.with_system_dependencies(&deps);
-        }
-
-        bundle
-            .build(&mut self.dispatcher_builder)
-            .expect("Failed to register `MapSelectionBundle` with dispatcher.");
-
-        MapSelectionState::new(Some(self.dispatcher_builder), self.next_state_fn)
     }
 }

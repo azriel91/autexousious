@@ -1,10 +1,12 @@
 use amethyst::prelude::*;
 use application_event::AppEvent;
-use character_selection::CharacterSelectionStateBuilder;
+use character_selection::{
+    CharacterSelectionBundle, CharacterSelectionStateBuilder, CharacterSelectionStateDelegate,
+};
 use character_selection_ui::CharacterSelectionUiBundle;
 use game_loading::GameLoadingState;
 use game_play::GamePlayState;
-use map_selection::MapSelectionStateBuilder;
+use map_selection::{MapSelectionBundle, MapSelectionStateBuilder, MapSelectionStateDelegate};
 use map_selection_ui::MapSelectionUiBundle;
 
 /// Game mode menu indicies.
@@ -33,19 +35,25 @@ impl Index {
                 let game_play_fn = || Box::new(GamePlayState::new());
                 let game_loading_fn = move || Box::new(GameLoadingState::new(game_play_fn));
                 let map_selection_fn = move || {
-                    let state = MapSelectionStateBuilder::new(game_loading_fn)
-                        .with_bundle(MapSelectionUiBundle::new())
-                        .with_system_dependencies(MapSelectionUiBundle::system_names())
-                        .build();
+                    let state = MapSelectionStateBuilder::new(MapSelectionStateDelegate::new(
+                        game_loading_fn,
+                    )).with_bundle(MapSelectionUiBundle::new())
+                    .with_bundle(
+                        MapSelectionBundle::new()
+                            .with_system_dependencies(&MapSelectionUiBundle::system_names()),
+                    ).build();
 
                     Box::new(state)
                 };
                 // kcov-ignore-end
                 let character_selection_state = {
-                    let state = CharacterSelectionStateBuilder::new(map_selection_fn)
-                        .with_bundle(CharacterSelectionUiBundle::new())
-                        .with_system_dependencies(CharacterSelectionUiBundle::system_names())
-                        .build();
+                    let state = CharacterSelectionStateBuilder::new(
+                        CharacterSelectionStateDelegate::new(map_selection_fn),
+                    ).with_bundle(CharacterSelectionUiBundle::new())
+                    .with_bundle(
+                        CharacterSelectionBundle::new()
+                            .with_system_dependencies(&CharacterSelectionUiBundle::system_names()),
+                    ).build();
                     Box::new(state)
                 };
 

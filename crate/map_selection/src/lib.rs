@@ -29,7 +29,9 @@ extern crate typename;
 extern crate typename_derive;
 
 pub use map_selection_bundle::MapSelectionBundle;
-pub use map_selection_state::{MapSelectionState, MapSelectionStateBuilder};
+pub use map_selection_state::{
+    MapSelectionState, MapSelectionStateBuilder, MapSelectionStateDelegate,
+};
 pub use map_selection_status::MapSelectionStatus;
 pub(crate) use system::MapSelectionSystem;
 
