@@ -1,0 +1,10 @@
+[package]
+name = "game_mode_selection_model"
+version = "0.6.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+
+[dependencies]
+amethyst_utils = { git = "https://github.com/amethyst/amethyst.git" }
+application_menu = { path = "../application_menu" }
+strum = "0.11"
+strum_macros = "0.11"

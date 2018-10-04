@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
@@ -5,7 +6,7 @@ use amethyst::{core::SystemBundle, ecs::prelude::*, prelude::*};
 use amethyst_utils::removal::{self, Removal};
 use application_event::AppEvent;
 
-use AutexState;
+use {AutexState, HookFn, HookableFn};
 
 /// Wrapper `State` with a custom dispatcher.
 ///
@@ -35,6 +36,8 @@ where
     /// The `State` to delegate to.
     #[derivative(Debug(bound = "S: Debug"))]
     delegate: S,
+    /// Functions to run at the beginning of the various `State` methods.
+    hook_fns: HashMap<HookableFn, Vec<HookFn>>,
     /// `PhantomData` for `Removal`.
     marker: PhantomData<I>,
 }
@@ -52,6 +55,14 @@ where
     fn initialize_dispatcher(&mut self, world: &mut World) {
         self.dispatcher.setup(&mut world.res);
     }
+
+    fn remove_entities(world: &mut World) {
+        removal::exec_removal(
+            &*world.entities(),
+            &world.read_storage::<Removal<I>>(),
+            I::default(),
+        );
+    }
 }
 
 impl<'a, 'b, S, I> State<GameData<'a, 'b>, AppEvent> for AppState<'a, 'b, S, I>
@@ -60,26 +71,50 @@ where
     I: Clone + Debug + Default + PartialEq + Send + Sync + 'static,
 {
     fn on_start(&mut self, mut data: StateData<GameData<'a, 'b>>) {
+        // Register the `Removal<I>` component first, because hook functions may rely on it.
         &data.world.register::<Removal<I>>();
+
+        if let Some(ref functions) = self.hook_fns.get(&HookableFn::OnStart) {
+            functions
+                .iter()
+                .for_each(|function| function(&mut data.world));
+        }
 
         self.initialize_dispatcher(&mut data.world);
         self.delegate.on_start(data);
     }
 
-    fn on_stop(&mut self, data: StateData<GameData<'a, 'b>>) {
-        removal::exec_removal(
-            &*data.world.entities(),
-            &data.world.read_storage::<Removal<I>>(),
-            I::default(),
-        );
+    fn on_stop(&mut self, mut data: StateData<GameData<'a, 'b>>) {
+        if let Some(ref functions) = self.hook_fns.get(&HookableFn::OnStop) {
+            functions
+                .iter()
+                .for_each(|function| function(&mut data.world));
+        }
+
+        Self::remove_entities(&mut data.world);
+
         self.delegate.on_stop(data);
     }
 
-    fn on_pause(&mut self, data: StateData<GameData<'a, 'b>>) {
+    fn on_pause(&mut self, mut data: StateData<GameData<'a, 'b>>) {
+        if let Some(ref functions) = self.hook_fns.get(&HookableFn::OnPause) {
+            functions
+                .iter()
+                .for_each(|function| function(&mut data.world));
+        }
+
+        Self::remove_entities(&mut data.world);
+
         self.delegate.on_pause(data);
     }
 
-    fn on_resume(&mut self, data: StateData<GameData<'a, 'b>>) {
+    fn on_resume(&mut self, mut data: StateData<GameData<'a, 'b>>) {
+        if let Some(ref functions) = self.hook_fns.get(&HookableFn::OnResume) {
+            functions
+                .iter()
+                .for_each(|function| function(&mut data.world));
+        }
+
         self.delegate.on_resume(data);
     }
 
@@ -130,6 +165,9 @@ where
     /// The `State` to delegate to.
     #[derivative(Debug(bound = "S: Debug"))]
     delegate: S,
+    /// Functions to run at the beginning of the various `State` methods.
+    #[new(default)]
+    hook_fns: HashMap<HookableFn, Vec<HookFn>>,
     /// `PhantomData` for `Removal`.
     marker: PhantomData<I>,
 }
@@ -151,6 +189,21 @@ where
         self
     }
 
+    /// Registers a function to be run at the beginning of a particular `State` method.
+    ///
+    /// # Parameters
+    ///
+    /// * `hookable_fn`: Method to run the function in.
+    /// * `function`: Function to run.
+    pub fn with_hook_fn(mut self, hookable_fn: HookableFn, function: HookFn) -> Self {
+        self.hook_fns
+            .entry(hookable_fn)
+            .or_insert_with(Vec::new)
+            .push(function);
+
+        self
+    }
+
     /// Registers a system to run in the `AppState`.
     ///
     /// # Parameters
@@ -166,7 +219,11 @@ where
 
     /// Builds and returns the `AppState`.
     pub fn build(self) -> AppState<'a, 'b, S, I> {
-        AppState::new(self.dispatcher_builder.build(), self.delegate)
+        AppState::new(
+            self.dispatcher_builder.build(),
+            self.delegate,
+            self.hook_fns,
+        )
     }
 }
 
@@ -183,14 +240,18 @@ mod tests {
     use rayon::ThreadPoolBuilder;
 
     use super::{AppState, AppStateBuilder};
+    use HookFn;
+    use HookableFn;
 
     type Invocations = Rc<RefCell<Vec<Invocation>>>;
+
+    // === Delegation === //
 
     macro_rules! test_delegate {
         ($test_name:ident, $function:ident, $invocation:expr) => {
             #[test]
             fn $test_name() {
-                let (mut world, mut game_data, invocations, mut state) = setup();
+                let (mut world, mut game_data, invocations, mut state) = setup_with_defaults();
 
                 state.$function(StateData::new(&mut world, &mut game_data));
 
@@ -212,7 +273,7 @@ mod tests {
 
     #[test]
     fn delegates_handle_event() {
-        let (mut world, mut game_data, invocations, mut state) = setup();
+        let (mut world, mut game_data, invocations, mut state) = setup_with_defaults();
 
         let event = StateEvent::Custom(AppEvent::CharacterSelection(
             CharacterSelectionEvent::Confirm,
@@ -234,30 +295,38 @@ mod tests {
         assert!(world.res.try_fetch::<Counter>().is_some());
     }
 
+    // === `Removal` component === //
+
     #[test]
     fn on_start_registers_removal_component() {
-        let (mut world, mut game_data, _invocations, mut state) = setup_without_removal_component(
-            GameDataBuilder::default(),
-            None as Option<(SystemCounter, &str, &[&str])>,
-        );
+        let (mut world, mut game_data, _invocations, mut state) = setup_without_removal();
 
         state.on_start(StateData::new(&mut world, &mut game_data));
 
         world.read_storage::<Removal<()>>(); // panics if it is not registered.
     }
 
-    #[test]
-    fn on_stop_deletes_entities_with_removal_component() {
-        let (mut world, mut game_data, _invocations, mut state) = setup();
-        let entity_with_removal = world.create_entity().with(Removal::new(())).build();
-        let entity_without_removal = world.create_entity().build();
+    macro_rules! test_delete_removal_entities {
+        ($test_name:ident, $method_name:ident) => {
+            #[test]
+            fn $test_name() {
+                let (mut world, mut game_data, _invocations, mut state) = setup_with_defaults();
+                let entity_with_removal = world.create_entity().with(Removal::new(())).build();
+                let entity_without_removal = world.create_entity().build();
 
-        state.on_stop(StateData::new(&mut world, &mut game_data));
-        world.maintain();
+                state.$method_name(StateData::new(&mut world, &mut game_data));
+                world.maintain();
 
-        assert!(!world.is_alive(entity_with_removal));
-        assert!(world.is_alive(entity_without_removal));
+                assert!(!world.is_alive(entity_with_removal));
+                assert!(world.is_alive(entity_without_removal));
+            }
+        };
     }
+
+    test_delete_removal_entities!(on_stop_deletes_entities_with_removal_component, on_stop);
+    test_delete_removal_entities!(on_pause_deletes_entities_with_removal_component, on_pause);
+
+    // === Dispatcher === //
 
     #[test]
     fn update_runs_game_data_dispatcher_then_state_specific_dispatcher() {
@@ -273,13 +342,54 @@ mod tests {
         assert_eq!(CopyCounter(10), *copy_counter.unwrap());
     }
 
-    fn setup<'a, 'b>() -> (
+    // === Hook functions === //
+
+    macro_rules! test_hook_function {
+        ($test_name:ident, $method_name:ident, $hook_fn_value:expr) => {
+            #[test]
+            fn $test_name() {
+                let (mut world, mut game_data, _invocations, mut state) =
+                    setup_with_hook_functions();
+
+                state.$method_name(StateData::new(&mut world, &mut game_data));
+
+                let hook_fn_value = world.res.try_fetch::<HookFnValue>();
+                assert!(hook_fn_value.is_some());
+                assert_eq!(HookFnValue($hook_fn_value), *hook_fn_value.unwrap());
+            }
+        };
+    }
+
+    test_hook_function!(on_start_runs_hook_functions, on_start, 1);
+    test_hook_function!(on_stop_runs_hook_functions, on_stop, 2);
+    test_hook_function!(on_pause_runs_hook_functions, on_pause, 4);
+    test_hook_function!(on_resume_runs_hook_functions, on_resume, 8);
+
+    // --- fixtures --- //
+
+    fn setup_with_defaults<'a, 'b>() -> (
         World,
         GameData<'a, 'b>,
         Invocations,
         AppState<'a, 'b, MockState, ()>,
     ) {
-        setup_with_system(
+        setup(
+            true,
+            false,
+            GameDataBuilder::default(),
+            None as Option<(SystemCounter, &str, &[&str])>,
+        )
+    }
+
+    fn setup_without_removal<'a, 'b>() -> (
+        World,
+        GameData<'a, 'b>,
+        Invocations,
+        AppState<'a, 'b, MockState, ()>,
+    ) {
+        setup(
+            false,
+            false,
             GameDataBuilder::default(),
             None as Option<(SystemCounter, &str, &[&str])>,
         )
@@ -297,14 +407,26 @@ mod tests {
     where
         Sys: for<'s> System<'s> + Send + Sync + 'a,
     {
-        let (mut world, game_data, invocations, state) =
-            setup_without_removal_component(game_data_builder, system);
-        world.register::<Removal<()>>();
-
-        (world, game_data, invocations, state)
+        setup(true, false, game_data_builder, system)
     }
 
-    fn setup_without_removal_component<'a, 'b, Sys>(
+    fn setup_with_hook_functions<'a, 'b>() -> (
+        World,
+        GameData<'a, 'b>,
+        Invocations,
+        AppState<'a, 'b, MockState, ()>,
+    ) {
+        setup(
+            true,
+            true,
+            GameDataBuilder::default(),
+            None as Option<(SystemCounter, &str, &[&str])>,
+        )
+    }
+
+    fn setup<'a, 'b, Sys>(
+        with_removal: bool,
+        with_hook_fns: bool,
         game_data_builder: GameDataBuilder<'a, 'b>,
         system: Option<(Sys, &str, &[&str])>,
     ) -> (
@@ -317,6 +439,10 @@ mod tests {
         Sys: for<'s> System<'s> + Send + Sync + 'a,
     {
         let mut world = World::new();
+        if with_removal {
+            world.register::<Removal<()>>();
+        }
+
         world.add_resource(Arc::new(
             ThreadPoolBuilder::default()
                 .build()
@@ -331,6 +457,23 @@ mod tests {
             let mut builder = AppStateBuilder::new(mock_state);
             if let Some((system, name, deps)) = system {
                 builder = builder.with_system(system, name, deps)
+            }
+
+            if with_hook_fns {
+                builder = builder
+                    .with_hook_fn(
+                        HookableFn::OnStart,
+                        HookFn(|world| world.add_resource(HookFnValue(1))),
+                    ).with_hook_fn(
+                        HookableFn::OnStop,
+                        HookFn(|world| world.add_resource(HookFnValue(2))),
+                    ).with_hook_fn(
+                        HookableFn::OnPause,
+                        HookFn(|world| world.add_resource(HookFnValue(4))),
+                    ).with_hook_fn(
+                        HookableFn::OnResume,
+                        HookFn(|world| world.add_resource(HookFnValue(8))),
+                    );
             }
 
             builder.build()
@@ -400,6 +543,8 @@ mod tests {
     struct Counter(u32);
     #[derive(Debug, Default, PartialEq)]
     struct CopyCounter(u32);
+    #[derive(Debug, PartialEq)]
+    struct HookFnValue(u32);
 
     #[derive(Debug)]
     struct SystemCounter;

@@ -7,10 +7,13 @@ extern crate amethyst;
 extern crate application;
 extern crate application_input;
 extern crate application_robot;
+extern crate application_state;
 extern crate application_ui;
 extern crate character_selection_stdio;
 extern crate game_input;
-extern crate game_mode_menu;
+extern crate game_mode_selection;
+extern crate game_mode_selection_stdio;
+extern crate game_mode_selection_ui;
 extern crate loading;
 #[macro_use]
 extern crate log;
@@ -43,9 +46,12 @@ use application::resource::{
     {self, load_in},
 };
 use application_robot::RobotState;
+use application_state::{HookFn, HookableFn};
 use character_selection_stdio::CharacterSelectionStdioBundle;
 use game_input::{GameInputBundle, InputConfig, PlayerActionControl, PlayerAxisControl};
-use game_mode_menu::GameModeMenuState;
+use game_mode_selection::{GameModeSelectionStateBuilder, GameModeSelectionStateDelegate};
+use game_mode_selection_stdio::GameModeSelectionStdioBundle;
+use game_mode_selection_ui::{GameModeSelectionUiBuildFn, GameModeSelectionUiBundle};
 use loading::LoadingState;
 use map_loading::MapLoadingBundle;
 use map_selection_stdio::MapSelectionStdioBundle;
@@ -73,8 +79,17 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
 
     let assets_dir = assets_dir(Some(development_base_dirs!()))?;
 
-    let game_mode_menu_state = GameModeMenuState::new();
-    let loading_state = LoadingState::<_>::new(assets_dir.clone(), game_mode_menu_state);
+    let game_mode_selection_state =
+        GameModeSelectionStateBuilder::new(GameModeSelectionStateDelegate::new())
+            .with_bundle(GameModeSelectionUiBundle::new())
+            .with_hook_fn(
+                HookableFn::OnStart,
+                HookFn(*GameModeSelectionUiBuildFn::new()),
+            ).with_hook_fn(
+                HookableFn::OnResume,
+                HookFn(*GameModeSelectionUiBuildFn::new()),
+            ).build();
+    let loading_state = LoadingState::<_>::new(assets_dir.clone(), game_mode_selection_state);
     let state = RobotState::new(Box::new(loading_state));
 
     let mut game_data = GameDataBuilder::default();
@@ -131,6 +146,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(GameInputBundle::new(input_config))?
             .with_bundle(StdioViewBundle::new())?
             .with_bundle(CharacterSelectionStdioBundle::new())?
+            .with_bundle(GameModeSelectionStdioBundle::new())?
             .with_bundle(MapSelectionStdioBundle::new())?
             .with_bundle(MapLoadingBundle::new())?
             .with_bundle(ObjectLoadingBundle::new())?;

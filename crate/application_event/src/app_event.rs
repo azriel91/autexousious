@@ -1,4 +1,5 @@
 use character_selection_model::CharacterSelectionEvent;
+use game_mode_selection_model::GameModeSelectionEvent;
 use map_selection_model::MapSelectionEvent;
 
 /// Type encompassing all state event types.
@@ -16,6 +17,8 @@ use map_selection_model::MapSelectionEvent;
 pub enum AppEvent {
     /// `character_selection` events.
     CharacterSelection(CharacterSelectionEvent),
+    /// `game_mode_selection` events.
+    GameModeSelection(GameModeSelectionEvent),
     /// `map_selection` events.
     MapSelection(MapSelectionEvent),
 }
