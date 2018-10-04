@@ -46,6 +46,7 @@ fn run(&mut self, (input_controlleds, mut controller_inputs, shared_input_contro
         for (entity, _) in (&*entities, &shared_input_controlleds).join() {
             controller_inputs
                 .insert(entity, merged_input)
+                // kcov-ignore-start
                 .unwrap_or_else(|e| {
                     panic!(
                         "Failed to replace `{}`. Error: `{}`",
@@ -53,6 +54,7 @@ fn run(&mut self, (input_controlleds, mut controller_inputs, shared_input_contro
                         e
                     )
                 });
+            // kcov-ignore-end
         }
     }
 }

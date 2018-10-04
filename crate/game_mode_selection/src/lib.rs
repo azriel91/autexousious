@@ -9,6 +9,8 @@ extern crate application_menu;
 extern crate application_state;
 extern crate character_selection;
 extern crate character_selection_ui;
+#[cfg(test)]
+extern crate debug_util_amethyst;
 #[macro_use]
 extern crate derivative;
 #[macro_use]

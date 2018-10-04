@@ -19,5 +19,8 @@ log = "0.4"
 map_selection = { path = "../map_selection" }
 map_selection_ui = { path = "../map_selection_ui" }
 
+[dev-dependencies]
+debug_util_amethyst = { path = "../debug_util_amethyst" }
+
 [features]
 nightly = ["amethyst/nightly"]

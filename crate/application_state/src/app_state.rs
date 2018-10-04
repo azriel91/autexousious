@@ -61,7 +61,7 @@ where
             &*world.entities(),
             &world.read_storage::<Removal<I>>(),
             I::default(),
-        );
+        ); // kcov-ignore
     }
 }
 
@@ -446,7 +446,7 @@ mod tests {
         world.add_resource(Arc::new(
             ThreadPoolBuilder::default()
                 .build()
-                .unwrap_or_else(|e| panic!("Failed to build ThreadPool. {}", e)),
+                .unwrap_or_else(|e| panic!("Failed to build ThreadPool. {}", e)), // kcov-ignore
         ));
         let game_data = game_data_builder.build(&mut world);
         let invocations = Rc::new(RefCell::new(vec![]));

@@ -1502,6 +1502,7 @@ dependencies = [
  "application_state 0.6.0",
  "character_selection 0.5.0",
  "character_selection_ui 0.5.0",
+ "debug_util_amethyst 0.5.0",
  "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_loading 0.5.0",

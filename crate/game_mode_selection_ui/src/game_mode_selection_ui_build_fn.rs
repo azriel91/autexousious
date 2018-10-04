@@ -86,6 +86,7 @@ where
                 world
                     .write_storage::<MenuItem<GameModeIndex>>()
                     .insert(entity, MenuItem { index })
+                    // kcov-ignore-start
                     .unwrap_or_else(|e| {
                         panic!(
                             "Failed to insert {} component. Error: `{}`.",
@@ -93,19 +94,23 @@ where
                             e
                         )
                     });
+                // kcov-ignore-end
 
                 world
                     .write_storage::<GameModeSelectionEntity>()
                     .insert(
                         entity,
                         GameModeSelectionEntity::new(GameModeSelectionEntityId),
-                    ).unwrap_or_else(|e| {
+                    )
+                    // kcov-ignore-start
+                    .unwrap_or_else(|e| {
                         panic!(
                             "Failed to insert {} component. Error: `{}`.",
                             stringify!(GameModeSelectionEntity),
                             e
                         )
                     });
+                // kcov-ignore-end
             });
     }
 }
