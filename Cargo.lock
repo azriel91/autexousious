@@ -1502,29 +1502,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "game_mode_menu"
-version = "0.5.0"
-dependencies = [
- "amethyst 0.8.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_test_support 0.5.0",
- "application_event 0.6.0",
- "application_menu 0.5.0",
- "application_state 0.6.0",
- "application_ui 0.5.0",
- "character_selection 0.5.0",
- "character_selection_ui 0.5.0",
- "debug_util_amethyst 0.5.0",
- "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
- "game_loading 0.5.0",
- "game_play 0.5.0",
- "log 0.4.5 (registry+https://github.com/rust-lang/crates.io-index)",
- "map_selection 0.5.0",
- "map_selection_ui 0.6.0",
- "rayon 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
 name = "game_mode_selection"
 version = "0.6.0"
 dependencies = [
