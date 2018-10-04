@@ -66,21 +66,15 @@ impl State<GameData<'static, 'static>, AppEvent> for GameModeSelectionStateDeleg
         data: StateData<GameData<'static, 'static>>,
         event: StateEvent<AppEvent>,
     ) -> Trans<GameData<'static, 'static>, AppEvent> {
-        match event {
-            StateEvent::Custom(app_event) => match app_event {
-                AppEvent::GameModeSelection(game_mode_selection_event) => {
-                    debug!(
-                        "Received game_mode_selection_event: {:?}",
-                        game_mode_selection_event
-                    );
-                    let mut channel = data
-                        .world
-                        .write_resource::<EventChannel<GameModeSelectionEvent>>();
-                    channel.single_write(game_mode_selection_event);
-                }
-                _ => {}
-            },
-            _ => {}
+        if let StateEvent::Custom(AppEvent::GameModeSelection(game_mode_selection_event)) = event {
+            debug!(
+                "Received game_mode_selection_event: {:?}",
+                game_mode_selection_event
+            );
+            let mut channel = data
+                .world
+                .write_resource::<EventChannel<GameModeSelectionEvent>>();
+            channel.single_write(game_mode_selection_event);
         }
         Trans::None
     }

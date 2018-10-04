@@ -72,7 +72,7 @@ where
 {
     fn on_start(&mut self, mut data: StateData<GameData<'a, 'b>>) {
         // Register the `Removal<I>` component first, because hook functions may rely on it.
-        &data.world.register::<Removal<I>>();
+        data.world.register::<Removal<I>>();
 
         if let Some(ref functions) = self.hook_fns.get(&HookableFn::OnStart) {
             functions

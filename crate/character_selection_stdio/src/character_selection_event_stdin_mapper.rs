@@ -20,7 +20,7 @@ impl CharacterSelectionEventStdinMapper {
         controller_id: ControllerId,
         selection: &str,
     ) -> Result<CharacterSelectionEvent> {
-        let character_selection = match selection.as_ref() {
+        let character_selection = match selection {
             "random" => {
                 let snh = SlugAndHandle::from(
                     character_assets
@@ -34,7 +34,7 @@ impl CharacterSelectionEventStdinMapper {
                 let slug = AssetSlug::from_str(slug_str)?;
                 let handle = character_assets
                     .get(&slug)
-                    .ok_or(format!("No character found with asset slug `{}`.", slug))?
+                    .ok_or_else(|| format!("No character found with asset slug `{}`.", slug))?
                     .clone();
 
                 let snh = SlugAndHandle { slug, handle };

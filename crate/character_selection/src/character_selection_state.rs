@@ -93,21 +93,15 @@ where
         data: StateData<GameData<'a, 'b>>,
         event: StateEvent<AppEvent>,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
-        match event {
-            StateEvent::Custom(app_event) => match app_event {
-                AppEvent::CharacterSelection(character_selection_event) => {
-                    debug!(
-                        "Received character_selection_event: {:?}",
-                        character_selection_event
-                    );
-                    let mut channel = data
-                        .world
-                        .write_resource::<EventChannel<CharacterSelectionEvent>>();
-                    channel.single_write(character_selection_event);
-                }
-                _ => {}
-            },
-            _ => {}
+        if let StateEvent::Custom(AppEvent::CharacterSelection(character_selection_event)) = event {
+            debug!(
+                "Received character_selection_event: {:?}",
+                character_selection_event
+            );
+            let mut channel = data
+                .world
+                .write_resource::<EventChannel<CharacterSelectionEvent>>();
+            channel.single_write(character_selection_event);
         }
         Trans::None
     }

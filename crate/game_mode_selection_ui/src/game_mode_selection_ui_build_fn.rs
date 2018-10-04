@@ -31,6 +31,12 @@ const FONT_SIZE: f32 = 25.;
 impl GameModeSelectionUiBuildFn<fn(&mut World)> {
     /// Returns a `GameModeSelectionUiBuildFn` to build the `GameModeSelectionUi`.
     pub fn new() -> Self {
+        Default::default()
+    }
+}
+
+impl Default for GameModeSelectionUiBuildFn<fn(&mut World)> {
+    fn default() -> Self {
         GameModeSelectionUiBuildFn(Self::initialize_ui)
     }
 }

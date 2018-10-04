@@ -97,7 +97,7 @@ impl FromStr for AssetSlug {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let segments: Vec<&str> = s.split("/").collect();
+        let segments: Vec<&str> = s.split('/').collect();
         if segments.len() == 2 {
             AssetSlugBuilder::default()
                 .namespace(segments[0].to_string())

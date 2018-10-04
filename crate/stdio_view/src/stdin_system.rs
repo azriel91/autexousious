@@ -68,7 +68,7 @@ impl<'s> System<'s> for StdinSystem {
                     return;
                 }
 
-                match IoAppEventUtils::input_to_variant_and_tokens(input) {
+                match IoAppEventUtils::input_to_variant_and_tokens(&input) {
                     Ok(variant_and_tokens) => {
                         if let Some(variant_and_tokens) = variant_and_tokens {
                             variant_channel.single_write(variant_and_tokens);
