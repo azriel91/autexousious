@@ -355,6 +355,7 @@ name = "application_state"
 version = "0.6.0"
 dependencies = [
  "amethyst 0.8.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_utils 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.6.0",
  "character_selection_model 0.6.0",
  "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -673,6 +674,7 @@ dependencies = [
 name = "character_selection_model"
 version = "0.6.0"
 dependencies = [
+ "amethyst_utils 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
  "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input 0.5.0",
@@ -2058,6 +2060,7 @@ dependencies = [
 name = "map_selection_model"
 version = "0.6.0"
 dependencies = [
+ "amethyst_utils 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
  "game_model 0.5.0",
  "map_model 0.5.0",
 ]

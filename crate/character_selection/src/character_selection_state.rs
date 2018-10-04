@@ -5,7 +5,8 @@ use amethyst::{ecs::prelude::*, prelude::*, shrev::EventChannel};
 use application_event::AppEvent;
 use application_state::{AppState, AppStateBuilder, AutexState};
 use character_selection_model::{
-    CharacterSelectionEvent, CharacterSelections, CharacterSelectionsStatus,
+    CharacterSelectionEntityId, CharacterSelectionEvent, CharacterSelections,
+    CharacterSelectionsStatus,
 };
 
 /// `State` where character selection takes place.
@@ -20,7 +21,7 @@ use character_selection_model::{
 ///
 /// [state_builder]: character_selection_state/struct.CharacterSelectionStateBuilder.html
 pub type CharacterSelectionState<'a, 'b, F, S> =
-    AppState<'a, 'b, CharacterSelectionStateDelegate<'a, 'b, F, S>>;
+    AppState<'a, 'b, CharacterSelectionStateDelegate<'a, 'b, F, S>, CharacterSelectionEntityId>;
 
 /// Builder for a `CharacterSelectionState`.
 ///
@@ -31,8 +32,12 @@ pub type CharacterSelectionState<'a, 'b, F, S> =
 ///
 /// * `F`: Function to construct the state to return after character selection is complete.
 /// * `S`: `State` to delegate to.
-pub type CharacterSelectionStateBuilder<'a, 'b, F, S> =
-    AppStateBuilder<'a, 'b, CharacterSelectionStateDelegate<'a, 'b, F, S>>;
+pub type CharacterSelectionStateBuilder<'a, 'b, F, S> = AppStateBuilder<
+    'a,
+    'b,
+    CharacterSelectionStateDelegate<'a, 'b, F, S>,
+    CharacterSelectionEntityId,
+>;
 
 /// Delegate `State` for character selection.
 ///

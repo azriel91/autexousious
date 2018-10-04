@@ -1,6 +1,8 @@
 use std::fmt::Debug;
+use std::marker::PhantomData;
 
 use amethyst::{core::SystemBundle, ecs::prelude::*, prelude::*};
+use amethyst_utils::removal::{self, Removal};
 use application_event::AppEvent;
 
 use AutexState;
@@ -22,9 +24,10 @@ use AutexState;
 /// [state_builder]: application_state/struct.AppStateBuilder.html
 #[derive(Derivative, new)]
 #[derivative(Debug)]
-pub struct AppState<'a, 'b, S>
+pub struct AppState<'a, 'b, S, I>
 where
     S: AutexState<'a, 'b>,
+    I: Clone + Debug + Default + PartialEq + Send + Sync + 'static,
 {
     /// State specific dispatcher.
     #[derivative(Debug = "ignore")]
@@ -32,11 +35,14 @@ where
     /// The `State` to delegate to.
     #[derivative(Debug(bound = "S: Debug"))]
     delegate: S,
+    /// `PhantomData` for `Removal`.
+    marker: PhantomData<I>,
 }
 
-impl<'a, 'b, S> AppState<'a, 'b, S>
+impl<'a, 'b, S, I> AppState<'a, 'b, S, I>
 where
     S: AutexState<'a, 'b>,
+    I: Clone + Debug + Default + PartialEq + Send + Sync + 'static,
 {
     /// Sets up the dispatcher for this state.
     ///
@@ -48,16 +54,24 @@ where
     }
 }
 
-impl<'a, 'b, S> State<GameData<'a, 'b>, AppEvent> for AppState<'a, 'b, S>
+impl<'a, 'b, S, I> State<GameData<'a, 'b>, AppEvent> for AppState<'a, 'b, S, I>
 where
     S: AutexState<'a, 'b>,
+    I: Clone + Debug + Default + PartialEq + Send + Sync + 'static,
 {
     fn on_start(&mut self, mut data: StateData<GameData<'a, 'b>>) {
+        &data.world.register::<Removal<I>>();
+
         self.initialize_dispatcher(&mut data.world);
         self.delegate.on_start(data);
     }
 
     fn on_stop(&mut self, data: StateData<GameData<'a, 'b>>) {
+        removal::exec_removal(
+            &*data.world.entities(),
+            &data.world.read_storage::<Removal<I>>(),
+            I::default(),
+        );
         self.delegate.on_stop(data);
     }
 
@@ -104,9 +118,10 @@ where
 /// * `S`: `State` to delegate to.
 #[derive(Derivative, new)]
 #[derivative(Debug)]
-pub struct AppStateBuilder<'a, 'b, S>
+pub struct AppStateBuilder<'a, 'b, S, I>
 where
     S: AutexState<'a, 'b>,
+    I: Clone + Debug + Default + PartialEq + Send + Sync + 'static,
 {
     /// State specific dispatcher builder.
     #[derivative(Debug = "ignore")]
@@ -115,11 +130,14 @@ where
     /// The `State` to delegate to.
     #[derivative(Debug(bound = "S: Debug"))]
     delegate: S,
+    /// `PhantomData` for `Removal`.
+    marker: PhantomData<I>,
 }
 
-impl<'a, 'b, S> AppStateBuilder<'a, 'b, S>
+impl<'a, 'b, S, I> AppStateBuilder<'a, 'b, S, I>
 where
     S: AutexState<'a, 'b>,
+    I: Clone + Debug + Default + PartialEq + Send + Sync + 'static,
 {
     /// Registers a bundle whose systems to run in the `AppState`.
     ///
@@ -147,7 +165,7 @@ where
     }
 
     /// Builds and returns the `AppState`.
-    pub fn build(self) -> AppState<'a, 'b, S> {
+    pub fn build(self) -> AppState<'a, 'b, S, I> {
         AppState::new(self.dispatcher_builder.build(), self.delegate)
     }
 }
@@ -159,6 +177,7 @@ mod tests {
     use std::sync::Arc;
 
     use amethyst::{ecs::prelude::*, prelude::*};
+    use amethyst_utils::removal::Removal;
     use application_event::AppEvent;
     use character_selection_model::CharacterSelectionEvent;
     use rayon::ThreadPoolBuilder;
@@ -216,6 +235,31 @@ mod tests {
     }
 
     #[test]
+    fn on_start_registers_removal_component() {
+        let (mut world, mut game_data, _invocations, mut state) = setup_without_removal_component(
+            GameDataBuilder::default(),
+            None as Option<(SystemCounter, &str, &[&str])>,
+        );
+
+        state.on_start(StateData::new(&mut world, &mut game_data));
+
+        world.read_storage::<Removal<()>>(); // panics if it is not registered.
+    }
+
+    #[test]
+    fn on_stop_deletes_entities_with_removal_component() {
+        let (mut world, mut game_data, _invocations, mut state) = setup();
+        let entity_with_removal = world.create_entity().with(Removal::new(())).build();
+        let entity_without_removal = world.create_entity().build();
+
+        state.on_stop(StateData::new(&mut world, &mut game_data));
+        world.maintain();
+
+        assert!(!world.is_alive(entity_with_removal));
+        assert!(world.is_alive(entity_without_removal));
+    }
+
+    #[test]
     fn update_runs_game_data_dispatcher_then_state_specific_dispatcher() {
         let game_data_builder = GameDataBuilder::default().with(SystemCounter, "", &[]);
         let (mut world, mut game_data, _invocations, mut state) =
@@ -233,7 +277,7 @@ mod tests {
         World,
         GameData<'a, 'b>,
         Invocations,
-        AppState<'a, 'b, MockState>,
+        AppState<'a, 'b, MockState, ()>,
     ) {
         setup_with_system(
             GameDataBuilder::default(),
@@ -248,7 +292,26 @@ mod tests {
         World,
         GameData<'a, 'b>,
         Invocations,
-        AppState<'a, 'b, MockState>,
+        AppState<'a, 'b, MockState, ()>,
+    )
+    where
+        Sys: for<'s> System<'s> + Send + Sync + 'a,
+    {
+        let (mut world, game_data, invocations, state) =
+            setup_without_removal_component(game_data_builder, system);
+        world.register::<Removal<()>>();
+
+        (world, game_data, invocations, state)
+    }
+
+    fn setup_without_removal_component<'a, 'b, Sys>(
+        game_data_builder: GameDataBuilder<'a, 'b>,
+        system: Option<(Sys, &str, &[&str])>,
+    ) -> (
+        World,
+        GameData<'a, 'b>,
+        Invocations,
+        AppState<'a, 'b, MockState, ()>,
     )
     where
         Sys: for<'s> System<'s> + Send + Sync + 'a,

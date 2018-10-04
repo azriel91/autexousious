@@ -4,6 +4,7 @@
 //! Provides the `AutexState` trait to simplify implementing `amethyst::State`.
 
 extern crate amethyst;
+extern crate amethyst_utils;
 extern crate application_event;
 #[cfg(test)]
 extern crate character_selection_model;

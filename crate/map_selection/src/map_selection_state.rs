@@ -4,7 +4,7 @@ use std::marker::PhantomData;
 use amethyst::{ecs::prelude::*, prelude::*, shrev::EventChannel};
 use application_event::AppEvent;
 use application_state::{AppState, AppStateBuilder, AutexState};
-use map_selection_model::{MapSelection, MapSelectionEvent};
+use map_selection_model::{MapSelection, MapSelectionEntityId, MapSelectionEvent};
 
 use MapSelectionStatus;
 
@@ -20,7 +20,7 @@ use MapSelectionStatus;
 ///
 /// [state_builder]: map_selection_state/struct.MapSelectionStateBuilder.html
 pub type MapSelectionState<'a, 'b, F, S> =
-    AppState<'a, 'b, MapSelectionStateDelegate<'a, 'b, F, S>>;
+    AppState<'a, 'b, MapSelectionStateDelegate<'a, 'b, F, S>, MapSelectionEntityId>;
 
 /// Builder for a `MapSelectionState`.
 ///
@@ -32,7 +32,7 @@ pub type MapSelectionState<'a, 'b, F, S> =
 /// * `F`: Function to construct the state to return after map selection is complete.
 /// * `S`: `State` to delegate to.
 pub type MapSelectionStateBuilder<'a, 'b, F, S> =
-    AppStateBuilder<'a, 'b, MapSelectionStateDelegate<'a, 'b, F, S>>;
+    AppStateBuilder<'a, 'b, MapSelectionStateDelegate<'a, 'b, F, S>, MapSelectionEntityId>;
 
 /// Delegate `State` for map selection.
 ///
