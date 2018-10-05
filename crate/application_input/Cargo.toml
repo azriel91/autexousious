@@ -4,4 +4,4 @@ version = "0.5.0"
 authors = ["Azriel Hoh <azriel91@gmail.com>"]
 
 [dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop" }
+amethyst = { git = "https://github.com/amethyst/amethyst.git" }

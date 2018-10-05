@@ -4,7 +4,7 @@ version = "0.5.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 
 [dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "develop" }
+amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 application = { path = "../application" }
 application_robot = { path = "../application_robot" }
 derive_more = "0.12"
@@ -14,7 +14,7 @@ strum_macros = "0.11"
 
 [dev-dependencies]
 amethyst_test_support = { path = "../amethyst_test_support" }
-assert_cli = "0.6"
+assert_cmd = "0.9"
 log = "0.4"
 structopt = "0.2"
 structopt-derive = "0.2"

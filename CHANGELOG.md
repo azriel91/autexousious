@@ -7,6 +7,7 @@
 * Map selection UI that allows users to select maps. ([#66][#66])
 * Character selection controllable via stdin. ([#67][#67])
 * Map selection controllable via stdin. ([#67][#67])
+* Game mode selection controllable via stdin. ([#67][#67])
 
 ### Changed
 

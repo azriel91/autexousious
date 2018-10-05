@@ -35,7 +35,9 @@ extern crate typename;
 extern crate typename_derive;
 
 pub use character_selection_bundle::CharacterSelectionBundle;
-pub use character_selection_state::{CharacterSelectionState, CharacterSelectionStateBuilder};
+pub use character_selection_state::{
+    CharacterSelectionState, CharacterSelectionStateBuilder, CharacterSelectionStateDelegate,
+};
 pub use system::CharacterSelectionSystem;
 
 mod character_selection_bundle;

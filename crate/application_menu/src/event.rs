@@ -15,7 +15,7 @@ pub enum MenuEvent<I> {
     /// If not, `State`s have to generate this event in [`handle_event(..)`][hdl_evt], instead of
     /// the `UiInputHandlerSystem`s' [`run(..)`][specs_run].
     ///
-    /// [hdl_evt]: https://docs.rs/amethyst/0.6.0/amethyst/trait.State.html#method.handle_event
-    /// [specs_run]: https://docs.rs/specs/0.10.0/specs/trait.System.html#tymethod.run
+    /// [hdl_evt]: https://docs.rs/amethyst/latest/amethyst/trait.State.html#method.handle_event
+    /// [specs_run]: https://docs.rs/specs/latest/specs/trait.System.html#tymethod.run
     Close,
 }

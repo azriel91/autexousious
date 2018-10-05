@@ -3,6 +3,7 @@
 
 //! Types used during character selection.
 
+extern crate amethyst_utils;
 #[macro_use]
 extern crate derivative;
 #[macro_use]
@@ -15,11 +16,15 @@ extern crate strum;
 extern crate strum_macros;
 
 pub use character_selection::CharacterSelection;
+pub use character_selection_entity::CharacterSelectionEntity;
+pub use character_selection_entity_id::CharacterSelectionEntityId;
 pub use character_selection_event::CharacterSelectionEvent;
 pub use character_selections::CharacterSelections;
 pub use character_selections_status::CharacterSelectionsStatus;
 
 mod character_selection;
+mod character_selection_entity;
+mod character_selection_entity_id;
 mod character_selection_event;
 mod character_selections;
 mod character_selections_status;

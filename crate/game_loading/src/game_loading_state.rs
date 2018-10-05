@@ -4,7 +4,7 @@ use amethyst::{
     core::SystemBundle, ecs::prelude::*, input::is_key_down, prelude::*, renderer::VirtualKeyCode,
 };
 use application_event::AppEvent;
-use application_state::AppState;
+use application_state::AutexState;
 use game_model::play::GameEntities;
 
 use GameLoadingBundle;
@@ -16,7 +16,7 @@ use GameLoadingStatus;
 pub struct GameLoadingState<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
-    S: AppState<'a, 'b> + 'static,
+    S: AutexState<'a, 'b> + 'static,
 {
     /// State specific dispatcher.
     #[derivative(Debug = "ignore")]
@@ -30,7 +30,7 @@ where
 impl<'a, 'b, F, S> GameLoadingState<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
-    S: AppState<'a, 'b> + 'static,
+    S: AutexState<'a, 'b> + 'static,
 {
     /// Sets up the dispatcher for this state.
     ///
@@ -70,7 +70,7 @@ where
 impl<'a, 'b, F, S> State<GameData<'a, 'b>, AppEvent> for GameLoadingState<'a, 'b, F, S>
 where
     F: Fn() -> Box<S>,
-    S: AppState<'a, 'b> + 'static,
+    S: AutexState<'a, 'b> + 'static,
 {
     fn on_start(&mut self, mut data: StateData<GameData>) {
         self.initialize_dispatcher(&mut data.world);

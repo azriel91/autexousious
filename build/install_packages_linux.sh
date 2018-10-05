@@ -3,6 +3,8 @@
 pkgs_desired=(
   # amethyst
   libasound2-dev
+  libfreetype6-dev
+  libexpat1-dev
 
   # enigo
   libxdo-dev

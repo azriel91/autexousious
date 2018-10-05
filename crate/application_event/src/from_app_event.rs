@@ -1,4 +1,5 @@
 use character_selection_model::CharacterSelectionEvent;
+use game_mode_selection_model::GameModeSelectionEvent;
 use map_selection_model::MapSelectionEvent;
 
 use AppEvent;
@@ -38,4 +39,5 @@ macro_rules! impl_from_app_event {
 }
 
 impl_from_app_event!(CharacterSelection, CharacterSelectionEvent);
+impl_from_app_event!(GameModeSelection, GameModeSelectionEvent);
 impl_from_app_event!(MapSelection, MapSelectionEvent);

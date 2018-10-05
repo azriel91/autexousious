@@ -15,7 +15,7 @@ pub struct MapSelectionEventStdinMapper;
 
 impl MapSelectionEventStdinMapper {
     fn map_select_event(map_assets: &MapAssets, selection: &str) -> Result<MapSelectionEvent> {
-        let map_selection = match selection.as_ref() {
+        let map_selection = match selection {
             "random" => {
                 let snh = SlugAndHandle::from(
                     map_assets
@@ -29,7 +29,7 @@ impl MapSelectionEventStdinMapper {
                 let slug = AssetSlug::from_str(slug_str)?;
                 let handle = map_assets
                     .get(&slug)
-                    .ok_or(format!("No map found with asset slug `{}`.", slug))?
+                    .ok_or_else(|| format!("No map found with asset slug `{}`.", slug))?
                     .clone();
 
                 let snh = SlugAndHandle { slug, handle };

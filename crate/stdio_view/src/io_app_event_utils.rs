@@ -12,7 +12,7 @@ pub struct IoAppEventUtils;
 
 impl IoAppEventUtils {
     /// Maps the input string to an `AppEventVariant` and `String` tokens.
-    pub fn input_to_variant_and_tokens(input: String) -> Result<Option<VariantAndTokens>, String> {
+    pub fn input_to_variant_and_tokens(input: &str) -> Result<Option<VariantAndTokens>, String> {
         shell_words::split(&input)
             .map_err(|e| Self::parse_error_to_string(&input, e))
             .and_then(Self::tokens_to_variant)
@@ -76,16 +76,13 @@ mod tests {
                  missing closing quote\n\
                  ```\n\n"
                 .to_string()),
-            IoAppEventUtils::input_to_variant_and_tokens("single quote \"".to_string())
+            IoAppEventUtils::input_to_variant_and_tokens("single quote \"")
         );
     }
 
     #[test]
     fn returns_ok_none_when_input_is_empty() {
-        assert_eq!(
-            Ok(None),
-            IoAppEventUtils::input_to_variant_and_tokens("".to_string())
-        );
+        assert_eq!(Ok(None), IoAppEventUtils::input_to_variant_and_tokens(""));
     }
 
     #[test]
@@ -95,13 +92,13 @@ mod tests {
                 AppEventVariant::CharacterSelection,
                 vec!["character_selection".to_string(), "confirm".to_string()]
             ))),
-            IoAppEventUtils::input_to_variant_and_tokens("character_selection confirm".to_string())
+            IoAppEventUtils::input_to_variant_and_tokens("character_selection confirm")
         );
     }
 
     #[test]
     fn returns_useful_error_message_when_input_matches_variant() {
-        let result = IoAppEventUtils::input_to_variant_and_tokens("abc".to_string());
+        let result = IoAppEventUtils::input_to_variant_and_tokens("abc");
         assert!(result.is_err());
         assert!(result.unwrap_err().starts_with(
             "Error parsing `abc` as an AppEventVariant. Error: `Matching variant not found`.\n\

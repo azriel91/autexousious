@@ -4,11 +4,10 @@ use amethyst::{
     ui::{UiEvent, UiEventType},
 };
 use application_menu::{MenuEvent, MenuItem};
-
-use index::Index;
+use game_mode_selection_model::GameModeIndex;
 
 /// System that processes `UiEvent`s and generates `MenuEvent`s.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, TypeName)]
 pub struct UiEventHandlerSystem {
     reader_id: Option<ReaderId<UiEvent>>,
 }
@@ -21,8 +20,8 @@ impl UiEventHandlerSystem {
 
 type UiEventHandlerSystemData<'s> = (
     Read<'s, EventChannel<UiEvent>>,
-    ReadStorage<'s, MenuItem<Index>>,
-    Write<'s, EventChannel<MenuEvent<Index>>>,
+    ReadStorage<'s, MenuItem<GameModeIndex>>,
+    Write<'s, EventChannel<MenuEvent<GameModeIndex>>>,
 );
 
 impl<'s> System<'s> for UiEventHandlerSystem {
@@ -37,10 +36,8 @@ impl<'s> System<'s> for UiEventHandlerSystem {
             {
                 if let Some(menu_item) = menu_items.get(entity) {
                     let menu_event = MenuEvent::Select(menu_item.index);
-                    info!("Sending menu event: {:?}", &menu_event);
+                    debug!("Sending menu event: {:?}", &menu_event);
                     menu_events.single_write(menu_event);
-                } else {
-                    trace!("Non-menu-item entity clicked: {:?}", entity)
                 }
             }
         }
@@ -61,13 +58,13 @@ mod test {
     };
     use amethyst_test_support::prelude::*;
     use application_menu::{MenuEvent, MenuItem};
+    use game_mode_selection_model::GameModeIndex;
 
     use super::UiEventHandlerSystem;
-    use index::Index;
 
     fn setup_menu_event_reader(world: &mut World) {
         let menu_event_channel_reader = world
-            .write_resource::<EventChannel<MenuEvent<Index>>>()
+            .write_resource::<EventChannel<MenuEvent<GameModeIndex>>>()
             .register_reader(); // kcov-ignore
 
         world.add_resource(EffectReturn(menu_event_channel_reader));
@@ -81,11 +78,11 @@ mod test {
                 .with_setup(setup_menu_event_reader)
                 .with_assertion(|world| {
                     let mut menu_event_channel_reader = &mut world
-                        .write_resource::<EffectReturn<ReaderId<MenuEvent<Index>>>>()
+                        .write_resource::<EffectReturn<ReaderId<MenuEvent<GameModeIndex>>>>()
                         .0;
 
                     let menu_event_channel =
-                        world.read_resource::<EventChannel<MenuEvent<Index>>>();
+                        world.read_resource::<EventChannel<MenuEvent<GameModeIndex>>>();
                     let mut menu_event_iter =
                         menu_event_channel.read(&mut menu_event_channel_reader);
                     assert_eq!(None, menu_event_iter.next());
@@ -119,11 +116,11 @@ mod test {
                     ui_event_channel.iter_write(ui_events.into_iter());
                 }).with_assertion(|world| {
                     let mut menu_event_channel_reader = &mut world
-                        .write_resource::<EffectReturn<ReaderId<MenuEvent<Index>>>>()
+                        .write_resource::<EffectReturn<ReaderId<MenuEvent<GameModeIndex>>>>()
                         .0;
 
                     let menu_event_channel =
-                        world.read_resource::<EventChannel<MenuEvent<Index>>>();
+                        world.read_resource::<EventChannel<MenuEvent<GameModeIndex>>>();
                     let mut menu_event_iter =
                         menu_event_channel.read(&mut menu_event_channel_reader);
                     assert_eq!(None, menu_event_iter.next());
@@ -142,7 +139,7 @@ mod test {
                     let entity = world
                         .create_entity()
                         .with(MenuItem {
-                            index: Index::StartGame,
+                            index: GameModeIndex::StartGame,
                         }).build();
 
                     let mut ui_event_channel = world.write_resource::<EventChannel<UiEvent>>();
@@ -152,15 +149,15 @@ mod test {
                     });
                 }).with_assertion(|world| {
                     let mut menu_event_channel_reader = &mut world
-                        .write_resource::<EffectReturn<ReaderId<MenuEvent<Index>>>>()
+                        .write_resource::<EffectReturn<ReaderId<MenuEvent<GameModeIndex>>>>()
                         .0;
 
                     let menu_event_channel =
-                        world.read_resource::<EventChannel<MenuEvent<Index>>>();
+                        world.read_resource::<EventChannel<MenuEvent<GameModeIndex>>>();
                     let mut menu_event_iter =
                         menu_event_channel.read(&mut menu_event_channel_reader);
                     assert_eq!(
-                        Some(&MenuEvent::Select(Index::StartGame)),
+                        Some(&MenuEvent::Select(GameModeIndex::StartGame)),
                         menu_event_iter.next()
                     );
                     assert_eq!(None, menu_event_iter.next());
@@ -185,11 +182,11 @@ mod test {
                     });
                 }).with_assertion(|world| {
                     let mut menu_event_channel_reader = &mut world
-                        .write_resource::<EffectReturn<ReaderId<MenuEvent<Index>>>>()
+                        .write_resource::<EffectReturn<ReaderId<MenuEvent<GameModeIndex>>>>()
                         .0;
 
                     let menu_event_channel =
-                        world.read_resource::<EventChannel<MenuEvent<Index>>>();
+                        world.read_resource::<EventChannel<MenuEvent<GameModeIndex>>>();
                     let mut menu_event_iter =
                         menu_event_channel.read(&mut menu_event_channel_reader);
                     assert_eq!(None, menu_event_iter.next());

@@ -87,7 +87,7 @@ impl MapSelectionWidgetUiSystem {
 
             self.ui_initialized = true;
 
-            let text_w = 200.;
+            let text_w = 250.;
             let text_h = 50.;
 
             let font = theme

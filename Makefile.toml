@@ -19,11 +19,7 @@ fi
 cargo audit
 
 # License compatibility
-if cargo license | grep -qi '\bGPL\b'; then
-    echo GPL license detected in a dependent crate. \
-         This is not compatible with a closed-source commercial application.
-    exit 1
-fi
+./build/conformance_license.sh
 '''
 ]
 
