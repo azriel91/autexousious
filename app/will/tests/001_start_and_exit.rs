@@ -1,14 +1,17 @@
-extern crate assert_cli;
+extern crate assert_cmd;
+
+use assert_cmd::{cargo::CargoError, prelude::*};
+use std::process::Command;
 
 #[test]
-fn start_and_exit() {
-    // We need to inherit the environment, otherwise we won't be able to run `cargo`. See
-    // <https://github.com/assert-rs/assert_cli/issues/58>
-    let environment =
-        assert_cli::Environment::inherit().insert("APP_DIR", env!("CARGO_MANIFEST_DIR"));
-
-    assert_cli::Assert::main_binary()
-        .with_env(&environment)
-        .stdin("exit\n")
-        .unwrap();
+fn start_and_exit() -> Result<(), CargoError> {
+    Command::main_binary()?
+        .env("APP_DIR", env!("CARGO_MANIFEST_DIR"))
+        .with_stdin()
+        .buffer("exit\n")
+        .output()
+        .unwrap()
+        .assert()
+        .success();
+    Ok(())
 }

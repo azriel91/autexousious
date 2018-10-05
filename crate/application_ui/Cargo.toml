@@ -14,7 +14,7 @@ strum_macros = "0.11"
 
 [dev-dependencies]
 amethyst_test_support = { path = "../amethyst_test_support" }
-assert_cli = "0.6"
+assert_cmd = "0.9"
 log = "0.4"
 structopt = "0.2"
 structopt-derive = "0.2"
