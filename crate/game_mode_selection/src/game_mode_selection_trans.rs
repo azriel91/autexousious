@@ -51,7 +51,7 @@ impl GameModeSelectionTrans {
 
                 Trans::Push(character_selection_state)
             }
-            GameModeIndex::Exit => Trans::Pop,
+            GameModeIndex::Exit => Trans::Quit,
         }
     } // kcov-ignore
 }
