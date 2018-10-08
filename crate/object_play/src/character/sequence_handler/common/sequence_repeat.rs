@@ -6,9 +6,7 @@ use object_model::{
 
 use character::sequence_handler::SequenceHandler;
 
-/// Determines whether to swithc to the `Walk` or `Run` sequence based on X input.
-///
-/// This should only be called from the Stand or Walk sequence handlers.
+/// Restarts a sequence when it has reached the end.
 #[derive(Debug)]
 pub(crate) struct SequenceRepeat;
 

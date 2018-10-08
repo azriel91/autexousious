@@ -6,7 +6,7 @@ use object_model::entity::{
 use character::sequence_handler::{
     common::{
         grounding::AirborneCheck,
-        input::{JumpCheck, StandXMovementCheck, StandZMovementCheck},
+        input::{JumpCheck, StandAttackCheck, StandXMovementCheck, StandZMovementCheck},
         util::RunCounterUpdater,
         SequenceRepeat,
     },
@@ -36,6 +36,7 @@ impl CharacterSequenceHandler for Stand {
         let status_update = [
             AirborneCheck::update,
             JumpCheck::update,
+            StandAttackCheck::update,
             StandXMovementCheck::update,
             StandZMovementCheck::update,
             SequenceRepeat::update,
@@ -482,6 +483,24 @@ mod test {
                     Stand::update(&input, &CharacterStatus::default(), &Kinematics::default())
                 );
             });
+    }
+
+    #[test]
+    fn stand_attack_when_attack_is_pressed() {
+        let mut input = ControllerInput::default();
+        input.attack = true;
+
+        assert_eq!(
+            CharacterStatusUpdate {
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::StandAttack),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
+            Stand::update(&input, &CharacterStatus::default(), &Kinematics::default())
+        );
     }
 
     #[test]

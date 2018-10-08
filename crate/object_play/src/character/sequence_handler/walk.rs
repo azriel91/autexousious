@@ -6,7 +6,10 @@ use object_model::entity::{
 use character::sequence_handler::{
     common::{
         grounding::AirborneCheck,
-        input::{JumpCheck, WalkNoMovementCheck, WalkXMovementCheck, WalkZMovementCheck},
+        input::{
+            JumpCheck, StandAttackCheck, WalkNoMovementCheck, WalkXMovementCheck,
+            WalkZMovementCheck,
+        },
         util::RunCounterUpdater,
     },
     CharacterSequenceHandler, SequenceHandler,
@@ -26,6 +29,7 @@ impl CharacterSequenceHandler for Walk {
         let status_update = [
             AirborneCheck::update,
             JumpCheck::update,
+            StandAttackCheck::update,
             WalkNoMovementCheck::update,
             WalkXMovementCheck::update,
             WalkZMovementCheck::update,
@@ -495,6 +499,45 @@ mod test {
                 },
                 &Kinematics::default()
             )
+        );
+    }
+
+    #[test]
+    fn jump_when_jump_is_pressed() {
+        vec![(0., 0.), (1., 0.), (-1., 0.), (0., 1.)]
+            .into_iter()
+            .for_each(|(x_input, z_input)| {
+                let input = ControllerInput::new(x_input, z_input, false, true, false, false);
+
+                assert_eq!(
+                    CharacterStatusUpdate {
+                        object_status: ObjectStatusUpdate {
+                            sequence_id: Some(CharacterSequenceId::Jump),
+                            sequence_state: Some(SequenceState::Begin),
+                            ..Default::default()
+                        },
+                        ..Default::default()
+                    },
+                    Walk::update(&input, &CharacterStatus::default(), &Kinematics::default())
+                );
+            });
+    }
+
+    #[test]
+    fn stand_attack_when_attack_is_pressed() {
+        let mut input = ControllerInput::default();
+        input.attack = true;
+
+        assert_eq!(
+            CharacterStatusUpdate {
+                object_status: ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::StandAttack),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
+            Walk::update(&input, &CharacterStatus::default(), &Kinematics::default())
         );
     }
 }

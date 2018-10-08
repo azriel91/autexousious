@@ -46,7 +46,7 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                 .expect("Expected character to be loaded.");
 
             match status.object_status.sequence_id {
-                CharacterSequenceId::Stand => {
+                CharacterSequenceId::Stand | CharacterSequenceId::StandAttack => {
                     kinematics.velocity[0] = 0.;
                     kinematics.velocity[2] = 0.;
                 }
