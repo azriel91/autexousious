@@ -29,11 +29,13 @@ impl GameModeSelectionTrans {
                 let map_selection_fn = move || {
                     let state = MapSelectionStateBuilder::new(MapSelectionStateDelegate::new(
                         game_loading_fn,
-                    )).with_bundle(MapSelectionUiBundle::new())
+                    ))
+                    .with_bundle(MapSelectionUiBundle::new())
                     .with_bundle(
                         MapSelectionBundle::new()
                             .with_system_dependencies(&MapSelectionUiBundle::system_names()),
-                    ).build();
+                    )
+                    .build();
 
                     Box::new(state)
                 };
@@ -41,11 +43,13 @@ impl GameModeSelectionTrans {
                 let character_selection_state = {
                     let state = CharacterSelectionStateBuilder::new(
                         CharacterSelectionStateDelegate::new(map_selection_fn),
-                    ).with_bundle(CharacterSelectionUiBundle::new())
+                    )
+                    .with_bundle(CharacterSelectionUiBundle::new())
                     .with_bundle(
                         CharacterSelectionBundle::new()
                             .with_system_dependencies(&CharacterSelectionUiBundle::system_names()),
-                    ).build();
+                    )
+                    .build();
                     Box::new(state)
                 };
 

@@ -20,7 +20,8 @@ impl CharacterSequenceHandler for Run {
             .iter()
             .fold(None, |status_update, fn_update| {
                 status_update.or_else(|| fn_update(input, character_status, kinematics))
-            }).unwrap_or_else(CharacterStatusUpdate::default)
+            })
+            .unwrap_or_else(CharacterStatusUpdate::default)
     }
 }
 

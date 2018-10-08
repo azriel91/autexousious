@@ -22,7 +22,8 @@ impl AssetIndexingUtils {
                     .namespace(namespace)
                     .name(name)
                     .build()
-            }).and_then(|asset_slug| Ok(AssetRecord::new(asset_slug, path)));
+            })
+            .and_then(|asset_slug| Ok(AssetRecord::new(asset_slug, path)));
 
         match mapping_result {
             Ok(asset_record) => Some(asset_record),

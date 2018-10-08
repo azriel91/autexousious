@@ -86,7 +86,8 @@ mod test {
                 .with_setup(|world| {
                     let entity = world.create_entity().with(TestComponent(123)).build();
                     world.add_resource(EffectReturn(entity));
-                }).with_system_single(system.clone(), system_name.clone(), &[])
+                })
+                .with_system_single(system.clone(), system_name.clone(), &[])
                 .with_assertion(|world| assert_last_value(world, 123))
                 .with_effect(|world| {
                     let entity = world.read_resource::<EffectReturn<Entity>>().0.clone();
@@ -97,7 +98,8 @@ mod test {
                         .expect("Entity should have a `TestComponent` component.");
 
                     test_component.0 = 456;
-                }).with_system_single(system, system_name, &[])
+                })
+                .with_system_single(system, system_name, &[])
                 .with_assertion(|world| assert_last_value(world, 456))
                 .run()
                 .is_ok()

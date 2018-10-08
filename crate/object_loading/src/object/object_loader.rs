@@ -72,17 +72,20 @@ mod test {
                         "object.toml",
                         Format::Toml,
                         None,
-                    ).expect("Failed to load object.toml into CharacterDefinition");
+                    )
+                    .expect("Failed to load object.toml into CharacterDefinition");
 
                     let object = ObjectLoader::load(
                         world,
                         &asset_record,
                         &character_definition.object_definition,
-                    ).expect("Failed to load object");
+                    )
+                    .expect("Failed to load object");
 
                     // See bat/object.toml
                     assert_eq!(9, object.animations.len());
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }

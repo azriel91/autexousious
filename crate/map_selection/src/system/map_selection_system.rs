@@ -104,16 +104,19 @@ mod test {
                     let empty_snh = SlugAndHandle::from((&*world, ASSETS_MAP_EMPTY_SLUG.clone()));
                     let map_selection = MapSelection::Id(empty_snh);
                     send_event(world, MapSelectionEvent::Select { map_selection })
-                }).with_system_single(
+                })
+                .with_system_single(
                     MapSelectionSystem::new(),
                     MapSelectionSystem::type_name(),
                     &[],
-                ).with_assertion(|world| {
+                )
+                .with_assertion(|world| {
                     let fade_snh = SlugAndHandle::from((&*world, ASSETS_MAP_FADE_SLUG.clone()));
 
                     let map_selection = world.read_resource::<MapSelection>();
                     assert_eq!(MapSelection::Id(fade_snh), *map_selection);
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }
@@ -140,11 +143,13 @@ mod test {
                     let empty_snh = SlugAndHandle::from((&*world, ASSETS_MAP_EMPTY_SLUG.clone()));
                     let map_selection = MapSelection::Id(empty_snh);
                     send_event(world, MapSelectionEvent::Select { map_selection })
-                }).with_system_single(
+                })
+                .with_system_single(
                     MapSelectionSystem::new(),
                     MapSelectionSystem::type_name(),
                     &[],
-                ).with_assertion(|world| {
+                )
+                .with_assertion(|world| {
                     let empty_snh = SlugAndHandle::from((&*world, ASSETS_MAP_EMPTY_SLUG.clone()));
 
                     let map_selection = world.read_resource::<MapSelection>();
@@ -152,7 +157,8 @@ mod test {
 
                     let map_selection_status = world.read_resource::<MapSelectionStatus>();
                     assert_eq!(MapSelectionStatus::Confirmed, *map_selection_status);
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }

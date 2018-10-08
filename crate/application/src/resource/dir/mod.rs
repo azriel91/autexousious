@@ -73,7 +73,8 @@ fn assets_dir_internal(
             ASSETS,
             "Failed to canonicalize path. Please ensure directory exists and can be accessed.",
             Some(io_error),
-        ).into()),
+        )
+        .into()),
         // kcov-ignore-end
     }
 }
@@ -256,14 +257,16 @@ mod test {
         unix::fs::symlink(
             exe_dir.path().join("my_assets"),
             exe_dir.path().join(ASSETS),
-        ).expect("Failed to create symlink for test.");
+        )
+        .expect("Failed to create symlink for test.");
 
         #[cfg(windows)]
         {
             windows::fs::symlink_dir(
                 exe_dir.path().join("my_assets"),
                 exe_dir.path().join(ASSETS),
-            ).expect("Failed to create symlink for test.");
+            )
+            .expect("Failed to create symlink for test.");
         }
 
         let assets_dir = assets_dir_internal(Ok(exe_path.clone()), None);
@@ -289,14 +292,16 @@ mod test {
         unix::fs::symlink(
             exe_dir.path().join("my_assets"),
             exe_dir.path().join(ASSETS),
-        ).expect("Failed to create symlink for test.");
+        )
+        .expect("Failed to create symlink for test.");
 
         #[cfg(windows)]
         {
             windows::fs::symlink_file(
                 exe_dir.path().join("my_assets"),
                 exe_dir.path().join(ASSETS),
-            ).expect("Failed to create symlink for test.");
+            )
+            .expect("Failed to create symlink for test.");
         }
 
         let assets_dir = assets_dir_internal(Ok(exe_path.clone()), None);
@@ -315,14 +320,16 @@ mod test {
         unix::fs::symlink(
             exe_dir.path().join("non_existent_assets"),
             exe_dir.path().join(ASSETS),
-        ).expect("Failed to create symlink for test.");
+        )
+        .expect("Failed to create symlink for test.");
 
         #[cfg(windows)]
         {
             windows::fs::symlink_file(
                 exe_dir.path().join("non_existent_assets"),
                 exe_dir.path().join(ASSETS),
-            ).expect("Failed to create symlink for test.");
+            )
+            .expect("Failed to create symlink for test.");
         }
 
         let assets_dir = assets_dir_internal(Ok(exe_path.clone()), None);

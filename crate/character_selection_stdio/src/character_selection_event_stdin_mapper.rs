@@ -144,7 +144,8 @@ mod tests {
                         },
                         result.unwrap()
                     )
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }
@@ -180,7 +181,8 @@ mod tests {
                         },
                         result.unwrap()
                     )
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }

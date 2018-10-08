@@ -132,11 +132,13 @@ mod tests {
                             }
                         },
                     );
-                }).with_system_single(
+                })
+                .with_system_single(
                     CharacterKinematicsSystem::new(),
                     CharacterKinematicsSystem::type_name(),
                     &[]
-                ).with_assertion(|world| {
+                )
+                .with_assertion(|world| {
                     world.exec(
                         |(status_storage, kinematics_storage): (
                             ReadStorage<CharacterStatus>,
@@ -148,7 +150,8 @@ mod tests {
                             }
                         },
                     );
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }
@@ -198,11 +201,13 @@ mod tests {
                             }
                         },
                     );
-                }).with_system_single(
+                })
+                .with_system_single(
                     CharacterKinematicsSystem::new(),
                     CharacterKinematicsSystem::type_name(),
                     &[]
-                ).with_assertion(|world| {
+                )
+                .with_assertion(|world| {
                     world.exec(
                         |(status_storage, kinematics_storage): (
                             ReadStorage<CharacterStatus>,
@@ -214,7 +219,8 @@ mod tests {
                             }
                         },
                     );
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }
@@ -264,11 +270,13 @@ mod tests {
                             }
                         },
                     );
-                }).with_system_single(
+                })
+                .with_system_single(
                     CharacterKinematicsSystem::new(),
                     CharacterKinematicsSystem::type_name(),
                     &[]
-                ).with_assertion(|world| {
+                )
+                .with_assertion(|world| {
                     world.exec(
                         |(status_storage, kinematics_storage): (
                             ReadStorage<CharacterStatus>,
@@ -280,7 +288,8 @@ mod tests {
                             }
                         },
                     );
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }
@@ -351,12 +360,14 @@ mod tests {
                     AutexousiousApplication::game_base(
                         "updates_run_stop_x_and_z_velocity_non_mirrored",
                         false
-                    ).with_setup(setup_fn)
+                    )
+                    .with_setup(setup_fn)
                     .with_system_single(
                         CharacterKinematicsSystem::new(),
                         CharacterKinematicsSystem::type_name(),
                         &[]
-                    ).with_assertion(assertion_fn)
+                    )
+                    .with_assertion(assertion_fn)
                     .run()
                     .is_ok()
                 );
@@ -408,11 +419,13 @@ mod tests {
                             }
                         },
                     );
-                }).with_system_single(
+                })
+                .with_system_single(
                     CharacterKinematicsSystem::new(),
                     CharacterKinematicsSystem::type_name(),
                     &[]
-                ).with_assertion(|world| {
+                )
+                .with_assertion(|world| {
                     world.exec(
                         |(status_storage, kinematics_storage): (
                             ReadStorage<CharacterStatus>,
@@ -425,7 +438,8 @@ mod tests {
                             }
                         },
                     );
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }
@@ -462,11 +476,13 @@ mod tests {
                             }
                         },
                     );
-                }).with_system_single(
+                })
+                .with_system_single(
                     CharacterKinematicsSystem::new(),
                     CharacterKinematicsSystem::type_name(),
                     &[]
-                ).with_assertion(|world| {
+                )
+                .with_assertion(|world| {
                     world.exec(
                         |(status_storage, kinematics_storage): (
                             ReadStorage<CharacterStatus>,
@@ -479,7 +495,8 @@ mod tests {
                             }
                         },
                     );
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }

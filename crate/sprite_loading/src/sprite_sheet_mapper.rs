@@ -20,7 +20,8 @@ impl SpriteSheetMapper {
             .enumerate()
             .map(|(idx, definition)| {
                 Self::definition_to_sprite_sheet(sprite_sheet_index_offset + idx as u64, definition)
-            }).collect::<Vec<SpriteSheet>>()
+            })
+            .collect::<Vec<SpriteSheet>>()
     }
 
     /// Converts a `SpriteSheetDefinition` into a `SpriteSheet`.

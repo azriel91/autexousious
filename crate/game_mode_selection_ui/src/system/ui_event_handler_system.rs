@@ -86,7 +86,8 @@ mod test {
                     let mut menu_event_iter =
                         menu_event_channel.read(&mut menu_event_channel_reader);
                     assert_eq!(None, menu_event_iter.next());
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }
@@ -112,9 +113,11 @@ mod test {
                         .map(|event_type| UiEvent {
                             event_type,
                             target: entity,
-                        }).collect::<Vec<UiEvent>>();
+                        })
+                        .collect::<Vec<UiEvent>>();
                     ui_event_channel.iter_write(ui_events.into_iter());
-                }).with_assertion(|world| {
+                })
+                .with_assertion(|world| {
                     let mut menu_event_channel_reader = &mut world
                         .write_resource::<EffectReturn<ReaderId<MenuEvent<GameModeIndex>>>>()
                         .0;
@@ -124,7 +127,8 @@ mod test {
                     let mut menu_event_iter =
                         menu_event_channel.read(&mut menu_event_channel_reader);
                     assert_eq!(None, menu_event_iter.next());
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }
@@ -140,14 +144,16 @@ mod test {
                         .create_entity()
                         .with(MenuItem {
                             index: GameModeIndex::StartGame,
-                        }).build();
+                        })
+                        .build();
 
                     let mut ui_event_channel = world.write_resource::<EventChannel<UiEvent>>();
                     ui_event_channel.single_write(UiEvent {
                         event_type: UiEventType::Click,
                         target: entity,
                     });
-                }).with_assertion(|world| {
+                })
+                .with_assertion(|world| {
                     let mut menu_event_channel_reader = &mut world
                         .write_resource::<EffectReturn<ReaderId<MenuEvent<GameModeIndex>>>>()
                         .0;
@@ -161,7 +167,8 @@ mod test {
                         menu_event_iter.next()
                     );
                     assert_eq!(None, menu_event_iter.next());
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }
@@ -180,7 +187,8 @@ mod test {
                         event_type: UiEventType::Click,
                         target: entity,
                     });
-                }).with_assertion(|world| {
+                })
+                .with_assertion(|world| {
                     let mut menu_event_channel_reader = &mut world
                         .write_resource::<EffectReturn<ReaderId<MenuEvent<GameModeIndex>>>>()
                         .0;
@@ -190,7 +198,8 @@ mod test {
                     let mut menu_event_iter =
                         menu_event_channel.read(&mut menu_event_channel_reader);
                     assert_eq!(None, menu_event_iter.next());
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }

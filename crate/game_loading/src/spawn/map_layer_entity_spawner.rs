@@ -89,7 +89,8 @@ impl MapLayerEntitySpawner {
                         };
 
                         (transform, sprite_render.clone())
-                    }).collect::<Vec<(Transform, SpriteRender)>>();
+                    })
+                    .collect::<Vec<(Transform, SpriteRender)>>();
 
                 Some((components, map_animations))
 
@@ -118,7 +119,8 @@ impl MapLayerEntitySpawner {
                         .expect("Failed to insert transform component.");
 
                     entity
-                }).collect::<Vec<_>>();
+                })
+                .collect::<Vec<_>>();
 
             entities
                 .iter()
@@ -129,7 +131,8 @@ impl MapLayerEntitySpawner {
                     let mut animation_set = get_animation_set::<u32, SpriteRender>(
                         animation_control_set_storage,
                         *entity,
-                    ).expect("Animation should exist as new entity should be valid.");
+                    )
+                    .expect("Animation should exist as new entity should be valid.");
 
                     AnimationRunner::start_loop(&mut animation_set, animation_handle, animation_id);
                 });

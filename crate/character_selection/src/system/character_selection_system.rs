@@ -29,14 +29,15 @@ impl<'s> System<'s> for CharacterSelectionSystem {
             character_selection_events,
             mut character_selections,
             mut character_selections_status
-        ): Self::SystemData
-){
+        ): Self::SystemData,
+    ) {
         character_selection_events
             .read(
                 self.reader_id
                     .as_mut()
                     .expect("Expected to read `CharacterSelectionEvent`s."),
-            ).for_each(|ev| match ev {
+            )
+            .for_each(|ev| match ev {
                 CharacterSelectionEvent::Select {
                     controller_id,
                     character_selection,
@@ -104,7 +105,8 @@ mod tests {
                     CharacterSelectionSystem::new(),
                     CharacterSelectionSystem::type_name(),
                     &[]
-                ).with_setup(|world| {
+                )
+                .with_setup(|world| {
                     let slug_and_handle =
                         SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
 
@@ -115,7 +117,8 @@ mod tests {
                             character_selection: CharacterSelection::Id(slug_and_handle),
                         },
                     )
-                }).with_assertion(|world| {
+                })
+                .with_assertion(|world| {
                     let character_selections = world.read_resource::<CharacterSelections>();
 
                     assert_eq!(
@@ -125,7 +128,8 @@ mod tests {
                         ))),
                         character_selections.selections.get(&123)
                     );
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }
@@ -140,7 +144,8 @@ mod tests {
             AmethystApplication::render_base(
                 "removes_character_selection_on_deselect_event",
                 false
-            ).with_custom_event_type::<AppEvent>()
+            )
+            .with_custom_event_type::<AppEvent>()
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
             .with_state(|| LoadingState::new(ASSETS_PATH.clone(), EmptyState))
@@ -148,7 +153,8 @@ mod tests {
                 CharacterSelectionSystem::new(),
                 CharacterSelectionSystem::type_name(),
                 &[]
-            ).with_setup(|world| {
+            )
+            .with_setup(|world| {
                 world
                     .write_resource::<CharacterSelections>()
                     .selections
@@ -156,14 +162,17 @@ mod tests {
                         123,
                         SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone())),
                     );
-            }).with_setup(|world| send_event(
+            })
+            .with_setup(|world| send_event(
                 world,
                 CharacterSelectionEvent::Deselect { controller_id: 123 }
-            )).with_assertion(|world| {
+            ))
+            .with_assertion(|world| {
                 let character_selections = world.read_resource::<CharacterSelections>();
 
                 assert_eq!(None, character_selections.selections.get(&123));
-            }).run()
+            })
+            .run()
             .is_ok()
         );
     }
@@ -178,7 +187,8 @@ mod tests {
                     CharacterSelectionSystem::new(),
                     CharacterSelectionSystem::type_name(),
                     &[]
-                ).with_setup(|world| send_event(world, CharacterSelectionEvent::Confirm))
+                )
+                .with_setup(|world| send_event(world, CharacterSelectionEvent::Confirm))
                 .with_assertion(|world| {
                     let character_selections_status =
                         world.read_resource::<CharacterSelectionsStatus>();
@@ -187,7 +197,8 @@ mod tests {
                         CharacterSelectionsStatus::Ready,
                         *character_selections_status
                     );
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }

@@ -20,7 +20,8 @@ impl MapIndexer {
             .into_iter()
             .filter_map(|object_dir| {
                 AssetIndexingUtils::asset_record(namespace.to_string(), object_dir)
-            }).collect::<Vec<_>>()
+            })
+            .collect::<Vec<_>>()
     }
 }
 
@@ -54,7 +55,8 @@ mod tests {
             contains(vec![
                 asset_record("rara", "map_0", map_0_dir),
                 asset_record("rara", "map_1", map_1_dir),
-            ]).exactly()
+            ])
+            .exactly()
         );
 
         Ok(())

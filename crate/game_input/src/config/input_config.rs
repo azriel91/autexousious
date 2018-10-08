@@ -17,15 +17,22 @@ impl<'config> From<&'config InputConfig> for Bindings<PlayerAxisControl, PlayerA
         let mut bindings = Bindings::new();
 
         // Axis controls
-        input_config.controller_configs.iter()
+        input_config
+            .controller_configs
+            .iter()
             .enumerate()
             // The enumeration index is used as the controller ID
             .flat_map(|(index, controller_config)| {
                 let controller_id = index as u32;
-                controller_config.axes.iter()
-                    .map(|(&axis, input_axis)|
-                        (PlayerAxisControl::new(controller_id, axis), input_axis.clone())
-                    )
+                controller_config
+                    .axes
+                    .iter()
+                    .map(|(&axis, input_axis)| {
+                        (
+                            PlayerAxisControl::new(controller_id, axis),
+                            input_axis.clone(),
+                        )
+                    })
                     .collect::<Vec<(PlayerAxisControl, InputAxis)>>()
             })
             .for_each(|(player_axis_control, input_axis)| {
@@ -33,15 +40,19 @@ impl<'config> From<&'config InputConfig> for Bindings<PlayerAxisControl, PlayerA
             });
 
         // Action controls
-        input_config.controller_configs.iter()
+        input_config
+            .controller_configs
+            .iter()
             .enumerate()
             // The enumeration index is used as the controller ID
             .flat_map(|(index, controller_config)| {
                 let controller_id = index as u32;
-                controller_config.actions.iter()
-                    .map(|(&axis, input_button)|
+                controller_config
+                    .actions
+                    .iter()
+                    .map(|(&axis, input_button)| {
                         (PlayerActionControl::new(controller_id, axis), *input_button)
-                    )
+                    })
                     .collect::<Vec<(PlayerActionControl, Button)>>()
             })
             .for_each(|(player_action_control, input_button)| {

@@ -103,7 +103,8 @@ impl GamePlayState {
                 // position, we also need to give it maximum Z viewing distance to ensure it can see
                 // all entities in front of it.
                 far: ::std::f32::MAX,
-            }))).with(global_transform)
+            })))
+            .with(global_transform)
             .build();
 
         self.camera = Some(camera);
@@ -116,7 +117,8 @@ impl GamePlayState {
                 self.camera
                     .take()
                     .expect("Expected camera entity to be set."),
-            ).expect("Failed to delete camera entity.");
+            )
+            .expect("Failed to delete camera entity.");
     }
 }
 

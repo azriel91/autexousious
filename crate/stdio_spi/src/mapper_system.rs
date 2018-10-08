@@ -48,16 +48,19 @@ where
                 } else {
                     None
                 }
-            }).map(|tokens| -> Result<M::Event> {
+            })
+            .map(|tokens| -> Result<M::Event> {
                 let args = M::Args::from_iter_safe(tokens.iter())?;
                 M::map(&resources, args)
-            }).filter_map(|result| match result {
+            })
+            .filter_map(|result| match result {
                 Ok(event) => Some(AppEvent::from(event)),
                 Err(e) => {
                     error!("{}", e);
                     None
                 }
-            }).collect::<Vec<_>>();
+            })
+            .collect::<Vec<_>>();
 
         app_event_channel.drain_vec_write(&mut events);
     }

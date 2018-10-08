@@ -65,12 +65,8 @@ impl CharacterSelectionWidgetUiSystem {
             input_controlleds,
             controller_inputs
         ): &mut WidgetComponentStorages,
-        (
-            theme,
-            ui_transforms,
-            ui_texts
-        ): &mut WidgetUiResources
-){
+        (theme, ui_transforms, ui_texts): &mut WidgetUiResources,
+    ) {
         if !self.ui_initialized {
             debug!("Initializing Character Selection UI.");
 
@@ -184,7 +180,8 @@ impl<'s> System<'s> for CharacterSelectionWidgetUiSystem {
                 self.reader_id
                     .as_mut()
                     .expect("Expected to read `CharacterSelectionEvent`s."),
-            ).any(|ev| CharacterSelectionEvent::Confirm == *ev)
+            )
+            .any(|ev| CharacterSelectionEvent::Confirm == *ev)
         {
             self.terminate_ui(&entities, &mut widget_component_storages.0);
             return;
@@ -249,13 +246,15 @@ mod test {
             AutexousiousApplication::config_base(
                 "initializes_ui_when_character_selections_waiting",
                 false
-            ).with_resource(CharacterSelectionsStatus::Waiting)
+            )
+            .with_resource(CharacterSelectionsStatus::Waiting)
             .with_setup(|world| world.add_resource(input_config()))
             .with_system_single(
                 CharacterSelectionWidgetUiSystem::new(),
                 CharacterSelectionWidgetUiSystem::type_name(),
                 &[]
-            ).with_assertion(|world| assert_widget_count(world, 2))
+            )
+            .with_assertion(|world| assert_widget_count(world, 2))
             .with_assertion(|world| assert_widget_text(world, "Inactive"))
             .run()
             .is_ok()
@@ -270,7 +269,8 @@ mod test {
             AutexousiousApplication::config_base(
                 "refreshes_ui_when_selections_select_random",
                 false
-            ).with_system(
+            )
+            .with_system(
                 CharacterSelectionWidgetUiSystem::new(),
                 CharacterSelectionWidgetUiSystem::type_name(),
                 &[]
@@ -316,7 +316,8 @@ mod test {
                         character_selection: CharacterSelection::Random(first_character),
                     },
                 )
-            }).with_effect(|_| {}) // Need an extra update for the event to get through.
+            })
+            .with_effect(|_| {}) // Need an extra update for the event to get through.
             .with_assertion(|world| assert_widget_text(world, "Random"))
             .run()
             .is_ok()
@@ -370,11 +371,13 @@ mod test {
                             character_selection: CharacterSelection::Id(bat_snh),
                         },
                     )
-                }).with_effect(|_| {}) // Need an extra update for the event to get through.
+                })
+                .with_effect(|_| {}) // Need an extra update for the event to get through.
                 .with_assertion(|world| assert_widget_text(
                     world,
                     &format!("{}", *ASSETS_CHAR_BAT_SLUG)
-                )).run() // kcov-ignore
+                ))
+                .run() // kcov-ignore
                 .is_ok()
         );
     }

@@ -62,7 +62,8 @@ impl SpriteRenderAnimationLoader {
             .map(|animation| {
                 let loader = world.read_resource::<Loader>();
                 loader.load_from_data(animation, (), &world.read_resource())
-            }).collect::<Vec<Handle<Animation<SpriteRender>>>>()
+            })
+            .collect::<Vec<Handle<Animation<SpriteRender>>>>()
     }
 
     /// Loads `SpriteRender` animations and returns an iterator to their handles by sequence ID.
@@ -91,7 +92,8 @@ impl SpriteRenderAnimationLoader {
                     id,
                     Self::sequence_to_animation(world, sprite_sheet_index_offset, sequence),
                 )
-            }).map(move |(id, animation)| {
+            })
+            .map(move |(id, animation)| {
                 let loader = world.read_resource::<Loader>();
                 let animation_handle = loader.load_from_data(animation, (), &world.read_resource());
                 (id, animation_handle)
@@ -157,7 +159,8 @@ impl SpriteRenderAnimationLoader {
                 SpriteRenderPrimitive::SpriteSheet(
                     sprite_sheet_index_offset + frame.texture_index() as u64,
                 )
-            }).collect::<Vec<SpriteRenderPrimitive>>();
+            })
+            .collect::<Vec<SpriteRenderPrimitive>>();
         let final_key_frame = output.last().cloned();
         if final_key_frame.is_some() {
             output.push(final_key_frame.unwrap());

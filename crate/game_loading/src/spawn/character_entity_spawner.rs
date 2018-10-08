@@ -163,7 +163,8 @@ impl CharacterEntitySpawner {
         let mut animation_set = get_animation_set::<CharacterSequenceId, SpriteRender>(
             animation_control_set_storage,
             entity,
-        ).expect("Animation should exist as new entity should be valid.");
+        )
+        .expect("Animation should exist as new entity should be valid.");
 
         AnimationRunner::start(&mut animation_set, &animation_handle, first_sequence_id);
 
@@ -234,7 +235,8 @@ mod test {
             AmethystApplication::render_base(
                 "spawn_for_player_creates_entity_with_object_components",
                 false
-            ).with_custom_event_type::<AppEvent>()
+            )
+            .with_custom_event_type::<AppEvent>()
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
             .with_system(TestSystem, TestSystem::type_name(), &[])

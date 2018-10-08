@@ -75,7 +75,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             dir::RESOURCES,
             "display_config.ron",
             Some(development_base_dirs!()),
-        ).unwrap(),
+        )
+        .unwrap(),
     );
     display_config.title = TITLE.to_string();
 
