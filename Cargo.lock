@@ -299,7 +299,7 @@ dependencies = [
  "ron 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.79 (registry+https://github.com/rust-lang/crates.io-index)",
  "tempfile 3.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "toml 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "toml 0.4.8 (git+https://github.com/azriel91/toml-rs.git?branch=feature/225/externally-tagged-enums)",
 ]
 
 [[package]]
@@ -1983,7 +1983,7 @@ dependencies = [
  "object_loading 0.5.0",
  "object_model 0.5.0",
  "strum 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "toml 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "toml 0.4.8 (git+https://github.com/azriel91/toml-rs.git?branch=feature/225/externally-tagged-enums)",
 ]
 
 [[package]]
@@ -2076,7 +2076,7 @@ dependencies = [
  "serde_derive 1.0.79 (registry+https://github.com/rust-lang/crates.io-index)",
  "sprite_loading 0.5.0",
  "sprite_model 0.5.0",
- "toml 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "toml 0.4.8 (git+https://github.com/azriel91/toml-rs.git?branch=feature/225/externally-tagged-enums)",
 ]
 
 [[package]]
@@ -2464,13 +2464,15 @@ dependencies = [
  "amethyst 0.8.0 (git+https://github.com/amethyst/amethyst.git)",
  "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pretty_assertions 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.79 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_derive 1.0.79 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shape_model 0.6.0",
  "sprite_loading 0.5.0",
  "sprite_model 0.5.0",
  "strum 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum_macros 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "toml 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "toml 0.4.8 (git+https://github.com/azriel91/toml-rs.git?branch=feature/225/externally-tagged-enums)",
 ]
 
 [[package]]
@@ -3008,6 +3010,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "shape_model"
+version = "0.6.0"
+dependencies = [
+ "serde 1.0.79 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_derive 1.0.79 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "shared_library"
 version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3139,7 +3151,7 @@ dependencies = [
  "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.79 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_derive 1.0.79 (registry+https://github.com/rust-lang/crates.io-index)",
- "toml 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "toml 0.4.8 (git+https://github.com/azriel91/toml-rs.git?branch=feature/225/externally-tagged-enums)",
 ]
 
 [[package]]
@@ -3387,7 +3399,7 @@ dependencies = [
 [[package]]
 name = "toml"
 version = "0.4.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
+source = "git+https://github.com/azriel91/toml-rs.git?branch=feature/225/externally-tagged-enums#a770d5e60525ec0a00e3a8be26fbbe437adb06a5"
 dependencies = [
  "serde 1.0.79 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -4003,7 +4015,7 @@ dependencies = [
 "checksum thread_local 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)" = "c6b53e329000edc2b34dbe8545fd20e55a333362d0a321909685a19bd28c3f1b"
 "checksum tiff 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "a2cc6c4fd13cb1cfd20abdb196e794ceccb29371855b7e7f575945f920a5b3c2"
 "checksum time 0.1.40 (registry+https://github.com/rust-lang/crates.io-index)" = "d825be0eb33fda1a7e68012d51e9c7f451dc1a69391e7fdc197060bb8c56667b"
-"checksum toml 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)" = "4a2ecc31b0351ea18b3fe11274b8db6e4d82bce861bbb22e6dbed40417902c65"
+"checksum toml 0.4.8 (git+https://github.com/azriel91/toml-rs.git?branch=feature/225/externally-tagged-enums)" = "<none>"
 "checksum treeline 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "a7f741b240f1a48843f9b8e0444fb55fb2a4ff67293b50a9179dfd5ea67f8d41"
 "checksum tuple_utils 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "cbfecd7bb8f0a3e96b3b31c46af2677a55a588767c0091f484601424fcb20e7e"
 "checksum typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "07c6494e04fa9e31404425680954aac69080337a6e9a946b475578962674482f"

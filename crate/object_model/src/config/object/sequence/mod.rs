@@ -41,11 +41,12 @@ impl<SeqId: SequenceId> AnimationSequence for Sequence<SeqId> {
 
 #[cfg(test)]
 mod test {
+    use shape_model::{Axis, Volume};
     use toml;
 
     use super::{Frame, Sequence, SequenceId};
 
-    const SEQUENCE_TOML: &str = r#"
+    const SEQUENCE_WITH_FRAMES: &str = r#"
         next = "Boo"
         frames = [
           { sheet = 0, sprite = 4, wait = 2 },
@@ -56,33 +57,126 @@ mod test {
           { sheet = 0, sprite = 5, wait = 2 },
         ]
     "#;
-    const SEQUENCE_TOML_2: &str = r#"
+    const SEQUENCE_WITH_FRAMES_EMPTY: &str = r#"
         frames = []
+    "#;
+    const FRAME_WITH_BODY_ALL_SPECIFIED: &str = r#"
+        [[frames]]
+        sheet = 0
+        sprite = 0
+        wait = 0
+        body = [
+          { box = { x = -1, y = -2, z = -3, w = 11, h = 12, d = 13 } },
+          { cylinder = { axis = "x", center = -4, r = 14, l = 24 } },
+          { cylinder = { axis = "y", center = -5, r = 15, l = 25 } },
+          { cylinder = { axis = "z", center = -6, r = 16, l = 26 } },
+          { sphere = { x = -7, y = -8, z = -9, r = 17 } },
+        ]
+    "#;
+    const FRAME_WITH_BODY_MINIMUM_SPECIFIED: &str = r#"
+        [[frames]]
+        sheet = 0
+        sprite = 0
+        wait = 0
+        body = [
+          { box = { x = -1, y = -2, w = 11, h = 12 } },
+          { sphere = { x = -7, y = -8, r = 17 } },
+        ]
     "#;
 
     #[test]
-    fn deserialize_sequence() {
-        let sequence = toml::from_str::<Sequence<TestSeqId>>(SEQUENCE_TOML)
+    fn sequence_with_empty_frames_list_deserializes_successfully() {
+        let sequence = toml::from_str::<Sequence<TestSeqId>>(SEQUENCE_WITH_FRAMES_EMPTY)
+            .expect("Failed to deserialize sequence.");
+
+        let expected = Sequence::new(None, vec![]);
+        assert_eq!(expected, sequence);
+    }
+
+    #[test]
+    fn sequence_with_frames() {
+        let sequence = toml::from_str::<Sequence<TestSeqId>>(SEQUENCE_WITH_FRAMES)
             .expect("Failed to deserialize sequence.");
 
         let frames = vec![
-            Frame::new(0, 4, 2),
-            Frame::new(0, 5, 2),
-            Frame::new(1, 6, 1),
-            Frame::new(1, 7, 1),
-            Frame::new(0, 6, 2),
-            Frame::new(0, 5, 2),
+            Frame::new(0, 4, 2, None),
+            Frame::new(0, 5, 2, None),
+            Frame::new(1, 6, 1, None),
+            Frame::new(1, 7, 1, None),
+            Frame::new(0, 6, 2, None),
+            Frame::new(0, 5, 2, None),
         ];
         let expected = Sequence::new(Some(TestSeqId::Boo), frames);
         assert_eq!(expected, sequence);
     }
 
     #[test]
-    fn deserialize_empty_sequence() {
-        let sequence = toml::from_str::<Sequence<TestSeqId>>(SEQUENCE_TOML_2)
+    fn sequence_with_body_specify_all_fields() {
+        let sequence = toml::from_str::<Sequence<TestSeqId>>(FRAME_WITH_BODY_ALL_SPECIFIED)
             .expect("Failed to deserialize sequence.");
 
-        let expected = Sequence::new(None, vec![]);
+        let body_volumes = vec![
+            Volume::Box {
+                x: -1,
+                y: -2,
+                z: -3,
+                w: 11,
+                h: 12,
+                d: 13,
+            },
+            Volume::Cylinder {
+                axis: Axis::X,
+                center: -4,
+                r: 14,
+                l: 24,
+            },
+            Volume::Cylinder {
+                axis: Axis::Y,
+                center: -5,
+                r: 15,
+                l: 25,
+            },
+            Volume::Cylinder {
+                axis: Axis::Z,
+                center: -6,
+                r: 16,
+                l: 26,
+            },
+            Volume::Sphere {
+                x: -7,
+                y: -8,
+                z: -9,
+                r: 17,
+            },
+        ];
+        let frames = vec![Frame::new(0, 0, 0, Some(body_volumes))];
+        let expected = Sequence::new(None, frames);
+        assert_eq!(expected, sequence);
+    }
+
+    #[test]
+    fn sequence_with_body_specify_minimum_fields() {
+        let sequence = toml::from_str::<Sequence<TestSeqId>>(FRAME_WITH_BODY_MINIMUM_SPECIFIED)
+            .expect("Failed to deserialize sequence.");
+
+        let body_volumes = vec![
+            Volume::Box {
+                x: -1,
+                y: -2,
+                z: 0,
+                w: 11,
+                h: 12,
+                d: 26,
+            },
+            Volume::Sphere {
+                x: -7,
+                y: -8,
+                z: 0,
+                r: 17,
+            },
+        ];
+        let frames = vec![Frame::new(0, 0, 0, Some(body_volumes))];
+        let expected = Sequence::new(None, frames);
         assert_eq!(expected, sequence);
     }
 

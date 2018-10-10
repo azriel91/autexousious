@@ -35,12 +35,12 @@ mod test {
             .expect("Failed to deserialize character definition.");
 
         let frames = vec![
-            Frame::new(0, 4, 2),
-            Frame::new(0, 5, 2),
-            Frame::new(1, 6, 1),
-            Frame::new(1, 7, 1),
-            Frame::new(0, 6, 2),
-            Frame::new(0, 5, 2),
+            Frame::new(0, 4, 2, None),
+            Frame::new(0, 5, 2, None),
+            Frame::new(1, 6, 1, None),
+            Frame::new(1, 7, 1, None),
+            Frame::new(0, 6, 2, None),
+            Frame::new(0, 5, 2, None),
         ];
         let sequence = Sequence::new(Some(CharacterSequenceId::Walk), frames);
         let mut sequences = HashMap::new();

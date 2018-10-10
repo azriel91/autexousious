@@ -1,0 +1,10 @@
+[package]
+name = "shape_model"
+version = "0.6.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+
+[dependencies]
+serde = "1.0"
+serde_derive = "1.0"
+strum = "0.11"
+strum_macros = "0.11"
