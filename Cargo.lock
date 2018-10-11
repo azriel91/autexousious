@@ -834,6 +834,7 @@ dependencies = [
 name = "collision_model"
 version = "0.6.0"
 dependencies = [
+ "derivative 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "pretty_assertions 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.79 (registry+https://github.com/rust-lang/crates.io-index)",

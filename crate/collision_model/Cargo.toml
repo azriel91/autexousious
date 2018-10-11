@@ -4,6 +4,7 @@ version = "0.6.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 
 [dependencies]
+derivative = "1.0"
 derive-new = "0.5"
 serde = "1.0"
 serde_derive = "1.0"

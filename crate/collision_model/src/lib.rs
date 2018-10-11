@@ -4,6 +4,8 @@
 //! Types used to represent collidable objects.
 
 #[macro_use]
+extern crate derivative;
+#[macro_use]
 extern crate derive_new;
 #[cfg(test)]
 #[macro_use]

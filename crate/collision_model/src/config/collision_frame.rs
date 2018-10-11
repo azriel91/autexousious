@@ -1,11 +1,17 @@
 use shape_model::Volume;
 
+use config::Interaction;
+
 /// Frame for an interactable object.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
+#[derive(Clone, Debug, Derivative, Deserialize, PartialEq, Serialize, new)]
+#[derivative(Default)]
 pub struct CollisionFrame {
-    /// Hittable volume of the object.
+    /// Hittable volumes of the object.
     #[serde(default)]
     pub body: Option<Vec<Volume>>,
+    /// Effects on other objects.
+    #[serde(default)]
+    pub interactions: Option<Vec<Interaction>>,
 }
 
 #[cfg(test)]
@@ -14,6 +20,7 @@ mod tests {
     use toml;
 
     use super::CollisionFrame;
+    use config::Interaction;
 
     const BODY_ALL_SPECIFIED: &str = r#"
         body = [
@@ -28,6 +35,16 @@ mod tests {
         body = [
           { box = { x = -1, y = -2, w = 11, h = 12 } },
           { sphere = { x = -7, y = -8, r = 17 } },
+        ]
+    "#;
+    const ITR_PHYSICAL_ALL_SPECIFIED: &str = r#"
+        interactions = [
+          { physical = { bounds = [{ sphere = { x = 1, y = 1, r = 1 } }], hp_damage = 40, sp_damage = 50, multiple = true } },
+        ]
+    "#;
+    const ITR_PHYSICAL_MINIMUM_SPECIFIED: &str = r#"
+        interactions = [
+          { physical = { bounds = [{ sphere = { x = 1, y = 1, r = 1 } }] } },
         ]
     "#;
 
@@ -70,7 +87,7 @@ mod tests {
                 r: 17,
             },
         ];
-        assert_eq!(CollisionFrame::new(Some(body_volumes)), frame);
+        assert_eq!(CollisionFrame::new(Some(body_volumes), None), frame);
     }
 
     #[test]
@@ -94,6 +111,44 @@ mod tests {
                 r: 17,
             },
         ];
-        assert_eq!(CollisionFrame::new(Some(body_volumes)), frame);
+        assert_eq!(CollisionFrame::new(Some(body_volumes), None), frame);
+    }
+
+    #[test]
+    fn itr_physical_specify_all_fields() {
+        let frame = toml::from_str::<CollisionFrame>(ITR_PHYSICAL_ALL_SPECIFIED)
+            .expect("Failed to deserialize frame.");
+
+        let interactions = vec![Interaction::Physical {
+            bounds: vec![Volume::Sphere {
+                x: 1,
+                y: 1,
+                z: 0,
+                r: 1,
+            }],
+            hp_damage: 40,
+            sp_damage: 50,
+            multiple: true,
+        }];
+        assert_eq!(CollisionFrame::new(None, Some(interactions)), frame);
+    }
+
+    #[test]
+    fn itr_physical_specify_minimum_fields() {
+        let frame = toml::from_str::<CollisionFrame>(ITR_PHYSICAL_MINIMUM_SPECIFIED)
+            .expect("Failed to deserialize frame.");
+
+        let interactions = vec![Interaction::Physical {
+            bounds: vec![Volume::Sphere {
+                x: 1,
+                y: 1,
+                z: 0,
+                r: 1,
+            }],
+            hp_damage: 0,
+            sp_damage: 0,
+            multiple: false,
+        }];
+        assert_eq!(CollisionFrame::new(None, Some(interactions)), frame);
     }
 }

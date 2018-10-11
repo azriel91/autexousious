@@ -41,7 +41,7 @@ impl<SeqId: SequenceId> AnimationSequence for Sequence<SeqId> {
 
 #[cfg(test)]
 mod tests {
-    use collision_model::config::CollisionFrame;
+    use collision_model::config::{CollisionFrame, Interaction};
     use shape_model::Volume;
     use sprite_model::config::SpriteFrame;
     use toml;
@@ -72,6 +72,15 @@ mod tests {
           { sphere = { x = -7, y = -8, z = -9, r = 17 } },
         ]
     "#;
+    const SEQUENCE_WITH_ITR: &str = r#"
+        [[frames]]
+        sheet = 0
+        sprite = 0
+        wait = 0
+        interactions = [
+          { physical = { bounds = [{ sphere = { x = 1, y = 1, r = 1 } }] } },
+        ]
+    "#;
 
     #[test]
     fn sequence_with_empty_frames_list_deserializes_successfully() {
@@ -88,12 +97,12 @@ mod tests {
             .expect("Failed to deserialize sequence.");
 
         let frames = vec![
-            Frame::new(SpriteFrame::new(0, 4, 2), CollisionFrame::new(None)),
-            Frame::new(SpriteFrame::new(0, 5, 2), CollisionFrame::new(None)),
-            Frame::new(SpriteFrame::new(1, 6, 1), CollisionFrame::new(None)),
-            Frame::new(SpriteFrame::new(1, 7, 1), CollisionFrame::new(None)),
-            Frame::new(SpriteFrame::new(0, 6, 2), CollisionFrame::new(None)),
-            Frame::new(SpriteFrame::new(0, 5, 2), CollisionFrame::new(None)),
+            Frame::new(SpriteFrame::new(0, 4, 2), CollisionFrame::default()),
+            Frame::new(SpriteFrame::new(0, 5, 2), CollisionFrame::default()),
+            Frame::new(SpriteFrame::new(1, 6, 1), CollisionFrame::default()),
+            Frame::new(SpriteFrame::new(1, 7, 1), CollisionFrame::default()),
+            Frame::new(SpriteFrame::new(0, 6, 2), CollisionFrame::default()),
+            Frame::new(SpriteFrame::new(0, 5, 2), CollisionFrame::default()),
         ];
         let expected = Sequence::new(Some(TestSeqId::Boo), frames);
         assert_eq!(expected, sequence);
@@ -122,7 +131,31 @@ mod tests {
         ];
         let frames = vec![Frame::new(
             SpriteFrame::new(0, 0, 0),
-            CollisionFrame::new(Some(body_volumes)),
+            CollisionFrame::new(Some(body_volumes), None),
+        )];
+        let expected = Sequence::new(None, frames);
+        assert_eq!(expected, sequence);
+    }
+
+    #[test]
+    fn sequence_with_itr() {
+        let sequence = toml::from_str::<Sequence<TestSeqId>>(SEQUENCE_WITH_ITR)
+            .expect("Failed to deserialize sequence.");
+
+        let interactions = vec![Interaction::Physical {
+            bounds: vec![Volume::Sphere {
+                x: 1,
+                y: 1,
+                z: 0,
+                r: 1,
+            }],
+            hp_damage: 0,
+            sp_damage: 0,
+            multiple: false,
+        }];
+        let frames = vec![Frame::new(
+            SpriteFrame::new(0, 0, 0),
+            CollisionFrame::new(None, Some(interactions)),
         )];
         let expected = Sequence::new(None, frames);
         assert_eq!(expected, sequence);
