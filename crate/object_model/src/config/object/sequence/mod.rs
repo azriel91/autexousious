@@ -41,6 +41,7 @@ impl<SeqId: SequenceId> AnimationSequence for Sequence<SeqId> {
 
 #[cfg(test)]
 mod test {
+    use collision_model::config::CollisionFrame;
     use shape_model::{Axis, Volume};
     use toml;
 
@@ -99,12 +100,12 @@ mod test {
             .expect("Failed to deserialize sequence.");
 
         let frames = vec![
-            Frame::new(0, 4, 2, None),
-            Frame::new(0, 5, 2, None),
-            Frame::new(1, 6, 1, None),
-            Frame::new(1, 7, 1, None),
-            Frame::new(0, 6, 2, None),
-            Frame::new(0, 5, 2, None),
+            Frame::new(0, 4, 2, CollisionFrame::new(None)),
+            Frame::new(0, 5, 2, CollisionFrame::new(None)),
+            Frame::new(1, 6, 1, CollisionFrame::new(None)),
+            Frame::new(1, 7, 1, CollisionFrame::new(None)),
+            Frame::new(0, 6, 2, CollisionFrame::new(None)),
+            Frame::new(0, 5, 2, CollisionFrame::new(None)),
         ];
         let expected = Sequence::new(Some(TestSeqId::Boo), frames);
         assert_eq!(expected, sequence);
@@ -149,7 +150,7 @@ mod test {
                 r: 17,
             },
         ];
-        let frames = vec![Frame::new(0, 0, 0, Some(body_volumes))];
+        let frames = vec![Frame::new(0, 0, 0, CollisionFrame::new(Some(body_volumes)))];
         let expected = Sequence::new(None, frames);
         assert_eq!(expected, sequence);
     }
@@ -175,7 +176,7 @@ mod test {
                 r: 17,
             },
         ];
-        let frames = vec![Frame::new(0, 0, 0, Some(body_volumes))];
+        let frames = vec![Frame::new(0, 0, 0, CollisionFrame::new(Some(body_volumes)))];
         let expected = Sequence::new(None, frames);
         assert_eq!(expected, sequence);
     }

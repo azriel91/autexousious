@@ -1,4 +1,4 @@
-use shape_model::Volume;
+use collision_model::config::CollisionFrame;
 use sprite_loading::AnimationFrame;
 
 /// Animation and interaction information to use on this frame.
@@ -24,8 +24,8 @@ pub struct Frame {
     /// Number of ticks to wait before the sequence switches to the next frame.
     pub wait: u32,
     /// Hittable volume of the object.
-    #[serde(default)]
-    pub body: Option<Vec<Volume>>,
+    #[serde(flatten)]
+    pub collision: CollisionFrame,
 }
 
 impl AnimationFrame for Frame {
