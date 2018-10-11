@@ -835,9 +835,11 @@ name = "collision_model"
 version = "0.6.0"
 dependencies = [
  "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pretty_assertions 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.79 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_derive 1.0.79 (registry+https://github.com/rust-lang/crates.io-index)",
  "shape_model 0.6.0",
+ "toml 0.4.8 (git+https://github.com/azriel91/toml-rs.git?branch=feature/225/externally-tagged-enums)",
 ]
 
 [[package]]

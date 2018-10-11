@@ -40,9 +40,9 @@ impl<SeqId: SequenceId> AnimationSequence for Sequence<SeqId> {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use collision_model::config::CollisionFrame;
-    use shape_model::{Axis, Volume};
+    use shape_model::Volume;
     use sprite_model::config::SpriteFrame;
     use toml;
 
@@ -62,27 +62,14 @@ mod test {
     const SEQUENCE_WITH_FRAMES_EMPTY: &str = r#"
         frames = []
     "#;
-    const FRAME_WITH_BODY_ALL_SPECIFIED: &str = r#"
+    const SEQUENCE_WITH_BODY: &str = r#"
         [[frames]]
         sheet = 0
         sprite = 0
         wait = 0
         body = [
           { box = { x = -1, y = -2, z = -3, w = 11, h = 12, d = 13 } },
-          { cylinder = { axis = "x", center = -4, r = 14, l = 24 } },
-          { cylinder = { axis = "y", center = -5, r = 15, l = 25 } },
-          { cylinder = { axis = "z", center = -6, r = 16, l = 26 } },
           { sphere = { x = -7, y = -8, z = -9, r = 17 } },
-        ]
-    "#;
-    const FRAME_WITH_BODY_MINIMUM_SPECIFIED: &str = r#"
-        [[frames]]
-        sheet = 0
-        sprite = 0
-        wait = 0
-        body = [
-          { box = { x = -1, y = -2, w = 11, h = 12 } },
-          { sphere = { x = -7, y = -8, r = 17 } },
         ]
     "#;
 
@@ -113,8 +100,8 @@ mod test {
     }
 
     #[test]
-    fn sequence_with_body_specify_all_fields() {
-        let sequence = toml::from_str::<Sequence<TestSeqId>>(FRAME_WITH_BODY_ALL_SPECIFIED)
+    fn sequence_with_body() {
+        let sequence = toml::from_str::<Sequence<TestSeqId>>(SEQUENCE_WITH_BODY)
             .expect("Failed to deserialize sequence.");
 
         let body_volumes = vec![
@@ -126,57 +113,10 @@ mod test {
                 h: 12,
                 d: 13,
             },
-            Volume::Cylinder {
-                axis: Axis::X,
-                center: -4,
-                r: 14,
-                l: 24,
-            },
-            Volume::Cylinder {
-                axis: Axis::Y,
-                center: -5,
-                r: 15,
-                l: 25,
-            },
-            Volume::Cylinder {
-                axis: Axis::Z,
-                center: -6,
-                r: 16,
-                l: 26,
-            },
             Volume::Sphere {
                 x: -7,
                 y: -8,
                 z: -9,
-                r: 17,
-            },
-        ];
-        let frames = vec![Frame::new(
-            SpriteFrame::new(0, 0, 0),
-            CollisionFrame::new(Some(body_volumes)),
-        )];
-        let expected = Sequence::new(None, frames);
-        assert_eq!(expected, sequence);
-    }
-
-    #[test]
-    fn sequence_with_body_specify_minimum_fields() {
-        let sequence = toml::from_str::<Sequence<TestSeqId>>(FRAME_WITH_BODY_MINIMUM_SPECIFIED)
-            .expect("Failed to deserialize sequence.");
-
-        let body_volumes = vec![
-            Volume::Box {
-                x: -1,
-                y: -2,
-                z: 0,
-                w: 11,
-                h: 12,
-                d: 26,
-            },
-            Volume::Sphere {
-                x: -7,
-                y: -8,
-                z: 0,
                 r: 17,
             },
         ];
