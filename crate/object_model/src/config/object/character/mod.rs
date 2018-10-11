@@ -11,6 +11,7 @@ mod test {
     use std::collections::HashMap;
 
     use collision_model::config::CollisionFrame;
+    use sprite_model::config::SpriteFrame;
     use toml;
 
     use super::{CharacterDefinition, CharacterSequenceId};
@@ -36,12 +37,12 @@ mod test {
             .expect("Failed to deserialize character definition.");
 
         let frames = vec![
-            Frame::new(0, 4, 2, CollisionFrame::new(None)),
-            Frame::new(0, 5, 2, CollisionFrame::new(None)),
-            Frame::new(1, 6, 1, CollisionFrame::new(None)),
-            Frame::new(1, 7, 1, CollisionFrame::new(None)),
-            Frame::new(0, 6, 2, CollisionFrame::new(None)),
-            Frame::new(0, 5, 2, CollisionFrame::new(None)),
+            Frame::new(SpriteFrame::new(0, 4, 2), CollisionFrame::new(None)),
+            Frame::new(SpriteFrame::new(0, 5, 2), CollisionFrame::new(None)),
+            Frame::new(SpriteFrame::new(1, 6, 1), CollisionFrame::new(None)),
+            Frame::new(SpriteFrame::new(1, 7, 1), CollisionFrame::new(None)),
+            Frame::new(SpriteFrame::new(0, 6, 2), CollisionFrame::new(None)),
+            Frame::new(SpriteFrame::new(0, 5, 2), CollisionFrame::new(None)),
         ];
         let sequence = Sequence::new(Some(CharacterSequenceId::Walk), frames);
         let mut sequences = HashMap::new();

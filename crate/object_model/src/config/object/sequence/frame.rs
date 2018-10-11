@@ -1,5 +1,6 @@
 use collision_model::config::CollisionFrame;
 use sprite_loading::AnimationFrame;
+use sprite_model::config::SpriteFrame;
 
 /// Animation and interaction information to use on this frame.
 ///
@@ -12,17 +13,9 @@ use sprite_loading::AnimationFrame;
 /// * **Weapon:** Where an active weapon should be.
 #[derive(Clone, Debug, Deserialize, PartialEq, new)]
 pub struct Frame {
-    /// Sprite sheet number.
-    ///
-    /// Note: this will almost always differ from the sheet number when loaded into Amethyst.
-    ///
-    /// Amethyst uses a global texture id map, so this number will be relative to the offset
-    /// allocated to the object that this sprite sheet belongs to.
-    pub sheet: usize,
-    /// Sprite number on the sprite sheet.
-    pub sprite: usize,
-    /// Number of ticks to wait before the sequence switches to the next frame.
-    pub wait: u32,
+    /// Hittable volume of the object.
+    #[serde(flatten)]
+    pub sprite: SpriteFrame,
     /// Hittable volume of the object.
     #[serde(flatten)]
     pub collision: CollisionFrame,
@@ -30,14 +23,14 @@ pub struct Frame {
 
 impl AnimationFrame for Frame {
     fn texture_index(&self) -> usize {
-        self.sheet
+        self.sprite.sheet
     }
 
     fn sprite_index(&self) -> usize {
-        self.sprite
+        self.sprite.sprite
     }
 
     fn wait(&self) -> u32 {
-        self.wait
+        self.sprite.wait
     }
 }
