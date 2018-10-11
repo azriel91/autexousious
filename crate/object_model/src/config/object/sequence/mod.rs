@@ -66,7 +66,6 @@ mod tests {
         [[frames]]
         sheet = 0
         sprite = 0
-        wait = 0
         body = [
           { box = { x = -1, y = -2, z = -3, w = 11, h = 12, d = 13 } },
           { sphere = { x = -7, y = -8, z = -9, r = 17 } },
@@ -76,7 +75,6 @@ mod tests {
         [[frames]]
         sheet = 0
         sprite = 0
-        wait = 0
         interactions = [
           { physical = { bounds = [{ sphere = { x = 1, y = 1, r = 1 } }] } },
         ]
