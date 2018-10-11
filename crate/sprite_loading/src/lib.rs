@@ -41,12 +41,14 @@ extern crate pretty_assertions;
 extern crate sprite_model;
 
 pub use animation::{AnimationFrame, AnimationSequence, SpriteRenderAnimationLoader};
+pub use sprite_animation_handle::SpriteAnimationHandle;
 pub use sprite_loader::SpriteLoader;
 pub(crate) use sprite_sheet_loader::SpriteSheetLoader;
 pub(crate) use sprite_sheet_mapper::SpriteSheetMapper;
 pub(crate) use texture_loader::TextureLoader;
 
 mod animation;
+mod sprite_animation_handle;
 mod sprite_loader;
 mod sprite_sheet_loader;
 mod sprite_sheet_mapper;

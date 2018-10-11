@@ -1,10 +1,7 @@
 use std::collections::HashMap;
 
-use amethyst::{
-    animation::Animation,
-    assets::Handle,
-    renderer::{SpriteRender, SpriteSheetHandle},
-};
+use amethyst::renderer::SpriteSheetHandle;
+use sprite_loading::SpriteAnimationHandle;
 
 use config::object::SequenceId;
 
@@ -15,5 +12,5 @@ pub struct Object<SeqId: SequenceId> {
     /// Handle to the default sprite sheet to use for the character.
     pub default_sprite_sheet: SpriteSheetHandle,
     /// Handle to the sprite animations that this object uses.
-    pub animations: HashMap<SeqId, Handle<Animation<SpriteRender>>>,
+    pub animations: HashMap<SeqId, SpriteAnimationHandle>,
 }

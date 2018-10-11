@@ -124,11 +124,12 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         // `InputBundle` provides `InputHandler<A, B>`, needed by the `UiBundle` for mouse events.
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
         game_data = game_data
-            // Provides sprite animation
+            // Object sprite animations.
             .with_bundle(AnimationBundle::<CharacterSequenceId, SpriteRender>::new(
                 "character_animation_control_system",
                 "character_sampler_interpolation_system",
             ))?
+            // Used for map layer animations.
             .with_bundle(AnimationBundle::<u32, SpriteRender>::new(
                 "animation_control_system",
                 "sampler_interpolation_system",
