@@ -85,10 +85,12 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_hook_fn(
                 HookableFn::OnStart,
                 HookFn(*GameModeSelectionUiBuildFn::new()),
-            ).with_hook_fn(
+            )
+            .with_hook_fn(
                 HookableFn::OnResume,
                 HookFn(*GameModeSelectionUiBuildFn::new()),
-            ).build();
+            )
+            .build();
     let loading_state = LoadingState::<_>::new(assets_dir.clone(), game_mode_selection_state);
     let state = RobotState::new(Box::new(loading_state));
 
@@ -108,7 +110,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                     ColorMask::all(),
                     ALPHA,
                     Some(DepthMode::LessEqualWrite),
-                )).with_pass(DrawUi::new()),
+                ))
+                .with_pass(DrawUi::new()),
         );
 
         let input_config = load_in::<InputConfig, _>(
@@ -121,11 +124,13 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         // `InputBundle` provides `InputHandler<A, B>`, needed by the `UiBundle` for mouse events.
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
         game_data = game_data
-            // Provides sprite animation
+            // Object sprite animations.
             .with_bundle(AnimationBundle::<CharacterSequenceId, SpriteRender>::new(
                 "character_animation_control_system",
                 "character_sampler_interpolation_system",
-            ))?.with_bundle(AnimationBundle::<u32, SpriteRender>::new(
+            ))?
+            // Used for map layer animations.
+            .with_bundle(AnimationBundle::<u32, SpriteRender>::new(
                 "animation_control_system",
                 "sampler_interpolation_system",
             ))?
@@ -135,14 +140,17 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 "character_sampler_interpolation_system",
                 "animation_control_system",
                 "sampler_interpolation_system",
-            ]))?.with_bundle(
+            ]))?
+            .with_bundle(
                 RenderBundle::new(pipe, Some(display_config))
                     .with_sprite_visibility_sorting(&["transform_system"])
                     .with_sprite_sheet_processor(),
-            )?.with_bundle(
+            )?
+            .with_bundle(
                 InputBundle::<PlayerAxisControl, PlayerActionControl>::new()
                     .with_bindings((&input_config).into()),
-            )?.with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?
+            )?
+            .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?
             .with_bundle(GameInputBundle::new(input_config))?
             .with_bundle(StdioViewBundle::new())?
             .with_bundle(CharacterSelectionStdioBundle::new())?
@@ -157,7 +165,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         .with_frame_limit(
             FrameRateLimitStrategy::SleepAndYield(Duration::from_micros(1000)),
             60,
-        ).build(game_data)?;
+        )
+        .build(game_data)?;
 
     app.run();
 

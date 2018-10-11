@@ -60,10 +60,12 @@ impl AutexousiousApplication {
             .with_bundle(AnimationBundle::<CharacterSequenceId, SpriteRender>::new(
                 "character_animation_control_system",
                 "character_sampler_interpolation_system",
-            )).with_bundle(TransformBundle::new().with_dep(&[
+            ))
+            .with_bundle(TransformBundle::new().with_dep(&[
                 "character_animation_control_system",
                 "character_sampler_interpolation_system",
-            ])).with_render_bundle(test_name, visibility)
+            ]))
+            .with_render_bundle(test_name, visibility)
     }
 
     /// Returns an application with Render, Input, and UI bundles loaded.
@@ -140,7 +142,8 @@ impl AutexousiousApplication {
 
                 world.add_resource(character_selections);
                 world.add_resource(CharacterSelectionsStatus::Ready);
-            }).with_setup(SetupFunction::map_selection(ASSETS_MAP_FADE_SLUG.clone()))
+            })
+            .with_setup(SetupFunction::map_selection(ASSETS_MAP_FADE_SLUG.clone()))
             .with_state(|| GameLoadingState::new(|| Box::new(EmptyState)))
     }
 }
@@ -167,7 +170,8 @@ mod test {
                     // Panics if the type parameters used are not these ones.
                     world.read_resource::<InputHandler<PlayerAxisControl, PlayerActionControl>>();
                     world.read_storage::<MouseReactive>();
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }
@@ -180,7 +184,8 @@ mod test {
             AutexousiousApplication::render_base(
                 "render_base_application_can_load_sprite_render_animations",
                 false
-            ).with_effect(SpriteRenderAnimationFixture::effect)
+            )
+            .with_effect(SpriteRenderAnimationFixture::effect)
             .with_assertion(SpriteRenderAnimationFixture::assertion)
             .run()
             .is_ok()
@@ -195,11 +200,13 @@ mod test {
             AutexousiousApplication::render_and_ui(
                 "render_and_ui_uses_strong_types_for_input_and_ui_bundles",
                 false
-            ).with_assertion(|world| {
+            )
+            .with_assertion(|world| {
                 // Panics if the type parameters used are not these ones.
                 world.read_resource::<InputHandler<PlayerAxisControl, PlayerActionControl>>();
                 world.read_storage::<MouseReactive>();
-            }).run()
+            })
+            .run()
             .is_ok()
         );
     }
@@ -212,11 +219,13 @@ mod test {
             AutexousiousApplication::config_base(
                 "config_base_loads_assets_from_self_crate_directory",
                 false
-            ).with_assertion(|world| {
+            )
+            .with_assertion(|world| {
                 // Panics if the resources have not been populated
                 world.read_resource::<MapAssets>();
                 assert!(!world.read_resource::<CharacterAssets>().is_empty());
-            }).run()
+            })
+            .run()
             .is_ok()
         );
     }
@@ -255,7 +264,8 @@ mod test {
                         !game_entities.map_layers.is_empty(),
                         "Expected map to be loaded."
                     );
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }

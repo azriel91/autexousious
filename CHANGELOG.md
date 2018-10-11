@@ -8,6 +8,7 @@
 * Character selection controllable via stdin. ([#67][#67])
 * Map selection controllable via stdin. ([#67][#67])
 * Game mode selection controllable via stdin. ([#67][#67])
+* Configuration types for hit (`interactions`) and hurt (`body`) boxes. ([#68][#68])
 
 ### Changed
 
@@ -22,6 +23,7 @@
 [#63]: https://gitlab.com/azriel91/autexousious/issues/63
 [#66]: https://gitlab.com/azriel91/autexousious/issues/66
 [#67]: https://gitlab.com/azriel91/autexousious/issues/67
+[#68]: https://gitlab.com/azriel91/autexousious/issues/68
 [#72]: https://gitlab.com/azriel91/autexousious/issues/72
 
 ## 0.5.0 (2018-08-31)

@@ -1,9 +1,9 @@
 use amethyst::{
-    animation::Animation,
     assets::{Asset, Error, Handle, ProcessingState},
     ecs::prelude::*,
-    renderer::{SpriteRender, SpriteSheetHandle},
+    renderer::SpriteSheetHandle,
 };
+use sprite_loading::SpriteAnimationHandle;
 
 use config::MapDefinition;
 use loaded::Margins;
@@ -18,7 +18,7 @@ pub struct Map {
     /// Handle to the sprite sheets for layer entities.
     pub sprite_sheet_handles: Option<Vec<SpriteSheetHandle>>,
     /// Handle to the animations for this map's layers.
-    pub animation_handles: Option<Vec<Handle<Animation<SpriteRender>>>>,
+    pub animation_handles: Option<Vec<SpriteAnimationHandle>>,
 }
 
 impl Asset for Map {

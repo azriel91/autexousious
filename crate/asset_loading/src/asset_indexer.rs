@@ -85,7 +85,8 @@ mod tests {
             contains(vec![
                 asset_record("rara", "map_0", map_0_dir),
                 asset_record("rara", "map_1", map_1_dir),
-            ]).exactly()
+            ])
+            .exactly()
         );
         // kcov-ignore-start
         assert_that!(
@@ -94,7 +95,8 @@ mod tests {
             contains(vec![
                 asset_record("rara", "char_0", char_0_dir),
                 asset_record("rara", "char_1", char_1_dir),
-            ]).exactly()
+            ])
+            .exactly()
         );
 
         Ok(())

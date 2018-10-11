@@ -64,7 +64,8 @@ mod test {
                 .with_bundle(
                     CharacterSelectionBundle::new()
                         .with_system_dependencies(&["transform_system".to_string()])
-                ).run()
+                )
+                .run()
                 .is_ok()
         );
     }

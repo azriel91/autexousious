@@ -5,14 +5,17 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git" }
+collision_model = { path = "../collision_model" }
 derivative = "1.0"
 derive-new = "0.5"
 serde = "1.0"
 serde_derive = "1.0"
+shape_model = { path = "../shape_model" }
 sprite_model = { path = "../sprite_model" }
 sprite_loading = { path = "../sprite_loading" }
 strum = "0.11"
 strum_macros = "0.11"
 
 [dev-dependencies]
+pretty_assertions = "0.5"
 toml = "0.4"

@@ -65,12 +65,14 @@ mod test {
                         .expect("Failed to load character.");
 
                     world.add_resource(EffectReturn(character_handle));
-                }).with_assertion(|world| {
+                })
+                .with_assertion(|world| {
                     let character_handle =
                         &world.read_resource::<EffectReturn<CharacterHandle>>().0;
                     let store = world.read_resource::<AssetStorage<Character>>();
                     assert!(store.get(character_handle).is_some());
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }

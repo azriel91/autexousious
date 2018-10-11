@@ -64,7 +64,8 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
                         bounds.height as f32,
                         bounds.depth as f32,
                     )
-                }).expect("Expected map to be loaded.")
+                })
+                .expect("Expected map to be loaded.")
         };
 
         // This `Position` moves the entity to the middle of a "screen wide" map.
@@ -78,7 +79,8 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             .iter()
             .map(|(controller_id, slug_and_handle)| {
                 (InputControlled::new(*controller_id), slug_and_handle)
-            }).map(|(input_controlled, slug_and_handle)| {
+            })
+            .map(|(input_controlled, slug_and_handle)| {
                 CharacterEntitySpawner::spawn_system(
                     &object_spawning_resources,
                     &mut character_component_storages,
@@ -87,7 +89,8 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
                     &slug_and_handle,
                     input_controlled,
                 )
-            }).collect::<Vec<Entity>>();
+            })
+            .collect::<Vec<Entity>>();
 
         game_entities
             .objects
@@ -145,11 +148,13 @@ mod tests {
 
                     world.add_resource(GameEntities::new(objects, Vec::new()));
                     world.add_resource(EffectReturn(char_entity));
-                }).with_system_single(
+                })
+                .with_system_single(
                     CharacterSelectionSpawningSystem,
                     CharacterSelectionSpawningSystem::type_name(),
                     &[],
-                ).with_assertion(|world| {
+                )
+                .with_assertion(|world| {
                     let char_entity = &world.read_resource::<EffectReturn<Entity>>().0;
                     assert_eq!(
                         char_entity,
@@ -162,7 +167,8 @@ mod tests {
                             .next()
                             .expect("Expected characters to have an entity.")
                     );
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }
@@ -177,7 +183,8 @@ mod tests {
             AmethystApplication::render_base(
                 "spawns_characters_when_they_havent_been_spawned",
                 false
-            ).with_custom_event_type::<AppEvent>()
+            )
+            .with_custom_event_type::<AppEvent>()
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
             .with_state(|| LoadingState::new(ASSETS_PATH.clone(), EmptyState))
@@ -189,11 +196,13 @@ mod tests {
                     SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone())),
                 );
                 world.add_resource(character_selections);
-            }).with_system_single(
+            })
+            .with_system_single(
                 CharacterSelectionSpawningSystem,
                 CharacterSelectionSpawningSystem::type_name(),
                 &[],
-            ).with_assertion(|world| {
+            )
+            .with_assertion(|world| {
                 assert!(
                     !world
                         .read_resource::<GameEntities>()
@@ -203,7 +212,8 @@ mod tests {
                         .is_empty()
                 );
                 assert!(world.read_resource::<GameLoadingStatus>().characters_loaded);
-            }).run()
+            })
+            .run()
             .is_ok()
         );
     }

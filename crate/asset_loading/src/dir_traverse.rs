@@ -65,16 +65,18 @@ impl DirTraverse {
     /// * `entry`: The entry to map.
     pub fn entry_to_dir_path_buf(entry: &DirEntry) -> Option<PathBuf> {
         match entry.file_type() {
-            Ok(file_type) => if file_type.is_dir() || file_type.is_symlink() {
-                let path = entry.path();
-                if path.is_dir() {
-                    Some(path)
+            Ok(file_type) => {
+                if file_type.is_dir() || file_type.is_symlink() {
+                    let path = entry.path();
+                    if path.is_dir() {
+                        Some(path)
+                    } else {
+                        None
+                    }
                 } else {
                     None
                 }
-            } else {
-                None
-            },
+            }
             // kcov-ignore-start
             // Not sure how to cause a failure to automatically test this. Tried:
             //

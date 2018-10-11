@@ -78,7 +78,8 @@ where
                     .with_position(
                         0.,
                         ((item_count - order) as f32 * text_h) - (item_count as f32 * text_h / 2.),
-                    ).with_text_color([0.7; 4])
+                    )
+                    .with_text_color([0.7; 4])
                     .with_image(black_bg.clone())
                     .with_hover_text_color([1.; 4])
                     .with_press_text_color([0.5; 4])
@@ -177,7 +178,8 @@ mod test {
             AmethystApplication::ui_base::<String, String>()
                 .with_setup(|world| {
                     world.register::<GameModeSelectionEntity>();
-                }).with_assertion(assertion)
+                })
+                .with_assertion(assertion)
                 .run()
                 .is_ok()
         );

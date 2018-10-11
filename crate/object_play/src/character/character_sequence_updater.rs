@@ -7,7 +7,7 @@ use object_model::{
 
 use character::sequence_handler::{
     CharacterSequenceHandler, Jump, JumpAscend, JumpDescend, JumpDescendLand, JumpOff, Run,
-    RunStop, Stand, Walk,
+    RunStop, Stand, StandAttack, Walk,
 };
 
 /// Defines behaviour for a character in game.
@@ -32,6 +32,7 @@ impl CharacterSequenceUpdater {
     ) -> CharacterStatusUpdate {
         let sequence_handler = match character_status.object_status.sequence_id {
             CharacterSequenceId::Stand => Stand::update,
+            CharacterSequenceId::StandAttack => StandAttack::update,
             CharacterSequenceId::Walk => Walk::update,
             CharacterSequenceId::Run => Run::update,
             CharacterSequenceId::RunStop => RunStop::update,

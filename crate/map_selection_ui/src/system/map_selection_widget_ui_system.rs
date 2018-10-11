@@ -67,21 +67,14 @@ impl MapSelectionWidgetUiSystem {
         &mut self,
         map_assets: &MapAssets,
         entities: &Entities,
-        (
-            input_config,
-            input_controlleds,
-        ): &mut InputControlledResources,
+        (input_config, input_controlleds): &mut InputControlledResources,
         (
             map_selection_widgets,
             shared_input_controlleds,
             controller_inputs
         ): &mut WidgetComponentStorages,
-        (
-            theme,
-            ui_transforms,
-            ui_texts
-        ): &mut WidgetUiResources,
-){
+        (theme, ui_transforms, ui_texts): &mut WidgetUiResources,
+    ) {
         if !self.ui_initialized {
             debug!("Initializing Map Selection UI.");
 
@@ -199,7 +192,8 @@ impl<'s> System<'s> for MapSelectionWidgetUiSystem {
                 self.reader_id
                     .as_mut()
                     .expect("Expected to read `MapSelectionEvent`s."),
-            ).next()
+            )
+            .next()
             .is_some()
         {
             self.terminate_ui(&entities);
@@ -261,14 +255,17 @@ mod test {
             AutexousiousApplication::config_base(
                 "initializes_ui_when_map_selections_waiting",
                 false
-            ).with_resource(input_config())
+            )
+            .with_resource(input_config())
             .with_setup(|world| {
                 world.add_resource(MapSelectionStatus::Pending);
-            }).with_system_single(
+            })
+            .with_system_single(
                 MapSelectionWidgetUiSystem::new(),
                 MapSelectionWidgetUiSystem::type_name(),
                 &[]
-            ).with_assertion(|world| assert_widget_count(world, 1))
+            )
+            .with_assertion(|world| assert_widget_count(world, 1))
             .with_assertion(|world| assert_widget_text(world, "Random"))
             .run()
             .is_ok()
@@ -283,7 +280,8 @@ mod test {
             AutexousiousApplication::config_base(
                 "refreshes_ui_when_selections_select_random",
                 false
-            ).with_system(
+            )
+            .with_system(
                 MapSelectionWidgetUiSystem::new(),
                 MapSelectionWidgetUiSystem::type_name(),
                 &[]
@@ -294,7 +292,8 @@ mod test {
             // Select map and send event
             .with_effect(|world| {
                 world.add_resource(MapSelectionStatus::Pending);
-            }).with_effect(|world| {
+            })
+            .with_effect(|world| {
                 world.exec(
                     |(mut widgets, map_assets): (
                         WriteStorage<MapSelectionWidget>,
@@ -328,7 +327,8 @@ mod test {
                         map_selection: MapSelection::Random(first_map),
                     },
                 )
-            }).with_effect(|_| {}) // Need an extra update for the event to get through.
+            })
+            .with_effect(|_| {}) // Need an extra update for the event to get through.
             .with_assertion(|world| assert_widget_text(world, "Random"))
             .run()
             .is_ok()
@@ -352,7 +352,8 @@ mod test {
                 // Confirm selection and send event
                 .with_effect(|world| {
                     world.add_resource(MapSelectionStatus::Confirmed);
-                }).with_effect(|world| {
+                })
+                .with_effect(|world| {
                     let empty_snh = SlugAndHandle::from((
                         &*world.read_resource::<MapAssets>(),
                         ASSETS_MAP_EMPTY_SLUG.clone(),
@@ -364,7 +365,8 @@ mod test {
                             map_selection: MapSelection::Id(empty_snh),
                         },
                     )
-                }).with_effect(|_| {}) // Need an extra update for the event to get through.
+                })
+                .with_effect(|_| {}) // Need an extra update for the event to get through.
                 .with_assertion(|world| assert_widget_count(world, 0))
                 .run()
                 .is_ok()

@@ -5,13 +5,14 @@ use amethyst::{
     animation::{
         Animation, InterpolationFunction, Sampler, SpriteRenderChannel, SpriteRenderPrimitive,
     },
-    assets::{Handle, Loader},
+    assets::Loader,
     prelude::*,
     renderer::SpriteRender,
 };
 
 use AnimationFrame;
 use AnimationSequence;
+use SpriteAnimationHandle;
 
 /// Loads `Animation`s from character sequences.
 #[derive(Debug)]
@@ -29,7 +30,7 @@ impl SpriteRenderAnimationLoader {
         world: &'seq World,
         sequences: &HashMap<SequenceId, Sequence>,
         sprite_sheet_index_offset: u64,
-    ) -> HashMap<SequenceId, Handle<Animation<SpriteRender>>>
+    ) -> HashMap<SequenceId, SpriteAnimationHandle>
     where
         SequenceId: Copy + Eq + Hash + 'seq,
         Frame: AnimationFrame,
@@ -37,7 +38,7 @@ impl SpriteRenderAnimationLoader {
     {
         Self::load(world, sequences.iter(), sprite_sheet_index_offset)
             .map(|(id, handle)| (*id, handle))
-            .collect::<HashMap<SequenceId, Handle<Animation<SpriteRender>>>>()
+            .collect::<HashMap<SequenceId, SpriteAnimationHandle>>()
     }
 
     /// Loads `SpriteRender` animations and returns a vector of their handles in order.
@@ -51,7 +52,7 @@ impl SpriteRenderAnimationLoader {
         world: &'seq World,
         sequences: Sequences,
         sprite_sheet_index_offset: u64,
-    ) -> Vec<Handle<Animation<SpriteRender>>>
+    ) -> Vec<SpriteAnimationHandle>
     where
         Sequences: Iterator<Item = &'seq Sequence>,
         Frame: AnimationFrame,
@@ -62,7 +63,8 @@ impl SpriteRenderAnimationLoader {
             .map(|animation| {
                 let loader = world.read_resource::<Loader>();
                 loader.load_from_data(animation, (), &world.read_resource())
-            }).collect::<Vec<Handle<Animation<SpriteRender>>>>()
+            })
+            .collect::<Vec<SpriteAnimationHandle>>()
     }
 
     /// Loads `SpriteRender` animations and returns an iterator to their handles by sequence ID.
@@ -78,7 +80,7 @@ impl SpriteRenderAnimationLoader {
         world: &'seq World,
         sequences: Sequences,
         sprite_sheet_index_offset: u64,
-    ) -> impl Iterator<Item = (&'seq SequenceId, Handle<Animation<SpriteRender>>)>
+    ) -> impl Iterator<Item = (&'seq SequenceId, SpriteAnimationHandle)>
     where
         Sequences: Iterator<Item = (&'seq SequenceId, &'seq Sequence)>,
         SequenceId: 'seq,
@@ -91,7 +93,8 @@ impl SpriteRenderAnimationLoader {
                     id,
                     Self::sequence_to_animation(world, sprite_sheet_index_offset, sequence),
                 )
-            }).map(move |(id, animation)| {
+            })
+            .map(move |(id, animation)| {
                 let loader = world.read_resource::<Loader>();
                 let animation_handle = loader.load_from_data(animation, (), &world.read_resource());
                 (id, animation_handle)
@@ -157,7 +160,8 @@ impl SpriteRenderAnimationLoader {
                 SpriteRenderPrimitive::SpriteSheet(
                     sprite_sheet_index_offset + frame.texture_index() as u64,
                 )
-            }).collect::<Vec<SpriteRenderPrimitive>>();
+            })
+            .collect::<Vec<SpriteRenderPrimitive>>();
         let final_key_frame = output.last().cloned();
         if final_key_frame.is_some() {
             output.push(final_key_frame.unwrap());
@@ -200,7 +204,7 @@ mod test {
         animation::{
             Animation, InterpolationFunction, Sampler, SpriteRenderChannel, SpriteRenderPrimitive,
         },
-        assets::{AssetStorage, Handle},
+        assets::AssetStorage,
         prelude::*,
         renderer::SpriteRender,
     };
@@ -209,6 +213,7 @@ mod test {
     use super::SpriteRenderAnimationLoader;
     use AnimationFrame;
     use AnimationSequence;
+    use SpriteAnimationHandle;
 
     #[test]
     fn loads_sprite_render_animations_into_map() {
@@ -224,8 +229,7 @@ mod test {
         }; // kcov-ignore
         let assertion = |world: &mut World| {
             let animation_handles = &world
-                .read_resource::<EffectReturn<HashMap<TestSequenceId, Handle<Animation<SpriteRender>>>>>(
-                )
+                .read_resource::<EffectReturn<HashMap<TestSequenceId, SpriteAnimationHandle>>>()
                 .0;
 
             // Verify animation is loaded
@@ -257,7 +261,7 @@ mod test {
         };
         let assertion = |world: &mut World| {
             let animation_handles = &world
-                .read_resource::<EffectReturn<Vec<Handle<Animation<SpriteRender>>>>>()
+                .read_resource::<EffectReturn<Vec<SpriteAnimationHandle>>>()
                 .0;
 
             // Verify animation is loaded
@@ -275,10 +279,7 @@ mod test {
         );
     }
 
-    fn verify_animation_handle(
-        world: &World,
-        animation_handle: Option<&Handle<Animation<SpriteRender>>>,
-    ) {
+    fn verify_animation_handle(world: &World, animation_handle: Option<&SpriteAnimationHandle>) {
         assert!(animation_handle.is_some());
 
         let animation_handle = animation_handle.unwrap();

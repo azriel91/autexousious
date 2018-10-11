@@ -11,5 +11,6 @@ pub struct SpriteFrame {
     /// Sprite number on the sprite sheet.
     pub sprite: usize,
     /// Number of ticks to wait before the sequence switches to the next frame.
+    #[serde(default)]
     pub wait: u32,
 }

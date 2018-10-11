@@ -88,11 +88,13 @@ mod tests {
                             }
                         },
                     );
-                }).with_system_single(
+                })
+                .with_system_single(
                     CharacterGroundingSystem::new(),
                     CharacterGroundingSystem::type_name(),
                     &[]
-                ).with_assertion(|world| {
+                )
+                .with_assertion(|world| {
                     world.exec(
                         |(kinematics_storage, status_storage): (
                             ReadStorage<Kinematics<f32>>,
@@ -108,7 +110,8 @@ mod tests {
                             }
                         },
                     );
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }
@@ -133,11 +136,13 @@ mod tests {
                             }
                         },
                     );
-                }).with_system_single(
+                })
+                .with_system_single(
                     CharacterGroundingSystem::new(),
                     CharacterGroundingSystem::type_name(),
                     &[]
-                ).with_assertion(|world| {
+                )
+                .with_assertion(|world| {
                     world.exec(
                         |(kinematics_storage, status_storage): (
                             ReadStorage<Kinematics<f32>>,
@@ -153,7 +158,8 @@ mod tests {
                             }
                         },
                     );
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }
@@ -166,7 +172,8 @@ mod tests {
             AutexousiousApplication::game_base(
                 "grounding_set_to_airborne_when_above_ground",
                 false
-            ).with_setup(|world| {
+            )
+            .with_setup(|world| {
                 world.exec(
                     |(mut kinematics_storage, mut status_storage): (
                         WriteStorage<Kinematics<f32>>,
@@ -180,11 +187,13 @@ mod tests {
                         }
                     },
                 );
-            }).with_system_single(
+            })
+            .with_system_single(
                 CharacterGroundingSystem::new(),
                 CharacterGroundingSystem::type_name(),
                 &[]
-            ).with_assertion(|world| {
+            )
+            .with_assertion(|world| {
                 world.exec(
                     |(kinematics_storage, status_storage): (
                         ReadStorage<Kinematics<f32>>,
@@ -195,7 +204,8 @@ mod tests {
                         }
                     },
                 );
-            }).run()
+            })
+            .run()
             .is_ok()
         );
     }
@@ -220,11 +230,13 @@ mod tests {
                             }
                         },
                     );
-                }).with_system_single(
+                })
+                .with_system_single(
                     CharacterGroundingSystem::new(),
                     CharacterGroundingSystem::type_name(),
                     &[]
-                ).with_assertion(|world| {
+                )
+                .with_assertion(|world| {
                     world.exec(
                         |(kinematics_storage, status_storage): (
                             ReadStorage<Kinematics<f32>>,
@@ -235,7 +247,8 @@ mod tests {
                             }
                         },
                     );
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }

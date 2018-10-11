@@ -260,7 +260,8 @@ mod test {
             AutexousiousApplication::config_base(
                 "does_not_send_event_when_controller_input_empty",
                 false
-            ).with_setup(setup_components)
+            )
+            .with_setup(setup_components)
             .with_setup(setup_event_reader)
             .with_setup(|world| {
                 let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
@@ -270,11 +271,13 @@ mod test {
                     CharacterSelection::Id(bat_snh),
                     ControllerInput::default(),
                 )
-            }).with_system_single(
+            })
+            .with_system_single(
                 CharacterSelectionWidgetInputSystem::new(),
                 CharacterSelectionWidgetInputSystem::type_name(),
                 &[]
-            ).with_assertion(|world| assert_events(world, vec![]))
+            )
+            .with_assertion(|world| assert_events(world, vec![]))
             .run()
             .is_ok()
         );
@@ -291,7 +294,8 @@ mod test {
             AutexousiousApplication::config_base(
                 "updates_widget_inactive_to_character_select_when_input_attack",
                 false
-            ).with_setup(setup_components)
+            )
+            .with_setup(setup_components)
             .with_setup(setup_event_reader)
             .with_setup(move |world| {
                 let first_char = first_character(world);
@@ -301,11 +305,13 @@ mod test {
                     CharacterSelection::Random(first_char),
                     controller_input,
                 )
-            }).with_system_single(
+            })
+            .with_system_single(
                 CharacterSelectionWidgetInputSystem::new(),
                 CharacterSelectionWidgetInputSystem::type_name(),
                 &[]
-            ).with_assertion(|world| {
+            )
+            .with_assertion(|world| {
                 let first_char = first_character(world);
                 assert_widget(
                     world,
@@ -314,7 +320,8 @@ mod test {
                         CharacterSelection::Random(first_char),
                     ),
                 )
-            }).with_assertion(|world| assert_events(world, vec![]))
+            })
+            .with_assertion(|world| assert_events(world, vec![]))
             .run()
             .is_ok()
         );
@@ -331,7 +338,8 @@ mod test {
             AutexousiousApplication::config_base(
                 "updates_widget_character_select_to_ready_and_sends_event_when_input_attack",
                 false
-            ).with_setup(setup_components)
+            )
+            .with_setup(setup_components)
             .with_setup(setup_event_reader)
             .with_setup(move |world| {
                 let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
@@ -341,11 +349,13 @@ mod test {
                     CharacterSelection::Id(bat_snh),
                     controller_input,
                 )
-            }).with_system_single(
+            })
+            .with_system_single(
                 CharacterSelectionWidgetInputSystem::new(),
                 CharacterSelectionWidgetInputSystem::type_name(),
                 &[]
-            ).with_assertion(|world| {
+            )
+            .with_assertion(|world| {
                 let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
                 assert_widget(
                     world,
@@ -354,7 +364,8 @@ mod test {
                         CharacterSelection::Id(bat_snh),
                     ),
                 )
-            }).with_assertion(|world| {
+            })
+            .with_assertion(|world| {
                 let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
                 assert_events(
                     world,
@@ -363,7 +374,8 @@ mod test {
                         character_selection: CharacterSelection::Id(bat_snh),
                     }],
                 )
-            }).run()
+            })
+            .run()
             .is_ok()
         );
     }
@@ -379,7 +391,8 @@ mod test {
             AutexousiousApplication::config_base(
                 "updates_widget_character_select_to_ready_and_sends_event_when_input_attack",
                 false
-            ).with_setup(setup_components)
+            )
+            .with_setup(setup_components)
             .with_setup(setup_event_reader)
             .with_setup(move |world| {
                 let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
@@ -389,11 +402,13 @@ mod test {
                     CharacterSelection::Id(bat_snh),
                     controller_input,
                 )
-            }).with_system_single(
+            })
+            .with_system_single(
                 CharacterSelectionWidgetInputSystem::new(),
                 CharacterSelectionWidgetInputSystem::type_name(),
                 &[]
-            ).with_assertion(|world| assert_events(world, vec![CharacterSelectionEvent::Confirm]))
+            )
+            .with_assertion(|world| assert_events(world, vec![CharacterSelectionEvent::Confirm]))
             .run()
             .is_ok()
         );
@@ -410,7 +425,8 @@ mod test {
             AutexousiousApplication::config_base(
                 "selects_last_character_when_input_left_and_selection_random",
                 false
-            ).with_setup(setup_components)
+            )
+            .with_setup(setup_components)
             .with_setup(setup_event_reader)
             .with_setup(move |world| {
                 let first_char = first_character(world);
@@ -420,11 +436,13 @@ mod test {
                     CharacterSelection::Random(first_char),
                     controller_input,
                 )
-            }).with_system_single(
+            })
+            .with_system_single(
                 CharacterSelectionWidgetInputSystem::new(),
                 CharacterSelectionWidgetInputSystem::type_name(),
                 &[]
-            ).with_assertion(|world| {
+            )
+            .with_assertion(|world| {
                 let last_char = last_character(world);
                 assert_widget(
                     world,
@@ -433,7 +451,8 @@ mod test {
                         CharacterSelection::Id(last_char),
                     ),
                 )
-            }).with_assertion(|world| {
+            })
+            .with_assertion(|world| {
                 let last_char = last_character(world);
                 assert_events(
                     world,
@@ -442,7 +461,8 @@ mod test {
                         character_selection: CharacterSelection::Id(last_char),
                     }],
                 )
-            }).run()
+            })
+            .run()
             .is_ok()
         );
     }
@@ -458,7 +478,8 @@ mod test {
             AutexousiousApplication::config_base(
                 "selects_first_character_when_input_right_and_selection_random",
                 false
-            ).with_setup(setup_components)
+            )
+            .with_setup(setup_components)
             .with_setup(setup_event_reader)
             .with_setup(move |world| {
                 let first_char = first_character(world);
@@ -468,11 +489,13 @@ mod test {
                     CharacterSelection::Random(first_char),
                     controller_input,
                 )
-            }).with_system_single(
+            })
+            .with_system_single(
                 CharacterSelectionWidgetInputSystem::new(),
                 CharacterSelectionWidgetInputSystem::type_name(),
                 &[]
-            ).with_assertion(|world| {
+            )
+            .with_assertion(|world| {
                 let first_char = first_character(world);
                 assert_widget(
                     world,
@@ -481,7 +504,8 @@ mod test {
                         CharacterSelection::Id(first_char),
                     ),
                 )
-            }).with_assertion(|world| {
+            })
+            .with_assertion(|world| {
                 let first_char = first_character(world);
                 assert_events(
                     world,
@@ -490,7 +514,8 @@ mod test {
                         character_selection: CharacterSelection::Id(first_char),
                     }],
                 )
-            }).run()
+            })
+            .run()
             .is_ok()
         );
     }
@@ -506,7 +531,8 @@ mod test {
             AutexousiousApplication::config_base(
                 "selects_random_when_input_right_and_selection_last_character",
                 false
-            ).with_setup(setup_components)
+            )
+            .with_setup(setup_components)
             .with_setup(setup_event_reader)
             .with_setup(move |world| {
                 let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
@@ -516,11 +542,13 @@ mod test {
                     CharacterSelection::Id(bat_snh),
                     controller_input,
                 )
-            }).with_system_single(
+            })
+            .with_system_single(
                 CharacterSelectionWidgetInputSystem::new(),
                 CharacterSelectionWidgetInputSystem::type_name(),
                 &[]
-            ).with_assertion(|world| {
+            )
+            .with_assertion(|world| {
                 let first_char = first_character(world);
                 assert_widget(
                     world,
@@ -529,7 +557,8 @@ mod test {
                         CharacterSelection::Random(first_char),
                     ),
                 )
-            }).with_assertion(|world| {
+            })
+            .with_assertion(|world| {
                 let first_char = first_character(world);
                 assert_events(
                     world,
@@ -538,7 +567,8 @@ mod test {
                         character_selection: CharacterSelection::Id(first_char),
                     }],
                 )
-            }).run()
+            })
+            .run()
             .is_ok()
         );
     }
@@ -554,7 +584,8 @@ mod test {
             AutexousiousApplication::config_base(
                 "updates_widget_ready_to_character_select_and_sends_event_when_input_jump",
                 false
-            ).with_setup(setup_components)
+            )
+            .with_setup(setup_components)
             .with_setup(setup_event_reader)
             .with_setup(move |world| {
                 let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
@@ -564,11 +595,13 @@ mod test {
                     CharacterSelection::Id(bat_snh),
                     controller_input,
                 )
-            }).with_system_single(
+            })
+            .with_system_single(
                 CharacterSelectionWidgetInputSystem::new(),
                 CharacterSelectionWidgetInputSystem::type_name(),
                 &[]
-            ).with_assertion(|world| {
+            )
+            .with_assertion(|world| {
                 let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
                 assert_widget(
                     world,
@@ -577,10 +610,12 @@ mod test {
                         CharacterSelection::Id(bat_snh),
                     ),
                 )
-            }).with_assertion(|world| assert_events(
+            })
+            .with_assertion(|world| assert_events(
                 world,
                 vec![CharacterSelectionEvent::Deselect { controller_id: 123 }]
-            )).run()
+            ))
+            .run()
             .is_ok()
         );
     }
@@ -596,7 +631,8 @@ mod test {
             AutexousiousApplication::config_base(
                 "updates_widget_character_select_to_inactive_when_input_jump",
                 false
-            ).with_setup(setup_components)
+            )
+            .with_setup(setup_components)
             .with_setup(setup_event_reader)
             .with_setup(move |world| {
                 let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
@@ -606,11 +642,13 @@ mod test {
                     CharacterSelection::Id(bat_snh),
                     controller_input,
                 )
-            }).with_system_single(
+            })
+            .with_system_single(
                 CharacterSelectionWidgetInputSystem::new(),
                 CharacterSelectionWidgetInputSystem::type_name(),
                 &[]
-            ).with_assertion(|world| {
+            )
+            .with_assertion(|world| {
                 let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
                 assert_widget(
                     world,
@@ -619,7 +657,8 @@ mod test {
                         CharacterSelection::Id(bat_snh),
                     ),
                 )
-            }).with_assertion(|world| assert_events(world, vec![]))
+            })
+            .with_assertion(|world| assert_events(world, vec![]))
             .run()
             .is_ok()
         );
@@ -666,7 +705,8 @@ mod test {
             .with(CharacterSelectionWidget::new(
                 widget_state,
                 character_selection,
-            )).with(InputControlled::new(123))
+            ))
+            .with(InputControlled::new(123))
             .with(controller_input)
             .with(Last(ControllerInput::default()))
             .build();

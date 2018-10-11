@@ -33,7 +33,8 @@ impl ObjectIndexer {
                     .into_iter()
                     .filter_map(|object_dir| {
                         AssetIndexingUtils::asset_record(namespace.to_string(), object_dir)
-                    }).collect::<Vec<_>>(),
+                    })
+                    .collect::<Vec<_>>(),
             );
 
             objects_by_type
@@ -77,7 +78,8 @@ mod tests {
             contains(vec![
                 asset_record("rara", "char_0", char_0_dir),
                 asset_record("rara", "char_1", char_1_dir),
-            ]).exactly()
+            ])
+            .exactly()
         );
 
         Ok(())

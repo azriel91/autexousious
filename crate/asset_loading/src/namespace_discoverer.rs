@@ -50,7 +50,8 @@ impl NamespaceDiscoverer {
             .map(|namespace| {
                 let path = assets_dir.join(&namespace);
                 (namespace, path)
-            }).filter(|(_namespace, dir)| dir.is_dir())
+            })
+            .filter(|(_namespace, dir)| dir.is_dir())
             .chain(namespaces_downloaded)
             .map(|(namespace, path)| NamespaceDirectory { namespace, path })
             .collect::<Vec<_>>()
@@ -97,7 +98,8 @@ mod tests {
                 NamespaceDirectory::new(ASSETS_DEFAULT_DIR.to_string(), default_dir),
                 NamespaceDirectory::new("user1".to_string(), user1_dir),
                 NamespaceDirectory::new("user2".to_string(), user2_dir),
-            ]).exactly()
+            ])
+            .exactly()
         );
 
         Ok(())

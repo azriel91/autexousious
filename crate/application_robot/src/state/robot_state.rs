@@ -72,7 +72,8 @@ where
                 } else {
                     Done(trans)
                 }
-            }).into_inner();
+            })
+            .into_inner();
 
         trans_opt.map(|trans| self.wrap_trans(trans))
     }
@@ -91,7 +92,8 @@ where
                     } else {
                         Done(trans)
                     }
-                }).into_inner()
+                })
+                .into_inner()
         };
         self.wrap_trans(intercept_trans.unwrap_or(state_trans))
     }

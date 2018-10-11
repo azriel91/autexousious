@@ -37,7 +37,8 @@ impl TextureLoader {
                 let sprite_image_path = sprite_image_path.to_str().ok_or(error_msg)?;
 
                 Ok(Self::load(world, String::from(sprite_image_path)))
-            }).collect::<Vec<Result<TextureHandle, String>>>();
+            })
+            .collect::<Vec<Result<TextureHandle, String>>>();
 
         {
             let failed_to_load = texture_results

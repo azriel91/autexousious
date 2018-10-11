@@ -111,7 +111,8 @@ mod tests {
                     let snh = SlugAndHandle::from((&*map_assets, ASSETS_MAP_FADE_SLUG.clone()));
                     let map_selection = MapSelection::Id(snh);
                     assert_eq!(MapSelectionEvent::Select { map_selection }, result.unwrap())
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }
@@ -139,7 +140,8 @@ mod tests {
                     );
                     let map_selection = MapSelection::Random(snh);
                     assert_eq!(MapSelectionEvent::Select { map_selection }, result.unwrap())
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }

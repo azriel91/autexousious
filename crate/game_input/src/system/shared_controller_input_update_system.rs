@@ -16,7 +16,10 @@ type SharedControllerInputUpdateSystemData<'s> = (
 impl<'s> System<'s> for SharedControllerInputUpdateSystem {
     type SystemData = SharedControllerInputUpdateSystemData<'s>;
 
-fn run(&mut self, (input_controlleds, mut controller_inputs, shared_input_controlleds,  entities): Self::SystemData){
+    fn run(
+        &mut self,
+        (input_controlleds, mut controller_inputs, shared_input_controlleds,  entities): Self::SystemData,
+    ) {
         let mut merged_input = (&input_controlleds, &controller_inputs).join().fold(
             ControllerInput::default(),
             |mut merged, (_, controller_input)| {
@@ -84,7 +87,8 @@ mod test {
                     SharedControllerInputUpdateSystem::new(),
                     SharedControllerInputUpdateSystem::type_name(),
                     &[]
-                ).with_setup(move |world| {
+                )
+                .with_setup(move |world| {
                     let controller_entities = (0..controller_count)
                         .map(|n| {
                             let controller_id = n as ControllerId;
@@ -93,18 +97,21 @@ mod test {
                                 .with(InputControlled::new(controller_id))
                                 .with(ControllerInput::default())
                                 .build()
-                        }).collect::<Vec<Entity>>();
+                        })
+                        .collect::<Vec<Entity>>();
                     world.add_resource(EffectReturn(controller_entities));
 
                     let entity = world.create_entity().with(SharedInputControlled).build();
                     world.add_resource(EffectReturn(entity));
-                }).with_assertion(|world| {
+                })
+                .with_assertion(|world| {
                     let store = world.read_storage::<ControllerInput>();
                     assert_eq!(
                         Some(&ControllerInput::new(0., 0., false, false, false, false)),
                         store.join().next()
                     );
-                }).with_effect(|world| {
+                })
+                .with_effect(|world| {
                     world.exec(
                         |(input_controlleds, mut controller_inputs): (
                             ReadStorage<InputControlled>,
@@ -118,14 +125,16 @@ mod test {
                                 });
                         }, // kcov-ignore
                     );
-                }).with_assertion(|world| {
+                })
+                .with_assertion(|world| {
                     let entity = world.read_resource::<EffectReturn<Entity>>().0;
                     let store = world.read_storage::<ControllerInput>();
                     assert_eq!(
                         Some(&ControllerInput::new(-1., 1., false, false, false, false)),
                         store.get(entity)
                     );
-                }).with_effect(|world| {
+                })
+                .with_effect(|world| {
                     world.exec(
                         |(input_controlleds, mut controller_inputs): (
                             ReadStorage<InputControlled>,
@@ -139,14 +148,16 @@ mod test {
                                 });
                         }, // kcov-ignore
                     );
-                }).with_assertion(|world| {
+                })
+                .with_assertion(|world| {
                     let entity = world.read_resource::<EffectReturn<Entity>>().0;
                     let store = world.read_storage::<ControllerInput>();
                     assert_eq!(
                         Some(&ControllerInput::new(1., -1., false, false, false, false)),
                         store.get(entity)
                     );
-                }).with_effect(|world| {
+                })
+                .with_effect(|world| {
                     let controller_entities =
                         (world.read_resource::<EffectReturn<Vec<Entity>>>().0)
                             .iter()
@@ -158,7 +169,8 @@ mod test {
                             .delete_entity(entity)
                             .expect("Failed to delete entity.")
                     });
-                }).with_assertion(|world| {
+                })
+                .with_assertion(|world| {
                     // Make sure it unsets the control input when released
                     let entity = world.read_resource::<EffectReturn<Entity>>().0;
                     let store = world.read_storage::<ControllerInput>();
@@ -166,7 +178,8 @@ mod test {
                         Some(&ControllerInput::new(0., 0., false, false, false, false)),
                         store.get(entity)
                     );
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }
@@ -181,17 +194,20 @@ mod test {
                     SharedControllerInputUpdateSystem::new(),
                     SharedControllerInputUpdateSystem::type_name(),
                     &[]
-                ).with_setup(|world| {
+                )
+                .with_setup(|world| {
                     let entity = world.create_entity().with(SharedInputControlled).build();
                     world.add_resource(EffectReturn(entity));
-                }).with_assertion(|world| {
+                })
+                .with_assertion(|world| {
                     let entity = world.read_resource::<EffectReturn<Entity>>().0;
                     let store = world.read_storage::<ControllerInput>();
                     assert_eq!(
                         Some(&ControllerInput::new(0., 0., false, false, false, false)),
                         store.get(entity)
                     );
-                }).with_effect(|world| {
+                })
+                .with_effect(|world| {
                     let mut jump_attack_pressed = ControllerInput::default();
                     jump_attack_pressed.attack = true;
                     jump_attack_pressed.jump = true;
@@ -214,14 +230,16 @@ mod test {
 
                     let controller_entities = vec![entity_0, entity_1];
                     world.add_resource(EffectReturn(controller_entities));
-                }).with_assertion(|world| {
+                })
+                .with_assertion(|world| {
                     let entity = world.read_resource::<EffectReturn<Entity>>().0;
                     let store = world.read_storage::<ControllerInput>();
                     assert_eq!(
                         Some(&ControllerInput::new(0., 0., true, true, true, true)),
                         store.get(entity)
                     );
-                }).with_effect(|world| {
+                })
+                .with_effect(|world| {
                     let entities = (world.read_resource::<EffectReturn<Vec<Entity>>>().0)
                         .iter()
                         .map(|e| *e)
@@ -230,14 +248,16 @@ mod test {
                     world
                         .delete_entity(*entities.first().expect("Expected entity to exist."))
                         .expect("Failed to delete `jump_attack` entity.");
-                }).with_assertion(|world| {
+                })
+                .with_assertion(|world| {
                     // Make sure it unsets the control input when released
                     let store = world.read_storage::<ControllerInput>();
                     assert_eq!(
                         Some(&ControllerInput::new(0., 0., true, false, false, true)),
                         store.join().next()
                     );
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }

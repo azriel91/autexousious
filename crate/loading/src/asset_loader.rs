@@ -84,7 +84,8 @@ impl AssetLoader {
                                 } else {
                                     Some((asset_record.asset_slug, load_result.unwrap()))
                                 }
-                            }).collect::<CharacterAssets>();
+                            })
+                            .collect::<CharacterAssets>();
 
                         debug!("Loaded character assets: `{:?}`", character_assets);
 
@@ -122,7 +123,8 @@ impl AssetLoader {
                 } else {
                     Some((asset_record.asset_slug, load_result.unwrap()))
                 }
-            }).collect::<MapAssets>();
+            })
+            .collect::<MapAssets>();
 
         let map_handle: MapHandle = {
             let loader = world.read_resource::<Loader>();

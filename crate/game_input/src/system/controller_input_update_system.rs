@@ -22,12 +22,15 @@ type ControllerInputUpdateSystemData<'s> = (
 impl<'s> System<'s> for ControllerInputUpdateSystem {
     type SystemData = ControllerInputUpdateSystemData<'s>;
 
-    fn run(&mut self, (
+    fn run(
+        &mut self,
+        (
             input_handler,
             input_controlleds,
             entities,
             mut controller_input_storage,
-): Self::SystemData){
+): Self::SystemData,
+    ) {
         for (entity, input_controlled) in (&*entities, &input_controlleds).join() {
             let player = input_controlled.controller_id;
 
@@ -89,7 +92,8 @@ mod test {
                     ControllerInputUpdateSystem::new(InputConfig::default()),
                     ControllerInputUpdateSystem::type_name(),
                     &[]
-                ).with_setup(|world| {
+                )
+                .with_setup(|world| {
                     let controller_id = 0;
                     let entity = world
                         .create_entity()
@@ -97,14 +101,16 @@ mod test {
                         .build();
 
                     world.add_resource(EffectReturn(entity));
-                }).with_assertion(|world| {
+                })
+                .with_assertion(|world| {
                     let entity = world.read_resource::<EffectReturn<Entity>>().0;
                     let store = world.read_storage::<ControllerInput>();
                     assert_eq!(
                         Some(&ControllerInput::new(0., 0., false, false, false, false)),
                         store.get(entity)
                     );
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }

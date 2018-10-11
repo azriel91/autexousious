@@ -86,7 +86,8 @@ mod tests {
                         .expect("Failed to load map.");
 
                     world.add_resource(EffectReturn(map_handle));
-                }).with_assertion(|world| {
+                })
+                .with_assertion(|world| {
                     let map_handle = world.read_resource::<EffectReturn<MapHandle>>().0.clone();
                     let map_store = world.read_resource::<AssetStorage<Map>>();
                     let map = map_store
@@ -95,7 +96,8 @@ mod tests {
 
                     // See empty/map.toml
                     assert!(map.animation_handles.is_none());
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }

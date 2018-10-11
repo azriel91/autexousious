@@ -177,7 +177,8 @@ mod test {
             AutexousiousApplication::config_base(
                 "does_not_send_event_when_controller_input_empty",
                 false
-            ).with_setup(setup_components)
+            )
+            .with_setup(setup_components)
             .with_setup(setup_event_reader)
             .with_setup(|world| {
                 let empty_snh = SlugAndHandle::from((&*world, ASSETS_MAP_EMPTY_SLUG.clone()));
@@ -187,11 +188,13 @@ mod test {
                     MapSelection::Id(empty_snh),
                     ControllerInput::default(),
                 )
-            }).with_system_single(
+            })
+            .with_system_single(
                 MapSelectionWidgetInputSystem::new(),
                 MapSelectionWidgetInputSystem::type_name(),
                 &[]
-            ).with_assertion(|world| assert_events(world, vec![]))
+            )
+            .with_assertion(|world| assert_events(world, vec![]))
             .run()
             .is_ok()
         );
@@ -208,7 +211,8 @@ mod test {
             AutexousiousApplication::config_base(
                 "updates_widget_map_select_to_ready_and_sends_event_when_input_attack",
                 false
-            ).with_setup(setup_components)
+            )
+            .with_setup(setup_components)
             .with_setup(setup_event_reader)
             .with_setup(move |world| {
                 let empty_snh = SlugAndHandle::from((&*world, ASSETS_MAP_EMPTY_SLUG.clone()));
@@ -218,17 +222,20 @@ mod test {
                     MapSelection::Id(empty_snh),
                     controller_input,
                 )
-            }).with_system_single(
+            })
+            .with_system_single(
                 MapSelectionWidgetInputSystem::new(),
                 MapSelectionWidgetInputSystem::type_name(),
                 &[]
-            ).with_assertion(|world| {
+            )
+            .with_assertion(|world| {
                 let empty_snh = SlugAndHandle::from((&*world, ASSETS_MAP_EMPTY_SLUG.clone()));
                 assert_widget(
                     world,
                     MapSelectionWidget::new(WidgetState::Ready, MapSelection::Id(empty_snh)),
                 )
-            }).with_assertion(|world| {
+            })
+            .with_assertion(|world| {
                 let empty_snh = SlugAndHandle::from((&*world, ASSETS_MAP_EMPTY_SLUG.clone()));
                 assert_events(
                     world,
@@ -236,7 +243,8 @@ mod test {
                         map_selection: MapSelection::Id(empty_snh),
                     }],
                 )
-            }).run()
+            })
+            .run()
             .is_ok()
         );
     }
@@ -252,7 +260,8 @@ mod test {
             AutexousiousApplication::config_base(
                 "selects_last_map_when_input_left_and_selection_random",
                 false
-            ).with_setup(setup_components)
+            )
+            .with_setup(setup_components)
             .with_setup(setup_event_reader)
             .with_setup(move |world| {
                 let first_snh = first_map(world);
@@ -262,17 +271,20 @@ mod test {
                     MapSelection::Random(first_snh),
                     controller_input,
                 )
-            }).with_system_single(
+            })
+            .with_system_single(
                 MapSelectionWidgetInputSystem::new(),
                 MapSelectionWidgetInputSystem::type_name(),
                 &[]
-            ).with_assertion(|world| {
+            )
+            .with_assertion(|world| {
                 let last_snh = last_map(world);
                 assert_widget(
                     world,
                     MapSelectionWidget::new(WidgetState::MapSelect, MapSelection::Id(last_snh)),
                 )
-            }).with_assertion(|world| {
+            })
+            .with_assertion(|world| {
                 let last_snh = last_map(world);
                 assert_events(
                     world,
@@ -280,7 +292,8 @@ mod test {
                         map_selection: MapSelection::Id(last_snh),
                     }],
                 )
-            }).run()
+            })
+            .run()
             .is_ok()
         );
     }
@@ -296,7 +309,8 @@ mod test {
             AutexousiousApplication::config_base(
                 "selects_first_map_when_input_right_and_selection_random",
                 false
-            ).with_setup(setup_components)
+            )
+            .with_setup(setup_components)
             .with_setup(setup_event_reader)
             .with_setup(move |world| {
                 let first_snh = first_map(world);
@@ -306,17 +320,20 @@ mod test {
                     MapSelection::Random(first_snh),
                     controller_input,
                 )
-            }).with_system_single(
+            })
+            .with_system_single(
                 MapSelectionWidgetInputSystem::new(),
                 MapSelectionWidgetInputSystem::type_name(),
                 &[]
-            ).with_assertion(|world| {
+            )
+            .with_assertion(|world| {
                 let first_snh = first_map(world);
                 assert_widget(
                     world,
                     MapSelectionWidget::new(WidgetState::MapSelect, MapSelection::Id(first_snh)),
                 )
-            }).with_assertion(|world| {
+            })
+            .with_assertion(|world| {
                 let first_snh = first_map(world);
                 assert_events(
                     world,
@@ -324,7 +341,8 @@ mod test {
                         map_selection: MapSelection::Id(first_snh),
                     }],
                 )
-            }).run()
+            })
+            .run()
             .is_ok()
         );
     }
@@ -340,7 +358,8 @@ mod test {
             AutexousiousApplication::config_base(
                 "selects_random_when_input_right_and_selection_last_map",
                 false
-            ).with_setup(setup_components)
+            )
+            .with_setup(setup_components)
             .with_setup(setup_event_reader)
             .with_setup(move |world| {
                 let last_snh = last_map(world);
@@ -350,11 +369,13 @@ mod test {
                     MapSelection::Id(last_snh),
                     controller_input,
                 )
-            }).with_system_single(
+            })
+            .with_system_single(
                 MapSelectionWidgetInputSystem::new(),
                 MapSelectionWidgetInputSystem::type_name(),
                 &[]
-            ).with_assertion(|world| {
+            )
+            .with_assertion(|world| {
                 let first_snh = first_map(world);
                 assert_widget(
                     world,
@@ -363,7 +384,8 @@ mod test {
                         MapSelection::Random(first_snh),
                     ),
                 )
-            }).with_assertion(|world| {
+            })
+            .with_assertion(|world| {
                 let empty_snh = SlugAndHandle::from((&*world, ASSETS_MAP_EMPTY_SLUG.clone()));
                 assert_events(
                     world,
@@ -371,7 +393,8 @@ mod test {
                         map_selection: MapSelection::Id(empty_snh),
                     }],
                 )
-            }).run()
+            })
+            .run()
             .is_ok()
         );
     }

@@ -82,7 +82,8 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                     .iter()
                     .find(|&&(ref id, ref _control)| {
                         id == &character_status.object_status.sequence_id
-                    }).map_or(true, |(_id, control)| control.state == ControlState::Done)
+                    })
+                    .map_or(true, |(_id, control)| control.state == ControlState::Done)
             };
             if sequence_ended {
                 character_status.object_status.sequence_state = SequenceState::End;
@@ -107,7 +108,8 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                             "Failed to get animation for sequence: `{:?}`",
                             next_sequence_id
                         )
-                    }).clone();
+                    })
+                    .clone();
 
                 AnimationRunner::swap(
                     &mut animation_set,
@@ -170,17 +172,20 @@ mod tests {
                             }
                         },
                     );
-                }).with_system_single(
+                })
+                .with_system_single(
                     CharacterSequenceUpdateSystem::new(),
                     CharacterSequenceUpdateSystem::type_name(),
                     &[]
-                ).with_assertion(|world| {
+                )
+                .with_assertion(|world| {
                     world.exec(|status_storage: ReadStorage<CharacterStatus>| {
                         for status in status_storage.join() {
                             assert_eq!(SequenceState::Ongoing, status.object_status.sequence_state);
                         }
                     });
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }
@@ -229,11 +234,13 @@ mod tests {
                             }
                         },
                     );
-                }).with_system_single(
+                })
+                .with_system_single(
                     CharacterSequenceUpdateSystem::new(),
                     CharacterSequenceUpdateSystem::type_name(),
                     &[]
-                ).with_assertion(|world| {
+                )
+                .with_assertion(|world| {
                     world.exec(|status_storage: ReadStorage<CharacterStatus>| {
                         for status in status_storage.join() {
                             assert_eq!(CharacterSequenceId::Walk, status.object_status.sequence_id);
@@ -241,7 +248,8 @@ mod tests {
                             assert!(status.object_status.mirrored);
                         }
                     });
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }

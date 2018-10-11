@@ -8,6 +8,8 @@ pub enum CharacterSequenceId {
     /// Default sequence for characters.
     #[derivative(Default)]
     Stand,
+    /// Attack while standing.
+    StandAttack,
     /// Walking sequence.
     Walk,
     /// Running sequence.

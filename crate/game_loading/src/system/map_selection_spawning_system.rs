@@ -91,11 +91,13 @@ mod tests {
                         vec![layer_entity.clone()],
                     ));
                     world.add_resource(EffectReturn(layer_entity));
-                }).with_system_single(
+                })
+                .with_system_single(
                     MapSelectionSpawningSystem,
                     MapSelectionSpawningSystem::type_name(),
                     &[],
-                ).with_assertion(|world| {
+                )
+                .with_assertion(|world| {
                     let layer_entity = &world.read_resource::<EffectReturn<Entity>>().0;
                     assert_eq!(
                         layer_entity,
@@ -106,7 +108,8 @@ mod tests {
                             .next()
                             .expect("Expected map layers to have an entity.")
                     );
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }
@@ -121,17 +124,20 @@ mod tests {
             AmethystApplication::render_base(
                 "spawns_map_layers_when_they_havent_been_spawned",
                 false
-            ).with_bundle(MapLoadingBundle::new())
+            )
+            .with_bundle(MapLoadingBundle::new())
             .with_setup(load_maps)
             .with_setup(map_selection(ASSETS_MAP_FADE_SLUG.clone()))
             .with_system_single(
                 MapSelectionSpawningSystem,
                 MapSelectionSpawningSystem::type_name(),
                 &[],
-            ).with_assertion(|world| {
+            )
+            .with_assertion(|world| {
                 assert!(!world.read_resource::<GameEntities>().map_layers.is_empty());
                 assert!(world.read_resource::<GameLoadingStatus>().map_loaded);
-            }).run()
+            })
+            .run()
             .is_ok()
         );
     }
@@ -146,17 +152,20 @@ mod tests {
             AmethystApplication::render_base(
                 "spawns_map_layers_when_they_havent_been_spawned",
                 false
-            ).with_bundle(MapLoadingBundle::new())
+            )
+            .with_bundle(MapLoadingBundle::new())
             .with_setup(load_maps)
             .with_setup(map_selection(ASSETS_MAP_EMPTY_SLUG.clone()))
             .with_system_single(
                 MapSelectionSpawningSystem,
                 MapSelectionSpawningSystem::type_name(),
                 &[],
-            ).with_assertion(|world| {
+            )
+            .with_assertion(|world| {
                 assert!(world.read_resource::<GameEntities>().map_layers.is_empty());
                 assert!(world.read_resource::<GameLoadingStatus>().map_loaded);
-            }).run()
+            })
+            .run()
             .is_ok()
         );
     }

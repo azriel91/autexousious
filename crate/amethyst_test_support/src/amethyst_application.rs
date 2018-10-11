@@ -156,15 +156,18 @@ impl AmethystApplication<GameData<'static, 'static>, ()> {
             .with_bundle(AnimationBundle::<u32, Material>::new(
                 "material_animation_control_system",
                 "material_sampler_interpolation_system",
-            )).with_bundle(AnimationBundle::<u32, SpriteRender>::new(
+            ))
+            .with_bundle(AnimationBundle::<u32, SpriteRender>::new(
                 "sprite_render_animation_control_system",
                 "sprite_render_sampler_interpolation_system",
-            )).with_bundle(TransformBundle::new().with_dep(&[
+            ))
+            .with_bundle(TransformBundle::new().with_dep(&[
                 "material_animation_control_system",
                 "material_sampler_interpolation_system",
                 "sprite_render_animation_control_system",
                 "sprite_render_sampler_interpolation_system",
-            ])).with_render_bundle(test_name, visibility)
+            ]))
+            .with_render_bundle(test_name, visibility)
     }
 
     /// Returns a `String` to `<crate_dir>/assets`.
@@ -278,7 +281,8 @@ where
             }
 
             Ok(())
-        }).join()
+        })
+        .join()
         .expect("Failed to run Amethyst application")
     }
 }
@@ -508,7 +512,8 @@ where
                     system,
                     &name,
                     &deps.iter().map(|dep| dep.as_ref()).collect::<Vec<&str>>(),
-                ).build() // kcov-ignore
+                )
+                .build() // kcov-ignore
         })
     }
 
@@ -628,7 +633,8 @@ where
                     ColorMask::all(),
                     ALPHA,
                     Some(DepthMode::LessEqualWrite),
-                )).with_pass(DrawUi::new()),
+                ))
+                .with_pass(DrawUi::new()),
         )
     }
 }
@@ -896,7 +902,8 @@ mod test {
             AmethystApplication::render_base(
                 "render_base_application_can_load_material_animations",
                 false
-            ).with_effect(MaterialAnimationFixture::effect)
+            )
+            .with_effect(MaterialAnimationFixture::effect)
             .with_assertion(MaterialAnimationFixture::assertion)
             .run()
             .is_ok()
@@ -911,7 +918,8 @@ mod test {
             AmethystApplication::render_base(
                 "render_base_application_can_load_sprite_render_animations",
                 false
-            ).with_effect(SpriteRenderAnimationFixture::effect)
+            )
+            .with_effect(SpriteRenderAnimationFixture::effect)
             .with_assertion(SpriteRenderAnimationFixture::assertion)
             .run()
             .is_ok()
@@ -980,7 +988,8 @@ mod test {
 
                     let entity = world.create_entity().with(ComponentZero(0)).build();
                     world.add_resource(EffectReturn(entity));
-                }).with_system_single(SystemEffect, "system_effect", &[])
+                })
+                .with_system_single(SystemEffect, "system_effect", &[])
                 .with_assertion(assertion_fn)
                 .with_assertion(assertion_fn)
                 .run()
@@ -999,9 +1008,11 @@ mod test {
             AmethystApplication::blank()
                 .with_setup(|world| {
                     world.add_resource(ApplicationResource);
-                }).with_setup(|world| {
+                })
+                .with_setup(|world| {
                     world.read_resource::<ApplicationResource>();
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }
@@ -1014,9 +1025,11 @@ mod test {
             AmethystApplication::blank()
                 .with_effect(|world| {
                     world.add_resource(ApplicationResource);
-                }).with_effect(|world| {
+                })
+                .with_effect(|world| {
                     world.read_resource::<ApplicationResource>();
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }
@@ -1029,9 +1042,11 @@ mod test {
             AmethystApplication::blank()
                 .with_assertion(|world| {
                     world.add_resource(ApplicationResource);
-                }).with_assertion(|world| {
+                })
+                .with_assertion(|world| {
                     world.read_resource::<ApplicationResource>();
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }
@@ -1044,9 +1059,11 @@ mod test {
             AmethystApplication::blank()
                 .with_state(|| FunctionState::new(|world| {
                     world.add_resource(ApplicationResource);
-                })).with_state(|| FunctionState::new(|world| {
+                }))
+                .with_state(|| FunctionState::new(|world| {
                     world.read_resource::<ApplicationResource>();
-                })).run()
+                }))
+                .run()
                 .is_ok()
         );
     }
@@ -1059,9 +1076,11 @@ mod test {
             AmethystApplication::blank()
                 .with_state(|| FunctionState::new(|world| {
                     world.add_resource(ApplicationResource);
-                })).with_setup(|world| {
+                }))
+                .with_setup(|world| {
                     world.read_resource::<ApplicationResource>();
-                }).run()
+                })
+                .run()
                 .is_ok()
         );
     }
@@ -1075,7 +1094,8 @@ mod test {
                 .with_resource(ApplicationResource)
                 .with_state(|| FunctionState::new(|world| {
                     world.read_resource::<ApplicationResource>();
-                })).run()
+                }))
+                .run()
                 .is_ok()
         );
     }

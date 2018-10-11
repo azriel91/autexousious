@@ -12,7 +12,11 @@ impl RunCounterUpdater {
         input: &ControllerInput,
         character_status: &CharacterStatus,
     ) -> Option<RunCounter> {
-        if character_status.object_status.grounding != Grounding::OnGround || input.jump {
+        if character_status.object_status.grounding != Grounding::OnGround
+            || input.defend
+            || input.jump
+            || input.attack
+        {
             if character_status.run_counter == RunCounter::Unused {
                 return None;
             } else {
@@ -111,25 +115,33 @@ mod tests {
         );
     }
 
-    #[test]
-    fn unused_when_jump_is_pressed() {
-        let mut input = ControllerInput::default();
-        input.jump = true;
+    macro_rules! test_action_button {
+        ($test_name:ident, $action_button:ident) => {
+            #[test]
+            fn $test_name() {
+                let mut input = ControllerInput::default();
+                input.$action_button = true;
 
-        assert_eq!(
-            Some(RunCounter::Unused),
-            RunCounterUpdater::update(
-                &input,
-                &CharacterStatus {
-                    run_counter: RunCounter::Increase(10),
-                    object_status: ObjectStatus {
-                        grounding: Grounding::Airborne,
-                        ..Default::default()
-                    }
-                }
-            )
-        );
+                assert_eq!(
+                    Some(RunCounter::Unused),
+                    RunCounterUpdater::update(
+                        &input,
+                        &CharacterStatus {
+                            run_counter: RunCounter::Increase(10),
+                            object_status: ObjectStatus {
+                                grounding: Grounding::Airborne,
+                                ..Default::default()
+                            }
+                        }
+                    )
+                );
+            }
+        };
     }
+
+    test_action_button!(unused_when_defend_is_pressed, defend);
+    test_action_button!(unused_when_jump_is_pressed, jump);
+    test_action_button!(unused_when_attack_is_pressed, attack);
 
     #[test]
     fn none_when_unused_and_no_x_input() {
