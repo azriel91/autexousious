@@ -3,7 +3,7 @@ use std::path::Path;
 use amethyst::{
     assets::{AssetStorage, Loader},
     prelude::*,
-    renderer::{PngFormat, Texture, TextureHandle},
+    renderer::{PngFormat, Texture, TextureHandle, TextureMetadata},
 };
 use application::{self, ErrorKind};
 use sprite_model::config::SpriteSheetDefinition;
@@ -88,7 +88,7 @@ impl TextureLoader {
         loader.load(
             path,
             PngFormat,
-            Default::default(),
+            TextureMetadata::srgb(),
             (),
             &world.read_resource::<AssetStorage<Texture>>(),
         )
