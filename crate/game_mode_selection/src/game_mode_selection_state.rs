@@ -64,9 +64,9 @@ impl State<GameData<'static, 'static>, AppEvent> for GameModeSelectionStateDeleg
     fn handle_event(
         &mut self,
         data: StateData<GameData<'static, 'static>>,
-        event: StateEvent<AppEvent>,
+        event: AppEvent,
     ) -> Trans<GameData<'static, 'static>, AppEvent> {
-        if let StateEvent::Custom(AppEvent::GameModeSelection(game_mode_selection_event)) = event {
+        if let AppEvent::GameModeSelection(game_mode_selection_event) = event {
             debug!(
                 "Received game_mode_selection_event: {:?}",
                 game_mode_selection_event

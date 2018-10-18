@@ -1,8 +1,6 @@
 use std::fmt::Debug;
 
-use amethyst::{
-    core::SystemBundle, ecs::prelude::*, input::is_key_down, prelude::*, renderer::VirtualKeyCode,
-};
+use amethyst::{core::SystemBundle, ecs::prelude::*, prelude::*};
 use application_event::AppEvent;
 use application_state::AutexState;
 use game_model::play::GameEntities;
@@ -88,18 +86,9 @@ where
     fn handle_event(
         &mut self,
         _data: StateData<GameData>,
-        event: StateEvent<AppEvent>,
+        _event: AppEvent,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
-        if let StateEvent::Window(event) = &event {
-            if is_key_down(&event, VirtualKeyCode::Escape) {
-                info!("Returning from `GameLoadingState`.");
-                Trans::Pop
-            } else {
-                Trans::None
-            }
-        } else {
-            Trans::None
-        }
+        Trans::None
     }
 
     fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, AppEvent> {

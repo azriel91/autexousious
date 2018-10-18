@@ -14,7 +14,7 @@ use std::process;
 use std::rc::Rc;
 use std::time::Duration;
 
-use amethyst::prelude::*;
+use amethyst::{prelude::*, StateEventReader};
 use application_robot::{state::FixedTimeoutIntercept, RobotState};
 use stdio_view::StdioViewBundle;
 use structopt::StructOpt;
@@ -33,12 +33,12 @@ struct Opt {
     timeout: Option<u64>,
 }
 
-impl<'a, 'b> State<GameData<'a, 'b>, ()> for EmptyState {
+impl<'a, 'b> State<GameData<'a, 'b>, StateEvent> for EmptyState {
     fn on_start(&mut self, _data: StateData<GameData>) {
         println!("Reading from stdin. Type 'exit' to quit.");
     }
 
-    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, ()> {
+    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, StateEvent> {
         data.data.update(&data.world);
         Trans::None
     }
@@ -55,7 +55,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     let state = RobotState::new_with_intercepts(Box::new(EmptyState), intercepts);
     let game_data = GameDataBuilder::default().with_bundle(StdioViewBundle::new())?;
     let assets_dir = format!("{}/assets", env!("CARGO_MANIFEST_DIR"));
-    Application::new(assets_dir, state, game_data)?.run();
+    CoreApplication::<_, _, StateEventReader>::new(assets_dir, state, game_data)?.run();
     Ok(())
 }
 

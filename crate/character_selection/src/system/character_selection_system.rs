@@ -75,7 +75,7 @@ mod tests {
 
     use amethyst::{ecs::prelude::*, shrev::EventChannel};
     use amethyst_test_support::prelude::*;
-    use application_event::AppEvent;
+    use application_event::{AppEvent, AppEventReader};
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
     use character_selection_model::{
         CharacterSelection, CharacterSelectionEvent, CharacterSelections, CharacterSelectionsStatus,
@@ -97,7 +97,7 @@ mod tests {
         assert!(
             // kcov-ignore-end
             AmethystApplication::render_base("inserts_character_selection_on_select_event", false)
-                .with_custom_event_type::<AppEvent>()
+                .with_custom_event_type::<AppEvent, AppEventReader>()
                 .with_bundle(MapLoadingBundle::new())
                 .with_bundle(ObjectLoadingBundle::new())
                 .with_state(|| LoadingState::new(ASSETS_PATH.clone(), EmptyState))
@@ -145,7 +145,7 @@ mod tests {
                 "removes_character_selection_on_deselect_event",
                 false
             )
-            .with_custom_event_type::<AppEvent>()
+            .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
             .with_state(|| LoadingState::new(ASSETS_PATH.clone(), EmptyState))

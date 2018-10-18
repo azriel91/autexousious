@@ -11,8 +11,6 @@ itertools = "0.7"
 
 [dev-dependencies]
 debug_util_amethyst = { path = "../debug_util_amethyst" }
-enigo = "0.0.12"
-winit = "0.17"
 
 [features]
 default = []

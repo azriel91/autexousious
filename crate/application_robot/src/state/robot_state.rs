@@ -183,7 +183,7 @@ where
 
     // TODO: Pending <https://gitlab.com/azriel91/autexousious/issues/16>
     // kcov-ignore-start
-    fn handle_event(&mut self, mut data: StateData<T>, mut event: StateEvent<E>) -> Trans<T, E> {
+    fn handle_event(&mut self, mut data: StateData<T>, mut event: E) -> Trans<T, E> {
         let intercept_trans = self.fold_trans_begin(|intercept| {
             intercept
                 .borrow_mut()
@@ -238,10 +238,7 @@ mod test {
 
     use amethyst::ecs::prelude::World;
     use amethyst::prelude::*;
-    use amethyst::renderer::{Event, WindowEvent};
     use debug_util_amethyst::{assert_eq_trans, display_trans};
-    use enigo::{Enigo, Key, KeyboardControllable};
-    use winit::{ControlFlow, EventsLoop, Window};
 
     use super::RobotState;
     use state::Intercept;
@@ -613,38 +610,22 @@ mod test {
     // <https://gitlab.com/azriel91/autexousious/issues/16>.
     // kcov-ignore-start
     #[test]
-    #[ignore]
     fn handle_event_delegates_to_state() {
         let (mut state, mut world, invocations): (RobotState<(), ()>, _, _) =
             setup_without_intercepts();
 
-        let mut events_loop = EventsLoop::new();
-        let _window = Window::new(&events_loop).unwrap();
-        let event = get_window_event(&mut events_loop);
-
-        let trans = state.handle_event(
-            StateData::new(&mut world, &mut ()),
-            StateEvent::Window(event),
-        );
+        let trans = state.handle_event(StateData::new(&mut world, &mut ()), ());
 
         assert_eq_trans(&Trans::None, &trans);
         assert_eq!(vec![Invocation::HandleEvent], *invocations.borrow());
     }
 
     #[test]
-    #[ignore]
     fn handle_event_invokes_intercept() {
         let (mut state, mut world, invocations): (RobotState<(), ()>, _, _) =
             setup_with_no_op_intercepts();
 
-        let mut events_loop = EventsLoop::new();
-        let _window = Window::new(&events_loop).unwrap();
-        let event = get_window_event(&mut events_loop);
-
-        let trans = state.handle_event(
-            StateData::new(&mut world, &mut ()),
-            StateEvent::Window(event),
-        );
+        let trans = state.handle_event(StateData::new(&mut world, &mut ()), ());
 
         assert_eq_trans(&Trans::None, &trans);
         assert_eq!(
@@ -665,14 +646,7 @@ mod test {
         let (mut state, mut world, invocations): (RobotState<(), ()>, _, _) =
             setup_with_begin_intercepts();
 
-        let mut events_loop = EventsLoop::new();
-        let _window = Window::new(&events_loop).unwrap();
-        let event = get_window_event(&mut events_loop);
-
-        let trans = state.handle_event(
-            StateData::new(&mut world, &mut ()),
-            StateEvent::Window(event),
-        );
+        let trans = state.handle_event(StateData::new(&mut world, &mut ()), ());
 
         assert_eq_trans(&Trans::Pop, &trans);
         assert_eq!(
@@ -690,14 +664,7 @@ mod test {
         let (mut state, mut world, invocations): (RobotState<(), ()>, _, _) =
             setup_with_end_intercepts();
 
-        let mut events_loop = EventsLoop::new();
-        let _window = Window::new(&events_loop).unwrap();
-        let event = get_window_event(&mut events_loop);
-
-        let trans = state.handle_event(
-            StateData::new(&mut world, &mut ()),
-            StateEvent::Window(event),
-        );
+        let trans = state.handle_event(StateData::new(&mut world, &mut ()), ());
 
         assert_eq_trans(&Trans::Pop, &trans);
         assert_eq!(
@@ -1050,7 +1017,7 @@ mod test {
             handle_event_begin,
             Invocation::HandleEventBegin,
             trans_begin;
-            [&mut StateData<T>, &mut StateEvent<E>]
+            [&mut StateData<T>, &mut E]
         );
         fn_opt_trans!(handle_event_end, Invocation::HandleEventEnd, trans_end; [&Trans<T, E>]);
         fn_opt_trans!(fixed_update_begin, Invocation::FixedUpdateBegin, trans_begin; [&mut StateData<T>]);
@@ -1128,41 +1095,10 @@ mod test {
         fn_trans!(
             handle_event,
             Invocation::HandleEvent; // kcov-ignore
-            [StateData<T>, StateEvent<E>]
+            [StateData<T>, E]
         );
         fn_trans!(fixed_update, Invocation::FixedUpdate; [StateData<T>]);
         fn_trans!(update, Invocation::Update; [StateData<T>]);
-    }
-
-    // TODO: Pending <https://gitlab.com/azriel91/autexousious/issues/16>
-    // kcov-ignore-start
-    fn get_window_event(events_loop: &mut EventsLoop) -> Event {
-        let mut enigo = Enigo::new();
-        enigo.key_click(Key::Backspace);
-
-        let mut return_event = None;
-
-        events_loop.run_forever(|event| {
-            if match &event {
-                &Event::WindowEvent {
-                    event: ref window_event,
-                    ..
-                } => match window_event {
-                    &WindowEvent::KeyboardInput { .. } => true,
-                    _ => false,
-                },
-                _ => false,
-            } {
-                return_event = Some(event);
-                ControlFlow::Break
-            } else {
-                ControlFlow::Continue
-            }
-        });
-
-        events_loop.poll_events(|_event| {}); // empty event queue
-
-        return_event.unwrap()
     }
 
     fn format_trans<T, E>(trans: &Option<Trans<T, E>>) -> String {

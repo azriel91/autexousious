@@ -59,10 +59,7 @@ impl OtherState {
     }
 }
 
-impl<'a, 'b, E> State<GameData<'a, 'b>, E> for OtherState
-where
-    E: Send + Sync + 'static,
-{
+impl<'a, 'b> State<GameData<'a, 'b>, StateEvent> for OtherState {
     fn on_start(&mut self, mut data: StateData<GameData>) {
         self.initialize_informative(&mut data.world);
     }
@@ -70,8 +67,8 @@ where
     fn handle_event(
         &mut self,
         _: StateData<GameData>,
-        event: StateEvent<E>,
-    ) -> Trans<GameData<'a, 'b>, E> {
+        event: StateEvent,
+    ) -> Trans<GameData<'a, 'b>, StateEvent> {
         if let StateEvent::Window(event) = &event {
             if is_key_down(&event, VirtualKeyCode::Escape) {
                 info!("Returning from `OtherState`.");
@@ -88,7 +85,7 @@ where
         self.terminate_informative(&mut data.world);
     }
 
-    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, E> {
+    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, StateEvent> {
         data.data.update(&data.world);
         Trans::None
     }

@@ -84,9 +84,9 @@ where
     fn handle_event(
         &mut self,
         data: StateData<GameData<'a, 'b>>,
-        event: StateEvent<AppEvent>,
+        event: AppEvent,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
-        if let StateEvent::Custom(AppEvent::MapSelection(map_selection_event)) = event {
+        if let AppEvent::MapSelection(map_selection_event) = event {
             debug!("Received map_selection_event: {:?}", map_selection_event);
             let mut channel = data
                 .world

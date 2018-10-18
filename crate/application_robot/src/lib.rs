@@ -12,11 +12,7 @@ extern crate application_input;
 extern crate debug_util_amethyst;
 #[macro_use]
 extern crate derivative;
-#[cfg(test)]
-extern crate enigo;
 extern crate itertools;
-#[cfg(test)]
-extern crate winit;
 
 pub use state::RobotState;
 

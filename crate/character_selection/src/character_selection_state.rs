@@ -91,9 +91,9 @@ where
     fn handle_event(
         &mut self,
         data: StateData<GameData<'a, 'b>>,
-        event: StateEvent<AppEvent>,
+        event: AppEvent,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
-        if let StateEvent::Custom(AppEvent::CharacterSelection(character_selection_event)) = event {
+        if let AppEvent::CharacterSelection(character_selection_event) = event {
             debug!(
                 "Received character_selection_event: {:?}",
                 character_selection_event

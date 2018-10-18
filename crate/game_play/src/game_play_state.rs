@@ -131,9 +131,9 @@ impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
     fn handle_event(
         &mut self,
         _data: StateData<GameData>,
-        event: StateEvent<AppEvent>,
+        event: AppEvent,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
-        if let StateEvent::Window(event) = &event {
+        if let AppEvent::State(StateEvent::Window(event)) = &event {
             if is_key_down(&event, VirtualKeyCode::Escape) {
                 info!("Returning from `GamePlayState`.");
                 Trans::Pop
