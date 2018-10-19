@@ -7,4 +7,5 @@ members = ["app/*", "crate/*"]
 codegen-units = 1
 
 [patch.crates-io]
+derivative = { git = "https://github.com/azriel91/rust-derivative.git", branch = "maintenance/25/bump-syn-and-quote" }
 toml = { git = "https://github.com/azriel91/toml-rs.git", branch = "feature/225/externally-tagged-enums" }
