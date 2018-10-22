@@ -121,7 +121,7 @@ where
     fn handle_event(
         &mut self,
         data: StateData<GameData<'a, 'b>>,
-        event: StateEvent<AppEvent>,
+        event: AppEvent,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
         self.delegate.handle_event(data, event)
     }
@@ -275,9 +275,7 @@ mod tests {
     fn delegates_handle_event() {
         let (mut world, mut game_data, invocations, mut state) = setup_with_defaults();
 
-        let event = StateEvent::Custom(AppEvent::CharacterSelection(
-            CharacterSelectionEvent::Confirm,
-        ));
+        let event = AppEvent::CharacterSelection(CharacterSelectionEvent::Confirm);
 
         state.handle_event(StateData::new(&mut world, &mut game_data), event);
 
@@ -508,7 +506,7 @@ mod tests {
         fn handle_event(
             &mut self,
             _data: StateData<GameData<'a, 'b>>,
-            _event: StateEvent<AppEvent>,
+            _event: AppEvent,
         ) -> Trans<GameData<'a, 'b>, AppEvent> {
             self.invocations.borrow_mut().push(Invocation::HandleEvent);
             Trans::None

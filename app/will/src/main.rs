@@ -5,6 +5,7 @@
 extern crate amethyst;
 #[macro_use]
 extern crate application;
+extern crate application_event;
 extern crate application_input;
 extern crate application_robot;
 extern crate application_state;
@@ -45,6 +46,7 @@ use application::resource::{
     dir::{self, assets_dir},
     {self, load_in},
 };
+use application_event::{AppEvent, AppEventReader};
 use application_robot::RobotState;
 use application_state::{HookFn, HookableFn};
 use character_selection_stdio::CharacterSelectionStdioBundle;
@@ -161,7 +163,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     }
 
     info!("Building application.");
-    let mut app = Application::build(assets_dir, state)?
+    let mut app = CoreApplication::<_, AppEvent, AppEventReader>::build(assets_dir, state)?
         .with_frame_limit(
             FrameRateLimitStrategy::SleepAndYield(Duration::from_micros(1000)),
             60,

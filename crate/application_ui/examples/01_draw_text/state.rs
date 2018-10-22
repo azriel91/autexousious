@@ -12,10 +12,7 @@ const FONT_SIZE: f32 = 25.;
 
 pub struct TextState;
 
-impl<'a, 'b, E> State<GameData<'a, 'b>, E> for TextState
-where
-    E: Send + Sync + 'static,
-{
+impl<'a, 'b> State<GameData<'a, 'b>, StateEvent> for TextState {
     fn on_start(&mut self, mut data: StateData<GameData>) {
         load_fonts(&mut data.world);
         initialize_text(&mut data.world);
@@ -24,8 +21,8 @@ where
     fn handle_event(
         &mut self,
         _data: StateData<GameData>,
-        event: StateEvent<E>,
-    ) -> Trans<GameData<'a, 'b>, E> {
+        event: StateEvent,
+    ) -> Trans<GameData<'a, 'b>, StateEvent> {
         if let StateEvent::Window(event) = &event {
             if is_close_requested(&event) || is_key_down(&event, VirtualKeyCode::Escape) {
                 Trans::Quit
@@ -37,7 +34,7 @@ where
         }
     }
 
-    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, E> {
+    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, StateEvent> {
         data.data.update(&data.world);
         Trans::None
     }

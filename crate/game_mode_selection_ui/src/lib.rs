@@ -13,7 +13,6 @@ extern crate derivative;
 #[macro_use]
 extern crate derive_new;
 extern crate game_mode_selection_model;
-#[macro_use]
 extern crate heck;
 #[macro_use]
 extern crate log;

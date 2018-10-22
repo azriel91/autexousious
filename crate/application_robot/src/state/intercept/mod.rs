@@ -50,7 +50,7 @@ where
     fn handle_event_begin(
         &mut self,
         _data: &mut StateData<T>,
-        _event: &mut StateEvent<E>,
+        _event: &mut E,
     ) -> Option<Trans<T, E>> {
         None
     }

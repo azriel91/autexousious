@@ -184,7 +184,7 @@ mod test {
         renderer::{SpriteRender, Transparent},
     };
     use amethyst_test_support::prelude::*;
-    use application_event::AppEvent;
+    use application_event::{AppEvent, AppEventReader};
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
     use game_input::{ControllerInput, InputControlled};
     use game_model::loaded::SlugAndHandle;
@@ -236,7 +236,7 @@ mod test {
                 "spawn_for_player_creates_entity_with_object_components",
                 false
             )
-            .with_custom_event_type::<AppEvent>()
+            .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
             .with_system(TestSystem, TestSystem::type_name(), &[])

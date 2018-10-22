@@ -5,7 +5,7 @@ use amethyst::{
     renderer::SpriteRender,
 };
 use amethyst_test_support::{prelude::*, EmptyState};
-use application_event::AppEvent;
+use application_event::{AppEvent, AppEventReader};
 use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
 use character_selection::CharacterSelectionBundle;
 use character_selection_model::{CharacterSelections, CharacterSelectionsStatus};
@@ -31,9 +31,9 @@ impl AutexousiousApplication {
     ///
     /// This has the same effect as calling `AmethystApplication::base::<PlayerAxisControl,
     /// PlayerActionControl>()`.
-    pub fn ui_base() -> AmethystApplication<GameData<'static, 'static>, AppEvent> {
+    pub fn ui_base() -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader> {
         AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
-            .with_custom_event_type::<AppEvent>()
+            .with_custom_event_type::<AppEvent, AppEventReader>()
     }
 
     /// Returns an application with the Animation, Transform, and Render bundles.
@@ -49,14 +49,14 @@ impl AutexousiousApplication {
     pub fn render_base<'name, N>(
         test_name: N,
         visibility: bool,
-    ) -> AmethystApplication<GameData<'static, 'static>, AppEvent>
+    ) -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader>
     where
         N: Into<&'name str>,
     {
         // Unfortunately we cannot re-use `AmethystApplication::render_base` because we need to
         // specify the `TransformBundle`'s dependencies.
         AmethystApplication::blank()
-            .with_custom_event_type::<AppEvent>()
+            .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_bundle(AnimationBundle::<CharacterSequenceId, SpriteRender>::new(
                 "character_animation_control_system",
                 "character_sampler_interpolation_system",
@@ -81,7 +81,7 @@ impl AutexousiousApplication {
     pub fn render_and_ui<'name, N>(
         test_name: N,
         visibility: bool,
-    ) -> AmethystApplication<GameData<'static, 'static>, AppEvent>
+    ) -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader>
     where
         N: Into<&'name str>,
     {
@@ -101,7 +101,7 @@ impl AutexousiousApplication {
     pub fn config_base<'name, N>(
         test_name: N,
         visibility: bool,
-    ) -> AmethystApplication<GameData<'static, 'static>, AppEvent>
+    ) -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader>
     where
         N: Into<&'name str>,
     {
@@ -125,7 +125,7 @@ impl AutexousiousApplication {
     pub fn game_base<'name, N>(
         test_name: N,
         visibility: bool,
-    ) -> AmethystApplication<GameData<'static, 'static>, AppEvent>
+    ) -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader>
     where
         N: Into<&'name str>,
     {

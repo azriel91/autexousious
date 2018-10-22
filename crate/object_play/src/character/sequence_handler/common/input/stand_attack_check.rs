@@ -54,11 +54,7 @@ mod tests {
 
         assert_eq!(
             None,
-            StandAttackCheck::update(
-                &input,
-                &CharacterStatus::default(),
-                &Kinematics::default()
-            )
+            StandAttackCheck::update(&input, &CharacterStatus::default(), &Kinematics::default())
         );
     }
 
@@ -76,11 +72,7 @@ mod tests {
                 },
                 ..Default::default()
             }),
-            StandAttackCheck::update(
-                &input,
-                &CharacterStatus::default(),
-                &Kinematics::default()
-            )
+            StandAttackCheck::update(&input, &CharacterStatus::default(), &Kinematics::default())
         );
     }
 }

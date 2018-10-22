@@ -6,7 +6,7 @@ use std::thread;
 use amethyst::{
     self,
     animation::AnimationBundle,
-    core::{transform::TransformBundle, SystemBundle},
+    core::{transform::TransformBundle, EventReader, SystemBundle},
     ecs::prelude::*,
     input::InputBundle,
     prelude::*,
@@ -16,9 +16,9 @@ use amethyst::{
     },
     shred::Resource,
     ui::{DrawUi, UiBundle},
-    Result,
+    utils::application_root_dir,
+    Result, StateEventReader,
 };
-use amethyst_utils::application_root_dir;
 use boxfnonce::SendBoxFnOnce;
 use hetseq::Queue;
 
@@ -35,9 +35,9 @@ type BundleAddFn = SendBoxFnOnce<
 >;
 // Hack: Ideally we want a `SendBoxFnOnce`. However implementing it got too crazy:
 //
-// * When taking in `ApplicationBuilder<SLocal>` as a parameter, I couldn't get the type parameters
-//   to be happy. `SLocal` had to change depending on the first state, but it couldn't be
-//   consolidated with `T`.
+// * When taking in `ApplicationBuilder<StateLocal>` as a parameter, I couldn't get the type
+//   parameters to be happy. `StateLocal` had to change depending on the first state, but it
+//   couldn't be consolidated with `T`.
 // * When using `SendBoxFnOnce<'w, (&'w mut World,)>`, the lifetime parameter for the function and
 //   the `World` could not agree &mdash; you can't coerce a `SendBoxFnOnce<'longer>` into a
 //   `SendBoxFnOnce<'shorter>`, which was necessary to indicate the length of the borrow of `World`
@@ -80,7 +80,7 @@ lazy_static! {
 /// * `E`: Custom event type shared between states.
 #[derive(Derivative, Default)]
 #[derivative(Debug)]
-pub struct AmethystApplication<T, E>
+pub struct AmethystApplication<T, E, R>
 where
     E: Send + Sync + 'static,
 {
@@ -102,28 +102,30 @@ where
     #[derivative(Debug = "ignore")]
     state_fns: Vec<FnState<T, E>>,
     /// Game data and event type.
-    state_data: PhantomData<(T, E)>,
+    state_data: PhantomData<(T, E, R)>,
     /// Whether or not this application uses the `RenderBundle`.
     render: bool,
 }
 
-impl AmethystApplication<GameData<'static, 'static>, ()> {
+impl AmethystApplication<GameData<'static, 'static>, StateEvent, StateEventReader> {
     /// Returns an Amethyst application without any bundles.
-    pub fn blank() -> AmethystApplication<GameData<'static, 'static>, ()> {
+    pub fn blank() -> AmethystApplication<GameData<'static, 'static>, StateEvent, StateEventReader>
+    {
         AmethystApplication {
             bundle_add_fns: Vec::new(),
             resource_add_fns: Vec::new(),
             state_fns: Vec::new(),
             state_data: PhantomData,
             render: false,
-        } // kcov-ignore
+        }
     }
 
     /// Returns an application with the Transform, Input, and UI bundles.
     ///
     /// This also adds a `ScreenDimensions` resource to the `World` so that UI calculations can be
     /// done.
-    pub fn ui_base<AX, AC>() -> AmethystApplication<GameData<'static, 'static>, ()>
+    pub fn ui_base<AX, AC>(
+    ) -> AmethystApplication<GameData<'static, 'static>, StateEvent, StateEventReader>
     where
         AX: Hash + Eq + Clone + Send + Sync + 'static,
         AC: Hash + Eq + Clone + Send + Sync + 'static,
@@ -148,7 +150,7 @@ impl AmethystApplication<GameData<'static, 'static>, ()> {
     pub fn render_base<'name, N>(
         test_name: N,
         visibility: bool,
-    ) -> AmethystApplication<GameData<'static, 'static>, ()>
+    ) -> AmethystApplication<GameData<'static, 'static>, StateEvent, StateEventReader>
     where
         N: Into<&'name str>,
     {
@@ -176,9 +178,10 @@ impl AmethystApplication<GameData<'static, 'static>, ()> {
     }
 }
 
-impl<E> AmethystApplication<GameData<'static, 'static>, E>
+impl<E, R> AmethystApplication<GameData<'static, 'static>, E, R>
 where
     E: Clone + Send + Sync + 'static,
+    R: Default,
 {
     /// Returns the built Application.
     ///
@@ -191,7 +194,10 @@ where
     /// separate thread and waits for it to end before returning.
     ///
     /// See <https://users.rust-lang.org/t/trouble-identifying-cause-of-segfault/18096>
-    pub fn build(self) -> Result<Application<'static, GameData<'static, 'static>, E>> {
+    pub fn build(self) -> Result<CoreApplication<'static, GameData<'static, 'static>, E, R>>
+    where
+        for<'b> R: EventReader<'b, Event = E>,
+    {
         let params = (self.bundle_add_fns, self.resource_add_fns, self.state_fns);
         Self::build_internal(params)
     }
@@ -210,7 +216,10 @@ where
             Vec<FnResourceAdd>,
             Vec<FnState<GameData<'static, 'static>, E>>,
         ),
-    ) -> Result<Application<'static, GameData<'static, 'static>, E>> {
+    ) -> Result<CoreApplication<'static, GameData<'static, 'static>, E, R>>
+    where
+        for<'b> R: EventReader<'b, Event = E>,
+    {
         let game_data = bundle_add_fns.into_iter().fold(
             Ok(GameDataBuilder::default()),
             |game_data: Result<GameDataBuilder>, function: BundleAddFn| {
@@ -226,16 +235,17 @@ where
         Self::build_application(SequencerState::new(states), game_data, resource_add_fns)
     }
 
-    fn build_application<SLocal>(
-        first_state: SLocal,
+    fn build_application<StateLocal>(
+        first_state: StateLocal,
         game_data: GameDataBuilder<'static, 'static>,
         resource_add_fns: Vec<FnResourceAdd>,
-    ) -> Result<Application<'static, GameData<'static, 'static>, E>>
+    ) -> Result<CoreApplication<'static, GameData<'static, 'static>, E, R>>
     where
-        SLocal: State<GameData<'static, 'static>, E> + 'static,
+        StateLocal: State<GameData<'static, 'static>, E> + 'static,
+        for<'b> R: EventReader<'b, Event = E>,
     {
         let mut application_builder =
-            Application::build(AmethystApplication::assets_dir(), first_state)?;
+            CoreApplication::build(AmethystApplication::assets_dir(), first_state)?;
         {
             let world = &mut application_builder.world;
             for mut function in resource_add_fns {
@@ -249,7 +259,10 @@ where
     ///
     /// This method should be called instead of the `.build()` method if the application is to be
     /// run, as this avoids a segfault on Linux when using the GL software renderer.
-    pub fn run(self) -> Result<()> {
+    pub fn run(self) -> Result<()>
+    where
+        for<'b> R: EventReader<'b, Event = E>,
+    {
         let params = (self.bundle_add_fns, self.resource_add_fns, self.state_fns);
 
         let render = self.render;
@@ -287,7 +300,7 @@ where
     }
 }
 
-impl<T, E> AmethystApplication<T, E>
+impl<T, E, R> AmethystApplication<T, E, R>
 where
     T: GameUpdate,
     E: Send + Sync + 'static,
@@ -299,10 +312,11 @@ where
     ///
     /// # Type Parameters
     ///
-    /// * `ELocal`: Type used for custom events.
-    pub fn with_custom_event_type<ELocal>(self) -> AmethystApplication<T, ELocal>
+    /// * `Event`: Type used for custom events.
+    pub fn with_custom_event_type<Event, Reader>(self) -> AmethystApplication<T, Event, Reader>
     where
-        ELocal: Send + Sync + 'static,
+        Event: Send + Sync + 'static,
+        for<'b> Reader: EventReader<'b, Event = Event>,
     {
         if !self.state_fns.is_empty() {
             panic!(
@@ -347,7 +361,7 @@ where
         //
         // To make this work, we can implement a trait for `FnOnce` with a trait function which
         // takes `Box<Self>` and can invoke the `FnOnce` whilst inside the Box.
-        // `SendBoxFnOnce` is an implementation this.
+        // `SendBoxFnOnce` is an implementation of this.
         //
         // See <https://users.rust-lang.org/t/move-a-boxed-function-inside-a-closure/18199>
         self.bundle_add_fns.push(SendBoxFnOnce::from(
@@ -435,9 +449,9 @@ where
     /// # Parameters
     ///
     /// * `resource`: Bundle to add.
-    pub fn with_resource<R>(mut self, resource: R) -> Self
+    pub fn with_resource<Res>(mut self, resource: Res) -> Self
     where
-        R: Resource,
+        Res: Resource,
     {
         let mut resource_opt = Some(resource);
         self.resource_add_fns
@@ -504,7 +518,7 @@ where
         let name = name.into();
         let deps = deps
             .iter()
-            .map(|dep| dep.clone().into()) // kcov-ignore
+            .map(|dep| dep.clone().into())
             .collect::<Vec<String>>();
         self.with_state(move || {
             CustomDispatcherStateBuilder::new()
@@ -513,7 +527,7 @@ where
                     &name,
                     &deps.iter().map(|dep| dep.as_ref()).collect::<Vec<&str>>(),
                 )
-                .build() // kcov-ignore
+                .build()
         })
     }
 
@@ -657,14 +671,14 @@ mod test {
     use EffectReturn;
     use EmptyState;
     use FunctionState;
+    #[cfg(feature = "graphics")]
     use MaterialAnimationFixture;
+    #[cfg(feature = "graphics")]
     use SpriteRenderAnimationFixture;
 
     #[test]
     fn bundle_build_is_ok() {
-        // kcov-ignore-start
         assert!(
-            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_bundle(BundleZero)
                 .run()
@@ -674,9 +688,7 @@ mod test {
 
     #[test]
     fn load_multiple_bundles() {
-        // kcov-ignore-start
         assert!(
-            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_bundle(BundleZero)
                 .with_bundle(BundleOne)
@@ -691,9 +703,8 @@ mod test {
             world.read_resource::<ApplicationResource>();
             world.read_resource::<ApplicationResourceNonDefault>();
         };
-        // kcov-ignore-start
+
         assert!(
-            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_bundle(BundleZero)
                 .with_bundle(BundleOne)
@@ -709,18 +720,16 @@ mod test {
         let assertion_fn = |world: &mut World| {
             // Panics if `ApplicationResource` was not added.
             world.read_resource::<ApplicationResource>();
-        }; // kcov-ignore
+        };
 
-        // kcov-ignore-start
         assert!(
-            // kcov-ignore-end
             AmethystApplication::blank()
                 // without BundleOne
                 .with_assertion(assertion_fn)
                 .run()
                 .is_ok()
         );
-    } // kcov-ignore
+    }
 
     #[test]
     fn assertion_switch_with_loading_state_with_add_resource_succeeds() {
@@ -734,9 +743,7 @@ mod test {
             LoadingState::new(assertion_state)
         };
 
-        // kcov-ignore-start
         assert!(
-            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_state(state_fns)
                 .run()
@@ -753,9 +760,7 @@ mod test {
             world.read_resource::<LoadResource>();
         };
 
-        // kcov-ignore-start
         assert!(
-            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_state(state_fns)
                 .with_assertion(assertion_fn)
@@ -770,20 +775,18 @@ mod test {
         let state_fns = || {
             let assertion_fn = |world: &mut World| {
                 world.read_resource::<LoadResource>();
-            }; // kcov-ignore
+            };
 
             SwitchState::new(FunctionState::new(assertion_fn))
         };
 
-        // kcov-ignore-start
         assert!(
-            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_state(state_fns)
                 .run()
                 .is_ok()
         );
-    } // kcov-ignore
+    }
 
     #[test]
     #[should_panic(expected = "Failed to run Amethyst application")]
@@ -793,18 +796,16 @@ mod test {
         let state_fns = || SwitchState::new(EmptyState);
         let assertion_fn = |world: &mut World| {
             world.read_resource::<LoadResource>();
-        }; // kcov-ignore
+        };
 
-        // kcov-ignore-start
         assert!(
-            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_state(state_fns)
                 .with_assertion(assertion_fn)
                 .run()
                 .is_ok()
         );
-    } // kcov-ignore
+    }
 
     #[test]
     fn game_data_must_update_before_assertion() {
@@ -824,9 +825,7 @@ mod test {
             assert_eq!(Some(&AssetZero(20)), store.get(&asset_zero_handles[1]));
         };
 
-        // kcov-ignore-start
         assert!(
-            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_bundle(BundleAsset)
                 .with_effect(effect_fn)
@@ -860,9 +859,7 @@ mod test {
             assert_eq!(Some(&AssetZero(10)), store.get(&asset_zero_handles[0]));
         };
 
-        // kcov-ignore-start
         assert!(
-            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_bundle(BundleAsset)
                 .with_setup(setup_fns)
@@ -884,9 +881,7 @@ mod test {
             world.read_resource::<ScreenDimensions>();
         };
 
-        // kcov-ignore-start
         assert!(
-            // kcov-ignore-end
             AmethystApplication::ui_base::<String, String>()
                 .with_assertion(assertion_fn)
                 .run()
@@ -895,10 +890,9 @@ mod test {
     }
 
     #[test]
+    #[cfg(feature = "graphics")]
     fn render_base_application_can_load_material_animations() {
-        // kcov-ignore-start
         assert!(
-            // kcov-ignore-end
             AmethystApplication::render_base(
                 "render_base_application_can_load_material_animations",
                 false
@@ -911,10 +905,9 @@ mod test {
     }
 
     #[test]
+    #[cfg(feature = "graphics")]
     fn render_base_application_can_load_sprite_render_animations() {
-        // kcov-ignore-start
         assert!(
-            // kcov-ignore-end
             AmethystApplication::render_base(
                 "render_base_application_can_load_sprite_render_animations",
                 false
@@ -945,9 +938,7 @@ mod test {
             component_zero.0
         };
 
-        // kcov-ignore-start
         assert!(
-            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_system(SystemEffect, "system_effect", &[])
                 .with_effect(effect_fn)
@@ -979,9 +970,7 @@ mod test {
             assert_eq!(1, component_zero.0);
         };
 
-        // kcov-ignore-start
         assert!(
-            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_setup(|world| {
                     world.register::<ComponentZero>();
@@ -1002,9 +991,7 @@ mod test {
 
     #[test]
     fn with_setup_invoked_twice_should_run_in_specified_order() {
-        // kcov-ignore-start
         assert!(
-            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_setup(|world| {
                     world.add_resource(ApplicationResource);
@@ -1019,9 +1006,7 @@ mod test {
 
     #[test]
     fn with_effect_invoked_twice_should_run_in_the_specified_order() {
-        // kcov-ignore-start
         assert!(
-            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_effect(|world| {
                     world.add_resource(ApplicationResource);
@@ -1036,9 +1021,7 @@ mod test {
 
     #[test]
     fn with_assertion_invoked_twice_should_run_in_the_specified_order() {
-        // kcov-ignore-start
         assert!(
-            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_assertion(|world| {
                     world.add_resource(ApplicationResource);
@@ -1053,9 +1036,7 @@ mod test {
 
     #[test]
     fn with_state_invoked_twice_should_run_in_the_specified_order() {
-        // kcov-ignore-start
         assert!(
-            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_state(|| FunctionState::new(|world| {
                     world.add_resource(ApplicationResource);
@@ -1070,9 +1051,7 @@ mod test {
 
     #[test]
     fn setup_can_be_invoked_after_with_state() {
-        // kcov-ignore-start
         assert!(
-            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_state(|| FunctionState::new(|world| {
                     world.add_resource(ApplicationResource);
@@ -1087,9 +1066,7 @@ mod test {
 
     #[test]
     fn with_state_invoked_after_with_resource_should_work() {
-        // kcov-ignore-start
         assert!(
-            // kcov-ignore-end
             AmethystApplication::blank()
                 .with_resource(ApplicationResource)
                 .with_state(|| FunctionState::new(|world| {
@@ -1248,7 +1225,7 @@ mod test {
     #[derive(Debug, PartialEq)]
     struct AssetZero(u32);
     impl Asset for AssetZero {
-        const NAME: &'static str = "amethyst_test_support::AssetZero";
+        const NAME: &'static str = "amethyst_test::AssetZero";
         type Data = Self;
         type HandleStorage = VecStorage<Handle<Self>>;
     }

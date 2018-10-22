@@ -8,15 +8,12 @@ use state::Intercept;
 #[derive(Clone, Debug, Default)]
 pub struct KeyboardEscapeIntercept;
 
-impl<T, E> Intercept<T, E> for KeyboardEscapeIntercept
-where
-    E: Send + Sync + 'static,
-{
+impl<T> Intercept<T, StateEvent> for KeyboardEscapeIntercept {
     fn handle_event_begin(
         &mut self,
         _data: &mut StateData<T>,
-        event: &mut StateEvent<E>,
-    ) -> Option<Trans<T, E>> {
+        event: &mut StateEvent,
+    ) -> Option<Trans<T, StateEvent>> {
         if let StateEvent::Window(event) = &event {
             if is_close_requested(&event) || is_key_down(&event, VirtualKeyCode::Escape) {
                 Some(Trans::Quit)
