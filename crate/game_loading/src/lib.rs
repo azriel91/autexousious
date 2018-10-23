@@ -44,6 +44,7 @@ pub use animation_runner::AnimationRunner;
 pub(crate) use game_loading_bundle::GameLoadingBundle;
 pub use game_loading_state::GameLoadingState;
 pub(crate) use game_loading_status::GameLoadingStatus;
+pub use multi_animation_runner::MultiAnimationRunner;
 pub use spawn::{
     CharacterComponentStorages, CharacterEntitySpawner, MapLayerComponentStorages,
     MapLayerEntitySpawner, MapSpawningResources, ObjectAnimationStorages, ObjectComponentStorages,
@@ -55,5 +56,6 @@ mod animation_runner;
 mod game_loading_bundle;
 mod game_loading_state;
 mod game_loading_status;
+mod multi_animation_runner;
 mod spawn;
 mod system;
