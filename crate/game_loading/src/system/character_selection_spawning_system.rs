@@ -16,6 +16,7 @@ use CharacterEntitySpawner;
 use GameLoadingStatus;
 use ObjectAnimationStorages;
 use ObjectComponentStorages;
+use ObjectSpawningResources;
 
 /// Spawns character entities based on the character selection.
 #[derive(Debug, Default, TypeName, new)]
@@ -26,8 +27,7 @@ type CharacterSelectionSpawningSystemData<'s> = (
     ReadExpect<'s, MapSelection>,
     Read<'s, CharacterSelections>,
     Read<'s, AssetStorage<Map>>,
-    Entities<'s>,
-    Read<'s, AssetStorage<Character>>,
+    ObjectSpawningResources<'s, Character>,
     CharacterComponentStorages<'s>,
     ObjectComponentStorages<'s>,
     ObjectAnimationStorages<'s, CharacterSequenceId>,
@@ -44,8 +44,7 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             map_selection,
             character_selections,
             loaded_maps,
-            entities,
-            loaded_characters,
+            object_spawning_resources,
             mut character_component_storages,
             mut object_component_storages,
             mut object_animation_storages,
@@ -74,8 +73,6 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
         // This `Position` moves the entity to the middle of a "screen wide" map.
         let position = Position::new(width / 2., height / 2., depth / 2.);
         let kinematics = Kinematics::new(position, Velocity::default());
-
-        let object_spawning_resources = (&*entities, &*loaded_characters);
 
         let character_entities = character_selections
             .selections

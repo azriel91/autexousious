@@ -38,8 +38,8 @@ impl CharacterEntitySpawner {
         slug_and_handle: &SlugAndHandle<Character>,
         input_controlled: InputControlled,
     ) -> Entity {
-        let entities = &*world.read_resource::<EntitiesRes>();
-        let loaded_characters = &*world.read_resource::<AssetStorage<Character>>();
+        let entities = Read::from(world.read_resource::<EntitiesRes>());
+        let loaded_characters = Read::from(world.read_resource::<AssetStorage<Character>>());
         Self::spawn_system(
             &(entities, loaded_characters),
             &mut (
@@ -182,7 +182,6 @@ mod test {
     use std::env;
 
     use amethyst::{
-        animation::AnimationControlSet,
         assets::AssetStorage,
         core::transform::Transform,
         ecs::prelude::*,
@@ -200,11 +199,15 @@ mod test {
     use object_model::{
         config::object::CharacterSequenceId,
         entity::{CharacterStatus, Kinematics, Position, Velocity},
-        loaded::CharacterHandle,
+        loaded::{Character, CharacterHandle},
     };
     use typename::TypeName;
 
     use super::CharacterEntitySpawner;
+    use CharacterComponentStorages;
+    use ObjectAnimationStorages;
+    use ObjectComponentStorages;
+    use ObjectSpawningResources;
 
     #[test]
     fn spawn_for_player_creates_entity_with_object_components() {
@@ -256,14 +259,11 @@ mod test {
     #[derive(Debug, TypeName)]
     struct TestSystem;
     type TestSystemData<'s> = (
+        CharacterComponentStorages<'s>,
+        ObjectAnimationStorages<'s, CharacterSequenceId>,
+        ObjectComponentStorages<'s>,
+        ObjectSpawningResources<'s, Character>,
         Read<'s, AssetStorage<Map>>,
-        ReadStorage<'s, InputControlled>,
-        ReadStorage<'s, CharacterHandle>,
-        ReadStorage<'s, CharacterStatus>,
-        ReadStorage<'s, ControllerInput>,
-        ReadStorage<'s, Transparent>,
-        ReadStorage<'s, Kinematics<f32>>,
-        ReadStorage<'s, AnimationControlSet<CharacterSequenceId, SpriteRender>>,
     );
     impl<'s> System<'s> for TestSystem {
         type SystemData = TestSystemData<'s>;
