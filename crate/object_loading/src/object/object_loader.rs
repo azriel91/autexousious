@@ -1,9 +1,11 @@
+use std::collections::HashMap;
+
 use amethyst::{prelude::*, renderer::SpriteSheetSet};
 use application::Result;
 use game_model::config::AssetRecord;
 use object_model::{
     config::{object::SequenceId, ObjectDefinition},
-    loaded,
+    loaded::{AnimatedComponent, Object},
 };
 use sprite_loading::{SpriteLoader, SpriteRenderAnimationLoader};
 
@@ -23,7 +25,7 @@ impl ObjectLoader {
         world: &World,
         asset_record: &AssetRecord,
         object_definition: &ObjectDefinition<SeqId>,
-    ) -> Result<loaded::Object<SeqId>> {
+    ) -> Result<Object<SeqId>> {
         let sprite_sheet_index_offset = world.read_resource::<SpriteSheetSet>().len() as u64;
 
         debug!("Loading object assets in `{}`", asset_record.path.display());
@@ -35,13 +37,16 @@ impl ObjectLoader {
             .next()
             .expect("Expected character to have at least one sprite sheet.");
 
-        let animation_handles = SpriteRenderAnimationLoader::load_into_map(
+        let animations = SpriteRenderAnimationLoader::load_into_map(
             world,
             &object_definition.sequences,
             sprite_sheet_index_offset,
-        );
+        )
+        .into_iter()
+        .map(|(id, handle)| (id, vec![AnimatedComponent::SpriteRender(handle)]))
+        .collect::<HashMap<_, _>>();
 
-        Ok(loaded::Object::new(sprite_sheet_handle, animation_handles))
+        Ok(Object::new(sprite_sheet_handle, animations))
     }
 }
 

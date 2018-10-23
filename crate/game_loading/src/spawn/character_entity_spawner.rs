@@ -10,11 +10,12 @@ use game_model::loaded::SlugAndHandle;
 use object_model::{
     config::object::CharacterSequenceId,
     entity::{CharacterStatus, Kinematics},
-    loaded::{Character, CharacterHandle},
+    loaded::{AnimatedComponent, Character, CharacterHandle},
 };
 
 use AnimationRunner;
 use CharacterComponentStorages;
+use ObjectAnimationStorages;
 use ObjectComponentStorages;
 use ObjectSpawningResources;
 
@@ -52,8 +53,8 @@ impl CharacterEntitySpawner {
                 world.write_storage::<Transparent>(),
                 world.write_storage::<Kinematics<f32>>(),
                 world.write_storage::<Transform>(),
-                world.write_storage::<AnimationControlSet<CharacterSequenceId, SpriteRender>>(),
             ), // kcov-ignore
+            &mut (world.write_storage::<AnimationControlSet<CharacterSequenceId, SpriteRender>>(),),
             kinematics,
             slug_and_handle,
             input_controlled,
@@ -83,8 +84,8 @@ impl CharacterEntitySpawner {
             ref mut transparent_storage,
             ref mut kinematics_storage,
             ref mut transform_storage,
-            ref mut animation_control_set_storage,
-        ): &mut ObjectComponentStorages<'s, CharacterSequenceId>,
+        ): &mut ObjectComponentStorages<'s>,
+        (ref mut sprite_acs,): &mut ObjectAnimationStorages<'s, CharacterSequenceId>,
         kinematics: Kinematics<f32>,
         slug_and_handle: &SlugAndHandle<Character>,
         input_controlled: InputControlled,
@@ -92,7 +93,7 @@ impl CharacterEntitySpawner {
         let character_status = CharacterStatus::default();
         let first_sequence_id = character_status.object_status.sequence_id;
 
-        let (character_handle, sprite_render, animation_handle) = {
+        let (character_handle, sprite_render, animations) = {
             let SlugAndHandle {
                 ref slug,
                 ref handle,
@@ -111,13 +112,13 @@ impl CharacterEntitySpawner {
                 flip_vertical: false,
             };
 
-            let animation_handle = object
+            let animations = object
                 .animations
                 .get(&first_sequence_id)
                 .expect("Expected character to have at least one sequence.")
                 .clone();
 
-            (handle.clone(), sprite_render, animation_handle)
+            (handle.clone(), sprite_render, animations)
         }; // kcov-ignore
 
         let position = &kinematics.position;
@@ -160,13 +161,17 @@ impl CharacterEntitySpawner {
             .expect("Failed to insert transform component.");
 
         // We also need to trigger the animation, not just attach it to the entity
-        let mut animation_set = get_animation_set::<CharacterSequenceId, SpriteRender>(
-            animation_control_set_storage,
-            entity,
-        )
-        .expect("Animation should exist as new entity should be valid.");
+        let mut sprite_animation_set =
+            get_animation_set::<CharacterSequenceId, SpriteRender>(sprite_acs, entity)
+                .expect("Animation should exist as new entity should be valid.");
 
-        AnimationRunner::start(&mut animation_set, &animation_handle, first_sequence_id);
+        animations
+            .iter()
+            .for_each(|animated_component| match animated_component {
+                AnimatedComponent::SpriteRender(ref handle) => {
+                    AnimationRunner::start(&mut sprite_animation_set, handle, first_sequence_id);
+                }
+            });
 
         entity
     }

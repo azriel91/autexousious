@@ -8,7 +8,7 @@ use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
     entity::{CharacterStatus, Kinematics},
-    loaded::{Character, CharacterHandle},
+    loaded::{AnimatedComponent, Character, CharacterHandle},
 };
 use object_play::CharacterSequenceUpdater;
 
@@ -18,6 +18,9 @@ use game_loading::AnimationRunner;
 #[derive(Debug, Default, TypeName, new)]
 pub(crate) struct CharacterSequenceUpdateSystem;
 
+type AnimationStorages<'s> =
+    (WriteStorage<'s, AnimationControlSet<CharacterSequenceId, SpriteRender>>,);
+
 type CharacterSequenceUpdateSystemData<'s> = (
     Entities<'s>,
     Read<'s, AssetStorage<Character>>,
@@ -26,7 +29,7 @@ type CharacterSequenceUpdateSystemData<'s> = (
     ReadStorage<'s, Kinematics<f32>>,
     WriteStorage<'s, CharacterStatus>,
     WriteStorage<'s, SpriteRender>,
-    WriteStorage<'s, AnimationControlSet<CharacterSequenceId, SpriteRender>>,
+    AnimationStorages<'s>,
 );
 
 impl<'s> System<'s> for CharacterSequenceUpdateSystem {
@@ -42,7 +45,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             kinematics_storage,
             mut character_status_storage,
             mut sprite_render_storage,
-            mut animation_control_set_storage,
+            (mut sprite_acs,),
         ): Self::SystemData,
     ) {
         for (
@@ -68,7 +71,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
 
             // TODO: Is it faster if we update the character statuses first, then calculate the
             // sequence updates in parallel?
-            let mut animation_set = get_animation_set(&mut animation_control_set_storage, entity)
+            let mut sprite_animation_set = get_animation_set(&mut sprite_acs, entity)
                 .expect("Animation should exist as entity should be valid.");
 
             // Mark sequence as `Ongoing` for subsequent tick.
@@ -77,7 +80,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             }
 
             let sequence_ended = {
-                animation_set
+                sprite_animation_set
                     .animations
                     .iter()
                     .find(|&&(ref id, ref _control)| {
@@ -99,24 +102,29 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             // TODO: Calculate a delta from the current status and update
             // Update the current sequence ID
             if let Some(next_sequence_id) = status_update.object_status.sequence_id {
-                let animation_handle = &character
+                let animations = &character
                     .object
                     .animations
                     .get(&next_sequence_id)
                     .unwrap_or_else(|| {
                         panic!(
-                            "Failed to get animation for sequence: `{:?}`",
+                            "Failed to get animations for sequence: `{:?}`",
                             next_sequence_id
                         )
-                    })
-                    .clone();
+                    });
 
-                AnimationRunner::swap(
-                    &mut animation_set,
-                    &animation_handle,
-                    character_status.object_status.sequence_id,
-                    next_sequence_id,
-                );
+                animations
+                    .iter()
+                    .for_each(|animated_component| match animated_component {
+                        AnimatedComponent::SpriteRender(ref handle) => {
+                            AnimationRunner::swap(
+                                &mut sprite_animation_set,
+                                handle,
+                                character_status.object_status.sequence_id,
+                                next_sequence_id,
+                            );
+                        }
+                    });
             }
 
             if let Some(mirrored) = status_update.object_status.mirrored {

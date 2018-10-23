@@ -14,6 +14,7 @@ use object_model::{
 use CharacterComponentStorages;
 use CharacterEntitySpawner;
 use GameLoadingStatus;
+use ObjectAnimationStorages;
 use ObjectComponentStorages;
 
 /// Spawns character entities based on the character selection.
@@ -28,7 +29,8 @@ type CharacterSelectionSpawningSystemData<'s> = (
     Entities<'s>,
     Read<'s, AssetStorage<Character>>,
     CharacterComponentStorages<'s>,
-    ObjectComponentStorages<'s, CharacterSequenceId>,
+    ObjectComponentStorages<'s>,
+    ObjectAnimationStorages<'s, CharacterSequenceId>,
     Write<'s, GameEntities>,
 );
 
@@ -46,6 +48,7 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             loaded_characters,
             mut character_component_storages,
             mut object_component_storages,
+            mut object_animation_storages,
             mut game_entities,
         ): Self::SystemData,
     ) {
@@ -85,6 +88,7 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
                     &object_spawning_resources,
                     &mut character_component_storages,
                     &mut object_component_storages,
+                    &mut object_animation_storages,
                     kinematics,
                     &slug_and_handle,
                     input_controlled,

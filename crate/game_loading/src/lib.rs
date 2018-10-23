@@ -46,7 +46,8 @@ pub use game_loading_state::GameLoadingState;
 pub(crate) use game_loading_status::GameLoadingStatus;
 pub use spawn::{
     CharacterComponentStorages, CharacterEntitySpawner, MapLayerComponentStorages,
-    MapLayerEntitySpawner, MapSpawningResources, ObjectComponentStorages, ObjectSpawningResources,
+    MapLayerEntitySpawner, MapSpawningResources, ObjectAnimationStorages, ObjectComponentStorages,
+    ObjectSpawningResources,
 };
 pub(crate) use system::{CharacterSelectionSpawningSystem, MapSelectionSpawningSystem};
 
