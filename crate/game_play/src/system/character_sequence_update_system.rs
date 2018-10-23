@@ -118,10 +118,10 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                     .for_each(|animated_component| match animated_component {
                         AnimatedComponent::SpriteRender(ref handle) => {
                             AnimationRunner::swap(
-                                &mut sprite_animation_set,
-                                handle,
                                 character_status.object_status.sequence_id,
                                 next_sequence_id,
+                                &mut sprite_animation_set,
+                                handle,
                             );
                         }
                     });

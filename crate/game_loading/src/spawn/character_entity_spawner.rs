@@ -169,7 +169,7 @@ impl CharacterEntitySpawner {
             .iter()
             .for_each(|animated_component| match animated_component {
                 AnimatedComponent::SpriteRender(ref handle) => {
-                    AnimationRunner::start(&mut sprite_animation_set, handle, first_sequence_id);
+                    AnimationRunner::start(first_sequence_id, &mut sprite_animation_set, handle);
                 }
             });
 
