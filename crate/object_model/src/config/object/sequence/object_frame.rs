@@ -12,7 +12,7 @@ use sprite_model::config::SpriteFrame;
 /// * **Spawning:** Spawning additional object(s).
 /// * **Weapon:** Where an active weapon should be.
 #[derive(Clone, Debug, Deserialize, PartialEq, new)]
-pub struct Frame {
+pub struct ObjectFrame {
     /// Hittable volume of the object.
     #[serde(flatten)]
     pub sprite: SpriteFrame,
@@ -21,7 +21,7 @@ pub struct Frame {
     pub collision: CollisionFrame,
 }
 
-impl AnimationFrame for Frame {
+impl AnimationFrame for ObjectFrame {
     fn texture_index(&self) -> usize {
         self.sprite.sheet
     }
