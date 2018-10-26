@@ -288,8 +288,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "animation_support"
 version = "0.7.0"
 dependencies = [
+ "amethyst 0.8.0 (git+https://github.com/amethyst/amethyst.git)",
  "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive_more 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "fnv 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "minterpolate 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "named_type 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "named_type_derive 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde 1.0.80 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_derive 1.0.80 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

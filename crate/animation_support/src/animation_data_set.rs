@@ -2,6 +2,7 @@ use std::fmt::Debug;
 use std::hash::Hash;
 
 use fnv::FnvHashMap;
+use named_type::NamedType;
 
 /// References to non-`Serializable` or `Copy` data used by animations.
 ///
@@ -9,7 +10,7 @@ use fnv::FnvHashMap;
 /// If you need to animate a `Component` that does not meet these bounds, you may use this set to
 /// store the data against an identifier such as `u64`. The `u64` can be used in the animation
 /// primitive, and the data looked up during sampling in the animation.
-#[derive(Debug, Default, new)]
+#[derive(Debug, Default, NamedType, new)]
 pub struct AnimationDataSet<I, D>
 where
     I: Clone + Copy + Debug + Hash + PartialEq + Eq,
