@@ -1,7 +1,7 @@
 use shape_model::Volume;
 
 /// Effects of one object on another
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, Hash, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Interaction {
     /// Basic physical attack.

@@ -1,5 +1,5 @@
 /// Axis to represent shape orientation.
-#[derive(Clone, Copy, Debug, Deserialize, Display, PartialEq, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Display, Hash, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Axis {
     /// X axis.

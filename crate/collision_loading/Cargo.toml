@@ -1,0 +1,17 @@
+[package]
+name = "collision_loading"
+version = "0.7.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+
+[dependencies]
+amethyst = { git = "https://github.com/amethyst/amethyst.git" }
+application = { path = "../application" }
+collision_model = { path = "../collision_model" }
+log = "0.4"
+shape_model = { path = "../shape_model" }
+
+[dev-dependencies]
+amethyst_test_support = { path = "../amethyst_test_support" }
+assets_test = { path = "../assets_test" }
+derive-new = "0.5"
+pretty_assertions = "0.5"

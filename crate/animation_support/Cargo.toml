@@ -1,0 +1,8 @@
+[package]
+name = "animation_support"
+version = "0.7.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+
+[dependencies]
+derive-new = "0.5"
+fnv = "1.0"

@@ -129,7 +129,7 @@ mod tests {
         ];
         let frames = vec![ObjectFrame::new(
             SpriteFrame::new(0, 0, 0),
-            CollisionFrame::new(Some(body_volumes), None),
+            CollisionFrame::new(Some(body_volumes), None, 0),
         )];
         let expected = Sequence::new(None, frames);
         assert_eq!(expected, sequence);
@@ -153,7 +153,7 @@ mod tests {
         }];
         let frames = vec![ObjectFrame::new(
             SpriteFrame::new(0, 0, 0),
-            CollisionFrame::new(None, Some(interactions)),
+            CollisionFrame::new(None, Some(interactions), 0),
         )];
         let expected = Sequence::new(None, frames);
         assert_eq!(expected, sequence);

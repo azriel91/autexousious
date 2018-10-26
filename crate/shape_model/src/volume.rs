@@ -1,7 +1,7 @@
 use Axis;
 
 /// Represents a volume
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Hash, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Volume {
     /// Useful for box shaped volumes.
