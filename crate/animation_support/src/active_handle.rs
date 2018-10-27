@@ -14,7 +14,7 @@ use ActiveHandlePrimitive;
 use AnimationDataSet;
 
 /// Wrapper `Component` to allow switching between memory-heavy data.
-#[derive(Debug, NamedType, new)]
+#[derive(Clone, Debug, NamedType, PartialEq, new)]
 pub struct ActiveHandle<I, T> {
     /// Handle of the component to use when no animations are running.
     pub rest: Handle<T>,
@@ -28,7 +28,7 @@ pub struct ActiveHandle<I, T> {
 impl<I, T> Component for ActiveHandle<I, T>
 where
     I: Clone + Copy + Debug + Display + Hash + PartialEq + Eq + Send + Sync + 'static,
-    T: Component + Clone + Debug + Send + Sync,
+    T: Clone + Debug + Send + Sync + 'static,
 {
     type Storage = DenseVecStorage<Self>;
 }
@@ -36,7 +36,7 @@ where
 impl<'s, I, T> ApplyData<'s> for ActiveHandle<I, T>
 where
     I: Clone + Copy + Debug + Display + Hash + PartialEq + Eq + Send + Sync + 'static,
-    T: Component + Clone + Debug + Send + Sync,
+    T: Clone + Debug + Send + Sync + 'static,
 {
     type ApplyData = ReadExpect<'s, AnimationDataSet<I, Handle<T>>>;
 }
@@ -44,7 +44,7 @@ where
 impl<I, T> AnimationSampling for ActiveHandle<I, T>
 where
     I: Clone + Copy + Debug + Display + Hash + PartialEq + Eq + Send + Sync + 'static,
-    T: Component + Clone + Debug + Send + Sync,
+    T: Clone + Debug + Send + Sync + 'static,
 {
     type Primitive = ActiveHandlePrimitive<I>;
     type Channel = ActiveHandleChannel;

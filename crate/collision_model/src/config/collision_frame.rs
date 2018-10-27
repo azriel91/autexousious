@@ -1,10 +1,9 @@
 use amethyst::{
-    animation::{AnimationSampling, ApplyData, BlendMethod},
-    ecs::prelude::{Component, ReadExpect, VecStorage},
+    assets::{Asset, Handle},
+    ecs::VecStorage,
 };
 use shape_model::Volume;
 
-use animation::{CollisionDataSet, CollisionFrameChannel, CollisionFramePrimitive};
 use config::Interaction;
 
 /// Frame for an interactable object.
@@ -22,65 +21,10 @@ pub struct CollisionFrame {
     pub wait: u32,
 }
 
-impl Component for &'static CollisionFrame {
-    type Storage = VecStorage<Self>;
-}
-
-impl<'s> ApplyData<'s> for &'static CollisionFrame {
-    type ApplyData = ReadExpect<'s, CollisionDataSet<'static>>;
-}
-
-impl AnimationSampling for &'static CollisionFrame {
-    type Primitive = CollisionFramePrimitive;
-    type Channel = CollisionFrameChannel;
-
-    fn apply_sample(
-        &mut self,
-        channel: &Self::Channel,
-        data: &Self::Primitive,
-        collision_data_set: &ReadExpect<CollisionDataSet<'static>>,
-    ) {
-        use animation::CollisionFrameChannel as Channel;
-        use animation::CollisionFramePrimitive as Primitive;
-
-        match (*channel, *data) {
-            (Channel::Frame, Primitive::Frame(id)) => {
-                *self = collision_data_set.data(id).unwrap_or_else(|| {
-                    panic!(
-                        "Unable to get `CollisionFrame` from `CollisionDataSet` with id: `{}`.",
-                        id
-                    )
-                })
-            }
-        }
-    }
-
-    fn current_sample(
-        &self,
-        channel: &Self::Channel,
-        collision_data_set: &ReadExpect<CollisionDataSet<'static>>,
-    ) -> Self::Primitive {
-        use animation::CollisionFrameChannel as Channel;
-        use animation::CollisionFramePrimitive as Primitive;
-
-        match *channel {
-            Channel::Frame => Primitive::Frame(collision_data_set.id(self).unwrap_or_else(|| {
-                panic!(
-                    "Unable to get `CollisionFrameId` from `CollisionDataSet`, \
-                     collision_frame: `{:?}`.",
-                    self
-                )
-            })),
-        }
-    }
-
-    fn default_primitive(_: &Self::Channel) -> Self::Primitive {
-        panic!("Blending is not applicable to CollisionFrame animation")
-    }
-
-    fn blend_method(&self, _: &Self::Channel) -> Option<BlendMethod> {
-        None
-    }
+impl Asset for CollisionFrame {
+    const NAME: &'static str = "collision_model::config::CollisionFrame";
+    type Data = Self;
+    type HandleStorage = VecStorage<Handle<Self>>;
 }
 
 #[cfg(test)]

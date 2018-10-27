@@ -3,7 +3,8 @@ use std::fmt::Display;
 
 use minterpolate::InterpolationPrimitive;
 
-/// Sampler primitive for ActiveHandle animations
+/// Sampler primitive for `ActiveHandle` animations.
+///
 /// Note that sprites can only ever be animated with `Step`, or a panic will occur.
 #[derive(Clone, Copy, Debug, Display, PartialEq, Serialize, Deserialize)]
 pub enum ActiveHandlePrimitive<I>

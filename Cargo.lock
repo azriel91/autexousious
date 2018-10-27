@@ -866,11 +866,11 @@ version = "0.7.0"
 dependencies = [
  "amethyst 0.8.0 (git+https://github.com/amethyst/amethyst.git)",
  "amethyst_test_support 0.6.0",
+ "animation_support 0.7.0",
  "application 0.6.0",
  "assets_test 0.6.0",
  "collision_model 0.6.0",
  "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
- "log 0.4.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "pretty_assertions 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "shape_model 0.6.0",
 ]

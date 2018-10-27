@@ -3,7 +3,7 @@ use std::hash::Hash;
 
 use shape_model::Volume;
 
-use config::{CollisionFrame, Interaction};
+use collision_model::config::{CollisionFrame, Interaction};
 
 /// Information for a single animation frame.
 ///

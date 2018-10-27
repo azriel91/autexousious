@@ -6,9 +6,11 @@ use amethyst::{
     assets::Loader,
     prelude::*,
 };
+use animation_support::{ActiveHandleChannel, ActiveHandlePrimitive};
 use collision_model::{
     animation::{
-        CollisionAnimationHandle, CollisionDataSet, CollisionFrameChannel, CollisionFramePrimitive,
+        CollisionAnimationHandle, CollisionDataSet, CollisionFrameActiveHandle,
+        CollisionFramePrimitive,
     },
     config::CollisionFrame,
 };
@@ -117,7 +119,7 @@ impl CollisionAnimationLoader {
         world: &World,
         frame_index_offset: u64,
         sequence: &Sequence,
-    ) -> Animation<&'static CollisionFrame> {
+    ) -> Animation<CollisionFrameActiveHandle> {
         let frames = sequence.frames();
         let mut input = Vec::with_capacity(frames.len() + 1);
         let mut tick_counter = 0.;
@@ -133,7 +135,7 @@ impl CollisionAnimationLoader {
         let frame_sampler_handle = loader.load_from_data(frame_sampler, (), &world.read_resource());
 
         Animation {
-            nodes: vec![(0, CollisionFrameChannel::Frame, frame_sampler_handle)],
+            nodes: vec![(0, ActiveHandleChannel::Handle, frame_sampler_handle)],
         }
     }
 
@@ -146,7 +148,6 @@ impl CollisionAnimationLoader {
         sequence: &Sequence,
         input: Vec<f32>,
     ) -> Sampler<CollisionFramePrimitive> {
-        // TODO: CollisionDataSet.insert(id, &frame)
         let frame_count = sequence.frames().len();
         let mut collision_data_set = world.write_resource::<CollisionDataSet>();
         let mut output = Vec::with_capacity(frame_count);
@@ -157,8 +158,21 @@ impl CollisionAnimationLoader {
             .for_each(|(frame_index, frame)| {
                 let id = frame_index_offset + frame_index as u64;
 
-                collision_data_set.insert(id.into(), &frame);
-                output.push(CollisionFramePrimitive::Frame(id.into()));
+                // TODO: load `CollisionFrame`s and pass `Handle`s in.
+                let loader = world.read_resource::<Loader>();
+                let store = world.read_resource();
+                let handle = loader.load_from_data(
+                    CollisionFrame::new(
+                        frame.body().map(Clone::clone),
+                        frame.interactions().map(Clone::clone),
+                        frame.wait(),
+                    ),
+                    (),
+                    &store,
+                );
+
+                collision_data_set.insert(id.into(), handle);
+                output.push(ActiveHandlePrimitive::Handle(id.into()));
             });
         let final_key_frame = output.last().cloned();
         if final_key_frame.is_some() {
@@ -184,10 +198,11 @@ mod test {
         prelude::*,
     };
     use amethyst_test_support::prelude::*;
+    use animation_support::{ActiveHandleChannel, ActiveHandlePrimitive};
     use collision_model::{
         animation::{
-            CollisionAnimationHandle, CollisionDataSet, CollisionFrameChannel, CollisionFrameId,
-            CollisionFramePrimitive,
+            CollisionAnimationHandle, CollisionDataSet, CollisionFrameActiveHandle,
+            CollisionFrameId, CollisionFramePrimitive,
         },
         config::{CollisionFrame, Interaction},
     };
@@ -217,7 +232,10 @@ mod test {
         assert!(
             // kcov-ignore-end
             AmethystApplication::render_base("loads_collision_animations_into_map", false)
-                .with_bundle(AnimationBundle::<CollisionFrameId, &CollisionFrame>::new(
+                .with_bundle(AnimationBundle::<
+                    CollisionFrameId,
+                    CollisionFrameActiveHandle,
+                >::new(
                     "collision_animation_control_system",
                     "collision_sampler_interpolation_system",
                 ))
@@ -254,7 +272,10 @@ mod test {
         assert!(
             // kcov-ignore-end
             AmethystApplication::render_base("loads_collision_animations_into_vec", false)
-                .with_bundle(AnimationBundle::<CollisionFrameId, &CollisionFrame>::new(
+                .with_bundle(AnimationBundle::<
+                    CollisionFrameId,
+                    CollisionFrameActiveHandle,
+                >::new(
                     "collision_animation_control_system",
                     "collision_sampler_interpolation_system",
                 ))
@@ -270,7 +291,8 @@ mod test {
         assert!(animation_handle.is_some());
 
         let animation_handle = animation_handle.unwrap();
-        let animation_store = world.read_resource::<AssetStorage<Animation<&CollisionFrame>>>();
+        let animation_store =
+            world.read_resource::<AssetStorage<Animation<CollisionFrameActiveHandle>>>();
         let animation = animation_store.get(animation_handle);
         assert!(animation.is_some());
 
@@ -279,7 +301,7 @@ mod test {
 
         let node_0 = &animation.nodes[0];
         assert_eq!(0, node_0.0);
-        assert_eq!(CollisionFrameChannel::Frame, node_0.1);
+        assert_eq!(ActiveHandleChannel::Handle, node_0.1);
 
         // Verify animation samplers
         let frame_sampler_handle = &node_0.2;
@@ -292,10 +314,10 @@ mod test {
         assert_eq!(vec![0.0, 1.0, 4.0, 6.0], frame_sampler.input);
         assert_eq!(
             vec![
-                CollisionFramePrimitive::Frame(10.into()),
-                CollisionFramePrimitive::Frame(11.into()),
-                CollisionFramePrimitive::Frame(12.into()),
-                CollisionFramePrimitive::Frame(12.into()),
+                ActiveHandlePrimitive::Handle(10.into()),
+                ActiveHandlePrimitive::Handle(11.into()),
+                ActiveHandlePrimitive::Handle(12.into()),
+                ActiveHandlePrimitive::Handle(12.into()),
             ],
             frame_sampler.output
         );

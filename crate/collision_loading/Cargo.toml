@@ -5,9 +5,9 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git" }
+animation_support = { path = "../animation_support" }
 application = { path = "../application" }
 collision_model = { path = "../collision_model" }
-log = "0.4"
 shape_model = { path = "../shape_model" }
 
 [dev-dependencies]

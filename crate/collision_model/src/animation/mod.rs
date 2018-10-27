@@ -63,12 +63,12 @@
 
 pub use self::collision_animation_handle::CollisionAnimationHandle;
 pub use self::collision_data_set::CollisionDataSet;
-pub use self::collision_frame_channel::CollisionFrameChannel;
+pub use self::collision_frame_active_handle::CollisionFrameActiveHandle;
 pub use self::collision_frame_id::CollisionFrameId;
 pub use self::collision_frame_primitive::CollisionFramePrimitive;
 
 mod collision_animation_handle;
 mod collision_data_set;
-mod collision_frame_channel;
+mod collision_frame_active_handle;
 mod collision_frame_id;
 mod collision_frame_primitive;

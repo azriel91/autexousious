@@ -6,6 +6,7 @@
 extern crate amethyst;
 #[cfg(test)]
 extern crate amethyst_test_support;
+extern crate animation_support;
 extern crate application;
 #[cfg(test)]
 extern crate assets_test;
@@ -13,8 +14,6 @@ extern crate collision_model;
 #[cfg(test)]
 #[macro_use]
 extern crate derive_new;
-#[macro_use]
-extern crate log;
 #[cfg(test)]
 #[macro_use]
 extern crate pretty_assertions;
