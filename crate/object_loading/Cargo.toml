@@ -6,6 +6,8 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 application = { path = "../application" }
+collision_loading = { path = "../collision_loading" }
+collision_model = { path = "../collision_model" }
 derive-new = "0.5"
 game_model = { path = "../game_model" }
 log = "0.4"

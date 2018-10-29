@@ -1,5 +1,6 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
 use character_selection_model::CharacterSelections;
+use collision_model::{animation::CollisionFrameId, config::CollisionFrame};
 use game_input::InputControlled;
 use game_model::play::GameEntities;
 use map_model::loaded::Map;
@@ -29,7 +30,7 @@ type CharacterSelectionSpawningSystemData<'s> = (
     Read<'s, AssetStorage<Map>>,
     ObjectSpawningResources<'s, Character>,
     CharacterComponentStorages<'s>,
-    ObjectComponentStorages<'s>,
+    ObjectComponentStorages<'s, CollisionFrameId, CollisionFrame>,
     ObjectAnimationStorages<'s, CharacterSequenceId>,
     Write<'s, GameEntities>,
 );
@@ -204,14 +205,12 @@ mod tests {
                 &[],
             )
             .with_assertion(|world| {
-                assert!(
-                    !world
-                        .read_resource::<GameEntities>()
-                        .objects
-                        .get(&ObjectType::Character)
-                        .expect("Expected `ObjectType::Character` key in `GameEntities`.")
-                        .is_empty()
-                );
+                assert!(!world
+                    .read_resource::<GameEntities>()
+                    .objects
+                    .get(&ObjectType::Character)
+                    .expect("Expected `ObjectType::Character` key in `GameEntities`.")
+                    .is_empty());
                 assert!(world.read_resource::<GameLoadingStatus>().characters_loaded);
             })
             .run()

@@ -11,6 +11,7 @@ pub use self::object_frame::ObjectFrame;
 pub use self::sequence_id::SequenceId;
 pub use self::sequence_state::SequenceState;
 
+use collision_loading::CollisionAnimationSequence;
 use sprite_loading::AnimationSequence;
 
 mod object_frame;
@@ -33,6 +34,13 @@ pub struct Sequence<SeqId: SequenceId> {
 }
 
 impl<SeqId: SequenceId> AnimationSequence for Sequence<SeqId> {
+    type Frame = ObjectFrame;
+    fn frames(&self) -> &[ObjectFrame] {
+        &self.frames
+    }
+}
+
+impl<SeqId: SequenceId> CollisionAnimationSequence for Sequence<SeqId> {
     type Frame = ObjectFrame;
     fn frames(&self) -> &[ObjectFrame] {
         &self.frames

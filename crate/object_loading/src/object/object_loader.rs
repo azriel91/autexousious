@@ -2,6 +2,8 @@ use std::collections::HashMap;
 
 use amethyst::{prelude::*, renderer::SpriteSheetSet};
 use application::Result;
+use collision_loading::CollisionAnimationLoader;
+use collision_model::animation::CollisionDataSet;
 use game_model::config::AssetRecord;
 use object_model::{
     config::{object::SequenceId, ObjectDefinition},
@@ -27,6 +29,7 @@ impl ObjectLoader {
         object_definition: &ObjectDefinition<SeqId>,
     ) -> Result<Object<SeqId>> {
         let sprite_sheet_index_offset = world.read_resource::<SpriteSheetSet>().len() as u64;
+        let collision_frame_offset = world.read_resource::<CollisionDataSet>().len() as u64;
 
         debug!("Loading object assets in `{}`", asset_record.path.display());
 
@@ -37,14 +40,32 @@ impl ObjectLoader {
             .next()
             .expect("Expected character to have at least one sprite sheet.");
 
-        let animations = SpriteRenderAnimationLoader::load_into_map(
+        let mut sprite_render_animations = SpriteRenderAnimationLoader::load_into_map(
             world,
             &object_definition.sequences,
             sprite_sheet_index_offset,
-        )
-        .into_iter()
-        .map(|(id, handle)| (id, vec![AnimatedComponent::SpriteRender(handle)]))
-        .collect::<HashMap<_, _>>();
+        );
+        let mut collision_frame_animations = CollisionAnimationLoader::load_into_map(
+            world,
+            &object_definition.sequences,
+            collision_frame_offset,
+        );
+
+        let animations = object_definition
+            .sequences
+            .keys()
+            .map(move |sequence_id| {
+                let mut animations = Vec::new();
+                if let Some(sprite_render) = sprite_render_animations.remove(sequence_id) {
+                    animations.push(AnimatedComponent::SpriteRender(sprite_render));
+                }
+                if let Some(collision_frame) = collision_frame_animations.remove(sequence_id) {
+                    animations.push(AnimatedComponent::Collision(collision_frame));
+                }
+
+                (*sequence_id, animations)
+            })
+            .collect::<HashMap<_, _>>();
 
         Ok(Object::new(sprite_sheet_handle, animations))
     }

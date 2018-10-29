@@ -11,6 +11,7 @@ extern crate application_robot;
 extern crate application_state;
 extern crate application_ui;
 extern crate character_selection_stdio;
+extern crate collision_model;
 extern crate game_input;
 extern crate game_mode_selection;
 extern crate game_mode_selection_stdio;
@@ -50,6 +51,7 @@ use application_event::{AppEvent, AppEventReader};
 use application_robot::RobotState;
 use application_state::{HookFn, HookableFn};
 use character_selection_stdio::CharacterSelectionStdioBundle;
+use collision_model::animation::CollisionFrameActiveHandle;
 use game_input::{GameInputBundle, InputConfig, PlayerActionControl, PlayerAxisControl};
 use game_mode_selection::{GameModeSelectionStateBuilder, GameModeSelectionStateDelegate};
 use game_mode_selection_stdio::GameModeSelectionStdioBundle;
@@ -126,22 +128,38 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         // `InputBundle` provides `InputHandler<A, B>`, needed by the `UiBundle` for mouse events.
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
         game_data = game_data
-            // Object sprite animations.
+            // === Animation bundles === //
+            //
+            // Shorthand:
+            //
+            // * `acs`: animation control system
+            // * `sis`: sampler_interpolation_system
+            //
+            // Object/Character animations
             .with_bundle(AnimationBundle::<CharacterSequenceId, SpriteRender>::new(
-                "character_animation_control_system",
-                "character_sampler_interpolation_system",
+                "character_sprite_acs",
+                "character_sprite_sis",
+            ))?
+            .with_bundle(AnimationBundle::<
+                CharacterSequenceId,
+                CollisionFrameActiveHandle,
+            >::new(
+                "character_collision_frame_acs",
+                "character_collision_frame_sis",
             ))?
             // Used for map layer animations.
             .with_bundle(AnimationBundle::<u32, SpriteRender>::new(
-                "animation_control_system",
-                "sampler_interpolation_system",
+                "map_layer_sprite_acs",
+                "map_layer_sprite_sis",
             ))?
             // Handles transformations of textures
             .with_bundle(TransformBundle::new().with_dep(&[
-                "character_animation_control_system",
-                "character_sampler_interpolation_system",
-                "animation_control_system",
-                "sampler_interpolation_system",
+                "character_sprite_acs",
+                "character_sprite_sis",
+                "character_collision_frame_acs",
+                "character_collision_frame_sis",
+                "map_layer_sprite_acs",
+                "map_layer_sprite_sis",
             ]))?
             .with_bundle(
                 RenderBundle::new(pipe, Some(display_config))

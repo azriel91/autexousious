@@ -10,6 +10,7 @@
 extern crate amethyst;
 #[cfg(test)]
 extern crate amethyst_test_support;
+extern crate animation_support;
 extern crate application_event;
 extern crate application_state;
 #[cfg(test)]

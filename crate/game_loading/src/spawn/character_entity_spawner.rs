@@ -5,7 +5,10 @@ use amethyst::{
     ecs::{prelude::*, world::EntitiesRes},
     renderer::{SpriteRender, Transparent},
 };
-use collision_model::animation::CollisionFrameActiveHandle;
+use collision_model::{
+    animation::{CollisionFrameActiveHandle, CollisionFrameId},
+    config::CollisionFrame,
+};
 use game_input::{ControllerInput, InputControlled};
 use game_model::loaded::SlugAndHandle;
 use object_model::{
@@ -56,6 +59,7 @@ impl CharacterEntitySpawner {
                 world.write_storage::<Transparent>(),
                 world.write_storage::<Kinematics<f32>>(),
                 world.write_storage::<Transform>(),
+                world.write_storage::<CollisionFrameActiveHandle>(),
             ), // kcov-ignore
             &mut (
                 world.write_storage::<SpriteRenderAcs<CharacterSequenceId>>(),
@@ -90,7 +94,8 @@ impl CharacterEntitySpawner {
             ref mut transparent_storage,
             ref mut kinematics_storage,
             ref mut transform_storage,
-        ): &mut ObjectComponentStorages<'s>,
+            ref mut collision_frame_active_handle_storage,
+        ): &mut ObjectComponentStorages<'s, CollisionFrameId, CollisionFrame>,
         (ref mut sprite_acs, ref mut collision_acs): &mut ObjectAnimationStorages<
             's,
             CharacterSequenceId,
@@ -207,6 +212,7 @@ mod test {
     use amethyst_test_support::prelude::*;
     use application_event::{AppEvent, AppEventReader};
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
+    use collision_model::{animation::CollisionFrameId, config::CollisionFrame};
     use game_input::{ControllerInput, InputControlled};
     use game_model::loaded::SlugAndHandle;
     use loading::LoadingState;
@@ -278,7 +284,7 @@ mod test {
     type TestSystemData<'s> = (
         CharacterComponentStorages<'s>,
         ObjectAnimationStorages<'s, CharacterSequenceId>,
-        ObjectComponentStorages<'s>,
+        ObjectComponentStorages<'s, CollisionFrameId, CollisionFrame>,
         ObjectSpawningResources<'s, Character>,
         Read<'s, AssetStorage<Map>>,
     );
