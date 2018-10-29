@@ -123,7 +123,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                                 handle,
                             );
                         }
-                        AnimatedComponentAnimation::Collision(ref handle) => {
+                        AnimatedComponentAnimation::CollisionFrame(ref handle) => {
                             AnimationRunner::swap(
                                 character_status.object_status.sequence_id,
                                 next_sequence_id,

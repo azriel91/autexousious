@@ -6,6 +6,6 @@ use sprite_loading::SpriteAnimationHandle;
 pub enum AnimatedComponentAnimation {
     /// Sprites.
     SpriteRender(SpriteAnimationHandle),
-    /// Collision
-    Collision(CollisionAnimationHandle),
+    /// Collision.
+    CollisionFrame(CollisionAnimationHandle),
 }

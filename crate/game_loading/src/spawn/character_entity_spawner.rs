@@ -194,7 +194,7 @@ impl CharacterEntitySpawner {
                 AnimatedComponentAnimation::SpriteRender(ref handle) => {
                     AnimationRunner::start(first_sequence_id, &mut sprite_animation_set, handle);
                 }
-                AnimatedComponentAnimation::Collision(ref handle) => {
+                AnimatedComponentAnimation::CollisionFrame(ref handle) => {
                     AnimationRunner::start(first_sequence_id, &mut collision_animation_set, handle);
                 }
             });

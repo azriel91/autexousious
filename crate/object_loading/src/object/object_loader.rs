@@ -60,7 +60,7 @@ impl ObjectLoader {
                     animations.push(AnimatedComponentAnimation::SpriteRender(sprite_render));
                 }
                 if let Some(collision_frame) = collision_frame_animations.remove(sequence_id) {
-                    animations.push(AnimatedComponentAnimation::Collision(collision_frame));
+                    animations.push(AnimatedComponentAnimation::CollisionFrame(collision_frame));
                 }
 
                 (*sequence_id, animations)
