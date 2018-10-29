@@ -1,10 +1,11 @@
 use amethyst::{
-    animation::{get_animation_set, AnimationControlSet},
+    animation::get_animation_set,
     assets::AssetStorage,
     core::{cgmath::Vector3, transform::Transform},
     ecs::{prelude::*, world::EntitiesRes},
     renderer::{SpriteRender, Transparent},
 };
+use collision_model::animation::CollisionFrameActiveHandle;
 use game_input::{ControllerInput, InputControlled};
 use game_model::loaded::SlugAndHandle;
 use object_model::{
@@ -15,9 +16,11 @@ use object_model::{
 
 use AnimationRunner;
 use CharacterComponentStorages;
+use CollisionAcs;
 use ObjectAnimationStorages;
 use ObjectComponentStorages;
 use ObjectSpawningResources;
+use SpriteRenderAcs;
 
 /// Spawns character entities into the world.
 #[derive(Debug)]
@@ -54,7 +57,10 @@ impl CharacterEntitySpawner {
                 world.write_storage::<Kinematics<f32>>(),
                 world.write_storage::<Transform>(),
             ), // kcov-ignore
-            &mut (world.write_storage::<AnimationControlSet<CharacterSequenceId, SpriteRender>>(),),
+            &mut (
+                world.write_storage::<SpriteRenderAcs<CharacterSequenceId>>(),
+                world.write_storage::<CollisionAcs<CharacterSequenceId>>(),
+            ),
             kinematics,
             slug_and_handle,
             input_controlled,
@@ -85,7 +91,10 @@ impl CharacterEntitySpawner {
             ref mut kinematics_storage,
             ref mut transform_storage,
         ): &mut ObjectComponentStorages<'s>,
-        (ref mut sprite_acs,): &mut ObjectAnimationStorages<'s, CharacterSequenceId>,
+        (ref mut sprite_acs, ref mut collision_acs): &mut ObjectAnimationStorages<
+            's,
+            CharacterSequenceId,
+        >,
         kinematics: Kinematics<f32>,
         slug_and_handle: &SlugAndHandle<Character>,
         input_controlled: InputControlled,
@@ -164,12 +173,20 @@ impl CharacterEntitySpawner {
         let mut sprite_animation_set =
             get_animation_set::<CharacterSequenceId, SpriteRender>(sprite_acs, entity)
                 .expect("Animation should exist as new entity should be valid.");
+        let mut collision_animation_set = get_animation_set::<
+            CharacterSequenceId,
+            CollisionFrameActiveHandle,
+        >(collision_acs, entity)
+        .expect("Animation should exist as new entity should be valid.");
 
         animations
             .iter()
             .for_each(|animated_component| match animated_component {
                 AnimatedComponent::SpriteRender(ref handle) => {
                     AnimationRunner::start(first_sequence_id, &mut sprite_animation_set, handle);
+                }
+                AnimatedComponent::Collision(ref handle) => {
+                    AnimationRunner::start(first_sequence_id, &mut collision_animation_set, handle);
                 }
             });
 

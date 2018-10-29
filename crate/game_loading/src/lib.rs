@@ -17,6 +17,7 @@ extern crate asset_loading;
 #[cfg(test)]
 extern crate assets_test;
 extern crate character_selection_model;
+extern crate collision_model;
 #[macro_use]
 extern crate derivative;
 #[macro_use]
@@ -46,9 +47,9 @@ pub use game_loading_state::GameLoadingState;
 pub(crate) use game_loading_status::GameLoadingStatus;
 pub use multi_animation_runner::MultiAnimationRunner;
 pub use spawn::{
-    CharacterComponentStorages, CharacterEntitySpawner, MapLayerComponentStorages,
+    CharacterComponentStorages, CharacterEntitySpawner, CollisionAcs, MapLayerComponentStorages,
     MapLayerEntitySpawner, MapSpawningResources, ObjectAnimationStorages, ObjectComponentStorages,
-    ObjectSpawningResources,
+    ObjectSpawningResources, SpriteRenderAcs,
 };
 pub(crate) use system::{CharacterSelectionSpawningSystem, MapSelectionSpawningSystem};
 

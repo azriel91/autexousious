@@ -1,5 +1,5 @@
 use amethyst::{
-    animation::{get_animation_set, AnimationControlSet, ControlState},
+    animation::{get_animation_set, ControlState},
     assets::AssetStorage,
     ecs::prelude::*,
     renderer::SpriteRender,
@@ -12,14 +12,11 @@ use object_model::{
 };
 use object_play::CharacterSequenceUpdater;
 
-use game_loading::AnimationRunner;
+use game_loading::{AnimationRunner, ObjectAnimationStorages};
 
 /// Updates `Character` sequence based on input
 #[derive(Debug, Default, TypeName, new)]
 pub(crate) struct CharacterSequenceUpdateSystem;
-
-type AnimationStorages<'s> =
-    (WriteStorage<'s, AnimationControlSet<CharacterSequenceId, SpriteRender>>,);
 
 type CharacterSequenceUpdateSystemData<'s> = (
     Entities<'s>,
@@ -29,7 +26,7 @@ type CharacterSequenceUpdateSystemData<'s> = (
     ReadStorage<'s, Kinematics<f32>>,
     WriteStorage<'s, CharacterStatus>,
     WriteStorage<'s, SpriteRender>,
-    AnimationStorages<'s>,
+    ObjectAnimationStorages<'s, CharacterSequenceId>,
 );
 
 impl<'s> System<'s> for CharacterSequenceUpdateSystem {
@@ -45,7 +42,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             kinematics_storage,
             mut character_status_storage,
             mut sprite_render_storage,
-            (mut sprite_acs,),
+            (mut sprite_acs, mut collision_acs),
         ): Self::SystemData,
     ) {
         for (
@@ -72,6 +69,8 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             // TODO: Is it faster if we update the character statuses first, then calculate the
             // sequence updates in parallel?
             let mut sprite_animation_set = get_animation_set(&mut sprite_acs, entity)
+                .expect("Animation should exist as entity should be valid.");
+            let mut collision_animation_set = get_animation_set(&mut collision_acs, entity)
                 .expect("Animation should exist as entity should be valid.");
 
             // Mark sequence as `Ongoing` for subsequent tick.
@@ -121,6 +120,14 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                                 character_status.object_status.sequence_id,
                                 next_sequence_id,
                                 &mut sprite_animation_set,
+                                handle,
+                            );
+                        }
+                        AnimatedComponent::Collision(ref handle) => {
+                            AnimationRunner::swap(
+                                character_status.object_status.sequence_id,
+                                next_sequence_id,
+                                &mut collision_animation_set,
                                 handle,
                             );
                         }

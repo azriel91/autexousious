@@ -1,5 +1,5 @@
 use amethyst::{
-    assets::{Asset, Handle},
+    assets::{Asset, Handle, ProcessingState, Result as AssetsResult},
     ecs::VecStorage,
 };
 use shape_model::Volume;
@@ -25,6 +25,12 @@ impl Asset for CollisionFrame {
     const NAME: &'static str = "collision_model::config::CollisionFrame";
     type Data = Self;
     type HandleStorage = VecStorage<Handle<Self>>;
+}
+
+impl From<CollisionFrame> for AssetsResult<ProcessingState<CollisionFrame>> {
+    fn from(collision_frame: CollisionFrame) -> AssetsResult<ProcessingState<CollisionFrame>> {
+        Ok(ProcessingState::Loaded(collision_frame))
+    }
 }
 
 #[cfg(test)]

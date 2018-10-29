@@ -11,7 +11,6 @@ extern crate application;
 #[cfg(test)]
 extern crate assets_test;
 extern crate collision_model;
-#[cfg(test)]
 #[macro_use]
 extern crate derive_new;
 #[cfg(test)]
@@ -22,5 +21,7 @@ extern crate shape_model;
 pub use animation::{
     CollisionAnimationFrame, CollisionAnimationLoader, CollisionAnimationSequence,
 };
+pub use collision_loading_bundle::CollisionLoadingBundle;
 
 mod animation;
+mod collision_loading_bundle;

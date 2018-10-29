@@ -1527,6 +1527,7 @@ dependencies = [
  "asset_loading 0.6.0",
  "assets_test 0.6.0",
  "character_selection_model 0.6.0",
+ "collision_model 0.6.0",
  "derivative 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input 0.6.0",

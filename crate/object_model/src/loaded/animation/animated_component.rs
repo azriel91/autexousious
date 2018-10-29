@@ -1,3 +1,4 @@
+use collision_model::animation::CollisionAnimationHandle;
 use sprite_loading::SpriteAnimationHandle;
 
 /// Animated components of an object.
@@ -5,4 +6,6 @@ use sprite_loading::SpriteAnimationHandle;
 pub enum AnimatedComponent {
     /// Sprites.
     SpriteRender(SpriteAnimationHandle),
+    /// Collision
+    Collision(CollisionAnimationHandle),
 }

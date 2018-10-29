@@ -202,13 +202,14 @@ mod test {
     use collision_model::{
         animation::{
             CollisionAnimationHandle, CollisionDataSet, CollisionFrameActiveHandle,
-            CollisionFrameId, CollisionFramePrimitive,
+            CollisionFramePrimitive,
         },
         config::{CollisionFrame, Interaction},
     };
 
     use super::CollisionAnimationLoader;
     use CollisionAnimationSequence;
+    use CollisionLoadingBundle;
 
     #[test]
     fn loads_collision_animations_into_map() {
@@ -232,13 +233,11 @@ mod test {
         assert!(
             // kcov-ignore-end
             AmethystApplication::render_base("loads_collision_animations_into_map", false)
-                .with_bundle(AnimationBundle::<
-                    CollisionFrameId,
-                    CollisionFrameActiveHandle,
-                >::new(
+                .with_bundle(AnimationBundle::<u32, CollisionFrameActiveHandle>::new(
                     "collision_animation_control_system",
                     "collision_sampler_interpolation_system",
                 ))
+                .with_bundle(CollisionLoadingBundle::new())
                 .with_resource(CollisionDataSet::new())
                 .with_effect(effect)
                 .with_assertion(assertion)
@@ -272,13 +271,11 @@ mod test {
         assert!(
             // kcov-ignore-end
             AmethystApplication::render_base("loads_collision_animations_into_vec", false)
-                .with_bundle(AnimationBundle::<
-                    CollisionFrameId,
-                    CollisionFrameActiveHandle,
-                >::new(
+                .with_bundle(AnimationBundle::<u32, CollisionFrameActiveHandle>::new(
                     "collision_animation_control_system",
                     "collision_sampler_interpolation_system",
                 ))
+                .with_bundle(CollisionLoadingBundle::new())
                 .with_resource(CollisionDataSet::new())
                 .with_effect(effect)
                 .with_assertion(assertion)
