@@ -8,7 +8,7 @@ use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
     entity::{CharacterStatus, Kinematics},
-    loaded::{AnimatedComponent, Character, CharacterHandle},
+    loaded::{AnimatedComponentAnimation, Character, CharacterHandle},
 };
 use object_play::CharacterSequenceUpdater;
 
@@ -115,7 +115,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                 animations
                     .iter()
                     .for_each(|animated_component| match animated_component {
-                        AnimatedComponent::SpriteRender(ref handle) => {
+                        AnimatedComponentAnimation::SpriteRender(ref handle) => {
                             AnimationRunner::swap(
                                 character_status.object_status.sequence_id,
                                 next_sequence_id,
@@ -123,7 +123,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                                 handle,
                             );
                         }
-                        AnimatedComponent::Collision(ref handle) => {
+                        AnimatedComponentAnimation::Collision(ref handle) => {
                             AnimationRunner::swap(
                                 character_status.object_status.sequence_id,
                                 next_sequence_id,

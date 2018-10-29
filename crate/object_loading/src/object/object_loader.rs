@@ -7,7 +7,7 @@ use collision_model::animation::CollisionDataSet;
 use game_model::config::AssetRecord;
 use object_model::{
     config::{object::SequenceId, ObjectDefinition},
-    loaded::{AnimatedComponent, Object},
+    loaded::{AnimatedComponentAnimation, Object},
 };
 use sprite_loading::{SpriteLoader, SpriteRenderAnimationLoader};
 
@@ -57,10 +57,10 @@ impl ObjectLoader {
             .map(move |sequence_id| {
                 let mut animations = Vec::new();
                 if let Some(sprite_render) = sprite_render_animations.remove(sequence_id) {
-                    animations.push(AnimatedComponent::SpriteRender(sprite_render));
+                    animations.push(AnimatedComponentAnimation::SpriteRender(sprite_render));
                 }
                 if let Some(collision_frame) = collision_frame_animations.remove(sequence_id) {
-                    animations.push(AnimatedComponent::Collision(collision_frame));
+                    animations.push(AnimatedComponentAnimation::Collision(collision_frame));
                 }
 
                 (*sequence_id, animations)

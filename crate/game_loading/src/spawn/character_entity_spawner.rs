@@ -14,7 +14,7 @@ use game_model::loaded::SlugAndHandle;
 use object_model::{
     config::object::CharacterSequenceId,
     entity::{CharacterStatus, Kinematics},
-    loaded::{AnimatedComponent, Character, CharacterHandle},
+    loaded::{AnimatedComponentAnimation, Character, CharacterHandle},
 };
 
 use AnimationRunner;
@@ -173,6 +173,10 @@ impl CharacterEntitySpawner {
         transform_storage
             .insert(entity, transform)
             .expect("Failed to insert transform component.");
+        // Default collision active handle
+        collision_frame_active_handle_storage
+            .insert(entity, CollisionFrameActiveHandle::new())
+            .expect("Failed to insert collision_frame_active_handle component.");
 
         // We also need to trigger the animation, not just attach it to the entity
         let mut sprite_animation_set =
@@ -187,10 +191,10 @@ impl CharacterEntitySpawner {
         animations
             .iter()
             .for_each(|animated_component| match animated_component {
-                AnimatedComponent::SpriteRender(ref handle) => {
+                AnimatedComponentAnimation::SpriteRender(ref handle) => {
                     AnimationRunner::start(first_sequence_id, &mut sprite_animation_set, handle);
                 }
-                AnimatedComponent::Collision(ref handle) => {
+                AnimatedComponentAnimation::Collision(ref handle) => {
                     AnimationRunner::start(first_sequence_id, &mut collision_animation_set, handle);
                 }
             });
