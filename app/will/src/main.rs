@@ -11,6 +11,7 @@ extern crate application_robot;
 extern crate application_state;
 extern crate application_ui;
 extern crate character_selection_stdio;
+extern crate collision_loading;
 extern crate collision_model;
 extern crate game_input;
 extern crate game_mode_selection;
@@ -51,6 +52,7 @@ use application_event::{AppEvent, AppEventReader};
 use application_robot::RobotState;
 use application_state::{HookFn, HookableFn};
 use character_selection_stdio::CharacterSelectionStdioBundle;
+use collision_loading::CollisionLoadingBundle;
 use collision_model::animation::CollisionFrameActiveHandle;
 use game_input::{GameInputBundle, InputConfig, PlayerActionControl, PlayerAxisControl};
 use game_mode_selection::{GameModeSelectionStateBuilder, GameModeSelectionStateDelegate};
@@ -176,6 +178,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(CharacterSelectionStdioBundle::new())?
             .with_bundle(GameModeSelectionStdioBundle::new())?
             .with_bundle(MapSelectionStdioBundle::new())?
+            .with_bundle(CollisionLoadingBundle::new())?
             .with_bundle(MapLoadingBundle::new())?
             .with_bundle(ObjectLoadingBundle::new())?;
     }

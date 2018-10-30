@@ -98,7 +98,6 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                 &kinematics,
             );
 
-            // TODO: Calculate a delta from the current status and update
             // Update the current sequence ID
             if let Some(next_sequence_id) = status_update.object_status.sequence_id {
                 let animations = &character

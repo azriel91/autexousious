@@ -8,8 +8,6 @@ extern crate amethyst;
 extern crate amethyst_test_support;
 extern crate animation_support;
 extern crate application;
-#[cfg(test)]
-extern crate assets_test;
 extern crate collision_model;
 #[macro_use]
 extern crate derive_new;
@@ -17,11 +15,16 @@ extern crate derive_new;
 #[macro_use]
 extern crate pretty_assertions;
 extern crate shape_model;
+extern crate typename;
+#[macro_use]
+extern crate typename_derive;
 
 pub use animation::{
     CollisionAnimationFrame, CollisionAnimationLoader, CollisionAnimationSequence,
 };
 pub use collision_loading_bundle::CollisionLoadingBundle;
+pub(crate) use system::CollisionLoadingSystem;
 
 mod animation;
 mod collision_loading_bundle;
+mod system;

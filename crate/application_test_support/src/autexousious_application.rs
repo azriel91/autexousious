@@ -1,10 +1,7 @@
 use std::env;
 
 use amethyst::{
-    animation::AnimationBundle,
-    core::transform::TransformBundle,
-    ecs::{ReadStorage, SystemData},
-    prelude::*,
+    animation::AnimationBundle, core::transform::TransformBundle, prelude::*,
     renderer::SpriteRender,
 };
 use amethyst_test_support::{prelude::*, EmptyState};
@@ -81,9 +78,6 @@ impl AutexousiousApplication {
             ]))
             .with_bundle(CollisionLoadingBundle::new())
             .with_resource(CollisionDataSet::new())
-            .with_setup(|world| {
-                <ReadStorage<CollisionFrameActiveHandle> as SystemData>::setup(&mut world.res)
-            })
             .with_render_bundle(test_name, visibility)
     }
 

@@ -4,6 +4,9 @@ use amethyst::{
     ecs::prelude::*,
 };
 use collision_model::config::CollisionFrame;
+use typename::TypeName;
+
+use CollisionLoadingSystem;
 
 /// Adds `Processor::<CollisionFrame>` to the `World` with id `"collision_frame_processor"`.
 #[derive(Debug, new)]
@@ -12,9 +15,14 @@ pub struct CollisionLoadingBundle;
 impl<'a, 'b> SystemBundle<'a, 'b> for CollisionLoadingBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
         builder.add(
+            CollisionLoadingSystem::new(),
+            &CollisionLoadingSystem::type_name(),
+            &[],
+        );
+        builder.add(
             Processor::<CollisionFrame>::new(),
             "collision_frame_processor",
-            &[],
+            &[&CollisionLoadingSystem::type_name()],
         );
         Ok(())
     }

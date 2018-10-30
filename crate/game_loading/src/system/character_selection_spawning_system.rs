@@ -107,11 +107,13 @@ mod tests {
     use std::collections::HashMap;
     use std::env;
 
-    use amethyst::ecs::prelude::*;
+    use amethyst::{animation::AnimationBundle, ecs::prelude::*};
     use amethyst_test_support::{prelude::*, EmptyState};
     use application_event::{AppEvent, AppEventReader};
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
     use character_selection_model::CharacterSelections;
+    use collision_loading::CollisionLoadingBundle;
+    use collision_model::animation::CollisionFrameActiveHandle;
     use game_model::{
         config::AssetSlug,
         loaded::{MapAssets, SlugAndHandle},
@@ -122,7 +124,7 @@ mod tests {
     use map_selection::MapSelectionStatus;
     use map_selection_model::MapSelection;
     use object_loading::ObjectLoadingBundle;
-    use object_model::ObjectType;
+    use object_model::{config::object::CharacterSequenceId, ObjectType};
     use typename::TypeName;
 
     use super::CharacterSelectionSpawningSystem;
@@ -135,6 +137,14 @@ mod tests {
             // kcov-ignore-end
             AmethystApplication::render_base("returns_if_characters_already_loaded", false)
                 .with_custom_event_type::<AppEvent, AppEventReader>()
+                .with_bundle(AnimationBundle::<
+                    CharacterSequenceId,
+                    CollisionFrameActiveHandle,
+                >::new(
+                    "character_collision_frame_acs",
+                    "character_collision_frame_sis",
+                ))
+                .with_bundle(CollisionLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_bundle(ObjectLoadingBundle::new())
                 .with_state(|| LoadingState::new(ASSETS_PATH.clone(), EmptyState))
@@ -187,6 +197,14 @@ mod tests {
                 false
             )
             .with_custom_event_type::<AppEvent, AppEventReader>()
+            .with_bundle(AnimationBundle::<
+                CharacterSequenceId,
+                CollisionFrameActiveHandle,
+            >::new(
+                "character_collision_frame_acs",
+                "character_collision_frame_sis",
+            ))
+            .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
             .with_state(|| LoadingState::new(ASSETS_PATH.clone(), EmptyState))

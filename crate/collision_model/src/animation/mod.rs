@@ -72,3 +72,6 @@ mod collision_data_set;
 mod collision_frame_active_handle;
 mod collision_frame_id;
 mod collision_frame_primitive;
+
+/// ID for a default collision frame component.
+pub const DEFAULT_COLLISION_FRAME_ID: CollisionFrameId = CollisionFrameId(0);

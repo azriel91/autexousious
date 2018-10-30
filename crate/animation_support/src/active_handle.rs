@@ -83,14 +83,10 @@ where
         match *channel {
             Channel::Handle => Primitive::Handle(
                 animation_data_set
-                    .id(self
-                        .active
-                        .as_ref()
-                        .expect("Expected active handle to exist when sampling"))
+                    .id(self.active.as_ref().unwrap_or(&self.rest))
                     .unwrap_or_else(|| {
                         panic!(
-                            "Unable to get ID for `{}` from `{}`, \
-                             active_handle: `{:?}`.",
+                            "Unable to get ID for `{}` from `{}`, active_handle: `{:?}`.",
                             Self::type_name(),
                             <AnimationDataSet<I, Handle<T>>>::type_name(),
                             self

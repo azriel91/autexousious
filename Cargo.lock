@@ -680,6 +680,8 @@ dependencies = [
  "asset_loading 0.6.0",
  "assets_test 0.6.0",
  "character_selection_model 0.6.0",
+ "collision_loading 0.7.0",
+ "collision_model 0.6.0",
  "derivative 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input 0.6.0",
@@ -870,11 +872,12 @@ dependencies = [
  "amethyst_test_support 0.6.0",
  "animation_support 0.7.0",
  "application 0.6.0",
- "assets_test 0.6.0",
  "collision_model 0.6.0",
  "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "pretty_assertions 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "shape_model 0.6.0",
+ "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typename_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -1530,6 +1533,7 @@ dependencies = [
  "asset_loading 0.6.0",
  "assets_test 0.6.0",
  "character_selection_model 0.6.0",
+ "collision_loading 0.7.0",
  "collision_model 0.6.0",
  "derivative 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -3643,6 +3647,7 @@ dependencies = [
  "application_ui 0.6.0",
  "assert_cmd 0.9.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "character_selection_stdio 0.6.0",
+ "collision_loading 0.7.0",
  "collision_model 0.6.0",
  "game_input 0.6.0",
  "game_mode_selection 0.6.0",
