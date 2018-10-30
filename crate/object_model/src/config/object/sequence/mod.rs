@@ -7,13 +7,14 @@
 //! because different object types have different valid sequence IDs, and we want to be able to
 //! define this at compile time rather than needing to process this at run time.
 
-pub use self::frame::Frame;
+pub use self::object_frame::ObjectFrame;
 pub use self::sequence_id::SequenceId;
 pub use self::sequence_state::SequenceState;
 
+use collision_loading::CollisionAnimationSequence;
 use sprite_loading::AnimationSequence;
 
-mod frame;
+mod object_frame;
 mod sequence_id;
 mod sequence_state;
 
@@ -29,12 +30,19 @@ pub struct Sequence<SeqId: SequenceId> {
     /// character that is in mid-air should remain in the last frame until it lands on the ground.
     pub next: Option<SeqId>,
     /// Key frames in the animation sequence.
-    pub frames: Vec<Frame>,
+    pub frames: Vec<ObjectFrame>,
 }
 
 impl<SeqId: SequenceId> AnimationSequence for Sequence<SeqId> {
-    type Frame = Frame;
-    fn frames(&self) -> &[Frame] {
+    type Frame = ObjectFrame;
+    fn frames(&self) -> &[ObjectFrame] {
+        &self.frames
+    }
+}
+
+impl<SeqId: SequenceId> CollisionAnimationSequence for Sequence<SeqId> {
+    type Frame = ObjectFrame;
+    fn frames(&self) -> &[ObjectFrame] {
         &self.frames
     }
 }
@@ -46,7 +54,7 @@ mod tests {
     use sprite_model::config::SpriteFrame;
     use toml;
 
-    use super::{Frame, Sequence, SequenceId};
+    use super::{ObjectFrame, Sequence, SequenceId};
 
     const SEQUENCE_WITH_FRAMES: &str = r#"
         next = "Boo"
@@ -95,12 +103,12 @@ mod tests {
             .expect("Failed to deserialize sequence.");
 
         let frames = vec![
-            Frame::new(SpriteFrame::new(0, 4, 2), CollisionFrame::default()),
-            Frame::new(SpriteFrame::new(0, 5, 2), CollisionFrame::default()),
-            Frame::new(SpriteFrame::new(1, 6, 1), CollisionFrame::default()),
-            Frame::new(SpriteFrame::new(1, 7, 1), CollisionFrame::default()),
-            Frame::new(SpriteFrame::new(0, 6, 2), CollisionFrame::default()),
-            Frame::new(SpriteFrame::new(0, 5, 2), CollisionFrame::default()),
+            ObjectFrame::new(SpriteFrame::new(0, 4, 2), CollisionFrame::default()),
+            ObjectFrame::new(SpriteFrame::new(0, 5, 2), CollisionFrame::default()),
+            ObjectFrame::new(SpriteFrame::new(1, 6, 1), CollisionFrame::default()),
+            ObjectFrame::new(SpriteFrame::new(1, 7, 1), CollisionFrame::default()),
+            ObjectFrame::new(SpriteFrame::new(0, 6, 2), CollisionFrame::default()),
+            ObjectFrame::new(SpriteFrame::new(0, 5, 2), CollisionFrame::default()),
         ];
         let expected = Sequence::new(Some(TestSeqId::Boo), frames);
         assert_eq!(expected, sequence);
@@ -127,9 +135,9 @@ mod tests {
                 r: 17,
             },
         ];
-        let frames = vec![Frame::new(
+        let frames = vec![ObjectFrame::new(
             SpriteFrame::new(0, 0, 0),
-            CollisionFrame::new(Some(body_volumes), None),
+            CollisionFrame::new(Some(body_volumes), None, 0),
         )];
         let expected = Sequence::new(None, frames);
         assert_eq!(expected, sequence);
@@ -151,9 +159,9 @@ mod tests {
             sp_damage: 0,
             multiple: false,
         }];
-        let frames = vec![Frame::new(
+        let frames = vec![ObjectFrame::new(
             SpriteFrame::new(0, 0, 0),
-            CollisionFrame::new(None, Some(interactions)),
+            CollisionFrame::new(None, Some(interactions), 0),
         )];
         let expected = Sequence::new(None, frames);
         assert_eq!(expected, sequence);

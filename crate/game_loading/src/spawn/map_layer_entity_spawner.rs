@@ -134,7 +134,7 @@ impl MapLayerEntitySpawner {
                     )
                     .expect("Animation should exist as new entity should be valid.");
 
-                    AnimationRunner::start_loop(&mut animation_set, animation_handle, animation_id);
+                    AnimationRunner::start_loop(animation_id, &mut animation_set, animation_handle);
                 });
 
             entities

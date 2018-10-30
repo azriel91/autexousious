@@ -39,11 +39,16 @@ impl CharacterLoader {
 
 #[cfg(test)]
 mod test {
-    use amethyst::assets::AssetStorage;
+    use amethyst::{animation::AnimationBundle, assets::AssetStorage};
     use amethyst_test_support::prelude::*;
     use assets_test::{ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SLUG};
+    use collision_loading::CollisionLoadingBundle;
+    use collision_model::animation::CollisionFrameActiveHandle;
     use game_model::config::AssetRecord;
-    use object_model::loaded::{Character, CharacterHandle};
+    use object_model::{
+        config::object::CharacterSequenceId,
+        loaded::{Character, CharacterHandle},
+    };
 
     use super::CharacterLoader;
     use ObjectLoadingBundle;
@@ -54,7 +59,15 @@ mod test {
         assert!(
             // kcov-ignore-end
             AmethystApplication::render_base("loads_character", false)
-                .with_bundle(ObjectLoadingBundle)
+                .with_bundle(AnimationBundle::<
+                    CharacterSequenceId,
+                    CollisionFrameActiveHandle,
+                >::new(
+                    "character_collision_frame_acs",
+                    "character_collision_frame_sis",
+                ))
+                .with_bundle(CollisionLoadingBundle::new())
+                .with_bundle(ObjectLoadingBundle::new())
                 .with_effect(|world| {
                     let asset_record = AssetRecord::new(
                         ASSETS_CHAR_BAT_SLUG.clone(),

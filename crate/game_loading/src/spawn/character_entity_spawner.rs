@@ -1,22 +1,29 @@
 use amethyst::{
-    animation::{get_animation_set, AnimationControlSet},
+    animation::get_animation_set,
     assets::AssetStorage,
     core::{cgmath::Vector3, transform::Transform},
     ecs::{prelude::*, world::EntitiesRes},
     renderer::{SpriteRender, Transparent},
+};
+use collision_model::{
+    animation::{CollisionFrameActiveHandle, CollisionFrameId},
+    config::CollisionFrame,
 };
 use game_input::{ControllerInput, InputControlled};
 use game_model::loaded::SlugAndHandle;
 use object_model::{
     config::object::CharacterSequenceId,
     entity::{CharacterStatus, Kinematics},
-    loaded::{Character, CharacterHandle},
+    loaded::{AnimatedComponentAnimation, AnimatedComponentDefault, Character, CharacterHandle},
 };
 
 use AnimationRunner;
 use CharacterComponentStorages;
+use CollisionAcs;
+use ObjectAnimationStorages;
 use ObjectComponentStorages;
 use ObjectSpawningResources;
+use SpriteRenderAcs;
 
 /// Spawns character entities into the world.
 #[derive(Debug)]
@@ -37,8 +44,8 @@ impl CharacterEntitySpawner {
         slug_and_handle: &SlugAndHandle<Character>,
         input_controlled: InputControlled,
     ) -> Entity {
-        let entities = &*world.read_resource::<EntitiesRes>();
-        let loaded_characters = &*world.read_resource::<AssetStorage<Character>>();
+        let entities = Read::from(world.read_resource::<EntitiesRes>());
+        let loaded_characters = Read::from(world.read_resource::<AssetStorage<Character>>());
         Self::spawn_system(
             &(entities, loaded_characters),
             &mut (
@@ -52,8 +59,12 @@ impl CharacterEntitySpawner {
                 world.write_storage::<Transparent>(),
                 world.write_storage::<Kinematics<f32>>(),
                 world.write_storage::<Transform>(),
-                world.write_storage::<AnimationControlSet<CharacterSequenceId, SpriteRender>>(),
+                world.write_storage::<CollisionFrameActiveHandle>(),
             ), // kcov-ignore
+            &mut (
+                world.write_storage::<SpriteRenderAcs<CharacterSequenceId>>(),
+                world.write_storage::<CollisionAcs<CharacterSequenceId>>(),
+            ),
             kinematics,
             slug_and_handle,
             input_controlled,
@@ -83,8 +94,12 @@ impl CharacterEntitySpawner {
             ref mut transparent_storage,
             ref mut kinematics_storage,
             ref mut transform_storage,
-            ref mut animation_control_set_storage,
-        ): &mut ObjectComponentStorages<'s, CharacterSequenceId>,
+            ref mut collision_frame_active_handle_storage,
+        ): &mut ObjectComponentStorages<'s, CollisionFrameId, CollisionFrame>,
+        (ref mut sprite_acs, ref mut collision_acs): &mut ObjectAnimationStorages<
+            's,
+            CharacterSequenceId,
+        >,
         kinematics: Kinematics<f32>,
         slug_and_handle: &SlugAndHandle<Character>,
         input_controlled: InputControlled,
@@ -92,33 +107,23 @@ impl CharacterEntitySpawner {
         let character_status = CharacterStatus::default();
         let first_sequence_id = character_status.object_status.sequence_id;
 
-        let (character_handle, sprite_render, animation_handle) = {
-            let SlugAndHandle {
-                ref slug,
-                ref handle,
-            } = slug_and_handle;
-            debug!("Spawning `{}`", slug);
+        let SlugAndHandle {
+            ref slug,
+            handle: ref character_handle,
+        } = slug_and_handle;
 
-            let character = loaded_characters
-                .get(handle)
-                .unwrap_or_else(|| panic!("Expected `{}` character to be loaded.", slug));
-            let object = &character.object;
+        debug!("Spawning `{}`", slug);
 
-            let sprite_render = SpriteRender {
-                sprite_sheet: object.default_sprite_sheet.clone(),
-                sprite_number: 0,
-                flip_horizontal: false,
-                flip_vertical: false,
-            };
+        let character = loaded_characters
+            .get(character_handle)
+            .unwrap_or_else(|| panic!("Expected `{}` character to be loaded.", slug));
 
-            let animation_handle = object
-                .animations
-                .get(&first_sequence_id)
-                .expect("Expected character to have at least one sequence.")
-                .clone();
+        let animation_defaults = &character.object.animation_defaults;
 
-            (handle.clone(), sprite_render, animation_handle)
-        }; // kcov-ignore
+        let all_animations = character.object.animations.get(&first_sequence_id);
+        let first_sequence_animations = all_animations
+            .as_ref()
+            .expect("Expected character to have at least one sequence.");
 
         let position = &kinematics.position;
         let mut transform = Transform::default();
@@ -136,16 +141,12 @@ impl CharacterEntitySpawner {
             .expect("Failed to insert controller_input component.");
         // Loaded `Character` for this entity.
         character_handle_storage
-            .insert(entity, character_handle)
+            .insert(entity, character_handle.clone())
             .expect("Failed to insert character_handle component.");
         // Character and object status attributes.
         character_status_storage
             .insert(entity, character_status)
             .expect("Failed to insert character_status component.");
-        // The starting pose
-        sprite_render_storage
-            .insert(entity, sprite_render)
-            .expect("Failed to insert sprite_render component.");
         // Enable transparency for visibility sorting
         transparent_storage
             .insert(entity, Transparent)
@@ -159,14 +160,43 @@ impl CharacterEntitySpawner {
             .insert(entity, transform)
             .expect("Failed to insert transform component.");
 
+        animation_defaults
+            .iter()
+            .for_each(|animation_default| match animation_default {
+                AnimatedComponentDefault::SpriteRender(ref sprite_render) => {
+                    // The starting pose
+                    sprite_render_storage
+                        .insert(entity, sprite_render.clone())
+                        .expect("Failed to insert `SpriteRender` component.");
+                }
+                AnimatedComponentDefault::CollisionFrame(ref active_handle) => {
+                    // Default collision active handle
+                    collision_frame_active_handle_storage
+                        .insert(entity, active_handle.clone())
+                        .expect("Failed to insert `CollisionFrameActiveHandle` component.");
+                }
+            });
+
         // We also need to trigger the animation, not just attach it to the entity
-        let mut animation_set = get_animation_set::<CharacterSequenceId, SpriteRender>(
-            animation_control_set_storage,
-            entity,
-        )
+        let mut sprite_animation_set =
+            get_animation_set::<CharacterSequenceId, SpriteRender>(sprite_acs, entity)
+                .expect("Animation should exist as new entity should be valid.");
+        let mut collision_animation_set = get_animation_set::<
+            CharacterSequenceId,
+            CollisionFrameActiveHandle,
+        >(collision_acs, entity)
         .expect("Animation should exist as new entity should be valid.");
 
-        AnimationRunner::start(&mut animation_set, &animation_handle, first_sequence_id);
+        first_sequence_animations
+            .iter()
+            .for_each(|animated_component| match animated_component {
+                AnimatedComponentAnimation::SpriteRender(ref handle) => {
+                    AnimationRunner::start(first_sequence_id, &mut sprite_animation_set, handle);
+                }
+                AnimatedComponentAnimation::CollisionFrame(ref handle) => {
+                    AnimationRunner::start(first_sequence_id, &mut collision_animation_set, handle);
+                }
+            });
 
         entity
     }
@@ -177,7 +207,7 @@ mod test {
     use std::env;
 
     use amethyst::{
-        animation::AnimationControlSet,
+        animation::AnimationBundle,
         assets::AssetStorage,
         core::transform::Transform,
         ecs::prelude::*,
@@ -186,6 +216,11 @@ mod test {
     use amethyst_test_support::prelude::*;
     use application_event::{AppEvent, AppEventReader};
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
+    use collision_loading::CollisionLoadingBundle;
+    use collision_model::{
+        animation::{CollisionFrameActiveHandle, CollisionFrameId},
+        config::CollisionFrame,
+    };
     use game_input::{ControllerInput, InputControlled};
     use game_model::loaded::SlugAndHandle;
     use loading::LoadingState;
@@ -195,11 +230,15 @@ mod test {
     use object_model::{
         config::object::CharacterSequenceId,
         entity::{CharacterStatus, Kinematics, Position, Velocity},
-        loaded::CharacterHandle,
+        loaded::{Character, CharacterHandle},
     };
     use typename::TypeName;
 
     use super::CharacterEntitySpawner;
+    use CharacterComponentStorages;
+    use ObjectAnimationStorages;
+    use ObjectComponentStorages;
+    use ObjectSpawningResources;
 
     #[test]
     fn spawn_for_player_creates_entity_with_object_components() {
@@ -237,6 +276,14 @@ mod test {
                 false
             )
             .with_custom_event_type::<AppEvent, AppEventReader>()
+            .with_bundle(AnimationBundle::<
+                CharacterSequenceId,
+                CollisionFrameActiveHandle,
+            >::new(
+                "character_collision_frame_acs",
+                "character_collision_frame_sis",
+            ))
+            .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
             .with_system(TestSystem, TestSystem::type_name(), &[])
@@ -251,14 +298,11 @@ mod test {
     #[derive(Debug, TypeName)]
     struct TestSystem;
     type TestSystemData<'s> = (
+        CharacterComponentStorages<'s>,
+        ObjectAnimationStorages<'s, CharacterSequenceId>,
+        ObjectComponentStorages<'s, CollisionFrameId, CollisionFrame>,
+        ObjectSpawningResources<'s, Character>,
         Read<'s, AssetStorage<Map>>,
-        ReadStorage<'s, InputControlled>,
-        ReadStorage<'s, CharacterHandle>,
-        ReadStorage<'s, CharacterStatus>,
-        ReadStorage<'s, ControllerInput>,
-        ReadStorage<'s, Transparent>,
-        ReadStorage<'s, Kinematics<f32>>,
-        ReadStorage<'s, AnimationControlSet<CharacterSequenceId, SpriteRender>>,
     );
     impl<'s> System<'s> for TestSystem {
         type SystemData = TestSystemData<'s>;

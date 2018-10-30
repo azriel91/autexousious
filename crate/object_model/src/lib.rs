@@ -8,6 +8,7 @@
 //! [obj_type]: enum.ObjectType.html
 
 extern crate amethyst;
+extern crate collision_loading;
 extern crate collision_model;
 #[macro_use]
 extern crate derivative;

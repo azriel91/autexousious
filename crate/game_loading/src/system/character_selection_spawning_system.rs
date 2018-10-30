@@ -1,5 +1,6 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
 use character_selection_model::CharacterSelections;
+use collision_model::{animation::CollisionFrameId, config::CollisionFrame};
 use game_input::InputControlled;
 use game_model::play::GameEntities;
 use map_model::loaded::Map;
@@ -14,7 +15,9 @@ use object_model::{
 use CharacterComponentStorages;
 use CharacterEntitySpawner;
 use GameLoadingStatus;
+use ObjectAnimationStorages;
 use ObjectComponentStorages;
+use ObjectSpawningResources;
 
 /// Spawns character entities based on the character selection.
 #[derive(Debug, Default, TypeName, new)]
@@ -25,10 +28,10 @@ type CharacterSelectionSpawningSystemData<'s> = (
     ReadExpect<'s, MapSelection>,
     Read<'s, CharacterSelections>,
     Read<'s, AssetStorage<Map>>,
-    Entities<'s>,
-    Read<'s, AssetStorage<Character>>,
+    ObjectSpawningResources<'s, Character>,
     CharacterComponentStorages<'s>,
-    ObjectComponentStorages<'s, CharacterSequenceId>,
+    ObjectComponentStorages<'s, CollisionFrameId, CollisionFrame>,
+    ObjectAnimationStorages<'s, CharacterSequenceId>,
     Write<'s, GameEntities>,
 );
 
@@ -42,10 +45,10 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             map_selection,
             character_selections,
             loaded_maps,
-            entities,
-            loaded_characters,
+            object_spawning_resources,
             mut character_component_storages,
             mut object_component_storages,
+            mut object_animation_storages,
             mut game_entities,
         ): Self::SystemData,
     ) {
@@ -72,8 +75,6 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
         let position = Position::new(width / 2., height / 2., depth / 2.);
         let kinematics = Kinematics::new(position, Velocity::default());
 
-        let object_spawning_resources = (&*entities, &*loaded_characters);
-
         let character_entities = character_selections
             .selections
             .iter()
@@ -85,6 +86,7 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
                     &object_spawning_resources,
                     &mut character_component_storages,
                     &mut object_component_storages,
+                    &mut object_animation_storages,
                     kinematics,
                     &slug_and_handle,
                     input_controlled,
@@ -105,11 +107,13 @@ mod tests {
     use std::collections::HashMap;
     use std::env;
 
-    use amethyst::ecs::prelude::*;
+    use amethyst::{animation::AnimationBundle, ecs::prelude::*};
     use amethyst_test_support::{prelude::*, EmptyState};
     use application_event::{AppEvent, AppEventReader};
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
     use character_selection_model::CharacterSelections;
+    use collision_loading::CollisionLoadingBundle;
+    use collision_model::animation::CollisionFrameActiveHandle;
     use game_model::{
         config::AssetSlug,
         loaded::{MapAssets, SlugAndHandle},
@@ -120,7 +124,7 @@ mod tests {
     use map_selection::MapSelectionStatus;
     use map_selection_model::MapSelection;
     use object_loading::ObjectLoadingBundle;
-    use object_model::ObjectType;
+    use object_model::{config::object::CharacterSequenceId, ObjectType};
     use typename::TypeName;
 
     use super::CharacterSelectionSpawningSystem;
@@ -133,6 +137,14 @@ mod tests {
             // kcov-ignore-end
             AmethystApplication::render_base("returns_if_characters_already_loaded", false)
                 .with_custom_event_type::<AppEvent, AppEventReader>()
+                .with_bundle(AnimationBundle::<
+                    CharacterSequenceId,
+                    CollisionFrameActiveHandle,
+                >::new(
+                    "character_collision_frame_acs",
+                    "character_collision_frame_sis",
+                ))
+                .with_bundle(CollisionLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_bundle(ObjectLoadingBundle::new())
                 .with_state(|| LoadingState::new(ASSETS_PATH.clone(), EmptyState))
@@ -185,6 +197,14 @@ mod tests {
                 false
             )
             .with_custom_event_type::<AppEvent, AppEventReader>()
+            .with_bundle(AnimationBundle::<
+                CharacterSequenceId,
+                CollisionFrameActiveHandle,
+            >::new(
+                "character_collision_frame_acs",
+                "character_collision_frame_sis",
+            ))
+            .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
             .with_state(|| LoadingState::new(ASSETS_PATH.clone(), EmptyState))
@@ -203,14 +223,12 @@ mod tests {
                 &[],
             )
             .with_assertion(|world| {
-                assert!(
-                    !world
-                        .read_resource::<GameEntities>()
-                        .objects
-                        .get(&ObjectType::Character)
-                        .expect("Expected `ObjectType::Character` key in `GameEntities`.")
-                        .is_empty()
-                );
+                assert!(!world
+                    .read_resource::<GameEntities>()
+                    .objects
+                    .get(&ObjectType::Character)
+                    .expect("Expected `ObjectType::Character` key in `GameEntities`.")
+                    .is_empty());
                 assert!(world.read_resource::<GameLoadingStatus>().characters_loaded);
             })
             .run()

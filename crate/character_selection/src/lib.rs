@@ -13,6 +13,10 @@ extern crate asset_loading;
 #[cfg(test)]
 extern crate assets_test;
 extern crate character_selection_model;
+#[cfg(test)]
+extern crate collision_loading;
+#[cfg(test)]
+extern crate collision_model;
 #[macro_use]
 extern crate derivative;
 #[macro_use]

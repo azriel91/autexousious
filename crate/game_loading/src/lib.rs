@@ -10,6 +10,7 @@
 extern crate amethyst;
 #[cfg(test)]
 extern crate amethyst_test_support;
+extern crate animation_support;
 extern crate application_event;
 extern crate application_state;
 #[cfg(test)]
@@ -17,6 +18,9 @@ extern crate asset_loading;
 #[cfg(test)]
 extern crate assets_test;
 extern crate character_selection_model;
+#[cfg(test)]
+extern crate collision_loading;
+extern crate collision_model;
 #[macro_use]
 extern crate derivative;
 #[macro_use]
@@ -44,9 +48,11 @@ pub use animation_runner::AnimationRunner;
 pub(crate) use game_loading_bundle::GameLoadingBundle;
 pub use game_loading_state::GameLoadingState;
 pub(crate) use game_loading_status::GameLoadingStatus;
+pub use multi_animation_runner::MultiAnimationRunner;
 pub use spawn::{
-    CharacterComponentStorages, CharacterEntitySpawner, MapLayerComponentStorages,
-    MapLayerEntitySpawner, MapSpawningResources, ObjectComponentStorages, ObjectSpawningResources,
+    CharacterComponentStorages, CharacterEntitySpawner, CollisionAcs, MapLayerComponentStorages,
+    MapLayerEntitySpawner, MapSpawningResources, ObjectAnimationStorages, ObjectComponentStorages,
+    ObjectSpawningResources, SpriteRenderAcs,
 };
 pub(crate) use system::{CharacterSelectionSpawningSystem, MapSelectionSpawningSystem};
 
@@ -54,5 +60,6 @@ mod animation_runner;
 mod game_loading_bundle;
 mod game_loading_state;
 mod game_loading_status;
+mod multi_animation_runner;
 mod spawn;
 mod system;

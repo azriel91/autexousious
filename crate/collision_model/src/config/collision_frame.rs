@@ -1,9 +1,13 @@
+use amethyst::{
+    assets::{Asset, Handle, ProcessingState, Result as AssetsResult},
+    ecs::VecStorage,
+};
 use shape_model::Volume;
 
 use config::Interaction;
 
 /// Frame for an interactable object.
-#[derive(Clone, Debug, Derivative, Deserialize, PartialEq, Serialize, new)]
+#[derive(Clone, Debug, Derivative, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
 #[derivative(Default)]
 pub struct CollisionFrame {
     /// Hittable volumes of the object.
@@ -12,6 +16,21 @@ pub struct CollisionFrame {
     /// Effects on other objects.
     #[serde(default)]
     pub interactions: Option<Vec<Interaction>>,
+    /// Number of ticks to wait before the sequence switches to the next frame.
+    #[serde(default)]
+    pub wait: u32,
+}
+
+impl Asset for CollisionFrame {
+    const NAME: &'static str = "collision_model::config::CollisionFrame";
+    type Data = Self;
+    type HandleStorage = VecStorage<Handle<Self>>;
+}
+
+impl From<CollisionFrame> for AssetsResult<ProcessingState<CollisionFrame>> {
+    fn from(collision_frame: CollisionFrame) -> AssetsResult<ProcessingState<CollisionFrame>> {
+        Ok(ProcessingState::Loaded(collision_frame))
+    }
 }
 
 #[cfg(test)]
@@ -87,7 +106,7 @@ mod tests {
                 r: 17,
             },
         ];
-        assert_eq!(CollisionFrame::new(Some(body_volumes), None), frame);
+        assert_eq!(CollisionFrame::new(Some(body_volumes), None, 0), frame);
     }
 
     #[test]
@@ -111,7 +130,7 @@ mod tests {
                 r: 17,
             },
         ];
-        assert_eq!(CollisionFrame::new(Some(body_volumes), None), frame);
+        assert_eq!(CollisionFrame::new(Some(body_volumes), None, 0), frame);
     }
 
     #[test]
@@ -130,7 +149,7 @@ mod tests {
             sp_damage: 50,
             multiple: true,
         }];
-        assert_eq!(CollisionFrame::new(None, Some(interactions)), frame);
+        assert_eq!(CollisionFrame::new(None, Some(interactions), 0), frame);
     }
 
     #[test]
@@ -149,6 +168,6 @@ mod tests {
             sp_damage: 0,
             multiple: false,
         }];
-        assert_eq!(CollisionFrame::new(None, Some(interactions)), frame);
+        assert_eq!(CollisionFrame::new(None, Some(interactions), 0), frame);
     }
 }
