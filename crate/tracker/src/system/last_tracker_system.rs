@@ -69,7 +69,7 @@ where
 #[cfg(test)]
 mod test {
     use amethyst::ecs::prelude::*;
-    use amethyst_test_support::prelude::*;
+    use amethyst_test::prelude::*;
 
     use super::{LastTrackerSystem, LastTrackerSystemData};
     use Last;

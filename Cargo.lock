@@ -225,11 +225,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "amethyst_test_support"
-version = "0.6.0"
+name = "amethyst_test"
+version = "0.1.0"
+source = "git+https://github.com/amethyst/amethyst.git#6f29f18aa3250a6f462e210aed049b1f64e2fef0"
 dependencies = [
  "amethyst 0.9.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_utils 0.4.0 (git+https://github.com/amethyst/amethyst.git)",
  "boxfnonce 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derivative 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -296,7 +296,7 @@ dependencies = [
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_more 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "fnv 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "minterpolate 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "minterpolate 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "named_type 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "named_type_derive 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.80 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -404,7 +404,7 @@ name = "application_test_support"
 version = "0.6.0"
 dependencies = [
  "amethyst 0.9.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_test_support 0.6.0",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.6.0",
  "asset_loading 0.6.0",
  "assets_test 0.6.0",
@@ -430,7 +430,7 @@ name = "application_ui"
 version = "0.6.0"
 dependencies = [
  "amethyst 0.9.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_test_support 0.6.0",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application 0.6.0",
  "application_robot 0.6.0",
  "assert_cmd 0.9.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -678,7 +678,7 @@ name = "character_selection"
 version = "0.6.0"
 dependencies = [
  "amethyst 0.9.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_test_support 0.6.0",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.6.0",
  "application_state 0.6.0",
  "asset_loading 0.6.0",
@@ -718,7 +718,7 @@ name = "character_selection_stdio"
 version = "0.6.0"
 dependencies = [
  "amethyst 0.9.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_test_support 0.6.0",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.6.0",
  "application_test_support 0.6.0",
  "assets_test 0.6.0",
@@ -738,7 +738,7 @@ name = "character_selection_ui"
 version = "0.6.0"
 dependencies = [
  "amethyst 0.9.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_test_support 0.6.0",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_test_support 0.6.0",
  "application_ui 0.6.0",
  "assets_test 0.6.0",
@@ -873,7 +873,7 @@ name = "collision_loading"
 version = "0.7.0"
 dependencies = [
  "amethyst 0.9.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_test_support 0.6.0",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "animation_support 0.7.0",
  "application 0.6.0",
  "collision_model 0.6.0",
@@ -893,7 +893,7 @@ dependencies = [
  "derivative 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_more 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "minterpolate 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "minterpolate 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "pretty_assertions 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.80 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_derive 1.0.80 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1511,7 +1511,7 @@ name = "game_input"
 version = "0.6.0"
 dependencies = [
  "amethyst 0.9.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_test_support 0.6.0",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application 0.6.0",
  "derivative 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1530,7 +1530,7 @@ name = "game_loading"
 version = "0.6.0"
 dependencies = [
  "amethyst 0.9.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_test_support 0.6.0",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "animation_support 0.7.0",
  "application_event 0.6.0",
  "application_state 0.6.0",
@@ -1591,7 +1591,7 @@ name = "game_mode_selection_stdio"
 version = "0.6.0"
 dependencies = [
  "amethyst 0.9.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_test_support 0.6.0",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.6.0",
  "application_menu 0.6.0",
  "assets_test 0.6.0",
@@ -1609,7 +1609,7 @@ name = "game_mode_selection_ui"
 version = "0.6.0"
 dependencies = [
  "amethyst 0.9.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_test_support 0.6.0",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_menu 0.6.0",
  "application_ui 0.6.0",
  "derivative 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1641,7 +1641,7 @@ name = "game_play"
 version = "0.6.0"
 dependencies = [
  "amethyst 0.9.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_test_support 0.6.0",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application 0.6.0",
  "application_event 0.6.0",
  "application_test_support 0.6.0",
@@ -2099,7 +2099,7 @@ name = "map_loading"
 version = "0.6.0"
 dependencies = [
  "amethyst 0.9.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_test_support 0.6.0",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application 0.6.0",
  "assets_test 0.6.0",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2127,7 +2127,7 @@ name = "map_play"
 version = "0.6.0"
 dependencies = [
  "amethyst 0.9.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_test_support 0.6.0",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_model 0.6.0",
  "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2139,7 +2139,7 @@ name = "map_selection"
 version = "0.6.0"
 dependencies = [
  "amethyst 0.9.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_test_support 0.6.0",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.6.0",
  "application_state 0.6.0",
  "asset_loading 0.6.0",
@@ -2169,7 +2169,7 @@ name = "map_selection_stdio"
 version = "0.6.0"
 dependencies = [
  "amethyst 0.9.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_test_support 0.6.0",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.6.0",
  "application_test_support 0.6.0",
  "assets_test 0.6.0",
@@ -2188,7 +2188,7 @@ name = "map_selection_ui"
 version = "0.6.0"
 dependencies = [
  "amethyst 0.9.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_test_support 0.6.0",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_test_support 0.6.0",
  "application_ui 0.6.0",
  "assets_test 0.6.0",
@@ -2268,21 +2268,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "minterpolate"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "mint 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "num 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde 1.0.80 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "minterpolate"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "mint 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "num 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "num 0.1.42 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.80 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -2350,19 +2340,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "num"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "num-bigint 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "num-complex 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "num-integer 0.1.39 (registry+https://github.com/rust-lang/crates.io-index)",
- "num-iter 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)",
- "num-rational 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "num-traits 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
 name = "num-bigint"
 version = "0.1.44"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2374,29 +2351,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "num-bigint"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "num-integer 0.1.39 (registry+https://github.com/rust-lang/crates.io-index)",
- "num-traits 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
 name = "num-complex"
 version = "0.1.43"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "num-traits 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.24 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "num-complex"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "num-traits 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -2443,7 +2403,6 @@ name = "num-rational"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "num-bigint 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-integer 0.1.39 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-traits 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -2500,7 +2459,7 @@ name = "object_loading"
 version = "0.6.0"
 dependencies = [
  "amethyst 0.9.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_test_support 0.6.0",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application 0.6.0",
  "assets_test 0.6.0",
  "collision_loading 0.7.0",
@@ -3196,7 +3155,7 @@ name = "sprite_loading"
 version = "0.6.0"
 dependencies = [
  "amethyst 0.9.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_test_support 0.6.0",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application 0.6.0",
  "assets_test 0.6.0",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -3250,7 +3209,7 @@ name = "stdio_view"
 version = "0.6.0"
 dependencies = [
  "amethyst 0.9.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_test_support 0.6.0",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.6.0",
  "application_input 0.6.0",
  "application_robot 0.6.0",
@@ -3463,7 +3422,7 @@ name = "tracker"
 version = "0.6.0"
 dependencies = [
  "amethyst 0.9.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_test_support 0.6.0",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "named_type 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "named_type_derive 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -3560,7 +3519,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bitflags 1.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "chrono 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "error-chain 0.12.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "error-chain 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "getset 0.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -3791,6 +3750,7 @@ dependencies = [
 "checksum amethyst_locale 0.3.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
 "checksum amethyst_network 0.2.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
 "checksum amethyst_renderer 0.9.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
+"checksum amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
 "checksum amethyst_ui 0.4.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
 "checksum amethyst_utils 0.4.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
 "checksum android_glue 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)" = "000444226fcff248f2bc4c7625be32c63caccfecc2723a2b9f78a7487a49c407"
@@ -3950,7 +3910,6 @@ dependencies = [
 "checksum minimp3 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "9ad362c18021c74cebb299a0ef8a4025ca7c1f5b7769d5efe45511456740f7bd"
 "checksum minimp3-sys 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "be06a26e75fdb130d68d6f589f32b1c7d2d0351f67fb7d393f0c78a8d6336ee3"
 "checksum mint 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)" = "c9e6c29b4bb0155117ea1a61520406c975673ee71b0287323f06d1a8d69c4a7c"
-"checksum minterpolate 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "4145b04ce678850f3470934511e68c0a8f81c06d7db83a710a08ae41c8b4a85e"
 "checksum minterpolate 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "9d51167254a2f9cbf683aa415fe275ab4e11350c58b7f0a2d7f6e0f10b3594ee"
 "checksum mopa 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)" = "a785740271256c230f57462d3b83e52f998433a7062fc18f96d5999474a9f915"
 "checksum named_type 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)" = "c39ac6c5ee13bf558879a82198b0afe84989cf3f7fb7592b56d73eb1a50c9e66"
@@ -3960,11 +3919,8 @@ dependencies = [
 "checksum nom 3.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "05aec50c70fd288702bcd93284a8444607f3292dbdf2a30de5ea5dcdbe72287b"
 "checksum normalize-line-endings 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)" = "2e0a1a39eab95caf4f5556da9289b9e68f0aafac901b2ce80daaf020d3b733a8"
 "checksum num 0.1.42 (registry+https://github.com/rust-lang/crates.io-index)" = "4703ad64153382334aa8db57c637364c322d3372e097840c72000dabdcf6156e"
-"checksum num 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "cf4825417e1e1406b3782a8ce92f4d53f26ec055e3622e1881ca8e9f5f9e08db"
 "checksum num-bigint 0.1.44 (registry+https://github.com/rust-lang/crates.io-index)" = "e63899ad0da84ce718c14936262a41cee2c79c981fc0a0e7c7beb47d5a07e8c1"
-"checksum num-bigint 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "10b8423ea72ec64751198856a853e07b37087cfc9b53a87ecb19bff67b6d1320"
 "checksum num-complex 0.1.43 (registry+https://github.com/rust-lang/crates.io-index)" = "b288631d7878aaf59442cffd36910ea604ecd7745c36054328595114001c9656"
-"checksum num-complex 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "107b9be86cd2481930688277b675b0114578227f034674726605b8a482d8baf8"
 "checksum num-derive 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)" = "8af1847c907c2f04d7bfd572fb25bbb4385c637fe5be163cf2f8c5d778fe1e7d"
 "checksum num-integer 0.1.39 (registry+https://github.com/rust-lang/crates.io-index)" = "e83d528d2677f0518c570baf2b7abdcf0cd2d248860b68507bdcb3e91d4c0cea"
 "checksum num-iter 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)" = "af3fdbbc3291a5464dc57b03860ec37ca6bf915ed6ee385e7c6c052c422b2124"

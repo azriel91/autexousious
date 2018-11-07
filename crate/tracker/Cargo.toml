@@ -10,4 +10,4 @@ named_type = "0.1.6"
 named_type_derive = "0.1.6"
 
 [dev-dependencies]
-amethyst_test_support = { path = "../amethyst_test_support" }
+amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }

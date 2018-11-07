@@ -213,7 +213,7 @@ mod test {
         ecs::prelude::*,
         renderer::{SpriteRender, Transparent},
     };
-    use amethyst_test_support::prelude::*;
+    use amethyst_test::prelude::*;
     use application_event::{AppEvent, AppEventReader};
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
     use collision_loading::CollisionLoadingBundle;
@@ -287,7 +287,7 @@ mod test {
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
             .with_system(TestSystem, TestSystem::type_name(), &[])
-            .with_state(|| LoadingState::new(ASSETS_PATH.clone(), EmptyState))
+            .with_state(|| LoadingState::new(ASSETS_PATH.clone(), PopState))
             .with_assertion(assertion)
             .run()
             .is_ok()

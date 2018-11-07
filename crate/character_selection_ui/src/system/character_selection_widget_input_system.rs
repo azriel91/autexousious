@@ -238,7 +238,7 @@ mod test {
         ecs::prelude::*,
         shrev::{EventChannel, ReaderId},
     };
-    use amethyst_test_support::prelude::*;
+    use amethyst_test::prelude::*;
     use application_test_support::AutexousiousApplication;
     use assets_test::ASSETS_CHAR_BAT_SLUG;
     use character_selection_model::{CharacterSelection, CharacterSelectionEvent};

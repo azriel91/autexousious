@@ -21,10 +21,10 @@ typename_derive = "0.1"
 
 [dev-dependencies]
 application_robot = { path = "../application_robot" }
-amethyst_test_support = { path = "../amethyst_test_support" }
+amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
 assert_cmd = "0.9"
 structopt = "0.2"
 structopt-derive = "0.2"
 
 [features]
-nightly = ["amethyst/nightly", "amethyst_test_support/nightly"]
+nightly = ["amethyst/nightly", "amethyst_test/nightly"]

@@ -30,7 +30,7 @@ mod test {
     use std::env;
 
     use amethyst::shrev::EventChannel;
-    use amethyst_test_support::prelude::*;
+    use amethyst_test::prelude::*;
     use stdio_spi::VariantAndTokens;
 
     use super::GameModeSelectionStdioBundle;

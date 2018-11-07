@@ -12,5 +12,5 @@ map_model = { path = "../map_model" }
 sprite_loading = { path = "../sprite_loading" }
 
 [dev-dependencies]
-amethyst_test_support = { path = "../amethyst_test_support" }
+amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
 assets_test = { path = "../assets_test" }

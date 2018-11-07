@@ -108,7 +108,7 @@ mod tests {
     use std::env;
 
     use amethyst::{animation::AnimationBundle, ecs::prelude::*};
-    use amethyst_test_support::{prelude::*, EmptyState};
+    use amethyst_test::prelude::*;
     use application_event::{AppEvent, AppEventReader};
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
     use character_selection_model::CharacterSelections;
@@ -147,7 +147,7 @@ mod tests {
                 .with_bundle(CollisionLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_bundle(ObjectLoadingBundle::new())
-                .with_state(|| LoadingState::new(ASSETS_PATH.clone(), EmptyState))
+                .with_state(|| LoadingState::new(ASSETS_PATH.clone(), PopState))
                 .with_setup(map_selection(ASSETS_MAP_FADE_SLUG.clone()))
                 .with_setup(|world| {
                     let mut game_loading_status = GameLoadingStatus::new();
@@ -207,7 +207,7 @@ mod tests {
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
-            .with_state(|| LoadingState::new(ASSETS_PATH.clone(), EmptyState))
+            .with_state(|| LoadingState::new(ASSETS_PATH.clone(), PopState))
             .with_setup(map_selection(ASSETS_MAP_FADE_SLUG.clone()))
             .with_setup(|world| {
                 let mut character_selections = CharacterSelections::default();

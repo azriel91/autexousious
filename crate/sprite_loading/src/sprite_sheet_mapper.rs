@@ -220,14 +220,12 @@ mod test {
         };
         let sprite_sheet_1 = SpriteSheet {
             texture_id: 11,
-            sprites: vec![
-                (
-                    (19., 29.),
-                    [0., 0.],
-                    [0.5 / 20., 18.5 / 20., 1.5 / 30., 29.5 / 30.],
-                )
-                    .into(),
-            ],
+            sprites: vec![(
+                (19., 29.),
+                [0., 0.],
+                [0.5 / 20., 18.5 / 20., 1.5 / 30., 29.5 / 30.],
+            )
+                .into()],
         };
 
         // kcov-ignore-start
@@ -288,14 +286,12 @@ mod test {
         };
         let sprite_sheet_1 = SpriteSheet {
             texture_id: 11,
-            sprites: vec![
-                (
-                    (19., 29.),
-                    [0., 0.],
-                    [0.5 / 20., 18.5 / 20., 1.5 / 30., 29.5 / 30.],
-                )
-                    .into(),
-            ],
+            sprites: vec![(
+                (19., 29.),
+                [0., 0.],
+                [0.5 / 20., 18.5 / 20., 1.5 / 30., 29.5 / 30.],
+            )
+                .into()],
         };
 
         // kcov-ignore-start
@@ -312,14 +308,12 @@ mod test {
 
         let sprite_sheet = SpriteSheet {
             texture_id: 10,
-            sprites: vec![
-                (
-                    (19., 29.),
-                    [0., 0.],
-                    [0.5 / 20., 18.5 / 20., 1.5 / 30., 29.5 / 30.],
-                )
-                    .into(),
-            ],
+            sprites: vec![(
+                (19., 29.),
+                [0., 0.],
+                [0.5 / 20., 18.5 / 20., 1.5 / 30., 29.5 / 30.],
+            )
+                .into()],
         };
 
         // kcov-ignore-start

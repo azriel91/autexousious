@@ -40,7 +40,7 @@ impl CharacterLoader {
 #[cfg(test)]
 mod test {
     use amethyst::{animation::AnimationBundle, assets::AssetStorage};
-    use amethyst_test_support::prelude::*;
+    use amethyst_test::prelude::*;
     use assets_test::{ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SLUG};
     use collision_loading::CollisionLoadingBundle;
     use collision_model::animation::CollisionFrameActiveHandle;

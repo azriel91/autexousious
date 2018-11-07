@@ -7,14 +7,14 @@ use amethyst::{
     },
     assets::Loader,
     prelude::*,
-    renderer::SpriteRender,
+    renderer::{SpriteRender, SpriteSheetHandle},
 };
 
 use AnimationFrame;
 use AnimationSequence;
 use SpriteAnimationHandle;
 
-/// Loads `Animation`s from character sequences.
+/// Loads `Animation`s from object sequences.
 #[derive(Debug)]
 pub struct SpriteRenderAnimationLoader;
 
@@ -25,18 +25,18 @@ impl SpriteRenderAnimationLoader {
     ///
     /// * `world`: `World` to load animations into.
     /// * `sequences`: Sequences of the animation.
-    /// * `sprite_sheet_index_offset`: Offset of the sprite sheet IDs in the `SpriteSheetSet`.
+    /// * `sprite_sheet_handles`: Sprite sheet handles of the object.
     pub fn load_into_map<'seq, SequenceId, Sequence, Frame>(
         world: &'seq World,
         sequences: &HashMap<SequenceId, Sequence>,
-        sprite_sheet_index_offset: u64,
+        sprite_sheet_handles: &[SpriteSheetHandle],
     ) -> HashMap<SequenceId, SpriteAnimationHandle>
     where
         SequenceId: Copy + Eq + Hash + 'seq,
         Frame: AnimationFrame,
         Sequence: AnimationSequence<Frame = Frame> + 'seq,
     {
-        Self::load(world, sequences.iter(), sprite_sheet_index_offset)
+        Self::load(world, sequences.iter(), sprite_sheet_handles)
             .map(|(id, handle)| (*id, handle))
             .collect::<HashMap<SequenceId, SpriteAnimationHandle>>()
     }
@@ -47,11 +47,11 @@ impl SpriteRenderAnimationLoader {
     ///
     /// * `world`: `World` to load animations into.
     /// * `sequences`: Sequences of the animation.
-    /// * `sprite_sheet_index_offset`: Offset of the sprite sheet IDs in the `SpriteSheetSet`.
+    /// * `sprite_sheet_handles`: Sprite sheet handles of the object.
     pub fn load_into_vec<'seq, Sequences, Sequence, Frame>(
         world: &'seq World,
         sequences: Sequences,
-        sprite_sheet_index_offset: u64,
+        sprite_sheet_handles: &[SpriteSheetHandle],
     ) -> Vec<SpriteAnimationHandle>
     where
         Sequences: Iterator<Item = &'seq Sequence>,
@@ -59,7 +59,7 @@ impl SpriteRenderAnimationLoader {
         Sequence: AnimationSequence<Frame = Frame> + 'seq,
     {
         sequences
-            .map(|sequence| Self::sequence_to_animation(world, sprite_sheet_index_offset, sequence))
+            .map(|sequence| Self::sequence_to_animation(world, sprite_sheet_handles, sequence))
             .map(|animation| {
                 let loader = world.read_resource::<Loader>();
                 loader.load_from_data(animation, (), &world.read_resource())
@@ -75,11 +75,11 @@ impl SpriteRenderAnimationLoader {
     ///
     /// * `world`: `World` to load animations into.
     /// * `sequences`: Sequences of the animation.
-    /// * `sprite_sheet_index_offset`: Offset of the sprite sheet IDs in the `SpriteSheetSet`.
+    /// * `sprite_sheet_handles`: Sprite sheet handles of the object.
     pub fn load<'seq, Sequences, SequenceId, Sequence, Frame>(
         world: &'seq World,
         sequences: Sequences,
-        sprite_sheet_index_offset: u64,
+        sprite_sheet_handles: &'seq [SpriteSheetHandle],
     ) -> impl Iterator<Item = (&'seq SequenceId, SpriteAnimationHandle)>
     where
         Sequences: Iterator<Item = (&'seq SequenceId, &'seq Sequence)>,
@@ -91,7 +91,7 @@ impl SpriteRenderAnimationLoader {
             .map(move |(id, sequence)| {
                 (
                     id,
-                    Self::sequence_to_animation(world, sprite_sheet_index_offset, sequence),
+                    Self::sequence_to_animation(world, sprite_sheet_handles, sequence),
                 )
             })
             .map(move |(id, animation)| {
@@ -106,11 +106,11 @@ impl SpriteRenderAnimationLoader {
     /// # Parameters
     ///
     /// * `world`: `World` to store the `Animation`s.
-    /// * `sprite_sheet_index_offset`: Offset of the sprite sheet IDs in the `SpriteSheetSet`.
+    /// * `sprite_sheet_handles`: Sprite sheet handles of the object.
     /// * `sequence`: `Sequence` to create the animation from.
     fn sequence_to_animation<Sequence: AnimationSequence<Frame = F>, F: AnimationFrame>(
         world: &World,
-        sprite_sheet_index_offset: u64,
+        sprite_sheet_handles: &[SpriteSheetHandle],
         sequence: &Sequence,
     ) -> Animation<SpriteRender> {
         let frames = sequence.frames();
@@ -123,7 +123,7 @@ impl SpriteRenderAnimationLoader {
         input.push(tick_counter);
 
         let sprite_sheet_sampler =
-            Self::sprite_sheet_sampler(sprite_sheet_index_offset, sequence, input.clone());
+            Self::sprite_sheet_sampler(sprite_sheet_handles, sequence, input.clone());
         let sprite_index_sampler = Self::sprite_index_sampler(sequence, input);
 
         let loader = world.read_resource::<Loader>();
@@ -149,7 +149,7 @@ impl SpriteRenderAnimationLoader {
     }
 
     fn sprite_sheet_sampler<Sequence: AnimationSequence<Frame = F>, F: AnimationFrame>(
-        sprite_sheet_index_offset: u64,
+        sprite_sheet_handles: &[SpriteSheetHandle],
         sequence: &Sequence,
         input: Vec<f32>,
     ) -> Sampler<SpriteRenderPrimitive> {
@@ -158,7 +158,7 @@ impl SpriteRenderAnimationLoader {
             .iter()
             .map(|frame: &F| {
                 SpriteRenderPrimitive::SpriteSheet(
-                    sprite_sheet_index_offset + frame.texture_index() as u64,
+                    sprite_sheet_handles[frame.texture_index()].clone(),
                 )
             })
             .collect::<Vec<SpriteRenderPrimitive>>();
@@ -206,34 +206,46 @@ mod test {
         },
         assets::AssetStorage,
         prelude::*,
-        renderer::SpriteRender,
+        renderer::{SpriteRender, SpriteSheetHandle},
     };
-    use amethyst_test_support::prelude::*;
+    use amethyst_test::prelude::*;
+    use assets_test::ASSETS_CHAR_BAT_PATH;
 
     use super::SpriteRenderAnimationLoader;
     use AnimationFrame;
     use AnimationSequence;
     use SpriteAnimationHandle;
+    use SpriteLoader;
 
     #[test]
     fn loads_sprite_render_animations_into_map() {
-        let effect = |world: &mut World| {
-            let sprite_sheet_index_offset = 10;
+        let effect = move |world: &mut World| {
             let test_sequences = test_sequences();
+            let sprite_sheet_handles = test_sprite_sheet_handles(world);
+
             let animation_handles = SpriteRenderAnimationLoader::load_into_map(
                 world,
                 &test_sequences,
-                sprite_sheet_index_offset,
+                &sprite_sheet_handles,
             );
+
+            world.add_resource(EffectReturn(sprite_sheet_handles));
             world.add_resource(EffectReturn(animation_handles));
         }; // kcov-ignore
-        let assertion = |world: &mut World| {
+        let assertion = move |world: &mut World| {
+            let sprite_sheet_handles = &world
+                .read_resource::<EffectReturn<Vec<SpriteSheetHandle>>>()
+                .0;
             let animation_handles = &world
                 .read_resource::<EffectReturn<HashMap<TestSequenceId, SpriteAnimationHandle>>>()
                 .0;
 
             // Verify animation is loaded
-            verify_animation_handle(world, animation_handles.get(&TestSequenceId::Boo));
+            verify_animation_handle(
+                world,
+                &*sprite_sheet_handles,
+                animation_handles.get(&TestSequenceId::Boo),
+            );
         };
 
         // kcov-ignore-start
@@ -249,23 +261,29 @@ mod test {
 
     #[test]
     fn loads_sprite_render_animations_into_vec() {
-        let effect = |world: &mut World| {
-            let sprite_sheet_index_offset = 10;
+        let effect = move |world: &mut World| {
             let test_sequences = test_sequences();
+            let sprite_sheet_handles = test_sprite_sheet_handles(world);
+
             let animation_handles = SpriteRenderAnimationLoader::load_into_vec(
                 world,
                 test_sequences.values(),
-                sprite_sheet_index_offset,
+                &sprite_sheet_handles,
             );
+
+            world.add_resource(EffectReturn(sprite_sheet_handles));
             world.add_resource(EffectReturn(animation_handles));
         };
-        let assertion = |world: &mut World| {
+        let assertion = move |world: &mut World| {
+            let sprite_sheet_handles = &world
+                .read_resource::<EffectReturn<Vec<SpriteSheetHandle>>>()
+                .0;
             let animation_handles = &world
                 .read_resource::<EffectReturn<Vec<SpriteAnimationHandle>>>()
                 .0;
 
             // Verify animation is loaded
-            verify_animation_handle(world, animation_handles.first());
+            verify_animation_handle(world, &*sprite_sheet_handles, animation_handles.first());
         };
 
         // kcov-ignore-start
@@ -279,7 +297,11 @@ mod test {
         );
     }
 
-    fn verify_animation_handle(world: &World, animation_handle: Option<&SpriteAnimationHandle>) {
+    fn verify_animation_handle(
+        world: &World,
+        sprite_sheet_handles: &[SpriteSheetHandle],
+        animation_handle: Option<&SpriteAnimationHandle>,
+    ) {
         assert!(animation_handle.is_some());
 
         let animation_handle = animation_handle.unwrap();
@@ -309,10 +331,10 @@ mod test {
         assert_eq!(vec![0.0, 1.0, 4.0, 6.0], sprite_sheet_sampler.input);
         assert_eq!(
             vec![
-                SpriteRenderPrimitive::SpriteSheet(10),
-                SpriteRenderPrimitive::SpriteSheet(11),
-                SpriteRenderPrimitive::SpriteSheet(10),
-                SpriteRenderPrimitive::SpriteSheet(10),
+                SpriteRenderPrimitive::SpriteSheet(sprite_sheet_handles[0].clone()),
+                SpriteRenderPrimitive::SpriteSheet(sprite_sheet_handles[1].clone()),
+                SpriteRenderPrimitive::SpriteSheet(sprite_sheet_handles[0].clone()),
+                SpriteRenderPrimitive::SpriteSheet(sprite_sheet_handles[0].clone()),
             ],
             sprite_sheet_sampler.output
         );
@@ -349,6 +371,15 @@ mod test {
         let mut sequences = HashMap::new();
         sequences.insert(TestSequenceId::Boo, sequence);
         sequences
+    }
+
+    fn test_sprite_sheet_handles(world: &mut World) -> Vec<SpriteSheetHandle> {
+        let sprite_sheet_index_offset = 0;
+        let (sprite_sheet_handles, _texture_handles) =
+            SpriteLoader::load(world, sprite_sheet_index_offset, &ASSETS_CHAR_BAT_PATH)
+                .expect("Failed to load sprites for test.");
+
+        sprite_sheet_handles
     }
 
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]

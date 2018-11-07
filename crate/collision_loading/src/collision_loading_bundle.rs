@@ -31,7 +31,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CollisionLoadingBundle {
 #[cfg(test)]
 mod test {
     use amethyst::assets::AssetStorage;
-    use amethyst_test_support::AmethystApplication;
+    use amethyst_test::AmethystApplication;
     use collision_model::config::CollisionFrame;
 
     use super::CollisionLoadingBundle;

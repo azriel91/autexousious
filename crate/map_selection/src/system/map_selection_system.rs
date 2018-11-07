@@ -72,7 +72,7 @@ impl<'s> System<'s> for MapSelectionSystem {
 #[cfg(test)]
 mod test {
     use amethyst::{assets::ProgressCounter, ecs::SystemData, prelude::*, shrev::EventChannel};
-    use amethyst_test_support::prelude::*;
+    use amethyst_test::prelude::*;
     use asset_loading::AssetDiscovery;
     use assets_test::{ASSETS_MAP_EMPTY_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
     use game_model::loaded::SlugAndHandle;

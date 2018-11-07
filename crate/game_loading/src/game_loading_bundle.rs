@@ -31,7 +31,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameLoadingBundle {
 mod test {
     use std::env;
 
-    use amethyst_test_support::prelude::*;
+    use amethyst_test::prelude::*;
 
     use super::GameLoadingBundle;
 

@@ -22,7 +22,7 @@ impl<'s> System<'s> for ObjectKinematicsUpdateSystem {
 #[cfg(test)]
 mod test {
     use amethyst::ecs::prelude::*;
-    use amethyst_test_support::*;
+    use amethyst_test::*;
     use object_model::entity::{Kinematics, Position, Velocity};
     use typename::TypeName;
 

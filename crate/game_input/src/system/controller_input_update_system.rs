@@ -72,7 +72,7 @@ impl<'s> System<'s> for ControllerInputUpdateSystem {
 #[cfg(test)]
 mod test {
     use amethyst::ecs::prelude::*;
-    use amethyst_test_support::*;
+    use amethyst_test::*;
     use typename::TypeName;
 
     use super::ControllerInputUpdateSystem;

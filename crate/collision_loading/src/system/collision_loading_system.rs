@@ -45,7 +45,7 @@ impl<'s> System<'s> for CollisionLoadingSystem {
 #[cfg(test)]
 mod test {
     use amethyst::ecs::System;
-    use amethyst_test_support::AmethystApplication;
+    use amethyst_test::AmethystApplication;
     use collision_model::animation::{CollisionDataSet, DEFAULT_COLLISION_FRAME_ID};
 
     use super::CollisionLoadingSystem;

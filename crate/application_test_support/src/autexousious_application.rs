@@ -4,7 +4,7 @@ use amethyst::{
     animation::AnimationBundle, core::transform::TransformBundle, prelude::*,
     renderer::SpriteRender,
 };
-use amethyst_test_support::{prelude::*, EmptyState};
+use amethyst_test::prelude::*;
 use application_event::{AppEvent, AppEventReader};
 use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
 use character_selection::CharacterSelectionBundle;
@@ -124,7 +124,7 @@ impl AutexousiousApplication {
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
             .with_bundle(CharacterSelectionBundle::new())
-            .with_state(|| LoadingState::new(ASSETS_PATH.clone(), EmptyState))
+            .with_state(|| LoadingState::new(ASSETS_PATH.clone(), PopState))
     }
 
     /// Returns an application with game objects loaded.
@@ -157,14 +157,14 @@ impl AutexousiousApplication {
                 world.add_resource(CharacterSelectionsStatus::Ready);
             })
             .with_setup(SetupFunction::map_selection(ASSETS_MAP_FADE_SLUG.clone()))
-            .with_state(|| GameLoadingState::new(|| Box::new(EmptyState)))
+            .with_state(|| GameLoadingState::new(|| Box::new(PopState)))
     }
 }
 
 #[cfg(test)]
 mod test {
     use amethyst::{input::InputHandler, ui::MouseReactive};
-    use amethyst_test_support::SpriteRenderAnimationFixture;
+    use amethyst_test::SpriteRenderAnimationFixture;
     use game_input::{PlayerActionControl, PlayerAxisControl};
     use game_model::loaded::{CharacterAssets, MapAssets};
     use game_model::play::GameEntities;
