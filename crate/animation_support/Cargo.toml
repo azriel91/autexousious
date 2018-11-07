@@ -8,7 +8,7 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 derive-new = "0.5"
 derive_more = "0.13"
 fnv = "1.0"
-minterpolate = { version = "0.3", features = ["serde"] }
+minterpolate = { version = "0.4", features = ["serde"] }
 named_type = "0.1.6"
 named_type_derive = "0.1.6"
 serde = "1.0"

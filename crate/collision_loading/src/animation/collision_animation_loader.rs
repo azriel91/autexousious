@@ -197,7 +197,7 @@ mod test {
         assets::AssetStorage,
         prelude::*,
     };
-    use amethyst_test_support::prelude::*;
+    use amethyst_test::prelude::*;
     use animation_support::{ActiveHandleChannel, ActiveHandlePrimitive};
     use collision_model::{
         animation::{

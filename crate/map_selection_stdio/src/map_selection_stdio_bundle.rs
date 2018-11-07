@@ -28,7 +28,7 @@ mod test {
     use std::env;
 
     use amethyst::shrev::EventChannel;
-    use amethyst_test_support::prelude::*;
+    use amethyst_test::prelude::*;
     use game_model::loaded::MapAssets;
     use stdio_spi::VariantAndTokens;
 

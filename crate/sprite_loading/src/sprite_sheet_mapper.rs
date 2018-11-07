@@ -53,19 +53,28 @@ impl SpriteSheetMapper {
                 // 10 11 12 13 14
                 // 15 16 17 18 19
 
+                // Offsets are shifted up by half the sprite width and height, as Amethyst uses the
+                // middle of sprites as the pivot point.
                 let offset_x = offset_w * col as u32;
                 let offset_y = offset_h * row as u32;
                 let offsets = sprite_offsets.map_or_else(
-                    || [0.; 2],
+                    || {
+                        [
+                            definition.sprite_w as f32 / -2.,
+                            definition.sprite_h as f32 / -2.,
+                        ]
+                    },
                     |sprite_offsets| {
                         let sprite_index = (row * definition.column_count + col) as usize;
                         let sprite_offset = &sprite_offsets[sprite_index];
 
                         [
-                            (sprite_offset.x - offset_x as i32) as f32,
+                            (sprite_offset.x - offset_x as i32) as f32
+                                - definition.sprite_w as f32 / 2.,
                             // Negate the Y value because we want to shift the sprite up, whereas
                             // the offset in Amethyst is to shift it down.
-                            (offset_y as i32 - sprite_offset.y) as f32,
+                            (offset_y as i32 - sprite_offset.y) as f32
+                                - definition.sprite_h as f32 / 2.,
                         ]
                     },
                 );
@@ -178,38 +187,38 @@ mod test {
             // Sprites top row
             (
                 (9., 19.),
-                [0., 0.],
+                [-4.5, -9.5],
                 [0.5 / 30., 8.5 / 30., 21.5 / 40., 39.5 / 40.],
             )
                 .into(),
             (
                 (9., 19.),
-                [-9., -1.],
+                [-13.5, -10.5],
                 [10.5 / 30., 18.5 / 30., 21.5 / 40., 39.5 / 40.],
             )
                 .into(),
             (
                 (9., 19.),
-                [-18., -2.],
+                [-22.5, -11.5],
                 [20.5 / 30., 28.5 / 30., 21.5 / 40., 39.5 / 40.],
             )
                 .into(),
             // Sprites bottom row
             (
                 (9., 19.),
-                [3., 17.],
+                [-1.5, 7.5],
                 [0.5 / 30., 8.5 / 30., 1.5 / 40., 19.5 / 40.],
             )
                 .into(),
             (
                 (9., 19.),
-                [-6., 16.],
+                [-10.5, 6.5],
                 [10.5 / 30., 18.5 / 30., 1.5 / 40., 19.5 / 40.],
             )
                 .into(),
             (
                 (9., 19.),
-                [-15., 15.],
+                [-19.5, 5.5],
                 [20.5 / 30., 28.5 / 30., 1.5 / 40., 19.5 / 40.],
             )
                 .into(),
@@ -220,14 +229,12 @@ mod test {
         };
         let sprite_sheet_1 = SpriteSheet {
             texture_id: 11,
-            sprites: vec![
-                (
-                    (19., 29.),
-                    [0., 0.],
-                    [0.5 / 20., 18.5 / 20., 1.5 / 30., 29.5 / 30.],
-                )
-                    .into(),
-            ],
+            sprites: vec![(
+                (19., 29.),
+                [-9.5, -14.5],
+                [0.5 / 20., 18.5 / 20., 1.5 / 30., 29.5 / 30.],
+            )
+                .into()],
         };
 
         // kcov-ignore-start
@@ -246,38 +253,38 @@ mod test {
             // Sprites top row
             (
                 (10., 20.),
-                [0., 0.],
+                [-5., -10.],
                 [0.5 / 30., 9.5 / 30., 20.5 / 40., 39.5 / 40.],
             )
                 .into(),
             (
                 (10., 20.),
-                [-9., -1.],
+                [-14., -11.],
                 [10.5 / 30., 19.5 / 30., 20.5 / 40., 39.5 / 40.],
             )
                 .into(),
             (
                 (10., 20.),
-                [-18., -2.],
+                [-23., -12.],
                 [20.5 / 30., 29.5 / 30., 20.5 / 40., 39.5 / 40.],
             )
                 .into(),
             // Sprites bottom row
             (
                 (10., 20.),
-                [3., 17.],
+                [-2., 7.],
                 [0.5 / 30., 9.5 / 30., 0.5 / 40., 19.5 / 40.],
             )
                 .into(),
             (
                 (10., 20.),
-                [-6., 16.],
+                [-11., 6.],
                 [10.5 / 30., 19.5 / 30., 0.5 / 40., 19.5 / 40.],
             )
                 .into(),
             (
                 (10., 20.),
-                [-15., 15.],
+                [-20., 5.],
                 [20.5 / 30., 29.5 / 30., 0.5 / 40., 19.5 / 40.],
             )
                 .into(),
@@ -288,14 +295,12 @@ mod test {
         };
         let sprite_sheet_1 = SpriteSheet {
             texture_id: 11,
-            sprites: vec![
-                (
-                    (19., 29.),
-                    [0., 0.],
-                    [0.5 / 20., 18.5 / 20., 1.5 / 30., 29.5 / 30.],
-                )
-                    .into(),
-            ],
+            sprites: vec![(
+                (19., 29.),
+                [-9.5, -14.5],
+                [0.5 / 20., 18.5 / 20., 1.5 / 30., 29.5 / 30.],
+            )
+                .into()],
         };
 
         // kcov-ignore-start
@@ -307,19 +312,17 @@ mod test {
     }
 
     #[test]
-    fn offsets_defaults_to_zero_if_none() {
+    fn offsets_defaults_to_negated_half_sprite_dimensions_if_none() {
         let sprite_sheet_definitions = [no_offsets_definition()];
 
         let sprite_sheet = SpriteSheet {
             texture_id: 10,
-            sprites: vec![
-                (
-                    (19., 29.),
-                    [0., 0.],
-                    [0.5 / 20., 18.5 / 20., 1.5 / 30., 29.5 / 30.],
-                )
-                    .into(),
-            ],
+            sprites: vec![(
+                (19., 29.),
+                [-9.5, -14.5],
+                [0.5 / 20., 18.5 / 20., 1.5 / 30., 29.5 / 30.],
+            )
+                .into()],
         };
 
         // kcov-ignore-start

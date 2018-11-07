@@ -28,7 +28,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for MapPlayBundle {
 mod test {
     use std::env;
 
-    use amethyst_test_support::prelude::*;
+    use amethyst_test::prelude::*;
 
     use super::MapPlayBundle;
 

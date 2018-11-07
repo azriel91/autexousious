@@ -1,3 +1,5 @@
+use std::iter;
+
 use amethyst::input::{Axis as InputAxis, Bindings, Button};
 
 use config::ControllerConfig;
@@ -56,7 +58,7 @@ impl<'config> From<&'config InputConfig> for Bindings<PlayerAxisControl, PlayerA
                     .collect::<Vec<(PlayerActionControl, Button)>>()
             })
             .for_each(|(player_action_control, input_button)| {
-                bindings.insert_action_binding(player_action_control, input_button);
+                bindings.insert_action_binding(player_action_control, iter::once(input_button));
             });
 
         bindings

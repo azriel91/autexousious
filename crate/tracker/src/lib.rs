@@ -10,7 +10,7 @@
 
 extern crate amethyst;
 #[cfg(test)]
-extern crate amethyst_test_support;
+extern crate amethyst_test;
 #[macro_use]
 extern crate derive_new;
 extern crate named_type;

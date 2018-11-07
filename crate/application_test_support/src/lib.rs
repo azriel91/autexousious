@@ -3,11 +3,11 @@
 
 //! Test harness to support testing of Autexousious applications.
 //!
-//! This builds on top of the `amethyst_test_support` crate by providing single calls to common
+//! This builds on top of the `amethyst_test` crate by providing single calls to common
 //! application setups necessary to test Autexousious applications.
 
 extern crate amethyst;
-extern crate amethyst_test_support;
+extern crate amethyst_test;
 extern crate application_event;
 extern crate asset_loading;
 extern crate assets_test;

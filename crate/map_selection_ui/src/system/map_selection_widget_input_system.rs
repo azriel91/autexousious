@@ -155,7 +155,7 @@ mod test {
         ecs::prelude::*,
         shrev::{EventChannel, ReaderId},
     };
-    use amethyst_test_support::prelude::*;
+    use amethyst_test::prelude::*;
     use application_test_support::AutexousiousApplication;
     use assets_test::ASSETS_MAP_EMPTY_SLUG;
     use game_input::ControllerInput;

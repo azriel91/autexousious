@@ -147,7 +147,7 @@ mod test {
     use std::env;
 
     use amethyst::{ecs::Join, prelude::*};
-    use amethyst_test_support::prelude::*;
+    use amethyst_test::prelude::*;
     use application_ui::ThemeLoader;
     use game_mode_selection_model::GameModeSelectionEntity;
 

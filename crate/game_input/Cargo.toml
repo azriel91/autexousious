@@ -16,6 +16,6 @@ typename_derive = "0.1"
 
 [dev-dependencies]
 application = { path = "../application" }
-amethyst_test_support = { path = "../amethyst_test_support" }
+amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
 hamcrest = "*"
 winit = "0.17"

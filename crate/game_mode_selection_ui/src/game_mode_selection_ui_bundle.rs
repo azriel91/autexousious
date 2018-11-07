@@ -37,7 +37,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameModeSelectionUiBundle {
 mod test {
     use std::env;
 
-    use amethyst_test_support::prelude::*;
+    use amethyst_test::prelude::*;
 
     use super::GameModeSelectionUiBundle;
 

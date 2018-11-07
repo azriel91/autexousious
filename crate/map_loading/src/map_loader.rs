@@ -39,7 +39,7 @@ impl MapLoader {
                 let animation_handles = SpriteRenderAnimationLoader::load_into_vec(
                     world,
                     map_definition.layers.iter(),
-                    texture_index_offset,
+                    &sprite_sheet_handles,
                 );
                 (Some(sprite_sheet_handles), Some(animation_handles))
             } else {
@@ -65,7 +65,7 @@ impl MapLoader {
 #[cfg(test)]
 mod tests {
     use amethyst::assets::AssetStorage;
-    use amethyst_test_support::prelude::*;
+    use amethyst_test::prelude::*;
     use assets_test::ASSETS_MAP_EMPTY_PATH;
     use map_model::loaded::{Map, MapHandle};
 

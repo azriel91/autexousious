@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use amethyst::{
     prelude::*,
-    renderer::{SpriteRender, SpriteSheetSet},
+    renderer::{MaterialTextureSet, SpriteRender},
 };
 use application::Result;
 use collision_loading::CollisionAnimationLoader;
@@ -33,23 +33,26 @@ impl ObjectLoader {
         asset_record: &AssetRecord,
         object_definition: &ObjectDefinition<SeqId>,
     ) -> Result<Object<SeqId>> {
-        let sprite_sheet_index_offset = world.read_resource::<SpriteSheetSet>().len() as u64;
+        let sprite_sheet_index_offset = world.read_resource::<MaterialTextureSet>().len() as u64;
         let collision_frame_offset = world.read_resource::<CollisionDataSet>().len() as u64;
 
         debug!("Loading object assets in `{}`", asset_record.path.display());
 
         let (sprite_sheet_handles, _texture_handles) =
             SpriteLoader::load(world, sprite_sheet_index_offset, &asset_record.path)?;
-        let sprite_sheet = sprite_sheet_handles
-            .into_iter()
-            .next()
-            .expect("Expected character to have at least one sprite sheet.");
 
         // === Animation Component Defaults === //
 
         // Load the animation defaults in a separate scope because the animations' loaders may read
         // the `AnimationDataSet`s mutably, and that will cause a panic at runtime since loading
         // animation defaults borrows them immutably.
+
+        let sprite_sheet = sprite_sheet_handles
+            .iter()
+            .next()
+            .expect("Expected character to have at least one sprite sheet.")
+            .clone();
+
         let animation_defaults = {
             let mut animation_defaults = Vec::new();
             let collision_data_set = world.read_resource::<CollisionDataSet>();
@@ -79,7 +82,7 @@ impl ObjectLoader {
         let mut sprite_render_animations = SpriteRenderAnimationLoader::load_into_map(
             world,
             &object_definition.sequences,
-            sprite_sheet_index_offset,
+            &sprite_sheet_handles,
         );
         let mut collision_frame_animations = CollisionAnimationLoader::load_into_map(
             world,
@@ -110,7 +113,7 @@ impl ObjectLoader {
 #[cfg(test)]
 mod test {
     use amethyst::animation::AnimationBundle;
-    use amethyst_test_support::AmethystApplication;
+    use amethyst_test::AmethystApplication;
     use application::{load_in, Format};
     use assets_test::{ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SLUG};
     use collision_loading::CollisionLoadingBundle;

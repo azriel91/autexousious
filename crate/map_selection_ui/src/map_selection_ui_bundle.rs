@@ -59,7 +59,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for MapSelectionUiBundle {
 mod test {
     use std::env;
 
-    use amethyst_test_support::prelude::*;
+    use amethyst_test::prelude::*;
     use game_input::{GameInputBundle, InputConfig, PlayerActionControl, PlayerAxisControl};
 
     use super::MapSelectionUiBundle;

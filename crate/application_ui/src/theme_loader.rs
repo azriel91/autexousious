@@ -63,7 +63,7 @@ impl ThemeLoader {
 #[cfg(test)]
 mod test {
     use amethyst::{prelude::*, renderer::ScreenDimensions};
-    use amethyst_test_support::prelude::*;
+    use amethyst_test::prelude::*;
     use application::resource;
     use strum::IntoEnumIterator;
 

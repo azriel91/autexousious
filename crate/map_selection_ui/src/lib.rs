@@ -5,7 +5,7 @@
 
 extern crate amethyst;
 #[cfg(test)]
-extern crate amethyst_test_support;
+extern crate amethyst_test;
 #[cfg(test)]
 extern crate application_test_support;
 extern crate application_ui;

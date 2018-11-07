@@ -22,7 +22,7 @@ mod test {
     use std::env;
 
     use amethyst::shrev::EventChannel;
-    use amethyst_test_support::prelude::*;
+    use amethyst_test::prelude::*;
     use application_input::ApplicationEvent;
 
     use super::StdioViewBundle;

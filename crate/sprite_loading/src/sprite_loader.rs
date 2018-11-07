@@ -2,7 +2,7 @@ use std::path::Path;
 
 use amethyst::{
     prelude::*,
-    renderer::{MaterialTextureSet, SpriteSheetHandle, SpriteSheetSet, TextureHandle},
+    renderer::{MaterialTextureSet, SpriteSheetHandle, TextureHandle},
 };
 use application::{load_in, Format, Result};
 use sprite_model::config::SpritesDefinition;
@@ -37,11 +37,6 @@ impl SpriteLoader {
 
         let sprite_sheet_handles =
             SpriteSheetLoader::load(world, sprite_sheet_index_offset, &sprites_definition.sheets);
-        Self::store_sprite_sheets_in_sprite_sheet_set(
-            world,
-            sprite_sheet_index_offset,
-            &sprite_sheet_handles,
-        );
 
         let texture_handles =
             TextureLoader::load_textures(world, base_dir, &sprites_definition.sheets)?;
@@ -78,33 +73,6 @@ impl SpriteLoader {
                 world
                     .write_resource::<MaterialTextureSet>()
                     .insert(texture_index, texture_handle.clone());
-            });
-    }
-
-    /// Stores the texture handles into the global `MaterialTextureSet`.
-    ///
-    /// # Parameters
-    ///
-    /// * `world`: `World` to store the sprite sheet handles.
-    /// * `sprite_sheet_index_offset`: The sprite sheet index offset to begin with.
-    /// * `sprite_sheet_handles`: Sprite sheet handles to store.
-    fn store_sprite_sheets_in_sprite_sheet_set(
-        world: &World,
-        sprite_sheet_index_offset: u64,
-        sprite_sheet_handles: &[SpriteSheetHandle],
-    ) {
-        sprite_sheet_handles
-            .iter()
-            .enumerate()
-            .for_each(|(index, sprite_sheet_handle)| {
-                let sprite_sheet_index = sprite_sheet_index_offset + index as u64;
-                debug!(
-                    "Storing sprite sheet handle: `{:?}` in SpriteSheetSet index: `{:?}`",
-                    sprite_sheet_handle, sprite_sheet_index
-                );
-                world
-                    .write_resource::<SpriteSheetSet>()
-                    .insert(sprite_sheet_index, sprite_sheet_handle.clone());
             });
     }
 }

@@ -74,7 +74,7 @@ mod tests {
     use std::env;
 
     use amethyst::{animation::AnimationBundle, ecs::prelude::*, shrev::EventChannel};
-    use amethyst_test_support::prelude::*;
+    use amethyst_test::prelude::*;
     use application_event::{AppEvent, AppEventReader};
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
     use character_selection_model::{
@@ -111,7 +111,7 @@ mod tests {
                 .with_bundle(CollisionLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_bundle(ObjectLoadingBundle::new())
-                .with_state(|| LoadingState::new(ASSETS_PATH.clone(), EmptyState))
+                .with_state(|| LoadingState::new(ASSETS_PATH.clone(), PopState))
                 .with_system(
                     CharacterSelectionSystem::new(),
                     CharacterSelectionSystem::type_name(),
@@ -167,7 +167,7 @@ mod tests {
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
-            .with_state(|| LoadingState::new(ASSETS_PATH.clone(), EmptyState))
+            .with_state(|| LoadingState::new(ASSETS_PATH.clone(), PopState))
             .with_system(
                 CharacterSelectionSystem::new(),
                 CharacterSelectionSystem::type_name(),

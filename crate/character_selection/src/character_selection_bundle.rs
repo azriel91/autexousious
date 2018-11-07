@@ -50,7 +50,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionBundle {
 #[cfg(test)]
 mod test {
     use amethyst::core::transform::TransformBundle;
-    use amethyst_test_support::prelude::*;
+    use amethyst_test::prelude::*;
 
     use super::CharacterSelectionBundle;
 

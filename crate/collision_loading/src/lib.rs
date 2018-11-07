@@ -5,7 +5,7 @@
 
 extern crate amethyst;
 #[cfg(test)]
-extern crate amethyst_test_support;
+extern crate amethyst_test;
 extern crate animation_support;
 extern crate application;
 extern crate collision_model;

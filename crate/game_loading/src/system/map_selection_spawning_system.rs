@@ -56,7 +56,7 @@ mod tests {
     use std::env;
 
     use amethyst::{assets::ProgressCounter, ecs::prelude::*};
-    use amethyst_test_support::prelude::*;
+    use amethyst_test::prelude::*;
     use asset_loading::AssetDiscovery;
     use assets_test::{ASSETS_MAP_EMPTY_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
     use game_model::{

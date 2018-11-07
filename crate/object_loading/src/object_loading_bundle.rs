@@ -22,7 +22,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for ObjectLoadingBundle {
 #[cfg(test)]
 mod test {
     use amethyst::assets::AssetStorage;
-    use amethyst_test_support::AmethystApplication;
+    use amethyst_test::AmethystApplication;
     use object_model::{loaded::Character, ObjectType};
     use strum::IntoEnumIterator;
 

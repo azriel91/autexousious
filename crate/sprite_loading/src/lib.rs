@@ -26,7 +26,7 @@
 
 extern crate amethyst;
 #[cfg(test)]
-extern crate amethyst_test_support;
+extern crate amethyst_test;
 extern crate application;
 #[cfg(test)]
 extern crate assets_test;
@@ -56,7 +56,7 @@ mod texture_loader;
 
 #[cfg(test)]
 mod test {
-    use amethyst_test_support::AmethystApplication;
+    use amethyst_test::AmethystApplication;
     use assets_test::ASSETS_CHAR_BAT_PATH;
 
     use super::SpriteLoader;
