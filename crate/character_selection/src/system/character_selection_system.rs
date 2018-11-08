@@ -81,7 +81,7 @@ mod tests {
         CharacterSelection, CharacterSelectionEvent, CharacterSelections, CharacterSelectionsStatus,
     };
     use collision_loading::CollisionLoadingBundle;
-    use collision_model::animation::CollisionFrameActiveHandle;
+    use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
     use game_input::{PlayerActionControl, PlayerAxisControl};
     use game_model::loaded::SlugAndHandle;
     use loading::LoadingState;
@@ -101,12 +101,18 @@ mod tests {
             // kcov-ignore-end
             AmethystApplication::render_base("inserts_character_selection_on_select_event", false)
                 .with_custom_event_type::<AppEvent, AppEventReader>()
+                .with_bundle(
+                    AnimationBundle::<CharacterSequenceId, BodyFrameActiveHandle>::new(
+                        "character_body_frame_acs",
+                        "character_body_frame_sis",
+                    )
+                )
                 .with_bundle(AnimationBundle::<
                     CharacterSequenceId,
-                    CollisionFrameActiveHandle,
+                    InteractionFrameActiveHandle,
                 >::new(
-                    "character_collision_frame_acs",
-                    "character_collision_frame_sis",
+                    "character_interaction_frame_acs",
+                    "character_interaction_frame_sis",
                 ))
                 .with_bundle(CollisionLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
@@ -157,12 +163,18 @@ mod tests {
                 false
             )
             .with_custom_event_type::<AppEvent, AppEventReader>()
+            .with_bundle(
+                AnimationBundle::<CharacterSequenceId, BodyFrameActiveHandle>::new(
+                    "character_body_frame_acs",
+                    "character_body_frame_sis",
+                )
+            )
             .with_bundle(AnimationBundle::<
                 CharacterSequenceId,
-                CollisionFrameActiveHandle,
+                InteractionFrameActiveHandle,
             >::new(
-                "character_collision_frame_acs",
-                "character_collision_frame_sis",
+                "character_interaction_frame_acs",
+                "character_interaction_frame_sis",
             ))
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())

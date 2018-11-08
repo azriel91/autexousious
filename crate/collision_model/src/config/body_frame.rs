@@ -4,32 +4,27 @@ use amethyst::{
 };
 use shape_model::Volume;
 
-use config::Interaction;
-
 /// Frame for an interactable object.
 #[derive(Clone, Debug, Derivative, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
 #[derivative(Default)]
-pub struct CollisionFrame {
+pub struct BodyFrame {
     /// Hittable volumes of the object.
     #[serde(default)]
     pub body: Option<Vec<Volume>>,
-    /// Effects on other objects.
-    #[serde(default)]
-    pub interactions: Option<Vec<Interaction>>,
     /// Number of ticks to wait before the sequence switches to the next frame.
     #[serde(default)]
     pub wait: u32,
 }
 
-impl Asset for CollisionFrame {
-    const NAME: &'static str = "collision_model::config::CollisionFrame";
+impl Asset for BodyFrame {
+    const NAME: &'static str = "collision_model::config::BodyFrame";
     type Data = Self;
     type HandleStorage = VecStorage<Handle<Self>>;
 }
 
-impl From<CollisionFrame> for AssetsResult<ProcessingState<CollisionFrame>> {
-    fn from(collision_frame: CollisionFrame) -> AssetsResult<ProcessingState<CollisionFrame>> {
-        Ok(ProcessingState::Loaded(collision_frame))
+impl From<BodyFrame> for AssetsResult<ProcessingState<BodyFrame>> {
+    fn from(body_frame: BodyFrame) -> AssetsResult<ProcessingState<BodyFrame>> {
+        Ok(ProcessingState::Loaded(body_frame))
     }
 }
 
@@ -38,8 +33,7 @@ mod tests {
     use shape_model::{Axis, Volume};
     use toml;
 
-    use super::CollisionFrame;
-    use config::Interaction;
+    use super::BodyFrame;
 
     const BODY_ALL_SPECIFIED: &str = r#"
         body = [
@@ -56,21 +50,11 @@ mod tests {
           { sphere = { x = -7, y = -8, r = 17 } },
         ]
     "#;
-    const ITR_PHYSICAL_ALL_SPECIFIED: &str = r#"
-        interactions = [
-          { physical = { bounds = [{ sphere = { x = 1, y = 1, r = 1 } }], hp_damage = 40, sp_damage = 50, multiple = true } },
-        ]
-    "#;
-    const ITR_PHYSICAL_MINIMUM_SPECIFIED: &str = r#"
-        interactions = [
-          { physical = { bounds = [{ sphere = { x = 1, y = 1, r = 1 } }] } },
-        ]
-    "#;
 
     #[test]
     fn body_specify_all_fields() {
-        let frame = toml::from_str::<CollisionFrame>(BODY_ALL_SPECIFIED)
-            .expect("Failed to deserialize frame.");
+        let frame =
+            toml::from_str::<BodyFrame>(BODY_ALL_SPECIFIED).expect("Failed to deserialize frame.");
 
         let body_volumes = vec![
             Volume::Box {
@@ -106,12 +90,12 @@ mod tests {
                 r: 17,
             },
         ];
-        assert_eq!(CollisionFrame::new(Some(body_volumes), None, 0), frame);
+        assert_eq!(BodyFrame::new(Some(body_volumes), 0), frame);
     }
 
     #[test]
     fn body_specify_minimum_fields() {
-        let frame = toml::from_str::<CollisionFrame>(BODY_MINIMUM_SPECIFIED)
+        let frame = toml::from_str::<BodyFrame>(BODY_MINIMUM_SPECIFIED)
             .expect("Failed to deserialize frame.");
 
         let body_volumes = vec![
@@ -130,44 +114,6 @@ mod tests {
                 r: 17,
             },
         ];
-        assert_eq!(CollisionFrame::new(Some(body_volumes), None, 0), frame);
-    }
-
-    #[test]
-    fn itr_physical_specify_all_fields() {
-        let frame = toml::from_str::<CollisionFrame>(ITR_PHYSICAL_ALL_SPECIFIED)
-            .expect("Failed to deserialize frame.");
-
-        let interactions = vec![Interaction::Physical {
-            bounds: vec![Volume::Sphere {
-                x: 1,
-                y: 1,
-                z: 0,
-                r: 1,
-            }],
-            hp_damage: 40,
-            sp_damage: 50,
-            multiple: true,
-        }];
-        assert_eq!(CollisionFrame::new(None, Some(interactions), 0), frame);
-    }
-
-    #[test]
-    fn itr_physical_specify_minimum_fields() {
-        let frame = toml::from_str::<CollisionFrame>(ITR_PHYSICAL_MINIMUM_SPECIFIED)
-            .expect("Failed to deserialize frame.");
-
-        let interactions = vec![Interaction::Physical {
-            bounds: vec![Volume::Sphere {
-                x: 1,
-                y: 1,
-                z: 0,
-                r: 1,
-            }],
-            hp_damage: 0,
-            sp_damage: 0,
-            multiple: false,
-        }];
-        assert_eq!(CollisionFrame::new(None, Some(interactions), 0), frame);
+        assert_eq!(BodyFrame::new(Some(body_volumes), 0), frame);
     }
 }

@@ -8,8 +8,6 @@ extern crate animation_support;
 #[macro_use]
 extern crate derivative;
 #[macro_use]
-extern crate derive_more;
-#[macro_use]
 extern crate derive_new;
 extern crate minterpolate;
 #[cfg(test)]

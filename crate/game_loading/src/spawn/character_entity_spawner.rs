@@ -5,10 +5,7 @@ use amethyst::{
     ecs::{prelude::*, world::EntitiesRes},
     renderer::{SpriteRender, Transparent},
 };
-use collision_model::{
-    animation::{CollisionFrameActiveHandle, CollisionFrameId},
-    config::CollisionFrame,
-};
+use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
 use game_input::{ControllerInput, InputControlled};
 use game_model::loaded::SlugAndHandle;
 use object_model::{
@@ -18,8 +15,9 @@ use object_model::{
 };
 
 use AnimationRunner;
+use BodyAcs;
 use CharacterComponentStorages;
-use CollisionAcs;
+use InteractionAcs;
 use ObjectAnimationStorages;
 use ObjectComponentStorages;
 use ObjectSpawningResources;
@@ -59,11 +57,13 @@ impl CharacterEntitySpawner {
                 world.write_storage::<Transparent>(),
                 world.write_storage::<Kinematics<f32>>(),
                 world.write_storage::<Transform>(),
-                world.write_storage::<CollisionFrameActiveHandle>(),
+                world.write_storage::<BodyFrameActiveHandle>(),
+                world.write_storage::<InteractionFrameActiveHandle>(),
             ), // kcov-ignore
             &mut (
                 world.write_storage::<SpriteRenderAcs<CharacterSequenceId>>(),
-                world.write_storage::<CollisionAcs<CharacterSequenceId>>(),
+                world.write_storage::<BodyAcs<CharacterSequenceId>>(),
+                world.write_storage::<InteractionAcs<CharacterSequenceId>>(),
             ),
             kinematics,
             slug_and_handle,
@@ -94,9 +94,10 @@ impl CharacterEntitySpawner {
             ref mut transparent_storage,
             ref mut kinematics_storage,
             ref mut transform_storage,
-            ref mut collision_frame_active_handle_storage,
-        ): &mut ObjectComponentStorages<'s, CollisionFrameId, CollisionFrame>,
-        (ref mut sprite_acs, ref mut collision_acs): &mut ObjectAnimationStorages<
+            ref mut body_frame_active_handle_storage,
+            ref mut interaction_frame_active_handle_storage,
+        ): &mut ObjectComponentStorages<'s>,
+        (ref mut sprite_acs, ref mut body_frame_acs, ref mut interaction_acs): &mut ObjectAnimationStorages<
             's,
             CharacterSequenceId,
         >,
@@ -169,23 +170,32 @@ impl CharacterEntitySpawner {
                         .insert(entity, sprite_render.clone())
                         .expect("Failed to insert `SpriteRender` component.");
                 }
-                AnimatedComponentDefault::CollisionFrame(ref active_handle) => {
-                    // Default collision active handle
-                    collision_frame_active_handle_storage
+                AnimatedComponentDefault::BodyFrame(ref active_handle) => {
+                    // Default body active handle
+                    body_frame_active_handle_storage
                         .insert(entity, active_handle.clone())
-                        .expect("Failed to insert `CollisionFrameActiveHandle` component.");
+                        .expect("Failed to insert `BodyFrameActiveHandle` component.");
+                }
+                AnimatedComponentDefault::InteractionFrame(ref active_handle) => {
+                    // Default interaction active handle
+                    interaction_frame_active_handle_storage
+                        .insert(entity, active_handle.clone())
+                        .expect("Failed to insert `InteractionFrameActiveHandle` component.");
                 }
             });
 
         // We also need to trigger the animation, not just attach it to the entity
         let mut sprite_animation_set =
             get_animation_set::<CharacterSequenceId, SpriteRender>(sprite_acs, entity)
-                .expect("Animation should exist as new entity should be valid.");
-        let mut collision_animation_set = get_animation_set::<
+                .expect("Sprite animation should exist as new entity should be valid.");
+        let mut body_animation_set =
+            get_animation_set::<CharacterSequenceId, BodyFrameActiveHandle>(body_frame_acs, entity)
+                .expect("Body animation should exist as new entity should be valid.");
+        let mut interaction_animation_set = get_animation_set::<
             CharacterSequenceId,
-            CollisionFrameActiveHandle,
-        >(collision_acs, entity)
-        .expect("Animation should exist as new entity should be valid.");
+            InteractionFrameActiveHandle,
+        >(interaction_acs, entity)
+        .expect("Interaction animation should exist as new entity should be valid.");
 
         first_sequence_animations
             .iter()
@@ -193,8 +203,15 @@ impl CharacterEntitySpawner {
                 AnimatedComponentAnimation::SpriteRender(ref handle) => {
                     AnimationRunner::start(first_sequence_id, &mut sprite_animation_set, handle);
                 }
-                AnimatedComponentAnimation::CollisionFrame(ref handle) => {
-                    AnimationRunner::start(first_sequence_id, &mut collision_animation_set, handle);
+                AnimatedComponentAnimation::BodyFrame(ref handle) => {
+                    AnimationRunner::start(first_sequence_id, &mut body_animation_set, handle);
+                }
+                AnimatedComponentAnimation::InteractionFrame(ref handle) => {
+                    AnimationRunner::start(
+                        first_sequence_id,
+                        &mut interaction_animation_set,
+                        handle,
+                    );
                 }
             });
 
@@ -217,10 +234,7 @@ mod test {
     use application_event::{AppEvent, AppEventReader};
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
     use collision_loading::CollisionLoadingBundle;
-    use collision_model::{
-        animation::{CollisionFrameActiveHandle, CollisionFrameId},
-        config::CollisionFrame,
-    };
+    use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
     use game_input::{ControllerInput, InputControlled};
     use game_model::loaded::SlugAndHandle;
     use loading::LoadingState;
@@ -276,12 +290,17 @@ mod test {
                 false
             )
             .with_custom_event_type::<AppEvent, AppEventReader>()
+            .with_bundle(
+                AnimationBundle::<CharacterSequenceId, BodyFrameActiveHandle>::new(
+                    "character_body_frame_acs",
+                    "character_body_frame_sis",
+                )
+            )
             .with_bundle(AnimationBundle::<
                 CharacterSequenceId,
-                CollisionFrameActiveHandle,
+                InteractionFrameActiveHandle,
             >::new(
-                "character_collision_frame_acs",
-                "character_collision_frame_sis",
+                "character_interaction_acs", "character_interaction_sis",
             ))
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
@@ -300,7 +319,7 @@ mod test {
     type TestSystemData<'s> = (
         CharacterComponentStorages<'s>,
         ObjectAnimationStorages<'s, CharacterSequenceId>,
-        ObjectComponentStorages<'s, CollisionFrameId, CollisionFrame>,
+        ObjectComponentStorages<'s>,
         ObjectSpawningResources<'s, Character>,
         Read<'s, AssetStorage<Map>>,
     );

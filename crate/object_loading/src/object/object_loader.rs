@@ -1,13 +1,15 @@
 use std::collections::HashMap;
 
 use amethyst::{
+    assets::Loader,
     prelude::*,
     renderer::{MaterialTextureSet, SpriteRender},
 };
 use application::Result;
-use collision_loading::CollisionAnimationLoader;
-use collision_model::animation::{
-    CollisionDataSet, CollisionFrameActiveHandle, DEFAULT_COLLISION_FRAME_ID,
+use collision_loading::{BodyAnimationLoader, InteractionAnimationLoader};
+use collision_model::{
+    animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle},
+    config::{BodyFrame, InteractionFrame},
 };
 use game_model::config::AssetRecord;
 use object_model::{
@@ -34,7 +36,6 @@ impl ObjectLoader {
         object_definition: &ObjectDefinition<SeqId>,
     ) -> Result<Object<SeqId>> {
         let sprite_sheet_index_offset = world.read_resource::<MaterialTextureSet>().len() as u64;
-        let collision_frame_offset = world.read_resource::<CollisionDataSet>().len() as u64;
 
         debug!("Loading object assets in `{}`", asset_record.path.display());
 
@@ -55,7 +56,6 @@ impl ObjectLoader {
 
         let animation_defaults = {
             let mut animation_defaults = Vec::new();
-            let collision_data_set = world.read_resource::<CollisionDataSet>();
 
             let sprite_render = SpriteRender {
                 sprite_sheet,
@@ -65,13 +65,23 @@ impl ObjectLoader {
             };
             animation_defaults.push(AnimatedComponentDefault::SpriteRender(sprite_render));
 
-            let collision_frame_handle = collision_data_set
-                .data(DEFAULT_COLLISION_FRAME_ID)
-                .expect("Expected default collision frame to be loaded.");
-            let collision_frame_active_handle =
-                CollisionFrameActiveHandle::new(collision_frame_handle);
-            animation_defaults.push(AnimatedComponentDefault::CollisionFrame(
-                collision_frame_active_handle,
+            let body_frame_handle = {
+                let loader = world.read_resource::<Loader>();
+                loader.load_from_data(BodyFrame::default(), (), &world.read_resource())
+            };
+            let body_frame_active_handle = BodyFrameActiveHandle::new(body_frame_handle);
+            animation_defaults.push(AnimatedComponentDefault::BodyFrame(
+                body_frame_active_handle,
+            ));
+
+            let interaction_frame_handle = {
+                let loader = world.read_resource::<Loader>();
+                loader.load_from_data(InteractionFrame::default(), (), &world.read_resource())
+            };
+            let interaction_frame_active_handle =
+                InteractionFrameActiveHandle::new(interaction_frame_handle);
+            animation_defaults.push(AnimatedComponentDefault::InteractionFrame(
+                interaction_frame_active_handle,
             ));
 
             animation_defaults
@@ -84,11 +94,10 @@ impl ObjectLoader {
             &object_definition.sequences,
             &sprite_sheet_handles,
         );
-        let mut collision_frame_animations = CollisionAnimationLoader::load_into_map(
-            world,
-            &object_definition.sequences,
-            collision_frame_offset,
-        );
+        let mut body_frame_animations =
+            BodyAnimationLoader::load_into_map(world, &object_definition.sequences);
+        let mut interaction_frame_animations =
+            InteractionAnimationLoader::load_into_map(world, &object_definition.sequences);
 
         let animations = object_definition
             .sequences
@@ -98,8 +107,13 @@ impl ObjectLoader {
                 if let Some(sprite_render) = sprite_render_animations.remove(sequence_id) {
                     animations.push(AnimatedComponentAnimation::SpriteRender(sprite_render));
                 }
-                if let Some(collision_frame) = collision_frame_animations.remove(sequence_id) {
-                    animations.push(AnimatedComponentAnimation::CollisionFrame(collision_frame));
+                if let Some(body_frame) = body_frame_animations.remove(sequence_id) {
+                    animations.push(AnimatedComponentAnimation::BodyFrame(body_frame));
+                }
+                if let Some(interaction_frame) = interaction_frame_animations.remove(sequence_id) {
+                    animations.push(AnimatedComponentAnimation::InteractionFrame(
+                        interaction_frame,
+                    ));
                 }
 
                 (*sequence_id, animations)
@@ -117,7 +131,7 @@ mod test {
     use application::{load_in, Format};
     use assets_test::{ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SLUG};
     use collision_loading::CollisionLoadingBundle;
-    use collision_model::animation::CollisionFrameActiveHandle;
+    use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
     use game_model::config::AssetRecord;
     use object_model::config::{object::CharacterSequenceId, CharacterDefinition};
 
@@ -129,12 +143,18 @@ mod test {
         assert!(
             // kcov-ignore-end
             AmethystApplication::render_base("loads_object_assets", false)
+                .with_bundle(
+                    AnimationBundle::<CharacterSequenceId, BodyFrameActiveHandle>::new(
+                        "character_body_frame_acs",
+                        "character_body_frame_sis",
+                    )
+                )
                 .with_bundle(AnimationBundle::<
                     CharacterSequenceId,
-                    CollisionFrameActiveHandle,
+                    InteractionFrameActiveHandle,
                 >::new(
-                    "character_collision_frame_acs",
-                    "character_collision_frame_sis",
+                    "character_interaction_frame_acs",
+                    "character_interaction_frame_sis",
                 ))
                 .with_bundle(CollisionLoadingBundle::new())
                 .with_assertion(|world| {
@@ -160,6 +180,12 @@ mod test {
 
                     // See bat/object.toml
                     assert_eq!(10, object.animations.len());
+
+                    let stand_attack_animations = object
+                        .animations
+                        .get(&CharacterSequenceId::StandAttack)
+                        .expect("Expected to read `StandAttack` animations.");
+                    assert_eq!(3, stand_attack_animations.len());
                 })
                 .run()
                 .is_ok()

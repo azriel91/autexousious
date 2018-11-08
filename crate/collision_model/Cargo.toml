@@ -8,7 +8,6 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 animation_support = { path = "../animation_support" }
 derivative = "1.0"
 derive-new = "0.5"
-derive_more = "0.13"
 minterpolate = { version = "0.4", features = ["serde"] }
 serde = "1.0"
 serde_derive = "1.0"

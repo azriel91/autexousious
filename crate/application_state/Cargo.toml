@@ -10,6 +10,7 @@ application_event = { path = "../application_event" }
 derivative = "1.0"
 derive_deref = "1.0"
 derive-new = "0.5"
+log = "0.4"
 
 [dev-dependencies]
 character_selection_model = { path = "../character_selection_model" }

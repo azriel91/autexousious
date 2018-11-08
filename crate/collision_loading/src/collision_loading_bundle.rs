@@ -3,12 +3,15 @@ use amethyst::{
     core::bundle::{Result, SystemBundle},
     ecs::prelude::*,
 };
-use collision_model::config::CollisionFrame;
+use collision_model::config::{BodyFrame, InteractionFrame};
 use typename::TypeName;
 
 use CollisionLoadingSystem;
 
-/// Adds `Processor::<CollisionFrame>` to the `World` with id `"collision_frame_processor"`.
+/// Adds `BodyFrame` and `InteractionFrame` processors to the `World`.
+///
+/// * `Processor::<BodyFrame>` is added with id `"body_frame_processor"`.
+/// * `Processor::<InteractionFrame>` is added with id `"interaction_frame_processor"`.
 #[derive(Debug, new)]
 pub struct CollisionLoadingBundle;
 
@@ -20,8 +23,13 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CollisionLoadingBundle {
             &[],
         );
         builder.add(
-            Processor::<CollisionFrame>::new(),
-            "collision_frame_processor",
+            Processor::<BodyFrame>::new(),
+            "body_frame_processor",
+            &[&CollisionLoadingSystem::type_name()],
+        );
+        builder.add(
+            Processor::<InteractionFrame>::new(),
+            "interaction_frame_processor",
             &[&CollisionLoadingSystem::type_name()],
         );
         Ok(())
@@ -32,20 +40,21 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CollisionLoadingBundle {
 mod test {
     use amethyst::assets::AssetStorage;
     use amethyst_test::AmethystApplication;
-    use collision_model::config::CollisionFrame;
+    use collision_model::config::{BodyFrame, InteractionFrame};
 
     use super::CollisionLoadingBundle;
 
     #[test]
-    fn bundle_build_adds_collision_frame_processor() {
+    fn bundle_build_adds_body_frame_processor() {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
             AmethystApplication::blank()
                 .with_bundle(CollisionLoadingBundle::new())
                 .with_assertion(|world| {
-                    // Next line will panic if the Processor wasn't added
-                    world.read_resource::<AssetStorage<CollisionFrame>>();
+                    // Next line will panic if the Processors aren't added
+                    world.read_resource::<AssetStorage<BodyFrame>>();
+                    world.read_resource::<AssetStorage<InteractionFrame>>();
                 })
                 .run()
                 .is_ok()

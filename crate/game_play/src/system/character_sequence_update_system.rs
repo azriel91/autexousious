@@ -42,7 +42,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             kinematics_storage,
             mut character_status_storage,
             mut sprite_render_storage,
-            (mut sprite_acs, mut collision_acs),
+            (mut sprite_acs, mut body_frame_acs, mut interaction_acs),
         ): Self::SystemData,
     ) {
         for (
@@ -69,9 +69,11 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             // TODO: Is it faster if we update the character statuses first, then calculate the
             // sequence updates in parallel?
             let mut sprite_animation_set = get_animation_set(&mut sprite_acs, entity)
-                .expect("Animation should exist as entity should be valid.");
-            let mut collision_animation_set = get_animation_set(&mut collision_acs, entity)
-                .expect("Animation should exist as entity should be valid.");
+                .expect("Sprite animation should exist as entity should be valid.");
+            let mut body_animation_set = get_animation_set(&mut body_frame_acs, entity)
+                .expect("Body animation should exist as entity should be valid.");
+            let mut interaction_animation_set = get_animation_set(&mut interaction_acs, entity)
+                .expect("Interaction animation should exist as entity should be valid.");
 
             // Mark sequence as `Ongoing` for subsequent tick.
             if character_status.object_status.sequence_state == SequenceState::Begin {
@@ -122,11 +124,19 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                                 handle,
                             );
                         }
-                        AnimatedComponentAnimation::CollisionFrame(ref handle) => {
+                        AnimatedComponentAnimation::BodyFrame(ref handle) => {
                             AnimationRunner::swap(
                                 character_status.object_status.sequence_id,
                                 next_sequence_id,
-                                &mut collision_animation_set,
+                                &mut body_animation_set,
+                                handle,
+                            );
+                        }
+                        AnimatedComponentAnimation::InteractionFrame(ref handle) => {
+                            AnimationRunner::swap(
+                                character_status.object_status.sequence_id,
+                                next_sequence_id,
+                                &mut interaction_animation_set,
                                 handle,
                             );
                         }

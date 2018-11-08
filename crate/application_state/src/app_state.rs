@@ -123,6 +123,7 @@ where
         data: StateData<GameData<'a, 'b>>,
         event: AppEvent,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
+        debug!("Received event: {:?}", event);
         self.delegate.handle_event(data, event)
     }
 

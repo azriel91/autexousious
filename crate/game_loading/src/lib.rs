@@ -50,9 +50,9 @@ pub use game_loading_state::GameLoadingState;
 pub(crate) use game_loading_status::GameLoadingStatus;
 pub use multi_animation_runner::MultiAnimationRunner;
 pub use spawn::{
-    CharacterComponentStorages, CharacterEntitySpawner, CollisionAcs, MapLayerComponentStorages,
-    MapLayerEntitySpawner, MapSpawningResources, ObjectAnimationStorages, ObjectComponentStorages,
-    ObjectSpawningResources, SpriteRenderAcs,
+    BodyAcs, CharacterComponentStorages, CharacterEntitySpawner, InteractionAcs,
+    MapLayerComponentStorages, MapLayerEntitySpawner, MapSpawningResources,
+    ObjectAnimationStorages, ObjectComponentStorages, ObjectSpawningResources, SpriteRenderAcs,
 };
 pub(crate) use system::{CharacterSelectionSpawningSystem, MapSelectionSpawningSystem};
 
