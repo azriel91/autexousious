@@ -8,10 +8,7 @@ use amethyst::{
 };
 use animation_support::{ActiveHandleChannel, ActiveHandlePrimitive};
 use collision_model::{
-    animation::{
-        CollisionAnimationHandle, CollisionDataSet, CollisionFrameActiveHandle,
-        CollisionFramePrimitive,
-    },
+    animation::{CollisionAnimationHandle, CollisionFrameActiveHandle, CollisionFramePrimitive},
     config::CollisionFrame,
 };
 
@@ -29,18 +26,16 @@ impl CollisionAnimationLoader {
     ///
     /// * `world`: `World` to load animations into.
     /// * `sequences`: Sequences of the animation.
-    /// * `frame_index_offset`: Offset of the collision frame IDs in the `CollisionDataSet`.
     pub fn load_into_map<'seq, SequenceId, Sequence, Frame>(
         world: &'seq World,
         sequences: &HashMap<SequenceId, Sequence>,
-        frame_index_offset: u64,
     ) -> HashMap<SequenceId, CollisionAnimationHandle>
     where
         SequenceId: Copy + Eq + Hash + 'seq,
         Frame: CollisionAnimationFrame,
         Sequence: CollisionAnimationSequence<Frame = Frame> + 'seq,
     {
-        Self::load(world, sequences.iter(), frame_index_offset)
+        Self::load(world, sequences.iter())
             .map(|(id, handle)| (*id, handle))
             .collect::<HashMap<SequenceId, CollisionAnimationHandle>>()
     }
@@ -51,11 +46,9 @@ impl CollisionAnimationLoader {
     ///
     /// * `world`: `World` to load animations into.
     /// * `sequences`: Sequences of the animation.
-    /// * `frame_index_offset`: Offset of the collision frame IDs in the `CollisionDataSet`.
     pub fn load_into_vec<'seq, Sequences, Sequence, Frame>(
         world: &'seq World,
         sequences: Sequences,
-        frame_index_offset: u64,
     ) -> Vec<CollisionAnimationHandle>
     where
         Sequences: Iterator<Item = &'seq Sequence>,
@@ -63,7 +56,7 @@ impl CollisionAnimationLoader {
         Sequence: CollisionAnimationSequence<Frame = Frame> + 'seq,
     {
         sequences
-            .map(|sequence| Self::sequence_to_animation(world, frame_index_offset, sequence))
+            .map(|sequence| Self::sequence_to_animation(world, sequence))
             .map(|animation| {
                 let loader = world.read_resource::<Loader>();
                 loader.load_from_data(animation, (), &world.read_resource())
@@ -79,11 +72,9 @@ impl CollisionAnimationLoader {
     ///
     /// * `world`: `World` to load animations into.
     /// * `sequences`: Sequences of the animation.
-    /// * `frame_index_offset`: Offset of the collision frame IDs in the `CollisionDataSet`.
     pub fn load<'seq, Sequences, SequenceId, Sequence, Frame>(
         world: &'seq World,
         sequences: Sequences,
-        frame_index_offset: u64,
     ) -> impl Iterator<Item = (&'seq SequenceId, CollisionAnimationHandle)>
     where
         Sequences: Iterator<Item = (&'seq SequenceId, &'seq Sequence)>,
@@ -92,12 +83,7 @@ impl CollisionAnimationLoader {
         Sequence: CollisionAnimationSequence<Frame = Frame> + 'seq,
     {
         sequences
-            .map(move |(id, sequence)| {
-                (
-                    id,
-                    Self::sequence_to_animation(world, frame_index_offset, sequence),
-                )
-            })
+            .map(move |(id, sequence)| (id, Self::sequence_to_animation(world, sequence)))
             .map(move |(id, animation)| {
                 let loader = world.read_resource::<Loader>();
                 let animation_handle = loader.load_from_data(animation, (), &world.read_resource());
@@ -110,14 +96,12 @@ impl CollisionAnimationLoader {
     /// # Parameters
     ///
     /// * `world`: `World` to store the `Animation`s.
-    /// * `frame_index_offset`: Offset of the collision frame IDs in the `CollisionDataSet`.
     /// * `sequence`: `Sequence` to create the animation from.
     fn sequence_to_animation<
         Sequence: CollisionAnimationSequence<Frame = F>,
         F: CollisionAnimationFrame,
     >(
         world: &World,
-        frame_index_offset: u64,
         sequence: &Sequence,
     ) -> Animation<CollisionFrameActiveHandle> {
         let frames = sequence.frames();
@@ -129,7 +113,7 @@ impl CollisionAnimationLoader {
         }
         input.push(tick_counter);
 
-        let frame_sampler = Self::frame_sampler(world, frame_index_offset, sequence, input.clone());
+        let frame_sampler = Self::frame_sampler(world, sequence, input.clone());
 
         let loader = world.read_resource::<Loader>();
         let frame_sampler_handle = loader.load_from_data(frame_sampler, (), &world.read_resource());
@@ -144,36 +128,27 @@ impl CollisionAnimationLoader {
         F: CollisionAnimationFrame,
     >(
         world: &World,
-        frame_index_offset: u64,
         sequence: &Sequence,
         input: Vec<f32>,
     ) -> Sampler<CollisionFramePrimitive> {
         let frame_count = sequence.frames().len();
-        let mut collision_data_set = world.write_resource::<CollisionDataSet>();
         let mut output = Vec::with_capacity(frame_count);
-        sequence
-            .frames()
-            .iter()
-            .enumerate()
-            .for_each(|(frame_index, frame)| {
-                let id = frame_index_offset + frame_index as u64;
+        sequence.frames().iter().for_each(|frame| {
+            // TODO: load `CollisionFrame`s and pass `Handle`s in.
+            let loader = world.read_resource::<Loader>();
+            let store = world.read_resource();
+            let handle = loader.load_from_data(
+                CollisionFrame::new(
+                    frame.body().map(Clone::clone),
+                    frame.interactions().map(Clone::clone),
+                    frame.wait(),
+                ),
+                (),
+                &store,
+            );
 
-                // TODO: load `CollisionFrame`s and pass `Handle`s in.
-                let loader = world.read_resource::<Loader>();
-                let store = world.read_resource();
-                let handle = loader.load_from_data(
-                    CollisionFrame::new(
-                        frame.body().map(Clone::clone),
-                        frame.interactions().map(Clone::clone),
-                        frame.wait(),
-                    ),
-                    (),
-                    &store,
-                );
-
-                collision_data_set.insert(id.into(), handle);
-                output.push(ActiveHandlePrimitive::Handle(id.into()));
-            });
+            output.push(ActiveHandlePrimitive::Handle(handle));
+        });
         let final_key_frame = output.last().cloned();
         if final_key_frame.is_some() {
             output.push(final_key_frame.unwrap());
@@ -198,11 +173,10 @@ mod test {
         prelude::*,
     };
     use amethyst_test::prelude::*;
-    use animation_support::{ActiveHandleChannel, ActiveHandlePrimitive};
+    use animation_support::ActiveHandleChannel;
     use collision_model::{
         animation::{
-            CollisionAnimationHandle, CollisionDataSet, CollisionFrameActiveHandle,
-            CollisionFramePrimitive,
+            CollisionAnimationHandle, CollisionFrameActiveHandle, CollisionFramePrimitive,
         },
         config::{CollisionFrame, Interaction},
     };
@@ -214,10 +188,8 @@ mod test {
     #[test]
     fn loads_collision_animations_into_map() {
         let effect = |world: &mut World| {
-            let frame_index_offset = 10;
             let test_sequences = test_sequences();
-            let animation_handles =
-                CollisionAnimationLoader::load_into_map(world, &test_sequences, frame_index_offset);
+            let animation_handles = CollisionAnimationLoader::load_into_map(world, &test_sequences);
             world.add_resource(EffectReturn(animation_handles));
         }; // kcov-ignore
         let assertion = |world: &mut World| {
@@ -238,7 +210,6 @@ mod test {
                     "collision_sampler_interpolation_system",
                 ))
                 .with_bundle(CollisionLoadingBundle::new())
-                .with_resource(CollisionDataSet::new())
                 .with_effect(effect)
                 .with_assertion(assertion)
                 .run()
@@ -249,13 +220,9 @@ mod test {
     #[test]
     fn loads_collision_animations_into_vec() {
         let effect = |world: &mut World| {
-            let frame_index_offset = 10;
             let test_sequences = test_sequences();
-            let animation_handles = CollisionAnimationLoader::load_into_vec(
-                world,
-                test_sequences.values(),
-                frame_index_offset,
-            );
+            let animation_handles =
+                CollisionAnimationLoader::load_into_vec(world, test_sequences.values());
             world.add_resource(EffectReturn(animation_handles));
         };
         let assertion = |world: &mut World| {
@@ -276,7 +243,6 @@ mod test {
                     "collision_sampler_interpolation_system",
                 ))
                 .with_bundle(CollisionLoadingBundle::new())
-                .with_resource(CollisionDataSet::new())
                 .with_effect(effect)
                 .with_assertion(assertion)
                 .run()
@@ -309,15 +275,16 @@ mod test {
 
         let frame_sampler = frame_sampler.unwrap();
         assert_eq!(vec![0.0, 1.0, 4.0, 6.0], frame_sampler.input);
-        assert_eq!(
-            vec![
-                ActiveHandlePrimitive::Handle(10.into()),
-                ActiveHandlePrimitive::Handle(11.into()),
-                ActiveHandlePrimitive::Handle(12.into()),
-                ActiveHandlePrimitive::Handle(12.into()),
-            ],
-            frame_sampler.output
-        );
+        // TODO: Verify on handles
+        // assert_eq!(
+        //     vec![
+        //         ActiveHandlePrimitive::Handle(10.into()),
+        //         ActiveHandlePrimitive::Handle(11.into()),
+        //         ActiveHandlePrimitive::Handle(12.into()),
+        //         ActiveHandlePrimitive::Handle(12.into()),
+        //     ],
+        //     frame_sampler.output
+        // );
         assert_eq!(InterpolationFunction::Step, frame_sampler.function);
     }
 

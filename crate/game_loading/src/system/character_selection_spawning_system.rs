@@ -1,6 +1,6 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
 use character_selection_model::CharacterSelections;
-use collision_model::{animation::CollisionFrameId, config::CollisionFrame};
+use collision_model::config::CollisionFrame;
 use game_input::InputControlled;
 use game_model::play::GameEntities;
 use map_model::loaded::Map;
@@ -30,7 +30,7 @@ type CharacterSelectionSpawningSystemData<'s> = (
     Read<'s, AssetStorage<Map>>,
     ObjectSpawningResources<'s, Character>,
     CharacterComponentStorages<'s>,
-    ObjectComponentStorages<'s, CollisionFrameId, CollisionFrame>,
+    ObjectComponentStorages<'s, CollisionFrame>,
     ObjectAnimationStorages<'s, CharacterSequenceId>,
     Write<'s, GameEntities>,
 );

@@ -5,10 +5,7 @@ use amethyst::{
     ecs::{prelude::*, world::EntitiesRes},
     renderer::{SpriteRender, Transparent},
 };
-use collision_model::{
-    animation::{CollisionFrameActiveHandle, CollisionFrameId},
-    config::CollisionFrame,
-};
+use collision_model::{animation::CollisionFrameActiveHandle, config::CollisionFrame};
 use game_input::{ControllerInput, InputControlled};
 use game_model::loaded::SlugAndHandle;
 use object_model::{
@@ -95,7 +92,7 @@ impl CharacterEntitySpawner {
             ref mut kinematics_storage,
             ref mut transform_storage,
             ref mut collision_frame_active_handle_storage,
-        ): &mut ObjectComponentStorages<'s, CollisionFrameId, CollisionFrame>,
+        ): &mut ObjectComponentStorages<'s, CollisionFrame>,
         (ref mut sprite_acs, ref mut collision_acs): &mut ObjectAnimationStorages<
             's,
             CharacterSequenceId,
@@ -217,10 +214,7 @@ mod test {
     use application_event::{AppEvent, AppEventReader};
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
     use collision_loading::CollisionLoadingBundle;
-    use collision_model::{
-        animation::{CollisionFrameActiveHandle, CollisionFrameId},
-        config::CollisionFrame,
-    };
+    use collision_model::{animation::CollisionFrameActiveHandle, config::CollisionFrame};
     use game_input::{ControllerInput, InputControlled};
     use game_model::loaded::SlugAndHandle;
     use loading::LoadingState;
@@ -300,7 +294,7 @@ mod test {
     type TestSystemData<'s> = (
         CharacterComponentStorages<'s>,
         ObjectAnimationStorages<'s, CharacterSequenceId>,
-        ObjectComponentStorages<'s, CollisionFrameId, CollisionFrame>,
+        ObjectComponentStorages<'s, CollisionFrame>,
         ObjectSpawningResources<'s, Character>,
         Read<'s, AssetStorage<Map>>,
     );

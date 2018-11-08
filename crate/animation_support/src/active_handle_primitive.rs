@@ -1,24 +1,17 @@
-use std::fmt::Debug;
-use std::fmt::Display;
+use amethyst::assets::Handle;
 
 use minterpolate::InterpolationPrimitive;
 
 /// Sampler primitive for `ActiveHandle` animations.
 ///
-/// Note that sprites can only ever be animated with `Step`, or a panic will occur.
-#[derive(Clone, Copy, Debug, Display, PartialEq, Serialize, Deserialize)]
-pub enum ActiveHandlePrimitive<I>
-where
-    I: Clone + Copy + Debug + Display + PartialEq,
-{
+/// Note that handles can only ever be animated with `Step`, or a panic will occur.
+#[derive(Clone, Debug, PartialEq)]
+pub enum ActiveHandlePrimitive<T> {
     /// The handle to use.
-    Handle(I),
+    Handle(Handle<T>),
 }
 
-impl<I> InterpolationPrimitive for ActiveHandlePrimitive<I>
-where
-    I: Debug + Display + Clone + Copy + PartialEq,
-{
+impl<T> InterpolationPrimitive for ActiveHandlePrimitive<T> {
     fn add(&self, _: &Self) -> Self {
         panic!("Cannot add ActiveHandlePrimitive")
     }

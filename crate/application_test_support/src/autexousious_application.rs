@@ -10,7 +10,7 @@ use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
 use character_selection::CharacterSelectionBundle;
 use character_selection_model::{CharacterSelections, CharacterSelectionsStatus};
 use collision_loading::CollisionLoadingBundle;
-use collision_model::animation::{CollisionDataSet, CollisionFrameActiveHandle};
+use collision_model::animation::CollisionFrameActiveHandle;
 use game_input::{PlayerActionControl, PlayerAxisControl};
 use game_loading::GameLoadingState;
 use game_model::loaded::SlugAndHandle;
@@ -77,7 +77,6 @@ impl AutexousiousApplication {
                 "character_collision_frame_sis",
             ]))
             .with_bundle(CollisionLoadingBundle::new())
-            .with_resource(CollisionDataSet::new())
             .with_render_bundle(test_name, visibility)
     }
 

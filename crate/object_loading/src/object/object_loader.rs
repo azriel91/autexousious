@@ -1,14 +1,13 @@
 use std::collections::HashMap;
 
 use amethyst::{
+    assets::Loader,
     prelude::*,
     renderer::{MaterialTextureSet, SpriteRender},
 };
 use application::Result;
 use collision_loading::CollisionAnimationLoader;
-use collision_model::animation::{
-    CollisionDataSet, CollisionFrameActiveHandle, DEFAULT_COLLISION_FRAME_ID,
-};
+use collision_model::{animation::CollisionFrameActiveHandle, config::CollisionFrame};
 use game_model::config::AssetRecord;
 use object_model::{
     config::{object::SequenceId, ObjectDefinition},
@@ -34,7 +33,6 @@ impl ObjectLoader {
         object_definition: &ObjectDefinition<SeqId>,
     ) -> Result<Object<SeqId>> {
         let sprite_sheet_index_offset = world.read_resource::<MaterialTextureSet>().len() as u64;
-        let collision_frame_offset = world.read_resource::<CollisionDataSet>().len() as u64;
 
         debug!("Loading object assets in `{}`", asset_record.path.display());
 
@@ -55,7 +53,6 @@ impl ObjectLoader {
 
         let animation_defaults = {
             let mut animation_defaults = Vec::new();
-            let collision_data_set = world.read_resource::<CollisionDataSet>();
 
             let sprite_render = SpriteRender {
                 sprite_sheet,
@@ -65,9 +62,10 @@ impl ObjectLoader {
             };
             animation_defaults.push(AnimatedComponentDefault::SpriteRender(sprite_render));
 
-            let collision_frame_handle = collision_data_set
-                .data(DEFAULT_COLLISION_FRAME_ID)
-                .expect("Expected default collision frame to be loaded.");
+            let collision_frame_handle = {
+                let loader = world.read_resource::<Loader>();
+                loader.load_from_data(CollisionFrame::default(), (), &world.read_resource())
+            };
             let collision_frame_active_handle =
                 CollisionFrameActiveHandle::new(collision_frame_handle);
             animation_defaults.push(AnimatedComponentDefault::CollisionFrame(
@@ -84,11 +82,8 @@ impl ObjectLoader {
             &object_definition.sequences,
             &sprite_sheet_handles,
         );
-        let mut collision_frame_animations = CollisionAnimationLoader::load_into_map(
-            world,
-            &object_definition.sequences,
-            collision_frame_offset,
-        );
+        let mut collision_frame_animations =
+            CollisionAnimationLoader::load_into_map(world, &object_definition.sequences);
 
         let animations = object_definition
             .sequences
