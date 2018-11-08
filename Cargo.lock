@@ -1645,6 +1645,7 @@ dependencies = [
  "application_event 0.6.0",
  "application_test_support 0.6.0",
  "character_selection 0.6.0",
+ "collision_model 0.6.0",
  "derivative 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input 0.6.0",
@@ -1657,6 +1658,7 @@ dependencies = [
  "object_loading 0.6.0",
  "object_model 0.6.0",
  "object_play 0.6.0",
+ "shape_model 0.6.0",
  "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

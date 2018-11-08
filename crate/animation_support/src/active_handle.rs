@@ -20,6 +20,13 @@ pub struct ActiveHandle<T> {
     pub active: Option<Handle<T>>,
 }
 
+impl<T> ActiveHandle<T> {
+    /// Returns a reference to the current active handle, or the rest handle if none.
+    pub fn current(&self) -> &Handle<T> {
+        self.active.as_ref().unwrap_or(&self.rest)
+    }
+}
+
 impl<T> Component for ActiveHandle<T>
 where
     T: Clone + Debug + Send + Sync + 'static,

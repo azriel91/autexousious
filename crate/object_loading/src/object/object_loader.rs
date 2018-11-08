@@ -179,7 +179,7 @@ mod test {
                     .expect("Failed to load object");
 
                     // See bat/object.toml
-                    assert_eq!(10, object.animations.len());
+                    assert_eq!(12, object.animations.len());
 
                     let stand_attack_animations = object
                         .animations

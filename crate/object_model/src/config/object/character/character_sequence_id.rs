@@ -32,6 +32,12 @@ pub enum CharacterSequenceId {
     JumpDescend,
     /// Character landed from jumping.
     JumpDescendLand,
+    /// Character is hit while on ground.
+    #[serde(rename = "flinch_0")]
+    Flinch0,
+    /// Character is hit while on ground, alternate sequence.
+    #[serde(rename = "flinch_1")]
+    Flinch1,
 }
 
 impl SequenceId for CharacterSequenceId {}

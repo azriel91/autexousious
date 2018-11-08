@@ -15,6 +15,7 @@ extern crate application_event;
 #[cfg(test)]
 extern crate application_test_support;
 extern crate character_selection;
+extern crate collision_model;
 #[macro_use]
 extern crate derivative;
 #[macro_use]
@@ -32,6 +33,7 @@ extern crate map_selection_model;
 extern crate object_loading;
 extern crate object_model;
 extern crate object_play;
+extern crate shape_model;
 extern crate typename;
 #[macro_use]
 extern crate typename_derive;
@@ -39,8 +41,9 @@ extern crate typename_derive;
 pub(crate) use game_play_bundle::GamePlayBundle;
 pub use game_play_state::GamePlayState;
 pub(crate) use system::{
-    CharacterGroundingSystem, CharacterKinematicsSystem, CharacterSequenceUpdateSystem,
-    ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
+    CharacterCollisionEffectSystem, CharacterGroundingSystem, CharacterKinematicsSystem,
+    CharacterSequenceUpdateSystem, ObjectCollisionDetectionSystem, ObjectKinematicsUpdateSystem,
+    ObjectTransformUpdateSystem,
 };
 
 mod game_play_bundle;

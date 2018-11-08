@@ -5,14 +5,13 @@ use amethyst::{
     renderer::SpriteRender,
 };
 use game_input::ControllerInput;
+use game_loading::{AnimationRunner, ObjectAnimationStorages};
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
     entity::{CharacterStatus, Kinematics},
     loaded::{AnimatedComponentAnimation, Character, CharacterHandle},
 };
 use object_play::CharacterSequenceUpdater;
-
-use game_loading::{AnimationRunner, ObjectAnimationStorages};
 
 /// Updates `Character` sequence based on input
 #[derive(Debug, Default, TypeName, new)]

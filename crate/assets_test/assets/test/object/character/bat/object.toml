@@ -237,3 +237,41 @@
     sheet = 0
     sprite = 0
     body = [{ box = { x = 16, y = 11, w = 15, h = 12 } }]
+
+[sequences.flinch_0]
+  [[sequences.flinch_0.frames]]
+    sheet = 0
+    sprite = 4
+    wait = 0
+    body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
+
+  [[sequences.flinch_0.frames]]
+    sheet = 0
+    sprite = 3
+    wait = 0
+    body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
+
+  [[sequences.flinch_0.frames]]
+    sheet = 0
+    sprite = 5
+    wait = 3
+    body = [{ box = { x = 169, y = 5, w = 12, h = 20 } }]
+
+[sequences.flinch_1]
+  [[sequences.flinch_1.frames]]
+    sheet = 0
+    sprite = 4
+    wait = 0
+    body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
+
+  [[sequences.flinch_1.frames]]
+    sheet = 0
+    sprite = 3
+    wait = 0
+    body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
+
+  [[sequences.flinch_1.frames]]
+    sheet = 0
+    sprite = 5
+    wait = 3
+    body = [{ box = { x = 169, y = 5, w = 12, h = 20 } }]

@@ -4,9 +4,11 @@ use amethyst::{
 };
 use typename::TypeName;
 
+use CharacterCollisionEffectSystem;
 use CharacterGroundingSystem;
 use CharacterKinematicsSystem;
 use CharacterSequenceUpdateSystem;
+use ObjectCollisionDetectionSystem;
 use ObjectKinematicsUpdateSystem;
 use ObjectTransformUpdateSystem;
 
@@ -43,6 +45,16 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             ObjectTransformUpdateSystem::new(),
             &ObjectTransformUpdateSystem::type_name(),
             &[&CharacterGroundingSystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
+            ObjectCollisionDetectionSystem::new(),
+            &ObjectCollisionDetectionSystem::type_name(),
+            &[&ObjectTransformUpdateSystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
+            CharacterCollisionEffectSystem::new(),
+            &CharacterCollisionEffectSystem::type_name(),
+            &[&ObjectCollisionDetectionSystem::type_name()],
         ); // kcov-ignore
         Ok(())
     }

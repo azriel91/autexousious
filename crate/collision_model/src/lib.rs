@@ -22,3 +22,4 @@ extern crate toml;
 
 pub mod animation;
 pub mod config;
+pub mod play;
