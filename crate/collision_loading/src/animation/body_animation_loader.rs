@@ -166,7 +166,7 @@ mod test {
     use animation_support::ActiveHandleChannel;
     use collision_model::{
         animation::{BodyAnimationHandle, BodyFrameActiveHandle, BodyFramePrimitive},
-        config::{BodyFrame, Interaction},
+        config::BodyFrame,
     };
 
     use super::BodyAnimationLoader;
