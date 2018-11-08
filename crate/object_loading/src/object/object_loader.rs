@@ -6,8 +6,11 @@ use amethyst::{
     renderer::{MaterialTextureSet, SpriteRender},
 };
 use application::Result;
-use collision_loading::BodyAnimationLoader;
-use collision_model::{animation::BodyFrameActiveHandle, config::BodyFrame};
+use collision_loading::{BodyAnimationLoader, InteractionAnimationLoader};
+use collision_model::{
+    animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle},
+    config::{BodyFrame, InteractionFrame},
+};
 use game_model::config::AssetRecord;
 use object_model::{
     config::{object::SequenceId, ObjectDefinition},
@@ -71,6 +74,16 @@ impl ObjectLoader {
                 body_frame_active_handle,
             ));
 
+            let interaction_frame_handle = {
+                let loader = world.read_resource::<Loader>();
+                loader.load_from_data(InteractionFrame::default(), (), &world.read_resource())
+            };
+            let interaction_frame_active_handle =
+                InteractionFrameActiveHandle::new(interaction_frame_handle);
+            animation_defaults.push(AnimatedComponentDefault::InteractionFrame(
+                interaction_frame_active_handle,
+            ));
+
             animation_defaults
         };
 
@@ -83,6 +96,8 @@ impl ObjectLoader {
         );
         let mut body_frame_animations =
             BodyAnimationLoader::load_into_map(world, &object_definition.sequences);
+        let mut interaction_frame_animations =
+            InteractionAnimationLoader::load_into_map(world, &object_definition.sequences);
 
         let animations = object_definition
             .sequences
@@ -94,6 +109,11 @@ impl ObjectLoader {
                 }
                 if let Some(body_frame) = body_frame_animations.remove(sequence_id) {
                     animations.push(AnimatedComponentAnimation::BodyFrame(body_frame));
+                }
+                if let Some(interaction_frame) = interaction_frame_animations.remove(sequence_id) {
+                    animations.push(AnimatedComponentAnimation::InteractionFrame(
+                        interaction_frame,
+                    ));
                 }
 
                 (*sequence_id, animations)
@@ -111,7 +131,7 @@ mod test {
     use application::{load_in, Format};
     use assets_test::{ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SLUG};
     use collision_loading::CollisionLoadingBundle;
-    use collision_model::animation::BodyFrameActiveHandle;
+    use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
     use game_model::config::AssetRecord;
     use object_model::config::{object::CharacterSequenceId, CharacterDefinition};
 
@@ -129,6 +149,13 @@ mod test {
                         "character_body_frame_sis",
                     )
                 )
+                .with_bundle(AnimationBundle::<
+                    CharacterSequenceId,
+                    InteractionFrameActiveHandle,
+                >::new(
+                    "character_interaction_frame_acs",
+                    "character_interaction_frame_sis",
+                ))
                 .with_bundle(CollisionLoadingBundle::new())
                 .with_assertion(|world| {
                     let asset_record = AssetRecord::new(
@@ -153,6 +180,12 @@ mod test {
 
                     // See bat/object.toml
                     assert_eq!(10, object.animations.len());
+
+                    let stand_attack_animations = object
+                        .animations
+                        .get(&CharacterSequenceId::StandAttack)
+                        .expect("Expected to read `StandAttack` animations.");
+                    assert_eq!(3, stand_attack_animations.len());
                 })
                 .run()
                 .is_ok()

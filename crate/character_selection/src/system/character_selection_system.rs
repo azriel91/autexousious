@@ -81,7 +81,7 @@ mod tests {
         CharacterSelection, CharacterSelectionEvent, CharacterSelections, CharacterSelectionsStatus,
     };
     use collision_loading::CollisionLoadingBundle;
-    use collision_model::animation::BodyFrameActiveHandle;
+    use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
     use game_input::{PlayerActionControl, PlayerAxisControl};
     use game_model::loaded::SlugAndHandle;
     use loading::LoadingState;
@@ -107,6 +107,13 @@ mod tests {
                         "character_body_frame_sis",
                     )
                 )
+                .with_bundle(AnimationBundle::<
+                    CharacterSequenceId,
+                    InteractionFrameActiveHandle,
+                >::new(
+                    "character_interaction_frame_acs",
+                    "character_interaction_frame_sis",
+                ))
                 .with_bundle(CollisionLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_bundle(ObjectLoadingBundle::new())
@@ -162,6 +169,13 @@ mod tests {
                     "character_body_frame_sis",
                 )
             )
+            .with_bundle(AnimationBundle::<
+                CharacterSequenceId,
+                InteractionFrameActiveHandle,
+            >::new(
+                "character_interaction_frame_acs",
+                "character_interaction_frame_sis",
+            ))
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(ObjectLoadingBundle::new())
