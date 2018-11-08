@@ -1,4 +1,4 @@
-//! Provides types to enable animation of `CollisionFrame`s.
+//! Provides types to enable animation of `BodyFrame`s.
 //!
 //! # Object Configuration Animation
 //!
@@ -61,10 +61,16 @@
 //! Was intending to go with `Animation<ObjectFrame>`, but the data locality point weighs pretty
 //! strongly, so instead going with animating each component separately.
 
-pub use self::collision_animation_handle::CollisionAnimationHandle;
-pub use self::collision_frame_active_handle::CollisionFrameActiveHandle;
-pub use self::collision_frame_primitive::CollisionFramePrimitive;
+pub use self::body_animation_handle::BodyAnimationHandle;
+pub use self::body_frame_active_handle::BodyFrameActiveHandle;
+pub use self::body_frame_primitive::BodyFramePrimitive;
+pub use self::interaction_animation_handle::InteractionAnimationHandle;
+pub use self::interaction_frame_active_handle::InteractionFrameActiveHandle;
+pub use self::interaction_frame_primitive::InteractionFramePrimitive;
 
-mod collision_animation_handle;
-mod collision_frame_active_handle;
-mod collision_frame_primitive;
+mod body_animation_handle;
+mod body_frame_active_handle;
+mod body_frame_primitive;
+mod interaction_animation_handle;
+mod interaction_frame_active_handle;
+mod interaction_frame_primitive;

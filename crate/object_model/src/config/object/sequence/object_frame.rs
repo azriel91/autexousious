@@ -1,5 +1,5 @@
-use collision_loading::CollisionAnimationFrame;
-use collision_model::config::{CollisionFrame, Interaction};
+use collision_loading::{BodyAnimationFrame, InteractionAnimationFrame};
+use collision_model::config::{BodyFrame, Interaction, InteractionFrame};
 use shape_model::Volume;
 use sprite_loading::AnimationFrame;
 use sprite_model::config::SpriteFrame;
@@ -15,12 +15,15 @@ use sprite_model::config::SpriteFrame;
 /// * **Weapon:** Where an active weapon should be.
 #[derive(Clone, Debug, Deserialize, Hash, PartialEq, Eq, new)]
 pub struct ObjectFrame {
-    /// Hittable volume of the object.
+    /// Sprite to render.
     #[serde(flatten)]
     pub sprite: SpriteFrame,
     /// Hittable volume of the object.
     #[serde(flatten)]
-    pub collision: CollisionFrame,
+    pub body: BodyFrame,
+    /// Interaction volumes of the object.
+    #[serde(flatten)]
+    pub interaction: InteractionFrame,
 }
 
 impl AnimationFrame for ObjectFrame {
@@ -37,16 +40,22 @@ impl AnimationFrame for ObjectFrame {
     }
 }
 
-impl CollisionAnimationFrame for ObjectFrame {
+impl BodyAnimationFrame for ObjectFrame {
     fn body(&self) -> Option<&Vec<Volume>> {
-        self.collision.body.as_ref()
-    }
-
-    fn interactions(&self) -> Option<&Vec<Interaction>> {
-        self.collision.interactions.as_ref()
+        self.body.body.as_ref()
     }
 
     fn wait(&self) -> u32 {
-        self.collision.wait
+        self.body.wait
+    }
+}
+
+impl InteractionAnimationFrame for ObjectFrame {
+    fn interactions(&self) -> Option<&Vec<Interaction>> {
+        self.interaction.interactions.as_ref()
+    }
+
+    fn wait(&self) -> u32 {
+        self.body.wait
     }
 }

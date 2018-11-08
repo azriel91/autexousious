@@ -43,7 +43,7 @@ mod test {
     use amethyst_test::prelude::*;
     use assets_test::{ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SLUG};
     use collision_loading::CollisionLoadingBundle;
-    use collision_model::animation::CollisionFrameActiveHandle;
+    use collision_model::animation::BodyFrameActiveHandle;
     use game_model::config::AssetRecord;
     use object_model::{
         config::object::CharacterSequenceId,
@@ -59,13 +59,12 @@ mod test {
         assert!(
             // kcov-ignore-end
             AmethystApplication::render_base("loads_character", false)
-                .with_bundle(AnimationBundle::<
-                    CharacterSequenceId,
-                    CollisionFrameActiveHandle,
-                >::new(
-                    "character_collision_frame_acs",
-                    "character_collision_frame_sis",
-                ))
+                .with_bundle(
+                    AnimationBundle::<CharacterSequenceId, BodyFrameActiveHandle>::new(
+                        "character_body_frame_acs",
+                        "character_body_frame_sis",
+                    )
+                )
                 .with_bundle(CollisionLoadingBundle::new())
                 .with_bundle(ObjectLoadingBundle::new())
                 .with_effect(|world| {

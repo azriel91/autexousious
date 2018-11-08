@@ -53,7 +53,7 @@ use application_robot::RobotState;
 use application_state::{HookFn, HookableFn};
 use character_selection_stdio::CharacterSelectionStdioBundle;
 use collision_loading::CollisionLoadingBundle;
-use collision_model::animation::CollisionFrameActiveHandle;
+use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
 use game_input::{GameInputBundle, InputConfig, PlayerActionControl, PlayerAxisControl};
 use game_mode_selection::{GameModeSelectionStateBuilder, GameModeSelectionStateDelegate};
 use game_mode_selection_stdio::GameModeSelectionStdioBundle;
@@ -142,12 +142,18 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 "character_sprite_acs",
                 "character_sprite_sis",
             ))?
+            .with_bundle(
+                AnimationBundle::<CharacterSequenceId, BodyFrameActiveHandle>::new(
+                    "character_body_frame_acs",
+                    "character_body_frame_sis",
+                ),
+            )?
             .with_bundle(AnimationBundle::<
                 CharacterSequenceId,
-                CollisionFrameActiveHandle,
+                InteractionFrameActiveHandle,
             >::new(
-                "character_collision_frame_acs",
-                "character_collision_frame_sis",
+                "character_interaction_frame_acs",
+                "character_interaction_frame_sis",
             ))?
             // Used for map layer animations.
             .with_bundle(AnimationBundle::<u32, SpriteRender>::new(
@@ -155,14 +161,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 "map_layer_sprite_sis",
             ))?
             // Handles transformations of textures
-            .with_bundle(TransformBundle::new().with_dep(&[
-                "character_sprite_acs",
-                "character_sprite_sis",
-                "character_collision_frame_acs",
-                "character_collision_frame_sis",
-                "map_layer_sprite_acs",
-                "map_layer_sprite_sis",
-            ]))?
+            .with_bundle(TransformBundle::new())?
             .with_bundle(
                 RenderBundle::new(pipe, Some(display_config))
                     .with_sprite_visibility_sorting(&["transform_system"])

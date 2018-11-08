@@ -1,7 +1,9 @@
 //! Types representing collision configuration.
 
-pub use self::collision_frame::CollisionFrame;
+pub use self::body_frame::BodyFrame;
 pub use self::interaction::Interaction;
+pub use self::interaction_frame::InteractionFrame;
 
-mod collision_frame;
+mod body_frame;
 mod interaction;
+mod interaction_frame;

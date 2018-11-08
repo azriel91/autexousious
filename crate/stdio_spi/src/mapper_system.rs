@@ -1,7 +1,7 @@
 use std::marker::PhantomData;
 
 use amethyst::{ecs::prelude::*, shrev::EventChannel};
-use application_event::{AppEvent, AppEventVariant};
+use application_event::AppEventVariant;
 use structopt::StructOpt;
 use typename::TypeName;
 

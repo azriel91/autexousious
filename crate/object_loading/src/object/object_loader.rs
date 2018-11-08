@@ -6,8 +6,8 @@ use amethyst::{
     renderer::{MaterialTextureSet, SpriteRender},
 };
 use application::Result;
-use collision_loading::CollisionAnimationLoader;
-use collision_model::{animation::CollisionFrameActiveHandle, config::CollisionFrame};
+use collision_loading::BodyAnimationLoader;
+use collision_model::{animation::BodyFrameActiveHandle, config::BodyFrame};
 use game_model::config::AssetRecord;
 use object_model::{
     config::{object::SequenceId, ObjectDefinition},
@@ -62,14 +62,13 @@ impl ObjectLoader {
             };
             animation_defaults.push(AnimatedComponentDefault::SpriteRender(sprite_render));
 
-            let collision_frame_handle = {
+            let body_frame_handle = {
                 let loader = world.read_resource::<Loader>();
-                loader.load_from_data(CollisionFrame::default(), (), &world.read_resource())
+                loader.load_from_data(BodyFrame::default(), (), &world.read_resource())
             };
-            let collision_frame_active_handle =
-                CollisionFrameActiveHandle::new(collision_frame_handle);
-            animation_defaults.push(AnimatedComponentDefault::CollisionFrame(
-                collision_frame_active_handle,
+            let body_frame_active_handle = BodyFrameActiveHandle::new(body_frame_handle);
+            animation_defaults.push(AnimatedComponentDefault::BodyFrame(
+                body_frame_active_handle,
             ));
 
             animation_defaults
@@ -82,8 +81,8 @@ impl ObjectLoader {
             &object_definition.sequences,
             &sprite_sheet_handles,
         );
-        let mut collision_frame_animations =
-            CollisionAnimationLoader::load_into_map(world, &object_definition.sequences);
+        let mut body_frame_animations =
+            BodyAnimationLoader::load_into_map(world, &object_definition.sequences);
 
         let animations = object_definition
             .sequences
@@ -93,8 +92,8 @@ impl ObjectLoader {
                 if let Some(sprite_render) = sprite_render_animations.remove(sequence_id) {
                     animations.push(AnimatedComponentAnimation::SpriteRender(sprite_render));
                 }
-                if let Some(collision_frame) = collision_frame_animations.remove(sequence_id) {
-                    animations.push(AnimatedComponentAnimation::CollisionFrame(collision_frame));
+                if let Some(body_frame) = body_frame_animations.remove(sequence_id) {
+                    animations.push(AnimatedComponentAnimation::BodyFrame(body_frame));
                 }
 
                 (*sequence_id, animations)
@@ -112,7 +111,7 @@ mod test {
     use application::{load_in, Format};
     use assets_test::{ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SLUG};
     use collision_loading::CollisionLoadingBundle;
-    use collision_model::animation::CollisionFrameActiveHandle;
+    use collision_model::animation::BodyFrameActiveHandle;
     use game_model::config::AssetRecord;
     use object_model::config::{object::CharacterSequenceId, CharacterDefinition};
 
@@ -124,13 +123,12 @@ mod test {
         assert!(
             // kcov-ignore-end
             AmethystApplication::render_base("loads_object_assets", false)
-                .with_bundle(AnimationBundle::<
-                    CharacterSequenceId,
-                    CollisionFrameActiveHandle,
-                >::new(
-                    "character_collision_frame_acs",
-                    "character_collision_frame_sis",
-                ))
+                .with_bundle(
+                    AnimationBundle::<CharacterSequenceId, BodyFrameActiveHandle>::new(
+                        "character_body_frame_acs",
+                        "character_body_frame_sis",
+                    )
+                )
                 .with_bundle(CollisionLoadingBundle::new())
                 .with_assertion(|world| {
                     let asset_record = AssetRecord::new(

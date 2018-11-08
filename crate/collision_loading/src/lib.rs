@@ -20,7 +20,8 @@ extern crate typename;
 extern crate typename_derive;
 
 pub use animation::{
-    CollisionAnimationFrame, CollisionAnimationLoader, CollisionAnimationSequence,
+    BodyAnimationFrame, BodyAnimationLoader, BodyAnimationSequence, InteractionAnimationFrame,
+    InteractionAnimationLoader, InteractionAnimationSequence,
 };
 pub use collision_loading_bundle::CollisionLoadingBundle;
 pub(crate) use system::CollisionLoadingSystem;

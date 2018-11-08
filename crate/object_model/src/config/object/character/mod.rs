@@ -10,7 +10,7 @@ mod character_sequence_id;
 mod test {
     use std::collections::HashMap;
 
-    use collision_model::config::CollisionFrame;
+    use collision_model::config::{BodyFrame, InteractionFrame};
     use sprite_model::config::SpriteFrame;
     use toml;
 
@@ -37,12 +37,36 @@ mod test {
             .expect("Failed to deserialize character definition.");
 
         let frames = vec![
-            ObjectFrame::new(SpriteFrame::new(0, 4, 2), CollisionFrame::default()),
-            ObjectFrame::new(SpriteFrame::new(0, 5, 2), CollisionFrame::default()),
-            ObjectFrame::new(SpriteFrame::new(1, 6, 1), CollisionFrame::default()),
-            ObjectFrame::new(SpriteFrame::new(1, 7, 1), CollisionFrame::default()),
-            ObjectFrame::new(SpriteFrame::new(0, 6, 2), CollisionFrame::default()),
-            ObjectFrame::new(SpriteFrame::new(0, 5, 2), CollisionFrame::default()),
+            ObjectFrame::new(
+                SpriteFrame::new(0, 4, 2),
+                BodyFrame::default(),
+                InteractionFrame::default(),
+            ),
+            ObjectFrame::new(
+                SpriteFrame::new(0, 5, 2),
+                BodyFrame::default(),
+                InteractionFrame::default(),
+            ),
+            ObjectFrame::new(
+                SpriteFrame::new(1, 6, 1),
+                BodyFrame::default(),
+                InteractionFrame::default(),
+            ),
+            ObjectFrame::new(
+                SpriteFrame::new(1, 7, 1),
+                BodyFrame::default(),
+                InteractionFrame::default(),
+            ),
+            ObjectFrame::new(
+                SpriteFrame::new(0, 6, 2),
+                BodyFrame::default(),
+                InteractionFrame::default(),
+            ),
+            ObjectFrame::new(
+                SpriteFrame::new(0, 5, 2),
+                BodyFrame::default(),
+                InteractionFrame::default(),
+            ),
         ];
         let sequence = Sequence::new(Some(CharacterSequenceId::Walk), frames);
         let mut sequences = HashMap::new();

@@ -10,7 +10,7 @@ use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
 use character_selection::CharacterSelectionBundle;
 use character_selection_model::{CharacterSelections, CharacterSelectionsStatus};
 use collision_loading::CollisionLoadingBundle;
-use collision_model::animation::CollisionFrameActiveHandle;
+use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
 use game_input::{PlayerActionControl, PlayerAxisControl};
 use game_loading::GameLoadingState;
 use game_model::loaded::SlugAndHandle;
@@ -63,19 +63,20 @@ impl AutexousiousApplication {
                 "character_sprite_acs",
                 "character_sprite_sis",
             ))
+            .with_bundle(
+                AnimationBundle::<CharacterSequenceId, BodyFrameActiveHandle>::new(
+                    "character_body_frame_acs",
+                    "character_body_frame_sis",
+                ),
+            )
             .with_bundle(AnimationBundle::<
                 CharacterSequenceId,
-                CollisionFrameActiveHandle,
+                InteractionFrameActiveHandle,
             >::new(
-                "character_collision_frame_acs",
-                "character_collision_frame_sis",
+                "character_interaction_frame_acs",
+                "character_interaction_frame_sis",
             ))
-            .with_bundle(TransformBundle::new().with_dep(&[
-                "character_sprite_acs",
-                "character_sprite_sis",
-                "character_collision_frame_acs",
-                "character_collision_frame_sis",
-            ]))
+            .with_bundle(TransformBundle::new())
             .with_bundle(CollisionLoadingBundle::new())
             .with_render_bundle(test_name, visibility)
     }
