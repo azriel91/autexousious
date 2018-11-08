@@ -10,9 +10,9 @@ use StdinMapper;
 use VariantAndTokens;
 
 /// Type to fetch the application event channel.
-type MapperSystemData<'s, SysData> = (
+type MapperSystemData<'s, E, SysData> = (
     Read<'s, EventChannel<VariantAndTokens>>,
-    Write<'s, EventChannel<AppEvent>>,
+    Write<'s, EventChannel<E>>,
     SysData,
 );
 
@@ -35,9 +35,8 @@ impl<'s, M> System<'s> for MapperSystem<M>
 where
     M: StdinMapper + TypeName,
     M::Resource: Default + Send + Sync + 'static,
-    AppEvent: From<M::Event>,
 {
-    type SystemData = MapperSystemData<'s, Read<'s, M::Resource>>;
+    type SystemData = MapperSystemData<'s, M::Event, Read<'s, M::Resource>>;
 
     fn run(&mut self, (variant_channel, mut app_event_channel, resources): Self::SystemData) {
         let mut events = variant_channel
@@ -54,7 +53,7 @@ where
                 M::map(&resources, args)
             })
             .filter_map(|result| match result {
-                Ok(event) => Some(AppEvent::from(event)),
+                Ok(event) => Some(event),
                 Err(e) => {
                     error!("{}", e);
                     None

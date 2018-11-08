@@ -14,6 +14,8 @@ extern crate derivative;
 extern crate derive_deref;
 #[macro_use]
 extern crate derive_new;
+#[macro_use]
+extern crate log;
 #[cfg(test)]
 extern crate rayon;
 
