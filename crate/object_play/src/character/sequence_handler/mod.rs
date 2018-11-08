@@ -11,6 +11,7 @@ pub(super) use self::run_stop::RunStop;
 pub(super) use self::sequence_handler_util::SequenceHandlerUtil;
 pub(super) use self::stand::Stand;
 pub(super) use self::stand_attack::StandAttack;
+pub(super) use self::stand_on_sequence_end::StandOnSequenceEnd;
 pub(super) use self::walk::Walk;
 
 mod common;
@@ -24,6 +25,7 @@ mod run_stop;
 mod sequence_handler_util;
 mod stand;
 mod stand_attack;
+mod stand_on_sequence_end;
 mod walk;
 
 /// Sequence transition behaviour calculation.

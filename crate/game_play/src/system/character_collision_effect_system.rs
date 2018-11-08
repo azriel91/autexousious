@@ -70,7 +70,13 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
                         );
 
                     // TODO: Select damage sequence based on status.
-                    let next_sequence_id = CharacterSequenceId::Jump;
+                    let next_sequence_id = if character_status.object_status.sequence_id
+                        == CharacterSequenceId::Flinch0
+                    {
+                        CharacterSequenceId::Flinch1
+                    } else {
+                        CharacterSequenceId::Flinch0
+                    };
 
                     // Swap animations
                     let animations = &character

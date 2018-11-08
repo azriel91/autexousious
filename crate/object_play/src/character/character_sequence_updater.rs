@@ -7,7 +7,7 @@ use object_model::{
 
 use character::sequence_handler::{
     CharacterSequenceHandler, Jump, JumpAscend, JumpDescend, JumpDescendLand, JumpOff, Run,
-    RunStop, Stand, StandAttack, Walk,
+    RunStop, Stand, StandAttack, StandOnSequenceEnd, Walk,
 };
 
 /// Defines behaviour for a character in game.
@@ -41,6 +41,9 @@ impl CharacterSequenceUpdater {
             CharacterSequenceId::JumpAscend => JumpAscend::update,
             CharacterSequenceId::JumpDescend => JumpDescend::update,
             CharacterSequenceId::JumpDescendLand => JumpDescendLand::update,
+            CharacterSequenceId::Flinch0 | CharacterSequenceId::Flinch1 => {
+                StandOnSequenceEnd::update
+            }
         };
 
         let mut status_update = sequence_handler(controller_input, character_status, kinematics);
