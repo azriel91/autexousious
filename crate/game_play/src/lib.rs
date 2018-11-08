@@ -41,8 +41,9 @@ extern crate typename_derive;
 pub(crate) use game_play_bundle::GamePlayBundle;
 pub use game_play_state::GamePlayState;
 pub(crate) use system::{
-    CharacterGroundingSystem, CharacterKinematicsSystem, CharacterSequenceUpdateSystem,
-    ObjectCollisionDetectionSystem, ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
+    CharacterCollisionEffectSystem, CharacterGroundingSystem, CharacterKinematicsSystem,
+    CharacterSequenceUpdateSystem, ObjectCollisionDetectionSystem, ObjectKinematicsUpdateSystem,
+    ObjectTransformUpdateSystem,
 };
 
 mod game_play_bundle;
