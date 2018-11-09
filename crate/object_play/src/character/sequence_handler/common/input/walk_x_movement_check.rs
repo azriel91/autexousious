@@ -74,8 +74,8 @@ mod tests {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-            RunCounter,
+            CharacterStatus, CharacterStatusUpdate, HealthPoints, Kinematics, ObjectStatus,
+            ObjectStatusUpdate, RunCounter,
         },
     };
 
@@ -92,6 +92,7 @@ mod tests {
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Increase(10),
+                    hp: HealthPoints(100),
                     object_status: ObjectStatus {
                         sequence_id: CharacterSequenceId::Walk,
                         ..Default::default()
@@ -120,6 +121,7 @@ mod tests {
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Increase(11),
+                    hp: HealthPoints(100),
                     object_status: ObjectStatus {
                         sequence_id: CharacterSequenceId::Walk,
                         mirrored: true,
@@ -149,6 +151,7 @@ mod tests {
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Increase(11),
+                    hp: HealthPoints(100),
                     object_status: ObjectStatus {
                         sequence_id: CharacterSequenceId::Walk,
                         mirrored: false,
@@ -180,6 +183,7 @@ mod tests {
                         &input,
                         &CharacterStatus {
                             run_counter: RunCounter::Increase(1),
+                            hp: HealthPoints(100),
                             object_status: ObjectStatus {
                                 sequence_id: CharacterSequenceId::Walk,
                                 sequence_state: SequenceState::End,
@@ -210,6 +214,7 @@ mod tests {
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Decrease(10),
+                    hp: HealthPoints(100),
                     object_status: ObjectStatus {
                         sequence_id: CharacterSequenceId::Walk,
                         mirrored: false,
@@ -238,6 +243,7 @@ mod tests {
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Decrease(10),
+                    hp: HealthPoints(100),
                     object_status: ObjectStatus {
                         sequence_id: CharacterSequenceId::Walk,
                         mirrored: true,

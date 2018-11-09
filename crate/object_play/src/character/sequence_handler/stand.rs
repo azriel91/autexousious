@@ -41,10 +41,10 @@ impl CharacterSequenceHandler for Stand {
             StandZMovementCheck::update,
             SequenceRepeat::update,
         ]
-            .iter()
-            .fold(None, |status_update, fn_update| {
-                status_update.or_else(|| fn_update(input, character_status, kinematics))
-            });
+        .iter()
+        .fold(None, |status_update, fn_update| {
+            status_update.or_else(|| fn_update(input, character_status, kinematics))
+        });
 
         if let Some(mut status_update) = status_update {
             status_update.run_counter = run_counter;
@@ -53,6 +53,7 @@ impl CharacterSequenceHandler for Stand {
 
         CharacterStatusUpdate {
             run_counter,
+            hp: None,
             object_status: ObjectStatusUpdate::default(),
         }
     }
@@ -64,8 +65,8 @@ mod test {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatus,
-            ObjectStatusUpdate, RunCounter,
+            CharacterStatus, CharacterStatusUpdate, Grounding, HealthPoints, Kinematics,
+            ObjectStatus, ObjectStatusUpdate, RunCounter,
         },
     };
 
@@ -80,15 +81,16 @@ mod test {
             CharacterStatusUpdate::default(),
             Stand::update(
                 &input,
-                &CharacterStatus::new(
-                    RunCounter::Unused,
-                    ObjectStatus::new(
+                &CharacterStatus {
+                    run_counter: RunCounter::Unused,
+                    hp: HealthPoints(100),
+                    object_status: ObjectStatus::new(
                         CharacterSequenceId::Stand,
                         SequenceState::Ongoing,
                         true,
                         Grounding::OnGround
                     )
-                ),
+                },
                 &Kinematics::default()
             )
         );
@@ -110,6 +112,7 @@ mod test {
             Stand::update(
                 &input,
                 &CharacterStatus {
+                    hp: HealthPoints(100),
                     object_status: ObjectStatus {
                         sequence_id: CharacterSequenceId::Stand,
                         sequence_state: SequenceState::End,
@@ -138,6 +141,7 @@ mod test {
             Stand::update(
                 &input,
                 &CharacterStatus {
+                    hp: HealthPoints(100),
                     object_status: ObjectStatus {
                         sequence_id: CharacterSequenceId::Stand,
                         grounding: Grounding::Airborne,
@@ -162,11 +166,13 @@ mod test {
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
                 },
+                ..Default::default()
             },
             Stand::update(
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Decrease(10),
+                    hp: HealthPoints(100),
                     object_status: ObjectStatus {
                         sequence_id: CharacterSequenceId::Stand,
                         grounding: Grounding::Airborne,
@@ -191,6 +197,7 @@ mod test {
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Decrease(1),
+                    hp: HealthPoints(100),
                     ..Default::default()
                 },
                 &Kinematics::default()
@@ -211,6 +218,7 @@ mod test {
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Decrease(0),
+                    hp: HealthPoints(100),
                     ..Default::default()
                 },
                 &Kinematics::default()
@@ -227,6 +235,7 @@ mod test {
             &input,
             &CharacterStatus {
                 run_counter: RunCounter::Exceeded,
+                hp: HealthPoints(100),
                 ..Default::default()
             },
             &Kinematics::default(),
@@ -242,6 +251,7 @@ mod test {
             &input,
             &CharacterStatus {
                 run_counter: RunCounter::Increase(10),
+                hp: HealthPoints(100),
                 ..Default::default()
             },
             &Kinematics::default(),
@@ -260,11 +270,13 @@ mod test {
                     sequence_state: Some(SequenceState::Begin),
                     mirrored: Some(false),
                     ..Default::default()
-                }
+                },
+                ..Default::default()
             },
             Stand::update(
                 &input,
                 &CharacterStatus {
+                    hp: HealthPoints(100),
                     object_status: ObjectStatus {
                         mirrored: true,
                         ..Default::default()
@@ -283,11 +295,13 @@ mod test {
                     sequence_id: Some(CharacterSequenceId::Walk),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
-                }
+                },
+                ..Default::default()
             },
             Stand::update(
                 &input,
                 &CharacterStatus {
+                    hp: HealthPoints(100),
                     object_status: ObjectStatus {
                         mirrored: false,
                         ..Default::default()
@@ -311,7 +325,8 @@ mod test {
                     sequence_state: Some(SequenceState::Begin),
                     mirrored: Some(true),
                     ..Default::default()
-                }
+                },
+                ..Default::default()
             },
             Stand::update(
                 &input,
@@ -334,11 +349,13 @@ mod test {
                     sequence_id: Some(CharacterSequenceId::Walk),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
-                }
+                },
+                ..Default::default()
             },
             Stand::update(
                 &input,
                 &CharacterStatus {
+                    hp: HealthPoints(100),
                     object_status: ObjectStatus {
                         mirrored: true,
                         ..Default::default()
@@ -361,12 +378,14 @@ mod test {
                     sequence_id: Some(CharacterSequenceId::Walk),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
-                }
+                },
+                ..Default::default()
             },
             Stand::update(
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Decrease(10),
+                    hp: HealthPoints(100),
                     ..Default::default()
                 },
                 &Kinematics::default()
@@ -385,11 +404,13 @@ mod test {
                     sequence_id: Some(CharacterSequenceId::Walk),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
-                }
+                },
+                ..Default::default()
             },
             Stand::update(
                 &input,
                 &CharacterStatus {
+                    hp: HealthPoints(100),
                     object_status: ObjectStatus {
                         mirrored: false,
                         ..Default::default()
@@ -415,12 +436,14 @@ mod test {
                             sequence_id: Some(CharacterSequenceId::Run),
                             sequence_state: Some(SequenceState::Begin),
                             ..Default::default()
-                        }
+                        },
+                        ..Default::default()
                     },
                     Stand::update(
                         &input,
                         &CharacterStatus {
                             run_counter: RunCounter::Decrease(10),
+                            hp: HealthPoints(100),
                             object_status: ObjectStatus {
                                 mirrored,
                                 ..Default::default()
@@ -447,12 +470,14 @@ mod test {
                             sequence_state: Some(SequenceState::Begin),
                             mirrored: Some(!mirrored),
                             ..Default::default()
-                        }
+                        },
+                        ..Default::default()
                     },
                     Stand::update(
                         &input,
                         &CharacterStatus {
                             run_counter: RunCounter::Decrease(10),
+                            hp: HealthPoints(100),
                             object_status: ObjectStatus {
                                 mirrored,
                                 ..Default::default()
@@ -480,7 +505,14 @@ mod test {
                         },
                         ..Default::default()
                     },
-                    Stand::update(&input, &CharacterStatus::default(), &Kinematics::default())
+                    Stand::update(
+                        &input,
+                        &CharacterStatus {
+                            hp: HealthPoints(100),
+                            ..Default::default()
+                        },
+                        &Kinematics::default()
+                    )
                 );
             });
     }
@@ -499,7 +531,14 @@ mod test {
                 },
                 ..Default::default()
             },
-            Stand::update(&input, &CharacterStatus::default(), &Kinematics::default())
+            Stand::update(
+                &input,
+                &CharacterStatus {
+                    hp: HealthPoints(100),
+                    ..Default::default()
+                },
+                &Kinematics::default()
+            )
         );
     }
 
@@ -514,12 +553,14 @@ mod test {
                     sequence_id: Some(CharacterSequenceId::Jump),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
-                }
+                },
+                ..Default::default()
             },
             Stand::update(
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Decrease(0),
+                    hp: HealthPoints(100),
                     ..Default::default()
                 },
                 &Kinematics::default()

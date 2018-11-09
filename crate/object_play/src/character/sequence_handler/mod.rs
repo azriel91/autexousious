@@ -82,6 +82,8 @@ mod test {
     fn sequence_handler_default_update_is_empty() {
         // No update to run counter.
         let run_counter = None;
+        // No update to HP.
+        let hp = None;
         // No calculated next sequence.
         let sequence_id = None;
         // No update to sequence state.
@@ -93,6 +95,7 @@ mod test {
         assert_eq!(
             CharacterStatusUpdate::new(
                 run_counter,
+                hp,
                 ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored, grounding)
             ),
             Sit::update(

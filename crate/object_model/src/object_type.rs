@@ -1,5 +1,7 @@
 #![allow(missing_debug_implementations)] // Needed for derived `EnumIter`
 
+use strum_macros::{Display, EnumIter};
+
 /// Types of in-game objects.
 ///
 /// In-game objects are those that can be interacted with.

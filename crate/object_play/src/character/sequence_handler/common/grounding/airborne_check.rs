@@ -38,8 +38,8 @@ mod tests {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatus,
-            ObjectStatusUpdate, RunCounter,
+            CharacterStatus, CharacterStatusUpdate, Grounding, HealthPoints, Kinematics,
+            ObjectStatus, ObjectStatusUpdate, RunCounter,
         },
     };
 
@@ -54,6 +54,7 @@ mod tests {
                 &ControllerInput::default(),
                 &CharacterStatus {
                     run_counter: RunCounter::Unused,
+                    hp: HealthPoints(100),
                     object_status: ObjectStatus {
                         sequence_id: CharacterSequenceId::Stand,
                         ..Default::default()
