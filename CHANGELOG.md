@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Added
+
+* Naive collision detection and effects. ([#69][#69])
+* Flinch and foward falling sequences. ([#70][#70])
+
+[#69]: https://gitlab.com/azriel91/autexousious/issues/69
+[#70]: https://gitlab.com/azriel91/autexousious/issues/70
+
 ## 0.6.0 (2018-10-12)
 
 ### Added
