@@ -77,8 +77,7 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
                     } else {
                         character_status.hp -= hp_damage;
                     }
-                    warn!("damage: {}", hp_damage);
-                    warn!("hp: {}", character_status.hp.0);
+
                     let next_sequence_id = if character_status.hp == 0 {
                         CharacterSequenceId::FallForwardAscend
                     } else {
