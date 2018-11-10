@@ -5,7 +5,8 @@ use object_model::{
 };
 
 use character::sequence_handler::{
-    common::grounding::AirborneCheck, CharacterSequenceHandler, SequenceHandler,
+    common::{grounding::AirborneCheck, status::AliveCheck},
+    CharacterSequenceHandler, SequenceHandler,
 };
 
 #[derive(Debug)]
@@ -13,18 +14,23 @@ pub(crate) struct RunStop;
 
 impl CharacterSequenceHandler for RunStop {
     fn update(
-        controller_input: &ControllerInput,
+        input: &ControllerInput,
         character_status: &CharacterStatus,
         kinematics: &Kinematics<f32>,
     ) -> CharacterStatusUpdate {
-        AirborneCheck::update(controller_input, character_status, kinematics).unwrap_or_else(|| {
-            let mut update = CharacterStatusUpdate::default();
-            if character_status.object_status.sequence_state == SequenceState::End {
-                update.object_status.sequence_id = Some(CharacterSequenceId::Stand);
-                update.object_status.sequence_state = Some(SequenceState::Begin);
-            }
-            update
-        })
+        [AliveCheck::update, AirborneCheck::update]
+            .iter()
+            .fold(None, |status_update, fn_update| {
+                status_update.or_else(|| fn_update(input, character_status, kinematics))
+            })
+            .unwrap_or_else(|| {
+                let mut update = CharacterStatusUpdate::default();
+                if character_status.object_status.sequence_state == SequenceState::End {
+                    update.object_status.sequence_id = Some(CharacterSequenceId::Stand);
+                    update.object_status.sequence_state = Some(SequenceState::Begin);
+                }
+                update
+            })
     }
 }
 

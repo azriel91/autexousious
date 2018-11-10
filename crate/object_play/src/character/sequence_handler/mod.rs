@@ -21,7 +21,7 @@ pub(super) use self::switch_sequence_on_end::SwitchSequenceOnEnd;
 pub(super) use self::switch_sequence_on_land::SwitchSequenceOnLand;
 pub(super) use self::walk::Walk;
 
-mod common;
+pub(super) mod common;
 mod fall_forward_ascend;
 mod fall_forward_descend;
 mod fall_forward_land;
