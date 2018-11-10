@@ -2,7 +2,7 @@ use game_input::ControllerInput;
 use object_model::entity::{CharacterStatus, CharacterStatusUpdate, Kinematics};
 
 use character::sequence_handler::{
-    common::{grounding::AirborneCheck, input::RunStopCheck},
+    common::{grounding::AirborneCheck, input::RunStopCheck, status::AliveCheck},
     CharacterSequenceHandler, SequenceHandler,
 };
 
@@ -16,12 +16,16 @@ impl CharacterSequenceHandler for Run {
         character_status: &CharacterStatus,
         kinematics: &Kinematics<f32>,
     ) -> CharacterStatusUpdate {
-        [AirborneCheck::update, RunStopCheck::update]
-            .iter()
-            .fold(None, |status_update, fn_update| {
-                status_update.or_else(|| fn_update(input, character_status, kinematics))
-            })
-            .unwrap_or_else(CharacterStatusUpdate::default)
+        [
+            AliveCheck::update,
+            AirborneCheck::update,
+            RunStopCheck::update,
+        ]
+        .iter()
+        .fold(None, |status_update, fn_update| {
+            status_update.or_else(|| fn_update(input, character_status, kinematics))
+        })
+        .unwrap_or_else(CharacterStatusUpdate::default)
     }
 }
 

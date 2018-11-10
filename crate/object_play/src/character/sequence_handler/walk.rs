@@ -10,6 +10,7 @@ use character::sequence_handler::{
             JumpCheck, StandAttackCheck, WalkNoMovementCheck, WalkXMovementCheck,
             WalkZMovementCheck,
         },
+        status::AliveCheck,
         util::RunCounterUpdater,
     },
     CharacterSequenceHandler, SequenceHandler,
@@ -27,6 +28,7 @@ impl CharacterSequenceHandler for Walk {
         let run_counter = RunCounterUpdater::update(input, character_status);
 
         let status_update = [
+            AliveCheck::update,
             AirborneCheck::update,
             JumpCheck::update,
             StandAttackCheck::update,

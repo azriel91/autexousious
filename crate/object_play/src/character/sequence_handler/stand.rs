@@ -7,6 +7,7 @@ use character::sequence_handler::{
     common::{
         grounding::AirborneCheck,
         input::{JumpCheck, StandAttackCheck, StandXMovementCheck, StandZMovementCheck},
+        status::AliveCheck,
         util::RunCounterUpdater,
         SequenceRepeat,
     },
@@ -34,6 +35,7 @@ impl CharacterSequenceHandler for Stand {
         let run_counter = RunCounterUpdater::update(input, character_status);
 
         let status_update = [
+            AliveCheck::update,
             AirborneCheck::update,
             JumpCheck::update,
             StandAttackCheck::update,
