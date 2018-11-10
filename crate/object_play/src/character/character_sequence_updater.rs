@@ -6,8 +6,9 @@ use object_model::{
 };
 
 use character::sequence_handler::{
-    CharacterSequenceHandler, Jump, JumpAscend, JumpDescend, JumpDescendLand, JumpOff, Run,
-    RunStop, Stand, StandAttack, StandOnSequenceEnd, Walk,
+    CharacterSequenceHandler, FallForwardAscend, FallForwardDescend, FallForwardLand, Jump,
+    JumpAscend, JumpDescend, JumpDescendLand, JumpOff, LieFaceDown, Run, RunStop, Stand,
+    StandAttack, StandOnSequenceEnd, Walk,
 };
 
 /// Defines behaviour for a character in game.
@@ -30,20 +31,25 @@ impl CharacterSequenceUpdater {
         character_status: &CharacterStatus,
         kinematics: &Kinematics<f32>,
     ) -> CharacterStatusUpdate {
-        let sequence_handler = match character_status.object_status.sequence_id {
-            CharacterSequenceId::Stand => Stand::update,
-            CharacterSequenceId::StandAttack => StandAttack::update,
-            CharacterSequenceId::Walk => Walk::update,
-            CharacterSequenceId::Run => Run::update,
-            CharacterSequenceId::RunStop => RunStop::update,
-            CharacterSequenceId::Jump => Jump::update,
-            CharacterSequenceId::JumpOff => JumpOff::update,
-            CharacterSequenceId::JumpAscend => JumpAscend::update,
-            CharacterSequenceId::JumpDescend => JumpDescend::update,
-            CharacterSequenceId::JumpDescendLand => JumpDescendLand::update,
+        let sequence_handler: &Fn(&ControllerInput, &CharacterStatus, &Kinematics<f32>)
+            -> CharacterStatusUpdate = match character_status.object_status.sequence_id {
+            CharacterSequenceId::Stand => &Stand::update,
+            CharacterSequenceId::StandAttack => &StandAttack::update,
+            CharacterSequenceId::Walk => &Walk::update,
+            CharacterSequenceId::Run => &Run::update,
+            CharacterSequenceId::RunStop => &RunStop::update,
+            CharacterSequenceId::Jump => &Jump::update,
+            CharacterSequenceId::JumpOff => &JumpOff::update,
+            CharacterSequenceId::JumpAscend => &JumpAscend::update,
+            CharacterSequenceId::JumpDescend => &JumpDescend::update,
+            CharacterSequenceId::JumpDescendLand => &JumpDescendLand::update,
             CharacterSequenceId::Flinch0 | CharacterSequenceId::Flinch1 => {
-                StandOnSequenceEnd::update
+                &StandOnSequenceEnd::update
             }
+            CharacterSequenceId::FallForwardAscend => &FallForwardAscend::update,
+            CharacterSequenceId::FallForwardDescend => &FallForwardDescend::update,
+            CharacterSequenceId::FallForwardLand => &FallForwardLand::update,
+            CharacterSequenceId::LieFaceDown => &LieFaceDown::update,
         };
 
         let mut status_update = sequence_handler(controller_input, character_status, kinematics);

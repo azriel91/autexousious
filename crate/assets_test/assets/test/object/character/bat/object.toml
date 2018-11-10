@@ -275,3 +275,44 @@
     sprite = 5
     wait = 3
     body = [{ box = { x = 169, y = 5, w = 12, h = 20 } }]
+
+# Fall when knocked down.
+[sequences.fall_forward_ascend]
+  [[sequences.fall_forward_ascend.frames]]
+    sheet = 0
+    sprite = 1
+    wait = 2
+    body = [{ box = { x = 48, y = 13, w = 15, h = 12 } }]
+
+[sequences.fall_forward_descend]
+  [[sequences.fall_forward_descend.frames]]
+    sheet = 0
+    sprite = 0
+    wait = 2
+    body = [{ box = { x = 16, y = 11, w = 15, h = 12 } }]
+
+  [[sequences.fall_forward_descend.frames]]
+    sheet = 0
+    sprite = 4
+    wait = 2
+    body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
+
+[sequences.fall_forward_land]
+  [[sequences.fall_forward_land.frames]]
+    sheet = 0
+    sprite = 3
+    wait = 2
+    body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
+
+  [[sequences.fall_forward_land.frames]]
+    sheet = 0
+    sprite = 4
+    wait = 2
+    body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
+
+[sequences.lie_face_down]
+  [[sequences.lie_face_down.frames]]
+    sheet = 0
+    sprite = 3
+    wait = 30
+    body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
