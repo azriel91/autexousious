@@ -1,25 +1,25 @@
 use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatusUpdate},
+    entity::{CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate},
 };
 
 use character::sequence_handler::SequenceHandler;
 
-/// Returns a `JumpDescend` update if the grounding is `Airborne`.
+/// Returns the appropriate falling sequence if HP is 0.
 #[derive(Debug)]
-pub(crate) struct AirborneCheck;
+pub(crate) struct AliveCheck;
 
-impl SequenceHandler for AirborneCheck {
+impl SequenceHandler for AliveCheck {
     fn update(
         _input: &ControllerInput,
         character_status: &CharacterStatus,
         _kinematics: &Kinematics<f32>,
     ) -> Option<CharacterStatusUpdate> {
-        if character_status.object_status.grounding == Grounding::Airborne {
+        if character_status.hp == 0 {
             Some(CharacterStatusUpdate {
                 object_status: ObjectStatusUpdate::new(
-                    Some(CharacterSequenceId::JumpDescend),
+                    Some(CharacterSequenceId::FallForwardDescend),
                     Some(SequenceState::Begin),
                     None,
                     None,
@@ -39,26 +39,26 @@ mod tests {
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
             CharacterStatus, CharacterStatusUpdate, Grounding, HealthPoints, Kinematics,
-            ObjectStatus, ObjectStatusUpdate, RunCounter,
+            ObjectStatus, ObjectStatusUpdate,
         },
     };
 
-    use super::AirborneCheck;
+    use super::AliveCheck;
     use character::sequence_handler::SequenceHandler;
 
     #[test]
-    fn returns_none_when_grounding_is_on_ground() {
+    fn returns_none_when_hp_is_above_zero() {
         assert_eq!(
             None,
-            AirborneCheck::update(
+            AliveCheck::update(
                 &ControllerInput::default(),
                 &CharacterStatus {
-                    run_counter: RunCounter::Unused,
                     hp: HealthPoints(100),
                     object_status: ObjectStatus {
                         sequence_id: CharacterSequenceId::Stand,
                         ..Default::default()
-                    }
+                    },
+                    ..Default::default()
                 },
                 &Kinematics::<f32>::default()
             )
@@ -66,19 +66,20 @@ mod tests {
     }
 
     #[test]
-    fn switches_to_jump_descend_when_grounding_is_airborne() {
+    fn switches_to_fall_forward_descend_when_hp_is_zero() {
         assert_eq!(
             Some(CharacterStatusUpdate {
                 object_status: ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::JumpDescend),
+                    sequence_id: Some(CharacterSequenceId::FallForwardDescend),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
                 },
                 ..Default::default()
             }),
-            AirborneCheck::update(
+            AliveCheck::update(
                 &ControllerInput::default(),
                 &CharacterStatus {
+                    hp: HealthPoints(0),
                     object_status: ObjectStatus {
                         sequence_id: CharacterSequenceId::Stand,
                         grounding: Grounding::Airborne,

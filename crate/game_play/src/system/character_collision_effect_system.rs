@@ -4,11 +4,11 @@ use amethyst::{
     ecs::{Read, ReadStorage, Resources, System, SystemData, WriteStorage},
     shrev::{EventChannel, ReaderId},
 };
-use collision_model::play::CollisionEvent;
+use collision_model::{config::Interaction, play::CollisionEvent};
 use game_loading::{AnimationRunner, ObjectAnimationStorages};
 use object_model::{
-    config::object::CharacterSequenceId,
-    entity::CharacterStatus,
+    config::object::{CharacterSequenceId, SequenceState},
+    entity::{CharacterStatus, HealthPoints},
     loaded::{AnimatedComponentAnimation, Character, CharacterHandle},
 };
 use typename::TypeName;
@@ -70,12 +70,25 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
                         );
 
                     // TODO: Select damage sequence based on status.
-                    let next_sequence_id = if character_status.object_status.sequence_id
-                        == CharacterSequenceId::Flinch0
-                    {
-                        CharacterSequenceId::Flinch1
+                    // TODO: Split this system with health check system.
+                    let Interaction::Physical { hp_damage, .. } = ev.interaction;
+                    if character_status.hp.0 < hp_damage {
+                        character_status.hp = HealthPoints(0);
                     } else {
-                        CharacterSequenceId::Flinch0
+                        character_status.hp -= hp_damage;
+                    }
+                    warn!("damage: {}", hp_damage);
+                    warn!("hp: {}", character_status.hp.0);
+                    let next_sequence_id = if character_status.hp == 0 {
+                        CharacterSequenceId::FallForwardAscend
+                    } else {
+                        if character_status.object_status.sequence_id
+                            == CharacterSequenceId::Flinch0
+                        {
+                            CharacterSequenceId::Flinch1
+                        } else {
+                            CharacterSequenceId::Flinch0
+                        }
                     };
 
                     // Swap animations
@@ -121,6 +134,7 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
 
                     // Set sequence id
                     character_status.object_status.sequence_id = next_sequence_id;
+                    character_status.object_status.sequence_state = SequenceState::Begin;
                 }
             });
     }

@@ -66,8 +66,8 @@ mod tests {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-            RunCounter,
+            CharacterStatus, CharacterStatusUpdate, HealthPoints, Kinematics, ObjectStatus,
+            ObjectStatusUpdate, RunCounter,
         },
     };
 
@@ -105,6 +105,7 @@ mod tests {
             StandXMovementCheck::update(
                 &input,
                 &CharacterStatus {
+                    hp: HealthPoints(100),
                     object_status: ObjectStatus {
                         mirrored: true,
                         ..Default::default()
@@ -128,6 +129,7 @@ mod tests {
             StandXMovementCheck::update(
                 &input,
                 &CharacterStatus {
+                    hp: HealthPoints(100),
                     object_status: ObjectStatus {
                         mirrored: false,
                         ..Default::default()
@@ -156,6 +158,7 @@ mod tests {
             StandXMovementCheck::update(
                 &input,
                 &CharacterStatus {
+                    hp: HealthPoints(100),
                     object_status: ObjectStatus {
                         mirrored: false,
                         ..Default::default()
@@ -179,6 +182,7 @@ mod tests {
             StandXMovementCheck::update(
                 &input,
                 &CharacterStatus {
+                    hp: HealthPoints(100),
                     object_status: ObjectStatus {
                         mirrored: true,
                         ..Default::default()
@@ -210,6 +214,7 @@ mod tests {
                         &input,
                         &CharacterStatus {
                             run_counter: RunCounter::Decrease(10),
+                            hp: HealthPoints(100),
                             object_status: ObjectStatus {
                                 mirrored,
                                 ..Default::default()
@@ -242,6 +247,7 @@ mod tests {
                         &input,
                         &CharacterStatus {
                             run_counter: RunCounter::Decrease(10),
+                            hp: HealthPoints(100),
                             object_status: ObjectStatus {
                                 mirrored,
                                 ..Default::default()

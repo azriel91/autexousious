@@ -53,7 +53,9 @@ impl RunCounterUpdater {
 #[cfg(test)]
 mod tests {
     use game_input::ControllerInput;
-    use object_model::entity::{CharacterStatus, Grounding, ObjectStatus, RunCounter};
+    use object_model::entity::{
+        CharacterStatus, Grounding, HealthPoints, ObjectStatus, RunCounter,
+    };
 
     use super::RunCounterUpdater;
 
@@ -67,6 +69,7 @@ mod tests {
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Unused,
+                    hp: HealthPoints(100),
                     object_status: ObjectStatus {
                         grounding: Grounding::Airborne,
                         ..Default::default()
@@ -86,6 +89,7 @@ mod tests {
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Increase(10),
+                    hp: HealthPoints(100),
                     object_status: ObjectStatus {
                         grounding: Grounding::Airborne,
                         ..Default::default()
@@ -106,6 +110,7 @@ mod tests {
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Unused,
+                    hp: HealthPoints(100),
                     object_status: ObjectStatus {
                         grounding: Grounding::Airborne,
                         ..Default::default()
@@ -128,6 +133,7 @@ mod tests {
                         &input,
                         &CharacterStatus {
                             run_counter: RunCounter::Increase(10),
+                            hp: HealthPoints(100),
                             object_status: ObjectStatus {
                                 grounding: Grounding::Airborne,
                                 ..Default::default()
@@ -153,6 +159,7 @@ mod tests {
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Unused,
+                    hp: HealthPoints(100),
                     ..Default::default()
                 }
             )
@@ -169,6 +176,7 @@ mod tests {
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Decrease(0),
+                    hp: HealthPoints(100),
                     ..Default::default()
                 }
             )
@@ -185,6 +193,7 @@ mod tests {
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Decrease(1),
+                    hp: HealthPoints(100),
                     ..Default::default()
                 }
             )
@@ -201,6 +210,7 @@ mod tests {
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Increase(0),
+                    hp: HealthPoints(100),
                     object_status: ObjectStatus {
                         ..Default::default()
                     }
@@ -226,6 +236,7 @@ mod tests {
                         &input,
                         &CharacterStatus {
                             run_counter: RunCounter::Unused,
+                            hp: HealthPoints(100),
                             object_status: ObjectStatus {
                                 mirrored,
                                 ..Default::default()
@@ -249,6 +260,7 @@ mod tests {
                         &input,
                         &CharacterStatus {
                             run_counter: RunCounter::Decrease(11),
+                            hp: HealthPoints(100),
                             object_status: ObjectStatus {
                                 mirrored,
                                 ..Default::default()
@@ -272,6 +284,7 @@ mod tests {
                         &input,
                         &CharacterStatus {
                             run_counter: RunCounter::Increase(11),
+                            hp: HealthPoints(100),
                             object_status: ObjectStatus {
                                 mirrored,
                                 ..Default::default()
@@ -295,6 +308,7 @@ mod tests {
                         &input,
                         &CharacterStatus {
                             run_counter: RunCounter::Decrease(11),
+                            hp: HealthPoints(100),
                             object_status: ObjectStatus {
                                 mirrored,
                                 ..Default::default()
@@ -318,6 +332,7 @@ mod tests {
                         &input,
                         &CharacterStatus {
                             run_counter: RunCounter::Increase(0),
+                            hp: HealthPoints(100),
                             object_status: ObjectStatus {
                                 mirrored,
                                 ..Default::default()
@@ -341,6 +356,7 @@ mod tests {
                         &input,
                         &CharacterStatus {
                             run_counter: RunCounter::Increase(11),
+                            hp: HealthPoints(100),
                             object_status: ObjectStatus {
                                 mirrored,
                                 ..Default::default()
@@ -364,6 +380,7 @@ mod tests {
                         &input,
                         &CharacterStatus {
                             run_counter: RunCounter::Exceeded,
+                            hp: HealthPoints(100),
                             object_status: ObjectStatus {
                                 mirrored,
                                 ..Default::default()

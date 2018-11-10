@@ -8,6 +8,7 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 collision_loading = { path = "../collision_loading" }
 collision_model = { path = "../collision_model" }
 derivative = "1.0"
+derive_more = "0.13"
 derive-new = "0.5"
 serde = "1.0"
 serde_derive = "1.0"

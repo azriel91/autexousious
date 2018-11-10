@@ -12,6 +12,7 @@ extern crate collision_loading;
 extern crate collision_model;
 #[macro_use]
 extern crate derivative;
+extern crate derive_more;
 #[macro_use]
 extern crate derive_new;
 #[cfg(test)]
@@ -24,7 +25,6 @@ extern crate shape_model;
 extern crate sprite_loading;
 extern crate sprite_model;
 extern crate strum;
-#[macro_use]
 extern crate strum_macros;
 #[cfg(test)]
 extern crate toml;
