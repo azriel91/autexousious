@@ -38,6 +38,14 @@ pub enum CharacterSequenceId {
     /// Character is hit while on ground, alternate sequence.
     #[serde(rename = "flinch_1")]
     Flinch1,
+    /// Knocked off balance, moving upwards.
+    FallForwardAscend,
+    /// Knocked off balance, moving downwards.
+    FallForwardDescend,
+    /// Knocked off balance, landed on ground (bounce).
+    FallForwardLand,
+    /// Lying on ground face down.
+    LieFaceDown,
 }
 
 impl SequenceId for CharacterSequenceId {}
