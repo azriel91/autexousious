@@ -1,4 +1,4 @@
-use amethyst::{core::EventReader, ecs::*, shrev::EventChannel, StateEvent};
+use amethyst::{core::EventReader, ecs::*, renderer::Event, shrev::EventChannel};
 use character_selection_model::CharacterSelectionEvent;
 use game_mode_selection_model::GameModeSelectionEvent;
 use map_selection_model::MapSelectionEvent;
@@ -24,6 +24,7 @@ pub enum AppEvent {
     GameModeSelection(GameModeSelectionEvent),
     /// `map_selection` events.
     MapSelection(MapSelectionEvent),
-    /// Amethyst `State` events.
-    State(#[derivative(Debug = "ignore", PartialEq = "ignore")] StateEvent),
+    /// Events sent by the winit window.
+    // TODO: Pending <https://github.com/amethyst/amethyst/pull/1131>
+    Window(#[derivative(PartialEq = "ignore")] Event),
 }
