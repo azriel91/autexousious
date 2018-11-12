@@ -1,6 +1,7 @@
 use amethyst::{core::EventReader, ecs::*, renderer::Event, shrev::EventChannel};
 use character_selection_model::CharacterSelectionEvent;
 use game_mode_selection_model::GameModeSelectionEvent;
+use game_play_model::GamePlayEvent;
 use map_selection_model::MapSelectionEvent;
 
 /// Type encompassing all state event types.
@@ -22,6 +23,8 @@ pub enum AppEvent {
     CharacterSelection(CharacterSelectionEvent),
     /// `game_mode_selection` events.
     GameModeSelection(GameModeSelectionEvent),
+    /// `game_play` events.
+    GamePlay(GamePlayEvent),
     /// `map_selection` events.
     MapSelection(MapSelectionEvent),
     /// Events sent by the winit window.

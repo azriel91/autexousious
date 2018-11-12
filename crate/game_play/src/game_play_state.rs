@@ -11,6 +11,7 @@ use amethyst::{
 };
 use application_event::AppEvent;
 use game_model::play::GameEntities;
+use game_play_model::GamePlayEvent;
 
 use GamePlayBundle;
 
@@ -133,15 +134,32 @@ impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
         _data: StateData<GameData>,
         event: AppEvent,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
-        if let AppEvent::Window(event) = &event {
-            if is_key_down(&event, VirtualKeyCode::Escape) {
-                debug!("Returning from `GamePlayState`.");
-                Trans::Pop
-            } else {
-                Trans::None
+        match event {
+            AppEvent::Window(window_event) => {
+                if is_key_down(&window_event, VirtualKeyCode::Escape) {
+                    debug!("Returning from `GamePlayState`.");
+                    Trans::Pop
+                } else {
+                    Trans::None
+                }
             }
-        } else {
-            Trans::None
+            AppEvent::GamePlay(game_play_event) => {
+                match game_play_event {
+                    GamePlayEvent::Cancel => {
+                        debug!("Returning from `GamePlayState`.");
+                        Trans::Pop
+                    }
+                    GamePlayEvent::Restart => {
+                        // TODO: Switch to `GameLoadingState`
+                        Trans::None
+                    }
+                    GamePlayEvent::End => {
+                        // TODO: `GamePlayStats` state.
+                        Trans::Pop
+                    }
+                }
+            }
+            _ => Trans::None,
         }
     }
 

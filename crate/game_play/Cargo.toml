@@ -13,6 +13,7 @@ derive-new = "0.5"
 game_input = { path = "../game_input" }
 game_loading = { path = "../game_loading" }
 game_model = { path = "../game_model" }
+game_play_model = { path = "../game_play_model" }
 log = "0.4"
 map_model = { path = "../map_model" }
 map_selection_model = { path = "../map_selection_model" }

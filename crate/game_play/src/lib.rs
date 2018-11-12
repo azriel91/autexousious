@@ -23,6 +23,7 @@ extern crate derive_new;
 extern crate game_input;
 extern crate game_loading;
 extern crate game_model;
+extern crate game_play_model;
 #[cfg(test)]
 extern crate loading;
 #[macro_use]
