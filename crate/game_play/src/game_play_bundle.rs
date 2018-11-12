@@ -8,6 +8,7 @@ use CharacterCollisionEffectSystem;
 use CharacterGroundingSystem;
 use CharacterKinematicsSystem;
 use CharacterSequenceUpdateSystem;
+use GamePlayEndDetectionSystem;
 use ObjectCollisionDetectionSystem;
 use ObjectKinematicsUpdateSystem;
 use ObjectTransformUpdateSystem;
@@ -55,6 +56,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             CharacterCollisionEffectSystem::new(),
             &CharacterCollisionEffectSystem::type_name(),
             &[&ObjectCollisionDetectionSystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
+            GamePlayEndDetectionSystem::new(),
+            &GamePlayEndDetectionSystem::type_name(),
+            &[&CharacterCollisionEffectSystem::type_name()],
         ); // kcov-ignore
         Ok(())
     }

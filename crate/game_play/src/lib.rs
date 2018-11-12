@@ -43,8 +43,8 @@ pub(crate) use game_play_bundle::GamePlayBundle;
 pub use game_play_state::GamePlayState;
 pub(crate) use system::{
     CharacterCollisionEffectSystem, CharacterGroundingSystem, CharacterKinematicsSystem,
-    CharacterSequenceUpdateSystem, ObjectCollisionDetectionSystem, ObjectKinematicsUpdateSystem,
-    ObjectTransformUpdateSystem,
+    CharacterSequenceUpdateSystem, GamePlayEndDetectionSystem, ObjectCollisionDetectionSystem,
+    ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
 };
 
 mod game_play_bundle;
