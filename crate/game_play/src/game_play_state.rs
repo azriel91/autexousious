@@ -164,6 +164,7 @@ impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
                         Trans::None
                     }
                     GamePlayEvent::End => {
+                        warn!("Game play ended!");
                         data.world.add_resource(GamePlayStatus::Ended);
                         Trans::None
                     }

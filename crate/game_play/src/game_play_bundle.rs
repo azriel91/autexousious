@@ -2,6 +2,8 @@ use amethyst::{
     core::bundle::{Result, SystemBundle},
     ecs::prelude::*,
 };
+use game_input::ControllerInput;
+use tracker::LastTrackerSystem;
 use typename::TypeName;
 
 use CharacterCollisionEffectSystem;
@@ -9,6 +11,7 @@ use CharacterGroundingSystem;
 use CharacterKinematicsSystem;
 use CharacterSequenceUpdateSystem;
 use GamePlayEndDetectionSystem;
+use GamePlayEndTransitionSystem;
 use ObjectCollisionDetectionSystem;
 use ObjectKinematicsUpdateSystem;
 use ObjectTransformUpdateSystem;
@@ -62,6 +65,26 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &GamePlayEndDetectionSystem::type_name(),
             &[&CharacterCollisionEffectSystem::type_name()],
         ); // kcov-ignore
+
+        // Depends on the LastTrackerSystem<ControllerInput>, so must run before it.
+        builder.add(
+            GamePlayEndTransitionSystem::new(),
+            &GamePlayEndTransitionSystem::type_name(),
+            &[],
+        ); // kcov-ignore
+
+        let controller_input_tracker_system =
+            LastTrackerSystem::<ControllerInput>::new(stringify!(game_input::ControllerInput));
+        let controller_input_tracker_system_name = controller_input_tracker_system.system_name();
+
+        // This depends on `&ControllerInputUpdateSystem::type_name()`, but since it runs in a
+        // separate dispatcher, we have to omit it from here.
+        builder.add(
+            controller_input_tracker_system,
+            &controller_input_tracker_system_name,
+            &[&GamePlayEndTransitionSystem::type_name()],
+        ); // kcov-ignore
+
         Ok(())
     }
 }

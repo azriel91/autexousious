@@ -35,6 +35,7 @@ extern crate object_loading;
 extern crate object_model;
 extern crate object_play;
 extern crate shape_model;
+extern crate tracker;
 extern crate typename;
 #[macro_use]
 extern crate typename_derive;
@@ -43,8 +44,8 @@ pub(crate) use game_play_bundle::GamePlayBundle;
 pub use game_play_state::GamePlayState;
 pub(crate) use system::{
     CharacterCollisionEffectSystem, CharacterGroundingSystem, CharacterKinematicsSystem,
-    CharacterSequenceUpdateSystem, GamePlayEndDetectionSystem, ObjectCollisionDetectionSystem,
-    ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
+    CharacterSequenceUpdateSystem, GamePlayEndDetectionSystem, GamePlayEndTransitionSystem,
+    ObjectCollisionDetectionSystem, ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
 };
 
 mod game_play_bundle;

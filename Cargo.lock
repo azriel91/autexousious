@@ -1661,6 +1661,7 @@ dependencies = [
  "object_model 0.6.0",
  "object_play 0.6.0",
  "shape_model 0.6.0",
+ "tracker 0.6.0",
  "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
