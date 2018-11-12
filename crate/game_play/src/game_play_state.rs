@@ -145,7 +145,7 @@ impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
             }
             AppEvent::GamePlay(game_play_event) => {
                 match game_play_event {
-                    GamePlayEvent::Cancel => {
+                    GamePlayEvent::Return => {
                         debug!("Returning from `GamePlayState`.");
                         Trans::Pop
                     }

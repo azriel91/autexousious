@@ -14,7 +14,7 @@ impl StdinMapper for GamePlayEventStdinMapper {
 
     fn map(_: &(), args: Self::Args) -> Result<Self::Event> {
         match args {
-            GamePlayEventArgs::Cancel => Ok(GamePlayEvent::Cancel),
+            GamePlayEventArgs::Return => Ok(GamePlayEvent::Return),
             GamePlayEventArgs::Restart => Ok(GamePlayEvent::Restart),
             GamePlayEventArgs::End => Ok(GamePlayEvent::End),
         }
@@ -43,7 +43,7 @@ mod tests {
         };
     }
 
-    test_mapping!(maps_cancel_event, Cancel);
+    test_mapping!(maps_return_event, Return);
     test_mapping!(maps_restart_event, Restart);
     test_mapping!(maps_end_event, End);
 }
