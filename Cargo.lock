@@ -3653,6 +3653,7 @@ dependencies = [
  "game_mode_selection 0.6.0",
  "game_mode_selection_stdio 0.6.0",
  "game_mode_selection_ui 0.6.0",
+ "game_play_stdio 0.7.0",
  "loading 0.6.0",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_loading 0.6.0",
