@@ -8,10 +8,10 @@
 #[derive(Clone, Copy, Debug, PartialEq, StructOpt)]
 #[structopt(rename_all = "snake_case")]
 pub enum GamePlayEventArgs {
-    /// Stop the round immediately.
+    /// Stops the round.
     Cancel,
-    /// Restart the round.
+    /// Restarts the round.
     Restart,
-    /// The round has ended.
+    /// Signals the end of the round.
     End,
 }
