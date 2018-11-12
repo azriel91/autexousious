@@ -17,6 +17,7 @@ extern crate game_input;
 extern crate game_mode_selection;
 extern crate game_mode_selection_stdio;
 extern crate game_mode_selection_ui;
+extern crate game_play_stdio;
 extern crate loading;
 #[macro_use]
 extern crate log;
@@ -58,6 +59,7 @@ use game_input::{GameInputBundle, InputConfig, PlayerActionControl, PlayerAxisCo
 use game_mode_selection::{GameModeSelectionStateBuilder, GameModeSelectionStateDelegate};
 use game_mode_selection_stdio::GameModeSelectionStdioBundle;
 use game_mode_selection_ui::{GameModeSelectionUiBuildFn, GameModeSelectionUiBundle};
+use game_play_stdio::GamePlayStdioBundle;
 use loading::LoadingState;
 use map_loading::MapLoadingBundle;
 use map_selection_stdio::MapSelectionStdioBundle;
@@ -176,6 +178,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(StdioViewBundle::new())?
             .with_bundle(CharacterSelectionStdioBundle::new())?
             .with_bundle(GameModeSelectionStdioBundle::new())?
+            .with_bundle(GamePlayStdioBundle::new())?
             .with_bundle(MapSelectionStdioBundle::new())?
             .with_bundle(CollisionLoadingBundle::new())?
             .with_bundle(MapLoadingBundle::new())?

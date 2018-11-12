@@ -11,6 +11,7 @@ use amethyst::{
 };
 use application_event::AppEvent;
 use game_model::play::GameEntities;
+use game_play_model::{GamePlayEvent, GamePlayStatus};
 
 use GamePlayBundle;
 
@@ -126,22 +127,54 @@ impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
     fn on_start(&mut self, mut data: StateData<GameData>) {
         self.initialize_dispatcher(&mut data.world);
         self.initialize_camera(&mut data.world);
+
+        data.world.add_resource(GamePlayStatus::Playing);
     }
 
     fn handle_event(
         &mut self,
-        _data: StateData<GameData>,
+        data: StateData<GameData>,
         event: AppEvent,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
-        if let AppEvent::State(StateEvent::Window(event)) = &event {
-            if is_key_down(&event, VirtualKeyCode::Escape) {
-                info!("Returning from `GamePlayState`.");
-                Trans::Pop
-            } else {
-                Trans::None
+        match event {
+            AppEvent::Window(window_event) => {
+                if is_key_down(&window_event, VirtualKeyCode::Escape) {
+                    debug!("Returning from `GamePlayState`.");
+                    Trans::Pop
+                } else {
+                    Trans::None
+                }
             }
-        } else {
-            Trans::None
+            AppEvent::GamePlay(game_play_event) => {
+                match game_play_event {
+                    GamePlayEvent::Return => {
+                        debug!("Returning from `GamePlayState`.");
+                        Trans::Pop
+                    }
+                    GamePlayEvent::Restart => {
+                        // TODO: Switch to `GameLoadingState`
+                        Trans::None
+                    }
+                    GamePlayEvent::Pause => {
+                        data.world.add_resource(GamePlayStatus::Paused);
+                        Trans::None
+                    }
+                    GamePlayEvent::Resume => {
+                        data.world.add_resource(GamePlayStatus::Playing);
+                        Trans::None
+                    }
+                    GamePlayEvent::End => {
+                        warn!("Game play ended!");
+                        data.world.add_resource(GamePlayStatus::Ended);
+                        Trans::None
+                    }
+                    GamePlayEvent::EndStats => {
+                        // TODO: `GamePlayStats` state.
+                        Trans::Pop
+                    }
+                }
+            }
+            _ => Trans::None,
         }
     }
 
