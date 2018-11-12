@@ -11,7 +11,7 @@ use amethyst::{
 };
 use application_event::AppEvent;
 use game_model::play::GameEntities;
-use game_play_model::GamePlayEvent;
+use game_play_model::{GamePlayEvent, GamePlayStatus};
 
 use GamePlayBundle;
 
@@ -127,11 +127,13 @@ impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
     fn on_start(&mut self, mut data: StateData<GameData>) {
         self.initialize_dispatcher(&mut data.world);
         self.initialize_camera(&mut data.world);
+
+        data.world.add_resource(GamePlayStatus::Playing);
     }
 
     fn handle_event(
         &mut self,
-        _data: StateData<GameData>,
+        data: StateData<GameData>,
         event: AppEvent,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
         match event {
@@ -153,7 +155,19 @@ impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
                         // TODO: Switch to `GameLoadingState`
                         Trans::None
                     }
+                    GamePlayEvent::Pause => {
+                        data.world.add_resource(GamePlayStatus::Paused);
+                        Trans::None
+                    }
+                    GamePlayEvent::Resume => {
+                        data.world.add_resource(GamePlayStatus::Playing);
+                        Trans::None
+                    }
                     GamePlayEvent::End => {
+                        data.world.add_resource(GamePlayStatus::Ended);
+                        Trans::None
+                    }
+                    GamePlayEvent::EndStats => {
                         // TODO: `GamePlayStats` state.
                         Trans::Pop
                     }

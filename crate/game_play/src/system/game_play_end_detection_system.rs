@@ -1,5 +1,5 @@
 use amethyst::{ecs::prelude::*, shrev::EventChannel};
-use game_play_model::GamePlayEvent;
+use game_play_model::{GamePlayEvent, GamePlayStatus};
 use object_model::entity::CharacterStatus;
 
 /// Detects the end of a game play round, and fires a `GamePlayEvent::End`.
@@ -9,6 +9,7 @@ use object_model::entity::CharacterStatus;
 pub(crate) struct GamePlayEndDetectionSystem;
 
 type GamePlayEndDetectionSystemData<'s> = (
+    ReadExpect<'s, GamePlayStatus>,
     Write<'s, EventChannel<GamePlayEvent>>,
     ReadStorage<'s, CharacterStatus>,
 );
@@ -16,19 +17,22 @@ type GamePlayEndDetectionSystemData<'s> = (
 impl<'s> System<'s> for GamePlayEndDetectionSystem {
     type SystemData = GamePlayEndDetectionSystemData<'s>;
 
-    fn run(&mut self, (mut game_play_ec, character_statuses): Self::SystemData) {
-        // Game ends when there is one or less people standing
-        let alive_count = character_statuses
-            .join()
-            .fold(0, |mut alive_count, character_status| {
-                if character_status.hp > 0 {
-                    alive_count += 1
-                };
-                alive_count
-            });
+    fn run(&mut self, (game_play_status, mut game_play_ec, character_statuses): Self::SystemData) {
+        if *game_play_status == GamePlayStatus::Playing {
+            // Game ends when there is one or less people standing
+            let alive_count =
+                character_statuses
+                    .join()
+                    .fold(0, |mut alive_count, character_status| {
+                        if character_status.hp > 0 {
+                            alive_count += 1
+                        };
+                        alive_count
+                    });
 
-        if alive_count <= 1 {
-            game_play_ec.single_write(GamePlayEvent::End);
+            if alive_count <= 1 {
+                game_play_ec.single_write(GamePlayEvent::End);
+            }
         }
     }
 }
@@ -37,11 +41,50 @@ impl<'s> System<'s> for GamePlayEndDetectionSystem {
 mod test {
     use amethyst::{ecs::prelude::*, shrev::EventChannel};
     use amethyst_test::*;
-    use game_play_model::GamePlayEvent;
+    use game_play_model::{GamePlayEvent, GamePlayStatus};
     use object_model::entity::{CharacterStatus, HealthPoints};
     use typename::TypeName;
 
     use super::{GamePlayEndDetectionSystem, GamePlayEndDetectionSystemData};
+
+    #[test]
+    fn does_not_send_game_play_end_event_when_game_play_is_not_playing() {
+        let setup = |world: &mut World| {
+            world
+                .create_entity()
+                .with(CharacterStatus {
+                    hp: HealthPoints(100),
+                    ..Default::default()
+                })
+                .build();
+
+            // Non-live character.
+            world
+                .create_entity()
+                .with(CharacterStatus {
+                    hp: HealthPoints(0),
+                    ..Default::default()
+                })
+                .build();
+        };
+
+        // kcov-ignore-start
+        assert!(
+            // kcov-ignore-end
+            AmethystApplication::ui_base::<String, String>()
+                .with_resource(GamePlayStatus::Ended)
+                .with_setup(register_gpec_reader)
+                .with_setup(setup)
+                .with_system_single(
+                    GamePlayEndDetectionSystem::new(),
+                    GamePlayEndDetectionSystem::type_name(),
+                    &[]
+                ) // kcov-ignore
+                .with_assertion(|world| verify_game_play_events(world, &[]))
+                .run()
+                .is_ok()
+        );
+    }
 
     #[test]
     fn sends_game_play_end_event_when_one_alive_character_remaining() {
@@ -68,6 +111,7 @@ mod test {
         assert!(
             // kcov-ignore-end
             AmethystApplication::ui_base::<String, String>()
+                .with_resource(GamePlayStatus::Playing)
                 .with_setup(register_gpec_reader)
                 .with_setup(setup)
                 .with_system_single(
@@ -106,6 +150,7 @@ mod test {
         assert!(
             // kcov-ignore-end
             AmethystApplication::ui_base::<String, String>()
+                .with_resource(GamePlayStatus::Playing)
                 .with_setup(register_gpec_reader)
                 .with_setup(setup)
                 .with_system_single(
@@ -144,6 +189,7 @@ mod test {
         assert!(
             // kcov-ignore-end
             AmethystApplication::ui_base::<String, String>()
+                .with_resource(GamePlayStatus::Playing)
                 .with_setup(register_gpec_reader)
                 .with_setup(setup)
                 .with_system_single(

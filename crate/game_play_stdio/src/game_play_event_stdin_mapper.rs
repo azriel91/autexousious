@@ -16,7 +16,10 @@ impl StdinMapper for GamePlayEventStdinMapper {
         match args {
             GamePlayEventArgs::Return => Ok(GamePlayEvent::Return),
             GamePlayEventArgs::Restart => Ok(GamePlayEvent::Restart),
+            GamePlayEventArgs::Pause => Ok(GamePlayEvent::Pause),
+            GamePlayEventArgs::Resume => Ok(GamePlayEvent::Resume),
             GamePlayEventArgs::End => Ok(GamePlayEvent::End),
+            GamePlayEventArgs::EndStats => Ok(GamePlayEvent::EndStats),
         }
     }
 }
@@ -45,5 +48,8 @@ mod tests {
 
     test_mapping!(maps_return_event, Return);
     test_mapping!(maps_restart_event, Restart);
+    test_mapping!(maps_pause_event, Pause);
+    test_mapping!(maps_resume_event, Resume);
     test_mapping!(maps_end_event, End);
+    test_mapping!(maps_end_stats_event, EndStats);
 }
