@@ -1,7 +1,7 @@
 use amethyst::{
     animation::get_animation_set,
     assets::AssetStorage,
-    core::{cgmath::Vector3, transform::Transform},
+    core::{nalgebra::Vector3, transform::Transform},
     ecs::{prelude::*, world::EntitiesRes},
     renderer::{SpriteRender, Transparent},
 };
@@ -128,7 +128,7 @@ impl CharacterEntitySpawner {
 
         let position = &kinematics.position;
         let mut transform = Transform::default();
-        transform.translation = Vector3::new(position.x, position.y + position.z, 0.);
+        transform.set_position(Vector3::new(position.x, position.y + position.z, 0.));
 
         let entity = entities.create();
 

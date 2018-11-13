@@ -1,7 +1,7 @@
 use amethyst::{
     animation::{get_animation_set, AnimationControlSet},
     assets::AssetStorage,
-    core::{cgmath::Vector3, transform::Transform},
+    core::{nalgebra::Vector3, transform::Transform},
     ecs::{prelude::*, world::EntitiesRes},
     renderer::{SpriteRender, Transparent},
 };
@@ -78,8 +78,11 @@ impl MapLayerEntitySpawner {
                     .map(|(layer, sprite_sheet_handle)| {
                         let position = layer.position;
                         let mut transform = Transform::default();
-                        transform.translation =
-                            Vector3::new(position.x as f32, position.y as f32, position.z as f32);
+                        transform.set_position(Vector3::new(
+                            position.x as f32,
+                            position.y as f32,
+                            position.z as f32,
+                        ));
 
                         let sprite_render = SpriteRender {
                             sprite_sheet: sprite_sheet_handle.clone(),

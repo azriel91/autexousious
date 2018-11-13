@@ -20,9 +20,9 @@ impl<'s> System<'s> for ObjectTransformUpdateSystem {
             // We subtract z from the y translation as the z axis increases "out of the screen".
             // Entities that have a larger Z value are transformed downwards.
             let position = &kinematics.position;
-            transform.translation[0] = position.x;
-            transform.translation[1] = position.y - position.z;
-            transform.translation[2] = position.z;
+            transform.set_x(position.x);
+            transform.set_y(position.y - position.z);
+            transform.set_z(position.z);
         }
     }
 }
@@ -30,7 +30,7 @@ impl<'s> System<'s> for ObjectTransformUpdateSystem {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        core::{cgmath::Vector3, transform::Transform},
+        core::{nalgebra::Vector3, transform::Transform},
         ecs::prelude::*,
     };
     use amethyst_test::*;
@@ -47,7 +47,7 @@ mod test {
             let velocity = Velocity::default();
 
             let mut transform = Transform::default();
-            transform.translation = Vector3::new(10., 20., 0.);
+            transform.set_position(Vector3::new(10., 20., 0.));
 
             let entity = world
                 .create_entity()
@@ -63,7 +63,7 @@ mod test {
             let store = world.read_storage::<Transform>();
 
             let mut transform = Transform::default();
-            transform.translation = Vector3::new(-5., 1., -4.);
+            transform.set_position(Vector3::new(-5., 1., -4.));
 
             assert_eq!(Some(&transform), store.get(entity));
         };

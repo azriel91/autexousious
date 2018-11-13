@@ -1,10 +1,6 @@
 use std::collections::HashMap;
 
-use amethyst::{
-    assets::Loader,
-    prelude::*,
-    renderer::{MaterialTextureSet, SpriteRender},
-};
+use amethyst::{assets::Loader, prelude::*, renderer::SpriteRender};
 use application::Result;
 use collision_loading::{BodyAnimationLoader, InteractionAnimationLoader};
 use collision_model::{
@@ -35,12 +31,10 @@ impl ObjectLoader {
         asset_record: &AssetRecord,
         object_definition: &ObjectDefinition<SeqId>,
     ) -> Result<Object<SeqId>> {
-        let sprite_sheet_index_offset = world.read_resource::<MaterialTextureSet>().len() as u64;
-
         debug!("Loading object assets in `{}`", asset_record.path.display());
 
         let (sprite_sheet_handles, _texture_handles) =
-            SpriteLoader::load(world, sprite_sheet_index_offset, &asset_record.path)?;
+            SpriteLoader::load(world, &asset_record.path)?;
 
         // === Animation Component Defaults === //
 

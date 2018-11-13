@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use amethyst::{assets::Loader, prelude::*, renderer::MaterialTextureSet};
+use amethyst::{assets::Loader, prelude::*};
 use application::{load_in, ErrorKind, Format, Result};
 use map_model::{
     config::MapDefinition,
@@ -23,9 +23,8 @@ impl MapLoader {
         debug!("Loading map in `{}`", base_dir.display());
 
         let map_definition = load_in::<MapDefinition, _>(base_dir, "map.toml", Format::Toml, None)?;
-        let texture_index_offset = world.read_resource::<MaterialTextureSet>().len() as u64;
 
-        let sprite_load_result = SpriteLoader::load(world, texture_index_offset, base_dir);
+        let sprite_load_result = SpriteLoader::load(world, base_dir);
         let loaded_sprites = match sprite_load_result {
             Ok(loaded_sprites) => Ok(Some(loaded_sprites)),
             Err(e) => match e.kind() {

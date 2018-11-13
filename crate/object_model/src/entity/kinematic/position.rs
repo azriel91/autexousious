@@ -1,16 +1,19 @@
-use std::ops::{Deref, DerefMut};
+use std::{
+    fmt::Debug,
+    ops::{Deref, DerefMut},
+};
 
-use amethyst::{core::cgmath::Vector3, ecs::prelude::*};
+use amethyst::{core::nalgebra::Vector3, ecs::prelude::*};
 
 /// Position of the entity in game.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Position<S>(Vector3<S>)
 where
-    S: Send + Sync + 'static;
+    S: Clone + Copy + Debug + PartialEq + Send + Sync + 'static;
 
 impl<S> Position<S>
 where
-    S: Send + Sync + 'static,
+    S: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
 {
     /// Returns a new `Position` vector.
     ///
@@ -26,7 +29,7 @@ where
 
 impl<S> Default for Position<S>
 where
-    S: Default + Send + Sync + 'static,
+    S: Clone + Copy + Debug + Default + PartialEq + Send + Sync + 'static,
 {
     fn default() -> Self {
         Position(Vector3::new(S::default(), S::default(), S::default()))
@@ -35,14 +38,14 @@ where
 
 impl<S> Component for Position<S>
 where
-    S: Send + Sync + 'static,
+    S: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
 {
     type Storage = VecStorage<Self>;
 }
 
 impl<S> From<Vector3<S>> for Position<S>
 where
-    S: Send + Sync + 'static,
+    S: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
 {
     fn from(p: Vector3<S>) -> Self {
         Position(p)
@@ -51,7 +54,7 @@ where
 
 impl<'a, S> From<&'a Vector3<S>> for Position<S>
 where
-    S: Copy + Send + Sync + 'static,
+    S: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
 {
     fn from(p: &'a Vector3<S>) -> Self {
         Position(*p)
@@ -60,7 +63,7 @@ where
 
 impl<'a, S> From<&'a mut Vector3<S>> for Position<S>
 where
-    S: Copy + Send + Sync + 'static,
+    S: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
 {
     fn from(p: &'a mut Vector3<S>) -> Self {
         Position(*p)
@@ -69,7 +72,7 @@ where
 
 impl<S> From<(S, S, S)> for Position<S>
 where
-    S: Send + Sync + 'static,
+    S: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
 {
     fn from(p: (S, S, S)) -> Self {
         Position::new(p.0, p.1, p.2)
@@ -78,7 +81,7 @@ where
 
 impl<'a, S> From<&'a (S, S, S)> for Position<S>
 where
-    S: Copy + Send + Sync + 'static,
+    S: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
 {
     fn from(p: &'a (S, S, S)) -> Self {
         Position::new(p.0, p.1, p.2)
@@ -87,7 +90,7 @@ where
 
 impl<'a, S> From<&'a mut (S, S, S)> for Position<S>
 where
-    S: Copy + Send + Sync + 'static,
+    S: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
 {
     fn from(p: &'a mut (S, S, S)) -> Self {
         Position::new(p.0, p.1, p.2)
@@ -96,7 +99,7 @@ where
 
 impl<S> From<[S; 3]> for Position<S>
 where
-    S: Copy + Send + Sync + 'static,
+    S: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
 {
     fn from(p: [S; 3]) -> Self {
         Position::new(p[0], p[1], p[2])
@@ -105,7 +108,7 @@ where
 
 impl<'a, S> From<&'a [S; 3]> for Position<S>
 where
-    S: Copy + Send + Sync + 'static,
+    S: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
 {
     fn from(p: &'a [S; 3]) -> Self {
         Position::new(p[0], p[1], p[2])
@@ -114,7 +117,7 @@ where
 
 impl<'a, S> From<&'a mut [S; 3]> for Position<S>
 where
-    S: Copy + Send + Sync + 'static,
+    S: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
 {
     fn from(p: &'a mut [S; 3]) -> Self {
         Position::new(p[0], p[1], p[2])
@@ -123,7 +126,7 @@ where
 
 impl<S> Deref for Position<S>
 where
-    S: Send + Sync + 'static,
+    S: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
 {
     type Target = Vector3<S>;
 
@@ -134,7 +137,7 @@ where
 
 impl<S> DerefMut for Position<S>
 where
-    S: Send + Sync + 'static,
+    S: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
 {
     fn deref_mut(&mut self) -> &mut Vector3<S> {
         &mut self.0
@@ -143,7 +146,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use amethyst::core::cgmath::Vector3;
+    use amethyst::core::nalgebra::Vector3;
 
     use super::Position;
 

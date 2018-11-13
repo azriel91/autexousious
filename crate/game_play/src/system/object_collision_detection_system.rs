@@ -1,6 +1,6 @@
 use amethyst::{
     assets::AssetStorage,
-    core::{cgmath::Vector3, transform::Transform},
+    core::{nalgebra::Vector3, transform::Transform},
     ecs::{Entities, Join, Read, ReadStorage, System, Write},
     shrev::EventChannel,
 };
@@ -98,7 +98,7 @@ impl<'s> System<'s> for ObjectCollisionDetectionSystem {
                     continue;
                 }
 
-                let relative_pos = to_transform.translation - from_transform.translation;
+                let relative_pos = to_transform.translation() - from_transform.translation();
                 let interaction_frame = interaction_frame_assets
                     .get(ifah.current())
                     .expect("Expected `InteractionFrame` from handle to exist.");

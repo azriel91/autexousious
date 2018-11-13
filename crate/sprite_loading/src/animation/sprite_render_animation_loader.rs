@@ -374,9 +374,8 @@ mod test {
     }
 
     fn test_sprite_sheet_handles(world: &mut World) -> Vec<SpriteSheetHandle> {
-        let sprite_sheet_index_offset = 0;
         let (sprite_sheet_handles, _texture_handles) =
-            SpriteLoader::load(world, sprite_sheet_index_offset, &ASSETS_CHAR_BAT_PATH)
+            SpriteLoader::load(world, &ASSETS_CHAR_BAT_PATH)
                 .expect("Failed to load sprites for test.");
 
         sprite_sheet_handles
