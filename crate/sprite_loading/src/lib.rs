@@ -17,8 +17,7 @@
 //! use sprite_loading::SpriteLoader;
 //!
 //! fn my_function(world: &mut World) {
-//!     let texture_index_offset = 0;
-//!     let result = SpriteLoader::load(world, texture_index_offset, &ASSETS_CHAR_BAT_PATH);
+//!     let result = SpriteLoader::load(world, &ASSETS_CHAR_BAT_PATH);
 //!
 //!     assert!(result.is_ok());
 //! }
@@ -68,9 +67,7 @@ mod test {
             // kcov-ignore-end
             AmethystApplication::render_base("loads_sprite_sheets_textures_and_mesh", false)
                 .with_assertion(|world| {
-                    let texture_index_offset = 0;
-                    let result =
-                        SpriteLoader::load(world, texture_index_offset, &ASSETS_CHAR_BAT_PATH);
+                    let result = SpriteLoader::load(world, &ASSETS_CHAR_BAT_PATH);
 
                     if let Err(e) = result {
                         panic!("Failed to load sprites: {:?}", e); // kcov-ignore

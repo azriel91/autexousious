@@ -1,6 +1,6 @@
 use amethyst::{
     core::{
-        cgmath::{Matrix4, Ortho, Vector3},
+        nalgebra::{Orthographic3, Translation3},
         transform::GlobalTransform,
         SystemBundle,
     },
@@ -89,22 +89,22 @@ impl GamePlayState {
         //
         // By using `::std::f32::MAX` here, we ensure that all entities will be in the camera's
         // view.
-        let translation = Matrix4::from_translation(Vector3::new(0.0, 0.0, ::std::f32::MAX));
+        let translation = Translation3::new(0.0, 0.0, ::std::f32::MAX).to_homogeneous();
         let global_transform = GlobalTransform(translation);
 
         let camera = world
             .create_entity()
-            .with(Camera::from(Projection::Orthographic(Ortho {
-                left: 0.0,
-                right: width,
-                top: height,
-                bottom: 0.0,
-                near: 0.0,
+            .with(Camera::from(Projection::Orthographic(Orthographic3::new(
+                0.0,
+                width,
+                0.0,
+                height,
+                0.0,
                 // The distance that the camera can see. Since the camera is moved to the maximum Z
                 // position, we also need to give it maximum Z viewing distance to ensure it can see
                 // all entities in front of it.
-                far: ::std::f32::MAX,
-            })))
+                ::std::f32::MAX,
+            ))))
             .with(global_transform)
             .build();
 

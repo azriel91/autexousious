@@ -1,3 +1,5 @@
+use std::fmt::Debug;
+
 use amethyst::ecs::prelude::*;
 
 use entity::{Position, Velocity};
@@ -6,7 +8,7 @@ use entity::{Position, Velocity};
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, new)]
 pub struct Kinematics<S>
 where
-    S: Send + Sync + 'static,
+    S: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
 {
     /// Position of the entity.
     pub position: Position<S>,
@@ -16,7 +18,7 @@ where
 
 impl<S> Component for Kinematics<S>
 where
-    S: Send + Sync + 'static,
+    S: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
 {
     type Storage = VecStorage<Self>;
 }

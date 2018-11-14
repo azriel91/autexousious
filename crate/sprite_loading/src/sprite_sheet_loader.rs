@@ -1,4 +1,8 @@
-use amethyst::{assets::Loader, prelude::*, renderer::SpriteSheetHandle};
+use amethyst::{
+    assets::Loader,
+    prelude::*,
+    renderer::{SpriteSheetHandle, TextureHandle},
+};
 use sprite_model::config::SpriteSheetDefinition;
 
 use SpriteSheetMapper;
@@ -12,15 +16,14 @@ impl SpriteSheetLoader {
     /// # Parameters
     ///
     /// * `world`: `World` to load the sprite sheets into.
-    /// * `sprite_sheet_index_offset`: Index offset for sprite sheet IDs.
+    /// * `texture_handles`: Handles of the sprite sheets' textures.
     /// * `sprite_sheet_definitions`: List of metadata for sprite sheets to map.
     pub fn load(
         world: &World,
-        sprite_sheet_index_offset: u64,
+        texture_handles: &[TextureHandle],
         sprite_sheet_definitions: &[SpriteSheetDefinition],
     ) -> Vec<SpriteSheetHandle> {
-        let sprite_sheets =
-            SpriteSheetMapper::map(sprite_sheet_index_offset, &sprite_sheet_definitions);
+        let sprite_sheets = SpriteSheetMapper::map(texture_handles, &sprite_sheet_definitions);
 
         let loader = world.read_resource::<Loader>();
         let sprite_sheet_store = world.read_resource();
