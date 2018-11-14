@@ -120,8 +120,8 @@ impl ObjectCollisionDetectionSystem {
             }
         };
         if let Some(relative_pos) = relative_pos {
-            coord = relative_pos + coord;
-            coord_w = relative_pos + coord_w;
+            coord += relative_pos;
+            coord_w += relative_pos;
         }
 
         (coord as i32, coord_w as i32)

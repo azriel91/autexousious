@@ -57,6 +57,9 @@ impl SpriteSheetMapper {
                 // middle of sprites as the pivot point.
                 let offset_x = offset_w * col as u32;
                 let offset_y = offset_h * row as u32;
+                let half_sprite_w = definition.sprite_w as f32 / 2.;
+                let half_sprite_h = definition.sprite_h as f32 / 2.;
+
                 let offsets = sprite_offsets.map_or_else(
                     || {
                         [
@@ -69,12 +72,10 @@ impl SpriteSheetMapper {
                         let sprite_offset = &sprite_offsets[sprite_index];
 
                         [
-                            (sprite_offset.x - offset_x as i32) as f32
-                                - definition.sprite_w as f32 / 2.,
+                            (sprite_offset.x - offset_x as i32) as f32 - half_sprite_w,
                             // Negate the Y value because we want to shift the sprite up, whereas
                             // the offset in Amethyst is to shift it down.
-                            (offset_y as i32 - sprite_offset.y) as f32
-                                - definition.sprite_h as f32 / 2.,
+                            (offset_y as i32 - sprite_offset.y) as f32 - half_sprite_h,
                         ]
                     },
                 );
