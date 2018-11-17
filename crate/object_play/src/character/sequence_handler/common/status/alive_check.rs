@@ -1,7 +1,9 @@
 use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate},
+    entity::{
+        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+    },
 };
 
 use character::sequence_handler::SequenceHandler;
@@ -14,18 +16,22 @@ impl SequenceHandler for AliveCheck {
     fn update(
         _input: &ControllerInput,
         character_status: &CharacterStatus,
+        _object_status: &ObjectStatus<CharacterSequenceId>,
         _kinematics: &Kinematics<f32>,
-    ) -> Option<CharacterStatusUpdate> {
+    ) -> Option<(
+        CharacterStatusUpdate,
+        ObjectStatusUpdate<CharacterSequenceId>,
+    )> {
         if character_status.hp == 0 {
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate::new(
+            Some((
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate::new(
                     Some(CharacterSequenceId::FallForwardDescend),
                     Some(SequenceState::Begin),
                     None,
                     None,
                 ),
-                ..Default::default()
-            })
+            ))
         } else {
             None
         }
@@ -54,10 +60,10 @@ mod tests {
                 &ControllerInput::default(),
                 &CharacterStatus {
                     hp: HealthPoints(100),
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::Stand,
-                        ..Default::default()
-                    },
+                    ..Default::default()
+                },
+                &ObjectStatus {
+                    sequence_id: CharacterSequenceId::Stand,
                     ..Default::default()
                 },
                 &Kinematics::<f32>::default()
@@ -68,23 +74,23 @@ mod tests {
     #[test]
     fn switches_to_fall_forward_descend_when_hp_is_zero() {
         assert_eq!(
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
+            Some((
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::FallForwardDescend),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
-                },
-                ..Default::default()
-            }),
+                }
+            )),
             AliveCheck::update(
                 &ControllerInput::default(),
                 &CharacterStatus {
                     hp: HealthPoints(0),
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::Stand,
-                        grounding: Grounding::Airborne,
-                        ..Default::default()
-                    },
+                    ..Default::default()
+                },
+                &ObjectStatus {
+                    sequence_id: CharacterSequenceId::Stand,
+                    grounding: Grounding::Airborne,
                     ..Default::default()
                 },
                 &Kinematics::<f32>::default()

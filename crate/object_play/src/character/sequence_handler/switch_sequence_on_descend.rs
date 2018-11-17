@@ -1,7 +1,9 @@
 use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, CharacterStatusUpdate, Kinematics},
+    entity::{
+        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+    },
 };
 
 #[derive(Debug)]
@@ -14,20 +16,25 @@ impl SwitchSequenceOnDescend {
     pub fn update(
         &self,
         _controller_input: &ControllerInput,
-        character_status: &CharacterStatus,
+        _character_status: &CharacterStatus,
+        object_status: &ObjectStatus<CharacterSequenceId>,
         kinematics: &Kinematics<f32>,
-    ) -> CharacterStatusUpdate {
-        let mut update = CharacterStatusUpdate::default();
+    ) -> (
+        CharacterStatusUpdate,
+        ObjectStatusUpdate<CharacterSequenceId>,
+    ) {
+        let character_status_update = CharacterStatusUpdate::default();
+        let mut object_status_update = ObjectStatusUpdate::default();
         // Switch to descend_sequence when Y axis velocity is no longer upwards.
         if kinematics.velocity[1] <= 0. {
-            update.object_status.sequence_id = Some(self.0);
-            update.object_status.sequence_state = Some(SequenceState::Begin);
-        } else if character_status.object_status.sequence_state == SequenceState::End {
-            update.object_status.sequence_id = Some(character_status.object_status.sequence_id);
-            update.object_status.sequence_state = Some(SequenceState::Begin);
+            object_status_update.sequence_id = Some(self.0);
+            object_status_update.sequence_state = Some(SequenceState::Begin);
+        } else if object_status.sequence_state == SequenceState::End {
+            object_status_update.sequence_id = Some(object_status.sequence_id);
+            object_status_update.sequence_state = Some(SequenceState::Begin);
         }
 
-        update
+        (character_status_update, object_status_update)
     }
 }
 
@@ -51,15 +58,16 @@ mod test {
         kinematics.velocity[1] = 1.;
 
         assert_eq!(
-            CharacterStatusUpdate::default(),
+            (
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate::default()
+            ),
             SwitchSequenceOnDescend(CharacterSequenceId::FallForwardDescend).update(
                 &input,
-                &CharacterStatus {
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::FallForwardAscend,
-                        grounding: Grounding::Airborne,
-                        ..Default::default()
-                    },
+                &CharacterStatus::default(),
+                &ObjectStatus {
+                    sequence_id: CharacterSequenceId::FallForwardAscend,
+                    grounding: Grounding::Airborne,
                     ..Default::default()
                 },
                 &kinematics
@@ -74,23 +82,21 @@ mod test {
         kinematics.velocity[1] = 1.;
 
         assert_eq!(
-            CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
+            (
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::FallForwardAscend),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
-                },
-                ..Default::default()
-            },
+                }
+            ),
             SwitchSequenceOnDescend(CharacterSequenceId::FallForwardDescend).update(
                 &input,
-                &CharacterStatus {
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::FallForwardAscend,
-                        sequence_state: SequenceState::End,
-                        grounding: Grounding::Airborne,
-                        ..Default::default()
-                    },
+                &CharacterStatus::default(),
+                &ObjectStatus {
+                    sequence_id: CharacterSequenceId::FallForwardAscend,
+                    sequence_state: SequenceState::End,
+                    grounding: Grounding::Airborne,
                     ..Default::default()
                 },
                 &kinematics
@@ -108,23 +114,21 @@ mod test {
             .into_iter()
             .for_each(|kinematics| {
                 assert_eq!(
-                    CharacterStatusUpdate {
-                        object_status: ObjectStatusUpdate {
+                    (
+                        CharacterStatusUpdate::default(),
+                        ObjectStatusUpdate {
                             sequence_id: Some(CharacterSequenceId::FallForwardDescend),
                             sequence_state: Some(SequenceState::Begin),
                             ..Default::default()
-                        },
-                        ..Default::default()
-                    },
+                        }
+                    ),
                     SwitchSequenceOnDescend(CharacterSequenceId::FallForwardDescend).update(
                         &input,
-                        &CharacterStatus {
-                            object_status: ObjectStatus {
-                                sequence_id: CharacterSequenceId::FallForwardAscend,
-                                sequence_state: SequenceState::Ongoing,
-                                grounding: Grounding::Airborne,
-                                ..Default::default()
-                            },
+                        &CharacterStatus::default(),
+                        &ObjectStatus {
+                            sequence_id: CharacterSequenceId::FallForwardAscend,
+                            sequence_state: SequenceState::Ongoing,
+                            grounding: Grounding::Airborne,
                             ..Default::default()
                         },
                         &kinematics
@@ -143,22 +147,20 @@ mod test {
                 kinematics.velocity[1] = 1.;
 
                 assert_eq!(
-                    CharacterStatusUpdate {
-                        object_status: ObjectStatusUpdate {
+                    (
+                        CharacterStatusUpdate::default(),
+                        ObjectStatusUpdate {
                             mirrored: None, // Explicitly test this.
                             ..Default::default()
-                        },
-                        ..Default::default()
-                    },
+                        }
+                    ),
                     SwitchSequenceOnDescend(CharacterSequenceId::FallForwardDescend).update(
                         &input,
-                        &CharacterStatus {
-                            object_status: ObjectStatus {
-                                sequence_id: CharacterSequenceId::FallForwardAscend,
-                                grounding: Grounding::Airborne,
-                                mirrored,
-                                ..Default::default()
-                            },
+                        &CharacterStatus::default(),
+                        &ObjectStatus {
+                            sequence_id: CharacterSequenceId::FallForwardAscend,
+                            grounding: Grounding::Airborne,
+                            mirrored,
                             ..Default::default()
                         },
                         &kinematics

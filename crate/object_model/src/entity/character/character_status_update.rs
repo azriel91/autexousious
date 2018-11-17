@@ -1,5 +1,4 @@
-use config::object::CharacterSequenceId;
-use entity::{HealthPoints, ObjectStatusUpdate, RunCounter};
+use entity::{HealthPoints, RunCounter};
 
 /// Indicates what fields of a `CharacterStatus` should be updated.
 #[derive(Default, Debug, PartialEq, new)]
@@ -8,6 +7,4 @@ pub struct CharacterStatusUpdate {
     pub run_counter: Option<RunCounter>,
     /// Health points.
     pub hp: Option<HealthPoints>,
-    /// Common object status for all object type entities.
-    pub object_status: ObjectStatusUpdate<CharacterSequenceId>,
 }

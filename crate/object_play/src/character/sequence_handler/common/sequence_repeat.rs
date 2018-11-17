@@ -1,7 +1,9 @@
 use game_input::ControllerInput;
 use object_model::{
-    config::object::SequenceState,
-    entity::{CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate},
+    config::object::{CharacterSequenceId, SequenceState},
+    entity::{
+        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+    },
 };
 
 use character::sequence_handler::SequenceHandler;
@@ -13,24 +15,23 @@ pub(crate) struct SequenceRepeat;
 impl SequenceHandler for SequenceRepeat {
     fn update(
         _input: &ControllerInput,
-        character_status: &CharacterStatus,
+        _character_status: &CharacterStatus,
+        object_status: &ObjectStatus<CharacterSequenceId>,
         _kinematics: &Kinematics<f32>,
-    ) -> Option<CharacterStatusUpdate> {
-        if character_status.object_status.sequence_state == SequenceState::End {
-            let sequence_id = Some(character_status.object_status.sequence_id);
+    ) -> Option<(
+        CharacterStatusUpdate,
+        ObjectStatusUpdate<CharacterSequenceId>,
+    )> {
+        if object_status.sequence_state == SequenceState::End {
+            let sequence_id = Some(object_status.sequence_id);
             let sequence_state = Some(SequenceState::Begin);
             let mirrored = None;
             let grounding = None;
 
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate::new(
-                    sequence_id,
-                    sequence_state,
-                    mirrored,
-                    grounding,
-                ),
-                ..Default::default()
-            })
+            Some((
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored, grounding),
+            ))
         } else {
             None
         }
@@ -56,12 +57,10 @@ mod tests {
             None,
             SequenceRepeat::update(
                 &ControllerInput::default(),
-                &CharacterStatus {
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::Walk,
-                        sequence_state: SequenceState::Begin,
-                        ..Default::default()
-                    },
+                &CharacterStatus::default(),
+                &ObjectStatus {
+                    sequence_id: CharacterSequenceId::Walk,
+                    sequence_state: SequenceState::Begin,
                     ..Default::default()
                 },
                 &Kinematics::default()
@@ -75,12 +74,10 @@ mod tests {
             None,
             SequenceRepeat::update(
                 &ControllerInput::default(),
-                &CharacterStatus {
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::Walk,
-                        sequence_state: SequenceState::Ongoing,
-                        ..Default::default()
-                    },
+                &CharacterStatus::default(),
+                &ObjectStatus {
+                    sequence_id: CharacterSequenceId::Walk,
+                    sequence_state: SequenceState::Ongoing,
                     ..Default::default()
                 },
                 &Kinematics::default()
@@ -93,22 +90,20 @@ mod tests {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
+            Some((
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::Walk),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
-                },
-                ..Default::default()
-            }),
+                }
+            )),
             SequenceRepeat::update(
                 &input,
-                &CharacterStatus {
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::Walk,
-                        sequence_state: SequenceState::End,
-                        ..Default::default()
-                    },
+                &CharacterStatus::default(),
+                &ObjectStatus {
+                    sequence_id: CharacterSequenceId::Walk,
+                    sequence_state: SequenceState::End,
                     ..Default::default()
                 },
                 &Kinematics::default()

@@ -8,7 +8,7 @@ use collision_model::{config::Interaction, play::CollisionEvent};
 use game_loading::{AnimationRunner, ObjectAnimationStorages};
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, HealthPoints},
+    entity::{CharacterStatus, HealthPoints, ObjectStatus},
     loaded::{AnimatedComponentAnimation, Character, CharacterHandle},
 };
 use typename::TypeName;
@@ -26,6 +26,7 @@ type CharacterCollisionEffectSystemData<'s> = (
     ReadStorage<'s, CharacterHandle>,
     Read<'s, AssetStorage<Character>>,
     WriteStorage<'s, CharacterStatus>,
+    WriteStorage<'s, ObjectStatus<CharacterSequenceId>>,
     ObjectAnimationStorages<'s, CharacterSequenceId>,
 );
 
@@ -39,6 +40,7 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
             character_handles,
             character_assets,
             mut character_statuses,
+            mut object_statuses,
             (mut sprite_acs, mut body_frame_acs, mut interaction_acs),
         ): Self::SystemData,
     ) {
@@ -53,9 +55,10 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
                 // Fetch CharacterStatus for entity
                 let character_handle = character_handles.get(ev.to);
                 let character_status = character_statuses.get_mut(ev.to);
+                let object_status = object_statuses.get_mut(ev.to);
 
-                if let (Some(character_handle), Some(character_status)) =
-                    (character_handle, character_status)
+                if let (Some(character_handle), Some(character_status), Some(object_status)) =
+                    (character_handle, character_status, object_status)
                 {
                     let character = character_assets
                         .get(character_handle)
@@ -81,9 +84,7 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
                     let next_sequence_id = if character_status.hp == 0 {
                         CharacterSequenceId::FallForwardAscend
                     } else {
-                        if character_status.object_status.sequence_id
-                            == CharacterSequenceId::Flinch0
-                        {
+                        if object_status.sequence_id == CharacterSequenceId::Flinch0 {
                             CharacterSequenceId::Flinch1
                         } else {
                             CharacterSequenceId::Flinch0
@@ -107,7 +108,7 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
                         .for_each(|animated_component| match animated_component {
                             AnimatedComponentAnimation::SpriteRender(ref handle) => {
                                 AnimationRunner::swap(
-                                    character_status.object_status.sequence_id,
+                                    object_status.sequence_id,
                                     next_sequence_id,
                                     &mut sprite_animation_set,
                                     handle,
@@ -115,7 +116,7 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
                             }
                             AnimatedComponentAnimation::BodyFrame(ref handle) => {
                                 AnimationRunner::swap(
-                                    character_status.object_status.sequence_id,
+                                    object_status.sequence_id,
                                     next_sequence_id,
                                     &mut body_animation_set,
                                     handle,
@@ -123,7 +124,7 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
                             }
                             AnimatedComponentAnimation::InteractionFrame(ref handle) => {
                                 AnimationRunner::swap(
-                                    character_status.object_status.sequence_id,
+                                    object_status.sequence_id,
                                     next_sequence_id,
                                     &mut interaction_animation_set,
                                     handle,
@@ -132,8 +133,8 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
                         });
 
                     // Set sequence id
-                    character_status.object_status.sequence_id = next_sequence_id;
-                    character_status.object_status.sequence_state = SequenceState::Begin;
+                    object_status.sequence_id = next_sequence_id;
+                    object_status.sequence_state = SequenceState::Begin;
                 }
             });
     }

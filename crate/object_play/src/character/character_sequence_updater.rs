@@ -1,7 +1,9 @@
 use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, CharacterStatusUpdate, Kinematics},
+    entity::{
+        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+    },
     loaded::Character,
 };
 
@@ -23,16 +25,28 @@ impl CharacterSequenceUpdater {
     /// * `character`: Loaded character configuration.
     /// * `controller_input`: Controller input for the character.
     /// * `character_status`: Character specific status attributes.
+    /// * `object_status`: Object status attributes.
     /// * `sequence_ended`: Whether the current sequence has ended.
     /// * `kinematics`: Kinematics of the character.
     pub fn update(
         character: &Character,
         controller_input: &ControllerInput,
         character_status: &CharacterStatus,
+        object_status: &ObjectStatus<CharacterSequenceId>,
         kinematics: &Kinematics<f32>,
-    ) -> CharacterStatusUpdate {
-        let sequence_handler: &Fn(&ControllerInput, &CharacterStatus, &Kinematics<f32>)
-            -> CharacterStatusUpdate = match character_status.object_status.sequence_id {
+    ) -> (
+        CharacterStatusUpdate,
+        ObjectStatusUpdate<CharacterSequenceId>,
+    ) {
+        let sequence_handler: &Fn(
+            &ControllerInput,
+            &CharacterStatus,
+            &ObjectStatus<CharacterSequenceId>,
+            &Kinematics<f32>,
+        ) -> (
+            CharacterStatusUpdate,
+            ObjectStatusUpdate<CharacterSequenceId>,
+        ) = match object_status.sequence_id {
             CharacterSequenceId::Stand => &Stand::update,
             CharacterSequenceId::StandAttack => &StandAttack::update,
             CharacterSequenceId::Walk => &Walk::update,
@@ -52,21 +66,26 @@ impl CharacterSequenceUpdater {
             CharacterSequenceId::LieFaceDown => &LieFaceDown::update,
         };
 
-        let mut status_update = sequence_handler(controller_input, character_status, kinematics);
+        let (character_status_update, mut object_status_update) = sequence_handler(
+            controller_input,
+            character_status,
+            object_status,
+            kinematics,
+        );
 
         // Check if it's at the end of the sequence before switching to next.
-        if character_status.object_status.sequence_state == SequenceState::End {
-            let current_sequence_id = &character_status.object_status.sequence_id;
+        if object_status.sequence_state == SequenceState::End {
+            let current_sequence_id = &object_status.sequence_id;
             let current_sequence =
                 &character.definition.object_definition.sequences[current_sequence_id];
 
             // `next` from configuration overrides the state handler transition.
             if current_sequence.next.is_some() {
-                status_update.object_status.sequence_id = current_sequence.next;
+                object_status_update.sequence_id = current_sequence.next;
             }
         }
 
-        status_update
+        (character_status_update, object_status_update)
 
         // TODO: overrides based on sequence configuration
     }

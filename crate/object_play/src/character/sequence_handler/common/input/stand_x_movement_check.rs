@@ -1,7 +1,10 @@
 use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate, RunCounter},
+    entity::{
+        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+        RunCounter,
+    },
 };
 
 use character::sequence_handler::{SequenceHandler, SequenceHandlerUtil};
@@ -16,18 +19,20 @@ impl SequenceHandler for StandXMovementCheck {
     fn update(
         input: &ControllerInput,
         character_status: &CharacterStatus,
+        object_status: &ObjectStatus<CharacterSequenceId>,
         _kinematics: &Kinematics<f32>,
-    ) -> Option<CharacterStatusUpdate> {
+    ) -> Option<(
+        CharacterStatusUpdate,
+        ObjectStatusUpdate<CharacterSequenceId>,
+    )> {
         if input.x_axis_value != 0. {
-            let same_direction = SequenceHandlerUtil::input_matches_direction(
-                input,
-                character_status.object_status.mirrored,
-            );
+            let same_direction =
+                SequenceHandlerUtil::input_matches_direction(input, object_status.mirrored);
 
             let mirrored = if same_direction {
                 None
             } else {
-                Some(!character_status.object_status.mirrored)
+                Some(!object_status.mirrored)
             };
 
             let sequence_id = match character_status.run_counter {
@@ -45,15 +50,10 @@ impl SequenceHandler for StandXMovementCheck {
             let sequence_state = Some(SequenceState::Begin);
             let grounding = None;
 
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate::new(
-                    sequence_id,
-                    sequence_state,
-                    mirrored,
-                    grounding,
-                ),
-                ..Default::default()
-            })
+            Some((
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored, grounding),
+            ))
         } else {
             None
         }
@@ -83,6 +83,7 @@ mod tests {
             StandXMovementCheck::update(
                 &input,
                 &CharacterStatus::default(),
+                &ObjectStatus::default(),
                 &Kinematics::default()
             )
         );
@@ -93,23 +94,23 @@ mod tests {
         let input = ControllerInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
+            Some((
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::Walk),
                     sequence_state: Some(SequenceState::Begin),
                     mirrored: Some(false),
                     ..Default::default()
-                },
-                ..Default::default()
-            }),
+                }
+            )),
             StandXMovementCheck::update(
                 &input,
                 &CharacterStatus {
                     hp: HealthPoints(100),
-                    object_status: ObjectStatus {
-                        mirrored: true,
-                        ..Default::default()
-                    },
+                    ..Default::default()
+                },
+                &ObjectStatus {
+                    mirrored: true,
                     ..Default::default()
                 },
                 &Kinematics::default()
@@ -118,22 +119,22 @@ mod tests {
 
         // Already facing right
         assert_eq!(
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
+            Some((
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::Walk),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
-                },
-                ..Default::default()
-            }),
+                }
+            )),
             StandXMovementCheck::update(
                 &input,
                 &CharacterStatus {
                     hp: HealthPoints(100),
-                    object_status: ObjectStatus {
-                        mirrored: false,
-                        ..Default::default()
-                    },
+                    ..Default::default()
+                },
+                &ObjectStatus {
+                    mirrored: false,
                     ..Default::default()
                 },
                 &Kinematics::default()
@@ -146,23 +147,23 @@ mod tests {
         let input = ControllerInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
+            Some((
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::Walk),
                     sequence_state: Some(SequenceState::Begin),
                     mirrored: Some(true),
                     ..Default::default()
-                },
-                ..Default::default()
-            }),
+                }
+            )),
             StandXMovementCheck::update(
                 &input,
                 &CharacterStatus {
                     hp: HealthPoints(100),
-                    object_status: ObjectStatus {
-                        mirrored: false,
-                        ..Default::default()
-                    },
+                    ..Default::default()
+                },
+                &ObjectStatus {
+                    mirrored: false,
                     ..Default::default()
                 },
                 &Kinematics::default()
@@ -171,22 +172,22 @@ mod tests {
 
         // Already facing left
         assert_eq!(
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
+            Some((
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::Walk),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
-                },
-                ..Default::default()
-            }),
+                }
+            )),
             StandXMovementCheck::update(
                 &input,
                 &CharacterStatus {
                     hp: HealthPoints(100),
-                    object_status: ObjectStatus {
-                        mirrored: true,
-                        ..Default::default()
-                    },
+                    ..Default::default()
+                },
+                &ObjectStatus {
+                    mirrored: true,
                     ..Default::default()
                 },
                 &Kinematics::default()
@@ -202,23 +203,23 @@ mod tests {
                 let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
-                    Some(CharacterStatusUpdate {
-                        object_status: ObjectStatusUpdate {
+                    Some((
+                        CharacterStatusUpdate::default(),
+                        ObjectStatusUpdate {
                             sequence_id: Some(CharacterSequenceId::Run),
                             sequence_state: Some(SequenceState::Begin),
                             ..Default::default()
-                        },
-                        ..Default::default()
-                    }),
+                        }
+                    )),
                     StandXMovementCheck::update(
                         &input,
                         &CharacterStatus {
                             run_counter: RunCounter::Decrease(10),
                             hp: HealthPoints(100),
-                            object_status: ObjectStatus {
-                                mirrored,
-                                ..Default::default()
-                            },
+                        },
+                        &ObjectStatus {
+                            mirrored,
+                            ..Default::default()
                         },
                         &Kinematics::default()
                     )
@@ -234,24 +235,24 @@ mod tests {
                 let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
-                    Some(CharacterStatusUpdate {
-                        object_status: ObjectStatusUpdate {
+                    Some((
+                        CharacterStatusUpdate::default(),
+                        ObjectStatusUpdate {
                             sequence_id: Some(CharacterSequenceId::Walk),
                             sequence_state: Some(SequenceState::Begin),
                             mirrored: Some(!mirrored),
                             ..Default::default()
-                        },
-                        ..Default::default()
-                    }),
+                        }
+                    )),
                     StandXMovementCheck::update(
                         &input,
                         &CharacterStatus {
                             run_counter: RunCounter::Decrease(10),
                             hp: HealthPoints(100),
-                            object_status: ObjectStatus {
-                                mirrored,
-                                ..Default::default()
-                            },
+                        },
+                        &ObjectStatus {
+                            mirrored,
+                            ..Default::default()
                         },
                         &Kinematics::default()
                     )

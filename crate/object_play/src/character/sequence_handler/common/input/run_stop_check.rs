@@ -1,7 +1,9 @@
 use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate},
+    entity::{
+        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+    },
 };
 
 use character::sequence_handler::{common::SequenceRepeat, SequenceHandler, SequenceHandlerUtil};
@@ -16,22 +18,23 @@ impl SequenceHandler for RunStopCheck {
     fn update(
         input: &ControllerInput,
         character_status: &CharacterStatus,
+        object_status: &ObjectStatus<CharacterSequenceId>,
         kinematics: &Kinematics<f32>,
-    ) -> Option<CharacterStatusUpdate> {
-        if SequenceHandlerUtil::input_matches_direction(
-            input,
-            character_status.object_status.mirrored,
-        ) {
-            SequenceRepeat::update(input, character_status, kinematics)
+    ) -> Option<(
+        CharacterStatusUpdate,
+        ObjectStatusUpdate<CharacterSequenceId>,
+    )> {
+        if SequenceHandlerUtil::input_matches_direction(input, object_status.mirrored) {
+            SequenceRepeat::update(input, character_status, object_status, kinematics)
         } else {
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
+            Some((
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::RunStop),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
                 },
-                ..Default::default()
-            })
+            ))
         }
     }
 }
@@ -63,11 +66,11 @@ mod tests {
                         &input,
                         &CharacterStatus {
                             hp: HealthPoints(100),
-                            object_status: ObjectStatus {
-                                sequence_id: CharacterSequenceId::Walk,
-                                mirrored,
-                                ..Default::default()
-                            },
+                            ..Default::default()
+                        },
+                        &ObjectStatus {
+                            sequence_id: CharacterSequenceId::Walk,
+                            mirrored,
                             ..Default::default()
                         },
                         &Kinematics::default()
@@ -81,23 +84,23 @@ mod tests {
         let input = ControllerInput::new(0., 1., false, false, false, false);
 
         assert_eq!(
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
+            Some((
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::RunStop),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
-                },
-                ..Default::default()
-            }),
+                }
+            )),
             RunStopCheck::update(
                 &input,
                 &CharacterStatus {
                     hp: HealthPoints(100),
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::Walk,
-                        mirrored: false,
-                        ..Default::default()
-                    },
+                    ..Default::default()
+                },
+                &ObjectStatus {
+                    sequence_id: CharacterSequenceId::Walk,
+                    mirrored: false,
                     ..Default::default()
                 },
                 &Kinematics::default()
@@ -113,23 +116,23 @@ mod tests {
                 let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
-                    Some(CharacterStatusUpdate {
-                        object_status: ObjectStatusUpdate {
+                    Some((
+                        CharacterStatusUpdate::default(),
+                        ObjectStatusUpdate {
                             sequence_id: Some(CharacterSequenceId::RunStop),
                             sequence_state: Some(SequenceState::Begin),
                             ..Default::default()
-                        },
-                        ..Default::default()
-                    }),
+                        }
+                    )),
                     RunStopCheck::update(
                         &input,
                         &CharacterStatus {
                             hp: HealthPoints(100),
-                            object_status: ObjectStatus {
-                                sequence_id: CharacterSequenceId::Walk,
-                                mirrored,
-                                ..Default::default()
-                            },
+                            ..Default::default()
+                        },
+                        &ObjectStatus {
+                            sequence_id: CharacterSequenceId::Walk,
+                            mirrored,
                             ..Default::default()
                         },
                         &Kinematics::default()
@@ -146,25 +149,25 @@ mod tests {
                 let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
-                    Some(CharacterStatusUpdate {
-                        object_status: ObjectStatusUpdate {
+                    Some((
+                        CharacterStatusUpdate::default(),
+                        ObjectStatusUpdate {
                             sequence_id: Some(CharacterSequenceId::Run),
                             sequence_state: Some(SequenceState::Begin),
                             ..Default::default()
-                        },
-                        ..Default::default()
-                    }),
+                        }
+                    )),
                     RunStopCheck::update(
                         &input,
                         &CharacterStatus {
                             run_counter: RunCounter::Increase(1),
-                            hp: HealthPoints(100),
-                            object_status: ObjectStatus {
-                                sequence_id: CharacterSequenceId::Run,
-                                sequence_state: SequenceState::End,
-                                mirrored,
-                                ..Default::default()
-                            }
+                            hp: HealthPoints(100)
+                        },
+                        &ObjectStatus {
+                            sequence_id: CharacterSequenceId::Run,
+                            sequence_state: SequenceState::End,
+                            mirrored,
+                            ..Default::default()
                         },
                         &Kinematics::default()
                     )

@@ -1,6 +1,9 @@
 use game_input::ControllerInput;
-use object_model::entity::{
-    CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
+use object_model::{
+    config::object::CharacterSequenceId,
+    entity::{
+        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+    },
 };
 
 use character::sequence_handler::{
@@ -21,8 +24,12 @@ impl CharacterSequenceHandler for Stand {
     fn update(
         input: &ControllerInput,
         character_status: &CharacterStatus,
+        object_status: &ObjectStatus<CharacterSequenceId>,
         kinematics: &Kinematics<f32>,
-    ) -> CharacterStatusUpdate {
+    ) -> (
+        CharacterStatusUpdate,
+        ObjectStatusUpdate<CharacterSequenceId>,
+    ) {
         use object_model::entity::RunCounter::*;
         match character_status.run_counter {
             Exceeded | Increase(_) => panic!(
@@ -32,7 +39,7 @@ impl CharacterSequenceHandler for Stand {
             _ => {}
         };
 
-        let run_counter = RunCounterUpdater::update(input, character_status);
+        let run_counter = RunCounterUpdater::update(input, character_status, object_status);
 
         let status_update = [
             AliveCheck::update,
@@ -45,19 +52,21 @@ impl CharacterSequenceHandler for Stand {
         ]
         .iter()
         .fold(None, |status_update, fn_update| {
-            status_update.or_else(|| fn_update(input, character_status, kinematics))
+            status_update.or_else(|| fn_update(input, character_status, object_status, kinematics))
         });
 
-        if let Some(mut status_update) = status_update {
-            status_update.run_counter = run_counter;
-            return status_update;
+        if let Some((mut character_status_update, object_status_update)) = status_update {
+            character_status_update.run_counter = run_counter;
+            return (character_status_update, object_status_update);
         }
 
-        CharacterStatusUpdate {
-            run_counter,
-            hp: None,
-            object_status: ObjectStatusUpdate::default(),
-        }
+        (
+            CharacterStatusUpdate {
+                run_counter,
+                hp: None,
+            },
+            ObjectStatusUpdate::default(),
+        )
     }
 }
 
@@ -80,19 +89,22 @@ mod test {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::default(),
+            (
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate::default()
+            ),
             Stand::update(
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Unused,
-                    hp: HealthPoints(100),
-                    object_status: ObjectStatus::new(
-                        CharacterSequenceId::Stand,
-                        SequenceState::Ongoing,
-                        true,
-                        Grounding::OnGround
-                    )
+                    hp: HealthPoints(100)
                 },
+                &ObjectStatus::new(
+                    CharacterSequenceId::Stand,
+                    SequenceState::Ongoing,
+                    true,
+                    Grounding::OnGround
+                ),
                 &Kinematics::default()
             )
         );
@@ -103,23 +115,23 @@ mod test {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
+            (
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::Stand),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
-                },
-                ..Default::default()
-            },
+                }
+            ),
             Stand::update(
                 &input,
                 &CharacterStatus {
                     hp: HealthPoints(100),
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::Stand,
-                        sequence_state: SequenceState::End,
-                        ..Default::default()
-                    },
+                    ..Default::default()
+                },
+                &ObjectStatus {
+                    sequence_id: CharacterSequenceId::Stand,
+                    sequence_state: SequenceState::End,
                     ..Default::default()
                 },
                 &Kinematics::default()
@@ -132,23 +144,23 @@ mod test {
         let input = ControllerInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
+            (
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::JumpDescend),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
-                },
-                ..Default::default()
-            },
+                }
+            ),
             Stand::update(
                 &input,
                 &CharacterStatus {
                     hp: HealthPoints(100),
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::Stand,
-                        grounding: Grounding::Airborne,
-                        ..Default::default()
-                    },
+                    ..Default::default()
+                },
+                &ObjectStatus {
+                    sequence_id: CharacterSequenceId::Stand,
+                    grounding: Grounding::Airborne,
                     ..Default::default()
                 },
                 &Kinematics::default()
@@ -161,25 +173,27 @@ mod test {
         let input = ControllerInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate {
-                run_counter: Some(RunCounter::Unused),
-                object_status: ObjectStatusUpdate {
+            (
+                CharacterStatusUpdate {
+                    run_counter: Some(RunCounter::Unused),
+                    ..Default::default()
+                },
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::JumpDescend),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
-                },
-                ..Default::default()
-            },
+                }
+            ),
             Stand::update(
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Decrease(10),
                     hp: HealthPoints(100),
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::Stand,
-                        grounding: Grounding::Airborne,
-                        ..Default::default()
-                    },
+                },
+                &ObjectStatus {
+                    sequence_id: CharacterSequenceId::Stand,
+                    grounding: Grounding::Airborne,
+                    ..Default::default()
                 },
                 &Kinematics::default()
             )
@@ -191,10 +205,13 @@ mod test {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate {
-                run_counter: Some(RunCounter::Decrease(0)),
-                ..Default::default()
-            },
+            (
+                CharacterStatusUpdate {
+                    run_counter: Some(RunCounter::Decrease(0)),
+                    ..Default::default()
+                },
+                ObjectStatusUpdate::default()
+            ),
             Stand::update(
                 &input,
                 &CharacterStatus {
@@ -202,6 +219,7 @@ mod test {
                     hp: HealthPoints(100),
                     ..Default::default()
                 },
+                &ObjectStatus::default(),
                 &Kinematics::default()
             )
         );
@@ -212,10 +230,13 @@ mod test {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate {
-                run_counter: Some(RunCounter::Unused),
-                ..Default::default()
-            },
+            (
+                CharacterStatusUpdate {
+                    run_counter: Some(RunCounter::Unused),
+                    ..Default::default()
+                },
+                ObjectStatusUpdate::default()
+            ),
             Stand::update(
                 &input,
                 &CharacterStatus {
@@ -223,6 +244,7 @@ mod test {
                     hp: HealthPoints(100),
                     ..Default::default()
                 },
+                &ObjectStatus::default(),
                 &Kinematics::default()
             )
         );
@@ -240,6 +262,7 @@ mod test {
                 hp: HealthPoints(100),
                 ..Default::default()
             },
+            &ObjectStatus::default(),
             &Kinematics::default(),
         );
     } // kcov-ignore
@@ -256,6 +279,7 @@ mod test {
                 hp: HealthPoints(100),
                 ..Default::default()
             },
+            &ObjectStatus::default(),
             &Kinematics::default(),
         );
     } // kcov-ignore
@@ -265,24 +289,26 @@ mod test {
         let input = ControllerInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate {
-                run_counter: Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
-                object_status: ObjectStatusUpdate {
+            (
+                CharacterStatusUpdate {
+                    run_counter: Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
+                    ..Default::default()
+                },
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::Walk),
                     sequence_state: Some(SequenceState::Begin),
                     mirrored: Some(false),
                     ..Default::default()
-                },
-                ..Default::default()
-            },
+                }
+            ),
             Stand::update(
                 &input,
                 &CharacterStatus {
                     hp: HealthPoints(100),
-                    object_status: ObjectStatus {
-                        mirrored: true,
-                        ..Default::default()
-                    },
+                    ..Default::default()
+                },
+                &ObjectStatus {
+                    mirrored: true,
                     ..Default::default()
                 },
                 &Kinematics::default()
@@ -291,23 +317,25 @@ mod test {
 
         // Already facing right
         assert_eq!(
-            CharacterStatusUpdate {
-                run_counter: Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
-                object_status: ObjectStatusUpdate {
+            (
+                CharacterStatusUpdate {
+                    run_counter: Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
+                    ..Default::default()
+                },
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::Walk),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
-                },
-                ..Default::default()
-            },
+                }
+            ),
             Stand::update(
                 &input,
                 &CharacterStatus {
                     hp: HealthPoints(100),
-                    object_status: ObjectStatus {
-                        mirrored: false,
-                        ..Default::default()
-                    },
+                    ..Default::default()
+                },
+                &ObjectStatus {
+                    mirrored: false,
                     ..Default::default()
                 },
                 &Kinematics::default()
@@ -320,23 +348,23 @@ mod test {
         let input = ControllerInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate {
-                run_counter: Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
-                object_status: ObjectStatusUpdate {
+            (
+                CharacterStatusUpdate {
+                    run_counter: Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
+                    ..Default::default()
+                },
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::Walk),
                     sequence_state: Some(SequenceState::Begin),
                     mirrored: Some(true),
                     ..Default::default()
-                },
-                ..Default::default()
-            },
+                }
+            ),
             Stand::update(
                 &input,
-                &CharacterStatus {
-                    object_status: ObjectStatus {
-                        mirrored: false,
-                        ..Default::default()
-                    },
+                &CharacterStatus::default(),
+                &ObjectStatus {
+                    mirrored: false,
                     ..Default::default()
                 },
                 &Kinematics::default()
@@ -345,23 +373,25 @@ mod test {
 
         // Already facing left
         assert_eq!(
-            CharacterStatusUpdate {
-                run_counter: Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
-                object_status: ObjectStatusUpdate {
+            (
+                CharacterStatusUpdate {
+                    run_counter: Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
+                    ..Default::default()
+                },
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::Walk),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
-                },
-                ..Default::default()
-            },
+                }
+            ),
             Stand::update(
                 &input,
                 &CharacterStatus {
                     hp: HealthPoints(100),
-                    object_status: ObjectStatus {
-                        mirrored: true,
-                        ..Default::default()
-                    },
+                    ..Default::default()
+                },
+                &ObjectStatus {
+                    mirrored: true,
                     ..Default::default()
                 },
                 &Kinematics::default()
@@ -374,15 +404,17 @@ mod test {
         let input = ControllerInput::new(0., 1., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate {
-                run_counter: Some(RunCounter::Decrease(9)),
-                object_status: ObjectStatusUpdate {
+            (
+                CharacterStatusUpdate {
+                    run_counter: Some(RunCounter::Decrease(9)),
+                    ..Default::default()
+                },
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::Walk),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
-                },
-                ..Default::default()
-            },
+                }
+            ),
             Stand::update(
                 &input,
                 &CharacterStatus {
@@ -390,6 +422,7 @@ mod test {
                     hp: HealthPoints(100),
                     ..Default::default()
                 },
+                &ObjectStatus::default(),
                 &Kinematics::default()
             )
         );
@@ -400,23 +433,25 @@ mod test {
         let input = ControllerInput::new(1., 1., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate {
-                run_counter: Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
-                object_status: ObjectStatusUpdate {
+            (
+                CharacterStatusUpdate {
+                    run_counter: Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
+                    ..Default::default()
+                },
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::Walk),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
-                },
-                ..Default::default()
-            },
+                }
+            ),
             Stand::update(
                 &input,
                 &CharacterStatus {
                     hp: HealthPoints(100),
-                    object_status: ObjectStatus {
-                        mirrored: false,
-                        ..Default::default()
-                    },
+                    ..Default::default()
+                },
+                &ObjectStatus {
+                    mirrored: false,
                     ..Default::default()
                 },
                 &Kinematics::default()
@@ -432,24 +467,26 @@ mod test {
                 let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
-                    CharacterStatusUpdate {
-                        run_counter: Some(RunCounter::Unused),
-                        object_status: ObjectStatusUpdate {
+                    (
+                        CharacterStatusUpdate {
+                            run_counter: Some(RunCounter::Unused),
+                            ..Default::default()
+                        },
+                        ObjectStatusUpdate {
                             sequence_id: Some(CharacterSequenceId::Run),
                             sequence_state: Some(SequenceState::Begin),
                             ..Default::default()
-                        },
-                        ..Default::default()
-                    },
+                        }
+                    ),
                     Stand::update(
                         &input,
                         &CharacterStatus {
                             run_counter: RunCounter::Decrease(10),
                             hp: HealthPoints(100),
-                            object_status: ObjectStatus {
-                                mirrored,
-                                ..Default::default()
-                            },
+                        },
+                        &ObjectStatus {
+                            mirrored,
+                            ..Default::default()
                         },
                         &Kinematics::default()
                     )
@@ -465,25 +502,27 @@ mod test {
                 let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
-                    CharacterStatusUpdate {
-                        run_counter: Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
-                        object_status: ObjectStatusUpdate {
+                    (
+                        CharacterStatusUpdate {
+                            run_counter: Some(RunCounter::Increase(RunCounter::RESET_TICK_COUNT)),
+                            ..Default::default()
+                        },
+                        ObjectStatusUpdate {
                             sequence_id: Some(CharacterSequenceId::Walk),
                             sequence_state: Some(SequenceState::Begin),
                             mirrored: Some(!mirrored),
                             ..Default::default()
-                        },
-                        ..Default::default()
-                    },
+                        }
+                    ),
                     Stand::update(
                         &input,
                         &CharacterStatus {
                             run_counter: RunCounter::Decrease(10),
                             hp: HealthPoints(100),
-                            object_status: ObjectStatus {
-                                mirrored,
-                                ..Default::default()
-                            },
+                        },
+                        &ObjectStatus {
+                            mirrored,
+                            ..Default::default()
                         },
                         &Kinematics::default()
                     )
@@ -499,20 +538,21 @@ mod test {
                 let input = ControllerInput::new(x_input, z_input, false, true, false, false);
 
                 assert_eq!(
-                    CharacterStatusUpdate {
-                        object_status: ObjectStatusUpdate {
+                    (
+                        CharacterStatusUpdate::default(),
+                        ObjectStatusUpdate {
                             sequence_id: Some(CharacterSequenceId::Jump),
                             sequence_state: Some(SequenceState::Begin),
                             ..Default::default()
-                        },
-                        ..Default::default()
-                    },
+                        }
+                    ),
                     Stand::update(
                         &input,
                         &CharacterStatus {
                             hp: HealthPoints(100),
                             ..Default::default()
                         },
+                        &ObjectStatus::default(),
                         &Kinematics::default()
                     )
                 );
@@ -525,20 +565,21 @@ mod test {
         input.attack = true;
 
         assert_eq!(
-            CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
+            (
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::StandAttack),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
-                },
-                ..Default::default()
-            },
+                }
+            ),
             Stand::update(
                 &input,
                 &CharacterStatus {
                     hp: HealthPoints(100),
                     ..Default::default()
                 },
+                &ObjectStatus::default(),
                 &Kinematics::default()
             )
         );
@@ -549,15 +590,17 @@ mod test {
         let input = ControllerInput::new(0., 0., false, true, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate {
-                run_counter: Some(RunCounter::Unused),
-                object_status: ObjectStatusUpdate {
+            (
+                CharacterStatusUpdate {
+                    run_counter: Some(RunCounter::Unused),
+                    ..Default::default()
+                },
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::Jump),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
-                },
-                ..Default::default()
-            },
+                }
+            ),
             Stand::update(
                 &input,
                 &CharacterStatus {
@@ -565,6 +608,7 @@ mod test {
                     hp: HealthPoints(100),
                     ..Default::default()
                 },
+                &ObjectStatus::default(),
                 &Kinematics::default()
             )
         );

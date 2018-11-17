@@ -1,7 +1,9 @@
 use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, CharacterStatusUpdate, Kinematics},
+    entity::{
+        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+    },
 };
 
 use character::sequence_handler::CharacterSequenceHandler;
@@ -12,16 +14,21 @@ pub(crate) struct StandAttack;
 impl CharacterSequenceHandler for StandAttack {
     fn update(
         _controller_input: &ControllerInput,
-        character_status: &CharacterStatus,
+        _character_status: &CharacterStatus,
+        object_status: &ObjectStatus<CharacterSequenceId>,
         _kinematics: &Kinematics<f32>,
-    ) -> CharacterStatusUpdate {
-        let mut update = CharacterStatusUpdate::default();
-        if character_status.object_status.sequence_state == SequenceState::End {
-            update.object_status.sequence_id = Some(CharacterSequenceId::Stand);
-            update.object_status.sequence_state = Some(SequenceState::Begin);
+    ) -> (
+        CharacterStatusUpdate,
+        ObjectStatusUpdate<CharacterSequenceId>,
+    ) {
+        let character_status_update = CharacterStatusUpdate::default();
+        let mut object_status_update = ObjectStatusUpdate::default();
+        if object_status.sequence_state == SequenceState::End {
+            object_status_update.sequence_id = Some(CharacterSequenceId::Stand);
+            object_status_update.sequence_state = Some(SequenceState::Begin);
         }
 
-        update
+        (character_status_update, object_status_update)
     }
 }
 
@@ -43,14 +50,15 @@ mod test {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::default(),
+            (
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate::default()
+            ),
             StandAttack::update(
                 &input,
-                &CharacterStatus {
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::StandAttack,
-                        ..Default::default()
-                    },
+                &CharacterStatus::default(),
+                &ObjectStatus {
+                    sequence_id: CharacterSequenceId::StandAttack,
                     ..Default::default()
                 },
                 &Kinematics::default()
@@ -63,22 +71,20 @@ mod test {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
+            (
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::Stand),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
-                },
-                ..Default::default()
-            },
+                }
+            ),
             StandAttack::update(
                 &input,
-                &CharacterStatus {
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::StandAttack,
-                        sequence_state: SequenceState::End,
-                        ..Default::default()
-                    },
+                &CharacterStatus::default(),
+                &ObjectStatus {
+                    sequence_id: CharacterSequenceId::StandAttack,
+                    sequence_state: SequenceState::End,
                     ..Default::default()
                 },
                 &Kinematics::default()

@@ -1,5 +1,8 @@
 use game_input::ControllerInput;
-use object_model::entity::{CharacterStatus, Grounding, RunCounter};
+use object_model::{
+    config::object::CharacterSequenceId,
+    entity::{CharacterStatus, Grounding, ObjectStatus, RunCounter},
+};
 
 use character::sequence_handler::SequenceHandlerUtil;
 
@@ -11,8 +14,9 @@ impl RunCounterUpdater {
     pub(crate) fn update(
         input: &ControllerInput,
         character_status: &CharacterStatus,
+        object_status: &ObjectStatus<CharacterSequenceId>,
     ) -> Option<RunCounter> {
-        if character_status.object_status.grounding != Grounding::OnGround
+        if object_status.grounding != Grounding::OnGround
             || input.defend
             || input.jump
             || input.attack
@@ -33,10 +37,8 @@ impl RunCounterUpdater {
                 Increase(_) => Some(Decrease(RunCounter::RESET_TICK_COUNT)),
             }
         } else {
-            let same_direction = SequenceHandlerUtil::input_matches_direction(
-                input,
-                character_status.object_status.mirrored,
-            );
+            let same_direction =
+                SequenceHandlerUtil::input_matches_direction(input, object_status.mirrored);
             match (character_status.run_counter, same_direction) {
                 (Unused, _) | (Decrease(_), false) | (Increase(_), false) => {
                     Some(Increase(RunCounter::RESET_TICK_COUNT))
@@ -69,11 +71,11 @@ mod tests {
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Unused,
-                    hp: HealthPoints(100),
-                    object_status: ObjectStatus {
-                        grounding: Grounding::Airborne,
-                        ..Default::default()
-                    }
+                    hp: HealthPoints(100)
+                },
+                &ObjectStatus {
+                    grounding: Grounding::Airborne,
+                    ..Default::default()
                 }
             )
         );
@@ -89,11 +91,11 @@ mod tests {
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Increase(10),
-                    hp: HealthPoints(100),
-                    object_status: ObjectStatus {
-                        grounding: Grounding::Airborne,
-                        ..Default::default()
-                    }
+                    hp: HealthPoints(100)
+                },
+                &ObjectStatus {
+                    grounding: Grounding::Airborne,
+                    ..Default::default()
                 }
             )
         );
@@ -110,11 +112,11 @@ mod tests {
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Unused,
-                    hp: HealthPoints(100),
-                    object_status: ObjectStatus {
-                        grounding: Grounding::Airborne,
-                        ..Default::default()
-                    }
+                    hp: HealthPoints(100)
+                },
+                &ObjectStatus {
+                    grounding: Grounding::Airborne,
+                    ..Default::default()
                 }
             )
         );
@@ -134,10 +136,10 @@ mod tests {
                         &CharacterStatus {
                             run_counter: RunCounter::Increase(10),
                             hp: HealthPoints(100),
-                            object_status: ObjectStatus {
-                                grounding: Grounding::Airborne,
-                                ..Default::default()
-                            }
+                        },
+                        &ObjectStatus {
+                            grounding: Grounding::Airborne,
+                            ..Default::default()
                         }
                     )
                 );
@@ -161,7 +163,8 @@ mod tests {
                     run_counter: RunCounter::Unused,
                     hp: HealthPoints(100),
                     ..Default::default()
-                }
+                },
+                &ObjectStatus::default()
             )
         );
     }
@@ -178,7 +181,8 @@ mod tests {
                     run_counter: RunCounter::Decrease(0),
                     hp: HealthPoints(100),
                     ..Default::default()
-                }
+                },
+                &ObjectStatus::default()
             )
         );
     }
@@ -195,7 +199,8 @@ mod tests {
                     run_counter: RunCounter::Decrease(1),
                     hp: HealthPoints(100),
                     ..Default::default()
-                }
+                },
+                &ObjectStatus::default()
             )
         );
     }
@@ -211,10 +216,8 @@ mod tests {
                 &CharacterStatus {
                     run_counter: RunCounter::Increase(0),
                     hp: HealthPoints(100),
-                    object_status: ObjectStatus {
-                        ..Default::default()
-                    }
-                }
+                },
+                &ObjectStatus::default()
             )
         );
     }
@@ -237,10 +240,10 @@ mod tests {
                         &CharacterStatus {
                             run_counter: RunCounter::Unused,
                             hp: HealthPoints(100),
-                            object_status: ObjectStatus {
-                                mirrored,
-                                ..Default::default()
-                            }
+                        },
+                        &ObjectStatus {
+                            mirrored,
+                            ..Default::default()
                         }
                     )
                 );
@@ -261,10 +264,10 @@ mod tests {
                         &CharacterStatus {
                             run_counter: RunCounter::Decrease(11),
                             hp: HealthPoints(100),
-                            object_status: ObjectStatus {
-                                mirrored,
-                                ..Default::default()
-                            }
+                        },
+                        &ObjectStatus {
+                            mirrored,
+                            ..Default::default()
                         }
                     )
                 );
@@ -285,10 +288,10 @@ mod tests {
                         &CharacterStatus {
                             run_counter: RunCounter::Increase(11),
                             hp: HealthPoints(100),
-                            object_status: ObjectStatus {
-                                mirrored,
-                                ..Default::default()
-                            }
+                        },
+                        &ObjectStatus {
+                            mirrored,
+                            ..Default::default()
                         }
                     )
                 );
@@ -309,10 +312,10 @@ mod tests {
                         &CharacterStatus {
                             run_counter: RunCounter::Decrease(11),
                             hp: HealthPoints(100),
-                            object_status: ObjectStatus {
-                                mirrored,
-                                ..Default::default()
-                            }
+                        },
+                        &ObjectStatus {
+                            mirrored,
+                            ..Default::default()
                         }
                     )
                 );
@@ -333,10 +336,10 @@ mod tests {
                         &CharacterStatus {
                             run_counter: RunCounter::Increase(0),
                             hp: HealthPoints(100),
-                            object_status: ObjectStatus {
-                                mirrored,
-                                ..Default::default()
-                            }
+                        },
+                        &ObjectStatus {
+                            mirrored,
+                            ..Default::default()
                         }
                     )
                 );
@@ -357,10 +360,10 @@ mod tests {
                         &CharacterStatus {
                             run_counter: RunCounter::Increase(11),
                             hp: HealthPoints(100),
-                            object_status: ObjectStatus {
-                                mirrored,
-                                ..Default::default()
-                            }
+                        },
+                        &ObjectStatus {
+                            mirrored,
+                            ..Default::default()
                         }
                     )
                 );
@@ -381,10 +384,10 @@ mod tests {
                         &CharacterStatus {
                             run_counter: RunCounter::Exceeded,
                             hp: HealthPoints(100),
-                            object_status: ObjectStatus {
-                                mirrored,
-                                ..Default::default()
-                            }
+                        },
+                        &ObjectStatus {
+                            mirrored,
+                            ..Default::default()
                         }
                     )
                 );

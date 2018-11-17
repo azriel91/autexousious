@@ -1,5 +1,10 @@
 use game_input::ControllerInput;
-use object_model::entity::{CharacterStatus, CharacterStatusUpdate, Kinematics};
+use object_model::{
+    config::object::CharacterSequenceId,
+    entity::{
+        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+    },
+};
 
 use character::sequence_handler::{common::SequenceRepeat, SequenceHandler};
 
@@ -13,10 +18,14 @@ impl SequenceHandler for WalkZMovementCheck {
     fn update(
         input: &ControllerInput,
         character_status: &CharacterStatus,
+        object_status: &ObjectStatus<CharacterSequenceId>,
         kinematics: &Kinematics<f32>,
-    ) -> Option<CharacterStatusUpdate> {
+    ) -> Option<(
+        CharacterStatusUpdate,
+        ObjectStatusUpdate<CharacterSequenceId>,
+    )> {
         if input.z_axis_value != 0. {
-            SequenceRepeat::update(input, character_status, kinematics)
+            SequenceRepeat::update(input, character_status, object_status, kinematics)
         } else {
             None
         }
@@ -45,11 +54,9 @@ mod tests {
             None,
             WalkZMovementCheck::update(
                 &input,
-                &CharacterStatus {
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::Walk,
-                        ..Default::default()
-                    },
+                &CharacterStatus::default(),
+                &ObjectStatus {
+                    sequence_id: CharacterSequenceId::Walk,
                     ..Default::default()
                 },
                 &Kinematics::default()
@@ -68,10 +75,10 @@ mod tests {
                     &input,
                     &CharacterStatus {
                         hp: HealthPoints(100),
-                        object_status: ObjectStatus {
-                            sequence_id: CharacterSequenceId::Walk,
-                            ..Default::default()
-                        },
+                        ..Default::default()
+                    },
+                    &ObjectStatus {
+                        sequence_id: CharacterSequenceId::Walk,
                         ..Default::default()
                     },
                     &Kinematics::default()
@@ -86,25 +93,25 @@ mod tests {
             let input = ControllerInput::new(0., z_input, false, false, false, false);
 
             assert_eq!(
-                Some(CharacterStatusUpdate {
-                    object_status: ObjectStatusUpdate {
+                Some((
+                    CharacterStatusUpdate::default(),
+                    ObjectStatusUpdate {
                         sequence_id: Some(CharacterSequenceId::Walk),
                         sequence_state: Some(SequenceState::Begin),
                         ..Default::default()
-                    },
-                    ..Default::default()
-                }),
+                    }
+                )),
                 WalkZMovementCheck::update(
                     &input,
                     &CharacterStatus {
                         run_counter: RunCounter::Increase(1),
                         hp: HealthPoints(100),
-                        object_status: ObjectStatus {
-                            sequence_id: CharacterSequenceId::Walk,
-                            sequence_state: SequenceState::End,
-                            mirrored: false,
-                            ..Default::default()
-                        }
+                    },
+                    &ObjectStatus {
+                        sequence_id: CharacterSequenceId::Walk,
+                        sequence_state: SequenceState::End,
+                        mirrored: false,
+                        ..Default::default()
                     },
                     &Kinematics::default()
                 )

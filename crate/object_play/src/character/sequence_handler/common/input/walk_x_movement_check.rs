@@ -1,7 +1,10 @@
 use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate, RunCounter},
+    entity::{
+        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+        RunCounter,
+    },
 };
 
 use character::sequence_handler::{common::SequenceRepeat, SequenceHandler, SequenceHandlerUtil};
@@ -16,18 +19,20 @@ impl SequenceHandler for WalkXMovementCheck {
     fn update(
         input: &ControllerInput,
         character_status: &CharacterStatus,
+        object_status: &ObjectStatus<CharacterSequenceId>,
         kinematics: &Kinematics<f32>,
-    ) -> Option<CharacterStatusUpdate> {
+    ) -> Option<(
+        CharacterStatusUpdate,
+        ObjectStatusUpdate<CharacterSequenceId>,
+    )> {
         if input.x_axis_value != 0. {
-            let same_direction = SequenceHandlerUtil::input_matches_direction(
-                input,
-                character_status.object_status.mirrored,
-            );
+            let same_direction =
+                SequenceHandlerUtil::input_matches_direction(input, object_status.mirrored);
 
             let mirrored = if same_direction {
                 None
             } else {
-                Some(!character_status.object_status.mirrored)
+                Some(!object_status.mirrored)
             };
 
             let sequence_id = match (character_status.run_counter, same_direction) {
@@ -49,18 +54,13 @@ impl SequenceHandler for WalkXMovementCheck {
             let grounding = None;
 
             if let (None, None) = (sequence_id, mirrored) {
-                return SequenceRepeat::update(input, character_status, kinematics);
+                return SequenceRepeat::update(input, character_status, object_status, kinematics);
             }
 
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate::new(
-                    sequence_id,
-                    sequence_state,
-                    mirrored,
-                    grounding,
-                ),
-                ..Default::default()
-            })
+            Some((
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored, grounding),
+            ))
         } else {
             // The responsibility of switching to `Stand` is handled elsewhere.
             None
@@ -92,11 +92,11 @@ mod tests {
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Increase(10),
-                    hp: HealthPoints(100),
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::Walk,
-                        ..Default::default()
-                    }
+                    hp: HealthPoints(100)
+                },
+                &ObjectStatus {
+                    sequence_id: CharacterSequenceId::Walk,
+                    ..Default::default()
                 },
                 &Kinematics::default()
             )
@@ -108,25 +108,25 @@ mod tests {
         let input = ControllerInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
+            Some((
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::Walk),
                     sequence_state: Some(SequenceState::Begin),
                     mirrored: Some(false),
                     ..Default::default()
-                },
-                ..Default::default()
-            }),
+                }
+            )),
             WalkXMovementCheck::update(
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Increase(11),
                     hp: HealthPoints(100),
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::Walk,
-                        mirrored: true,
-                        ..Default::default()
-                    }
+                },
+                &ObjectStatus {
+                    sequence_id: CharacterSequenceId::Walk,
+                    mirrored: true,
+                    ..Default::default()
                 },
                 &Kinematics::default()
             )
@@ -138,25 +138,25 @@ mod tests {
         let input = ControllerInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
+            Some((
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::Walk),
                     sequence_state: Some(SequenceState::Begin),
                     mirrored: Some(true),
                     ..Default::default()
-                },
-                ..Default::default()
-            }),
+                }
+            )),
             WalkXMovementCheck::update(
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Increase(11),
                     hp: HealthPoints(100),
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::Walk,
-                        mirrored: false,
-                        ..Default::default()
-                    }
+                },
+                &ObjectStatus {
+                    sequence_id: CharacterSequenceId::Walk,
+                    mirrored: false,
+                    ..Default::default()
                 },
                 &Kinematics::default()
             )
@@ -171,25 +171,25 @@ mod tests {
                 let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
-                    Some(CharacterStatusUpdate {
-                        object_status: ObjectStatusUpdate {
+                    Some((
+                        CharacterStatusUpdate::default(),
+                        ObjectStatusUpdate {
                             sequence_id: Some(CharacterSequenceId::Walk),
                             sequence_state: Some(SequenceState::Begin),
                             ..Default::default()
-                        },
-                        ..Default::default()
-                    }),
+                        }
+                    )),
                     WalkXMovementCheck::update(
                         &input,
                         &CharacterStatus {
                             run_counter: RunCounter::Increase(1),
-                            hp: HealthPoints(100),
-                            object_status: ObjectStatus {
-                                sequence_id: CharacterSequenceId::Walk,
-                                sequence_state: SequenceState::End,
-                                mirrored,
-                                ..Default::default()
-                            }
+                            hp: HealthPoints(100)
+                        },
+                        &ObjectStatus {
+                            sequence_id: CharacterSequenceId::Walk,
+                            sequence_state: SequenceState::End,
+                            mirrored,
+                            ..Default::default()
                         },
                         &Kinematics::default()
                     )
@@ -202,24 +202,24 @@ mod tests {
         let input = ControllerInput::new(1., -1., false, false, false, false);
 
         assert_eq!(
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
+            Some((
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::Run),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
-                },
-                ..Default::default()
-            }),
+                }
+            )),
             WalkXMovementCheck::update(
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Decrease(10),
                     hp: HealthPoints(100),
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::Walk,
-                        mirrored: false,
-                        ..Default::default()
-                    }
+                },
+                &ObjectStatus {
+                    sequence_id: CharacterSequenceId::Walk,
+                    mirrored: false,
+                    ..Default::default()
                 },
                 &Kinematics::default()
             )
@@ -231,24 +231,24 @@ mod tests {
         let input = ControllerInput::new(-1., -1., false, false, false, false);
 
         assert_eq!(
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
+            Some((
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::Run),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
-                },
-                ..Default::default()
-            }),
+                }
+            )),
             WalkXMovementCheck::update(
                 &input,
                 &CharacterStatus {
                     run_counter: RunCounter::Decrease(10),
                     hp: HealthPoints(100),
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::Walk,
-                        mirrored: true,
-                        ..Default::default()
-                    }
+                },
+                &ObjectStatus {
+                    sequence_id: CharacterSequenceId::Walk,
+                    mirrored: true,
+                    ..Default::default()
                 },
                 &Kinematics::default()
             )

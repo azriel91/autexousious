@@ -10,7 +10,7 @@ use game_input::{ControllerInput, InputControlled};
 use game_model::loaded::SlugAndHandle;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{CharacterStatus, Kinematics},
+    entity::{CharacterStatus, Kinematics, ObjectStatus},
     loaded::{AnimatedComponentAnimation, AnimatedComponentDefault, Character, CharacterHandle},
 };
 
@@ -51,6 +51,7 @@ impl CharacterEntitySpawner {
                 world.write_storage::<ControllerInput>(),
                 world.write_storage::<CharacterHandle>(),
                 world.write_storage::<CharacterStatus>(),
+                world.write_storage::<ObjectStatus<CharacterSequenceId>>(),
             ), // kcov-ignore
             &mut (
                 world.write_storage::<SpriteRender>(),
@@ -88,6 +89,7 @@ impl CharacterEntitySpawner {
             ref mut controller_input_storage,
             ref mut character_handle_storage,
             ref mut character_status_storage,
+            ref mut object_status_storage,
         ): &mut CharacterComponentStorages<'s>,
         (
             ref mut sprite_render_storage,
@@ -105,8 +107,8 @@ impl CharacterEntitySpawner {
         slug_and_handle: &SlugAndHandle<Character>,
         input_controlled: InputControlled,
     ) -> Entity {
-        let character_status = CharacterStatus::default();
-        let first_sequence_id = character_status.object_status.sequence_id;
+        let object_status = ObjectStatus::default();
+        let first_sequence_id = object_status.sequence_id;
 
         let SlugAndHandle {
             ref slug,
@@ -146,8 +148,12 @@ impl CharacterEntitySpawner {
             .expect("Failed to insert character_handle component.");
         // Character and object status attributes.
         character_status_storage
-            .insert(entity, character_status)
+            .insert(entity, CharacterStatus::default())
             .expect("Failed to insert character_status component.");
+        // Character and object status attributes.
+        object_status_storage
+            .insert(entity, object_status)
+            .expect("Failed to insert object_status component.");
         // Enable transparency for visibility sorting
         transparent_storage
             .insert(entity, Transparent)
@@ -243,7 +249,7 @@ mod test {
     use object_loading::ObjectLoadingBundle;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{CharacterStatus, Kinematics, Position, Velocity},
+        entity::{CharacterStatus, Kinematics, ObjectStatus, Position, Velocity},
         loaded::{Character, CharacterHandle},
     };
     use typename::TypeName;
@@ -275,6 +281,9 @@ mod test {
             assert!(world.read_storage::<InputControlled>().contains(entity));
             assert!(world.read_storage::<CharacterHandle>().contains(entity));
             assert!(world.read_storage::<CharacterStatus>().contains(entity));
+            assert!(world
+                .read_storage::<ObjectStatus<CharacterSequenceId>>()
+                .contains(entity));
             assert!(world.read_storage::<ControllerInput>().contains(entity));
             assert!(world.read_storage::<SpriteRender>().contains(entity));
             assert!(world.read_storage::<Transparent>().contains(entity));

@@ -1,7 +1,9 @@
 use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate},
+    entity::{
+        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+    },
 };
 
 use character::sequence_handler::SequenceHandler;
@@ -14,21 +16,25 @@ impl SequenceHandler for JumpCheck {
     fn update(
         input: &ControllerInput,
         _character_status: &CharacterStatus,
+        _object_status: &ObjectStatus<CharacterSequenceId>,
         _kinematics: &Kinematics<f32>,
-    ) -> Option<CharacterStatusUpdate> {
+    ) -> Option<(
+        CharacterStatusUpdate,
+        ObjectStatusUpdate<CharacterSequenceId>,
+    )> {
         // TODO: Don't handle action buttons in `CharacterSequenceHandler`s. Instead, each sequence
         // has default sequence update IDs for each action button, which are overridden by
         // configuration.
         if input.jump {
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate::new(
+            Some((
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate::new(
                     Some(CharacterSequenceId::Jump),
                     Some(SequenceState::Begin),
                     None,
                     None,
                 ),
-                ..Default::default()
-            })
+            ))
         } else {
             None
         }
@@ -57,11 +63,9 @@ mod tests {
             None,
             JumpCheck::update(
                 &controller_input,
-                &CharacterStatus {
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::Stand,
-                        ..Default::default()
-                    },
+                &CharacterStatus::default(),
+                &ObjectStatus {
+                    sequence_id: CharacterSequenceId::Stand,
                     ..Default::default()
                 },
                 &Kinematics::<f32>::default()
@@ -74,22 +78,20 @@ mod tests {
         let mut controller_input = ControllerInput::default();
         controller_input.jump = true;
         assert_eq!(
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
+            Some((
+                CharacterStatusUpdate::default(),
+                ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::Jump),
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
-                },
-                ..Default::default()
-            }),
+                }
+            )),
             JumpCheck::update(
                 &controller_input,
-                &CharacterStatus {
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::Stand,
-                        grounding: Grounding::Airborne,
-                        ..Default::default()
-                    },
+                &CharacterStatus::default(),
+                &ObjectStatus {
+                    sequence_id: CharacterSequenceId::Stand,
+                    grounding: Grounding::Airborne,
                     ..Default::default()
                 },
                 &Kinematics::<f32>::default()

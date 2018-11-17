@@ -1,5 +1,10 @@
 use game_input::ControllerInput;
-use object_model::entity::{CharacterStatus, CharacterStatusUpdate, Kinematics};
+use object_model::{
+    config::object::CharacterSequenceId,
+    entity::{
+        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+    },
+};
 
 pub(super) use self::fall_forward_ascend::FallForwardAscend;
 pub(super) use self::fall_forward_descend::FallForwardDescend;
@@ -54,9 +59,16 @@ pub(super) trait CharacterSequenceHandler {
     fn update(
         _controller_input: &ControllerInput,
         _character_status: &CharacterStatus,
+        _object_status: &ObjectStatus<CharacterSequenceId>,
         _kinematics: &Kinematics<f32>,
-    ) -> CharacterStatusUpdate {
-        CharacterStatusUpdate::default()
+    ) -> (
+        CharacterStatusUpdate,
+        ObjectStatusUpdate<CharacterSequenceId>,
+    ) {
+        (
+            CharacterStatusUpdate::default(),
+            ObjectStatusUpdate::default(),
+        )
     }
 }
 
@@ -77,8 +89,12 @@ pub(super) trait SequenceHandler {
     fn update(
         _controller_input: &ControllerInput,
         _character_status: &CharacterStatus,
+        _object_status: &ObjectStatus<CharacterSequenceId>,
         _kinematics: &Kinematics<f32>,
-    ) -> Option<CharacterStatusUpdate> {
+    ) -> Option<(
+        CharacterStatusUpdate,
+        ObjectStatusUpdate<CharacterSequenceId>,
+    )> {
         None
     }
 }
@@ -87,7 +103,7 @@ pub(super) trait SequenceHandler {
 mod test {
     use game_input::ControllerInput;
     use object_model::entity::{
-        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate,
+        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
     };
 
     use super::{CharacterSequenceHandler, SequenceHandler};
@@ -107,14 +123,14 @@ mod test {
         // No update to grounding.
         let grounding = None;
         assert_eq!(
-            CharacterStatusUpdate::new(
-                run_counter,
-                hp,
+            (
+                CharacterStatusUpdate::new(run_counter, hp),
                 ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored, grounding)
             ),
             Sit::update(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
+                &ObjectStatus::default(),
                 &Kinematics::default()
             )
         );
@@ -127,6 +143,7 @@ mod test {
             Sleep::update(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
+                &ObjectStatus::default(),
                 &Kinematics::default()
             )
         );
