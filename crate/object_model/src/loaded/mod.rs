@@ -5,7 +5,7 @@
 
 pub use self::animation::{AnimatedComponentAnimation, AnimatedComponentDefault};
 pub use self::character::{Character, CharacterHandle};
-pub use self::object::Object;
+pub use self::object::{Object, ObjectHandle};
 
 mod animation;
 mod character;
