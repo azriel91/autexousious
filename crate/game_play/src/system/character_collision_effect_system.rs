@@ -9,7 +9,7 @@ use game_loading::{AnimationRunner, ObjectAnimationStorages};
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
     entity::{CharacterStatus, HealthPoints, ObjectStatus},
-    loaded::{AnimatedComponentAnimation, Character, CharacterHandle},
+    loaded::{AnimatedComponentAnimation, Character, CharacterHandle, Object},
 };
 use typename::TypeName;
 
@@ -25,6 +25,7 @@ type CharacterCollisionEffectSystemData<'s> = (
     Read<'s, EventChannel<CollisionEvent>>,
     ReadStorage<'s, CharacterHandle>,
     Read<'s, AssetStorage<Character>>,
+    Read<'s, AssetStorage<Object<CharacterSequenceId>>>,
     WriteStorage<'s, CharacterStatus>,
     WriteStorage<'s, ObjectStatus<CharacterSequenceId>>,
     ObjectAnimationStorages<'s, CharacterSequenceId>,
@@ -39,6 +40,7 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
             collision_ec,
             character_handles,
             character_assets,
+            object_assets,
             mut character_statuses,
             mut object_statuses,
             (mut sprite_acs, mut body_frame_acs, mut interaction_acs),
@@ -63,6 +65,9 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
                     let character = character_assets
                         .get(character_handle)
                         .expect("Expected character to be loaded.");
+                    let object = object_assets
+                        .get(&character.object_handle)
+                        .expect("Expected object for character to be loaded.");
                     let mut sprite_animation_set = get_animation_set(&mut sprite_acs, ev.to)
                         .expect("Sprite animation should exist as entity should be valid.");
                     let mut body_animation_set = get_animation_set(&mut body_frame_acs, ev.to)
@@ -92,11 +97,8 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
                     };
 
                     // Swap animations
-                    let animations = &character
-                        .object
-                        .animations
-                        .get(&next_sequence_id)
-                        .unwrap_or_else(|| {
+                    let animations =
+                        &object.animations.get(&next_sequence_id).unwrap_or_else(|| {
                             panic!(
                                 "Failed to get animations for sequence: `{:?}`",
                                 next_sequence_id

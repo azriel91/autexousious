@@ -9,7 +9,7 @@ use game_loading::{AnimationRunner, ObjectAnimationStorages};
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
     entity::{CharacterStatus, Kinematics, ObjectStatus},
-    loaded::{AnimatedComponentAnimation, Character, CharacterHandle},
+    loaded::{AnimatedComponentAnimation, Character, CharacterHandle, Object, ObjectHandle},
 };
 use object_play::CharacterSequenceUpdater;
 
@@ -20,7 +20,9 @@ pub(crate) struct CharacterSequenceUpdateSystem;
 type CharacterSequenceUpdateSystemData<'s> = (
     Entities<'s>,
     Read<'s, AssetStorage<Character>>,
+    Read<'s, AssetStorage<Object<CharacterSequenceId>>>,
     ReadStorage<'s, CharacterHandle>,
+    ReadStorage<'s, ObjectHandle<CharacterSequenceId>>,
     ReadStorage<'s, ControllerInput>,
     ReadStorage<'s, Kinematics<f32>>,
     WriteStorage<'s, CharacterStatus>,
@@ -36,8 +38,10 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
         &mut self,
         (
             entities,
-            characters,
-            handle_storage,
+            character_assets,
+            object_assets,
+            character_handles,
+            object_handles,
             controller_input_storage,
             kinematics_storage,
             mut character_statuses,
@@ -49,6 +53,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
         for (
             entity,
             character_handle,
+            object_handle,
             controller_input,
             kinematics,
             mut character_status,
@@ -56,7 +61,8 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             mut sprite_render,
         ) in (
             &*entities,
-            &handle_storage,
+            &character_handles,
+            &object_handles,
             &controller_input_storage,
             &kinematics_storage,
             &mut character_statuses,
@@ -65,9 +71,12 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
         )
             .join()
         {
-            let character = characters
+            let character = character_assets
                 .get(character_handle)
                 .expect("Expected character to be loaded.");
+            let object = object_assets
+                .get(object_handle)
+                .expect("Expected object for character to be loaded.");
 
             // TODO: Is it faster if we update the character statuses first, then calculate the
             // sequence updates in parallel?
@@ -104,16 +113,12 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
 
             // Update the current sequence ID
             if let Some(next_sequence_id) = object_status_update.sequence_id {
-                let animations = &character
-                    .object
-                    .animations
-                    .get(&next_sequence_id)
-                    .unwrap_or_else(|| {
-                        panic!(
-                            "Failed to get animations for sequence: `{:?}`",
-                            next_sequence_id
-                        )
-                    });
+                let animations = &object.animations.get(&next_sequence_id).unwrap_or_else(|| {
+                    panic!(
+                        "Failed to get animations for sequence: `{:?}`",
+                        next_sequence_id
+                    )
+                });
 
                 animations
                     .iter()

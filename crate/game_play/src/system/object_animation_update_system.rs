@@ -2,17 +2,19 @@ use std::marker::PhantomData;
 
 use amethyst::{
     animation::get_animation_set,
-    assets::{Asset, AssetStorage, Handle},
+    assets::AssetStorage,
     ecs::{
-        storage::ComponentEvent, BitSet, Entities, Entity, Read, ReadStorage, Resources, System,
-        SystemData, WriteStorage,
+        storage::ComponentEvent, BitSet, Entities, Entity, Join, Read, ReadStorage, Resources,
+        System, SystemData, WriteStorage,
     },
     shrev::ReaderId,
 };
 use game_loading::{AnimationRunner, ObjectAnimationStorages};
 use named_type::NamedType;
 use object_model::{
-    config::object::SequenceId, entity::ObjectStatus, loaded::AnimatedComponentAnimation,
+    config::object::SequenceId,
+    entity::ObjectStatus,
+    loaded::{AnimatedComponentAnimation, Object, ObjectHandle},
 };
 
 /// Updates sequence animations for objects.
@@ -22,7 +24,7 @@ use object_model::{
 /// * `ObTy`: Loaded object model type, e.g. `Character`.
 /// * `SeqId`: Sequence ID type, e.g. `CharacterSequenceId`.
 #[derive(Debug, Default, NamedType, new)]
-pub(crate) struct ObjectAnimationUpdateSystem<ObTy, SeqId> {
+pub(crate) struct ObjectAnimationUpdateSystem<SeqId> {
     /// Reader ID for the `ComponentEvent` event channel.
     #[new(default)]
     component_ev_rid: Option<ReaderId<ComponentEvent>>,
@@ -30,39 +32,34 @@ pub(crate) struct ObjectAnimationUpdateSystem<ObTy, SeqId> {
     #[new(default)]
     object_status_modifications: BitSet,
     /// PhantomData.
-    phantom_data: PhantomData<(ObTy, SeqId)>,
+    phantom_data: PhantomData<SeqId>,
 }
 
-type ObjectAnimationUpdateSystemData<'s, ObTy, SeqId> = (
+type ObjectAnimationUpdateSystemData<'s, SeqId> = (
     Entities<'s>,
     ReadStorage<'s, ObjectStatus<SeqId>>,
-    ReadStorage<'s, Handle<ObTy>>,
-    Read<'s, AssetStorage<ObTy>>,
+    ReadStorage<'s, ObjectHandle<SeqId>>,
+    Read<'s, AssetStorage<Object<SeqId>>>,
     ObjectAnimationStorages<'s, SeqId>,
 );
 
-impl<ObTy, SeqId> ObjectAnimationUpdateSystem<ObTy, SeqId>
+impl<SeqId> ObjectAnimationUpdateSystem<SeqId>
 where
-    ObTy: Asset,
     SeqId: SequenceId + 'static,
 {
     fn swap_animation(
-        ob_ty_assets: &Read<AssetStorage<ObTy>>,
-        (mut sprite_acs, mut body_frame_acs, mut interaction_acs): &mut ObjectAnimationStorages<
+        object: &Object<SeqId>,
+        (ref mut sprite_acs, ref mut body_frame_acs, ref mut interaction_acs): &mut ObjectAnimationStorages<
             SeqId,
         >,
         entity: &Entity,
         object_status: &ObjectStatus<SeqId>,
-        ob_ty_handle: &Handle<ObTy>,
     ) {
-        let ob_ty = ob_ty_assets
-            .get(ob_ty_handle)
-            .expect("Expected object to be loaded.");
-        let mut sprite_animation_set = get_animation_set(&mut sprite_acs, *entity)
+        let mut sprite_animation_set = get_animation_set(sprite_acs, *entity)
             .expect("Sprite animation should exist as entity should be valid.");
-        let mut body_animation_set = get_animation_set(&mut body_frame_acs, *entity)
+        let mut body_animation_set = get_animation_set(body_frame_acs, *entity)
             .expect("Body animation should exist as entity should be valid.");
-        let mut interaction_animation_set = get_animation_set(&mut interaction_acs, *entity)
+        let mut interaction_animation_set = get_animation_set(interaction_acs, *entity)
             .expect("Interaction animation should exist as entity should be valid.");
 
         // TODO: replace with actual
@@ -73,20 +70,12 @@ where
         let last_sequence_id = object_status.sequence_id;
         let next_sequence_id = object_status.sequence_id;
 
-        // TODO:
-        // 1. impl Asset for Object<SeqId>
-        // 2. attach Handle<Object<SeqId>> to ob_ty (character)
-        // 3. read it here, and get the animations
-        let animations = &ob_ty
-            .object
-            .animations
-            .get(&next_sequence_id)
-            .unwrap_or_else(|| {
-                panic!(
-                    "Failed to get animations for sequence: `{:?}`",
-                    next_sequence_id
-                )
-            });
+        let animations = &object.animations.get(&next_sequence_id).unwrap_or_else(|| {
+            panic!(
+                "Failed to get animations for sequence: `{:?}`",
+                next_sequence_id
+            )
+        });
 
         animations
             .iter()
@@ -119,20 +108,19 @@ where
     }
 }
 
-impl<'s, ObTy, SeqId> System<'s> for ObjectAnimationUpdateSystem<ObTy, SeqId>
+impl<'s, SeqId> System<'s> for ObjectAnimationUpdateSystem<SeqId>
 where
-    ObTy: Asset,
     SeqId: SequenceId + 'static,
 {
-    type SystemData = ObjectAnimationUpdateSystemData<'s, ObTy, SeqId>;
+    type SystemData = ObjectAnimationUpdateSystemData<'s, SeqId>;
 
     fn run(
         &mut self,
         (
             entities,
             object_statuses,
-            ob_ty_handles,
-            ob_ty_assets,
+            object_handles,
+            object_assets,
             mut object_animation_storages,
         ): Self::SystemData,
     ) {
@@ -146,11 +134,7 @@ where
         object_status_modifications.clear();
         object_statuses
             .channel()
-            .read(
-                self.component_ev_rid
-                    .as_mut()
-                    .expect("Expected reader ID to exist for ObjectAnimationUpdateSystem."),
-            )
+            .read(component_ev_rid)
             .for_each(|ev| match ev {
                 ComponentEvent::Inserted(id) | ComponentEvent::Modified(id) => {
                     object_status_modifications.add(*id);
@@ -165,17 +149,20 @@ where
             (
                 &entities,
                 &object_statuses,
-                &ob_ty_handles,
+                &object_handles,
                 object_status_modifications,
             )
                 .join()
-                .for_each(|(entity, object_status, ob_ty_handle, _)| {
+                .for_each(|(entity, object_status, object_handle, _)| {
+                    let object = object_assets
+                        .get(object_handle)
+                        .expect("Expected object to be loaded.");
+
                     Self::swap_animation(
-                        &ob_ty_assets,
+                        &object,
                         &mut object_animation_storages,
-                        entity,
+                        &entity,
                         object_status,
-                        ob_ty_handle,
                     );
                 });
         }
