@@ -16,6 +16,7 @@ use object_model::{
     entity::ObjectStatus,
     loaded::{AnimatedComponentAnimation, Object, ObjectHandle},
 };
+use tracker::Last;
 
 /// Updates sequence animations for objects.
 ///
@@ -37,6 +38,7 @@ pub(crate) struct ObjectAnimationUpdateSystem<SeqId> {
 
 type ObjectAnimationUpdateSystemData<'s, SeqId> = (
     Entities<'s>,
+    ReadStorage<'s, Last<ObjectStatus<SeqId>>>,
     ReadStorage<'s, ObjectStatus<SeqId>>,
     ReadStorage<'s, ObjectHandle<SeqId>>,
     Read<'s, AssetStorage<Object<SeqId>>>,
@@ -53,6 +55,7 @@ where
             SeqId,
         >,
         entity: &Entity,
+        last_object_status: &ObjectStatus<SeqId>,
         object_status: &ObjectStatus<SeqId>,
     ) {
         let mut sprite_animation_set = get_animation_set(sprite_acs, *entity)
@@ -62,12 +65,7 @@ where
         let mut interaction_animation_set = get_animation_set(interaction_acs, *entity)
             .expect("Interaction animation should exist as entity should be valid.");
 
-        // TODO: replace with actual
-        // 1. Update `LastTrackerSystem<T> to take in associated type for what it is tracking from T.
-        // 2. Track `SequenceId` from `ObjectStatus`.
-        // 3. Add LastTrackerSystem that runs after this one.
-        // 4. This system reads `Last<ObjectStatus, Tracked = SeqId>` for this value.
-        let last_sequence_id = object_status.sequence_id;
+        let last_sequence_id = last_object_status.sequence_id;
         let next_sequence_id = object_status.sequence_id;
 
         let animations = &object.animations.get(&next_sequence_id).unwrap_or_else(|| {
@@ -118,6 +116,7 @@ where
         &mut self,
         (
             entities,
+            last_object_statuses,
             object_statuses,
             object_handles,
             object_assets,
@@ -148,23 +147,27 @@ where
 
             (
                 &entities,
+                &last_object_statuses,
                 &object_statuses,
                 &object_handles,
                 object_status_modifications,
             )
                 .join()
-                .for_each(|(entity, object_status, object_handle, _)| {
-                    let object = object_assets
-                        .get(object_handle)
-                        .expect("Expected object to be loaded.");
+                .for_each(
+                    |(entity, last_object_status, object_status, object_handle, _)| {
+                        let object = object_assets
+                            .get(object_handle)
+                            .expect("Expected object to be loaded.");
 
-                    Self::swap_animation(
-                        &object,
-                        &mut object_animation_storages,
-                        &entity,
-                        object_status,
-                    );
-                });
+                        Self::swap_animation(
+                            &object,
+                            &mut object_animation_storages,
+                            &entity,
+                            last_object_status,
+                            object_status,
+                        );
+                    },
+                );
         }
     }
 

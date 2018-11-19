@@ -5,11 +5,11 @@ use amethyst::{
     renderer::SpriteRender,
 };
 use game_input::ControllerInput;
-use game_loading::{AnimationRunner, ObjectAnimationStorages};
+use game_loading::ObjectAnimationStorages;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
     entity::{CharacterStatus, Kinematics, ObjectStatus},
-    loaded::{AnimatedComponentAnimation, Character, CharacterHandle, Object, ObjectHandle},
+    loaded::{Character, CharacterHandle},
 };
 use object_play::CharacterSequenceUpdater;
 
@@ -20,9 +20,7 @@ pub(crate) struct CharacterSequenceUpdateSystem;
 type CharacterSequenceUpdateSystemData<'s> = (
     Entities<'s>,
     Read<'s, AssetStorage<Character>>,
-    Read<'s, AssetStorage<Object<CharacterSequenceId>>>,
     ReadStorage<'s, CharacterHandle>,
-    ReadStorage<'s, ObjectHandle<CharacterSequenceId>>,
     ReadStorage<'s, ControllerInput>,
     ReadStorage<'s, Kinematics<f32>>,
     WriteStorage<'s, CharacterStatus>,
@@ -39,21 +37,18 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
         (
             entities,
             character_assets,
-            object_assets,
             character_handles,
-            object_handles,
             controller_input_storage,
             kinematics_storage,
             mut character_statuses,
             mut object_statuses,
             mut sprite_render_storage,
-            (mut sprite_acs, mut body_frame_acs, mut interaction_acs),
+            (mut sprite_acs, _body_frame_acs, _interaction_acs),
         ): Self::SystemData,
     ) {
         for (
             entity,
             character_handle,
-            object_handle,
             controller_input,
             kinematics,
             mut character_status,
@@ -62,7 +57,6 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
         ) in (
             &*entities,
             &character_handles,
-            &object_handles,
             &controller_input_storage,
             &kinematics_storage,
             &mut character_statuses,
@@ -74,18 +68,11 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             let character = character_assets
                 .get(character_handle)
                 .expect("Expected character to be loaded.");
-            let object = object_assets
-                .get(object_handle)
-                .expect("Expected object for character to be loaded.");
 
             // TODO: Is it faster if we update the character statuses first, then calculate the
             // sequence updates in parallel?
             let mut sprite_animation_set = get_animation_set(&mut sprite_acs, entity)
                 .expect("Sprite animation should exist as entity should be valid.");
-            let mut body_animation_set = get_animation_set(&mut body_frame_acs, entity)
-                .expect("Body animation should exist as entity should be valid.");
-            let mut interaction_animation_set = get_animation_set(&mut interaction_acs, entity)
-                .expect("Interaction animation should exist as entity should be valid.");
 
             // Mark sequence as `Ongoing` for subsequent tick.
             if object_status.sequence_state == SequenceState::Begin {
@@ -110,45 +97,6 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                 &object_status,
                 &kinematics,
             );
-
-            // Update the current sequence ID
-            if let Some(next_sequence_id) = object_status_update.sequence_id {
-                let animations = &object.animations.get(&next_sequence_id).unwrap_or_else(|| {
-                    panic!(
-                        "Failed to get animations for sequence: `{:?}`",
-                        next_sequence_id
-                    )
-                });
-
-                animations
-                    .iter()
-                    .for_each(|animated_component| match animated_component {
-                        AnimatedComponentAnimation::SpriteRender(ref handle) => {
-                            AnimationRunner::swap(
-                                object_status.sequence_id,
-                                next_sequence_id,
-                                &mut sprite_animation_set,
-                                handle,
-                            );
-                        }
-                        AnimatedComponentAnimation::BodyFrame(ref handle) => {
-                            AnimationRunner::swap(
-                                object_status.sequence_id,
-                                next_sequence_id,
-                                &mut body_animation_set,
-                                handle,
-                            );
-                        }
-                        AnimatedComponentAnimation::InteractionFrame(ref handle) => {
-                            AnimationRunner::swap(
-                                object_status.sequence_id,
-                                next_sequence_id,
-                                &mut interaction_animation_set,
-                                handle,
-                            );
-                        }
-                    });
-            }
 
             if let Some(mirrored) = object_status_update.mirrored {
                 sprite_render.flip_horizontal = mirrored;

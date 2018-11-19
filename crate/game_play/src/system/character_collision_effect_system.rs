@@ -1,15 +1,11 @@
 use amethyst::{
-    animation::get_animation_set,
-    assets::AssetStorage,
-    ecs::{Read, ReadStorage, Resources, System, SystemData, WriteStorage},
+    ecs::{Read, Resources, System, SystemData, WriteStorage},
     shrev::{EventChannel, ReaderId},
 };
 use collision_model::{config::Interaction, play::CollisionEvent};
-use game_loading::{AnimationRunner, ObjectAnimationStorages};
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
     entity::{CharacterStatus, HealthPoints, ObjectStatus},
-    loaded::{AnimatedComponentAnimation, Character, CharacterHandle, Object},
 };
 use typename::TypeName;
 
@@ -23,12 +19,8 @@ pub(crate) struct CharacterCollisionEffectSystem {
 
 type CharacterCollisionEffectSystemData<'s> = (
     Read<'s, EventChannel<CollisionEvent>>,
-    ReadStorage<'s, CharacterHandle>,
-    Read<'s, AssetStorage<Character>>,
-    Read<'s, AssetStorage<Object<CharacterSequenceId>>>,
     WriteStorage<'s, CharacterStatus>,
     WriteStorage<'s, ObjectStatus<CharacterSequenceId>>,
-    ObjectAnimationStorages<'s, CharacterSequenceId>,
 );
 
 impl<'s> System<'s> for CharacterCollisionEffectSystem {
@@ -36,15 +28,7 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
 
     fn run(
         &mut self,
-        (
-            collision_ec,
-            character_handles,
-            character_assets,
-            object_assets,
-            mut character_statuses,
-            mut object_statuses,
-            (mut sprite_acs, mut body_frame_acs, mut interaction_acs),
-        ): Self::SystemData,
+        (collision_ec, mut character_statuses, mut object_statuses): Self::SystemData,
     ) {
         // Read from channel
         collision_ec
@@ -55,28 +39,12 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
             )
             .for_each(|ev| {
                 // Fetch CharacterStatus for entity
-                let character_handle = character_handles.get(ev.to);
                 let character_status = character_statuses.get_mut(ev.to);
                 let object_status = object_statuses.get_mut(ev.to);
 
-                if let (Some(character_handle), Some(character_status), Some(object_status)) =
-                    (character_handle, character_status, object_status)
+                if let (Some(character_status), Some(object_status)) =
+                    (character_status, object_status)
                 {
-                    let character = character_assets
-                        .get(character_handle)
-                        .expect("Expected character to be loaded.");
-                    let object = object_assets
-                        .get(&character.object_handle)
-                        .expect("Expected object for character to be loaded.");
-                    let mut sprite_animation_set = get_animation_set(&mut sprite_acs, ev.to)
-                        .expect("Sprite animation should exist as entity should be valid.");
-                    let mut body_animation_set = get_animation_set(&mut body_frame_acs, ev.to)
-                        .expect("Body animation should exist as entity should be valid.");
-                    let mut interaction_animation_set =
-                        get_animation_set(&mut interaction_acs, ev.to).expect(
-                            "Interaction animation should exist as entity should be valid.",
-                        );
-
                     // TODO: Select damage sequence based on status.
                     // TODO: Split this system with health check system.
                     let Interaction::Physical { hp_damage, .. } = ev.interaction;
@@ -95,44 +63,6 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
                             CharacterSequenceId::Flinch0
                         }
                     };
-
-                    // Swap animations
-                    let animations =
-                        &object.animations.get(&next_sequence_id).unwrap_or_else(|| {
-                            panic!(
-                                "Failed to get animations for sequence: `{:?}`",
-                                next_sequence_id
-                            )
-                        });
-
-                    animations
-                        .iter()
-                        .for_each(|animated_component| match animated_component {
-                            AnimatedComponentAnimation::SpriteRender(ref handle) => {
-                                AnimationRunner::swap(
-                                    object_status.sequence_id,
-                                    next_sequence_id,
-                                    &mut sprite_animation_set,
-                                    handle,
-                                );
-                            }
-                            AnimatedComponentAnimation::BodyFrame(ref handle) => {
-                                AnimationRunner::swap(
-                                    object_status.sequence_id,
-                                    next_sequence_id,
-                                    &mut body_animation_set,
-                                    handle,
-                                );
-                            }
-                            AnimatedComponentAnimation::InteractionFrame(ref handle) => {
-                                AnimationRunner::swap(
-                                    object_status.sequence_id,
-                                    next_sequence_id,
-                                    &mut interaction_animation_set,
-                                    handle,
-                                );
-                            }
-                        });
 
                     // Set sequence id
                     object_status.sequence_id = next_sequence_id;

@@ -3,6 +3,8 @@ use amethyst::{
     ecs::prelude::*,
 };
 use game_input::ControllerInput;
+use named_type::NamedType;
+use object_model::{config::object::CharacterSequenceId, entity::ObjectStatus};
 use tracker::LastTrackerSystem;
 use typename::TypeName;
 
@@ -12,6 +14,7 @@ use CharacterKinematicsSystem;
 use CharacterSequenceUpdateSystem;
 use GamePlayEndDetectionSystem;
 use GamePlayEndTransitionSystem;
+use ObjectAnimationUpdateSystem;
 use ObjectCollisionDetectionSystem;
 use ObjectKinematicsUpdateSystem;
 use ObjectTransformUpdateSystem;
@@ -66,12 +69,21 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[&CharacterCollisionEffectSystem::type_name()],
         ); // kcov-ignore
 
+        // Depends on the LastTrackerSystem<ObjectStatus<CharacterSequenceId>>, so must run before it.
+        builder.add(
+            ObjectAnimationUpdateSystem::<CharacterSequenceId>::new(),
+            &ObjectAnimationUpdateSystem::<CharacterSequenceId>::type_name(),
+            &[&CharacterCollisionEffectSystem::type_name()],
+        ); // kcov-ignore
+
         // Depends on the LastTrackerSystem<ControllerInput>, so must run before it.
         builder.add(
             GamePlayEndTransitionSystem::new(),
             &GamePlayEndTransitionSystem::type_name(),
             &[],
         ); // kcov-ignore
+
+        // === `LastTrackerSystem`s === //
 
         let controller_input_tracker_system =
             LastTrackerSystem::<ControllerInput>::new(stringify!(game_input::ControllerInput));
@@ -83,6 +95,18 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             controller_input_tracker_system,
             &controller_input_tracker_system_name,
             &[&GamePlayEndTransitionSystem::type_name()],
+        ); // kcov-ignore
+
+        let character_object_status_tracker_system =
+            LastTrackerSystem::<ObjectStatus<CharacterSequenceId>>::new(stringify!(
+                ObjectStatus<CharacterSequenceId>
+            ));
+        let character_object_status_tracker_system_name =
+            character_object_status_tracker_system.system_name();
+        builder.add(
+            character_object_status_tracker_system,
+            &character_object_status_tracker_system_name,
+            &[&ObjectAnimationUpdateSystem::<CharacterSequenceId>::type_name()],
         ); // kcov-ignore
 
         Ok(())
