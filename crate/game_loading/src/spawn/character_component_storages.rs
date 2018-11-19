@@ -3,7 +3,7 @@ use game_input::{ControllerInput, InputControlled};
 use object_model::{
     config::object::CharacterSequenceId,
     entity::{CharacterStatus, ObjectStatus},
-    loaded::CharacterHandle,
+    loaded::{CharacterHandle, ObjectHandle},
 };
 
 /// Character specific `Component` storages.
@@ -14,6 +14,7 @@ pub type CharacterComponentStorages<'s> = (
     WriteStorage<'s, InputControlled>,
     WriteStorage<'s, ControllerInput>,
     WriteStorage<'s, CharacterHandle>,
+    WriteStorage<'s, ObjectHandle<CharacterSequenceId>>,
     WriteStorage<'s, CharacterStatus>,
     WriteStorage<'s, ObjectStatus<CharacterSequenceId>>,
 );

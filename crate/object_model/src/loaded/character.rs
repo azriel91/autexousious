@@ -11,7 +11,7 @@ use loaded::ObjectHandle;
 #[derivative(Debug)]
 pub struct Character {
     /// Handle to loaded object data.
-    pub object: ObjectHandle<CharacterSequenceId>,
+    pub object_handle: ObjectHandle<CharacterSequenceId>,
     /// Character configuration.
     pub definition: CharacterDefinition,
 }

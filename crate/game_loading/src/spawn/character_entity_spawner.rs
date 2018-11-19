@@ -11,7 +11,10 @@ use game_model::loaded::SlugAndHandle;
 use object_model::{
     config::object::CharacterSequenceId,
     entity::{CharacterStatus, Kinematics, ObjectStatus},
-    loaded::{AnimatedComponentAnimation, AnimatedComponentDefault, Character, CharacterHandle},
+    loaded::{
+        AnimatedComponentAnimation, AnimatedComponentDefault, Character, CharacterHandle, Object,
+        ObjectHandle,
+    },
 };
 
 use AnimationRunner;
@@ -44,12 +47,15 @@ impl CharacterEntitySpawner {
     ) -> Entity {
         let entities = Read::from(world.read_resource::<EntitiesRes>());
         let loaded_characters = Read::from(world.read_resource::<AssetStorage<Character>>());
+        let loaded_objects =
+            Read::from(world.read_resource::<AssetStorage<Object<CharacterSequenceId>>>());
         Self::spawn_system(
-            &(entities, loaded_characters),
+            &(entities, loaded_characters, loaded_objects),
             &mut (
                 world.write_storage::<InputControlled>(),
                 world.write_storage::<ControllerInput>(),
                 world.write_storage::<CharacterHandle>(),
+                world.write_storage::<ObjectHandle<CharacterSequenceId>>(),
                 world.write_storage::<CharacterStatus>(),
                 world.write_storage::<ObjectStatus<CharacterSequenceId>>(),
             ), // kcov-ignore
@@ -83,11 +89,16 @@ impl CharacterEntitySpawner {
     /// * `slug_and_handle`: Slug and handle of the character to spawn.
     /// * `input_controlled`: `Component` that links the character entity to the controller.
     pub fn spawn_system<'res, 's>(
-        (entities, loaded_characters): &ObjectSpawningResources<'res, Character>,
+        (entities, loaded_characters, loaded_objects): &ObjectSpawningResources<
+            'res,
+            Character,
+            CharacterSequenceId,
+        >,
         (
             ref mut input_controlled_storage,
             ref mut controller_input_storage,
             ref mut character_handle_storage,
+            ref mut object_handle_storage,
             ref mut character_status_storage,
             ref mut object_status_storage,
         ): &mut CharacterComponentStorages<'s>,
@@ -120,10 +131,14 @@ impl CharacterEntitySpawner {
         let character = loaded_characters
             .get(character_handle)
             .unwrap_or_else(|| panic!("Expected `{}` character to be loaded.", slug));
+        let object_handle = &character.object_handle;
+        let object = loaded_objects
+            .get(object_handle)
+            .unwrap_or_else(|| panic!("Expected `{}` object to be loaded.", slug));
 
-        let animation_defaults = &character.object.animation_defaults;
+        let animation_defaults = &object.animation_defaults;
 
-        let all_animations = character.object.animations.get(&first_sequence_id);
+        let all_animations = object.animations.get(&first_sequence_id);
         let first_sequence_animations = all_animations
             .as_ref()
             .expect("Expected character to have at least one sequence.");
@@ -146,6 +161,10 @@ impl CharacterEntitySpawner {
         character_handle_storage
             .insert(entity, character_handle.clone())
             .expect("Failed to insert character_handle component.");
+        // Loaded `Object` for this entity.
+        object_handle_storage
+            .insert(entity, object_handle.clone())
+            .expect("Failed to insert object_handle component.");
         // Character and object status attributes.
         character_status_storage
             .insert(entity, CharacterStatus::default())
@@ -250,7 +269,7 @@ mod test {
     use object_model::{
         config::object::CharacterSequenceId,
         entity::{CharacterStatus, Kinematics, ObjectStatus, Position, Velocity},
-        loaded::{Character, CharacterHandle},
+        loaded::{Character, CharacterHandle, ObjectHandle},
     };
     use typename::TypeName;
 
@@ -280,6 +299,9 @@ mod test {
 
             assert!(world.read_storage::<InputControlled>().contains(entity));
             assert!(world.read_storage::<CharacterHandle>().contains(entity));
+            assert!(world
+                .read_storage::<ObjectHandle<CharacterSequenceId>>()
+                .contains(entity));
             assert!(world.read_storage::<CharacterStatus>().contains(entity));
             assert!(world
                 .read_storage::<ObjectStatus<CharacterSequenceId>>()
@@ -329,7 +351,7 @@ mod test {
         CharacterComponentStorages<'s>,
         ObjectAnimationStorages<'s, CharacterSequenceId>,
         ObjectComponentStorages<'s>,
-        ObjectSpawningResources<'s, Character>,
+        ObjectSpawningResources<'s, Character, CharacterSequenceId>,
         Read<'s, AssetStorage<Map>>,
     );
     impl<'s> System<'s> for TestSystem {

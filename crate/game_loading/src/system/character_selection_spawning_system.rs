@@ -27,7 +27,7 @@ type CharacterSelectionSpawningSystemData<'s> = (
     ReadExpect<'s, MapSelection>,
     Read<'s, CharacterSelections>,
     Read<'s, AssetStorage<Map>>,
-    ObjectSpawningResources<'s, Character>,
+    ObjectSpawningResources<'s, Character, CharacterSequenceId>,
     CharacterComponentStorages<'s>,
     ObjectComponentStorages<'s>,
     ObjectAnimationStorages<'s, CharacterSequenceId>,
