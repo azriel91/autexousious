@@ -27,9 +27,9 @@ impl CharacterLoader {
             None,
         )?;
 
-        let object =
+        let object_handle =
             ObjectLoader::load(world, asset_record, &character_definition.object_definition)?;
-        let character = Character::new(object, character_definition);
+        let character = Character::new(object_handle, character_definition);
 
         let loader = world.read_resource::<Loader>();
         let character_handle = loader.load_from_data(character, (), &world.read_resource());

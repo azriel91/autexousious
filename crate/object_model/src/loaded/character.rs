@@ -4,15 +4,15 @@ use amethyst::{
 };
 
 use config::{object::CharacterSequenceId, CharacterDefinition};
-use loaded::Object;
+use loaded::ObjectHandle;
 
 /// Represents an in-game character that has been loaded.
 #[derive(Clone, Derivative, PartialEq, new)]
 #[derivative(Debug)]
 pub struct Character {
-    /// Common loaded object data.
-    pub object: Object<CharacterSequenceId>,
-    /// Character configuration
+    /// Handle to loaded object data.
+    pub object: ObjectHandle<CharacterSequenceId>,
+    /// Character configuration.
     pub definition: CharacterDefinition,
 }
 
