@@ -17,6 +17,8 @@ game_play_model = { path = "../game_play_model" }
 log = "0.4"
 map_model = { path = "../map_model" }
 map_selection_model = { path = "../map_selection_model" }
+named_type = "0.1.6"
+named_type_derive = "0.1.6"
 object_model = { path = "../object_model" }
 object_play = { path = "../object_play" }
 shape_model = { path = "../shape_model" }

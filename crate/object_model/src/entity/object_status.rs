@@ -1,6 +1,9 @@
 use std::ops::{Add, AddAssign};
 
-use amethyst::ecs::{prelude::*, storage::DenseVecStorage};
+use amethyst::ecs::{
+    storage::{DenseVecStorage, FlaggedStorage},
+    Component,
+};
 
 use config::object::{SequenceId, SequenceState};
 use entity::{Grounding, ObjectStatusUpdate};
@@ -21,7 +24,7 @@ pub struct ObjectStatus<SeqId: SequenceId> {
 }
 
 impl<SeqId: SequenceId + 'static> Component for ObjectStatus<SeqId> {
-    type Storage = DenseVecStorage<Self>;
+    type Storage = FlaggedStorage<Self, DenseVecStorage<Self>>;
 }
 
 impl<SeqId: SequenceId> Add<ObjectStatusUpdate<SeqId>> for ObjectStatus<SeqId> {
