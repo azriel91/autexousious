@@ -1,6 +1,6 @@
 [package]
 name = "game_mode_selection_ui"
-version = "0.6.0"
+version = "0.7.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 
 [dependencies]
