@@ -13,18 +13,12 @@ pub(crate) struct StandOnSequenceEnd;
 
 impl CharacterSequenceHandler for StandOnSequenceEnd {
     fn update(
-        controller_input: &ControllerInput,
-        character_status: &CharacterStatus,
+        _controller_input: &ControllerInput,
+        _character_status: &CharacterStatus,
         object_status: &ObjectStatus<CharacterSequenceId>,
-        kinematics: &Kinematics<f32>,
-        run_counter: RunCounter,
+        _kinematics: &Kinematics<f32>,
+        _run_counter: RunCounter,
     ) -> ObjectStatusUpdate<CharacterSequenceId> {
-        STAND_ON_SEQUENCE_END.update(
-            controller_input,
-            character_status,
-            object_status,
-            kinematics,
-            run_counter,
-        )
+        STAND_ON_SEQUENCE_END.update(object_status)
     }
 }

@@ -34,7 +34,7 @@ impl CharacterSequenceHandler for Stand {
             _ => {}
         };
 
-        let status_update = [
+        [
             AliveCheck::update,
             AirborneCheck::update,
             JumpCheck::update,
@@ -54,13 +54,8 @@ impl CharacterSequenceHandler for Stand {
                     run_counter,
                 )
             })
-        });
-
-        if let Some(status_update) = status_update {
-            status_update
-        } else {
-            ObjectStatusUpdate::default()
-        }
+        })
+        .unwrap_or_else(|| ObjectStatusUpdate::default())
     }
 }
 

@@ -1,7 +1,6 @@
-use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
+    entity::{ObjectStatus, ObjectStatusUpdate},
 };
 
 #[derive(Debug)]
@@ -13,11 +12,7 @@ pub(crate) struct SwitchSequenceOnEnd(
 impl SwitchSequenceOnEnd {
     pub fn update(
         &self,
-        _controller_input: &ControllerInput,
-        _character_status: &CharacterStatus,
         object_status: &ObjectStatus<CharacterSequenceId>,
-        _kinematics: &Kinematics<f32>,
-        _run_counter: RunCounter,
     ) -> ObjectStatusUpdate<CharacterSequenceId> {
         let mut object_status_update = ObjectStatusUpdate::default();
         if object_status.sequence_state == SequenceState::End {
@@ -31,54 +26,37 @@ impl SwitchSequenceOnEnd {
 
 #[cfg(test)]
 mod test {
-    use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
-        entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
+        entity::{ObjectStatus, ObjectStatusUpdate},
     };
 
     use super::SwitchSequenceOnEnd;
 
     #[test]
     fn no_update_when_sequence_not_ended() {
-        let input = ControllerInput::new(0., 0., false, false, false, false);
-
         assert_eq!(
             ObjectStatusUpdate::default(),
-            SwitchSequenceOnEnd(CharacterSequenceId::Stand).update(
-                &input,
-                &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Flinch0,
-                    ..Default::default()
-                },
-                &Kinematics::default(),
-                RunCounter::default()
-            )
+            SwitchSequenceOnEnd(CharacterSequenceId::Stand).update(&ObjectStatus {
+                sequence_id: CharacterSequenceId::Flinch0,
+                ..Default::default()
+            })
         );
     }
 
     #[test]
     fn reverts_to_stand_when_sequence_ended() {
-        let input = ControllerInput::new(0., 0., false, false, false, false);
-
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Stand),
                 sequence_state: Some(SequenceState::Begin),
                 ..Default::default()
             },
-            SwitchSequenceOnEnd(CharacterSequenceId::Stand).update(
-                &input,
-                &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Flinch0,
-                    sequence_state: SequenceState::End,
-                    ..Default::default()
-                },
-                &Kinematics::default(),
-                RunCounter::default()
-            )
+            SwitchSequenceOnEnd(CharacterSequenceId::Stand).update(&ObjectStatus {
+                sequence_id: CharacterSequenceId::Flinch0,
+                sequence_state: SequenceState::End,
+                ..Default::default()
+            })
         );
     }
 }

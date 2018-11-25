@@ -13,20 +13,14 @@ pub(crate) struct LieFaceDown;
 
 impl CharacterSequenceHandler for LieFaceDown {
     fn update(
-        controller_input: &ControllerInput,
+        _controller_input: &ControllerInput,
         character_status: &CharacterStatus,
         object_status: &ObjectStatus<CharacterSequenceId>,
-        kinematics: &Kinematics<f32>,
-        run_counter: RunCounter,
+        _kinematics: &Kinematics<f32>,
+        _run_counter: RunCounter,
     ) -> ObjectStatusUpdate<CharacterSequenceId> {
         if character_status.hp > 0 {
-            LIE_FACE_DOWN.update(
-                controller_input,
-                character_status,
-                object_status,
-                kinematics,
-                run_counter,
-            )
+            LIE_FACE_DOWN.update(object_status)
         } else {
             ObjectStatusUpdate::default()
         }

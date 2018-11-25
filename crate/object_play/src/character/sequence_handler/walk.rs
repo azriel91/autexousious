@@ -27,7 +27,7 @@ impl CharacterSequenceHandler for Walk {
         kinematics: &Kinematics<f32>,
         run_counter: RunCounter,
     ) -> ObjectStatusUpdate<CharacterSequenceId> {
-        let status_update = [
+        [
             AliveCheck::update,
             AirborneCheck::update,
             JumpCheck::update,
@@ -47,13 +47,8 @@ impl CharacterSequenceHandler for Walk {
                     run_counter,
                 )
             })
-        });
-
-        if let Some(status_update) = status_update {
-            status_update
-        } else {
-            ObjectStatusUpdate::default()
-        }
+        })
+        .unwrap_or_else(|| ObjectStatusUpdate::default())
     }
 }
 

@@ -14,18 +14,12 @@ pub(crate) struct FallForwardLand;
 
 impl CharacterSequenceHandler for FallForwardLand {
     fn update(
-        controller_input: &ControllerInput,
-        character_status: &CharacterStatus,
+        _controller_input: &ControllerInput,
+        _character_status: &CharacterStatus,
         object_status: &ObjectStatus<CharacterSequenceId>,
-        kinematics: &Kinematics<f32>,
-        run_counter: RunCounter,
+        _kinematics: &Kinematics<f32>,
+        _run_counter: RunCounter,
     ) -> ObjectStatusUpdate<CharacterSequenceId> {
-        FALL_FORWARD_LAND.update(
-            controller_input,
-            character_status,
-            object_status,
-            kinematics,
-            run_counter,
-        )
+        FALL_FORWARD_LAND.update(object_status)
     }
 }
