@@ -10,7 +10,7 @@ use game_input::{ControllerInput, InputControlled};
 use game_model::loaded::SlugAndHandle;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{CharacterStatus, Kinematics, ObjectStatus},
+    entity::{CharacterStatus, Kinematics, ObjectStatus, RunCounter},
     loaded::{
         AnimatedComponentAnimation, AnimatedComponentDefault, Character, CharacterHandle, Object,
         ObjectHandle,
@@ -58,6 +58,7 @@ impl CharacterEntitySpawner {
                 world.write_storage::<ObjectHandle<CharacterSequenceId>>(),
                 world.write_storage::<CharacterStatus>(),
                 world.write_storage::<ObjectStatus<CharacterSequenceId>>(),
+                world.write_storage::<RunCounter>(),
             ), // kcov-ignore
             &mut (
                 world.write_storage::<SpriteRender>(),
@@ -101,6 +102,7 @@ impl CharacterEntitySpawner {
             ref mut object_handle_storage,
             ref mut character_status_storage,
             ref mut object_status_storage,
+            ref mut run_counter_storage,
         ): &mut CharacterComponentStorages<'s>,
         (
             ref mut sprite_render_storage,
@@ -165,14 +167,18 @@ impl CharacterEntitySpawner {
         object_handle_storage
             .insert(entity, object_handle.clone())
             .expect("Failed to insert object_handle component.");
-        // Character and object status attributes.
+        // Character status attributes.
         character_status_storage
             .insert(entity, CharacterStatus::default())
             .expect("Failed to insert character_status component.");
-        // Character and object status attributes.
+        // Object status attributes.
         object_status_storage
             .insert(entity, object_status)
             .expect("Failed to insert object_status component.");
+        // Run counter.
+        run_counter_storage
+            .insert(entity, RunCounter::default())
+            .expect("Failed to insert run_counter component.");
         // Enable transparency for visibility sorting
         transparent_storage
             .insert(entity, Transparent)

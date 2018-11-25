@@ -3,6 +3,7 @@ use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
     entity::{
         CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+        RunCounter,
     },
 };
 
@@ -20,6 +21,7 @@ impl CharacterSequenceHandler for RunStop {
         character_status: &CharacterStatus,
         object_status: &ObjectStatus<CharacterSequenceId>,
         kinematics: &Kinematics<f32>,
+        run_counter: RunCounter,
     ) -> (
         CharacterStatusUpdate,
         ObjectStatusUpdate<CharacterSequenceId>,
@@ -27,8 +29,15 @@ impl CharacterSequenceHandler for RunStop {
         [AliveCheck::update, AirborneCheck::update]
             .iter()
             .fold(None, |status_update, fn_update| {
-                status_update
-                    .or_else(|| fn_update(input, character_status, object_status, kinematics))
+                status_update.or_else(|| {
+                    fn_update(
+                        input,
+                        character_status,
+                        object_status,
+                        kinematics,
+                        run_counter,
+                    )
+                })
             })
             .unwrap_or_else(|| {
                 let character_status_update = CharacterStatusUpdate::default();
@@ -49,7 +58,7 @@ mod test {
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
             CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatus,
-            ObjectStatusUpdate,
+            ObjectStatusUpdate, RunCounter,
         },
     };
 
@@ -75,7 +84,8 @@ mod test {
                     grounding: Grounding::Airborne,
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::default()
             )
         );
     }
@@ -96,7 +106,8 @@ mod test {
                     sequence_id: CharacterSequenceId::RunStop,
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::default()
             )
         );
     }
@@ -122,7 +133,8 @@ mod test {
                     sequence_state: SequenceState::End,
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::default()
             )
         );
     }

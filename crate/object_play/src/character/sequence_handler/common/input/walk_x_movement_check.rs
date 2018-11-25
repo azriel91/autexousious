@@ -21,6 +21,7 @@ impl SequenceHandler for WalkXMovementCheck {
         character_status: &CharacterStatus,
         object_status: &ObjectStatus<CharacterSequenceId>,
         kinematics: &Kinematics<f32>,
+        run_counter: RunCounter,
     ) -> Option<(
         CharacterStatusUpdate,
         ObjectStatusUpdate<CharacterSequenceId>,
@@ -35,7 +36,7 @@ impl SequenceHandler for WalkXMovementCheck {
                 Some(!object_status.mirrored)
             };
 
-            let sequence_id = match (character_status.run_counter, same_direction) {
+            let sequence_id = match (run_counter, same_direction) {
                 (RunCounter::Unused, _) | (RunCounter::Increase(_), false) => {
                     Some(CharacterSequenceId::Walk)
                 }
@@ -54,7 +55,13 @@ impl SequenceHandler for WalkXMovementCheck {
             let grounding = None;
 
             if let (None, None) = (sequence_id, mirrored) {
-                return SequenceRepeat::update(input, character_status, object_status, kinematics);
+                return SequenceRepeat::update(
+                    input,
+                    character_status,
+                    object_status,
+                    kinematics,
+                    run_counter,
+                );
             }
 
             Some((
@@ -74,8 +81,8 @@ mod tests {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, CharacterStatusUpdate, HealthPoints, Kinematics, ObjectStatus,
-            ObjectStatusUpdate, RunCounter,
+            CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+            RunCounter,
         },
     };
 
@@ -90,15 +97,13 @@ mod tests {
             None,
             WalkXMovementCheck::update(
                 &input,
-                &CharacterStatus {
-                    run_counter: RunCounter::Increase(10),
-                    hp: HealthPoints(100)
-                },
+                &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::Increase(10)
             )
         );
     }
@@ -119,16 +124,14 @@ mod tests {
             )),
             WalkXMovementCheck::update(
                 &input,
-                &CharacterStatus {
-                    run_counter: RunCounter::Increase(11),
-                    hp: HealthPoints(100),
-                },
+                &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
                     mirrored: true,
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::Increase(11)
             )
         );
     }
@@ -149,16 +152,14 @@ mod tests {
             )),
             WalkXMovementCheck::update(
                 &input,
-                &CharacterStatus {
-                    run_counter: RunCounter::Increase(11),
-                    hp: HealthPoints(100),
-                },
+                &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
                     mirrored: false,
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::Increase(11)
             )
         );
     }
@@ -181,17 +182,15 @@ mod tests {
                     )),
                     WalkXMovementCheck::update(
                         &input,
-                        &CharacterStatus {
-                            run_counter: RunCounter::Increase(1),
-                            hp: HealthPoints(100)
-                        },
+                        &CharacterStatus::default(),
                         &ObjectStatus {
                             sequence_id: CharacterSequenceId::Walk,
                             sequence_state: SequenceState::End,
                             mirrored,
                             ..Default::default()
                         },
-                        &Kinematics::default()
+                        &Kinematics::default(),
+                        RunCounter::Increase(1)
                     )
                 );
             });
@@ -212,16 +211,14 @@ mod tests {
             )),
             WalkXMovementCheck::update(
                 &input,
-                &CharacterStatus {
-                    run_counter: RunCounter::Decrease(10),
-                    hp: HealthPoints(100),
-                },
+                &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
                     mirrored: false,
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::Decrease(10)
             )
         );
     }
@@ -241,16 +238,14 @@ mod tests {
             )),
             WalkXMovementCheck::update(
                 &input,
-                &CharacterStatus {
-                    run_counter: RunCounter::Decrease(10),
-                    hp: HealthPoints(100),
-                },
+                &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
                     mirrored: true,
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::Decrease(10)
             )
         );
     }

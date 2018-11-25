@@ -3,6 +3,7 @@ use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
     entity::{
         CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+        RunCounter,
     },
 };
 
@@ -20,6 +21,7 @@ impl SequenceHandler for WalkNoMovementCheck {
         _character_status: &CharacterStatus,
         _object_status: &ObjectStatus<CharacterSequenceId>,
         _kinematics: &Kinematics<f32>,
+        _run_counter: RunCounter,
     ) -> Option<(
         CharacterStatusUpdate,
         ObjectStatusUpdate<CharacterSequenceId>,
@@ -46,6 +48,7 @@ mod tests {
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
             CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+            RunCounter,
         },
     };
 
@@ -72,7 +75,8 @@ mod tests {
                     sequence_id: CharacterSequenceId::Walk,
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::default()
             )
         );
     }
@@ -91,7 +95,8 @@ mod tests {
                         sequence_id: CharacterSequenceId::Walk,
                         ..Default::default()
                     },
-                    &Kinematics::default()
+                    &Kinematics::default(),
+                    RunCounter::default()
                 )
             );
         });
@@ -111,7 +116,8 @@ mod tests {
                         sequence_id: CharacterSequenceId::Walk,
                         ..Default::default()
                     },
-                    &Kinematics::default()
+                    &Kinematics::default(),
+                    RunCounter::default()
                 )
             );
         });

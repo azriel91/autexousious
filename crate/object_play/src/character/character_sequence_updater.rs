@@ -3,6 +3,7 @@ use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
     entity::{
         CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+        RunCounter,
     },
     loaded::Character,
 };
@@ -34,6 +35,7 @@ impl CharacterSequenceUpdater {
         character_status: &CharacterStatus,
         object_status: &ObjectStatus<CharacterSequenceId>,
         kinematics: &Kinematics<f32>,
+        run_counter: RunCounter,
     ) -> (
         CharacterStatusUpdate,
         ObjectStatusUpdate<CharacterSequenceId>,
@@ -43,6 +45,7 @@ impl CharacterSequenceUpdater {
             &CharacterStatus,
             &ObjectStatus<CharacterSequenceId>,
             &Kinematics<f32>,
+            RunCounter,
         ) -> (
             CharacterStatusUpdate,
             ObjectStatusUpdate<CharacterSequenceId>,
@@ -71,6 +74,7 @@ impl CharacterSequenceUpdater {
             character_status,
             object_status,
             kinematics,
+            run_counter,
         );
 
         // Check if it's at the end of the sequence before switching to next.

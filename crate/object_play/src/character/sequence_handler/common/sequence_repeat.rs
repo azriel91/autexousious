@@ -3,6 +3,7 @@ use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
     entity::{
         CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+        RunCounter,
     },
 };
 
@@ -18,6 +19,7 @@ impl SequenceHandler for SequenceRepeat {
         _character_status: &CharacterStatus,
         object_status: &ObjectStatus<CharacterSequenceId>,
         _kinematics: &Kinematics<f32>,
+        _run_counter: RunCounter,
     ) -> Option<(
         CharacterStatusUpdate,
         ObjectStatusUpdate<CharacterSequenceId>,
@@ -45,6 +47,7 @@ mod tests {
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
             CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+            RunCounter,
         },
     };
 
@@ -63,7 +66,8 @@ mod tests {
                     sequence_state: SequenceState::Begin,
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::default()
             )
         );
     }
@@ -80,7 +84,8 @@ mod tests {
                     sequence_state: SequenceState::Ongoing,
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::default()
             )
         );
     }
@@ -106,7 +111,8 @@ mod tests {
                     sequence_state: SequenceState::End,
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::default()
             )
         );
     }

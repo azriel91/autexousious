@@ -3,6 +3,7 @@ use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
     entity::{
         CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+        RunCounter,
     },
 };
 
@@ -20,12 +21,19 @@ impl SequenceHandler for RunStopCheck {
         character_status: &CharacterStatus,
         object_status: &ObjectStatus<CharacterSequenceId>,
         kinematics: &Kinematics<f32>,
+        run_counter: RunCounter,
     ) -> Option<(
         CharacterStatusUpdate,
         ObjectStatusUpdate<CharacterSequenceId>,
     )> {
         if SequenceHandlerUtil::input_matches_direction(input, object_status.mirrored) {
-            SequenceRepeat::update(input, character_status, object_status, kinematics)
+            SequenceRepeat::update(
+                input,
+                character_status,
+                object_status,
+                kinematics,
+                run_counter,
+            )
         } else {
             Some((
                 CharacterStatusUpdate::default(),
@@ -45,8 +53,8 @@ mod tests {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, CharacterStatusUpdate, HealthPoints, Kinematics, ObjectStatus,
-            ObjectStatusUpdate, RunCounter,
+            CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+            RunCounter,
         },
     };
 
@@ -64,16 +72,14 @@ mod tests {
                     None,
                     RunStopCheck::update(
                         &input,
-                        &CharacterStatus {
-                            hp: HealthPoints(100),
-                            ..Default::default()
-                        },
+                        &CharacterStatus::default(),
                         &ObjectStatus {
                             sequence_id: CharacterSequenceId::Walk,
                             mirrored,
                             ..Default::default()
                         },
-                        &Kinematics::default()
+                        &Kinematics::default(),
+                        RunCounter::default()
                     )
                 );
             });
@@ -94,16 +100,14 @@ mod tests {
             )),
             RunStopCheck::update(
                 &input,
-                &CharacterStatus {
-                    hp: HealthPoints(100),
-                    ..Default::default()
-                },
+                &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
                     mirrored: false,
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::default()
             )
         );
     }
@@ -126,16 +130,14 @@ mod tests {
                     )),
                     RunStopCheck::update(
                         &input,
-                        &CharacterStatus {
-                            hp: HealthPoints(100),
-                            ..Default::default()
-                        },
+                        &CharacterStatus::default(),
                         &ObjectStatus {
                             sequence_id: CharacterSequenceId::Walk,
                             mirrored,
                             ..Default::default()
                         },
-                        &Kinematics::default()
+                        &Kinematics::default(),
+                        RunCounter::default()
                     )
                 );
             });
@@ -159,17 +161,15 @@ mod tests {
                     )),
                     RunStopCheck::update(
                         &input,
-                        &CharacterStatus {
-                            run_counter: RunCounter::Increase(1),
-                            hp: HealthPoints(100)
-                        },
+                        &CharacterStatus::default(),
                         &ObjectStatus {
                             sequence_id: CharacterSequenceId::Run,
                             sequence_state: SequenceState::End,
                             mirrored,
                             ..Default::default()
                         },
-                        &Kinematics::default()
+                        &Kinematics::default(),
+                        RunCounter::default()
                     )
                 );
             });

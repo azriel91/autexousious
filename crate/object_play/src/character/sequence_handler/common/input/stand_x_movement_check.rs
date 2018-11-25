@@ -18,9 +18,10 @@ pub(crate) struct StandXMovementCheck;
 impl SequenceHandler for StandXMovementCheck {
     fn update(
         input: &ControllerInput,
-        character_status: &CharacterStatus,
+        _character_status: &CharacterStatus,
         object_status: &ObjectStatus<CharacterSequenceId>,
         _kinematics: &Kinematics<f32>,
+        run_counter: RunCounter,
     ) -> Option<(
         CharacterStatusUpdate,
         ObjectStatusUpdate<CharacterSequenceId>,
@@ -35,7 +36,7 @@ impl SequenceHandler for StandXMovementCheck {
                 Some(!object_status.mirrored)
             };
 
-            let sequence_id = match character_status.run_counter {
+            let sequence_id = match run_counter {
                 RunCounter::Unused => Some(CharacterSequenceId::Walk),
                 RunCounter::Decrease(_) => {
                     if same_direction {
@@ -66,8 +67,8 @@ mod tests {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, CharacterStatusUpdate, HealthPoints, Kinematics, ObjectStatus,
-            ObjectStatusUpdate, RunCounter,
+            CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+            RunCounter,
         },
     };
 
@@ -84,7 +85,8 @@ mod tests {
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus::default(),
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::default()
             )
         );
     }
@@ -105,15 +107,13 @@ mod tests {
             )),
             StandXMovementCheck::update(
                 &input,
-                &CharacterStatus {
-                    hp: HealthPoints(100),
-                    ..Default::default()
-                },
+                &CharacterStatus::default(),
                 &ObjectStatus {
                     mirrored: true,
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::default()
             )
         );
 
@@ -129,15 +129,13 @@ mod tests {
             )),
             StandXMovementCheck::update(
                 &input,
-                &CharacterStatus {
-                    hp: HealthPoints(100),
-                    ..Default::default()
-                },
+                &CharacterStatus::default(),
                 &ObjectStatus {
                     mirrored: false,
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::default()
             )
         );
     }
@@ -158,15 +156,13 @@ mod tests {
             )),
             StandXMovementCheck::update(
                 &input,
-                &CharacterStatus {
-                    hp: HealthPoints(100),
-                    ..Default::default()
-                },
+                &CharacterStatus::default(),
                 &ObjectStatus {
                     mirrored: false,
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::default()
             )
         );
 
@@ -182,15 +178,13 @@ mod tests {
             )),
             StandXMovementCheck::update(
                 &input,
-                &CharacterStatus {
-                    hp: HealthPoints(100),
-                    ..Default::default()
-                },
+                &CharacterStatus::default(),
                 &ObjectStatus {
                     mirrored: true,
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::default()
             )
         );
     }
@@ -213,15 +207,13 @@ mod tests {
                     )),
                     StandXMovementCheck::update(
                         &input,
-                        &CharacterStatus {
-                            run_counter: RunCounter::Decrease(10),
-                            hp: HealthPoints(100),
-                        },
+                        &CharacterStatus::default(),
                         &ObjectStatus {
                             mirrored,
                             ..Default::default()
                         },
-                        &Kinematics::default()
+                        &Kinematics::default(),
+                        RunCounter::Decrease(10)
                     )
                 );
             });
@@ -246,15 +238,13 @@ mod tests {
                     )),
                     StandXMovementCheck::update(
                         &input,
-                        &CharacterStatus {
-                            run_counter: RunCounter::Decrease(10),
-                            hp: HealthPoints(100),
-                        },
+                        &CharacterStatus::default(),
                         &ObjectStatus {
                             mirrored,
                             ..Default::default()
                         },
-                        &Kinematics::default()
+                        &Kinematics::default(),
+                        RunCounter::Decrease(10)
                     )
                 );
             });

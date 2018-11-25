@@ -3,6 +3,7 @@ use object_model::{
     config::object::CharacterSequenceId,
     entity::{
         CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+        RunCounter,
     },
 };
 
@@ -21,6 +22,7 @@ impl CharacterSequenceHandler for Run {
         character_status: &CharacterStatus,
         object_status: &ObjectStatus<CharacterSequenceId>,
         kinematics: &Kinematics<f32>,
+        run_counter: RunCounter,
     ) -> (
         CharacterStatusUpdate,
         ObjectStatusUpdate<CharacterSequenceId>,
@@ -32,7 +34,15 @@ impl CharacterSequenceHandler for Run {
         ]
         .iter()
         .fold(None, |status_update, fn_update| {
-            status_update.or_else(|| fn_update(input, character_status, object_status, kinematics))
+            status_update.or_else(|| {
+                fn_update(
+                    input,
+                    character_status,
+                    object_status,
+                    kinematics,
+                    run_counter,
+                )
+            })
         })
         .unwrap_or_else(|| {
             (
@@ -50,7 +60,7 @@ mod test {
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
             CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatus,
-            ObjectStatusUpdate,
+            ObjectStatusUpdate, RunCounter,
         },
     };
 
@@ -76,7 +86,8 @@ mod test {
                     grounding: Grounding::Airborne,
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::default()
             )
         );
     }
@@ -102,7 +113,8 @@ mod test {
                     mirrored: false,
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::default()
             )
         );
     }
@@ -124,7 +136,8 @@ mod test {
                     mirrored: false,
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::default()
             )
         );
     }
@@ -146,7 +159,8 @@ mod test {
                     mirrored: true,
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::default()
             )
         );
     }
@@ -176,7 +190,8 @@ mod test {
                             mirrored,
                             ..Default::default()
                         },
-                        &Kinematics::default()
+                        &Kinematics::default(),
+                        RunCounter::default()
                     )
                 );
             });
@@ -203,7 +218,8 @@ mod test {
                     mirrored: false,
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::default()
             )
         );
     }
@@ -229,7 +245,8 @@ mod test {
                     mirrored: true,
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::default()
             )
         );
     }
@@ -251,7 +268,8 @@ mod test {
                     mirrored: false,
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::default()
             )
         );
 
@@ -270,7 +288,8 @@ mod test {
                     mirrored: false,
                     ..Default::default()
                 },
-                &Kinematics::default()
+                &Kinematics::default(),
+                RunCounter::default()
             )
         );
     }

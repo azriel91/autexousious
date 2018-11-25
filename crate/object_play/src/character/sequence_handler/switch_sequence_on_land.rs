@@ -3,7 +3,7 @@ use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
     entity::{
         CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatus,
-        ObjectStatusUpdate,
+        ObjectStatusUpdate, RunCounter,
     },
 };
 
@@ -20,6 +20,7 @@ impl SwitchSequenceOnLand {
         _character_status: &CharacterStatus,
         object_status: &ObjectStatus<CharacterSequenceId>,
         _kinematics: &Kinematics<f32>,
+        _run_counter: RunCounter,
     ) -> (
         CharacterStatusUpdate,
         ObjectStatusUpdate<CharacterSequenceId>,
@@ -45,7 +46,7 @@ mod test {
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
             CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatus,
-            ObjectStatusUpdate,
+            ObjectStatusUpdate, RunCounter,
         },
     };
 
@@ -70,7 +71,8 @@ mod test {
                     grounding: Grounding::Airborne,
                     ..Default::default()
                 },
-                &kinematics
+                &kinematics,
+                RunCounter::default()
             )
         );
     }
@@ -99,7 +101,8 @@ mod test {
                     grounding: Grounding::Airborne,
                     ..Default::default()
                 },
-                &kinematics
+                &kinematics,
+                RunCounter::default()
             )
         );
     }
@@ -127,7 +130,8 @@ mod test {
                     grounding: Grounding::OnGround,
                     ..Default::default()
                 },
-                &kinematics
+                &kinematics,
+                RunCounter::default()
             )
         );
     }
@@ -158,7 +162,8 @@ mod test {
                             mirrored,
                             ..Default::default()
                         },
-                        &kinematics
+                        &kinematics,
+                        RunCounter::default()
                     )
                 );
             });

@@ -3,7 +3,7 @@ use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
     entity::{
         CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatus,
-        ObjectStatusUpdate,
+        ObjectStatusUpdate, RunCounter,
     },
 };
 
@@ -19,6 +19,7 @@ impl SequenceHandler for AirborneCheck {
         _character_status: &CharacterStatus,
         object_status: &ObjectStatus<CharacterSequenceId>,
         _kinematics: &Kinematics<f32>,
+        _run_counter: RunCounter,
     ) -> Option<(
         CharacterStatusUpdate,
         ObjectStatusUpdate<CharacterSequenceId>,
@@ -45,8 +46,8 @@ mod tests {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, CharacterStatusUpdate, Grounding, HealthPoints, Kinematics,
-            ObjectStatus, ObjectStatusUpdate, RunCounter,
+            CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatus,
+            ObjectStatusUpdate, RunCounter,
         },
     };
 
@@ -59,15 +60,13 @@ mod tests {
             None,
             AirborneCheck::update(
                 &ControllerInput::default(),
-                &CharacterStatus {
-                    run_counter: RunCounter::Unused,
-                    hp: HealthPoints(100)
-                },
+                &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Stand,
                     ..Default::default()
                 },
-                &Kinematics::<f32>::default()
+                &Kinematics::<f32>::default(),
+                RunCounter::default()
             )
         );
     }
@@ -91,7 +90,8 @@ mod tests {
                     grounding: Grounding::Airborne,
                     ..Default::default()
                 },
-                &Kinematics::<f32>::default()
+                &Kinematics::<f32>::default(),
+                RunCounter::default()
             )
         );
     }

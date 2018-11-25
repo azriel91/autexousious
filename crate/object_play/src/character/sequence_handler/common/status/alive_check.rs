@@ -3,6 +3,7 @@ use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
     entity::{
         CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+        RunCounter,
     },
 };
 
@@ -18,6 +19,7 @@ impl SequenceHandler for AliveCheck {
         character_status: &CharacterStatus,
         _object_status: &ObjectStatus<CharacterSequenceId>,
         _kinematics: &Kinematics<f32>,
+        _run_counter: RunCounter,
     ) -> Option<(
         CharacterStatusUpdate,
         ObjectStatusUpdate<CharacterSequenceId>,
@@ -45,7 +47,7 @@ mod tests {
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
             CharacterStatus, CharacterStatusUpdate, Grounding, HealthPoints, Kinematics,
-            ObjectStatus, ObjectStatusUpdate,
+            ObjectStatus, ObjectStatusUpdate, RunCounter,
         },
     };
 
@@ -58,15 +60,13 @@ mod tests {
             None,
             AliveCheck::update(
                 &ControllerInput::default(),
-                &CharacterStatus {
-                    hp: HealthPoints(100),
-                    ..Default::default()
-                },
+                &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Stand,
                     ..Default::default()
                 },
-                &Kinematics::<f32>::default()
+                &Kinematics::<f32>::default(),
+                RunCounter::default()
             )
         );
     }
@@ -86,14 +86,14 @@ mod tests {
                 &ControllerInput::default(),
                 &CharacterStatus {
                     hp: HealthPoints(0),
-                    ..Default::default()
                 },
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Stand,
                     grounding: Grounding::Airborne,
                     ..Default::default()
                 },
-                &Kinematics::<f32>::default()
+                &Kinematics::<f32>::default(),
+                RunCounter::default()
             )
         );
     }

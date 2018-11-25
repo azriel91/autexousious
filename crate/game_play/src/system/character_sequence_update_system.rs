@@ -8,7 +8,7 @@ use game_input::ControllerInput;
 use game_loading::ObjectAnimationStorages;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, Kinematics, ObjectStatus},
+    entity::{CharacterStatus, Kinematics, ObjectStatus, RunCounter},
     loaded::{Character, CharacterHandle},
 };
 use object_play::CharacterSequenceUpdater;
@@ -23,6 +23,7 @@ type CharacterSequenceUpdateSystemData<'s> = (
     ReadStorage<'s, CharacterHandle>,
     ReadStorage<'s, ControllerInput>,
     ReadStorage<'s, Kinematics<f32>>,
+    ReadStorage<'s, RunCounter>,
     WriteStorage<'s, CharacterStatus>,
     WriteStorage<'s, ObjectStatus<CharacterSequenceId>>,
     WriteStorage<'s, SpriteRender>,
@@ -40,6 +41,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             character_handles,
             controller_input_storage,
             kinematics_storage,
+            run_counters,
             mut character_statuses,
             mut object_statuses,
             mut sprite_render_storage,
@@ -51,6 +53,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             character_handle,
             controller_input,
             kinematics,
+            run_counter,
             mut character_status,
             mut object_status,
             mut sprite_render,
@@ -59,6 +62,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             &character_handles,
             &controller_input_storage,
             &kinematics_storage,
+            &run_counters,
             &mut character_statuses,
             &mut object_statuses,
             &mut sprite_render_storage,
@@ -96,6 +100,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                 &character_status,
                 &object_status,
                 &kinematics,
+                *run_counter,
             );
 
             if let Some(mirrored) = object_status_update.mirrored {

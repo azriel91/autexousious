@@ -3,6 +3,7 @@ use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
     entity::{
         CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+        RunCounter,
     },
 };
 
@@ -17,6 +18,7 @@ impl CharacterSequenceHandler for JumpOff {
         _character_status: &CharacterStatus,
         object_status: &ObjectStatus<CharacterSequenceId>,
         kinematics: &Kinematics<f32>,
+        _run_counter: RunCounter,
     ) -> (
         CharacterStatusUpdate,
         ObjectStatusUpdate<CharacterSequenceId>,
@@ -44,6 +46,7 @@ mod test {
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
             CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+            RunCounter,
         },
     };
 
@@ -68,7 +71,8 @@ mod test {
                     sequence_id: CharacterSequenceId::JumpOff,
                     ..Default::default()
                 },
-                &kinematics
+                &kinematics,
+                RunCounter::default()
             )
         );
     }
@@ -96,7 +100,8 @@ mod test {
                     sequence_state: SequenceState::End,
                     ..Default::default()
                 },
-                &kinematics
+                &kinematics,
+                RunCounter::default()
             )
         );
     }
@@ -127,7 +132,8 @@ mod test {
                             sequence_state: SequenceState::Ongoing,
                             ..Default::default()
                         },
-                        &kinematics
+                        &kinematics,
+                        RunCounter::default()
                     )
                 );
             });

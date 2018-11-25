@@ -2,7 +2,7 @@ use amethyst::ecs::prelude::*;
 use game_input::{ControllerInput, InputControlled};
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{CharacterStatus, ObjectStatus},
+    entity::{CharacterStatus, ObjectStatus, RunCounter},
     loaded::{CharacterHandle, ObjectHandle},
 };
 
@@ -17,4 +17,5 @@ pub type CharacterComponentStorages<'s> = (
     WriteStorage<'s, ObjectHandle<CharacterSequenceId>>,
     WriteStorage<'s, CharacterStatus>,
     WriteStorage<'s, ObjectStatus<CharacterSequenceId>>,
+    WriteStorage<'s, RunCounter>,
 );

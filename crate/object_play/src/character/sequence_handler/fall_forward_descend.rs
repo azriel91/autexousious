@@ -3,6 +3,7 @@ use object_model::{
     config::object::CharacterSequenceId,
     entity::{
         CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+        RunCounter,
     },
 };
 
@@ -22,6 +23,7 @@ impl CharacterSequenceHandler for FallForwardDescend {
         character_status: &CharacterStatus,
         object_status: &ObjectStatus<CharacterSequenceId>,
         kinematics: &Kinematics<f32>,
+        run_counter: RunCounter,
     ) -> (
         CharacterStatusUpdate,
         ObjectStatusUpdate<CharacterSequenceId>,
@@ -32,6 +34,7 @@ impl CharacterSequenceHandler for FallForwardDescend {
                 character_status,
                 object_status,
                 kinematics,
+                run_counter,
             )
         } else {
             FALL_FORWARD_DESCEND_LIE.update(
@@ -39,6 +42,7 @@ impl CharacterSequenceHandler for FallForwardDescend {
                 character_status,
                 object_status,
                 kinematics,
+                run_counter,
             )
         }
     }
