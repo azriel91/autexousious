@@ -1,10 +1,7 @@
 use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{
-        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-        RunCounter,
-    },
+    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
 };
 
 use character::sequence_handler::SequenceHandler;
@@ -20,19 +17,13 @@ impl SequenceHandler for AliveCheck {
         _object_status: &ObjectStatus<CharacterSequenceId>,
         _kinematics: &Kinematics<f32>,
         _run_counter: RunCounter,
-    ) -> Option<(
-        CharacterStatusUpdate,
-        ObjectStatusUpdate<CharacterSequenceId>,
-    )> {
+    ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
         if character_status.hp == 0 {
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate::new(
-                    Some(CharacterSequenceId::FallForwardDescend),
-                    Some(SequenceState::Begin),
-                    None,
-                    None,
-                ),
+            Some(ObjectStatusUpdate::new(
+                Some(CharacterSequenceId::FallForwardDescend),
+                Some(SequenceState::Begin),
+                None,
+                None,
             ))
         } else {
             None
@@ -46,8 +37,8 @@ mod tests {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, CharacterStatusUpdate, Grounding, HealthPoints, Kinematics,
-            ObjectStatus, ObjectStatusUpdate, RunCounter,
+            CharacterStatus, Grounding, HealthPoints, Kinematics, ObjectStatus, ObjectStatusUpdate,
+            RunCounter,
         },
     };
 
@@ -74,14 +65,11 @@ mod tests {
     #[test]
     fn switches_to_fall_forward_descend_when_hp_is_zero() {
         assert_eq!(
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::FallForwardDescend),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            )),
+            Some(ObjectStatusUpdate {
+                sequence_id: Some(CharacterSequenceId::FallForwardDescend),
+                sequence_state: Some(SequenceState::Begin),
+                ..Default::default()
+            }),
             AliveCheck::update(
                 &ControllerInput::default(),
                 &CharacterStatus {

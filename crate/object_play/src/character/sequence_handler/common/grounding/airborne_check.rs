@@ -2,8 +2,7 @@ use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
     entity::{
-        CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatus,
-        ObjectStatusUpdate, RunCounter,
+        CharacterStatus, Grounding, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter,
     },
 };
 
@@ -20,19 +19,13 @@ impl SequenceHandler for AirborneCheck {
         object_status: &ObjectStatus<CharacterSequenceId>,
         _kinematics: &Kinematics<f32>,
         _run_counter: RunCounter,
-    ) -> Option<(
-        CharacterStatusUpdate,
-        ObjectStatusUpdate<CharacterSequenceId>,
-    )> {
+    ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
         if object_status.grounding == Grounding::Airborne {
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate::new(
-                    Some(CharacterSequenceId::JumpDescend),
-                    Some(SequenceState::Begin),
-                    None,
-                    None,
-                ),
+            Some(ObjectStatusUpdate::new(
+                Some(CharacterSequenceId::JumpDescend),
+                Some(SequenceState::Begin),
+                None,
+                None,
             ))
         } else {
             None
@@ -46,8 +39,7 @@ mod tests {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatus,
-            ObjectStatusUpdate, RunCounter,
+            CharacterStatus, Grounding, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter,
         },
     };
 
@@ -74,14 +66,11 @@ mod tests {
     #[test]
     fn switches_to_jump_descend_when_grounding_is_airborne() {
         assert_eq!(
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::JumpDescend),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            )),
+            Some(ObjectStatusUpdate {
+                sequence_id: Some(CharacterSequenceId::JumpDescend),
+                sequence_state: Some(SequenceState::Begin),
+                ..Default::default()
+            }),
             AirborneCheck::update(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),

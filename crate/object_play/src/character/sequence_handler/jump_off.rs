@@ -1,10 +1,7 @@
 use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{
-        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-        RunCounter,
-    },
+    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
 };
 
 use character::sequence_handler::CharacterSequenceHandler;
@@ -19,11 +16,7 @@ impl CharacterSequenceHandler for JumpOff {
         object_status: &ObjectStatus<CharacterSequenceId>,
         kinematics: &Kinematics<f32>,
         _run_counter: RunCounter,
-    ) -> (
-        CharacterStatusUpdate,
-        ObjectStatusUpdate<CharacterSequenceId>,
-    ) {
-        let character_status_update = CharacterStatusUpdate::default();
+    ) -> ObjectStatusUpdate<CharacterSequenceId> {
         let mut object_status_update = ObjectStatusUpdate::default();
 
         // Switch to jump_descend when Y axis velocity is no longer upwards.
@@ -35,7 +28,7 @@ impl CharacterSequenceHandler for JumpOff {
             object_status_update.sequence_state = Some(SequenceState::Begin);
         }
 
-        (character_status_update, object_status_update)
+        object_status_update
     }
 }
 
@@ -44,10 +37,7 @@ mod test {
     use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
-        entity::{
-            CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-            RunCounter,
-        },
+        entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
     };
 
     use super::JumpOff;
@@ -60,10 +50,7 @@ mod test {
         kinematics.velocity[1] = 1.;
 
         assert_eq!(
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate::default()
-            ),
+            ObjectStatusUpdate::default(),
             JumpOff::update(
                 &input,
                 &CharacterStatus::default(),
@@ -84,14 +71,11 @@ mod test {
         kinematics.velocity[1] = 1.;
 
         assert_eq!(
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::JumpAscend),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            ),
+            ObjectStatusUpdate {
+                sequence_id: Some(CharacterSequenceId::JumpAscend),
+                sequence_state: Some(SequenceState::Begin),
+                ..Default::default()
+            },
             JumpOff::update(
                 &input,
                 &CharacterStatus::default(),
@@ -116,14 +100,11 @@ mod test {
             .into_iter()
             .for_each(|kinematics| {
                 assert_eq!(
-                    (
-                        CharacterStatusUpdate::default(),
-                        ObjectStatusUpdate {
-                            sequence_id: Some(CharacterSequenceId::JumpDescend),
-                            sequence_state: Some(SequenceState::Begin),
-                            ..Default::default()
-                        }
-                    ),
+                    ObjectStatusUpdate {
+                        sequence_id: Some(CharacterSequenceId::JumpDescend),
+                        sequence_state: Some(SequenceState::Begin),
+                        ..Default::default()
+                    },
                     JumpOff::update(
                         &input,
                         &CharacterStatus::default(),

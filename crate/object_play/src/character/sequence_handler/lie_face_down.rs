@@ -1,10 +1,7 @@
 use game_input::ControllerInput;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{
-        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-        RunCounter,
-    },
+    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
 };
 
 use character::sequence_handler::{CharacterSequenceHandler, SwitchSequenceOnEnd};
@@ -21,10 +18,7 @@ impl CharacterSequenceHandler for LieFaceDown {
         object_status: &ObjectStatus<CharacterSequenceId>,
         kinematics: &Kinematics<f32>,
         run_counter: RunCounter,
-    ) -> (
-        CharacterStatusUpdate,
-        ObjectStatusUpdate<CharacterSequenceId>,
-    ) {
+    ) -> ObjectStatusUpdate<CharacterSequenceId> {
         if character_status.hp > 0 {
             LIE_FACE_DOWN.update(
                 controller_input,
@@ -34,10 +28,7 @@ impl CharacterSequenceHandler for LieFaceDown {
                 run_counter,
             )
         } else {
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate::default(),
-            )
+            ObjectStatusUpdate::default()
         }
     }
 }

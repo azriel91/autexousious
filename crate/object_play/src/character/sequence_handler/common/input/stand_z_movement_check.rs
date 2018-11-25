@@ -1,10 +1,7 @@
 use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{
-        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-        RunCounter,
-    },
+    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
 };
 
 use character::sequence_handler::SequenceHandler;
@@ -22,19 +19,18 @@ impl SequenceHandler for StandZMovementCheck {
         _object_status: &ObjectStatus<CharacterSequenceId>,
         _kinematics: &Kinematics<f32>,
         _run_counter: RunCounter,
-    ) -> Option<(
-        CharacterStatusUpdate,
-        ObjectStatusUpdate<CharacterSequenceId>,
-    )> {
+    ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
         if input.z_axis_value != 0. {
             let sequence_id = Some(CharacterSequenceId::Walk);
             let sequence_state = Some(SequenceState::Begin);
             let mirrored = None;
             let grounding = None;
 
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored, grounding),
+            Some(ObjectStatusUpdate::new(
+                sequence_id,
+                sequence_state,
+                mirrored,
+                grounding,
             ))
         } else {
             None
@@ -47,10 +43,7 @@ mod tests {
     use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
-        entity::{
-            CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-            RunCounter,
-        },
+        entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
     };
 
     use super::StandZMovementCheck;
@@ -77,14 +70,11 @@ mod tests {
         let input = ControllerInput::new(0., 1., false, false, false, false);
 
         assert_eq!(
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Walk),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            )),
+            Some(ObjectStatusUpdate {
+                sequence_id: Some(CharacterSequenceId::Walk),
+                sequence_state: Some(SequenceState::Begin),
+                ..Default::default()
+            }),
             StandZMovementCheck::update(
                 &input,
                 &CharacterStatus::default(),

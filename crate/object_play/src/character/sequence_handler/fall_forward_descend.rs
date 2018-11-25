@@ -1,10 +1,7 @@
 use game_input::ControllerInput;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{
-        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-        RunCounter,
-    },
+    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
 };
 
 use character::sequence_handler::{CharacterSequenceHandler, SwitchSequenceOnLand};
@@ -24,10 +21,7 @@ impl CharacterSequenceHandler for FallForwardDescend {
         object_status: &ObjectStatus<CharacterSequenceId>,
         kinematics: &Kinematics<f32>,
         run_counter: RunCounter,
-    ) -> (
-        CharacterStatusUpdate,
-        ObjectStatusUpdate<CharacterSequenceId>,
-    ) {
+    ) -> ObjectStatusUpdate<CharacterSequenceId> {
         if kinematics.velocity[1] <= -10. {
             FALL_FORWARD_DESCEND_BOUNCE.update(
                 controller_input,

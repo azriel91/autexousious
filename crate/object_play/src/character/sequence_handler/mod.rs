@@ -1,10 +1,7 @@
 use game_input::ControllerInput;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{
-        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-        RunCounter,
-    },
+    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
 };
 
 pub(super) use self::fall_forward_ascend::FallForwardAscend;
@@ -63,14 +60,8 @@ pub(super) trait CharacterSequenceHandler {
         _object_status: &ObjectStatus<CharacterSequenceId>,
         _kinematics: &Kinematics<f32>,
         _run_counter: RunCounter,
-    ) -> (
-        CharacterStatusUpdate,
-        ObjectStatusUpdate<CharacterSequenceId>,
-    ) {
-        (
-            CharacterStatusUpdate::default(),
-            ObjectStatusUpdate::default(),
-        )
+    ) -> ObjectStatusUpdate<CharacterSequenceId> {
+        ObjectStatusUpdate::default()
     }
 }
 
@@ -94,10 +85,7 @@ pub(super) trait SequenceHandler {
         _object_status: &ObjectStatus<CharacterSequenceId>,
         _kinematics: &Kinematics<f32>,
         _run_counter: RunCounter,
-    ) -> Option<(
-        CharacterStatusUpdate,
-        ObjectStatusUpdate<CharacterSequenceId>,
-    )> {
+    ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
         None
     }
 }
@@ -106,16 +94,13 @@ pub(super) trait SequenceHandler {
 mod test {
     use game_input::ControllerInput;
     use object_model::entity::{
-        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-        RunCounter,
+        CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter,
     };
 
     use super::{CharacterSequenceHandler, SequenceHandler};
 
     #[test]
     fn sequence_handler_default_update_is_empty() {
-        // No update to HP.
-        let hp = None;
         // No calculated next sequence.
         let sequence_id = None;
         // No update to sequence state.
@@ -125,10 +110,7 @@ mod test {
         // No update to grounding.
         let grounding = None;
         assert_eq!(
-            (
-                CharacterStatusUpdate::new(hp),
-                ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored, grounding)
-            ),
+            ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored, grounding),
             Sit::update(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),

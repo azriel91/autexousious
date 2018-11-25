@@ -1,10 +1,7 @@
 use game_input::ControllerInput;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{
-        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-        RunCounter,
-    },
+    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
 };
 
 use character::sequence_handler::{common::SequenceRepeat, SequenceHandler};
@@ -22,10 +19,7 @@ impl SequenceHandler for WalkZMovementCheck {
         object_status: &ObjectStatus<CharacterSequenceId>,
         kinematics: &Kinematics<f32>,
         run_counter: RunCounter,
-    ) -> Option<(
-        CharacterStatusUpdate,
-        ObjectStatusUpdate<CharacterSequenceId>,
-    )> {
+    ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
         if input.z_axis_value != 0. {
             SequenceRepeat::update(
                 input,
@@ -45,10 +39,7 @@ mod tests {
     use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
-        entity::{
-            CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-            RunCounter,
-        },
+        entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
     };
 
     use super::WalkZMovementCheck;
@@ -100,14 +91,11 @@ mod tests {
             let input = ControllerInput::new(0., z_input, false, false, false, false);
 
             assert_eq!(
-                Some((
-                    CharacterStatusUpdate::default(),
-                    ObjectStatusUpdate {
-                        sequence_id: Some(CharacterSequenceId::Walk),
-                        sequence_state: Some(SequenceState::Begin),
-                        ..Default::default()
-                    }
-                )),
+                Some(ObjectStatusUpdate {
+                    sequence_id: Some(CharacterSequenceId::Walk),
+                    sequence_state: Some(SequenceState::Begin),
+                    ..Default::default()
+                }),
                 WalkZMovementCheck::update(
                     &input,
                     &CharacterStatus::default(),

@@ -1,10 +1,7 @@
 use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{
-        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-        RunCounter,
-    },
+    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
 };
 
 use character::sequence_handler::SequenceHandler;
@@ -22,19 +19,13 @@ impl SequenceHandler for WalkNoMovementCheck {
         _object_status: &ObjectStatus<CharacterSequenceId>,
         _kinematics: &Kinematics<f32>,
         _run_counter: RunCounter,
-    ) -> Option<(
-        CharacterStatusUpdate,
-        ObjectStatusUpdate<CharacterSequenceId>,
-    )> {
+    ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
         if input.x_axis_value == 0. && input.z_axis_value == 0. {
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Stand),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                },
-            ))
+            Some(ObjectStatusUpdate {
+                sequence_id: Some(CharacterSequenceId::Stand),
+                sequence_state: Some(SequenceState::Begin),
+                ..Default::default()
+            })
         } else {
             None
         }
@@ -46,10 +37,7 @@ mod tests {
     use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
-        entity::{
-            CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-            RunCounter,
-        },
+        entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
     };
 
     use super::WalkNoMovementCheck;
@@ -60,14 +48,11 @@ mod tests {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Stand),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            )),
+            Some(ObjectStatusUpdate {
+                sequence_id: Some(CharacterSequenceId::Stand),
+                sequence_state: Some(SequenceState::Begin),
+                ..Default::default()
+            }),
             WalkNoMovementCheck::update(
                 &input,
                 &CharacterStatus::default(),

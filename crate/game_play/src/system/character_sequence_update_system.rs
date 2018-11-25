@@ -24,7 +24,7 @@ type CharacterSequenceUpdateSystemData<'s> = (
     ReadStorage<'s, ControllerInput>,
     ReadStorage<'s, Kinematics<f32>>,
     ReadStorage<'s, RunCounter>,
-    WriteStorage<'s, CharacterStatus>,
+    ReadStorage<'s, CharacterStatus>,
     WriteStorage<'s, ObjectStatus<CharacterSequenceId>>,
     WriteStorage<'s, SpriteRender>,
     ObjectAnimationStorages<'s, CharacterSequenceId>,
@@ -42,7 +42,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             controller_input_storage,
             kinematics_storage,
             run_counters,
-            mut character_statuses,
+            character_statuses,
             mut object_statuses,
             mut sprite_render_storage,
             (mut sprite_acs, _body_frame_acs, _interaction_acs),
@@ -54,7 +54,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             controller_input,
             kinematics,
             run_counter,
-            mut character_status,
+            character_status,
             mut object_status,
             mut sprite_render,
         ) in (
@@ -63,7 +63,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             &controller_input_storage,
             &kinematics_storage,
             &run_counters,
-            &mut character_statuses,
+            &character_statuses,
             &mut object_statuses,
             &mut sprite_render_storage,
         )
@@ -94,7 +94,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                 object_status.sequence_state = SequenceState::End;
             }
 
-            let (character_status_update, object_status_update) = CharacterSequenceUpdater::update(
+            let object_status_update = CharacterSequenceUpdater::update(
                 character,
                 &controller_input,
                 &character_status,
@@ -107,7 +107,6 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                 sprite_render.flip_horizontal = mirrored;
             }
 
-            *character_status += character_status_update;
             *object_status += object_status_update;
         }
     }

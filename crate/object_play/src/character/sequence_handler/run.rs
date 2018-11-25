@@ -1,10 +1,7 @@
 use game_input::ControllerInput;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{
-        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-        RunCounter,
-    },
+    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
 };
 
 use character::sequence_handler::{
@@ -23,10 +20,7 @@ impl CharacterSequenceHandler for Run {
         object_status: &ObjectStatus<CharacterSequenceId>,
         kinematics: &Kinematics<f32>,
         run_counter: RunCounter,
-    ) -> (
-        CharacterStatusUpdate,
-        ObjectStatusUpdate<CharacterSequenceId>,
-    ) {
+    ) -> ObjectStatusUpdate<CharacterSequenceId> {
         [
             AliveCheck::update,
             AirborneCheck::update,
@@ -44,12 +38,7 @@ impl CharacterSequenceHandler for Run {
                 )
             })
         })
-        .unwrap_or_else(|| {
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate::default(),
-            )
-        })
+        .unwrap_or_else(|| ObjectStatusUpdate::default())
     }
 }
 
@@ -59,8 +48,7 @@ mod test {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatus,
-            ObjectStatusUpdate, RunCounter,
+            CharacterStatus, Grounding, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter,
         },
     };
 
@@ -70,14 +58,11 @@ mod test {
     #[test]
     fn jump_descend_when_airborne() {
         assert_eq!(
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::JumpDescend),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            ),
+            ObjectStatusUpdate {
+                sequence_id: Some(CharacterSequenceId::JumpDescend),
+                sequence_state: Some(SequenceState::Begin),
+                ..Default::default()
+            },
             Run::update(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
@@ -97,14 +82,11 @@ mod test {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::RunStop),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            ),
+            ObjectStatusUpdate {
+                sequence_id: Some(CharacterSequenceId::RunStop),
+                sequence_state: Some(SequenceState::Begin),
+                ..Default::default()
+            },
             Run::update(
                 &input,
                 &CharacterStatus::default(),
@@ -124,10 +106,7 @@ mod test {
         let input = ControllerInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate::default()
-            ),
+            ObjectStatusUpdate::default(),
             Run::update(
                 &input,
                 &CharacterStatus::default(),
@@ -147,10 +126,7 @@ mod test {
         let input = ControllerInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate::default()
-            ),
+            ObjectStatusUpdate::default(),
             Run::update(
                 &input,
                 &CharacterStatus::default(),
@@ -173,14 +149,11 @@ mod test {
                 let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
-                    (
-                        CharacterStatusUpdate::default(),
-                        ObjectStatusUpdate {
-                            sequence_id: Some(CharacterSequenceId::Run),
-                            sequence_state: Some(SequenceState::Begin),
-                            ..Default::default()
-                        }
-                    ),
+                    ObjectStatusUpdate {
+                        sequence_id: Some(CharacterSequenceId::Run),
+                        sequence_state: Some(SequenceState::Begin),
+                        ..Default::default()
+                    },
                     Run::update(
                         &input,
                         &CharacterStatus::default(),
@@ -202,14 +175,11 @@ mod test {
         let input = ControllerInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::RunStop),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            ),
+            ObjectStatusUpdate {
+                sequence_id: Some(CharacterSequenceId::RunStop),
+                sequence_state: Some(SequenceState::Begin),
+                ..Default::default()
+            },
             Run::update(
                 &input,
                 &CharacterStatus::default(),
@@ -229,14 +199,11 @@ mod test {
         let input = ControllerInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::RunStop),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            ),
+            ObjectStatusUpdate {
+                sequence_id: Some(CharacterSequenceId::RunStop),
+                sequence_state: Some(SequenceState::Begin),
+                ..Default::default()
+            },
             Run::update(
                 &input,
                 &CharacterStatus::default(),
@@ -256,10 +223,7 @@ mod test {
         let input = ControllerInput::new(1., 1., false, false, false, false);
 
         assert_eq!(
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate::default()
-            ),
+            ObjectStatusUpdate::default(),
             Run::update(
                 &input,
                 &CharacterStatus::default(),
@@ -276,10 +240,7 @@ mod test {
         let input = ControllerInput::new(1., -1., false, false, false, false);
 
         assert_eq!(
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate::default()
-            ),
+            ObjectStatusUpdate::default(),
             Run::update(
                 &input,
                 &CharacterStatus::default(),

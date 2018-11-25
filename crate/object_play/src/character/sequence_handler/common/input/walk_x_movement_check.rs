@@ -1,10 +1,7 @@
 use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{
-        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-        RunCounter,
-    },
+    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
 };
 
 use character::sequence_handler::{common::SequenceRepeat, SequenceHandler, SequenceHandlerUtil};
@@ -22,10 +19,7 @@ impl SequenceHandler for WalkXMovementCheck {
         object_status: &ObjectStatus<CharacterSequenceId>,
         kinematics: &Kinematics<f32>,
         run_counter: RunCounter,
-    ) -> Option<(
-        CharacterStatusUpdate,
-        ObjectStatusUpdate<CharacterSequenceId>,
-    )> {
+    ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
         if input.x_axis_value != 0. {
             let same_direction =
                 SequenceHandlerUtil::input_matches_direction(input, object_status.mirrored);
@@ -64,9 +58,11 @@ impl SequenceHandler for WalkXMovementCheck {
                 );
             }
 
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored, grounding),
+            Some(ObjectStatusUpdate::new(
+                sequence_id,
+                sequence_state,
+                mirrored,
+                grounding,
             ))
         } else {
             // The responsibility of switching to `Stand` is handled elsewhere.
@@ -80,10 +76,7 @@ mod tests {
     use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
-        entity::{
-            CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-            RunCounter,
-        },
+        entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
     };
 
     use super::WalkXMovementCheck;
@@ -113,15 +106,12 @@ mod tests {
         let input = ControllerInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Walk),
-                    sequence_state: Some(SequenceState::Begin),
-                    mirrored: Some(false),
-                    ..Default::default()
-                }
-            )),
+            Some(ObjectStatusUpdate {
+                sequence_id: Some(CharacterSequenceId::Walk),
+                sequence_state: Some(SequenceState::Begin),
+                mirrored: Some(false),
+                ..Default::default()
+            }),
             WalkXMovementCheck::update(
                 &input,
                 &CharacterStatus::default(),
@@ -141,15 +131,12 @@ mod tests {
         let input = ControllerInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Walk),
-                    sequence_state: Some(SequenceState::Begin),
-                    mirrored: Some(true),
-                    ..Default::default()
-                }
-            )),
+            Some(ObjectStatusUpdate {
+                sequence_id: Some(CharacterSequenceId::Walk),
+                sequence_state: Some(SequenceState::Begin),
+                mirrored: Some(true),
+                ..Default::default()
+            }),
             WalkXMovementCheck::update(
                 &input,
                 &CharacterStatus::default(),
@@ -172,14 +159,11 @@ mod tests {
                 let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
-                    Some((
-                        CharacterStatusUpdate::default(),
-                        ObjectStatusUpdate {
-                            sequence_id: Some(CharacterSequenceId::Walk),
-                            sequence_state: Some(SequenceState::Begin),
-                            ..Default::default()
-                        }
-                    )),
+                    Some(ObjectStatusUpdate {
+                        sequence_id: Some(CharacterSequenceId::Walk),
+                        sequence_state: Some(SequenceState::Begin),
+                        ..Default::default()
+                    }),
                     WalkXMovementCheck::update(
                         &input,
                         &CharacterStatus::default(),
@@ -201,14 +185,11 @@ mod tests {
         let input = ControllerInput::new(1., -1., false, false, false, false);
 
         assert_eq!(
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Run),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            )),
+            Some(ObjectStatusUpdate {
+                sequence_id: Some(CharacterSequenceId::Run),
+                sequence_state: Some(SequenceState::Begin),
+                ..Default::default()
+            }),
             WalkXMovementCheck::update(
                 &input,
                 &CharacterStatus::default(),
@@ -228,14 +209,11 @@ mod tests {
         let input = ControllerInput::new(-1., -1., false, false, false, false);
 
         assert_eq!(
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Run),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            )),
+            Some(ObjectStatusUpdate {
+                sequence_id: Some(CharacterSequenceId::Run),
+                sequence_state: Some(SequenceState::Begin),
+                ..Default::default()
+            }),
             WalkXMovementCheck::update(
                 &input,
                 &CharacterStatus::default(),

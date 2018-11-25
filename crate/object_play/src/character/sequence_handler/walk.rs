@@ -1,10 +1,7 @@
 use game_input::ControllerInput;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{
-        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-        RunCounter,
-    },
+    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
 };
 
 use character::sequence_handler::{
@@ -29,10 +26,7 @@ impl CharacterSequenceHandler for Walk {
         object_status: &ObjectStatus<CharacterSequenceId>,
         kinematics: &Kinematics<f32>,
         run_counter: RunCounter,
-    ) -> (
-        CharacterStatusUpdate,
-        ObjectStatusUpdate<CharacterSequenceId>,
-    ) {
+    ) -> ObjectStatusUpdate<CharacterSequenceId> {
         let status_update = [
             AliveCheck::update,
             AirborneCheck::update,
@@ -55,14 +49,11 @@ impl CharacterSequenceHandler for Walk {
             })
         });
 
-        if let Some(status_updates) = status_update {
-            return status_updates;
+        if let Some(status_update) = status_update {
+            status_update
+        } else {
+            ObjectStatusUpdate::default()
         }
-
-        (
-            CharacterStatusUpdate { hp: None },
-            ObjectStatusUpdate::default(),
-        )
     }
 }
 
@@ -71,10 +62,7 @@ mod test {
     use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
-        entity::{
-            CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-            RunCounter,
-        },
+        entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
     };
 
     use super::Walk;
@@ -85,14 +73,11 @@ mod test {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Stand),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            ),
+            ObjectStatusUpdate {
+                sequence_id: Some(CharacterSequenceId::Stand),
+                sequence_state: Some(SequenceState::Begin),
+                ..Default::default()
+            },
             Walk::update(
                 &input,
                 &CharacterStatus::default(),
@@ -111,14 +96,11 @@ mod test {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Stand),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            ),
+            ObjectStatusUpdate {
+                sequence_id: Some(CharacterSequenceId::Stand),
+                sequence_state: Some(SequenceState::Begin),
+                ..Default::default()
+            },
             Walk::update(
                 &input,
                 &CharacterStatus::default(),
@@ -137,15 +119,12 @@ mod test {
         let input = ControllerInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Walk),
-                    sequence_state: Some(SequenceState::Begin),
-                    mirrored: Some(false),
-                    ..Default::default()
-                }
-            ),
+            ObjectStatusUpdate {
+                sequence_id: Some(CharacterSequenceId::Walk),
+                sequence_state: Some(SequenceState::Begin),
+                mirrored: Some(false),
+                ..Default::default()
+            },
             Walk::update(
                 &input,
                 &CharacterStatus::default(),
@@ -165,15 +144,12 @@ mod test {
         let input = ControllerInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Walk),
-                    sequence_state: Some(SequenceState::Begin),
-                    mirrored: Some(true),
-                    ..Default::default()
-                }
-            ),
+            ObjectStatusUpdate {
+                sequence_id: Some(CharacterSequenceId::Walk),
+                sequence_state: Some(SequenceState::Begin),
+                mirrored: Some(true),
+                ..Default::default()
+            },
             Walk::update(
                 &input,
                 &CharacterStatus::default(),
@@ -193,10 +169,7 @@ mod test {
         let input = ControllerInput::new(0., 1., false, false, false, false);
 
         assert_eq!(
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate::default()
-            ),
+            ObjectStatusUpdate::default(),
             Walk::update(
                 &input,
                 &CharacterStatus::default(),
@@ -212,10 +185,7 @@ mod test {
         let input = ControllerInput::new(0., -1., false, false, false, false);
 
         assert_eq!(
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate::default()
-            ),
+            ObjectStatusUpdate::default(),
             Walk::update(
                 &input,
                 &CharacterStatus::default(),
@@ -237,14 +207,11 @@ mod test {
                 let input = ControllerInput::new(x_input, z_input, false, false, false, false);
 
                 assert_eq!(
-                    (
-                        CharacterStatusUpdate::default(),
-                        ObjectStatusUpdate {
-                            sequence_id: Some(CharacterSequenceId::Walk),
-                            sequence_state: Some(SequenceState::Begin),
-                            ..Default::default()
-                        }
-                    ),
+                    ObjectStatusUpdate {
+                        sequence_id: Some(CharacterSequenceId::Walk),
+                        sequence_state: Some(SequenceState::Begin),
+                        ..Default::default()
+                    },
                     Walk::update(
                         &input,
                         &CharacterStatus::default(),
@@ -266,14 +233,11 @@ mod test {
                 let input = ControllerInput::new(x_input, z_input, false, false, false, false);
 
                 assert_eq!(
-                    (
-                        CharacterStatusUpdate::default(),
-                        ObjectStatusUpdate {
-                            sequence_id: Some(CharacterSequenceId::Walk),
-                            sequence_state: Some(SequenceState::Begin),
-                            ..Default::default()
-                        }
-                    ),
+                    ObjectStatusUpdate {
+                        sequence_id: Some(CharacterSequenceId::Walk),
+                        sequence_state: Some(SequenceState::Begin),
+                        ..Default::default()
+                    },
                     Walk::update(
                         &input,
                         &CharacterStatus::default(),
@@ -295,14 +259,11 @@ mod test {
         let input = ControllerInput::new(1., -1., false, false, false, false);
 
         assert_eq!(
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Run),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            ),
+            ObjectStatusUpdate {
+                sequence_id: Some(CharacterSequenceId::Run),
+                sequence_state: Some(SequenceState::Begin),
+                ..Default::default()
+            },
             Walk::update(
                 &input,
                 &CharacterStatus::default(),
@@ -322,14 +283,11 @@ mod test {
         let input = ControllerInput::new(-1., -1., false, false, false, false);
 
         assert_eq!(
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Run),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            ),
+            ObjectStatusUpdate {
+                sequence_id: Some(CharacterSequenceId::Run),
+                sequence_state: Some(SequenceState::Begin),
+                ..Default::default()
+            },
             Walk::update(
                 &input,
                 &CharacterStatus::default(),
@@ -352,14 +310,11 @@ mod test {
                 let input = ControllerInput::new(x_input, z_input, false, true, false, false);
 
                 assert_eq!(
-                    (
-                        CharacterStatusUpdate::default(),
-                        ObjectStatusUpdate {
-                            sequence_id: Some(CharacterSequenceId::Jump),
-                            sequence_state: Some(SequenceState::Begin),
-                            ..Default::default()
-                        }
-                    ),
+                    ObjectStatusUpdate {
+                        sequence_id: Some(CharacterSequenceId::Jump),
+                        sequence_state: Some(SequenceState::Begin),
+                        ..Default::default()
+                    },
                     Walk::update(
                         &input,
                         &CharacterStatus::default(),
@@ -377,14 +332,11 @@ mod test {
         input.attack = true;
 
         assert_eq!(
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::StandAttack),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            ),
+            ObjectStatusUpdate {
+                sequence_id: Some(CharacterSequenceId::StandAttack),
+                sequence_state: Some(SequenceState::Begin),
+                ..Default::default()
+            },
             Walk::update(
                 &input,
                 &CharacterStatus::default(),

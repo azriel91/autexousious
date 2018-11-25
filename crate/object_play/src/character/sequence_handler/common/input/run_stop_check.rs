@@ -1,10 +1,7 @@
 use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{
-        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-        RunCounter,
-    },
+    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
 };
 
 use character::sequence_handler::{common::SequenceRepeat, SequenceHandler, SequenceHandlerUtil};
@@ -22,10 +19,7 @@ impl SequenceHandler for RunStopCheck {
         object_status: &ObjectStatus<CharacterSequenceId>,
         kinematics: &Kinematics<f32>,
         run_counter: RunCounter,
-    ) -> Option<(
-        CharacterStatusUpdate,
-        ObjectStatusUpdate<CharacterSequenceId>,
-    )> {
+    ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
         if SequenceHandlerUtil::input_matches_direction(input, object_status.mirrored) {
             SequenceRepeat::update(
                 input,
@@ -35,14 +29,11 @@ impl SequenceHandler for RunStopCheck {
                 run_counter,
             )
         } else {
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::RunStop),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                },
-            ))
+            Some(ObjectStatusUpdate {
+                sequence_id: Some(CharacterSequenceId::RunStop),
+                sequence_state: Some(SequenceState::Begin),
+                ..Default::default()
+            })
         }
     }
 }
@@ -52,10 +43,7 @@ mod tests {
     use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
-        entity::{
-            CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-            RunCounter,
-        },
+        entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
     };
 
     use super::RunStopCheck;
@@ -90,14 +78,11 @@ mod tests {
         let input = ControllerInput::new(0., 1., false, false, false, false);
 
         assert_eq!(
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::RunStop),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            )),
+            Some(ObjectStatusUpdate {
+                sequence_id: Some(CharacterSequenceId::RunStop),
+                sequence_state: Some(SequenceState::Begin),
+                ..Default::default()
+            }),
             RunStopCheck::update(
                 &input,
                 &CharacterStatus::default(),
@@ -120,14 +105,11 @@ mod tests {
                 let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
-                    Some((
-                        CharacterStatusUpdate::default(),
-                        ObjectStatusUpdate {
-                            sequence_id: Some(CharacterSequenceId::RunStop),
-                            sequence_state: Some(SequenceState::Begin),
-                            ..Default::default()
-                        }
-                    )),
+                    Some(ObjectStatusUpdate {
+                        sequence_id: Some(CharacterSequenceId::RunStop),
+                        sequence_state: Some(SequenceState::Begin),
+                        ..Default::default()
+                    }),
                     RunStopCheck::update(
                         &input,
                         &CharacterStatus::default(),
@@ -151,14 +133,11 @@ mod tests {
                 let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
-                    Some((
-                        CharacterStatusUpdate::default(),
-                        ObjectStatusUpdate {
-                            sequence_id: Some(CharacterSequenceId::Run),
-                            sequence_state: Some(SequenceState::Begin),
-                            ..Default::default()
-                        }
-                    )),
+                    Some(ObjectStatusUpdate {
+                        sequence_id: Some(CharacterSequenceId::Run),
+                        sequence_state: Some(SequenceState::Begin),
+                        ..Default::default()
+                    }),
                     RunStopCheck::update(
                         &input,
                         &CharacterStatus::default(),

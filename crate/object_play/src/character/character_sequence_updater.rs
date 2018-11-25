@@ -1,10 +1,7 @@
 use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{
-        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-        RunCounter,
-    },
+    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
     loaded::Character,
 };
 
@@ -36,20 +33,14 @@ impl CharacterSequenceUpdater {
         object_status: &ObjectStatus<CharacterSequenceId>,
         kinematics: &Kinematics<f32>,
         run_counter: RunCounter,
-    ) -> (
-        CharacterStatusUpdate,
-        ObjectStatusUpdate<CharacterSequenceId>,
-    ) {
+    ) -> ObjectStatusUpdate<CharacterSequenceId> {
         let sequence_handler: &Fn(
             &ControllerInput,
             &CharacterStatus,
             &ObjectStatus<CharacterSequenceId>,
             &Kinematics<f32>,
             RunCounter,
-        ) -> (
-            CharacterStatusUpdate,
-            ObjectStatusUpdate<CharacterSequenceId>,
-        ) = match object_status.sequence_id {
+        ) -> ObjectStatusUpdate<CharacterSequenceId> = match object_status.sequence_id {
             CharacterSequenceId::Stand => &Stand::update,
             CharacterSequenceId::StandAttack => &StandAttack::update,
             CharacterSequenceId::Walk => &Walk::update,
@@ -69,7 +60,7 @@ impl CharacterSequenceUpdater {
             CharacterSequenceId::LieFaceDown => &LieFaceDown::update,
         };
 
-        let (character_status_update, mut object_status_update) = sequence_handler(
+        let mut object_status_update = sequence_handler(
             controller_input,
             character_status,
             object_status,
@@ -89,7 +80,7 @@ impl CharacterSequenceUpdater {
             }
         }
 
-        (character_status_update, object_status_update)
+        object_status_update
 
         // TODO: overrides based on sequence configuration
     }

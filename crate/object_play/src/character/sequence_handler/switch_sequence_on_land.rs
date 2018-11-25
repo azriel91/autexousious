@@ -2,8 +2,7 @@ use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
     entity::{
-        CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatus,
-        ObjectStatusUpdate, RunCounter,
+        CharacterStatus, Grounding, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter,
     },
 };
 
@@ -21,11 +20,7 @@ impl SwitchSequenceOnLand {
         object_status: &ObjectStatus<CharacterSequenceId>,
         _kinematics: &Kinematics<f32>,
         _run_counter: RunCounter,
-    ) -> (
-        CharacterStatusUpdate,
-        ObjectStatusUpdate<CharacterSequenceId>,
-    ) {
-        let character_status_update = CharacterStatusUpdate::default();
+    ) -> ObjectStatusUpdate<CharacterSequenceId> {
         let mut object_status_update = ObjectStatusUpdate::default();
         if object_status.grounding == Grounding::OnGround {
             object_status_update.sequence_id = Some(self.0);
@@ -35,7 +30,7 @@ impl SwitchSequenceOnLand {
             object_status_update.sequence_state = Some(SequenceState::Begin);
         }
 
-        (character_status_update, object_status_update)
+        object_status_update
     }
 }
 
@@ -45,8 +40,7 @@ mod test {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatus,
-            ObjectStatusUpdate, RunCounter,
+            CharacterStatus, Grounding, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter,
         },
     };
 
@@ -59,10 +53,7 @@ mod test {
         kinematics.velocity[1] = -1.;
 
         assert_eq!(
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate::default()
-            ),
+            ObjectStatusUpdate::default(),
             SwitchSequenceOnLand(CharacterSequenceId::FallForwardLand).update(
                 &input,
                 &CharacterStatus::default(),
@@ -84,14 +75,11 @@ mod test {
         kinematics.velocity[1] = -1.;
 
         assert_eq!(
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::FallForwardDescend),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            ),
+            ObjectStatusUpdate {
+                sequence_id: Some(CharacterSequenceId::FallForwardDescend),
+                sequence_state: Some(SequenceState::Begin),
+                ..Default::default()
+            },
             SwitchSequenceOnLand(CharacterSequenceId::FallForwardLand).update(
                 &input,
                 &CharacterStatus::default(),
@@ -114,14 +102,11 @@ mod test {
         kinematics.velocity[1] = -1.;
 
         assert_eq!(
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::FallForwardLand),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            ),
+            ObjectStatusUpdate {
+                sequence_id: Some(CharacterSequenceId::FallForwardLand),
+                sequence_state: Some(SequenceState::Begin),
+                ..Default::default()
+            },
             SwitchSequenceOnLand(CharacterSequenceId::FallForwardLand).update(
                 &input,
                 &CharacterStatus::default(),
@@ -146,13 +131,10 @@ mod test {
                 kinematics.velocity[1] = -1.;
 
                 assert_eq!(
-                    (
-                        CharacterStatusUpdate::default(),
-                        ObjectStatusUpdate {
-                            mirrored: None, // Explicitly test this.
-                            ..Default::default()
-                        }
-                    ),
+                    ObjectStatusUpdate {
+                        mirrored: None, // Explicitly test this.
+                        ..Default::default()
+                    },
                     SwitchSequenceOnLand(CharacterSequenceId::FallForwardLand).update(
                         &input,
                         &CharacterStatus::default(),
