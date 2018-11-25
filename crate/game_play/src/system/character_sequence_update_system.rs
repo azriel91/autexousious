@@ -104,7 +104,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             );
 
             if let Some(mirrored) = object_status_update.mirrored {
-                sprite_render.flip_horizontal = mirrored;
+                sprite_render.flip_horizontal = mirrored.0;
             }
 
             *object_status += object_status_update;
@@ -121,7 +121,7 @@ mod tests {
     use map_selection_model::MapSelection;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
-        entity::{Grounding, Kinematics, ObjectStatus},
+        entity::{Grounding, Kinematics, Mirrored, ObjectStatus},
     };
     use typename::TypeName;
 
@@ -214,7 +214,7 @@ mod tests {
                                 object_status.grounding = Grounding::OnGround;
                                 object_status.sequence_id = CharacterSequenceId::Stand;
                                 object_status.sequence_state = SequenceState::Ongoing;
-                                object_status.mirrored = false;
+                                object_status.mirrored = Mirrored(false);
 
                                 kinematics.position[1] = map.margins.bottom;
                             }
@@ -232,7 +232,7 @@ mod tests {
                             for object_status in object_statuses.join() {
                                 assert_eq!(CharacterSequenceId::Walk, object_status.sequence_id);
                                 assert_eq!(SequenceState::Begin, object_status.sequence_state);
-                                assert!(object_status.mirrored);
+                                assert_eq!(Mirrored(true), object_status.mirrored);
                             }
                         },
                     );

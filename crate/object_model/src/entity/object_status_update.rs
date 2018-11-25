@@ -1,5 +1,5 @@
 use config::object::{SequenceId, SequenceState};
-use entity::Grounding;
+use entity::{Grounding, Mirrored};
 
 /// Indicates what fields of an `ObjectStatus` should be updated.
 // TODO: Learning exercise - Generate this using a proc macro
@@ -11,7 +11,7 @@ pub struct ObjectStatusUpdate<SeqId: SequenceId> {
     /// Whether the sequence just started, is ongoing, or has ended.
     pub sequence_state: Option<SequenceState>,
     /// Whether or not this object is facing left.
-    pub mirrored: Option<bool>,
+    pub mirrored: Option<Mirrored>,
     /// Tracks an object's attachment to the surrounding environment.
     pub grounding: Option<Grounding>,
 }

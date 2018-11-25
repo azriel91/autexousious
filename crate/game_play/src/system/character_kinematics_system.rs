@@ -62,7 +62,7 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                     kinematics.velocity[2] = controller_input.z_axis_value as f32 * 1.5;
                 }
                 CharacterSequenceId::RunStop => {
-                    kinematics.velocity[0] = if object_status.mirrored { -2. } else { 2. };
+                    kinematics.velocity[0] = if object_status.mirrored.0 { -2. } else { 2. };
                     kinematics.velocity[2] = controller_input.z_axis_value as f32 * 0.5;
                 }
                 CharacterSequenceId::JumpOff => {
@@ -332,7 +332,7 @@ mod tests {
 
                                 object_status.sequence_id = CharacterSequenceId::RunStop;
                                 object_status.grounding = Grounding::OnGround;
-                                object_status.mirrored = mirrored;
+                                object_status.mirrored = mirrored.into();
 
                                 kinematics.position[1] = map.margins.bottom;
                                 kinematics.velocity[0] = 0.;

@@ -238,7 +238,7 @@ mod tests {
                         RunCounter::Unused,
                         &input,
                         &Last(ObjectStatus {
-                            mirrored,
+                            mirrored: mirrored.into(),
                             ..Default::default()
                         })
                     )
@@ -259,7 +259,7 @@ mod tests {
                         RunCounter::Decrease(11),
                         &input,
                         &Last(ObjectStatus {
-                            mirrored,
+                            mirrored: mirrored.into(),
                             ..Default::default()
                         })
                     )
@@ -280,7 +280,7 @@ mod tests {
                         RunCounter::Increase(11),
                         &input,
                         &Last(ObjectStatus {
-                            mirrored,
+                            mirrored: mirrored.into(),
                             ..Default::default()
                         })
                     )
@@ -301,7 +301,7 @@ mod tests {
                         RunCounter::Decrease(11),
                         &input,
                         &Last(ObjectStatus {
-                            mirrored,
+                            mirrored: mirrored.into(),
                             ..Default::default()
                         })
                     )
@@ -322,7 +322,7 @@ mod tests {
                         RunCounter::Increase(0),
                         &input,
                         &Last(ObjectStatus {
-                            mirrored,
+                            mirrored: mirrored.into(),
                             ..Default::default()
                         })
                     )
@@ -343,7 +343,7 @@ mod tests {
                         RunCounter::Increase(11),
                         &input,
                         &Last(ObjectStatus {
-                            mirrored,
+                            mirrored: mirrored.into(),
                             ..Default::default()
                         })
                     )
@@ -364,7 +364,7 @@ mod tests {
                         RunCounter::Exceeded,
                         &input,
                         &Last(ObjectStatus {
-                            mirrored,
+                            mirrored: mirrored.into(),
                             ..Default::default()
                         })
                     )

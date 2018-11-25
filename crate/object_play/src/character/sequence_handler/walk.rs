@@ -57,7 +57,9 @@ mod test {
     use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
-        entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
+        entity::{
+            CharacterStatus, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate, RunCounter,
+        },
     };
 
     use super::Walk;
@@ -117,7 +119,7 @@ mod test {
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Walk),
                 sequence_state: Some(SequenceState::Begin),
-                mirrored: Some(false),
+                mirrored: Some(Mirrored(false)),
                 ..Default::default()
             },
             Walk::update(
@@ -125,7 +127,7 @@ mod test {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
-                    mirrored: true,
+                    mirrored: Mirrored(true),
                     ..Default::default()
                 },
                 &Kinematics::default(),
@@ -142,7 +144,7 @@ mod test {
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Walk),
                 sequence_state: Some(SequenceState::Begin),
-                mirrored: Some(true),
+                mirrored: Some(Mirrored(true)),
                 ..Default::default()
             },
             Walk::update(
@@ -150,7 +152,7 @@ mod test {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
-                    mirrored: false,
+                    mirrored: Mirrored(false),
                     ..Default::default()
                 },
                 &Kinematics::default(),
@@ -213,7 +215,7 @@ mod test {
                         &ObjectStatus {
                             sequence_id: CharacterSequenceId::Walk,
                             sequence_state: SequenceState::End,
-                            mirrored: false,
+                            mirrored: Mirrored(false),
                             ..Default::default()
                         },
                         &Kinematics::default(),
@@ -239,7 +241,7 @@ mod test {
                         &ObjectStatus {
                             sequence_id: CharacterSequenceId::Walk,
                             sequence_state: SequenceState::End,
-                            mirrored,
+                            mirrored: mirrored.into(),
                             ..Default::default()
                         },
                         &Kinematics::default(),
@@ -264,7 +266,7 @@ mod test {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
-                    mirrored: false,
+                    mirrored: Mirrored(false),
                     ..Default::default()
                 },
                 &Kinematics::default(),
@@ -288,7 +290,7 @@ mod test {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
-                    mirrored: true,
+                    mirrored: Mirrored(true),
                     ..Default::default()
                 },
                 &Kinematics::default(),

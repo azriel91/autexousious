@@ -141,7 +141,7 @@ mod test {
                         &ObjectStatus {
                             sequence_id: CharacterSequenceId::FallForwardDescend,
                             grounding: Grounding::Airborne,
-                            mirrored,
+                            mirrored: mirrored.into(),
                             ..Default::default()
                         },
                         &kinematics,

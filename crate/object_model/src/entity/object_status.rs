@@ -6,7 +6,7 @@ use amethyst::ecs::{
 };
 
 use config::object::{SequenceId, SequenceState};
-use entity::{Grounding, ObjectStatusUpdate};
+use entity::{Grounding, Mirrored, ObjectStatusUpdate};
 
 /// Status of an object entity.
 ///
@@ -18,7 +18,7 @@ pub struct ObjectStatus<SeqId: SequenceId> {
     /// Whether the sequence just started, is ongoing, or has ended.
     pub sequence_state: SequenceState,
     /// Whether or not this object is facing left.
-    pub mirrored: bool,
+    pub mirrored: Mirrored,
     /// Tracks an object's attachment to the surrounding environment.
     pub grounding: Grounding,
 }
@@ -49,7 +49,7 @@ impl<SeqId: SequenceId> AddAssign<ObjectStatusUpdate<SeqId>> for ObjectStatus<Se
 #[cfg(test)]
 mod test {
     use config::object::{SequenceId, SequenceState};
-    use entity::{Grounding, ObjectStatusUpdate};
+    use entity::{Grounding, Mirrored, ObjectStatusUpdate};
 
     use super::ObjectStatus;
 
@@ -58,7 +58,7 @@ mod test {
         let status = ObjectStatus::new(
             TestSeqId::Moo,
             SequenceState::End,
-            true,
+            Mirrored(true),
             Grounding::Airborne,
         );
         let delta = ObjectStatusUpdate::default();
@@ -67,7 +67,7 @@ mod test {
             ObjectStatus::new(
                 TestSeqId::Moo,
                 SequenceState::End,
-                true,
+                Mirrored(true),
                 Grounding::Airborne
             ),
             status + delta
@@ -105,15 +105,15 @@ mod test {
     #[test]
     fn add_updates_mirrored_if_present() {
         let status = ObjectStatus::<TestSeqId> {
-            mirrored: false,
+            mirrored: Mirrored(false),
             ..Default::default()
         };
         let delta = ObjectStatusUpdate {
-            mirrored: Some(true),
+            mirrored: Some(Mirrored(true)),
             ..Default::default()
         };
 
-        assert_eq!(true, (status + delta).mirrored);
+        assert_eq!(Mirrored(true), (status + delta).mirrored);
     }
 
     #[test]
@@ -135,13 +135,13 @@ mod test {
         let status = ObjectStatus::new(
             TestSeqId::Boo,
             SequenceState::End,
-            true,
+            Mirrored(true),
             Grounding::Airborne,
         );
         let delta = ObjectStatusUpdate::new(
             Some(TestSeqId::Boo),
             Some(SequenceState::End),
-            Some(true),
+            Some(Mirrored(true)),
             Some(Grounding::Airborne),
         );
 
@@ -149,7 +149,7 @@ mod test {
             ObjectStatus::new(
                 TestSeqId::Boo,
                 SequenceState::End,
-                true,
+                Mirrored(true),
                 Grounding::Airborne
             ),
             status + delta
@@ -161,13 +161,13 @@ mod test {
         let mut status = ObjectStatus::new(
             TestSeqId::Boo,
             SequenceState::Begin,
-            false,
+            Mirrored(false),
             Grounding::Airborne,
         );
         let delta = ObjectStatusUpdate::new(
             Some(TestSeqId::Moo),
             Some(SequenceState::Ongoing),
-            Some(true),
+            Some(Mirrored(true)),
             Some(Grounding::OnGround),
         );
 
@@ -176,7 +176,7 @@ mod test {
             ObjectStatus::new(
                 TestSeqId::Moo,
                 SequenceState::Ongoing,
-                true,
+                Mirrored(true),
                 Grounding::OnGround
             ),
             status

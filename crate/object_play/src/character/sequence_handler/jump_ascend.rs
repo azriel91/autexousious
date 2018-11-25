@@ -42,7 +42,8 @@ mod test {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, Grounding, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter,
+            CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
+            RunCounter,
         },
     };
 
@@ -140,7 +141,7 @@ mod test {
 
                 assert_eq!(
                     ObjectStatusUpdate {
-                        mirrored: Some(!mirrored),
+                        mirrored: Some(Mirrored(!mirrored)),
                         ..Default::default()
                     },
                     JumpAscend::update(
@@ -149,7 +150,7 @@ mod test {
                         &ObjectStatus {
                             sequence_id: CharacterSequenceId::JumpAscend,
                             grounding: Grounding::Airborne,
-                            mirrored,
+                            mirrored: mirrored.into(),
                             ..Default::default()
                         },
                         &kinematics,

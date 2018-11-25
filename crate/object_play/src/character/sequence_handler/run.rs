@@ -48,7 +48,8 @@ mod test {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, Grounding, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter,
+            CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
+            RunCounter,
         },
     };
 
@@ -92,7 +93,7 @@ mod test {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Run,
-                    mirrored: false,
+                    mirrored: Mirrored(false),
                     ..Default::default()
                 },
                 &Kinematics::default(),
@@ -112,7 +113,7 @@ mod test {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Run,
-                    mirrored: false,
+                    mirrored: Mirrored(false),
                     ..Default::default()
                 },
                 &Kinematics::default(),
@@ -132,7 +133,7 @@ mod test {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Run,
-                    mirrored: true,
+                    mirrored: Mirrored(true),
                     ..Default::default()
                 },
                 &Kinematics::default(),
@@ -160,7 +161,7 @@ mod test {
                         &ObjectStatus {
                             sequence_id: CharacterSequenceId::Run,
                             sequence_state: SequenceState::End,
-                            mirrored,
+                            mirrored: mirrored.into(),
                             ..Default::default()
                         },
                         &Kinematics::default(),
@@ -185,7 +186,7 @@ mod test {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Run,
-                    mirrored: false,
+                    mirrored: Mirrored(false),
                     ..Default::default()
                 },
                 &Kinematics::default(),
@@ -209,7 +210,7 @@ mod test {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Run,
-                    mirrored: true,
+                    mirrored: Mirrored(true),
                     ..Default::default()
                 },
                 &Kinematics::default(),
@@ -229,7 +230,7 @@ mod test {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Run,
-                    mirrored: false,
+                    mirrored: Mirrored(false),
                     ..Default::default()
                 },
                 &Kinematics::default(),
@@ -246,7 +247,7 @@ mod test {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Run,
-                    mirrored: false,
+                    mirrored: Mirrored(false),
                     ..Default::default()
                 },
                 &Kinematics::default(),

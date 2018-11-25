@@ -39,7 +39,9 @@ mod tests {
     use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
-        entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
+        entity::{
+            CharacterStatus, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate, RunCounter,
+        },
     };
 
     use super::WalkZMovementCheck;
@@ -102,7 +104,7 @@ mod tests {
                     &ObjectStatus {
                         sequence_id: CharacterSequenceId::Walk,
                         sequence_state: SequenceState::End,
-                        mirrored: false,
+                        mirrored: Mirrored(false),
                         ..Default::default()
                     },
                     &Kinematics::default(),

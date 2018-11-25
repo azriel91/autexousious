@@ -65,7 +65,8 @@ mod test {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, Grounding, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter,
+            CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
+            RunCounter,
         },
     };
 
@@ -84,7 +85,7 @@ mod test {
                 &ObjectStatus::new(
                     CharacterSequenceId::Stand,
                     SequenceState::Ongoing,
-                    true,
+                    Mirrored(true),
                     Grounding::OnGround
                 ),
                 &Kinematics::default(),
@@ -177,14 +178,14 @@ mod test {
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Walk),
                 sequence_state: Some(SequenceState::Begin),
-                mirrored: Some(false),
+                mirrored: Some(Mirrored(false)),
                 ..Default::default()
             },
             Stand::update(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
-                    mirrored: true,
+                    mirrored: Mirrored(true),
                     ..Default::default()
                 },
                 &Kinematics::default(),
@@ -203,7 +204,7 @@ mod test {
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
-                    mirrored: false,
+                    mirrored: Mirrored(false),
                     ..Default::default()
                 },
                 &Kinematics::default(),
@@ -220,14 +221,14 @@ mod test {
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Walk),
                 sequence_state: Some(SequenceState::Begin),
-                mirrored: Some(true),
+                mirrored: Some(Mirrored(true)),
                 ..Default::default()
             },
             Stand::update(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
-                    mirrored: false,
+                    mirrored: Mirrored(false),
                     ..Default::default()
                 },
                 &Kinematics::default(),
@@ -246,7 +247,7 @@ mod test {
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
-                    mirrored: true,
+                    mirrored: Mirrored(true),
                     ..Default::default()
                 },
                 &Kinematics::default(),
@@ -269,7 +270,7 @@ mod test {
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
-                    mirrored: false,
+                    mirrored: Mirrored(false),
                     ..Default::default()
                 },
                 &Kinematics::default(),
@@ -295,7 +296,7 @@ mod test {
                         &input,
                         &CharacterStatus::default(),
                         &ObjectStatus {
-                            mirrored,
+                            mirrored: mirrored.into(),
                             ..Default::default()
                         },
                         &Kinematics::default(),
@@ -316,14 +317,14 @@ mod test {
                     ObjectStatusUpdate {
                         sequence_id: Some(CharacterSequenceId::Walk),
                         sequence_state: Some(SequenceState::Begin),
-                        mirrored: Some(!mirrored),
+                        mirrored: Some(Mirrored(!mirrored)),
                         ..Default::default()
                     },
                     Stand::update(
                         &input,
                         &CharacterStatus::default(),
                         &ObjectStatus {
-                            mirrored,
+                            mirrored: mirrored.into(),
                             ..Default::default()
                         },
                         &Kinematics::default(),
