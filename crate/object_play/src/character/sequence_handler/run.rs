@@ -1,25 +1,18 @@
-use game_input::ControllerInput;
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
-};
+use object_model::{config::object::CharacterSequenceId, entity::ObjectStatusUpdate};
 
 use character::sequence_handler::{
     common::{grounding::AirborneCheck, input::RunStopCheck, status::AliveCheck},
     CharacterSequenceHandler, SequenceHandler,
 };
+use CharacterSequenceUpdateComponents;
 
 /// Hold forward to run, release to stop running.
 #[derive(Debug)]
 pub(crate) struct Run;
 
 impl CharacterSequenceHandler for Run {
-    fn update(
-        input: &ControllerInput,
-        character_status: &CharacterStatus,
-        object_status: &ObjectStatus<CharacterSequenceId>,
-        kinematics: &Kinematics<f32>,
-        run_counter: RunCounter,
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
     ) -> ObjectStatusUpdate<CharacterSequenceId> {
         [
             AliveCheck::update,
@@ -28,15 +21,7 @@ impl CharacterSequenceHandler for Run {
         ]
         .iter()
         .fold(None, |status_update, fn_update| {
-            status_update.or_else(|| {
-                fn_update(
-                    input,
-                    character_status,
-                    object_status,
-                    kinematics,
-                    run_counter,
-                )
-            })
+            status_update.or_else(|| fn_update(components))
         })
         .unwrap_or_else(|| ObjectStatusUpdate::default())
     }
@@ -55,6 +40,7 @@ mod test {
 
     use super::Run;
     use character::sequence_handler::CharacterSequenceHandler;
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn jump_descend_when_airborne() {
@@ -64,7 +50,7 @@ mod test {
                 sequence_state: Some(SequenceState::Begin),
                 ..Default::default()
             },
-            Run::update(
+            Run::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -74,7 +60,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 
@@ -88,7 +74,7 @@ mod test {
                 sequence_state: Some(SequenceState::Begin),
                 ..Default::default()
             },
-            Run::update(
+            Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -98,7 +84,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 
@@ -108,7 +94,7 @@ mod test {
 
         assert_eq!(
             ObjectStatusUpdate::default(),
-            Run::update(
+            Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -118,7 +104,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 
@@ -128,7 +114,7 @@ mod test {
 
         assert_eq!(
             ObjectStatusUpdate::default(),
-            Run::update(
+            Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -138,7 +124,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 
@@ -155,7 +141,7 @@ mod test {
                         sequence_state: Some(SequenceState::Begin),
                         ..Default::default()
                     },
-                    Run::update(
+                    Run::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
                         &ObjectStatus {
@@ -166,7 +152,7 @@ mod test {
                         },
                         &Kinematics::default(),
                         RunCounter::default()
-                    )
+                    ))
                 );
             });
     }
@@ -181,7 +167,7 @@ mod test {
                 sequence_state: Some(SequenceState::Begin),
                 ..Default::default()
             },
-            Run::update(
+            Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -191,7 +177,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 
@@ -205,7 +191,7 @@ mod test {
                 sequence_state: Some(SequenceState::Begin),
                 ..Default::default()
             },
-            Run::update(
+            Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -215,7 +201,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 
@@ -225,7 +211,7 @@ mod test {
 
         assert_eq!(
             ObjectStatusUpdate::default(),
-            Run::update(
+            Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -235,14 +221,14 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
 
         let input = ControllerInput::new(1., -1., false, false, false, false);
 
         assert_eq!(
             ObjectStatusUpdate::default(),
-            Run::update(
+            Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -252,7 +238,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 }

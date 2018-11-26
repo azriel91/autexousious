@@ -1,24 +1,20 @@
-use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
+    entity::ObjectStatusUpdate,
 };
 
 use character::sequence_handler::SequenceHandler;
+use CharacterSequenceUpdateComponents;
 
 /// Returns the appropriate falling sequence if HP is 0.
 #[derive(Debug)]
 pub(crate) struct AliveCheck;
 
 impl SequenceHandler for AliveCheck {
-    fn update(
-        _input: &ControllerInput,
-        character_status: &CharacterStatus,
-        _object_status: &ObjectStatus<CharacterSequenceId>,
-        _kinematics: &Kinematics<f32>,
-        _run_counter: RunCounter,
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
-        if character_status.hp == 0 {
+        if components.character_status.hp == 0 {
             Some(ObjectStatusUpdate::new(
                 Some(CharacterSequenceId::FallForwardDescend),
                 Some(SequenceState::Begin),
@@ -44,12 +40,13 @@ mod tests {
 
     use super::AliveCheck;
     use character::sequence_handler::SequenceHandler;
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn returns_none_when_hp_is_above_zero() {
         assert_eq!(
             None,
-            AliveCheck::update(
+            AliveCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -58,7 +55,7 @@ mod tests {
                 },
                 &Kinematics::<f32>::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 
@@ -70,7 +67,7 @@ mod tests {
                 sequence_state: Some(SequenceState::Begin),
                 ..Default::default()
             }),
-            AliveCheck::update(
+            AliveCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus {
                     hp: HealthPoints(0),
@@ -82,7 +79,7 @@ mod tests {
                 },
                 &Kinematics::<f32>::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 }

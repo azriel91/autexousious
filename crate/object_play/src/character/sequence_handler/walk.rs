@@ -1,8 +1,4 @@
-use game_input::ControllerInput;
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
-};
+use object_model::{config::object::CharacterSequenceId, entity::ObjectStatusUpdate};
 
 use character::sequence_handler::{
     common::{
@@ -15,17 +11,14 @@ use character::sequence_handler::{
     },
     CharacterSequenceHandler, SequenceHandler,
 };
+use CharacterSequenceUpdateComponents;
 
 #[derive(Debug)]
 pub(crate) struct Walk;
 
 impl CharacterSequenceHandler for Walk {
-    fn update(
-        input: &ControllerInput,
-        character_status: &CharacterStatus,
-        object_status: &ObjectStatus<CharacterSequenceId>,
-        kinematics: &Kinematics<f32>,
-        run_counter: RunCounter,
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
     ) -> ObjectStatusUpdate<CharacterSequenceId> {
         [
             AliveCheck::update,
@@ -38,15 +31,7 @@ impl CharacterSequenceHandler for Walk {
         ]
         .iter()
         .fold(None, |status_update, fn_update| {
-            status_update.or_else(|| {
-                fn_update(
-                    input,
-                    character_status,
-                    object_status,
-                    kinematics,
-                    run_counter,
-                )
-            })
+            status_update.or_else(|| fn_update(components))
         })
         .unwrap_or_else(|| ObjectStatusUpdate::default())
     }
@@ -64,6 +49,7 @@ mod test {
 
     use super::Walk;
     use character::sequence_handler::CharacterSequenceHandler;
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn reverts_to_stand_when_no_input() {
@@ -75,7 +61,7 @@ mod test {
                 sequence_state: Some(SequenceState::Begin),
                 ..Default::default()
             },
-            Walk::update(
+            Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -84,7 +70,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::Increase(10)
-            )
+            ))
         );
     }
 
@@ -98,7 +84,7 @@ mod test {
                 sequence_state: Some(SequenceState::Begin),
                 ..Default::default()
             },
-            Walk::update(
+            Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -107,7 +93,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::Exceeded
-            )
+            ))
         );
     }
 
@@ -122,7 +108,7 @@ mod test {
                 mirrored: Some(Mirrored(false)),
                 ..Default::default()
             },
-            Walk::update(
+            Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -132,7 +118,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::Increase(11)
-            )
+            ))
         );
     }
 
@@ -147,7 +133,7 @@ mod test {
                 mirrored: Some(Mirrored(true)),
                 ..Default::default()
             },
-            Walk::update(
+            Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -157,7 +143,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::Increase(11)
-            )
+            ))
         );
     }
 
@@ -167,7 +153,7 @@ mod test {
 
         assert_eq!(
             ObjectStatusUpdate::default(),
-            Walk::update(
+            Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -176,14 +162,14 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::Increase(0)
-            )
+            ))
         );
 
         let input = ControllerInput::new(0., -1., false, false, false, false);
 
         assert_eq!(
             ObjectStatusUpdate::default(),
-            Walk::update(
+            Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -192,7 +178,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::Increase(0)
-            )
+            ))
         );
     }
 
@@ -209,7 +195,7 @@ mod test {
                         sequence_state: Some(SequenceState::Begin),
                         ..Default::default()
                     },
-                    Walk::update(
+                    Walk::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
                         &ObjectStatus {
@@ -220,7 +206,7 @@ mod test {
                         },
                         &Kinematics::default(),
                         RunCounter::Increase(0)
-                    )
+                    ))
                 );
             });
 
@@ -235,7 +221,7 @@ mod test {
                         sequence_state: Some(SequenceState::Begin),
                         ..Default::default()
                     },
-                    Walk::update(
+                    Walk::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
                         &ObjectStatus {
@@ -246,7 +232,7 @@ mod test {
                         },
                         &Kinematics::default(),
                         RunCounter::Increase(1)
-                    )
+                    ))
                 );
             });
     }
@@ -261,7 +247,7 @@ mod test {
                 sequence_state: Some(SequenceState::Begin),
                 ..Default::default()
             },
-            Walk::update(
+            Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -271,7 +257,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::Decrease(10)
-            )
+            ))
         );
     }
 
@@ -285,7 +271,7 @@ mod test {
                 sequence_state: Some(SequenceState::Begin),
                 ..Default::default()
             },
-            Walk::update(
+            Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -295,7 +281,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::Decrease(10)
-            )
+            ))
         );
     }
 
@@ -312,13 +298,13 @@ mod test {
                         sequence_state: Some(SequenceState::Begin),
                         ..Default::default()
                     },
-                    Walk::update(
+                    Walk::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
                         &ObjectStatus::default(),
                         &Kinematics::default(),
                         RunCounter::default()
-                    )
+                    ))
                 );
             });
     }
@@ -334,13 +320,13 @@ mod test {
                 sequence_state: Some(SequenceState::Begin),
                 ..Default::default()
             },
-            Walk::update(
+            Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus::default(),
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 }

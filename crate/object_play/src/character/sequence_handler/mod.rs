@@ -1,8 +1,6 @@
-use game_input::ControllerInput;
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
-};
+use object_model::{config::object::CharacterSequenceId, entity::ObjectStatusUpdate};
+
+use CharacterSequenceUpdateComponents;
 
 pub(super) use self::fall_forward_ascend::FallForwardAscend;
 pub(super) use self::fall_forward_descend::FallForwardDescend;
@@ -51,15 +49,9 @@ pub(super) trait CharacterSequenceHandler {
     ///
     /// # Parameters
     ///
-    /// * `controller_input`: Controller input for the character.
-    /// * `character_status`: Character specific status attributes.
-    /// * `kinematics`: Kinematics of the character.
-    fn update(
-        _controller_input: &ControllerInput,
-        _character_status: &CharacterStatus,
-        _object_status: &ObjectStatus<CharacterSequenceId>,
-        _kinematics: &Kinematics<f32>,
-        _run_counter: RunCounter,
+    /// * `components`: Components used to compute character sequence updates.
+    fn update<'c>(
+        _components: CharacterSequenceUpdateComponents<'c>,
     ) -> ObjectStatusUpdate<CharacterSequenceId> {
         ObjectStatusUpdate::default()
     }
@@ -76,15 +68,9 @@ pub(super) trait SequenceHandler {
     ///
     /// # Parameters
     ///
-    /// * `controller_input`: Controller input for the character.
-    /// * `character_status`: Character specific status attributes.
-    /// * `kinematics`: Kinematics of the character.
-    fn update(
-        _controller_input: &ControllerInput,
-        _character_status: &CharacterStatus,
-        _object_status: &ObjectStatus<CharacterSequenceId>,
-        _kinematics: &Kinematics<f32>,
-        _run_counter: RunCounter,
+    /// * `components`: Components used to compute character sequence updates.
+    fn update<'c>(
+        _components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
         None
     }
@@ -98,6 +84,7 @@ mod test {
     };
 
     use super::{CharacterSequenceHandler, SequenceHandler};
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn sequence_handler_default_update_is_empty() {
@@ -111,13 +98,13 @@ mod test {
         let grounding = None;
         assert_eq!(
             ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored, grounding),
-            Sit::update(
+            Sit::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
                 &ObjectStatus::default(),
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 
@@ -125,13 +112,13 @@ mod test {
     fn sequence_handler_opt_default_update_is_none() {
         assert_eq!(
             None,
-            Sleep::update(
+            Sleep::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
                 &ObjectStatus::default(),
                 &Kinematics::default(),
                 RunCounter::default(),
-            )
+            ))
         );
     }
 

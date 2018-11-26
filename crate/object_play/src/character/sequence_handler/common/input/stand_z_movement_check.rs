@@ -1,10 +1,10 @@
-use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
+    entity::ObjectStatusUpdate,
 };
 
 use character::sequence_handler::SequenceHandler;
+use CharacterSequenceUpdateComponents;
 
 /// Determines whether to switch to the `Walk` sequence based on Z input.
 ///
@@ -13,14 +13,10 @@ use character::sequence_handler::SequenceHandler;
 pub(crate) struct StandZMovementCheck;
 
 impl SequenceHandler for StandZMovementCheck {
-    fn update(
-        input: &ControllerInput,
-        _character_status: &CharacterStatus,
-        _object_status: &ObjectStatus<CharacterSequenceId>,
-        _kinematics: &Kinematics<f32>,
-        _run_counter: RunCounter,
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
-        if input.z_axis_value != 0. {
+        if components.controller_input.z_axis_value != 0. {
             let sequence_id = Some(CharacterSequenceId::Walk);
             let sequence_state = Some(SequenceState::Begin);
             let mirrored = None;
@@ -48,6 +44,7 @@ mod tests {
 
     use super::StandZMovementCheck;
     use character::sequence_handler::SequenceHandler;
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn no_change_when_no_z_input() {
@@ -55,13 +52,13 @@ mod tests {
 
         assert_eq!(
             None,
-            StandZMovementCheck::update(
+            StandZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus::default(),
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 
@@ -75,13 +72,13 @@ mod tests {
                 sequence_state: Some(SequenceState::Begin),
                 ..Default::default()
             }),
-            StandZMovementCheck::update(
+            StandZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus::default(),
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 }

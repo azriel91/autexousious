@@ -11,7 +11,7 @@ use object_model::{
     entity::{CharacterStatus, Kinematics, ObjectStatus, RunCounter},
     loaded::{Character, CharacterHandle},
 };
-use object_play::CharacterSequenceUpdater;
+use object_play::{CharacterSequenceUpdateComponents, CharacterSequenceUpdater};
 
 /// Updates `Character` sequence based on input
 #[derive(Debug, Default, TypeName, new)]
@@ -96,11 +96,13 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
 
             let object_status_update = CharacterSequenceUpdater::update(
                 character,
-                &controller_input,
-                &character_status,
-                &object_status,
-                &kinematics,
-                *run_counter,
+                CharacterSequenceUpdateComponents::new(
+                    &controller_input,
+                    &character_status,
+                    &object_status,
+                    &kinematics,
+                    *run_counter,
+                ),
             );
 
             if let Some(mirrored) = object_status_update.mirrored {

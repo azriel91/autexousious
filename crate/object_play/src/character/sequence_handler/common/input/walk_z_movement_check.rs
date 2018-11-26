@@ -1,10 +1,7 @@
-use game_input::ControllerInput;
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
-};
+use object_model::{config::object::CharacterSequenceId, entity::ObjectStatusUpdate};
 
 use character::sequence_handler::{common::SequenceRepeat, SequenceHandler};
+use CharacterSequenceUpdateComponents;
 
 /// Determines whether to switch to the `Stand` sequence based on Z input.
 ///
@@ -13,21 +10,11 @@ use character::sequence_handler::{common::SequenceRepeat, SequenceHandler};
 pub(crate) struct WalkZMovementCheck;
 
 impl SequenceHandler for WalkZMovementCheck {
-    fn update(
-        input: &ControllerInput,
-        character_status: &CharacterStatus,
-        object_status: &ObjectStatus<CharacterSequenceId>,
-        kinematics: &Kinematics<f32>,
-        run_counter: RunCounter,
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
-        if input.z_axis_value != 0. {
-            SequenceRepeat::update(
-                input,
-                character_status,
-                object_status,
-                kinematics,
-                run_counter,
-            )
+        if components.controller_input.z_axis_value != 0. {
+            SequenceRepeat::update(components)
         } else {
             None
         }
@@ -46,6 +33,7 @@ mod tests {
 
     use super::WalkZMovementCheck;
     use character::sequence_handler::SequenceHandler;
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn none_when_no_z_input() {
@@ -53,7 +41,7 @@ mod tests {
 
         assert_eq!(
             None,
-            WalkZMovementCheck::update(
+            WalkZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -62,7 +50,7 @@ mod tests {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 
@@ -73,7 +61,7 @@ mod tests {
 
             assert_eq!(
                 None,
-                WalkZMovementCheck::update(
+                WalkZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                     &input,
                     &CharacterStatus::default(),
                     &ObjectStatus {
@@ -82,7 +70,7 @@ mod tests {
                     },
                     &Kinematics::default(),
                     RunCounter::default()
-                )
+                ))
             );
         });
     }
@@ -98,7 +86,7 @@ mod tests {
                     sequence_state: Some(SequenceState::Begin),
                     ..Default::default()
                 }),
-                WalkZMovementCheck::update(
+                WalkZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                     &input,
                     &CharacterStatus::default(),
                     &ObjectStatus {
@@ -109,7 +97,7 @@ mod tests {
                     },
                     &Kinematics::default(),
                     RunCounter::Increase(1)
-                )
+                ))
             );
         });
     }

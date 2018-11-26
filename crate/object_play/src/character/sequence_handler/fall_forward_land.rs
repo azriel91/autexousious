@@ -1,10 +1,7 @@
-use game_input::ControllerInput;
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
-};
+use object_model::{config::object::CharacterSequenceId, entity::ObjectStatusUpdate};
 
 use character::sequence_handler::{CharacterSequenceHandler, SwitchSequenceOnEnd};
+use CharacterSequenceUpdateComponents;
 
 const FALL_FORWARD_LAND: SwitchSequenceOnEnd =
     SwitchSequenceOnEnd(CharacterSequenceId::LieFaceDown);
@@ -13,13 +10,9 @@ const FALL_FORWARD_LAND: SwitchSequenceOnEnd =
 pub(crate) struct FallForwardLand;
 
 impl CharacterSequenceHandler for FallForwardLand {
-    fn update(
-        _controller_input: &ControllerInput,
-        _character_status: &CharacterStatus,
-        object_status: &ObjectStatus<CharacterSequenceId>,
-        _kinematics: &Kinematics<f32>,
-        _run_counter: RunCounter,
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
     ) -> ObjectStatusUpdate<CharacterSequenceId> {
-        FALL_FORWARD_LAND.update(object_status)
+        FALL_FORWARD_LAND.update(components.object_status)
     }
 }

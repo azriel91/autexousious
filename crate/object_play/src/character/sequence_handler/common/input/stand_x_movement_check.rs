@@ -1,10 +1,10 @@
-use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
+    entity::{ObjectStatusUpdate, RunCounter},
 };
 
 use character::sequence_handler::{SequenceHandler, SequenceHandlerUtil};
+use CharacterSequenceUpdateComponents;
 
 /// Determines whether to swithc to the `Walk` or `Run` sequence based on X input.
 ///
@@ -13,24 +13,22 @@ use character::sequence_handler::{SequenceHandler, SequenceHandlerUtil};
 pub(crate) struct StandXMovementCheck;
 
 impl SequenceHandler for StandXMovementCheck {
-    fn update(
-        input: &ControllerInput,
-        _character_status: &CharacterStatus,
-        object_status: &ObjectStatus<CharacterSequenceId>,
-        _kinematics: &Kinematics<f32>,
-        run_counter: RunCounter,
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
-        if input.x_axis_value != 0. {
-            let same_direction =
-                SequenceHandlerUtil::input_matches_direction(input, object_status.mirrored);
+        if components.controller_input.x_axis_value != 0. {
+            let same_direction = SequenceHandlerUtil::input_matches_direction(
+                components.controller_input,
+                components.object_status.mirrored,
+            );
 
             let mirrored = if same_direction {
                 None
             } else {
-                Some(!object_status.mirrored)
+                Some(!components.object_status.mirrored)
             };
 
-            let sequence_id = match run_counter {
+            let sequence_id = match components.run_counter {
                 RunCounter::Unused => Some(CharacterSequenceId::Walk),
                 RunCounter::Decrease(_) => {
                     if same_direction {
@@ -69,6 +67,7 @@ mod tests {
 
     use super::StandXMovementCheck;
     use character::sequence_handler::SequenceHandler;
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn no_change_when_no_x_input() {
@@ -76,13 +75,13 @@ mod tests {
 
         assert_eq!(
             None,
-            StandXMovementCheck::update(
+            StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus::default(),
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 
@@ -97,7 +96,7 @@ mod tests {
                 mirrored: Some(Mirrored(false)),
                 ..Default::default()
             }),
-            StandXMovementCheck::update(
+            StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -106,7 +105,7 @@ mod tests {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
 
         // Already facing right
@@ -116,7 +115,7 @@ mod tests {
                 sequence_state: Some(SequenceState::Begin),
                 ..Default::default()
             }),
-            StandXMovementCheck::update(
+            StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -125,7 +124,7 @@ mod tests {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 
@@ -140,7 +139,7 @@ mod tests {
                 mirrored: Some(Mirrored(true)),
                 ..Default::default()
             }),
-            StandXMovementCheck::update(
+            StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -149,7 +148,7 @@ mod tests {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
 
         // Already facing left
@@ -159,7 +158,7 @@ mod tests {
                 sequence_state: Some(SequenceState::Begin),
                 ..Default::default()
             }),
-            StandXMovementCheck::update(
+            StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -168,7 +167,7 @@ mod tests {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 
@@ -185,7 +184,7 @@ mod tests {
                         sequence_state: Some(SequenceState::Begin),
                         ..Default::default()
                     }),
-                    StandXMovementCheck::update(
+                    StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
                         &ObjectStatus {
@@ -194,7 +193,7 @@ mod tests {
                         },
                         &Kinematics::default(),
                         RunCounter::Decrease(10)
-                    )
+                    ))
                 );
             });
     }
@@ -213,7 +212,7 @@ mod tests {
                         mirrored: Some(Mirrored(!mirrored)),
                         ..Default::default()
                     }),
-                    StandXMovementCheck::update(
+                    StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
                         &ObjectStatus {
@@ -222,7 +221,7 @@ mod tests {
                         },
                         &Kinematics::default(),
                         RunCounter::Decrease(10)
-                    )
+                    ))
                 );
             });
     }

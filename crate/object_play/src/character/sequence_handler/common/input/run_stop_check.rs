@@ -1,10 +1,10 @@
-use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
+    entity::ObjectStatusUpdate,
 };
 
 use character::sequence_handler::{common::SequenceRepeat, SequenceHandler, SequenceHandlerUtil};
+use CharacterSequenceUpdateComponents;
 
 /// Determines whether to switch to the `RunStop` sequence based on X input.
 ///
@@ -13,21 +13,14 @@ use character::sequence_handler::{common::SequenceRepeat, SequenceHandler, Seque
 pub(crate) struct RunStopCheck;
 
 impl SequenceHandler for RunStopCheck {
-    fn update(
-        input: &ControllerInput,
-        character_status: &CharacterStatus,
-        object_status: &ObjectStatus<CharacterSequenceId>,
-        kinematics: &Kinematics<f32>,
-        run_counter: RunCounter,
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
-        if SequenceHandlerUtil::input_matches_direction(input, object_status.mirrored) {
-            SequenceRepeat::update(
-                input,
-                character_status,
-                object_status,
-                kinematics,
-                run_counter,
-            )
+        if SequenceHandlerUtil::input_matches_direction(
+            components.controller_input,
+            components.object_status.mirrored,
+        ) {
+            SequenceRepeat::update(components)
         } else {
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::RunStop),
@@ -50,6 +43,7 @@ mod tests {
 
     use super::RunStopCheck;
     use character::sequence_handler::SequenceHandler;
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn none_when_input_same_direction() {
@@ -60,7 +54,7 @@ mod tests {
 
                 assert_eq!(
                     None,
-                    RunStopCheck::update(
+                    RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
                         &ObjectStatus {
@@ -70,7 +64,7 @@ mod tests {
                         },
                         &Kinematics::default(),
                         RunCounter::default()
-                    )
+                    ))
                 );
             });
     }
@@ -85,7 +79,7 @@ mod tests {
                 sequence_state: Some(SequenceState::Begin),
                 ..Default::default()
             }),
-            RunStopCheck::update(
+            RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -95,7 +89,7 @@ mod tests {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 
@@ -112,7 +106,7 @@ mod tests {
                         sequence_state: Some(SequenceState::Begin),
                         ..Default::default()
                     }),
-                    RunStopCheck::update(
+                    RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
                         &ObjectStatus {
@@ -122,7 +116,7 @@ mod tests {
                         },
                         &Kinematics::default(),
                         RunCounter::default()
-                    )
+                    ))
                 );
             });
     }
@@ -140,7 +134,7 @@ mod tests {
                         sequence_state: Some(SequenceState::Begin),
                         ..Default::default()
                     }),
-                    RunStopCheck::update(
+                    RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
                         &ObjectStatus {
@@ -151,7 +145,7 @@ mod tests {
                         },
                         &Kinematics::default(),
                         RunCounter::default()
-                    )
+                    ))
                 );
             });
     }

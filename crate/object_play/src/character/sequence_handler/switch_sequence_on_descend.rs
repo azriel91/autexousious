@@ -1,8 +1,9 @@
-use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
+    entity::ObjectStatusUpdate,
 };
+
+use CharacterSequenceUpdateComponents;
 
 #[derive(Debug)]
 pub(crate) struct SwitchSequenceOnDescend(
@@ -11,21 +12,17 @@ pub(crate) struct SwitchSequenceOnDescend(
 );
 
 impl SwitchSequenceOnDescend {
-    pub fn update(
+    pub fn update<'c>(
         &self,
-        _controller_input: &ControllerInput,
-        _character_status: &CharacterStatus,
-        object_status: &ObjectStatus<CharacterSequenceId>,
-        kinematics: &Kinematics<f32>,
-        _run_counter: RunCounter,
+        components: CharacterSequenceUpdateComponents<'c>,
     ) -> ObjectStatusUpdate<CharacterSequenceId> {
         let mut object_status_update = ObjectStatusUpdate::default();
         // Switch to descend_sequence when Y axis velocity is no longer upwards.
-        if kinematics.velocity[1] <= 0. {
+        if components.kinematics.velocity[1] <= 0. {
             object_status_update.sequence_id = Some(self.0);
             object_status_update.sequence_state = Some(SequenceState::Begin);
-        } else if object_status.sequence_state == SequenceState::End {
-            object_status_update.sequence_id = Some(object_status.sequence_id);
+        } else if components.object_status.sequence_state == SequenceState::End {
+            object_status_update.sequence_id = Some(components.object_status.sequence_id);
             object_status_update.sequence_state = Some(SequenceState::Begin);
         }
 
@@ -44,6 +41,7 @@ mod test {
     };
 
     use super::SwitchSequenceOnDescend;
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn no_update_when_sequence_not_ended() {
@@ -54,15 +52,17 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate::default(),
             SwitchSequenceOnDescend(CharacterSequenceId::FallForwardDescend).update(
-                &input,
-                &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::FallForwardAscend,
-                    grounding: Grounding::Airborne,
-                    ..Default::default()
-                },
-                &kinematics,
-                RunCounter::default()
+                CharacterSequenceUpdateComponents::new(
+                    &input,
+                    &CharacterStatus::default(),
+                    &ObjectStatus {
+                        sequence_id: CharacterSequenceId::FallForwardAscend,
+                        grounding: Grounding::Airborne,
+                        ..Default::default()
+                    },
+                    &kinematics,
+                    RunCounter::default()
+                )
             )
         );
     }
@@ -80,16 +80,18 @@ mod test {
                 ..Default::default()
             },
             SwitchSequenceOnDescend(CharacterSequenceId::FallForwardDescend).update(
-                &input,
-                &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::FallForwardAscend,
-                    sequence_state: SequenceState::End,
-                    grounding: Grounding::Airborne,
-                    ..Default::default()
-                },
-                &kinematics,
-                RunCounter::default()
+                CharacterSequenceUpdateComponents::new(
+                    &input,
+                    &CharacterStatus::default(),
+                    &ObjectStatus {
+                        sequence_id: CharacterSequenceId::FallForwardAscend,
+                        sequence_state: SequenceState::End,
+                        grounding: Grounding::Airborne,
+                        ..Default::default()
+                    },
+                    &kinematics,
+                    RunCounter::default()
+                )
             )
         );
     }
@@ -110,16 +112,18 @@ mod test {
                         ..Default::default()
                     },
                     SwitchSequenceOnDescend(CharacterSequenceId::FallForwardDescend).update(
-                        &input,
-                        &CharacterStatus::default(),
-                        &ObjectStatus {
-                            sequence_id: CharacterSequenceId::FallForwardAscend,
-                            sequence_state: SequenceState::Ongoing,
-                            grounding: Grounding::Airborne,
-                            ..Default::default()
-                        },
-                        &kinematics,
-                        RunCounter::default()
+                        CharacterSequenceUpdateComponents::new(
+                            &input,
+                            &CharacterStatus::default(),
+                            &ObjectStatus {
+                                sequence_id: CharacterSequenceId::FallForwardAscend,
+                                sequence_state: SequenceState::Ongoing,
+                                grounding: Grounding::Airborne,
+                                ..Default::default()
+                            },
+                            &kinematics,
+                            RunCounter::default()
+                        )
                     )
                 );
             });
@@ -140,16 +144,18 @@ mod test {
                         ..Default::default()
                     },
                     SwitchSequenceOnDescend(CharacterSequenceId::FallForwardDescend).update(
-                        &input,
-                        &CharacterStatus::default(),
-                        &ObjectStatus {
-                            sequence_id: CharacterSequenceId::FallForwardAscend,
-                            grounding: Grounding::Airborne,
-                            mirrored: mirrored.into(),
-                            ..Default::default()
-                        },
-                        &kinematics,
-                        RunCounter::default()
+                        CharacterSequenceUpdateComponents::new(
+                            &input,
+                            &CharacterStatus::default(),
+                            &ObjectStatus {
+                                sequence_id: CharacterSequenceId::FallForwardAscend,
+                                grounding: Grounding::Airborne,
+                                mirrored: mirrored.into(),
+                                ..Default::default()
+                            },
+                            &kinematics,
+                            RunCounter::default()
+                        )
                     )
                 );
             });

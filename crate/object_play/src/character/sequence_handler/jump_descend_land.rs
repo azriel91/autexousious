@@ -1,24 +1,20 @@
-use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
+    entity::ObjectStatusUpdate,
 };
 
 use character::sequence_handler::CharacterSequenceHandler;
+use CharacterSequenceUpdateComponents;
 
 #[derive(Debug)]
 pub(crate) struct JumpDescendLand;
 
 impl CharacterSequenceHandler for JumpDescendLand {
-    fn update(
-        _controller_input: &ControllerInput,
-        _character_status: &CharacterStatus,
-        object_status: &ObjectStatus<CharacterSequenceId>,
-        _kinematics: &Kinematics<f32>,
-        _run_counter: RunCounter,
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
     ) -> ObjectStatusUpdate<CharacterSequenceId> {
         let mut object_status_update = ObjectStatusUpdate::default();
-        if object_status.sequence_state == SequenceState::End {
+        if components.object_status.sequence_state == SequenceState::End {
             object_status_update.sequence_id = Some(CharacterSequenceId::Stand);
             object_status_update.sequence_state = Some(SequenceState::Begin);
         }
@@ -37,6 +33,7 @@ mod test {
 
     use super::JumpDescendLand;
     use character::sequence_handler::CharacterSequenceHandler;
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn no_update_when_sequence_not_ended() {
@@ -44,7 +41,7 @@ mod test {
 
         assert_eq!(
             ObjectStatusUpdate::default(),
-            JumpDescendLand::update(
+            JumpDescendLand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -53,7 +50,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 
@@ -67,7 +64,7 @@ mod test {
                 sequence_state: Some(SequenceState::Begin),
                 ..Default::default()
             },
-            JumpDescendLand::update(
+            JumpDescendLand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -77,7 +74,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 }

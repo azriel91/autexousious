@@ -1,10 +1,7 @@
-use game_input::ControllerInput;
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
-};
+use object_model::{config::object::CharacterSequenceId, entity::ObjectStatusUpdate};
 
 use character::sequence_handler::{CharacterSequenceHandler, SwitchSequenceOnEnd};
+use CharacterSequenceUpdateComponents;
 
 const STAND_ON_SEQUENCE_END: SwitchSequenceOnEnd = SwitchSequenceOnEnd(CharacterSequenceId::Stand);
 
@@ -12,13 +9,9 @@ const STAND_ON_SEQUENCE_END: SwitchSequenceOnEnd = SwitchSequenceOnEnd(Character
 pub(crate) struct StandOnSequenceEnd;
 
 impl CharacterSequenceHandler for StandOnSequenceEnd {
-    fn update(
-        _controller_input: &ControllerInput,
-        _character_status: &CharacterStatus,
-        object_status: &ObjectStatus<CharacterSequenceId>,
-        _kinematics: &Kinematics<f32>,
-        _run_counter: RunCounter,
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
     ) -> ObjectStatusUpdate<CharacterSequenceId> {
-        STAND_ON_SEQUENCE_END.update(object_status)
+        STAND_ON_SEQUENCE_END.update(components.object_status)
     }
 }

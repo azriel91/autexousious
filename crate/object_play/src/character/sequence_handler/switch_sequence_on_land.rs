@@ -1,10 +1,9 @@
-use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{
-        CharacterStatus, Grounding, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter,
-    },
+    entity::{Grounding, ObjectStatusUpdate},
 };
+
+use CharacterSequenceUpdateComponents;
 
 #[derive(Debug)]
 pub(crate) struct SwitchSequenceOnLand(
@@ -13,19 +12,15 @@ pub(crate) struct SwitchSequenceOnLand(
 );
 
 impl SwitchSequenceOnLand {
-    pub fn update(
+    pub fn update<'c>(
         &self,
-        _controller_input: &ControllerInput,
-        _character_status: &CharacterStatus,
-        object_status: &ObjectStatus<CharacterSequenceId>,
-        _kinematics: &Kinematics<f32>,
-        _run_counter: RunCounter,
+        components: CharacterSequenceUpdateComponents<'c>,
     ) -> ObjectStatusUpdate<CharacterSequenceId> {
         let mut object_status_update = ObjectStatusUpdate::default();
-        if object_status.grounding == Grounding::OnGround {
+        if components.object_status.grounding == Grounding::OnGround {
             object_status_update.sequence_id = Some(self.0);
             object_status_update.sequence_state = Some(SequenceState::Begin);
-        } else if object_status.sequence_state == SequenceState::End {
+        } else if components.object_status.sequence_state == SequenceState::End {
             object_status_update.sequence_id = Some(CharacterSequenceId::FallForwardDescend);
             object_status_update.sequence_state = Some(SequenceState::Begin);
         }
@@ -45,6 +40,7 @@ mod test {
     };
 
     use super::SwitchSequenceOnLand;
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn no_update_when_sequence_not_ended() {
@@ -55,15 +51,17 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate::default(),
             SwitchSequenceOnLand(CharacterSequenceId::FallForwardLand).update(
-                &input,
-                &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::FallForwardDescend,
-                    grounding: Grounding::Airborne,
-                    ..Default::default()
-                },
-                &kinematics,
-                RunCounter::default()
+                CharacterSequenceUpdateComponents::new(
+                    &input,
+                    &CharacterStatus::default(),
+                    &ObjectStatus {
+                        sequence_id: CharacterSequenceId::FallForwardDescend,
+                        grounding: Grounding::Airborne,
+                        ..Default::default()
+                    },
+                    &kinematics,
+                    RunCounter::default()
+                )
             )
         );
     }
@@ -81,16 +79,18 @@ mod test {
                 ..Default::default()
             },
             SwitchSequenceOnLand(CharacterSequenceId::FallForwardLand).update(
-                &input,
-                &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::FallForwardDescend,
-                    sequence_state: SequenceState::End,
-                    grounding: Grounding::Airborne,
-                    ..Default::default()
-                },
-                &kinematics,
-                RunCounter::default()
+                CharacterSequenceUpdateComponents::new(
+                    &input,
+                    &CharacterStatus::default(),
+                    &ObjectStatus {
+                        sequence_id: CharacterSequenceId::FallForwardDescend,
+                        sequence_state: SequenceState::End,
+                        grounding: Grounding::Airborne,
+                        ..Default::default()
+                    },
+                    &kinematics,
+                    RunCounter::default()
+                )
             )
         );
     }
@@ -108,15 +108,17 @@ mod test {
                 ..Default::default()
             },
             SwitchSequenceOnLand(CharacterSequenceId::FallForwardLand).update(
-                &input,
-                &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::FallForwardDescend,
-                    grounding: Grounding::OnGround,
-                    ..Default::default()
-                },
-                &kinematics,
-                RunCounter::default()
+                CharacterSequenceUpdateComponents::new(
+                    &input,
+                    &CharacterStatus::default(),
+                    &ObjectStatus {
+                        sequence_id: CharacterSequenceId::FallForwardDescend,
+                        grounding: Grounding::OnGround,
+                        ..Default::default()
+                    },
+                    &kinematics,
+                    RunCounter::default()
+                )
             )
         );
     }
@@ -136,16 +138,18 @@ mod test {
                         ..Default::default()
                     },
                     SwitchSequenceOnLand(CharacterSequenceId::FallForwardLand).update(
-                        &input,
-                        &CharacterStatus::default(),
-                        &ObjectStatus {
-                            sequence_id: CharacterSequenceId::FallForwardDescend,
-                            grounding: Grounding::Airborne,
-                            mirrored: mirrored.into(),
-                            ..Default::default()
-                        },
-                        &kinematics,
-                        RunCounter::default()
+                        CharacterSequenceUpdateComponents::new(
+                            &input,
+                            &CharacterStatus::default(),
+                            &ObjectStatus {
+                                sequence_id: CharacterSequenceId::FallForwardDescend,
+                                grounding: Grounding::Airborne,
+                                mirrored: mirrored.into(),
+                                ..Default::default()
+                            },
+                            &kinematics,
+                            RunCounter::default()
+                        )
                     )
                 );
             });

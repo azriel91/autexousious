@@ -1,41 +1,29 @@
-use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
+    entity::ObjectStatusUpdate,
 };
 
 use character::sequence_handler::{
     common::{grounding::AirborneCheck, status::AliveCheck},
     CharacterSequenceHandler, SequenceHandler,
 };
+use CharacterSequenceUpdateComponents;
 
 #[derive(Debug)]
 pub(crate) struct RunStop;
 
 impl CharacterSequenceHandler for RunStop {
-    fn update(
-        input: &ControllerInput,
-        character_status: &CharacterStatus,
-        object_status: &ObjectStatus<CharacterSequenceId>,
-        kinematics: &Kinematics<f32>,
-        run_counter: RunCounter,
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
     ) -> ObjectStatusUpdate<CharacterSequenceId> {
         [AliveCheck::update, AirborneCheck::update]
             .iter()
             .fold(None, |status_update, fn_update| {
-                status_update.or_else(|| {
-                    fn_update(
-                        input,
-                        character_status,
-                        object_status,
-                        kinematics,
-                        run_counter,
-                    )
-                })
+                status_update.or_else(|| fn_update(components))
             })
             .unwrap_or_else(|| {
                 let mut object_status_update = ObjectStatusUpdate::default();
-                if object_status.sequence_state == SequenceState::End {
+                if components.object_status.sequence_state == SequenceState::End {
                     object_status_update.sequence_id = Some(CharacterSequenceId::Stand);
                     object_status_update.sequence_state = Some(SequenceState::Begin);
                 }
@@ -56,6 +44,7 @@ mod test {
 
     use super::RunStop;
     use character::sequence_handler::CharacterSequenceHandler;
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn jump_descend_when_airborne() {
@@ -65,7 +54,7 @@ mod test {
                 sequence_state: Some(SequenceState::Begin),
                 ..Default::default()
             },
-            RunStop::update(
+            RunStop::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -75,7 +64,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 
@@ -85,7 +74,7 @@ mod test {
 
         assert_eq!(
             ObjectStatusUpdate::default(),
-            RunStop::update(
+            RunStop::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -94,7 +83,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 
@@ -108,7 +97,7 @@ mod test {
                 sequence_state: Some(SequenceState::Begin),
                 ..Default::default()
             },
-            RunStop::update(
+            RunStop::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -118,7 +107,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 }

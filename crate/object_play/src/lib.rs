@@ -18,7 +18,7 @@ extern crate typename;
 #[macro_use]
 extern crate typename_derive;
 
-pub use character::CharacterSequenceUpdater;
+pub use character::{CharacterSequenceUpdateComponents, CharacterSequenceUpdater};
 pub use object_play_bundle::ObjectPlayBundle;
 pub use system::RunCounterUpdateSystem;
 

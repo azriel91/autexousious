@@ -1,8 +1,4 @@
-use game_input::ControllerInput;
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
-};
+use object_model::{config::object::CharacterSequenceId, entity::ObjectStatusUpdate};
 
 use character::sequence_handler::{
     common::{
@@ -13,23 +9,20 @@ use character::sequence_handler::{
     },
     CharacterSequenceHandler, SequenceHandler,
 };
+use CharacterSequenceUpdateComponents;
 
 #[derive(Debug)]
 pub(crate) struct Stand;
 
 impl CharacterSequenceHandler for Stand {
-    fn update(
-        input: &ControllerInput,
-        character_status: &CharacterStatus,
-        object_status: &ObjectStatus<CharacterSequenceId>,
-        kinematics: &Kinematics<f32>,
-        run_counter: RunCounter,
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
     ) -> ObjectStatusUpdate<CharacterSequenceId> {
         use object_model::entity::RunCounter::*;
-        match run_counter {
+        match components.run_counter {
             Exceeded | Increase(_) => panic!(
                 "Invalid run_counter state during `Stand` sequence: `{:?}`",
-                run_counter
+                components.run_counter
             ),
             _ => {}
         };
@@ -45,15 +38,7 @@ impl CharacterSequenceHandler for Stand {
         ]
         .iter()
         .fold(None, |status_update, fn_update| {
-            status_update.or_else(|| {
-                fn_update(
-                    input,
-                    character_status,
-                    object_status,
-                    kinematics,
-                    run_counter,
-                )
-            })
+            status_update.or_else(|| fn_update(components))
         })
         .unwrap_or_else(|| ObjectStatusUpdate::default())
     }
@@ -72,6 +57,7 @@ mod test {
 
     use super::Stand;
     use character::sequence_handler::CharacterSequenceHandler;
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn no_change_when_no_input() {
@@ -79,7 +65,7 @@ mod test {
 
         assert_eq!(
             ObjectStatusUpdate::default(),
-            Stand::update(
+            Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus::new(
@@ -90,7 +76,7 @@ mod test {
                 ),
                 &Kinematics::default(),
                 RunCounter::Unused
-            )
+            ))
         );
     }
 
@@ -104,7 +90,7 @@ mod test {
                 sequence_state: Some(SequenceState::Begin),
                 ..Default::default()
             },
-            Stand::update(
+            Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -114,7 +100,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 
@@ -128,7 +114,7 @@ mod test {
                 sequence_state: Some(SequenceState::Begin),
                 ..Default::default()
             },
-            Stand::update(
+            Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -138,7 +124,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 
@@ -147,13 +133,13 @@ mod test {
     fn panics_when_run_counter_exceeded() {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
-        Stand::update(
+        Stand::update(CharacterSequenceUpdateComponents::new(
             &input,
             &CharacterStatus::default(),
             &ObjectStatus::default(),
             &Kinematics::default(),
             RunCounter::Exceeded,
-        );
+        ));
     } // kcov-ignore
 
     #[test]
@@ -161,13 +147,13 @@ mod test {
     fn panics_when_run_counter_increase() {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
-        Stand::update(
+        Stand::update(CharacterSequenceUpdateComponents::new(
             &input,
             &CharacterStatus::default(),
             &ObjectStatus::default(),
             &Kinematics::default(),
             RunCounter::Increase(10),
-        );
+        ));
     } // kcov-ignore
 
     #[test]
@@ -181,7 +167,7 @@ mod test {
                 mirrored: Some(Mirrored(false)),
                 ..Default::default()
             },
-            Stand::update(
+            Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -190,7 +176,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
 
         // Already facing right
@@ -200,7 +186,7 @@ mod test {
                 sequence_state: Some(SequenceState::Begin),
                 ..Default::default()
             },
-            Stand::update(
+            Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -209,7 +195,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 
@@ -224,7 +210,7 @@ mod test {
                 mirrored: Some(Mirrored(true)),
                 ..Default::default()
             },
-            Stand::update(
+            Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -233,7 +219,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
 
         // Already facing left
@@ -243,7 +229,7 @@ mod test {
                 sequence_state: Some(SequenceState::Begin),
                 ..Default::default()
             },
-            Stand::update(
+            Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -252,7 +238,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 
@@ -266,7 +252,7 @@ mod test {
                 sequence_state: Some(SequenceState::Begin),
                 ..Default::default()
             },
-            Stand::update(
+            Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -275,7 +261,7 @@ mod test {
                 },
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 
@@ -292,7 +278,7 @@ mod test {
                         sequence_state: Some(SequenceState::Begin),
                         ..Default::default()
                     },
-                    Stand::update(
+                    Stand::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
                         &ObjectStatus {
@@ -301,7 +287,7 @@ mod test {
                         },
                         &Kinematics::default(),
                         RunCounter::Decrease(10)
-                    )
+                    ))
                 );
             });
     }
@@ -320,7 +306,7 @@ mod test {
                         mirrored: Some(Mirrored(!mirrored)),
                         ..Default::default()
                     },
-                    Stand::update(
+                    Stand::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
                         &ObjectStatus {
@@ -329,7 +315,7 @@ mod test {
                         },
                         &Kinematics::default(),
                         RunCounter::Decrease(10)
-                    )
+                    ))
                 );
             });
     }
@@ -347,13 +333,13 @@ mod test {
                         sequence_state: Some(SequenceState::Begin),
                         ..Default::default()
                     },
-                    Stand::update(
+                    Stand::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
                         &ObjectStatus::default(),
                         &Kinematics::default(),
                         RunCounter::default()
-                    )
+                    ))
                 );
             });
     }
@@ -369,13 +355,13 @@ mod test {
                 sequence_state: Some(SequenceState::Begin),
                 ..Default::default()
             },
-            Stand::update(
+            Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus::default(),
                 &Kinematics::default(),
                 RunCounter::default()
-            )
+            ))
         );
     }
 }

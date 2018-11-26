@@ -1,35 +1,34 @@
-use game_input::ControllerInput;
 use object_model::{
     config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
+    entity::ObjectStatusUpdate,
 };
 
 use character::sequence_handler::{CharacterSequenceHandler, SequenceHandlerUtil};
+use CharacterSequenceUpdateComponents;
 
 #[derive(Debug)]
 pub(crate) struct JumpAscend;
 
 impl CharacterSequenceHandler for JumpAscend {
-    fn update(
-        controller_input: &ControllerInput,
-        _character_status: &CharacterStatus,
-        object_status: &ObjectStatus<CharacterSequenceId>,
-        kinematics: &Kinematics<f32>,
-        _run_counter: RunCounter,
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
     ) -> ObjectStatusUpdate<CharacterSequenceId> {
         let mut object_status_update = ObjectStatusUpdate::default();
         // Switch to jump_descend when Y axis velocity is no longer upwards.
-        if kinematics.velocity[1] <= 0. {
+        if components.kinematics.velocity[1] <= 0. {
             object_status_update.sequence_id = Some(CharacterSequenceId::JumpDescend);
             object_status_update.sequence_state = Some(SequenceState::Begin);
-        } else if object_status.sequence_state == SequenceState::End {
+        } else if components.object_status.sequence_state == SequenceState::End {
             object_status_update.sequence_id = Some(CharacterSequenceId::JumpAscend);
             object_status_update.sequence_state = Some(SequenceState::Begin);
         }
 
         // Switch direction if user is pressing the opposite way.
-        if SequenceHandlerUtil::input_opposes_direction(controller_input, object_status.mirrored) {
-            object_status_update.mirrored = Some(!object_status.mirrored);
+        if SequenceHandlerUtil::input_opposes_direction(
+            components.controller_input,
+            components.object_status.mirrored,
+        ) {
+            object_status_update.mirrored = Some(!components.object_status.mirrored);
         }
 
         object_status_update
@@ -49,6 +48,7 @@ mod test {
 
     use super::JumpAscend;
     use character::sequence_handler::CharacterSequenceHandler;
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn no_update_when_sequence_not_ended() {
@@ -58,7 +58,7 @@ mod test {
 
         assert_eq!(
             ObjectStatusUpdate::default(),
-            JumpAscend::update(
+            JumpAscend::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -68,7 +68,7 @@ mod test {
                 },
                 &kinematics,
                 RunCounter::default()
-            )
+            ))
         );
     }
 
@@ -84,7 +84,7 @@ mod test {
                 sequence_state: Some(SequenceState::Begin),
                 ..Default::default()
             },
-            JumpAscend::update(
+            JumpAscend::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
@@ -95,7 +95,7 @@ mod test {
                 },
                 &kinematics,
                 RunCounter::default()
-            )
+            ))
         );
     }
 
@@ -114,7 +114,7 @@ mod test {
                         sequence_state: Some(SequenceState::Begin),
                         ..Default::default()
                     },
-                    JumpAscend::update(
+                    JumpAscend::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
                         &ObjectStatus {
@@ -125,7 +125,7 @@ mod test {
                         },
                         &kinematics,
                         RunCounter::default()
-                    )
+                    ))
                 );
             });
     }
@@ -144,7 +144,7 @@ mod test {
                         mirrored: Some(Mirrored(!mirrored)),
                         ..Default::default()
                     },
-                    JumpAscend::update(
+                    JumpAscend::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
                         &ObjectStatus {
@@ -155,7 +155,7 @@ mod test {
                         },
                         &kinematics,
                         RunCounter::default()
-                    )
+                    ))
                 );
             });
     }
