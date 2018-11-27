@@ -18,14 +18,13 @@ impl SequenceHandler for RunStopCheck {
     ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
         if SequenceHandlerUtil::input_matches_direction(
             components.controller_input,
-            components.object_status.mirrored,
+            components.mirrored,
         ) {
             SequenceRepeat::update(components)
         } else {
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::RunStop),
                 sequence_state: Some(SequenceState::Begin),
-                ..Default::default()
             })
         }
     }
@@ -37,7 +36,8 @@ mod tests {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate, RunCounter,
+            CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
+            RunCounter,
         },
     };
 
@@ -59,10 +59,11 @@ mod tests {
                         &CharacterStatus::default(),
                         &ObjectStatus {
                             sequence_id: CharacterSequenceId::Walk,
-                            mirrored: mirrored.into(),
                             ..Default::default()
                         },
                         &Kinematics::default(),
+                        mirrored.into(),
+                        Grounding::default(),
                         RunCounter::default()
                     ))
                 );
@@ -77,17 +78,17 @@ mod tests {
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::RunStop),
                 sequence_state: Some(SequenceState::Begin),
-                ..Default::default()
             }),
             RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
-                    mirrored: Mirrored(false),
                     ..Default::default()
                 },
                 &Kinematics::default(),
+                Mirrored(false),
+                Grounding::default(),
                 RunCounter::default()
             ))
         );
@@ -104,17 +105,17 @@ mod tests {
                     Some(ObjectStatusUpdate {
                         sequence_id: Some(CharacterSequenceId::RunStop),
                         sequence_state: Some(SequenceState::Begin),
-                        ..Default::default()
                     }),
                     RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
                         &ObjectStatus {
                             sequence_id: CharacterSequenceId::Walk,
-                            mirrored: mirrored.into(),
                             ..Default::default()
                         },
                         &Kinematics::default(),
+                        mirrored.into(),
+                        Grounding::default(),
                         RunCounter::default()
                     ))
                 );
@@ -132,7 +133,6 @@ mod tests {
                     Some(ObjectStatusUpdate {
                         sequence_id: Some(CharacterSequenceId::Run),
                         sequence_state: Some(SequenceState::Begin),
-                        ..Default::default()
                     }),
                     RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
@@ -140,10 +140,10 @@ mod tests {
                         &ObjectStatus {
                             sequence_id: CharacterSequenceId::Run,
                             sequence_state: SequenceState::End,
-                            mirrored: mirrored.into(),
-                            ..Default::default()
                         },
                         &Kinematics::default(),
+                        mirrored.into(),
+                        Grounding::default(),
                         RunCounter::default()
                     ))
                 );

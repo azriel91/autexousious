@@ -27,7 +27,8 @@ mod tests {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate, RunCounter,
+            CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
+            RunCounter,
         },
     };
 
@@ -49,6 +50,8 @@ mod tests {
                     ..Default::default()
                 },
                 &Kinematics::default(),
+                Mirrored::default(),
+                Grounding::default(),
                 RunCounter::default()
             ))
         );
@@ -69,6 +72,8 @@ mod tests {
                         ..Default::default()
                     },
                     &Kinematics::default(),
+                    Mirrored::default(),
+                    Grounding::default(),
                     RunCounter::default()
                 ))
             );
@@ -84,7 +89,6 @@ mod tests {
                 Some(ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::Walk),
                     sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
                 }),
                 WalkZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                     &input,
@@ -92,10 +96,10 @@ mod tests {
                     &ObjectStatus {
                         sequence_id: CharacterSequenceId::Walk,
                         sequence_state: SequenceState::End,
-                        mirrored: Mirrored(false),
-                        ..Default::default()
                     },
                     &Kinematics::default(),
+                    Mirrored(false),
+                    Grounding::default(),
                     RunCounter::Increase(1)
                 ))
             );

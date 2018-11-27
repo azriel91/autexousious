@@ -5,7 +5,6 @@ use amethyst::{
 use game_input::ControllerInput;
 use named_type::NamedType;
 use object_model::{config::object::CharacterSequenceId, entity::ObjectStatus};
-use object_play::RunCounterUpdateSystem;
 use tracker::LastTrackerSystem;
 use typename::TypeName;
 
@@ -33,11 +32,6 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             CharacterSequenceUpdateSystem::new(),
             &CharacterSequenceUpdateSystem::type_name(),
             &[],
-        ); // kcov-ignore
-        builder.add(
-            RunCounterUpdateSystem::new(),
-            &RunCounterUpdateSystem::type_name(),
-            &[&CharacterSequenceUpdateSystem::type_name()],
         ); // kcov-ignore
         builder.add(
             CharacterKinematicsSystem::new(),

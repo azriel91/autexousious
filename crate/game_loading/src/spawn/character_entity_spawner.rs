@@ -10,7 +10,7 @@ use game_input::{ControllerInput, InputControlled};
 use game_model::loaded::SlugAndHandle;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{CharacterStatus, Kinematics, ObjectStatus, RunCounter},
+    entity::{CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, RunCounter},
     loaded::{
         AnimatedComponentAnimation, AnimatedComponentDefault, Character, CharacterHandle, Object,
         ObjectHandle,
@@ -59,6 +59,8 @@ impl CharacterEntitySpawner {
                 world.write_storage::<CharacterStatus>(),
                 world.write_storage::<ObjectStatus<CharacterSequenceId>>(),
                 world.write_storage::<RunCounter>(),
+                world.write_storage::<Mirrored>(),
+                world.write_storage::<Grounding>(),
             ), // kcov-ignore
             &mut (
                 world.write_storage::<SpriteRender>(),
@@ -103,6 +105,8 @@ impl CharacterEntitySpawner {
             ref mut character_status_storage,
             ref mut object_status_storage,
             ref mut run_counter_storage,
+            ref mut mirrored_storage,
+            ref mut grounding_storage,
         ): &mut CharacterComponentStorages<'s>,
         (
             ref mut sprite_render_storage,
@@ -179,6 +183,14 @@ impl CharacterEntitySpawner {
         run_counter_storage
             .insert(entity, RunCounter::default())
             .expect("Failed to insert run_counter component.");
+        // Mirrored.
+        mirrored_storage
+            .insert(entity, Mirrored::default())
+            .expect("Failed to insert mirrored component.");
+        // Grounding.
+        grounding_storage
+            .insert(entity, Grounding::default())
+            .expect("Failed to insert grounding component.");
         // Enable transparency for visibility sorting
         transparent_storage
             .insert(entity, Transparent)
@@ -274,7 +286,9 @@ mod test {
     use object_loading::ObjectLoadingBundle;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{CharacterStatus, Kinematics, ObjectStatus, Position, Velocity},
+        entity::{
+            CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, Position, Velocity,
+        },
         loaded::{Character, CharacterHandle, ObjectHandle},
     };
     use typename::TypeName;
@@ -313,6 +327,8 @@ mod test {
                 .read_storage::<ObjectStatus<CharacterSequenceId>>()
                 .contains(entity));
             assert!(world.read_storage::<ControllerInput>().contains(entity));
+            assert!(world.read_storage::<Mirrored>().contains(entity));
+            assert!(world.read_storage::<Grounding>().contains(entity));
             assert!(world.read_storage::<SpriteRender>().contains(entity));
             assert!(world.read_storage::<Transparent>().contains(entity));
             assert!(world.read_storage::<Kinematics<f32>>().contains(entity));

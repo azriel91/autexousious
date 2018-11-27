@@ -6,7 +6,7 @@ use amethyst::ecs::{
 };
 
 use config::object::{SequenceId, SequenceState};
-use entity::{Grounding, Mirrored, ObjectStatusUpdate};
+use entity::ObjectStatusUpdate;
 
 /// Status of an object entity.
 ///
@@ -17,10 +17,6 @@ pub struct ObjectStatus<SeqId: SequenceId> {
     pub sequence_id: SeqId,
     /// Whether the sequence just started, is ongoing, or has ended.
     pub sequence_state: SequenceState,
-    /// Whether or not this object is facing left.
-    pub mirrored: Mirrored,
-    /// Tracks an object's attachment to the surrounding environment.
-    pub grounding: Grounding,
 }
 
 impl<SeqId: SequenceId + 'static> Component for ObjectStatus<SeqId> {
@@ -34,8 +30,6 @@ impl<SeqId: SequenceId> Add<ObjectStatusUpdate<SeqId>> for ObjectStatus<SeqId> {
         ObjectStatus {
             sequence_id: delta.sequence_id.unwrap_or(self.sequence_id),
             sequence_state: delta.sequence_state.unwrap_or(self.sequence_state),
-            mirrored: delta.mirrored.unwrap_or(self.mirrored),
-            grounding: delta.grounding.unwrap_or(self.grounding),
         }
     }
 }
@@ -49,27 +43,17 @@ impl<SeqId: SequenceId> AddAssign<ObjectStatusUpdate<SeqId>> for ObjectStatus<Se
 #[cfg(test)]
 mod test {
     use config::object::{SequenceId, SequenceState};
-    use entity::{Grounding, Mirrored, ObjectStatusUpdate};
+    use entity::ObjectStatusUpdate;
 
     use super::ObjectStatus;
 
     #[test]
     fn add_retains_values_if_no_delta() {
-        let status = ObjectStatus::new(
-            TestSeqId::Moo,
-            SequenceState::End,
-            Mirrored(true),
-            Grounding::Airborne,
-        );
+        let status = ObjectStatus::new(TestSeqId::Moo, SequenceState::End);
         let delta = ObjectStatusUpdate::default();
 
         assert_eq!(
-            ObjectStatus::new(
-                TestSeqId::Moo,
-                SequenceState::End,
-                Mirrored(true),
-                Grounding::Airborne
-            ),
+            ObjectStatus::new(TestSeqId::Moo, SequenceState::End,),
             status + delta
         );
     }
@@ -103,82 +87,24 @@ mod test {
     }
 
     #[test]
-    fn add_updates_mirrored_if_present() {
-        let status = ObjectStatus::<TestSeqId> {
-            mirrored: Mirrored(false),
-            ..Default::default()
-        };
-        let delta = ObjectStatusUpdate {
-            mirrored: Some(Mirrored(true)),
-            ..Default::default()
-        };
-
-        assert_eq!(Mirrored(true), (status + delta).mirrored);
-    }
-
-    #[test]
-    fn add_updates_grounding_if_present() {
-        let status = ObjectStatus::<TestSeqId> {
-            grounding: Grounding::Airborne,
-            ..Default::default()
-        };
-        let delta = ObjectStatusUpdate {
-            grounding: Some(Grounding::OnGround),
-            ..Default::default()
-        };
-
-        assert_eq!(Grounding::OnGround, (status + delta).grounding);
-    }
-
-    #[test]
     fn add_retains_value_when_delta_value_is_same() {
-        let status = ObjectStatus::new(
-            TestSeqId::Boo,
-            SequenceState::End,
-            Mirrored(true),
-            Grounding::Airborne,
-        );
-        let delta = ObjectStatusUpdate::new(
-            Some(TestSeqId::Boo),
-            Some(SequenceState::End),
-            Some(Mirrored(true)),
-            Some(Grounding::Airborne),
-        );
+        let status = ObjectStatus::new(TestSeqId::Boo, SequenceState::End);
+        let delta = ObjectStatusUpdate::new(Some(TestSeqId::Boo), Some(SequenceState::End));
 
         assert_eq!(
-            ObjectStatus::new(
-                TestSeqId::Boo,
-                SequenceState::End,
-                Mirrored(true),
-                Grounding::Airborne
-            ),
+            ObjectStatus::new(TestSeqId::Boo, SequenceState::End,),
             status + delta
         );
     }
 
     #[test]
     fn add_assign_updates_fields_if_present() {
-        let mut status = ObjectStatus::new(
-            TestSeqId::Boo,
-            SequenceState::Begin,
-            Mirrored(false),
-            Grounding::Airborne,
-        );
-        let delta = ObjectStatusUpdate::new(
-            Some(TestSeqId::Moo),
-            Some(SequenceState::Ongoing),
-            Some(Mirrored(true)),
-            Some(Grounding::OnGround),
-        );
+        let mut status = ObjectStatus::new(TestSeqId::Boo, SequenceState::Begin);
+        let delta = ObjectStatusUpdate::new(Some(TestSeqId::Moo), Some(SequenceState::Ongoing));
 
         status += delta;
         assert_eq!(
-            ObjectStatus::new(
-                TestSeqId::Moo,
-                SequenceState::Ongoing,
-                Mirrored(true),
-                Grounding::OnGround
-            ),
+            ObjectStatus::new(TestSeqId::Moo, SequenceState::Ongoing,),
             status
         );
     }

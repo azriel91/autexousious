@@ -1,36 +1,38 @@
-use amethyst::ecs::prelude::*;
 use game_input::ControllerInput;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{Grounding, ObjectStatus, RunCounter},
+    entity::{Grounding, Mirrored, ObjectStatus, RunCounter},
 };
-use tracker::Last;
 
 use character::sequence_handler::SequenceHandlerUtil;
 
-/// Updates `RunCounter` component.
-#[derive(Debug, Default, TypeName, new)]
-pub struct RunCounterUpdateSystem;
+/// Updates the `RunCounter` component for character entities.
+#[derive(Debug)]
+pub struct RunCounterUpdater;
 
-type RunCounterUpdateSystemData<'s> = (
-    WriteStorage<'s, RunCounter>,
-    // TODO: replace with Grounding and Mirrored
-    ReadStorage<'s, ControllerInput>,
-    ReadStorage<'s, Last<ObjectStatus<CharacterSequenceId>>>,
-);
-
-impl RunCounterUpdateSystem {
-    fn update(
+impl RunCounterUpdater {
+    /// Returns the updated `RunCounter` value.
+    ///
+    /// # Parameters
+    ///
+    /// * `run_counter`: Original `RunCounter` value.
+    /// * `controller_input`: Controller input for this character.
+    /// * `object_status`: Current object status.
+    /// * `mirrored`: Whether the object is mirrored (facing left).
+    /// * `grounding`: Whether the object is on the ground.
+    pub fn update(
         run_counter: RunCounter,
         controller_input: &ControllerInput,
-        last_object_status: &Last<ObjectStatus<CharacterSequenceId>>,
+        object_status: &ObjectStatus<CharacterSequenceId>,
+        mirrored: Mirrored,
+        grounding: Grounding,
     ) -> RunCounter {
-        match last_object_status.sequence_id {
+        match object_status.sequence_id {
             CharacterSequenceId::Stand | CharacterSequenceId::Walk => {}
             _ => return RunCounter::Unused,
         }
 
-        if last_object_status.grounding != Grounding::OnGround
+        if grounding != Grounding::OnGround
             || controller_input.defend
             || controller_input.jump
             || controller_input.attack
@@ -47,10 +49,8 @@ impl RunCounterUpdateSystem {
                 Increase(_) => Decrease(RunCounter::RESET_TICK_COUNT),
             }
         } else {
-            let same_direction = SequenceHandlerUtil::input_matches_direction(
-                controller_input,
-                last_object_status.mirrored,
-            );
+            let same_direction =
+                SequenceHandlerUtil::input_matches_direction(controller_input, mirrored);
             match (run_counter, same_direction) {
                 (Unused, _) | (Decrease(_), false) | (Increase(_), false) => {
                     Increase(RunCounter::RESET_TICK_COUNT)
@@ -64,28 +64,12 @@ impl RunCounterUpdateSystem {
     }
 }
 
-impl<'s> System<'s> for RunCounterUpdateSystem {
-    type SystemData = RunCounterUpdateSystemData<'s>;
-
-    fn run(
-        &mut self,
-        (mut run_counters, controller_inputs, last_object_statuses): Self::SystemData,
-    ) {
-        (&mut run_counters, &controller_inputs, &last_object_statuses)
-            .join()
-            .for_each(|(run_counter, controller_input, last_object_status)| {
-                *run_counter = Self::update(*run_counter, controller_input, last_object_status);
-            });
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use game_input::ControllerInput;
-    use object_model::entity::{Grounding, ObjectStatus, RunCounter};
-    use tracker::Last;
+    use object_model::entity::{Grounding, Mirrored, ObjectStatus, RunCounter};
 
-    use super::RunCounterUpdateSystem;
+    use super::RunCounterUpdater;
 
     #[test]
     fn none_when_grounding_is_airborne_and_unused() {
@@ -93,13 +77,12 @@ mod tests {
 
         assert_eq!(
             RunCounter::Unused,
-            RunCounterUpdateSystem::update(
+            RunCounterUpdater::update(
                 RunCounter::Unused,
                 &input,
-                &Last(ObjectStatus {
-                    grounding: Grounding::Airborne,
-                    ..Default::default()
-                })
+                &ObjectStatus::default(),
+                Mirrored::default(),
+                Grounding::Airborne
             )
         );
     }
@@ -110,13 +93,12 @@ mod tests {
 
         assert_eq!(
             RunCounter::Unused,
-            RunCounterUpdateSystem::update(
+            RunCounterUpdater::update(
                 RunCounter::Increase(10),
                 &input,
-                &Last(ObjectStatus {
-                    grounding: Grounding::Airborne,
-                    ..Default::default()
-                })
+                &ObjectStatus::default(),
+                Mirrored::default(),
+                Grounding::Airborne
             )
         );
     }
@@ -128,13 +110,12 @@ mod tests {
 
         assert_eq!(
             RunCounter::Unused,
-            RunCounterUpdateSystem::update(
+            RunCounterUpdater::update(
                 RunCounter::Unused,
                 &input,
-                &Last(ObjectStatus {
-                    grounding: Grounding::Airborne,
-                    ..Default::default()
-                })
+                &ObjectStatus::default(),
+                Mirrored::default(),
+                Grounding::Airborne
             )
         );
     }
@@ -148,13 +129,12 @@ mod tests {
 
                 assert_eq!(
                     RunCounter::Unused,
-                    RunCounterUpdateSystem::update(
+                    RunCounterUpdater::update(
                         RunCounter::Increase(10),
                         &input,
-                        &Last(ObjectStatus {
-                            grounding: Grounding::Airborne,
-                            ..Default::default()
-                        })
+                        &ObjectStatus::default(),
+                        Mirrored::default(),
+                        Grounding::Airborne
                     )
                 );
             }
@@ -171,10 +151,12 @@ mod tests {
 
         assert_eq!(
             RunCounter::Unused,
-            RunCounterUpdateSystem::update(
+            RunCounterUpdater::update(
                 RunCounter::Unused,
                 &input,
-                &Last(ObjectStatus::default())
+                &ObjectStatus::default(),
+                Mirrored::default(),
+                Grounding::default()
             )
         );
     }
@@ -185,10 +167,12 @@ mod tests {
 
         assert_eq!(
             RunCounter::Unused,
-            RunCounterUpdateSystem::update(
+            RunCounterUpdater::update(
                 RunCounter::Decrease(0),
                 &input,
-                &Last(ObjectStatus::default())
+                &ObjectStatus::default(),
+                Mirrored::default(),
+                Grounding::default()
             )
         );
     }
@@ -199,10 +183,12 @@ mod tests {
 
         assert_eq!(
             RunCounter::Decrease(0),
-            RunCounterUpdateSystem::update(
+            RunCounterUpdater::update(
                 RunCounter::Decrease(1),
                 &input,
-                &Last(ObjectStatus::default())
+                &ObjectStatus::default(),
+                Mirrored::default(),
+                Grounding::default()
             )
         );
     }
@@ -213,10 +199,12 @@ mod tests {
 
         assert_eq!(
             RunCounter::Decrease(RunCounter::RESET_TICK_COUNT),
-            RunCounterUpdateSystem::update(
+            RunCounterUpdater::update(
                 RunCounter::Increase(0),
                 &input,
-                &Last(ObjectStatus::default())
+                &ObjectStatus::default(),
+                Mirrored::default(),
+                Grounding::default()
             )
         );
     }
@@ -234,13 +222,12 @@ mod tests {
 
                 assert_eq!(
                     RunCounter::Increase(RunCounter::RESET_TICK_COUNT),
-                    RunCounterUpdateSystem::update(
+                    RunCounterUpdater::update(
                         RunCounter::Unused,
                         &input,
-                        &Last(ObjectStatus {
-                            mirrored: mirrored.into(),
-                            ..Default::default()
-                        })
+                        &ObjectStatus::default(),
+                        mirrored.into(),
+                        Grounding::default()
                     )
                 );
             });
@@ -255,13 +242,12 @@ mod tests {
 
                 assert_eq!(
                     RunCounter::Increase(RunCounter::RESET_TICK_COUNT),
-                    RunCounterUpdateSystem::update(
+                    RunCounterUpdater::update(
                         RunCounter::Decrease(11),
                         &input,
-                        &Last(ObjectStatus {
-                            mirrored: mirrored.into(),
-                            ..Default::default()
-                        })
+                        &ObjectStatus::default(),
+                        mirrored.into(),
+                        Grounding::default()
                     )
                 );
             });
@@ -276,13 +262,12 @@ mod tests {
 
                 assert_eq!(
                     RunCounter::Increase(RunCounter::RESET_TICK_COUNT),
-                    RunCounterUpdateSystem::update(
+                    RunCounterUpdater::update(
                         RunCounter::Increase(11),
                         &input,
-                        &Last(ObjectStatus {
-                            mirrored: mirrored.into(),
-                            ..Default::default()
-                        })
+                        &ObjectStatus::default(),
+                        mirrored.into(),
+                        Grounding::default()
                     )
                 );
             });
@@ -297,13 +282,12 @@ mod tests {
 
                 assert_eq!(
                     RunCounter::Unused,
-                    RunCounterUpdateSystem::update(
+                    RunCounterUpdater::update(
                         RunCounter::Decrease(11),
                         &input,
-                        &Last(ObjectStatus {
-                            mirrored: mirrored.into(),
-                            ..Default::default()
-                        })
+                        &ObjectStatus::default(),
+                        mirrored.into(),
+                        Grounding::default()
                     )
                 );
             });
@@ -318,13 +302,12 @@ mod tests {
 
                 assert_eq!(
                     RunCounter::Exceeded,
-                    RunCounterUpdateSystem::update(
+                    RunCounterUpdater::update(
                         RunCounter::Increase(0),
                         &input,
-                        &Last(ObjectStatus {
-                            mirrored: mirrored.into(),
-                            ..Default::default()
-                        })
+                        &ObjectStatus::default(),
+                        mirrored.into(),
+                        Grounding::default()
                     )
                 );
             });
@@ -339,13 +322,12 @@ mod tests {
 
                 assert_eq!(
                     RunCounter::Increase(10),
-                    RunCounterUpdateSystem::update(
+                    RunCounterUpdater::update(
                         RunCounter::Increase(11),
                         &input,
-                        &Last(ObjectStatus {
-                            mirrored: mirrored.into(),
-                            ..Default::default()
-                        })
+                        &ObjectStatus::default(),
+                        mirrored.into(),
+                        Grounding::default()
                     )
                 );
             });
@@ -360,13 +342,12 @@ mod tests {
 
                 assert_eq!(
                     RunCounter::Exceeded,
-                    RunCounterUpdateSystem::update(
+                    RunCounterUpdater::update(
                         RunCounter::Exceeded,
                         &input,
-                        &Last(ObjectStatus {
-                            mirrored: mirrored.into(),
-                            ..Default::default()
-                        })
+                        &ObjectStatus::default(),
+                        mirrored.into(),
+                        Grounding::default()
                     )
                 );
             });

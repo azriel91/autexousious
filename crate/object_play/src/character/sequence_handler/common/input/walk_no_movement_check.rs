@@ -22,7 +22,6 @@ impl SequenceHandler for WalkNoMovementCheck {
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Stand),
                 sequence_state: Some(SequenceState::Begin),
-                ..Default::default()
             })
         } else {
             None
@@ -35,7 +34,10 @@ mod tests {
     use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
-        entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
+        entity::{
+            CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
+            RunCounter,
+        },
     };
 
     use super::WalkNoMovementCheck;
@@ -50,7 +52,6 @@ mod tests {
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Stand),
                 sequence_state: Some(SequenceState::Begin),
-                ..Default::default()
             }),
             WalkNoMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
@@ -60,6 +61,8 @@ mod tests {
                     ..Default::default()
                 },
                 &Kinematics::default(),
+                Mirrored::default(),
+                Grounding::default(),
                 RunCounter::default()
             ))
         );
@@ -80,6 +83,8 @@ mod tests {
                         ..Default::default()
                     },
                     &Kinematics::default(),
+                    Mirrored::default(),
+                    Grounding::default(),
                     RunCounter::default()
                 ))
             );
@@ -101,6 +106,8 @@ mod tests {
                         ..Default::default()
                     },
                     &Kinematics::default(),
+                    Mirrored::default(),
+                    Grounding::default(),
                     RunCounter::default()
                 ))
             );

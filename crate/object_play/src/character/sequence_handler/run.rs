@@ -48,17 +48,17 @@ mod test {
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::JumpDescend),
                 sequence_state: Some(SequenceState::Begin),
-                ..Default::default()
             },
             Run::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Run,
-                    grounding: Grounding::Airborne,
                     ..Default::default()
                 },
                 &Kinematics::default(),
+                Mirrored::default(),
+                Grounding::Airborne,
                 RunCounter::default()
             ))
         );
@@ -72,17 +72,17 @@ mod test {
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::RunStop),
                 sequence_state: Some(SequenceState::Begin),
-                ..Default::default()
             },
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Run,
-                    mirrored: Mirrored(false),
                     ..Default::default()
                 },
                 &Kinematics::default(),
+                Mirrored(false),
+                Grounding::default(),
                 RunCounter::default()
             ))
         );
@@ -99,10 +99,11 @@ mod test {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Run,
-                    mirrored: Mirrored(false),
                     ..Default::default()
                 },
                 &Kinematics::default(),
+                Mirrored(false),
+                Grounding::default(),
                 RunCounter::default()
             ))
         );
@@ -119,10 +120,11 @@ mod test {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Run,
-                    mirrored: Mirrored(true),
                     ..Default::default()
                 },
                 &Kinematics::default(),
+                Mirrored(true),
+                Grounding::default(),
                 RunCounter::default()
             ))
         );
@@ -139,7 +141,6 @@ mod test {
                     ObjectStatusUpdate {
                         sequence_id: Some(CharacterSequenceId::Run),
                         sequence_state: Some(SequenceState::Begin),
-                        ..Default::default()
                     },
                     Run::update(CharacterSequenceUpdateComponents::new(
                         &input,
@@ -147,10 +148,10 @@ mod test {
                         &ObjectStatus {
                             sequence_id: CharacterSequenceId::Run,
                             sequence_state: SequenceState::End,
-                            mirrored: mirrored.into(),
-                            ..Default::default()
                         },
                         &Kinematics::default(),
+                        mirrored.into(),
+                        Grounding::default(),
                         RunCounter::default()
                     ))
                 );
@@ -165,17 +166,17 @@ mod test {
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::RunStop),
                 sequence_state: Some(SequenceState::Begin),
-                ..Default::default()
             },
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Run,
-                    mirrored: Mirrored(false),
                     ..Default::default()
                 },
                 &Kinematics::default(),
+                Mirrored(false),
+                Grounding::default(),
                 RunCounter::default()
             ))
         );
@@ -189,17 +190,17 @@ mod test {
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::RunStop),
                 sequence_state: Some(SequenceState::Begin),
-                ..Default::default()
             },
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Run,
-                    mirrored: Mirrored(true),
                     ..Default::default()
                 },
                 &Kinematics::default(),
+                Mirrored(true),
+                Grounding::default(),
                 RunCounter::default()
             ))
         );
@@ -216,10 +217,11 @@ mod test {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Run,
-                    mirrored: Mirrored(false),
                     ..Default::default()
                 },
                 &Kinematics::default(),
+                Mirrored(false),
+                Grounding::default(),
                 RunCounter::default()
             ))
         );
@@ -233,10 +235,11 @@ mod test {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Run,
-                    mirrored: Mirrored(false),
                     ..Default::default()
                 },
                 &Kinematics::default(),
+                Mirrored(false),
+                Grounding::default(),
                 RunCounter::default()
             ))
         );

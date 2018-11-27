@@ -28,7 +28,10 @@ mod test {
     use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
-        entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
+        entity::{
+            CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
+            RunCounter,
+        },
     };
 
     use super::StandAttack;
@@ -49,6 +52,8 @@ mod test {
                     ..Default::default()
                 },
                 &Kinematics::default(),
+                Mirrored::default(),
+                Grounding::default(),
                 RunCounter::default()
             ))
         );
@@ -62,7 +67,6 @@ mod test {
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Stand),
                 sequence_state: Some(SequenceState::Begin),
-                ..Default::default()
             },
             StandAttack::update(CharacterSequenceUpdateComponents::new(
                 &input,
@@ -70,9 +74,10 @@ mod test {
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::StandAttack,
                     sequence_state: SequenceState::End,
-                    ..Default::default()
                 },
                 &Kinematics::default(),
+                Mirrored::default(),
+                Grounding::default(),
                 RunCounter::default()
             ))
         );

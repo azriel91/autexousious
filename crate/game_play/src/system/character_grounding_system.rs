@@ -1,10 +1,7 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
 use map_model::loaded::Map;
 use map_selection_model::MapSelection;
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{Grounding, Kinematics, ObjectStatus},
-};
+use object_model::entity::{Grounding, Kinematics};
 
 /// Updates `Character` kinematics based on sequence.
 #[derive(Debug, Default, TypeName, new)]
@@ -14,25 +11,20 @@ type CharacterGroundingSystemData<'s> = (
     ReadExpect<'s, MapSelection>,
     Read<'s, AssetStorage<Map>>,
     WriteStorage<'s, Kinematics<f32>>,
-    WriteStorage<'s, ObjectStatus<CharacterSequenceId>>,
+    WriteStorage<'s, Grounding>,
 );
 
 impl<'s> System<'s> for CharacterGroundingSystem {
     type SystemData = CharacterGroundingSystemData<'s>;
 
-    fn run(
-        &mut self,
-        (map_selection, maps, mut kinematics_storage, mut object_statuses): Self::SystemData,
-    ) {
+    fn run(&mut self, (map_selection, maps, mut kinematicses, mut groundings): Self::SystemData) {
         let map_margins = {
             maps.get(map_selection.handle())
                 .map(|map| map.margins)
                 .expect("Expected map to be loaded.")
         };
 
-        for (mut kinematics, mut object_status) in
-            (&mut kinematics_storage, &mut object_statuses).join()
-        {
+        for (mut kinematics, mut grounding) in (&mut kinematicses, &mut groundings).join() {
             // X axis
             if kinematics.position[0] < map_margins.left {
                 kinematics.position[0] = map_margins.left;
@@ -43,7 +35,7 @@ impl<'s> System<'s> for CharacterGroundingSystem {
             // Y axis
             if kinematics.position[1] > map_margins.bottom {
                 kinematics.velocity[1] += -1.7;
-                object_status.grounding = Grounding::Airborne;
+                *grounding = Grounding::Airborne;
 
                 if kinematics.position[1] > map_margins.top {
                     kinematics.position[1] = map_margins.top;
@@ -51,7 +43,7 @@ impl<'s> System<'s> for CharacterGroundingSystem {
             } else {
                 kinematics.position[1] = map_margins.bottom;
                 kinematics.velocity[1] = 0.;
-                object_status.grounding = Grounding::OnGround;
+                *grounding = Grounding::OnGround;
             }
 
             // Z axis
@@ -68,10 +60,7 @@ impl<'s> System<'s> for CharacterGroundingSystem {
 mod tests {
     use amethyst::ecs::prelude::*;
     use application_test_support::AutexousiousApplication;
-    use object_model::{
-        config::object::CharacterSequenceId,
-        entity::{Grounding, Kinematics, ObjectStatus},
-    };
+    use object_model::entity::{Grounding, Kinematics};
     use typename::TypeName;
 
     use super::CharacterGroundingSystem;
@@ -84,13 +73,11 @@ mod tests {
             AutexousiousApplication::game_base("keeps_character_within_lower_map_bounds", false)
                 .with_setup(|world| {
                     world.exec(
-                        |(mut kinematics_storage, object_statuses): (
+                        |(mut kinematicses, groundings): (
                             WriteStorage<Kinematics<f32>>,
-                            ReadStorage<ObjectStatus<CharacterSequenceId>>,
+                            ReadStorage<Grounding>,
                         )| {
-                            for (kinematics, _) in
-                                (&mut kinematics_storage, &object_statuses).join()
-                            {
+                            for (kinematics, _) in (&mut kinematicses, &groundings).join() {
                                 kinematics.position[0] = -10.;
                                 kinematics.position[1] = -10.;
                                 kinematics.position[2] = -10.;
@@ -105,11 +92,11 @@ mod tests {
                 )
                 .with_assertion(|world| {
                     world.exec(
-                        |(kinematics_storage, object_statuses): (
+                        |(kinematicses, groundings): (
                             ReadStorage<Kinematics<f32>>,
-                            ReadStorage<ObjectStatus<CharacterSequenceId>>,
+                            ReadStorage<Grounding>,
                         )| {
-                            for (kinematics, _) in (&kinematics_storage, &object_statuses).join() {
+                            for (kinematics, _) in (&kinematicses, &groundings).join() {
                                 assert_eq!(1., kinematics.position[0]);
 
                                 // Map margins are shifted by z and depth. See
@@ -133,13 +120,11 @@ mod tests {
             AutexousiousApplication::game_base("keeps_character_within_upper_map_bounds", false)
                 .with_setup(|world| {
                     world.exec(
-                        |(mut kinematics_storage, object_statuses): (
+                        |(mut kinematicses, groundings): (
                             WriteStorage<Kinematics<f32>>,
-                            ReadStorage<ObjectStatus<CharacterSequenceId>>,
+                            ReadStorage<Grounding>,
                         )| {
-                            for (kinematics, _) in
-                                (&mut kinematics_storage, &object_statuses).join()
-                            {
+                            for (kinematics, _) in (&mut kinematicses, &groundings).join() {
                                 kinematics.position[0] = 2000.;
                                 kinematics.position[1] = 2000.;
                                 kinematics.position[2] = 2000.;
@@ -154,11 +139,11 @@ mod tests {
                 )
                 .with_assertion(|world| {
                     world.exec(
-                        |(kinematics_storage, object_statuses): (
+                        |(kinematicses, groundings): (
                             ReadStorage<Kinematics<f32>>,
-                            ReadStorage<ObjectStatus<CharacterSequenceId>>,
+                            ReadStorage<Grounding>,
                         )| {
-                            for (kinematics, _) in (&kinematics_storage, &object_statuses).join() {
+                            for (kinematics, _) in (&kinematicses, &groundings).join() {
                                 assert_eq!(801., kinematics.position[0]);
 
                                 // Map margins are shifted by z and depth. See
@@ -185,15 +170,13 @@ mod tests {
             )
             .with_setup(|world| {
                 world.exec(
-                    |(mut kinematics_storage, mut object_statuses): (
+                    |(mut kinematicses, mut groundings): (
                         WriteStorage<Kinematics<f32>>,
-                        WriteStorage<ObjectStatus<CharacterSequenceId>>,
+                        WriteStorage<Grounding>,
                     )| {
-                        for (kinematics, object_status) in
-                            (&mut kinematics_storage, &mut object_statuses).join()
-                        {
+                        for (kinematics, grounding) in (&mut kinematicses, &mut groundings).join() {
                             kinematics.position[1] = 300.;
-                            object_status.grounding = Grounding::OnGround;
+                            *grounding = Grounding::OnGround;
                         }
                     },
                 );
@@ -205,12 +188,12 @@ mod tests {
             )
             .with_assertion(|world| {
                 world.exec(
-                    |(kinematics_storage, object_statuses): (
+                    |(kinematicses, groundings): (
                         ReadStorage<Kinematics<f32>>,
-                        ReadStorage<ObjectStatus<CharacterSequenceId>>,
+                        ReadStorage<Grounding>,
                     )| {
-                        for (_, object_status) in (&kinematics_storage, &object_statuses).join() {
-                            assert_eq!(Grounding::Airborne, object_status.grounding);
+                        for (_, grounding) in (&kinematicses, &groundings).join() {
+                            assert_eq!(Grounding::Airborne, *grounding);
                         }
                     },
                 );
@@ -228,15 +211,15 @@ mod tests {
             AutexousiousApplication::game_base("grounding_set_to_on_ground_when_on_ground", false)
                 .with_setup(|world| {
                     world.exec(
-                        |(mut kinematics_storage, mut object_statuses): (
+                        |(mut kinematicses, mut groundings): (
                             WriteStorage<Kinematics<f32>>,
-                            WriteStorage<ObjectStatus<CharacterSequenceId>>,
+                            WriteStorage<Grounding>,
                         )| {
-                            for (kinematics, object_status) in
-                                (&mut kinematics_storage, &mut object_statuses).join()
+                            for (kinematics, grounding) in
+                                (&mut kinematicses, &mut groundings).join()
                             {
                                 kinematics.position[1] = 200.;
-                                object_status.grounding = Grounding::Airborne;
+                                *grounding = Grounding::Airborne;
                             }
                         },
                     );
@@ -248,13 +231,12 @@ mod tests {
                 )
                 .with_assertion(|world| {
                     world.exec(
-                        |(kinematics_storage, object_statuses): (
+                        |(kinematicses, groundings): (
                             ReadStorage<Kinematics<f32>>,
-                            ReadStorage<ObjectStatus<CharacterSequenceId>>,
+                            ReadStorage<Grounding>,
                         )| {
-                            for (_, object_status) in (&kinematics_storage, &object_statuses).join()
-                            {
-                                assert_eq!(Grounding::OnGround, object_status.grounding);
+                            for (_, grounding) in (&kinematicses, &groundings).join() {
+                                assert_eq!(Grounding::OnGround, *grounding);
                             }
                         },
                     );

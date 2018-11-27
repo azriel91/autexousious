@@ -50,12 +50,10 @@ mod test {
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Stand),
                 sequence_state: Some(SequenceState::Begin),
-                ..Default::default()
             },
             SwitchSequenceOnEnd(CharacterSequenceId::Stand).update(&ObjectStatus {
                 sequence_id: CharacterSequenceId::Flinch0,
                 sequence_state: SequenceState::End,
-                ..Default::default()
             })
         );
     }

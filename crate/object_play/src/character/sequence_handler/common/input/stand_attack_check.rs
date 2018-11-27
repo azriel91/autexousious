@@ -17,15 +17,8 @@ impl SequenceHandler for StandAttackCheck {
         if components.controller_input.attack {
             let sequence_id = Some(CharacterSequenceId::StandAttack);
             let sequence_state = Some(SequenceState::Begin);
-            let mirrored = None;
-            let grounding = None;
 
-            Some(ObjectStatusUpdate::new(
-                sequence_id,
-                sequence_state,
-                mirrored,
-                grounding,
-            ))
+            Some(ObjectStatusUpdate::new(sequence_id, sequence_state))
         } else {
             None
         }
@@ -37,7 +30,10 @@ mod tests {
     use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
-        entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
+        entity::{
+            CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
+            RunCounter,
+        },
     };
 
     use super::StandAttackCheck;
@@ -55,6 +51,8 @@ mod tests {
                 &CharacterStatus::default(),
                 &ObjectStatus::default(),
                 &Kinematics::default(),
+                Mirrored::default(),
+                Grounding::default(),
                 RunCounter::default()
             ))
         );
@@ -69,13 +67,14 @@ mod tests {
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::StandAttack),
                 sequence_state: Some(SequenceState::Begin),
-                ..Default::default()
             }),
             StandAttackCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus::default(),
                 &Kinematics::default(),
+                Mirrored::default(),
+                Grounding::default(),
                 RunCounter::default()
             ))
         );

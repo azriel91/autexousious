@@ -13,15 +13,9 @@ extern crate object_model;
 #[cfg(test)]
 #[macro_use]
 extern crate pretty_assertions;
-extern crate tracker;
-extern crate typename;
-#[macro_use]
-extern crate typename_derive;
 
-pub use character::{CharacterSequenceUpdateComponents, CharacterSequenceUpdater};
-pub use object_play_bundle::ObjectPlayBundle;
-pub use system::RunCounterUpdateSystem;
+pub use character::{
+    CharacterSequenceUpdateComponents, CharacterSequenceUpdater, MirroredUpdater, RunCounterUpdater,
+};
 
 mod character;
-mod object_play_bundle;
-mod system;

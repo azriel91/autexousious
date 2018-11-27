@@ -80,7 +80,8 @@ pub(super) trait SequenceHandler {
 mod test {
     use game_input::ControllerInput;
     use object_model::entity::{
-        CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter,
+        CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
+        RunCounter,
     };
 
     use super::{CharacterSequenceHandler, SequenceHandler};
@@ -92,17 +93,15 @@ mod test {
         let sequence_id = None;
         // No update to sequence state.
         let sequence_state = None;
-        // No update to facing direction.
-        let mirrored = None;
-        // No update to grounding.
-        let grounding = None;
         assert_eq!(
-            ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored, grounding),
+            ObjectStatusUpdate::new(sequence_id, sequence_state),
             Sit::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
                 &ObjectStatus::default(),
                 &Kinematics::default(),
+                Mirrored::default(),
+                Grounding::default(),
                 RunCounter::default()
             ))
         );
@@ -117,6 +116,8 @@ mod test {
                 &CharacterStatus::default(),
                 &ObjectStatus::default(),
                 &Kinematics::default(),
+                Mirrored::default(),
+                Grounding::default(),
                 RunCounter::default(),
             ))
         );

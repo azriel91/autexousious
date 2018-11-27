@@ -36,7 +36,8 @@ mod test {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, Grounding, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter,
+            CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
+            RunCounter,
         },
     };
 
@@ -57,10 +58,11 @@ mod test {
                     &CharacterStatus::default(),
                     &ObjectStatus {
                         sequence_id: CharacterSequenceId::FallForwardAscend,
-                        grounding: Grounding::Airborne,
                         ..Default::default()
                     },
                     &kinematics,
+                    Mirrored::default(),
+                    Grounding::Airborne,
                     RunCounter::default()
                 )
             )
@@ -77,7 +79,6 @@ mod test {
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::FallForwardAscend),
                 sequence_state: Some(SequenceState::Begin),
-                ..Default::default()
             },
             SwitchSequenceOnDescend(CharacterSequenceId::FallForwardDescend).update(
                 CharacterSequenceUpdateComponents::new(
@@ -86,10 +87,10 @@ mod test {
                     &ObjectStatus {
                         sequence_id: CharacterSequenceId::FallForwardAscend,
                         sequence_state: SequenceState::End,
-                        grounding: Grounding::Airborne,
-                        ..Default::default()
                     },
                     &kinematics,
+                    Mirrored::default(),
+                    Grounding::Airborne,
                     RunCounter::default()
                 )
             )
@@ -109,7 +110,6 @@ mod test {
                     ObjectStatusUpdate {
                         sequence_id: Some(CharacterSequenceId::FallForwardDescend),
                         sequence_state: Some(SequenceState::Begin),
-                        ..Default::default()
                     },
                     SwitchSequenceOnDescend(CharacterSequenceId::FallForwardDescend).update(
                         CharacterSequenceUpdateComponents::new(
@@ -118,42 +118,10 @@ mod test {
                             &ObjectStatus {
                                 sequence_id: CharacterSequenceId::FallForwardAscend,
                                 sequence_state: SequenceState::Ongoing,
-                                grounding: Grounding::Airborne,
-                                ..Default::default()
                             },
                             &kinematics,
-                            RunCounter::default()
-                        )
-                    )
-                );
-            });
-    }
-
-    #[test]
-    fn does_not_switch_mirror_when_pressing_opposite_direction() {
-        vec![(-1., false), (1., true)]
-            .into_iter()
-            .for_each(|(x_input, mirrored)| {
-                let input = ControllerInput::new(x_input, 0., false, false, false, false);
-                let mut kinematics = Kinematics::default();
-                kinematics.velocity[1] = 1.;
-
-                assert_eq!(
-                    ObjectStatusUpdate {
-                        mirrored: None, // Explicitly test this.
-                        ..Default::default()
-                    },
-                    SwitchSequenceOnDescend(CharacterSequenceId::FallForwardDescend).update(
-                        CharacterSequenceUpdateComponents::new(
-                            &input,
-                            &CharacterStatus::default(),
-                            &ObjectStatus {
-                                sequence_id: CharacterSequenceId::FallForwardAscend,
-                                grounding: Grounding::Airborne,
-                                mirrored: mirrored.into(),
-                                ..Default::default()
-                            },
-                            &kinematics,
+                            Mirrored::default(),
+                            Grounding::Airborne,
                             RunCounter::default()
                         )
                     )

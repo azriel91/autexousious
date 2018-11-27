@@ -2641,9 +2641,6 @@ dependencies = [
  "game_input 0.7.0",
  "object_model 0.7.0",
  "pretty_assertions 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "tracker 0.7.0",
- "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "typename_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

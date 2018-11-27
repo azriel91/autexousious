@@ -18,8 +18,6 @@ impl SequenceHandler for AliveCheck {
             Some(ObjectStatusUpdate::new(
                 Some(CharacterSequenceId::FallForwardDescend),
                 Some(SequenceState::Begin),
-                None,
-                None,
             ))
         } else {
             None
@@ -33,8 +31,8 @@ mod tests {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, Grounding, HealthPoints, Kinematics, ObjectStatus, ObjectStatusUpdate,
-            RunCounter,
+            CharacterStatus, Grounding, HealthPoints, Kinematics, Mirrored, ObjectStatus,
+            ObjectStatusUpdate, RunCounter,
         },
     };
 
@@ -54,6 +52,8 @@ mod tests {
                     ..Default::default()
                 },
                 &Kinematics::<f32>::default(),
+                Mirrored::default(),
+                Grounding::default(),
                 RunCounter::default()
             ))
         );
@@ -65,7 +65,6 @@ mod tests {
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::FallForwardDescend),
                 sequence_state: Some(SequenceState::Begin),
-                ..Default::default()
             }),
             AliveCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
@@ -74,10 +73,11 @@ mod tests {
                 },
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Stand,
-                    grounding: Grounding::Airborne,
                     ..Default::default()
                 },
                 &Kinematics::<f32>::default(),
+                Mirrored::default(),
+                Grounding::Airborne,
                 RunCounter::default()
             ))
         );

@@ -38,7 +38,8 @@ mod test {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, Grounding, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter,
+            CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
+            RunCounter,
         },
     };
 
@@ -52,17 +53,17 @@ mod test {
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::JumpDescend),
                 sequence_state: Some(SequenceState::Begin),
-                ..Default::default()
             },
             RunStop::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::RunStop,
-                    grounding: Grounding::Airborne,
                     ..Default::default()
                 },
                 &Kinematics::default(),
+                Mirrored::default(),
+                Grounding::Airborne,
                 RunCounter::default()
             ))
         );
@@ -82,6 +83,8 @@ mod test {
                     ..Default::default()
                 },
                 &Kinematics::default(),
+                Mirrored::default(),
+                Grounding::default(),
                 RunCounter::default()
             ))
         );
@@ -95,7 +98,6 @@ mod test {
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Stand),
                 sequence_state: Some(SequenceState::Begin),
-                ..Default::default()
             },
             RunStop::update(CharacterSequenceUpdateComponents::new(
                 &input,
@@ -103,9 +105,10 @@ mod test {
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::RunStop,
                     sequence_state: SequenceState::End,
-                    ..Default::default()
                 },
                 &Kinematics::default(),
+                Mirrored::default(),
+                Grounding::default(),
                 RunCounter::default()
             ))
         );

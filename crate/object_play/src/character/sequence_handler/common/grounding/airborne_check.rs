@@ -14,12 +14,10 @@ impl SequenceHandler for AirborneCheck {
     fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
-        if components.object_status.grounding == Grounding::Airborne {
+        if components.grounding == Grounding::Airborne {
             Some(ObjectStatusUpdate::new(
                 Some(CharacterSequenceId::JumpDescend),
                 Some(SequenceState::Begin),
-                None,
-                None,
             ))
         } else {
             None
@@ -33,7 +31,8 @@ mod tests {
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
         entity::{
-            CharacterStatus, Grounding, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter,
+            CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
+            RunCounter,
         },
     };
 
@@ -53,6 +52,8 @@ mod tests {
                     ..Default::default()
                 },
                 &Kinematics::<f32>::default(),
+                Mirrored::default(),
+                Grounding::default(),
                 RunCounter::default()
             ))
         );
@@ -64,17 +65,17 @@ mod tests {
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::JumpDescend),
                 sequence_state: Some(SequenceState::Begin),
-                ..Default::default()
             }),
             AirborneCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Stand,
-                    grounding: Grounding::Airborne,
                     ..Default::default()
                 },
                 &Kinematics::<f32>::default(),
+                Mirrored::default(),
+                Grounding::Airborne,
                 RunCounter::default()
             ))
         );

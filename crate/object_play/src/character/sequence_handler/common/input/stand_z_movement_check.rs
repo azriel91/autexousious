@@ -19,15 +19,8 @@ impl SequenceHandler for StandZMovementCheck {
         if components.controller_input.z_axis_value != 0. {
             let sequence_id = Some(CharacterSequenceId::Walk);
             let sequence_state = Some(SequenceState::Begin);
-            let mirrored = None;
-            let grounding = None;
 
-            Some(ObjectStatusUpdate::new(
-                sequence_id,
-                sequence_state,
-                mirrored,
-                grounding,
-            ))
+            Some(ObjectStatusUpdate::new(sequence_id, sequence_state))
         } else {
             None
         }
@@ -39,7 +32,10 @@ mod tests {
     use game_input::ControllerInput;
     use object_model::{
         config::object::{CharacterSequenceId, SequenceState},
-        entity::{CharacterStatus, Kinematics, ObjectStatus, ObjectStatusUpdate, RunCounter},
+        entity::{
+            CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
+            RunCounter,
+        },
     };
 
     use super::StandZMovementCheck;
@@ -57,6 +53,8 @@ mod tests {
                 &CharacterStatus::default(),
                 &ObjectStatus::default(),
                 &Kinematics::default(),
+                Mirrored::default(),
+                Grounding::default(),
                 RunCounter::default()
             ))
         );
@@ -70,13 +68,14 @@ mod tests {
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Walk),
                 sequence_state: Some(SequenceState::Begin),
-                ..Default::default()
             }),
             StandZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus::default(),
                 &Kinematics::default(),
+                Mirrored::default(),
+                Grounding::default(),
                 RunCounter::default()
             ))
         );
