@@ -1,6 +1,6 @@
 use object_model::{
-    config::object::{CharacterSequenceId, SequenceStatus},
-    entity::{ObjectStatus, ObjectStatusUpdate},
+    config::object::CharacterSequenceId,
+    entity::{ObjectStatus, ObjectStatusUpdate, SequenceStatus},
 };
 
 #[derive(Debug)]
@@ -27,8 +27,8 @@ impl SwitchSequenceOnEnd {
 #[cfg(test)]
 mod test {
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceStatus},
-        entity::{ObjectStatus, ObjectStatusUpdate},
+        config::object::CharacterSequenceId,
+        entity::{ObjectStatus, ObjectStatusUpdate, SequenceStatus},
     };
 
     use super::SwitchSequenceOnEnd;

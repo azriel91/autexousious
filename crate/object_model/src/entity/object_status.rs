@@ -5,8 +5,8 @@ use amethyst::ecs::{
     Component,
 };
 
-use config::object::{SequenceId, SequenceStatus};
-use entity::ObjectStatusUpdate;
+use config::object::SequenceId;
+use entity::{ObjectStatusUpdate, SequenceStatus};
 
 /// Status of an object entity.
 ///
@@ -42,8 +42,8 @@ impl<SeqId: SequenceId> AddAssign<ObjectStatusUpdate<SeqId>> for ObjectStatus<Se
 
 #[cfg(test)]
 mod test {
-    use config::object::{SequenceId, SequenceStatus};
-    use entity::ObjectStatusUpdate;
+    use config::object::SequenceId;
+    use entity::{ObjectStatusUpdate, SequenceStatus};
 
     use super::ObjectStatus;
 

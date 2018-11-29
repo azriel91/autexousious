@@ -1,6 +1,6 @@
 use object_model::{
-    config::object::{CharacterSequenceId, SequenceStatus},
-    entity::ObjectStatusUpdate,
+    config::object::CharacterSequenceId,
+    entity::{ObjectStatusUpdate, SequenceStatus},
     loaded::Character,
 };
 

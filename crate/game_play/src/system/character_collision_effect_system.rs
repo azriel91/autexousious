@@ -4,8 +4,8 @@ use amethyst::{
 };
 use collision_model::{config::Interaction, play::CollisionEvent};
 use object_model::{
-    config::object::{CharacterSequenceId, SequenceStatus},
-    entity::{CharacterStatus, HealthPoints, ObjectStatus},
+    config::object::CharacterSequenceId,
+    entity::{CharacterStatus, HealthPoints, ObjectStatus, SequenceStatus},
 };
 use typename::TypeName;
 

@@ -7,8 +7,10 @@ use amethyst::{
 use game_input::ControllerInput;
 use game_loading::ObjectAnimationStorages;
 use object_model::{
-    config::object::{CharacterSequenceId, SequenceStatus},
-    entity::{CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, RunCounter},
+    config::object::CharacterSequenceId,
+    entity::{
+        CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, RunCounter, SequenceStatus,
+    },
     loaded::{Character, CharacterHandle},
 };
 use object_play::{
@@ -141,8 +143,8 @@ mod tests {
     use map_model::loaded::Map;
     use map_selection_model::MapSelection;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceStatus},
-        entity::{Grounding, Kinematics, Mirrored, ObjectStatus},
+        config::object::CharacterSequenceId,
+        entity::{Grounding, Kinematics, Mirrored, ObjectStatus, SequenceStatus},
     };
     use typename::TypeName;
 

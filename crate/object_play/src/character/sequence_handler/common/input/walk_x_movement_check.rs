@@ -1,6 +1,6 @@
 use object_model::{
-    config::object::{CharacterSequenceId, SequenceStatus},
-    entity::{ObjectStatusUpdate, RunCounter},
+    config::object::CharacterSequenceId,
+    entity::{ObjectStatusUpdate, RunCounter, SequenceStatus},
 };
 
 use character::sequence_handler::{common::SequenceRepeat, SequenceHandler, SequenceHandlerUtil};
@@ -51,10 +51,10 @@ impl SequenceHandler for WalkXMovementCheck {
 mod tests {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceStatus},
+        config::object::CharacterSequenceId,
         entity::{
             CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
-            RunCounter,
+            RunCounter, SequenceStatus,
         },
     };
 

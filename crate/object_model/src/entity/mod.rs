@@ -10,6 +10,7 @@ pub use self::kinematic::{Kinematics, Position, Velocity};
 pub use self::mirrored::Mirrored;
 pub use self::object_status::ObjectStatus;
 pub use self::object_status_update::ObjectStatusUpdate;
+pub use self::sequence_status::SequenceStatus;
 
 mod character;
 mod grounding;
@@ -18,3 +19,4 @@ mod kinematic;
 mod mirrored;
 mod object_status;
 mod object_status_update;
+mod sequence_status;

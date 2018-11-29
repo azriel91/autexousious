@@ -1,8 +1,8 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
 use game_input::ControllerInput;
 use object_model::{
-    config::object::{CharacterSequenceId, SequenceStatus},
-    entity::{Kinematics, Mirrored, ObjectStatus},
+    config::object::CharacterSequenceId,
+    entity::{Kinematics, Mirrored, ObjectStatus, SequenceStatus},
     loaded::{Character, CharacterHandle},
 };
 

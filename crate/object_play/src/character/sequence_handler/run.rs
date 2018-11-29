@@ -31,10 +31,10 @@ impl CharacterSequenceHandler for Run {
 mod test {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceStatus},
+        config::object::CharacterSequenceId,
         entity::{
             CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
-            RunCounter,
+            RunCounter, SequenceStatus,
         },
     };
 

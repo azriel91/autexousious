@@ -1,4 +1,5 @@
-use config::object::{SequenceId, SequenceStatus};
+use config::object::SequenceId;
+use entity::SequenceStatus;
 
 /// Indicates what fields of an `ObjectStatus` should be updated.
 // TODO: Learning exercise - Generate this using a proc macro
