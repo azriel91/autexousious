@@ -1,6 +1,6 @@
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{ObjectStatus, ObjectStatusUpdate, SequenceStatus},
+    entity::{ObjectStatusUpdate, SequenceStatus},
 };
 
 #[derive(Debug)]
@@ -12,12 +12,11 @@ pub(crate) struct SwitchSequenceOnEnd(
 impl SwitchSequenceOnEnd {
     pub fn update(
         &self,
-        object_status: &ObjectStatus<CharacterSequenceId>,
+        sequence_status: SequenceStatus,
     ) -> ObjectStatusUpdate<CharacterSequenceId> {
         let mut object_status_update = ObjectStatusUpdate::default();
-        if object_status.sequence_status == SequenceStatus::End {
+        if sequence_status == SequenceStatus::End {
             object_status_update.sequence_id = Some(self.0);
-            object_status_update.sequence_status = Some(SequenceStatus::Begin);
         }
 
         object_status_update
@@ -28,7 +27,7 @@ impl SwitchSequenceOnEnd {
 mod test {
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{ObjectStatus, ObjectStatusUpdate, SequenceStatus},
+        entity::{ObjectStatusUpdate, SequenceStatus},
     };
 
     use super::SwitchSequenceOnEnd;
@@ -37,10 +36,7 @@ mod test {
     fn no_update_when_sequence_not_ended() {
         assert_eq!(
             ObjectStatusUpdate::default(),
-            SwitchSequenceOnEnd(CharacterSequenceId::Stand).update(&ObjectStatus {
-                sequence_id: CharacterSequenceId::Flinch0,
-                ..Default::default()
-            })
+            SwitchSequenceOnEnd(CharacterSequenceId::Stand).update(SequenceStatus::default())
         );
     }
 
@@ -49,12 +45,8 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Stand),
-                sequence_status: Some(SequenceStatus::Begin),
             },
-            SwitchSequenceOnEnd(CharacterSequenceId::Stand).update(&ObjectStatus {
-                sequence_id: CharacterSequenceId::Flinch0,
-                sequence_status: SequenceStatus::End,
-            })
+            SwitchSequenceOnEnd(CharacterSequenceId::Stand).update(SequenceStatus::End)
         );
     }
 }

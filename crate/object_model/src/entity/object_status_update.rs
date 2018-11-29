@@ -8,6 +8,4 @@ use entity::SequenceStatus;
 pub struct ObjectStatusUpdate<SeqId: SequenceId> {
     /// ID of the current sequence the entity is on.
     pub sequence_id: Option<SeqId>,
-    /// Whether the sequence just started, is ongoing, or has ended.
-    pub sequence_status: Option<SequenceStatus>,
 }

@@ -1,7 +1,4 @@
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{ObjectStatusUpdate, SequenceStatus},
-};
+use object_model::{config::object::CharacterSequenceId, entity::ObjectStatusUpdate};
 
 use character::sequence_handler::SequenceHandler;
 use CharacterSequenceUpdateComponents;
@@ -15,10 +12,9 @@ impl SequenceHandler for AliveCheck {
         components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
         if components.character_status.hp == 0 {
-            Some(ObjectStatusUpdate::new(
-                Some(CharacterSequenceId::FallForwardDescend),
-                Some(SequenceStatus::Begin),
-            ))
+            Some(ObjectStatusUpdate::new(Some(
+                CharacterSequenceId::FallForwardDescend,
+            )))
         } else {
             None
         }
@@ -49,8 +45,8 @@ mod tests {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Stand,
-                    ..Default::default()
                 },
+                SequenceStatus::default(),
                 &Kinematics::<f32>::default(),
                 Mirrored::default(),
                 Grounding::default(),
@@ -64,7 +60,6 @@ mod tests {
         assert_eq!(
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::FallForwardDescend),
-                sequence_status: Some(SequenceStatus::Begin),
             }),
             AliveCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
@@ -73,8 +68,8 @@ mod tests {
                 },
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Stand,
-                    ..Default::default()
                 },
+                SequenceStatus::default(),
                 &Kinematics::<f32>::default(),
                 Mirrored::default(),
                 Grounding::Airborne,

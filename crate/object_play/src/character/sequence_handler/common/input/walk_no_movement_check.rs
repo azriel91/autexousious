@@ -1,7 +1,4 @@
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{ObjectStatusUpdate, SequenceStatus},
-};
+use object_model::{config::object::CharacterSequenceId, entity::ObjectStatusUpdate};
 
 use character::sequence_handler::SequenceHandler;
 use CharacterSequenceUpdateComponents;
@@ -21,7 +18,6 @@ impl SequenceHandler for WalkNoMovementCheck {
         {
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Stand),
-                sequence_status: Some(SequenceStatus::Begin),
             })
         } else {
             None
@@ -51,15 +47,14 @@ mod tests {
         assert_eq!(
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Stand),
-                sequence_status: Some(SequenceStatus::Begin),
             }),
             WalkNoMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
-                    ..Default::default()
                 },
+                SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),
                 Grounding::default(),
@@ -80,8 +75,8 @@ mod tests {
                     &CharacterStatus::default(),
                     &ObjectStatus {
                         sequence_id: CharacterSequenceId::Walk,
-                        ..Default::default()
                     },
+                    SequenceStatus::default(),
                     &Kinematics::default(),
                     Mirrored::default(),
                     Grounding::default(),
@@ -103,8 +98,8 @@ mod tests {
                     &CharacterStatus::default(),
                     &ObjectStatus {
                         sequence_id: CharacterSequenceId::Walk,
-                        ..Default::default()
                     },
+                    SequenceStatus::default(),
                     &Kinematics::default(),
                     Mirrored::default(),
                     Grounding::default(),

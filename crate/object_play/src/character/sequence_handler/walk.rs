@@ -59,15 +59,14 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Stand),
-                sequence_status: Some(SequenceStatus::Begin),
             },
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
-                    ..Default::default()
                 },
+                SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),
                 Grounding::default(),
@@ -83,15 +82,14 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Stand),
-                sequence_status: Some(SequenceStatus::Begin),
             },
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
-                    ..Default::default()
                 },
+                SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),
                 Grounding::default(),
@@ -107,15 +105,14 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Walk),
-                sequence_status: Some(SequenceStatus::Begin),
             },
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
-                    ..Default::default()
                 },
+                SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored(true),
                 Grounding::default(),
@@ -131,15 +128,14 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Walk),
-                sequence_status: Some(SequenceStatus::Begin),
             },
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
-                    ..Default::default()
                 },
+                SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored(false),
                 Grounding::default(),
@@ -159,8 +155,8 @@ mod test {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
-                    ..Default::default()
                 },
+                SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),
                 Grounding::default(),
@@ -177,8 +173,8 @@ mod test {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
-                    ..Default::default()
                 },
+                SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),
                 Grounding::default(),
@@ -197,15 +193,14 @@ mod test {
                 assert_eq!(
                     ObjectStatusUpdate {
                         sequence_id: Some(CharacterSequenceId::Walk),
-                        sequence_status: Some(SequenceStatus::Begin),
                     },
                     Walk::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
                         &ObjectStatus {
                             sequence_id: CharacterSequenceId::Walk,
-                            sequence_status: SequenceStatus::End,
                         },
+                        SequenceStatus::End,
                         &Kinematics::default(),
                         Mirrored(false),
                         Grounding::default(),
@@ -222,15 +217,14 @@ mod test {
                 assert_eq!(
                     ObjectStatusUpdate {
                         sequence_id: Some(CharacterSequenceId::Walk),
-                        sequence_status: Some(SequenceStatus::Begin),
                     },
                     Walk::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
                         &ObjectStatus {
                             sequence_id: CharacterSequenceId::Walk,
-                            sequence_status: SequenceStatus::End,
                         },
+                        SequenceStatus::End,
                         &Kinematics::default(),
                         mirrored.into(),
                         Grounding::default(),
@@ -247,15 +241,14 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Run),
-                sequence_status: Some(SequenceStatus::Begin),
             },
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
-                    ..Default::default()
                 },
+                SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored(false),
                 Grounding::default(),
@@ -271,15 +264,14 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Run),
-                sequence_status: Some(SequenceStatus::Begin),
             },
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
-                    ..Default::default()
                 },
+                SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored(true),
                 Grounding::default(),
@@ -298,12 +290,12 @@ mod test {
                 assert_eq!(
                     ObjectStatusUpdate {
                         sequence_id: Some(CharacterSequenceId::Jump),
-                        sequence_status: Some(SequenceStatus::Begin),
                     },
                     Walk::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
                         &ObjectStatus::default(),
+                        SequenceStatus::default(),
                         &Kinematics::default(),
                         Mirrored::default(),
                         Grounding::default(),
@@ -321,12 +313,12 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::StandAttack),
-                sequence_status: Some(SequenceStatus::Begin),
             },
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus::default(),
+                SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),
                 Grounding::default(),

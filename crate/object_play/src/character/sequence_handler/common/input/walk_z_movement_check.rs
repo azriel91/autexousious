@@ -47,8 +47,8 @@ mod tests {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
-                    ..Default::default()
                 },
+                SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),
                 Grounding::default(),
@@ -69,8 +69,8 @@ mod tests {
                     &CharacterStatus::default(),
                     &ObjectStatus {
                         sequence_id: CharacterSequenceId::Walk,
-                        ..Default::default()
                     },
+                    SequenceStatus::default(),
                     &Kinematics::default(),
                     Mirrored::default(),
                     Grounding::default(),
@@ -88,15 +88,14 @@ mod tests {
             assert_eq!(
                 Some(ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::Walk),
-                    sequence_status: Some(SequenceStatus::Begin),
                 }),
                 WalkZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                     &input,
                     &CharacterStatus::default(),
                     &ObjectStatus {
                         sequence_id: CharacterSequenceId::Walk,
-                        sequence_status: SequenceStatus::End,
                     },
+                    SequenceStatus::End,
                     &Kinematics::default(),
                     Mirrored(false),
                     Grounding::default(),

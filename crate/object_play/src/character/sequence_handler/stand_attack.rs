@@ -14,9 +14,8 @@ impl CharacterSequenceHandler for StandAttack {
         components: CharacterSequenceUpdateComponents<'c>,
     ) -> ObjectStatusUpdate<CharacterSequenceId> {
         let mut object_status_update = ObjectStatusUpdate::default();
-        if components.object_status.sequence_status == SequenceStatus::End {
+        if components.sequence_status == SequenceStatus::End {
             object_status_update.sequence_id = Some(CharacterSequenceId::Stand);
-            object_status_update.sequence_status = Some(SequenceStatus::Begin);
         }
 
         object_status_update
@@ -49,8 +48,8 @@ mod test {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::StandAttack,
-                    ..Default::default()
                 },
+                SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),
                 Grounding::default(),
@@ -66,15 +65,14 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Stand),
-                sequence_status: Some(SequenceStatus::Begin),
             },
             StandAttack::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::StandAttack,
-                    sequence_status: SequenceStatus::End,
                 },
+                SequenceStatus::End,
                 &Kinematics::default(),
                 Mirrored::default(),
                 Grounding::default(),

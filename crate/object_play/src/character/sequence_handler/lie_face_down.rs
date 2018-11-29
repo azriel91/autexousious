@@ -13,7 +13,7 @@ impl CharacterSequenceHandler for LieFaceDown {
         components: CharacterSequenceUpdateComponents<'c>,
     ) -> ObjectStatusUpdate<CharacterSequenceId> {
         if components.character_status.hp > 0 {
-            LIE_FACE_DOWN.update(components.object_status)
+            LIE_FACE_DOWN.update(components.sequence_status)
         } else {
             ObjectStatusUpdate::default()
         }

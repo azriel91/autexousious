@@ -14,9 +14,8 @@ impl CharacterSequenceHandler for Jump {
         components: CharacterSequenceUpdateComponents<'c>,
     ) -> ObjectStatusUpdate<CharacterSequenceId> {
         let mut object_status_update = ObjectStatusUpdate::default();
-        if components.object_status.sequence_status == SequenceStatus::End {
+        if components.sequence_status == SequenceStatus::End {
             object_status_update.sequence_id = Some(CharacterSequenceId::JumpOff);
-            object_status_update.sequence_status = Some(SequenceStatus::Begin);
         }
 
         object_status_update
@@ -49,8 +48,8 @@ mod test {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Jump,
-                    ..Default::default()
                 },
+                SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),
                 Grounding::default(),
@@ -68,15 +67,14 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::JumpOff),
-                sequence_status: Some(SequenceStatus::Begin),
             },
             Jump::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Jump,
-                    sequence_status: SequenceStatus::End,
                 },
+                SequenceStatus::End,
                 &kinematics,
                 Mirrored::default(),
                 Grounding::default(),

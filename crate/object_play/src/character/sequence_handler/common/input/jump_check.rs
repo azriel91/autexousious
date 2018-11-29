@@ -1,7 +1,4 @@
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{ObjectStatusUpdate, SequenceStatus},
-};
+use object_model::{config::object::CharacterSequenceId, entity::ObjectStatusUpdate};
 
 use character::sequence_handler::SequenceHandler;
 use CharacterSequenceUpdateComponents;
@@ -18,10 +15,7 @@ impl SequenceHandler for JumpCheck {
         // has default sequence update IDs for each action button, which are overridden by
         // configuration.
         if components.controller_input.jump {
-            Some(ObjectStatusUpdate::new(
-                Some(CharacterSequenceId::Jump),
-                Some(SequenceStatus::Begin),
-            ))
+            Some(ObjectStatusUpdate::new(Some(CharacterSequenceId::Jump)))
         } else {
             None
         }
@@ -54,8 +48,8 @@ mod tests {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Stand,
-                    ..Default::default()
                 },
+                SequenceStatus::default(),
                 &Kinematics::<f32>::default(),
                 Mirrored::default(),
                 Grounding::default(),
@@ -71,15 +65,14 @@ mod tests {
         assert_eq!(
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Jump),
-                sequence_status: Some(SequenceStatus::Begin),
             }),
             JumpCheck::update(CharacterSequenceUpdateComponents::new(
                 &controller_input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Stand,
-                    ..Default::default()
                 },
+                SequenceStatus::default(),
                 &Kinematics::<f32>::default(),
                 Mirrored::default(),
                 Grounding::Airborne,

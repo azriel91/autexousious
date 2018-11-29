@@ -14,11 +14,10 @@ impl SequenceHandler for SequenceRepeat {
     fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
-        if components.object_status.sequence_status == SequenceStatus::End {
+        if components.sequence_status == SequenceStatus::End {
             let sequence_id = Some(components.object_status.sequence_id);
-            let sequence_status = Some(SequenceStatus::Begin);
 
-            Some(ObjectStatusUpdate::new(sequence_id, sequence_status))
+            Some(ObjectStatusUpdate::new(sequence_id))
         } else {
             None
         }
@@ -49,8 +48,8 @@ mod tests {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
-                    sequence_status: SequenceStatus::Begin,
                 },
+                SequenceStatus::Begin,
                 &Kinematics::default(),
                 Mirrored::default(),
                 Grounding::default(),
@@ -68,8 +67,8 @@ mod tests {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
-                    sequence_status: SequenceStatus::Ongoing,
                 },
+                SequenceStatus::Ongoing,
                 &Kinematics::default(),
                 Mirrored::default(),
                 Grounding::default(),
@@ -85,15 +84,14 @@ mod tests {
         assert_eq!(
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Walk),
-                sequence_status: Some(SequenceStatus::Begin),
             }),
             SequenceRepeat::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
-                    sequence_status: SequenceStatus::End,
                 },
+                SequenceStatus::End,
                 &Kinematics::default(),
                 Mirrored::default(),
                 Grounding::default(),

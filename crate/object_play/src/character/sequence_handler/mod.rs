@@ -81,7 +81,7 @@ mod test {
     use game_input::ControllerInput;
     use object_model::entity::{
         CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
-        RunCounter,
+        RunCounter, SequenceStatus,
     };
 
     use super::{CharacterSequenceHandler, SequenceHandler};
@@ -91,14 +91,13 @@ mod test {
     fn sequence_handler_default_update_is_empty() {
         // No calculated next sequence.
         let sequence_id = None;
-        // No update to sequence status.
-        let sequence_status = None;
         assert_eq!(
-            ObjectStatusUpdate::new(sequence_id, sequence_status),
+            ObjectStatusUpdate::new(sequence_id),
             Sit::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
                 &ObjectStatus::default(),
+                SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),
                 Grounding::default(),
@@ -115,6 +114,7 @@ mod test {
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
                 &ObjectStatus::default(),
+                SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),
                 Grounding::default(),

@@ -17,10 +17,8 @@ impl CharacterSequenceHandler for JumpAscend {
         // Switch to jump_descend when Y axis velocity is no longer upwards.
         if components.kinematics.velocity[1] <= 0. {
             object_status_update.sequence_id = Some(CharacterSequenceId::JumpDescend);
-            object_status_update.sequence_status = Some(SequenceStatus::Begin);
-        } else if components.object_status.sequence_status == SequenceStatus::End {
+        } else if components.sequence_status == SequenceStatus::End {
             object_status_update.sequence_id = Some(CharacterSequenceId::JumpAscend);
-            object_status_update.sequence_status = Some(SequenceStatus::Begin);
         }
 
         object_status_update
@@ -55,8 +53,8 @@ mod test {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::JumpAscend,
-                    ..Default::default()
                 },
+                SequenceStatus::default(),
                 &kinematics,
                 Mirrored::default(),
                 Grounding::Airborne,
@@ -74,15 +72,14 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::JumpAscend),
-                sequence_status: Some(SequenceStatus::Begin),
             },
             JumpAscend::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::JumpAscend,
-                    sequence_status: SequenceStatus::End,
                 },
+                SequenceStatus::End,
                 &kinematics,
                 Mirrored::default(),
                 Grounding::Airborne,
@@ -103,15 +100,14 @@ mod test {
                 assert_eq!(
                     ObjectStatusUpdate {
                         sequence_id: Some(CharacterSequenceId::JumpDescend),
-                        sequence_status: Some(SequenceStatus::Begin),
                     },
                     JumpAscend::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
                         &ObjectStatus {
                             sequence_id: CharacterSequenceId::JumpAscend,
-                            sequence_status: SequenceStatus::Ongoing,
                         },
+                        SequenceStatus::Ongoing,
                         &kinematics,
                         Mirrored::default(),
                         Grounding::Airborne,

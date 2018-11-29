@@ -1,7 +1,4 @@
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{ObjectStatusUpdate, SequenceStatus},
-};
+use object_model::{config::object::CharacterSequenceId, entity::ObjectStatusUpdate};
 
 use character::sequence_handler::SequenceHandler;
 use CharacterSequenceUpdateComponents;
@@ -18,9 +15,8 @@ impl SequenceHandler for StandZMovementCheck {
     ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
         if components.controller_input.z_axis_value != 0. {
             let sequence_id = Some(CharacterSequenceId::Walk);
-            let sequence_status = Some(SequenceStatus::Begin);
 
-            Some(ObjectStatusUpdate::new(sequence_id, sequence_status))
+            Some(ObjectStatusUpdate::new(sequence_id))
         } else {
             None
         }
@@ -52,6 +48,7 @@ mod tests {
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus::default(),
+                SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),
                 Grounding::default(),
@@ -67,12 +64,12 @@ mod tests {
         assert_eq!(
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Walk),
-                sequence_status: Some(SequenceStatus::Begin),
             }),
             StandZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus::default(),
+                SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),
                 Grounding::default(),

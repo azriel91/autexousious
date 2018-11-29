@@ -15,6 +15,7 @@ type CharacterKinematicsSystemData<'s> = (
     ReadStorage<'s, CharacterHandle>,
     ReadStorage<'s, ControllerInput>,
     ReadStorage<'s, ObjectStatus<CharacterSequenceId>>,
+    ReadStorage<'s, SequenceStatus>,
     WriteStorage<'s, Kinematics<f32>>,
     WriteStorage<'s, Mirrored>,
 );
@@ -29,14 +30,23 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
             handle_storage,
             controller_inputs,
             object_statuses,
+            sequence_statuses,
             mut kinematicses,
             mut mirroreds,
         ): Self::SystemData,
     ) {
-        for (character_handle, controller_input, object_status, mut kinematics, mut mirrored) in (
+        for (
+            character_handle,
+            controller_input,
+            object_status,
+            sequence_status,
+            mut kinematics,
+            mut mirrored,
+        ) in (
             &handle_storage,
             &controller_inputs,
             &object_statuses,
+            &sequence_statuses,
             &mut kinematicses,
             &mut mirroreds,
         )
@@ -69,7 +79,7 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                     kinematics.velocity[2] = controller_input.z_axis_value as f32 * 0.5;
                 }
                 CharacterSequenceId::JumpOff => {
-                    if object_status.sequence_status == SequenceStatus::Begin {
+                    if *sequence_status == SequenceStatus::Begin {
                         kinematics.velocity[0] = controller_input.x_axis_value as f32 * 5.;
                         kinematics.velocity[1] = 17.;
                         kinematics.velocity[2] = controller_input.z_axis_value as f32 * 2.;
@@ -101,7 +111,7 @@ mod tests {
     use map_selection_model::MapSelection;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{Grounding, Kinematics, Mirrored, ObjectStatus},
+        entity::{Grounding, Kinematics, Mirrored, ObjectStatus, SequenceStatus},
     };
     use typename::TypeName;
 
@@ -418,6 +428,7 @@ mod tests {
                             maps,
                             mut controller_inputs,
                             mut object_statuses,
+                            mut sequence_statuses,
                             mut kinematicses,
                             mut groundings,
                         ): (
@@ -425,6 +436,7 @@ mod tests {
                             Read<AssetStorage<Map>>,
                             WriteStorage<ControllerInput>,
                             WriteStorage<ObjectStatus<CharacterSequenceId>>,
+                            WriteStorage<SequenceStatus>,
                             WriteStorage<Kinematics<f32>>,
                             WriteStorage<Grounding>,
                         )| {
@@ -432,9 +444,16 @@ mod tests {
                                 .get(map_selection.handle())
                                 .expect("Expected map to be loaded.");
 
-                            for (controller_input, object_status, kinematics, grounding) in (
+                            for (
+                                controller_input,
+                                object_status,
+                                sequence_status,
+                                kinematics,
+                                grounding,
+                            ) in (
                                 &mut controller_inputs,
                                 &mut object_statuses,
+                                &mut sequence_statuses,
                                 &mut kinematicses,
                                 &mut groundings,
                             )
@@ -444,6 +463,7 @@ mod tests {
                                 controller_input.z_axis_value = 1.;
 
                                 object_status.sequence_id = CharacterSequenceId::JumpOff;
+                                *sequence_status = SequenceStatus::Begin;
                                 *grounding = Grounding::OnGround;
 
                                 kinematics.position[1] = map.margins.bottom;

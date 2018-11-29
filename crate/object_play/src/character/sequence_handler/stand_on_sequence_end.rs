@@ -12,6 +12,6 @@ impl CharacterSequenceHandler for StandOnSequenceEnd {
     fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
     ) -> ObjectStatusUpdate<CharacterSequenceId> {
-        STAND_ON_SEQUENCE_END.update(components.object_status)
+        STAND_ON_SEQUENCE_END.update(components.sequence_status)
     }
 }

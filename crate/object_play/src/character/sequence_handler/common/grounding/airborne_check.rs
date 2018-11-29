@@ -1,6 +1,6 @@
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{Grounding, ObjectStatusUpdate, SequenceStatus},
+    entity::{Grounding, ObjectStatusUpdate},
 };
 
 use character::sequence_handler::SequenceHandler;
@@ -15,10 +15,9 @@ impl SequenceHandler for AirborneCheck {
         components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
         if components.grounding == Grounding::Airborne {
-            Some(ObjectStatusUpdate::new(
-                Some(CharacterSequenceId::JumpDescend),
-                Some(SequenceStatus::Begin),
-            ))
+            Some(ObjectStatusUpdate::new(Some(
+                CharacterSequenceId::JumpDescend,
+            )))
         } else {
             None
         }
@@ -49,8 +48,8 @@ mod tests {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Stand,
-                    ..Default::default()
                 },
+                SequenceStatus::default(),
                 &Kinematics::<f32>::default(),
                 Mirrored::default(),
                 Grounding::default(),
@@ -64,15 +63,14 @@ mod tests {
         assert_eq!(
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::JumpDescend),
-                sequence_status: Some(SequenceStatus::Begin),
             }),
             AirborneCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Stand,
-                    ..Default::default()
                 },
+                SequenceStatus::default(),
                 &Kinematics::<f32>::default(),
                 Mirrored::default(),
                 Grounding::Airborne,

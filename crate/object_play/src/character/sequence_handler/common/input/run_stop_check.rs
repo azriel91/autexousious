@@ -1,7 +1,4 @@
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{ObjectStatusUpdate, SequenceStatus},
-};
+use object_model::{config::object::CharacterSequenceId, entity::ObjectStatusUpdate};
 
 use character::sequence_handler::{common::SequenceRepeat, SequenceHandler, SequenceHandlerUtil};
 use CharacterSequenceUpdateComponents;
@@ -24,7 +21,6 @@ impl SequenceHandler for RunStopCheck {
         } else {
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::RunStop),
-                sequence_status: Some(SequenceStatus::Begin),
             })
         }
     }
@@ -59,8 +55,8 @@ mod tests {
                         &CharacterStatus::default(),
                         &ObjectStatus {
                             sequence_id: CharacterSequenceId::Walk,
-                            ..Default::default()
                         },
+                        SequenceStatus::default(),
                         &Kinematics::default(),
                         mirrored.into(),
                         Grounding::default(),
@@ -77,15 +73,14 @@ mod tests {
         assert_eq!(
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::RunStop),
-                sequence_status: Some(SequenceStatus::Begin),
             }),
             RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
-                    ..Default::default()
                 },
+                SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored(false),
                 Grounding::default(),
@@ -104,15 +99,14 @@ mod tests {
                 assert_eq!(
                     Some(ObjectStatusUpdate {
                         sequence_id: Some(CharacterSequenceId::RunStop),
-                        sequence_status: Some(SequenceStatus::Begin),
                     }),
                     RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
                         &ObjectStatus {
                             sequence_id: CharacterSequenceId::Walk,
-                            ..Default::default()
                         },
+                        SequenceStatus::default(),
                         &Kinematics::default(),
                         mirrored.into(),
                         Grounding::default(),
@@ -132,15 +126,14 @@ mod tests {
                 assert_eq!(
                     Some(ObjectStatusUpdate {
                         sequence_id: Some(CharacterSequenceId::Run),
-                        sequence_status: Some(SequenceStatus::Begin),
                     }),
                     RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
                         &ObjectStatus {
                             sequence_id: CharacterSequenceId::Run,
-                            sequence_status: SequenceStatus::End,
                         },
+                        SequenceStatus::End,
                         &Kinematics::default(),
                         mirrored.into(),
                         Grounding::default(),

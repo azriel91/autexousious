@@ -1,7 +1,4 @@
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{ObjectStatusUpdate, SequenceStatus},
-};
+use object_model::{config::object::CharacterSequenceId, entity::ObjectStatusUpdate};
 
 use character::sequence_handler::SequenceHandler;
 use CharacterSequenceUpdateComponents;
@@ -16,9 +13,8 @@ impl SequenceHandler for StandAttackCheck {
     ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
         if components.controller_input.attack {
             let sequence_id = Some(CharacterSequenceId::StandAttack);
-            let sequence_status = Some(SequenceStatus::Begin);
 
-            Some(ObjectStatusUpdate::new(sequence_id, sequence_status))
+            Some(ObjectStatusUpdate::new(sequence_id))
         } else {
             None
         }
@@ -50,6 +46,7 @@ mod tests {
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus::default(),
+                SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),
                 Grounding::default(),
@@ -66,12 +63,12 @@ mod tests {
         assert_eq!(
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::StandAttack),
-                sequence_status: Some(SequenceStatus::Begin),
             }),
             StandAttackCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus::default(),
+                SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),
                 Grounding::default(),

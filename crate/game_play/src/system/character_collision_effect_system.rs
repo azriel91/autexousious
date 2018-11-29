@@ -21,6 +21,7 @@ type CharacterCollisionEffectSystemData<'s> = (
     Read<'s, EventChannel<CollisionEvent>>,
     WriteStorage<'s, CharacterStatus>,
     WriteStorage<'s, ObjectStatus<CharacterSequenceId>>,
+    WriteStorage<'s, SequenceStatus>,
 );
 
 impl<'s> System<'s> for CharacterCollisionEffectSystem {
@@ -28,7 +29,7 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
 
     fn run(
         &mut self,
-        (collision_ec, mut character_statuses, mut object_statuses): Self::SystemData,
+        (collision_ec, mut character_statuses, mut object_statuses, mut sequence_statuses): Self::SystemData,
     ) {
         // Read from channel
         collision_ec
@@ -41,9 +42,10 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
                 // Fetch CharacterStatus for entity
                 let character_status = character_statuses.get_mut(ev.to);
                 let object_status = object_statuses.get_mut(ev.to);
+                let sequence_status = sequence_statuses.get_mut(ev.to);
 
-                if let (Some(character_status), Some(object_status)) =
-                    (character_status, object_status)
+                if let (Some(character_status), Some(object_status), Some(sequence_status)) =
+                    (character_status, object_status, sequence_status)
                 {
                     // TODO: Select damage sequence based on status.
                     // TODO: Split this system with health check system.
@@ -66,7 +68,7 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
 
                     // Set sequence id
                     object_status.sequence_id = next_sequence_id;
-                    object_status.sequence_status = SequenceStatus::Begin;
+                    *sequence_status = SequenceStatus::Begin;
                 }
             });
     }

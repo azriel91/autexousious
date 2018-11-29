@@ -13,6 +13,6 @@ impl CharacterSequenceHandler for FallForwardLand {
     fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
     ) -> ObjectStatusUpdate<CharacterSequenceId> {
-        FALL_FORWARD_LAND.update(components.object_status)
+        FALL_FORWARD_LAND.update(components.sequence_status)
     }
 }

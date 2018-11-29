@@ -1,4 +1,6 @@
-/// Statuses that indicate whether a sequence has just began,
+use amethyst::ecs::{storage::VecStorage, Component};
+
+/// Statuses that indicate whether a sequence has just begun, is ongoing, or has ended.
 #[derive(Clone, Copy, Debug, Derivative, PartialEq, Eq)]
 #[derivative(Default)]
 pub enum SequenceStatus {
@@ -9,4 +11,10 @@ pub enum SequenceStatus {
     Ongoing,
     /// The sequence has ended.
     End,
+}
+
+/// Not every entity will have this, but since this is probably a `u8`, we don't need an indirection
+/// table.
+impl Component for SequenceStatus {
+    type Storage = VecStorage<Self>;
 }
