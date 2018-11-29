@@ -1,5 +1,5 @@
 use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
+    config::object::{CharacterSequenceId, SequenceStatus},
     entity::{ObjectStatusUpdate, RunCounter},
 };
 
@@ -34,9 +34,9 @@ impl SequenceHandler for StandXMovementCheck {
                 _ => unreachable!(), // kcov-ignore
             };
 
-            let sequence_state = Some(SequenceState::Begin);
+            let sequence_status = Some(SequenceStatus::Begin);
 
-            Some(ObjectStatusUpdate::new(sequence_id, sequence_state))
+            Some(ObjectStatusUpdate::new(sequence_id, sequence_status))
         } else {
             None
         }
@@ -47,7 +47,7 @@ impl SequenceHandler for StandXMovementCheck {
 mod tests {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::{CharacterSequenceId, SequenceStatus},
         entity::{
             CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
             RunCounter,
@@ -86,7 +86,7 @@ mod tests {
         assert_eq!(
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Walk),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             }),
             StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
@@ -106,7 +106,7 @@ mod tests {
         assert_eq!(
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Walk),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             }),
             StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
@@ -130,7 +130,7 @@ mod tests {
         assert_eq!(
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Walk),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             }),
             StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
@@ -150,7 +150,7 @@ mod tests {
         assert_eq!(
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Walk),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             }),
             StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
@@ -177,7 +177,7 @@ mod tests {
                 assert_eq!(
                     Some(ObjectStatusUpdate {
                         sequence_id: Some(CharacterSequenceId::Run),
-                        sequence_state: Some(SequenceState::Begin),
+                        sequence_status: Some(SequenceStatus::Begin),
                     }),
                     StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
@@ -205,7 +205,7 @@ mod tests {
                 assert_eq!(
                     Some(ObjectStatusUpdate {
                         sequence_id: Some(CharacterSequenceId::Walk),
-                        sequence_state: Some(SequenceState::Begin),
+                        sequence_status: Some(SequenceStatus::Begin),
                     }),
                     StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,

@@ -1,5 +1,5 @@
 use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
+    config::object::{CharacterSequenceId, SequenceStatus},
     entity::ObjectStatusUpdate,
 };
 
@@ -21,7 +21,7 @@ impl SequenceHandler for WalkNoMovementCheck {
         {
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Stand),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             })
         } else {
             None
@@ -33,7 +33,7 @@ impl SequenceHandler for WalkNoMovementCheck {
 mod tests {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::{CharacterSequenceId, SequenceStatus},
         entity::{
             CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
             RunCounter,
@@ -51,7 +51,7 @@ mod tests {
         assert_eq!(
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Stand),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             }),
             WalkNoMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,

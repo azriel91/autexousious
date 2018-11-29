@@ -5,7 +5,7 @@ use amethyst::ecs::{
     Component,
 };
 
-use config::object::{SequenceId, SequenceState};
+use config::object::{SequenceId, SequenceStatus};
 use entity::ObjectStatusUpdate;
 
 /// Status of an object entity.
@@ -16,7 +16,7 @@ pub struct ObjectStatus<SeqId: SequenceId> {
     /// ID of the current sequence the entity is on.
     pub sequence_id: SeqId,
     /// Whether the sequence just started, is ongoing, or has ended.
-    pub sequence_state: SequenceState,
+    pub sequence_status: SequenceStatus,
 }
 
 impl<SeqId: SequenceId + 'static> Component for ObjectStatus<SeqId> {
@@ -29,7 +29,7 @@ impl<SeqId: SequenceId> Add<ObjectStatusUpdate<SeqId>> for ObjectStatus<SeqId> {
     fn add(self, delta: ObjectStatusUpdate<SeqId>) -> Self {
         ObjectStatus {
             sequence_id: delta.sequence_id.unwrap_or(self.sequence_id),
-            sequence_state: delta.sequence_state.unwrap_or(self.sequence_state),
+            sequence_status: delta.sequence_status.unwrap_or(self.sequence_status),
         }
     }
 }
@@ -42,18 +42,18 @@ impl<SeqId: SequenceId> AddAssign<ObjectStatusUpdate<SeqId>> for ObjectStatus<Se
 
 #[cfg(test)]
 mod test {
-    use config::object::{SequenceId, SequenceState};
+    use config::object::{SequenceId, SequenceStatus};
     use entity::ObjectStatusUpdate;
 
     use super::ObjectStatus;
 
     #[test]
     fn add_retains_values_if_no_delta() {
-        let status = ObjectStatus::new(TestSeqId::Moo, SequenceState::End);
+        let status = ObjectStatus::new(TestSeqId::Moo, SequenceStatus::End);
         let delta = ObjectStatusUpdate::default();
 
         assert_eq!(
-            ObjectStatus::new(TestSeqId::Moo, SequenceState::End,),
+            ObjectStatus::new(TestSeqId::Moo, SequenceStatus::End,),
             status + delta
         );
     }
@@ -73,38 +73,38 @@ mod test {
     }
 
     #[test]
-    fn add_updates_sequence_state_if_present() {
+    fn add_updates_sequence_status_if_present() {
         let status = ObjectStatus::<TestSeqId> {
-            sequence_state: SequenceState::Ongoing,
+            sequence_status: SequenceStatus::Ongoing,
             ..Default::default()
         };
         let delta = ObjectStatusUpdate {
-            sequence_state: Some(SequenceState::End),
+            sequence_status: Some(SequenceStatus::End),
             ..Default::default()
         };
 
-        assert_eq!(SequenceState::End, (status + delta).sequence_state);
+        assert_eq!(SequenceStatus::End, (status + delta).sequence_status);
     }
 
     #[test]
     fn add_retains_value_when_delta_value_is_same() {
-        let status = ObjectStatus::new(TestSeqId::Boo, SequenceState::End);
-        let delta = ObjectStatusUpdate::new(Some(TestSeqId::Boo), Some(SequenceState::End));
+        let status = ObjectStatus::new(TestSeqId::Boo, SequenceStatus::End);
+        let delta = ObjectStatusUpdate::new(Some(TestSeqId::Boo), Some(SequenceStatus::End));
 
         assert_eq!(
-            ObjectStatus::new(TestSeqId::Boo, SequenceState::End,),
+            ObjectStatus::new(TestSeqId::Boo, SequenceStatus::End,),
             status + delta
         );
     }
 
     #[test]
     fn add_assign_updates_fields_if_present() {
-        let mut status = ObjectStatus::new(TestSeqId::Boo, SequenceState::Begin);
-        let delta = ObjectStatusUpdate::new(Some(TestSeqId::Moo), Some(SequenceState::Ongoing));
+        let mut status = ObjectStatus::new(TestSeqId::Boo, SequenceStatus::Begin);
+        let delta = ObjectStatusUpdate::new(Some(TestSeqId::Moo), Some(SequenceStatus::Ongoing));
 
         status += delta;
         assert_eq!(
-            ObjectStatus::new(TestSeqId::Moo, SequenceState::Ongoing,),
+            ObjectStatus::new(TestSeqId::Moo, SequenceStatus::Ongoing,),
             status
         );
     }

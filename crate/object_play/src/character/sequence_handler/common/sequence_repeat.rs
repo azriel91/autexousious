@@ -1,5 +1,5 @@
 use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
+    config::object::{CharacterSequenceId, SequenceStatus},
     entity::ObjectStatusUpdate,
 };
 
@@ -14,11 +14,11 @@ impl SequenceHandler for SequenceRepeat {
     fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
-        if components.object_status.sequence_state == SequenceState::End {
+        if components.object_status.sequence_status == SequenceStatus::End {
             let sequence_id = Some(components.object_status.sequence_id);
-            let sequence_state = Some(SequenceState::Begin);
+            let sequence_status = Some(SequenceStatus::Begin);
 
-            Some(ObjectStatusUpdate::new(sequence_id, sequence_state))
+            Some(ObjectStatusUpdate::new(sequence_id, sequence_status))
         } else {
             None
         }
@@ -29,7 +29,7 @@ impl SequenceHandler for SequenceRepeat {
 mod tests {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::{CharacterSequenceId, SequenceStatus},
         entity::{
             CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
             RunCounter,
@@ -49,7 +49,7 @@ mod tests {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
-                    sequence_state: SequenceState::Begin,
+                    sequence_status: SequenceStatus::Begin,
                 },
                 &Kinematics::default(),
                 Mirrored::default(),
@@ -68,7 +68,7 @@ mod tests {
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
-                    sequence_state: SequenceState::Ongoing,
+                    sequence_status: SequenceStatus::Ongoing,
                 },
                 &Kinematics::default(),
                 Mirrored::default(),
@@ -85,14 +85,14 @@ mod tests {
         assert_eq!(
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Walk),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             }),
             SequenceRepeat::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Walk,
-                    sequence_state: SequenceState::End,
+                    sequence_status: SequenceStatus::End,
                 },
                 &Kinematics::default(),
                 Mirrored::default(),

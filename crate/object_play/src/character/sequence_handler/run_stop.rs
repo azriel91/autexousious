@@ -1,5 +1,5 @@
 use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
+    config::object::{CharacterSequenceId, SequenceStatus},
     entity::ObjectStatusUpdate,
 };
 
@@ -23,9 +23,9 @@ impl CharacterSequenceHandler for RunStop {
             })
             .unwrap_or_else(|| {
                 let mut object_status_update = ObjectStatusUpdate::default();
-                if components.object_status.sequence_state == SequenceState::End {
+                if components.object_status.sequence_status == SequenceStatus::End {
                     object_status_update.sequence_id = Some(CharacterSequenceId::Stand);
-                    object_status_update.sequence_state = Some(SequenceState::Begin);
+                    object_status_update.sequence_status = Some(SequenceStatus::Begin);
                 }
                 object_status_update
             })
@@ -36,7 +36,7 @@ impl CharacterSequenceHandler for RunStop {
 mod test {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::{CharacterSequenceId, SequenceStatus},
         entity::{
             CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
             RunCounter,
@@ -52,7 +52,7 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::JumpDescend),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             },
             RunStop::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
@@ -97,14 +97,14 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Stand),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             },
             RunStop::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::RunStop,
-                    sequence_state: SequenceState::End,
+                    sequence_status: SequenceStatus::End,
                 },
                 &Kinematics::default(),
                 Mirrored::default(),

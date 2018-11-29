@@ -1,5 +1,5 @@
 use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
+    config::object::{CharacterSequenceId, SequenceStatus},
     entity::{ObjectStatus, ObjectStatusUpdate},
 };
 
@@ -15,9 +15,9 @@ impl SwitchSequenceOnEnd {
         object_status: &ObjectStatus<CharacterSequenceId>,
     ) -> ObjectStatusUpdate<CharacterSequenceId> {
         let mut object_status_update = ObjectStatusUpdate::default();
-        if object_status.sequence_state == SequenceState::End {
+        if object_status.sequence_status == SequenceStatus::End {
             object_status_update.sequence_id = Some(self.0);
-            object_status_update.sequence_state = Some(SequenceState::Begin);
+            object_status_update.sequence_status = Some(SequenceStatus::Begin);
         }
 
         object_status_update
@@ -27,7 +27,7 @@ impl SwitchSequenceOnEnd {
 #[cfg(test)]
 mod test {
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::{CharacterSequenceId, SequenceStatus},
         entity::{ObjectStatus, ObjectStatusUpdate},
     };
 
@@ -49,11 +49,11 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Stand),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             },
             SwitchSequenceOnEnd(CharacterSequenceId::Stand).update(&ObjectStatus {
                 sequence_id: CharacterSequenceId::Flinch0,
-                sequence_state: SequenceState::End,
+                sequence_status: SequenceStatus::End,
             })
         );
     }

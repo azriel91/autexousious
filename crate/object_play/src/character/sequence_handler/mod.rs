@@ -91,10 +91,10 @@ mod test {
     fn sequence_handler_default_update_is_empty() {
         // No calculated next sequence.
         let sequence_id = None;
-        // No update to sequence state.
-        let sequence_state = None;
+        // No update to sequence status.
+        let sequence_status = None;
         assert_eq!(
-            ObjectStatusUpdate::new(sequence_id, sequence_state),
+            ObjectStatusUpdate::new(sequence_id, sequence_status),
             Sit::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),

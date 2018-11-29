@@ -4,7 +4,7 @@ use amethyst::{
 };
 use collision_model::{config::Interaction, play::CollisionEvent};
 use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
+    config::object::{CharacterSequenceId, SequenceStatus},
     entity::{CharacterStatus, HealthPoints, ObjectStatus},
 };
 use typename::TypeName;
@@ -66,7 +66,7 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
 
                     // Set sequence id
                     object_status.sequence_id = next_sequence_id;
-                    object_status.sequence_state = SequenceState::Begin;
+                    object_status.sequence_status = SequenceStatus::Begin;
                 }
             });
     }

@@ -31,7 +31,7 @@ impl CharacterSequenceHandler for Run {
 mod test {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::{CharacterSequenceId, SequenceStatus},
         entity::{
             CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
             RunCounter,
@@ -47,7 +47,7 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::JumpDescend),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             },
             Run::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
@@ -71,7 +71,7 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::RunStop),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             },
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
@@ -140,14 +140,14 @@ mod test {
                 assert_eq!(
                     ObjectStatusUpdate {
                         sequence_id: Some(CharacterSequenceId::Run),
-                        sequence_state: Some(SequenceState::Begin),
+                        sequence_status: Some(SequenceStatus::Begin),
                     },
                     Run::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
                         &ObjectStatus {
                             sequence_id: CharacterSequenceId::Run,
-                            sequence_state: SequenceState::End,
+                            sequence_status: SequenceStatus::End,
                         },
                         &Kinematics::default(),
                         mirrored.into(),
@@ -165,7 +165,7 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::RunStop),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             },
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
@@ -189,7 +189,7 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::RunStop),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             },
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,

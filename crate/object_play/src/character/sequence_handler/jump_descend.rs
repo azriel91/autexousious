@@ -1,5 +1,5 @@
 use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
+    config::object::{CharacterSequenceId, SequenceStatus},
     entity::{Grounding, ObjectStatusUpdate},
 };
 
@@ -16,10 +16,10 @@ impl CharacterSequenceHandler for JumpDescend {
         let mut object_status_update = ObjectStatusUpdate::default();
         if components.grounding == Grounding::OnGround {
             object_status_update.sequence_id = Some(CharacterSequenceId::JumpDescendLand);
-            object_status_update.sequence_state = Some(SequenceState::Begin);
-        } else if components.object_status.sequence_state == SequenceState::End {
+            object_status_update.sequence_status = Some(SequenceStatus::Begin);
+        } else if components.object_status.sequence_status == SequenceStatus::End {
             object_status_update.sequence_id = Some(CharacterSequenceId::JumpDescend);
-            object_status_update.sequence_state = Some(SequenceState::Begin);
+            object_status_update.sequence_status = Some(SequenceStatus::Begin);
         }
 
         object_status_update
@@ -30,7 +30,7 @@ impl CharacterSequenceHandler for JumpDescend {
 mod test {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::{CharacterSequenceId, SequenceStatus},
         entity::{
             CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
             RunCounter,
@@ -73,14 +73,14 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::JumpDescend),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             },
             JumpDescend::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::JumpDescend,
-                    sequence_state: SequenceState::End,
+                    sequence_status: SequenceStatus::End,
                 },
                 &kinematics,
                 Mirrored::default(),
@@ -99,7 +99,7 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::JumpDescendLand),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             },
             JumpDescend::update(CharacterSequenceUpdateComponents::new(
                 &input,

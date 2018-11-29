@@ -1,5 +1,5 @@
 use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
+    config::object::{CharacterSequenceId, SequenceStatus},
     entity::ObjectStatusUpdate,
 };
 
@@ -20,7 +20,7 @@ impl SequenceHandler for JumpCheck {
         if components.controller_input.jump {
             Some(ObjectStatusUpdate::new(
                 Some(CharacterSequenceId::Jump),
-                Some(SequenceState::Begin),
+                Some(SequenceStatus::Begin),
             ))
         } else {
             None
@@ -32,7 +32,7 @@ impl SequenceHandler for JumpCheck {
 mod tests {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::{CharacterSequenceId, SequenceStatus},
         entity::{
             CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
             RunCounter,
@@ -71,7 +71,7 @@ mod tests {
         assert_eq!(
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Jump),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             }),
             JumpCheck::update(CharacterSequenceUpdateComponents::new(
                 &controller_input,

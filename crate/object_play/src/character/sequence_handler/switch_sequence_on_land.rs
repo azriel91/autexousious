@@ -1,5 +1,5 @@
 use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
+    config::object::{CharacterSequenceId, SequenceStatus},
     entity::{Grounding, ObjectStatusUpdate},
 };
 
@@ -19,10 +19,10 @@ impl SwitchSequenceOnLand {
         let mut object_status_update = ObjectStatusUpdate::default();
         if components.grounding == Grounding::OnGround {
             object_status_update.sequence_id = Some(self.0);
-            object_status_update.sequence_state = Some(SequenceState::Begin);
-        } else if components.object_status.sequence_state == SequenceState::End {
+            object_status_update.sequence_status = Some(SequenceStatus::Begin);
+        } else if components.object_status.sequence_status == SequenceStatus::End {
             object_status_update.sequence_id = Some(CharacterSequenceId::FallForwardDescend);
-            object_status_update.sequence_state = Some(SequenceState::Begin);
+            object_status_update.sequence_status = Some(SequenceStatus::Begin);
         }
 
         object_status_update
@@ -33,7 +33,7 @@ impl SwitchSequenceOnLand {
 mod test {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::{CharacterSequenceId, SequenceStatus},
         entity::{
             CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
             RunCounter,
@@ -77,7 +77,7 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::FallForwardDescend),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             },
             SwitchSequenceOnLand(CharacterSequenceId::FallForwardLand).update(
                 CharacterSequenceUpdateComponents::new(
@@ -85,7 +85,7 @@ mod test {
                     &CharacterStatus::default(),
                     &ObjectStatus {
                         sequence_id: CharacterSequenceId::FallForwardDescend,
-                        sequence_state: SequenceState::End,
+                        sequence_status: SequenceStatus::End,
                     },
                     &kinematics,
                     Mirrored::default(),
@@ -105,7 +105,7 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::FallForwardLand),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             },
             SwitchSequenceOnLand(CharacterSequenceId::FallForwardLand).update(
                 CharacterSequenceUpdateComponents::new(

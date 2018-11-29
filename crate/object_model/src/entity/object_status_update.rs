@@ -1,4 +1,4 @@
-use config::object::{SequenceId, SequenceState};
+use config::object::{SequenceId, SequenceStatus};
 
 /// Indicates what fields of an `ObjectStatus` should be updated.
 // TODO: Learning exercise - Generate this using a proc macro
@@ -8,5 +8,5 @@ pub struct ObjectStatusUpdate<SeqId: SequenceId> {
     /// ID of the current sequence the entity is on.
     pub sequence_id: Option<SeqId>,
     /// Whether the sequence just started, is ongoing, or has ended.
-    pub sequence_state: Option<SequenceState>,
+    pub sequence_status: Option<SequenceStatus>,
 }

@@ -1,5 +1,5 @@
 use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
+    config::object::{CharacterSequenceId, SequenceStatus},
     entity::{Grounding, ObjectStatusUpdate},
 };
 
@@ -17,7 +17,7 @@ impl SequenceHandler for AirborneCheck {
         if components.grounding == Grounding::Airborne {
             Some(ObjectStatusUpdate::new(
                 Some(CharacterSequenceId::JumpDescend),
-                Some(SequenceState::Begin),
+                Some(SequenceStatus::Begin),
             ))
         } else {
             None
@@ -29,7 +29,7 @@ impl SequenceHandler for AirborneCheck {
 mod tests {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::{CharacterSequenceId, SequenceStatus},
         entity::{
             CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
             RunCounter,
@@ -64,7 +64,7 @@ mod tests {
         assert_eq!(
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::JumpDescend),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             }),
             AirborneCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),

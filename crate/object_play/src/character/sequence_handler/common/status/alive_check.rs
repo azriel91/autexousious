@@ -1,5 +1,5 @@
 use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
+    config::object::{CharacterSequenceId, SequenceStatus},
     entity::ObjectStatusUpdate,
 };
 
@@ -17,7 +17,7 @@ impl SequenceHandler for AliveCheck {
         if components.character_status.hp == 0 {
             Some(ObjectStatusUpdate::new(
                 Some(CharacterSequenceId::FallForwardDescend),
-                Some(SequenceState::Begin),
+                Some(SequenceStatus::Begin),
             ))
         } else {
             None
@@ -29,7 +29,7 @@ impl SequenceHandler for AliveCheck {
 mod tests {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::{CharacterSequenceId, SequenceStatus},
         entity::{
             CharacterStatus, Grounding, HealthPoints, Kinematics, Mirrored, ObjectStatus,
             ObjectStatusUpdate, RunCounter,
@@ -64,7 +64,7 @@ mod tests {
         assert_eq!(
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::FallForwardDescend),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             }),
             AliveCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),

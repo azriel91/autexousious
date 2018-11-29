@@ -7,7 +7,7 @@ use amethyst::{
 use game_input::ControllerInput;
 use game_loading::ObjectAnimationStorages;
 use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
+    config::object::{CharacterSequenceId, SequenceStatus},
     entity::{CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, RunCounter},
     loaded::{Character, CharacterHandle},
 };
@@ -89,8 +89,8 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                 .expect("Sprite animation should exist as entity should be valid.");
 
             // Mark sequence as `Ongoing` for subsequent tick.
-            if object_status.sequence_state == SequenceState::Begin {
-                object_status.sequence_state = SequenceState::Ongoing;
+            if object_status.sequence_status == SequenceStatus::Begin {
+                object_status.sequence_status = SequenceStatus::Ongoing;
             }
 
             let sequence_ended = {
@@ -101,7 +101,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                     .map_or(true, |(_id, control)| control.state == ControlState::Done)
             };
             if sequence_ended {
-                object_status.sequence_state = SequenceState::End;
+                object_status.sequence_status = SequenceStatus::End;
             }
 
             let object_status_update = CharacterSequenceUpdater::update(
@@ -141,7 +141,7 @@ mod tests {
     use map_model::loaded::Map;
     use map_selection_model::MapSelection;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::{CharacterSequenceId, SequenceStatus},
         entity::{Grounding, Kinematics, Mirrored, ObjectStatus},
     };
     use typename::TypeName;
@@ -149,11 +149,11 @@ mod tests {
     use super::CharacterSequenceUpdateSystem;
 
     #[test]
-    fn updates_sequence_state_begin_to_ongoing() {
+    fn updates_sequence_status_begin_to_ongoing() {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AutexousiousApplication::game_base("updates_sequence_state_begin_to_ongoing", false)
+            AutexousiousApplication::game_base("updates_sequence_status_begin_to_ongoing", false)
                 .with_setup(|world| {
                     world.exec(
                         |(
@@ -177,7 +177,7 @@ mod tests {
                                 (&mut object_statuses, &mut kinematicses, &mut groundings).join()
                             {
                                 object_status.sequence_id = CharacterSequenceId::Stand;
-                                object_status.sequence_state = SequenceState::Begin;
+                                object_status.sequence_status = SequenceStatus::Begin;
                                 *grounding = Grounding::OnGround;
 
                                 kinematics.position[1] = map.margins.bottom;
@@ -194,7 +194,7 @@ mod tests {
                     world.exec(
                         |object_statuses: ReadStorage<ObjectStatus<CharacterSequenceId>>| {
                             for object_status in object_statuses.join() {
-                                assert_eq!(SequenceState::Ongoing, object_status.sequence_state);
+                                assert_eq!(SequenceStatus::Ongoing, object_status.sequence_status);
                             }
                         },
                     );
@@ -252,7 +252,7 @@ mod tests {
                                 controller_input.z_axis_value = -1.;
 
                                 object_status.sequence_id = CharacterSequenceId::Stand;
-                                object_status.sequence_state = SequenceState::Ongoing;
+                                object_status.sequence_status = SequenceStatus::Ongoing;
                                 *mirrored = Mirrored(false);
                                 *grounding = Grounding::OnGround;
 
@@ -274,7 +274,7 @@ mod tests {
                         )| {
                             for (object_status, mirrored) in (&object_statuses, &mirroreds).join() {
                                 assert_eq!(CharacterSequenceId::Walk, object_status.sequence_id);
-                                assert_eq!(SequenceState::Begin, object_status.sequence_state);
+                                assert_eq!(SequenceStatus::Begin, object_status.sequence_status);
                                 assert_eq!(Mirrored(true), *mirrored);
                             }
                         },

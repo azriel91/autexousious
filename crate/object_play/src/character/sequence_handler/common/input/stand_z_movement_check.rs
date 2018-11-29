@@ -1,5 +1,5 @@
 use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
+    config::object::{CharacterSequenceId, SequenceStatus},
     entity::ObjectStatusUpdate,
 };
 
@@ -18,9 +18,9 @@ impl SequenceHandler for StandZMovementCheck {
     ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
         if components.controller_input.z_axis_value != 0. {
             let sequence_id = Some(CharacterSequenceId::Walk);
-            let sequence_state = Some(SequenceState::Begin);
+            let sequence_status = Some(SequenceStatus::Begin);
 
-            Some(ObjectStatusUpdate::new(sequence_id, sequence_state))
+            Some(ObjectStatusUpdate::new(sequence_id, sequence_status))
         } else {
             None
         }
@@ -31,7 +31,7 @@ impl SequenceHandler for StandZMovementCheck {
 mod tests {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::{CharacterSequenceId, SequenceStatus},
         entity::{
             CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
             RunCounter,
@@ -67,7 +67,7 @@ mod tests {
         assert_eq!(
             Some(ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Walk),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             }),
             StandZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,

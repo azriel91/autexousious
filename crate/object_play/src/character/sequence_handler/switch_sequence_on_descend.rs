@@ -1,5 +1,5 @@
 use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
+    config::object::{CharacterSequenceId, SequenceStatus},
     entity::ObjectStatusUpdate,
 };
 
@@ -20,10 +20,10 @@ impl SwitchSequenceOnDescend {
         // Switch to descend_sequence when Y axis velocity is no longer upwards.
         if components.kinematics.velocity[1] <= 0. {
             object_status_update.sequence_id = Some(self.0);
-            object_status_update.sequence_state = Some(SequenceState::Begin);
-        } else if components.object_status.sequence_state == SequenceState::End {
+            object_status_update.sequence_status = Some(SequenceStatus::Begin);
+        } else if components.object_status.sequence_status == SequenceStatus::End {
             object_status_update.sequence_id = Some(components.object_status.sequence_id);
-            object_status_update.sequence_state = Some(SequenceState::Begin);
+            object_status_update.sequence_status = Some(SequenceStatus::Begin);
         }
 
         object_status_update
@@ -34,7 +34,7 @@ impl SwitchSequenceOnDescend {
 mod test {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::{CharacterSequenceId, SequenceStatus},
         entity::{
             CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
             RunCounter,
@@ -78,7 +78,7 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::FallForwardAscend),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             },
             SwitchSequenceOnDescend(CharacterSequenceId::FallForwardDescend).update(
                 CharacterSequenceUpdateComponents::new(
@@ -86,7 +86,7 @@ mod test {
                     &CharacterStatus::default(),
                     &ObjectStatus {
                         sequence_id: CharacterSequenceId::FallForwardAscend,
-                        sequence_state: SequenceState::End,
+                        sequence_status: SequenceStatus::End,
                     },
                     &kinematics,
                     Mirrored::default(),
@@ -109,7 +109,7 @@ mod test {
                 assert_eq!(
                     ObjectStatusUpdate {
                         sequence_id: Some(CharacterSequenceId::FallForwardDescend),
-                        sequence_state: Some(SequenceState::Begin),
+                        sequence_status: Some(SequenceStatus::Begin),
                     },
                     SwitchSequenceOnDescend(CharacterSequenceId::FallForwardDescend).update(
                         CharacterSequenceUpdateComponents::new(
@@ -117,7 +117,7 @@ mod test {
                             &CharacterStatus::default(),
                             &ObjectStatus {
                                 sequence_id: CharacterSequenceId::FallForwardAscend,
-                                sequence_state: SequenceState::Ongoing,
+                                sequence_status: SequenceStatus::Ongoing,
                             },
                             &kinematics,
                             Mirrored::default(),

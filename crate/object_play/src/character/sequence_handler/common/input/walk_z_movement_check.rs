@@ -25,7 +25,7 @@ impl SequenceHandler for WalkZMovementCheck {
 mod tests {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::{CharacterSequenceId, SequenceStatus},
         entity::{
             CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
             RunCounter,
@@ -88,14 +88,14 @@ mod tests {
             assert_eq!(
                 Some(ObjectStatusUpdate {
                     sequence_id: Some(CharacterSequenceId::Walk),
-                    sequence_state: Some(SequenceState::Begin),
+                    sequence_status: Some(SequenceStatus::Begin),
                 }),
                 WalkZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                     &input,
                     &CharacterStatus::default(),
                     &ObjectStatus {
                         sequence_id: CharacterSequenceId::Walk,
-                        sequence_state: SequenceState::End,
+                        sequence_status: SequenceStatus::End,
                     },
                     &Kinematics::default(),
                     Mirrored(false),

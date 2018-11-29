@@ -48,7 +48,7 @@ impl CharacterSequenceHandler for Stand {
 mod test {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::{CharacterSequenceId, SequenceStatus},
         entity::{
             CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
             RunCounter,
@@ -68,7 +68,7 @@ mod test {
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &ObjectStatus::new(CharacterSequenceId::Stand, SequenceState::Ongoing,),
+                &ObjectStatus::new(CharacterSequenceId::Stand, SequenceStatus::Ongoing,),
                 &Kinematics::default(),
                 Mirrored(true),
                 Grounding::OnGround,
@@ -84,14 +84,14 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Stand),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             },
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
                 &ObjectStatus {
                     sequence_id: CharacterSequenceId::Stand,
-                    sequence_state: SequenceState::End,
+                    sequence_status: SequenceStatus::End,
                 },
                 &Kinematics::default(),
                 Mirrored::default(),
@@ -108,7 +108,7 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::JumpDescend),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             },
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
@@ -164,7 +164,7 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Walk),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             },
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
@@ -184,7 +184,7 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Walk),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             },
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
@@ -208,7 +208,7 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Walk),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             },
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
@@ -228,7 +228,7 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Walk),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             },
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
@@ -252,7 +252,7 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::Walk),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             },
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
@@ -279,7 +279,7 @@ mod test {
                 assert_eq!(
                     ObjectStatusUpdate {
                         sequence_id: Some(CharacterSequenceId::Run),
-                        sequence_state: Some(SequenceState::Begin),
+                        sequence_status: Some(SequenceStatus::Begin),
                     },
                     Stand::update(CharacterSequenceUpdateComponents::new(
                         &input,
@@ -307,7 +307,7 @@ mod test {
                 assert_eq!(
                     ObjectStatusUpdate {
                         sequence_id: Some(CharacterSequenceId::Walk),
-                        sequence_state: Some(SequenceState::Begin),
+                        sequence_status: Some(SequenceStatus::Begin),
                     },
                     Stand::update(CharacterSequenceUpdateComponents::new(
                         &input,
@@ -335,7 +335,7 @@ mod test {
                 assert_eq!(
                     ObjectStatusUpdate {
                         sequence_id: Some(CharacterSequenceId::Jump),
-                        sequence_state: Some(SequenceState::Begin),
+                        sequence_status: Some(SequenceStatus::Begin),
                     },
                     Stand::update(CharacterSequenceUpdateComponents::new(
                         &input,
@@ -358,7 +358,7 @@ mod test {
         assert_eq!(
             ObjectStatusUpdate {
                 sequence_id: Some(CharacterSequenceId::StandAttack),
-                sequence_state: Some(SequenceState::Begin),
+                sequence_status: Some(SequenceStatus::Begin),
             },
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,

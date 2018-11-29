@@ -9,14 +9,14 @@
 
 pub use self::object_frame::ObjectFrame;
 pub use self::sequence_id::SequenceId;
-pub use self::sequence_state::SequenceState;
+pub use self::sequence_status::SequenceStatus;
 
 use collision_loading::{BodyAnimationSequence, InteractionAnimationSequence};
 use sprite_loading::AnimationSequence;
 
 mod object_frame;
 mod sequence_id;
-mod sequence_state;
+mod sequence_status;
 
 /// Represents an independent action sequence of an object.
 ///

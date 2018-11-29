@@ -1,7 +1,7 @@
-/// States that indicate whether a sequence has just began,
+/// Statuses that indicate whether a sequence has just began,
 #[derive(Clone, Copy, Debug, Derivative, PartialEq, Eq)]
 #[derivative(Default)]
-pub enum SequenceState {
+pub enum SequenceStatus {
     /// The sequence has just begun.
     #[derivative(Default)]
     Begin,

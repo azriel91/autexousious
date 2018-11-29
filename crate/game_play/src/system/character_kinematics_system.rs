@@ -1,7 +1,7 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
 use game_input::ControllerInput;
 use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
+    config::object::{CharacterSequenceId, SequenceStatus},
     entity::{Kinematics, Mirrored, ObjectStatus},
     loaded::{Character, CharacterHandle},
 };
@@ -69,7 +69,7 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                     kinematics.velocity[2] = controller_input.z_axis_value as f32 * 0.5;
                 }
                 CharacterSequenceId::JumpOff => {
-                    if object_status.sequence_state == SequenceState::Begin {
+                    if object_status.sequence_status == SequenceStatus::Begin {
                         kinematics.velocity[0] = controller_input.x_axis_value as f32 * 5.;
                         kinematics.velocity[1] = 17.;
                         kinematics.velocity[2] = controller_input.z_axis_value as f32 * 2.;
