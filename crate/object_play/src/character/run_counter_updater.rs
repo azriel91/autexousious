@@ -1,7 +1,7 @@
 use game_input::ControllerInput;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{Grounding, Mirrored, ObjectStatus, RunCounter},
+    entity::{Grounding, Mirrored, RunCounter},
 };
 
 use character::sequence_handler::SequenceHandlerUtil;
@@ -17,17 +17,17 @@ impl RunCounterUpdater {
     ///
     /// * `run_counter`: Original `RunCounter` value.
     /// * `controller_input`: Controller input for this character.
-    /// * `object_status`: Current object status.
+    /// * `character_sequence_id`: Current character sequence ID.
     /// * `mirrored`: Whether the object is mirrored (facing left).
     /// * `grounding`: Whether the object is on the ground.
     pub fn update(
         run_counter: RunCounter,
         controller_input: &ControllerInput,
-        object_status: &ObjectStatus<CharacterSequenceId>,
+        character_sequence_id: CharacterSequenceId,
         mirrored: Mirrored,
         grounding: Grounding,
     ) -> RunCounter {
-        match object_status.sequence_id {
+        match character_sequence_id {
             CharacterSequenceId::Stand | CharacterSequenceId::Walk => {}
             _ => return RunCounter::Unused,
         }
@@ -67,7 +67,10 @@ impl RunCounterUpdater {
 #[cfg(test)]
 mod tests {
     use game_input::ControllerInput;
-    use object_model::entity::{Grounding, Mirrored, ObjectStatus, RunCounter};
+    use object_model::{
+        config::object::CharacterSequenceId,
+        entity::{Grounding, Mirrored, RunCounter},
+    };
 
     use super::RunCounterUpdater;
 
@@ -80,7 +83,7 @@ mod tests {
             RunCounterUpdater::update(
                 RunCounter::Unused,
                 &input,
-                &ObjectStatus::default(),
+                CharacterSequenceId::default(),
                 Mirrored::default(),
                 Grounding::Airborne
             )
@@ -96,7 +99,7 @@ mod tests {
             RunCounterUpdater::update(
                 RunCounter::Increase(10),
                 &input,
-                &ObjectStatus::default(),
+                CharacterSequenceId::default(),
                 Mirrored::default(),
                 Grounding::Airborne
             )
@@ -113,7 +116,7 @@ mod tests {
             RunCounterUpdater::update(
                 RunCounter::Unused,
                 &input,
-                &ObjectStatus::default(),
+                CharacterSequenceId::default(),
                 Mirrored::default(),
                 Grounding::Airborne
             )
@@ -132,7 +135,7 @@ mod tests {
                     RunCounterUpdater::update(
                         RunCounter::Increase(10),
                         &input,
-                        &ObjectStatus::default(),
+                        CharacterSequenceId::default(),
                         Mirrored::default(),
                         Grounding::Airborne
                     )
@@ -154,7 +157,7 @@ mod tests {
             RunCounterUpdater::update(
                 RunCounter::Unused,
                 &input,
-                &ObjectStatus::default(),
+                CharacterSequenceId::default(),
                 Mirrored::default(),
                 Grounding::default()
             )
@@ -170,7 +173,7 @@ mod tests {
             RunCounterUpdater::update(
                 RunCounter::Decrease(0),
                 &input,
-                &ObjectStatus::default(),
+                CharacterSequenceId::default(),
                 Mirrored::default(),
                 Grounding::default()
             )
@@ -186,7 +189,7 @@ mod tests {
             RunCounterUpdater::update(
                 RunCounter::Decrease(1),
                 &input,
-                &ObjectStatus::default(),
+                CharacterSequenceId::default(),
                 Mirrored::default(),
                 Grounding::default()
             )
@@ -202,7 +205,7 @@ mod tests {
             RunCounterUpdater::update(
                 RunCounter::Increase(0),
                 &input,
-                &ObjectStatus::default(),
+                CharacterSequenceId::default(),
                 Mirrored::default(),
                 Grounding::default()
             )
@@ -225,7 +228,7 @@ mod tests {
                     RunCounterUpdater::update(
                         RunCounter::Unused,
                         &input,
-                        &ObjectStatus::default(),
+                        CharacterSequenceId::default(),
                         mirrored.into(),
                         Grounding::default()
                     )
@@ -245,7 +248,7 @@ mod tests {
                     RunCounterUpdater::update(
                         RunCounter::Decrease(11),
                         &input,
-                        &ObjectStatus::default(),
+                        CharacterSequenceId::default(),
                         mirrored.into(),
                         Grounding::default()
                     )
@@ -265,7 +268,7 @@ mod tests {
                     RunCounterUpdater::update(
                         RunCounter::Increase(11),
                         &input,
-                        &ObjectStatus::default(),
+                        CharacterSequenceId::default(),
                         mirrored.into(),
                         Grounding::default()
                     )
@@ -285,7 +288,7 @@ mod tests {
                     RunCounterUpdater::update(
                         RunCounter::Decrease(11),
                         &input,
-                        &ObjectStatus::default(),
+                        CharacterSequenceId::default(),
                         mirrored.into(),
                         Grounding::default()
                     )
@@ -305,7 +308,7 @@ mod tests {
                     RunCounterUpdater::update(
                         RunCounter::Increase(0),
                         &input,
-                        &ObjectStatus::default(),
+                        CharacterSequenceId::default(),
                         mirrored.into(),
                         Grounding::default()
                     )
@@ -325,7 +328,7 @@ mod tests {
                     RunCounterUpdater::update(
                         RunCounter::Increase(11),
                         &input,
-                        &ObjectStatus::default(),
+                        CharacterSequenceId::default(),
                         mirrored.into(),
                         Grounding::default()
                     )
@@ -345,7 +348,7 @@ mod tests {
                     RunCounterUpdater::update(
                         RunCounter::Exceeded,
                         &input,
-                        &ObjectStatus::default(),
+                        CharacterSequenceId::default(),
                         mirrored.into(),
                         Grounding::default()
                     )

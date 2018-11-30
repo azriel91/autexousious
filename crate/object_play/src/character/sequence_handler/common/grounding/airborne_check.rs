@@ -1,23 +1,18 @@
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{Grounding, ObjectStatusUpdate},
-};
+use object_model::{config::object::CharacterSequenceId, entity::Grounding};
 
-use character::sequence_handler::SequenceHandler;
+use character::sequence_handler::CharacterSequenceHandler;
 use CharacterSequenceUpdateComponents;
 
 /// Returns a `JumpDescend` update if the grounding is `Airborne`.
 #[derive(Debug)]
 pub(crate) struct AirborneCheck;
 
-impl SequenceHandler for AirborneCheck {
+impl CharacterSequenceHandler for AirborneCheck {
     fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
+    ) -> Option<CharacterSequenceId> {
         if components.grounding == Grounding::Airborne {
-            Some(ObjectStatusUpdate::new(Some(
-                CharacterSequenceId::JumpDescend,
-            )))
+            Some(CharacterSequenceId::JumpDescend)
         } else {
             None
         }
@@ -29,14 +24,11 @@ mod tests {
     use game_input::ControllerInput;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{
-            CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
-            RunCounter, SequenceStatus,
-        },
+        entity::{CharacterStatus, Grounding, Kinematics, Mirrored, RunCounter, SequenceStatus},
     };
 
     use super::AirborneCheck;
-    use character::sequence_handler::SequenceHandler;
+    use character::sequence_handler::CharacterSequenceHandler;
     use CharacterSequenceUpdateComponents;
 
     #[test]
@@ -46,9 +38,7 @@ mod tests {
             AirborneCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Stand,
-                },
+                CharacterSequenceId::Stand,
                 SequenceStatus::default(),
                 &Kinematics::<f32>::default(),
                 Mirrored::default(),
@@ -61,15 +51,11 @@ mod tests {
     #[test]
     fn switches_to_jump_descend_when_grounding_is_airborne() {
         assert_eq!(
-            Some(ObjectStatusUpdate {
-                sequence_id: Some(CharacterSequenceId::JumpDescend),
-            }),
+            Some(CharacterSequenceId::JumpDescend),
             AirborneCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Stand,
-                },
+                CharacterSequenceId::Stand,
                 SequenceStatus::default(),
                 &Kinematics::<f32>::default(),
                 Mirrored::default(),

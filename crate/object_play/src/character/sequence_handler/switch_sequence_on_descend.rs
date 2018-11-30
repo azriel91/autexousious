@@ -1,7 +1,4 @@
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{ObjectStatusUpdate, SequenceStatus},
-};
+use object_model::{config::object::CharacterSequenceId, entity::SequenceStatus};
 
 use CharacterSequenceUpdateComponents;
 
@@ -15,16 +12,15 @@ impl SwitchSequenceOnDescend {
     pub fn update<'c>(
         &self,
         components: CharacterSequenceUpdateComponents<'c>,
-    ) -> ObjectStatusUpdate<CharacterSequenceId> {
-        let mut object_status_update = ObjectStatusUpdate::default();
+    ) -> Option<CharacterSequenceId> {
         // Switch to descend_sequence when Y axis velocity is no longer upwards.
         if components.kinematics.velocity[1] <= 0. {
-            object_status_update.sequence_id = Some(self.0);
+            Some(self.0)
         } else if components.sequence_status == SequenceStatus::End {
-            object_status_update.sequence_id = Some(components.object_status.sequence_id);
+            Some(components.character_sequence_id)
+        } else {
+            None
         }
-
-        object_status_update
     }
 }
 
@@ -33,10 +29,7 @@ mod test {
     use game_input::ControllerInput;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{
-            CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
-            RunCounter, SequenceStatus,
-        },
+        entity::{CharacterStatus, Grounding, Kinematics, Mirrored, RunCounter, SequenceStatus},
     };
 
     use super::SwitchSequenceOnDescend;
@@ -49,14 +42,12 @@ mod test {
         kinematics.velocity[1] = 1.;
 
         assert_eq!(
-            ObjectStatusUpdate::default(),
+            None,
             SwitchSequenceOnDescend(CharacterSequenceId::FallForwardDescend).update(
                 CharacterSequenceUpdateComponents::new(
                     &input,
                     &CharacterStatus::default(),
-                    &ObjectStatus {
-                        sequence_id: CharacterSequenceId::FallForwardAscend,
-                    },
+                    CharacterSequenceId::FallForwardAscend,
                     SequenceStatus::default(),
                     &kinematics,
                     Mirrored::default(),
@@ -74,16 +65,12 @@ mod test {
         kinematics.velocity[1] = 1.;
 
         assert_eq!(
-            ObjectStatusUpdate {
-                sequence_id: Some(CharacterSequenceId::FallForwardAscend),
-            },
+            Some(CharacterSequenceId::FallForwardAscend),
             SwitchSequenceOnDescend(CharacterSequenceId::FallForwardDescend).update(
                 CharacterSequenceUpdateComponents::new(
                     &input,
                     &CharacterStatus::default(),
-                    &ObjectStatus {
-                        sequence_id: CharacterSequenceId::FallForwardAscend,
-                    },
+                    CharacterSequenceId::FallForwardAscend,
                     SequenceStatus::End,
                     &kinematics,
                     Mirrored::default(),
@@ -104,16 +91,12 @@ mod test {
             .into_iter()
             .for_each(|kinematics| {
                 assert_eq!(
-                    ObjectStatusUpdate {
-                        sequence_id: Some(CharacterSequenceId::FallForwardDescend),
-                    },
+                    Some(CharacterSequenceId::FallForwardDescend),
                     SwitchSequenceOnDescend(CharacterSequenceId::FallForwardDescend).update(
                         CharacterSequenceUpdateComponents::new(
                             &input,
                             &CharacterStatus::default(),
-                            &ObjectStatus {
-                                sequence_id: CharacterSequenceId::FallForwardAscend,
-                            },
+                            CharacterSequenceId::FallForwardAscend,
                             SequenceStatus::Ongoing,
                             &kinematics,
                             Mirrored::default(),

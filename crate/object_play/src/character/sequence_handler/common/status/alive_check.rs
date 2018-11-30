@@ -1,20 +1,18 @@
-use object_model::{config::object::CharacterSequenceId, entity::ObjectStatusUpdate};
+use object_model::config::object::CharacterSequenceId;
 
-use character::sequence_handler::SequenceHandler;
+use character::sequence_handler::CharacterSequenceHandler;
 use CharacterSequenceUpdateComponents;
 
 /// Returns the appropriate falling sequence if HP is 0.
 #[derive(Debug)]
 pub(crate) struct AliveCheck;
 
-impl SequenceHandler for AliveCheck {
+impl CharacterSequenceHandler for AliveCheck {
     fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
+    ) -> Option<CharacterSequenceId> {
         if components.character_status.hp == 0 {
-            Some(ObjectStatusUpdate::new(Some(
-                CharacterSequenceId::FallForwardDescend,
-            )))
+            Some(CharacterSequenceId::FallForwardDescend)
         } else {
             None
         }
@@ -27,13 +25,13 @@ mod tests {
     use object_model::{
         config::object::CharacterSequenceId,
         entity::{
-            CharacterStatus, Grounding, HealthPoints, Kinematics, Mirrored, ObjectStatus,
-            ObjectStatusUpdate, RunCounter, SequenceStatus,
+            CharacterStatus, Grounding, HealthPoints, Kinematics, Mirrored, RunCounter,
+            SequenceStatus,
         },
     };
 
     use super::AliveCheck;
-    use character::sequence_handler::SequenceHandler;
+    use character::sequence_handler::CharacterSequenceHandler;
     use CharacterSequenceUpdateComponents;
 
     #[test]
@@ -43,9 +41,7 @@ mod tests {
             AliveCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Stand,
-                },
+                CharacterSequenceId::Stand,
                 SequenceStatus::default(),
                 &Kinematics::<f32>::default(),
                 Mirrored::default(),
@@ -58,17 +54,13 @@ mod tests {
     #[test]
     fn switches_to_fall_forward_descend_when_hp_is_zero() {
         assert_eq!(
-            Some(ObjectStatusUpdate {
-                sequence_id: Some(CharacterSequenceId::FallForwardDescend),
-            }),
+            Some(CharacterSequenceId::FallForwardDescend),
             AliveCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus {
                     hp: HealthPoints(0),
                 },
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Stand,
-                },
+                CharacterSequenceId::Stand,
                 SequenceStatus::default(),
                 &Kinematics::<f32>::default(),
                 Mirrored::default(),

@@ -1,4 +1,4 @@
-use object_model::{config::object::CharacterSequenceId, entity::ObjectStatusUpdate};
+use object_model::config::object::CharacterSequenceId;
 
 use character::sequence_handler::{CharacterSequenceHandler, SwitchSequenceOnEnd};
 use CharacterSequenceUpdateComponents;
@@ -12,7 +12,7 @@ pub(crate) struct FallForwardLand;
 impl CharacterSequenceHandler for FallForwardLand {
     fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
-    ) -> ObjectStatusUpdate<CharacterSequenceId> {
+    ) -> Option<CharacterSequenceId> {
         FALL_FORWARD_LAND.update(components.sequence_status)
     }
 }

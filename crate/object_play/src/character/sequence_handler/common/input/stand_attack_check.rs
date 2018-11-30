@@ -1,20 +1,18 @@
-use object_model::{config::object::CharacterSequenceId, entity::ObjectStatusUpdate};
+use object_model::config::object::CharacterSequenceId;
 
-use character::sequence_handler::SequenceHandler;
+use character::sequence_handler::CharacterSequenceHandler;
 use CharacterSequenceUpdateComponents;
 
 /// Determines whether to switch to the `StandAttack` sequence based on Attack input.
 #[derive(Debug)]
 pub(crate) struct StandAttackCheck;
 
-impl SequenceHandler for StandAttackCheck {
+impl CharacterSequenceHandler for StandAttackCheck {
     fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
+    ) -> Option<CharacterSequenceId> {
         if components.controller_input.attack {
-            let sequence_id = Some(CharacterSequenceId::StandAttack);
-
-            Some(ObjectStatusUpdate::new(sequence_id))
+            Some(CharacterSequenceId::StandAttack)
         } else {
             None
         }
@@ -26,14 +24,11 @@ mod tests {
     use game_input::ControllerInput;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{
-            CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
-            RunCounter, SequenceStatus,
-        },
+        entity::{CharacterStatus, Grounding, Kinematics, Mirrored, RunCounter, SequenceStatus},
     };
 
     use super::StandAttackCheck;
-    use character::sequence_handler::SequenceHandler;
+    use character::sequence_handler::CharacterSequenceHandler;
     use CharacterSequenceUpdateComponents;
 
     #[test]
@@ -45,7 +40,7 @@ mod tests {
             StandAttackCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &ObjectStatus::default(),
+                CharacterSequenceId::default(),
                 SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),
@@ -61,13 +56,11 @@ mod tests {
         input.attack = true;
 
         assert_eq!(
-            Some(ObjectStatusUpdate {
-                sequence_id: Some(CharacterSequenceId::StandAttack),
-            }),
+            Some(CharacterSequenceId::StandAttack),
             StandAttackCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &ObjectStatus::default(),
+                CharacterSequenceId::default(),
                 SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),

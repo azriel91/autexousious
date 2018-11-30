@@ -1,4 +1,4 @@
-use object_model::{config::object::CharacterSequenceId, entity::ObjectStatusUpdate};
+use object_model::config::object::CharacterSequenceId;
 
 use character::sequence_handler::{CharacterSequenceHandler, SwitchSequenceOnEnd};
 use CharacterSequenceUpdateComponents;
@@ -11,11 +11,11 @@ pub(crate) struct LieFaceDown;
 impl CharacterSequenceHandler for LieFaceDown {
     fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
-    ) -> ObjectStatusUpdate<CharacterSequenceId> {
+    ) -> Option<CharacterSequenceId> {
         if components.character_status.hp > 0 {
             LIE_FACE_DOWN.update(components.sequence_status)
         } else {
-            ObjectStatusUpdate::default()
+            None
         }
     }
 }

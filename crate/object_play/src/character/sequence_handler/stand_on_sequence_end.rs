@@ -1,4 +1,4 @@
-use object_model::{config::object::CharacterSequenceId, entity::ObjectStatusUpdate};
+use object_model::config::object::CharacterSequenceId;
 
 use character::sequence_handler::{CharacterSequenceHandler, SwitchSequenceOnEnd};
 use CharacterSequenceUpdateComponents;
@@ -11,7 +11,7 @@ pub(crate) struct StandOnSequenceEnd;
 impl CharacterSequenceHandler for StandOnSequenceEnd {
     fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
-    ) -> ObjectStatusUpdate<CharacterSequenceId> {
+    ) -> Option<CharacterSequenceId> {
         STAND_ON_SEQUENCE_END.update(components.sequence_status)
     }
 }

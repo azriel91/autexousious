@@ -5,7 +5,7 @@ use amethyst::{
 use collision_model::{config::Interaction, play::CollisionEvent};
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{CharacterStatus, HealthPoints, ObjectStatus, SequenceStatus},
+    entity::{CharacterStatus, HealthPoints, SequenceStatus},
 };
 use typename::TypeName;
 
@@ -20,7 +20,7 @@ pub(crate) struct CharacterCollisionEffectSystem {
 type CharacterCollisionEffectSystemData<'s> = (
     Read<'s, EventChannel<CollisionEvent>>,
     WriteStorage<'s, CharacterStatus>,
-    WriteStorage<'s, ObjectStatus<CharacterSequenceId>>,
+    WriteStorage<'s, CharacterSequenceId>,
     WriteStorage<'s, SequenceStatus>,
 );
 
@@ -29,7 +29,7 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
 
     fn run(
         &mut self,
-        (collision_ec, mut character_statuses, mut object_statuses, mut sequence_statuses): Self::SystemData,
+        (collision_ec, mut character_statuses, mut character_sequence_ids, mut sequence_statuses): Self::SystemData,
     ) {
         // Read from channel
         collision_ec
@@ -41,11 +41,14 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
             .for_each(|ev| {
                 // Fetch CharacterStatus for entity
                 let character_status = character_statuses.get_mut(ev.to);
-                let object_status = object_statuses.get_mut(ev.to);
+                let character_sequence_id = character_sequence_ids.get_mut(ev.to);
                 let sequence_status = sequence_statuses.get_mut(ev.to);
 
-                if let (Some(character_status), Some(object_status), Some(sequence_status)) =
-                    (character_status, object_status, sequence_status)
+                if let (
+                    Some(character_status),
+                    Some(character_sequence_id),
+                    Some(sequence_status),
+                ) = (character_status, character_sequence_id, sequence_status)
                 {
                     // TODO: Select damage sequence based on status.
                     // TODO: Split this system with health check system.
@@ -59,7 +62,7 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
                     let next_sequence_id = if character_status.hp == 0 {
                         CharacterSequenceId::FallForwardAscend
                     } else {
-                        if object_status.sequence_id == CharacterSequenceId::Flinch0 {
+                        if *character_sequence_id == CharacterSequenceId::Flinch0 {
                             CharacterSequenceId::Flinch1
                         } else {
                             CharacterSequenceId::Flinch0
@@ -67,7 +70,7 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
                     };
 
                     // Set sequence id
-                    object_status.sequence_id = next_sequence_id;
+                    *character_sequence_id = next_sequence_id;
                     *sequence_status = SequenceStatus::Begin;
                 }
             });

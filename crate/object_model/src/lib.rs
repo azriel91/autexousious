@@ -22,6 +22,8 @@ extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 extern crate shape_model;
+#[cfg(test)]
+extern crate specs_derive;
 extern crate sprite_loading;
 extern crate sprite_model;
 extern crate strum;

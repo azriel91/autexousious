@@ -1,11 +1,8 @@
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{ObjectStatusUpdate, SequenceStatus},
-};
+use object_model::{config::object::CharacterSequenceId, entity::SequenceStatus};
 
 use character::sequence_handler::{
     common::{grounding::AirborneCheck, status::AliveCheck},
-    CharacterSequenceHandler, SequenceHandler,
+    CharacterSequenceHandler,
 };
 use CharacterSequenceUpdateComponents;
 
@@ -15,18 +12,18 @@ pub(crate) struct RunStop;
 impl CharacterSequenceHandler for RunStop {
     fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
-    ) -> ObjectStatusUpdate<CharacterSequenceId> {
+    ) -> Option<CharacterSequenceId> {
         [AliveCheck::update, AirborneCheck::update]
             .iter()
             .fold(None, |status_update, fn_update| {
                 status_update.or_else(|| fn_update(components))
             })
-            .unwrap_or_else(|| {
-                let mut object_status_update = ObjectStatusUpdate::default();
+            .or_else(|| {
                 if components.sequence_status == SequenceStatus::End {
-                    object_status_update.sequence_id = Some(CharacterSequenceId::Stand);
+                    Some(CharacterSequenceId::Stand)
+                } else {
+                    None
                 }
-                object_status_update
             })
     }
 }
@@ -36,10 +33,7 @@ mod test {
     use game_input::ControllerInput;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{
-            CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
-            RunCounter, SequenceStatus,
-        },
+        entity::{CharacterStatus, Grounding, Kinematics, Mirrored, RunCounter, SequenceStatus},
     };
 
     use super::RunStop;
@@ -49,15 +43,11 @@ mod test {
     #[test]
     fn jump_descend_when_airborne() {
         assert_eq!(
-            ObjectStatusUpdate {
-                sequence_id: Some(CharacterSequenceId::JumpDescend),
-            },
+            Some(CharacterSequenceId::JumpDescend),
             RunStop::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::RunStop,
-                },
+                CharacterSequenceId::RunStop,
                 SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),
@@ -72,13 +62,11 @@ mod test {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            ObjectStatusUpdate::default(),
+            None,
             RunStop::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::RunStop,
-                },
+                CharacterSequenceId::RunStop,
                 SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),
@@ -93,15 +81,11 @@ mod test {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            ObjectStatusUpdate {
-                sequence_id: Some(CharacterSequenceId::Stand),
-            },
+            Some(CharacterSequenceId::Stand),
             RunStop::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::RunStop,
-                },
+                CharacterSequenceId::RunStop,
                 SequenceStatus::End,
                 &Kinematics::default(),
                 Mirrored::default(),

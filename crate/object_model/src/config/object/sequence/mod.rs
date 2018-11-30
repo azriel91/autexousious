@@ -54,8 +54,10 @@ impl<SeqId: SequenceId> InteractionAnimationSequence for Sequence<SeqId> {
 
 #[cfg(test)]
 mod tests {
+    use amethyst::ecs::{storage::DenseVecStorage, Component};
     use collision_model::config::{BodyFrame, Interaction, InteractionFrame};
     use shape_model::Volume;
+    use specs_derive::Component;
     use sprite_model::config::SpriteFrame;
     use toml;
 
@@ -198,7 +200,7 @@ mod tests {
         assert_eq!(expected, sequence);
     }
 
-    #[derive(Clone, Copy, Debug, Derivative, Deserialize, PartialEq, Eq, Hash)]
+    #[derive(Clone, Component, Copy, Debug, Derivative, Deserialize, PartialEq, Eq, Hash)]
     #[derivative(Default)]
     enum TestSeqId {
         #[derivative(Default)]

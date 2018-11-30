@@ -1,6 +1,8 @@
-use object_model::{config::object::CharacterSequenceId, entity::ObjectStatusUpdate};
+use object_model::config::object::CharacterSequenceId;
 
-use character::sequence_handler::{common::SequenceRepeat, SequenceHandler, SequenceHandlerUtil};
+use character::sequence_handler::{
+    common::SequenceRepeat, CharacterSequenceHandler, SequenceHandlerUtil,
+};
 use CharacterSequenceUpdateComponents;
 
 /// Determines whether to switch to the `RunStop` sequence based on X input.
@@ -9,19 +11,17 @@ use CharacterSequenceUpdateComponents;
 #[derive(Debug)]
 pub(crate) struct RunStopCheck;
 
-impl SequenceHandler for RunStopCheck {
+impl CharacterSequenceHandler for RunStopCheck {
     fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
+    ) -> Option<CharacterSequenceId> {
         if SequenceHandlerUtil::input_matches_direction(
             components.controller_input,
             components.mirrored,
         ) {
             SequenceRepeat::update(components)
         } else {
-            Some(ObjectStatusUpdate {
-                sequence_id: Some(CharacterSequenceId::RunStop),
-            })
+            Some(CharacterSequenceId::RunStop)
         }
     }
 }
@@ -31,14 +31,11 @@ mod tests {
     use game_input::ControllerInput;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{
-            CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
-            RunCounter, SequenceStatus,
-        },
+        entity::{CharacterStatus, Grounding, Kinematics, Mirrored, RunCounter, SequenceStatus},
     };
 
     use super::RunStopCheck;
-    use character::sequence_handler::SequenceHandler;
+    use character::sequence_handler::CharacterSequenceHandler;
     use CharacterSequenceUpdateComponents;
 
     #[test]
@@ -53,9 +50,7 @@ mod tests {
                     RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
-                        &ObjectStatus {
-                            sequence_id: CharacterSequenceId::Walk,
-                        },
+                        CharacterSequenceId::Walk,
                         SequenceStatus::default(),
                         &Kinematics::default(),
                         mirrored.into(),
@@ -71,15 +66,11 @@ mod tests {
         let input = ControllerInput::new(0., 1., false, false, false, false);
 
         assert_eq!(
-            Some(ObjectStatusUpdate {
-                sequence_id: Some(CharacterSequenceId::RunStop),
-            }),
+            Some(CharacterSequenceId::RunStop),
             RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Walk,
-                },
+                CharacterSequenceId::Walk,
                 SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored(false),
@@ -97,15 +88,11 @@ mod tests {
                 let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
-                    Some(ObjectStatusUpdate {
-                        sequence_id: Some(CharacterSequenceId::RunStop),
-                    }),
+                    Some(CharacterSequenceId::RunStop),
                     RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
-                        &ObjectStatus {
-                            sequence_id: CharacterSequenceId::Walk,
-                        },
+                        CharacterSequenceId::Walk,
                         SequenceStatus::default(),
                         &Kinematics::default(),
                         mirrored.into(),
@@ -124,15 +111,11 @@ mod tests {
                 let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
-                    Some(ObjectStatusUpdate {
-                        sequence_id: Some(CharacterSequenceId::Run),
-                    }),
+                    Some(CharacterSequenceId::Run),
                     RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
-                        &ObjectStatus {
-                            sequence_id: CharacterSequenceId::Run,
-                        },
+                        CharacterSequenceId::Run,
                         SequenceStatus::End,
                         &Kinematics::default(),
                         mirrored.into(),

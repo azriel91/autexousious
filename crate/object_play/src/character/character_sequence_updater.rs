@@ -1,7 +1,5 @@
 use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{ObjectStatusUpdate, SequenceStatus},
-    loaded::Character,
+    config::object::CharacterSequenceId, entity::SequenceStatus, loaded::Character,
 };
 
 use character::sequence_handler::{
@@ -24,10 +22,9 @@ impl CharacterSequenceUpdater {
     pub fn update<'c>(
         character: &Character,
         components: CharacterSequenceUpdateComponents<'c>,
-    ) -> ObjectStatusUpdate<CharacterSequenceId> {
+    ) -> Option<CharacterSequenceId> {
         let sequence_handler: &Fn(CharacterSequenceUpdateComponents)
-            -> ObjectStatusUpdate<CharacterSequenceId> = match components.object_status.sequence_id
-        {
+            -> Option<CharacterSequenceId> = match components.character_sequence_id {
             CharacterSequenceId::Stand => &Stand::update,
             CharacterSequenceId::StandAttack => &StandAttack::update,
             CharacterSequenceId::Walk => &Walk::update,
@@ -47,21 +44,21 @@ impl CharacterSequenceUpdater {
             CharacterSequenceId::LieFaceDown => &LieFaceDown::update,
         };
 
-        let mut object_status_update = sequence_handler(components);
+        let mut sequence_id = sequence_handler(components);
 
         // Check if it's at the end of the sequence before switching to next.
         if components.sequence_status == SequenceStatus::End {
-            let current_sequence_id = &components.object_status.sequence_id;
+            let current_sequence_id = &components.character_sequence_id;
             let current_sequence =
                 &character.definition.object_definition.sequences[current_sequence_id];
 
             // `next` from configuration overrides the state handler transition.
             if current_sequence.next.is_some() {
-                object_status_update.sequence_id = current_sequence.next;
+                sequence_id = current_sequence.next;
             }
         }
 
-        object_status_update
+        sequence_id
 
         // TODO: overrides based on sequence configuration
     }

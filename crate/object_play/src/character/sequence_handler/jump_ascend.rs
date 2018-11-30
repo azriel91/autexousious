@@ -1,7 +1,4 @@
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{ObjectStatusUpdate, SequenceStatus},
-};
+use object_model::{config::object::CharacterSequenceId, entity::SequenceStatus};
 
 use character::sequence_handler::CharacterSequenceHandler;
 use CharacterSequenceUpdateComponents;
@@ -12,16 +9,15 @@ pub(crate) struct JumpAscend;
 impl CharacterSequenceHandler for JumpAscend {
     fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
-    ) -> ObjectStatusUpdate<CharacterSequenceId> {
-        let mut object_status_update = ObjectStatusUpdate::default();
+    ) -> Option<CharacterSequenceId> {
         // Switch to jump_descend when Y axis velocity is no longer upwards.
         if components.kinematics.velocity[1] <= 0. {
-            object_status_update.sequence_id = Some(CharacterSequenceId::JumpDescend);
+            Some(CharacterSequenceId::JumpDescend)
         } else if components.sequence_status == SequenceStatus::End {
-            object_status_update.sequence_id = Some(CharacterSequenceId::JumpAscend);
+            Some(CharacterSequenceId::JumpAscend)
+        } else {
+            None
         }
-
-        object_status_update
     }
 }
 
@@ -30,10 +26,7 @@ mod test {
     use game_input::ControllerInput;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{
-            CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
-            RunCounter, SequenceStatus,
-        },
+        entity::{CharacterStatus, Grounding, Kinematics, Mirrored, RunCounter, SequenceStatus},
     };
 
     use super::JumpAscend;
@@ -47,13 +40,11 @@ mod test {
         kinematics.velocity[1] = 1.;
 
         assert_eq!(
-            ObjectStatusUpdate::default(),
+            None,
             JumpAscend::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::JumpAscend,
-                },
+                CharacterSequenceId::JumpAscend,
                 SequenceStatus::default(),
                 &kinematics,
                 Mirrored::default(),
@@ -70,15 +61,11 @@ mod test {
         kinematics.velocity[1] = 1.;
 
         assert_eq!(
-            ObjectStatusUpdate {
-                sequence_id: Some(CharacterSequenceId::JumpAscend),
-            },
+            Some(CharacterSequenceId::JumpAscend),
             JumpAscend::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::JumpAscend,
-                },
+                CharacterSequenceId::JumpAscend,
                 SequenceStatus::End,
                 &kinematics,
                 Mirrored::default(),
@@ -98,15 +85,11 @@ mod test {
             .into_iter()
             .for_each(|kinematics| {
                 assert_eq!(
-                    ObjectStatusUpdate {
-                        sequence_id: Some(CharacterSequenceId::JumpDescend),
-                    },
+                    Some(CharacterSequenceId::JumpDescend),
                     JumpAscend::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
-                        &ObjectStatus {
-                            sequence_id: CharacterSequenceId::JumpAscend,
-                        },
+                        CharacterSequenceId::JumpAscend,
                         SequenceStatus::Ongoing,
                         &kinematics,
                         Mirrored::default(),

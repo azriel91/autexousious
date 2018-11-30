@@ -1,4 +1,4 @@
-use object_model::{config::object::CharacterSequenceId, entity::ObjectStatusUpdate};
+use object_model::config::object::CharacterSequenceId;
 
 use character::sequence_handler::{
     common::{
@@ -9,7 +9,7 @@ use character::sequence_handler::{
         },
         status::AliveCheck,
     },
-    CharacterSequenceHandler, SequenceHandler,
+    CharacterSequenceHandler,
 };
 use CharacterSequenceUpdateComponents;
 
@@ -19,7 +19,7 @@ pub(crate) struct Walk;
 impl CharacterSequenceHandler for Walk {
     fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
-    ) -> ObjectStatusUpdate<CharacterSequenceId> {
+    ) -> Option<CharacterSequenceId> {
         [
             AliveCheck::update,
             AirborneCheck::update,
@@ -33,7 +33,6 @@ impl CharacterSequenceHandler for Walk {
         .fold(None, |status_update, fn_update| {
             status_update.or_else(|| fn_update(components))
         })
-        .unwrap_or_else(|| ObjectStatusUpdate::default())
     }
 }
 
@@ -42,10 +41,7 @@ mod test {
     use game_input::ControllerInput;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{
-            CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
-            RunCounter, SequenceStatus,
-        },
+        entity::{CharacterStatus, Grounding, Kinematics, Mirrored, RunCounter, SequenceStatus},
     };
 
     use super::Walk;
@@ -57,15 +53,11 @@ mod test {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            ObjectStatusUpdate {
-                sequence_id: Some(CharacterSequenceId::Stand),
-            },
+            Some(CharacterSequenceId::Stand),
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Walk,
-                },
+                CharacterSequenceId::Walk,
                 SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),
@@ -80,15 +72,11 @@ mod test {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            ObjectStatusUpdate {
-                sequence_id: Some(CharacterSequenceId::Stand),
-            },
+            Some(CharacterSequenceId::Stand),
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Walk,
-                },
+                CharacterSequenceId::Walk,
                 SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),
@@ -103,15 +91,11 @@ mod test {
         let input = ControllerInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
-            ObjectStatusUpdate {
-                sequence_id: Some(CharacterSequenceId::Walk),
-            },
+            Some(CharacterSequenceId::Walk),
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Walk,
-                },
+                CharacterSequenceId::Walk,
                 SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored(true),
@@ -126,15 +110,11 @@ mod test {
         let input = ControllerInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
-            ObjectStatusUpdate {
-                sequence_id: Some(CharacterSequenceId::Walk),
-            },
+            Some(CharacterSequenceId::Walk),
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Walk,
-                },
+                CharacterSequenceId::Walk,
                 SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored(false),
@@ -149,13 +129,11 @@ mod test {
         let input = ControllerInput::new(0., 1., false, false, false, false);
 
         assert_eq!(
-            ObjectStatusUpdate::default(),
+            None,
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Walk,
-                },
+                CharacterSequenceId::Walk,
                 SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),
@@ -167,13 +145,11 @@ mod test {
         let input = ControllerInput::new(0., -1., false, false, false, false);
 
         assert_eq!(
-            ObjectStatusUpdate::default(),
+            None,
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Walk,
-                },
+                CharacterSequenceId::Walk,
                 SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),
@@ -191,15 +167,11 @@ mod test {
                 let input = ControllerInput::new(x_input, z_input, false, false, false, false);
 
                 assert_eq!(
-                    ObjectStatusUpdate {
-                        sequence_id: Some(CharacterSequenceId::Walk),
-                    },
+                    Some(CharacterSequenceId::Walk),
                     Walk::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
-                        &ObjectStatus {
-                            sequence_id: CharacterSequenceId::Walk,
-                        },
+                        CharacterSequenceId::Walk,
                         SequenceStatus::End,
                         &Kinematics::default(),
                         Mirrored(false),
@@ -215,15 +187,11 @@ mod test {
                 let input = ControllerInput::new(x_input, z_input, false, false, false, false);
 
                 assert_eq!(
-                    ObjectStatusUpdate {
-                        sequence_id: Some(CharacterSequenceId::Walk),
-                    },
+                    Some(CharacterSequenceId::Walk),
                     Walk::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
-                        &ObjectStatus {
-                            sequence_id: CharacterSequenceId::Walk,
-                        },
+                        CharacterSequenceId::Walk,
                         SequenceStatus::End,
                         &Kinematics::default(),
                         mirrored.into(),
@@ -239,15 +207,11 @@ mod test {
         let input = ControllerInput::new(1., -1., false, false, false, false);
 
         assert_eq!(
-            ObjectStatusUpdate {
-                sequence_id: Some(CharacterSequenceId::Run),
-            },
+            Some(CharacterSequenceId::Run),
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Walk,
-                },
+                CharacterSequenceId::Walk,
                 SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored(false),
@@ -262,15 +226,11 @@ mod test {
         let input = ControllerInput::new(-1., -1., false, false, false, false);
 
         assert_eq!(
-            ObjectStatusUpdate {
-                sequence_id: Some(CharacterSequenceId::Run),
-            },
+            Some(CharacterSequenceId::Run),
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Walk,
-                },
+                CharacterSequenceId::Walk,
                 SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored(true),
@@ -288,13 +248,11 @@ mod test {
                 let input = ControllerInput::new(x_input, z_input, false, true, false, false);
 
                 assert_eq!(
-                    ObjectStatusUpdate {
-                        sequence_id: Some(CharacterSequenceId::Jump),
-                    },
+                    Some(CharacterSequenceId::Jump),
                     Walk::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
-                        &ObjectStatus::default(),
+                        CharacterSequenceId::default(),
                         SequenceStatus::default(),
                         &Kinematics::default(),
                         Mirrored::default(),
@@ -311,13 +269,11 @@ mod test {
         input.attack = true;
 
         assert_eq!(
-            ObjectStatusUpdate {
-                sequence_id: Some(CharacterSequenceId::StandAttack),
-            },
+            Some(CharacterSequenceId::StandAttack),
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &ObjectStatus::default(),
+                CharacterSequenceId::default(),
                 SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),

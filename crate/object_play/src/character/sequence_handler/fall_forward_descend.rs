@@ -1,4 +1,4 @@
-use object_model::{config::object::CharacterSequenceId, entity::ObjectStatusUpdate};
+use object_model::config::object::CharacterSequenceId;
 
 use character::sequence_handler::{CharacterSequenceHandler, SwitchSequenceOnLand};
 use CharacterSequenceUpdateComponents;
@@ -14,7 +14,7 @@ pub(crate) struct FallForwardDescend;
 impl CharacterSequenceHandler for FallForwardDescend {
     fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
-    ) -> ObjectStatusUpdate<CharacterSequenceId> {
+    ) -> Option<CharacterSequenceId> {
         if components.kinematics.velocity[1] <= -10. {
             FALL_FORWARD_DESCEND_BOUNCE.update(components)
         } else {

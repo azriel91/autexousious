@@ -2,7 +2,7 @@ use amethyst::{assets::AssetStorage, ecs::prelude::*};
 use game_input::ControllerInput;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{Kinematics, Mirrored, ObjectStatus, SequenceStatus},
+    entity::{Kinematics, Mirrored, SequenceStatus},
     loaded::{Character, CharacterHandle},
 };
 
@@ -14,7 +14,7 @@ type CharacterKinematicsSystemData<'s> = (
     Read<'s, AssetStorage<Character>>,
     ReadStorage<'s, CharacterHandle>,
     ReadStorage<'s, ControllerInput>,
-    ReadStorage<'s, ObjectStatus<CharacterSequenceId>>,
+    ReadStorage<'s, CharacterSequenceId>,
     ReadStorage<'s, SequenceStatus>,
     WriteStorage<'s, Kinematics<f32>>,
     WriteStorage<'s, Mirrored>,
@@ -29,7 +29,7 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
             characters,
             handle_storage,
             controller_inputs,
-            object_statuses,
+            character_sequence_ids,
             sequence_statuses,
             mut kinematicses,
             mut mirroreds,
@@ -38,14 +38,14 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
         for (
             character_handle,
             controller_input,
-            object_status,
+            character_sequence_id,
             sequence_status,
             mut kinematics,
             mut mirrored,
         ) in (
             &handle_storage,
             &controller_inputs,
-            &object_statuses,
+            &character_sequence_ids,
             &sequence_statuses,
             &mut kinematicses,
             &mut mirroreds,
@@ -58,7 +58,7 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                 .get(character_handle)
                 .expect("Expected character to be loaded.");
 
-            match object_status.sequence_id {
+            match character_sequence_id {
                 CharacterSequenceId::Stand
                 | CharacterSequenceId::StandAttack
                 | CharacterSequenceId::Flinch0
@@ -111,7 +111,7 @@ mod tests {
     use map_selection_model::MapSelection;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{Grounding, Kinematics, Mirrored, ObjectStatus, SequenceStatus},
+        entity::{Grounding, Kinematics, Mirrored, SequenceStatus},
     };
     use typename::TypeName;
 
@@ -128,13 +128,13 @@ mod tests {
                         |(
                             map_selection,
                             maps,
-                            mut object_statuses,
+                            mut character_sequence_ids,
                             mut kinematicses,
                             mut groundings,
                         ): (
                             ReadExpect<MapSelection>,
                             Read<AssetStorage<Map>>,
-                            WriteStorage<ObjectStatus<CharacterSequenceId>>,
+                            WriteStorage<CharacterSequenceId>,
                             WriteStorage<Kinematics<f32>>,
                             WriteStorage<Grounding>,
                         )| {
@@ -142,10 +142,14 @@ mod tests {
                                 .get(map_selection.handle())
                                 .expect("Expected map to be loaded.");
 
-                            for (object_status, kinematics, grounding) in
-                                (&mut object_statuses, &mut kinematicses, &mut groundings).join()
+                            for (character_sequence_id, kinematics, grounding) in (
+                                &mut character_sequence_ids,
+                                &mut kinematicses,
+                                &mut groundings,
+                            )
+                                .join()
                             {
-                                object_status.sequence_id = CharacterSequenceId::Stand;
+                                *character_sequence_id = CharacterSequenceId::Stand;
                                 *grounding = Grounding::OnGround;
 
                                 kinematics.position[1] = map.margins.bottom;
@@ -163,11 +167,11 @@ mod tests {
                 )
                 .with_assertion(|world| {
                     world.exec(
-                        |(object_statuses, kinematicses): (
-                            ReadStorage<ObjectStatus<CharacterSequenceId>>,
+                        |(character_sequence_ids, kinematicses): (
+                            ReadStorage<CharacterSequenceId>,
                             ReadStorage<Kinematics<f32>>,
                         )| {
-                            for (_, kinematics) in (&object_statuses, &kinematicses).join() {
+                            for (_, kinematics) in (&character_sequence_ids, &kinematicses).join() {
                                 assert_eq!(0., kinematics.velocity[0]);
                                 assert_eq!(0., kinematics.velocity[2]);
                             }
@@ -191,14 +195,14 @@ mod tests {
                             map_selection,
                             maps,
                             mut controller_inputs,
-                            mut object_statuses,
+                            mut character_sequence_ids,
                             mut kinematicses,
                             mut groundings,
                         ): (
                             ReadExpect<MapSelection>,
                             Read<AssetStorage<Map>>,
                             WriteStorage<ControllerInput>,
-                            WriteStorage<ObjectStatus<CharacterSequenceId>>,
+                            WriteStorage<CharacterSequenceId>,
                             WriteStorage<Kinematics<f32>>,
                             WriteStorage<Grounding>,
                         )| {
@@ -206,18 +210,19 @@ mod tests {
                                 .get(map_selection.handle())
                                 .expect("Expected map to be loaded.");
 
-                            for (controller_input, object_status, kinematics, grounding) in (
-                                &mut controller_inputs,
-                                &mut object_statuses,
-                                &mut kinematicses,
-                                &mut groundings,
-                            )
-                                .join()
+                            for (controller_input, character_sequence_id, kinematics, grounding) in
+                                (
+                                    &mut controller_inputs,
+                                    &mut character_sequence_ids,
+                                    &mut kinematicses,
+                                    &mut groundings,
+                                )
+                                    .join()
                             {
                                 controller_input.x_axis_value = 1.;
                                 controller_input.z_axis_value = -1.;
 
-                                object_status.sequence_id = CharacterSequenceId::Walk;
+                                *character_sequence_id = CharacterSequenceId::Walk;
                                 *grounding = Grounding::OnGround;
 
                                 kinematics.position[1] = map.margins.bottom;
@@ -235,11 +240,11 @@ mod tests {
                 )
                 .with_assertion(|world| {
                     world.exec(
-                        |(object_statuses, kinematicses): (
-                            ReadStorage<ObjectStatus<CharacterSequenceId>>,
+                        |(character_sequence_ids, kinematicses): (
+                            ReadStorage<CharacterSequenceId>,
                             ReadStorage<Kinematics<f32>>,
                         )| {
-                            for (_, kinematics) in (&object_statuses, &kinematicses).join() {
+                            for (_, kinematics) in (&character_sequence_ids, &kinematicses).join() {
                                 assert_eq!(3.5, kinematics.velocity[0]);
                                 assert_eq!(-2., kinematics.velocity[2]);
                             }
@@ -263,14 +268,14 @@ mod tests {
                             map_selection,
                             maps,
                             mut controller_inputs,
-                            mut object_statuses,
+                            mut character_sequence_ids,
                             mut kinematicses,
                             mut groundings,
                         ): (
                             ReadExpect<MapSelection>,
                             Read<AssetStorage<Map>>,
                             WriteStorage<ControllerInput>,
-                            WriteStorage<ObjectStatus<CharacterSequenceId>>,
+                            WriteStorage<CharacterSequenceId>,
                             WriteStorage<Kinematics<f32>>,
                             WriteStorage<Grounding>,
                         )| {
@@ -278,18 +283,19 @@ mod tests {
                                 .get(map_selection.handle())
                                 .expect("Expected map to be loaded.");
 
-                            for (controller_input, object_status, kinematics, grounding) in (
-                                &mut controller_inputs,
-                                &mut object_statuses,
-                                &mut kinematicses,
-                                &mut groundings,
-                            )
-                                .join()
+                            for (controller_input, character_sequence_id, kinematics, grounding) in
+                                (
+                                    &mut controller_inputs,
+                                    &mut character_sequence_ids,
+                                    &mut kinematicses,
+                                    &mut groundings,
+                                )
+                                    .join()
                             {
                                 controller_input.x_axis_value = 1.;
                                 controller_input.z_axis_value = -1.;
 
-                                object_status.sequence_id = CharacterSequenceId::Run;
+                                *character_sequence_id = CharacterSequenceId::Run;
                                 *grounding = Grounding::OnGround;
 
                                 kinematics.position[1] = map.margins.bottom;
@@ -307,11 +313,11 @@ mod tests {
                 )
                 .with_assertion(|world| {
                     world.exec(
-                        |(object_statuses, kinematicses): (
-                            ReadStorage<ObjectStatus<CharacterSequenceId>>,
+                        |(character_sequence_ids, kinematicses): (
+                            ReadStorage<CharacterSequenceId>,
                             ReadStorage<Kinematics<f32>>,
                         )| {
-                            for (_, kinematics) in (&object_statuses, &kinematicses).join() {
+                            for (_, kinematics) in (&character_sequence_ids, &kinematicses).join() {
                                 assert_eq!(6., kinematics.velocity[0]);
                                 assert_eq!(-1.5, kinematics.velocity[2]);
                             }
@@ -334,7 +340,7 @@ mod tests {
                             map_selection,
                             maps,
                             mut controller_inputs,
-                            mut object_statuses,
+                            mut character_sequence_ids,
                             mut kinematicses,
                             mut mirroreds,
                             mut groundings,
@@ -342,7 +348,7 @@ mod tests {
                             ReadExpect<MapSelection>,
                             Read<AssetStorage<Map>>,
                             WriteStorage<ControllerInput>,
-                            WriteStorage<ObjectStatus<CharacterSequenceId>>,
+                            WriteStorage<CharacterSequenceId>,
                             WriteStorage<Kinematics<f32>>,
                             WriteStorage<Mirrored>,
                             WriteStorage<Grounding>,
@@ -353,13 +359,13 @@ mod tests {
 
                             for (
                                 controller_input,
-                                object_status,
+                                character_sequence_id,
                                 kinematics,
                                 mirrored,
                                 grounding,
                             ) in (
                                 &mut controller_inputs,
-                                &mut object_statuses,
+                                &mut character_sequence_ids,
                                 &mut kinematicses,
                                 &mut mirroreds,
                                 &mut groundings,
@@ -368,7 +374,7 @@ mod tests {
                             {
                                 controller_input.z_axis_value = 1.;
 
-                                object_status.sequence_id = CharacterSequenceId::RunStop;
+                                *character_sequence_id = CharacterSequenceId::RunStop;
                                 *grounding = Grounding::OnGround;
                                 *mirrored = mirrored_bool.into();
 
@@ -383,11 +389,11 @@ mod tests {
 
                 let assertion_fn = move |world: &mut World| {
                     world.exec(
-                        |(object_statuses, kinematicses): (
-                            ReadStorage<ObjectStatus<CharacterSequenceId>>,
+                        |(character_sequence_ids, kinematicses): (
+                            ReadStorage<CharacterSequenceId>,
                             ReadStorage<Kinematics<f32>>,
                         )| {
-                            for (_, kinematics) in (&object_statuses, &kinematicses).join() {
+                            for (_, kinematics) in (&character_sequence_ids, &kinematicses).join() {
                                 assert_eq!(vx, kinematics.velocity[0]);
                                 assert_eq!(0.5, kinematics.velocity[2]);
                             }
@@ -427,7 +433,7 @@ mod tests {
                             map_selection,
                             maps,
                             mut controller_inputs,
-                            mut object_statuses,
+                            mut character_sequence_ids,
                             mut sequence_statuses,
                             mut kinematicses,
                             mut groundings,
@@ -435,7 +441,7 @@ mod tests {
                             ReadExpect<MapSelection>,
                             Read<AssetStorage<Map>>,
                             WriteStorage<ControllerInput>,
-                            WriteStorage<ObjectStatus<CharacterSequenceId>>,
+                            WriteStorage<CharacterSequenceId>,
                             WriteStorage<SequenceStatus>,
                             WriteStorage<Kinematics<f32>>,
                             WriteStorage<Grounding>,
@@ -446,13 +452,13 @@ mod tests {
 
                             for (
                                 controller_input,
-                                object_status,
+                                character_sequence_id,
                                 sequence_status,
                                 kinematics,
                                 grounding,
                             ) in (
                                 &mut controller_inputs,
-                                &mut object_statuses,
+                                &mut character_sequence_ids,
                                 &mut sequence_statuses,
                                 &mut kinematicses,
                                 &mut groundings,
@@ -462,7 +468,7 @@ mod tests {
                                 controller_input.x_axis_value = -1.;
                                 controller_input.z_axis_value = 1.;
 
-                                object_status.sequence_id = CharacterSequenceId::JumpOff;
+                                *character_sequence_id = CharacterSequenceId::JumpOff;
                                 *sequence_status = SequenceStatus::Begin;
                                 *grounding = Grounding::OnGround;
 
@@ -481,11 +487,11 @@ mod tests {
                 )
                 .with_assertion(|world| {
                     world.exec(
-                        |(object_statuses, kinematicses): (
-                            ReadStorage<ObjectStatus<CharacterSequenceId>>,
+                        |(character_sequence_ids, kinematicses): (
+                            ReadStorage<CharacterSequenceId>,
                             ReadStorage<Kinematics<f32>>,
                         )| {
-                            for (_, kinematics) in (&object_statuses, &kinematicses).join() {
+                            for (_, kinematics) in (&character_sequence_ids, &kinematicses).join() {
                                 assert_eq!(-5., kinematics.velocity[0]);
                                 assert_eq!(17., kinematics.velocity[1]);
                                 assert_eq!(2., kinematics.velocity[2]);
@@ -509,13 +515,13 @@ mod tests {
                         |(
                             map_selection,
                             maps,
-                            mut object_statuses,
+                            mut character_sequence_ids,
                             mut kinematicses,
                             mut groundings,
                         ): (
                             ReadExpect<MapSelection>,
                             Read<AssetStorage<Map>>,
-                            WriteStorage<ObjectStatus<CharacterSequenceId>>,
+                            WriteStorage<CharacterSequenceId>,
                             WriteStorage<Kinematics<f32>>,
                             WriteStorage<Grounding>,
                         )| {
@@ -523,10 +529,14 @@ mod tests {
                                 .get(map_selection.handle())
                                 .expect("Expected map to be loaded.");
 
-                            for (object_status, kinematics, grounding) in
-                                (&mut object_statuses, &mut kinematicses, &mut groundings).join()
+                            for (character_sequence_id, kinematics, grounding) in (
+                                &mut character_sequence_ids,
+                                &mut kinematicses,
+                                &mut groundings,
+                            )
+                                .join()
                             {
-                                object_status.sequence_id = CharacterSequenceId::JumpDescendLand;
+                                *character_sequence_id = CharacterSequenceId::JumpDescendLand;
                                 *grounding = Grounding::Airborne;
 
                                 kinematics.position[1] = map.margins.bottom;
@@ -544,11 +554,11 @@ mod tests {
                 )
                 .with_assertion(|world| {
                     world.exec(
-                        |(object_statuses, kinematicses): (
-                            ReadStorage<ObjectStatus<CharacterSequenceId>>,
+                        |(character_sequence_ids, kinematicses): (
+                            ReadStorage<CharacterSequenceId>,
                             ReadStorage<Kinematics<f32>>,
                         )| {
-                            for (_, kinematics) in (&object_statuses, &kinematicses).join() {
+                            for (_, kinematics) in (&character_sequence_ids, &kinematicses).join() {
                                 assert_eq!(-3., kinematics.velocity[0]);
                                 assert_eq!(0., kinematics.velocity[1]);
                                 assert_eq!(-2., kinematics.velocity[2]);
@@ -572,13 +582,13 @@ mod tests {
                         |(
                             map_selection,
                             maps,
-                            mut object_statuses,
+                            mut character_sequence_ids,
                             mut kinematicses,
                             mut groundings,
                         ): (
                             ReadExpect<MapSelection>,
                             Read<AssetStorage<Map>>,
-                            WriteStorage<ObjectStatus<CharacterSequenceId>>,
+                            WriteStorage<CharacterSequenceId>,
                             WriteStorage<Kinematics<f32>>,
                             WriteStorage<Grounding>,
                         )| {
@@ -586,10 +596,14 @@ mod tests {
                                 .get(map_selection.handle())
                                 .expect("Expected map to be loaded.");
 
-                            for (object_status, kinematics, grounding) in
-                                (&mut object_statuses, &mut kinematicses, &mut groundings).join()
+                            for (character_sequence_id, kinematics, grounding) in (
+                                &mut character_sequence_ids,
+                                &mut kinematicses,
+                                &mut groundings,
+                            )
+                                .join()
                             {
-                                object_status.sequence_id = CharacterSequenceId::FallForwardLand;
+                                *character_sequence_id = CharacterSequenceId::FallForwardLand;
                                 *grounding = Grounding::Airborne;
 
                                 kinematics.position[1] = map.margins.bottom;
@@ -607,11 +621,11 @@ mod tests {
                 )
                 .with_assertion(|world| {
                     world.exec(
-                        |(object_statuses, kinematicses): (
-                            ReadStorage<ObjectStatus<CharacterSequenceId>>,
+                        |(character_sequence_ids, kinematicses): (
+                            ReadStorage<CharacterSequenceId>,
                             ReadStorage<Kinematics<f32>>,
                         )| {
-                            for (_, kinematics) in (&object_statuses, &kinematicses).join() {
+                            for (_, kinematics) in (&character_sequence_ids, &kinematicses).join() {
                                 assert_eq!(-3., kinematics.velocity[0]);
                                 assert_eq!(0., kinematics.velocity[1]);
                                 assert_eq!(-2., kinematics.velocity[2]);
@@ -635,13 +649,13 @@ mod tests {
                         |(
                             map_selection,
                             maps,
-                            mut object_statuses,
+                            mut character_sequence_ids,
                             mut kinematicses,
                             mut groundings,
                         ): (
                             ReadExpect<MapSelection>,
                             Read<AssetStorage<Map>>,
-                            WriteStorage<ObjectStatus<CharacterSequenceId>>,
+                            WriteStorage<CharacterSequenceId>,
                             WriteStorage<Kinematics<f32>>,
                             WriteStorage<Grounding>,
                         )| {
@@ -649,10 +663,14 @@ mod tests {
                                 .get(map_selection.handle())
                                 .expect("Expected map to be loaded.");
 
-                            for (object_status, kinematics, grounding) in
-                                (&mut object_statuses, &mut kinematicses, &mut groundings).join()
+                            for (character_sequence_id, kinematics, grounding) in (
+                                &mut character_sequence_ids,
+                                &mut kinematicses,
+                                &mut groundings,
+                            )
+                                .join()
                             {
-                                object_status.sequence_id = CharacterSequenceId::LieFaceDown;
+                                *character_sequence_id = CharacterSequenceId::LieFaceDown;
                                 *grounding = Grounding::OnGround;
 
                                 kinematics.position[1] = map.margins.bottom;
@@ -670,11 +688,11 @@ mod tests {
                 )
                 .with_assertion(|world| {
                     world.exec(
-                        |(object_statuses, kinematicses): (
-                            ReadStorage<ObjectStatus<CharacterSequenceId>>,
+                        |(character_sequence_ids, kinematicses): (
+                            ReadStorage<CharacterSequenceId>,
                             ReadStorage<Kinematics<f32>>,
                         )| {
-                            for (_, kinematics) in (&object_statuses, &kinematicses).join() {
+                            for (_, kinematics) in (&character_sequence_ids, &kinematicses).join() {
                                 assert_eq!(-3., kinematics.velocity[0]);
                                 assert_eq!(0., kinematics.velocity[1]);
                                 assert_eq!(-2., kinematics.velocity[2]);

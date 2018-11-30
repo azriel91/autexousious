@@ -1,6 +1,6 @@
-use object_model::{config::object::CharacterSequenceId, entity::ObjectStatusUpdate};
+use object_model::config::object::CharacterSequenceId;
 
-use character::sequence_handler::{common::SequenceRepeat, SequenceHandler};
+use character::sequence_handler::{common::SequenceRepeat, CharacterSequenceHandler};
 use CharacterSequenceUpdateComponents;
 
 /// Determines whether to switch to the `Stand` sequence based on Z input.
@@ -9,10 +9,10 @@ use CharacterSequenceUpdateComponents;
 #[derive(Debug)]
 pub(crate) struct WalkZMovementCheck;
 
-impl SequenceHandler for WalkZMovementCheck {
+impl CharacterSequenceHandler for WalkZMovementCheck {
     fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
+    ) -> Option<CharacterSequenceId> {
         if components.controller_input.z_axis_value != 0. {
             SequenceRepeat::update(components)
         } else {
@@ -26,14 +26,11 @@ mod tests {
     use game_input::ControllerInput;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{
-            CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
-            RunCounter, SequenceStatus,
-        },
+        entity::{CharacterStatus, Grounding, Kinematics, Mirrored, RunCounter, SequenceStatus},
     };
 
     use super::WalkZMovementCheck;
-    use character::sequence_handler::SequenceHandler;
+    use character::sequence_handler::CharacterSequenceHandler;
     use CharacterSequenceUpdateComponents;
 
     #[test]
@@ -45,9 +42,7 @@ mod tests {
             WalkZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Walk,
-                },
+                CharacterSequenceId::Walk,
                 SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),
@@ -67,9 +62,7 @@ mod tests {
                 WalkZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                     &input,
                     &CharacterStatus::default(),
-                    &ObjectStatus {
-                        sequence_id: CharacterSequenceId::Walk,
-                    },
+                    CharacterSequenceId::Walk,
                     SequenceStatus::default(),
                     &Kinematics::default(),
                     Mirrored::default(),
@@ -86,15 +79,11 @@ mod tests {
             let input = ControllerInput::new(0., z_input, false, false, false, false);
 
             assert_eq!(
-                Some(ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Walk),
-                }),
+                Some(CharacterSequenceId::Walk),
                 WalkZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                     &input,
                     &CharacterStatus::default(),
-                    &ObjectStatus {
-                        sequence_id: CharacterSequenceId::Walk,
-                    },
+                    CharacterSequenceId::Walk,
                     SequenceStatus::End,
                     &Kinematics::default(),
                     Mirrored(false),

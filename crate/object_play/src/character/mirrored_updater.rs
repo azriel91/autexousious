@@ -1,8 +1,5 @@
 use game_input::ControllerInput;
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{Mirrored, ObjectStatus},
-};
+use object_model::{config::object::CharacterSequenceId, entity::Mirrored};
 
 use character::sequence_handler::SequenceHandlerUtil;
 
@@ -16,14 +13,14 @@ impl MirroredUpdater {
     /// # Parameters
     ///
     /// * `controller_input`: Controller input for this character.
-    /// * `object_status`: Current object status.
+    /// * `character_sequence_id`: Current character sequence ID.
     /// * `mirrored`: Whether the object is mirrored (facing left).
     pub fn update(
         controller_input: &ControllerInput,
-        object_status: &ObjectStatus<CharacterSequenceId>,
+        character_sequence_id: CharacterSequenceId,
         mirrored: Mirrored,
     ) -> Mirrored {
-        match object_status.sequence_id {
+        match character_sequence_id {
             CharacterSequenceId::Stand
             | CharacterSequenceId::Walk
             | CharacterSequenceId::JumpAscend
@@ -42,10 +39,7 @@ impl MirroredUpdater {
 #[cfg(test)]
 mod tests {
     use game_input::ControllerInput;
-    use object_model::{
-        config::object::CharacterSequenceId,
-        entity::{Mirrored, ObjectStatus},
-    };
+    use object_model::{config::object::CharacterSequenceId, entity::Mirrored};
 
     use super::MirroredUpdater;
 
@@ -102,14 +96,7 @@ mod tests {
         .for_each(|sequence_id| {
             assert_eq!(
                 expected,
-                MirroredUpdater::update(
-                    controller_input,
-                    &ObjectStatus {
-                        sequence_id,
-                        ..Default::default()
-                    },
-                    mirrored,
-                )
+                MirroredUpdater::update(controller_input, sequence_id, mirrored,)
             );
         });
     }
@@ -120,14 +107,7 @@ mod tests {
             .for_each(|sequence_id| {
                 assert_eq!(
                     mirrored,
-                    MirroredUpdater::update(
-                        controller_input,
-                        &ObjectStatus {
-                            sequence_id,
-                            ..Default::default()
-                        },
-                        mirrored,
-                    )
+                    MirroredUpdater::update(controller_input, sequence_id, mirrored,)
                 );
             });
     }

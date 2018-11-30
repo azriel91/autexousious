@@ -10,9 +10,7 @@ use game_input::{ControllerInput, InputControlled};
 use game_model::loaded::SlugAndHandle;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{
-        CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, RunCounter, SequenceStatus,
-    },
+    entity::{CharacterStatus, Grounding, Kinematics, Mirrored, RunCounter, SequenceStatus},
     loaded::{
         AnimatedComponentAnimation, AnimatedComponentDefault, Character, CharacterHandle, Object,
         ObjectHandle,
@@ -59,7 +57,7 @@ impl CharacterEntitySpawner {
                 world.write_storage::<CharacterHandle>(),
                 world.write_storage::<ObjectHandle<CharacterSequenceId>>(),
                 world.write_storage::<CharacterStatus>(),
-                world.write_storage::<ObjectStatus<CharacterSequenceId>>(),
+                world.write_storage::<CharacterSequenceId>(),
                 world.write_storage::<SequenceStatus>(),
                 world.write_storage::<RunCounter>(),
                 world.write_storage::<Mirrored>(),
@@ -106,7 +104,7 @@ impl CharacterEntitySpawner {
             ref mut character_handle_storage,
             ref mut object_handle_storage,
             ref mut character_status_storage,
-            ref mut object_status_storage,
+            ref mut character_sequence_ids,
             ref mut sequence_status_storage,
             ref mut run_counter_storage,
             ref mut mirrored_storage,
@@ -128,8 +126,7 @@ impl CharacterEntitySpawner {
         slug_and_handle: &SlugAndHandle<Character>,
         input_controlled: InputControlled,
     ) -> Entity {
-        let object_status = ObjectStatus::default();
-        let first_sequence_id = object_status.sequence_id;
+        let character_sequence_id = CharacterSequenceId::default();
 
         let SlugAndHandle {
             ref slug,
@@ -148,7 +145,7 @@ impl CharacterEntitySpawner {
 
         let animation_defaults = &object.animation_defaults;
 
-        let all_animations = object.animations.get(&first_sequence_id);
+        let all_animations = object.animations.get(&character_sequence_id);
         let first_sequence_animations = all_animations
             .as_ref()
             .expect("Expected character to have at least one sequence.");
@@ -180,9 +177,9 @@ impl CharacterEntitySpawner {
             .insert(entity, CharacterStatus::default())
             .expect("Failed to insert character_status component.");
         // Object status attributes.
-        object_status_storage
-            .insert(entity, object_status)
-            .expect("Failed to insert object_status component.");
+        character_sequence_ids
+            .insert(entity, character_sequence_id)
+            .expect("Failed to insert character_sequence_id component.");
         // Sequence status attributes.
         sequence_status_storage
             .insert(entity, SequenceStatus::default())
@@ -252,14 +249,18 @@ impl CharacterEntitySpawner {
             .iter()
             .for_each(|animated_component| match animated_component {
                 AnimatedComponentAnimation::SpriteRender(ref handle) => {
-                    AnimationRunner::start(first_sequence_id, &mut sprite_animation_set, handle);
+                    AnimationRunner::start(
+                        character_sequence_id,
+                        &mut sprite_animation_set,
+                        handle,
+                    );
                 }
                 AnimatedComponentAnimation::BodyFrame(ref handle) => {
-                    AnimationRunner::start(first_sequence_id, &mut body_animation_set, handle);
+                    AnimationRunner::start(character_sequence_id, &mut body_animation_set, handle);
                 }
                 AnimatedComponentAnimation::InteractionFrame(ref handle) => {
                     AnimationRunner::start(
-                        first_sequence_id,
+                        character_sequence_id,
                         &mut interaction_animation_set,
                         handle,
                     );
@@ -295,8 +296,7 @@ mod test {
     use object_model::{
         config::object::CharacterSequenceId,
         entity::{
-            CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, Position,
-            SequenceStatus, Velocity,
+            CharacterStatus, Grounding, Kinematics, Mirrored, Position, SequenceStatus, Velocity,
         },
         loaded::{Character, CharacterHandle, ObjectHandle},
     };
@@ -333,9 +333,7 @@ mod test {
                 .read_storage::<ObjectHandle<CharacterSequenceId>>()
                 .contains(entity));
             assert!(world.read_storage::<CharacterStatus>().contains(entity));
-            assert!(world
-                .read_storage::<ObjectStatus<CharacterSequenceId>>()
-                .contains(entity));
+            assert!(world.read_storage::<CharacterSequenceId>().contains(entity));
             assert!(world.read_storage::<SequenceStatus>().contains(entity));
             assert!(world.read_storage::<Mirrored>().contains(entity));
             assert!(world.read_storage::<Grounding>().contains(entity));

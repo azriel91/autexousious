@@ -1,6 +1,6 @@
-use object_model::{config::object::CharacterSequenceId, entity::ObjectStatusUpdate};
+use object_model::config::object::CharacterSequenceId;
 
-use character::sequence_handler::SequenceHandler;
+use character::sequence_handler::CharacterSequenceHandler;
 use CharacterSequenceUpdateComponents;
 
 /// Determines whether to switch to the `Stand` sequence based on X and Z input.
@@ -9,16 +9,14 @@ use CharacterSequenceUpdateComponents;
 #[derive(Debug)]
 pub(crate) struct WalkNoMovementCheck;
 
-impl SequenceHandler for WalkNoMovementCheck {
+impl CharacterSequenceHandler for WalkNoMovementCheck {
     fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<ObjectStatusUpdate<CharacterSequenceId>> {
+    ) -> Option<CharacterSequenceId> {
         if components.controller_input.x_axis_value == 0.
             && components.controller_input.z_axis_value == 0.
         {
-            Some(ObjectStatusUpdate {
-                sequence_id: Some(CharacterSequenceId::Stand),
-            })
+            Some(CharacterSequenceId::Stand)
         } else {
             None
         }
@@ -30,14 +28,11 @@ mod tests {
     use game_input::ControllerInput;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{
-            CharacterStatus, Grounding, Kinematics, Mirrored, ObjectStatus, ObjectStatusUpdate,
-            RunCounter, SequenceStatus,
-        },
+        entity::{CharacterStatus, Grounding, Kinematics, Mirrored, RunCounter, SequenceStatus},
     };
 
     use super::WalkNoMovementCheck;
-    use character::sequence_handler::SequenceHandler;
+    use character::sequence_handler::CharacterSequenceHandler;
     use CharacterSequenceUpdateComponents;
 
     #[test]
@@ -45,15 +40,11 @@ mod tests {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            Some(ObjectStatusUpdate {
-                sequence_id: Some(CharacterSequenceId::Stand),
-            }),
+            Some(CharacterSequenceId::Stand),
             WalkNoMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Walk,
-                },
+                CharacterSequenceId::Walk,
                 SequenceStatus::default(),
                 &Kinematics::default(),
                 Mirrored::default(),
@@ -73,9 +64,7 @@ mod tests {
                 WalkNoMovementCheck::update(CharacterSequenceUpdateComponents::new(
                     &input,
                     &CharacterStatus::default(),
-                    &ObjectStatus {
-                        sequence_id: CharacterSequenceId::Walk,
-                    },
+                    CharacterSequenceId::Walk,
                     SequenceStatus::default(),
                     &Kinematics::default(),
                     Mirrored::default(),
@@ -96,9 +85,7 @@ mod tests {
                 WalkNoMovementCheck::update(CharacterSequenceUpdateComponents::new(
                     &input,
                     &CharacterStatus::default(),
-                    &ObjectStatus {
-                        sequence_id: CharacterSequenceId::Walk,
-                    },
+                    CharacterSequenceId::Walk,
                     SequenceStatus::default(),
                     &Kinematics::default(),
                     Mirrored::default(),

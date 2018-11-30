@@ -4,8 +4,8 @@ use amethyst::{
     animation::get_animation_set,
     assets::AssetStorage,
     ecs::{
-        storage::ComponentEvent, BitSet, Entities, Entity, Join, Read, ReadStorage, Resources,
-        System, SystemData, WriteStorage,
+        storage::ComponentEvent, BitSet, Component, Entities, Entity, Join, Read, ReadStorage,
+        Resources, System, SystemData, Tracked, WriteStorage,
     },
     shrev::ReaderId,
 };
@@ -13,7 +13,6 @@ use game_loading::{AnimationRunner, ObjectAnimationStorages};
 use named_type::NamedType;
 use object_model::{
     config::object::SequenceId,
-    entity::ObjectStatus,
     loaded::{AnimatedComponentAnimation, Object, ObjectHandle},
 };
 use tracker::Last;
@@ -31,15 +30,15 @@ pub(crate) struct ObjectAnimationUpdateSystem<SeqId> {
     component_ev_rid: Option<ReaderId<ComponentEvent>>,
     /// Pre-allocated bitset to track object status modifications.
     #[new(default)]
-    object_status_modifications: BitSet,
+    sequence_id_modifications: BitSet,
     /// PhantomData.
     phantom_data: PhantomData<SeqId>,
 }
 
 type ObjectAnimationUpdateSystemData<'s, SeqId> = (
     Entities<'s>,
-    ReadStorage<'s, Last<ObjectStatus<SeqId>>>,
-    ReadStorage<'s, ObjectStatus<SeqId>>,
+    ReadStorage<'s, Last<SeqId>>,
+    ReadStorage<'s, SeqId>,
     ReadStorage<'s, ObjectHandle<SeqId>>,
     Read<'s, AssetStorage<Object<SeqId>>>,
     ObjectAnimationStorages<'s, SeqId>,
@@ -48,6 +47,7 @@ type ObjectAnimationUpdateSystemData<'s, SeqId> = (
 impl<SeqId> ObjectAnimationUpdateSystem<SeqId>
 where
     SeqId: SequenceId + 'static,
+    <SeqId as Component>::Storage: Tracked,
 {
     fn swap_animation(
         object: &Object<SeqId>,
@@ -55,8 +55,8 @@ where
             SeqId,
         >,
         entity: &Entity,
-        last_object_status: &ObjectStatus<SeqId>,
-        object_status: &ObjectStatus<SeqId>,
+        last_sequence_id: SeqId,
+        next_sequence_id: SeqId,
     ) {
         let mut sprite_animation_set = get_animation_set(sprite_acs, *entity)
             .expect("Sprite animation should exist as entity should be valid.");
@@ -64,9 +64,6 @@ where
             .expect("Body animation should exist as entity should be valid.");
         let mut interaction_animation_set = get_animation_set(interaction_acs, *entity)
             .expect("Interaction animation should exist as entity should be valid.");
-
-        let last_sequence_id = last_object_status.sequence_id;
-        let next_sequence_id = object_status.sequence_id;
 
         let animations = &object.animations.get(&next_sequence_id).unwrap_or_else(|| {
             panic!(
@@ -109,6 +106,7 @@ where
 impl<'s, SeqId> System<'s> for ObjectAnimationUpdateSystem<SeqId>
 where
     SeqId: SequenceId + 'static,
+    <SeqId as Component>::Storage: Tracked,
 {
     type SystemData = ObjectAnimationUpdateSystemData<'s, SeqId>;
 
@@ -116,45 +114,45 @@ where
         &mut self,
         (
             entities,
-            last_object_statuses,
-            object_statuses,
+            last_sequence_ids,
+            sequence_ids,
             object_handles,
             object_assets,
             mut object_animation_storages,
         ): Self::SystemData,
     ) {
         // Split borrow self
-        let object_status_modifications = &mut self.object_status_modifications;
+        let sequence_id_modifications = &mut self.sequence_id_modifications;
         let component_ev_rid = self
             .component_ev_rid
             .as_mut()
             .expect("Expected reader ID to exist for ObjectAnimationUpdateSystem.");
 
-        object_status_modifications.clear();
-        object_statuses
+        sequence_id_modifications.clear();
+        sequence_ids
             .channel()
             .read(component_ev_rid)
             .for_each(|ev| match ev {
                 ComponentEvent::Inserted(id) | ComponentEvent::Modified(id) => {
-                    object_status_modifications.add(*id);
+                    sequence_id_modifications.add(*id);
                 }
                 ComponentEvent::Removed(_id) => {}
             });
 
         {
             // Immutable borrow
-            let object_status_modifications = &*object_status_modifications;
+            let sequence_id_modifications = &*sequence_id_modifications;
 
             (
                 &entities,
-                &last_object_statuses,
-                &object_statuses,
+                &last_sequence_ids,
+                &sequence_ids,
                 &object_handles,
-                object_status_modifications,
+                sequence_id_modifications,
             )
                 .join()
                 .for_each(
-                    |(entity, last_object_status, object_status, object_handle, _)| {
+                    |(entity, last_sequence_id, sequence_id, object_handle, _)| {
                         let object = object_assets
                             .get(object_handle)
                             .expect("Expected object to be loaded.");
@@ -163,8 +161,8 @@ where
                             &object,
                             &mut object_animation_storages,
                             &entity,
-                            last_object_status,
-                            object_status,
+                            **last_sequence_id,
+                            *sequence_id,
                         );
                     },
                 );
@@ -173,7 +171,7 @@ where
 
     fn setup(&mut self, res: &mut Resources) {
         Self::SystemData::setup(res);
-        let mut object_statuses = WriteStorage::<ObjectStatus<SeqId>>::fetch(res);
-        self.component_ev_rid = Some(object_statuses.register_reader());
+        let mut sequence_ids = WriteStorage::<SeqId>::fetch(res);
+        self.component_ev_rid = Some(sequence_ids.register_reader());
     }
 }
