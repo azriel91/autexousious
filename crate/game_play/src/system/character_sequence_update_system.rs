@@ -63,7 +63,6 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             kinematics,
             run_counter,
             character_status,
-            character_sequence_id,
             sequence_status,
             mirrored,
             grounding,
@@ -75,7 +74,6 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             &kinematicses,
             &mut run_counters,
             &character_statuses,
-            &mut character_sequence_ids,
             &mut sequence_statuses,
             &mut mirroreds,
             &mut groundings,
@@ -83,6 +81,9 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
         )
             .join()
         {
+            let character_sequence_id = *character_sequence_ids.get(entity).expect(
+                "Expected entities with character_status to also have character_sequence_id.",
+            );
             let character = character_assets
                 .get(character_handle)
                 .expect("Expected character to be loaded.");
@@ -101,7 +102,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                 sprite_animation_set
                     .animations
                     .iter()
-                    .find(|&&(ref id, ref _control)| id == character_sequence_id)
+                    .find(|&&(ref id, ref _control)| id == &character_sequence_id)
                     .map_or(true, |(_id, control)| control.state == ControlState::Done)
             };
             if sequence_ended {
@@ -113,7 +114,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                 CharacterSequenceUpdateComponents::new(
                     &controller_input,
                     &character_status,
-                    *character_sequence_id,
+                    character_sequence_id,
                     *sequence_status,
                     &kinematics,
                     *mirrored,
@@ -125,16 +126,18 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             *run_counter = RunCounterUpdater::update(
                 *run_counter,
                 controller_input,
-                *character_sequence_id,
+                character_sequence_id,
                 *mirrored,
                 *grounding,
             );
-            *mirrored =
-                MirroredUpdater::update(controller_input, *character_sequence_id, *mirrored);
+            *mirrored = MirroredUpdater::update(controller_input, character_sequence_id, *mirrored);
 
             sprite_render.flip_horizontal = mirrored.0;
 
             if let Some(next_character_sequence_id) = next_character_sequence_id {
+                let mut character_sequence_id = character_sequence_ids
+                    .get_mut(entity)
+                    .expect("Failed to get character_sequence_id mutably.");
                 *character_sequence_id = next_character_sequence_id;
                 *sequence_status = SequenceStatus::Begin;
             }
