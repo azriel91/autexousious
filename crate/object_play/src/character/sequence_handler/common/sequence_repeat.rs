@@ -24,7 +24,9 @@ mod tests {
     use game_input::ControllerInput;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{CharacterStatus, Grounding, Kinematics, Mirrored, RunCounter, SequenceStatus},
+        entity::{
+            CharacterStatus, Grounding, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
+        },
     };
 
     use super::SequenceRepeat;
@@ -40,7 +42,8 @@ mod tests {
                 &CharacterStatus::default(),
                 CharacterSequenceId::Walk,
                 SequenceStatus::Begin,
-                &Kinematics::default(),
+                &Position::default(),
+                &Velocity::default(),
                 Mirrored::default(),
                 Grounding::default(),
                 RunCounter::default()
@@ -57,7 +60,8 @@ mod tests {
                 &CharacterStatus::default(),
                 CharacterSequenceId::Walk,
                 SequenceStatus::Ongoing,
-                &Kinematics::default(),
+                &Position::default(),
+                &Velocity::default(),
                 Mirrored::default(),
                 Grounding::default(),
                 RunCounter::default()
@@ -76,7 +80,8 @@ mod tests {
                 &CharacterStatus::default(),
                 CharacterSequenceId::Walk,
                 SequenceStatus::End,
-                &Kinematics::default(),
+                &Position::default(),
+                &Velocity::default(),
                 Mirrored::default(),
                 Grounding::default(),
                 RunCounter::default()

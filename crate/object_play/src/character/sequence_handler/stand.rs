@@ -48,7 +48,9 @@ mod test {
     use game_input::ControllerInput;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{CharacterStatus, Grounding, Kinematics, Mirrored, RunCounter, SequenceStatus},
+        entity::{
+            CharacterStatus, Grounding, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
+        },
     };
 
     use super::Stand;
@@ -66,7 +68,8 @@ mod test {
                 &CharacterStatus::default(),
                 CharacterSequenceId::Stand,
                 SequenceStatus::default(),
-                &Kinematics::default(),
+                &Position::default(),
+                &Velocity::default(),
                 Mirrored(true),
                 Grounding::OnGround,
                 RunCounter::Unused
@@ -85,7 +88,8 @@ mod test {
                 &CharacterStatus::default(),
                 CharacterSequenceId::Stand,
                 SequenceStatus::End,
-                &Kinematics::default(),
+                &Position::default(),
+                &Velocity::default(),
                 Mirrored::default(),
                 Grounding::default(),
                 RunCounter::default()
@@ -104,7 +108,8 @@ mod test {
                 &CharacterStatus::default(),
                 CharacterSequenceId::Stand,
                 SequenceStatus::default(),
-                &Kinematics::default(),
+                &Position::default(),
+                &Velocity::default(),
                 Mirrored::default(),
                 Grounding::Airborne,
                 RunCounter::default()
@@ -122,7 +127,8 @@ mod test {
             &CharacterStatus::default(),
             CharacterSequenceId::default(),
             SequenceStatus::default(),
-            &Kinematics::default(),
+            &Position::default(),
+            &Velocity::default(),
             Mirrored::default(),
             Grounding::default(),
             RunCounter::Exceeded,
@@ -139,7 +145,8 @@ mod test {
             &CharacterStatus::default(),
             CharacterSequenceId::default(),
             SequenceStatus::default(),
-            &Kinematics::default(),
+            &Position::default(),
+            &Velocity::default(),
             Mirrored::default(),
             Grounding::default(),
             RunCounter::Increase(10),
@@ -157,7 +164,8 @@ mod test {
                 &CharacterStatus::default(),
                 CharacterSequenceId::Stand,
                 SequenceStatus::default(),
-                &Kinematics::default(),
+                &Position::default(),
+                &Velocity::default(),
                 Mirrored(true),
                 Grounding::default(),
                 RunCounter::default()
@@ -172,7 +180,8 @@ mod test {
                 &CharacterStatus::default(),
                 CharacterSequenceId::Stand,
                 SequenceStatus::default(),
-                &Kinematics::default(),
+                &Position::default(),
+                &Velocity::default(),
                 Mirrored(false),
                 Grounding::default(),
                 RunCounter::default()
@@ -191,7 +200,8 @@ mod test {
                 &CharacterStatus::default(),
                 CharacterSequenceId::Stand,
                 SequenceStatus::default(),
-                &Kinematics::default(),
+                &Position::default(),
+                &Velocity::default(),
                 Mirrored(false),
                 Grounding::default(),
                 RunCounter::default()
@@ -206,7 +216,8 @@ mod test {
                 &CharacterStatus::default(),
                 CharacterSequenceId::Stand,
                 SequenceStatus::default(),
-                &Kinematics::default(),
+                &Position::default(),
+                &Velocity::default(),
                 Mirrored(true),
                 Grounding::default(),
                 RunCounter::default()
@@ -225,7 +236,8 @@ mod test {
                 &CharacterStatus::default(),
                 CharacterSequenceId::Stand,
                 SequenceStatus::default(),
-                &Kinematics::default(),
+                &Position::default(),
+                &Velocity::default(),
                 Mirrored(false),
                 Grounding::default(),
                 RunCounter::default()
@@ -247,7 +259,8 @@ mod test {
                         &CharacterStatus::default(),
                         CharacterSequenceId::Stand,
                         SequenceStatus::default(),
-                        &Kinematics::default(),
+                        &Position::default(),
+                        &Velocity::default(),
                         mirrored.into(),
                         Grounding::default(),
                         RunCounter::Decrease(10)
@@ -270,7 +283,8 @@ mod test {
                         &CharacterStatus::default(),
                         CharacterSequenceId::Stand,
                         SequenceStatus::default(),
-                        &Kinematics::default(),
+                        &Position::default(),
+                        &Velocity::default(),
                         mirrored.into(),
                         Grounding::default(),
                         RunCounter::Decrease(10)
@@ -293,7 +307,8 @@ mod test {
                         &CharacterStatus::default(),
                         CharacterSequenceId::default(),
                         SequenceStatus::default(),
-                        &Kinematics::default(),
+                        &Position::default(),
+                        &Velocity::default(),
                         Mirrored::default(),
                         Grounding::default(),
                         RunCounter::default()
@@ -314,7 +329,8 @@ mod test {
                 &CharacterStatus::default(),
                 CharacterSequenceId::default(),
                 SequenceStatus::default(),
-                &Kinematics::default(),
+                &Position::default(),
+                &Velocity::default(),
                 Mirrored::default(),
                 Grounding::default(),
                 RunCounter::default()

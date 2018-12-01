@@ -8,7 +8,9 @@ use game_input::ControllerInput;
 use game_loading::ObjectAnimationStorages;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{CharacterStatus, Grounding, Kinematics, Mirrored, RunCounter, SequenceStatus},
+    entity::{
+        CharacterStatus, Grounding, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
+    },
     loaded::{Character, CharacterHandle},
 };
 use object_play::{
@@ -24,7 +26,8 @@ type CharacterSequenceUpdateSystemData<'s> = (
     Read<'s, AssetStorage<Character>>,
     ReadStorage<'s, CharacterHandle>,
     ReadStorage<'s, ControllerInput>,
-    ReadStorage<'s, Kinematics<f32>>,
+    ReadStorage<'s, Position<f32>>,
+    ReadStorage<'s, Velocity<f32>>,
     WriteStorage<'s, RunCounter>,
     ReadStorage<'s, CharacterStatus>,
     WriteStorage<'s, CharacterSequenceId>,
@@ -45,7 +48,8 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             character_assets,
             character_handles,
             controller_inputs,
-            kinematicses,
+            positions,
+            velocities,
             mut run_counters,
             character_statuses,
             mut character_sequence_ids,
@@ -60,7 +64,8 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             entity,
             character_handle,
             controller_input,
-            kinematics,
+            position,
+            velocity,
             run_counter,
             character_status,
             sequence_status,
@@ -71,7 +76,8 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             &*entities,
             &character_handles,
             &controller_inputs,
-            &kinematicses,
+            &positions,
+            &velocities,
             &mut run_counters,
             &character_statuses,
             &mut sequence_statuses,
@@ -116,7 +122,8 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                     &character_status,
                     character_sequence_id,
                     *sequence_status,
-                    &kinematics,
+                    &position,
+                    &velocity,
                     *mirrored,
                     *grounding,
                     *run_counter,
@@ -154,7 +161,7 @@ mod tests {
     use map_selection_model::MapSelection;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{Grounding, Kinematics, Mirrored, SequenceStatus},
+        entity::{Grounding, Mirrored, Position, SequenceStatus},
     };
     use typename::TypeName;
 
@@ -173,24 +180,24 @@ mod tests {
                             maps,
                             mut character_sequence_ids,
                             mut sequence_statuses,
-                            mut kinematicses,
+                            mut positions,
                             mut groundings,
                         ): (
                             ReadExpect<MapSelection>,
                             Read<AssetStorage<Map>>,
                             WriteStorage<CharacterSequenceId>,
                             WriteStorage<SequenceStatus>,
-                            WriteStorage<Kinematics<f32>>,
+                            WriteStorage<Position<f32>>,
                             WriteStorage<Grounding>,
                         )| {
                             let map = maps
                                 .get(map_selection.handle())
                                 .expect("Expected map to be loaded.");
 
-                            for (character_sequence_id, sequence_status, kinematics, grounding) in (
+                            for (character_sequence_id, sequence_status, position, grounding) in (
                                 &mut character_sequence_ids,
                                 &mut sequence_statuses,
-                                &mut kinematicses,
+                                &mut positions,
                                 &mut groundings,
                             )
                                 .join()
@@ -199,7 +206,7 @@ mod tests {
                                 *sequence_status = SequenceStatus::Begin;
                                 *grounding = Grounding::OnGround;
 
-                                kinematics.position[1] = map.margins.bottom;
+                                position[1] = map.margins.bottom;
                             }
                         },
                     );
@@ -235,7 +242,7 @@ mod tests {
                             mut controller_inputs,
                             mut character_sequence_ids,
                             mut sequence_statuses,
-                            mut kinematicses,
+                            mut positions,
                             mut mirroreds,
                             mut groundings,
                         ): (
@@ -244,7 +251,7 @@ mod tests {
                             WriteStorage<ControllerInput>,
                             WriteStorage<CharacterSequenceId>,
                             WriteStorage<SequenceStatus>,
-                            WriteStorage<Kinematics<f32>>,
+                            WriteStorage<Position<f32>>,
                             WriteStorage<Mirrored>,
                             WriteStorage<Grounding>,
                         )| {
@@ -256,14 +263,14 @@ mod tests {
                                 controller_input,
                                 character_sequence_id,
                                 sequence_status,
-                                kinematics,
+                                position,
                                 mirrored,
                                 grounding,
                             ) in (
                                 &mut controller_inputs,
                                 &mut character_sequence_ids,
                                 &mut sequence_statuses,
-                                &mut kinematicses,
+                                &mut positions,
                                 &mut mirroreds,
                                 &mut groundings,
                             )
@@ -277,7 +284,7 @@ mod tests {
                                 *mirrored = Mirrored(false);
                                 *grounding = Grounding::OnGround;
 
-                                kinematics.position[1] = map.margins.bottom;
+                                position[1] = map.margins.bottom;
                             }
                         },
                     );

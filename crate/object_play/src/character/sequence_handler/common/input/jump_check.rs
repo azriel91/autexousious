@@ -27,7 +27,9 @@ mod tests {
     use game_input::ControllerInput;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{CharacterStatus, Grounding, Kinematics, Mirrored, RunCounter, SequenceStatus},
+        entity::{
+            CharacterStatus, Grounding, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
+        },
     };
 
     use super::JumpCheck;
@@ -45,7 +47,8 @@ mod tests {
                 &CharacterStatus::default(),
                 CharacterSequenceId::Stand,
                 SequenceStatus::default(),
-                &Kinematics::<f32>::default(),
+                &Position::default(),
+                &Velocity::default(),
                 Mirrored::default(),
                 Grounding::default(),
                 RunCounter::default()
@@ -64,7 +67,8 @@ mod tests {
                 &CharacterStatus::default(),
                 CharacterSequenceId::Stand,
                 SequenceStatus::default(),
-                &Kinematics::<f32>::default(),
+                &Position::default(),
+                &Velocity::default(),
                 Mirrored::default(),
                 Grounding::Airborne,
                 RunCounter::default()

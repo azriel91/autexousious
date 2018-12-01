@@ -15,7 +15,7 @@ impl CharacterSequenceHandler for FallForwardDescend {
     fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<CharacterSequenceId> {
-        if components.kinematics.velocity[1] <= -10. {
+        if components.velocity[1] <= -10. {
             FALL_FORWARD_DESCEND_BOUNCE.update(components)
         } else {
             FALL_FORWARD_DESCEND_LIE.update(components)

@@ -31,7 +31,9 @@ mod test {
     use game_input::ControllerInput;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{CharacterStatus, Grounding, Kinematics, Mirrored, RunCounter, SequenceStatus},
+        entity::{
+            CharacterStatus, Grounding, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
+        },
     };
 
     use super::SwitchSequenceOnLand;
@@ -40,8 +42,8 @@ mod test {
     #[test]
     fn no_update_when_sequence_not_ended() {
         let input = ControllerInput::new(0., 0., false, false, false, false);
-        let mut kinematics = Kinematics::default();
-        kinematics.velocity[1] = -1.;
+        let mut velocity = Velocity::default();
+        velocity[1] = -1.;
 
         assert_eq!(
             None,
@@ -51,7 +53,8 @@ mod test {
                     &CharacterStatus::default(),
                     CharacterSequenceId::FallForwardDescend,
                     SequenceStatus::default(),
-                    &kinematics,
+                    &Position::default(),
+                    &velocity,
                     Mirrored::default(),
                     Grounding::Airborne,
                     RunCounter::default()
@@ -63,8 +66,8 @@ mod test {
     #[test]
     fn restarts_jump_descend_when_sequence_ends() {
         let input = ControllerInput::new(0., 0., false, false, false, false);
-        let mut kinematics = Kinematics::default();
-        kinematics.velocity[1] = -1.;
+        let mut velocity = Velocity::default();
+        velocity[1] = -1.;
 
         assert_eq!(
             Some(CharacterSequenceId::FallForwardDescend),
@@ -74,7 +77,8 @@ mod test {
                     &CharacterStatus::default(),
                     CharacterSequenceId::FallForwardDescend,
                     SequenceStatus::End,
-                    &kinematics,
+                    &Position::default(),
+                    &velocity,
                     Mirrored::default(),
                     Grounding::Airborne,
                     RunCounter::default()
@@ -86,8 +90,8 @@ mod test {
     #[test]
     fn switches_to_land_when_on_ground() {
         let input = ControllerInput::new(0., 0., false, false, false, false);
-        let mut kinematics = Kinematics::default();
-        kinematics.velocity[1] = -1.;
+        let mut velocity = Velocity::default();
+        velocity[1] = -1.;
 
         assert_eq!(
             Some(CharacterSequenceId::FallForwardLand),
@@ -97,7 +101,8 @@ mod test {
                     &CharacterStatus::default(),
                     CharacterSequenceId::FallForwardDescend,
                     SequenceStatus::default(),
-                    &kinematics,
+                    &Position::default(),
+                    &velocity,
                     Mirrored::default(),
                     Grounding::OnGround,
                     RunCounter::default()

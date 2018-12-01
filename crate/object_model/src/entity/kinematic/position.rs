@@ -3,11 +3,15 @@ use std::{
     ops::{Deref, DerefMut},
 };
 
-use amethyst::{core::nalgebra::Vector3, ecs::prelude::*};
+use amethyst::{
+    core::nalgebra::Vector3,
+    ecs::{storage::DenseVecStorage, Component},
+};
+use specs_derive::Component;
 
 /// Position of the entity in game.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct Position<S>(Vector3<S>)
+#[derive(Clone, Component, Copy, Debug, PartialEq, Eq)]
+pub struct Position<S>(pub Vector3<S>)
 where
     S: Clone + Copy + Debug + PartialEq + Send + Sync + 'static;
 
@@ -34,13 +38,6 @@ where
     fn default() -> Self {
         Position(Vector3::new(S::default(), S::default(), S::default()))
     }
-}
-
-impl<S> Component for Position<S>
-where
-    S: Clone + Copy + Debug + PartialEq + Send + Sync + 'static,
-{
-    type Storage = VecStorage<Self>;
 }
 
 impl<S> From<Vector3<S>> for Position<S>

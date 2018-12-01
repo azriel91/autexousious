@@ -25,8 +25,8 @@ mod tests {
     use object_model::{
         config::object::CharacterSequenceId,
         entity::{
-            CharacterStatus, Grounding, HealthPoints, Kinematics, Mirrored, RunCounter,
-            SequenceStatus,
+            CharacterStatus, Grounding, HealthPoints, Mirrored, Position, RunCounter,
+            SequenceStatus, Velocity,
         },
     };
 
@@ -43,7 +43,8 @@ mod tests {
                 &CharacterStatus::default(),
                 CharacterSequenceId::Stand,
                 SequenceStatus::default(),
-                &Kinematics::<f32>::default(),
+                &Position::default(),
+                &Velocity::default(),
                 Mirrored::default(),
                 Grounding::default(),
                 RunCounter::default()
@@ -62,7 +63,8 @@ mod tests {
                 },
                 CharacterSequenceId::Stand,
                 SequenceStatus::default(),
-                &Kinematics::<f32>::default(),
+                &Position::default(),
+                &Velocity::default(),
                 Mirrored::default(),
                 Grounding::Airborne,
                 RunCounter::default()

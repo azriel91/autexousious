@@ -6,7 +6,7 @@
 pub use self::character::{CharacterStatus, CharacterStatusUpdate, RunCounter};
 pub use self::grounding::Grounding;
 pub use self::health_points::HealthPoints;
-pub use self::kinematic::{Kinematics, Position, Velocity};
+pub use self::kinematic::{Position, Velocity};
 pub use self::mirrored::Mirrored;
 pub use self::sequence_status::SequenceStatus;
 

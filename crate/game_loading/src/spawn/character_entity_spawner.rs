@@ -10,7 +10,9 @@ use game_input::{ControllerInput, InputControlled};
 use game_model::loaded::SlugAndHandle;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{CharacterStatus, Grounding, Kinematics, Mirrored, RunCounter, SequenceStatus},
+    entity::{
+        CharacterStatus, Grounding, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
+    },
     loaded::{
         AnimatedComponentAnimation, AnimatedComponentDefault, Character, CharacterHandle, Object,
         ObjectHandle,
@@ -36,12 +38,14 @@ impl CharacterEntitySpawner {
     /// # Parameters
     ///
     /// * `world`: `World` to spawn the character into.
-    /// * `kinematics`: Kinematics of the entity in game.
+    /// * `position`: Position of the entity in game.
+    /// * `velocity`: Velocity of the entity in game.
     /// * `slug_and_handle`: Slug of the character to spawn.
     /// * `input_controlled`: `Component` that links the character entity to the controller.
     pub fn spawn_world(
         world: &mut World,
-        kinematics: Kinematics<f32>,
+        position: Position<f32>,
+        velocity: Velocity<f32>,
         slug_and_handle: &SlugAndHandle<Character>,
         input_controlled: InputControlled,
     ) -> Entity {
@@ -66,7 +70,8 @@ impl CharacterEntitySpawner {
             &mut (
                 world.write_storage::<SpriteRender>(),
                 world.write_storage::<Transparent>(),
-                world.write_storage::<Kinematics<f32>>(),
+                world.write_storage::<Position<f32>>(),
+                world.write_storage::<Velocity<f32>>(),
                 world.write_storage::<Transform>(),
                 world.write_storage::<BodyFrameActiveHandle>(),
                 world.write_storage::<InteractionFrameActiveHandle>(),
@@ -76,7 +81,8 @@ impl CharacterEntitySpawner {
                 world.write_storage::<BodyAcs<CharacterSequenceId>>(),
                 world.write_storage::<InteractionAcs<CharacterSequenceId>>(),
             ),
-            kinematics,
+            position,
+            velocity,
             slug_and_handle,
             input_controlled,
         )
@@ -89,7 +95,8 @@ impl CharacterEntitySpawner {
     /// * `object_spawning_resources`: Resources to construct the character with.
     /// * `character_component_storages`: Character specific `Component` storages.
     /// * `object_component_storages`: Common object `Component` storages.
-    /// * `kinematics`: Kinematics of the entity in game.
+    /// * `position`: Position of the entity in game.
+    /// * `velocity`: Velocity of the entity in game.
     /// * `slug_and_handle`: Slug and handle of the character to spawn.
     /// * `input_controlled`: `Component` that links the character entity to the controller.
     pub fn spawn_system<'res, 's>(
@@ -113,7 +120,8 @@ impl CharacterEntitySpawner {
         (
             ref mut sprite_render_storage,
             ref mut transparent_storage,
-            ref mut kinematics_storage,
+            ref mut position_storage,
+            ref mut velocity_storage,
             ref mut transform_storage,
             ref mut body_frame_active_handle_storage,
             ref mut interaction_frame_active_handle_storage,
@@ -122,7 +130,8 @@ impl CharacterEntitySpawner {
             's,
             CharacterSequenceId,
         >,
-        kinematics: Kinematics<f32>,
+        position: Position<f32>,
+        velocity: Velocity<f32>,
         slug_and_handle: &SlugAndHandle<Character>,
         input_controlled: InputControlled,
     ) -> Entity {
@@ -150,7 +159,6 @@ impl CharacterEntitySpawner {
             .as_ref()
             .expect("Expected character to have at least one sequence.");
 
-        let position = &kinematics.position;
         let mut transform = Transform::default();
         transform.set_position(Vector3::new(position.x, position.y + position.z, 0.));
 
@@ -200,10 +208,14 @@ impl CharacterEntitySpawner {
         transparent_storage
             .insert(entity, Transparent)
             .expect("Failed to insert transparent component.");
-        // Kinematics of the entity in game.
-        kinematics_storage
-            .insert(entity, kinematics)
-            .expect("Failed to insert kinematics component.");
+        // Position of the entity in game.
+        position_storage
+            .insert(entity, position)
+            .expect("Failed to insert position component.");
+        // Velocity of the entity in game.
+        velocity_storage
+            .insert(entity, velocity)
+            .expect("Failed to insert velocity component.");
         // Render location of the entity on screen.
         transform_storage
             .insert(entity, transform)
@@ -295,9 +307,7 @@ mod test {
     use object_loading::ObjectLoadingBundle;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{
-            CharacterStatus, Grounding, Kinematics, Mirrored, Position, SequenceStatus, Velocity,
-        },
+        entity::{CharacterStatus, Grounding, Mirrored, Position, SequenceStatus, Velocity},
         loaded::{Character, CharacterHandle, ObjectHandle},
     };
     use typename::TypeName;
@@ -314,14 +324,15 @@ mod test {
 
         let assertion = |world: &mut World| {
             let position = Position::new(100., -10., -20.);
-            let kinematics = Kinematics::new(position, Velocity::default());
+            let velocity = Velocity::default();
             let controller_id = 0;
             let input_controlled = InputControlled::new(controller_id);
 
             let slug_and_handle = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
             let entity = CharacterEntitySpawner::spawn_world(
                 world,
-                kinematics,
+                position,
+                velocity,
                 &slug_and_handle,
                 input_controlled,
             );
@@ -339,7 +350,8 @@ mod test {
             assert!(world.read_storage::<Grounding>().contains(entity));
             assert!(world.read_storage::<SpriteRender>().contains(entity));
             assert!(world.read_storage::<Transparent>().contains(entity));
-            assert!(world.read_storage::<Kinematics<f32>>().contains(entity));
+            assert!(world.read_storage::<Position<f32>>().contains(entity));
+            assert!(world.read_storage::<Velocity<f32>>().contains(entity));
             assert!(world.read_storage::<Transform>().contains(entity));
         };
 

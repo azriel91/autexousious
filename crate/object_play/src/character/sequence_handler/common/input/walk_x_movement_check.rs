@@ -48,7 +48,9 @@ mod tests {
     use game_input::ControllerInput;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{CharacterStatus, Grounding, Kinematics, Mirrored, RunCounter, SequenceStatus},
+        entity::{
+            CharacterStatus, Grounding, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
+        },
     };
 
     use super::WalkXMovementCheck;
@@ -66,7 +68,8 @@ mod tests {
                 &CharacterStatus::default(),
                 CharacterSequenceId::Walk,
                 SequenceStatus::default(),
-                &Kinematics::default(),
+                &Position::default(),
+                &Velocity::default(),
                 Mirrored::default(),
                 Grounding::default(),
                 RunCounter::Increase(10)
@@ -85,7 +88,8 @@ mod tests {
                 &CharacterStatus::default(),
                 CharacterSequenceId::Walk,
                 SequenceStatus::default(),
-                &Kinematics::default(),
+                &Position::default(),
+                &Velocity::default(),
                 Mirrored(true),
                 Grounding::default(),
                 RunCounter::Increase(11)
@@ -104,7 +108,8 @@ mod tests {
                 &CharacterStatus::default(),
                 CharacterSequenceId::Walk,
                 SequenceStatus::default(),
-                &Kinematics::default(),
+                &Position::default(),
+                &Velocity::default(),
                 Mirrored(false),
                 Grounding::default(),
                 RunCounter::Increase(11)
@@ -126,7 +131,8 @@ mod tests {
                         &CharacterStatus::default(),
                         CharacterSequenceId::Walk,
                         SequenceStatus::End,
-                        &Kinematics::default(),
+                        &Position::default(),
+                        &Velocity::default(),
                         mirrored.into(),
                         Grounding::default(),
                         RunCounter::Increase(1)
@@ -146,7 +152,8 @@ mod tests {
                 &CharacterStatus::default(),
                 CharacterSequenceId::Walk,
                 SequenceStatus::default(),
-                &Kinematics::default(),
+                &Position::default(),
+                &Velocity::default(),
                 Mirrored(false),
                 Grounding::default(),
                 RunCounter::Decrease(10)
@@ -165,7 +172,8 @@ mod tests {
                 &CharacterStatus::default(),
                 CharacterSequenceId::Walk,
                 SequenceStatus::default(),
-                &Kinematics::default(),
+                &Position::default(),
+                &Velocity::default(),
                 Mirrored(true),
                 Grounding::default(),
                 RunCounter::Decrease(10)

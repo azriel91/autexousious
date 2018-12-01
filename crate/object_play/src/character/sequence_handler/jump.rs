@@ -23,7 +23,9 @@ mod test {
     use game_input::ControllerInput;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{CharacterStatus, Grounding, Kinematics, Mirrored, RunCounter, SequenceStatus},
+        entity::{
+            CharacterStatus, Grounding, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
+        },
     };
 
     use super::Jump;
@@ -41,7 +43,8 @@ mod test {
                 &CharacterStatus::default(),
                 CharacterSequenceId::Jump,
                 SequenceStatus::default(),
-                &Kinematics::default(),
+                &Position::default(),
+                &Velocity::default(),
                 Mirrored::default(),
                 Grounding::default(),
                 RunCounter::default()
@@ -52,8 +55,8 @@ mod test {
     #[test]
     fn switches_to_jump_off_when_sequence_ends() {
         let input = ControllerInput::new(0., 0., false, false, false, false);
-        let mut kinematics = Kinematics::default();
-        kinematics.velocity[1] = 1.;
+        let mut velocity = Velocity::default();
+        velocity[1] = 1.;
 
         assert_eq!(
             Some(CharacterSequenceId::JumpOff),
@@ -62,7 +65,8 @@ mod test {
                 &CharacterStatus::default(),
                 CharacterSequenceId::Jump,
                 SequenceStatus::End,
-                &kinematics,
+                &Position::default(),
+                &velocity,
                 Mirrored::default(),
                 Grounding::default(),
                 RunCounter::default()

@@ -14,7 +14,7 @@ impl SwitchSequenceOnDescend {
         components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<CharacterSequenceId> {
         // Switch to descend_sequence when Y axis velocity is no longer upwards.
-        if components.kinematics.velocity[1] <= 0. {
+        if components.velocity[1] <= 0. {
             Some(self.0)
         } else if components.sequence_status == SequenceStatus::End {
             Some(components.character_sequence_id)
@@ -29,7 +29,9 @@ mod test {
     use game_input::ControllerInput;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{CharacterStatus, Grounding, Kinematics, Mirrored, RunCounter, SequenceStatus},
+        entity::{
+            CharacterStatus, Grounding, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
+        },
     };
 
     use super::SwitchSequenceOnDescend;
@@ -38,8 +40,8 @@ mod test {
     #[test]
     fn no_update_when_sequence_not_ended() {
         let input = ControllerInput::new(0., 0., false, false, false, false);
-        let mut kinematics = Kinematics::default();
-        kinematics.velocity[1] = 1.;
+        let mut velocity = Velocity::default();
+        velocity[1] = 1.;
 
         assert_eq!(
             None,
@@ -49,7 +51,8 @@ mod test {
                     &CharacterStatus::default(),
                     CharacterSequenceId::FallForwardAscend,
                     SequenceStatus::default(),
-                    &kinematics,
+                    &Position::default(),
+                    &velocity,
                     Mirrored::default(),
                     Grounding::Airborne,
                     RunCounter::default()
@@ -61,8 +64,8 @@ mod test {
     #[test]
     fn restarts_ascend_sequence_when_sequence_ends() {
         let input = ControllerInput::new(0., 0., false, false, false, false);
-        let mut kinematics = Kinematics::default();
-        kinematics.velocity[1] = 1.;
+        let mut velocity = Velocity::default();
+        velocity[1] = 1.;
 
         assert_eq!(
             Some(CharacterSequenceId::FallForwardAscend),
@@ -72,7 +75,8 @@ mod test {
                     &CharacterStatus::default(),
                     CharacterSequenceId::FallForwardAscend,
                     SequenceStatus::End,
-                    &kinematics,
+                    &Position::default(),
+                    &velocity,
                     Mirrored::default(),
                     Grounding::Airborne,
                     RunCounter::default()
@@ -84,12 +88,12 @@ mod test {
     #[test]
     fn switches_to_descend_sequence_when_y_velocity_is_zero_or_downwards() {
         let input = ControllerInput::new(0., 0., false, false, false, false);
-        let mut downwards_kinematics = Kinematics::default();
-        downwards_kinematics.velocity[1] = -1.;
+        let mut downwards_velocity = Velocity::default();
+        downwards_velocity[1] = -1.;
 
-        vec![Kinematics::default(), downwards_kinematics]
+        vec![Velocity::default(), downwards_velocity]
             .into_iter()
-            .for_each(|kinematics| {
+            .for_each(|velocity| {
                 assert_eq!(
                     Some(CharacterSequenceId::FallForwardDescend),
                     SwitchSequenceOnDescend(CharacterSequenceId::FallForwardDescend).update(
@@ -98,7 +102,8 @@ mod test {
                             &CharacterStatus::default(),
                             CharacterSequenceId::FallForwardAscend,
                             SequenceStatus::Ongoing,
-                            &kinematics,
+                            &Position::default(),
+                            &velocity,
                             Mirrored::default(),
                             Grounding::Airborne,
                             RunCounter::default()

@@ -1,7 +1,9 @@
 use game_input::ControllerInput;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{CharacterStatus, Grounding, Kinematics, Mirrored, RunCounter, SequenceStatus},
+    entity::{
+        CharacterStatus, Grounding, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
+    },
 };
 
 /// Components used to compute character sequence updates.
@@ -15,8 +17,10 @@ pub struct CharacterSequenceUpdateComponents<'c> {
     pub character_sequence_id: CharacterSequenceId,
     /// Whether a sequence has just begun, is ongoing, or has ended.
     pub sequence_status: SequenceStatus,
-    /// Grouping of motion attributes.
-    pub kinematics: &'c Kinematics<f32>,
+    /// Position of the character.
+    pub position: &'c Position<f32>,
+    /// Velocity of the character.
+    pub velocity: &'c Velocity<f32>,
     /// Whether or not this object is facing left.
     pub mirrored: Mirrored,
     /// Tracks an object's attachment to the surrounding environment.

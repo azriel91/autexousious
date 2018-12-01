@@ -64,7 +64,9 @@ mod test {
     use game_input::ControllerInput;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{CharacterStatus, Grounding, Kinematics, Mirrored, RunCounter, SequenceStatus},
+        entity::{
+            CharacterStatus, Grounding, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
+        },
     };
 
     use super::CharacterSequenceHandler;
@@ -79,7 +81,8 @@ mod test {
                 &CharacterStatus::default(),
                 CharacterSequenceId::default(),
                 SequenceStatus::default(),
-                &Kinematics::default(),
+                &Position::default(),
+                &Velocity::default(),
                 Mirrored::default(),
                 Grounding::default(),
                 RunCounter::default()
