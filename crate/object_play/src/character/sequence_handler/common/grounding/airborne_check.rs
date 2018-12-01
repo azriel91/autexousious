@@ -11,7 +11,7 @@ impl CharacterSequenceHandler for AirborneCheck {
     fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<CharacterSequenceId> {
-        if components.grounding == Grounding::Airborne {
+        if *components.grounding == Grounding::Airborne {
             Some(CharacterSequenceId::JumpDescend)
         } else {
             None
@@ -40,13 +40,13 @@ mod tests {
             AirborneCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
-                CharacterSequenceId::Stand,
-                SequenceStatus::default(),
+                &CharacterSequenceId::Stand,
+                &SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                Mirrored::default(),
-                Grounding::default(),
-                RunCounter::default()
+                &Mirrored::default(),
+                &Grounding::default(),
+                &RunCounter::default()
             ))
         );
     }
@@ -58,13 +58,13 @@ mod tests {
             AirborneCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
-                CharacterSequenceId::Stand,
-                SequenceStatus::default(),
+                &CharacterSequenceId::Stand,
+                &SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                Mirrored::default(),
-                Grounding::Airborne,
-                RunCounter::default()
+                &Mirrored::default(),
+                &Grounding::Airborne,
+                &RunCounter::default()
             ))
         );
     }

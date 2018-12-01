@@ -45,13 +45,13 @@ mod tests {
             JumpCheck::update(CharacterSequenceUpdateComponents::new(
                 &controller_input,
                 &CharacterStatus::default(),
-                CharacterSequenceId::Stand,
-                SequenceStatus::default(),
+                &CharacterSequenceId::Stand,
+                &SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                Mirrored::default(),
-                Grounding::default(),
-                RunCounter::default()
+                &Mirrored::default(),
+                &Grounding::default(),
+                &RunCounter::default()
             ))
         );
     }
@@ -65,13 +65,13 @@ mod tests {
             JumpCheck::update(CharacterSequenceUpdateComponents::new(
                 &controller_input,
                 &CharacterStatus::default(),
-                CharacterSequenceId::Stand,
-                SequenceStatus::default(),
+                &CharacterSequenceId::Stand,
+                &SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                Mirrored::default(),
-                Grounding::Airborne,
-                RunCounter::default()
+                &Mirrored::default(),
+                &Grounding::Airborne,
+                &RunCounter::default()
             ))
         );
     }

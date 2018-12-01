@@ -11,8 +11,8 @@ impl CharacterSequenceHandler for SequenceRepeat {
     fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<CharacterSequenceId> {
-        if components.sequence_status == SequenceStatus::End {
-            Some(components.character_sequence_id)
+        if *components.sequence_status == SequenceStatus::End {
+            Some(*components.character_sequence_id)
         } else {
             None
         }
@@ -40,13 +40,13 @@ mod tests {
             SequenceRepeat::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
-                CharacterSequenceId::Walk,
-                SequenceStatus::Begin,
+                &CharacterSequenceId::Walk,
+                &SequenceStatus::Begin,
                 &Position::default(),
                 &Velocity::default(),
-                Mirrored::default(),
-                Grounding::default(),
-                RunCounter::default()
+                &Mirrored::default(),
+                &Grounding::default(),
+                &RunCounter::default()
             ))
         );
     }
@@ -58,13 +58,13 @@ mod tests {
             SequenceRepeat::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
-                CharacterSequenceId::Walk,
-                SequenceStatus::Ongoing,
+                &CharacterSequenceId::Walk,
+                &SequenceStatus::Ongoing,
                 &Position::default(),
                 &Velocity::default(),
-                Mirrored::default(),
-                Grounding::default(),
-                RunCounter::default()
+                &Mirrored::default(),
+                &Grounding::default(),
+                &RunCounter::default()
             ))
         );
     }
@@ -78,13 +78,13 @@ mod tests {
             SequenceRepeat::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                CharacterSequenceId::Walk,
-                SequenceStatus::End,
+                &CharacterSequenceId::Walk,
+                &SequenceStatus::End,
                 &Position::default(),
                 &Velocity::default(),
-                Mirrored::default(),
-                Grounding::default(),
-                RunCounter::default()
+                &Mirrored::default(),
+                &Grounding::default(),
+                &RunCounter::default()
             ))
         );
     }

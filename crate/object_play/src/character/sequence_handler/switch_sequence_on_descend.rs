@@ -16,8 +16,8 @@ impl SwitchSequenceOnDescend {
         // Switch to descend_sequence when Y axis velocity is no longer upwards.
         if components.velocity[1] <= 0. {
             Some(self.0)
-        } else if components.sequence_status == SequenceStatus::End {
-            Some(components.character_sequence_id)
+        } else if *components.sequence_status == SequenceStatus::End {
+            Some(*components.character_sequence_id)
         } else {
             None
         }
@@ -49,13 +49,13 @@ mod test {
                 CharacterSequenceUpdateComponents::new(
                     &input,
                     &CharacterStatus::default(),
-                    CharacterSequenceId::FallForwardAscend,
-                    SequenceStatus::default(),
+                    &CharacterSequenceId::FallForwardAscend,
+                    &SequenceStatus::default(),
                     &Position::default(),
                     &velocity,
-                    Mirrored::default(),
-                    Grounding::Airborne,
-                    RunCounter::default()
+                    &Mirrored::default(),
+                    &Grounding::Airborne,
+                    &RunCounter::default()
                 )
             )
         );
@@ -73,13 +73,13 @@ mod test {
                 CharacterSequenceUpdateComponents::new(
                     &input,
                     &CharacterStatus::default(),
-                    CharacterSequenceId::FallForwardAscend,
-                    SequenceStatus::End,
+                    &CharacterSequenceId::FallForwardAscend,
+                    &SequenceStatus::End,
                     &Position::default(),
                     &velocity,
-                    Mirrored::default(),
-                    Grounding::Airborne,
-                    RunCounter::default()
+                    &Mirrored::default(),
+                    &Grounding::Airborne,
+                    &RunCounter::default()
                 )
             )
         );
@@ -100,13 +100,13 @@ mod test {
                         CharacterSequenceUpdateComponents::new(
                             &input,
                             &CharacterStatus::default(),
-                            CharacterSequenceId::FallForwardAscend,
-                            SequenceStatus::Ongoing,
+                            &CharacterSequenceId::FallForwardAscend,
+                            &SequenceStatus::Ongoing,
                             &Position::default(),
                             &velocity,
-                            Mirrored::default(),
-                            Grounding::Airborne,
-                            RunCounter::default()
+                            &Mirrored::default(),
+                            &Grounding::Airborne,
+                            &RunCounter::default()
                         )
                     )
                 );

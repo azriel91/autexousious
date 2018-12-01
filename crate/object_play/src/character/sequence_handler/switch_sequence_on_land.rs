@@ -16,9 +16,9 @@ impl SwitchSequenceOnLand {
         &self,
         components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<CharacterSequenceId> {
-        if components.grounding == Grounding::OnGround {
+        if *components.grounding == Grounding::OnGround {
             Some(self.0)
-        } else if components.sequence_status == SequenceStatus::End {
+        } else if *components.sequence_status == SequenceStatus::End {
             Some(CharacterSequenceId::FallForwardDescend)
         } else {
             None
@@ -51,13 +51,13 @@ mod test {
                 CharacterSequenceUpdateComponents::new(
                     &input,
                     &CharacterStatus::default(),
-                    CharacterSequenceId::FallForwardDescend,
-                    SequenceStatus::default(),
+                    &CharacterSequenceId::FallForwardDescend,
+                    &SequenceStatus::default(),
                     &Position::default(),
                     &velocity,
-                    Mirrored::default(),
-                    Grounding::Airborne,
-                    RunCounter::default()
+                    &Mirrored::default(),
+                    &Grounding::Airborne,
+                    &RunCounter::default()
                 )
             )
         );
@@ -75,13 +75,13 @@ mod test {
                 CharacterSequenceUpdateComponents::new(
                     &input,
                     &CharacterStatus::default(),
-                    CharacterSequenceId::FallForwardDescend,
-                    SequenceStatus::End,
+                    &CharacterSequenceId::FallForwardDescend,
+                    &SequenceStatus::End,
                     &Position::default(),
                     &velocity,
-                    Mirrored::default(),
-                    Grounding::Airborne,
-                    RunCounter::default()
+                    &Mirrored::default(),
+                    &Grounding::Airborne,
+                    &RunCounter::default()
                 )
             )
         );
@@ -99,13 +99,13 @@ mod test {
                 CharacterSequenceUpdateComponents::new(
                     &input,
                     &CharacterStatus::default(),
-                    CharacterSequenceId::FallForwardDescend,
-                    SequenceStatus::default(),
+                    &CharacterSequenceId::FallForwardDescend,
+                    &SequenceStatus::default(),
                     &Position::default(),
                     &velocity,
-                    Mirrored::default(),
-                    Grounding::OnGround,
-                    RunCounter::default()
+                    &Mirrored::default(),
+                    &Grounding::OnGround,
+                    &RunCounter::default()
                 )
             )
         );

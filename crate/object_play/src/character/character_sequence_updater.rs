@@ -47,7 +47,7 @@ impl CharacterSequenceUpdater {
         let mut sequence_id = sequence_handler(components);
 
         // Check if it's at the end of the sequence before switching to next.
-        if components.sequence_status == SequenceStatus::End {
+        if *components.sequence_status == SequenceStatus::End {
             let current_sequence_id = &components.character_sequence_id;
             let current_sequence =
                 &character.definition.object_definition.sequences[current_sequence_id];

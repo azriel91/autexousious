@@ -120,22 +120,22 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                 CharacterSequenceUpdateComponents::new(
                     &controller_input,
                     &character_status,
-                    character_sequence_id,
-                    *sequence_status,
+                    &character_sequence_id,
+                    &sequence_status,
                     &position,
                     &velocity,
-                    *mirrored,
-                    *grounding,
-                    *run_counter,
+                    &mirrored,
+                    &grounding,
+                    &run_counter,
                 ),
             );
 
             *run_counter = RunCounterUpdater::update(
-                *run_counter,
-                controller_input,
-                character_sequence_id,
-                *mirrored,
-                *grounding,
+                &run_counter,
+                &controller_input,
+                &character_sequence_id,
+                &mirrored,
+                &grounding,
             );
             *mirrored = MirroredUpdater::update(controller_input, character_sequence_id, *mirrored);
 

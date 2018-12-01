@@ -17,7 +17,7 @@ impl CharacterSequenceHandler for RunStopCheck {
     ) -> Option<CharacterSequenceId> {
         if SequenceHandlerUtil::input_matches_direction(
             components.controller_input,
-            components.mirrored,
+            *components.mirrored,
         ) {
             SequenceRepeat::update(components)
         } else {
@@ -52,13 +52,13 @@ mod tests {
                     RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
-                        CharacterSequenceId::Walk,
-                        SequenceStatus::default(),
+                        &CharacterSequenceId::Walk,
+                        &SequenceStatus::default(),
                         &Position::default(),
                         &Velocity::default(),
-                        mirrored.into(),
-                        Grounding::default(),
-                        RunCounter::default()
+                        &mirrored.into(),
+                        &Grounding::default(),
+                        &RunCounter::default()
                     ))
                 );
             });
@@ -73,13 +73,13 @@ mod tests {
             RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                CharacterSequenceId::Walk,
-                SequenceStatus::default(),
+                &CharacterSequenceId::Walk,
+                &SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                Mirrored(false),
-                Grounding::default(),
-                RunCounter::default()
+                &Mirrored(false),
+                &Grounding::default(),
+                &RunCounter::default()
             ))
         );
     }
@@ -96,13 +96,13 @@ mod tests {
                     RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
-                        CharacterSequenceId::Walk,
-                        SequenceStatus::default(),
+                        &CharacterSequenceId::Walk,
+                        &SequenceStatus::default(),
                         &Position::default(),
                         &Velocity::default(),
-                        mirrored.into(),
-                        Grounding::default(),
-                        RunCounter::default()
+                        &mirrored.into(),
+                        &Grounding::default(),
+                        &RunCounter::default()
                     ))
                 );
             });
@@ -120,13 +120,13 @@ mod tests {
                     RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
-                        CharacterSequenceId::Run,
-                        SequenceStatus::End,
+                        &CharacterSequenceId::Run,
+                        &SequenceStatus::End,
                         &Position::default(),
                         &Velocity::default(),
-                        mirrored.into(),
-                        Grounding::default(),
-                        RunCounter::default()
+                        &mirrored.into(),
+                        &Grounding::default(),
+                        &RunCounter::default()
                     ))
                 );
             });

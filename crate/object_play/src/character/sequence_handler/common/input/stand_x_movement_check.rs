@@ -16,7 +16,7 @@ impl CharacterSequenceHandler for StandXMovementCheck {
         if components.controller_input.x_axis_value != 0. {
             let same_direction = SequenceHandlerUtil::input_matches_direction(
                 components.controller_input,
-                components.mirrored,
+                *components.mirrored,
             );
 
             let sequence_id = match components.run_counter {
@@ -61,13 +61,13 @@ mod tests {
             StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                CharacterSequenceId::Stand,
-                SequenceStatus::default(),
+                &CharacterSequenceId::Stand,
+                &SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                Mirrored::default(),
-                Grounding::default(),
-                RunCounter::default()
+                &Mirrored::default(),
+                &Grounding::default(),
+                &RunCounter::default()
             ))
         );
     }
@@ -81,13 +81,13 @@ mod tests {
             StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                CharacterSequenceId::Stand,
-                SequenceStatus::default(),
+                &CharacterSequenceId::Stand,
+                &SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                Mirrored(true),
-                Grounding::default(),
-                RunCounter::default()
+                &Mirrored(true),
+                &Grounding::default(),
+                &RunCounter::default()
             ))
         );
 
@@ -97,13 +97,13 @@ mod tests {
             StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                CharacterSequenceId::Stand,
-                SequenceStatus::default(),
+                &CharacterSequenceId::Stand,
+                &SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                Mirrored(false),
-                Grounding::default(),
-                RunCounter::default()
+                &Mirrored(false),
+                &Grounding::default(),
+                &RunCounter::default()
             ))
         );
     }
@@ -117,13 +117,13 @@ mod tests {
             StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                CharacterSequenceId::Stand,
-                SequenceStatus::default(),
+                &CharacterSequenceId::Stand,
+                &SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                Mirrored(false),
-                Grounding::default(),
-                RunCounter::default()
+                &Mirrored(false),
+                &Grounding::default(),
+                &RunCounter::default()
             ))
         );
 
@@ -133,13 +133,13 @@ mod tests {
             StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                CharacterSequenceId::Stand,
-                SequenceStatus::default(),
+                &CharacterSequenceId::Stand,
+                &SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                Mirrored(true),
-                Grounding::default(),
-                RunCounter::default()
+                &Mirrored(true),
+                &Grounding::default(),
+                &RunCounter::default()
             ))
         );
     }
@@ -156,13 +156,13 @@ mod tests {
                     StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
-                        CharacterSequenceId::Stand,
-                        SequenceStatus::default(),
+                        &CharacterSequenceId::Stand,
+                        &SequenceStatus::default(),
                         &Position::default(),
                         &Velocity::default(),
-                        mirrored.into(),
-                        Grounding::default(),
-                        RunCounter::Decrease(10)
+                        &mirrored.into(),
+                        &Grounding::default(),
+                        &RunCounter::Decrease(10)
                     ))
                 );
             });
@@ -180,13 +180,13 @@ mod tests {
                     StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
-                        CharacterSequenceId::Stand,
-                        SequenceStatus::default(),
+                        &CharacterSequenceId::Stand,
+                        &SequenceStatus::default(),
                         &Position::default(),
                         &Velocity::default(),
-                        mirrored.into(),
-                        Grounding::default(),
-                        RunCounter::Decrease(10)
+                        &mirrored.into(),
+                        &Grounding::default(),
+                        &RunCounter::Decrease(10)
                     ))
                 );
             });

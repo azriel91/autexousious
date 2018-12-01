@@ -47,13 +47,13 @@ mod test {
             Run::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
-                CharacterSequenceId::Run,
-                SequenceStatus::default(),
+                &CharacterSequenceId::Run,
+                &SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                Mirrored::default(),
-                Grounding::Airborne,
-                RunCounter::default()
+                &Mirrored::default(),
+                &Grounding::Airborne,
+                &RunCounter::default()
             ))
         );
     }
@@ -67,13 +67,13 @@ mod test {
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                CharacterSequenceId::Run,
-                SequenceStatus::default(),
+                &CharacterSequenceId::Run,
+                &SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                Mirrored(false),
-                Grounding::default(),
-                RunCounter::default()
+                &Mirrored(false),
+                &Grounding::default(),
+                &RunCounter::default()
             ))
         );
     }
@@ -87,13 +87,13 @@ mod test {
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                CharacterSequenceId::Run,
-                SequenceStatus::default(),
+                &CharacterSequenceId::Run,
+                &SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                Mirrored(false),
-                Grounding::default(),
-                RunCounter::default()
+                &Mirrored(false),
+                &Grounding::default(),
+                &RunCounter::default()
             ))
         );
     }
@@ -107,13 +107,13 @@ mod test {
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                CharacterSequenceId::Run,
-                SequenceStatus::default(),
+                &CharacterSequenceId::Run,
+                &SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                Mirrored(true),
-                Grounding::default(),
-                RunCounter::default()
+                &Mirrored(true),
+                &Grounding::default(),
+                &RunCounter::default()
             ))
         );
     }
@@ -130,13 +130,13 @@ mod test {
                     Run::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
-                        CharacterSequenceId::Run,
-                        SequenceStatus::End,
+                        &CharacterSequenceId::Run,
+                        &SequenceStatus::End,
                         &Position::default(),
                         &Velocity::default(),
-                        mirrored.into(),
-                        Grounding::default(),
-                        RunCounter::default()
+                        &mirrored.into(),
+                        &Grounding::default(),
+                        &RunCounter::default()
                     ))
                 );
             });
@@ -151,13 +151,13 @@ mod test {
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                CharacterSequenceId::Run,
-                SequenceStatus::default(),
+                &CharacterSequenceId::Run,
+                &SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                Mirrored(false),
-                Grounding::default(),
-                RunCounter::default()
+                &Mirrored(false),
+                &Grounding::default(),
+                &RunCounter::default()
             ))
         );
     }
@@ -171,13 +171,13 @@ mod test {
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                CharacterSequenceId::Run,
-                SequenceStatus::default(),
+                &CharacterSequenceId::Run,
+                &SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                Mirrored(true),
-                Grounding::default(),
-                RunCounter::default()
+                &Mirrored(true),
+                &Grounding::default(),
+                &RunCounter::default()
             ))
         );
     }
@@ -191,13 +191,13 @@ mod test {
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                CharacterSequenceId::Run,
-                SequenceStatus::default(),
+                &CharacterSequenceId::Run,
+                &SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                Mirrored(false),
-                Grounding::default(),
-                RunCounter::default()
+                &Mirrored(false),
+                &Grounding::default(),
+                &RunCounter::default()
             ))
         );
 
@@ -208,13 +208,13 @@ mod test {
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                CharacterSequenceId::Run,
-                SequenceStatus::default(),
+                &CharacterSequenceId::Run,
+                &SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                Mirrored(false),
-                Grounding::default(),
-                RunCounter::default()
+                &Mirrored(false),
+                &Grounding::default(),
+                &RunCounter::default()
             ))
         );
     }
