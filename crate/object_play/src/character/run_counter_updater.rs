@@ -21,18 +21,18 @@ impl RunCounterUpdater {
     /// * `mirrored`: Whether the object is mirrored (facing left).
     /// * `grounding`: Whether the object is on the ground.
     pub fn update(
-        run_counter: &RunCounter,
+        run_counter: RunCounter,
         controller_input: &ControllerInput,
-        character_sequence_id: &CharacterSequenceId,
-        mirrored: &Mirrored,
-        grounding: &Grounding,
+        character_sequence_id: CharacterSequenceId,
+        mirrored: Mirrored,
+        grounding: Grounding,
     ) -> RunCounter {
         match character_sequence_id {
             CharacterSequenceId::Stand | CharacterSequenceId::Walk => {}
             _ => return RunCounter::Unused,
         }
 
-        if *grounding != Grounding::OnGround
+        if grounding != Grounding::OnGround
             || controller_input.defend
             || controller_input.jump
             || controller_input.attack
@@ -42,23 +42,23 @@ impl RunCounterUpdater {
 
         use object_model::entity::RunCounter::*;
         if controller_input.x_axis_value == 0. {
-            match *run_counter {
-                Unused => *run_counter,
+            match run_counter {
+                Unused => run_counter,
                 Exceeded | Decrease(0) => RunCounter::Unused,
                 Decrease(ticks) => Decrease(ticks - 1),
                 Increase(_) => Decrease(RunCounter::RESET_TICK_COUNT),
             }
         } else {
             let same_direction =
-                SequenceHandlerUtil::input_matches_direction(controller_input, *mirrored);
-            match (*run_counter, same_direction) {
+                SequenceHandlerUtil::input_matches_direction(controller_input, mirrored);
+            match (run_counter, same_direction) {
                 (Unused, _) | (Decrease(_), false) | (Increase(_), false) => {
                     Increase(RunCounter::RESET_TICK_COUNT)
                 }
                 (Decrease(_), true) => Unused, // Switch to running
                 (Increase(0), true) => Exceeded,
                 (Increase(ticks), true) => Increase(ticks - 1),
-                (Exceeded, _) => *run_counter,
+                (Exceeded, _) => run_counter,
             }
         }
     }
@@ -81,11 +81,11 @@ mod tests {
         assert_eq!(
             RunCounter::Unused,
             RunCounterUpdater::update(
-                &RunCounter::Unused,
+                RunCounter::Unused,
                 &input,
-                &CharacterSequenceId::default(),
-                &Mirrored::default(),
-                &Grounding::Airborne
+                CharacterSequenceId::default(),
+                Mirrored::default(),
+                Grounding::Airborne
             )
         );
     }
@@ -97,11 +97,11 @@ mod tests {
         assert_eq!(
             RunCounter::Unused,
             RunCounterUpdater::update(
-                &RunCounter::Increase(10),
+                RunCounter::Increase(10),
                 &input,
-                &CharacterSequenceId::default(),
-                &Mirrored::default(),
-                &Grounding::Airborne
+                CharacterSequenceId::default(),
+                Mirrored::default(),
+                Grounding::Airborne
             )
         );
     }
@@ -114,11 +114,11 @@ mod tests {
         assert_eq!(
             RunCounter::Unused,
             RunCounterUpdater::update(
-                &RunCounter::Unused,
+                RunCounter::Unused,
                 &input,
-                &CharacterSequenceId::default(),
-                &Mirrored::default(),
-                &Grounding::Airborne
+                CharacterSequenceId::default(),
+                Mirrored::default(),
+                Grounding::Airborne
             )
         );
     }
@@ -133,11 +133,11 @@ mod tests {
                 assert_eq!(
                     RunCounter::Unused,
                     RunCounterUpdater::update(
-                        &RunCounter::Increase(10),
+                        RunCounter::Increase(10),
                         &input,
-                        &CharacterSequenceId::default(),
-                        &Mirrored::default(),
-                        &Grounding::Airborne
+                        CharacterSequenceId::default(),
+                        Mirrored::default(),
+                        Grounding::Airborne
                     )
                 );
             }
@@ -155,11 +155,11 @@ mod tests {
         assert_eq!(
             RunCounter::Unused,
             RunCounterUpdater::update(
-                &RunCounter::Unused,
+                RunCounter::Unused,
                 &input,
-                &CharacterSequenceId::default(),
-                &Mirrored::default(),
-                &Grounding::default()
+                CharacterSequenceId::default(),
+                Mirrored::default(),
+                Grounding::default()
             )
         );
     }
@@ -171,11 +171,11 @@ mod tests {
         assert_eq!(
             RunCounter::Unused,
             RunCounterUpdater::update(
-                &RunCounter::Decrease(0),
+                RunCounter::Decrease(0),
                 &input,
-                &CharacterSequenceId::default(),
-                &Mirrored::default(),
-                &Grounding::default()
+                CharacterSequenceId::default(),
+                Mirrored::default(),
+                Grounding::default()
             )
         );
     }
@@ -187,11 +187,11 @@ mod tests {
         assert_eq!(
             RunCounter::Decrease(0),
             RunCounterUpdater::update(
-                &RunCounter::Decrease(1),
+                RunCounter::Decrease(1),
                 &input,
-                &CharacterSequenceId::default(),
-                &Mirrored::default(),
-                &Grounding::default()
+                CharacterSequenceId::default(),
+                Mirrored::default(),
+                Grounding::default()
             )
         );
     }
@@ -203,11 +203,11 @@ mod tests {
         assert_eq!(
             RunCounter::Decrease(RunCounter::RESET_TICK_COUNT),
             RunCounterUpdater::update(
-                &RunCounter::Increase(0),
+                RunCounter::Increase(0),
                 &input,
-                &CharacterSequenceId::default(),
-                &Mirrored::default(),
-                &Grounding::default()
+                CharacterSequenceId::default(),
+                Mirrored::default(),
+                Grounding::default()
             )
         );
     }
@@ -226,11 +226,11 @@ mod tests {
                 assert_eq!(
                     RunCounter::Increase(RunCounter::RESET_TICK_COUNT),
                     RunCounterUpdater::update(
-                        &RunCounter::Unused,
+                        RunCounter::Unused,
                         &input,
-                        &CharacterSequenceId::default(),
-                        &mirrored.into(),
-                        &Grounding::default()
+                        CharacterSequenceId::default(),
+                        mirrored.into(),
+                        Grounding::default()
                     )
                 );
             });
@@ -246,11 +246,11 @@ mod tests {
                 assert_eq!(
                     RunCounter::Increase(RunCounter::RESET_TICK_COUNT),
                     RunCounterUpdater::update(
-                        &RunCounter::Decrease(11),
+                        RunCounter::Decrease(11),
                         &input,
-                        &CharacterSequenceId::default(),
-                        &mirrored.into(),
-                        &Grounding::default()
+                        CharacterSequenceId::default(),
+                        mirrored.into(),
+                        Grounding::default()
                     )
                 );
             });
@@ -266,11 +266,11 @@ mod tests {
                 assert_eq!(
                     RunCounter::Increase(RunCounter::RESET_TICK_COUNT),
                     RunCounterUpdater::update(
-                        &RunCounter::Increase(11),
+                        RunCounter::Increase(11),
                         &input,
-                        &CharacterSequenceId::default(),
-                        &mirrored.into(),
-                        &Grounding::default()
+                        CharacterSequenceId::default(),
+                        mirrored.into(),
+                        Grounding::default()
                     )
                 );
             });
@@ -286,11 +286,11 @@ mod tests {
                 assert_eq!(
                     RunCounter::Unused,
                     RunCounterUpdater::update(
-                        &RunCounter::Decrease(11),
+                        RunCounter::Decrease(11),
                         &input,
-                        &CharacterSequenceId::default(),
-                        &mirrored.into(),
-                        &Grounding::default()
+                        CharacterSequenceId::default(),
+                        mirrored.into(),
+                        Grounding::default()
                     )
                 );
             });
@@ -306,11 +306,11 @@ mod tests {
                 assert_eq!(
                     RunCounter::Exceeded,
                     RunCounterUpdater::update(
-                        &RunCounter::Increase(0),
+                        RunCounter::Increase(0),
                         &input,
-                        &CharacterSequenceId::default(),
-                        &mirrored.into(),
-                        &Grounding::default()
+                        CharacterSequenceId::default(),
+                        mirrored.into(),
+                        Grounding::default()
                     )
                 );
             });
@@ -326,11 +326,11 @@ mod tests {
                 assert_eq!(
                     RunCounter::Increase(10),
                     RunCounterUpdater::update(
-                        &RunCounter::Increase(11),
+                        RunCounter::Increase(11),
                         &input,
-                        &CharacterSequenceId::default(),
-                        &mirrored.into(),
-                        &Grounding::default()
+                        CharacterSequenceId::default(),
+                        mirrored.into(),
+                        Grounding::default()
                     )
                 );
             });
@@ -346,11 +346,11 @@ mod tests {
                 assert_eq!(
                     RunCounter::Exceeded,
                     RunCounterUpdater::update(
-                        &RunCounter::Exceeded,
+                        RunCounter::Exceeded,
                         &input,
-                        &CharacterSequenceId::default(),
-                        &mirrored.into(),
-                        &Grounding::default()
+                        CharacterSequenceId::default(),
+                        mirrored.into(),
+                        Grounding::default()
                     )
                 );
             });

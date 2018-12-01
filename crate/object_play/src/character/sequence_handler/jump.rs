@@ -10,7 +10,7 @@ impl CharacterSequenceHandler for Jump {
     fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<CharacterSequenceId> {
-        if *components.sequence_status == SequenceStatus::End {
+        if components.sequence_status == SequenceStatus::End {
             Some(CharacterSequenceId::JumpOff)
         } else {
             None
@@ -41,13 +41,13 @@ mod test {
             Jump::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::Jump,
-                &SequenceStatus::default(),
+                CharacterSequenceId::Jump,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored::default(),
-                &Grounding::default(),
-                &RunCounter::default()
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
             ))
         );
     }
@@ -63,13 +63,13 @@ mod test {
             Jump::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::Jump,
-                &SequenceStatus::End,
+                CharacterSequenceId::Jump,
+                SequenceStatus::End,
                 &Position::default(),
                 &velocity,
-                &Mirrored::default(),
-                &Grounding::default(),
-                &RunCounter::default()
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
             ))
         );
     }

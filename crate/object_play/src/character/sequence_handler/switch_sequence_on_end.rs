@@ -7,8 +7,8 @@ pub(crate) struct SwitchSequenceOnEnd(
 );
 
 impl SwitchSequenceOnEnd {
-    pub fn update(&self, sequence_status: &SequenceStatus) -> Option<CharacterSequenceId> {
-        if *sequence_status == SequenceStatus::End {
+    pub fn update(&self, sequence_status: SequenceStatus) -> Option<CharacterSequenceId> {
+        if sequence_status == SequenceStatus::End {
             Some(self.0)
         } else {
             None
@@ -26,7 +26,7 @@ mod test {
     fn no_update_when_sequence_not_ended() {
         assert_eq!(
             None,
-            SwitchSequenceOnEnd(CharacterSequenceId::Stand).update(&SequenceStatus::default())
+            SwitchSequenceOnEnd(CharacterSequenceId::Stand).update(SequenceStatus::default())
         );
     }
 
@@ -34,7 +34,7 @@ mod test {
     fn reverts_to_stand_when_sequence_ended() {
         assert_eq!(
             Some(CharacterSequenceId::Stand),
-            SwitchSequenceOnEnd(CharacterSequenceId::Stand).update(&SequenceStatus::End)
+            SwitchSequenceOnEnd(CharacterSequenceId::Stand).update(SequenceStatus::End)
         );
     }
 }

@@ -18,7 +18,7 @@ impl CharacterSequenceHandler for WalkXMovementCheck {
         if components.controller_input.x_axis_value != 0. {
             let same_direction = SequenceHandlerUtil::input_matches_direction(
                 components.controller_input,
-                *components.mirrored,
+                components.mirrored,
             );
 
             let sequence_id = match (components.run_counter, same_direction) {
@@ -66,13 +66,13 @@ mod tests {
             WalkXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::Walk,
-                &SequenceStatus::default(),
+                CharacterSequenceId::Walk,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored::default(),
-                &Grounding::default(),
-                &RunCounter::Increase(10)
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::Increase(10)
             ))
         );
     }
@@ -86,13 +86,13 @@ mod tests {
             WalkXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::Walk,
-                &SequenceStatus::default(),
+                CharacterSequenceId::Walk,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored(true),
-                &Grounding::default(),
-                &RunCounter::Increase(11)
+                Mirrored(true),
+                Grounding::default(),
+                RunCounter::Increase(11)
             ))
         );
     }
@@ -106,13 +106,13 @@ mod tests {
             WalkXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::Walk,
-                &SequenceStatus::default(),
+                CharacterSequenceId::Walk,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored(false),
-                &Grounding::default(),
-                &RunCounter::Increase(11)
+                Mirrored(false),
+                Grounding::default(),
+                RunCounter::Increase(11)
             ))
         );
     }
@@ -129,13 +129,13 @@ mod tests {
                     WalkXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
-                        &CharacterSequenceId::Walk,
-                        &SequenceStatus::End,
+                        CharacterSequenceId::Walk,
+                        SequenceStatus::End,
                         &Position::default(),
                         &Velocity::default(),
-                        &mirrored.into(),
-                        &Grounding::default(),
-                        &RunCounter::Increase(1)
+                        mirrored.into(),
+                        Grounding::default(),
+                        RunCounter::Increase(1)
                     ))
                 );
             });
@@ -150,13 +150,13 @@ mod tests {
             WalkXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::Walk,
-                &SequenceStatus::default(),
+                CharacterSequenceId::Walk,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored(false),
-                &Grounding::default(),
-                &RunCounter::Decrease(10)
+                Mirrored(false),
+                Grounding::default(),
+                RunCounter::Decrease(10)
             ))
         );
     }
@@ -170,13 +170,13 @@ mod tests {
             WalkXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::Walk,
-                &SequenceStatus::default(),
+                CharacterSequenceId::Walk,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored(true),
-                &Grounding::default(),
-                &RunCounter::Decrease(10)
+                Mirrored(true),
+                Grounding::default(),
+                RunCounter::Decrease(10)
             ))
         );
     }

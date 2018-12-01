@@ -66,13 +66,13 @@ mod test {
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::Stand,
-                &SequenceStatus::default(),
+                CharacterSequenceId::Stand,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored(true),
-                &Grounding::OnGround,
-                &RunCounter::Unused
+                Mirrored(true),
+                Grounding::OnGround,
+                RunCounter::Unused
             ))
         );
     }
@@ -86,13 +86,13 @@ mod test {
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::Stand,
-                &SequenceStatus::End,
+                CharacterSequenceId::Stand,
+                SequenceStatus::End,
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored::default(),
-                &Grounding::default(),
-                &RunCounter::default()
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
             ))
         );
     }
@@ -106,13 +106,13 @@ mod test {
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::Stand,
-                &SequenceStatus::default(),
+                CharacterSequenceId::Stand,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored::default(),
-                &Grounding::Airborne,
-                &RunCounter::default()
+                Mirrored::default(),
+                Grounding::Airborne,
+                RunCounter::default()
             ))
         );
     }
@@ -125,13 +125,13 @@ mod test {
         Stand::update(CharacterSequenceUpdateComponents::new(
             &input,
             &CharacterStatus::default(),
-            &CharacterSequenceId::default(),
-            &SequenceStatus::default(),
+            CharacterSequenceId::default(),
+            SequenceStatus::default(),
             &Position::default(),
             &Velocity::default(),
-            &Mirrored::default(),
-            &Grounding::default(),
-            &RunCounter::Exceeded,
+            Mirrored::default(),
+            Grounding::default(),
+            RunCounter::Exceeded,
         ));
     } // kcov-ignore
 
@@ -143,13 +143,13 @@ mod test {
         Stand::update(CharacterSequenceUpdateComponents::new(
             &input,
             &CharacterStatus::default(),
-            &CharacterSequenceId::default(),
-            &SequenceStatus::default(),
+            CharacterSequenceId::default(),
+            SequenceStatus::default(),
             &Position::default(),
             &Velocity::default(),
-            &Mirrored::default(),
-            &Grounding::default(),
-            &RunCounter::Increase(10),
+            Mirrored::default(),
+            Grounding::default(),
+            RunCounter::Increase(10),
         ));
     } // kcov-ignore
 
@@ -162,13 +162,13 @@ mod test {
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::Stand,
-                &SequenceStatus::default(),
+                CharacterSequenceId::Stand,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored(true),
-                &Grounding::default(),
-                &RunCounter::default()
+                Mirrored(true),
+                Grounding::default(),
+                RunCounter::default()
             ))
         );
 
@@ -178,13 +178,13 @@ mod test {
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::Stand,
-                &SequenceStatus::default(),
+                CharacterSequenceId::Stand,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored(false),
-                &Grounding::default(),
-                &RunCounter::default()
+                Mirrored(false),
+                Grounding::default(),
+                RunCounter::default()
             ))
         );
     }
@@ -198,13 +198,13 @@ mod test {
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::Stand,
-                &SequenceStatus::default(),
+                CharacterSequenceId::Stand,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored(false),
-                &Grounding::default(),
-                &RunCounter::default()
+                Mirrored(false),
+                Grounding::default(),
+                RunCounter::default()
             ))
         );
 
@@ -214,13 +214,13 @@ mod test {
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::Stand,
-                &SequenceStatus::default(),
+                CharacterSequenceId::Stand,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored(true),
-                &Grounding::default(),
-                &RunCounter::default()
+                Mirrored(true),
+                Grounding::default(),
+                RunCounter::default()
             ))
         );
     }
@@ -234,13 +234,13 @@ mod test {
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::Stand,
-                &SequenceStatus::default(),
+                CharacterSequenceId::Stand,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored(false),
-                &Grounding::default(),
-                &RunCounter::default()
+                Mirrored(false),
+                Grounding::default(),
+                RunCounter::default()
             ))
         );
     }
@@ -257,13 +257,13 @@ mod test {
                     Stand::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
-                        &CharacterSequenceId::Stand,
-                        &SequenceStatus::default(),
+                        CharacterSequenceId::Stand,
+                        SequenceStatus::default(),
                         &Position::default(),
                         &Velocity::default(),
-                        &mirrored.into(),
-                        &Grounding::default(),
-                        &RunCounter::Decrease(10)
+                        mirrored.into(),
+                        Grounding::default(),
+                        RunCounter::Decrease(10)
                     ))
                 );
             });
@@ -281,13 +281,13 @@ mod test {
                     Stand::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
-                        &CharacterSequenceId::Stand,
-                        &SequenceStatus::default(),
+                        CharacterSequenceId::Stand,
+                        SequenceStatus::default(),
                         &Position::default(),
                         &Velocity::default(),
-                        &mirrored.into(),
-                        &Grounding::default(),
-                        &RunCounter::Decrease(10)
+                        mirrored.into(),
+                        Grounding::default(),
+                        RunCounter::Decrease(10)
                     ))
                 );
             });
@@ -305,13 +305,13 @@ mod test {
                     Stand::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
-                        &CharacterSequenceId::default(),
-                        &SequenceStatus::default(),
+                        CharacterSequenceId::default(),
+                        SequenceStatus::default(),
                         &Position::default(),
                         &Velocity::default(),
-                        &Mirrored::default(),
-                        &Grounding::default(),
-                        &RunCounter::default()
+                        Mirrored::default(),
+                        Grounding::default(),
+                        RunCounter::default()
                     ))
                 );
             });
@@ -327,13 +327,13 @@ mod test {
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::default(),
-                &SequenceStatus::default(),
+                CharacterSequenceId::default(),
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored::default(),
-                &Grounding::default(),
-                &RunCounter::default()
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
             ))
         );
     }

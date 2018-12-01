@@ -13,7 +13,7 @@ impl CharacterSequenceHandler for JumpAscend {
         // Switch to jump_descend when Y axis velocity is no longer upwards.
         if components.velocity[1] <= 0. {
             Some(CharacterSequenceId::JumpDescend)
-        } else if *components.sequence_status == SequenceStatus::End {
+        } else if components.sequence_status == SequenceStatus::End {
             Some(CharacterSequenceId::JumpAscend)
         } else {
             None
@@ -46,13 +46,13 @@ mod test {
             JumpAscend::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::JumpAscend,
-                &SequenceStatus::default(),
+                CharacterSequenceId::JumpAscend,
+                SequenceStatus::default(),
                 &Position::default(),
                 &velocity,
-                &Mirrored::default(),
-                &Grounding::Airborne,
-                &RunCounter::default()
+                Mirrored::default(),
+                Grounding::Airborne,
+                RunCounter::default()
             ))
         );
     }
@@ -68,13 +68,13 @@ mod test {
             JumpAscend::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::JumpAscend,
-                &SequenceStatus::End,
+                CharacterSequenceId::JumpAscend,
+                SequenceStatus::End,
                 &Position::default(),
                 &velocity,
-                &Mirrored::default(),
-                &Grounding::Airborne,
-                &RunCounter::default()
+                Mirrored::default(),
+                Grounding::Airborne,
+                RunCounter::default()
             ))
         );
     }
@@ -93,13 +93,13 @@ mod test {
                     JumpAscend::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
-                        &CharacterSequenceId::JumpAscend,
-                        &SequenceStatus::Ongoing,
+                        CharacterSequenceId::JumpAscend,
+                        SequenceStatus::Ongoing,
                         &Position::default(),
                         &velocity,
-                        &Mirrored::default(),
-                        &Grounding::Airborne,
-                        &RunCounter::default()
+                        Mirrored::default(),
+                        Grounding::Airborne,
+                        RunCounter::default()
                     ))
                 );
             });

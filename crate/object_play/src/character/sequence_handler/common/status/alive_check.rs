@@ -41,13 +41,13 @@ mod tests {
             AliveCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
-                &CharacterSequenceId::Stand,
-                &SequenceStatus::default(),
+                CharacterSequenceId::Stand,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored::default(),
-                &Grounding::default(),
-                &RunCounter::default()
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
             ))
         );
     }
@@ -61,13 +61,13 @@ mod tests {
                 &CharacterStatus {
                     hp: HealthPoints(0),
                 },
-                &CharacterSequenceId::Stand,
-                &SequenceStatus::default(),
+                CharacterSequenceId::Stand,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored::default(),
-                &Grounding::Airborne,
-                &RunCounter::default()
+                Mirrored::default(),
+                Grounding::Airborne,
+                RunCounter::default()
             ))
         );
     }

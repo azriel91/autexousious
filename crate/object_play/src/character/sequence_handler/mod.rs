@@ -79,13 +79,13 @@ mod test {
             Sit::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
-                &CharacterSequenceId::default(),
-                &SequenceStatus::default(),
+                CharacterSequenceId::default(),
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored::default(),
-                &Grounding::default(),
-                &RunCounter::default()
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
             ))
         );
     }

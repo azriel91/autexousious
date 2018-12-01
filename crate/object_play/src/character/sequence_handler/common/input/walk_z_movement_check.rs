@@ -44,13 +44,13 @@ mod tests {
             WalkZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::Walk,
-                &SequenceStatus::default(),
+                CharacterSequenceId::Walk,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored::default(),
-                &Grounding::default(),
-                &RunCounter::default()
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
             ))
         );
     }
@@ -65,13 +65,13 @@ mod tests {
                 WalkZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                     &input,
                     &CharacterStatus::default(),
-                    &CharacterSequenceId::Walk,
-                    &SequenceStatus::default(),
+                    CharacterSequenceId::Walk,
+                    SequenceStatus::default(),
                     &Position::default(),
                     &Velocity::default(),
-                    &Mirrored::default(),
-                    &Grounding::default(),
-                    &RunCounter::default()
+                    Mirrored::default(),
+                    Grounding::default(),
+                    RunCounter::default()
                 ))
             );
         });
@@ -87,13 +87,13 @@ mod tests {
                 WalkZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                     &input,
                     &CharacterStatus::default(),
-                    &CharacterSequenceId::Walk,
-                    &SequenceStatus::End,
+                    CharacterSequenceId::Walk,
+                    SequenceStatus::End,
                     &Position::default(),
                     &Velocity::default(),
-                    &Mirrored(false),
-                    &Grounding::default(),
-                    &RunCounter::Increase(1)
+                    Mirrored(false),
+                    Grounding::default(),
+                    RunCounter::Increase(1)
                 ))
             );
         });

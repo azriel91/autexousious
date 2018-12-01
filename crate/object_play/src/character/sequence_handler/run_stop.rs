@@ -19,7 +19,7 @@ impl CharacterSequenceHandler for RunStop {
                 status_update.or_else(|| fn_update(components))
             })
             .or_else(|| {
-                if *components.sequence_status == SequenceStatus::End {
+                if components.sequence_status == SequenceStatus::End {
                     Some(CharacterSequenceId::Stand)
                 } else {
                     None
@@ -49,13 +49,13 @@ mod test {
             RunStop::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 &CharacterStatus::default(),
-                &CharacterSequenceId::RunStop,
-                &SequenceStatus::default(),
+                CharacterSequenceId::RunStop,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored::default(),
-                &Grounding::Airborne,
-                &RunCounter::default()
+                Mirrored::default(),
+                Grounding::Airborne,
+                RunCounter::default()
             ))
         );
     }
@@ -69,13 +69,13 @@ mod test {
             RunStop::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::RunStop,
-                &SequenceStatus::default(),
+                CharacterSequenceId::RunStop,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored::default(),
-                &Grounding::default(),
-                &RunCounter::default()
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
             ))
         );
     }
@@ -89,13 +89,13 @@ mod test {
             RunStop::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::RunStop,
-                &SequenceStatus::End,
+                CharacterSequenceId::RunStop,
+                SequenceStatus::End,
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored::default(),
-                &Grounding::default(),
-                &RunCounter::default()
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
             ))
         );
     }

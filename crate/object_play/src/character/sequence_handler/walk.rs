@@ -59,13 +59,13 @@ mod test {
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::Walk,
-                &SequenceStatus::default(),
+                CharacterSequenceId::Walk,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored::default(),
-                &Grounding::default(),
-                &RunCounter::Increase(10)
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::Increase(10)
             ))
         );
     }
@@ -79,13 +79,13 @@ mod test {
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::Walk,
-                &SequenceStatus::default(),
+                CharacterSequenceId::Walk,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored::default(),
-                &Grounding::default(),
-                &RunCounter::Exceeded
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::Exceeded
             ))
         );
     }
@@ -99,13 +99,13 @@ mod test {
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::Walk,
-                &SequenceStatus::default(),
+                CharacterSequenceId::Walk,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored(true),
-                &Grounding::default(),
-                &RunCounter::Increase(11)
+                Mirrored(true),
+                Grounding::default(),
+                RunCounter::Increase(11)
             ))
         );
     }
@@ -119,13 +119,13 @@ mod test {
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::Walk,
-                &SequenceStatus::default(),
+                CharacterSequenceId::Walk,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored(false),
-                &Grounding::default(),
-                &RunCounter::Increase(11)
+                Mirrored(false),
+                Grounding::default(),
+                RunCounter::Increase(11)
             ))
         );
     }
@@ -139,13 +139,13 @@ mod test {
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::Walk,
-                &SequenceStatus::default(),
+                CharacterSequenceId::Walk,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored::default(),
-                &Grounding::default(),
-                &RunCounter::Increase(0)
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::Increase(0)
             ))
         );
 
@@ -156,13 +156,13 @@ mod test {
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::Walk,
-                &SequenceStatus::default(),
+                CharacterSequenceId::Walk,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored::default(),
-                &Grounding::default(),
-                &RunCounter::Increase(0)
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::Increase(0)
             ))
         );
     }
@@ -179,13 +179,13 @@ mod test {
                     Walk::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
-                        &CharacterSequenceId::Walk,
-                        &SequenceStatus::End,
+                        CharacterSequenceId::Walk,
+                        SequenceStatus::End,
                         &Position::default(),
                         &Velocity::default(),
-                        &Mirrored(false),
-                        &Grounding::default(),
-                        &RunCounter::Increase(0)
+                        Mirrored(false),
+                        Grounding::default(),
+                        RunCounter::Increase(0)
                     ))
                 );
             });
@@ -200,13 +200,13 @@ mod test {
                     Walk::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
-                        &CharacterSequenceId::Walk,
-                        &SequenceStatus::End,
+                        CharacterSequenceId::Walk,
+                        SequenceStatus::End,
                         &Position::default(),
                         &Velocity::default(),
-                        &mirrored.into(),
-                        &Grounding::default(),
-                        &RunCounter::Increase(1)
+                        mirrored.into(),
+                        Grounding::default(),
+                        RunCounter::Increase(1)
                     ))
                 );
             });
@@ -221,13 +221,13 @@ mod test {
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::Walk,
-                &SequenceStatus::default(),
+                CharacterSequenceId::Walk,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored(false),
-                &Grounding::default(),
-                &RunCounter::Decrease(10)
+                Mirrored(false),
+                Grounding::default(),
+                RunCounter::Decrease(10)
             ))
         );
     }
@@ -241,13 +241,13 @@ mod test {
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::Walk,
-                &SequenceStatus::default(),
+                CharacterSequenceId::Walk,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored(true),
-                &Grounding::default(),
-                &RunCounter::Decrease(10)
+                Mirrored(true),
+                Grounding::default(),
+                RunCounter::Decrease(10)
             ))
         );
     }
@@ -264,13 +264,13 @@ mod test {
                     Walk::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         &CharacterStatus::default(),
-                        &CharacterSequenceId::default(),
-                        &SequenceStatus::default(),
+                        CharacterSequenceId::default(),
+                        SequenceStatus::default(),
                         &Position::default(),
                         &Velocity::default(),
-                        &Mirrored::default(),
-                        &Grounding::default(),
-                        &RunCounter::default()
+                        Mirrored::default(),
+                        Grounding::default(),
+                        RunCounter::default()
                     ))
                 );
             });
@@ -286,13 +286,13 @@ mod test {
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::default(),
-                &SequenceStatus::default(),
+                CharacterSequenceId::default(),
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored::default(),
-                &Grounding::default(),
-                &RunCounter::default()
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
             ))
         );
     }

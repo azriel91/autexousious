@@ -10,7 +10,7 @@ impl CharacterSequenceHandler for JumpDescendLand {
     fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<CharacterSequenceId> {
-        if *components.sequence_status == SequenceStatus::End {
+        if components.sequence_status == SequenceStatus::End {
             Some(CharacterSequenceId::Stand)
         } else {
             None
@@ -41,13 +41,13 @@ mod test {
             JumpDescendLand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::JumpDescendLand,
-                &SequenceStatus::default(),
+                CharacterSequenceId::JumpDescendLand,
+                SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored::default(),
-                &Grounding::default(),
-                &RunCounter::default()
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
             ))
         );
     }
@@ -61,13 +61,13 @@ mod test {
             JumpDescendLand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 &CharacterStatus::default(),
-                &CharacterSequenceId::JumpDescendLand,
-                &SequenceStatus::End,
+                CharacterSequenceId::JumpDescendLand,
+                SequenceStatus::End,
                 &Position::default(),
                 &Velocity::default(),
-                &Mirrored::default(),
-                &Grounding::default(),
-                &RunCounter::default()
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
             ))
         );
     }
