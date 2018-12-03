@@ -12,7 +12,7 @@ impl CharacterSequenceHandler for LieFaceDown {
     fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<CharacterSequenceId> {
-        if components.character_status.hp > 0 {
+        if components.health_points > 0 {
             LIE_FACE_DOWN.update(components.sequence_status)
         } else {
             None

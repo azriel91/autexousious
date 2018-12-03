@@ -49,7 +49,7 @@ mod tests {
     use object_model::{
         config::object::CharacterSequenceId,
         entity::{
-            CharacterStatus, Grounding, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
+            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
         },
     };
 
@@ -65,7 +65,7 @@ mod tests {
             None,
             WalkXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Walk,
                 SequenceStatus::default(),
                 &Position::default(),
@@ -85,7 +85,7 @@ mod tests {
             Some(CharacterSequenceId::Walk),
             WalkXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Walk,
                 SequenceStatus::default(),
                 &Position::default(),
@@ -105,7 +105,7 @@ mod tests {
             Some(CharacterSequenceId::Walk),
             WalkXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Walk,
                 SequenceStatus::default(),
                 &Position::default(),
@@ -128,7 +128,7 @@ mod tests {
                     Some(CharacterSequenceId::Walk),
                     WalkXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
-                        &CharacterStatus::default(),
+                        HealthPoints::default(),
                         CharacterSequenceId::Walk,
                         SequenceStatus::End,
                         &Position::default(),
@@ -149,7 +149,7 @@ mod tests {
             Some(CharacterSequenceId::Run),
             WalkXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Walk,
                 SequenceStatus::default(),
                 &Position::default(),
@@ -169,7 +169,7 @@ mod tests {
             Some(CharacterSequenceId::Run),
             WalkXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Walk,
                 SequenceStatus::default(),
                 &Position::default(),

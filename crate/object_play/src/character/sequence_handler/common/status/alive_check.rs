@@ -11,7 +11,7 @@ impl CharacterSequenceHandler for AliveCheck {
     fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<CharacterSequenceId> {
-        if components.character_status.hp == 0 {
+        if components.health_points == 0 {
             Some(CharacterSequenceId::FallForwardDescend)
         } else {
             None
@@ -25,8 +25,7 @@ mod tests {
     use object_model::{
         config::object::CharacterSequenceId,
         entity::{
-            CharacterStatus, Grounding, HealthPoints, Mirrored, Position, RunCounter,
-            SequenceStatus, Velocity,
+            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
         },
     };
 
@@ -40,7 +39,7 @@ mod tests {
             None,
             AliveCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Stand,
                 SequenceStatus::default(),
                 &Position::default(),
@@ -58,9 +57,7 @@ mod tests {
             Some(CharacterSequenceId::FallForwardDescend),
             AliveCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
-                &CharacterStatus {
-                    hp: HealthPoints(0),
-                },
+                HealthPoints(0),
                 CharacterSequenceId::Stand,
                 SequenceStatus::default(),
                 &Position::default(),

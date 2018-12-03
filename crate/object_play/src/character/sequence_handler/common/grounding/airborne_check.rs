@@ -25,7 +25,7 @@ mod tests {
     use object_model::{
         config::object::CharacterSequenceId,
         entity::{
-            CharacterStatus, Grounding, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
+            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
         },
     };
 
@@ -39,7 +39,7 @@ mod tests {
             None,
             AirborneCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Stand,
                 SequenceStatus::default(),
                 &Position::default(),
@@ -57,7 +57,7 @@ mod tests {
             Some(CharacterSequenceId::JumpDescend),
             AirborneCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Stand,
                 SequenceStatus::default(),
                 &Position::default(),

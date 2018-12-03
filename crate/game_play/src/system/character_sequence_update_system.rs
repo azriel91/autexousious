@@ -8,9 +8,7 @@ use game_input::ControllerInput;
 use game_loading::ObjectAnimationStorages;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{
-        CharacterStatus, Grounding, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
-    },
+    entity::{Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity},
     loaded::{Character, CharacterHandle},
 };
 use object_play::{
@@ -29,7 +27,7 @@ type CharacterSequenceUpdateSystemData<'s> = (
     ReadStorage<'s, Position<f32>>,
     ReadStorage<'s, Velocity<f32>>,
     WriteStorage<'s, RunCounter>,
-    ReadStorage<'s, CharacterStatus>,
+    ReadStorage<'s, HealthPoints>,
     WriteStorage<'s, CharacterSequenceId>,
     WriteStorage<'s, SequenceStatus>,
     WriteStorage<'s, Mirrored>,
@@ -51,7 +49,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             positions,
             velocities,
             mut run_counters,
-            character_statuses,
+            health_pointses,
             mut character_sequence_ids,
             mut sequence_statuses,
             mut mirroreds,
@@ -67,7 +65,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             position,
             velocity,
             run_counter,
-            character_status,
+            health_points,
             sequence_status,
             mirrored,
             grounding,
@@ -79,7 +77,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             &positions,
             &velocities,
             &mut run_counters,
-            &character_statuses,
+            &health_pointses,
             &mut sequence_statuses,
             &mut mirroreds,
             &mut groundings,
@@ -88,14 +86,12 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             .join()
         {
             let character_sequence_id = *character_sequence_ids.get(entity).expect(
-                "Expected entities with character_status to also have character_sequence_id.",
+                "Expected entities with character_handle to also have character_sequence_id.",
             );
             let character = character_assets
                 .get(character_handle)
                 .expect("Expected character to be loaded.");
 
-            // TODO: Is it faster if we update the character statuses first, then calculate the
-            // sequence updates in parallel?
             let mut sprite_animation_set = get_animation_set(&mut sprite_acs, entity)
                 .expect("Sprite animation should exist as entity should be valid.");
 
@@ -119,7 +115,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                 character,
                 CharacterSequenceUpdateComponents::new(
                     &controller_input,
-                    &character_status,
+                    *health_points,
                     character_sequence_id,
                     *sequence_status,
                     &position,

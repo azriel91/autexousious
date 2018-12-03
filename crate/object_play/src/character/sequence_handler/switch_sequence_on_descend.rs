@@ -30,7 +30,7 @@ mod test {
     use object_model::{
         config::object::CharacterSequenceId,
         entity::{
-            CharacterStatus, Grounding, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
+            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
         },
     };
 
@@ -48,7 +48,7 @@ mod test {
             SwitchSequenceOnDescend(CharacterSequenceId::FallForwardDescend).update(
                 CharacterSequenceUpdateComponents::new(
                     &input,
-                    &CharacterStatus::default(),
+                    HealthPoints::default(),
                     CharacterSequenceId::FallForwardAscend,
                     SequenceStatus::default(),
                     &Position::default(),
@@ -72,7 +72,7 @@ mod test {
             SwitchSequenceOnDescend(CharacterSequenceId::FallForwardDescend).update(
                 CharacterSequenceUpdateComponents::new(
                     &input,
-                    &CharacterStatus::default(),
+                    HealthPoints::default(),
                     CharacterSequenceId::FallForwardAscend,
                     SequenceStatus::End,
                     &Position::default(),
@@ -99,7 +99,7 @@ mod test {
                     SwitchSequenceOnDescend(CharacterSequenceId::FallForwardDescend).update(
                         CharacterSequenceUpdateComponents::new(
                             &input,
-                            &CharacterStatus::default(),
+                            HealthPoints::default(),
                             CharacterSequenceId::FallForwardAscend,
                             SequenceStatus::Ongoing,
                             &Position::default(),

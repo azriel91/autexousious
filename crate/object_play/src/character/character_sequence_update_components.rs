@@ -1,9 +1,7 @@
 use game_input::ControllerInput;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{
-        CharacterStatus, Grounding, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
-    },
+    entity::{Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity},
 };
 
 /// Components used to compute character sequence updates.
@@ -11,8 +9,8 @@ use object_model::{
 pub struct CharacterSequenceUpdateComponents<'c> {
     /// Controller input of the character.
     pub controller_input: &'c ControllerInput,
-    /// Character-specific status attributes.
-    pub character_status: &'c CharacterStatus,
+    /// Health points.
+    pub health_points: HealthPoints,
     /// Current character sequence ID.
     pub character_sequence_id: CharacterSequenceId,
     /// Whether a sequence has just begun, is ongoing, or has ended.

@@ -10,9 +10,7 @@ use game_input::{ControllerInput, InputControlled};
 use game_model::loaded::SlugAndHandle;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{
-        CharacterStatus, Grounding, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
-    },
+    entity::{Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity},
     loaded::{
         AnimatedComponentAnimation, AnimatedComponentDefault, Character, CharacterHandle, Object,
         ObjectHandle,
@@ -60,7 +58,7 @@ impl CharacterEntitySpawner {
                 world.write_storage::<ControllerInput>(),
                 world.write_storage::<CharacterHandle>(),
                 world.write_storage::<ObjectHandle<CharacterSequenceId>>(),
-                world.write_storage::<CharacterStatus>(),
+                world.write_storage::<HealthPoints>(),
                 world.write_storage::<CharacterSequenceId>(),
                 world.write_storage::<SequenceStatus>(),
                 world.write_storage::<RunCounter>(),
@@ -110,7 +108,7 @@ impl CharacterEntitySpawner {
             ref mut controller_input_storage,
             ref mut character_handle_storage,
             ref mut object_handle_storage,
-            ref mut character_status_storage,
+            ref mut health_points_storage,
             ref mut character_sequence_ids,
             ref mut sequence_status_storage,
             ref mut run_counter_storage,
@@ -181,9 +179,9 @@ impl CharacterEntitySpawner {
             .insert(entity, object_handle.clone())
             .expect("Failed to insert object_handle component.");
         // Character status attributes.
-        character_status_storage
-            .insert(entity, CharacterStatus::default())
-            .expect("Failed to insert character_status component.");
+        health_points_storage
+            .insert(entity, HealthPoints::default())
+            .expect("Failed to insert health_points component.");
         // Object status attributes.
         character_sequence_ids
             .insert(entity, character_sequence_id)
@@ -307,7 +305,7 @@ mod test {
     use object_loading::ObjectLoadingBundle;
     use object_model::{
         config::object::CharacterSequenceId,
-        entity::{CharacterStatus, Grounding, Mirrored, Position, SequenceStatus, Velocity},
+        entity::{Grounding, HealthPoints, Mirrored, Position, SequenceStatus, Velocity},
         loaded::{Character, CharacterHandle, ObjectHandle},
     };
     use typename::TypeName;
@@ -343,7 +341,7 @@ mod test {
             assert!(world
                 .read_storage::<ObjectHandle<CharacterSequenceId>>()
                 .contains(entity));
-            assert!(world.read_storage::<CharacterStatus>().contains(entity));
+            assert!(world.read_storage::<HealthPoints>().contains(entity));
             assert!(world.read_storage::<CharacterSequenceId>().contains(entity));
             assert!(world.read_storage::<SequenceStatus>().contains(entity));
             assert!(world.read_storage::<Mirrored>().contains(entity));

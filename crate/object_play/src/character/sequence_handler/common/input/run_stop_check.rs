@@ -32,7 +32,7 @@ mod tests {
     use object_model::{
         config::object::CharacterSequenceId,
         entity::{
-            CharacterStatus, Grounding, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
+            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
         },
     };
 
@@ -51,7 +51,7 @@ mod tests {
                     None,
                     RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
-                        &CharacterStatus::default(),
+                        HealthPoints::default(),
                         CharacterSequenceId::Walk,
                         SequenceStatus::default(),
                         &Position::default(),
@@ -72,7 +72,7 @@ mod tests {
             Some(CharacterSequenceId::RunStop),
             RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Walk,
                 SequenceStatus::default(),
                 &Position::default(),
@@ -95,7 +95,7 @@ mod tests {
                     Some(CharacterSequenceId::RunStop),
                     RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
-                        &CharacterStatus::default(),
+                        HealthPoints::default(),
                         CharacterSequenceId::Walk,
                         SequenceStatus::default(),
                         &Position::default(),
@@ -119,7 +119,7 @@ mod tests {
                     Some(CharacterSequenceId::Run),
                     RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
-                        &CharacterStatus::default(),
+                        HealthPoints::default(),
                         CharacterSequenceId::Run,
                         SequenceStatus::End,
                         &Position::default(),

@@ -25,7 +25,7 @@ mod tests {
     use object_model::{
         config::object::CharacterSequenceId,
         entity::{
-            CharacterStatus, Grounding, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
+            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
         },
     };
 
@@ -39,7 +39,7 @@ mod tests {
             None,
             SequenceRepeat::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Walk,
                 SequenceStatus::Begin,
                 &Position::default(),
@@ -57,7 +57,7 @@ mod tests {
             None,
             SequenceRepeat::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Walk,
                 SequenceStatus::Ongoing,
                 &Position::default(),
@@ -77,7 +77,7 @@ mod tests {
             Some(CharacterSequenceId::Walk),
             SequenceRepeat::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Walk,
                 SequenceStatus::End,
                 &Position::default(),

@@ -24,7 +24,7 @@ mod test {
     use object_model::{
         config::object::CharacterSequenceId,
         entity::{
-            CharacterStatus, Grounding, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
+            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
         },
     };
 
@@ -40,7 +40,7 @@ mod test {
             None,
             StandAttack::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::StandAttack,
                 SequenceStatus::default(),
                 &Position::default(),
@@ -60,7 +60,7 @@ mod test {
             Some(CharacterSequenceId::Stand),
             StandAttack::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::StandAttack,
                 SequenceStatus::End,
                 &Position::default(),

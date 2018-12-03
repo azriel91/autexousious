@@ -65,7 +65,7 @@ mod test {
     use object_model::{
         config::object::CharacterSequenceId,
         entity::{
-            CharacterStatus, Grounding, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
+            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
         },
     };
 
@@ -78,7 +78,7 @@ mod test {
             None,
             Sit::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::default(),
                 SequenceStatus::default(),
                 &Position::default(),

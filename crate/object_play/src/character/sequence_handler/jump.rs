@@ -24,7 +24,7 @@ mod test {
     use object_model::{
         config::object::CharacterSequenceId,
         entity::{
-            CharacterStatus, Grounding, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
+            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
         },
     };
 
@@ -40,7 +40,7 @@ mod test {
             None,
             Jump::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Jump,
                 SequenceStatus::default(),
                 &Position::default(),
@@ -62,7 +62,7 @@ mod test {
             Some(CharacterSequenceId::JumpOff),
             Jump::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Jump,
                 SequenceStatus::End,
                 &Position::default(),

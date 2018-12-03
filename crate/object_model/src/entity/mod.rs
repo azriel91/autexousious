@@ -3,7 +3,7 @@
 //! This differs from the `loaded` types as these may contain mutable state that are specific to an
 //! entity.
 
-pub use self::character::{CharacterStatus, CharacterStatusUpdate, RunCounter};
+pub use self::character::RunCounter;
 pub use self::grounding::Grounding;
 pub use self::health_points::HealthPoints;
 pub use self::kinematic::{Position, Velocity};

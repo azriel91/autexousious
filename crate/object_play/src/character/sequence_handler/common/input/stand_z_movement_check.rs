@@ -27,7 +27,7 @@ mod tests {
     use object_model::{
         config::object::CharacterSequenceId,
         entity::{
-            CharacterStatus, Grounding, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
+            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
         },
     };
 
@@ -43,7 +43,7 @@ mod tests {
             None,
             StandZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::default(),
                 SequenceStatus::default(),
                 &Position::default(),
@@ -63,7 +63,7 @@ mod tests {
             Some(CharacterSequenceId::Walk),
             StandZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::default(),
                 SequenceStatus::default(),
                 &Position::default(),

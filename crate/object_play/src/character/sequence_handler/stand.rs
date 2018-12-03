@@ -49,7 +49,7 @@ mod test {
     use object_model::{
         config::object::CharacterSequenceId,
         entity::{
-            CharacterStatus, Grounding, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
+            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
         },
     };
 
@@ -65,7 +65,7 @@ mod test {
             None,
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Stand,
                 SequenceStatus::default(),
                 &Position::default(),
@@ -85,7 +85,7 @@ mod test {
             Some(CharacterSequenceId::Stand),
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Stand,
                 SequenceStatus::End,
                 &Position::default(),
@@ -105,7 +105,7 @@ mod test {
             Some(CharacterSequenceId::JumpDescend),
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Stand,
                 SequenceStatus::default(),
                 &Position::default(),
@@ -124,7 +124,7 @@ mod test {
 
         Stand::update(CharacterSequenceUpdateComponents::new(
             &input,
-            &CharacterStatus::default(),
+            HealthPoints::default(),
             CharacterSequenceId::default(),
             SequenceStatus::default(),
             &Position::default(),
@@ -142,7 +142,7 @@ mod test {
 
         Stand::update(CharacterSequenceUpdateComponents::new(
             &input,
-            &CharacterStatus::default(),
+            HealthPoints::default(),
             CharacterSequenceId::default(),
             SequenceStatus::default(),
             &Position::default(),
@@ -161,7 +161,7 @@ mod test {
             Some(CharacterSequenceId::Walk),
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Stand,
                 SequenceStatus::default(),
                 &Position::default(),
@@ -177,7 +177,7 @@ mod test {
             Some(CharacterSequenceId::Walk),
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Stand,
                 SequenceStatus::default(),
                 &Position::default(),
@@ -197,7 +197,7 @@ mod test {
             Some(CharacterSequenceId::Walk),
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Stand,
                 SequenceStatus::default(),
                 &Position::default(),
@@ -213,7 +213,7 @@ mod test {
             Some(CharacterSequenceId::Walk),
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Stand,
                 SequenceStatus::default(),
                 &Position::default(),
@@ -233,7 +233,7 @@ mod test {
             Some(CharacterSequenceId::Walk),
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Stand,
                 SequenceStatus::default(),
                 &Position::default(),
@@ -256,7 +256,7 @@ mod test {
                     Some(CharacterSequenceId::Run),
                     Stand::update(CharacterSequenceUpdateComponents::new(
                         &input,
-                        &CharacterStatus::default(),
+                        HealthPoints::default(),
                         CharacterSequenceId::Stand,
                         SequenceStatus::default(),
                         &Position::default(),
@@ -280,7 +280,7 @@ mod test {
                     Some(CharacterSequenceId::Walk),
                     Stand::update(CharacterSequenceUpdateComponents::new(
                         &input,
-                        &CharacterStatus::default(),
+                        HealthPoints::default(),
                         CharacterSequenceId::Stand,
                         SequenceStatus::default(),
                         &Position::default(),
@@ -304,7 +304,7 @@ mod test {
                     Some(CharacterSequenceId::Jump),
                     Stand::update(CharacterSequenceUpdateComponents::new(
                         &input,
-                        &CharacterStatus::default(),
+                        HealthPoints::default(),
                         CharacterSequenceId::default(),
                         SequenceStatus::default(),
                         &Position::default(),
@@ -326,7 +326,7 @@ mod test {
             Some(CharacterSequenceId::StandAttack),
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::default(),
                 SequenceStatus::default(),
                 &Position::default(),

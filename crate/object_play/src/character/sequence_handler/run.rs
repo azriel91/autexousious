@@ -32,7 +32,7 @@ mod test {
     use object_model::{
         config::object::CharacterSequenceId,
         entity::{
-            CharacterStatus, Grounding, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
+            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
         },
     };
 
@@ -46,7 +46,7 @@ mod test {
             Some(CharacterSequenceId::JumpDescend),
             Run::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Run,
                 SequenceStatus::default(),
                 &Position::default(),
@@ -66,7 +66,7 @@ mod test {
             Some(CharacterSequenceId::RunStop),
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Run,
                 SequenceStatus::default(),
                 &Position::default(),
@@ -86,7 +86,7 @@ mod test {
             None,
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Run,
                 SequenceStatus::default(),
                 &Position::default(),
@@ -106,7 +106,7 @@ mod test {
             None,
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Run,
                 SequenceStatus::default(),
                 &Position::default(),
@@ -129,7 +129,7 @@ mod test {
                     Some(CharacterSequenceId::Run),
                     Run::update(CharacterSequenceUpdateComponents::new(
                         &input,
-                        &CharacterStatus::default(),
+                        HealthPoints::default(),
                         CharacterSequenceId::Run,
                         SequenceStatus::End,
                         &Position::default(),
@@ -150,7 +150,7 @@ mod test {
             Some(CharacterSequenceId::RunStop),
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Run,
                 SequenceStatus::default(),
                 &Position::default(),
@@ -170,7 +170,7 @@ mod test {
             Some(CharacterSequenceId::RunStop),
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Run,
                 SequenceStatus::default(),
                 &Position::default(),
@@ -190,7 +190,7 @@ mod test {
             None,
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Run,
                 SequenceStatus::default(),
                 &Position::default(),
@@ -207,7 +207,7 @@ mod test {
             None,
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
+                HealthPoints::default(),
                 CharacterSequenceId::Run,
                 SequenceStatus::default(),
                 &Position::default(),
