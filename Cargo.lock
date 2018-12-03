@@ -1677,6 +1677,8 @@ dependencies = [
  "object_model 0.7.0",
  "object_play 0.7.0",
  "shape_model 0.7.0",
+ "shred 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "tracker 0.7.0",
  "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",

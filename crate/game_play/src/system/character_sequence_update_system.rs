@@ -1,7 +1,7 @@
 use amethyst::{
     animation::{get_animation_set, ControlState},
     assets::AssetStorage,
-    ecs::prelude::*,
+    ecs::{Entities, Join, Read, ReadStorage, System, WriteStorage},
     renderer::SpriteRender,
 };
 use game_input::ControllerInput;
@@ -14,34 +14,37 @@ use object_model::{
 use object_play::{
     CharacterSequenceUpdateComponents, CharacterSequenceUpdater, MirroredUpdater, RunCounterUpdater,
 };
+use shred_derive::SystemData;
 
 /// Updates `Character` sequence based on input
 #[derive(Debug, Default, TypeName, new)]
 pub(crate) struct CharacterSequenceUpdateSystem;
 
-type CharacterSequenceUpdateSystemData<'s> = (
-    Entities<'s>,
-    Read<'s, AssetStorage<Character>>,
-    ReadStorage<'s, CharacterHandle>,
-    ReadStorage<'s, ControllerInput>,
-    ReadStorage<'s, Position<f32>>,
-    ReadStorage<'s, Velocity<f32>>,
-    WriteStorage<'s, RunCounter>,
-    ReadStorage<'s, HealthPoints>,
-    WriteStorage<'s, CharacterSequenceId>,
-    WriteStorage<'s, SequenceStatus>,
-    WriteStorage<'s, Mirrored>,
-    WriteStorage<'s, Grounding>,
-    WriteStorage<'s, SpriteRender>,
-    ObjectAnimationStorages<'s, CharacterSequenceId>,
-);
+#[allow(missing_debug_implementations)]
+#[derive(SystemData)]
+pub struct CharacterSequenceUpdateSystemData<'s> {
+    entities: Entities<'s>,
+    character_assets: Read<'s, AssetStorage<Character>>,
+    character_handles: ReadStorage<'s, CharacterHandle>,
+    controller_inputs: ReadStorage<'s, ControllerInput>,
+    positions: ReadStorage<'s, Position<f32>>,
+    velocities: ReadStorage<'s, Velocity<f32>>,
+    run_counters: WriteStorage<'s, RunCounter>,
+    health_pointses: ReadStorage<'s, HealthPoints>,
+    character_sequence_ids: WriteStorage<'s, CharacterSequenceId>,
+    sequence_statuses: WriteStorage<'s, SequenceStatus>,
+    mirroreds: WriteStorage<'s, Mirrored>,
+    groundings: WriteStorage<'s, Grounding>,
+    sprite_renders: WriteStorage<'s, SpriteRender>,
+    object_acses: ObjectAnimationStorages<'s, CharacterSequenceId>,
+}
 
 impl<'s> System<'s> for CharacterSequenceUpdateSystem {
     type SystemData = CharacterSequenceUpdateSystemData<'s>;
 
     fn run(
         &mut self,
-        (
+        CharacterSequenceUpdateSystemData {
             entities,
             character_assets,
             character_handles,
@@ -55,9 +58,10 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             mut mirroreds,
             mut groundings,
             mut sprite_renders,
-            (mut sprite_acs, _body_frame_acs, _interaction_acs),
-        ): Self::SystemData,
+            object_acses,
+        }: Self::SystemData,
     ) {
+        let (mut sprite_acs, _body_frame_acs, _interaction_acs) = object_acses;
         for (
             entity,
             character_handle,
