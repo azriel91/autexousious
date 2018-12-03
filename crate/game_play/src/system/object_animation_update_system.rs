@@ -15,13 +15,13 @@ use object_model::{
     config::object::SequenceId,
     loaded::{AnimatedComponentAnimation, Object, ObjectHandle},
 };
+use shred_derive::SystemData;
 use tracker::Last;
 
 /// Updates sequence animations for objects.
 ///
 /// # Type Parameters
 ///
-/// * `ObTy`: Loaded object model type, e.g. `Character`.
 /// * `SeqId`: Sequence ID type, e.g. `CharacterSequenceId`.
 #[derive(Debug, Default, NamedType, new)]
 pub(crate) struct ObjectAnimationUpdateSystem<SeqId> {
@@ -35,14 +35,20 @@ pub(crate) struct ObjectAnimationUpdateSystem<SeqId> {
     phantom_data: PhantomData<SeqId>,
 }
 
-type ObjectAnimationUpdateSystemData<'s, SeqId> = (
-    Entities<'s>,
-    ReadStorage<'s, Last<SeqId>>,
-    ReadStorage<'s, SeqId>,
-    ReadStorage<'s, ObjectHandle<SeqId>>,
-    Read<'s, AssetStorage<Object<SeqId>>>,
-    ObjectAnimationStorages<'s, SeqId>,
-);
+#[allow(missing_debug_implementations)]
+#[derive(SystemData)]
+pub struct ObjectAnimationUpdateSystemData<'s, SeqId>
+where
+    SeqId: SequenceId + 'static,
+    <SeqId as Component>::Storage: Tracked,
+{
+    entities: Entities<'s>,
+    last_sequence_ids: ReadStorage<'s, Last<SeqId>>,
+    sequence_ids: ReadStorage<'s, SeqId>,
+    object_handles: ReadStorage<'s, ObjectHandle<SeqId>>,
+    object_assets: Read<'s, AssetStorage<Object<SeqId>>>,
+    object_acses: ObjectAnimationStorages<'s, SeqId>,
+}
 
 impl<SeqId> ObjectAnimationUpdateSystem<SeqId>
 where
@@ -112,14 +118,14 @@ where
 
     fn run(
         &mut self,
-        (
+        ObjectAnimationUpdateSystemData {
             entities,
             last_sequence_ids,
             sequence_ids,
             object_handles,
             object_assets,
-            mut object_animation_storages,
-        ): Self::SystemData,
+            mut object_acses,
+        }: Self::SystemData,
     ) {
         // Split borrow self
         let sequence_id_modifications = &mut self.sequence_id_modifications;
@@ -159,7 +165,7 @@ where
 
                         Self::swap_animation(
                             &object,
-                            &mut object_animation_storages,
+                            &mut object_acses,
                             &entity,
                             **last_sequence_id,
                             *sequence_id,
