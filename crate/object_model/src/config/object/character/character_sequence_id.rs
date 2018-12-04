@@ -1,7 +1,4 @@
-use amethyst::ecs::{
-    storage::{FlaggedStorage, VecStorage},
-    Component,
-};
+use amethyst::ecs::{storage::VecStorage, Component};
 use config::object::SequenceId;
 
 /// Object Sequence IDs.
@@ -55,7 +52,7 @@ pub enum CharacterSequenceId {
 /// Not every entity will have this, but since this is probably a `u8`, we don't need an indirection
 /// table.
 impl Component for CharacterSequenceId {
-    type Storage = FlaggedStorage<Self, VecStorage<Self>>;
+    type Storage = VecStorage<Self>;
 }
 
 impl SequenceId for CharacterSequenceId {}
