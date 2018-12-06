@@ -7,10 +7,14 @@ use collision_model::{
     animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle},
     config::{BodyFrame, InteractionFrame},
 };
+use fnv::FnvHashMap;
 use game_model::config::AssetRecord;
 use object_model::{
     config::{object::SequenceId, ObjectDefinition},
-    loaded::{AnimatedComponentAnimation, AnimatedComponentDefault, Object},
+    loaded::{
+        AnimatedComponentAnimation, AnimatedComponentDefault, Object, ObjectHandle,
+        SequenceEndTransition, SequenceEndTransitions,
+    },
 };
 use sprite_loading::{SpriteLoader, SpriteRenderAnimationLoader};
 
@@ -26,12 +30,26 @@ impl ObjectLoader {
     /// * `world`: `World` to store the object's assets.
     /// * `asset_record`: Entry of the object's configuration.
     /// * `object_definition`: Object definition configuration.
-    pub fn load<SeqId: SequenceId>(
+    pub fn load<SeqId>(
         world: &World,
         asset_record: &AssetRecord,
         object_definition: &ObjectDefinition<SeqId>,
-    ) -> Result<Object<SeqId>> {
+    ) -> Result<(SequenceEndTransitions<SeqId>, ObjectHandle<SeqId>)>
+    where
+        SeqId: SequenceId + 'static,
+    {
         debug!("Loading object assets in `{}`", asset_record.path.display());
+
+        let sequence_end_transitions = object_definition
+            .sequences
+            .iter()
+            .map(|(sequence_id, sequence)| {
+                (
+                    *sequence_id,
+                    SequenceEndTransition::new(sequence.next.clone()),
+                )
+            })
+            .collect::<FnvHashMap<_, _>>();
 
         let (sprite_sheet_handles, _texture_handles) =
             SpriteLoader::load(world, &asset_record.path)?;
@@ -114,22 +132,32 @@ impl ObjectLoader {
             })
             .collect::<HashMap<_, _>>();
 
-        Ok(Object::new(animation_defaults, animations))
+        let object = Object::new(animation_defaults, animations);
+        let object_handle = {
+            let loader = world.read_resource::<Loader>();
+            loader.load_from_data(object, (), &world.read_resource())
+        };
+
+        Ok((sequence_end_transitions.into(), object_handle))
     }
 }
 
 #[cfg(test)]
 mod test {
-    use amethyst::animation::AnimationBundle;
+    use amethyst::{animation::AnimationBundle, assets::AssetStorage};
     use amethyst_test::AmethystApplication;
     use application::{load_in, Format};
     use assets_test::{ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SLUG};
     use collision_loading::CollisionLoadingBundle;
     use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
     use game_model::config::AssetRecord;
-    use object_model::config::{object::CharacterSequenceId, CharacterDefinition};
+    use object_model::{
+        config::{object::CharacterSequenceId, CharacterDefinition},
+        loaded::{Object, ObjectHandle},
+    };
 
     use super::ObjectLoader;
+    use crate::ObjectLoadingBundle;
 
     #[test]
     fn loads_object_assets() {
@@ -151,7 +179,8 @@ mod test {
                     "character_interaction_frame_sis",
                 ))
                 .with_bundle(CollisionLoadingBundle::new())
-                .with_assertion(|world| {
+                .with_bundle(ObjectLoadingBundle::new())
+                .with_effect(|world| {
                     let asset_record = AssetRecord::new(
                         ASSETS_CHAR_BAT_SLUG.clone(),
                         ASSETS_CHAR_BAT_PATH.clone(),
@@ -165,12 +194,22 @@ mod test {
                     )
                     .expect("Failed to load object.toml into CharacterDefinition");
 
-                    let object = ObjectLoader::load(
+                    let (_sequence_end_transitions, object_handle) = ObjectLoader::load(
                         world,
                         &asset_record,
                         &character_definition.object_definition,
                     )
                     .expect("Failed to load object");
+
+                    world.add_resource(object_handle);
+                })
+                .with_assertion(|world| {
+                    let object_handle = world.read_resource::<ObjectHandle<CharacterSequenceId>>();
+                    let object_assets =
+                        world.read_resource::<AssetStorage<Object<CharacterSequenceId>>>();
+                    let object = object_assets
+                        .get(&object_handle)
+                        .expect("Expected object to be loaded after one tick.");
 
                     // See bat/object.toml
                     assert_eq!(16, object.animations.len());

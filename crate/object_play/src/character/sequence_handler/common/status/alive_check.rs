@@ -1,31 +1,18 @@
-use game_input::ControllerInput;
-use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate},
-};
+use object_model::config::object::CharacterSequenceId;
 
-use character::sequence_handler::SequenceHandler;
+use character::sequence_handler::CharacterSequenceHandler;
+use CharacterSequenceUpdateComponents;
 
 /// Returns the appropriate falling sequence if HP is 0.
 #[derive(Debug)]
 pub(crate) struct AliveCheck;
 
-impl SequenceHandler for AliveCheck {
-    fn update(
-        _input: &ControllerInput,
-        character_status: &CharacterStatus,
-        _kinematics: &Kinematics<f32>,
-    ) -> Option<CharacterStatusUpdate> {
-        if character_status.hp == 0 {
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate::new(
-                    Some(CharacterSequenceId::FallForwardDescend),
-                    Some(SequenceState::Begin),
-                    None,
-                    None,
-                ),
-                ..Default::default()
-            })
+impl CharacterSequenceHandler for AliveCheck {
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
+    ) -> Option<CharacterSequenceId> {
+        if components.health_points == 0 {
+            Some(CharacterSequenceId::FallForwardDescend)
         } else {
             None
         }
@@ -36,59 +23,49 @@ impl SequenceHandler for AliveCheck {
 mod tests {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::CharacterSequenceId,
         entity::{
-            CharacterStatus, CharacterStatusUpdate, Grounding, HealthPoints, Kinematics,
-            ObjectStatus, ObjectStatusUpdate,
+            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
         },
     };
 
     use super::AliveCheck;
-    use character::sequence_handler::SequenceHandler;
+    use character::sequence_handler::CharacterSequenceHandler;
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn returns_none_when_hp_is_above_zero() {
         assert_eq!(
             None,
-            AliveCheck::update(
+            AliveCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
-                &CharacterStatus {
-                    hp: HealthPoints(100),
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::Stand,
-                        ..Default::default()
-                    },
-                    ..Default::default()
-                },
-                &Kinematics::<f32>::default()
-            )
+                HealthPoints::default(),
+                CharacterSequenceId::Stand,
+                SequenceStatus::default(),
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
+            ))
         );
     }
 
     #[test]
     fn switches_to_fall_forward_descend_when_hp_is_zero() {
         assert_eq!(
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::FallForwardDescend),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }),
-            AliveCheck::update(
+            Some(CharacterSequenceId::FallForwardDescend),
+            AliveCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
-                &CharacterStatus {
-                    hp: HealthPoints(0),
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::Stand,
-                        grounding: Grounding::Airborne,
-                        ..Default::default()
-                    },
-                    ..Default::default()
-                },
-                &Kinematics::<f32>::default()
-            )
+                HealthPoints(0),
+                CharacterSequenceId::Stand,
+                SequenceStatus::default(),
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored::default(),
+                Grounding::Airborne,
+                RunCounter::default()
+            ))
         );
     }
 }

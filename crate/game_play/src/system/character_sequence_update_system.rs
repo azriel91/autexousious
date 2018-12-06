@@ -1,152 +1,143 @@
 use amethyst::{
     animation::{get_animation_set, ControlState},
-    assets::AssetStorage,
-    ecs::prelude::*,
+    ecs::{Entities, Join, ReadStorage, System, WriteStorage},
     renderer::SpriteRender,
 };
 use game_input::ControllerInput;
-use game_loading::{AnimationRunner, ObjectAnimationStorages};
+use game_loading::ObjectAnimationStorages;
 use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, Kinematics},
-    loaded::{AnimatedComponentAnimation, Character, CharacterHandle},
+    config::object::CharacterSequenceId,
+    entity::{Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity},
+    loaded::SequenceEndTransitions,
 };
-use object_play::CharacterSequenceUpdater;
+use object_play::{
+    CharacterSequenceUpdateComponents, CharacterSequenceUpdater, MirroredUpdater, RunCounterUpdater,
+};
+use shred_derive::SystemData;
 
-/// Updates `Character` sequence based on input
+/// Updates character sequence ID based on input (or lack of).
 #[derive(Debug, Default, TypeName, new)]
 pub(crate) struct CharacterSequenceUpdateSystem;
 
-type CharacterSequenceUpdateSystemData<'s> = (
-    Entities<'s>,
-    Read<'s, AssetStorage<Character>>,
-    ReadStorage<'s, CharacterHandle>,
-    ReadStorage<'s, ControllerInput>,
-    ReadStorage<'s, Kinematics<f32>>,
-    WriteStorage<'s, CharacterStatus>,
-    WriteStorage<'s, SpriteRender>,
-    ObjectAnimationStorages<'s, CharacterSequenceId>,
-);
+#[allow(missing_debug_implementations)]
+#[derive(SystemData)]
+pub struct CharacterSequenceUpdateSystemData<'s> {
+    entities: Entities<'s>,
+    controller_inputs: ReadStorage<'s, ControllerInput>,
+    sequence_end_transitionses: ReadStorage<'s, SequenceEndTransitions<CharacterSequenceId>>,
+    positions: ReadStorage<'s, Position<f32>>,
+    velocities: ReadStorage<'s, Velocity<f32>>,
+    run_counters: WriteStorage<'s, RunCounter>,
+    health_pointses: ReadStorage<'s, HealthPoints>,
+    character_sequence_ids: WriteStorage<'s, CharacterSequenceId>,
+    sequence_statuses: WriteStorage<'s, SequenceStatus>,
+    mirroreds: WriteStorage<'s, Mirrored>,
+    groundings: WriteStorage<'s, Grounding>,
+    sprite_renders: WriteStorage<'s, SpriteRender>,
+    object_acses: ObjectAnimationStorages<'s, CharacterSequenceId>,
+}
 
 impl<'s> System<'s> for CharacterSequenceUpdateSystem {
     type SystemData = CharacterSequenceUpdateSystemData<'s>;
 
     fn run(
         &mut self,
-        (
+        CharacterSequenceUpdateSystemData {
             entities,
-            characters,
-            handle_storage,
-            controller_input_storage,
-            kinematics_storage,
-            mut character_status_storage,
-            mut sprite_render_storage,
-            (mut sprite_acs, mut body_frame_acs, mut interaction_acs),
-        ): Self::SystemData,
+            controller_inputs,
+            sequence_end_transitionses,
+            positions,
+            velocities,
+            mut run_counters,
+            health_pointses,
+            mut character_sequence_ids,
+            mut sequence_statuses,
+            mut mirroreds,
+            mut groundings,
+            mut sprite_renders,
+            object_acses,
+        }: Self::SystemData,
     ) {
+        let (mut sprite_acs, _body_frame_acs, _interaction_acs) = object_acses;
         for (
             entity,
-            character_handle,
             controller_input,
-            kinematics,
-            mut character_status,
-            mut sprite_render,
+            sequence_end_transitions,
+            position,
+            velocity,
+            run_counter,
+            health_points,
+            character_sequence_id,
+            sequence_status,
+            mirrored,
+            grounding,
+            sprite_render,
         ) in (
             &*entities,
-            &handle_storage,
-            &controller_input_storage,
-            &kinematics_storage,
-            &mut character_status_storage,
-            &mut sprite_render_storage,
+            &controller_inputs,
+            &sequence_end_transitionses,
+            &positions,
+            &velocities,
+            &mut run_counters,
+            &health_pointses,
+            &mut character_sequence_ids,
+            &mut sequence_statuses,
+            &mut mirroreds,
+            &mut groundings,
+            &mut sprite_renders,
         )
             .join()
         {
-            let character = characters
-                .get(character_handle)
-                .expect("Expected character to be loaded.");
-
-            // TODO: Is it faster if we update the character statuses first, then calculate the
-            // sequence updates in parallel?
             let mut sprite_animation_set = get_animation_set(&mut sprite_acs, entity)
                 .expect("Sprite animation should exist as entity should be valid.");
-            let mut body_animation_set = get_animation_set(&mut body_frame_acs, entity)
-                .expect("Body animation should exist as entity should be valid.");
-            let mut interaction_animation_set = get_animation_set(&mut interaction_acs, entity)
-                .expect("Interaction animation should exist as entity should be valid.");
 
             // Mark sequence as `Ongoing` for subsequent tick.
-            if character_status.object_status.sequence_state == SequenceState::Begin {
-                character_status.object_status.sequence_state = SequenceState::Ongoing;
+            if *sequence_status == SequenceStatus::Begin {
+                *sequence_status = SequenceStatus::Ongoing;
             }
 
             let sequence_ended = {
                 sprite_animation_set
                     .animations
                     .iter()
-                    .find(|&&(ref id, ref _control)| {
-                        id == &character_status.object_status.sequence_id
-                    })
+                    .find(|&&(ref id, ref _control)| id == character_sequence_id)
                     .map_or(true, |(_id, control)| control.state == ControlState::Done)
             };
             if sequence_ended {
-                character_status.object_status.sequence_state = SequenceState::End;
+                *sequence_status = SequenceStatus::End;
             }
 
-            let status_update = CharacterSequenceUpdater::update(
-                character,
-                &controller_input,
-                &character_status,
-                &kinematics,
+            let next_character_sequence_id = CharacterSequenceUpdater::update(
+                sequence_end_transitions,
+                CharacterSequenceUpdateComponents::new(
+                    &controller_input,
+                    *health_points,
+                    *character_sequence_id,
+                    *sequence_status,
+                    &position,
+                    &velocity,
+                    *mirrored,
+                    *grounding,
+                    *run_counter,
+                ),
             );
 
-            // Update the current sequence ID
-            if let Some(next_sequence_id) = status_update.object_status.sequence_id {
-                let animations = &character
-                    .object
-                    .animations
-                    .get(&next_sequence_id)
-                    .unwrap_or_else(|| {
-                        panic!(
-                            "Failed to get animations for sequence: `{:?}`",
-                            next_sequence_id
-                        )
-                    });
+            *run_counter = RunCounterUpdater::update(
+                *run_counter,
+                controller_input,
+                *character_sequence_id,
+                *mirrored,
+                *grounding,
+            );
+            *mirrored =
+                MirroredUpdater::update(controller_input, *character_sequence_id, *mirrored);
 
-                animations
-                    .iter()
-                    .for_each(|animated_component| match animated_component {
-                        AnimatedComponentAnimation::SpriteRender(ref handle) => {
-                            AnimationRunner::swap(
-                                character_status.object_status.sequence_id,
-                                next_sequence_id,
-                                &mut sprite_animation_set,
-                                handle,
-                            );
-                        }
-                        AnimatedComponentAnimation::BodyFrame(ref handle) => {
-                            AnimationRunner::swap(
-                                character_status.object_status.sequence_id,
-                                next_sequence_id,
-                                &mut body_animation_set,
-                                handle,
-                            );
-                        }
-                        AnimatedComponentAnimation::InteractionFrame(ref handle) => {
-                            AnimationRunner::swap(
-                                character_status.object_status.sequence_id,
-                                next_sequence_id,
-                                &mut interaction_animation_set,
-                                handle,
-                            );
-                        }
-                    });
+            sprite_render.flip_horizontal = mirrored.0;
+
+            if let Some(next_character_sequence_id) = next_character_sequence_id {
+                *character_sequence_id = next_character_sequence_id;
+                *sequence_status = SequenceStatus::Begin;
             }
-
-            if let Some(mirrored) = status_update.object_status.mirrored {
-                sprite_render.flip_horizontal = mirrored;
-            }
-
-            *character_status += status_update;
         }
     }
 }
@@ -159,39 +150,53 @@ mod tests {
     use map_model::loaded::Map;
     use map_selection_model::MapSelection;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
-        entity::{CharacterStatus, Grounding, Kinematics},
+        config::object::CharacterSequenceId,
+        entity::{Grounding, Mirrored, Position, SequenceStatus},
     };
     use typename::TypeName;
 
     use super::CharacterSequenceUpdateSystem;
 
     #[test]
-    fn updates_sequence_state_begin_to_ongoing() {
+    fn updates_sequence_status_begin_to_ongoing() {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AutexousiousApplication::game_base("updates_sequence_state_begin_to_ongoing", false)
+            AutexousiousApplication::game_base("updates_sequence_status_begin_to_ongoing", false)
                 .with_setup(|world| {
                     world.exec(
-                        |(map_selection, maps, mut status_storage, mut kinematics_storage): (
+                        |(
+                            map_selection,
+                            maps,
+                            mut character_sequence_ids,
+                            mut sequence_statuses,
+                            mut positions,
+                            mut groundings,
+                        ): (
                             ReadExpect<MapSelection>,
                             Read<AssetStorage<Map>>,
-                            WriteStorage<CharacterStatus>,
-                            WriteStorage<Kinematics<f32>>,
+                            WriteStorage<CharacterSequenceId>,
+                            WriteStorage<SequenceStatus>,
+                            WriteStorage<Position<f32>>,
+                            WriteStorage<Grounding>,
                         )| {
                             let map = maps
                                 .get(map_selection.handle())
                                 .expect("Expected map to be loaded.");
 
-                            for (status, kinematics) in
-                                (&mut status_storage, &mut kinematics_storage).join()
+                            for (character_sequence_id, sequence_status, position, grounding) in (
+                                &mut character_sequence_ids,
+                                &mut sequence_statuses,
+                                &mut positions,
+                                &mut groundings,
+                            )
+                                .join()
                             {
-                                status.object_status.grounding = Grounding::OnGround;
-                                status.object_status.sequence_id = CharacterSequenceId::Stand;
-                                status.object_status.sequence_state = SequenceState::Begin;
+                                *character_sequence_id = CharacterSequenceId::Stand;
+                                *sequence_status = SequenceStatus::Begin;
+                                *grounding = Grounding::OnGround;
 
-                                kinematics.position[1] = map.margins.bottom;
+                                position[1] = map.margins.bottom;
                             }
                         },
                     );
@@ -202,9 +207,9 @@ mod tests {
                     &[]
                 )
                 .with_assertion(|world| {
-                    world.exec(|status_storage: ReadStorage<CharacterStatus>| {
-                        for status in status_storage.join() {
-                            assert_eq!(SequenceState::Ongoing, status.object_status.sequence_state);
+                    world.exec(|sequence_statuses: ReadStorage<SequenceStatus>| {
+                        for sequence_status in sequence_statuses.join() {
+                            assert_eq!(SequenceStatus::Ongoing, *sequence_status);
                         }
                     });
                 })
@@ -224,36 +229,52 @@ mod tests {
                         |(
                             map_selection,
                             maps,
-                            mut controller_input_storage,
-                            mut status_storage,
-                            mut kinematics_storage,
+                            mut controller_inputs,
+                            mut character_sequence_ids,
+                            mut sequence_statuses,
+                            mut positions,
+                            mut mirroreds,
+                            mut groundings,
                         ): (
                             ReadExpect<MapSelection>,
                             Read<AssetStorage<Map>>,
                             WriteStorage<ControllerInput>,
-                            WriteStorage<CharacterStatus>,
-                            WriteStorage<Kinematics<f32>>,
+                            WriteStorage<CharacterSequenceId>,
+                            WriteStorage<SequenceStatus>,
+                            WriteStorage<Position<f32>>,
+                            WriteStorage<Mirrored>,
+                            WriteStorage<Grounding>,
                         )| {
                             let map = maps
                                 .get(map_selection.handle())
                                 .expect("Expected map to be loaded.");
 
-                            for (controller_input, status, kinematics) in (
-                                &mut controller_input_storage,
-                                &mut status_storage,
-                                &mut kinematics_storage,
+                            for (
+                                controller_input,
+                                character_sequence_id,
+                                sequence_status,
+                                position,
+                                mirrored,
+                                grounding,
+                            ) in (
+                                &mut controller_inputs,
+                                &mut character_sequence_ids,
+                                &mut sequence_statuses,
+                                &mut positions,
+                                &mut mirroreds,
+                                &mut groundings,
                             )
                                 .join()
                             {
                                 controller_input.x_axis_value = -1.;
                                 controller_input.z_axis_value = -1.;
 
-                                status.object_status.grounding = Grounding::OnGround;
-                                status.object_status.sequence_id = CharacterSequenceId::Stand;
-                                status.object_status.sequence_state = SequenceState::Ongoing;
-                                status.object_status.mirrored = false;
+                                *character_sequence_id = CharacterSequenceId::Stand;
+                                *sequence_status = SequenceStatus::Ongoing;
+                                *mirrored = Mirrored(false);
+                                *grounding = Grounding::OnGround;
 
-                                kinematics.position[1] = map.margins.bottom;
+                                position[1] = map.margins.bottom;
                             }
                         },
                     );
@@ -264,13 +285,21 @@ mod tests {
                     &[]
                 )
                 .with_assertion(|world| {
-                    world.exec(|status_storage: ReadStorage<CharacterStatus>| {
-                        for status in status_storage.join() {
-                            assert_eq!(CharacterSequenceId::Walk, status.object_status.sequence_id);
-                            assert_eq!(SequenceState::Begin, status.object_status.sequence_state);
-                            assert!(status.object_status.mirrored);
-                        }
-                    });
+                    world.exec(
+                        |(character_sequence_ids, sequence_statuses, mirroreds): (
+                            ReadStorage<CharacterSequenceId>,
+                            ReadStorage<SequenceStatus>,
+                            ReadStorage<Mirrored>,
+                        )| {
+                            for (character_sequence_id, sequence_status, mirrored) in
+                                (&character_sequence_ids, &sequence_statuses, &mirroreds).join()
+                            {
+                                assert_eq!(CharacterSequenceId::Walk, *character_sequence_id);
+                                assert_eq!(SequenceStatus::Begin, *sequence_status);
+                                assert_eq!(Mirrored(true), *mirrored);
+                            }
+                        },
+                    );
                 })
                 .run()
                 .is_ok()

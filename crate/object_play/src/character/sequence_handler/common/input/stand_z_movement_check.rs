@@ -1,10 +1,7 @@
-use game_input::ControllerInput;
-use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate},
-};
+use object_model::config::object::CharacterSequenceId;
 
-use character::sequence_handler::SequenceHandler;
+use character::sequence_handler::CharacterSequenceHandler;
+use CharacterSequenceUpdateComponents;
 
 /// Determines whether to switch to the `Walk` sequence based on Z input.
 ///
@@ -12,27 +9,12 @@ use character::sequence_handler::SequenceHandler;
 #[derive(Debug)]
 pub(crate) struct StandZMovementCheck;
 
-impl SequenceHandler for StandZMovementCheck {
-    fn update(
-        input: &ControllerInput,
-        _character_status: &CharacterStatus,
-        _kinematics: &Kinematics<f32>,
-    ) -> Option<CharacterStatusUpdate> {
-        if input.z_axis_value != 0. {
-            let sequence_id = Some(CharacterSequenceId::Walk);
-            let sequence_state = Some(SequenceState::Begin);
-            let mirrored = None;
-            let grounding = None;
-
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate::new(
-                    sequence_id,
-                    sequence_state,
-                    mirrored,
-                    grounding,
-                ),
-                ..Default::default()
-            })
+impl CharacterSequenceHandler for StandZMovementCheck {
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
+    ) -> Option<CharacterSequenceId> {
+        if components.controller_input.z_axis_value != 0. {
+            Some(CharacterSequenceId::Walk)
         } else {
             None
         }
@@ -43,12 +25,15 @@ impl SequenceHandler for StandZMovementCheck {
 mod tests {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
-        entity::{CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate},
+        config::object::CharacterSequenceId,
+        entity::{
+            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
+        },
     };
 
     use super::StandZMovementCheck;
-    use character::sequence_handler::SequenceHandler;
+    use character::sequence_handler::CharacterSequenceHandler;
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn no_change_when_no_z_input() {
@@ -56,11 +41,17 @@ mod tests {
 
         assert_eq!(
             None,
-            StandZMovementCheck::update(
+            StandZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
-                &Kinematics::default()
-            )
+                HealthPoints::default(),
+                CharacterSequenceId::default(),
+                SequenceStatus::default(),
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
+            ))
         );
     }
 
@@ -69,19 +60,18 @@ mod tests {
         let input = ControllerInput::new(0., 1., false, false, false, false);
 
         assert_eq!(
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Walk),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }),
-            StandZMovementCheck::update(
+            Some(CharacterSequenceId::Walk),
+            StandZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
-                &Kinematics::default()
-            )
+                HealthPoints::default(),
+                CharacterSequenceId::default(),
+                SequenceStatus::default(),
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
+            ))
         );
     }
 }

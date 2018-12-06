@@ -1,27 +1,20 @@
-use game_input::ControllerInput;
-use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, CharacterStatusUpdate, Kinematics},
-};
+use object_model::{config::object::CharacterSequenceId, entity::SequenceStatus};
 
 use character::sequence_handler::CharacterSequenceHandler;
+use CharacterSequenceUpdateComponents;
 
 #[derive(Debug)]
 pub(crate) struct JumpDescendLand;
 
 impl CharacterSequenceHandler for JumpDescendLand {
-    fn update(
-        _controller_input: &ControllerInput,
-        character_status: &CharacterStatus,
-        _kinematics: &Kinematics<f32>,
-    ) -> CharacterStatusUpdate {
-        let mut update = CharacterStatusUpdate::default();
-        if character_status.object_status.sequence_state == SequenceState::End {
-            update.object_status.sequence_id = Some(CharacterSequenceId::Stand);
-            update.object_status.sequence_state = Some(SequenceState::Begin);
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
+    ) -> Option<CharacterSequenceId> {
+        if components.sequence_status == SequenceStatus::End {
+            Some(CharacterSequenceId::Stand)
+        } else {
+            None
         }
-
-        update
     }
 }
 
@@ -29,32 +22,33 @@ impl CharacterSequenceHandler for JumpDescendLand {
 mod test {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::CharacterSequenceId,
         entity::{
-            CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
         },
     };
 
     use super::JumpDescendLand;
     use character::sequence_handler::CharacterSequenceHandler;
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn no_update_when_sequence_not_ended() {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate::default(),
-            JumpDescendLand::update(
+            None,
+            JumpDescendLand::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus {
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::JumpDescendLand,
-                        ..Default::default()
-                    },
-                    ..Default::default()
-                },
-                &Kinematics::default()
-            )
+                HealthPoints::default(),
+                CharacterSequenceId::JumpDescendLand,
+                SequenceStatus::default(),
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
+            ))
         );
     }
 
@@ -63,26 +57,18 @@ mod test {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Stand),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                },
-                ..Default::default()
-            },
-            JumpDescendLand::update(
+            Some(CharacterSequenceId::Stand),
+            JumpDescendLand::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus {
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::JumpDescendLand,
-                        sequence_state: SequenceState::End,
-                        ..Default::default()
-                    },
-                    ..Default::default()
-                },
-                &Kinematics::default()
-            )
+                HealthPoints::default(),
+                CharacterSequenceId::JumpDescendLand,
+                SequenceStatus::End,
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
+            ))
         );
     }
 }

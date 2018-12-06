@@ -1,10 +1,7 @@
-use game_input::ControllerInput;
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{CharacterStatus, CharacterStatusUpdate, Kinematics},
-};
+use object_model::config::object::CharacterSequenceId;
 
 use character::sequence_handler::{CharacterSequenceHandler, SwitchSequenceOnEnd};
+use CharacterSequenceUpdateComponents;
 
 const LIE_FACE_DOWN: SwitchSequenceOnEnd = SwitchSequenceOnEnd(CharacterSequenceId::Stand);
 
@@ -12,15 +9,13 @@ const LIE_FACE_DOWN: SwitchSequenceOnEnd = SwitchSequenceOnEnd(CharacterSequence
 pub(crate) struct LieFaceDown;
 
 impl CharacterSequenceHandler for LieFaceDown {
-    fn update(
-        controller_input: &ControllerInput,
-        character_status: &CharacterStatus,
-        kinematics: &Kinematics<f32>,
-    ) -> CharacterStatusUpdate {
-        if character_status.hp > 0 {
-            LIE_FACE_DOWN.update(controller_input, character_status, kinematics)
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
+    ) -> Option<CharacterSequenceId> {
+        if components.health_points > 0 {
+            LIE_FACE_DOWN.update(components.sequence_status)
         } else {
-            CharacterStatusUpdate::default()
+            None
         }
     }
 }

@@ -1,38 +1,25 @@
-use game_input::ControllerInput;
 use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics},
+    config::object::CharacterSequenceId,
+    entity::{Grounding, SequenceStatus},
 };
 
-use character::sequence_handler::{CharacterSequenceHandler, SequenceHandlerUtil};
+use character::sequence_handler::CharacterSequenceHandler;
+use CharacterSequenceUpdateComponents;
 
 #[derive(Debug)]
 pub(crate) struct JumpDescend;
 
 impl CharacterSequenceHandler for JumpDescend {
-    fn update(
-        controller_input: &ControllerInput,
-        character_status: &CharacterStatus,
-        _kinematics: &Kinematics<f32>,
-    ) -> CharacterStatusUpdate {
-        let mut update = CharacterStatusUpdate::default();
-        if character_status.object_status.grounding == Grounding::OnGround {
-            update.object_status.sequence_id = Some(CharacterSequenceId::JumpDescendLand);
-            update.object_status.sequence_state = Some(SequenceState::Begin);
-        } else if character_status.object_status.sequence_state == SequenceState::End {
-            update.object_status.sequence_id = Some(CharacterSequenceId::JumpDescend);
-            update.object_status.sequence_state = Some(SequenceState::Begin);
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
+    ) -> Option<CharacterSequenceId> {
+        if components.grounding == Grounding::OnGround {
+            Some(CharacterSequenceId::JumpDescendLand)
+        } else if components.sequence_status == SequenceStatus::End {
+            Some(CharacterSequenceId::JumpDescend)
+        } else {
+            None
         }
-
-        // Switch direction if user is pressing the opposite way.
-        if SequenceHandlerUtil::input_opposes_direction(
-            controller_input,
-            character_status.object_status.mirrored,
-        ) {
-            update.object_status.mirrored = Some(!character_status.object_status.mirrored);
-        }
-
-        update
     }
 }
 
@@ -40,131 +27,79 @@ impl CharacterSequenceHandler for JumpDescend {
 mod test {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::CharacterSequenceId,
         entity::{
-            CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatus,
-            ObjectStatusUpdate,
+            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
         },
     };
 
     use super::JumpDescend;
     use character::sequence_handler::CharacterSequenceHandler;
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn no_update_when_sequence_not_ended() {
         let input = ControllerInput::new(0., 0., false, false, false, false);
-        let mut kinematics = Kinematics::default();
-        kinematics.velocity[1] = -1.;
+        let mut velocity = Velocity::default();
+        velocity[1] = -1.;
 
         assert_eq!(
-            CharacterStatusUpdate::default(),
-            JumpDescend::update(
+            None,
+            JumpDescend::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus {
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::JumpDescend,
-                        grounding: Grounding::Airborne,
-                        ..Default::default()
-                    },
-                    ..Default::default()
-                },
-                &kinematics
-            )
+                HealthPoints::default(),
+                CharacterSequenceId::JumpDescend,
+                SequenceStatus::default(),
+                &Position::default(),
+                &velocity,
+                Mirrored::default(),
+                Grounding::Airborne,
+                RunCounter::default()
+            ))
         );
     }
 
     #[test]
     fn restarts_jump_descend_when_sequence_ends() {
         let input = ControllerInput::new(0., 0., false, false, false, false);
-        let mut kinematics = Kinematics::default();
-        kinematics.velocity[1] = -1.;
+        let mut velocity = Velocity::default();
+        velocity[1] = -1.;
 
         assert_eq!(
-            CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::JumpDescend),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                },
-                ..Default::default()
-            },
-            JumpDescend::update(
+            Some(CharacterSequenceId::JumpDescend),
+            JumpDescend::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus {
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::JumpDescend,
-                        sequence_state: SequenceState::End,
-                        grounding: Grounding::Airborne,
-                        ..Default::default()
-                    },
-                    ..Default::default()
-                },
-                &kinematics
-            )
+                HealthPoints::default(),
+                CharacterSequenceId::JumpDescend,
+                SequenceStatus::End,
+                &Position::default(),
+                &velocity,
+                Mirrored::default(),
+                Grounding::Airborne,
+                RunCounter::default()
+            ))
         );
     }
 
     #[test]
     fn jump_descend_land_when_on_ground() {
         let input = ControllerInput::new(0., 0., false, false, false, false);
-        let mut kinematics = Kinematics::default();
-        kinematics.velocity[1] = -1.;
+        let mut velocity = Velocity::default();
+        velocity[1] = -1.;
 
         assert_eq!(
-            CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::JumpDescendLand),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                },
-                ..Default::default()
-            },
-            JumpDescend::update(
+            Some(CharacterSequenceId::JumpDescendLand),
+            JumpDescend::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus {
-                    object_status: ObjectStatus {
-                        sequence_id: CharacterSequenceId::JumpDescend,
-                        grounding: Grounding::OnGround,
-                        ..Default::default()
-                    },
-                    ..Default::default()
-                },
-                &kinematics
-            )
+                HealthPoints::default(),
+                CharacterSequenceId::JumpDescend,
+                SequenceStatus::default(),
+                &Position::default(),
+                &velocity,
+                Mirrored::default(),
+                Grounding::OnGround,
+                RunCounter::default()
+            ))
         );
-    }
-
-    #[test]
-    fn switches_mirror_when_pressing_opposite_direction() {
-        vec![(-1., false), (1., true)]
-            .into_iter()
-            .for_each(|(x_input, mirrored)| {
-                let input = ControllerInput::new(x_input, 0., false, false, false, false);
-                let mut kinematics = Kinematics::default();
-                kinematics.velocity[1] = 1.;
-
-                assert_eq!(
-                    CharacterStatusUpdate {
-                        object_status: ObjectStatusUpdate {
-                            mirrored: Some(!mirrored),
-                            ..Default::default()
-                        },
-                        ..Default::default()
-                    },
-                    JumpDescend::update(
-                        &input,
-                        &CharacterStatus {
-                            object_status: ObjectStatus {
-                                sequence_id: CharacterSequenceId::JumpDescend,
-                                grounding: Grounding::Airborne,
-                                mirrored,
-                                ..Default::default()
-                            },
-                            ..Default::default()
-                        },
-                        &kinematics
-                    )
-                );
-            });
     }
 }

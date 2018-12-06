@@ -3,7 +3,10 @@ use amethyst::{
     core::bundle::{Result, SystemBundle},
     ecs::prelude::*,
 };
-use object_model::loaded::Character;
+use object_model::{
+    config::object::CharacterSequenceId,
+    loaded::{Character, Object},
+};
 
 /// Adds `Processor::<`*`ObjectType`*`>` to the `World` with id
 /// `"`*`object_type`*`_processor"`.
@@ -14,6 +17,11 @@ pub struct ObjectLoadingBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for ObjectLoadingBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
+        builder.add(
+            Processor::<Object<CharacterSequenceId>>::new(),
+            "character_object_processor",
+            &[],
+        );
         builder.add(Processor::<Character>::new(), "character_processor", &[]);
         Ok(())
     }

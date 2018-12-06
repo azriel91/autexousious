@@ -1,36 +1,18 @@
-use game_input::ControllerInput;
-use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
-    entity::{CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate},
-};
+use object_model::config::object::CharacterSequenceId;
 
-use character::sequence_handler::SequenceHandler;
+use character::sequence_handler::CharacterSequenceHandler;
+use CharacterSequenceUpdateComponents;
 
 /// Determines whether to switch to the `StandAttack` sequence based on Attack input.
 #[derive(Debug)]
 pub(crate) struct StandAttackCheck;
 
-impl SequenceHandler for StandAttackCheck {
-    fn update(
-        input: &ControllerInput,
-        _character_status: &CharacterStatus,
-        _kinematics: &Kinematics<f32>,
-    ) -> Option<CharacterStatusUpdate> {
-        if input.attack {
-            let sequence_id = Some(CharacterSequenceId::StandAttack);
-            let sequence_state = Some(SequenceState::Begin);
-            let mirrored = None;
-            let grounding = None;
-
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate::new(
-                    sequence_id,
-                    sequence_state,
-                    mirrored,
-                    grounding,
-                ),
-                ..Default::default()
-            })
+impl CharacterSequenceHandler for StandAttackCheck {
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
+    ) -> Option<CharacterSequenceId> {
+        if components.controller_input.attack {
+            Some(CharacterSequenceId::StandAttack)
         } else {
             None
         }
@@ -41,12 +23,15 @@ impl SequenceHandler for StandAttackCheck {
 mod tests {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
-        entity::{CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatusUpdate},
+        config::object::CharacterSequenceId,
+        entity::{
+            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
+        },
     };
 
     use super::StandAttackCheck;
-    use character::sequence_handler::SequenceHandler;
+    use character::sequence_handler::CharacterSequenceHandler;
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn no_change_when_no_attack_input() {
@@ -54,7 +39,17 @@ mod tests {
 
         assert_eq!(
             None,
-            StandAttackCheck::update(&input, &CharacterStatus::default(), &Kinematics::default())
+            StandAttackCheck::update(CharacterSequenceUpdateComponents::new(
+                &input,
+                HealthPoints::default(),
+                CharacterSequenceId::default(),
+                SequenceStatus::default(),
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
+            ))
         );
     }
 
@@ -64,15 +59,18 @@ mod tests {
         input.attack = true;
 
         assert_eq!(
-            Some(CharacterStatusUpdate {
-                object_status: ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::StandAttack),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }),
-            StandAttackCheck::update(&input, &CharacterStatus::default(), &Kinematics::default())
+            Some(CharacterSequenceId::StandAttack),
+            StandAttackCheck::update(CharacterSequenceUpdateComponents::new(
+                &input,
+                HealthPoints::default(),
+                CharacterSequenceId::default(),
+                SequenceStatus::default(),
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
+            ))
         );
     }
 }

@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+* Object animations are updated in a dedicated system. ([#81][#81])
+* Components are now more granular. ([#83][#83])
+
+[#81]: https://gitlab.com/azriel91/autexousious/issues/81
+[#83]: https://gitlab.com/azriel91/autexousious/issues/83
+
 ## 0.7.0 (2018-11-23)
 
 ### Added

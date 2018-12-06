@@ -6,7 +6,7 @@ use map_model::loaded::Map;
 use map_selection_model::MapSelection;
 use object_model::{
     config::object::CharacterSequenceId,
-    entity::{Kinematics, Position, Velocity},
+    entity::{Position, Velocity},
     loaded::Character,
     ObjectType,
 };
@@ -27,7 +27,7 @@ type CharacterSelectionSpawningSystemData<'s> = (
     ReadExpect<'s, MapSelection>,
     Read<'s, CharacterSelections>,
     Read<'s, AssetStorage<Map>>,
-    ObjectSpawningResources<'s, Character>,
+    ObjectSpawningResources<'s, Character, CharacterSequenceId>,
     CharacterComponentStorages<'s>,
     ObjectComponentStorages<'s>,
     ObjectAnimationStorages<'s, CharacterSequenceId>,
@@ -72,7 +72,7 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
 
         // This `Position` moves the entity to the middle of a "screen wide" map.
         let position = Position::new(width / 2., height / 2., depth / 2.);
-        let kinematics = Kinematics::new(position, Velocity::default());
+        let velocity = Velocity::default();
 
         let character_entities = character_selections
             .selections
@@ -86,7 +86,8 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
                     &mut character_component_storages,
                     &mut object_component_storages,
                     &mut object_animation_storages,
-                    kinematics,
+                    position,
+                    velocity,
                     &slug_and_handle,
                     input_controlled,
                 )

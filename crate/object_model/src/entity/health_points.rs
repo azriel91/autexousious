@@ -3,7 +3,9 @@ use std::{
     ops::{Add, AddAssign, Sub, SubAssign},
 };
 
+use amethyst::ecs::{storage::VecStorage, Component};
 use derive_more::{Add, AddAssign, Display, From, Sub, SubAssign};
+use specs_derive::Component;
 
 /// Health points of an object.
 #[derive(
@@ -12,6 +14,7 @@ use derive_more::{Add, AddAssign, Display, From, Sub, SubAssign};
     Sub,
     SubAssign,
     Clone,
+    Component,
     Copy,
     Debug,
     Derivative,
@@ -22,6 +25,7 @@ use derive_more::{Add, AddAssign, Display, From, Sub, SubAssign};
     PartialOrd,
     Ord,
 )]
+#[storage(VecStorage)]
 #[derivative(Default)]
 pub struct HealthPoints(#[derivative(Default(value = "100"))] pub u32);
 
