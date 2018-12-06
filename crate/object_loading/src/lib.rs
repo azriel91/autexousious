@@ -13,6 +13,7 @@ extern crate collision_loading;
 extern crate collision_model;
 #[macro_use]
 extern crate derive_new;
+extern crate fnv;
 extern crate game_model;
 #[macro_use]
 extern crate log;

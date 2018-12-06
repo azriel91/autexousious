@@ -7,10 +7,14 @@ use collision_model::{
     animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle},
     config::{BodyFrame, InteractionFrame},
 };
+use fnv::FnvHashMap;
 use game_model::config::AssetRecord;
 use object_model::{
     config::{object::SequenceId, ObjectDefinition},
-    loaded::{AnimatedComponentAnimation, AnimatedComponentDefault, Object, ObjectHandle},
+    loaded::{
+        AnimatedComponentAnimation, AnimatedComponentDefault, Object, ObjectHandle,
+        SequenceEndTransition, SequenceEndTransitions,
+    },
 };
 use sprite_loading::{SpriteLoader, SpriteRenderAnimationLoader};
 
@@ -30,11 +34,22 @@ impl ObjectLoader {
         world: &World,
         asset_record: &AssetRecord,
         object_definition: &ObjectDefinition<SeqId>,
-    ) -> Result<ObjectHandle<SeqId>>
+    ) -> Result<(SequenceEndTransitions<SeqId>, ObjectHandle<SeqId>)>
     where
         SeqId: SequenceId + 'static,
     {
         debug!("Loading object assets in `{}`", asset_record.path.display());
+
+        let sequence_end_transitions = object_definition
+            .sequences
+            .iter()
+            .map(|(sequence_id, sequence)| {
+                (
+                    *sequence_id,
+                    SequenceEndTransition::new(sequence.next.clone()),
+                )
+            })
+            .collect::<FnvHashMap<_, _>>();
 
         let (sprite_sheet_handles, _texture_handles) =
             SpriteLoader::load(world, &asset_record.path)?;
@@ -123,7 +138,7 @@ impl ObjectLoader {
             loader.load_from_data(object, (), &world.read_resource())
         };
 
-        Ok(object_handle)
+        Ok((sequence_end_transitions.into(), object_handle))
     }
 }
 
@@ -179,7 +194,7 @@ mod test {
                     )
                     .expect("Failed to load object.toml into CharacterDefinition");
 
-                    let object_handle = ObjectLoader::load(
+                    let (_sequence_end_transitions, object_handle) = ObjectLoader::load(
                         world,
                         &asset_record,
                         &character_definition.object_definition,

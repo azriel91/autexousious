@@ -13,7 +13,7 @@ use object_model::{
     entity::{Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity},
     loaded::{
         AnimatedComponentAnimation, AnimatedComponentDefault, Character, CharacterHandle, Object,
-        ObjectHandle,
+        ObjectHandle, SequenceEndTransitions,
     },
 };
 
@@ -58,6 +58,7 @@ impl CharacterEntitySpawner {
                 world.write_storage::<ControllerInput>(),
                 world.write_storage::<CharacterHandle>(),
                 world.write_storage::<ObjectHandle<CharacterSequenceId>>(),
+                world.write_storage::<SequenceEndTransitions<CharacterSequenceId>>(),
                 world.write_storage::<HealthPoints>(),
                 world.write_storage::<CharacterSequenceId>(),
                 world.write_storage::<SequenceStatus>(),
@@ -108,6 +109,7 @@ impl CharacterEntitySpawner {
             ref mut controller_input_storage,
             ref mut character_handle_storage,
             ref mut object_handle_storage,
+            ref mut sequence_end_transitions_storage,
             ref mut health_points_storage,
             ref mut character_sequence_ids,
             ref mut sequence_status_storage,
@@ -149,6 +151,7 @@ impl CharacterEntitySpawner {
         let object = loaded_objects
             .get(object_handle)
             .unwrap_or_else(|| panic!("Expected `{}` object to be loaded.", slug));
+        let sequence_end_transitions = &character.sequence_end_transitions;
 
         let animation_defaults = &object.animation_defaults;
 
@@ -174,11 +177,15 @@ impl CharacterEntitySpawner {
         character_handle_storage
             .insert(entity, character_handle.clone())
             .expect("Failed to insert character_handle component.");
-        // Loaded `Object` for this entity.
+        // Loaded animations.
         object_handle_storage
             .insert(entity, object_handle.clone())
             .expect("Failed to insert object_handle component.");
-        // Character status attributes.
+        // Loaded animations.
+        sequence_end_transitions_storage
+            .insert(entity, sequence_end_transitions.clone())
+            .expect("Failed to insert sequence_end_transitions component.");
+        // Health points.
         health_points_storage
             .insert(entity, HealthPoints::default())
             .expect("Failed to insert health_points component.");

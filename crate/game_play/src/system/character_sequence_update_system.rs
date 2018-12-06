@@ -1,7 +1,6 @@
 use amethyst::{
     animation::{get_animation_set, ControlState},
-    assets::AssetStorage,
-    ecs::{Entities, Join, Read, ReadStorage, System, WriteStorage},
+    ecs::{Entities, Join, ReadStorage, System, WriteStorage},
     renderer::SpriteRender,
 };
 use game_input::ControllerInput;
@@ -9,14 +8,14 @@ use game_loading::ObjectAnimationStorages;
 use object_model::{
     config::object::CharacterSequenceId,
     entity::{Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity},
-    loaded::{Character, CharacterHandle},
+    loaded::SequenceEndTransitions,
 };
 use object_play::{
     CharacterSequenceUpdateComponents, CharacterSequenceUpdater, MirroredUpdater, RunCounterUpdater,
 };
 use shred_derive::SystemData;
 
-/// Updates `Character` sequence based on input
+/// Updates character sequence ID based on input (or lack of).
 #[derive(Debug, Default, TypeName, new)]
 pub(crate) struct CharacterSequenceUpdateSystem;
 
@@ -24,9 +23,8 @@ pub(crate) struct CharacterSequenceUpdateSystem;
 #[derive(SystemData)]
 pub struct CharacterSequenceUpdateSystemData<'s> {
     entities: Entities<'s>,
-    character_assets: Read<'s, AssetStorage<Character>>,
-    character_handles: ReadStorage<'s, CharacterHandle>,
     controller_inputs: ReadStorage<'s, ControllerInput>,
+    sequence_end_transitionses: ReadStorage<'s, SequenceEndTransitions<CharacterSequenceId>>,
     positions: ReadStorage<'s, Position<f32>>,
     velocities: ReadStorage<'s, Velocity<f32>>,
     run_counters: WriteStorage<'s, RunCounter>,
@@ -46,9 +44,8 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
         &mut self,
         CharacterSequenceUpdateSystemData {
             entities,
-            character_assets,
-            character_handles,
             controller_inputs,
+            sequence_end_transitionses,
             positions,
             velocities,
             mut run_counters,
@@ -64,8 +61,8 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
         let (mut sprite_acs, _body_frame_acs, _interaction_acs) = object_acses;
         for (
             entity,
-            character_handle,
             controller_input,
+            sequence_end_transitions,
             position,
             velocity,
             run_counter,
@@ -77,8 +74,8 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             sprite_render,
         ) in (
             &*entities,
-            &character_handles,
             &controller_inputs,
+            &sequence_end_transitionses,
             &positions,
             &velocities,
             &mut run_counters,
@@ -91,10 +88,6 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
         )
             .join()
         {
-            let character = character_assets
-                .get(character_handle)
-                .expect("Expected character to be loaded.");
-
             let mut sprite_animation_set = get_animation_set(&mut sprite_acs, entity)
                 .expect("Sprite animation should exist as entity should be valid.");
 
@@ -115,7 +108,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             }
 
             let next_character_sequence_id = CharacterSequenceUpdater::update(
-                character,
+                sequence_end_transitions,
                 CharacterSequenceUpdateComponents::new(
                     &controller_input,
                     *health_points,

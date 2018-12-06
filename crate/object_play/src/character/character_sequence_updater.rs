@@ -1,5 +1,5 @@
 use object_model::{
-    config::object::CharacterSequenceId, entity::SequenceStatus, loaded::Character,
+    config::object::CharacterSequenceId, entity::SequenceStatus, loaded::SequenceEndTransitions,
 };
 
 use character::sequence_handler::{
@@ -20,7 +20,7 @@ impl CharacterSequenceUpdater {
     ///
     /// * `components`: Components used to compute character sequence updates.
     pub fn update<'c>(
-        character: &Character,
+        sequence_end_transitions: &SequenceEndTransitions<CharacterSequenceId>,
         components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<CharacterSequenceId> {
         let sequence_handler: &Fn(CharacterSequenceUpdateComponents)
@@ -49,12 +49,13 @@ impl CharacterSequenceUpdater {
         // Check if it's at the end of the sequence before switching to next.
         if components.sequence_status == SequenceStatus::End {
             let current_sequence_id = &components.character_sequence_id;
-            let current_sequence =
-                &character.definition.object_definition.sequences[current_sequence_id];
+            let next = sequence_end_transitions
+                .get(current_sequence_id)
+                .and_then(|sequence_end_transition| sequence_end_transition.next);
 
             // `next` from configuration overrides the state handler transition.
-            if current_sequence.next.is_some() {
-                sequence_id = current_sequence.next;
+            if next.is_some() {
+                sequence_id = next;
             }
         }
 

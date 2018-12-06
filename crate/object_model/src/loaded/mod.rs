@@ -6,7 +6,9 @@
 pub use self::animation::{AnimatedComponentAnimation, AnimatedComponentDefault};
 pub use self::character::{Character, CharacterHandle};
 pub use self::object::{Object, ObjectHandle};
+pub use self::sequence::{SequenceEndTransition, SequenceEndTransitions};
 
 mod animation;
 mod character;
 mod object;
+mod sequence;

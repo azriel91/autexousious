@@ -12,9 +12,11 @@ extern crate collision_loading;
 extern crate collision_model;
 #[macro_use]
 extern crate derivative;
+extern crate derive_deref;
 extern crate derive_more;
 #[macro_use]
 extern crate derive_new;
+extern crate fnv;
 #[cfg(test)]
 #[macro_use]
 extern crate pretty_assertions;
