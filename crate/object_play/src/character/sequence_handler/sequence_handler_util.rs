@@ -1,4 +1,5 @@
 use game_input::ControllerInput;
+use object_model::entity::Mirrored;
 
 #[derive(Debug)]
 pub struct SequenceHandlerUtil;
@@ -12,9 +13,9 @@ impl SequenceHandlerUtil {
     ///
     /// * `controller_input`: Controller input for the character.
     /// * `mirrored`: Whether the character is facing left.
-    pub fn input_matches_direction(controller_input: &ControllerInput, mirrored: bool) -> bool {
-        controller_input.x_axis_value > 0. && !mirrored
-            || controller_input.x_axis_value < 0. && mirrored
+    pub fn input_matches_direction(controller_input: &ControllerInput, mirrored: Mirrored) -> bool {
+        controller_input.x_axis_value > 0. && !mirrored.0
+            || controller_input.x_axis_value < 0. && mirrored.0
     }
 
     /// Returns whether X axis input is in the opposite direction as the object is facing.
@@ -25,15 +26,16 @@ impl SequenceHandlerUtil {
     ///
     /// * `controller_input`: Controller input for the character.
     /// * `mirrored`: Whether the character is facing left.
-    pub fn input_opposes_direction(controller_input: &ControllerInput, mirrored: bool) -> bool {
-        controller_input.x_axis_value > 0. && mirrored
-            || controller_input.x_axis_value < 0. && !mirrored
+    pub fn input_opposes_direction(controller_input: &ControllerInput, mirrored: Mirrored) -> bool {
+        controller_input.x_axis_value > 0. && mirrored.0
+            || controller_input.x_axis_value < 0. && !mirrored.0
     }
 }
 
 #[cfg(test)]
 mod tests {
     use game_input::ControllerInput;
+    use object_model::entity::Mirrored;
 
     use super::SequenceHandlerUtil;
 
@@ -43,11 +45,11 @@ mod tests {
 
         assert_eq!(
             false,
-            SequenceHandlerUtil::input_matches_direction(&input, true)
+            SequenceHandlerUtil::input_matches_direction(&input, Mirrored(true))
         );
         assert_eq!(
             false,
-            SequenceHandlerUtil::input_matches_direction(&input, false)
+            SequenceHandlerUtil::input_matches_direction(&input, Mirrored(false))
         );
     }
 
@@ -57,7 +59,7 @@ mod tests {
 
         assert_eq!(
             false,
-            SequenceHandlerUtil::input_matches_direction(&input, true)
+            SequenceHandlerUtil::input_matches_direction(&input, Mirrored(true))
         );
     }
 
@@ -67,7 +69,7 @@ mod tests {
 
         assert_eq!(
             false,
-            SequenceHandlerUtil::input_matches_direction(&input, false)
+            SequenceHandlerUtil::input_matches_direction(&input, Mirrored(false))
         );
     }
 
@@ -75,14 +77,20 @@ mod tests {
     fn matches_direction_returns_true_on_positive_x_input_and_not_mirrored() {
         let input = ControllerInput::new(1., 0., false, false, false, false);
 
-        assert!(SequenceHandlerUtil::input_matches_direction(&input, false));
+        assert!(SequenceHandlerUtil::input_matches_direction(
+            &input,
+            Mirrored(false)
+        ));
     }
 
     #[test]
     fn matches_direction_returns_true_on_negative_x_input_and_mirrored() {
         let input = ControllerInput::new(-1., 0., false, false, false, false);
 
-        assert!(SequenceHandlerUtil::input_matches_direction(&input, true));
+        assert!(SequenceHandlerUtil::input_matches_direction(
+            &input,
+            Mirrored(true)
+        ));
     }
 
     #[test]
@@ -91,11 +99,11 @@ mod tests {
 
         assert_eq!(
             false,
-            SequenceHandlerUtil::input_opposes_direction(&input, true)
+            SequenceHandlerUtil::input_opposes_direction(&input, Mirrored(true))
         );
         assert_eq!(
             false,
-            SequenceHandlerUtil::input_opposes_direction(&input, false)
+            SequenceHandlerUtil::input_opposes_direction(&input, Mirrored(false))
         );
     }
 
@@ -105,7 +113,7 @@ mod tests {
 
         assert_eq!(
             false,
-            SequenceHandlerUtil::input_opposes_direction(&input, false)
+            SequenceHandlerUtil::input_opposes_direction(&input, Mirrored(false))
         );
     }
 
@@ -115,7 +123,7 @@ mod tests {
 
         assert_eq!(
             false,
-            SequenceHandlerUtil::input_opposes_direction(&input, true)
+            SequenceHandlerUtil::input_opposes_direction(&input, Mirrored(true))
         );
     }
 
@@ -123,13 +131,19 @@ mod tests {
     fn opposes_direction_returns_true_on_positive_x_input_and_mirrored() {
         let input = ControllerInput::new(1., 0., false, false, false, false);
 
-        assert!(SequenceHandlerUtil::input_opposes_direction(&input, true));
+        assert!(SequenceHandlerUtil::input_opposes_direction(
+            &input,
+            Mirrored(true)
+        ));
     }
 
     #[test]
     fn opposes_direction_returns_true_on_negative_x_input_and_not_mirrored() {
         let input = ControllerInput::new(-1., 0., false, false, false, false);
 
-        assert!(SequenceHandlerUtil::input_opposes_direction(&input, false));
+        assert!(SequenceHandlerUtil::input_opposes_direction(
+            &input,
+            Mirrored(false)
+        ));
     }
 }

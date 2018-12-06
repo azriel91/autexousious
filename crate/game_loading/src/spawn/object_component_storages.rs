@@ -4,7 +4,7 @@ use amethyst::{
     renderer::{SpriteRender, Transparent},
 };
 use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
-use object_model::entity::Kinematics;
+use object_model::entity::{Position, Velocity};
 
 /// Common game object `Component` storages.
 ///
@@ -12,7 +12,8 @@ use object_model::entity::Kinematics;
 pub type ObjectComponentStorages<'s> = (
     WriteStorage<'s, SpriteRender>,
     WriteStorage<'s, Transparent>,
-    WriteStorage<'s, Kinematics<f32>>,
+    WriteStorage<'s, Position<f32>>,
+    WriteStorage<'s, Velocity<f32>>,
     WriteStorage<'s, Transform>,
     WriteStorage<'s, BodyFrameActiveHandle>,
     WriteStorage<'s, InteractionFrameActiveHandle>,

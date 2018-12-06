@@ -9,14 +9,12 @@
 
 pub use self::object_frame::ObjectFrame;
 pub use self::sequence_id::SequenceId;
-pub use self::sequence_state::SequenceState;
 
 use collision_loading::{BodyAnimationSequence, InteractionAnimationSequence};
 use sprite_loading::AnimationSequence;
 
 mod object_frame;
 mod sequence_id;
-mod sequence_state;
 
 /// Represents an independent action sequence of an object.
 ///
@@ -56,8 +54,10 @@ impl<SeqId: SequenceId> InteractionAnimationSequence for Sequence<SeqId> {
 
 #[cfg(test)]
 mod tests {
+    use amethyst::ecs::{storage::DenseVecStorage, Component};
     use collision_model::config::{BodyFrame, Interaction, InteractionFrame};
     use shape_model::Volume;
+    use specs_derive::Component;
     use sprite_model::config::SpriteFrame;
     use toml;
 
@@ -200,7 +200,7 @@ mod tests {
         assert_eq!(expected, sequence);
     }
 
-    #[derive(Clone, Copy, Debug, Derivative, Deserialize, PartialEq, Eq, Hash)]
+    #[derive(Clone, Component, Copy, Debug, Derivative, Deserialize, PartialEq, Eq, Hash)]
     #[derivative(Default)]
     enum TestSeqId {
         #[derivative(Default)]

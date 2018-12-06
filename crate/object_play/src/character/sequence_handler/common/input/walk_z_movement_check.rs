@@ -1,12 +1,7 @@
-use game_input::ControllerInput;
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{
-        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-    },
-};
+use object_model::config::object::CharacterSequenceId;
 
-use character::sequence_handler::{common::SequenceRepeat, SequenceHandler};
+use character::sequence_handler::{common::SequenceRepeat, CharacterSequenceHandler};
+use CharacterSequenceUpdateComponents;
 
 /// Determines whether to switch to the `Stand` sequence based on Z input.
 ///
@@ -14,18 +9,12 @@ use character::sequence_handler::{common::SequenceRepeat, SequenceHandler};
 #[derive(Debug)]
 pub(crate) struct WalkZMovementCheck;
 
-impl SequenceHandler for WalkZMovementCheck {
-    fn update(
-        input: &ControllerInput,
-        character_status: &CharacterStatus,
-        object_status: &ObjectStatus<CharacterSequenceId>,
-        kinematics: &Kinematics<f32>,
-    ) -> Option<(
-        CharacterStatusUpdate,
-        ObjectStatusUpdate<CharacterSequenceId>,
-    )> {
-        if input.z_axis_value != 0. {
-            SequenceRepeat::update(input, character_status, object_status, kinematics)
+impl CharacterSequenceHandler for WalkZMovementCheck {
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
+    ) -> Option<CharacterSequenceId> {
+        if components.controller_input.z_axis_value != 0. {
+            SequenceRepeat::update(components)
         } else {
             None
         }
@@ -36,15 +25,15 @@ impl SequenceHandler for WalkZMovementCheck {
 mod tests {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::CharacterSequenceId,
         entity::{
-            CharacterStatus, CharacterStatusUpdate, HealthPoints, Kinematics, ObjectStatus,
-            ObjectStatusUpdate, RunCounter,
+            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
         },
     };
 
     use super::WalkZMovementCheck;
-    use character::sequence_handler::SequenceHandler;
+    use character::sequence_handler::CharacterSequenceHandler;
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn none_when_no_z_input() {
@@ -52,15 +41,17 @@ mod tests {
 
         assert_eq!(
             None,
-            WalkZMovementCheck::update(
+            WalkZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Walk,
-                    ..Default::default()
-                },
-                &Kinematics::default()
-            )
+                HealthPoints::default(),
+                CharacterSequenceId::Walk,
+                SequenceStatus::default(),
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
+            ))
         );
     }
 
@@ -71,18 +62,17 @@ mod tests {
 
             assert_eq!(
                 None,
-                WalkZMovementCheck::update(
+                WalkZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                     &input,
-                    &CharacterStatus {
-                        hp: HealthPoints(100),
-                        ..Default::default()
-                    },
-                    &ObjectStatus {
-                        sequence_id: CharacterSequenceId::Walk,
-                        ..Default::default()
-                    },
-                    &Kinematics::default()
-                )
+                    HealthPoints::default(),
+                    CharacterSequenceId::Walk,
+                    SequenceStatus::default(),
+                    &Position::default(),
+                    &Velocity::default(),
+                    Mirrored::default(),
+                    Grounding::default(),
+                    RunCounter::default()
+                ))
             );
         });
     }
@@ -93,28 +83,18 @@ mod tests {
             let input = ControllerInput::new(0., z_input, false, false, false, false);
 
             assert_eq!(
-                Some((
-                    CharacterStatusUpdate::default(),
-                    ObjectStatusUpdate {
-                        sequence_id: Some(CharacterSequenceId::Walk),
-                        sequence_state: Some(SequenceState::Begin),
-                        ..Default::default()
-                    }
-                )),
-                WalkZMovementCheck::update(
+                Some(CharacterSequenceId::Walk),
+                WalkZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                     &input,
-                    &CharacterStatus {
-                        run_counter: RunCounter::Increase(1),
-                        hp: HealthPoints(100),
-                    },
-                    &ObjectStatus {
-                        sequence_id: CharacterSequenceId::Walk,
-                        sequence_state: SequenceState::End,
-                        mirrored: false,
-                        ..Default::default()
-                    },
-                    &Kinematics::default()
-                )
+                    HealthPoints::default(),
+                    CharacterSequenceId::Walk,
+                    SequenceStatus::End,
+                    &Position::default(),
+                    &Velocity::default(),
+                    Mirrored(false),
+                    Grounding::default(),
+                    RunCounter::Increase(1)
+                ))
             );
         });
     }

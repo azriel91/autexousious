@@ -1,43 +1,29 @@
-use game_input::ControllerInput;
-use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
-    entity::{
-        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-    },
-};
+use object_model::{config::object::CharacterSequenceId, entity::SequenceStatus};
 
 use character::sequence_handler::{
     common::{grounding::AirborneCheck, status::AliveCheck},
-    CharacterSequenceHandler, SequenceHandler,
+    CharacterSequenceHandler,
 };
+use CharacterSequenceUpdateComponents;
 
 #[derive(Debug)]
 pub(crate) struct RunStop;
 
 impl CharacterSequenceHandler for RunStop {
-    fn update(
-        input: &ControllerInput,
-        character_status: &CharacterStatus,
-        object_status: &ObjectStatus<CharacterSequenceId>,
-        kinematics: &Kinematics<f32>,
-    ) -> (
-        CharacterStatusUpdate,
-        ObjectStatusUpdate<CharacterSequenceId>,
-    ) {
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
+    ) -> Option<CharacterSequenceId> {
         [AliveCheck::update, AirborneCheck::update]
             .iter()
             .fold(None, |status_update, fn_update| {
-                status_update
-                    .or_else(|| fn_update(input, character_status, object_status, kinematics))
+                status_update.or_else(|| fn_update(components))
             })
-            .unwrap_or_else(|| {
-                let character_status_update = CharacterStatusUpdate::default();
-                let mut object_status_update = ObjectStatusUpdate::default();
-                if object_status.sequence_state == SequenceState::End {
-                    object_status_update.sequence_id = Some(CharacterSequenceId::Stand);
-                    object_status_update.sequence_state = Some(SequenceState::Begin);
+            .or_else(|| {
+                if components.sequence_status == SequenceStatus::End {
+                    Some(CharacterSequenceId::Stand)
+                } else {
+                    None
                 }
-                (character_status_update, object_status_update)
             })
     }
 }
@@ -46,37 +32,31 @@ impl CharacterSequenceHandler for RunStop {
 mod test {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::CharacterSequenceId,
         entity::{
-            CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatus,
-            ObjectStatusUpdate,
+            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
         },
     };
 
     use super::RunStop;
     use character::sequence_handler::CharacterSequenceHandler;
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn jump_descend_when_airborne() {
         assert_eq!(
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::JumpDescend),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            ),
-            RunStop::update(
+            Some(CharacterSequenceId::JumpDescend),
+            RunStop::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
-                &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::RunStop,
-                    grounding: Grounding::Airborne,
-                    ..Default::default()
-                },
-                &Kinematics::default()
-            )
+                HealthPoints::default(),
+                CharacterSequenceId::RunStop,
+                SequenceStatus::default(),
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored::default(),
+                Grounding::Airborne,
+                RunCounter::default()
+            ))
         );
     }
 
@@ -85,19 +65,18 @@ mod test {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate::default()
-            ),
-            RunStop::update(
+            None,
+            RunStop::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::RunStop,
-                    ..Default::default()
-                },
-                &Kinematics::default()
-            )
+                HealthPoints::default(),
+                CharacterSequenceId::RunStop,
+                SequenceStatus::default(),
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
+            ))
         );
     }
 
@@ -106,24 +85,18 @@ mod test {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            (
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Stand),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            ),
-            RunStop::update(
+            Some(CharacterSequenceId::Stand),
+            RunStop::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::RunStop,
-                    sequence_state: SequenceState::End,
-                    ..Default::default()
-                },
-                &Kinematics::default()
-            )
+                HealthPoints::default(),
+                CharacterSequenceId::RunStop,
+                SequenceStatus::End,
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
+            ))
         );
     }
 }

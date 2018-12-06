@@ -1,3 +1,5 @@
+use amethyst::ecs::{storage::DenseVecStorage, Component};
+
 /// States used to track X axis input over time to determine when a character should run.
 #[derive(Clone, Copy, Debug, Derivative, PartialEq, Eq)]
 #[derivative(Default)]
@@ -21,4 +23,8 @@ impl RunCounter {
     /// Number of ticks that the run counter will wait for X axis input to be released / re-pressed
     /// to cause the character to run.
     pub const RESET_TICK_COUNT: u32 = 15;
+}
+
+impl Component for RunCounter {
+    type Storage = DenseVecStorage<Self>;
 }

@@ -1,3 +1,4 @@
+use amethyst::ecs::{storage::VecStorage, Component};
 use config::object::SequenceId;
 
 /// Object Sequence IDs.
@@ -46,6 +47,12 @@ pub enum CharacterSequenceId {
     FallForwardLand,
     /// Lying on ground face down.
     LieFaceDown,
+}
+
+/// Not every entity will have this, but since this is probably a `u8`, we don't need an indirection
+/// table.
+impl Component for CharacterSequenceId {
+    type Storage = VecStorage<Self>;
 }
 
 impl SequenceId for CharacterSequenceId {}

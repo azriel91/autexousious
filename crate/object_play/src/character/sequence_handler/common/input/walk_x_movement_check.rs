@@ -1,13 +1,9 @@
-use game_input::ControllerInput;
-use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
-    entity::{
-        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-        RunCounter,
-    },
-};
+use object_model::{config::object::CharacterSequenceId, entity::RunCounter};
 
-use character::sequence_handler::{common::SequenceRepeat, SequenceHandler, SequenceHandlerUtil};
+use character::sequence_handler::{
+    common::SequenceRepeat, CharacterSequenceHandler, SequenceHandlerUtil,
+};
+use CharacterSequenceUpdateComponents;
 
 /// Determines whether to swithc to the `Walk` or `Run` sequence based on X input.
 ///
@@ -15,27 +11,17 @@ use character::sequence_handler::{common::SequenceRepeat, SequenceHandler, Seque
 #[derive(Debug)]
 pub(crate) struct WalkXMovementCheck;
 
-impl SequenceHandler for WalkXMovementCheck {
-    fn update(
-        input: &ControllerInput,
-        character_status: &CharacterStatus,
-        object_status: &ObjectStatus<CharacterSequenceId>,
-        kinematics: &Kinematics<f32>,
-    ) -> Option<(
-        CharacterStatusUpdate,
-        ObjectStatusUpdate<CharacterSequenceId>,
-    )> {
-        if input.x_axis_value != 0. {
-            let same_direction =
-                SequenceHandlerUtil::input_matches_direction(input, object_status.mirrored);
+impl CharacterSequenceHandler for WalkXMovementCheck {
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
+    ) -> Option<CharacterSequenceId> {
+        if components.controller_input.x_axis_value != 0. {
+            let same_direction = SequenceHandlerUtil::input_matches_direction(
+                components.controller_input,
+                components.mirrored,
+            );
 
-            let mirrored = if same_direction {
-                None
-            } else {
-                Some(!object_status.mirrored)
-            };
-
-            let sequence_id = match (character_status.run_counter, same_direction) {
+            let sequence_id = match (components.run_counter, same_direction) {
                 (RunCounter::Unused, _) | (RunCounter::Increase(_), false) => {
                     Some(CharacterSequenceId::Walk)
                 }
@@ -45,22 +31,11 @@ impl SequenceHandler for WalkXMovementCheck {
                 | (RunCounter::Increase(_), true) => None,
             };
 
-            let sequence_state = if sequence_id.is_some() {
-                Some(SequenceState::Begin)
+            if sequence_id.is_none() {
+                SequenceRepeat::update(components)
             } else {
-                None
-            };
-
-            let grounding = None;
-
-            if let (None, None) = (sequence_id, mirrored) {
-                return SequenceRepeat::update(input, character_status, object_status, kinematics);
+                sequence_id
             }
-
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored, grounding),
-            ))
         } else {
             // The responsibility of switching to `Stand` is handled elsewhere.
             None
@@ -72,15 +47,15 @@ impl SequenceHandler for WalkXMovementCheck {
 mod tests {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::CharacterSequenceId,
         entity::{
-            CharacterStatus, CharacterStatusUpdate, HealthPoints, Kinematics, ObjectStatus,
-            ObjectStatusUpdate, RunCounter,
+            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
         },
     };
 
     use super::WalkXMovementCheck;
-    use character::sequence_handler::SequenceHandler;
+    use character::sequence_handler::CharacterSequenceHandler;
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn none_when_no_input() {
@@ -88,78 +63,57 @@ mod tests {
 
         assert_eq!(
             None,
-            WalkXMovementCheck::update(
+            WalkXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus {
-                    run_counter: RunCounter::Increase(10),
-                    hp: HealthPoints(100)
-                },
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Walk,
-                    ..Default::default()
-                },
-                &Kinematics::default()
-            )
+                HealthPoints::default(),
+                CharacterSequenceId::Walk,
+                SequenceStatus::default(),
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::Increase(10)
+            ))
         );
     }
 
     #[test]
-    fn walk_non_mirror_when_x_axis_positive_mirror() {
+    fn walk_when_x_axis_positive_mirror() {
         let input = ControllerInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Walk),
-                    sequence_state: Some(SequenceState::Begin),
-                    mirrored: Some(false),
-                    ..Default::default()
-                }
-            )),
-            WalkXMovementCheck::update(
+            Some(CharacterSequenceId::Walk),
+            WalkXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus {
-                    run_counter: RunCounter::Increase(11),
-                    hp: HealthPoints(100),
-                },
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Walk,
-                    mirrored: true,
-                    ..Default::default()
-                },
-                &Kinematics::default()
-            )
+                HealthPoints::default(),
+                CharacterSequenceId::Walk,
+                SequenceStatus::default(),
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored(true),
+                Grounding::default(),
+                RunCounter::Increase(11)
+            ))
         );
     }
 
     #[test]
-    fn walk_mirror_when_x_axis_negative_non_mirror() {
+    fn walk_when_x_axis_negative_non_mirror() {
         let input = ControllerInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Walk),
-                    sequence_state: Some(SequenceState::Begin),
-                    mirrored: Some(true),
-                    ..Default::default()
-                }
-            )),
-            WalkXMovementCheck::update(
+            Some(CharacterSequenceId::Walk),
+            WalkXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus {
-                    run_counter: RunCounter::Increase(11),
-                    hp: HealthPoints(100),
-                },
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Walk,
-                    mirrored: false,
-                    ..Default::default()
-                },
-                &Kinematics::default()
-            )
+                HealthPoints::default(),
+                CharacterSequenceId::Walk,
+                SequenceStatus::default(),
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored(false),
+                Grounding::default(),
+                RunCounter::Increase(11)
+            ))
         );
     }
 
@@ -171,28 +125,18 @@ mod tests {
                 let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
-                    Some((
-                        CharacterStatusUpdate::default(),
-                        ObjectStatusUpdate {
-                            sequence_id: Some(CharacterSequenceId::Walk),
-                            sequence_state: Some(SequenceState::Begin),
-                            ..Default::default()
-                        }
-                    )),
-                    WalkXMovementCheck::update(
+                    Some(CharacterSequenceId::Walk),
+                    WalkXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
-                        &CharacterStatus {
-                            run_counter: RunCounter::Increase(1),
-                            hp: HealthPoints(100)
-                        },
-                        &ObjectStatus {
-                            sequence_id: CharacterSequenceId::Walk,
-                            sequence_state: SequenceState::End,
-                            mirrored,
-                            ..Default::default()
-                        },
-                        &Kinematics::default()
-                    )
+                        HealthPoints::default(),
+                        CharacterSequenceId::Walk,
+                        SequenceStatus::End,
+                        &Position::default(),
+                        &Velocity::default(),
+                        mirrored.into(),
+                        Grounding::default(),
+                        RunCounter::Increase(1)
+                    ))
                 );
             });
     }
@@ -202,27 +146,18 @@ mod tests {
         let input = ControllerInput::new(1., -1., false, false, false, false);
 
         assert_eq!(
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Run),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            )),
-            WalkXMovementCheck::update(
+            Some(CharacterSequenceId::Run),
+            WalkXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus {
-                    run_counter: RunCounter::Decrease(10),
-                    hp: HealthPoints(100),
-                },
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Walk,
-                    mirrored: false,
-                    ..Default::default()
-                },
-                &Kinematics::default()
-            )
+                HealthPoints::default(),
+                CharacterSequenceId::Walk,
+                SequenceStatus::default(),
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored(false),
+                Grounding::default(),
+                RunCounter::Decrease(10)
+            ))
         );
     }
 
@@ -231,27 +166,18 @@ mod tests {
         let input = ControllerInput::new(-1., -1., false, false, false, false);
 
         assert_eq!(
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Run),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            )),
-            WalkXMovementCheck::update(
+            Some(CharacterSequenceId::Run),
+            WalkXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus {
-                    run_counter: RunCounter::Decrease(10),
-                    hp: HealthPoints(100),
-                },
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Walk,
-                    mirrored: true,
-                    ..Default::default()
-                },
-                &Kinematics::default()
-            )
+                HealthPoints::default(),
+                CharacterSequenceId::Walk,
+                SequenceStatus::default(),
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored(true),
+                Grounding::default(),
+                RunCounter::Decrease(10)
+            ))
         );
     }
 }

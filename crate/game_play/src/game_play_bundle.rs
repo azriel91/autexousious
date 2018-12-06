@@ -4,7 +4,7 @@ use amethyst::{
 };
 use game_input::ControllerInput;
 use named_type::NamedType;
-use object_model::{config::object::CharacterSequenceId, entity::ObjectStatus};
+use object_model::config::object::CharacterSequenceId;
 use tracker::LastTrackerSystem;
 use typename::TypeName;
 
@@ -69,7 +69,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[&CharacterCollisionEffectSystem::type_name()],
         ); // kcov-ignore
 
-        // Depends on the LastTrackerSystem<ObjectStatus<CharacterSequenceId>>, so must run before it.
+        // Depends on the LastTrackerSystem<CharacterSequenceId>, so must run before it.
         builder.add(
             ObjectAnimationUpdateSystem::<CharacterSequenceId>::new(),
             &ObjectAnimationUpdateSystem::<CharacterSequenceId>::type_name(),
@@ -97,15 +97,13 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[&GamePlayEndTransitionSystem::type_name()],
         ); // kcov-ignore
 
-        let character_object_status_tracker_system =
-            LastTrackerSystem::<ObjectStatus<CharacterSequenceId>>::new(stringify!(
-                ObjectStatus<CharacterSequenceId>
-            ));
-        let character_object_status_tracker_system_name =
-            character_object_status_tracker_system.system_name();
+        let character_sequence_id_tracker_system =
+            LastTrackerSystem::<CharacterSequenceId>::new(stringify!(CharacterSequenceId));
+        let character_sequence_id_tracker_system_name =
+            character_sequence_id_tracker_system.system_name();
         builder.add(
-            character_object_status_tracker_system,
-            &character_object_status_tracker_system_name,
+            character_sequence_id_tracker_system,
+            &character_sequence_id_tracker_system_name,
             &[&ObjectAnimationUpdateSystem::<CharacterSequenceId>::type_name()],
         ); // kcov-ignore
 

@@ -1,5 +1,5 @@
 use amethyst::ecs::prelude::*;
-use object_model::entity::Kinematics;
+use object_model::entity::{Position, Velocity};
 
 /// Updates each entity's `Position` based on their `Velocity` in game.
 ///
@@ -7,14 +7,17 @@ use object_model::entity::Kinematics;
 #[derive(Debug, Default, TypeName, new)]
 pub(crate) struct ObjectKinematicsUpdateSystem;
 
-type ObjectKinematicsUpdateSystemData<'s> = WriteStorage<'s, Kinematics<f32>>;
+type ObjectKinematicsUpdateSystemData<'s> = (
+    WriteStorage<'s, Position<f32>>,
+    WriteStorage<'s, Velocity<f32>>,
+);
 
 impl<'s> System<'s> for ObjectKinematicsUpdateSystem {
     type SystemData = ObjectKinematicsUpdateSystemData<'s>;
 
-    fn run(&mut self, mut kinematics_storage: Self::SystemData) {
-        for mut kinematics in (&mut kinematics_storage).join() {
-            *kinematics.position += *kinematics.velocity;
+    fn run(&mut self, (mut positions, velocities): Self::SystemData) {
+        for (position, velocity) in (&mut positions, &velocities).join() {
+            position.0 += velocity.0;
         }
     }
 }
@@ -23,7 +26,7 @@ impl<'s> System<'s> for ObjectKinematicsUpdateSystem {
 mod test {
     use amethyst::ecs::prelude::*;
     use amethyst_test::*;
-    use object_model::entity::{Kinematics, Position, Velocity};
+    use object_model::entity::{Position, Velocity};
     use typename::TypeName;
 
     use super::ObjectKinematicsUpdateSystem;
@@ -31,29 +34,24 @@ mod test {
     #[test]
     fn adds_velocity_to_position() {
         let setup = |world: &mut World| {
-            // Create entity with Kinematics
-
+            // Create entity with kinematics
             let position = Position::<f32>::new(-2., -2., -2.);
             let velocity = Velocity::<f32>::new(-3., -3., -3.);
-            let entity = world
-                .create_entity()
-                .with(Kinematics::new(position, velocity))
-                .build();
+            let entity = world.create_entity().with(position).with(velocity).build();
 
             world.add_resource(EffectReturn(entity));
         };
 
         let assertion = |world: &mut World| {
             let entity = world.read_resource::<EffectReturn<Entity>>().0;
-            let store = world.read_storage::<Kinematics<f32>>();
+            let positions = world.read_storage::<Position<f32>>();
+            let velocities = world.read_storage::<Velocity<f32>>();
 
             let position = Position::new(-5., -5., -5.);
             let velocity = Velocity::new(-3., -3., -3.);
 
-            assert_eq!(
-                Some(&Kinematics::new(position, velocity)),
-                store.get(entity)
-            );
+            assert_eq!(Some(&position), positions.get(entity));
+            assert_eq!(Some(&velocity), velocities.get(entity));
         };
 
         // kcov-ignore-start

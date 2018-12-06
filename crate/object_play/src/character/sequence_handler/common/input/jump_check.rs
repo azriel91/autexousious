@@ -1,40 +1,21 @@
-use game_input::ControllerInput;
-use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
-    entity::{
-        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-    },
-};
+use object_model::config::object::CharacterSequenceId;
 
-use character::sequence_handler::SequenceHandler;
+use character::sequence_handler::CharacterSequenceHandler;
+use CharacterSequenceUpdateComponents;
 
 /// Returns a `Jump` update if jump is pressed.
 #[derive(Debug)]
 pub(crate) struct JumpCheck;
 
-impl SequenceHandler for JumpCheck {
-    fn update(
-        input: &ControllerInput,
-        _character_status: &CharacterStatus,
-        _object_status: &ObjectStatus<CharacterSequenceId>,
-        _kinematics: &Kinematics<f32>,
-    ) -> Option<(
-        CharacterStatusUpdate,
-        ObjectStatusUpdate<CharacterSequenceId>,
-    )> {
+impl CharacterSequenceHandler for JumpCheck {
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
+    ) -> Option<CharacterSequenceId> {
         // TODO: Don't handle action buttons in `CharacterSequenceHandler`s. Instead, each sequence
         // has default sequence update IDs for each action button, which are overridden by
         // configuration.
-        if input.jump {
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate::new(
-                    Some(CharacterSequenceId::Jump),
-                    Some(SequenceState::Begin),
-                    None,
-                    None,
-                ),
-            ))
+        if components.controller_input.jump {
+            Some(CharacterSequenceId::Jump)
         } else {
             None
         }
@@ -45,15 +26,15 @@ impl SequenceHandler for JumpCheck {
 mod tests {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::CharacterSequenceId,
         entity::{
-            CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatus,
-            ObjectStatusUpdate,
+            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
         },
     };
 
     use super::JumpCheck;
-    use character::sequence_handler::SequenceHandler;
+    use character::sequence_handler::CharacterSequenceHandler;
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn returns_none_when_jump_is_not_pressed() {
@@ -61,15 +42,17 @@ mod tests {
         controller_input.jump = false;
         assert_eq!(
             None,
-            JumpCheck::update(
+            JumpCheck::update(CharacterSequenceUpdateComponents::new(
                 &controller_input,
-                &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Stand,
-                    ..Default::default()
-                },
-                &Kinematics::<f32>::default()
-            )
+                HealthPoints::default(),
+                CharacterSequenceId::Stand,
+                SequenceStatus::default(),
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
+            ))
         );
     }
 
@@ -78,24 +61,18 @@ mod tests {
         let mut controller_input = ControllerInput::default();
         controller_input.jump = true;
         assert_eq!(
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Jump),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            )),
-            JumpCheck::update(
+            Some(CharacterSequenceId::Jump),
+            JumpCheck::update(CharacterSequenceUpdateComponents::new(
                 &controller_input,
-                &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Stand,
-                    grounding: Grounding::Airborne,
-                    ..Default::default()
-                },
-                &Kinematics::<f32>::default()
-            )
+                HealthPoints::default(),
+                CharacterSequenceId::Stand,
+                SequenceStatus::default(),
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored::default(),
+                Grounding::Airborne,
+                RunCounter::default()
+            ))
         );
     }
 }

@@ -1,12 +1,9 @@
-use game_input::ControllerInput;
-use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
-    entity::{
-        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-    },
-};
+use object_model::config::object::CharacterSequenceId;
 
-use character::sequence_handler::{common::SequenceRepeat, SequenceHandler, SequenceHandlerUtil};
+use character::sequence_handler::{
+    common::SequenceRepeat, CharacterSequenceHandler, SequenceHandlerUtil,
+};
+use CharacterSequenceUpdateComponents;
 
 /// Determines whether to switch to the `RunStop` sequence based on X input.
 ///
@@ -14,27 +11,17 @@ use character::sequence_handler::{common::SequenceRepeat, SequenceHandler, Seque
 #[derive(Debug)]
 pub(crate) struct RunStopCheck;
 
-impl SequenceHandler for RunStopCheck {
-    fn update(
-        input: &ControllerInput,
-        character_status: &CharacterStatus,
-        object_status: &ObjectStatus<CharacterSequenceId>,
-        kinematics: &Kinematics<f32>,
-    ) -> Option<(
-        CharacterStatusUpdate,
-        ObjectStatusUpdate<CharacterSequenceId>,
-    )> {
-        if SequenceHandlerUtil::input_matches_direction(input, object_status.mirrored) {
-            SequenceRepeat::update(input, character_status, object_status, kinematics)
+impl CharacterSequenceHandler for RunStopCheck {
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
+    ) -> Option<CharacterSequenceId> {
+        if SequenceHandlerUtil::input_matches_direction(
+            components.controller_input,
+            components.mirrored,
+        ) {
+            SequenceRepeat::update(components)
         } else {
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::RunStop),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                },
-            ))
+            Some(CharacterSequenceId::RunStop)
         }
     }
 }
@@ -43,15 +30,15 @@ impl SequenceHandler for RunStopCheck {
 mod tests {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::CharacterSequenceId,
         entity::{
-            CharacterStatus, CharacterStatusUpdate, HealthPoints, Kinematics, ObjectStatus,
-            ObjectStatusUpdate, RunCounter,
+            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
         },
     };
 
     use super::RunStopCheck;
-    use character::sequence_handler::SequenceHandler;
+    use character::sequence_handler::CharacterSequenceHandler;
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn none_when_input_same_direction() {
@@ -62,19 +49,17 @@ mod tests {
 
                 assert_eq!(
                     None,
-                    RunStopCheck::update(
+                    RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
-                        &CharacterStatus {
-                            hp: HealthPoints(100),
-                            ..Default::default()
-                        },
-                        &ObjectStatus {
-                            sequence_id: CharacterSequenceId::Walk,
-                            mirrored,
-                            ..Default::default()
-                        },
-                        &Kinematics::default()
-                    )
+                        HealthPoints::default(),
+                        CharacterSequenceId::Walk,
+                        SequenceStatus::default(),
+                        &Position::default(),
+                        &Velocity::default(),
+                        mirrored.into(),
+                        Grounding::default(),
+                        RunCounter::default()
+                    ))
                 );
             });
     }
@@ -84,27 +69,18 @@ mod tests {
         let input = ControllerInput::new(0., 1., false, false, false, false);
 
         assert_eq!(
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::RunStop),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            )),
-            RunStopCheck::update(
+            Some(CharacterSequenceId::RunStop),
+            RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus {
-                    hp: HealthPoints(100),
-                    ..Default::default()
-                },
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Walk,
-                    mirrored: false,
-                    ..Default::default()
-                },
-                &Kinematics::default()
-            )
+                HealthPoints::default(),
+                CharacterSequenceId::Walk,
+                SequenceStatus::default(),
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored(false),
+                Grounding::default(),
+                RunCounter::default()
+            ))
         );
     }
 
@@ -116,27 +92,18 @@ mod tests {
                 let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
-                    Some((
-                        CharacterStatusUpdate::default(),
-                        ObjectStatusUpdate {
-                            sequence_id: Some(CharacterSequenceId::RunStop),
-                            sequence_state: Some(SequenceState::Begin),
-                            ..Default::default()
-                        }
-                    )),
-                    RunStopCheck::update(
+                    Some(CharacterSequenceId::RunStop),
+                    RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
-                        &CharacterStatus {
-                            hp: HealthPoints(100),
-                            ..Default::default()
-                        },
-                        &ObjectStatus {
-                            sequence_id: CharacterSequenceId::Walk,
-                            mirrored,
-                            ..Default::default()
-                        },
-                        &Kinematics::default()
-                    )
+                        HealthPoints::default(),
+                        CharacterSequenceId::Walk,
+                        SequenceStatus::default(),
+                        &Position::default(),
+                        &Velocity::default(),
+                        mirrored.into(),
+                        Grounding::default(),
+                        RunCounter::default()
+                    ))
                 );
             });
     }
@@ -149,28 +116,18 @@ mod tests {
                 let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
-                    Some((
-                        CharacterStatusUpdate::default(),
-                        ObjectStatusUpdate {
-                            sequence_id: Some(CharacterSequenceId::Run),
-                            sequence_state: Some(SequenceState::Begin),
-                            ..Default::default()
-                        }
-                    )),
-                    RunStopCheck::update(
+                    Some(CharacterSequenceId::Run),
+                    RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
-                        &CharacterStatus {
-                            run_counter: RunCounter::Increase(1),
-                            hp: HealthPoints(100)
-                        },
-                        &ObjectStatus {
-                            sequence_id: CharacterSequenceId::Run,
-                            sequence_state: SequenceState::End,
-                            mirrored,
-                            ..Default::default()
-                        },
-                        &Kinematics::default()
-                    )
+                        HealthPoints::default(),
+                        CharacterSequenceId::Run,
+                        SequenceStatus::End,
+                        &Position::default(),
+                        &Velocity::default(),
+                        mirrored.into(),
+                        Grounding::default(),
+                        RunCounter::default()
+                    ))
                 );
             });
     }

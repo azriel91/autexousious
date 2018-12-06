@@ -3,17 +3,19 @@ use amethyst::{
     ecs::prelude::*,
 };
 
-use config::{object::CharacterSequenceId, CharacterDefinition};
-use loaded::ObjectHandle;
+use config::object::CharacterSequenceId;
+use loaded::{ObjectHandle, SequenceEndTransitions};
 
 /// Represents an in-game character that has been loaded.
+///
+/// Each of these fields should be a component that is attached to the character entity.
 #[derive(Clone, Derivative, PartialEq, new)]
 #[derivative(Debug)]
 pub struct Character {
     /// Handle to loaded object data.
     pub object_handle: ObjectHandle<CharacterSequenceId>,
-    /// Character configuration.
-    pub definition: CharacterDefinition,
+    /// Component sequence transitions when a sequence ends.
+    pub sequence_end_transitions: SequenceEndTransitions<CharacterSequenceId>,
 }
 
 impl Asset for Character {

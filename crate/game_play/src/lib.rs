@@ -38,6 +38,8 @@ extern crate object_loading;
 extern crate object_model;
 extern crate object_play;
 extern crate shape_model;
+extern crate shred;
+extern crate shred_derive;
 extern crate tracker;
 extern crate typename;
 #[macro_use]

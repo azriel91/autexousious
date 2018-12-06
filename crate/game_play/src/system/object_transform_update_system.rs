@@ -1,5 +1,5 @@
 use amethyst::{core::transform::Transform, ecs::prelude::*};
-use object_model::entity::Kinematics;
+use object_model::entity::Position;
 
 /// Updates each entity's `Transform` based on their `Position` in game.
 ///
@@ -7,19 +7,16 @@ use object_model::entity::Kinematics;
 #[derive(Debug, Default, TypeName, new)]
 pub(crate) struct ObjectTransformUpdateSystem;
 
-type ObjectTransformUpdateSystemData<'s> = (
-    ReadStorage<'s, Kinematics<f32>>,
-    WriteStorage<'s, Transform>,
-);
+type ObjectTransformUpdateSystemData<'s> =
+    (ReadStorage<'s, Position<f32>>, WriteStorage<'s, Transform>);
 
 impl<'s> System<'s> for ObjectTransformUpdateSystem {
     type SystemData = ObjectTransformUpdateSystemData<'s>;
 
-    fn run(&mut self, (kinematics_storage, mut transform_storage): Self::SystemData) {
-        for (kinematics, mut transform) in (&kinematics_storage, &mut transform_storage).join() {
+    fn run(&mut self, (positions, mut transform_storage): Self::SystemData) {
+        for (position, mut transform) in (&positions, &mut transform_storage).join() {
             // We subtract z from the y translation as the z axis increases "out of the screen".
             // Entities that have a larger Z value are transformed downwards.
-            let position = &kinematics.position;
             transform.set_x(position.x);
             transform.set_y(position.y - position.z);
             transform.set_z(position.z);
@@ -34,7 +31,7 @@ mod test {
         ecs::prelude::*,
     };
     use amethyst_test::*;
-    use object_model::entity::{Kinematics, Position, Velocity};
+    use object_model::entity::Position;
     use typename::TypeName;
 
     use super::ObjectTransformUpdateSystem;
@@ -42,18 +39,13 @@ mod test {
     #[test]
     fn updates_transform_with_x_and_yz() {
         let setup = |world: &mut World| {
-            // Create entity with Kinematics
+            // Create entity with position
             let position = Position::<f32>::new(-5., -3., -4.);
-            let velocity = Velocity::default();
 
             let mut transform = Transform::default();
             transform.set_position(Vector3::new(10., 20., 0.));
 
-            let entity = world
-                .create_entity()
-                .with(Kinematics::new(position, velocity))
-                .with(transform)
-                .build();
+            let entity = world.create_entity().with(position).with(transform).build();
 
             world.add_resource(EffectReturn(entity));
         };

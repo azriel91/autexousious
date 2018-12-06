@@ -1,38 +1,18 @@
-use game_input::ControllerInput;
-use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
-    entity::{
-        CharacterStatus, CharacterStatusUpdate, Grounding, Kinematics, ObjectStatus,
-        ObjectStatusUpdate,
-    },
-};
+use object_model::{config::object::CharacterSequenceId, entity::Grounding};
 
-use character::sequence_handler::SequenceHandler;
+use character::sequence_handler::CharacterSequenceHandler;
+use CharacterSequenceUpdateComponents;
 
 /// Returns a `JumpDescend` update if the grounding is `Airborne`.
 #[derive(Debug)]
 pub(crate) struct AirborneCheck;
 
-impl SequenceHandler for AirborneCheck {
-    fn update(
-        _input: &ControllerInput,
-        _character_status: &CharacterStatus,
-        object_status: &ObjectStatus<CharacterSequenceId>,
-        _kinematics: &Kinematics<f32>,
-    ) -> Option<(
-        CharacterStatusUpdate,
-        ObjectStatusUpdate<CharacterSequenceId>,
-    )> {
-        if object_status.grounding == Grounding::Airborne {
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate::new(
-                    Some(CharacterSequenceId::JumpDescend),
-                    Some(SequenceState::Begin),
-                    None,
-                    None,
-                ),
-            ))
+impl CharacterSequenceHandler for AirborneCheck {
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
+    ) -> Option<CharacterSequenceId> {
+        if components.grounding == Grounding::Airborne {
+            Some(CharacterSequenceId::JumpDescend)
         } else {
             None
         }
@@ -43,56 +23,49 @@ impl SequenceHandler for AirborneCheck {
 mod tests {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::CharacterSequenceId,
         entity::{
-            CharacterStatus, CharacterStatusUpdate, Grounding, HealthPoints, Kinematics,
-            ObjectStatus, ObjectStatusUpdate, RunCounter,
+            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
         },
     };
 
     use super::AirborneCheck;
-    use character::sequence_handler::SequenceHandler;
+    use character::sequence_handler::CharacterSequenceHandler;
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn returns_none_when_grounding_is_on_ground() {
         assert_eq!(
             None,
-            AirborneCheck::update(
+            AirborneCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
-                &CharacterStatus {
-                    run_counter: RunCounter::Unused,
-                    hp: HealthPoints(100)
-                },
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Stand,
-                    ..Default::default()
-                },
-                &Kinematics::<f32>::default()
-            )
+                HealthPoints::default(),
+                CharacterSequenceId::Stand,
+                SequenceStatus::default(),
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
+            ))
         );
     }
 
     #[test]
     fn switches_to_jump_descend_when_grounding_is_airborne() {
         assert_eq!(
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::JumpDescend),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            )),
-            AirborneCheck::update(
+            Some(CharacterSequenceId::JumpDescend),
+            AirborneCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
-                &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Stand,
-                    grounding: Grounding::Airborne,
-                    ..Default::default()
-                },
-                &Kinematics::<f32>::default()
-            )
+                HealthPoints::default(),
+                CharacterSequenceId::Stand,
+                SequenceStatus::default(),
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored::default(),
+                Grounding::Airborne,
+                RunCounter::default()
+            ))
         );
     }
 }

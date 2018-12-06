@@ -1,37 +1,18 @@
-use game_input::ControllerInput;
-use object_model::{
-    config::object::{CharacterSequenceId, SequenceState},
-    entity::{
-        CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
-    },
-};
+use object_model::{config::object::CharacterSequenceId, entity::SequenceStatus};
 
-use character::sequence_handler::SequenceHandler;
+use character::sequence_handler::CharacterSequenceHandler;
+use CharacterSequenceUpdateComponents;
 
 /// Restarts a sequence when it has reached the end.
 #[derive(Debug)]
 pub(crate) struct SequenceRepeat;
 
-impl SequenceHandler for SequenceRepeat {
-    fn update(
-        _input: &ControllerInput,
-        _character_status: &CharacterStatus,
-        object_status: &ObjectStatus<CharacterSequenceId>,
-        _kinematics: &Kinematics<f32>,
-    ) -> Option<(
-        CharacterStatusUpdate,
-        ObjectStatusUpdate<CharacterSequenceId>,
-    )> {
-        if object_status.sequence_state == SequenceState::End {
-            let sequence_id = Some(object_status.sequence_id);
-            let sequence_state = Some(SequenceState::Begin);
-            let mirrored = None;
-            let grounding = None;
-
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate::new(sequence_id, sequence_state, mirrored, grounding),
-            ))
+impl CharacterSequenceHandler for SequenceRepeat {
+    fn update<'c>(
+        components: CharacterSequenceUpdateComponents<'c>,
+    ) -> Option<CharacterSequenceId> {
+        if components.sequence_status == SequenceStatus::End {
+            Some(components.character_sequence_id)
         } else {
             None
         }
@@ -42,29 +23,31 @@ impl SequenceHandler for SequenceRepeat {
 mod tests {
     use game_input::ControllerInput;
     use object_model::{
-        config::object::{CharacterSequenceId, SequenceState},
+        config::object::CharacterSequenceId,
         entity::{
-            CharacterStatus, CharacterStatusUpdate, Kinematics, ObjectStatus, ObjectStatusUpdate,
+            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
         },
     };
 
     use super::SequenceRepeat;
-    use character::sequence_handler::SequenceHandler;
+    use character::sequence_handler::CharacterSequenceHandler;
+    use CharacterSequenceUpdateComponents;
 
     #[test]
     fn no_change_when_sequence_begin() {
         assert_eq!(
             None,
-            SequenceRepeat::update(
+            SequenceRepeat::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
-                &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Walk,
-                    sequence_state: SequenceState::Begin,
-                    ..Default::default()
-                },
-                &Kinematics::default()
-            )
+                HealthPoints::default(),
+                CharacterSequenceId::Walk,
+                SequenceStatus::Begin,
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
+            ))
         );
     }
 
@@ -72,16 +55,17 @@ mod tests {
     fn no_change_when_sequence_ongoing() {
         assert_eq!(
             None,
-            SequenceRepeat::update(
+            SequenceRepeat::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
-                &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Walk,
-                    sequence_state: SequenceState::Ongoing,
-                    ..Default::default()
-                },
-                &Kinematics::default()
-            )
+                HealthPoints::default(),
+                CharacterSequenceId::Walk,
+                SequenceStatus::Ongoing,
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
+            ))
         );
     }
 
@@ -90,24 +74,18 @@ mod tests {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            Some((
-                CharacterStatusUpdate::default(),
-                ObjectStatusUpdate {
-                    sequence_id: Some(CharacterSequenceId::Walk),
-                    sequence_state: Some(SequenceState::Begin),
-                    ..Default::default()
-                }
-            )),
-            SequenceRepeat::update(
+            Some(CharacterSequenceId::Walk),
+            SequenceRepeat::update(CharacterSequenceUpdateComponents::new(
                 &input,
-                &CharacterStatus::default(),
-                &ObjectStatus {
-                    sequence_id: CharacterSequenceId::Walk,
-                    sequence_state: SequenceState::End,
-                    ..Default::default()
-                },
-                &Kinematics::default()
-            )
+                HealthPoints::default(),
+                CharacterSequenceId::Walk,
+                SequenceStatus::End,
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
+            ))
         );
     }
 }
