@@ -1,4 +1,4 @@
-use config::MapBounds;
+use crate::config::MapBounds;
 
 /// Coordinates of the limits of the playable area.
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, new)]
@@ -36,7 +36,7 @@ impl From<MapBounds> for Margins {
 #[cfg(test)]
 mod tests {
     use super::Margins;
-    use config::MapBounds;
+    use crate::config::MapBounds;
 
     #[test]
     fn from_map_bounds() {

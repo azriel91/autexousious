@@ -4,7 +4,7 @@ use amethyst::{
 };
 use typename::TypeName;
 
-use CharacterSelectionSystem;
+use crate::CharacterSelectionSystem;
 
 /// Adds the `CharacterSelectionSystem` to the `World`.
 ///

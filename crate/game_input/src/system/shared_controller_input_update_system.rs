@@ -1,6 +1,6 @@
 use amethyst::ecs::prelude::*;
 
-use {ControllerInput, InputControlled, SharedInputControlled};
+use crate::{ControllerInput, InputControlled, SharedInputControlled};
 
 /// Updates the `ControllerInput` component based on input from the sharing controllers.
 #[derive(Debug, Default, TypeName, new)]
@@ -69,12 +69,12 @@ mod test {
     use typename::TypeName;
 
     use super::SharedControllerInputUpdateSystem;
-    use ControllerId;
-    use ControllerInput;
-    use InputControlled;
-    use PlayerActionControl;
-    use PlayerAxisControl;
-    use SharedInputControlled;
+    use crate::ControllerId;
+    use crate::ControllerInput;
+    use crate::InputControlled;
+    use crate::PlayerActionControl;
+    use crate::PlayerAxisControl;
+    use crate::SharedInputControlled;
 
     #[test]
     fn merges_axes_controller_input_with_limit_correction() {

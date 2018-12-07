@@ -10,7 +10,7 @@ use std::env;
 use std::io;
 use std::path::{Path, PathBuf};
 
-use resource::find::find_in_internal;
+use crate::resource::find::find_in_internal;
 
 // Note to self:
 //
@@ -92,9 +92,9 @@ mod test {
     use tempfile::tempdir;
 
     use super::{assets_dir_internal, ASSETS};
-    use resource;
-    use resource::dir::{DiscoveryContext, Error, ErrorKind};
-    use resource::FindContext;
+    use crate::resource;
+    use crate::resource::dir::{DiscoveryContext, Error, ErrorKind};
+    use crate::resource::FindContext;
 
     // kcov-ignore-start
     fn assert_dir_discovery_error(

@@ -28,12 +28,12 @@ extern crate typename;
 #[macro_use]
 extern crate typename_derive;
 
-pub use map_selection_bundle::MapSelectionBundle;
-pub use map_selection_state::{
+pub use crate::map_selection_bundle::MapSelectionBundle;
+pub use crate::map_selection_state::{
     MapSelectionState, MapSelectionStateBuilder, MapSelectionStateDelegate,
 };
-pub use map_selection_status::MapSelectionStatus;
-pub(crate) use system::MapSelectionSystem;
+pub use crate::map_selection_status::MapSelectionStatus;
+pub(crate) use crate::system::MapSelectionSystem;
 
 mod map_selection_bundle;
 mod map_selection_state;

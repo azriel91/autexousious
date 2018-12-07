@@ -30,9 +30,9 @@ extern crate typename;
 #[macro_use]
 extern crate typename_derive;
 
-pub(crate) use component::{MapSelectionWidget, WidgetState};
-pub use map_selection_ui_bundle::MapSelectionUiBundle;
-pub(crate) use system::{MapSelectionWidgetInputSystem, MapSelectionWidgetUiSystem};
+pub(crate) use crate::component::{MapSelectionWidget, WidgetState};
+pub use crate::map_selection_ui_bundle::MapSelectionUiBundle;
+pub(crate) use crate::system::{MapSelectionWidgetInputSystem, MapSelectionWidgetUiSystem};
 
 mod component;
 mod map_selection_ui_bundle;

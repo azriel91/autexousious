@@ -11,8 +11,8 @@ use game_model::loaded::{MapAssets, SlugAndHandle};
 use map_selection::MapSelectionStatus;
 use map_selection_model::{MapSelection, MapSelectionEvent};
 
-use MapSelectionWidget;
-use WidgetState;
+use crate::MapSelectionWidget;
+use crate::WidgetState;
 
 const FONT_SIZE: f32 = 20.;
 
@@ -244,8 +244,8 @@ mod test {
     use typename::TypeName;
 
     use super::MapSelectionWidgetUiSystem;
-    use MapSelectionWidget;
-    use WidgetState;
+    use crate::MapSelectionWidget;
+    use crate::WidgetState;
 
     #[test]
     fn initializes_ui_when_map_selections_waiting() {

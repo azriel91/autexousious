@@ -186,7 +186,7 @@ mod test {
     use sprite_model::config::{SpriteOffset, SpriteSheetDefinition};
 
     use super::SpriteSheetMapper;
-    use TextureLoader;
+    use crate::TextureLoader;
 
     #[test]
     fn map_multiple_sprite_sheet_definitions() {

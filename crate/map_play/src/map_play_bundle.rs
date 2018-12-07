@@ -4,7 +4,7 @@ use amethyst::{
 };
 use typename::TypeName;
 
-use MapAnimationUpdateSystem;
+use crate::MapAnimationUpdateSystem;
 
 /// Adds the object type update systems to the provided dispatcher.
 ///

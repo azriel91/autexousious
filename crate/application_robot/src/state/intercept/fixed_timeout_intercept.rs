@@ -2,7 +2,7 @@ use std::time::{Duration, Instant};
 
 use amethyst::prelude::*;
 
-use state::Intercept;
+use crate::state::Intercept;
 
 /// Pops the application stack after a specified timeout.
 ///
@@ -76,7 +76,7 @@ mod test {
     use debug_util_amethyst::assert_eq_opt_trans;
 
     use super::FixedTimeoutIntercept;
-    use state::Intercept;
+    use crate::state::Intercept;
 
     fn setup(timeout: Duration) -> (FixedTimeoutIntercept, World) {
         let world = World::new();

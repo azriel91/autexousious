@@ -1,7 +1,7 @@
 use amethyst::ecs::Entity;
 use shape_model::Volume;
 
-use config::Interaction;
+use crate::config::Interaction;
 
 /// Event indicating a collision has occurred.
 #[derive(Clone, Debug, PartialEq, new)]

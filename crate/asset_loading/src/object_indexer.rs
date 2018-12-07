@@ -6,7 +6,7 @@ use heck::SnakeCase;
 use object_model::ObjectType;
 use strum::IntoEnumIterator;
 
-use {AssetIndexingUtils, DirTraverse};
+use crate::{AssetIndexingUtils, DirTraverse};
 
 /// Indexes object types' assets.
 #[derive(Debug)]

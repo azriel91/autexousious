@@ -5,8 +5,8 @@ use amethyst::{ecs::prelude::*, shrev::EventChannel};
 use application_input::ApplicationEvent;
 use stdio_spi::VariantAndTokens;
 
-use reader::{self, StdinReader};
-use IoAppEventUtils;
+use crate::reader::{self, StdinReader};
+use crate::IoAppEventUtils;
 
 /// Type to fetch the application event channel.
 type StdinSystemData<'s> = (

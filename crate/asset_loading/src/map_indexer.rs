@@ -2,7 +2,7 @@ use std::path::Path;
 
 use game_model::config::AssetRecord;
 
-use {AssetIndexingUtils, DirTraverse};
+use crate::{AssetIndexingUtils, DirTraverse};
 
 /// Indexes map assets.
 #[derive(Debug)]

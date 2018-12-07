@@ -7,7 +7,7 @@ use application_event::AppEvent;
 use application_state::AutexState;
 use application_ui::ThemeLoader;
 
-use AssetLoader;
+use crate::AssetLoader;
 
 /// `State` where resource loading takes place.
 ///

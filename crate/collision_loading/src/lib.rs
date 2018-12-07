@@ -19,12 +19,12 @@ extern crate typename;
 #[macro_use]
 extern crate typename_derive;
 
-pub use animation::{
+pub use crate::animation::{
     BodyAnimationFrame, BodyAnimationLoader, BodyAnimationSequence, InteractionAnimationFrame,
     InteractionAnimationLoader, InteractionAnimationSequence,
 };
-pub use collision_loading_bundle::CollisionLoadingBundle;
-pub(crate) use system::CollisionLoadingSystem;
+pub use crate::collision_loading_bundle::CollisionLoadingBundle;
+pub(crate) use crate::system::CollisionLoadingSystem;
 
 mod animation;
 mod collision_loading_bundle;

@@ -4,7 +4,7 @@ use map_model::{
     loaded::{Map, Margins},
 };
 
-use NAMESPACE_BUILT_IN;
+use crate::NAMESPACE_BUILT_IN;
 
 /// Name of the "blank" map asset.
 pub const MAP_BLANK_NAME: &str = "blank";

@@ -3,7 +3,7 @@ use amethyst::{
     ecs::prelude::*,
 };
 
-use config::object::{CharacterSequenceId, ObjectDefinition};
+use crate::config::object::{CharacterSequenceId, ObjectDefinition};
 
 /// Contains all of the sequences for an `Object`.
 #[derive(Clone, Debug, Deserialize, PartialEq, new)]

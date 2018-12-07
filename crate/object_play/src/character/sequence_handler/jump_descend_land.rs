@@ -1,7 +1,7 @@
 use object_model::{config::object::CharacterSequenceId, entity::SequenceStatus};
 
-use character::sequence_handler::CharacterSequenceHandler;
-use CharacterSequenceUpdateComponents;
+use crate::character::sequence_handler::CharacterSequenceHandler;
+use crate::CharacterSequenceUpdateComponents;
 
 #[derive(Debug)]
 pub(crate) struct JumpDescendLand;
@@ -29,8 +29,8 @@ mod test {
     };
 
     use super::JumpDescendLand;
-    use character::sequence_handler::CharacterSequenceHandler;
-    use CharacterSequenceUpdateComponents;
+    use crate::character::sequence_handler::CharacterSequenceHandler;
+    use crate::CharacterSequenceUpdateComponents;
 
     #[test]
     fn no_update_when_sequence_not_ended() {

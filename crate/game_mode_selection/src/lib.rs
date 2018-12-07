@@ -23,10 +23,10 @@ extern crate log;
 extern crate map_selection;
 extern crate map_selection_ui;
 
-pub use game_mode_selection_state::{
+pub use crate::game_mode_selection_state::{
     GameModeSelectionState, GameModeSelectionStateBuilder, GameModeSelectionStateDelegate,
 };
-pub(crate) use game_mode_selection_trans::GameModeSelectionTrans;
+pub(crate) use crate::game_mode_selection_trans::GameModeSelectionTrans;
 
 mod game_mode_selection_state;
 mod game_mode_selection_trans;

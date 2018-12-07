@@ -32,7 +32,7 @@ extern crate strum_macros;
 #[cfg(test)]
 extern crate toml;
 
-pub use object_type::ObjectType;
+pub use crate::object_type::ObjectType;
 
 pub mod config;
 pub mod entity;

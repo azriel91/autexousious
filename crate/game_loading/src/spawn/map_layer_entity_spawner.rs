@@ -7,9 +7,9 @@ use amethyst::{
 };
 use map_model::loaded::{Map, MapHandle};
 
-use AnimationRunner;
-use MapLayerComponentStorages;
-use MapSpawningResources;
+use crate::AnimationRunner;
+use crate::MapLayerComponentStorages;
+use crate::MapSpawningResources;
 
 /// Spawns map layer entities into the world.
 #[derive(Debug)]

@@ -1,6 +1,6 @@
 use object_model::config::object::CharacterSequenceId;
 
-use CharacterSequenceUpdateComponents;
+use crate::CharacterSequenceUpdateComponents;
 
 pub(super) use self::fall_forward_ascend::FallForwardAscend;
 pub(super) use self::fall_forward_descend::FallForwardDescend;
@@ -70,7 +70,7 @@ mod test {
     };
 
     use super::CharacterSequenceHandler;
-    use CharacterSequenceUpdateComponents;
+    use crate::CharacterSequenceUpdateComponents;
 
     #[test]
     fn sequence_handler_default_update_is_none() {

@@ -29,8 +29,8 @@ extern crate strum;
 #[cfg(test)]
 extern crate tempfile;
 
-pub use object::{CharacterLoader, ObjectLoader};
-pub use object_loading_bundle::ObjectLoadingBundle;
+pub use crate::object::{CharacterLoader, ObjectLoader};
+pub use crate::object_loading_bundle::ObjectLoadingBundle;
 
 mod object;
 mod object_loading_bundle;

@@ -1,5 +1,5 @@
-use config::Layer;
-use config::MapHeader;
+use crate::config::Layer;
+use crate::config::MapHeader;
 
 /// Defines a playable area that objects can reside in.
 #[derive(Clone, Debug, Deserialize, PartialEq, new)]
@@ -17,7 +17,7 @@ mod test {
     use toml;
 
     use super::MapDefinition;
-    use config::{Layer, MapBounds, MapHeader, Position};
+    use crate::config::{Layer, MapBounds, MapHeader, Position};
 
     const MAP_NO_LAYERS: &str = r#"
         [header]

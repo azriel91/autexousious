@@ -16,8 +16,8 @@ extern crate log;
 extern crate map_model;
 extern crate sprite_loading;
 
-pub use map_loader::MapLoader;
-pub use map_loading_bundle::MapLoadingBundle;
+pub use crate::map_loader::MapLoader;
+pub use crate::map_loading_bundle::MapLoadingBundle;
 
 mod map_loader;
 mod map_loading_bundle;

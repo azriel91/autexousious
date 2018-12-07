@@ -56,7 +56,7 @@ extern crate serde;
 extern crate tempfile;
 extern crate toml;
 
-pub use resource::{
+pub use crate::resource::{
     find, find_in, load, load_in, Error, ErrorKind, FindContext, Format, IoUtils, Result,
 };
 

@@ -6,7 +6,7 @@ use amethyst::{core::SystemBundle, ecs::prelude::*, prelude::*};
 use amethyst_utils::removal::{self, Removal};
 use application_event::AppEvent;
 
-use {AutexState, HookFn, HookableFn};
+use crate::{AutexState, HookFn, HookableFn};
 
 /// Wrapper `State` with a custom dispatcher.
 ///
@@ -241,8 +241,8 @@ mod tests {
     use rayon::ThreadPoolBuilder;
 
     use super::{AppState, AppStateBuilder};
-    use HookFn;
-    use HookableFn;
+    use crate::HookFn;
+    use crate::HookableFn;
 
     type Invocations = Rc<RefCell<Vec<Invocation>>>;
 

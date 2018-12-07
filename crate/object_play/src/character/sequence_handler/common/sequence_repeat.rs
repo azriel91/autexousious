@@ -1,7 +1,7 @@
 use object_model::{config::object::CharacterSequenceId, entity::SequenceStatus};
 
-use character::sequence_handler::CharacterSequenceHandler;
-use CharacterSequenceUpdateComponents;
+use crate::character::sequence_handler::CharacterSequenceHandler;
+use crate::CharacterSequenceUpdateComponents;
 
 /// Restarts a sequence when it has reached the end.
 #[derive(Debug)]
@@ -30,8 +30,8 @@ mod tests {
     };
 
     use super::SequenceRepeat;
-    use character::sequence_handler::CharacterSequenceHandler;
-    use CharacterSequenceUpdateComponents;
+    use crate::character::sequence_handler::CharacterSequenceHandler;
+    use crate::CharacterSequenceUpdateComponents;
 
     #[test]
     fn no_change_when_sequence_begin() {

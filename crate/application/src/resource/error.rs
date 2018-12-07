@@ -5,7 +5,7 @@ use error_chain;
 use ron;
 use toml;
 
-use resource::FindContext;
+use crate::resource::FindContext;
 
 // kcov-ignore-start
 /// `ErrorKind` for application configuration
@@ -80,7 +80,7 @@ mod test {
     use toml;
 
     use super::{Error, ErrorKind};
-    use FindContext;
+    use crate::FindContext;
 
     #[test]
     fn msg_error_into_io_error() {

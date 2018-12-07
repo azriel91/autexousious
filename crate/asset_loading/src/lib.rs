@@ -25,15 +25,15 @@ extern crate strum;
 #[cfg(test)]
 extern crate tempfile;
 
-pub use asset_discovery::AssetDiscovery;
-pub use asset_indexer::AssetIndexer;
-pub(crate) use asset_indexing_utils::AssetIndexingUtils;
-pub use dir_traverse::DirTraverse;
-pub(crate) use map_indexer::MapIndexer;
-pub use namespace_directory::NamespaceDirectory;
-pub(crate) use namespace_discoverer::NamespaceDiscoverer;
-pub use namespace_discoverer::{ASSETS_DEFAULT_DIR, ASSETS_DOWNLOAD_DIR, ASSETS_TEST_DIR};
-pub(crate) use object_indexer::ObjectIndexer;
+pub use crate::asset_discovery::AssetDiscovery;
+pub use crate::asset_indexer::AssetIndexer;
+pub(crate) use crate::asset_indexing_utils::AssetIndexingUtils;
+pub use crate::dir_traverse::DirTraverse;
+pub(crate) use crate::map_indexer::MapIndexer;
+pub use crate::namespace_directory::NamespaceDirectory;
+pub(crate) use crate::namespace_discoverer::NamespaceDiscoverer;
+pub use crate::namespace_discoverer::{ASSETS_DEFAULT_DIR, ASSETS_DOWNLOAD_DIR, ASSETS_TEST_DIR};
+pub(crate) use crate::object_indexer::ObjectIndexer;
 
 mod asset_discovery;
 mod asset_indexer;

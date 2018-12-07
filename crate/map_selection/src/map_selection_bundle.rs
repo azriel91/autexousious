@@ -4,7 +4,7 @@ use amethyst::{
 };
 use typename::TypeName;
 
-use MapSelectionSystem;
+use crate::MapSelectionSystem;
 
 /// Adds the `MapSelectionSystem` to the `World`.
 #[derive(Debug, new)]

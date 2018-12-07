@@ -4,8 +4,8 @@ use amethyst::{
 };
 use typename::TypeName;
 
-use CharacterSelectionSpawningSystem;
-use MapSelectionSpawningSystem;
+use crate::CharacterSelectionSpawningSystem;
+use crate::MapSelectionSpawningSystem;
 
 /// Adds game loading systems to the provided dispatcher.
 #[derive(Debug, new)]

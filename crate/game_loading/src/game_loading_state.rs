@@ -5,8 +5,8 @@ use application_event::AppEvent;
 use application_state::AutexState;
 use game_model::play::GameEntities;
 
-use GameLoadingBundle;
-use GameLoadingStatus;
+use crate::GameLoadingBundle;
+use crate::GameLoadingStatus;
 
 /// `State` where game play takes place.
 #[derive(Derivative, Default, new)]

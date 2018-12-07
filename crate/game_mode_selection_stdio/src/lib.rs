@@ -21,9 +21,9 @@ extern crate typename;
 #[macro_use]
 extern crate typename_derive;
 
-pub use game_mode_selection_event_args::GameModeSelectionEventArgs;
-pub use game_mode_selection_event_stdin_mapper::GameModeSelectionEventStdinMapper;
-pub use game_mode_selection_stdio_bundle::GameModeSelectionStdioBundle;
+pub use crate::game_mode_selection_event_args::GameModeSelectionEventArgs;
+pub use crate::game_mode_selection_event_stdin_mapper::GameModeSelectionEventStdinMapper;
+pub use crate::game_mode_selection_stdio_bundle::GameModeSelectionStdioBundle;
 
 mod game_mode_selection_event_args;
 mod game_mode_selection_event_stdin_mapper;

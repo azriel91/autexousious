@@ -1,4 +1,4 @@
-use BodyAnimationFrame;
+use crate::BodyAnimationFrame;
 
 /// Information for an animation sequence.
 pub trait BodyAnimationSequence {

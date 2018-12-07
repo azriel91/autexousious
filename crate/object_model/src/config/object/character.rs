@@ -15,8 +15,8 @@ mod test {
     use toml;
 
     use super::{CharacterDefinition, CharacterSequenceId};
-    use config::object::sequence::ObjectFrame;
-    use config::object::{ObjectDefinition, Sequence};
+    use crate::config::object::sequence::ObjectFrame;
+    use crate::config::object::{ObjectDefinition, Sequence};
 
     const OBJECT_TOML: &str = r#"
         [sequences.stand]

@@ -13,7 +13,7 @@ use application_event::AppEvent;
 use game_model::play::GameEntities;
 use game_play_model::{GamePlayEvent, GamePlayStatus};
 
-use GamePlayBundle;
+use crate::GamePlayBundle;
 
 /// `State` where game play takes place.
 #[derive(Derivative, Default, new)]

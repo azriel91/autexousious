@@ -11,12 +11,12 @@ use object_model::{
     ObjectType,
 };
 
-use CharacterComponentStorages;
-use CharacterEntitySpawner;
-use GameLoadingStatus;
-use ObjectAnimationStorages;
-use ObjectComponentStorages;
-use ObjectSpawningResources;
+use crate::CharacterComponentStorages;
+use crate::CharacterEntitySpawner;
+use crate::GameLoadingStatus;
+use crate::ObjectAnimationStorages;
+use crate::ObjectComponentStorages;
+use crate::ObjectSpawningResources;
 
 /// Spawns character entities based on the character selection.
 #[derive(Debug, Default, TypeName, new)]
@@ -128,7 +128,7 @@ mod tests {
     use typename::TypeName;
 
     use super::CharacterSelectionSpawningSystem;
-    use GameLoadingStatus;
+    use crate::GameLoadingStatus;
 
     #[test]
     fn returns_if_characters_already_loaded() {

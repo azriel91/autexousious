@@ -14,7 +14,7 @@ extern crate object_model;
 #[macro_use]
 extern crate pretty_assertions;
 
-pub use character::{
+pub use crate::character::{
     CharacterSequenceUpdateComponents, CharacterSequenceUpdater, MirroredUpdater, RunCounterUpdater,
 };
 

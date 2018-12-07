@@ -2,7 +2,7 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::path::{Component, Path};
 
-use resource::{Error, Result};
+use crate::resource::{Error, Result};
 
 /// One-liner functions to interact with files.
 #[derive(Debug)]
@@ -76,7 +76,7 @@ mod test {
     use tempfile::NamedTempFile;
 
     use super::IoUtils;
-    use ErrorKind;
+    use crate::ErrorKind;
 
     #[test]
     fn reads_file_to_bytes() {

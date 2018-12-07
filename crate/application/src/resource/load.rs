@@ -6,11 +6,11 @@ use ron;
 use serde::Deserialize;
 use toml;
 
-use find;
-use find_in;
-use resource::error::Result;
-use Format;
-use IoUtils;
+use crate::find;
+use crate::find_in;
+use crate::resource::error::Result;
+use crate::Format;
+use crate::IoUtils;
 
 /// Loads and returns the data from the specified file.
 ///
@@ -113,10 +113,10 @@ mod test {
     use toml;
 
     use super::{load, load_in};
-    use resource::dir;
-    use resource::error::ErrorKind;
-    use resource::test_support::{exe_dir, setup_temp_file};
-    use resource::{FindContext, Format};
+    use crate::resource::dir;
+    use crate::resource::error::ErrorKind;
+    use crate::resource::test_support::{exe_dir, setup_temp_file};
+    use crate::resource::{FindContext, Format};
 
     test_mutex!();
 

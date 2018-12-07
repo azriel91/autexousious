@@ -45,9 +45,9 @@ extern crate typename;
 #[macro_use]
 extern crate typename_derive;
 
-pub(crate) use game_play_bundle::GamePlayBundle;
-pub use game_play_state::GamePlayState;
-pub(crate) use system::{
+pub(crate) use crate::game_play_bundle::GamePlayBundle;
+pub use crate::game_play_state::GamePlayState;
+pub(crate) use crate::system::{
     CharacterCollisionEffectSystem, CharacterGroundingSystem, CharacterKinematicsSystem,
     CharacterSequenceUpdateSystem, GamePlayEndDetectionSystem, GamePlayEndTransitionSystem,
     ObjectAnimationUpdateSystem, ObjectCollisionDetectionSystem, ObjectKinematicsUpdateSystem,

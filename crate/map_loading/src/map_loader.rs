@@ -69,7 +69,7 @@ mod tests {
     use map_model::loaded::{Map, MapHandle};
 
     use super::MapLoader;
-    use MapLoadingBundle;
+    use crate::MapLoadingBundle;
 
     // Map with layers case covered by `MapLoadingBundle` test
 

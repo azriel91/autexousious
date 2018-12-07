@@ -1,6 +1,6 @@
 use game_input::ControllerId;
 
-use CharacterSelection;
+use crate::CharacterSelection;
 
 /// Event signalling a change in character selection state.
 #[derive(Clone, Debug, PartialEq)]

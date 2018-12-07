@@ -17,12 +17,12 @@ extern crate lazy_static;
 extern crate object_model;
 extern crate strum;
 
-pub use common::{ASSETS_PATH, NAMESPACE_TEST, NAMESPACE_TEST_PATH};
-pub use map::{
+pub use crate::common::{ASSETS_PATH, NAMESPACE_TEST, NAMESPACE_TEST_PATH};
+pub use crate::map::{
     ASSETS_MAP_EMPTY_NAME, ASSETS_MAP_EMPTY_PATH, ASSETS_MAP_EMPTY_SLUG, ASSETS_MAP_FADE_NAME,
     ASSETS_MAP_FADE_PATH, ASSETS_MAP_FADE_SLUG,
 };
-pub use object::{
+pub use crate::object::{
     ASSETS_CHAR_BAT_NAME, ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SLUG,
     ASSETS_CHAR_BAT_SPRITE_BROWN_NAME, ASSETS_CHAR_BAT_SPRITE_GREY_NAME, ASSETS_OBJECT_PATH,
 };

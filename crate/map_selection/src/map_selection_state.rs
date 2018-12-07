@@ -6,7 +6,7 @@ use application_event::AppEvent;
 use application_state::{AppState, AppStateBuilder, AutexState};
 use map_selection_model::{MapSelection, MapSelectionEntityId, MapSelectionEvent};
 
-use MapSelectionStatus;
+use crate::MapSelectionStatus;
 
 /// `State` where map selection takes place.
 ///

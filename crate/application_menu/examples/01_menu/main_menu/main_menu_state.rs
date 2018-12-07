@@ -9,7 +9,7 @@ use application_menu::{MenuEvent, MenuItem};
 use application_ui::{FontVariant, Theme, ThemeLoader};
 use rayon;
 
-use main_menu::{self, UiEventHandlerSystem};
+use crate::main_menu::{self, UiEventHandlerSystem};
 
 const FONT_SIZE: f32 = 25.;
 

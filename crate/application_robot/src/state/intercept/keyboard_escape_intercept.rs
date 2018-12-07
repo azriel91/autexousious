@@ -2,7 +2,7 @@ use amethyst::input::{is_close_requested, is_key_down};
 use amethyst::prelude::*;
 use amethyst::renderer::VirtualKeyCode;
 
-use state::Intercept;
+use crate::state::Intercept;
 
 /// Exits when the `Escape` key is pressed.
 #[derive(Clone, Debug, Default)]

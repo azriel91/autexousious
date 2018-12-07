@@ -13,8 +13,8 @@ extern crate typename;
 #[macro_use]
 extern crate typename_derive;
 
-pub use map_animation_update_system::MapAnimationUpdateSystem;
-pub use map_play_bundle::MapPlayBundle;
+pub use crate::map_animation_update_system::MapAnimationUpdateSystem;
+pub use crate::map_play_bundle::MapPlayBundle;
 
 mod map_animation_update_system;
 mod map_play_bundle;

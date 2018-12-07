@@ -1,9 +1,9 @@
 use object_model::config::object::CharacterSequenceId;
 
-use character::sequence_handler::{
+use crate::character::sequence_handler::{
     common::SequenceRepeat, CharacterSequenceHandler, SequenceHandlerUtil,
 };
-use CharacterSequenceUpdateComponents;
+use crate::CharacterSequenceUpdateComponents;
 
 /// Determines whether to switch to the `RunStop` sequence based on X input.
 ///
@@ -37,8 +37,8 @@ mod tests {
     };
 
     use super::RunStopCheck;
-    use character::sequence_handler::CharacterSequenceHandler;
-    use CharacterSequenceUpdateComponents;
+    use crate::character::sequence_handler::CharacterSequenceHandler;
+    use crate::CharacterSequenceUpdateComponents;
 
     #[test]
     fn none_when_input_same_direction() {

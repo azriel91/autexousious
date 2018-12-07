@@ -2,8 +2,8 @@ use std::iter;
 
 use amethyst::input::{Axis as InputAxis, Bindings, Button};
 
-use config::ControllerConfig;
-use {PlayerActionControl, PlayerAxisControl};
+use crate::config::ControllerConfig;
+use crate::{PlayerActionControl, PlayerAxisControl};
 
 /// Structure for holding the input configuration.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, new)]
@@ -74,11 +74,11 @@ mod tests {
     use winit::VirtualKeyCode;
 
     use super::InputConfig;
-    use Axis;
-    use ControlAction;
-    use ControllerConfig;
-    use PlayerActionControl;
-    use PlayerAxisControl;
+    use crate::Axis;
+    use crate::ControlAction;
+    use crate::ControllerConfig;
+    use crate::PlayerActionControl;
+    use crate::PlayerAxisControl;
 
     #[test]
     fn bindings_from_input_config_converts_correctly() {

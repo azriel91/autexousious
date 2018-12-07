@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use config::object::{Sequence, SequenceId};
+use crate::config::object::{Sequence, SequenceId};
 
 /// Contains all of the sequences for an `Object`.
 ///

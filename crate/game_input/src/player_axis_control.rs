@@ -1,5 +1,5 @@
-use Axis;
-use ControllerId;
+use crate::Axis;
+use crate::ControllerId;
 
 /// Axis control for a player.
 #[derive(Clone, Copy, Debug, Default, Deserialize, Hash, PartialEq, Eq, Serialize, new)]

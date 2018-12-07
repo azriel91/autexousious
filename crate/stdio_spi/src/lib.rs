@@ -18,10 +18,10 @@ extern crate typename;
 #[macro_use]
 extern crate typename_derive;
 
-pub use error_kind::{Error, ErrorKind, Result};
-pub use mapper_system::MapperSystem;
-pub use stdin_mapper::StdinMapper;
-pub use variant_and_tokens::VariantAndTokens;
+pub use crate::error_kind::{Error, ErrorKind, Result};
+pub use crate::mapper_system::MapperSystem;
+pub use crate::stdin_mapper::StdinMapper;
+pub use crate::variant_and_tokens::VariantAndTokens;
 
 mod error_kind;
 mod mapper_system;

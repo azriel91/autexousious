@@ -3,9 +3,9 @@ use game_model::play::GameEntities;
 use map_model::loaded::Map;
 use map_selection_model::MapSelection;
 
-use GameLoadingStatus;
-use MapLayerComponentStorages;
-use MapLayerEntitySpawner;
+use crate::GameLoadingStatus;
+use crate::MapLayerComponentStorages;
+use crate::MapLayerEntitySpawner;
 
 /// Spawns character entities based on the character selection.
 #[derive(Debug, Default, TypeName, new)]
@@ -71,7 +71,7 @@ mod tests {
     use typename::TypeName;
 
     use super::MapSelectionSpawningSystem;
-    use GameLoadingStatus;
+    use crate::GameLoadingStatus;
 
     #[test]
     fn returns_if_map_already_loaded() {

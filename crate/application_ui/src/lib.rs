@@ -64,10 +64,10 @@ extern crate strum;
 #[macro_use]
 extern crate strum_macros;
 
-pub use font_config::FontConfig;
-pub use font_variant::FontVariant;
-pub use theme::Theme;
-pub use theme_loader::ThemeLoader;
+pub use crate::font_config::FontConfig;
+pub use crate::font_variant::FontVariant;
+pub use crate::theme::Theme;
+pub use crate::theme_loader::ThemeLoader;
 
 mod font_config;
 mod font_variant;

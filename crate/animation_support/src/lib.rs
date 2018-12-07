@@ -15,9 +15,9 @@ extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 
-pub use active_handle::ActiveHandle;
-pub use active_handle_channel::ActiveHandleChannel;
-pub use active_handle_primitive::ActiveHandlePrimitive;
+pub use crate::active_handle::ActiveHandle;
+pub use crate::active_handle_channel::ActiveHandleChannel;
+pub use crate::active_handle_primitive::ActiveHandlePrimitive;
 
 mod active_handle;
 mod active_handle_channel;

@@ -1,6 +1,6 @@
 use amethyst::ecs::{prelude::*, storage::HashMapStorage};
 
-use ControllerId;
+use crate::ControllerId;
 
 /// Marks a game input controlled entity.
 ///

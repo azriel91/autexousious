@@ -9,8 +9,8 @@ extern crate game_model;
 extern crate lazy_static;
 extern crate map_model;
 
-pub use common::NAMESPACE_BUILT_IN;
-pub use map::{MAP_BLANK, MAP_BLANK_NAME, MAP_BLANK_SLUG};
+pub use crate::common::NAMESPACE_BUILT_IN;
+pub use crate::map::{MAP_BLANK, MAP_BLANK_NAME, MAP_BLANK_SLUG};
 
 mod common;
 mod map;

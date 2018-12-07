@@ -7,8 +7,8 @@ use amethyst::{
 use application::{load_in, Format, Result};
 use sprite_model::config::SpritesDefinition;
 
-use SpriteSheetLoader;
-use TextureLoader;
+use crate::SpriteSheetLoader;
+use crate::TextureLoader;
 
 /// Provides functionality to load sprites configuration and assets.
 #[derive(Debug)]

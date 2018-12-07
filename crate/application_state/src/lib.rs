@@ -19,10 +19,10 @@ extern crate log;
 #[cfg(test)]
 extern crate rayon;
 
-pub use app_state::{AppState, AppStateBuilder};
-pub use autex_state::AutexState;
-pub use hook_fn::HookFn;
-pub use hookable_fn::HookableFn;
+pub use crate::app_state::{AppState, AppStateBuilder};
+pub use crate::autex_state::AutexState;
+pub use crate::hook_fn::HookFn;
+pub use crate::hookable_fn::HookableFn;
 
 mod app_state;
 mod autex_state;

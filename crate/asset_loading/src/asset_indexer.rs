@@ -2,7 +2,7 @@ use game_model::config::{AssetIndex, ConfigType};
 use heck::SnakeCase;
 use strum::IntoEnumIterator;
 
-use {MapIndexer, NamespaceDirectory, ObjectIndexer};
+use crate::{MapIndexer, NamespaceDirectory, ObjectIndexer};
 
 /// Indexes assets within a single namespace directory.
 #[derive(Debug)]
@@ -47,7 +47,7 @@ mod tests {
     use tempfile::tempdir;
 
     use super::AssetIndexer;
-    use NamespaceDirectory;
+    use crate::NamespaceDirectory;
 
     #[test]
     fn returns_asset_index_of_maps_and_objects() -> io::Result<()> {

@@ -6,8 +6,8 @@ use game_input::ControllerInput;
 use tracker::LastTrackerSystem;
 use typename::TypeName;
 
-use MapSelectionWidgetInputSystem;
-use MapSelectionWidgetUiSystem;
+use crate::MapSelectionWidgetInputSystem;
+use crate::MapSelectionWidgetUiSystem;
 
 /// Adds the systems that set up and manage the `MapSelectionUi`.
 ///

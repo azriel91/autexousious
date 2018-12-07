@@ -26,7 +26,7 @@ mod test {
     use map_model::loaded::{Map, MapHandle};
 
     use super::MapLoadingBundle;
-    use MapLoader;
+    use crate::MapLoader;
 
     #[test]
     fn bundle_build_adds_map_processor() {

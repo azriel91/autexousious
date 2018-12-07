@@ -8,7 +8,7 @@ use game_model::{
 };
 use stdio_spi::{Result, StdinMapper};
 
-use CharacterSelectionEventArgs;
+use crate::CharacterSelectionEventArgs;
 
 /// Builds a `CharacterSelectionEvent` from stdin tokens.
 #[derive(Debug, TypeName)]
@@ -79,7 +79,7 @@ mod tests {
     use stdio_spi::{ErrorKind, Result, StdinMapper};
 
     use super::CharacterSelectionEventStdinMapper;
-    use CharacterSelectionEventArgs;
+    use crate::CharacterSelectionEventArgs;
 
     #[test]
     fn returns_err_when_asset_slug_invalid() {

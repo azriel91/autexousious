@@ -1,7 +1,7 @@
 use sprite_loading::AnimationSequence;
 use sprite_model::config::SpriteFrame;
 
-use config::Position;
+use crate::config::Position;
 
 /// An image layer on a map.
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, new)]

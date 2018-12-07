@@ -1,7 +1,7 @@
 use object_model::config::object::CharacterSequenceId;
 
-use character::sequence_handler::{CharacterSequenceHandler, SwitchSequenceOnEnd};
-use CharacterSequenceUpdateComponents;
+use crate::character::sequence_handler::{CharacterSequenceHandler, SwitchSequenceOnEnd};
+use crate::CharacterSequenceUpdateComponents;
 
 const LIE_FACE_DOWN: SwitchSequenceOnEnd = SwitchSequenceOnEnd(CharacterSequenceId::Stand);
 

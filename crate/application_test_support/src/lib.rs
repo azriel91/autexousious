@@ -28,8 +28,8 @@ extern crate object_model;
 #[cfg(test)]
 extern crate strum;
 
-pub use autexousious_application::AutexousiousApplication;
-pub use setup_function::SetupFunction;
+pub use crate::autexousious_application::AutexousiousApplication;
+pub use crate::setup_function::SetupFunction;
 
 mod autexousious_application;
 pub mod prelude;

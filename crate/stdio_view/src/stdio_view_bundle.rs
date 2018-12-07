@@ -4,7 +4,7 @@ use amethyst::{
 };
 use typename::TypeName;
 
-use StdinSystem;
+use crate::StdinSystem;
 
 /// Adds the `StdinSystem` to the `World`.
 #[derive(Debug, new)]

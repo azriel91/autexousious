@@ -2,7 +2,7 @@ use std::path::Path;
 
 use game_model::config::AssetIndex;
 
-use {AssetIndexer, NamespaceDiscoverer};
+use crate::{AssetIndexer, NamespaceDiscoverer};
 
 /// Discovers assets across multiple namespaces.
 #[derive(Debug)]
@@ -40,7 +40,7 @@ mod tests {
     use tempfile::tempdir;
 
     use super::AssetDiscovery;
-    use {ASSETS_DEFAULT_DIR, ASSETS_DOWNLOAD_DIR, ASSETS_TEST_DIR};
+    use crate::{ASSETS_DEFAULT_DIR, ASSETS_DOWNLOAD_DIR, ASSETS_TEST_DIR};
 
     #[test]
     fn returns_merged_asset_index() -> io::Result<()> {

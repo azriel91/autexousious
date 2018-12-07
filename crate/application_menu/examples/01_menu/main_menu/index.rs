@@ -1,6 +1,6 @@
 use amethyst::prelude::*;
 
-use other::OtherState;
+use crate::other::OtherState;
 
 /// Indicies of main menu items.
 #[derive(Debug, Clone, Copy)]

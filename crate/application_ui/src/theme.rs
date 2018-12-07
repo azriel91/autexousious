@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use amethyst::ui::FontHandle;
 
-use FontVariant;
+use crate::FontVariant;
 
 /// Application user interface theme.
 #[derive(Constructor, Debug)]

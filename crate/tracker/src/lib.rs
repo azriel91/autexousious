@@ -17,8 +17,8 @@ extern crate named_type;
 #[macro_use]
 extern crate named_type_derive;
 
-pub use component::Last;
-pub use system::LastTrackerSystem;
+pub use crate::component::Last;
+pub use crate::system::LastTrackerSystem;
 
 mod component;
 mod system;

@@ -1,4 +1,4 @@
-use config::MapBounds;
+use crate::config::MapBounds;
 
 /// Base information of the map.
 #[derive(Clone, Debug, Deserialize, PartialEq, new)]

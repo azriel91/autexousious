@@ -14,6 +14,6 @@ extern crate debug_util_amethyst;
 extern crate derivative;
 extern crate itertools;
 
-pub use state::RobotState;
+pub use crate::state::RobotState;
 
 pub mod state;

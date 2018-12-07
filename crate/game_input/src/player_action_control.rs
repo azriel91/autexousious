@@ -1,5 +1,5 @@
-use ControlAction;
-use ControllerId;
+use crate::ControlAction;
+use crate::ControllerId;
 
 /// Action control for a player.
 ///

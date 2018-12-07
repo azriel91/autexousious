@@ -2,7 +2,7 @@ use std::path::Path;
 
 use application::resource::IoUtils;
 
-use {DirTraverse, NamespaceDirectory};
+use crate::{DirTraverse, NamespaceDirectory};
 
 /// Directory under `assets` with test application configuration.
 pub const ASSETS_TEST_DIR: &str = "test";
@@ -67,7 +67,7 @@ mod tests {
     use tempfile::tempdir;
 
     use super::{NamespaceDiscoverer, ASSETS_DEFAULT_DIR, ASSETS_DOWNLOAD_DIR, ASSETS_TEST_DIR};
-    use NamespaceDirectory;
+    use crate::NamespaceDirectory;
 
     #[test]
     fn child_directories_returns_directory_children_and_symlinked_directories() -> io::Result<()> {

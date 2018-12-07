@@ -5,8 +5,8 @@ use amethyst::config::ConfigError;
 use amethyst::core;
 use error_chain;
 
-use resource;
-use resource::dir::DiscoveryContext;
+use crate::resource;
+use crate::resource::dir::DiscoveryContext;
 
 // kcov-ignore-start
 /// `ErrorKind` for application directories.

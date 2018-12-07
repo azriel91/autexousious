@@ -4,7 +4,7 @@ use application_menu::MenuEvent;
 use application_state::{AppState, AppStateBuilder};
 use game_mode_selection_model::{GameModeSelectionEntityId, GameModeSelectionEvent};
 
-use GameModeSelectionTrans;
+use crate::GameModeSelectionTrans;
 
 /// `State` where game mode selection takes place.
 ///

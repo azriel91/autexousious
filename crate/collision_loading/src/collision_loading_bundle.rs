@@ -6,7 +6,7 @@ use amethyst::{
 use collision_model::config::{BodyFrame, InteractionFrame};
 use typename::TypeName;
 
-use CollisionLoadingSystem;
+use crate::CollisionLoadingSystem;
 
 /// Adds `BodyFrame` and `InteractionFrame` processors to the `World`.
 ///

@@ -10,9 +10,9 @@ use amethyst::{
     renderer::{SpriteRender, SpriteSheetHandle},
 };
 
-use AnimationFrame;
-use AnimationSequence;
-use SpriteAnimationHandle;
+use crate::AnimationFrame;
+use crate::AnimationSequence;
+use crate::SpriteAnimationHandle;
 
 /// Loads `Animation`s from object sequences.
 #[derive(Debug)]
@@ -212,10 +212,10 @@ mod test {
     use assets_test::ASSETS_CHAR_BAT_PATH;
 
     use super::SpriteRenderAnimationLoader;
-    use AnimationFrame;
-    use AnimationSequence;
-    use SpriteAnimationHandle;
-    use SpriteLoader;
+    use crate::AnimationFrame;
+    use crate::AnimationSequence;
+    use crate::SpriteAnimationHandle;
+    use crate::SpriteLoader;
 
     #[test]
     fn loads_sprite_render_animations_into_map() {

@@ -5,8 +5,8 @@ use amethyst::{
 };
 use sprite_loading::SpriteAnimationHandle;
 
-use config::MapDefinition;
-use loaded::Margins;
+use crate::config::MapDefinition;
+use crate::loaded::Margins;
 
 /// Loaded representation of a `Map`.
 #[derive(Clone, Debug, PartialEq, new)]

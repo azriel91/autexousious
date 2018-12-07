@@ -1,10 +1,10 @@
 use object_model::config::object::CharacterSequenceId;
 
-use character::sequence_handler::{
+use crate::character::sequence_handler::{
     common::{grounding::AirborneCheck, input::RunStopCheck, status::AliveCheck},
     CharacterSequenceHandler,
 };
-use CharacterSequenceUpdateComponents;
+use crate::CharacterSequenceUpdateComponents;
 
 /// Hold forward to run, release to stop running.
 #[derive(Debug)]
@@ -37,8 +37,8 @@ mod test {
     };
 
     use super::Run;
-    use character::sequence_handler::CharacterSequenceHandler;
-    use CharacterSequenceUpdateComponents;
+    use crate::character::sequence_handler::CharacterSequenceHandler;
+    use crate::CharacterSequenceUpdateComponents;
 
     #[test]
     fn jump_descend_when_airborne() {

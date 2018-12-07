@@ -1,4 +1,4 @@
-use InteractionAnimationFrame;
+use crate::InteractionAnimationFrame;
 
 /// Information for an animation sequence.
 pub trait InteractionAnimationSequence {

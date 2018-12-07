@@ -15,12 +15,12 @@ extern crate strum;
 #[macro_use]
 extern crate strum_macros;
 
-pub use character_selection::CharacterSelection;
-pub use character_selection_entity::CharacterSelectionEntity;
-pub use character_selection_entity_id::CharacterSelectionEntityId;
-pub use character_selection_event::CharacterSelectionEvent;
-pub use character_selections::CharacterSelections;
-pub use character_selections_status::CharacterSelectionsStatus;
+pub use crate::character_selection::CharacterSelection;
+pub use crate::character_selection_entity::CharacterSelectionEntity;
+pub use crate::character_selection_entity_id::CharacterSelectionEntityId;
+pub use crate::character_selection_event::CharacterSelectionEvent;
+pub use crate::character_selections::CharacterSelections;
+pub use crate::character_selections_status::CharacterSelectionsStatus;
 
 mod character_selection;
 mod character_selection_entity;

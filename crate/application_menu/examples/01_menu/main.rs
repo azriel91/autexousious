@@ -46,7 +46,7 @@ use application_robot::{
 };
 use structopt::StructOpt;
 
-use main_menu::MainMenuState;
+use crate::main_menu::MainMenuState;
 
 const TITLE: &str = "Example 01: Menu";
 

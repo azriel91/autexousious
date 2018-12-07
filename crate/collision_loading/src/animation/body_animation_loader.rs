@@ -12,8 +12,8 @@ use collision_model::{
     config::BodyFrame,
 };
 
-use BodyAnimationFrame;
-use BodyAnimationSequence;
+use crate::BodyAnimationFrame;
+use crate::BodyAnimationSequence;
 
 /// Loads `Animation`s from character sequences.
 #[derive(Debug)]
@@ -170,8 +170,8 @@ mod test {
     };
 
     use super::BodyAnimationLoader;
-    use BodyAnimationSequence;
-    use CollisionLoadingBundle;
+    use crate::BodyAnimationSequence;
+    use crate::CollisionLoadingBundle;
 
     #[test]
     fn loads_body_animations_into_map() {

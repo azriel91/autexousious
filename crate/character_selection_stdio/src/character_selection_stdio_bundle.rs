@@ -6,7 +6,7 @@ use application_event::AppEventVariant;
 use stdio_spi::MapperSystem;
 use typename::TypeName;
 
-use CharacterSelectionEventStdinMapper;
+use crate::CharacterSelectionEventStdinMapper;
 
 /// Adds a `MapperSystem<CharacterSelectionEventStdinMapper>` to the `World`.
 #[derive(Debug, new)]

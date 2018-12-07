@@ -2,7 +2,7 @@ use amethyst::prelude::*;
 use amethyst::shrev::{EventChannel, ReaderId};
 use application_input::ApplicationEvent;
 
-use state::Intercept;
+use crate::state::Intercept;
 
 /// Reads `ApplicationEvent`s and programmatically controls the application control flow.
 #[derive(Debug, Default)]
@@ -77,7 +77,7 @@ mod test {
     use application_input::ApplicationEvent;
 
     use super::ApplicationEventIntercept;
-    use state::Intercept;
+    use crate::state::Intercept;
 
     fn setup() -> (ApplicationEventIntercept, World) {
         let mut world = World::new();

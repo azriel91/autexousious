@@ -10,8 +10,8 @@ extern crate strum;
 #[macro_use]
 extern crate strum_macros;
 
-pub use axis::Axis;
-pub use volume::Volume;
+pub use crate::axis::Axis;
+pub use crate::volume::Volume;
 
 mod axis;
 mod volume;

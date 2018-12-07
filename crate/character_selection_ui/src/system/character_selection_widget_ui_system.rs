@@ -10,8 +10,8 @@ use character_selection_model::{
 use game_input::{ControllerId, ControllerInput, InputConfig, InputControlled};
 use game_model::loaded::{CharacterAssets, SlugAndHandle};
 
-use CharacterSelectionWidget;
-use WidgetState;
+use crate::CharacterSelectionWidget;
+use crate::WidgetState;
 
 const FONT_SIZE: f32 = 20.;
 
@@ -235,8 +235,8 @@ mod test {
     use typename::TypeName;
 
     use super::CharacterSelectionWidgetUiSystem;
-    use CharacterSelectionWidget;
-    use WidgetState;
+    use crate::CharacterSelectionWidget;
+    use crate::WidgetState;
 
     #[test]
     fn initializes_ui_when_character_selections_waiting() {

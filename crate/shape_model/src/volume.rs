@@ -1,4 +1,4 @@
-use Axis;
+use crate::Axis;
 
 /// Represents a volume
 #[derive(Clone, Copy, Debug, Deserialize, Hash, PartialEq, Eq, Serialize)]

@@ -19,7 +19,7 @@ use map_loading::MapLoadingBundle;
 use object_loading::ObjectLoadingBundle;
 use object_model::config::object::CharacterSequenceId;
 
-use SetupFunction;
+use crate::SetupFunction;
 
 /// Baselines for building Amethyst applications with Autexousious types.
 #[derive(Debug)]

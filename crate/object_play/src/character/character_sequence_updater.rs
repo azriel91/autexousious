@@ -2,12 +2,12 @@ use object_model::{
     config::object::CharacterSequenceId, entity::SequenceStatus, loaded::SequenceEndTransitions,
 };
 
-use character::sequence_handler::{
+use crate::character::sequence_handler::{
     CharacterSequenceHandler, FallForwardAscend, FallForwardDescend, FallForwardLand, Jump,
     JumpAscend, JumpDescend, JumpDescendLand, JumpOff, LieFaceDown, Run, RunStop, Stand,
     StandAttack, StandOnSequenceEnd, Walk,
 };
-use CharacterSequenceUpdateComponents;
+use crate::CharacterSequenceUpdateComponents;
 
 /// Defines behaviour for a character in game.
 #[derive(Debug)]

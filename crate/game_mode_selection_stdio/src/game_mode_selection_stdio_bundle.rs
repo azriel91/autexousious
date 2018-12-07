@@ -6,7 +6,7 @@ use application_event::AppEventVariant;
 use stdio_spi::MapperSystem;
 use typename::TypeName;
 
-use GameModeSelectionEventStdinMapper;
+use crate::GameModeSelectionEventStdinMapper;
 
 /// Adds a `MapperSystem<GameModeSelectionEventStdinMapper>` to the `World`.
 #[derive(Debug, new)]

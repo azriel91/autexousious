@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use config::AssetSlug;
+use crate::config::AssetSlug;
 
 /// Contains the meta information about an asset.
 ///

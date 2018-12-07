@@ -33,6 +33,6 @@
 
 extern crate amethyst;
 
-pub use event::ApplicationEvent;
+pub use crate::event::ApplicationEvent;
 
 mod event;

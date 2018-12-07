@@ -1,4 +1,4 @@
-use config::SpriteOffset;
+use crate::config::SpriteOffset;
 
 /// Information about how sprites are laid out on the sprite sheet.
 ///

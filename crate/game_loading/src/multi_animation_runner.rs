@@ -5,7 +5,7 @@ use amethyst::{
     assets::Handle,
 };
 
-use AnimationRunner;
+use crate::AnimationRunner;
 
 /// Starts, stops, and swaps multiple animation control sets.
 #[derive(Debug)]

@@ -5,8 +5,8 @@ use amethyst::prelude::*;
 use itertools::FoldWhile::{Continue, Done};
 use itertools::Itertools;
 
-use state::intercept::ApplicationEventIntercept;
-use state::Intercept;
+use crate::state::intercept::ApplicationEventIntercept;
+use crate::state::Intercept;
 
 /// Wraps a delegate state with automation capabilities.
 #[derive(Derivative)]
@@ -241,7 +241,7 @@ mod test {
     use debug_util_amethyst::{assert_eq_trans, display_trans};
 
     use super::RobotState;
-    use state::Intercept;
+    use crate::state::Intercept;
 
     type Invocations = Rc<RefCell<Vec<Invocation>>>;
 

@@ -1,6 +1,6 @@
 use structopt::StructOpt;
 
-use Result;
+use crate::Result;
 
 /// Maps tokens from stdin to a state specific event.
 pub trait StdinMapper {

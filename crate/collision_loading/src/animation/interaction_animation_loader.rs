@@ -14,8 +14,8 @@ use collision_model::{
     config::InteractionFrame,
 };
 
-use InteractionAnimationFrame;
-use InteractionAnimationSequence;
+use crate::InteractionAnimationFrame;
+use crate::InteractionAnimationSequence;
 
 /// Loads `Animation`s from character sequences.
 #[derive(Debug)]
@@ -180,8 +180,8 @@ mod test {
     };
 
     use super::InteractionAnimationLoader;
-    use CollisionLoadingBundle;
-    use InteractionAnimationSequence;
+    use crate::CollisionLoadingBundle;
+    use crate::InteractionAnimationSequence;
 
     #[test]
     fn loads_interaction_animations_into_map() {

@@ -7,10 +7,10 @@ extern crate amethyst_utils;
 extern crate game_model;
 extern crate map_model;
 
-pub use map_selection::MapSelection;
-pub use map_selection_entity::MapSelectionEntity;
-pub use map_selection_entity_id::MapSelectionEntityId;
-pub use map_selection_event::MapSelectionEvent;
+pub use crate::map_selection::MapSelection;
+pub use crate::map_selection_entity::MapSelectionEntity;
+pub use crate::map_selection_entity_id::MapSelectionEntityId;
+pub use crate::map_selection_event::MapSelectionEvent;
 
 mod map_selection;
 mod map_selection_entity;

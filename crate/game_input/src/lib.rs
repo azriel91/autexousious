@@ -38,14 +38,14 @@ extern crate typename_derive;
 #[cfg(test)]
 extern crate winit;
 
-pub use axis::Axis;
-pub use component::{ControllerInput, InputControlled, SharedInputControlled};
-pub use config::{ControllerConfig, InputConfig};
-pub use control_action::ControlAction;
-pub use game_input_bundle::GameInputBundle;
-pub use player_action_control::PlayerActionControl;
-pub use player_axis_control::PlayerAxisControl;
-pub use system::{ControllerInputUpdateSystem, SharedControllerInputUpdateSystem};
+pub use crate::axis::Axis;
+pub use crate::component::{ControllerInput, InputControlled, SharedInputControlled};
+pub use crate::config::{ControllerConfig, InputConfig};
+pub use crate::control_action::ControlAction;
+pub use crate::game_input_bundle::GameInputBundle;
+pub use crate::player_action_control::PlayerActionControl;
+pub use crate::player_axis_control::PlayerAxisControl;
+pub use crate::system::{ControllerInputUpdateSystem, SharedControllerInputUpdateSystem};
 
 mod axis;
 mod component;

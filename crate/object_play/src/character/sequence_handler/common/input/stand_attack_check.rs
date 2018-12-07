@@ -1,7 +1,7 @@
 use object_model::config::object::CharacterSequenceId;
 
-use character::sequence_handler::CharacterSequenceHandler;
-use CharacterSequenceUpdateComponents;
+use crate::character::sequence_handler::CharacterSequenceHandler;
+use crate::CharacterSequenceUpdateComponents;
 
 /// Determines whether to switch to the `StandAttack` sequence based on Attack input.
 #[derive(Debug)]
@@ -30,8 +30,8 @@ mod tests {
     };
 
     use super::StandAttackCheck;
-    use character::sequence_handler::CharacterSequenceHandler;
-    use CharacterSequenceUpdateComponents;
+    use crate::character::sequence_handler::CharacterSequenceHandler;
+    use crate::CharacterSequenceUpdateComponents;
 
     #[test]
     fn no_change_when_no_attack_input() {

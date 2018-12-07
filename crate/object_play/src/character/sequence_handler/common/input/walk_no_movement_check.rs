@@ -1,7 +1,7 @@
 use object_model::config::object::CharacterSequenceId;
 
-use character::sequence_handler::CharacterSequenceHandler;
-use CharacterSequenceUpdateComponents;
+use crate::character::sequence_handler::CharacterSequenceHandler;
+use crate::CharacterSequenceUpdateComponents;
 
 /// Determines whether to switch to the `Stand` sequence based on X and Z input.
 ///
@@ -34,8 +34,8 @@ mod tests {
     };
 
     use super::WalkNoMovementCheck;
-    use character::sequence_handler::CharacterSequenceHandler;
-    use CharacterSequenceUpdateComponents;
+    use crate::character::sequence_handler::CharacterSequenceHandler;
+    use crate::CharacterSequenceUpdateComponents;
 
     #[test]
     fn stand_when_no_input() {

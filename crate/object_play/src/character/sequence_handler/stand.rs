@@ -1,6 +1,6 @@
 use object_model::config::object::CharacterSequenceId;
 
-use character::sequence_handler::{
+use crate::character::sequence_handler::{
     common::{
         grounding::AirborneCheck,
         input::{JumpCheck, StandAttackCheck, StandXMovementCheck, StandZMovementCheck},
@@ -9,7 +9,7 @@ use character::sequence_handler::{
     },
     CharacterSequenceHandler,
 };
-use CharacterSequenceUpdateComponents;
+use crate::CharacterSequenceUpdateComponents;
 
 #[derive(Debug)]
 pub(crate) struct Stand;
@@ -54,8 +54,8 @@ mod test {
     };
 
     use super::Stand;
-    use character::sequence_handler::CharacterSequenceHandler;
-    use CharacterSequenceUpdateComponents;
+    use crate::character::sequence_handler::CharacterSequenceHandler;
+    use crate::CharacterSequenceUpdateComponents;
 
     #[test]
     fn no_change_when_no_input() {

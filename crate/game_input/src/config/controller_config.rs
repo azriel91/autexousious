@@ -2,8 +2,8 @@ use std::collections::HashMap;
 
 use amethyst::input::{Axis as InputAxis, Button};
 
-use Axis;
-use ControlAction;
+use crate::Axis;
+use crate::ControlAction;
 
 /// Structure for each controller's configuration.
 #[derive(Clone, Derivative, Default, PartialEq, Serialize, Deserialize, new)]

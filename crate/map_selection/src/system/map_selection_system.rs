@@ -3,7 +3,7 @@ use amethyst::{ecs::prelude::*, shrev::EventChannel};
 use game_model::loaded::{MapAssets, SlugAndHandle};
 use map_selection_model::{MapSelection, MapSelectionEvent};
 
-use MapSelectionStatus;
+use crate::MapSelectionStatus;
 
 /// Updates the `MapSelection` resource based on user selection.
 #[derive(Debug, Default, TypeName, new)]
@@ -82,7 +82,7 @@ mod test {
     use typename::TypeName;
 
     use super::{MapSelectionSystem, MapSelectionSystemData};
-    use MapSelectionStatus;
+    use crate::MapSelectionStatus;
 
     #[test]
     fn returns_when_map_selection_status_confirmed() {

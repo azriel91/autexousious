@@ -3,7 +3,7 @@ use amethyst::shrev::{EventChannel, ReaderId};
 use amethyst::ui::{UiEvent, UiEventType};
 use application_menu::{MenuEvent, MenuItem};
 
-use main_menu;
+use crate::main_menu;
 
 /// System that processes `UiEvent`s and generates `MenuEvent`s.
 #[derive(Debug, Default)]

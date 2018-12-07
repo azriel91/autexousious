@@ -4,7 +4,7 @@ use amethyst::{
 };
 use typename::TypeName;
 
-use UiEventHandlerSystem;
+use crate::UiEventHandlerSystem;
 
 /// Adds the systems that set up and manage the `GameModeSelectionUi`.
 ///

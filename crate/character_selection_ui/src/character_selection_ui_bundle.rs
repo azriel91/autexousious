@@ -6,8 +6,8 @@ use game_input::ControllerInput;
 use tracker::LastTrackerSystem;
 use typename::TypeName;
 
-use CharacterSelectionWidgetInputSystem;
-use CharacterSelectionWidgetUiSystem;
+use crate::CharacterSelectionWidgetInputSystem;
+use crate::CharacterSelectionWidgetUiSystem;
 
 /// Adds the systems that set up and manage the `CharacterSelectionUi`.
 ///
