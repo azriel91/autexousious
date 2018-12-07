@@ -6,10 +6,10 @@
 //! These are used by other types that use sprites such as the various object types and map
 //! layers.
 
-extern crate amethyst;
+
 #[macro_use]
 extern crate derive_new;
-extern crate serde;
+
 #[macro_use]
 extern crate serde_derive;
 #[cfg(test)]

@@ -23,7 +23,7 @@ impl CharacterSequenceUpdater {
         sequence_end_transitions: &SequenceEndTransitions<CharacterSequenceId>,
         components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<CharacterSequenceId> {
-        let sequence_handler: &Fn(CharacterSequenceUpdateComponents)
+        let sequence_handler: &dyn Fn(CharacterSequenceUpdateComponents<'_>)
             -> Option<CharacterSequenceId> = match components.character_sequence_id {
             CharacterSequenceId::Stand => &Stand::update,
             CharacterSequenceId::StandAttack => &StandAttack::update,

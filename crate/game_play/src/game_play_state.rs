@@ -124,7 +124,7 @@ impl GamePlayState {
 }
 
 impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
-    fn on_start(&mut self, mut data: StateData<GameData>) {
+    fn on_start(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
         self.initialize_dispatcher(&mut data.world);
         self.initialize_camera(&mut data.world);
 
@@ -133,7 +133,7 @@ impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
 
     fn handle_event(
         &mut self,
-        data: StateData<GameData>,
+        data: StateData<'_, GameData<'_, '_>>,
         event: AppEvent,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
         match event {
@@ -178,13 +178,13 @@ impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
         }
     }
 
-    fn on_stop(&mut self, mut data: StateData<GameData>) {
+    fn on_stop(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
         self.terminate_entities(&mut data.world);
         self.terminate_camera(&mut data.world);
         self.terminate_dispatcher();
     }
 
-    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, AppEvent> {
+    fn update(&mut self, data: StateData<'_, GameData<'_, '_>>) -> Trans<GameData<'a, 'b>, AppEvent> {
         // Note: The built-in dispatcher must be run before the state specific dispatcher as the
         // `"input_system"` is registered in the main dispatcher, and is a dependency of the
         // `ControllerInputUpdateSystem`.

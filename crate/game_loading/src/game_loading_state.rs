@@ -70,28 +70,28 @@ where
     F: Fn() -> Box<S>,
     S: AutexState<'a, 'b> + 'static,
 {
-    fn on_start(&mut self, mut data: StateData<GameData>) {
+    fn on_start(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
         self.initialize_dispatcher(&mut data.world);
         self.reset_game_loading_status(&mut data.world);
     }
 
-    fn on_stop(&mut self, _data: StateData<GameData<'a, 'b>>) {
+    fn on_stop(&mut self, _data: StateData<'_, GameData<'a, 'b>>) {
         self.terminate_dispatcher();
     }
 
-    fn on_resume(&mut self, mut data: StateData<GameData>) {
+    fn on_resume(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
         self.reset_game_loading_status(&mut data.world);
     }
 
     fn handle_event(
         &mut self,
-        _data: StateData<GameData>,
+        _data: StateData<'_, GameData<'_, '_>>,
         _event: AppEvent,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
         Trans::None
     }
 
-    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, AppEvent> {
+    fn update(&mut self, data: StateData<'_, GameData<'_, '_>>) -> Trans<GameData<'a, 'b>, AppEvent> {
         data.data.update(&data.world);
         self.dispatcher.as_mut().unwrap().dispatch(&data.world.res);
 

@@ -3,9 +3,9 @@
 
 //! Types used during map selection.
 
-extern crate amethyst_utils;
-extern crate game_model;
-extern crate map_model;
+
+
+
 
 pub use crate::map_selection::MapSelection;
 pub use crate::map_selection_entity::MapSelectionEntity;

@@ -3,19 +3,18 @@
 
 //! Processes collision configuration into the loaded collision model.
 
-extern crate amethyst;
-#[cfg(test)]
-extern crate amethyst_test;
-extern crate animation_support;
-extern crate application;
-extern crate collision_model;
+
+
+
+
+
 #[macro_use]
 extern crate derive_new;
 #[cfg(test)]
 #[macro_use]
 extern crate pretty_assertions;
-extern crate shape_model;
-extern crate typename;
+
+use typename;
 #[macro_use]
 extern crate typename_derive;
 

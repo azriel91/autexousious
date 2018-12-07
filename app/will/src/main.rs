@@ -2,31 +2,31 @@
 
 //! Opens an empty window.
 
-extern crate amethyst;
+use amethyst;
 #[macro_use]
 extern crate application;
-extern crate application_event;
-extern crate application_input;
-extern crate application_robot;
-extern crate application_state;
-extern crate application_ui;
-extern crate character_selection_stdio;
-extern crate collision_loading;
-extern crate collision_model;
-extern crate game_input;
-extern crate game_mode_selection;
-extern crate game_mode_selection_stdio;
-extern crate game_mode_selection_ui;
-extern crate game_play_stdio;
-extern crate loading;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #[macro_use]
 extern crate log;
-extern crate map_loading;
-extern crate map_selection_stdio;
-extern crate object_loading;
-extern crate object_model;
-extern crate stdio_view;
-extern crate structopt;
+
+
+
+
+
+use structopt;
 #[macro_use]
 extern crate structopt_derive;
 

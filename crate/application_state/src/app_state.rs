@@ -70,7 +70,7 @@ where
     S: AutexState<'a, 'b>,
     I: Clone + Debug + Default + PartialEq + Send + Sync + 'static,
 {
-    fn on_start(&mut self, mut data: StateData<GameData<'a, 'b>>) {
+    fn on_start(&mut self, mut data: StateData<'_, GameData<'a, 'b>>) {
         // Register the `Removal<I>` component first, because hook functions may rely on it.
         data.world.register::<Removal<I>>();
 
@@ -84,7 +84,7 @@ where
         self.delegate.on_start(data);
     }
 
-    fn on_stop(&mut self, mut data: StateData<GameData<'a, 'b>>) {
+    fn on_stop(&mut self, mut data: StateData<'_, GameData<'a, 'b>>) {
         if let Some(ref functions) = self.hook_fns.get(&HookableFn::OnStop) {
             functions
                 .iter()
@@ -96,7 +96,7 @@ where
         self.delegate.on_stop(data);
     }
 
-    fn on_pause(&mut self, mut data: StateData<GameData<'a, 'b>>) {
+    fn on_pause(&mut self, mut data: StateData<'_, GameData<'a, 'b>>) {
         if let Some(ref functions) = self.hook_fns.get(&HookableFn::OnPause) {
             functions
                 .iter()
@@ -108,7 +108,7 @@ where
         self.delegate.on_pause(data);
     }
 
-    fn on_resume(&mut self, mut data: StateData<GameData<'a, 'b>>) {
+    fn on_resume(&mut self, mut data: StateData<'_, GameData<'a, 'b>>) {
         if let Some(ref functions) = self.hook_fns.get(&HookableFn::OnResume) {
             functions
                 .iter()
@@ -120,7 +120,7 @@ where
 
     fn handle_event(
         &mut self,
-        data: StateData<GameData<'a, 'b>>,
+        data: StateData<'_, GameData<'a, 'b>>,
         event: AppEvent,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
         debug!("Received event: {:?}", event);
@@ -129,12 +129,12 @@ where
 
     fn fixed_update(
         &mut self,
-        data: StateData<GameData<'a, 'b>>,
+        data: StateData<'_, GameData<'a, 'b>>,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
         self.delegate.fixed_update(data)
     }
 
-    fn update(&mut self, data: StateData<GameData<'a, 'b>>) -> Trans<GameData<'a, 'b>, AppEvent> {
+    fn update(&mut self, data: StateData<'_, GameData<'a, 'b>>) -> Trans<GameData<'a, 'b>, AppEvent> {
         // Note: The built-in dispatcher must be run before the state specific dispatcher as the
         // `"input_system"` is registered in the main dispatcher, and by design we have chosen that
         // systems that depend on that should be placed in the state specific dispatcher.
@@ -490,23 +490,23 @@ mod tests {
     }
 
     impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for MockState {
-        fn on_start(&mut self, mut _data: StateData<GameData<'a, 'b>>) {
+        fn on_start(&mut self, mut _data: StateData<'_, GameData<'a, 'b>>) {
             self.invocations.borrow_mut().push(Invocation::OnStart);
         }
-        fn on_stop(&mut self, _data: StateData<GameData<'a, 'b>>) {
+        fn on_stop(&mut self, _data: StateData<'_, GameData<'a, 'b>>) {
             self.invocations.borrow_mut().push(Invocation::OnStop);
         }
-        fn on_pause(&mut self, _data: StateData<GameData<'a, 'b>>) {
+        fn on_pause(&mut self, _data: StateData<'_, GameData<'a, 'b>>) {
             self.invocations.borrow_mut().push(Invocation::OnPause);
         }
 
-        fn on_resume(&mut self, _data: StateData<GameData<'a, 'b>>) {
+        fn on_resume(&mut self, _data: StateData<'_, GameData<'a, 'b>>) {
             self.invocations.borrow_mut().push(Invocation::OnResume);
         }
 
         fn handle_event(
             &mut self,
-            _data: StateData<GameData<'a, 'b>>,
+            _data: StateData<'_, GameData<'a, 'b>>,
             _event: AppEvent,
         ) -> Trans<GameData<'a, 'b>, AppEvent> {
             self.invocations.borrow_mut().push(Invocation::HandleEvent);
@@ -515,7 +515,7 @@ mod tests {
 
         fn fixed_update(
             &mut self,
-            _data: StateData<GameData<'a, 'b>>,
+            _data: StateData<'_, GameData<'a, 'b>>,
         ) -> Trans<GameData<'a, 'b>, AppEvent> {
             self.invocations.borrow_mut().push(Invocation::FixedUpdate);
             Trans::None
@@ -523,7 +523,7 @@ mod tests {
 
         fn update(
             &mut self,
-            _data: StateData<GameData<'a, 'b>>,
+            _data: StateData<'_, GameData<'a, 'b>>,
         ) -> Trans<GameData<'a, 'b>, AppEvent> {
             self.invocations.borrow_mut().push(Invocation::Update);
             Trans::None

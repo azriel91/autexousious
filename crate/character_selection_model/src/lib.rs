@@ -3,15 +3,15 @@
 
 //! Types used during character selection.
 
-extern crate amethyst_utils;
+
 #[macro_use]
 extern crate derivative;
 #[macro_use]
 extern crate derive_new;
-extern crate game_input;
-extern crate game_model;
-extern crate object_model;
-extern crate strum;
+
+
+
+
 #[macro_use]
 extern crate strum_macros;
 

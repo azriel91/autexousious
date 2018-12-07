@@ -3,13 +3,12 @@
 
 //! Provides systems that update the map during game play.
 
-extern crate amethyst;
-#[cfg(test)]
-extern crate amethyst_test;
+
+
 #[macro_use]
 extern crate derive_new;
-extern crate map_model;
-extern crate typename;
+
+use typename;
 #[macro_use]
 extern crate typename_derive;
 

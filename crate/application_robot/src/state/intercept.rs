@@ -23,19 +23,19 @@ where
     E: Send + Sync + 'static,
 {
     /// Invoked before the delegate state's `on_start(..)` invocation.
-    fn on_start_begin(&mut self, _data: &mut StateData<T>) {}
+    fn on_start_begin(&mut self, _data: &mut StateData<'_, T>) {}
     /// Invoked after the delegate state's `on_start(..)` invocation.
     fn on_start_end(&mut self) {}
     /// Invoked before the delegate state's `on_stop(..)` invocation.
-    fn on_stop_begin(&mut self, _data: &mut StateData<T>) {}
+    fn on_stop_begin(&mut self, _data: &mut StateData<'_, T>) {}
     /// Invoked after the delegate state's `on_stop(..)` invocation.
     fn on_stop_end(&mut self) {}
     /// Invoked before the delegate state's `on_pause(..)` invocation.
-    fn on_pause_begin(&mut self, _data: &mut StateData<T>) {}
+    fn on_pause_begin(&mut self, _data: &mut StateData<'_, T>) {}
     /// Invoked after the delegate state's `on_pause(..)` invocation.
     fn on_pause_end(&mut self) {}
     /// Invoked before the delegate state's `on_resume(..)` invocation.
-    fn on_resume_begin(&mut self, _data: &mut StateData<T>) {}
+    fn on_resume_begin(&mut self, _data: &mut StateData<'_, T>) {}
     /// Invoked after the delegate state's `on_resume(..)` invocation.
     fn on_resume_end(&mut self) {}
     /// Optionally returns a `Trans` to override the delegate state behaviour.
@@ -49,7 +49,7 @@ where
     ///             behaviour.
     fn handle_event_begin(
         &mut self,
-        _data: &mut StateData<T>,
+        _data: &mut StateData<'_, T>,
         _event: &mut E,
     ) -> Option<Trans<T, E>> {
         None
@@ -71,7 +71,7 @@ where
     /// # Parameters:
     ///
     /// * `data`: `StateData` for the application `State`.
-    fn fixed_update_begin(&mut self, _data: &mut StateData<T>) -> Option<Trans<T, E>> {
+    fn fixed_update_begin(&mut self, _data: &mut StateData<'_, T>) -> Option<Trans<T, E>> {
         None
     }
     /// Optionally returns a `Trans` to override the delegate state behaviour.
@@ -91,7 +91,7 @@ where
     /// # Parameters:
     ///
     /// * `data`: `StateData` for the application `State`.
-    fn update_begin(&mut self, _data: &mut StateData<T>) -> Option<Trans<T, E>> {
+    fn update_begin(&mut self, _data: &mut StateData<'_, T>) -> Option<Trans<T, E>> {
         None
     }
     /// Optionally returns a `Trans` to override the delegate state behaviour.

@@ -171,7 +171,7 @@ mod test {
             );
 
             if let &ErrorKind::Find(ref find_context) = load_result.unwrap_err().kind() {
-                let mut base_dirs = vec![exe_dir()];
+                let base_dirs = vec![exe_dir()];
                 let expected = FindContext {
                     base_dirs,
                     conf_dir: PathBuf::from(""),
@@ -192,7 +192,7 @@ mod test {
             if let &ErrorKind::Find(ref find_context) =
                 load::<Data>("test__load_config.ron", Format::Ron).unwrap_err().kind()
             {
-                let mut base_dirs = vec![exe_dir()];
+                let base_dirs = vec![exe_dir()];
                 let expected = FindContext {
                     base_dirs,
                     conf_dir: PathBuf::from(""),

@@ -31,7 +31,7 @@
 //! * <https://docs.rs/shrev/0.8.1/shrev/struct.EventChannel.html>
 //! * <https://www.amethyst.rs/doc/develop/doc/amethyst/struct.Engine.html>
 
-extern crate amethyst;
+
 
 pub use crate::event::ApplicationEvent;
 

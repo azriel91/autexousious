@@ -10,12 +10,12 @@
 //!
 //! For assets that should be compiled into the executable, please use the `assets_built_in` crate.
 
-extern crate game_model;
-extern crate heck;
+
+
 #[macro_use]
 extern crate lazy_static;
-extern crate object_model;
-extern crate strum;
+
+
 
 pub use crate::common::{ASSETS_PATH, NAMESPACE_TEST, NAMESPACE_TEST_PATH};
 pub use crate::map::{

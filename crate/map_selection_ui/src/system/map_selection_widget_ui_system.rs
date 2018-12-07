@@ -66,14 +66,14 @@ impl MapSelectionWidgetUiSystem {
     fn initialize_ui(
         &mut self,
         map_assets: &MapAssets,
-        entities: &Entities,
-        (input_config, input_controlleds): &mut InputControlledResources,
+        entities: &Entities<'_>,
+        (input_config, input_controlleds): &mut InputControlledResources<'_>,
         (
             map_selection_widgets,
             shared_input_controlleds,
             controller_inputs
-        ): &mut WidgetComponentStorages,
-        (theme, ui_transforms, ui_texts): &mut WidgetUiResources,
+        ): &mut WidgetComponentStorages<'_>,
+        (theme, ui_transforms, ui_texts): &mut WidgetUiResources<'_>,
     ) {
         if !self.ui_initialized {
             debug!("Initializing Map Selection UI.");
@@ -147,8 +147,8 @@ impl MapSelectionWidgetUiSystem {
 
     fn refresh_ui(
         &mut self,
-        map_selection_widgets: &mut WriteStorage<MapSelectionWidget>,
-        ui_texts: &mut WriteStorage<UiText>,
+        map_selection_widgets: &mut WriteStorage<'_, MapSelectionWidget>,
+        ui_texts: &mut WriteStorage<'_, UiText>,
     ) {
         (map_selection_widgets, ui_texts)
             .join()
@@ -157,7 +157,7 @@ impl MapSelectionWidgetUiSystem {
             });
     }
 
-    fn terminate_ui(&mut self, entities: &Entities) {
+    fn terminate_ui(&mut self, entities: &Entities<'_>) {
         if self.ui_initialized {
             self.entities.drain(..).for_each(|e| {
                 entities
@@ -296,8 +296,8 @@ mod test {
             .with_effect(|world| {
                 world.exec(
                     |(mut widgets, map_assets): (
-                        WriteStorage<MapSelectionWidget>,
-                        Read<MapAssets>,
+                        WriteStorage<'_, MapSelectionWidget>,
+                        Read<'_, MapAssets>,
                     )| {
                         let widget = (&mut widgets)
                             .join()
@@ -407,13 +407,13 @@ mod test {
     }
 
     fn assert_widget_count(world: &mut World, count: usize) {
-        world.exec(|widgets: ReadStorage<MapSelectionWidget>| {
+        world.exec(|widgets: ReadStorage<'_, MapSelectionWidget>| {
             assert_eq!(count, widgets.join().count());
         });
     }
 
     fn assert_widget_text(world: &mut World, text: &str) {
-        world.exec(|ui_texts: ReadStorage<UiText>| {
+        world.exec(|ui_texts: ReadStorage<'_, UiText>| {
             assert_eq!(
                 text,
                 ui_texts

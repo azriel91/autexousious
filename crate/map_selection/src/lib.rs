@@ -3,28 +3,23 @@
 
 //! Provides the state where Map selection takes place.
 
-extern crate amethyst;
-#[cfg(test)]
-extern crate amethyst_test;
-extern crate application_event;
-extern crate application_state;
-#[cfg(test)]
-extern crate asset_loading;
-#[cfg(test)]
-extern crate assets_test;
+
+
+
+
+
+
 #[macro_use]
 extern crate derivative;
 #[macro_use]
 extern crate derive_new;
-extern crate game_model;
-#[cfg(test)]
-extern crate loading;
+
+
 #[macro_use]
 extern crate log;
-#[cfg(test)]
-extern crate map_loading;
-extern crate map_selection_model;
-extern crate typename;
+
+
+use typename;
 #[macro_use]
 extern crate typename_derive;
 

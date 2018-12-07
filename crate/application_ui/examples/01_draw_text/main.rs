@@ -9,12 +9,12 @@
 //! * `assets/font/source-code-pro-2.030R-ro-1.050R-it/TTF/SourceCodePro-It.ttf`
 //! * `assets/font/source-code-pro-2.030R-ro-1.050R-it/TTF/SourceCodePro-Regular.ttf`
 
-extern crate amethyst;
+use amethyst;
 #[macro_use]
 extern crate application;
-extern crate application_robot;
-extern crate application_ui;
-extern crate structopt;
+
+
+use structopt;
 #[macro_use]
 extern crate structopt_derive;
 
@@ -73,7 +73,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_pass(DrawUi::new()),
     );
 
-    let intercepts: Vec<Rc<RefCell<Intercept<GameData, StateEvent>>>> = {
+    let intercepts: Vec<Rc<RefCell<dyn Intercept<GameData<'_, '_>, StateEvent>>>> = {
         if let Some(timeout) = opt.timeout {
             vec![Rc::new(RefCell::new(FixedTimeoutIntercept::new(
                 Duration::from_millis(timeout),

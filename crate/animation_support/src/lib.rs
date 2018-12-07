@@ -3,15 +3,15 @@
 
 //! Provides types to make it easier to work with Amethyst animations.
 
-extern crate amethyst;
+
 #[macro_use]
 extern crate derive_new;
-extern crate fnv;
-extern crate minterpolate;
-extern crate named_type;
+
+
+
 #[macro_use]
 extern crate named_type_derive;
-extern crate serde;
+
 #[macro_use]
 extern crate serde_derive;
 

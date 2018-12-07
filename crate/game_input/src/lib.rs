@@ -14,11 +14,9 @@
 //! * Attack
 //! * Special
 
-extern crate amethyst;
-#[cfg(test)]
-extern crate amethyst_test;
-#[cfg(test)]
-extern crate application;
+
+
+
 #[macro_use]
 extern crate derivative;
 #[macro_use]
@@ -26,17 +24,16 @@ extern crate derive_new;
 #[cfg(test)]
 #[macro_use]
 extern crate hamcrest;
-extern crate serde;
+
 #[macro_use]
 extern crate serde_derive;
-extern crate strum;
+use strum;
 #[macro_use]
 extern crate strum_macros;
-extern crate typename;
+use typename;
 #[macro_use]
 extern crate typename_derive;
-#[cfg(test)]
-extern crate winit;
+
 
 pub use crate::axis::Axis;
 pub use crate::component::{ControllerInput, InputControlled, SharedInputControlled};

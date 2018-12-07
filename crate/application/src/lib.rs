@@ -30,14 +30,14 @@
 //! [find_in]: resource/fn.find_in.html
 //! [load_in]: resource/fn.load_in.html
 
-extern crate amethyst;
+use amethyst;
 #[macro_use]
 extern crate derivative;
 #[macro_use]
 extern crate derive_error_chain;
 #[macro_use]
 extern crate derive_more;
-extern crate error_chain;
+use error_chain;
 #[cfg(test)]
 #[macro_use]
 extern crate lazy_static;
@@ -46,15 +46,13 @@ extern crate log;
 #[cfg(test)]
 #[macro_use]
 extern crate pretty_assertions;
-extern crate ron;
+use ron;
 #[cfg(test)]
 #[macro_use]
 extern crate serde;
-#[cfg(not(test))]
-extern crate serde;
-#[cfg(test)]
-extern crate tempfile;
-extern crate toml;
+
+
+use toml;
 
 pub use crate::resource::{
     find, find_in, load, load_in, Error, ErrorKind, FindContext, Format, IoUtils, Result,

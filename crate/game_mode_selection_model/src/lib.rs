@@ -3,9 +3,9 @@
 
 //! Types used during game mode selection.
 
-extern crate amethyst_utils;
-extern crate application_menu;
-extern crate strum;
+
+
+use strum;
 #[macro_use]
 extern crate strum_macros;
 

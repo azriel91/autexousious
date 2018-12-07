@@ -8,12 +8,11 @@
 //! pressed, but the `System` may be run multiple times before the user has released the button,
 //! causing multiple actions to happen / rapid-fire when only one action is intended.
 
-extern crate amethyst;
-#[cfg(test)]
-extern crate amethyst_test;
+
+
 #[macro_use]
 extern crate derive_new;
-extern crate named_type;
+
 #[macro_use]
 extern crate named_type_derive;
 

@@ -11,7 +11,7 @@ pub struct KeyboardEscapeIntercept;
 impl<T> Intercept<T, StateEvent> for KeyboardEscapeIntercept {
     fn handle_event_begin(
         &mut self,
-        _data: &mut StateData<T>,
+        _data: &mut StateData<'_, T>,
         event: &mut StateEvent,
     ) -> Option<Trans<T, StateEvent>> {
         if let StateEvent::Window(event) = &event {

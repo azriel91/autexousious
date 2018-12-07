@@ -3,18 +3,18 @@
 
 //! Types and traits to allow the `stdio_view` to control a state.
 
-extern crate amethyst;
-extern crate application_event;
-extern crate clap;
+
+
+use clap;
 #[macro_use]
 extern crate derive_error_chain;
 #[macro_use]
 extern crate derive_new;
-extern crate error_chain;
+
 #[macro_use]
 extern crate log;
-extern crate structopt;
-extern crate typename;
+
+use typename;
 #[macro_use]
 extern crate typename_derive;
 

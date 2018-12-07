@@ -88,7 +88,7 @@ impl AssetSlugBuilder {
 }
 
 impl fmt::Display for AssetSlug {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}/{}", self.namespace, self.name)
     }
 }

@@ -103,7 +103,7 @@ impl MainMenuState {
 }
 
 impl<'a, 'b> State<GameData<'a, 'b>, StateEvent> for MainMenuState {
-    fn on_start(&mut self, mut data: StateData<GameData>) {
+    fn on_start(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
         let mut dispatch = ParSeq::new(
             UiEventHandlerSystem::new(),
             data.world.read_resource::<Arc<rayon::ThreadPool>>().clone(),
@@ -117,7 +117,7 @@ impl<'a, 'b> State<GameData<'a, 'b>, StateEvent> for MainMenuState {
         self.initialize_menu_items(&mut data.world);
     }
 
-    fn on_stop(&mut self, mut data: StateData<GameData>) {
+    fn on_stop(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
         self.terminate_menu_items(&mut data.world);
         self.terminate_menu_event_channel(&mut data.world);
 
@@ -125,15 +125,15 @@ impl<'a, 'b> State<GameData<'a, 'b>, StateEvent> for MainMenuState {
     }
 
     // Need to explicitly hide and show the menu items during pause and resume
-    fn on_resume(&mut self, mut data: StateData<GameData>) {
+    fn on_resume(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
         self.initialize_menu_items(&mut data.world);
     }
 
-    fn on_pause(&mut self, mut data: StateData<GameData>) {
+    fn on_pause(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
         self.terminate_menu_items(&mut data.world);
     }
 
-    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, StateEvent> {
+    fn update(&mut self, data: StateData<'_, GameData<'_, '_>>) -> Trans<GameData<'a, 'b>, StateEvent> {
         data.data.update(&data.world);
         self.dispatch.as_mut().unwrap().dispatch(&data.world.res);
 

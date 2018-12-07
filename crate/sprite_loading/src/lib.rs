@@ -23,12 +23,10 @@
 //! }
 //! ```
 
-extern crate amethyst;
-#[cfg(test)]
-extern crate amethyst_test;
-extern crate application;
-#[cfg(test)]
-extern crate assets_test;
+
+
+use application;
+
 #[cfg(test)]
 #[macro_use]
 extern crate derive_new;
@@ -37,7 +35,7 @@ extern crate log;
 #[cfg(test)]
 #[macro_use]
 extern crate pretty_assertions;
-extern crate sprite_model;
+
 
 pub use crate::animation::{AnimationFrame, AnimationSequence, SpriteRenderAnimationLoader};
 pub use crate::sprite_animation_handle::SpriteAnimationHandle;

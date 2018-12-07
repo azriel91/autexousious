@@ -51,15 +51,15 @@ where
         self.start_instant = Some(Instant::now());
     }
 
-    fn fixed_update_begin(&mut self, _: &mut StateData<T>) -> Option<Trans<T, E>> {
+    fn fixed_update_begin(&mut self, _: &mut StateData<'_, T>) -> Option<Trans<T, E>> {
         self.pop_on_timeout()
     }
 
-    fn update_begin(&mut self, _: &mut StateData<T>) -> Option<Trans<T, E>> {
+    fn update_begin(&mut self, _: &mut StateData<'_, T>) -> Option<Trans<T, E>> {
         self.pop_on_timeout()
     }
 
-    fn on_stop_begin(&mut self, _: &mut StateData<T>) {
+    fn on_stop_begin(&mut self, _: &mut StateData<'_, T>) {
         self.start_instant = None;
     }
 
@@ -102,7 +102,7 @@ mod test {
 
         assert!(intercept.start_instant.is_some());
 
-        <Intercept<(), ()>>::on_stop_begin(
+        <dyn Intercept<(), ()>>::on_stop_begin(
             &mut intercept,
             &mut StateData::new(&mut world, &mut ()),
         );
@@ -196,7 +196,7 @@ mod test {
 
     #[test]
     fn intercept_is_transitive() {
-        assert!(<Intercept<(), ()>>::is_transitive(
+        assert!(<dyn Intercept<(), ()>>::is_transitive(
             &FixedTimeoutIntercept::new(Duration::from_millis(0))
         ));
     }

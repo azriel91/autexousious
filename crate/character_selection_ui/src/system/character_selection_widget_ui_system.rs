@@ -59,13 +59,13 @@ impl CharacterSelectionWidgetUiSystem {
         &mut self,
         character_assets: &CharacterAssets,
         input_config: &InputConfig,
-        entities: &Entities,
+        entities: &Entities<'_>,
         (
             character_selection_widgets,
             input_controlleds,
             controller_inputs
-        ): &mut WidgetComponentStorages,
-        (theme, ui_transforms, ui_texts): &mut WidgetUiResources,
+        ): &mut WidgetComponentStorages<'_>,
+        (theme, ui_transforms, ui_texts): &mut WidgetUiResources<'_>,
     ) {
         if !self.ui_initialized {
             debug!("Initializing Character Selection UI.");
@@ -127,8 +127,8 @@ impl CharacterSelectionWidgetUiSystem {
 
     fn refresh_ui(
         &mut self,
-        character_selection_widgets: &mut WriteStorage<CharacterSelectionWidget>,
-        ui_texts: &mut WriteStorage<UiText>,
+        character_selection_widgets: &mut WriteStorage<'_, CharacterSelectionWidget>,
+        ui_texts: &mut WriteStorage<'_, UiText>,
     ) {
         (character_selection_widgets, ui_texts)
             .join()
@@ -142,8 +142,8 @@ impl CharacterSelectionWidgetUiSystem {
 
     fn terminate_ui(
         &mut self,
-        entities: &Entities,
-        character_selection_widgets: &mut WriteStorage<CharacterSelectionWidget>,
+        entities: &Entities<'_>,
+        character_selection_widgets: &mut WriteStorage<'_, CharacterSelectionWidget>,
     ) {
         if self.ui_initialized {
             (&**entities, character_selection_widgets)
@@ -284,8 +284,8 @@ mod test {
             .with_effect(|world| {
                 world.exec(
                     |(mut widgets, character_assets): (
-                        WriteStorage<CharacterSelectionWidget>,
-                        Read<CharacterAssets>,
+                        WriteStorage<'_, CharacterSelectionWidget>,
+                        Read<'_, CharacterAssets>,
                     )| {
                         let widget = (&mut widgets)
                             .join()
@@ -344,8 +344,8 @@ mod test {
                 .with_effect(|world| {
                     world.exec(
                         |(mut widgets, character_assets): (
-                            WriteStorage<CharacterSelectionWidget>,
-                            Read<CharacterAssets>,
+                            WriteStorage<'_, CharacterSelectionWidget>,
+                            Read<'_, CharacterAssets>,
                         )| {
                             let widget = (&mut widgets).join().next().expect(
                                 "Expected entity with `CharacterSelectionWidget` component.",
@@ -441,13 +441,13 @@ mod test {
     }
 
     fn assert_widget_count(world: &mut World, count: usize) {
-        world.exec(|widgets: ReadStorage<CharacterSelectionWidget>| {
+        world.exec(|widgets: ReadStorage<'_, CharacterSelectionWidget>| {
             assert_eq!(count, widgets.join().count());
         });
     }
 
     fn assert_widget_text(world: &mut World, text: &str) {
-        world.exec(|ui_texts: ReadStorage<UiText>| {
+        world.exec(|ui_texts: ReadStorage<'_, UiText>| {
             assert_eq!(
                 text,
                 ui_texts

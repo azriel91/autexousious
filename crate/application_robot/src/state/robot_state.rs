@@ -22,10 +22,10 @@ where
     /// setter from the `Builder` derive, so we instead provide default intercepts, and functions
     /// to toggle the enablement of certain `Intercept`s.
     #[derivative(Debug = "ignore")]
-    pub intercepts: Vec<Rc<RefCell<Intercept<T, E>>>>,
+    pub intercepts: Vec<Rc<RefCell<dyn Intercept<T, E>>>>,
     /// State to delegate behaviour to.
     #[derivative(Debug = "ignore")]
-    pub delegate: Box<State<T, E>>,
+    pub delegate: Box<dyn State<T, E>>,
 }
 
 impl<T, E> RobotState<T, E>
@@ -34,7 +34,7 @@ where
     E: Send + Sync + 'static,
 {
     /// Returns a new application robot state.
-    pub fn new(delegate: Box<State<T, E>>) -> Self {
+    pub fn new(delegate: Box<dyn State<T, E>>) -> Self {
         RobotState {
             intercepts: RobotState::default_intercepts(),
             delegate,
@@ -43,8 +43,8 @@ where
 
     /// Returns a new application robot state with only the specified intercepts.
     pub fn new_with_intercepts(
-        delegate: Box<State<T, E>>,
-        intercepts: Vec<Rc<RefCell<Intercept<T, E>>>>,
+        delegate: Box<dyn State<T, E>>,
+        intercepts: Vec<Rc<RefCell<dyn Intercept<T, E>>>>,
     ) -> Self {
         RobotState {
             intercepts,
@@ -55,13 +55,13 @@ where
     /// Returns the default intercepts for a `RobotState`.
     ///
     /// Currently this only includes the `ApplicationEventIntercept`.
-    pub fn default_intercepts() -> Vec<Rc<RefCell<Intercept<T, E>>>> {
+    pub fn default_intercepts() -> Vec<Rc<RefCell<dyn Intercept<T, E>>>> {
         vec![Rc::new(RefCell::new(ApplicationEventIntercept::new()))]
     }
 
     fn fold_trans_begin<F>(&mut self, mut intercept_fn: F) -> Option<Trans<T, E>>
     where
-        F: FnMut(&mut Rc<RefCell<Intercept<T, E>>>) -> Option<Trans<T, E>>,
+        F: FnMut(&mut Rc<RefCell<dyn Intercept<T, E>>>) -> Option<Trans<T, E>>,
     {
         let trans_opt = self
             .intercepts
@@ -80,7 +80,7 @@ where
 
     fn fold_trans_end<F>(&mut self, state_trans: Trans<T, E>, mut intercept_fn: F) -> Trans<T, E>
     where
-        F: FnMut(&mut Rc<RefCell<Intercept<T, E>>>, &Trans<T, E>) -> Option<Trans<T, E>>,
+        F: FnMut(&mut Rc<RefCell<dyn Intercept<T, E>>>, &Trans<T, E>) -> Option<Trans<T, E>>,
     {
         let intercept_trans = {
             let state_trans_ref = &state_trans;
@@ -114,13 +114,13 @@ where
     /// # Parameters
     ///
     /// * `trans_state`: `State` that should be wrapped in a `RobotState`.
-    fn wrap_trans_state(&mut self, trans_state: Box<State<T, E>>) -> Box<State<T, E>> {
+    fn wrap_trans_state(&mut self, trans_state: Box<dyn State<T, E>>) -> Box<dyn State<T, E>> {
         let intercepts = self
             .intercepts
             .iter()
             .filter(|intercept| intercept.borrow().is_transitive())
             .cloned()
-            .collect::<Vec<Rc<RefCell<Intercept<T, E>>>>>();
+            .collect::<Vec<Rc<RefCell<dyn Intercept<T, E>>>>>();
         Box::new(RobotState {
             intercepts,
             delegate: trans_state,
@@ -133,7 +133,7 @@ where
     T: 'static,
     E: Send + Sync + 'static,
 {
-    fn on_start(&mut self, mut data: StateData<T>) {
+    fn on_start(&mut self, mut data: StateData<'_, T>) {
         self.intercepts
             .iter_mut()
             .for_each(|intercept| intercept.borrow_mut().on_start_begin(&mut data));
@@ -145,7 +145,7 @@ where
             .for_each(|intercept| intercept.borrow_mut().on_start_end());
     }
 
-    fn on_stop(&mut self, mut data: StateData<T>) {
+    fn on_stop(&mut self, mut data: StateData<'_, T>) {
         self.intercepts
             .iter_mut()
             .for_each(|intercept| intercept.borrow_mut().on_stop_begin(&mut data));
@@ -157,7 +157,7 @@ where
             .for_each(|intercept| intercept.borrow_mut().on_stop_end());
     }
 
-    fn on_pause(&mut self, mut data: StateData<T>) {
+    fn on_pause(&mut self, mut data: StateData<'_, T>) {
         self.intercepts
             .iter_mut()
             .for_each(|intercept| intercept.borrow_mut().on_pause_begin(&mut data));
@@ -169,7 +169,7 @@ where
             .for_each(|intercept| intercept.borrow_mut().on_pause_end());
     }
 
-    fn on_resume(&mut self, mut data: StateData<T>) {
+    fn on_resume(&mut self, mut data: StateData<'_, T>) {
         self.intercepts
             .iter_mut()
             .for_each(|intercept| intercept.borrow_mut().on_resume_begin(&mut data));
@@ -183,7 +183,7 @@ where
 
     // TODO: Pending <https://gitlab.com/azriel91/autexousious/issues/16>
     // kcov-ignore-start
-    fn handle_event(&mut self, mut data: StateData<T>, mut event: E) -> Trans<T, E> {
+    fn handle_event(&mut self, mut data: StateData<'_, T>, mut event: E) -> Trans<T, E> {
         let intercept_trans = self.fold_trans_begin(|intercept| {
             intercept
                 .borrow_mut()
@@ -201,7 +201,7 @@ where
     }
     // kcov-ignore-end
 
-    fn fixed_update(&mut self, mut data: StateData<T>) -> Trans<T, E> {
+    fn fixed_update(&mut self, mut data: StateData<'_, T>) -> Trans<T, E> {
         let intercept_trans =
             self.fold_trans_begin(|intercept| intercept.borrow_mut().fixed_update_begin(&mut data));
         if let Some(trans) = intercept_trans {
@@ -215,7 +215,7 @@ where
         }) // kcov-ignore
     }
 
-    fn update(&mut self, mut data: StateData<T>) -> Trans<T, E> {
+    fn update(&mut self, mut data: StateData<'_, T>) -> Trans<T, E> {
         let intercept_trans =
             self.fold_trans_begin(|intercept| intercept.borrow_mut().update_begin(&mut data));
         if let Some(trans) = intercept_trans {
@@ -247,7 +247,7 @@ mod test {
 
     fn setup<T, E>(
         invocations: Invocations,
-        intercepts: Vec<Rc<RefCell<Intercept<T, E>>>>,
+        intercepts: Vec<Rc<RefCell<dyn Intercept<T, E>>>>,
     ) -> (RobotState<T, E>, World, Invocations)
     where
         T: 'static,
@@ -277,7 +277,7 @@ mod test {
         E: Send + Sync + 'static,
     {
         let invocations = Rc::new(RefCell::new(vec![]));
-        let intercepts: Vec<Rc<RefCell<Intercept<T, E>>>> = vec![
+        let intercepts: Vec<Rc<RefCell<dyn Intercept<T, E>>>> = vec![
             Rc::new(RefCell::new(MockIntercept {
                 id: 0,
                 invocations: invocations.clone(),
@@ -302,7 +302,7 @@ mod test {
         E: Send + Sync + 'static,
     {
         let invocations = Rc::new(RefCell::new(vec![]));
-        let intercepts: Vec<Rc<RefCell<Intercept<T, E>>>> = vec![
+        let intercepts: Vec<Rc<RefCell<dyn Intercept<T, E>>>> = vec![
             Rc::new(RefCell::new(MockIntercept {
                 id: 0,
                 invocations: invocations.clone(),
@@ -334,7 +334,7 @@ mod test {
         E: Send + Sync + 'static,
     {
         let invocations = Rc::new(RefCell::new(vec![]));
-        let intercepts: Vec<Rc<RefCell<Intercept<T, E>>>> = vec![
+        let intercepts: Vec<Rc<RefCell<dyn Intercept<T, E>>>> = vec![
             Rc::new(RefCell::new(MockIntercept {
                 id: 0,
                 invocations: invocations.clone(),
@@ -369,7 +369,7 @@ mod test {
         E: Send + Sync + 'static,
     {
         let invocations = Rc::new(RefCell::new(vec![]));
-        let intercepts: Vec<Rc<RefCell<Intercept<T, E>>>> = vec![
+        let intercepts: Vec<Rc<RefCell<dyn Intercept<T, E>>>> = vec![
             Rc::new(RefCell::new(MockIntercept {
                 id: 0,
                 invocations: invocations.clone(),
@@ -404,7 +404,7 @@ mod test {
         E: Send + Sync + 'static,
     {
         let invocations = Rc::new(RefCell::new(vec![]));
-        let intercepts: Vec<Rc<RefCell<Intercept<T, E>>>> = vec![
+        let intercepts: Vec<Rc<RefCell<dyn Intercept<T, E>>>> = vec![
             Rc::new(RefCell::new(MockIntercept {
                 id: 0,
                 invocations: invocations.clone(),
@@ -439,7 +439,7 @@ mod test {
         E: Send + Sync + 'static,
     {
         let invocations = Rc::new(RefCell::new(vec![]));
-        let intercepts: Vec<Rc<RefCell<Intercept<T, E>>>> = vec![
+        let intercepts: Vec<Rc<RefCell<dyn Intercept<T, E>>>> = vec![
             Rc::new(RefCell::new(MockIntercept {
                 id: 0,
                 invocations: invocations.clone(),
@@ -474,7 +474,7 @@ mod test {
         E: Send + Sync + 'static,
     {
         let invocations = Rc::new(RefCell::new(vec![]));
-        let intercepts: Vec<Rc<RefCell<Intercept<T, E>>>> = vec![
+        let intercepts: Vec<Rc<RefCell<dyn Intercept<T, E>>>> = vec![
             Rc::new(RefCell::new(MockIntercept {
                 id: 0,
                 invocations: invocations.clone(),
@@ -933,7 +933,7 @@ mod test {
     #[macro_use]
     macro_rules! fn_ {
         ($function:ident, $invocation:expr) => {
-            fn $function(&mut self, _: StateData<T>) {
+            fn $function(&mut self, _: StateData<'_, T>) {
                 self.invocations
                     .borrow_mut()
                     .push($invocation); // kcov-ignore
@@ -1005,24 +1005,24 @@ mod test {
         T: 'static,
         E: Send + Sync + 'static,
     {
-        fn_id!(on_start_begin, Invocation::OnStartBegin; [&mut StateData<T>]);
+        fn_id!(on_start_begin, Invocation::OnStartBegin; [&mut StateData<'_, T>]);
         fn_id!(on_start_end, Invocation::OnStartEnd; []);
-        fn_id!(on_stop_begin, Invocation::OnStopBegin; [&mut StateData<T>]);
+        fn_id!(on_stop_begin, Invocation::OnStopBegin; [&mut StateData<'_, T>]);
         fn_id!(on_stop_end, Invocation::OnStopEnd; []);
-        fn_id!(on_pause_begin, Invocation::OnPauseBegin; [&mut StateData<T>]);
+        fn_id!(on_pause_begin, Invocation::OnPauseBegin; [&mut StateData<'_, T>]);
         fn_id!(on_pause_end, Invocation::OnPauseEnd; []);
-        fn_id!(on_resume_begin, Invocation::OnResumeBegin; [&mut StateData<T>]);
+        fn_id!(on_resume_begin, Invocation::OnResumeBegin; [&mut StateData<'_, T>]);
         fn_id!(on_resume_end, Invocation::OnResumeEnd; []);
         fn_opt_trans!(
             handle_event_begin,
             Invocation::HandleEventBegin,
             trans_begin;
-            [&mut StateData<T>, &mut E]
+            [&mut StateData<'_, T>, &mut E]
         );
         fn_opt_trans!(handle_event_end, Invocation::HandleEventEnd, trans_end; [&Trans<T, E>]);
-        fn_opt_trans!(fixed_update_begin, Invocation::FixedUpdateBegin, trans_begin; [&mut StateData<T>]);
+        fn_opt_trans!(fixed_update_begin, Invocation::FixedUpdateBegin, trans_begin; [&mut StateData<'_, T>]);
         fn_opt_trans!(fixed_update_end, Invocation::FixedUpdateEnd, trans_end; [&Trans<T, E>]);
-        fn_opt_trans!(update_begin, Invocation::UpdateBegin, trans_begin; [&mut StateData<T>]);
+        fn_opt_trans!(update_begin, Invocation::UpdateBegin, trans_begin; [&mut StateData<'_, T>]);
         fn_opt_trans!(update_end, Invocation::UpdateEnd, trans_end; [&Trans<T, E>]);
         fn is_transitive(&self) -> bool {
             self.transitive
@@ -1034,7 +1034,7 @@ mod test {
     where
         E: Send + Sync + 'static,
     {
-        fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> Result<(), fmt::Error> {
             write!(
                 f,
                 "MockIntercept {{ invocations: {:?}, trans_begin: {}, trans_end: {} }}",
@@ -1073,7 +1073,7 @@ mod test {
         T: 'static,
         E: Send + Sync + 'static,
     {
-        fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> Result<(), fmt::Error> {
             write!(
                 f,
                 "MockState {{ invocations: {:?}, trans: {} }}",
@@ -1095,10 +1095,10 @@ mod test {
         fn_trans!(
             handle_event,
             Invocation::HandleEvent; // kcov-ignore
-            [StateData<T>, E]
+            [StateData<'_, T>, E]
         );
-        fn_trans!(fixed_update, Invocation::FixedUpdate; [StateData<T>]);
-        fn_trans!(update, Invocation::Update; [StateData<T>]);
+        fn_trans!(fixed_update, Invocation::FixedUpdate; [StateData<'_, T>]);
+        fn_trans!(update, Invocation::Update; [StateData<'_, T>]);
     }
 
     fn format_trans<T, E>(trans: &Option<Trans<T, E>>) -> String {

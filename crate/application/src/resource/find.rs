@@ -203,7 +203,7 @@ mod test {
             if let &ErrorKind::Find(ref find_context) =
                 find("test__find_config.ron").unwrap_err().kind()
             {
-                let mut base_dirs = vec![exe_dir()];
+                let base_dirs = vec![exe_dir()];
                 let expected = FindContext {
                     base_dirs,
                     conf_dir: PathBuf::from(""),
@@ -228,7 +228,7 @@ mod test {
             );
 
             if let &ErrorKind::Find(ref find_context) = find_result.unwrap_err().kind() {
-                let mut base_dirs = vec![exe_dir()];
+                let base_dirs = vec![exe_dir()];
                 let expected = FindContext {
                     base_dirs,
                     conf_dir: PathBuf::from(""),

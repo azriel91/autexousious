@@ -114,8 +114,8 @@ mod test {
                 .with_effect(|world| {
                     world.exec(
                         |(input_controlleds, mut controller_inputs): (
-                            ReadStorage<InputControlled>,
-                            WriteStorage<ControllerInput>,
+                            ReadStorage<'_, InputControlled>,
+                            WriteStorage<'_, ControllerInput>,
                         )| {
                             (&input_controlleds, &mut controller_inputs)
                                 .join()
@@ -137,8 +137,8 @@ mod test {
                 .with_effect(|world| {
                     world.exec(
                         |(input_controlleds, mut controller_inputs): (
-                            ReadStorage<InputControlled>,
-                            WriteStorage<ControllerInput>,
+                            ReadStorage<'_, InputControlled>,
+                            WriteStorage<'_, ControllerInput>,
                         )| {
                             (&input_controlleds, &mut controller_inputs)
                                 .join()

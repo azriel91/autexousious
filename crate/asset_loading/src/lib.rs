@@ -5,25 +5,24 @@
 //!
 //! This crate provides the logic to discover
 
-extern crate application;
+
 #[macro_use]
 extern crate derive_new;
-extern crate game_model;
+
 #[cfg(test)]
 #[macro_use]
 extern crate hamcrest;
-extern crate heck;
-extern crate itertools;
+
+
 #[macro_use]
 extern crate log;
-extern crate map_model;
-extern crate object_model;
+
+
 #[cfg(test)]
 #[macro_use]
 extern crate pretty_assertions;
-extern crate strum;
-#[cfg(test)]
-extern crate tempfile;
+
+
 
 pub use crate::asset_discovery::AssetDiscovery;
 pub use crate::asset_indexer::AssetIndexer;

@@ -3,7 +3,7 @@
 
 //! Provides types to support building an application menu.
 
-extern crate amethyst;
+
 
 pub use self::event::MenuEvent;
 pub use self::menu_item::MenuItem;

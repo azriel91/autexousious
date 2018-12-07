@@ -21,7 +21,7 @@ pub struct FindContext {
 }
 
 impl fmt::Display for FindContext {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         writeln!(
             f,
             "Failed to find '{}' under any of the following directories:",

@@ -25,15 +25,15 @@
 
 #[macro_use]
 extern crate amethyst;
-extern crate character_selection_model;
+
 #[macro_use]
 extern crate derivative;
 #[macro_use]
 extern crate derive_more;
-extern crate game_mode_selection_model;
-extern crate game_play_model;
-extern crate map_selection_model;
-extern crate strum;
+
+
+
+use strum;
 #[macro_use]
 extern crate strum_macros;
 

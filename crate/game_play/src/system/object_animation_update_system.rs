@@ -48,7 +48,7 @@ where
     fn swap_animation(
         object: &Object<SeqId>,
         (ref mut sprite_acs, ref mut body_frame_acs, ref mut interaction_acs): &mut ObjectAnimationStorages<
-            SeqId,
+            '_, SeqId,
         >,
         entity: &Entity,
         last_sequence_id: SeqId,

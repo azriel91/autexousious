@@ -3,10 +3,10 @@
 
 //! Types used to represent shapes.
 
-extern crate serde;
+
 #[macro_use]
 extern crate serde_derive;
-extern crate strum;
+
 #[macro_use]
 extern crate strum_macros;
 

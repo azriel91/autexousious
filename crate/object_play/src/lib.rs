@@ -3,13 +3,12 @@
 
 //! Behaviour logic for object types.
 
-extern crate amethyst;
-#[cfg(test)]
-extern crate amethyst_test;
+
+
 #[macro_use]
 extern crate derive_new;
-extern crate game_input;
-extern crate object_model;
+
+
 #[cfg(test)]
 #[macro_use]
 extern crate pretty_assertions;

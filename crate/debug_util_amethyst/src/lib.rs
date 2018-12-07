@@ -5,7 +5,7 @@
 //!
 //! [amethyst]: https://github.com/amethyst/amethyst
 
-extern crate amethyst;
+
 
 use std::mem::discriminant;
 

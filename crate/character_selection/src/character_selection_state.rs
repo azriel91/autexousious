@@ -59,7 +59,7 @@ where
     #[derivative(Debug(bound = "F: Debug"))]
     next_state_fn: F,
     /// `PhantomData`.
-    marker: PhantomData<AutexState<'a, 'b>>,
+    marker: PhantomData<dyn AutexState<'a, 'b>>,
 }
 
 impl<'a, 'b, F, S> CharacterSelectionStateDelegate<'a, 'b, F, S>
@@ -79,18 +79,18 @@ where
     F: Fn() -> Box<S>,
     S: AutexState<'a, 'b> + 'static,
 {
-    fn on_start(&mut self, mut data: StateData<GameData<'a, 'b>>) {
+    fn on_start(&mut self, mut data: StateData<'_, GameData<'a, 'b>>) {
         self.initialize_character_selections(&mut data.world);
     }
 
-    fn on_resume(&mut self, data: StateData<GameData<'a, 'b>>) {
+    fn on_resume(&mut self, data: StateData<'_, GameData<'a, 'b>>) {
         let mut selections_status = data.world.write_resource::<CharacterSelectionsStatus>();
         *selections_status = CharacterSelectionsStatus::Confirmed;
     }
 
     fn handle_event(
         &mut self,
-        data: StateData<GameData<'a, 'b>>,
+        data: StateData<'_, GameData<'a, 'b>>,
         event: AppEvent,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
         if let AppEvent::CharacterSelection(character_selection_event) = event {
@@ -106,7 +106,7 @@ where
         Trans::None
     }
 
-    fn update(&mut self, data: StateData<GameData<'a, 'b>>) -> Trans<GameData<'a, 'b>, AppEvent> {
+    fn update(&mut self, data: StateData<'_, GameData<'a, 'b>>) -> Trans<GameData<'a, 'b>, AppEvent> {
         let selections_status = data.world.read_resource::<CharacterSelectionsStatus>();
         if *selections_status == CharacterSelectionsStatus::Ready {
             let character_selections = data.world.read_resource::<CharacterSelections>();
