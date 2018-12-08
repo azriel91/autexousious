@@ -1,3 +1,5 @@
+use derive_new::new;
+
 use crate::{ControlAction, ControllerId};
 
 /// Action control for a player.

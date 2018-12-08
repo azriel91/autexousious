@@ -1,3 +1,5 @@
+use derive_new::new;
+
 use crate::config::SpriteOffset;
 
 /// Information about how sprites are laid out on the sprite sheet.

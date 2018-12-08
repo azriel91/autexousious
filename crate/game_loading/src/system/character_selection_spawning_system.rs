@@ -1,5 +1,6 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
 use character_selection_model::CharacterSelections;
+use derive_new::new;
 use game_input::InputControlled;
 use game_model::play::GameEntities;
 use map_model::loaded::Map;

@@ -7,9 +7,6 @@
 //! layers.
 
 #[macro_use]
-extern crate derive_new;
-
-#[macro_use]
 extern crate serde_derive;
 #[cfg(test)]
 extern crate toml;

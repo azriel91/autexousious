@@ -2,6 +2,7 @@ use amethyst::{
     core::bundle::{Result, SystemBundle},
     ecs::prelude::*,
 };
+use derive_new::new;
 use game_input::ControllerInput;
 use tracker::LastTrackerSystem;
 use typename::TypeName;

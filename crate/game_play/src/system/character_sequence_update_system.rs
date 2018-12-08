@@ -3,6 +3,7 @@ use amethyst::{
     ecs::{Entities, Join, ReadStorage, System, WriteStorage},
     renderer::SpriteRender,
 };
+use derive_new::new;
 use game_input::ControllerInput;
 use game_loading::ObjectAnimationStorages;
 use object_model::{

@@ -1,3 +1,5 @@
+use derive_new::new;
+
 use crate::config::SpriteSheetDefinition;
 
 /// Configuration type for all sprite sheet definitions for an object.

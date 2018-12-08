@@ -3,6 +3,7 @@ use amethyst::{
     core::bundle::{Result, SystemBundle},
     ecs::prelude::*,
 };
+use derive_new::new;
 use object_model::{
     config::object::CharacterSequenceId,
     loaded::{Character, Object},

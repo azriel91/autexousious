@@ -1,4 +1,5 @@
 use amethyst::{core::transform::Transform, ecs::prelude::*};
+use derive_new::new;
 use object_model::entity::Position;
 
 /// Updates each entity's `Transform` based on their `Position` in game.

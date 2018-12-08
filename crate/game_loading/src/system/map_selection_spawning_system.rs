@@ -1,4 +1,5 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
+use derive_new::new;
 use game_model::play::GameEntities;
 use map_model::loaded::Map;
 use map_selection_model::MapSelection;

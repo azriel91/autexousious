@@ -25,9 +25,6 @@
 
 use application;
 
-#[cfg(test)]
-#[macro_use]
-extern crate derive_new;
 #[macro_use]
 extern crate log;
 #[cfg(test)]

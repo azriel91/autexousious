@@ -1,4 +1,5 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
+use derive_new::new;
 use game_input::ControllerInput;
 use object_model::{
     config::object::CharacterSequenceId,

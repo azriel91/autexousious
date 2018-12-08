@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use amethyst::ecs::prelude::*;
+use derive_new::new;
 use object_model::ObjectType;
 
 /// All entities for a game.

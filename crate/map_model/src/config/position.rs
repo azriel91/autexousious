@@ -1,3 +1,5 @@
+use derive_new::new;
+
 /// Position of a layer on a map.
 #[derive(Clone, Copy, Debug, Default, Deserialize, PartialEq, Eq, new)]
 #[serde(default)]

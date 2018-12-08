@@ -2,6 +2,7 @@ use std::marker::PhantomData;
 
 use amethyst::{ecs::prelude::*, shrev::EventChannel};
 use application_event::AppEventVariant;
+use derive_new::new;
 use structopt::StructOpt;
 use typename::TypeName;
 

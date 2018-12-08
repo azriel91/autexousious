@@ -10,6 +10,7 @@ use collision_model::{
     config::{BodyFrame, Interaction, InteractionFrame},
     play::CollisionEvent,
 };
+use derive_new::new;
 use shape_model::Volume;
 use typename::TypeName;
 

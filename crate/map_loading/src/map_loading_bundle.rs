@@ -3,6 +3,7 @@ use amethyst::{
     core::bundle::{Result, SystemBundle},
     ecs::prelude::*,
 };
+use derive_new::new;
 use map_model::loaded::Map;
 
 /// Adds `Processor<Map>` to the `World`.

@@ -166,6 +166,7 @@ mod test {
         animation::{BodyAnimationHandle, BodyFrameActiveHandle, BodyFramePrimitive},
         config::BodyFrame,
     };
+    use derive_new::new;
 
     use super::BodyAnimationLoader;
     use crate::{BodyAnimationSequence, CollisionLoadingBundle};

@@ -1,5 +1,6 @@
 use amethyst::ecs::prelude::{Component, DenseVecStorage};
 use character_selection_model::CharacterSelection;
+use derive_new::new;
 
 use crate::WidgetState;
 

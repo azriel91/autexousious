@@ -2,6 +2,7 @@ use amethyst::{
     assets::{Asset, Handle},
     ecs::prelude::*,
 };
+use derive_new::new;
 
 use crate::config::object::{CharacterSequenceId, ObjectDefinition};
 

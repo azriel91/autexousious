@@ -1,3 +1,5 @@
+use derive_new::new;
+
 use crate::{Axis, ControllerId};
 
 /// Axis control for a player.

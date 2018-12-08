@@ -1,4 +1,5 @@
 use amethyst::ecs::{prelude::*, storage::HashMapStorage};
+use derive_new::new;
 
 use crate::ControllerId;
 

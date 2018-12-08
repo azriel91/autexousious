@@ -1,4 +1,5 @@
 use amethyst::{ecs::prelude::*, input::InputHandler};
+use derive_new::new;
 
 use crate::{
     Axis, ControlAction, ControllerInput, InputConfig, InputControlled, PlayerActionControl,

@@ -4,6 +4,7 @@ use amethyst::{
     ecs::prelude::*,
 };
 use collision_model::config::{BodyFrame, InteractionFrame};
+use derive_new::new;
 use typename::TypeName;
 
 use crate::CollisionLoadingSystem;

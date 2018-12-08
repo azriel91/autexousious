@@ -1,4 +1,5 @@
 use amethyst::ecs::prelude::*;
+use derive_new::new;
 use object_model::entity::{Position, Velocity};
 
 /// Updates each entity's `Position` based on their `Velocity` in game.

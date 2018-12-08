@@ -10,6 +10,7 @@ use amethyst::{
     renderer::{Camera, Projection, ScreenDimensions, VirtualKeyCode},
 };
 use application_event::AppEvent;
+use derive_new::new;
 use game_model::play::GameEntities;
 use game_play_model::{GamePlayEvent, GamePlayStatus};
 

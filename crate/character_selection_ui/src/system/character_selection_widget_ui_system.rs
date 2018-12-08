@@ -7,6 +7,7 @@ use application_ui::{FontVariant, Theme};
 use character_selection_model::{
     CharacterSelection, CharacterSelectionEvent, CharacterSelectionsStatus,
 };
+use derive_new::new;
 use game_input::{ControllerId, ControllerInput, InputConfig, InputControlled};
 use game_model::loaded::{CharacterAssets, SlugAndHandle};
 

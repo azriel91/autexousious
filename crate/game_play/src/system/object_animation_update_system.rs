@@ -5,6 +5,7 @@ use amethyst::{
     assets::AssetStorage,
     ecs::{Entities, Entity, Join, Read, ReadStorage, System},
 };
+use derive_new::new;
 use game_loading::{AnimationRunner, ObjectAnimationStorages};
 use named_type::NamedType;
 use object_model::{

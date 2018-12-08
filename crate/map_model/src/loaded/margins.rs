@@ -1,3 +1,5 @@
+use derive_new::new;
+
 use crate::config::MapBounds;
 
 /// Coordinates of the limits of the playable area.

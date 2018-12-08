@@ -3,6 +3,7 @@ use amethyst::{
     ecs::prelude::*,
     renderer::SpriteSheetHandle,
 };
+use derive_new::new;
 use sprite_loading::SpriteAnimationHandle;
 
 use crate::{config::MapDefinition, loaded::Margins};

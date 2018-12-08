@@ -176,6 +176,7 @@ mod test {
         },
         config::{Interaction, InteractionFrame},
     };
+    use derive_new::new;
 
     use super::InteractionAnimationLoader;
     use crate::{CollisionLoadingBundle, InteractionAnimationSequence};

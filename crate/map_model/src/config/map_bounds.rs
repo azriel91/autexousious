@@ -1,3 +1,5 @@
+use derive_new::new;
+
 /// Boundary of the playable area of the map.
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, new)]
 pub struct MapBounds {

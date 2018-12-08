@@ -8,8 +8,6 @@
 
 #[macro_use]
 extern crate derivative;
-#[macro_use]
-extern crate derive_new;
 
 #[macro_use]
 extern crate log;

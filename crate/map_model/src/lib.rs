@@ -7,9 +7,6 @@
 //! contrast to `Object`s, an entity should be created for each map `Layer`.
 
 #[macro_use]
-extern crate derive_new;
-
-#[macro_use]
 extern crate serde_derive;
 #[cfg(test)]
 #[macro_use]

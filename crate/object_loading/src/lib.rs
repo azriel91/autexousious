@@ -4,9 +4,6 @@
 //! Processes object configuration into the loaded object model.
 
 #[macro_use]
-extern crate derive_new;
-
-#[macro_use]
 extern crate log;
 
 #[cfg(test)]

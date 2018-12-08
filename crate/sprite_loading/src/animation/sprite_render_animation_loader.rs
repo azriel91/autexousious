@@ -207,6 +207,7 @@ mod test {
     };
     use amethyst_test::prelude::*;
     use assets_test::ASSETS_CHAR_BAT_PATH;
+    use derive_new::new;
 
     use super::SpriteRenderAnimationLoader;
     use crate::{AnimationFrame, AnimationSequence, SpriteAnimationHandle, SpriteLoader};

@@ -5,6 +5,7 @@ use amethyst::{
 use character_selection_model::{
     CharacterSelection, CharacterSelectionEvent, CharacterSelections, CharacterSelectionsStatus,
 };
+use derive_new::new;
 
 /// Populates the `CharacterSelections` based on user input.
 #[derive(Debug, Default, TypeName, new)]

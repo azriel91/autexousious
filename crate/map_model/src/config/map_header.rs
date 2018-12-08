@@ -1,3 +1,5 @@
+use derive_new::new;
+
 use crate::config::MapBounds;
 
 /// Base information of the map.

@@ -1,3 +1,5 @@
+use derive_new::new;
+
 use crate::config::{Layer, MapHeader};
 
 /// Defines a playable area that objects can reside in.

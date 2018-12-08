@@ -1,3 +1,5 @@
+use derive_new::new;
+
 /// Status of setting up entities for game play.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, new)]
 pub struct GameLoadingStatus {

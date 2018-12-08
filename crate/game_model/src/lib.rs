@@ -49,8 +49,6 @@
 
 #[macro_use]
 extern crate derive_builder;
-#[macro_use]
-extern crate derive_new;
 
 use strum;
 #[macro_use]

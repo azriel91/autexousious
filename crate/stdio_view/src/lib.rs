@@ -4,9 +4,6 @@
 //! System that integrates with standard I/O so that the application can be controlled headlessly.
 
 #[macro_use]
-extern crate derive_new;
-
-#[macro_use]
 extern crate log;
 use shell_words;
 

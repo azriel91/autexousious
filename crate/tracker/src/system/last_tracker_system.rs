@@ -1,6 +1,7 @@
 use std::marker::PhantomData;
 
 use amethyst::ecs::prelude::*;
+use derive_new::new;
 use named_type::NamedType;
 
 use crate::Last;

@@ -1,3 +1,5 @@
+use derive_new::new;
+
 use amethyst::{animation::AnimationControlSet, ecs::prelude::*, renderer::Material};
 
 /// Updates `Character` sequence based on input

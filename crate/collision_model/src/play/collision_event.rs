@@ -1,4 +1,5 @@
 use amethyst::ecs::Entity;
+use derive_new::new;
 use shape_model::Volume;
 
 use crate::config::Interaction;

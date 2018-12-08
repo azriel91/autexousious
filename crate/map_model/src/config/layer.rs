@@ -1,3 +1,4 @@
+use derive_new::new;
 use sprite_loading::AnimationSequence;
 use sprite_model::config::SpriteFrame;
 

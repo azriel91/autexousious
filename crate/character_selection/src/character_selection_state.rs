@@ -7,6 +7,7 @@ use character_selection_model::{
     CharacterSelectionEntityId, CharacterSelectionEvent, CharacterSelections,
     CharacterSelectionsStatus,
 };
+use derive_new::new;
 
 /// `State` where character selection takes place.
 ///

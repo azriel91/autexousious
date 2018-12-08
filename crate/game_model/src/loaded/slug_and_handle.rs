@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 
 use amethyst::{assets::Handle, prelude::*};
+use derive_new::new;
 
 use crate::config::AssetSlug;
 

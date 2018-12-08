@@ -10,6 +10,7 @@
 pub use self::{object_frame::ObjectFrame, sequence_id::SequenceId};
 
 use collision_loading::{BodyAnimationSequence, InteractionAnimationSequence};
+use derive_new::new;
 use sprite_loading::AnimationSequence;
 
 mod object_frame;

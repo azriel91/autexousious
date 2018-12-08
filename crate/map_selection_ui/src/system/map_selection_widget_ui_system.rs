@@ -4,6 +4,7 @@ use amethyst::{
     ui::{Anchor, UiText, UiTransform},
 };
 use application_ui::{FontVariant, Theme};
+use derive_new::new;
 use game_input::{
     ControllerId, ControllerInput, InputConfig, InputControlled, SharedInputControlled,
 };

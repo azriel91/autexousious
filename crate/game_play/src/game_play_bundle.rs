@@ -2,6 +2,7 @@ use amethyst::{
     core::bundle::{Result, SystemBundle},
     ecs::prelude::*,
 };
+use derive_new::new;
 use game_input::ControllerInput;
 use named_type::NamedType;
 use object_model::config::object::CharacterSequenceId;

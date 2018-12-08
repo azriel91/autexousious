@@ -5,6 +5,7 @@ use amethyst::{
     assets::Handle,
     ecs::{Component, DenseVecStorage},
 };
+use derive_new::new;
 use named_type::NamedType;
 
 use crate::{ActiveHandleChannel, ActiveHandlePrimitive};

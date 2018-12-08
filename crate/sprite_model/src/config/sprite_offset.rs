@@ -1,3 +1,5 @@
+use derive_new::new;
+
 /// Pixel offsets of the sprite relative to the entity's position in the world.
 ///
 /// A positive x value shifts the sprite to the left by that many pixels.

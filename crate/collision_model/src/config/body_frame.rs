@@ -2,6 +2,7 @@ use amethyst::{
     assets::{Asset, Handle, ProcessingState, Result as AssetsResult},
     ecs::VecStorage,
 };
+use derive_new::new;
 use shape_model::Volume;
 
 /// Frame for an interactable object.

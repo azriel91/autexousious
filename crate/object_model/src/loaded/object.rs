@@ -7,6 +7,7 @@ use amethyst::{
         Component,
     },
 };
+use derive_new::new;
 
 use crate::{
     config::object::{CharacterSequenceId, SequenceId},

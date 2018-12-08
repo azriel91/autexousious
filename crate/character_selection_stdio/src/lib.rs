@@ -3,9 +3,6 @@
 
 //! Extension to enable `character_selection` to be controlled by stdio.
 
-#[macro_use]
-extern crate derive_new;
-
 use structopt;
 #[macro_use]
 extern crate structopt_derive;

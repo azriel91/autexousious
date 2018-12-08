@@ -3,6 +3,7 @@ use std::fmt::Debug;
 use amethyst::{core::SystemBundle, ecs::prelude::*, prelude::*};
 use application_event::AppEvent;
 use application_state::AutexState;
+use derive_new::new;
 use game_model::play::GameEntities;
 
 use crate::{GameLoadingBundle, GameLoadingStatus};

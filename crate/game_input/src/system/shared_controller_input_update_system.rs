@@ -1,4 +1,5 @@
 use amethyst::ecs::prelude::*;
+use derive_new::new;
 
 use crate::{ControllerInput, InputControlled, SharedInputControlled};
 

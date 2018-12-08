@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use derive_new::new;
+
 use crate::config::object::{Sequence, SequenceId};
 
 /// Contains all of the sequences for an `Object`.

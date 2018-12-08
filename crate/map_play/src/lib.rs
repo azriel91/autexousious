@@ -3,9 +3,6 @@
 
 //! Provides systems that update the map during game play.
 
-#[macro_use]
-extern crate derive_new;
-
 use typename;
 #[macro_use]
 extern crate typename_derive;

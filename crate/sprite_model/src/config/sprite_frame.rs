@@ -1,3 +1,5 @@
+use derive_new::new;
+
 /// Animation frame that displays a sprite.
 #[derive(Clone, Copy, Debug, Deserialize, Hash, PartialEq, Eq, new)]
 pub struct SpriteFrame {

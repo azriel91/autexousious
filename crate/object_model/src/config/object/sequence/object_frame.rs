@@ -1,5 +1,6 @@
 use collision_loading::{BodyAnimationFrame, InteractionAnimationFrame};
 use collision_model::config::{BodyFrame, Interaction, InteractionFrame};
+use derive_new::new;
 use shape_model::Volume;
 use sprite_loading::AnimationFrame;
 use sprite_model::config::SpriteFrame;

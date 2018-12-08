@@ -1,4 +1,5 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
+use derive_new::new;
 use map_model::loaded::Map;
 use map_selection_model::MapSelection;
 use object_model::entity::{Grounding, Position, Velocity};

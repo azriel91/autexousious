@@ -1,5 +1,6 @@
 use amethyst::{ecs::prelude::*, shrev::EventChannel};
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
+use derive_new::new;
 use game_input::{ControllerInput, InputControlled};
 use game_model::loaded::{CharacterAssets, SlugAndHandle};
 use tracker::Last;

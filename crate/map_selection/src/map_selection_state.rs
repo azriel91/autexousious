@@ -3,6 +3,7 @@ use std::{fmt::Debug, marker::PhantomData};
 use amethyst::{ecs::prelude::*, prelude::*, shrev::EventChannel};
 use application_event::AppEvent;
 use application_state::{AppState, AppStateBuilder, AutexState};
+use derive_new::new;
 use map_selection_model::{MapSelection, MapSelectionEntityId, MapSelectionEvent};
 
 use crate::MapSelectionStatus;

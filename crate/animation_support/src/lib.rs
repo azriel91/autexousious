@@ -4,9 +4,6 @@
 //! Provides types to make it easier to work with Amethyst animations.
 
 #[macro_use]
-extern crate derive_new;
-
-#[macro_use]
 extern crate named_type_derive;
 
 #[macro_use]
