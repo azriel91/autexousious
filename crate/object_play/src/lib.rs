@@ -3,11 +3,8 @@
 
 //! Behaviour logic for object types.
 
-
-
 #[macro_use]
 extern crate derive_new;
-
 
 #[cfg(test)]
 #[macro_use]

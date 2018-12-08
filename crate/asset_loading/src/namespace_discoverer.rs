@@ -60,8 +60,7 @@ impl NamespaceDiscoverer {
 
 #[cfg(test)]
 mod tests {
-    use std::fs;
-    use std::io;
+    use std::{fs, io};
 
     use hamcrest::prelude::*;
     use tempfile::tempdir;
@@ -86,10 +85,10 @@ mod tests {
             &user1_dir,
             &user2_dir,
         ]
-            .iter()
-            .fold(Ok(()), |result, dir| {
-                result.and_then(|_| fs::create_dir(&dir))
-            })?;
+        .iter()
+        .fold(Ok(()), |result, dir| {
+            result.and_then(|_| fs::create_dir(&dir))
+        })?;
 
         assert_that!(
             &NamespaceDiscoverer::discover(&assets_dir),

@@ -37,9 +37,7 @@ impl AssetIndexer {
 
 #[cfg(test)]
 mod tests {
-    use std::fs;
-    use std::io;
-    use std::path::PathBuf;
+    use std::{fs, io, path::PathBuf};
 
     use game_model::config::{AssetRecord, AssetSlugBuilder};
     use hamcrest::prelude::*;
@@ -70,10 +68,10 @@ mod tests {
             &char_0_dir,
             &char_1_dir,
         ]
-            .iter()
-            .fold(Ok(()), |result, dir| {
-                result.and_then(|_| fs::create_dir(&dir))
-            })?;
+        .iter()
+        .fold(Ok(()), |result, dir| {
+            result.and_then(|_| fs::create_dir(&dir))
+        })?;
 
         let asset_index = AssetIndexer::index(&NamespaceDirectory::new(
             "rara".to_string(),

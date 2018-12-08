@@ -7,8 +7,7 @@
 //! because different object types have different valid sequence IDs, and we want to be able to
 //! define this at compile time rather than needing to process this at run time.
 
-pub use self::object_frame::ObjectFrame;
-pub use self::sequence_id::SequenceId;
+pub use self::{object_frame::ObjectFrame, sequence_id::SequenceId};
 
 use collision_loading::{BodyAnimationSequence, InteractionAnimationSequence};
 use sprite_loading::AnimationSequence;

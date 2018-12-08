@@ -1,5 +1,5 @@
-use amethyst::ecs::{storage::VecStorage, Component};
 use crate::config::object::SequenceId;
+use amethyst::ecs::{storage::VecStorage, Component};
 
 /// Object Sequence IDs.
 #[derive(Clone, Copy, Debug, Derivative, Deserialize, Eq, Hash, PartialEq)]

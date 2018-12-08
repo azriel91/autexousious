@@ -1,6 +1,4 @@
-use std::collections::HashMap;
-use std::fmt::Debug;
-use std::marker::PhantomData;
+use std::{collections::HashMap, fmt::Debug, marker::PhantomData};
 
 use amethyst::{core::SystemBundle, ecs::prelude::*, prelude::*};
 use amethyst_utils::removal::{self, Removal};
@@ -134,7 +132,10 @@ where
         self.delegate.fixed_update(data)
     }
 
-    fn update(&mut self, data: StateData<'_, GameData<'a, 'b>>) -> Trans<GameData<'a, 'b>, AppEvent> {
+    fn update(
+        &mut self,
+        data: StateData<'_, GameData<'a, 'b>>,
+    ) -> Trans<GameData<'a, 'b>, AppEvent> {
         // Note: The built-in dispatcher must be run before the state specific dispatcher as the
         // `"input_system"` is registered in the main dispatcher, and by design we have chosen that
         // systems that depend on that should be placed in the state specific dispatcher.
@@ -230,9 +231,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use std::cell::RefCell;
-    use std::rc::Rc;
-    use std::sync::Arc;
+    use std::{cell::RefCell, rc::Rc, sync::Arc};
 
     use amethyst::{ecs::prelude::*, prelude::*};
     use amethyst_utils::removal::Removal;
@@ -241,8 +240,7 @@ mod tests {
     use rayon::ThreadPoolBuilder;
 
     use super::{AppState, AppStateBuilder};
-    use crate::HookFn;
-    use crate::HookableFn;
+    use crate::{HookFn, HookableFn};
 
     type Invocations = Rc<RefCell<Vec<Invocation>>>;
 

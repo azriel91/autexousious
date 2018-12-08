@@ -1,5 +1,7 @@
-use amethyst::prelude::*;
-use amethyst::shrev::{EventChannel, ReaderId};
+use amethyst::{
+    prelude::*,
+    shrev::{EventChannel, ReaderId},
+};
 use application_input::ApplicationEvent;
 
 use crate::state::Intercept;
@@ -72,8 +74,7 @@ where
 mod test {
     use std::mem::discriminant;
 
-    use amethyst::prelude::*;
-    use amethyst::shrev::EventChannel;
+    use amethyst::{prelude::*, shrev::EventChannel};
     use application_input::ApplicationEvent;
 
     use super::ApplicationEventIntercept;

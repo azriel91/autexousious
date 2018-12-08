@@ -1,7 +1,8 @@
 use object_model::config::object::CharacterSequenceId;
 
-use crate::character::sequence_handler::CharacterSequenceHandler;
-use crate::CharacterSequenceUpdateComponents;
+use crate::{
+    character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+};
 
 /// Returns a `Jump` update if jump is pressed.
 #[derive(Debug)]
@@ -33,8 +34,9 @@ mod tests {
     };
 
     use super::JumpCheck;
-    use crate::character::sequence_handler::CharacterSequenceHandler;
-    use crate::CharacterSequenceUpdateComponents;
+    use crate::{
+        character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+    };
 
     #[test]
     fn returns_none_when_jump_is_not_pressed() {

@@ -1,5 +1,4 @@
-use std::collections::HashMap;
-use std::path::Path;
+use std::{collections::HashMap, path::Path};
 
 use game_model::config::AssetRecord;
 use heck::SnakeCase;
@@ -44,9 +43,7 @@ impl ObjectIndexer {
 
 #[cfg(test)]
 mod tests {
-    use std::fs;
-    use std::io;
-    use std::path::PathBuf;
+    use std::{fs, io, path::PathBuf};
 
     use game_model::config::{AssetRecord, AssetSlugBuilder};
     use hamcrest::prelude::*;

@@ -11,12 +11,10 @@ use object_model::{
     ObjectType,
 };
 
-use crate::CharacterComponentStorages;
-use crate::CharacterEntitySpawner;
-use crate::GameLoadingStatus;
-use crate::ObjectAnimationStorages;
-use crate::ObjectComponentStorages;
-use crate::ObjectSpawningResources;
+use crate::{
+    CharacterComponentStorages, CharacterEntitySpawner, GameLoadingStatus, ObjectAnimationStorages,
+    ObjectComponentStorages, ObjectSpawningResources,
+};
 
 /// Spawns character entities based on the character selection.
 #[derive(Debug, Default, TypeName, new)]
@@ -104,8 +102,7 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
-    use std::env;
+    use std::{collections::HashMap, env};
 
     use amethyst::{animation::AnimationBundle, ecs::prelude::*};
     use amethyst_test::prelude::*;

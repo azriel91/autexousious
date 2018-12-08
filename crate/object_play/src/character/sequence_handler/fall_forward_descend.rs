@@ -1,7 +1,9 @@
 use object_model::config::object::CharacterSequenceId;
 
-use crate::character::sequence_handler::{CharacterSequenceHandler, SwitchSequenceOnLand};
-use crate::CharacterSequenceUpdateComponents;
+use crate::{
+    character::sequence_handler::{CharacterSequenceHandler, SwitchSequenceOnLand},
+    CharacterSequenceUpdateComponents,
+};
 
 const FALL_FORWARD_DESCEND_BOUNCE: SwitchSequenceOnLand =
     SwitchSequenceOnLand(CharacterSequenceId::FallForwardLand);

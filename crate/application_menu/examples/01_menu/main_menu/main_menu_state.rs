@@ -1,10 +1,12 @@
 use std::sync::Arc;
 
-use amethyst::ecs::prelude::*;
-use amethyst::prelude::*;
-use amethyst::shred::ParSeq;
-use amethyst::shrev::{EventChannel, ReaderId};
-use amethyst::ui::{Anchor, FontHandle, MouseReactive, UiText, UiTransform};
+use amethyst::{
+    ecs::prelude::*,
+    prelude::*,
+    shred::ParSeq,
+    shrev::{EventChannel, ReaderId},
+    ui::{Anchor, FontHandle, MouseReactive, UiText, UiTransform},
+};
 use application_menu::{MenuEvent, MenuItem};
 use application_ui::{FontVariant, Theme, ThemeLoader};
 use rayon;
@@ -133,7 +135,10 @@ impl<'a, 'b> State<GameData<'a, 'b>, StateEvent> for MainMenuState {
         self.terminate_menu_items(&mut data.world);
     }
 
-    fn update(&mut self, data: StateData<'_, GameData<'_, '_>>) -> Trans<GameData<'a, 'b>, StateEvent> {
+    fn update(
+        &mut self,
+        data: StateData<'_, GameData<'_, '_>>,
+    ) -> Trans<GameData<'a, 'b>, StateEvent> {
         data.data.update(&data.world);
         self.dispatch.as_mut().unwrap().dispatch(&data.world.res);
 

@@ -184,7 +184,10 @@ impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
         self.terminate_dispatcher();
     }
 
-    fn update(&mut self, data: StateData<'_, GameData<'_, '_>>) -> Trans<GameData<'a, 'b>, AppEvent> {
+    fn update(
+        &mut self,
+        data: StateData<'_, GameData<'_, '_>>,
+    ) -> Trans<GameData<'a, 'b>, AppEvent> {
         // Note: The built-in dispatcher must be run before the state specific dispatcher as the
         // `"input_system"` is registered in the main dispatcher, and is a dependency of the
         // `ControllerInputUpdateSystem`.

@@ -1,12 +1,12 @@
-use std::cell::RefCell;
-use std::rc::Rc;
+use std::{cell::RefCell, rc::Rc};
 
 use amethyst::prelude::*;
-use itertools::FoldWhile::{Continue, Done};
-use itertools::Itertools;
+use itertools::{
+    FoldWhile::{Continue, Done},
+    Itertools,
+};
 
-use crate::state::intercept::ApplicationEventIntercept;
-use crate::state::Intercept;
+use crate::state::{intercept::ApplicationEventIntercept, Intercept};
 
 /// Wraps a delegate state with automation capabilities.
 #[derive(Derivative)]
@@ -232,12 +232,13 @@ where
 
 #[cfg(test)]
 mod test {
-    use std::cell::RefCell;
-    use std::fmt::{self, Debug};
-    use std::rc::Rc;
+    use std::{
+        cell::RefCell,
+        fmt::{self, Debug},
+        rc::Rc,
+    };
 
-    use amethyst::ecs::prelude::World;
-    use amethyst::prelude::*;
+    use amethyst::{ecs::prelude::World, prelude::*};
     use debug_util_amethyst::{assert_eq_trans, display_trans};
 
     use super::RobotState;

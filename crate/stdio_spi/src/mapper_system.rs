@@ -5,9 +5,7 @@ use application_event::AppEventVariant;
 use structopt::StructOpt;
 use typename::TypeName;
 
-use crate::Result;
-use crate::StdinMapper;
-use crate::VariantAndTokens;
+use crate::{Result, StdinMapper, VariantAndTokens};
 
 /// Type to fetch the application event channel.
 type MapperSystemData<'s, E, SysData> = (

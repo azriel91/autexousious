@@ -1,10 +1,9 @@
 //! Types representing a map in configuration form.
 
-pub use self::layer::Layer;
-pub use self::map_bounds::MapBounds;
-pub use self::map_definition::MapDefinition;
-pub use self::map_header::MapHeader;
-pub use self::position::Position;
+pub use self::{
+    layer::Layer, map_bounds::MapBounds, map_definition::MapDefinition, map_header::MapHeader,
+    position::Position,
+};
 
 mod layer;
 mod map_bounds;

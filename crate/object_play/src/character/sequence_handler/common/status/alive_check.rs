@@ -1,7 +1,8 @@
 use object_model::config::object::CharacterSequenceId;
 
-use crate::character::sequence_handler::CharacterSequenceHandler;
-use crate::CharacterSequenceUpdateComponents;
+use crate::{
+    character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+};
 
 /// Returns the appropriate falling sequence if HP is 0.
 #[derive(Debug)]
@@ -30,8 +31,9 @@ mod tests {
     };
 
     use super::AliveCheck;
-    use crate::character::sequence_handler::CharacterSequenceHandler;
-    use crate::CharacterSequenceUpdateComponents;
+    use crate::{
+        character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+    };
 
     #[test]
     fn returns_none_when_hp_is_above_zero() {

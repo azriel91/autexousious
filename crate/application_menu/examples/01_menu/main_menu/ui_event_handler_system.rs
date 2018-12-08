@@ -1,6 +1,8 @@
-use amethyst::ecs::prelude::{ReadStorage, Resources, System, SystemData, Write};
-use amethyst::shrev::{EventChannel, ReaderId};
-use amethyst::ui::{UiEvent, UiEventType};
+use amethyst::{
+    ecs::prelude::{ReadStorage, Resources, System, SystemData, Write},
+    shrev::{EventChannel, ReaderId},
+    ui::{UiEvent, UiEventType},
+};
 use application_menu::{MenuEvent, MenuItem};
 
 use crate::main_menu;

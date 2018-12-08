@@ -3,11 +3,6 @@
 
 //! Processes collision configuration into the loaded collision model.
 
-
-
-
-
-
 #[macro_use]
 extern crate derive_new;
 #[cfg(test)]
@@ -18,12 +13,14 @@ use typename;
 #[macro_use]
 extern crate typename_derive;
 
-pub use crate::animation::{
-    BodyAnimationFrame, BodyAnimationLoader, BodyAnimationSequence, InteractionAnimationFrame,
-    InteractionAnimationLoader, InteractionAnimationSequence,
-};
-pub use crate::collision_loading_bundle::CollisionLoadingBundle;
 pub(crate) use crate::system::CollisionLoadingSystem;
+pub use crate::{
+    animation::{
+        BodyAnimationFrame, BodyAnimationLoader, BodyAnimationSequence, InteractionAnimationFrame,
+        InteractionAnimationLoader, InteractionAnimationSequence,
+    },
+    collision_loading_bundle::CollisionLoadingBundle,
+};
 
 mod animation;
 mod collision_loading_bundle;

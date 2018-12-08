@@ -1,7 +1,9 @@
 use object_model::config::object::CharacterSequenceId;
 
-use crate::character::sequence_handler::{CharacterSequenceHandler, SwitchSequenceOnDescend};
-use crate::CharacterSequenceUpdateComponents;
+use crate::{
+    character::sequence_handler::{CharacterSequenceHandler, SwitchSequenceOnDescend},
+    CharacterSequenceUpdateComponents,
+};
 
 const FALL_FORWARD_ASCEND: SwitchSequenceOnDescend =
     SwitchSequenceOnDescend(CharacterSequenceId::FallForwardDescend);

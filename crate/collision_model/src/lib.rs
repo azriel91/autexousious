@@ -3,8 +3,6 @@
 
 //! Types used to represent collidable objects.
 
-
-
 #[macro_use]
 extern crate derivative;
 #[macro_use]

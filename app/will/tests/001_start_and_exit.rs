@@ -1,5 +1,3 @@
-
-
 use assert_cmd::{cargo::CargoError, prelude::*};
 use std::process::Command;
 

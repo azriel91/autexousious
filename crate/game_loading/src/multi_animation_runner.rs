@@ -92,7 +92,7 @@ macro_rules! impl_multi_runner {
     };
 }
 
-impl_multi_runner!{
+impl_multi_runner! {
     Tuple1 {
         (0) -> A
     }

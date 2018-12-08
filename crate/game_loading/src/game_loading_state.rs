@@ -5,8 +5,7 @@ use application_event::AppEvent;
 use application_state::AutexState;
 use game_model::play::GameEntities;
 
-use crate::GameLoadingBundle;
-use crate::GameLoadingStatus;
+use crate::{GameLoadingBundle, GameLoadingStatus};
 
 /// `State` where game play takes place.
 #[derive(Derivative, Default, new)]
@@ -91,7 +90,10 @@ where
         Trans::None
     }
 
-    fn update(&mut self, data: StateData<'_, GameData<'_, '_>>) -> Trans<GameData<'a, 'b>, AppEvent> {
+    fn update(
+        &mut self,
+        data: StateData<'_, GameData<'_, '_>>,
+    ) -> Trans<GameData<'a, 'b>, AppEvent> {
         data.data.update(&data.world);
         self.dispatcher.as_mut().unwrap().dispatch(&data.world.res);
 

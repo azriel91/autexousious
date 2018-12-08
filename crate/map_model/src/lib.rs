@@ -6,7 +6,6 @@
 //! This allows us to define the bounds of a map for a game, as well as image layers to render. In
 //! contrast to `Object`s, an entity should be created for each map `Layer`.
 
-
 #[macro_use]
 extern crate derive_new;
 
@@ -15,7 +14,6 @@ extern crate serde_derive;
 #[cfg(test)]
 #[macro_use]
 extern crate pretty_assertions;
-
 
 #[cfg(test)]
 extern crate toml;

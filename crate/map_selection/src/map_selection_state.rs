@@ -1,5 +1,4 @@
-use std::fmt::Debug;
-use std::marker::PhantomData;
+use std::{fmt::Debug, marker::PhantomData};
 
 use amethyst::{ecs::prelude::*, prelude::*, shrev::EventChannel};
 use application_event::AppEvent;
@@ -96,7 +95,10 @@ where
         Trans::None
     }
 
-    fn update(&mut self, data: StateData<'_, GameData<'a, 'b>>) -> Trans<GameData<'a, 'b>, AppEvent> {
+    fn update(
+        &mut self,
+        data: StateData<'_, GameData<'a, 'b>>,
+    ) -> Trans<GameData<'a, 'b>, AppEvent> {
         let map_selection_status = data.world.read_resource::<MapSelectionStatus>();
         if *map_selection_status == MapSelectionStatus::Confirmed {
             let map_selection = data.world.read_resource::<MapSelection>();

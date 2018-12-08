@@ -3,26 +3,13 @@
 
 //! Provides a wrapper `State` around asset loading.
 
-
-
-
-
-
-
 #[macro_use]
 extern crate derivative;
 
 #[macro_use]
 extern crate log;
 
-
-
-
-
-
-
-pub use crate::asset_loader::AssetLoader;
-pub use crate::loading_state::LoadingState;
+pub use crate::{asset_loader::AssetLoader, loading_state::LoadingState};
 
 mod asset_loader;
 mod loading_state;

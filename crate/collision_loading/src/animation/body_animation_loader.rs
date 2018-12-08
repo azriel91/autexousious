@@ -1,5 +1,4 @@
-use std::collections::HashMap;
-use std::hash::Hash;
+use std::{collections::HashMap, hash::Hash};
 
 use amethyst::{
     animation::{Animation, InterpolationFunction, Sampler},
@@ -12,8 +11,7 @@ use collision_model::{
     config::BodyFrame,
 };
 
-use crate::BodyAnimationFrame;
-use crate::BodyAnimationSequence;
+use crate::{BodyAnimationFrame, BodyAnimationSequence};
 
 /// Loads `Animation`s from character sequences.
 #[derive(Debug)]
@@ -170,8 +168,7 @@ mod test {
     };
 
     use super::BodyAnimationLoader;
-    use crate::BodyAnimationSequence;
-    use crate::CollisionLoadingBundle;
+    use crate::{BodyAnimationSequence, CollisionLoadingBundle};
 
     #[test]
     fn loads_body_animations_into_map() {

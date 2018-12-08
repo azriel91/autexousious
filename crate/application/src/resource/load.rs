@@ -1,16 +1,14 @@
-use std::ffi;
-use std::fs::File;
-use std::path::{Path, PathBuf};
+use std::{
+    ffi,
+    fs::File,
+    path::{Path, PathBuf},
+};
 
 use ron;
 use serde::Deserialize;
 use toml;
 
-use crate::find;
-use crate::find_in;
-use crate::resource::error::Result;
-use crate::Format;
-use crate::IoUtils;
+use crate::{find, find_in, resource::error::Result, Format, IoUtils};
 
 /// Loads and returns the data from the specified file.
 ///
@@ -108,15 +106,16 @@ where
 mod test {
     use std::path::PathBuf;
 
-    use ron;
-    use ron::de::ParseError;
+    use ron::{self, de::ParseError};
     use toml;
 
     use super::{load, load_in};
-    use crate::resource::dir;
-    use crate::resource::error::ErrorKind;
-    use crate::resource::test_support::{exe_dir, setup_temp_file};
-    use crate::resource::{FindContext, Format};
+    use crate::resource::{
+        dir,
+        error::ErrorKind,
+        test_support::{exe_dir, setup_temp_file},
+        FindContext, Format,
+    };
 
     test_mutex!();
 

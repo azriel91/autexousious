@@ -4,8 +4,7 @@ use game_input::{ControllerInput, InputControlled};
 use game_model::loaded::{CharacterAssets, SlugAndHandle};
 use tracker::Last;
 
-use crate::CharacterSelectionWidget;
-use crate::WidgetState;
+use crate::{CharacterSelectionWidget, WidgetState};
 
 /// System that processes controller input and generates `CharacterSelectionEvent`s.
 ///
@@ -249,8 +248,7 @@ mod test {
     use typename::TypeName;
 
     use super::{CharacterSelectionWidgetInputSystem, CharacterSelectionWidgetInputSystemData};
-    use crate::CharacterSelectionWidget;
-    use crate::WidgetState;
+    use crate::{CharacterSelectionWidget, WidgetState};
 
     #[test]
     fn does_not_send_event_when_controller_input_empty() {

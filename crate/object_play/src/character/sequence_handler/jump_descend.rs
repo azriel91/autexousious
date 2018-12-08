@@ -3,8 +3,9 @@ use object_model::{
     entity::{Grounding, SequenceStatus},
 };
 
-use crate::character::sequence_handler::CharacterSequenceHandler;
-use crate::CharacterSequenceUpdateComponents;
+use crate::{
+    character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+};
 
 #[derive(Debug)]
 pub(crate) struct JumpDescend;
@@ -34,8 +35,9 @@ mod test {
     };
 
     use super::JumpDescend;
-    use crate::character::sequence_handler::CharacterSequenceHandler;
-    use crate::CharacterSequenceUpdateComponents;
+    use crate::{
+        character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+    };
 
     #[test]
     fn no_update_when_sequence_not_ended() {

@@ -7,12 +7,8 @@
 //!
 //! [obj_type]: enum.ObjectType.html
 
-
-
-
 #[macro_use]
 extern crate derivative;
-
 
 #[macro_use]
 extern crate derive_new;
@@ -23,9 +19,6 @@ extern crate pretty_assertions;
 
 #[macro_use]
 extern crate serde_derive;
-
-
-
 
 use strum;
 

@@ -1,10 +1,9 @@
-use std::env;
-use std::ffi;
-use std::io;
-use std::path::{Path, PathBuf};
+use std::{
+    env, ffi, io,
+    path::{Path, PathBuf},
+};
 
-use crate::resource::error::Result;
-use crate::resource::FindContext;
+use crate::resource::{error::Result, FindContext};
 
 /// Returns development-time base directories as a `Vec<::std::path::Path>`.
 ///
@@ -154,10 +153,12 @@ mod test {
     use std::path::PathBuf;
 
     use super::{find, find_in};
-    use crate::resource::dir;
-    use crate::resource::error::ErrorKind;
-    use crate::resource::test_support::{exe_dir, setup_temp_file};
-    use crate::resource::FindContext;
+    use crate::resource::{
+        dir,
+        error::ErrorKind,
+        test_support::{exe_dir, setup_temp_file},
+        FindContext,
+    };
 
     test_mutex!();
 

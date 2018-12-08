@@ -51,7 +51,6 @@ use ron;
 #[macro_use]
 extern crate serde;
 
-
 use toml;
 
 pub use crate::resource::{

@@ -3,8 +3,6 @@
 
 //! Types used during game play.
 
-
-
 pub use crate::{
     game_play_entity::GamePlayEntity, game_play_entity_id::GamePlayEntityId,
     game_play_event::GamePlayEvent, game_play_status::GamePlayStatus,

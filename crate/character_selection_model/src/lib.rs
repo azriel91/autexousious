@@ -3,24 +3,20 @@
 
 //! Types used during character selection.
 
-
 #[macro_use]
 extern crate derivative;
 #[macro_use]
 extern crate derive_new;
 
-
-
-
 #[macro_use]
 extern crate strum_macros;
 
-pub use crate::character_selection::CharacterSelection;
-pub use crate::character_selection_entity::CharacterSelectionEntity;
-pub use crate::character_selection_entity_id::CharacterSelectionEntityId;
-pub use crate::character_selection_event::CharacterSelectionEvent;
-pub use crate::character_selections::CharacterSelections;
-pub use crate::character_selections_status::CharacterSelectionsStatus;
+pub use crate::{
+    character_selection::CharacterSelection, character_selection_entity::CharacterSelectionEntity,
+    character_selection_entity_id::CharacterSelectionEntityId,
+    character_selection_event::CharacterSelectionEvent, character_selections::CharacterSelections,
+    character_selections_status::CharacterSelectionsStatus,
+};
 
 mod character_selection;
 mod character_selection_entity;

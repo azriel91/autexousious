@@ -1,12 +1,9 @@
 use std::io;
 
-use amethyst;
-use amethyst::config::ConfigError;
-use amethyst::core;
+use amethyst::{self, config::ConfigError, core};
 use error_chain;
 
-use crate::resource;
-use crate::resource::dir::DiscoveryContext;
+use crate::resource::{self, dir::DiscoveryContext};
 
 // kcov-ignore-start
 /// `ErrorKind` for application directories.

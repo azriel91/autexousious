@@ -1,13 +1,15 @@
-pub(crate) use self::character_collision_effect_system::CharacterCollisionEffectSystem;
-pub(crate) use self::character_grounding_system::CharacterGroundingSystem;
-pub(crate) use self::character_kinematics_system::CharacterKinematicsSystem;
-pub(crate) use self::character_sequence_update_system::CharacterSequenceUpdateSystem;
-pub(crate) use self::game_play_end_detection_system::GamePlayEndDetectionSystem;
-pub(crate) use self::game_play_end_transition_system::GamePlayEndTransitionSystem;
-pub(crate) use self::object_animation_update_system::ObjectAnimationUpdateSystem;
-pub(crate) use self::object_collision_detection_system::ObjectCollisionDetectionSystem;
-pub(crate) use self::object_kinematics_update_system::ObjectKinematicsUpdateSystem;
-pub(crate) use self::object_transform_update_system::ObjectTransformUpdateSystem;
+pub(crate) use self::{
+    character_collision_effect_system::CharacterCollisionEffectSystem,
+    character_grounding_system::CharacterGroundingSystem,
+    character_kinematics_system::CharacterKinematicsSystem,
+    character_sequence_update_system::CharacterSequenceUpdateSystem,
+    game_play_end_detection_system::GamePlayEndDetectionSystem,
+    game_play_end_transition_system::GamePlayEndTransitionSystem,
+    object_animation_update_system::ObjectAnimationUpdateSystem,
+    object_collision_detection_system::ObjectCollisionDetectionSystem,
+    object_kinematics_update_system::ObjectKinematicsUpdateSystem,
+    object_transform_update_system::ObjectTransformUpdateSystem,
+};
 
 mod character_collision_effect_system;
 mod character_grounding_system;

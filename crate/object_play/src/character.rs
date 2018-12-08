@@ -1,7 +1,8 @@
-pub use self::character_sequence_update_components::CharacterSequenceUpdateComponents;
-pub use self::character_sequence_updater::CharacterSequenceUpdater;
-pub use self::mirrored_updater::MirroredUpdater;
-pub use self::run_counter_updater::RunCounterUpdater;
+pub use self::{
+    character_sequence_update_components::CharacterSequenceUpdateComponents,
+    character_sequence_updater::CharacterSequenceUpdater, mirrored_updater::MirroredUpdater,
+    run_counter_updater::RunCounterUpdater,
+};
 
 mod character_sequence_update_components;
 mod character_sequence_updater;

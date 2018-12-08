@@ -10,9 +10,7 @@ use application::{
     Format,
 };
 
-use crate::FontConfig;
-use crate::FontVariant;
-use crate::Theme;
+use crate::{FontConfig, FontVariant, Theme};
 
 /// Privates functionality to load an application theme.
 #[derive(Debug)]
@@ -68,8 +66,7 @@ mod test {
     use strum::IntoEnumIterator;
 
     use super::ThemeLoader;
-    use crate::FontVariant;
-    use crate::Theme;
+    use crate::{FontVariant, Theme};
 
     #[test]
     fn build_adds_theme_with_fonts_to_world() {

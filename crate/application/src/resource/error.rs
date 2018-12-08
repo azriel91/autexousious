@@ -23,17 +23,11 @@ pub enum ErrorKind {
     Io(io::Error),
 
     /// Error when failing to find a configuration file
-    #[error_chain(
-        foreign,
-        display = r#"|e| write!(f, "ron::de::Error: `{}`", e)"#
-    )]
+    #[error_chain(foreign, display = r#"|e| write!(f, "ron::de::Error: `{}`", e)"#)]
     RonDeserialization(ron::de::Error),
 
     /// Error when failing to find a configuration file
-    #[error_chain(
-        foreign,
-        display = r#"|e| write!(f, "toml::de::Error: `{}`", e)"#
-    )]
+    #[error_chain(foreign, display = r#"|e| write!(f, "toml::de::Error: `{}`", e)"#)]
     TomlDeserialization(toml::de::Error),
 }
 // kcov-ignore-end
@@ -73,8 +67,7 @@ impl From<Error> for core::Error {
 
 #[cfg(test)]
 mod test {
-    use std::io;
-    use std::path::PathBuf;
+    use std::{io, path::PathBuf};
 
     use ron;
     use toml;

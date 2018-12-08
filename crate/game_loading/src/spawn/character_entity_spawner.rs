@@ -17,14 +17,10 @@ use object_model::{
     },
 };
 
-use crate::AnimationRunner;
-use crate::BodyAcs;
-use crate::CharacterComponentStorages;
-use crate::InteractionAcs;
-use crate::ObjectAnimationStorages;
-use crate::ObjectComponentStorages;
-use crate::ObjectSpawningResources;
-use crate::SpriteRenderAcs;
+use crate::{
+    AnimationRunner, BodyAcs, CharacterComponentStorages, InteractionAcs, ObjectAnimationStorages,
+    ObjectComponentStorages, ObjectSpawningResources, SpriteRenderAcs,
+};
 
 /// Spawns character entities into the world.
 #[derive(Debug)]
@@ -318,10 +314,10 @@ mod test {
     use typename::TypeName;
 
     use super::CharacterEntitySpawner;
-    use crate::CharacterComponentStorages;
-    use crate::ObjectAnimationStorages;
-    use crate::ObjectComponentStorages;
-    use crate::ObjectSpawningResources;
+    use crate::{
+        CharacterComponentStorages, ObjectAnimationStorages, ObjectComponentStorages,
+        ObjectSpawningResources,
+    };
 
     #[test]
     fn spawn_for_player_creates_entity_with_object_components() {

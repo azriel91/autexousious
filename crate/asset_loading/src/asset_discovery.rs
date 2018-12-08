@@ -30,9 +30,7 @@ impl AssetDiscovery {
 
 #[cfg(test)]
 mod tests {
-    use std::fs;
-    use std::io;
-    use std::path::PathBuf;
+    use std::{fs, io, path::PathBuf};
 
     use game_model::config::{AssetRecord, AssetSlugBuilder};
     use hamcrest::prelude::*;
@@ -65,8 +63,8 @@ mod tests {
                 "character",
                 "char_0",
             ]
-                .iter()
-                .collect::<PathBuf>(),
+            .iter()
+            .collect::<PathBuf>(),
         );
         [&map_0_dir, &map_1_dir, &char_0_dir]
             .iter()

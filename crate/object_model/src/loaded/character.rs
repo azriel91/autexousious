@@ -3,8 +3,10 @@ use amethyst::{
     ecs::prelude::*,
 };
 
-use crate::config::object::CharacterSequenceId;
-use crate::loaded::{ObjectHandle, SequenceEndTransitions};
+use crate::{
+    config::object::CharacterSequenceId,
+    loaded::{ObjectHandle, SequenceEndTransitions},
+};
 
 /// Represents an in-game character that has been loaded.
 ///

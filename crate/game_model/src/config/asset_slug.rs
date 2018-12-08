@@ -1,6 +1,4 @@
-use std::char;
-use std::fmt;
-use std::str::FromStr;
+use std::{char, fmt, str::FromStr};
 
 /// Namespaced reference to identify assets.
 ///

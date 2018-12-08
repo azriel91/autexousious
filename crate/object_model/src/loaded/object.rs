@@ -8,8 +8,10 @@ use amethyst::{
     },
 };
 
-use crate::config::object::{CharacterSequenceId, SequenceId};
-use crate::loaded::{AnimatedComponentAnimation, AnimatedComponentDefault};
+use crate::{
+    config::object::{CharacterSequenceId, SequenceId},
+    loaded::{AnimatedComponentAnimation, AnimatedComponentDefault},
+};
 
 /// Represents an in-game object that has been loaded.
 #[derive(Clone, Derivative, PartialEq, new)]

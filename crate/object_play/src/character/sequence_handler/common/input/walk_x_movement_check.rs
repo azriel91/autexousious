@@ -1,9 +1,11 @@
 use object_model::{config::object::CharacterSequenceId, entity::RunCounter};
 
-use crate::character::sequence_handler::{
-    common::SequenceRepeat, CharacterSequenceHandler, SequenceHandlerUtil,
+use crate::{
+    character::sequence_handler::{
+        common::SequenceRepeat, CharacterSequenceHandler, SequenceHandlerUtil,
+    },
+    CharacterSequenceUpdateComponents,
 };
-use crate::CharacterSequenceUpdateComponents;
 
 /// Determines whether to swithc to the `Walk` or `Run` sequence based on X input.
 ///
@@ -54,8 +56,9 @@ mod tests {
     };
 
     use super::WalkXMovementCheck;
-    use crate::character::sequence_handler::CharacterSequenceHandler;
-    use crate::CharacterSequenceUpdateComponents;
+    use crate::{
+        character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+    };
 
     #[test]
     fn none_when_no_input() {

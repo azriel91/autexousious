@@ -14,9 +14,6 @@
 //! * Attack
 //! * Special
 
-
-
-
 #[macro_use]
 extern crate derivative;
 #[macro_use]
@@ -34,15 +31,16 @@ use typename;
 #[macro_use]
 extern crate typename_derive;
 
-
-pub use crate::axis::Axis;
-pub use crate::component::{ControllerInput, InputControlled, SharedInputControlled};
-pub use crate::config::{ControllerConfig, InputConfig};
-pub use crate::control_action::ControlAction;
-pub use crate::game_input_bundle::GameInputBundle;
-pub use crate::player_action_control::PlayerActionControl;
-pub use crate::player_axis_control::PlayerAxisControl;
-pub use crate::system::{ControllerInputUpdateSystem, SharedControllerInputUpdateSystem};
+pub use crate::{
+    axis::Axis,
+    component::{ControllerInput, InputControlled, SharedInputControlled},
+    config::{ControllerConfig, InputConfig},
+    control_action::ControlAction,
+    game_input_bundle::GameInputBundle,
+    player_action_control::PlayerActionControl,
+    player_axis_control::PlayerAxisControl,
+    system::{ControllerInputUpdateSystem, SharedControllerInputUpdateSystem},
+};
 
 mod axis;
 mod component;

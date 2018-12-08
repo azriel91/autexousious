@@ -3,8 +3,6 @@
 
 //! Types and traits to allow the `stdio_view` to control a state.
 
-
-
 use clap;
 #[macro_use]
 extern crate derive_error_chain;
@@ -18,10 +16,12 @@ use typename;
 #[macro_use]
 extern crate typename_derive;
 
-pub use crate::error_kind::{Error, ErrorKind, Result};
-pub use crate::mapper_system::MapperSystem;
-pub use crate::stdin_mapper::StdinMapper;
-pub use crate::variant_and_tokens::VariantAndTokens;
+pub use crate::{
+    error_kind::{Error, ErrorKind, Result},
+    mapper_system::MapperSystem,
+    stdin_mapper::StdinMapper,
+    variant_and_tokens::VariantAndTokens,
+};
 
 mod error_kind;
 mod mapper_system;

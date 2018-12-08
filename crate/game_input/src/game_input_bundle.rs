@@ -4,9 +4,7 @@ use amethyst::{
 };
 use typename::TypeName;
 
-use crate::ControllerInputUpdateSystem;
-use crate::InputConfig;
-use crate::SharedControllerInputUpdateSystem;
+use crate::{ControllerInputUpdateSystem, InputConfig, SharedControllerInputUpdateSystem};
 
 /// Adds the game input update systems to the provided dispatcher.
 ///
@@ -40,9 +38,7 @@ mod test {
     use amethyst_test::prelude::*;
 
     use super::GameInputBundle;
-    use crate::InputConfig;
-    use crate::PlayerActionControl;
-    use crate::PlayerAxisControl;
+    use crate::{InputConfig, PlayerActionControl, PlayerAxisControl};
 
     #[test]
     fn bundle_build_should_succeed() {

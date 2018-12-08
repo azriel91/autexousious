@@ -3,13 +3,8 @@
 
 //! Extension to enable `game_play` to be controlled by stdio.
 
-
-
-
-
 #[macro_use]
 extern crate derive_new;
-
 
 use structopt;
 #[macro_use]

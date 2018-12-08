@@ -3,12 +3,14 @@
 //! This differs from the `loaded` types as these may contain mutable state that are specific to an
 //! entity.
 
-pub use self::character::RunCounter;
-pub use self::grounding::Grounding;
-pub use self::health_points::HealthPoints;
-pub use self::kinematic::{Position, Velocity};
-pub use self::mirrored::Mirrored;
-pub use self::sequence_status::SequenceStatus;
+pub use self::{
+    character::RunCounter,
+    grounding::Grounding,
+    health_points::HealthPoints,
+    kinematic::{Position, Velocity},
+    mirrored::Mirrored,
+    sequence_status::SequenceStatus,
+};
 
 mod character;
 mod grounding;

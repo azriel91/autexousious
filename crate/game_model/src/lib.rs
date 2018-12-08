@@ -47,17 +47,14 @@
 //! ```
 //!
 
-
 #[macro_use]
 extern crate derive_builder;
 #[macro_use]
 extern crate derive_new;
 
-
 use strum;
 #[macro_use]
 extern crate strum_macros;
-
 
 pub mod config;
 pub mod loaded;

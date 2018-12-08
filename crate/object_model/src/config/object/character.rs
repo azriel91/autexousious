@@ -1,7 +1,8 @@
 //! Configuration types for `Character`s.
 
-pub use self::character_definition::CharacterDefinition;
-pub use self::character_sequence_id::CharacterSequenceId;
+pub use self::{
+    character_definition::CharacterDefinition, character_sequence_id::CharacterSequenceId,
+};
 
 mod character_definition;
 mod character_sequence_id;
@@ -15,8 +16,7 @@ mod test {
     use toml;
 
     use super::{CharacterDefinition, CharacterSequenceId};
-    use crate::config::object::sequence::ObjectFrame;
-    use crate::config::object::{ObjectDefinition, Sequence};
+    use crate::config::object::{sequence::ObjectFrame, ObjectDefinition, Sequence};
 
     const OBJECT_TOML: &str = r#"
         [sequences.stand]

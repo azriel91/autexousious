@@ -8,16 +8,12 @@ use object_model::config::object::CharacterSequenceId;
 use tracker::LastTrackerSystem;
 use typename::TypeName;
 
-use crate::CharacterCollisionEffectSystem;
-use crate::CharacterGroundingSystem;
-use crate::CharacterKinematicsSystem;
-use crate::CharacterSequenceUpdateSystem;
-use crate::GamePlayEndDetectionSystem;
-use crate::GamePlayEndTransitionSystem;
-use crate::ObjectAnimationUpdateSystem;
-use crate::ObjectCollisionDetectionSystem;
-use crate::ObjectKinematicsUpdateSystem;
-use crate::ObjectTransformUpdateSystem;
+use crate::{
+    CharacterCollisionEffectSystem, CharacterGroundingSystem, CharacterKinematicsSystem,
+    CharacterSequenceUpdateSystem, GamePlayEndDetectionSystem, GamePlayEndTransitionSystem,
+    ObjectAnimationUpdateSystem, ObjectCollisionDetectionSystem, ObjectKinematicsUpdateSystem,
+    ObjectTransformUpdateSystem,
+};
 
 /// Adds the object type update systems to the provided dispatcher.
 #[derive(Debug, new)]

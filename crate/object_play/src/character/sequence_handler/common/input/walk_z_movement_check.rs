@@ -1,7 +1,9 @@
 use object_model::config::object::CharacterSequenceId;
 
-use crate::character::sequence_handler::{common::SequenceRepeat, CharacterSequenceHandler};
-use crate::CharacterSequenceUpdateComponents;
+use crate::{
+    character::sequence_handler::{common::SequenceRepeat, CharacterSequenceHandler},
+    CharacterSequenceUpdateComponents,
+};
 
 /// Determines whether to switch to the `Stand` sequence based on Z input.
 ///
@@ -32,8 +34,9 @@ mod tests {
     };
 
     use super::WalkZMovementCheck;
-    use crate::character::sequence_handler::CharacterSequenceHandler;
-    use crate::CharacterSequenceUpdateComponents;
+    use crate::{
+        character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+    };
 
     #[test]
     fn none_when_no_z_input() {

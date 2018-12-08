@@ -69,12 +69,10 @@ mod test {
     use typename::TypeName;
 
     use super::SharedControllerInputUpdateSystem;
-    use crate::ControllerId;
-    use crate::ControllerInput;
-    use crate::InputControlled;
-    use crate::PlayerActionControl;
-    use crate::PlayerAxisControl;
-    use crate::SharedInputControlled;
+    use crate::{
+        ControllerId, ControllerInput, InputControlled, PlayerActionControl, PlayerAxisControl,
+        SharedInputControlled,
+    };
 
     #[test]
     fn merges_axes_controller_input_with_limit_correction() {

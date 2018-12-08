@@ -1,5 +1,4 @@
-pub use self::position::Position;
-pub use self::velocity::Velocity;
+pub use self::{position::Position, velocity::Velocity};
 
 mod position;
 mod velocity;

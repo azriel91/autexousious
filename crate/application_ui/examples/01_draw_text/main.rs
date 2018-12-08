@@ -13,17 +13,13 @@ use amethyst;
 #[macro_use]
 extern crate application;
 
-
 use structopt;
 #[macro_use]
 extern crate structopt_derive;
 
 mod state;
 
-use std::cell::RefCell;
-use std::process;
-use std::rc::Rc;
-use std::time::Duration;
+use std::{cell::RefCell, process, rc::Rc, time::Duration};
 
 use amethyst::{
     core::transform::TransformBundle,

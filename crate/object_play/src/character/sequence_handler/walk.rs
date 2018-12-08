@@ -1,17 +1,19 @@
 use object_model::config::object::CharacterSequenceId;
 
-use crate::character::sequence_handler::{
-    common::{
-        grounding::AirborneCheck,
-        input::{
-            JumpCheck, StandAttackCheck, WalkNoMovementCheck, WalkXMovementCheck,
-            WalkZMovementCheck,
+use crate::{
+    character::sequence_handler::{
+        common::{
+            grounding::AirborneCheck,
+            input::{
+                JumpCheck, StandAttackCheck, WalkNoMovementCheck, WalkXMovementCheck,
+                WalkZMovementCheck,
+            },
+            status::AliveCheck,
         },
-        status::AliveCheck,
+        CharacterSequenceHandler,
     },
-    CharacterSequenceHandler,
+    CharacterSequenceUpdateComponents,
 };
-use crate::CharacterSequenceUpdateComponents;
 
 #[derive(Debug)]
 pub(crate) struct Walk;
@@ -47,8 +49,9 @@ mod test {
     };
 
     use super::Walk;
-    use crate::character::sequence_handler::CharacterSequenceHandler;
-    use crate::CharacterSequenceUpdateComponents;
+    use crate::{
+        character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+    };
 
     #[test]
     fn reverts_to_stand_when_no_input() {

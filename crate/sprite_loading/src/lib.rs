@@ -23,8 +23,6 @@
 //! }
 //! ```
 
-
-
 use application;
 
 #[cfg(test)]
@@ -36,13 +34,15 @@ extern crate log;
 #[macro_use]
 extern crate pretty_assertions;
 
-
-pub use crate::animation::{AnimationFrame, AnimationSequence, SpriteRenderAnimationLoader};
-pub use crate::sprite_animation_handle::SpriteAnimationHandle;
-pub use crate::sprite_loader::SpriteLoader;
-pub(crate) use crate::sprite_sheet_loader::SpriteSheetLoader;
-pub(crate) use crate::sprite_sheet_mapper::SpriteSheetMapper;
-pub(crate) use crate::texture_loader::TextureLoader;
+pub use crate::{
+    animation::{AnimationFrame, AnimationSequence, SpriteRenderAnimationLoader},
+    sprite_animation_handle::SpriteAnimationHandle,
+    sprite_loader::SpriteLoader,
+};
+pub(crate) use crate::{
+    sprite_sheet_loader::SpriteSheetLoader, sprite_sheet_mapper::SpriteSheetMapper,
+    texture_loader::TextureLoader,
+};
 
 mod animation;
 mod sprite_animation_handle;

@@ -61,12 +61,13 @@
 //! Was intending to go with `Animation<ObjectFrame>`, but the data locality point weighs pretty
 //! strongly, so instead going with animating each component separately.
 
-pub use self::body_animation_handle::BodyAnimationHandle;
-pub use self::body_frame_active_handle::BodyFrameActiveHandle;
-pub use self::body_frame_primitive::BodyFramePrimitive;
-pub use self::interaction_animation_handle::InteractionAnimationHandle;
-pub use self::interaction_frame_active_handle::InteractionFrameActiveHandle;
-pub use self::interaction_frame_primitive::InteractionFramePrimitive;
+pub use self::{
+    body_animation_handle::BodyAnimationHandle, body_frame_active_handle::BodyFrameActiveHandle,
+    body_frame_primitive::BodyFramePrimitive,
+    interaction_animation_handle::InteractionAnimationHandle,
+    interaction_frame_active_handle::InteractionFrameActiveHandle,
+    interaction_frame_primitive::InteractionFramePrimitive,
+};
 
 mod body_animation_handle;
 mod body_frame_active_handle;

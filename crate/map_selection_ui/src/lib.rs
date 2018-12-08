@@ -3,22 +3,13 @@
 
 //! UI to allow the user to select the map.
 
-
-
-
-
-
 #[macro_use]
 extern crate derivative;
 #[macro_use]
 extern crate derive_new;
 
-
 #[macro_use]
 extern crate log;
-
-
-
 
 #[macro_use]
 extern crate strum_macros;
@@ -27,9 +18,11 @@ use typename;
 #[macro_use]
 extern crate typename_derive;
 
-pub(crate) use crate::component::{MapSelectionWidget, WidgetState};
 pub use crate::map_selection_ui_bundle::MapSelectionUiBundle;
-pub(crate) use crate::system::{MapSelectionWidgetInputSystem, MapSelectionWidgetUiSystem};
+pub(crate) use crate::{
+    component::{MapSelectionWidget, WidgetState},
+    system::{MapSelectionWidgetInputSystem, MapSelectionWidgetUiSystem},
+};
 
 mod component;
 mod map_selection_ui_bundle;

@@ -1,5 +1,4 @@
-use std::collections::HashMap;
-use std::hash::Hash;
+use std::{collections::HashMap, hash::Hash};
 
 use amethyst::{
     animation::{Animation, InterpolationFunction, Sampler},
@@ -14,8 +13,7 @@ use collision_model::{
     config::InteractionFrame,
 };
 
-use crate::InteractionAnimationFrame;
-use crate::InteractionAnimationSequence;
+use crate::{InteractionAnimationFrame, InteractionAnimationSequence};
 
 /// Loads `Animation`s from character sequences.
 #[derive(Debug)]
@@ -180,8 +178,7 @@ mod test {
     };
 
     use super::InteractionAnimationLoader;
-    use crate::CollisionLoadingBundle;
-    use crate::InteractionAnimationSequence;
+    use crate::{CollisionLoadingBundle, InteractionAnimationSequence};
 
     #[test]
     fn loads_interaction_animations_into_map() {

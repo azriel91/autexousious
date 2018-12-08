@@ -1,5 +1,4 @@
-use crate::config::Layer;
-use crate::config::MapHeader;
+use crate::config::{Layer, MapHeader};
 
 /// Defines a playable area that objects can reside in.
 #[derive(Clone, Debug, Deserialize, PartialEq, new)]

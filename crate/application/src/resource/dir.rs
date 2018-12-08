@@ -3,12 +3,15 @@
 mod discovery_context;
 mod error;
 
-pub use self::discovery_context::DiscoveryContext;
-pub use self::error::{Error, ErrorKind, Result};
+pub use self::{
+    discovery_context::DiscoveryContext,
+    error::{Error, ErrorKind, Result},
+};
 
-use std::env;
-use std::io;
-use std::path::{Path, PathBuf};
+use std::{
+    env, io,
+    path::{Path, PathBuf},
+};
 
 use crate::resource::find::find_in_internal;
 
@@ -81,20 +84,23 @@ fn assets_dir_internal(
 
 #[cfg(test)]
 mod test {
-    use std::fs;
-    use std::io;
     #[cfg(unix)]
     use std::os::unix;
     #[cfg(windows)]
     use std::os::windows;
-    use std::path::{Path, PathBuf};
+    use std::{
+        fs, io,
+        path::{Path, PathBuf},
+    };
 
     use tempfile::tempdir;
 
     use super::{assets_dir_internal, ASSETS};
-    use crate::resource;
-    use crate::resource::dir::{DiscoveryContext, Error, ErrorKind};
-    use crate::resource::FindContext;
+    use crate::resource::{
+        self,
+        dir::{DiscoveryContext, Error, ErrorKind},
+        FindContext,
+    };
 
     // kcov-ignore-start
     fn assert_dir_discovery_error(

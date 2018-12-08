@@ -5,8 +5,6 @@
 //!
 //! [amethyst]: https://github.com/amethyst/amethyst
 
-
-
 use std::mem::discriminant;
 
 use amethyst::prelude::*;

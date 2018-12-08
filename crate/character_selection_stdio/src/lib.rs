@@ -3,16 +3,8 @@
 
 //! Extension to enable `character_selection` to be controlled by stdio.
 
-
-
-
-
-
-
 #[macro_use]
 extern crate derive_new;
-
-
 
 use structopt;
 #[macro_use]
@@ -21,9 +13,11 @@ use typename;
 #[macro_use]
 extern crate typename_derive;
 
-pub use crate::character_selection_event_args::CharacterSelectionEventArgs;
-pub use crate::character_selection_event_stdin_mapper::CharacterSelectionEventStdinMapper;
-pub use crate::character_selection_stdio_bundle::CharacterSelectionStdioBundle;
+pub use crate::{
+    character_selection_event_args::CharacterSelectionEventArgs,
+    character_selection_event_stdin_mapper::CharacterSelectionEventStdinMapper,
+    character_selection_stdio_bundle::CharacterSelectionStdioBundle,
+};
 
 mod character_selection_event_args;
 mod character_selection_event_stdin_mapper;

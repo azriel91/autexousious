@@ -8,16 +8,13 @@
 //! pressed, but the `System` may be run multiple times before the user has released the button,
 //! causing multiple actions to happen / rapid-fire when only one action is intended.
 
-
-
 #[macro_use]
 extern crate derive_new;
 
 #[macro_use]
 extern crate named_type_derive;
 
-pub use crate::component::Last;
-pub use crate::system::LastTrackerSystem;
+pub use crate::{component::Last, system::LastTrackerSystem};
 
 mod component;
 mod system;

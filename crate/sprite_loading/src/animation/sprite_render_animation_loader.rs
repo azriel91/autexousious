@@ -1,5 +1,4 @@
-use std::collections::HashMap;
-use std::hash::Hash;
+use std::{collections::HashMap, hash::Hash};
 
 use amethyst::{
     animation::{
@@ -10,9 +9,7 @@ use amethyst::{
     renderer::{SpriteRender, SpriteSheetHandle},
 };
 
-use crate::AnimationFrame;
-use crate::AnimationSequence;
-use crate::SpriteAnimationHandle;
+use crate::{AnimationFrame, AnimationSequence, SpriteAnimationHandle};
 
 /// Loads `Animation`s from object sequences.
 #[derive(Debug)]
@@ -212,10 +209,7 @@ mod test {
     use assets_test::ASSETS_CHAR_BAT_PATH;
 
     use super::SpriteRenderAnimationLoader;
-    use crate::AnimationFrame;
-    use crate::AnimationSequence;
-    use crate::SpriteAnimationHandle;
-    use crate::SpriteLoader;
+    use crate::{AnimationFrame, AnimationSequence, SpriteAnimationHandle, SpriteLoader};
 
     #[test]
     fn loads_sprite_render_animations_into_map() {

@@ -3,9 +3,7 @@ use game_model::play::GameEntities;
 use map_model::loaded::Map;
 use map_selection_model::MapSelection;
 
-use crate::GameLoadingStatus;
-use crate::MapLayerComponentStorages;
-use crate::MapLayerEntitySpawner;
+use crate::{GameLoadingStatus, MapLayerComponentStorages, MapLayerEntitySpawner};
 
 /// Spawns character entities based on the character selection.
 #[derive(Debug, Default, TypeName, new)]
@@ -52,8 +50,7 @@ impl<'s> System<'s> for MapSelectionSpawningSystem {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
-    use std::env;
+    use std::{collections::HashMap, env};
 
     use amethyst::{assets::ProgressCounter, ecs::prelude::*};
     use amethyst_test::prelude::*;

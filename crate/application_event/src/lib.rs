@@ -31,14 +31,14 @@ extern crate derivative;
 #[macro_use]
 extern crate derive_more;
 
-
-
 use strum;
 #[macro_use]
 extern crate strum_macros;
 
-pub use crate::app_event::{AppEvent, AppEventReader, AppEventVariant};
-pub use crate::from_app_event::FromAppEvent;
+pub use crate::{
+    app_event::{AppEvent, AppEventReader, AppEventVariant},
+    from_app_event::FromAppEvent,
+};
 
 mod app_event;
 mod from_app_event;

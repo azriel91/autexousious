@@ -1,11 +1,13 @@
 //! Contains modules for various application configuration
 
-pub use self::error::{Error, ErrorKind, Result};
-pub use self::find::{find, find_in};
-pub use self::find_context::FindContext;
-pub use self::format::Format;
-pub use self::io_utils::IoUtils;
-pub use self::load::{load, load_in};
+pub use self::{
+    error::{Error, ErrorKind, Result},
+    find::{find, find_in},
+    find_context::FindContext,
+    format::Format,
+    io_utils::IoUtils,
+    load::{load, load_in},
+};
 
 #[cfg(test)]
 #[macro_use]

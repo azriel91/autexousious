@@ -166,8 +166,10 @@ mod test {
     use amethyst::{input::InputHandler, ui::MouseReactive};
     use amethyst_test::SpriteRenderAnimationFixture;
     use game_input::{PlayerActionControl, PlayerAxisControl};
-    use game_model::loaded::{CharacterAssets, MapAssets};
-    use game_model::play::GameEntities;
+    use game_model::{
+        loaded::{CharacterAssets, MapAssets},
+        play::GameEntities,
+    };
     use object_model::ObjectType;
     use strum::IntoEnumIterator;
 

@@ -6,7 +6,6 @@
 //! These are used by other types that use sprites such as the various object types and map
 //! layers.
 
-
 #[macro_use]
 extern crate derive_new;
 

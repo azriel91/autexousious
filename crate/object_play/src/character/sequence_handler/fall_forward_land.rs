@@ -1,7 +1,9 @@
 use object_model::config::object::CharacterSequenceId;
 
-use crate::character::sequence_handler::{CharacterSequenceHandler, SwitchSequenceOnEnd};
-use crate::CharacterSequenceUpdateComponents;
+use crate::{
+    character::sequence_handler::{CharacterSequenceHandler, SwitchSequenceOnEnd},
+    CharacterSequenceUpdateComponents,
+};
 
 const FALL_FORWARD_LAND: SwitchSequenceOnEnd =
     SwitchSequenceOnEnd(CharacterSequenceId::LieFaceDown);

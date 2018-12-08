@@ -6,32 +6,14 @@ use amethyst;
 #[macro_use]
 extern crate application;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 #[macro_use]
 extern crate log;
-
-
-
-
 
 use structopt;
 #[macro_use]
 extern crate structopt_derive;
 
-use std::process;
-use std::time::Duration;
+use std::{process, time::Duration};
 
 use amethyst::{
     animation::AnimationBundle,
@@ -46,8 +28,9 @@ use amethyst::{
     LogLevelFilter, LoggerConfig,
 };
 use application::resource::{
+    self,
     dir::{self, assets_dir},
-    {self, load_in},
+    load_in,
 };
 use application_event::{AppEvent, AppEventReader};
 use application_robot::RobotState;

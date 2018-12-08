@@ -1,6 +1,4 @@
-use std::fmt::Debug;
-use std::marker::PhantomData;
-use std::path::PathBuf;
+use std::{fmt::Debug, marker::PhantomData, path::PathBuf};
 
 use amethyst::{assets::ProgressCounter, prelude::*};
 use application_event::AppEvent;
@@ -69,7 +67,10 @@ where
         );
     }
 
-    fn update(&mut self, data: StateData<'_, GameData<'_, '_>>) -> Trans<GameData<'a, 'b>, AppEvent> {
+    fn update(
+        &mut self,
+        data: StateData<'_, GameData<'_, '_>>,
+    ) -> Trans<GameData<'a, 'b>, AppEvent> {
         data.data.update(&data.world);
 
         if self.progress_counter.is_complete() {

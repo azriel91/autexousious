@@ -7,8 +7,7 @@ use amethyst::{
 };
 use named_type::NamedType;
 
-use crate::ActiveHandleChannel;
-use crate::ActiveHandlePrimitive;
+use crate::{ActiveHandleChannel, ActiveHandlePrimitive};
 
 /// Wrapper `Component` to allow switching between memory-heavy data.
 #[derive(Clone, Debug, NamedType, PartialEq, new)]
@@ -49,8 +48,7 @@ where
     type Channel = ActiveHandleChannel;
 
     fn apply_sample(&mut self, channel: &Self::Channel, data: &Self::Primitive, _: &()) {
-        use crate::ActiveHandleChannel as Channel;
-        use crate::ActiveHandlePrimitive as Primitive;
+        use crate::{ActiveHandleChannel as Channel, ActiveHandlePrimitive as Primitive};
 
         match (channel, data) {
             (Channel::Handle, Primitive::Handle(handle)) => self.active = Some(handle.clone()),
@@ -58,8 +56,7 @@ where
     }
 
     fn current_sample(&self, channel: &Self::Channel, _: &()) -> Self::Primitive {
-        use crate::ActiveHandleChannel as Channel;
-        use crate::ActiveHandlePrimitive as Primitive;
+        use crate::{ActiveHandleChannel as Channel, ActiveHandlePrimitive as Primitive};
 
         match channel {
             Channel::Handle => {

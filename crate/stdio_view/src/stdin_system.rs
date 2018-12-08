@@ -1,12 +1,16 @@
-use std::sync::mpsc::{self, Receiver, TryRecvError};
-use std::thread;
+use std::{
+    sync::mpsc::{self, Receiver, TryRecvError},
+    thread,
+};
 
 use amethyst::{ecs::prelude::*, shrev::EventChannel};
 use application_input::ApplicationEvent;
 use stdio_spi::VariantAndTokens;
 
-use crate::reader::{self, StdinReader};
-use crate::IoAppEventUtils;
+use crate::{
+    reader::{self, StdinReader},
+    IoAppEventUtils,
+};
 
 /// Type to fetch the application event channel.
 type StdinSystemData<'s> = (

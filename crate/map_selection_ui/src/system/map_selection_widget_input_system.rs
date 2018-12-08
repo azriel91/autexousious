@@ -4,8 +4,7 @@ use game_model::loaded::{MapAssets, SlugAndHandle};
 use map_selection_model::{MapSelection, MapSelectionEvent};
 use tracker::Last;
 
-use crate::MapSelectionWidget;
-use crate::WidgetState;
+use crate::{MapSelectionWidget, WidgetState};
 
 /// System that processes controller input and generates `MapSelectionEvent`s.
 ///
@@ -166,8 +165,7 @@ mod test {
     use typename::TypeName;
 
     use super::{MapSelectionWidgetInputSystem, MapSelectionWidgetInputSystemData};
-    use crate::MapSelectionWidget;
-    use crate::WidgetState;
+    use crate::{MapSelectionWidget, WidgetState};
 
     #[test]
     fn does_not_send_event_when_controller_input_empty() {

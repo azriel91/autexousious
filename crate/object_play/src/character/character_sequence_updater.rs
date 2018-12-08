@@ -2,12 +2,14 @@ use object_model::{
     config::object::CharacterSequenceId, entity::SequenceStatus, loaded::SequenceEndTransitions,
 };
 
-use crate::character::sequence_handler::{
-    CharacterSequenceHandler, FallForwardAscend, FallForwardDescend, FallForwardLand, Jump,
-    JumpAscend, JumpDescend, JumpDescendLand, JumpOff, LieFaceDown, Run, RunStop, Stand,
-    StandAttack, StandOnSequenceEnd, Walk,
+use crate::{
+    character::sequence_handler::{
+        CharacterSequenceHandler, FallForwardAscend, FallForwardDescend, FallForwardLand, Jump,
+        JumpAscend, JumpDescend, JumpDescendLand, JumpOff, LieFaceDown, Run, RunStop, Stand,
+        StandAttack, StandOnSequenceEnd, Walk,
+    },
+    CharacterSequenceUpdateComponents,
 };
-use crate::CharacterSequenceUpdateComponents;
 
 /// Defines behaviour for a character in game.
 #[derive(Debug)]
@@ -23,8 +25,9 @@ impl CharacterSequenceUpdater {
         sequence_end_transitions: &SequenceEndTransitions<CharacterSequenceId>,
         components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<CharacterSequenceId> {
-        let sequence_handler: &dyn Fn(CharacterSequenceUpdateComponents<'_>)
-            -> Option<CharacterSequenceId> = match components.character_sequence_id {
+        let sequence_handler: &dyn Fn(
+            CharacterSequenceUpdateComponents<'_>,
+        ) -> Option<CharacterSequenceId> = match components.character_sequence_id {
             CharacterSequenceId::Stand => &Stand::update,
             CharacterSequenceId::StandAttack => &StandAttack::update,
             CharacterSequenceId::Walk => &Walk::update,

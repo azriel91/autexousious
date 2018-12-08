@@ -2,25 +2,17 @@ use object_model::config::object::CharacterSequenceId;
 
 use crate::CharacterSequenceUpdateComponents;
 
-pub(super) use self::fall_forward_ascend::FallForwardAscend;
-pub(super) use self::fall_forward_descend::FallForwardDescend;
-pub(super) use self::fall_forward_land::FallForwardLand;
-pub(super) use self::jump::Jump;
-pub(super) use self::jump_ascend::JumpAscend;
-pub(super) use self::jump_descend::JumpDescend;
-pub(super) use self::jump_descend_land::JumpDescendLand;
-pub(super) use self::jump_off::JumpOff;
-pub(super) use self::lie_face_down::LieFaceDown;
-pub(super) use self::run::Run;
-pub(super) use self::run_stop::RunStop;
 pub(crate) use self::sequence_handler_util::SequenceHandlerUtil;
-pub(super) use self::stand::Stand;
-pub(super) use self::stand_attack::StandAttack;
-pub(super) use self::stand_on_sequence_end::StandOnSequenceEnd;
-pub(super) use self::switch_sequence_on_descend::SwitchSequenceOnDescend;
-pub(super) use self::switch_sequence_on_end::SwitchSequenceOnEnd;
-pub(super) use self::switch_sequence_on_land::SwitchSequenceOnLand;
-pub(super) use self::walk::Walk;
+pub(super) use self::{
+    fall_forward_ascend::FallForwardAscend, fall_forward_descend::FallForwardDescend,
+    fall_forward_land::FallForwardLand, jump::Jump, jump_ascend::JumpAscend,
+    jump_descend::JumpDescend, jump_descend_land::JumpDescendLand, jump_off::JumpOff,
+    lie_face_down::LieFaceDown, run::Run, run_stop::RunStop, stand::Stand,
+    stand_attack::StandAttack, stand_on_sequence_end::StandOnSequenceEnd,
+    switch_sequence_on_descend::SwitchSequenceOnDescend,
+    switch_sequence_on_end::SwitchSequenceOnEnd, switch_sequence_on_land::SwitchSequenceOnLand,
+    walk::Walk,
+};
 
 pub(super) mod common;
 mod fall_forward_ascend;

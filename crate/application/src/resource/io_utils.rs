@@ -1,6 +1,8 @@
-use std::fs::File;
-use std::io::prelude::*;
-use std::path::{Component, Path};
+use std::{
+    fs::File,
+    io::prelude::*,
+    path::{Component, Path},
+};
 
 use crate::resource::{Error, Result};
 
@@ -70,8 +72,7 @@ impl IoUtils {
 
 #[cfg(test)]
 mod test {
-    use std::io::prelude::*;
-    use std::path::Path;
+    use std::{io::prelude::*, path::Path};
 
     use tempfile::NamedTempFile;
 

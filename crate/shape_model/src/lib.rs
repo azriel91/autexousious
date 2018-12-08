@@ -3,15 +3,13 @@
 
 //! Types used to represent shapes.
 
-
 #[macro_use]
 extern crate serde_derive;
 
 #[macro_use]
 extern crate strum_macros;
 
-pub use crate::axis::Axis;
-pub use crate::volume::Volume;
+pub use crate::{axis::Axis, volume::Volume};
 
 mod axis;
 mod volume;
