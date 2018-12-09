@@ -2,18 +2,13 @@
 
 //! Opens an empty window.
 
-use amethyst;
-
-use structopt;
-#[macro_use]
-extern crate structopt_derive;
-
 use std::{cell::RefCell, process, rc::Rc, time::Duration};
 
 use amethyst::{prelude::*, StateEventReader};
 use application_robot::{state::FixedTimeoutIntercept, RobotState};
 use stdio_view::StdioViewBundle;
-use structopt::StructOpt;
+use structopt::StructOpt as StructOptTrait;
+use structopt_derive::StructOpt;
 
 #[derive(Debug)]
 struct EmptyState;

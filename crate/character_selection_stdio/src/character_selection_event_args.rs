@@ -1,4 +1,5 @@
 use game_input::ControllerId;
+use structopt_derive::StructOpt;
 
 /// Parameters to the mapper.
 ///
@@ -11,9 +12,9 @@ use game_input::ControllerId;
 // TODO: Pending <https://github.com/TeXitoi/structopt/issues/18>
 // TODO: Update `StructOpt` to support automatic snake_case names.
 #[derive(Clone, Debug, PartialEq, StructOpt)]
+#[structopt(rename_all = "snake_case")]
 pub enum CharacterSelectionEventArgs {
     /// Select event.
-    #[structopt(name = "select")]
     Select {
         /// Controller ID.
         ///
@@ -25,7 +26,6 @@ pub enum CharacterSelectionEventArgs {
         selection: String,
     },
     /// Deselect event.
-    #[structopt(name = "deselect")]
     Deselect {
         /// Controller ID.
         ///
@@ -34,6 +34,5 @@ pub enum CharacterSelectionEventArgs {
         controller_id: ControllerId,
     },
     /// Confirm event.
-    #[structopt(name = "confirm")]
     Confirm,
 }
