@@ -3,10 +3,6 @@
 
 //! Provides systems that update the map during game play.
 
-use typename;
-#[macro_use]
-extern crate typename_derive;
-
 pub use crate::{
     map_animation_update_system::MapAnimationUpdateSystem, map_play_bundle::MapPlayBundle,
 };

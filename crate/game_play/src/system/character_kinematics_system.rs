@@ -6,6 +6,7 @@ use object_model::{
     entity::{Mirrored, SequenceStatus, Velocity},
     loaded::{Character, CharacterHandle},
 };
+use typename_derive::TypeName;
 
 /// Updates `Character` velocity based on sequence.
 #[derive(Debug, Default, TypeName, new)]

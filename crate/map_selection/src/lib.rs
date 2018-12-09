@@ -9,10 +9,6 @@ extern crate derivative;
 #[macro_use]
 extern crate log;
 
-use typename;
-#[macro_use]
-extern crate typename_derive;
-
 pub(crate) use crate::system::MapSelectionSystem;
 pub use crate::{
     map_selection_bundle::MapSelectionBundle,

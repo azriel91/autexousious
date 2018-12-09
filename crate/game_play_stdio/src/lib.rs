@@ -3,10 +3,6 @@
 
 //! Extension to enable `game_play` to be controlled by stdio.
 
-use typename;
-#[macro_use]
-extern crate typename_derive;
-
 pub use crate::{
     game_play_event_args::GamePlayEventArgs,
     game_play_event_stdin_mapper::GamePlayEventStdinMapper,

@@ -11,6 +11,7 @@ use game_input::{
 use game_model::loaded::{MapAssets, SlugAndHandle};
 use map_selection::MapSelectionStatus;
 use map_selection_model::{MapSelection, MapSelectionEvent};
+use typename_derive::TypeName;
 
 use crate::{MapSelectionWidget, WidgetState};
 

@@ -4,6 +4,7 @@ use game_input::ControllerInput;
 use game_model::loaded::{MapAssets, SlugAndHandle};
 use map_selection_model::{MapSelection, MapSelectionEvent};
 use tracker::Last;
+use typename_derive::TypeName;
 
 use crate::{MapSelectionWidget, WidgetState};
 

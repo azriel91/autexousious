@@ -10,10 +10,6 @@ extern crate derive_error_chain;
 #[macro_use]
 extern crate log;
 
-use typename;
-#[macro_use]
-extern crate typename_derive;
-
 pub use crate::{
     error_kind::{Error, ErrorKind, Result},
     mapper_system::MapperSystem,

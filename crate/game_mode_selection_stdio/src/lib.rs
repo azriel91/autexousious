@@ -3,10 +3,6 @@
 
 //! Extension to enable `game_mode_selection` to be controlled by stdio.
 
-use typename;
-#[macro_use]
-extern crate typename_derive;
-
 pub use crate::{
     game_mode_selection_event_args::GameModeSelectionEventArgs,
     game_mode_selection_event_stdin_mapper::GameModeSelectionEventStdinMapper,

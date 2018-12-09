@@ -25,9 +25,6 @@ extern crate serde_derive;
 use strum;
 #[macro_use]
 extern crate strum_macros;
-use typename;
-#[macro_use]
-extern crate typename_derive;
 
 pub use crate::{
     axis::Axis,

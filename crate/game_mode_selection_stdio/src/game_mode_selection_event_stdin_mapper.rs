@@ -1,6 +1,7 @@
 use application_menu::MenuEvent;
 use game_mode_selection_model::GameModeSelectionEvent;
 use stdio_spi::{Result, StdinMapper};
+use typename_derive::TypeName;
 
 use crate::GameModeSelectionEventArgs;
 

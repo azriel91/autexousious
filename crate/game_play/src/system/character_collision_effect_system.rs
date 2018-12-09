@@ -8,7 +8,7 @@ use object_model::{
     config::object::CharacterSequenceId,
     entity::{HealthPoints, SequenceStatus},
 };
-use typename::TypeName;
+use typename_derive::TypeName;
 
 /// Determines collision effects for characters.
 #[derive(Debug, Default, TypeName, new)]

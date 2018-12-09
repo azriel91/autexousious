@@ -12,10 +12,6 @@ extern crate log;
 #[macro_use]
 extern crate strum_macros;
 
-use typename;
-#[macro_use]
-extern crate typename_derive;
-
 pub use crate::map_selection_ui_bundle::MapSelectionUiBundle;
 pub(crate) use crate::{
     component::{MapSelectionWidget, WidgetState},

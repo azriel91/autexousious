@@ -6,6 +6,7 @@ use game_model::{
 };
 use map_selection_model::{MapSelection, MapSelectionEvent};
 use stdio_spi::{Result, StdinMapper};
+use typename_derive::TypeName;
 
 use crate::MapSelectionEventArgs;
 

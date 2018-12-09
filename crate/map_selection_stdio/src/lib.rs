@@ -3,10 +3,6 @@
 
 //! Extension to enable `map_selection` to be controlled by stdio.
 
-use typename;
-#[macro_use]
-extern crate typename_derive;
-
 pub use crate::{
     map_selection_event_args::MapSelectionEventArgs,
     map_selection_event_stdin_mapper::MapSelectionEventStdinMapper,

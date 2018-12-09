@@ -4,6 +4,7 @@ use derive_new::new;
 use game_input::{ControllerInput, InputControlled};
 use game_model::loaded::{CharacterAssets, SlugAndHandle};
 use tracker::Last;
+use typename_derive::TypeName;
 
 use crate::{CharacterSelectionWidget, WidgetState};
 

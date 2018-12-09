@@ -12,7 +12,7 @@ use collision_model::{
 };
 use derive_new::new;
 use shape_model::Volume;
-use typename::TypeName;
+use typename_derive::TypeName;
 
 /// Detects collisions for all objects.
 #[derive(Debug, Default, TypeName, new)]

@@ -12,10 +12,6 @@ extern crate log;
 #[macro_use]
 extern crate strum_macros;
 
-use typename;
-#[macro_use]
-extern crate typename_derive;
-
 pub use crate::character_selection_ui_bundle::CharacterSelectionUiBundle;
 pub(crate) use crate::{
     component::{CharacterSelectionWidget, WidgetState},

@@ -3,10 +3,6 @@
 
 //! Extension to enable `character_selection` to be controlled by stdio.
 
-use typename;
-#[macro_use]
-extern crate typename_derive;
-
 pub use crate::{
     character_selection_event_args::CharacterSelectionEventArgs,
     character_selection_event_stdin_mapper::CharacterSelectionEventStdinMapper,

@@ -15,6 +15,7 @@ use object_play::{
     CharacterSequenceUpdateComponents, CharacterSequenceUpdater, MirroredUpdater, RunCounterUpdater,
 };
 use shred_derive::SystemData;
+use typename_derive::TypeName;
 
 /// Updates character sequence ID based on input (or lack of).
 #[derive(Debug, Default, TypeName, new)]

@@ -6,6 +6,7 @@ use std::{
 use amethyst::{ecs::prelude::*, shrev::EventChannel};
 use application_input::ApplicationEvent;
 use stdio_spi::VariantAndTokens;
+use typename_derive::TypeName;
 
 use crate::{
     reader::{self, StdinReader},

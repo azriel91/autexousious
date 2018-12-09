@@ -3,6 +3,7 @@ use derive_new::new;
 use game_model::play::GameEntities;
 use map_model::loaded::Map;
 use map_selection_model::MapSelection;
+use typename_derive::TypeName;
 
 use crate::{GameLoadingStatus, MapLayerComponentStorages, MapLayerEntitySpawner};
 

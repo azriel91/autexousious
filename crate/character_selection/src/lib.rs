@@ -9,10 +9,6 @@ extern crate derivative;
 #[macro_use]
 extern crate log;
 
-use typename;
-#[macro_use]
-extern crate typename_derive;
-
 pub use crate::{
     character_selection_bundle::CharacterSelectionBundle,
     character_selection_state::{

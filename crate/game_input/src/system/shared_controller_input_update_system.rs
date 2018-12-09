@@ -1,5 +1,6 @@
 use amethyst::ecs::prelude::*;
 use derive_new::new;
+use typename_derive::TypeName;
 
 use crate::{ControllerInput, InputControlled, SharedInputControlled};
 

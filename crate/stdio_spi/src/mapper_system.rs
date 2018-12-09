@@ -4,7 +4,8 @@ use amethyst::{ecs::prelude::*, shrev::EventChannel};
 use application_event::AppEventVariant;
 use derive_new::new;
 use structopt::StructOpt;
-use typename::TypeName;
+use typename::TypeName as TypeNameTrait;
+use typename_derive::TypeName;
 
 use crate::{Result, StdinMapper, VariantAndTokens};
 
@@ -19,7 +20,7 @@ type MapperSystemData<'s, E, SysData> = (
 #[derive(Debug, TypeName, new)]
 pub struct MapperSystem<M>
 where
-    M: StdinMapper + TypeName,
+    M: StdinMapper + TypeNameTrait,
 {
     /// The `AppEventVariant` that this system should handle.
     variant: AppEventVariant,
@@ -32,7 +33,7 @@ where
 
 impl<'s, M> System<'s> for MapperSystem<M>
 where
-    M: StdinMapper + TypeName,
+    M: StdinMapper + TypeNameTrait,
     M::Resource: Default + Send + Sync + 'static,
 {
     type SystemData = MapperSystemData<'s, M::Event, Read<'s, M::Resource>>;

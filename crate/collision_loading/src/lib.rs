@@ -7,10 +7,6 @@
 #[macro_use]
 extern crate pretty_assertions;
 
-use typename;
-#[macro_use]
-extern crate typename_derive;
-
 pub(crate) use crate::system::CollisionLoadingSystem;
 pub use crate::{
     animation::{

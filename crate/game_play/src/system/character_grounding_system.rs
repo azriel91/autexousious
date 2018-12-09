@@ -3,6 +3,7 @@ use derive_new::new;
 use map_model::loaded::Map;
 use map_selection_model::MapSelection;
 use object_model::entity::{Grounding, Position, Velocity};
+use typename_derive::TypeName;
 
 /// Updates `Character` kinematics based on sequence.
 #[derive(Debug, Default, TypeName, new)]

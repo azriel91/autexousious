@@ -7,6 +7,7 @@ use game_model::{
     loaded::{CharacterAssets, SlugAndHandle},
 };
 use stdio_spi::{Result, StdinMapper};
+use typename_derive::TypeName;
 
 use crate::CharacterSelectionEventArgs;
 

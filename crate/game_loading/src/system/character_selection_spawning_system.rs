@@ -11,6 +11,7 @@ use object_model::{
     loaded::Character,
     ObjectType,
 };
+use typename_derive::TypeName;
 
 use crate::{
     CharacterComponentStorages, CharacterEntitySpawner, GameLoadingStatus, ObjectAnimationStorages,

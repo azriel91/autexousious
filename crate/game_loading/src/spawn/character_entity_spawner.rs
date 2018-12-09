@@ -311,7 +311,8 @@ mod test {
         entity::{Grounding, HealthPoints, Mirrored, Position, SequenceStatus, Velocity},
         loaded::{Character, CharacterHandle, ObjectHandle},
     };
-    use typename::TypeName;
+    use typename::TypeName as TypeNameTrait;
+    use typename_derive::TypeName;
 
     use super::CharacterEntitySpawner;
     use crate::{

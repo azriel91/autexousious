@@ -17,10 +17,6 @@ extern crate named_type_derive;
 
 use shred;
 
-use typename;
-#[macro_use]
-extern crate typename_derive;
-
 pub use crate::game_play_state::GamePlayState;
 pub(crate) use crate::{
     game_play_bundle::GamePlayBundle,
