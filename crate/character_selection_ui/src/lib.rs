@@ -9,9 +9,6 @@ extern crate derivative;
 #[macro_use]
 extern crate log;
 
-#[macro_use]
-extern crate strum_macros;
-
 pub use crate::character_selection_ui_bundle::CharacterSelectionUiBundle;
 pub(crate) use crate::{
     component::{CharacterSelectionWidget, WidgetState},

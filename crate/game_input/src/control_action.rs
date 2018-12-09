@@ -1,5 +1,7 @@
 #![allow(missing_debug_implementations)] // needed for `EnumIter`
 
+use strum_macros::{Display, EnumIter};
+
 /// Control actions for characters.
 #[derive(
     Clone, Copy, Debug, Derivative, Deserialize, Display, EnumIter, Hash, PartialEq, Eq, Serialize,

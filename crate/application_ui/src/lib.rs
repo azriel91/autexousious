@@ -55,9 +55,6 @@ extern crate derive_more;
 extern crate log;
 #[macro_use]
 extern crate serde;
-use strum;
-#[macro_use]
-extern crate strum_macros;
 
 pub use crate::{
     font_config::FontConfig, font_variant::FontVariant, theme::Theme, theme_loader::ThemeLoader,

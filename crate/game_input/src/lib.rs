@@ -22,9 +22,6 @@ extern crate hamcrest;
 
 #[macro_use]
 extern crate serde_derive;
-use strum;
-#[macro_use]
-extern crate strum_macros;
 
 pub use crate::{
     axis::Axis,

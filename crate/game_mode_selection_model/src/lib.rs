@@ -3,10 +3,6 @@
 
 //! Types used during game mode selection.
 
-use strum;
-#[macro_use]
-extern crate strum_macros;
-
 pub use crate::{
     game_mode_index::GameModeIndex, game_mode_selection_entity::GameModeSelectionEntity,
     game_mode_selection_entity_id::GameModeSelectionEntityId,

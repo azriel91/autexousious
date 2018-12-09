@@ -50,10 +50,6 @@
 #[macro_use]
 extern crate derive_builder;
 
-use strum;
-#[macro_use]
-extern crate strum_macros;
-
 pub mod config;
 pub mod loaded;
 pub mod play;

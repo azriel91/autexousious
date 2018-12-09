@@ -6,9 +6,6 @@
 #[macro_use]
 extern crate derivative;
 
-#[macro_use]
-extern crate strum_macros;
-
 pub use crate::{
     character_selection::CharacterSelection, character_selection_entity::CharacterSelectionEntity,
     character_selection_entity_id::CharacterSelectionEntityId,
