@@ -1,4 +1,5 @@
 use amethyst::ecs::{storage::VecStorage, Component};
+use derivative::Derivative;
 
 /// State that tracks an object's attachment to the surrounding environment.
 #[derive(Clone, Copy, Debug, Derivative, PartialEq, Eq)]

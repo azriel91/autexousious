@@ -2,6 +2,7 @@ use amethyst::{
     assets::{Asset, Error, Handle, ProcessingState},
     ecs::prelude::*,
 };
+use derivative::Derivative;
 use derive_new::new;
 
 use crate::{

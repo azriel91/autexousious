@@ -1,5 +1,6 @@
 #![allow(missing_debug_implementations)] // needed for `EnumIter`
 
+use derivative::Derivative;
 use strum_macros::{Display, EnumIter};
 
 /// Control actions for characters.

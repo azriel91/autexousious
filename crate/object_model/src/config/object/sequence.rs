@@ -56,6 +56,7 @@ impl<SeqId: SequenceId> InteractionAnimationSequence for Sequence<SeqId> {
 mod tests {
     use amethyst::ecs::{storage::DenseVecStorage, Component};
     use collision_model::config::{BodyFrame, Interaction, InteractionFrame};
+    use derivative::Derivative;
     use shape_model::Volume;
     use specs_derive::Component;
     use sprite_model::config::SpriteFrame;

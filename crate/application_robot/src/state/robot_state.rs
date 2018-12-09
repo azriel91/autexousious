@@ -1,6 +1,7 @@
 use std::{cell::RefCell, rc::Rc};
 
 use amethyst::prelude::*;
+use derivative::Derivative;
 use itertools::{
     FoldWhile::{Continue, Done},
     Itertools,

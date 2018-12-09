@@ -7,6 +7,7 @@ use amethyst::{
         Component,
     },
 };
+use derivative::Derivative;
 use derive_new::new;
 
 use crate::{

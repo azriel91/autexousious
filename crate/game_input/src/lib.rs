@@ -14,8 +14,6 @@
 //! * Attack
 //! * Special
 
-#[macro_use]
-extern crate derivative;
 #[cfg(test)]
 #[macro_use]
 extern crate hamcrest;

@@ -4,9 +4,6 @@
 //! Provides the state where Map selection takes place.
 
 #[macro_use]
-extern crate derivative;
-
-#[macro_use]
 extern crate log;
 
 pub(crate) use crate::system::MapSelectionSystem;

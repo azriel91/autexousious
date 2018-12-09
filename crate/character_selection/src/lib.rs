@@ -4,9 +4,6 @@
 //! State where character selection takes place.
 
 #[macro_use]
-extern crate derivative;
-
-#[macro_use]
 extern crate log;
 
 pub use crate::{

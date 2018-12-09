@@ -9,6 +9,7 @@ use amethyst::{
 };
 use application_menu::{MenuEvent, MenuItem};
 use application_ui::{FontVariant, Theme, ThemeLoader};
+use derivative::Derivative;
 use rayon;
 
 use crate::main_menu::{self, UiEventHandlerSystem};

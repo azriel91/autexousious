@@ -3,6 +3,7 @@ use std::{collections::HashMap, fmt::Debug, marker::PhantomData};
 use amethyst::{core::SystemBundle, ecs::prelude::*, prelude::*};
 use amethyst_utils::removal::{self, Removal};
 use application_event::AppEvent;
+use derivative::Derivative;
 use derive_new::new;
 
 use crate::{AutexState, HookFn, HookableFn};

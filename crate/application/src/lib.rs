@@ -29,9 +29,6 @@
 //! [find_in]: resource/fn.find_in.html
 //! [load_in]: resource/fn.load_in.html
 
-use amethyst;
-#[macro_use]
-extern crate derivative;
 #[macro_use]
 extern crate derive_error_chain;
 #[macro_use]

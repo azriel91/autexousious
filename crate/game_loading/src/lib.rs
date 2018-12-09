@@ -8,9 +8,6 @@
 //! depend on the `application_test_support` crate for testing its systems.
 
 #[macro_use]
-extern crate derivative;
-
-#[macro_use]
 extern crate log;
 
 pub use crate::{

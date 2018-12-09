@@ -2,6 +2,7 @@ use amethyst::{
     assets::{Asset, Handle, ProcessingState, Result as AssetsResult},
     ecs::VecStorage,
 };
+use derivative::Derivative;
 use derive_new::new;
 
 use crate::config::Interaction;

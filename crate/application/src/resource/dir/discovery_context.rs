@@ -1,5 +1,7 @@
 use std::{fmt, io};
 
+use derivative::Derivative;
+
 use crate::resource::io_support;
 
 /// Information around the failure to discover a directory.

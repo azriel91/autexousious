@@ -1,3 +1,5 @@
+use derivative::Derivative;
+
 /// Status of the user selecting a map.
 ///
 /// Not to be confused with the Amethyst `State`, this is used to track whether a map is chosen.

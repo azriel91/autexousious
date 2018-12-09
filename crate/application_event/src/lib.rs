@@ -27,8 +27,6 @@
 extern crate amethyst;
 
 #[macro_use]
-extern crate derivative;
-#[macro_use]
 extern crate derive_more;
 
 pub use crate::{

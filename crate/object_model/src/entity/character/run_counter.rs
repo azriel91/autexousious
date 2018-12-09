@@ -1,4 +1,5 @@
 use amethyst::ecs::{storage::DenseVecStorage, Component};
+use derivative::Derivative;
 
 /// States used to track X axis input over time to determine when a character should run.
 #[derive(Clone, Copy, Debug, Derivative, PartialEq, Eq)]

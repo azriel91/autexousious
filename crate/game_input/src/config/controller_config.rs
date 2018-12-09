@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use amethyst::input::{Axis as InputAxis, Button};
+use derivative::Derivative;
 use derive_new::new;
 
 use crate::{Axis, ControlAction};

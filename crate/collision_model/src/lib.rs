@@ -3,9 +3,6 @@
 
 //! Types used to represent collidable objects.
 
-#[macro_use]
-extern crate derivative;
-
 #[cfg(test)]
 #[macro_use]
 extern crate pretty_assertions;

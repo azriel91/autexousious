@@ -4,9 +4,6 @@
 //! UI to allow the user to select the map.
 
 #[macro_use]
-extern crate derivative;
-
-#[macro_use]
 extern crate log;
 
 pub use crate::map_selection_ui_bundle::MapSelectionUiBundle;

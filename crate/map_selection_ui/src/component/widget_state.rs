@@ -1,3 +1,4 @@
+use derivative::Derivative;
 use strum_macros::Display;
 
 /// Map selection state of the `MapSelectionWidget`.

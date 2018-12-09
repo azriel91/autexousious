@@ -7,9 +7,6 @@
 //! crate.
 
 #[macro_use]
-extern crate derivative;
-
-#[macro_use]
 extern crate log;
 
 pub use crate::game_play_state::GamePlayState;

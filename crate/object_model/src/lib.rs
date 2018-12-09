@@ -7,17 +7,12 @@
 //!
 //! [obj_type]: enum.ObjectType.html
 
-#[macro_use]
-extern crate derivative;
-
 #[cfg(test)]
 #[macro_use]
 extern crate pretty_assertions;
 
 #[macro_use]
 extern crate serde_derive;
-
-use strum;
 
 #[cfg(test)]
 extern crate toml;

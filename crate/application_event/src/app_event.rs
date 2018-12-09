@@ -1,5 +1,6 @@
 use amethyst::{core::EventReader, ecs::*, renderer::Event, shrev::EventChannel};
 use character_selection_model::CharacterSelectionEvent;
+use derivative::Derivative;
 use game_mode_selection_model::GameModeSelectionEvent;
 use game_play_model::GamePlayEvent;
 use map_selection_model::MapSelectionEvent;

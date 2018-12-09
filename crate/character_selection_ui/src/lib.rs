@@ -4,9 +4,6 @@
 //! Menu to allow the user to select game mode.
 
 #[macro_use]
-extern crate derivative;
-
-#[macro_use]
 extern crate log;
 
 pub use crate::character_selection_ui_bundle::CharacterSelectionUiBundle;
