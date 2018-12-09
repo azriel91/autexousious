@@ -9,14 +9,6 @@
 //! * `assets/font/source-code-pro-2.030R-ro-1.050R-it/TTF/SourceCodePro-It.ttf`
 //! * `assets/font/source-code-pro-2.030R-ro-1.050R-it/TTF/SourceCodePro-Regular.ttf`
 
-use amethyst;
-#[macro_use]
-extern crate application;
-
-use structopt;
-#[macro_use]
-extern crate structopt_derive;
-
 mod state;
 
 use std::{cell::RefCell, process, rc::Rc, time::Duration};
@@ -28,7 +20,10 @@ use amethyst::{
     renderer::{DisplayConfig, Pipeline, RenderBundle, Stage},
     ui::{DrawUi, UiBundle},
 };
-use application::resource::{self, dir, load_in};
+use application::{
+    development_base_dirs,
+    resource::{self, dir, load_in},
+};
 use application_robot::{
     state::{FixedTimeoutIntercept, Intercept},
     RobotState,

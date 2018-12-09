@@ -6,6 +6,7 @@ use amethyst::{
     ui::{FontAsset, FontHandle, TtfFormat},
 };
 use application::{
+    development_base_dirs,
     resource::{self, dir, load_in},
     Format,
 };

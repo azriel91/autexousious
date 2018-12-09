@@ -65,11 +65,10 @@ pub fn find(file_name: &str) -> Result<PathBuf> {
 /// # Examples
 ///
 /// ```rust
-/// #[macro_use]
-/// extern crate application;
-///
-/// use application::resource::find_in;
-/// use application::resource::dir;
+/// use application::{
+///     development_base_dirs,
+///     resource::{dir, find_in},
+/// };
 ///
 /// # fn main() {
 /// // Search for '<application_dir>/resources/config.ron'.
@@ -153,11 +152,14 @@ mod test {
     use std::path::PathBuf;
 
     use super::{find, find_in};
-    use crate::resource::{
-        dir,
-        error::ErrorKind,
-        test_support::{exe_dir, setup_temp_file},
-        FindContext,
+    use crate::{
+        development_base_dirs,
+        resource::{
+            dir,
+            error::ErrorKind,
+            test_support::{exe_dir, setup_temp_file},
+            FindContext,
+        },
     };
 
     test_mutex!();

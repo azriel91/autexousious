@@ -9,18 +9,10 @@
 //! * `assets/font/source-code-pro-2.030R-ro-1.050R-it/TTF/SourceCodePro-It.ttf`
 //! * `assets/font/source-code-pro-2.030R-ro-1.050R-it/TTF/SourceCodePro-Regular.ttf`
 
-use amethyst;
-#[macro_use]
-extern crate application;
-
 #[macro_use]
 extern crate derivative;
 #[macro_use]
 extern crate log;
-use rayon;
-use structopt;
-#[macro_use]
-extern crate structopt_derive;
 
 mod main_menu;
 mod other;
@@ -34,7 +26,10 @@ use amethyst::{
     renderer::{DisplayConfig, Pipeline, RenderBundle, Stage},
     ui::{DrawUi, UiBundle},
 };
-use application::resource::{dir, find_in};
+use application::{
+    development_base_dirs,
+    resource::{dir, find_in},
+};
 use application_robot::{
     state::{FixedTimeoutIntercept, Intercept},
     RobotState,

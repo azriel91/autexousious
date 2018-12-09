@@ -2,17 +2,6 @@
 
 //! Opens an empty window.
 
-use amethyst;
-#[macro_use]
-extern crate application;
-
-#[macro_use]
-extern crate log;
-
-use structopt;
-#[macro_use]
-extern crate structopt_derive;
-
 use std::{process, time::Duration};
 
 use amethyst::{
@@ -27,10 +16,13 @@ use amethyst::{
     ui::{DrawUi, UiBundle},
     LogLevelFilter, LoggerConfig,
 };
-use application::resource::{
-    self,
-    dir::{self, assets_dir},
-    load_in,
+use application::{
+    development_base_dirs,
+    resource::{
+        self,
+        dir::{self, assets_dir},
+        load_in,
+    },
 };
 use application_event::{AppEvent, AppEventReader};
 use application_robot::RobotState;
@@ -44,6 +36,7 @@ use game_mode_selection_stdio::GameModeSelectionStdioBundle;
 use game_mode_selection_ui::{GameModeSelectionUiBuildFn, GameModeSelectionUiBundle};
 use game_play_stdio::GamePlayStdioBundle;
 use loading::LoadingState;
+use log::info;
 use map_loading::MapLoadingBundle;
 use map_selection_stdio::MapSelectionStdioBundle;
 use object_loading::ObjectLoadingBundle;

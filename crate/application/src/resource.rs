@@ -13,15 +13,11 @@ pub use self::{
 #[macro_use]
 mod test_support;
 
+pub mod dir;
 mod error;
-// `development_base_dirs` macro is also used in tests.
-#[macro_use]
 mod find;
 mod find_context;
 mod format;
 mod io_support;
 mod io_utils;
 mod load;
-
-// Must be after `mod find;` as it uses the `development_base_dirs` macro.
-pub mod dir;

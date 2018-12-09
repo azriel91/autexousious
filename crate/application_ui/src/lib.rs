@@ -49,8 +49,6 @@
 //! text in regular, bold, italic, and bold italic fonts.
 
 #[macro_use]
-extern crate application;
-#[macro_use]
 extern crate derive_more;
 #[cfg(test)]
 #[macro_use]

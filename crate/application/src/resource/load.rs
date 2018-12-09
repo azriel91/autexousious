@@ -45,12 +45,12 @@ where
 /// // serde = "1.0"
 ///
 /// #[macro_use]
-/// extern crate application;
-/// #[macro_use]
 /// extern crate serde;
 ///
-/// use application::resource::load_in;
-/// use application::resource::{self, dir};
+/// use application::{
+///     development_base_dirs,
+///     resource::{self, dir, load_in}
+/// };
 ///
 /// #[derive(Debug, Deserialize)]
 /// struct Config {
@@ -110,11 +110,14 @@ mod test {
     use toml;
 
     use super::{load, load_in};
-    use crate::resource::{
-        dir,
-        error::ErrorKind,
-        test_support::{exe_dir, setup_temp_file},
-        FindContext, Format,
+    use crate::{
+        development_base_dirs,
+        resource::{
+            dir,
+            error::ErrorKind,
+            test_support::{exe_dir, setup_temp_file},
+            FindContext, Format,
+        },
     };
 
     test_mutex!();
