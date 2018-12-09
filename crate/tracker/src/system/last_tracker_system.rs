@@ -3,6 +3,7 @@ use std::marker::PhantomData;
 use amethyst::ecs::prelude::*;
 use derive_new::new;
 use named_type::NamedType;
+use named_type_derive::NamedType;
 
 use crate::Last;
 

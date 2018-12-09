@@ -12,11 +12,6 @@ extern crate derivative;
 #[macro_use]
 extern crate log;
 
-#[macro_use]
-extern crate named_type_derive;
-
-use shred;
-
 pub use crate::game_play_state::GamePlayState;
 pub(crate) use crate::{
     game_play_bundle::GamePlayBundle,

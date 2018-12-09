@@ -7,6 +7,7 @@ use amethyst::{
 };
 use derive_new::new;
 use named_type::NamedType;
+use named_type_derive::NamedType;
 
 use crate::{ActiveHandleChannel, ActiveHandlePrimitive};
 

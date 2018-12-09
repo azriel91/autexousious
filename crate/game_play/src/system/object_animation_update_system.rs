@@ -8,6 +8,7 @@ use amethyst::{
 use derive_new::new;
 use game_loading::{AnimationRunner, ObjectAnimationStorages};
 use named_type::NamedType;
+use named_type_derive::NamedType;
 use object_model::{
     config::object::SequenceId,
     entity::SequenceStatus,

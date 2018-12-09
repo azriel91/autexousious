@@ -2,6 +2,7 @@ use std::ops::{Deref, DerefMut};
 
 use amethyst::ecs::prelude::*;
 use named_type::NamedType;
+use named_type_derive::NamedType;
 
 /// Stores the last value of the component.
 #[derive(Debug, NamedType)] // kcov-ignore
