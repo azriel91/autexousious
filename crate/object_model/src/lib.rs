@@ -11,9 +11,6 @@
 #[macro_use]
 extern crate pretty_assertions;
 
-#[cfg(test)]
-extern crate toml;
-
 pub use crate::object_type::ObjectType;
 
 pub mod config;

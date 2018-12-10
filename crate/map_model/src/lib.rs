@@ -10,8 +10,5 @@
 #[macro_use]
 extern crate pretty_assertions;
 
-#[cfg(test)]
-extern crate toml;
-
 pub mod config;
 pub mod loaded;
