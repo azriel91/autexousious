@@ -3,9 +3,6 @@
 
 //! Provides the `AutexState` trait to simplify implementing `amethyst::State`.
 
-#[macro_use]
-extern crate derive_deref;
-
 pub use crate::{
     app_state::{AppState, AppStateBuilder},
     autex_state::AutexState,
