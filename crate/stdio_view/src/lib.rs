@@ -3,8 +3,6 @@
 
 //! System that integrates with standard I/O so that the application can be controlled headlessly.
 
-#[macro_use]
-extern crate log;
 use shell_words;
 
 pub(crate) use crate::io_app_event_utils::IoAppEventUtils;

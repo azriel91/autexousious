@@ -9,6 +9,7 @@ use character_selection_model::{
 };
 use derivative::Derivative;
 use derive_new::new;
+use log::{debug, info};
 
 /// `State` where character selection takes place.
 ///

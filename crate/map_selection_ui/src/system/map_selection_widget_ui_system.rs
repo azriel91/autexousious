@@ -9,6 +9,7 @@ use game_input::{
     ControllerId, ControllerInput, InputConfig, InputControlled, SharedInputControlled,
 };
 use game_model::loaded::{MapAssets, SlugAndHandle};
+use log::debug;
 use map_selection::MapSelectionStatus;
 use map_selection_model::{MapSelection, MapSelectionEvent};
 use typename_derive::TypeName;

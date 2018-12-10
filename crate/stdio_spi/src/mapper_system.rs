@@ -3,6 +3,7 @@ use std::marker::PhantomData;
 use amethyst::{ecs::prelude::*, shrev::EventChannel};
 use application_event::AppEventVariant;
 use derive_new::new;
+use log::error;
 use structopt::StructOpt;
 use typename::TypeName as TypeNameTrait;
 use typename_derive::TypeName;

@@ -9,6 +9,7 @@ use collision_model::{
 };
 use fnv::FnvHashMap;
 use game_model::config::AssetRecord;
+use log::debug;
 use object_model::{
     config::{object::SequenceId, ObjectDefinition},
     loaded::{

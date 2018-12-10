@@ -23,10 +23,6 @@
 //! }
 //! ```
 
-use application;
-
-#[macro_use]
-extern crate log;
 #[cfg(test)]
 #[macro_use]
 extern crate pretty_assertions;

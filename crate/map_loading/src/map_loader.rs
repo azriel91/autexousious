@@ -2,6 +2,7 @@ use std::path::Path;
 
 use amethyst::{assets::Loader, prelude::*};
 use application::{load_in, ErrorKind, Format, Result};
+use log::debug;
 use map_model::{
     config::MapDefinition,
     loaded::{Map, MapHandle, Margins},

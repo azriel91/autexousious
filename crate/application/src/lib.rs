@@ -32,13 +32,9 @@
 #[cfg(test)]
 #[macro_use]
 extern crate lazy_static;
-#[macro_use]
-extern crate log;
 #[cfg(test)]
 #[macro_use]
 extern crate pretty_assertions;
-
-use toml;
 
 pub use crate::resource::{
     find, find_in, load, load_in, Error, ErrorKind, FindContext, Format, IoUtils, Result,

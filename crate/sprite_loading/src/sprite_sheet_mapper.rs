@@ -1,4 +1,5 @@
 use amethyst::renderer::{Sprite, SpriteSheet, TextureCoordinates, TextureHandle};
+use log::trace;
 use sprite_model::config::SpriteSheetDefinition;
 
 #[derive(Debug)]

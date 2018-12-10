@@ -3,9 +3,6 @@
 
 //! State where character selection takes place.
 
-#[macro_use]
-extern crate log;
-
 pub use crate::{
     character_selection_bundle::CharacterSelectionBundle,
     character_selection_state::{

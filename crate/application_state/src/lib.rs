@@ -5,8 +5,6 @@
 
 #[macro_use]
 extern crate derive_deref;
-#[macro_use]
-extern crate log;
 
 pub use crate::{
     app_state::{AppState, AppStateBuilder},

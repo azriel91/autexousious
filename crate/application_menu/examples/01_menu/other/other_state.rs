@@ -6,6 +6,7 @@ use amethyst::{
     ui::{Anchor, FontHandle, UiText, UiTransform},
 };
 use application_ui::{FontVariant, Theme};
+use log::info;
 
 const FONT_SIZE: f32 = 17.;
 

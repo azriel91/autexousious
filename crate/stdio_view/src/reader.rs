@@ -4,6 +4,7 @@ use std::{
 };
 
 use console::{style, Term};
+use log::{trace, warn};
 
 /// Name of this reader, useful when naming threads.
 pub const NAME: &str = concat!(module_path!(), "::StdinReader");

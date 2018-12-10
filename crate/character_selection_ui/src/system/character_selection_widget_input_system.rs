@@ -3,6 +3,7 @@ use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
 use derive_new::new;
 use game_input::{ControllerInput, InputControlled};
 use game_model::loaded::{CharacterAssets, SlugAndHandle};
+use log::debug;
 use tracker::Last;
 use typename_derive::TypeName;
 

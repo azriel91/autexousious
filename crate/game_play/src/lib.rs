@@ -6,9 +6,6 @@
 //! Note that game entities are spawned in the `GameLoadingState` provided by the `game_loading`
 //! crate.
 
-#[macro_use]
-extern crate log;
-
 pub use crate::game_play_state::GamePlayState;
 pub(crate) use crate::{
     game_play_bundle::GamePlayBundle,

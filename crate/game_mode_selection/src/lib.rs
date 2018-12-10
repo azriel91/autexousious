@@ -3,9 +3,6 @@
 
 //! State where game mode selection takes place.
 
-#[macro_use]
-extern crate log;
-
 pub use crate::game_mode_selection_state::{
     GameModeSelectionState, GameModeSelectionStateBuilder, GameModeSelectionStateDelegate,
 };

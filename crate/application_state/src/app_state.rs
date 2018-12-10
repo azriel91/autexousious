@@ -5,6 +5,7 @@ use amethyst_utils::removal::{self, Removal};
 use application_event::AppEvent;
 use derivative::Derivative;
 use derive_new::new;
+use log::debug;
 
 use crate::{AutexState, HookFn, HookableFn};
 

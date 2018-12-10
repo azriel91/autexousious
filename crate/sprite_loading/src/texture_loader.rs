@@ -6,6 +6,7 @@ use amethyst::{
     renderer::{PngFormat, Texture, TextureHandle, TextureMetadata},
 };
 use application::{self, ErrorKind};
+use log::error;
 use sprite_model::config::SpriteSheetDefinition;
 
 #[derive(Debug)]

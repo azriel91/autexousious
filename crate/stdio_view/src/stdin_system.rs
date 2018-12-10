@@ -5,6 +5,7 @@ use std::{
 
 use amethyst::{ecs::prelude::*, shrev::EventChannel};
 use application_input::ApplicationEvent;
+use log::{debug, error, trace, warn};
 use stdio_spi::VariantAndTokens;
 use typename_derive::TypeName;
 

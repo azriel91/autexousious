@@ -9,9 +9,6 @@
 //! * `assets/font/source-code-pro-2.030R-ro-1.050R-it/TTF/SourceCodePro-It.ttf`
 //! * `assets/font/source-code-pro-2.030R-ro-1.050R-it/TTF/SourceCodePro-Regular.ttf`
 
-#[macro_use]
-extern crate log;
-
 mod main_menu;
 mod other;
 

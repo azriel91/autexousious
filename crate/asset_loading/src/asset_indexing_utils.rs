@@ -2,6 +2,7 @@ use std::path::PathBuf;
 
 use application::resource::IoUtils;
 use game_model::config::{AssetRecord, AssetSlugBuilder};
+use log::error;
 
 /// Utility functions to make it easier to manage asset indexing.
 #[derive(Debug)]

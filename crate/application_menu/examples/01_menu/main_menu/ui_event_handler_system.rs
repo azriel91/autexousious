@@ -4,6 +4,7 @@ use amethyst::{
     ui::{UiEvent, UiEventType},
 };
 use application_menu::{MenuEvent, MenuItem};
+use log::{info, trace};
 
 use crate::main_menu;
 

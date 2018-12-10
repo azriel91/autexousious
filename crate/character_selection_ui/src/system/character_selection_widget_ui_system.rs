@@ -10,6 +10,7 @@ use character_selection_model::{
 use derive_new::new;
 use game_input::{ControllerId, ControllerInput, InputConfig, InputControlled};
 use game_model::loaded::{CharacterAssets, SlugAndHandle};
+use log::debug;
 use typename_derive::TypeName;
 
 use crate::{CharacterSelectionWidget, WidgetState};

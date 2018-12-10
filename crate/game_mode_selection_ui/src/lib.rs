@@ -3,9 +3,6 @@
 
 //! UI to allow the user to select the game mode.
 
-#[macro_use]
-extern crate log;
-
 pub(crate) use crate::system::UiEventHandlerSystem;
 pub use crate::{
     game_mode_selection_ui_build_fn::GameModeSelectionUiBuildFn,

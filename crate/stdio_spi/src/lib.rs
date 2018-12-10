@@ -3,9 +3,6 @@
 
 //! Types and traits to allow the `stdio_view` to control a state.
 
-#[macro_use]
-extern crate log;
-
 pub use crate::{
     error_kind::{Error, ErrorKind, Result},
     mapper_system::MapperSystem,

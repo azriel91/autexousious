@@ -4,6 +4,8 @@ use std::{
     path::{Component, Path},
 };
 
+use log::debug;
+
 use crate::resource::{Error, Result};
 
 /// One-liner functions to interact with files.

@@ -8,6 +8,7 @@ use amethyst::{
 use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
 use game_input::{ControllerInput, InputControlled};
 use game_model::loaded::SlugAndHandle;
+use log::debug;
 use object_model::{
     config::object::CharacterSequenceId,
     entity::{Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity},

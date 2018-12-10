@@ -4,6 +4,8 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use log::{error, warn};
+
 /// Functions to make directory traversal code more ergonomic.
 #[derive(Debug)]
 pub struct DirTraverse;

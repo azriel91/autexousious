@@ -7,9 +7,6 @@
 //! depend on this crate and spawn objects for use by other crates. The `game_play` crate can then
 //! depend on the `application_test_support` crate for testing its systems.
 
-#[macro_use]
-extern crate log;
-
 pub use crate::{
     animation_runner::AnimationRunner,
     game_loading_state::GameLoadingState,

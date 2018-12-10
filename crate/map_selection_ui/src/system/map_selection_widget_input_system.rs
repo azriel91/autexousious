@@ -2,6 +2,7 @@ use amethyst::{ecs::prelude::*, shrev::EventChannel};
 use derive_new::new;
 use game_input::ControllerInput;
 use game_model::loaded::{MapAssets, SlugAndHandle};
+use log::debug;
 use map_selection_model::{MapSelection, MapSelectionEvent};
 use tracker::Last;
 use typename_derive::TypeName;

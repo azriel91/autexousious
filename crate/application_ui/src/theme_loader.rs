@@ -76,7 +76,6 @@ mod test {
 
             let theme = world.read_resource::<Theme>();
             let fonts = &theme.fonts;
-            debug!("Fonts: {:?}", &fonts);
 
             FontVariant::iter().for_each(|variant| assert!(fonts.contains_key(&variant)));
         };
