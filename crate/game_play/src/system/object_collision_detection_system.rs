@@ -2,7 +2,7 @@ use amethyst::{
     assets::AssetStorage,
     core::{nalgebra::Vector3, transform::Transform},
     ecs::{Entities, Join, Read, ReadStorage, System, Write},
-    renderer::{SpriteRender, SpriteSheet},
+    renderer::{Flipped, SpriteRender, SpriteSheet},
     shrev::EventChannel,
 };
 use collision_model::{
@@ -27,6 +27,7 @@ type ObjectCollisionDetectionSystemData<'s> = (
     ReadStorage<'s, BodyFrameActiveHandle>,
     Read<'s, AssetStorage<BodyFrame>>,
     ReadStorage<'s, SpriteRender>,
+    ReadStorage<'s, Flipped>,
     Read<'s, AssetStorage<SpriteSheet>>,
     Write<'s, EventChannel<CollisionEvent>>,
 );
@@ -143,17 +144,18 @@ impl<'s> System<'s> for ObjectCollisionDetectionSystem {
             bfahs,
             body_frame_assets,
             sprite_renders,
+            flippeds,
             sprite_sheet_assets,
             mut collision_ec,
         ): Self::SystemData,
     ) {
         // Naive collision detection.
         // TODO: Use broad sweep + narrow sweep for optimization.
-        for (from, from_transform, ifah, from_sprite_render) in
-            (&entities, &transforms, &ifahs, &sprite_renders).join()
+        for (from, from_transform, ifah, from_sprite_render, from_flipped) in
+            (&entities, &transforms, &ifahs, &sprite_renders, &flippeds).join()
         {
-            for (to, to_transform, bfah, to_sprite_render) in
-                (&entities, &transforms, &bfahs, &sprite_renders).join()
+            for (to, to_transform, bfah, to_sprite_render, to_flipped) in
+                (&entities, &transforms, &bfahs, &sprite_renders, &flippeds).join()
             {
                 if from == to {
                     // Skip self
@@ -211,9 +213,9 @@ impl<'s> System<'s> for ObjectCollisionDetectionSystem {
                                         (
                                             interaction,
                                             interaction_offsets,
-                                            from_sprite_render.flip_horizontal,
+                                            *from_flipped == Flipped::Horizontal,
                                         ),
-                                        (volume, body_offsets, to_sprite_render.flip_horizontal),
+                                        (volume, body_offsets, *to_flipped == Flipped::Horizontal),
                                     ) {
                                         Some(CollisionEvent::new(
                                             from,

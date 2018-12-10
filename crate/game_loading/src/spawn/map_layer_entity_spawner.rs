@@ -85,8 +85,6 @@ impl MapLayerEntitySpawner {
                         let sprite_render = SpriteRender {
                             sprite_sheet: sprite_sheet_handle.clone(),
                             sprite_number: 0,
-                            flip_horizontal: false,
-                            flip_vertical: false,
                         };
 
                         (transform, sprite_render.clone())

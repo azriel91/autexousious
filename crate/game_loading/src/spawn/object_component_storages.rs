@@ -1,7 +1,7 @@
 use amethyst::{
     core::Transform,
     ecs::prelude::*,
-    renderer::{SpriteRender, Transparent},
+    renderer::{Flipped, SpriteRender, Transparent},
 };
 use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
 use object_model::entity::{Position, Velocity};
@@ -11,6 +11,7 @@ use object_model::entity::{Position, Velocity};
 /// These are the storages for the components common to all game objects.
 pub type ObjectComponentStorages<'s> = (
     WriteStorage<'s, SpriteRender>,
+    WriteStorage<'s, Flipped>,
     WriteStorage<'s, Transparent>,
     WriteStorage<'s, Position<f32>>,
     WriteStorage<'s, Velocity<f32>>,

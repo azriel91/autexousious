@@ -3,7 +3,7 @@ use amethyst::{
     assets::AssetStorage,
     core::{nalgebra::Vector3, transform::Transform},
     ecs::{prelude::*, world::EntitiesRes},
-    renderer::{SpriteRender, Transparent},
+    renderer::{Flipped, SpriteRender, Transparent},
 };
 use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
 use game_input::{ControllerInput, InputControlled};
@@ -65,6 +65,7 @@ impl CharacterEntitySpawner {
             ), // kcov-ignore
             &mut (
                 world.write_storage::<SpriteRender>(),
+                world.write_storage::<Flipped>(),
                 world.write_storage::<Transparent>(),
                 world.write_storage::<Position<f32>>(),
                 world.write_storage::<Velocity<f32>>(),
@@ -116,6 +117,7 @@ impl CharacterEntitySpawner {
         ): &mut CharacterComponentStorages<'s>,
         (
             ref mut sprite_render_storage,
+            ref mut flipped_storage,
             ref mut transparent_storage,
             ref mut position_storage,
             ref mut velocity_storage,
@@ -206,6 +208,10 @@ impl CharacterEntitySpawner {
         grounding_storage
             .insert(entity, Grounding::default())
             .expect("Failed to insert grounding component.");
+        // Whether the sprite should be flipped
+        flipped_storage
+            .insert(entity, Flipped::None)
+            .expect("Failed to insert flipped component.");
         // Enable transparency for visibility sorting
         transparent_storage
             .insert(entity, Transparent)
@@ -294,7 +300,7 @@ mod test {
         assets::AssetStorage,
         core::transform::Transform,
         ecs::prelude::*,
-        renderer::{SpriteRender, Transparent},
+        renderer::{Flipped, SpriteRender, Transparent},
     };
     use amethyst_test::prelude::*;
     use application_event::{AppEvent, AppEventReader};
@@ -352,6 +358,7 @@ mod test {
             assert!(world.read_storage::<Mirrored>().contains(entity));
             assert!(world.read_storage::<Grounding>().contains(entity));
             assert!(world.read_storage::<SpriteRender>().contains(entity));
+            assert!(world.read_storage::<Flipped>().contains(entity));
             assert!(world.read_storage::<Transparent>().contains(entity));
             assert!(world.read_storage::<Position<f32>>().contains(entity));
             assert!(world.read_storage::<Velocity<f32>>().contains(entity));

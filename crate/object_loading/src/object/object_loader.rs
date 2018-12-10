@@ -45,10 +45,7 @@ impl ObjectLoader {
             .sequences
             .iter()
             .map(|(sequence_id, sequence)| {
-                (
-                    *sequence_id,
-                    SequenceEndTransition::new(sequence.next.clone()),
-                )
+                (*sequence_id, SequenceEndTransition::new(sequence.next))
             })
             .collect::<FnvHashMap<_, _>>();
 
@@ -73,8 +70,6 @@ impl ObjectLoader {
             let sprite_render = SpriteRender {
                 sprite_sheet,
                 sprite_number: 0,
-                flip_horizontal: false,
-                flip_vertical: false,
             };
             animation_defaults.push(AnimatedComponentDefault::SpriteRender(sprite_render));
 
