@@ -1,5 +1,7 @@
 use std::{char, fmt, str::FromStr};
 
+use derive_builder::Builder;
+
 /// Namespaced reference to identify assets.
 ///
 /// This should be constructed using `AssetSlugBuilder` as it performs validation on the values.
