@@ -1,5 +1,6 @@
 use game_play_model::GamePlayEvent;
 use stdio_spi::{Result, StdinMapper};
+use typename_derive::TypeName;
 
 use crate::GamePlayEventArgs;
 

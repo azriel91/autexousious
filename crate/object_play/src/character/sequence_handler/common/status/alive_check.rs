@@ -1,16 +1,15 @@
 use object_model::config::object::CharacterSequenceId;
 
-use character::sequence_handler::CharacterSequenceHandler;
-use CharacterSequenceUpdateComponents;
+use crate::{
+    character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+};
 
 /// Returns the appropriate falling sequence if HP is 0.
 #[derive(Debug)]
 pub(crate) struct AliveCheck;
 
 impl CharacterSequenceHandler for AliveCheck {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         if components.health_points == 0 {
             Some(CharacterSequenceId::FallForwardDescend)
         } else {
@@ -30,8 +29,9 @@ mod tests {
     };
 
     use super::AliveCheck;
-    use character::sequence_handler::CharacterSequenceHandler;
-    use CharacterSequenceUpdateComponents;
+    use crate::{
+        character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+    };
 
     #[test]
     fn returns_none_when_hp_is_above_zero() {

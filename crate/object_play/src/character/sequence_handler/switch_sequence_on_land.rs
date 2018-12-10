@@ -3,7 +3,7 @@ use object_model::{
     entity::{Grounding, SequenceStatus},
 };
 
-use CharacterSequenceUpdateComponents;
+use crate::CharacterSequenceUpdateComponents;
 
 #[derive(Debug)]
 pub(crate) struct SwitchSequenceOnLand(
@@ -37,7 +37,7 @@ mod test {
     };
 
     use super::SwitchSequenceOnLand;
-    use CharacterSequenceUpdateComponents;
+    use crate::CharacterSequenceUpdateComponents;
 
     #[test]
     fn no_update_when_sequence_not_ended() {

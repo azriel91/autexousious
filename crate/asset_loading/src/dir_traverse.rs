@@ -1,6 +1,10 @@
-use std::fs::{DirEntry, ReadDir};
-use std::io;
-use std::path::{Path, PathBuf};
+use std::{
+    fs::{DirEntry, ReadDir},
+    io,
+    path::{Path, PathBuf},
+};
+
+use log::{error, warn};
 
 /// Functions to make directory traversal code more ergonomic.
 #[derive(Debug)]
@@ -92,12 +96,11 @@ impl DirTraverse {
 
 #[cfg(test)]
 mod tests {
-    use std::fs;
-    use std::io;
     #[cfg(unix)]
     use std::os::unix;
     #[cfg(windows)]
     use std::os::windows;
+    use std::{fs, io};
 
     use hamcrest::prelude::*;
     use tempfile::tempdir;

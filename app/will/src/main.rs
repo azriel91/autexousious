@@ -2,36 +2,7 @@
 
 //! Opens an empty window.
 
-extern crate amethyst;
-#[macro_use]
-extern crate application;
-extern crate application_event;
-extern crate application_input;
-extern crate application_robot;
-extern crate application_state;
-extern crate application_ui;
-extern crate character_selection_stdio;
-extern crate collision_loading;
-extern crate collision_model;
-extern crate game_input;
-extern crate game_mode_selection;
-extern crate game_mode_selection_stdio;
-extern crate game_mode_selection_ui;
-extern crate game_play_stdio;
-extern crate loading;
-#[macro_use]
-extern crate log;
-extern crate map_loading;
-extern crate map_selection_stdio;
-extern crate object_loading;
-extern crate object_model;
-extern crate stdio_view;
-extern crate structopt;
-#[macro_use]
-extern crate structopt_derive;
-
-use std::process;
-use std::time::Duration;
+use std::{process, time::Duration};
 
 use amethyst::{
     animation::AnimationBundle,
@@ -45,9 +16,13 @@ use amethyst::{
     ui::{DrawUi, UiBundle},
     LogLevelFilter, LoggerConfig,
 };
-use application::resource::{
-    dir::{self, assets_dir},
-    {self, load_in},
+use application::{
+    development_base_dirs,
+    resource::{
+        self,
+        dir::{self, assets_dir},
+        load_in,
+    },
 };
 use application_event::{AppEvent, AppEventReader};
 use application_robot::RobotState;
@@ -61,6 +36,7 @@ use game_mode_selection_stdio::GameModeSelectionStdioBundle;
 use game_mode_selection_ui::{GameModeSelectionUiBuildFn, GameModeSelectionUiBundle};
 use game_play_stdio::GamePlayStdioBundle;
 use loading::LoadingState;
+use log::info;
 use map_loading::MapLoadingBundle;
 use map_selection_stdio::MapSelectionStdioBundle;
 use object_loading::ObjectLoadingBundle;

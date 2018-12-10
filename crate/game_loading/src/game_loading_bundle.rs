@@ -2,10 +2,10 @@ use amethyst::{
     core::bundle::{Result, SystemBundle},
     ecs::prelude::*,
 };
+use derive_new::new;
 use typename::TypeName;
 
-use CharacterSelectionSpawningSystem;
-use MapSelectionSpawningSystem;
+use crate::{CharacterSelectionSpawningSystem, MapSelectionSpawningSystem};
 
 /// Adds game loading systems to the provided dispatcher.
 #[derive(Debug, new)]

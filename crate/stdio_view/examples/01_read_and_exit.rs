@@ -2,22 +2,13 @@
 
 //! Opens an empty window.
 
-extern crate amethyst;
-extern crate application_robot;
-extern crate stdio_view;
-extern crate structopt;
-#[macro_use]
-extern crate structopt_derive;
-
-use std::cell::RefCell;
-use std::process;
-use std::rc::Rc;
-use std::time::Duration;
+use std::{cell::RefCell, process, rc::Rc, time::Duration};
 
 use amethyst::{prelude::*, StateEventReader};
 use application_robot::{state::FixedTimeoutIntercept, RobotState};
 use stdio_view::StdioViewBundle;
-use structopt::StructOpt;
+use structopt::StructOpt as StructOptTrait;
+use structopt_derive::StructOpt;
 
 #[derive(Debug)]
 struct EmptyState;
@@ -34,11 +25,14 @@ struct Opt {
 }
 
 impl<'a, 'b> State<GameData<'a, 'b>, StateEvent> for EmptyState {
-    fn on_start(&mut self, _data: StateData<GameData>) {
+    fn on_start(&mut self, _data: StateData<'_, GameData<'_, '_>>) {
         println!("Reading from stdin. Type 'exit' to quit.");
     }
 
-    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, StateEvent> {
+    fn update(
+        &mut self,
+        data: StateData<'_, GameData<'_, '_>>,
+    ) -> Trans<GameData<'a, 'b>, StateEvent> {
         data.data.update(&data.world);
         Trans::None
     }

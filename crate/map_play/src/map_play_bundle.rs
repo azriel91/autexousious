@@ -2,9 +2,10 @@ use amethyst::{
     core::bundle::{Result, SystemBundle},
     ecs::prelude::*,
 };
+use derive_new::new;
 use typename::TypeName;
 
-use MapAnimationUpdateSystem;
+use crate::MapAnimationUpdateSystem;
 
 /// Adds the object type update systems to the provided dispatcher.
 ///

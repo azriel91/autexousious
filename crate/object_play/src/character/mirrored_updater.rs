@@ -1,7 +1,7 @@
 use game_input::ControllerInput;
 use object_model::{config::object::CharacterSequenceId, entity::Mirrored};
 
-use character::sequence_handler::SequenceHandlerUtil;
+use crate::character::sequence_handler::SequenceHandlerUtil;
 
 /// Updates the `Mirrored` component for character entities.
 #[derive(Debug)]

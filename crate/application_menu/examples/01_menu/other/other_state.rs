@@ -6,6 +6,7 @@ use amethyst::{
     ui::{Anchor, FontHandle, UiText, UiTransform},
 };
 use application_ui::{FontVariant, Theme};
+use log::info;
 
 const FONT_SIZE: f32 = 17.;
 
@@ -60,13 +61,13 @@ impl OtherState {
 }
 
 impl<'a, 'b> State<GameData<'a, 'b>, StateEvent> for OtherState {
-    fn on_start(&mut self, mut data: StateData<GameData>) {
+    fn on_start(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
         self.initialize_informative(&mut data.world);
     }
 
     fn handle_event(
         &mut self,
-        _: StateData<GameData>,
+        _: StateData<'_, GameData<'_, '_>>,
         event: StateEvent,
     ) -> Trans<GameData<'a, 'b>, StateEvent> {
         if let StateEvent::Window(event) = &event {
@@ -81,11 +82,14 @@ impl<'a, 'b> State<GameData<'a, 'b>, StateEvent> for OtherState {
         }
     }
 
-    fn on_stop(&mut self, mut data: StateData<GameData>) {
+    fn on_stop(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
         self.terminate_informative(&mut data.world);
     }
 
-    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, StateEvent> {
+    fn update(
+        &mut self,
+        data: StateData<'_, GameData<'_, '_>>,
+    ) -> Trans<GameData<'a, 'b>, StateEvent> {
         data.data.update(&data.world);
         Trans::None
     }

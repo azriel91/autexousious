@@ -1,7 +1,8 @@
 use amethyst::ecs::prelude::{Component, DenseVecStorage};
 use character_selection_model::CharacterSelection;
+use derive_new::new;
 
-use WidgetState;
+use crate::WidgetState;
 
 /// Component to tag entities that are character selection widgets.
 #[derive(Clone, Debug, PartialEq, new)]

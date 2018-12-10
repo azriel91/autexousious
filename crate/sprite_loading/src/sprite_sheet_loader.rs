@@ -5,7 +5,7 @@ use amethyst::{
 };
 use sprite_model::config::SpriteSheetDefinition;
 
-use SpriteSheetMapper;
+use crate::SpriteSheetMapper;
 
 #[derive(Debug)]
 pub(crate) struct SpriteSheetLoader;

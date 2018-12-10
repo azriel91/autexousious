@@ -8,6 +8,7 @@ use amethyst::{
 use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
 use game_input::{ControllerInput, InputControlled};
 use game_model::loaded::SlugAndHandle;
+use log::debug;
 use object_model::{
     config::object::CharacterSequenceId,
     entity::{Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity},
@@ -17,14 +18,10 @@ use object_model::{
     },
 };
 
-use AnimationRunner;
-use BodyAcs;
-use CharacterComponentStorages;
-use InteractionAcs;
-use ObjectAnimationStorages;
-use ObjectComponentStorages;
-use ObjectSpawningResources;
-use SpriteRenderAcs;
+use crate::{
+    AnimationRunner, BodyAcs, CharacterComponentStorages, InteractionAcs, ObjectAnimationStorages,
+    ObjectComponentStorages, ObjectSpawningResources, SpriteRenderAcs,
+};
 
 /// Spawns character entities into the world.
 #[derive(Debug)]
@@ -315,13 +312,14 @@ mod test {
         entity::{Grounding, HealthPoints, Mirrored, Position, SequenceStatus, Velocity},
         loaded::{Character, CharacterHandle, ObjectHandle},
     };
-    use typename::TypeName;
+    use typename::TypeName as TypeNameTrait;
+    use typename_derive::TypeName;
 
     use super::CharacterEntitySpawner;
-    use CharacterComponentStorages;
-    use ObjectAnimationStorages;
-    use ObjectComponentStorages;
-    use ObjectSpawningResources;
+    use crate::{
+        CharacterComponentStorages, ObjectAnimationStorages, ObjectComponentStorages,
+        ObjectSpawningResources,
+    };
 
     #[test]
     fn spawn_for_player_creates_entity_with_object_components() {

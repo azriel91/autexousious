@@ -14,38 +14,20 @@
 //! * Attack
 //! * Special
 
-extern crate amethyst;
-#[cfg(test)]
-extern crate amethyst_test;
-#[cfg(test)]
-extern crate application;
-#[macro_use]
-extern crate derivative;
-#[macro_use]
-extern crate derive_new;
 #[cfg(test)]
 #[macro_use]
 extern crate hamcrest;
-extern crate serde;
-#[macro_use]
-extern crate serde_derive;
-extern crate strum;
-#[macro_use]
-extern crate strum_macros;
-extern crate typename;
-#[macro_use]
-extern crate typename_derive;
-#[cfg(test)]
-extern crate winit;
 
-pub use axis::Axis;
-pub use component::{ControllerInput, InputControlled, SharedInputControlled};
-pub use config::{ControllerConfig, InputConfig};
-pub use control_action::ControlAction;
-pub use game_input_bundle::GameInputBundle;
-pub use player_action_control::PlayerActionControl;
-pub use player_axis_control::PlayerAxisControl;
-pub use system::{ControllerInputUpdateSystem, SharedControllerInputUpdateSystem};
+pub use crate::{
+    axis::Axis,
+    component::{ControllerInput, InputControlled, SharedInputControlled},
+    config::{ControllerConfig, InputConfig},
+    control_action::ControlAction,
+    game_input_bundle::GameInputBundle,
+    player_action_control::PlayerActionControl,
+    player_axis_control::PlayerAxisControl,
+    system::{ControllerInputUpdateSystem, SharedControllerInputUpdateSystem},
+};
 
 mod axis;
 mod component;

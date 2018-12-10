@@ -3,10 +3,11 @@ use std::fmt::Debug;
 use amethyst::{core::SystemBundle, ecs::prelude::*, prelude::*};
 use application_event::AppEvent;
 use application_state::AutexState;
+use derivative::Derivative;
+use derive_new::new;
 use game_model::play::GameEntities;
 
-use GameLoadingBundle;
-use GameLoadingStatus;
+use crate::{GameLoadingBundle, GameLoadingStatus};
 
 /// `State` where game play takes place.
 #[derive(Derivative, Default, new)]
@@ -70,28 +71,31 @@ where
     F: Fn() -> Box<S>,
     S: AutexState<'a, 'b> + 'static,
 {
-    fn on_start(&mut self, mut data: StateData<GameData>) {
+    fn on_start(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
         self.initialize_dispatcher(&mut data.world);
         self.reset_game_loading_status(&mut data.world);
     }
 
-    fn on_stop(&mut self, _data: StateData<GameData<'a, 'b>>) {
+    fn on_stop(&mut self, _data: StateData<'_, GameData<'a, 'b>>) {
         self.terminate_dispatcher();
     }
 
-    fn on_resume(&mut self, mut data: StateData<GameData>) {
+    fn on_resume(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
         self.reset_game_loading_status(&mut data.world);
     }
 
     fn handle_event(
         &mut self,
-        _data: StateData<GameData>,
+        _data: StateData<'_, GameData<'_, '_>>,
         _event: AppEvent,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
         Trans::None
     }
 
-    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, AppEvent> {
+    fn update(
+        &mut self,
+        data: StateData<'_, GameData<'_, '_>>,
+    ) -> Trans<GameData<'a, 'b>, AppEvent> {
         data.data.update(&data.world);
         self.dispatcher.as_mut().unwrap().dispatch(&data.world.res);
 

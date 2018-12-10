@@ -3,6 +3,8 @@ use amethyst::{
     ecs::{Read, System},
 };
 use collision_model::config::{BodyFrame, InteractionFrame};
+use derive_new::new;
+use typename_derive::TypeName;
 
 /// Adds a default `BodyFrame` to the resources.
 #[derive(Debug, Default, TypeName, new)]

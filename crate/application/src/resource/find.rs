@@ -1,10 +1,9 @@
-use std::env;
-use std::ffi;
-use std::io;
-use std::path::{Path, PathBuf};
+use std::{
+    env, ffi, io,
+    path::{Path, PathBuf},
+};
 
-use resource::error::Result;
-use resource::FindContext;
+use crate::resource::{error::Result, FindContext};
 
 /// Returns development-time base directories as a `Vec<::std::path::Path>`.
 ///
@@ -66,11 +65,10 @@ pub fn find(file_name: &str) -> Result<PathBuf> {
 /// # Examples
 ///
 /// ```rust
-/// #[macro_use]
-/// extern crate application;
-///
-/// use application::resource::find_in;
-/// use application::resource::dir;
+/// use application::{
+///     development_base_dirs,
+///     resource::{dir, find_in},
+/// };
 ///
 /// # fn main() {
 /// // Search for '<application_dir>/resources/config.ron'.
@@ -154,10 +152,15 @@ mod test {
     use std::path::PathBuf;
 
     use super::{find, find_in};
-    use resource::dir;
-    use resource::error::ErrorKind;
-    use resource::test_support::{exe_dir, setup_temp_file};
-    use resource::FindContext;
+    use crate::{
+        development_base_dirs,
+        resource::{
+            dir,
+            error::ErrorKind,
+            test_support::{exe_dir, setup_temp_file},
+            FindContext,
+        },
+    };
 
     test_mutex!();
 
@@ -203,7 +206,7 @@ mod test {
             if let &ErrorKind::Find(ref find_context) =
                 find("test__find_config.ron").unwrap_err().kind()
             {
-                let mut base_dirs = vec![exe_dir()];
+                let base_dirs = vec![exe_dir()];
                 let expected = FindContext {
                     base_dirs,
                     conf_dir: PathBuf::from(""),
@@ -228,7 +231,7 @@ mod test {
             );
 
             if let &ErrorKind::Find(ref find_context) = find_result.unwrap_err().kind() {
-                let mut base_dirs = vec![exe_dir()];
+                let base_dirs = vec![exe_dir()];
                 let expected = FindContext {
                     base_dirs,
                     conf_dir: PathBuf::from(""),

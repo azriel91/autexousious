@@ -1,16 +1,15 @@
 use object_model::{config::object::CharacterSequenceId, entity::SequenceStatus};
 
-use character::sequence_handler::CharacterSequenceHandler;
-use CharacterSequenceUpdateComponents;
+use crate::{
+    character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+};
 
 /// Restarts a sequence when it has reached the end.
 #[derive(Debug)]
 pub(crate) struct SequenceRepeat;
 
 impl CharacterSequenceHandler for SequenceRepeat {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         if components.sequence_status == SequenceStatus::End {
             Some(components.character_sequence_id)
         } else {
@@ -30,8 +29,9 @@ mod tests {
     };
 
     use super::SequenceRepeat;
-    use character::sequence_handler::CharacterSequenceHandler;
-    use CharacterSequenceUpdateComponents;
+    use crate::{
+        character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+    };
 
     #[test]
     fn no_change_when_sequence_begin() {

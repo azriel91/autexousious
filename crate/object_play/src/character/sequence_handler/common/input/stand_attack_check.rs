@@ -1,16 +1,15 @@
 use object_model::config::object::CharacterSequenceId;
 
-use character::sequence_handler::CharacterSequenceHandler;
-use CharacterSequenceUpdateComponents;
+use crate::{
+    character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+};
 
 /// Determines whether to switch to the `StandAttack` sequence based on Attack input.
 #[derive(Debug)]
 pub(crate) struct StandAttackCheck;
 
 impl CharacterSequenceHandler for StandAttackCheck {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         if components.controller_input.attack {
             Some(CharacterSequenceId::StandAttack)
         } else {
@@ -30,8 +29,9 @@ mod tests {
     };
 
     use super::StandAttackCheck;
-    use character::sequence_handler::CharacterSequenceHandler;
-    use CharacterSequenceUpdateComponents;
+    use crate::{
+        character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+    };
 
     #[test]
     fn no_change_when_no_attack_input() {

@@ -2,8 +2,11 @@ use amethyst::{
     assets::{Asset, Handle, ProcessingState, Result as AssetsResult},
     ecs::VecStorage,
 };
+use derivative::Derivative;
+use derive_new::new;
+use serde::{Deserialize, Serialize};
 
-use config::Interaction;
+use crate::config::Interaction;
 
 /// Frame for an interactable object.
 #[derive(Clone, Debug, Derivative, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
@@ -37,7 +40,7 @@ mod tests {
     use toml;
 
     use super::InteractionFrame;
-    use config::Interaction;
+    use crate::config::Interaction;
 
     const ITR_PHYSICAL_ALL_SPECIFIED: &str = r#"
         interactions = [

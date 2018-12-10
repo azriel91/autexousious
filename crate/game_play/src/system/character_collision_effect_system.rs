@@ -3,11 +3,12 @@ use amethyst::{
     shrev::{EventChannel, ReaderId},
 };
 use collision_model::{config::Interaction, play::CollisionEvent};
+use derive_new::new;
 use object_model::{
     config::object::CharacterSequenceId,
     entity::{HealthPoints, SequenceStatus},
 };
-use typename::TypeName;
+use typename_derive::TypeName;
 
 /// Determines collision effects for characters.
 #[derive(Debug, Default, TypeName, new)]
@@ -58,12 +59,10 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
 
                     let next_sequence_id = if *health_points == 0 {
                         CharacterSequenceId::FallForwardAscend
+                    } else if *character_sequence_id == CharacterSequenceId::Flinch0 {
+                        CharacterSequenceId::Flinch1
                     } else {
-                        if *character_sequence_id == CharacterSequenceId::Flinch0 {
-                            CharacterSequenceId::Flinch1
-                        } else {
-                            CharacterSequenceId::Flinch0
-                        }
+                        CharacterSequenceId::Flinch0
                     };
 
                     // Set sequence id

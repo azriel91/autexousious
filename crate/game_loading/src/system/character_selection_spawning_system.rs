@@ -1,5 +1,6 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
 use character_selection_model::CharacterSelections;
+use derive_new::new;
 use game_input::InputControlled;
 use game_model::play::GameEntities;
 use map_model::loaded::Map;
@@ -10,13 +11,12 @@ use object_model::{
     loaded::Character,
     ObjectType,
 };
+use typename_derive::TypeName;
 
-use CharacterComponentStorages;
-use CharacterEntitySpawner;
-use GameLoadingStatus;
-use ObjectAnimationStorages;
-use ObjectComponentStorages;
-use ObjectSpawningResources;
+use crate::{
+    CharacterComponentStorages, CharacterEntitySpawner, GameLoadingStatus, ObjectAnimationStorages,
+    ObjectComponentStorages, ObjectSpawningResources,
+};
 
 /// Spawns character entities based on the character selection.
 #[derive(Debug, Default, TypeName, new)]
@@ -104,8 +104,7 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
-    use std::env;
+    use std::{collections::HashMap, env};
 
     use amethyst::{animation::AnimationBundle, ecs::prelude::*};
     use amethyst_test::prelude::*;
@@ -128,7 +127,7 @@ mod tests {
     use typename::TypeName;
 
     use super::CharacterSelectionSpawningSystem;
-    use GameLoadingStatus;
+    use crate::GameLoadingStatus;
 
     #[test]
     fn returns_if_characters_already_loaded() {

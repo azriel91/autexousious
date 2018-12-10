@@ -1,6 +1,6 @@
 use application_menu::MenuEvent;
 
-use GameModeIndex;
+use crate::GameModeIndex;
 
 /// Event indicating game mode selection.
 pub type GameModeSelectionEvent = MenuEvent<GameModeIndex>;

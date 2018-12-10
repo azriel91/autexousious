@@ -1,4 +1,6 @@
-use Axis;
+use serde::{Deserialize, Serialize};
+
+use crate::Axis;
 
 /// Represents a volume
 #[derive(Clone, Copy, Debug, Deserialize, Hash, PartialEq, Eq, Serialize)]

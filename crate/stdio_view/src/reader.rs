@@ -1,8 +1,10 @@
-use std::io::{self, Write};
-use std::sync::mpsc::Sender;
+use std::{
+    io::{self, Write},
+    sync::mpsc::Sender,
+};
 
-use console::style;
-use console::Term;
+use console::{style, Term};
+use log::{trace, warn};
 
 /// Name of this reader, useful when naming threads.
 pub const NAME: &str = concat!(module_path!(), "::StdinReader");

@@ -1,8 +1,9 @@
 use std::collections::BTreeMap;
 
 use amethyst::{assets::Handle, prelude::*};
+use derive_new::new;
 
-use config::AssetSlug;
+use crate::config::AssetSlug;
 
 /// Type that holds an asset's slug and handle.
 #[derive(Clone, Debug, PartialEq, new)]

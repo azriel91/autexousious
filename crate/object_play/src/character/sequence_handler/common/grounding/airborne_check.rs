@@ -1,16 +1,15 @@
 use object_model::{config::object::CharacterSequenceId, entity::Grounding};
 
-use character::sequence_handler::CharacterSequenceHandler;
-use CharacterSequenceUpdateComponents;
+use crate::{
+    character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+};
 
 /// Returns a `JumpDescend` update if the grounding is `Airborne`.
 #[derive(Debug)]
 pub(crate) struct AirborneCheck;
 
 impl CharacterSequenceHandler for AirborneCheck {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         if components.grounding == Grounding::Airborne {
             Some(CharacterSequenceId::JumpDescend)
         } else {
@@ -30,8 +29,9 @@ mod tests {
     };
 
     use super::AirborneCheck;
-    use character::sequence_handler::CharacterSequenceHandler;
-    use CharacterSequenceUpdateComponents;
+    use crate::{
+        character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+    };
 
     #[test]
     fn returns_none_when_grounding_is_on_ground() {

@@ -2,9 +2,10 @@ use amethyst::{
     core::bundle::{Result, SystemBundle},
     ecs::prelude::*,
 };
+use derive_new::new;
 use typename::TypeName;
 
-use CharacterSelectionSystem;
+use crate::CharacterSelectionSystem;
 
 /// Adds the `CharacterSelectionSystem` to the `World`.
 ///

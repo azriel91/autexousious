@@ -1,10 +1,12 @@
-use std::fmt;
-use std::io;
+use std::{fmt, io};
 
-use resource::io_support;
+use derivative::Derivative;
+use derive_new::new;
+
+use crate::resource::io_support;
 
 /// Information around the failure to discover a directory.
-#[derive(Constructor, Debug, Derivative)]
+#[derive(Debug, Derivative, new)]
 #[derivative(PartialEq)]
 pub struct DiscoveryContext {
     // kcov-ignore-start
@@ -19,7 +21,7 @@ pub struct DiscoveryContext {
 }
 
 impl fmt::Display for DiscoveryContext {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         writeln!(
             f,
             "Failed to find the '{}' directory beside the current executable.",

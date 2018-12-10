@@ -1,5 +1,7 @@
 #![allow(missing_debug_implementations)] // derived `EnumIter` does not implement Debug
 
+use strum_macros::{Display, EnumIter};
+
 /// Style variants of fonts.
 #[derive(Debug, Display, Eq, EnumIter, Hash, PartialEq)]
 pub enum FontVariant {

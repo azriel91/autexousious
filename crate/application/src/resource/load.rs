@@ -1,16 +1,14 @@
-use std::ffi;
-use std::fs::File;
-use std::path::{Path, PathBuf};
+use std::{
+    ffi,
+    fs::File,
+    path::{Path, PathBuf},
+};
 
 use ron;
 use serde::Deserialize;
 use toml;
 
-use find;
-use find_in;
-use resource::error::Result;
-use Format;
-use IoUtils;
+use crate::{find, find_in, resource::error::Result, Format, IoUtils};
 
 /// Loads and returns the data from the specified file.
 ///
@@ -44,15 +42,14 @@ where
 /// // Cargo.toml
 /// //
 /// // [dependencies]
-/// // serde = "1.0"
+/// // serde_derive = "1.0"
 ///
-/// #[macro_use]
-/// extern crate application;
-/// #[macro_use]
-/// extern crate serde;
+/// use serde::Deserialize;
 ///
-/// use application::resource::load_in;
-/// use application::resource::{self, dir};
+/// use application::{
+///     development_base_dirs,
+///     resource::{self, dir, load_in}
+/// };
 ///
 /// #[derive(Debug, Deserialize)]
 /// struct Config {
@@ -108,15 +105,20 @@ where
 mod test {
     use std::path::PathBuf;
 
-    use ron;
-    use ron::de::ParseError;
+    use ron::{self, de::ParseError};
+    use serde::Deserialize;
     use toml;
 
     use super::{load, load_in};
-    use resource::dir;
-    use resource::error::ErrorKind;
-    use resource::test_support::{exe_dir, setup_temp_file};
-    use resource::{FindContext, Format};
+    use crate::{
+        development_base_dirs,
+        resource::{
+            dir,
+            error::ErrorKind,
+            test_support::{exe_dir, setup_temp_file},
+            FindContext, Format,
+        },
+    };
 
     test_mutex!();
 
@@ -171,7 +173,7 @@ mod test {
             );
 
             if let &ErrorKind::Find(ref find_context) = load_result.unwrap_err().kind() {
-                let mut base_dirs = vec![exe_dir()];
+                let base_dirs = vec![exe_dir()];
                 let expected = FindContext {
                     base_dirs,
                     conf_dir: PathBuf::from(""),
@@ -192,7 +194,7 @@ mod test {
             if let &ErrorKind::Find(ref find_context) =
                 load::<Data>("test__load_config.ron", Format::Ron).unwrap_err().kind()
             {
-                let mut base_dirs = vec![exe_dir()];
+                let base_dirs = vec![exe_dir()];
                 let expected = FindContext {
                     base_dirs,
                     conf_dir: PathBuf::from(""),

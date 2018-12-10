@@ -10,10 +10,13 @@ use amethyst::{
     renderer::{Camera, Projection, ScreenDimensions, VirtualKeyCode},
 };
 use application_event::AppEvent;
+use derivative::Derivative;
+use derive_new::new;
 use game_model::play::GameEntities;
 use game_play_model::{GamePlayEvent, GamePlayStatus};
+use log::{debug, warn};
 
-use GamePlayBundle;
+use crate::GamePlayBundle;
 
 /// `State` where game play takes place.
 #[derive(Derivative, Default, new)]
@@ -59,8 +62,7 @@ impl GamePlayState {
         //
         // * <https://github.com/rust-lang-nursery/rust-clippy/issues/1524>
         // * <https://github.com/rust-lang-nursery/rust-clippy/issues/2904>
-        #[allow(unknown_lints)]
-        #[allow(let_and_return)]
+        #[allow(clippy::let_and_return)]
         let entities = {
             let mut game_entities = world.write_resource::<GameEntities>();
             let entities = game_entities.drain().collect::<Vec<Entity>>();
@@ -124,7 +126,7 @@ impl GamePlayState {
 }
 
 impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
-    fn on_start(&mut self, mut data: StateData<GameData>) {
+    fn on_start(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
         self.initialize_dispatcher(&mut data.world);
         self.initialize_camera(&mut data.world);
 
@@ -133,7 +135,7 @@ impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
 
     fn handle_event(
         &mut self,
-        data: StateData<GameData>,
+        data: StateData<'_, GameData<'_, '_>>,
         event: AppEvent,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
         match event {
@@ -178,13 +180,16 @@ impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
         }
     }
 
-    fn on_stop(&mut self, mut data: StateData<GameData>) {
+    fn on_stop(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
         self.terminate_entities(&mut data.world);
         self.terminate_camera(&mut data.world);
         self.terminate_dispatcher();
     }
 
-    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, AppEvent> {
+    fn update(
+        &mut self,
+        data: StateData<'_, GameData<'_, '_>>,
+    ) -> Trans<GameData<'a, 'b>, AppEvent> {
         // Note: The built-in dispatcher must be run before the state specific dispatcher as the
         // `"input_system"` is registered in the main dispatcher, and is a dependency of the
         // `ControllerInputUpdateSystem`.

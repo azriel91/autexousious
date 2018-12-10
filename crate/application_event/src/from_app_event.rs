@@ -3,7 +3,7 @@ use game_mode_selection_model::GameModeSelectionEvent;
 use game_play_model::GamePlayEvent;
 use map_selection_model::MapSelectionEvent;
 
-use AppEvent;
+use crate::AppEvent;
 
 /// Trait to obtain the state specific event contained in an `AppEvent`, or the app event.
 ///

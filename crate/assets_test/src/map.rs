@@ -2,9 +2,9 @@ use std::path::PathBuf;
 
 use game_model::config::{AssetSlug, AssetSlugBuilder, ConfigType};
 use heck::SnakeCase;
+use lazy_static::lazy_static;
 
-use NAMESPACE_TEST;
-use NAMESPACE_TEST_PATH;
+use crate::{NAMESPACE_TEST, NAMESPACE_TEST_PATH};
 
 /// Name of the "fade" map asset.
 pub const ASSETS_MAP_FADE_NAME: &str = "fade";

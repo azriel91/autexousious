@@ -1,6 +1,4 @@
-use std::env;
-use std::io::Write;
-use std::path::PathBuf;
+use std::{env, io::Write, path::PathBuf};
 
 use tempfile::{Builder, NamedTempFile, TempDir};
 
@@ -9,8 +7,9 @@ use tempfile::{Builder, NamedTempFile, TempDir};
 #[macro_export]
 macro_rules! test_mutex {
     () => {
-        use std::panic;
-        use std::sync::Mutex;
+        use std::{panic, sync::Mutex};
+
+        use lazy_static::lazy_static;
 
         lazy_static! {
             static ref TEST_MUTEX: Mutex<()> = Mutex::new(());

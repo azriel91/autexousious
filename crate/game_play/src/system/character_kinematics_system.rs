@@ -1,10 +1,12 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
+use derive_new::new;
 use game_input::ControllerInput;
 use object_model::{
     config::object::CharacterSequenceId,
     entity::{Mirrored, SequenceStatus, Velocity},
     loaded::{Character, CharacterHandle},
 };
+use typename_derive::TypeName;
 
 /// Updates `Character` velocity based on sequence.
 #[derive(Debug, Default, TypeName, new)]
@@ -40,8 +42,8 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
             controller_input,
             character_sequence_id,
             sequence_status,
-            mut velocity,
-            mut mirrored,
+            velocity,
+            mirrored,
         ) in (
             &handle_storage,
             &controller_inputs,
@@ -133,12 +135,12 @@ mod tests {
                             mut velocities,
                             mut groundings,
                         ): (
-                            ReadExpect<MapSelection>,
-                            Read<AssetStorage<Map>>,
-                            WriteStorage<CharacterSequenceId>,
-                            WriteStorage<Position<f32>>,
-                            WriteStorage<Velocity<f32>>,
-                            WriteStorage<Grounding>,
+                            ReadExpect<'_, MapSelection>,
+                            Read<'_, AssetStorage<Map>>,
+                            WriteStorage<'_, CharacterSequenceId>,
+                            WriteStorage<'_, Position<f32>>,
+                            WriteStorage<'_, Velocity<f32>>,
+                            WriteStorage<'_, Grounding>,
                         )| {
                             let map = maps
                                 .get(map_selection.handle())
@@ -171,8 +173,8 @@ mod tests {
                 .with_assertion(|world| {
                     world.exec(
                         |(character_sequence_ids, velocities): (
-                            ReadStorage<CharacterSequenceId>,
-                            ReadStorage<Velocity<f32>>,
+                            ReadStorage<'_, CharacterSequenceId>,
+                            ReadStorage<'_, Velocity<f32>>,
                         )| {
                             for (_, velocity) in (&character_sequence_ids, &velocities).join() {
                                 assert_eq!(0., velocity[0]);
@@ -203,13 +205,13 @@ mod tests {
                             mut velocities,
                             mut groundings,
                         ): (
-                            ReadExpect<MapSelection>,
-                            Read<AssetStorage<Map>>,
-                            WriteStorage<ControllerInput>,
-                            WriteStorage<CharacterSequenceId>,
-                            WriteStorage<Position<f32>>,
-                            WriteStorage<Velocity<f32>>,
-                            WriteStorage<Grounding>,
+                            ReadExpect<'_, MapSelection>,
+                            Read<'_, AssetStorage<Map>>,
+                            WriteStorage<'_, ControllerInput>,
+                            WriteStorage<'_, CharacterSequenceId>,
+                            WriteStorage<'_, Position<f32>>,
+                            WriteStorage<'_, Velocity<f32>>,
+                            WriteStorage<'_, Grounding>,
                         )| {
                             let map = maps
                                 .get(map_selection.handle())
@@ -252,8 +254,8 @@ mod tests {
                 .with_assertion(|world| {
                     world.exec(
                         |(character_sequence_ids, velocities): (
-                            ReadStorage<CharacterSequenceId>,
-                            ReadStorage<Velocity<f32>>,
+                            ReadStorage<'_, CharacterSequenceId>,
+                            ReadStorage<'_, Velocity<f32>>,
                         )| {
                             for (_, velocity) in (&character_sequence_ids, &velocities).join() {
                                 assert_eq!(3.5, velocity[0]);
@@ -284,13 +286,13 @@ mod tests {
                             mut velocities,
                             mut groundings,
                         ): (
-                            ReadExpect<MapSelection>,
-                            Read<AssetStorage<Map>>,
-                            WriteStorage<ControllerInput>,
-                            WriteStorage<CharacterSequenceId>,
-                            WriteStorage<Position<f32>>,
-                            WriteStorage<Velocity<f32>>,
-                            WriteStorage<Grounding>,
+                            ReadExpect<'_, MapSelection>,
+                            Read<'_, AssetStorage<Map>>,
+                            WriteStorage<'_, ControllerInput>,
+                            WriteStorage<'_, CharacterSequenceId>,
+                            WriteStorage<'_, Position<f32>>,
+                            WriteStorage<'_, Velocity<f32>>,
+                            WriteStorage<'_, Grounding>,
                         )| {
                             let map = maps
                                 .get(map_selection.handle())
@@ -333,8 +335,8 @@ mod tests {
                 .with_assertion(|world| {
                     world.exec(
                         |(character_sequence_ids, velocities): (
-                            ReadStorage<CharacterSequenceId>,
-                            ReadStorage<Velocity<f32>>,
+                            ReadStorage<'_, CharacterSequenceId>,
+                            ReadStorage<'_, Velocity<f32>>,
                         )| {
                             for (_, velocity) in (&character_sequence_ids, &velocities).join() {
                                 assert_eq!(6., velocity[0]);
@@ -365,14 +367,14 @@ mod tests {
                             mut mirroreds,
                             mut groundings,
                         ): (
-                            ReadExpect<MapSelection>,
-                            Read<AssetStorage<Map>>,
-                            WriteStorage<ControllerInput>,
-                            WriteStorage<CharacterSequenceId>,
-                            WriteStorage<Position<f32>>,
-                            WriteStorage<Velocity<f32>>,
-                            WriteStorage<Mirrored>,
-                            WriteStorage<Grounding>,
+                            ReadExpect<'_, MapSelection>,
+                            Read<'_, AssetStorage<Map>>,
+                            WriteStorage<'_, ControllerInput>,
+                            WriteStorage<'_, CharacterSequenceId>,
+                            WriteStorage<'_, Position<f32>>,
+                            WriteStorage<'_, Velocity<f32>>,
+                            WriteStorage<'_, Mirrored>,
+                            WriteStorage<'_, Grounding>,
                         )| {
                             let map = maps
                                 .get(map_selection.handle())
@@ -413,8 +415,8 @@ mod tests {
                 let assertion_fn = move |world: &mut World| {
                     world.exec(
                         |(character_sequence_ids, velocities): (
-                            ReadStorage<CharacterSequenceId>,
-                            ReadStorage<Velocity<f32>>,
+                            ReadStorage<'_, CharacterSequenceId>,
+                            ReadStorage<'_, Velocity<f32>>,
                         )| {
                             for (_, velocity) in (&character_sequence_ids, &velocities).join() {
                                 assert_eq!(vx, velocity[0]);
@@ -462,14 +464,14 @@ mod tests {
                             mut velocities,
                             mut groundings,
                         ): (
-                            ReadExpect<MapSelection>,
-                            Read<AssetStorage<Map>>,
-                            WriteStorage<ControllerInput>,
-                            WriteStorage<CharacterSequenceId>,
-                            WriteStorage<SequenceStatus>,
-                            WriteStorage<Position<f32>>,
-                            WriteStorage<Velocity<f32>>,
-                            WriteStorage<Grounding>,
+                            ReadExpect<'_, MapSelection>,
+                            Read<'_, AssetStorage<Map>>,
+                            WriteStorage<'_, ControllerInput>,
+                            WriteStorage<'_, CharacterSequenceId>,
+                            WriteStorage<'_, SequenceStatus>,
+                            WriteStorage<'_, Position<f32>>,
+                            WriteStorage<'_, Velocity<f32>>,
+                            WriteStorage<'_, Grounding>,
                         )| {
                             let map = maps
                                 .get(map_selection.handle())
@@ -515,8 +517,8 @@ mod tests {
                 .with_assertion(|world| {
                     world.exec(
                         |(character_sequence_ids, velocities): (
-                            ReadStorage<CharacterSequenceId>,
-                            ReadStorage<Velocity<f32>>,
+                            ReadStorage<'_, CharacterSequenceId>,
+                            ReadStorage<'_, Velocity<f32>>,
                         )| {
                             for (_, velocity) in (&character_sequence_ids, &velocities).join() {
                                 assert_eq!(-5., velocity[0]);
@@ -547,12 +549,12 @@ mod tests {
                             mut velocities,
                             mut groundings,
                         ): (
-                            ReadExpect<MapSelection>,
-                            Read<AssetStorage<Map>>,
-                            WriteStorage<CharacterSequenceId>,
-                            WriteStorage<Position<f32>>,
-                            WriteStorage<Velocity<f32>>,
-                            WriteStorage<Grounding>,
+                            ReadExpect<'_, MapSelection>,
+                            Read<'_, AssetStorage<Map>>,
+                            WriteStorage<'_, CharacterSequenceId>,
+                            WriteStorage<'_, Position<f32>>,
+                            WriteStorage<'_, Velocity<f32>>,
+                            WriteStorage<'_, Grounding>,
                         )| {
                             let map = maps
                                 .get(map_selection.handle())
@@ -585,8 +587,8 @@ mod tests {
                 .with_assertion(|world| {
                     world.exec(
                         |(character_sequence_ids, velocities): (
-                            ReadStorage<CharacterSequenceId>,
-                            ReadStorage<Velocity<f32>>,
+                            ReadStorage<'_, CharacterSequenceId>,
+                            ReadStorage<'_, Velocity<f32>>,
                         )| {
                             for (_, velocity) in (&character_sequence_ids, &velocities).join() {
                                 assert_eq!(-3., velocity[0]);
@@ -617,12 +619,12 @@ mod tests {
                             mut velocities,
                             mut groundings,
                         ): (
-                            ReadExpect<MapSelection>,
-                            Read<AssetStorage<Map>>,
-                            WriteStorage<CharacterSequenceId>,
-                            WriteStorage<Position<f32>>,
-                            WriteStorage<Velocity<f32>>,
-                            WriteStorage<Grounding>,
+                            ReadExpect<'_, MapSelection>,
+                            Read<'_, AssetStorage<Map>>,
+                            WriteStorage<'_, CharacterSequenceId>,
+                            WriteStorage<'_, Position<f32>>,
+                            WriteStorage<'_, Velocity<f32>>,
+                            WriteStorage<'_, Grounding>,
                         )| {
                             let map = maps
                                 .get(map_selection.handle())
@@ -655,8 +657,8 @@ mod tests {
                 .with_assertion(|world| {
                     world.exec(
                         |(character_sequence_ids, velocities): (
-                            ReadStorage<CharacterSequenceId>,
-                            ReadStorage<Velocity<f32>>,
+                            ReadStorage<'_, CharacterSequenceId>,
+                            ReadStorage<'_, Velocity<f32>>,
                         )| {
                             for (_, velocity) in (&character_sequence_ids, &velocities).join() {
                                 assert_eq!(-3., velocity[0]);
@@ -687,12 +689,12 @@ mod tests {
                             mut velocities,
                             mut groundings,
                         ): (
-                            ReadExpect<MapSelection>,
-                            Read<AssetStorage<Map>>,
-                            WriteStorage<CharacterSequenceId>,
-                            WriteStorage<Position<f32>>,
-                            WriteStorage<Velocity<f32>>,
-                            WriteStorage<Grounding>,
+                            ReadExpect<'_, MapSelection>,
+                            Read<'_, AssetStorage<Map>>,
+                            WriteStorage<'_, CharacterSequenceId>,
+                            WriteStorage<'_, Position<f32>>,
+                            WriteStorage<'_, Velocity<f32>>,
+                            WriteStorage<'_, Grounding>,
                         )| {
                             let map = maps
                                 .get(map_selection.handle())
@@ -725,8 +727,8 @@ mod tests {
                 .with_assertion(|world| {
                     world.exec(
                         |(character_sequence_ids, velocities): (
-                            ReadStorage<CharacterSequenceId>,
-                            ReadStorage<Velocity<f32>>,
+                            ReadStorage<'_, CharacterSequenceId>,
+                            ReadStorage<'_, Velocity<f32>>,
                         )| {
                             for (_, velocity) in (&character_sequence_ids, &velocities).join() {
                                 assert_eq!(-3., velocity[0]);

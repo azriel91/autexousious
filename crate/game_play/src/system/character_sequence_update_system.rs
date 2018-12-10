@@ -3,6 +3,7 @@ use amethyst::{
     ecs::{Entities, Join, ReadStorage, System, WriteStorage},
     renderer::SpriteRender,
 };
+use derive_new::new;
 use game_input::ControllerInput;
 use game_loading::ObjectAnimationStorages;
 use object_model::{
@@ -14,6 +15,7 @@ use object_play::{
     CharacterSequenceUpdateComponents, CharacterSequenceUpdater, MirroredUpdater, RunCounterUpdater,
 };
 use shred_derive::SystemData;
+use typename_derive::TypeName;
 
 /// Updates character sequence ID based on input (or lack of).
 #[derive(Debug, Default, TypeName, new)]
@@ -88,7 +90,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
         )
             .join()
         {
-            let mut sprite_animation_set = get_animation_set(&mut sprite_acs, entity)
+            let sprite_animation_set = get_animation_set(&mut sprite_acs, entity)
                 .expect("Sprite animation should exist as entity should be valid.");
 
             // Mark sequence as `Ongoing` for subsequent tick.
@@ -173,12 +175,12 @@ mod tests {
                             mut positions,
                             mut groundings,
                         ): (
-                            ReadExpect<MapSelection>,
-                            Read<AssetStorage<Map>>,
-                            WriteStorage<CharacterSequenceId>,
-                            WriteStorage<SequenceStatus>,
-                            WriteStorage<Position<f32>>,
-                            WriteStorage<Grounding>,
+                            ReadExpect<'_, MapSelection>,
+                            Read<'_, AssetStorage<Map>>,
+                            WriteStorage<'_, CharacterSequenceId>,
+                            WriteStorage<'_, SequenceStatus>,
+                            WriteStorage<'_, Position<f32>>,
+                            WriteStorage<'_, Grounding>,
                         )| {
                             let map = maps
                                 .get(map_selection.handle())
@@ -207,7 +209,7 @@ mod tests {
                     &[]
                 )
                 .with_assertion(|world| {
-                    world.exec(|sequence_statuses: ReadStorage<SequenceStatus>| {
+                    world.exec(|sequence_statuses: ReadStorage<'_, SequenceStatus>| {
                         for sequence_status in sequence_statuses.join() {
                             assert_eq!(SequenceStatus::Ongoing, *sequence_status);
                         }
@@ -236,14 +238,14 @@ mod tests {
                             mut mirroreds,
                             mut groundings,
                         ): (
-                            ReadExpect<MapSelection>,
-                            Read<AssetStorage<Map>>,
-                            WriteStorage<ControllerInput>,
-                            WriteStorage<CharacterSequenceId>,
-                            WriteStorage<SequenceStatus>,
-                            WriteStorage<Position<f32>>,
-                            WriteStorage<Mirrored>,
-                            WriteStorage<Grounding>,
+                            ReadExpect<'_, MapSelection>,
+                            Read<'_, AssetStorage<Map>>,
+                            WriteStorage<'_, ControllerInput>,
+                            WriteStorage<'_, CharacterSequenceId>,
+                            WriteStorage<'_, SequenceStatus>,
+                            WriteStorage<'_, Position<f32>>,
+                            WriteStorage<'_, Mirrored>,
+                            WriteStorage<'_, Grounding>,
                         )| {
                             let map = maps
                                 .get(map_selection.handle())
@@ -287,9 +289,9 @@ mod tests {
                 .with_assertion(|world| {
                     world.exec(
                         |(character_sequence_ids, sequence_statuses, mirroreds): (
-                            ReadStorage<CharacterSequenceId>,
-                            ReadStorage<SequenceStatus>,
-                            ReadStorage<Mirrored>,
+                            ReadStorage<'_, CharacterSequenceId>,
+                            ReadStorage<'_, SequenceStatus>,
+                            ReadStorage<'_, Mirrored>,
                         )| {
                             for (character_sequence_id, sequence_status, mirrored) in
                                 (&character_sequence_ids, &sequence_statuses, &mirroreds).join()

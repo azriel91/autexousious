@@ -1,4 +1,4 @@
-use map_selection::MapSelection;
+use crate::map_selection::MapSelection;
 
 /// Event indicating a map selection.
 #[derive(Clone, Debug, PartialEq)]

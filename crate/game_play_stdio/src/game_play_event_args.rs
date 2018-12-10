@@ -1,3 +1,5 @@
+use structopt_derive::StructOpt;
+
 /// Parameters to the mapper.
 ///
 /// # Examples

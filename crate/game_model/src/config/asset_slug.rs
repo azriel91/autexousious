@@ -1,6 +1,6 @@
-use std::char;
-use std::fmt;
-use std::str::FromStr;
+use std::{char, fmt, str::FromStr};
+
+use derive_builder::Builder;
 
 /// Namespaced reference to identify assets.
 ///
@@ -88,7 +88,7 @@ impl AssetSlugBuilder {
 }
 
 impl fmt::Display for AssetSlug {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}/{}", self.namespace, self.name)
     }
 }

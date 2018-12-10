@@ -1,6 +1,8 @@
 use amethyst::ecs::prelude::*;
+use derive_new::new;
+use typename_derive::TypeName;
 
-use {ControllerInput, InputControlled, SharedInputControlled};
+use crate::{ControllerInput, InputControlled, SharedInputControlled};
 
 /// Updates the `ControllerInput` component based on input from the sharing controllers.
 #[derive(Debug, Default, TypeName, new)]
@@ -69,12 +71,10 @@ mod test {
     use typename::TypeName;
 
     use super::SharedControllerInputUpdateSystem;
-    use ControllerId;
-    use ControllerInput;
-    use InputControlled;
-    use PlayerActionControl;
-    use PlayerAxisControl;
-    use SharedInputControlled;
+    use crate::{
+        ControllerId, ControllerInput, InputControlled, PlayerActionControl, PlayerAxisControl,
+        SharedInputControlled,
+    };
 
     #[test]
     fn merges_axes_controller_input_with_limit_correction() {
@@ -114,8 +114,8 @@ mod test {
                 .with_effect(|world| {
                     world.exec(
                         |(input_controlleds, mut controller_inputs): (
-                            ReadStorage<InputControlled>,
-                            WriteStorage<ControllerInput>,
+                            ReadStorage<'_, InputControlled>,
+                            WriteStorage<'_, ControllerInput>,
                         )| {
                             (&input_controlleds, &mut controller_inputs)
                                 .join()
@@ -137,8 +137,8 @@ mod test {
                 .with_effect(|world| {
                     world.exec(
                         |(input_controlleds, mut controller_inputs): (
-                            ReadStorage<InputControlled>,
-                            WriteStorage<ControllerInput>,
+                            ReadStorage<'_, InputControlled>,
+                            WriteStorage<'_, ControllerInput>,
                         )| {
                             (&input_controlleds, &mut controller_inputs)
                                 .join()

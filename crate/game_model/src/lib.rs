@@ -47,19 +47,6 @@
 //! ```
 //!
 
-extern crate amethyst;
-#[macro_use]
-extern crate derive_builder;
-#[macro_use]
-extern crate derive_new;
-extern crate map_model;
-extern crate object_model;
-extern crate strum;
-#[macro_use]
-extern crate strum_macros;
-#[cfg(test)]
-extern crate tempfile;
-
 pub mod config;
 pub mod loaded;
 pub mod play;

@@ -23,7 +23,7 @@ impl MapSelection {
 }
 
 impl fmt::Display for MapSelection {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             MapSelection::Random(ref _slug_and_handle) => write!(f, "Random"), // TODO: i18n
             MapSelection::Id(SlugAndHandle { ref slug, .. }) => write!(f, "{}", slug),

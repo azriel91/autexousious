@@ -1,5 +1,7 @@
 use amethyst::{core::transform::Transform, ecs::prelude::*};
+use derive_new::new;
 use object_model::entity::Position;
+use typename_derive::TypeName;
 
 /// Updates each entity's `Transform` based on their `Position` in game.
 ///
@@ -14,7 +16,7 @@ impl<'s> System<'s> for ObjectTransformUpdateSystem {
     type SystemData = ObjectTransformUpdateSystemData<'s>;
 
     fn run(&mut self, (positions, mut transform_storage): Self::SystemData) {
-        for (position, mut transform) in (&positions, &mut transform_storage).join() {
+        for (position, transform) in (&positions, &mut transform_storage).join() {
             // We subtract z from the y translation as the z axis increases "out of the screen".
             // Entities that have a larger Z value are transformed downwards.
             transform.set_x(position.x);

@@ -1,19 +1,19 @@
 use object_model::config::object::CharacterSequenceId;
 
-use character::sequence_handler::{
-    common::{grounding::AirborneCheck, input::RunStopCheck, status::AliveCheck},
-    CharacterSequenceHandler,
+use crate::{
+    character::sequence_handler::{
+        common::{grounding::AirborneCheck, input::RunStopCheck, status::AliveCheck},
+        CharacterSequenceHandler,
+    },
+    CharacterSequenceUpdateComponents,
 };
-use CharacterSequenceUpdateComponents;
 
 /// Hold forward to run, release to stop running.
 #[derive(Debug)]
 pub(crate) struct Run;
 
 impl CharacterSequenceHandler for Run {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         [
             AliveCheck::update,
             AirborneCheck::update,
@@ -37,8 +37,9 @@ mod test {
     };
 
     use super::Run;
-    use character::sequence_handler::CharacterSequenceHandler;
-    use CharacterSequenceUpdateComponents;
+    use crate::{
+        character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+    };
 
     #[test]
     fn jump_descend_when_airborne() {

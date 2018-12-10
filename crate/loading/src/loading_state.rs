@@ -1,13 +1,13 @@
-use std::fmt::Debug;
-use std::marker::PhantomData;
-use std::path::PathBuf;
+use std::{fmt::Debug, marker::PhantomData, path::PathBuf};
 
 use amethyst::{assets::ProgressCounter, prelude::*};
 use application_event::AppEvent;
 use application_state::AutexState;
 use application_ui::ThemeLoader;
+use derivative::Derivative;
+use log::{debug, error, warn};
 
-use AssetLoader;
+use crate::AssetLoader;
 
 /// `State` where resource loading takes place.
 ///
@@ -33,7 +33,7 @@ where
     #[derivative(Debug = "ignore")]
     progress_counter: ProgressCounter,
     /// Lifetime tracker.
-    phantom_data: PhantomData<AutexState<'a, 'b>>,
+    phantom_data: PhantomData<dyn AutexState<'a, 'b>>,
 }
 
 impl<'a, 'b, S> LoadingState<'a, 'b, S>
@@ -55,7 +55,7 @@ impl<'a, 'b, S> State<GameData<'a, 'b>, AppEvent> for LoadingState<'a, 'b, S>
 where
     S: AutexState<'a, 'b> + 'static,
 {
-    fn on_start(&mut self, mut data: StateData<GameData>) {
+    fn on_start(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
         if let Err(e) = ThemeLoader::load(&mut data.world) {
             let err_msg = format!("Failed to load theme: {}", e);
             error!("{}", &err_msg);
@@ -69,7 +69,10 @@ where
         );
     }
 
-    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, AppEvent> {
+    fn update(
+        &mut self,
+        data: StateData<'_, GameData<'_, '_>>,
+    ) -> Trans<GameData<'a, 'b>, AppEvent> {
         data.data.update(&data.world);
 
         if self.progress_counter.is_complete() {

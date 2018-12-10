@@ -2,9 +2,10 @@ use amethyst::{
     core::bundle::{Result, SystemBundle},
     ecs::prelude::*,
 };
+use derive_new::new;
 use typename::TypeName;
 
-use StdinSystem;
+use crate::StdinSystem;
 
 /// Adds the `StdinSystem` to the `World`.
 #[derive(Debug, new)]

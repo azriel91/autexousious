@@ -1,7 +1,8 @@
 use amethyst::ecs::prelude::{Component, HashMapStorage};
+use derive_new::new;
 use map_selection_model::MapSelection;
 
-use WidgetState;
+use crate::WidgetState;
 
 /// Component to tag entities that are map selection widgets.
 #[derive(Clone, Debug, PartialEq, new)]

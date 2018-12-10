@@ -1,8 +1,9 @@
 use application_menu::MenuEvent;
 use game_mode_selection_model::GameModeSelectionEvent;
 use stdio_spi::{Result, StdinMapper};
+use typename_derive::TypeName;
 
-use GameModeSelectionEventArgs;
+use crate::GameModeSelectionEventArgs;
 
 /// Builds a `GameModeSelectionEvent` from stdin tokens.
 #[derive(Debug, TypeName)]
@@ -28,7 +29,7 @@ mod tests {
     use stdio_spi::StdinMapper;
 
     use super::GameModeSelectionEventStdinMapper;
-    use GameModeSelectionEventArgs;
+    use crate::GameModeSelectionEventArgs;
 
     #[test]
     fn maps_select_event() {

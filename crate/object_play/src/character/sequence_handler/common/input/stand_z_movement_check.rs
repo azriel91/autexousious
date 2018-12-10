@@ -1,7 +1,8 @@
 use object_model::config::object::CharacterSequenceId;
 
-use character::sequence_handler::CharacterSequenceHandler;
-use CharacterSequenceUpdateComponents;
+use crate::{
+    character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+};
 
 /// Determines whether to switch to the `Walk` sequence based on Z input.
 ///
@@ -10,9 +11,7 @@ use CharacterSequenceUpdateComponents;
 pub(crate) struct StandZMovementCheck;
 
 impl CharacterSequenceHandler for StandZMovementCheck {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         if components.controller_input.z_axis_value != 0. {
             Some(CharacterSequenceId::Walk)
         } else {
@@ -32,8 +31,9 @@ mod tests {
     };
 
     use super::StandZMovementCheck;
-    use character::sequence_handler::CharacterSequenceHandler;
-    use CharacterSequenceUpdateComponents;
+    use crate::{
+        character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+    };
 
     #[test]
     fn no_change_when_no_z_input() {

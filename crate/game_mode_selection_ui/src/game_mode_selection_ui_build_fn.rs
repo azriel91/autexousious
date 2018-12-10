@@ -8,6 +8,7 @@ use amethyst::{
 };
 use application_menu::MenuItem;
 use application_ui::{FontVariant, Theme};
+use derivative::Derivative;
 use game_mode_selection_model::{
     GameModeIndex, GameModeSelectionEntity, GameModeSelectionEntityId,
 };

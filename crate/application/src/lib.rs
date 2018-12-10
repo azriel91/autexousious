@@ -9,11 +9,10 @@
 //! # Examples
 //!
 //! ```rust
-//! #[macro_use] // for the development_base_dirs!() macro
-//! extern crate application;
-//!
-//! use application::resource::dir;
-//! use application::resource::find_in;
+//! use application::{
+//!     development_base_dirs,
+//!     resource::{dir, find_in},
+//! };
 //!
 //! fn main() {
 //!     let path_to_resource = find_in(
@@ -30,33 +29,11 @@
 //! [find_in]: resource/fn.find_in.html
 //! [load_in]: resource/fn.load_in.html
 
-extern crate amethyst;
-#[macro_use]
-extern crate derivative;
-#[macro_use]
-extern crate derive_error_chain;
-#[macro_use]
-extern crate derive_more;
-extern crate error_chain;
-#[cfg(test)]
-#[macro_use]
-extern crate lazy_static;
-#[macro_use]
-extern crate log;
 #[cfg(test)]
 #[macro_use]
 extern crate pretty_assertions;
-extern crate ron;
-#[cfg(test)]
-#[macro_use]
-extern crate serde;
-#[cfg(not(test))]
-extern crate serde;
-#[cfg(test)]
-extern crate tempfile;
-extern crate toml;
 
-pub use resource::{
+pub use crate::resource::{
     find, find_in, load, load_in, Error, ErrorKind, FindContext, Format, IoUtils, Result,
 };
 

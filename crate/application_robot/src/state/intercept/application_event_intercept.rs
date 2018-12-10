@@ -1,8 +1,10 @@
-use amethyst::prelude::*;
-use amethyst::shrev::{EventChannel, ReaderId};
+use amethyst::{
+    prelude::*,
+    shrev::{EventChannel, ReaderId},
+};
 use application_input::ApplicationEvent;
 
-use state::Intercept;
+use crate::state::Intercept;
 
 /// Reads `ApplicationEvent`s and programmatically controls the application control flow.
 #[derive(Debug, Default)]
@@ -51,15 +53,15 @@ impl<T, E> Intercept<T, E> for ApplicationEventIntercept
 where
     E: Send + Sync + 'static,
 {
-    fn on_start_begin(&mut self, data: &mut StateData<T>) {
+    fn on_start_begin(&mut self, data: &mut StateData<'_, T>) {
         self.initialize_application_event_reader(data.world);
     }
 
-    fn fixed_update_begin(&mut self, data: &mut StateData<T>) -> Option<Trans<T, E>> {
+    fn fixed_update_begin(&mut self, data: &mut StateData<'_, T>) -> Option<Trans<T, E>> {
         self.handle_application_events(data.world)
     }
 
-    fn update_begin(&mut self, data: &mut StateData<T>) -> Option<Trans<T, E>> {
+    fn update_begin(&mut self, data: &mut StateData<'_, T>) -> Option<Trans<T, E>> {
         self.handle_application_events(data.world)
     }
 
@@ -72,12 +74,11 @@ where
 mod test {
     use std::mem::discriminant;
 
-    use amethyst::prelude::*;
-    use amethyst::shrev::EventChannel;
+    use amethyst::{prelude::*, shrev::EventChannel};
     use application_input::ApplicationEvent;
 
     use super::ApplicationEventIntercept;
-    use state::Intercept;
+    use crate::state::Intercept;
 
     fn setup() -> (ApplicationEventIntercept, World) {
         let mut world = World::new();
@@ -92,7 +93,7 @@ mod test {
 
         assert!(intercept.application_event_reader.is_none());
 
-        <Intercept<(), ()>>::on_start_begin(
+        <dyn Intercept<(), ()>>::on_start_begin(
             &mut intercept,
             &mut StateData::new(&mut world, &mut ()),
         );
@@ -108,7 +109,7 @@ mod test {
         let (mut intercept, mut world) = setup();
 
         // register reader
-        <Intercept<(), ()>>::on_start_begin(
+        <dyn Intercept<(), ()>>::on_start_begin(
             &mut intercept,
             &mut StateData::new(&mut world, &mut ()),
         );
@@ -133,7 +134,7 @@ mod test {
         let (mut intercept, mut world) = setup();
 
         // register reader
-        <Intercept<(), ()>>::on_start_begin(
+        <dyn Intercept<(), ()>>::on_start_begin(
             &mut intercept,
             &mut StateData::new(&mut world, &mut ()),
         );
@@ -155,7 +156,7 @@ mod test {
 
     #[test]
     fn intercept_is_transitive() {
-        assert!(<Intercept<(), ()>>::is_transitive(
+        assert!(<dyn Intercept<(), ()>>::is_transitive(
             &ApplicationEventIntercept::new()
         ));
     }

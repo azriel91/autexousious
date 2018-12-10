@@ -23,22 +23,10 @@
 //! * The state *should* have transitioned, but did not.
 //! * There are multiple event senders that are not catering for each other.
 
-#[macro_use]
-extern crate amethyst;
-extern crate character_selection_model;
-#[macro_use]
-extern crate derivative;
-#[macro_use]
-extern crate derive_more;
-extern crate game_mode_selection_model;
-extern crate game_play_model;
-extern crate map_selection_model;
-extern crate strum;
-#[macro_use]
-extern crate strum_macros;
-
-pub use app_event::{AppEvent, AppEventReader, AppEventVariant};
-pub use from_app_event::FromAppEvent;
+pub use crate::{
+    app_event::{AppEvent, AppEventReader, AppEventVariant},
+    from_app_event::FromAppEvent,
+};
 
 mod app_event;
 mod from_app_event;

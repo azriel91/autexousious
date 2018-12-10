@@ -3,16 +3,15 @@ use object_model::{
     entity::{Grounding, SequenceStatus},
 };
 
-use character::sequence_handler::CharacterSequenceHandler;
-use CharacterSequenceUpdateComponents;
+use crate::{
+    character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+};
 
 #[derive(Debug)]
 pub(crate) struct JumpDescend;
 
 impl CharacterSequenceHandler for JumpDescend {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         if components.grounding == Grounding::OnGround {
             Some(CharacterSequenceId::JumpDescendLand)
         } else if components.sequence_status == SequenceStatus::End {
@@ -34,8 +33,9 @@ mod test {
     };
 
     use super::JumpDescend;
-    use character::sequence_handler::CharacterSequenceHandler;
-    use CharacterSequenceUpdateComponents;
+    use crate::{
+        character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+    };
 
     #[test]
     fn no_update_when_sequence_not_ended() {

@@ -19,7 +19,7 @@ use map_loading::MapLoadingBundle;
 use object_loading::ObjectLoadingBundle;
 use object_model::config::object::CharacterSequenceId;
 
-use SetupFunction;
+use crate::SetupFunction;
 
 /// Baselines for building Amethyst applications with Autexousious types.
 #[derive(Debug)]
@@ -166,8 +166,10 @@ mod test {
     use amethyst::{input::InputHandler, ui::MouseReactive};
     use amethyst_test::SpriteRenderAnimationFixture;
     use game_input::{PlayerActionControl, PlayerAxisControl};
-    use game_model::loaded::{CharacterAssets, MapAssets};
-    use game_model::play::GameEntities;
+    use game_model::{
+        loaded::{CharacterAssets, MapAssets},
+        play::GameEntities,
+    };
     use object_model::ObjectType;
     use strum::IntoEnumIterator;
 

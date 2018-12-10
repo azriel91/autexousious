@@ -3,10 +3,11 @@ use amethyst::{
     ecs::prelude::*,
 };
 use application_event::AppEventVariant;
+use derive_new::new;
 use stdio_spi::MapperSystem;
 use typename::TypeName;
 
-use CharacterSelectionEventStdinMapper;
+use crate::CharacterSelectionEventStdinMapper;
 
 /// Adds a `MapperSystem<CharacterSelectionEventStdinMapper>` to the `World`.
 #[derive(Debug, new)]

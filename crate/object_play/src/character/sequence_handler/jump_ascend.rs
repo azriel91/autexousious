@@ -1,15 +1,14 @@
 use object_model::{config::object::CharacterSequenceId, entity::SequenceStatus};
 
-use character::sequence_handler::CharacterSequenceHandler;
-use CharacterSequenceUpdateComponents;
+use crate::{
+    character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+};
 
 #[derive(Debug)]
 pub(crate) struct JumpAscend;
 
 impl CharacterSequenceHandler for JumpAscend {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         // Switch to jump_descend when Y axis velocity is no longer upwards.
         if components.velocity[1] <= 0. {
             Some(CharacterSequenceId::JumpDescend)
@@ -32,8 +31,9 @@ mod test {
     };
 
     use super::JumpAscend;
-    use character::sequence_handler::CharacterSequenceHandler;
-    use CharacterSequenceUpdateComponents;
+    use crate::{
+        character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+    };
 
     #[test]
     fn no_update_when_sequence_not_ended() {

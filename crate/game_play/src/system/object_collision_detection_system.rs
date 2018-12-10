@@ -10,8 +10,10 @@ use collision_model::{
     config::{BodyFrame, Interaction, InteractionFrame},
     play::CollisionEvent,
 };
+use derive_new::new;
+use log::debug;
 use shape_model::Volume;
-use typename::TypeName;
+use typename_derive::TypeName;
 
 /// Detects collisions for all objects.
 #[derive(Debug, Default, TypeName, new)]

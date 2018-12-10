@@ -48,26 +48,9 @@
 //! For the code example, please see the `01_draw_text` example in this repository, which renders
 //! text in regular, bold, italic, and bold italic fonts.
 
-extern crate amethyst;
-#[cfg(test)]
-extern crate amethyst_test;
-#[macro_use]
-extern crate application;
-#[macro_use]
-extern crate derive_more;
-#[cfg(test)]
-#[macro_use]
-extern crate log;
-#[macro_use]
-extern crate serde;
-extern crate strum;
-#[macro_use]
-extern crate strum_macros;
-
-pub use font_config::FontConfig;
-pub use font_variant::FontVariant;
-pub use theme::Theme;
-pub use theme_loader::ThemeLoader;
+pub use crate::{
+    font_config::FontConfig, font_variant::FontVariant, theme::Theme, theme_loader::ThemeLoader,
+};
 
 mod font_config;
 mod font_variant;

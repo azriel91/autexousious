@@ -6,8 +6,9 @@ use game_model::{
 };
 use map_selection_model::{MapSelection, MapSelectionEvent};
 use stdio_spi::{Result, StdinMapper};
+use typename_derive::TypeName;
 
-use MapSelectionEventArgs;
+use crate::MapSelectionEventArgs;
 
 /// Builds a `MapSelectionEvent` from stdin tokens.
 #[derive(Debug, TypeName)]
@@ -66,7 +67,7 @@ mod tests {
     use stdio_spi::{ErrorKind, Result, StdinMapper};
 
     use super::MapSelectionEventStdinMapper;
-    use MapSelectionEventArgs;
+    use crate::MapSelectionEventArgs;
 
     #[test]
     fn returns_err_when_asset_slug_invalid() {

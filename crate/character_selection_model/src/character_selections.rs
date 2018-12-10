@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use derive_new::new;
 use game_input::ControllerId;
 use game_model::loaded::SlugAndHandle;
 use object_model::loaded::Character;

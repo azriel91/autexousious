@@ -1,6 +1,6 @@
 use object_model::{config::object::CharacterSequenceId, entity::SequenceStatus};
 
-use CharacterSequenceUpdateComponents;
+use crate::CharacterSequenceUpdateComponents;
 
 #[derive(Debug)]
 pub(crate) struct SwitchSequenceOnDescend(
@@ -35,7 +35,7 @@ mod test {
     };
 
     use super::SwitchSequenceOnDescend;
-    use CharacterSequenceUpdateComponents;
+    use crate::CharacterSequenceUpdateComponents;
 
     #[test]
     fn no_update_when_sequence_not_ended() {

@@ -7,54 +7,21 @@
 //! depend on this crate and spawn objects for use by other crates. The `game_play` crate can then
 //! depend on the `application_test_support` crate for testing its systems.
 
-extern crate amethyst;
-#[cfg(test)]
-extern crate amethyst_test;
-extern crate animation_support;
-extern crate application_event;
-extern crate application_state;
-#[cfg(test)]
-extern crate asset_loading;
-#[cfg(test)]
-extern crate assets_test;
-extern crate character_selection_model;
-#[cfg(test)]
-extern crate collision_loading;
-extern crate collision_model;
-#[macro_use]
-extern crate derivative;
-#[macro_use]
-extern crate derive_new;
-extern crate game_input;
-extern crate game_model;
-#[cfg(test)]
-extern crate loading;
-#[macro_use]
-extern crate log;
-#[cfg(test)]
-extern crate map_loading;
-extern crate map_model;
-#[cfg(test)]
-extern crate map_selection;
-extern crate map_selection_model;
-#[cfg(test)]
-extern crate object_loading;
-extern crate object_model;
-extern crate typename;
-#[macro_use]
-extern crate typename_derive;
-
-pub use animation_runner::AnimationRunner;
-pub(crate) use game_loading_bundle::GameLoadingBundle;
-pub use game_loading_state::GameLoadingState;
-pub(crate) use game_loading_status::GameLoadingStatus;
-pub use multi_animation_runner::MultiAnimationRunner;
-pub use spawn::{
-    BodyAcs, CharacterComponentStorages, CharacterEntitySpawner, InteractionAcs,
-    MapLayerComponentStorages, MapLayerEntitySpawner, MapSpawningResources,
-    ObjectAnimationStorages, ObjectComponentStorages, ObjectSpawningResources, SpriteRenderAcs,
+pub use crate::{
+    animation_runner::AnimationRunner,
+    game_loading_state::GameLoadingState,
+    multi_animation_runner::MultiAnimationRunner,
+    spawn::{
+        BodyAcs, CharacterComponentStorages, CharacterEntitySpawner, InteractionAcs,
+        MapLayerComponentStorages, MapLayerEntitySpawner, MapSpawningResources,
+        ObjectAnimationStorages, ObjectComponentStorages, ObjectSpawningResources, SpriteRenderAcs,
+    },
 };
-pub(crate) use system::{CharacterSelectionSpawningSystem, MapSelectionSpawningSystem};
+pub(crate) use crate::{
+    game_loading_bundle::GameLoadingBundle,
+    game_loading_status::GameLoadingStatus,
+    system::{CharacterSelectionSpawningSystem, MapSelectionSpawningSystem},
+};
 
 mod animation_runner;
 mod game_loading_bundle;

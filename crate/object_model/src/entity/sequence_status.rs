@@ -1,4 +1,5 @@
 use amethyst::ecs::{storage::VecStorage, Component};
+use derivative::Derivative;
 
 /// Statuses that indicate whether a sequence has just begun, is ongoing, or has ended.
 #[derive(Clone, Copy, Debug, Derivative, PartialEq, Eq)]

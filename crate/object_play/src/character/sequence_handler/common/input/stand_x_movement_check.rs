@@ -1,7 +1,9 @@
 use object_model::{config::object::CharacterSequenceId, entity::RunCounter};
 
-use character::sequence_handler::{CharacterSequenceHandler, SequenceHandlerUtil};
-use CharacterSequenceUpdateComponents;
+use crate::{
+    character::sequence_handler::{CharacterSequenceHandler, SequenceHandlerUtil},
+    CharacterSequenceUpdateComponents,
+};
 
 /// Determines whether to swithc to the `Walk` or `Run` sequence based on X input.
 ///
@@ -10,16 +12,14 @@ use CharacterSequenceUpdateComponents;
 pub(crate) struct StandXMovementCheck;
 
 impl CharacterSequenceHandler for StandXMovementCheck {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         if components.controller_input.x_axis_value != 0. {
             let same_direction = SequenceHandlerUtil::input_matches_direction(
                 components.controller_input,
                 components.mirrored,
             );
 
-            let sequence_id = match components.run_counter {
+            match components.run_counter {
                 RunCounter::Unused => Some(CharacterSequenceId::Walk),
                 RunCounter::Decrease(_) => {
                     if same_direction {
@@ -29,9 +29,7 @@ impl CharacterSequenceHandler for StandXMovementCheck {
                     }
                 }
                 _ => unreachable!(), // kcov-ignore
-            };
-
-            sequence_id
+            }
         } else {
             None
         }
@@ -49,8 +47,9 @@ mod tests {
     };
 
     use super::StandXMovementCheck;
-    use character::sequence_handler::CharacterSequenceHandler;
-    use CharacterSequenceUpdateComponents;
+    use crate::{
+        character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+    };
 
     #[test]
     fn no_change_when_no_x_input() {

@@ -5,7 +5,7 @@ use amethyst::{
     assets::Handle,
 };
 
-use AnimationRunner;
+use crate::AnimationRunner;
 
 /// Starts, stops, and swaps multiple animation control sets.
 #[derive(Debug)]
@@ -92,7 +92,7 @@ macro_rules! impl_multi_runner {
     };
 }
 
-impl_multi_runner!{
+impl_multi_runner! {
     Tuple1 {
         (0) -> A
     }

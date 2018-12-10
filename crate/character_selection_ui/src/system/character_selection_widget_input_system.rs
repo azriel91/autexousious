@@ -1,11 +1,13 @@
 use amethyst::{ecs::prelude::*, shrev::EventChannel};
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
+use derive_new::new;
 use game_input::{ControllerInput, InputControlled};
 use game_model::loaded::{CharacterAssets, SlugAndHandle};
+use log::debug;
 use tracker::Last;
+use typename_derive::TypeName;
 
-use CharacterSelectionWidget;
-use WidgetState;
+use crate::{CharacterSelectionWidget, WidgetState};
 
 /// System that processes controller input and generates `CharacterSelectionEvent`s.
 ///
@@ -249,8 +251,7 @@ mod test {
     use typename::TypeName;
 
     use super::{CharacterSelectionWidgetInputSystem, CharacterSelectionWidgetInputSystemData};
-    use CharacterSelectionWidget;
-    use WidgetState;
+    use crate::{CharacterSelectionWidget, WidgetState};
 
     #[test]
     fn does_not_send_event_when_controller_input_empty() {

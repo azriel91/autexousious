@@ -7,32 +7,11 @@
 //!
 //! [obj_type]: enum.ObjectType.html
 
-extern crate amethyst;
-extern crate collision_loading;
-extern crate collision_model;
-#[macro_use]
-extern crate derivative;
-extern crate derive_deref;
-extern crate derive_more;
-#[macro_use]
-extern crate derive_new;
-extern crate fnv;
 #[cfg(test)]
 #[macro_use]
 extern crate pretty_assertions;
-extern crate serde;
-#[macro_use]
-extern crate serde_derive;
-extern crate shape_model;
-extern crate specs_derive;
-extern crate sprite_loading;
-extern crate sprite_model;
-extern crate strum;
-extern crate strum_macros;
-#[cfg(test)]
-extern crate toml;
 
-pub use object_type::ObjectType;
+pub use crate::object_type::ObjectType;
 
 pub mod config;
 pub mod entity;

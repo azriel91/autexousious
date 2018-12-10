@@ -2,7 +2,7 @@ use std::path::Path;
 
 use game_model::config::AssetRecord;
 
-use {AssetIndexingUtils, DirTraverse};
+use crate::{AssetIndexingUtils, DirTraverse};
 
 /// Indexes map assets.
 #[derive(Debug)]
@@ -27,9 +27,7 @@ impl MapIndexer {
 
 #[cfg(test)]
 mod tests {
-    use std::fs;
-    use std::io;
-    use std::path::PathBuf;
+    use std::{fs, io, path::PathBuf};
 
     use game_model::config::{AssetRecord, AssetSlugBuilder};
     use hamcrest::prelude::*;

@@ -4,7 +4,7 @@ use object_model::{
     entity::{Grounding, Mirrored, RunCounter},
 };
 
-use character::sequence_handler::SequenceHandlerUtil;
+use crate::character::sequence_handler::SequenceHandlerUtil;
 
 /// Updates the `RunCounter` component for character entities.
 #[derive(Debug)]

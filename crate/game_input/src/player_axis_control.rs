@@ -1,5 +1,7 @@
-use Axis;
-use ControllerId;
+use derive_new::new;
+use serde::{Deserialize, Serialize};
+
+use crate::{Axis, ControllerId};
 
 /// Axis control for a player.
 #[derive(Clone, Copy, Debug, Default, Deserialize, Hash, PartialEq, Eq, Serialize, new)]

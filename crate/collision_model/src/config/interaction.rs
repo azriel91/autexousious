@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use shape_model::Volume;
 
 /// Effects of one object on another

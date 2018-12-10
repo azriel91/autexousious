@@ -2,22 +2,19 @@ use amethyst::{
     core::bundle::{Result, SystemBundle},
     ecs::prelude::*,
 };
+use derive_new::new;
 use game_input::ControllerInput;
 use named_type::NamedType;
 use object_model::config::object::CharacterSequenceId;
 use tracker::LastTrackerSystem;
 use typename::TypeName;
 
-use CharacterCollisionEffectSystem;
-use CharacterGroundingSystem;
-use CharacterKinematicsSystem;
-use CharacterSequenceUpdateSystem;
-use GamePlayEndDetectionSystem;
-use GamePlayEndTransitionSystem;
-use ObjectAnimationUpdateSystem;
-use ObjectCollisionDetectionSystem;
-use ObjectKinematicsUpdateSystem;
-use ObjectTransformUpdateSystem;
+use crate::{
+    CharacterCollisionEffectSystem, CharacterGroundingSystem, CharacterKinematicsSystem,
+    CharacterSequenceUpdateSystem, GamePlayEndDetectionSystem, GamePlayEndTransitionSystem,
+    ObjectAnimationUpdateSystem, ObjectCollisionDetectionSystem, ObjectKinematicsUpdateSystem,
+    ObjectTransformUpdateSystem,
+};
 
 /// Adds the object type update systems to the provided dispatcher.
 #[derive(Debug, new)]

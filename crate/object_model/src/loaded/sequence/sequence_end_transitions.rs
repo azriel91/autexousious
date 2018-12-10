@@ -1,6 +1,7 @@
 use amethyst::ecs::{storage::DenseVecStorage, Component};
 use derive_deref::{Deref, DerefMut};
 use derive_more::From;
+use derive_new::new;
 use fnv::FnvHashMap;
 use specs_derive::Component;
 

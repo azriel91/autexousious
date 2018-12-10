@@ -1,9 +1,11 @@
 use object_model::config::object::CharacterSequenceId;
 
-use character::sequence_handler::{
-    common::SequenceRepeat, CharacterSequenceHandler, SequenceHandlerUtil,
+use crate::{
+    character::sequence_handler::{
+        common::SequenceRepeat, CharacterSequenceHandler, SequenceHandlerUtil,
+    },
+    CharacterSequenceUpdateComponents,
 };
-use CharacterSequenceUpdateComponents;
 
 /// Determines whether to switch to the `RunStop` sequence based on X input.
 ///
@@ -12,9 +14,7 @@ use CharacterSequenceUpdateComponents;
 pub(crate) struct RunStopCheck;
 
 impl CharacterSequenceHandler for RunStopCheck {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         if SequenceHandlerUtil::input_matches_direction(
             components.controller_input,
             components.mirrored,
@@ -37,8 +37,9 @@ mod tests {
     };
 
     use super::RunStopCheck;
-    use character::sequence_handler::CharacterSequenceHandler;
-    use CharacterSequenceUpdateComponents;
+    use crate::{
+        character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+    };
 
     #[test]
     fn none_when_input_same_direction() {

@@ -6,13 +6,12 @@ use amethyst::{
     ui::{FontAsset, FontHandle, TtfFormat},
 };
 use application::{
+    development_base_dirs,
     resource::{self, dir, load_in},
     Format,
 };
 
-use FontConfig;
-use FontVariant;
-use Theme;
+use crate::{FontConfig, FontVariant, Theme};
 
 /// Privates functionality to load an application theme.
 #[derive(Debug)]
@@ -68,8 +67,7 @@ mod test {
     use strum::IntoEnumIterator;
 
     use super::ThemeLoader;
-    use FontVariant;
-    use Theme;
+    use crate::{FontVariant, Theme};
 
     #[test]
     fn build_adds_theme_with_fonts_to_world() {
@@ -78,7 +76,6 @@ mod test {
 
             let theme = world.read_resource::<Theme>();
             let fonts = &theme.fonts;
-            debug!("Fonts: {:?}", &fonts);
 
             FontVariant::iter().for_each(|variant| assert!(fonts.contains_key(&variant)));
         };

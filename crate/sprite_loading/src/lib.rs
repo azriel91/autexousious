@@ -23,28 +23,19 @@
 //! }
 //! ```
 
-extern crate amethyst;
-#[cfg(test)]
-extern crate amethyst_test;
-extern crate application;
-#[cfg(test)]
-extern crate assets_test;
-#[cfg(test)]
-#[macro_use]
-extern crate derive_new;
-#[macro_use]
-extern crate log;
 #[cfg(test)]
 #[macro_use]
 extern crate pretty_assertions;
-extern crate sprite_model;
 
-pub use animation::{AnimationFrame, AnimationSequence, SpriteRenderAnimationLoader};
-pub use sprite_animation_handle::SpriteAnimationHandle;
-pub use sprite_loader::SpriteLoader;
-pub(crate) use sprite_sheet_loader::SpriteSheetLoader;
-pub(crate) use sprite_sheet_mapper::SpriteSheetMapper;
-pub(crate) use texture_loader::TextureLoader;
+pub use crate::{
+    animation::{AnimationFrame, AnimationSequence, SpriteRenderAnimationLoader},
+    sprite_animation_handle::SpriteAnimationHandle,
+    sprite_loader::SpriteLoader,
+};
+pub(crate) use crate::{
+    sprite_sheet_loader::SpriteSheetLoader, sprite_sheet_mapper::SpriteSheetMapper,
+    texture_loader::TextureLoader,
+};
 
 mod animation;
 mod sprite_animation_handle;

@@ -2,6 +2,7 @@
 name = "stdio_view"
 version = "0.7.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
+edition = "2018"
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git" }

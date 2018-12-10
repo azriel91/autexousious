@@ -1,9 +1,11 @@
 use std::marker::PhantomData;
 
 use amethyst::ecs::prelude::*;
+use derive_new::new;
 use named_type::NamedType;
+use named_type_derive::NamedType;
 
-use Last;
+use crate::Last;
 
 /// Tracks the value of an entity's component, and adds a `Last<T>` component with that value.
 ///
@@ -72,7 +74,7 @@ mod test {
     use amethyst_test::prelude::*;
 
     use super::{LastTrackerSystem, LastTrackerSystemData};
-    use Last;
+    use crate::Last;
 
     #[test]
     fn inserts_last_component_with_cloned_value() {

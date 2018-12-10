@@ -1,5 +1,8 @@
+use derive_new::new;
+use serde::{Deserialize, Serialize};
+
 /// Position of a layer on a map.
-#[derive(Clone, Copy, Debug, Default, Deserialize, PartialEq, Eq, new)]
+#[derive(Clone, Copy, Debug, Default, Deserialize, PartialEq, Eq, Serialize, new)]
 #[serde(default)]
 pub struct Position {
     /// X coordinate of the image on the map.

@@ -2,6 +2,9 @@ use amethyst::{
     assets::{Asset, Handle, ProcessingState, Result as AssetsResult},
     ecs::VecStorage,
 };
+use derivative::Derivative;
+use derive_new::new;
+use serde::{Deserialize, Serialize};
 use shape_model::Volume;
 
 /// Frame for an interactable object.

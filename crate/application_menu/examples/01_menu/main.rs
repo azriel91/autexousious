@@ -9,28 +9,10 @@
 //! * `assets/font/source-code-pro-2.030R-ro-1.050R-it/TTF/SourceCodePro-It.ttf`
 //! * `assets/font/source-code-pro-2.030R-ro-1.050R-it/TTF/SourceCodePro-Regular.ttf`
 
-extern crate amethyst;
-#[macro_use]
-extern crate application;
-extern crate application_menu;
-extern crate application_robot;
-extern crate application_ui;
-#[macro_use]
-extern crate derivative;
-#[macro_use]
-extern crate log;
-extern crate rayon;
-extern crate structopt;
-#[macro_use]
-extern crate structopt_derive;
-
 mod main_menu;
 mod other;
 
-use std::cell::RefCell;
-use std::process;
-use std::rc::Rc;
-use std::time::Duration;
+use std::{cell::RefCell, process, rc::Rc, time::Duration};
 
 use amethyst::{
     core::transform::TransformBundle,
@@ -39,14 +21,17 @@ use amethyst::{
     renderer::{DisplayConfig, Pipeline, RenderBundle, Stage},
     ui::{DrawUi, UiBundle},
 };
-use application::resource::{dir, find_in};
+use application::{
+    development_base_dirs,
+    resource::{dir, find_in},
+};
 use application_robot::{
     state::{FixedTimeoutIntercept, Intercept},
     RobotState,
 };
 use structopt::StructOpt;
 
-use main_menu::MainMenuState;
+use crate::main_menu::MainMenuState;
 
 const TITLE: &str = "Example 01: Menu";
 
@@ -86,7 +71,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_pass(DrawUi::new()),
     );
 
-    let intercepts: Vec<Rc<RefCell<Intercept<GameData, StateEvent>>>> = {
+    let intercepts: Vec<Rc<RefCell<dyn Intercept<GameData<'_, '_>, StateEvent>>>> = {
         if let Some(timeout) = opt.timeout {
             vec![Rc::new(RefCell::new(FixedTimeoutIntercept::new(
                 Duration::from_millis(timeout),

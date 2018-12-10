@@ -1,5 +1,8 @@
+use derive_new::new;
+use serde::{Deserialize, Serialize};
+
 /// Animation frame that displays a sprite.
-#[derive(Clone, Copy, Debug, Deserialize, Hash, PartialEq, Eq, new)]
+#[derive(Clone, Copy, Debug, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
 pub struct SpriteFrame {
     /// Sprite sheet number.
     ///

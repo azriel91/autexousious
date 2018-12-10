@@ -1,4 +1,5 @@
 use amethyst::renderer::{Sprite, SpriteSheet, TextureCoordinates, TextureHandle};
+use log::trace;
 use sprite_model::config::SpriteSheetDefinition;
 
 #[derive(Debug)]
@@ -186,7 +187,7 @@ mod test {
     use sprite_model::config::{SpriteOffset, SpriteSheetDefinition};
 
     use super::SpriteSheetMapper;
-    use TextureLoader;
+    use crate::TextureLoader;
 
     #[test]
     fn map_multiple_sprite_sheet_definitions() {

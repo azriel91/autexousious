@@ -1,18 +1,18 @@
 use object_model::{config::object::CharacterSequenceId, entity::SequenceStatus};
 
-use character::sequence_handler::{
-    common::{grounding::AirborneCheck, status::AliveCheck},
-    CharacterSequenceHandler,
+use crate::{
+    character::sequence_handler::{
+        common::{grounding::AirborneCheck, status::AliveCheck},
+        CharacterSequenceHandler,
+    },
+    CharacterSequenceUpdateComponents,
 };
-use CharacterSequenceUpdateComponents;
 
 #[derive(Debug)]
 pub(crate) struct RunStop;
 
 impl CharacterSequenceHandler for RunStop {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         [AliveCheck::update, AirborneCheck::update]
             .iter()
             .fold(None, |status_update, fn_update| {
@@ -39,8 +39,9 @@ mod test {
     };
 
     use super::RunStop;
-    use character::sequence_handler::CharacterSequenceHandler;
-    use CharacterSequenceUpdateComponents;
+    use crate::{
+        character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+    };
 
     #[test]
     fn jump_descend_when_airborne() {

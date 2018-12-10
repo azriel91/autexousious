@@ -1,5 +1,7 @@
-use ControlAction;
-use ControllerId;
+use derive_new::new;
+use serde::{Deserialize, Serialize};
+
+use crate::{ControlAction, ControllerId};
 
 /// Action control for a player.
 ///

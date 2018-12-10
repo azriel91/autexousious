@@ -2,9 +2,12 @@ use amethyst::{ecs::prelude::*, prelude::*, shrev::EventChannel};
 use application_event::AppEvent;
 use application_menu::MenuEvent;
 use application_state::{AppState, AppStateBuilder};
+use derivative::Derivative;
+use derive_new::new;
 use game_mode_selection_model::{GameModeSelectionEntityId, GameModeSelectionEvent};
+use log::debug;
 
-use GameModeSelectionTrans;
+use crate::GameModeSelectionTrans;
 
 /// `State` where game mode selection takes place.
 ///
@@ -53,17 +56,17 @@ impl GameModeSelectionStateDelegate {
 }
 
 impl State<GameData<'static, 'static>, AppEvent> for GameModeSelectionStateDelegate {
-    fn on_start(&mut self, mut data: StateData<GameData<'static, 'static>>) {
+    fn on_start(&mut self, mut data: StateData<'_, GameData<'static, 'static>>) {
         self.initialize_menu_event_channel(&mut data.world);
     }
 
-    fn on_stop(&mut self, _data: StateData<GameData<'static, 'static>>) {
+    fn on_stop(&mut self, _data: StateData<'_, GameData<'static, 'static>>) {
         self.terminate_menu_event_channel();
     }
 
     fn handle_event(
         &mut self,
-        data: StateData<GameData<'static, 'static>>,
+        data: StateData<'_, GameData<'static, 'static>>,
         event: AppEvent,
     ) -> Trans<GameData<'static, 'static>, AppEvent> {
         if let AppEvent::GameModeSelection(game_mode_selection_event) = event {
@@ -81,7 +84,7 @@ impl State<GameData<'static, 'static>, AppEvent> for GameModeSelectionStateDeleg
 
     fn update(
         &mut self,
-        data: StateData<GameData<'static, 'static>>,
+        data: StateData<'_, GameData<'static, 'static>>,
     ) -> Trans<GameData<'static, 'static>, AppEvent> {
         let menu_event_channel = data
             .world

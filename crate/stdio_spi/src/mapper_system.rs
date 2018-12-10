@@ -2,12 +2,13 @@ use std::marker::PhantomData;
 
 use amethyst::{ecs::prelude::*, shrev::EventChannel};
 use application_event::AppEventVariant;
+use derive_new::new;
+use log::error;
 use structopt::StructOpt;
-use typename::TypeName;
+use typename::TypeName as TypeNameTrait;
+use typename_derive::TypeName;
 
-use Result;
-use StdinMapper;
-use VariantAndTokens;
+use crate::{Result, StdinMapper, VariantAndTokens};
 
 /// Type to fetch the application event channel.
 type MapperSystemData<'s, E, SysData> = (
@@ -20,7 +21,7 @@ type MapperSystemData<'s, E, SysData> = (
 #[derive(Debug, TypeName, new)]
 pub struct MapperSystem<M>
 where
-    M: StdinMapper + TypeName,
+    M: StdinMapper + TypeNameTrait,
 {
     /// The `AppEventVariant` that this system should handle.
     variant: AppEventVariant,
@@ -33,7 +34,7 @@ where
 
 impl<'s, M> System<'s> for MapperSystem<M>
 where
-    M: StdinMapper + TypeName,
+    M: StdinMapper + TypeNameTrait,
     M::Resource: Default + Send + Sync + 'static,
 {
     type SystemData = MapperSystemData<'s, M::Event, Read<'s, M::Resource>>;

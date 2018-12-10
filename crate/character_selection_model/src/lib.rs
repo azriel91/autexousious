@@ -3,24 +3,12 @@
 
 //! Types used during character selection.
 
-extern crate amethyst_utils;
-#[macro_use]
-extern crate derivative;
-#[macro_use]
-extern crate derive_new;
-extern crate game_input;
-extern crate game_model;
-extern crate object_model;
-extern crate strum;
-#[macro_use]
-extern crate strum_macros;
-
-pub use character_selection::CharacterSelection;
-pub use character_selection_entity::CharacterSelectionEntity;
-pub use character_selection_entity_id::CharacterSelectionEntityId;
-pub use character_selection_event::CharacterSelectionEvent;
-pub use character_selections::CharacterSelections;
-pub use character_selections_status::CharacterSelectionsStatus;
+pub use crate::{
+    character_selection::CharacterSelection, character_selection_entity::CharacterSelectionEntity,
+    character_selection_entity_id::CharacterSelectionEntityId,
+    character_selection_event::CharacterSelectionEvent, character_selections::CharacterSelections,
+    character_selections_status::CharacterSelectionsStatus,
+};
 
 mod character_selection;
 mod character_selection_entity;

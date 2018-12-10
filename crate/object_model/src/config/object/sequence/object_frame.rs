@@ -1,5 +1,7 @@
 use collision_loading::{BodyAnimationFrame, InteractionAnimationFrame};
 use collision_model::config::{BodyFrame, Interaction, InteractionFrame};
+use derive_new::new;
+use serde::{Deserialize, Serialize};
 use shape_model::Volume;
 use sprite_loading::AnimationFrame;
 use sprite_model::config::SpriteFrame;
@@ -13,7 +15,7 @@ use sprite_model::config::SpriteFrame;
 /// * **Effects:** Sound(s) to play.
 /// * **Spawning:** Spawning additional object(s).
 /// * **Weapon:** Where an active weapon should be.
-#[derive(Clone, Debug, Deserialize, Hash, PartialEq, Eq, new)]
+#[derive(Clone, Debug, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
 pub struct ObjectFrame {
     /// Sprite to render.
     #[serde(flatten)]

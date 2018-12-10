@@ -6,7 +6,7 @@ use object_model::{
     loaded::{Character, CharacterHandle},
 };
 
-use object::ObjectLoader;
+use crate::object::ObjectLoader;
 
 /// Loads `Character`s from configuration.
 #[derive(Debug)]
@@ -51,7 +51,7 @@ mod test {
     };
 
     use super::CharacterLoader;
-    use ObjectLoadingBundle;
+    use crate::ObjectLoadingBundle;
 
     #[test]
     fn loads_character() {

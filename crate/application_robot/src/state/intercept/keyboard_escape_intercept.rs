@@ -1,8 +1,10 @@
-use amethyst::input::{is_close_requested, is_key_down};
-use amethyst::prelude::*;
-use amethyst::renderer::VirtualKeyCode;
+use amethyst::{
+    input::{is_close_requested, is_key_down},
+    prelude::*,
+    renderer::VirtualKeyCode,
+};
 
-use state::Intercept;
+use crate::state::Intercept;
 
 /// Exits when the `Escape` key is pressed.
 #[derive(Clone, Debug, Default)]
@@ -11,7 +13,7 @@ pub struct KeyboardEscapeIntercept;
 impl<T> Intercept<T, StateEvent> for KeyboardEscapeIntercept {
     fn handle_event_begin(
         &mut self,
-        _data: &mut StateData<T>,
+        _data: &mut StateData<'_, T>,
         event: &mut StateEvent,
     ) -> Option<Trans<T, StateEvent>> {
         if let StateEvent::Window(event) = &event {
@@ -30,8 +32,10 @@ impl<T> Intercept<T, StateEvent> for KeyboardEscapeIntercept {
 #[cfg(test)]
 #[cfg(all(windows, feature = "test_ui"))]
 mod test {
-    use amethyst::prelude::*;
-    use amethyst::renderer::{Event, WindowEvent};
+    use amethyst::{
+        prelude::*,
+        renderer::{Event, WindowEvent},
+    };
     use debug_util_amethyst::assert_eq_opt_trans;
     use enigo::{Enigo, Key, KeyboardControllable};
     use winit::{ControlFlow, EventsLoop, Window};

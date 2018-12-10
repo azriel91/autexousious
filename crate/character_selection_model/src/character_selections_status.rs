@@ -1,3 +1,6 @@
+use derivative::Derivative;
+use strum_macros::Display;
+
 /// State of all character selections.
 #[derive(Clone, Copy, Debug, Derivative, Display, PartialEq, Eq)]
 #[derivative(Default)]

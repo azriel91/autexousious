@@ -1,8 +1,9 @@
 use std::path::Path;
 
 use application::resource::IoUtils;
+use log::error;
 
-use {DirTraverse, NamespaceDirectory};
+use crate::{DirTraverse, NamespaceDirectory};
 
 /// Directory under `assets` with test application configuration.
 pub const ASSETS_TEST_DIR: &str = "test";
@@ -60,14 +61,13 @@ impl NamespaceDiscoverer {
 
 #[cfg(test)]
 mod tests {
-    use std::fs;
-    use std::io;
+    use std::{fs, io};
 
     use hamcrest::prelude::*;
     use tempfile::tempdir;
 
     use super::{NamespaceDiscoverer, ASSETS_DEFAULT_DIR, ASSETS_DOWNLOAD_DIR, ASSETS_TEST_DIR};
-    use NamespaceDirectory;
+    use crate::NamespaceDirectory;
 
     #[test]
     fn child_directories_returns_directory_children_and_symlinked_directories() -> io::Result<()> {
@@ -86,10 +86,10 @@ mod tests {
             &user1_dir,
             &user2_dir,
         ]
-            .iter()
-            .fold(Ok(()), |result, dir| {
-                result.and_then(|_| fs::create_dir(&dir))
-            })?;
+        .iter()
+        .fold(Ok(()), |result, dir| {
+            result.and_then(|_| fs::create_dir(&dir))
+        })?;
 
         assert_that!(
             &NamespaceDiscoverer::discover(&assets_dir),

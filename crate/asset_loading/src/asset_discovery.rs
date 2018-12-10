@@ -2,7 +2,7 @@ use std::path::Path;
 
 use game_model::config::AssetIndex;
 
-use {AssetIndexer, NamespaceDiscoverer};
+use crate::{AssetIndexer, NamespaceDiscoverer};
 
 /// Discovers assets across multiple namespaces.
 #[derive(Debug)]
@@ -30,9 +30,7 @@ impl AssetDiscovery {
 
 #[cfg(test)]
 mod tests {
-    use std::fs;
-    use std::io;
-    use std::path::PathBuf;
+    use std::{fs, io, path::PathBuf};
 
     use game_model::config::{AssetRecord, AssetSlugBuilder};
     use hamcrest::prelude::*;
@@ -40,7 +38,7 @@ mod tests {
     use tempfile::tempdir;
 
     use super::AssetDiscovery;
-    use {ASSETS_DEFAULT_DIR, ASSETS_DOWNLOAD_DIR, ASSETS_TEST_DIR};
+    use crate::{ASSETS_DEFAULT_DIR, ASSETS_DOWNLOAD_DIR, ASSETS_TEST_DIR};
 
     #[test]
     fn returns_merged_asset_index() -> io::Result<()> {
@@ -65,8 +63,8 @@ mod tests {
                 "character",
                 "char_0",
             ]
-                .iter()
-                .collect::<PathBuf>(),
+            .iter()
+            .collect::<PathBuf>(),
         );
         [&map_0_dir, &map_1_dir, &char_0_dir]
             .iter()

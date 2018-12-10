@@ -1,10 +1,11 @@
 use game_model::config::{AssetSlug, AssetSlugBuilder};
+use lazy_static::lazy_static;
 use map_model::{
     config::{MapBounds, MapDefinition, MapHeader},
     loaded::{Map, Margins},
 };
 
-use NAMESPACE_BUILT_IN;
+use crate::NAMESPACE_BUILT_IN;
 
 /// Name of the "blank" map asset.
 pub const MAP_BLANK_NAME: &str = "blank";

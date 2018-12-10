@@ -1,22 +1,19 @@
 use game_mode_selection_model::GameModeIndex;
+use structopt_derive::StructOpt;
 
 /// Parameters to the mapper.
 ///
 /// # Examples
 ///
-/// * `map_selection select -s default/eruption`
-//
-// TODO: Pending <https://github.com/TeXitoi/structopt/issues/18>
-// TODO: Update `StructOpt` to support automatic snake_case names.
+/// * `game_mode_selection select -s start_game`
 #[derive(Clone, Debug, PartialEq, StructOpt)]
+#[structopt(rename_all = "snake_case")]
 pub enum GameModeSelectionEventArgs {
     /// Select event.
-    #[structopt(name = "select")]
     Select {
         /// Index of the selection.
         index: GameModeIndex,
     },
     /// Close event.
-    #[structopt(name = "close")]
     Close,
 }

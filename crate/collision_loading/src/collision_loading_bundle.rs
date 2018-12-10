@@ -4,9 +4,10 @@ use amethyst::{
     ecs::prelude::*,
 };
 use collision_model::config::{BodyFrame, InteractionFrame};
+use derive_new::new;
 use typename::TypeName;
 
-use CollisionLoadingSystem;
+use crate::CollisionLoadingSystem;
 
 /// Adds `BodyFrame` and `InteractionFrame` processors to the `World`.
 ///

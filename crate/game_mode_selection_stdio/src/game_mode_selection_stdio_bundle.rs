@@ -3,10 +3,11 @@ use amethyst::{
     ecs::prelude::*,
 };
 use application_event::AppEventVariant;
+use derive_new::new;
 use stdio_spi::MapperSystem;
 use typename::TypeName;
 
-use GameModeSelectionEventStdinMapper;
+use crate::GameModeSelectionEventStdinMapper;
 
 /// Adds a `MapperSystem<GameModeSelectionEventStdinMapper>` to the `World`.
 #[derive(Debug, new)]

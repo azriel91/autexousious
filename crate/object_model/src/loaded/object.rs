@@ -7,9 +7,13 @@ use amethyst::{
         Component,
     },
 };
+use derivative::Derivative;
+use derive_new::new;
 
-use config::object::{CharacterSequenceId, SequenceId};
-use loaded::{AnimatedComponentAnimation, AnimatedComponentDefault};
+use crate::{
+    config::object::{CharacterSequenceId, SequenceId},
+    loaded::{AnimatedComponentAnimation, AnimatedComponentDefault},
+};
 
 /// Represents an in-game object that has been loaded.
 #[derive(Clone, Derivative, PartialEq, new)]

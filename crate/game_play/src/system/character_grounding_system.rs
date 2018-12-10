@@ -1,7 +1,9 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
+use derive_new::new;
 use map_model::loaded::Map;
 use map_selection_model::MapSelection;
 use object_model::entity::{Grounding, Position, Velocity};
+use typename_derive::TypeName;
 
 /// Updates `Character` kinematics based on sequence.
 #[derive(Debug, Default, TypeName, new)]
@@ -28,7 +30,7 @@ impl<'s> System<'s> for CharacterGroundingSystem {
                 .expect("Expected map to be loaded.")
         };
 
-        for (mut position, mut velocity, mut grounding) in
+        for (position, velocity, grounding) in
             (&mut positions, &mut velocities, &mut groundings).join()
         {
             // X axis
@@ -80,8 +82,8 @@ mod tests {
                 .with_setup(|world| {
                     world.exec(
                         |(mut positions, groundings): (
-                            WriteStorage<Position<f32>>,
-                            ReadStorage<Grounding>,
+                            WriteStorage<'_, Position<f32>>,
+                            ReadStorage<'_, Grounding>,
                         )| {
                             for (position, _) in (&mut positions, &groundings).join() {
                                 position[0] = -10.;
@@ -99,8 +101,8 @@ mod tests {
                 .with_assertion(|world| {
                     world.exec(
                         |(positions, groundings): (
-                            ReadStorage<Position<f32>>,
-                            ReadStorage<Grounding>,
+                            ReadStorage<'_, Position<f32>>,
+                            ReadStorage<'_, Grounding>,
                         )| {
                             for (position, _) in (&positions, &groundings).join() {
                                 assert_eq!(1., position[0]);
@@ -127,8 +129,8 @@ mod tests {
                 .with_setup(|world| {
                     world.exec(
                         |(mut positions, groundings): (
-                            WriteStorage<Position<f32>>,
-                            ReadStorage<Grounding>,
+                            WriteStorage<'_, Position<f32>>,
+                            ReadStorage<'_, Grounding>,
                         )| {
                             for (position, _) in (&mut positions, &groundings).join() {
                                 position[0] = 2000.;
@@ -146,8 +148,8 @@ mod tests {
                 .with_assertion(|world| {
                     world.exec(
                         |(positions, groundings): (
-                            ReadStorage<Position<f32>>,
-                            ReadStorage<Grounding>,
+                            ReadStorage<'_, Position<f32>>,
+                            ReadStorage<'_, Grounding>,
                         )| {
                             for (position, _) in (&positions, &groundings).join() {
                                 assert_eq!(801., position[0]);
@@ -177,8 +179,8 @@ mod tests {
             .with_setup(|world| {
                 world.exec(
                     |(mut positions, mut groundings): (
-                        WriteStorage<Position<f32>>,
-                        WriteStorage<Grounding>,
+                        WriteStorage<'_, Position<f32>>,
+                        WriteStorage<'_, Grounding>,
                     )| {
                         for (position, grounding) in (&mut positions, &mut groundings).join() {
                             position[1] = 300.;
@@ -195,8 +197,8 @@ mod tests {
             .with_assertion(|world| {
                 world.exec(
                     |(positions, groundings): (
-                        ReadStorage<Position<f32>>,
-                        ReadStorage<Grounding>,
+                        ReadStorage<'_, Position<f32>>,
+                        ReadStorage<'_, Grounding>,
                     )| {
                         for (_, grounding) in (&positions, &groundings).join() {
                             assert_eq!(Grounding::Airborne, *grounding);
@@ -218,8 +220,8 @@ mod tests {
                 .with_setup(|world| {
                     world.exec(
                         |(mut positions, mut groundings): (
-                            WriteStorage<Position<f32>>,
-                            WriteStorage<Grounding>,
+                            WriteStorage<'_, Position<f32>>,
+                            WriteStorage<'_, Grounding>,
                         )| {
                             for (position, grounding) in (&mut positions, &mut groundings).join() {
                                 position[1] = 200.;
@@ -236,8 +238,8 @@ mod tests {
                 .with_assertion(|world| {
                     world.exec(
                         |(positions, groundings): (
-                            ReadStorage<Position<f32>>,
-                            ReadStorage<Grounding>,
+                            ReadStorage<'_, Position<f32>>,
+                            ReadStorage<'_, Grounding>,
                         )| {
                             for (_, grounding) in (&positions, &groundings).join() {
                                 assert_eq!(Grounding::OnGround, *grounding);

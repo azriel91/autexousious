@@ -13,14 +13,14 @@ const FONT_SIZE: f32 = 25.;
 pub struct TextState;
 
 impl<'a, 'b> State<GameData<'a, 'b>, StateEvent> for TextState {
-    fn on_start(&mut self, mut data: StateData<GameData>) {
+    fn on_start(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
         load_fonts(&mut data.world);
         initialize_text(&mut data.world);
     }
 
     fn handle_event(
         &mut self,
-        _data: StateData<GameData>,
+        _data: StateData<'_, GameData<'_, '_>>,
         event: StateEvent,
     ) -> Trans<GameData<'a, 'b>, StateEvent> {
         if let StateEvent::Window(event) = &event {
@@ -34,7 +34,10 @@ impl<'a, 'b> State<GameData<'a, 'b>, StateEvent> for TextState {
         }
     }
 
-    fn update(&mut self, data: StateData<GameData>) -> Trans<GameData<'a, 'b>, StateEvent> {
+    fn update(
+        &mut self,
+        data: StateData<'_, GameData<'_, '_>>,
+    ) -> Trans<GameData<'a, 'b>, StateEvent> {
         data.data.update(&data.world);
         Trans::None
     }

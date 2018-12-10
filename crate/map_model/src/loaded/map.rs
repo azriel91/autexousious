@@ -3,10 +3,10 @@ use amethyst::{
     ecs::prelude::*,
     renderer::SpriteSheetHandle,
 };
+use derive_new::new;
 use sprite_loading::SpriteAnimationHandle;
 
-use config::MapDefinition;
-use loaded::Margins;
+use crate::{config::MapDefinition, loaded::Margins};
 
 /// Loaded representation of a `Map`.
 #[derive(Clone, Debug, PartialEq, new)]

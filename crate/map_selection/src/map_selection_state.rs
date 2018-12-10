@@ -1,12 +1,14 @@
-use std::fmt::Debug;
-use std::marker::PhantomData;
+use std::{fmt::Debug, marker::PhantomData};
 
 use amethyst::{ecs::prelude::*, prelude::*, shrev::EventChannel};
 use application_event::AppEvent;
 use application_state::{AppState, AppStateBuilder, AutexState};
+use derivative::Derivative;
+use derive_new::new;
+use log::{debug, info};
 use map_selection_model::{MapSelection, MapSelectionEntityId, MapSelectionEvent};
 
-use MapSelectionStatus;
+use crate::MapSelectionStatus;
 
 /// `State` where map selection takes place.
 ///
@@ -54,7 +56,7 @@ where
     #[derivative(Debug(bound = "F: Debug"))]
     next_state_fn: F,
     /// `PhantomData`.
-    marker: PhantomData<AutexState<'a, 'b>>,
+    marker: PhantomData<dyn AutexState<'a, 'b>>,
 }
 
 impl<'a, 'b, F, S> MapSelectionStateDelegate<'a, 'b, F, S>
@@ -73,17 +75,17 @@ where
     F: Fn() -> Box<S>,
     S: AutexState<'a, 'b> + 'static,
 {
-    fn on_start(&mut self, mut data: StateData<GameData<'a, 'b>>) {
+    fn on_start(&mut self, mut data: StateData<'_, GameData<'a, 'b>>) {
         self.reset_map_selection_state(&mut data.world);
     }
 
-    fn on_resume(&mut self, data: StateData<GameData<'a, 'b>>) {
+    fn on_resume(&mut self, data: StateData<'_, GameData<'a, 'b>>) {
         self.reset_map_selection_state(data.world);
     }
 
     fn handle_event(
         &mut self,
-        data: StateData<GameData<'a, 'b>>,
+        data: StateData<'_, GameData<'a, 'b>>,
         event: AppEvent,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
         if let AppEvent::MapSelection(map_selection_event) = event {
@@ -96,7 +98,10 @@ where
         Trans::None
     }
 
-    fn update(&mut self, data: StateData<GameData<'a, 'b>>) -> Trans<GameData<'a, 'b>, AppEvent> {
+    fn update(
+        &mut self,
+        data: StateData<'_, GameData<'a, 'b>>,
+    ) -> Trans<GameData<'a, 'b>, AppEvent> {
         let map_selection_status = data.world.read_resource::<MapSelectionStatus>();
         if *map_selection_status == MapSelectionStatus::Confirmed {
             let map_selection = data.world.read_resource::<MapSelection>();

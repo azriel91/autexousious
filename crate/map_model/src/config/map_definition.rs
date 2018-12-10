@@ -1,8 +1,10 @@
-use config::Layer;
-use config::MapHeader;
+use derive_new::new;
+use serde::{Deserialize, Serialize};
+
+use crate::config::{Layer, MapHeader};
 
 /// Defines a playable area that objects can reside in.
-#[derive(Clone, Debug, Deserialize, PartialEq, new)]
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, new)]
 pub struct MapDefinition {
     /// Base information of the map.
     pub header: MapHeader,
@@ -17,7 +19,7 @@ mod test {
     use toml;
 
     use super::MapDefinition;
-    use config::{Layer, MapBounds, MapHeader, Position};
+    use crate::config::{Layer, MapBounds, MapHeader, Position};
 
     const MAP_NO_LAYERS: &str = r#"
         [header]

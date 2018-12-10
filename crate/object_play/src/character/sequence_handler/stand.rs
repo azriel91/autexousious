@@ -1,23 +1,23 @@
 use object_model::config::object::CharacterSequenceId;
 
-use character::sequence_handler::{
-    common::{
-        grounding::AirborneCheck,
-        input::{JumpCheck, StandAttackCheck, StandXMovementCheck, StandZMovementCheck},
-        status::AliveCheck,
-        SequenceRepeat,
+use crate::{
+    character::sequence_handler::{
+        common::{
+            grounding::AirborneCheck,
+            input::{JumpCheck, StandAttackCheck, StandXMovementCheck, StandZMovementCheck},
+            status::AliveCheck,
+            SequenceRepeat,
+        },
+        CharacterSequenceHandler,
     },
-    CharacterSequenceHandler,
+    CharacterSequenceUpdateComponents,
 };
-use CharacterSequenceUpdateComponents;
 
 #[derive(Debug)]
 pub(crate) struct Stand;
 
 impl CharacterSequenceHandler for Stand {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         use object_model::entity::RunCounter::*;
         match components.run_counter {
             Exceeded | Increase(_) => panic!(
@@ -54,8 +54,9 @@ mod test {
     };
 
     use super::Stand;
-    use character::sequence_handler::CharacterSequenceHandler;
-    use CharacterSequenceUpdateComponents;
+    use crate::{
+        character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+    };
 
     #[test]
     fn no_change_when_no_input() {

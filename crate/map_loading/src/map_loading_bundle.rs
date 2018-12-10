@@ -3,6 +3,7 @@ use amethyst::{
     core::bundle::{Result, SystemBundle},
     ecs::prelude::*,
 };
+use derive_new::new;
 use map_model::loaded::Map;
 
 /// Adds `Processor<Map>` to the `World`.
@@ -26,7 +27,7 @@ mod test {
     use map_model::loaded::{Map, MapHandle};
 
     use super::MapLoadingBundle;
-    use MapLoader;
+    use crate::MapLoader;
 
     #[test]
     fn bundle_build_adds_map_processor() {

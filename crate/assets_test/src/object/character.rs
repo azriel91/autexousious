@@ -2,10 +2,10 @@ use std::path::PathBuf;
 
 use game_model::config::{AssetSlug, AssetSlugBuilder};
 use heck::SnakeCase;
+use lazy_static::lazy_static;
 use object_model::ObjectType;
 
-use ASSETS_OBJECT_PATH;
-use NAMESPACE_TEST;
+use crate::{ASSETS_OBJECT_PATH, NAMESPACE_TEST};
 
 /// Name of the "bat" character asset.
 pub const ASSETS_CHAR_BAT_NAME: &str = "bat";

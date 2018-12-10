@@ -2,9 +2,10 @@ use amethyst::{
     core::bundle::{Result, SystemBundle},
     ecs::prelude::*,
 };
+use derive_new::new;
 use typename::TypeName;
 
-use UiEventHandlerSystem;
+use crate::UiEventHandlerSystem;
 
 /// Adds the systems that set up and manage the `GameModeSelectionUi`.
 ///

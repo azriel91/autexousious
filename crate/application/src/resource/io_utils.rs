@@ -1,8 +1,12 @@
-use std::fs::File;
-use std::io::prelude::*;
-use std::path::{Component, Path};
+use std::{
+    fs::File,
+    io::prelude::*,
+    path::{Component, Path},
+};
 
-use resource::{Error, Result};
+use log::debug;
+
+use crate::resource::{Error, Result};
 
 /// One-liner functions to interact with files.
 #[derive(Debug)]
@@ -70,13 +74,12 @@ impl IoUtils {
 
 #[cfg(test)]
 mod test {
-    use std::io::prelude::*;
-    use std::path::Path;
+    use std::{io::prelude::*, path::Path};
 
     use tempfile::NamedTempFile;
 
     use super::IoUtils;
-    use ErrorKind;
+    use crate::ErrorKind;
 
     #[test]
     fn reads_file_to_bytes() {

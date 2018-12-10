@@ -1,4 +1,4 @@
-use AnimationFrame;
+use crate::AnimationFrame;
 
 /// Information for an animation sequence.
 pub trait AnimationSequence {

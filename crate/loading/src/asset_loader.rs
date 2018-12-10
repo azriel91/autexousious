@@ -1,5 +1,4 @@
-use std::collections::HashMap;
-use std::path::Path;
+use std::{collections::HashMap, path::Path};
 
 use amethyst::{
     assets::{Loader, Progress},
@@ -11,6 +10,7 @@ use game_model::{
     config::AssetRecord,
     loaded::{CharacterAssets, MapAssets},
 };
+use log::{debug, error};
 use map_loading::MapLoader;
 use map_model::loaded::MapHandle;
 use object_loading::CharacterLoader;

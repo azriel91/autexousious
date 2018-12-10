@@ -2,6 +2,7 @@ use std::path::Path;
 
 use amethyst::{assets::Loader, prelude::*};
 use application::{load_in, ErrorKind, Format, Result};
+use log::debug;
 use map_model::{
     config::MapDefinition,
     loaded::{Map, MapHandle, Margins},
@@ -69,7 +70,7 @@ mod tests {
     use map_model::loaded::{Map, MapHandle};
 
     use super::MapLoader;
-    use MapLoadingBundle;
+    use crate::MapLoadingBundle;
 
     // Map with layers case covered by `MapLoadingBundle` test
 

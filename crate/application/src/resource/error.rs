@@ -1,11 +1,12 @@
 use std::io;
 
 use amethyst::{self, config::ConfigError, core};
+use derive_error_chain::ErrorChain;
 use error_chain;
 use ron;
 use toml;
 
-use resource::FindContext;
+use crate::resource::FindContext;
 
 // kcov-ignore-start
 /// `ErrorKind` for application configuration
@@ -23,17 +24,11 @@ pub enum ErrorKind {
     Io(io::Error),
 
     /// Error when failing to find a configuration file
-    #[error_chain(
-        foreign,
-        display = r#"|e| write!(f, "ron::de::Error: `{}`", e)"#
-    )]
+    #[error_chain(foreign, display = r#"|e| write!(f, "ron::de::Error: `{}`", e)"#)]
     RonDeserialization(ron::de::Error),
 
     /// Error when failing to find a configuration file
-    #[error_chain(
-        foreign,
-        display = r#"|e| write!(f, "toml::de::Error: `{}`", e)"#
-    )]
+    #[error_chain(foreign, display = r#"|e| write!(f, "toml::de::Error: `{}`", e)"#)]
     TomlDeserialization(toml::de::Error),
 }
 // kcov-ignore-end
@@ -73,14 +68,14 @@ impl From<Error> for core::Error {
 
 #[cfg(test)]
 mod test {
-    use std::io;
-    use std::path::PathBuf;
+    use std::{io, path::PathBuf};
 
     use ron;
+    use serde::Deserialize;
     use toml;
 
     use super::{Error, ErrorKind};
-    use FindContext;
+    use crate::FindContext;
 
     #[test]
     fn msg_error_into_io_error() {

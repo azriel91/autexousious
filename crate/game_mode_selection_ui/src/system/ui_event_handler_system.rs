@@ -5,6 +5,8 @@ use amethyst::{
 };
 use application_menu::{MenuEvent, MenuItem};
 use game_mode_selection_model::GameModeIndex;
+use log::debug;
+use typename_derive::TypeName;
 
 /// System that processes `UiEvent`s and generates `MenuEvent`s.
 #[derive(Debug, Default, TypeName)]

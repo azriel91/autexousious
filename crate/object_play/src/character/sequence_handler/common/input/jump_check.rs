@@ -1,16 +1,15 @@
 use object_model::config::object::CharacterSequenceId;
 
-use character::sequence_handler::CharacterSequenceHandler;
-use CharacterSequenceUpdateComponents;
+use crate::{
+    character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+};
 
 /// Returns a `Jump` update if jump is pressed.
 #[derive(Debug)]
 pub(crate) struct JumpCheck;
 
 impl CharacterSequenceHandler for JumpCheck {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         // TODO: Don't handle action buttons in `CharacterSequenceHandler`s. Instead, each sequence
         // has default sequence update IDs for each action button, which are overridden by
         // configuration.
@@ -33,8 +32,9 @@ mod tests {
     };
 
     use super::JumpCheck;
-    use character::sequence_handler::CharacterSequenceHandler;
-    use CharacterSequenceUpdateComponents;
+    use crate::{
+        character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+    };
 
     #[test]
     fn returns_none_when_jump_is_not_pressed() {

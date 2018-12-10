@@ -1,6 +1,8 @@
 use amethyst::{ecs::prelude::*, input::InputHandler};
+use derive_new::new;
+use typename_derive::TypeName;
 
-use {
+use crate::{
     Axis, ControlAction, ControllerInput, InputConfig, InputControlled, PlayerActionControl,
     PlayerAxisControl,
 };
@@ -76,11 +78,9 @@ mod test {
     use typename::TypeName;
 
     use super::ControllerInputUpdateSystem;
-    use ControllerInput;
-    use InputConfig;
-    use InputControlled;
-    use PlayerActionControl;
-    use PlayerAxisControl;
+    use crate::{
+        ControllerInput, InputConfig, InputControlled, PlayerActionControl, PlayerAxisControl,
+    };
 
     #[test]
     fn updates_controller_input_from_input_bindings() {

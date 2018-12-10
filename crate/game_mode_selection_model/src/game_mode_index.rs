@@ -1,3 +1,5 @@
+use strum_macros::{Display, EnumIter, EnumString};
+
 /// Game mode menu indicies.
 #[derive(Clone, Copy, Debug, Display, EnumIter, EnumString, PartialEq)]
 #[strum(serialize_all = "snake_case")]

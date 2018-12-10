@@ -1,4 +1,5 @@
 use amethyst::ecs::prelude::*;
+use derive_new::new;
 
 /// Input for a character entity.
 // TODO: Map of actions and axes <https://gitlab.com/azriel91/autexousious/issues/73>.
