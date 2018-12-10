@@ -45,10 +45,7 @@ impl ObjectLoader {
             .sequences
             .iter()
             .map(|(sequence_id, sequence)| {
-                (
-                    *sequence_id,
-                    SequenceEndTransition::new(sequence.next.clone()),
-                )
+                (*sequence_id, SequenceEndTransition::new(sequence.next))
             })
             .collect::<FnvHashMap<_, _>>();
 
