@@ -30,10 +30,7 @@
 //! [load_in]: resource/fn.load_in.html
 
 #[macro_use]
-extern crate derive_error_chain;
-#[macro_use]
 extern crate derive_more;
-use error_chain;
 #[cfg(test)]
 #[macro_use]
 extern crate lazy_static;
@@ -42,7 +39,6 @@ extern crate log;
 #[cfg(test)]
 #[macro_use]
 extern crate pretty_assertions;
-use ron;
 #[cfg(test)]
 #[macro_use]
 extern crate serde;

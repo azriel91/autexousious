@@ -3,10 +3,6 @@
 
 //! Types and traits to allow the `stdio_view` to control a state.
 
-use clap;
-#[macro_use]
-extern crate derive_error_chain;
-
 #[macro_use]
 extern crate log;
 

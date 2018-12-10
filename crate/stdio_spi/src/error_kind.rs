@@ -1,4 +1,5 @@
 use clap;
+use derive_error_chain::ErrorChain;
 
 /// Kinds of errors when handling stdio logic.
 #[derive(Debug, ErrorChain)]

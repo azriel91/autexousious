@@ -1,6 +1,7 @@
 use std::io;
 
 use amethyst::{self, config::ConfigError, core};
+use derive_error_chain::ErrorChain;
 use error_chain;
 
 use crate::resource::{self, dir::DiscoveryContext};
