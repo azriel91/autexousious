@@ -9,9 +9,7 @@ use crate::{
 pub(crate) struct SequenceRepeat;
 
 impl CharacterSequenceHandler for SequenceRepeat {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         if components.sequence_status == SequenceStatus::End {
             Some(components.character_sequence_id)
         } else {

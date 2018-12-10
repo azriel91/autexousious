@@ -12,9 +12,7 @@ const FALL_FORWARD_LAND: SwitchSequenceOnEnd =
 pub(crate) struct FallForwardLand;
 
 impl CharacterSequenceHandler for FallForwardLand {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         FALL_FORWARD_LAND.update(components.sequence_status)
     }
 }

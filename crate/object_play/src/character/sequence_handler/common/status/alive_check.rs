@@ -9,9 +9,7 @@ use crate::{
 pub(crate) struct AliveCheck;
 
 impl CharacterSequenceHandler for AliveCheck {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         if components.health_points == 0 {
             Some(CharacterSequenceId::FallForwardDescend)
         } else {

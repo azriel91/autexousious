@@ -8,9 +8,7 @@ use crate::{
 pub(crate) struct JumpOff;
 
 impl CharacterSequenceHandler for JumpOff {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         // Switch to jump_descend when Y axis velocity is no longer upwards.
         if components.velocity[1] <= 0. {
             Some(CharacterSequenceId::JumpDescend)

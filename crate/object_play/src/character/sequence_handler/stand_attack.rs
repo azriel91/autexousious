@@ -8,9 +8,7 @@ use crate::{
 pub(crate) struct StandAttack;
 
 impl CharacterSequenceHandler for StandAttack {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         if components.sequence_status == SequenceStatus::End {
             Some(CharacterSequenceId::Stand)
         } else {

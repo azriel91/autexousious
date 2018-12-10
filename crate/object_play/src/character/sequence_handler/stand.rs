@@ -17,9 +17,7 @@ use crate::{
 pub(crate) struct Stand;
 
 impl CharacterSequenceHandler for Stand {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         use object_model::entity::RunCounter::*;
         match components.run_counter {
             Exceeded | Increase(_) => panic!(

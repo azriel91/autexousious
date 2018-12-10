@@ -1,3 +1,6 @@
+// See comment on struct. This attribute isn't detected if we put it on the struct.
+#![allow(clippy::too_many_arguments)]
+
 use derive_new::new;
 use game_input::ControllerInput;
 use object_model::{
@@ -6,6 +9,9 @@ use object_model::{
 };
 
 /// Components used to compute character sequence updates.
+///
+/// TODO: Reduce number of arguments passed, perhaps by splitting the sequence update handlers into
+/// separate systems.
 #[derive(Clone, Copy, Debug, new)]
 pub struct CharacterSequenceUpdateComponents<'c> {
     /// Controller input of the character.

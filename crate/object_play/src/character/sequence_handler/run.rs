@@ -13,9 +13,7 @@ use crate::{
 pub(crate) struct Run;
 
 impl CharacterSequenceHandler for Run {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         [
             AliveCheck::update,
             AirborneCheck::update,

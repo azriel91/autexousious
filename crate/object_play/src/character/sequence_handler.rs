@@ -44,9 +44,7 @@ pub(super) trait CharacterSequenceHandler {
     /// # Parameters
     ///
     /// * `components`: Components used to compute character sequence updates.
-    fn update<'c>(
-        _components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(_components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         None
     }
 }

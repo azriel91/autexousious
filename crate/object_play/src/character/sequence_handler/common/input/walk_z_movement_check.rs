@@ -12,9 +12,7 @@ use crate::{
 pub(crate) struct WalkZMovementCheck;
 
 impl CharacterSequenceHandler for WalkZMovementCheck {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         if components.controller_input.z_axis_value != 0. {
             SequenceRepeat::update(components)
         } else {

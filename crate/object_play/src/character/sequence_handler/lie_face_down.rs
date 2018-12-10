@@ -11,9 +11,7 @@ const LIE_FACE_DOWN: SwitchSequenceOnEnd = SwitchSequenceOnEnd(CharacterSequence
 pub(crate) struct LieFaceDown;
 
 impl CharacterSequenceHandler for LieFaceDown {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         if components.health_points > 0 {
             LIE_FACE_DOWN.update(components.sequence_status)
         } else {

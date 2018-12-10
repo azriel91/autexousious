@@ -12,16 +12,14 @@ use crate::{
 pub(crate) struct StandXMovementCheck;
 
 impl CharacterSequenceHandler for StandXMovementCheck {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         if components.controller_input.x_axis_value != 0. {
             let same_direction = SequenceHandlerUtil::input_matches_direction(
                 components.controller_input,
                 components.mirrored,
             );
 
-            let sequence_id = match components.run_counter {
+            match components.run_counter {
                 RunCounter::Unused => Some(CharacterSequenceId::Walk),
                 RunCounter::Decrease(_) => {
                     if same_direction {
@@ -31,9 +29,7 @@ impl CharacterSequenceHandler for StandXMovementCheck {
                     }
                 }
                 _ => unreachable!(), // kcov-ignore
-            };
-
-            sequence_id
+            }
         } else {
             None
         }

@@ -9,9 +9,7 @@ use crate::{
 pub(crate) struct JumpCheck;
 
 impl CharacterSequenceHandler for JumpCheck {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         // TODO: Don't handle action buttons in `CharacterSequenceHandler`s. Instead, each sequence
         // has default sequence update IDs for each action button, which are overridden by
         // configuration.

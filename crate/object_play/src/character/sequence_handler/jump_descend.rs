@@ -11,9 +11,7 @@ use crate::{
 pub(crate) struct JumpDescend;
 
 impl CharacterSequenceHandler for JumpDescend {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         if components.grounding == Grounding::OnGround {
             Some(CharacterSequenceId::JumpDescendLand)
         } else if components.sequence_status == SequenceStatus::End {

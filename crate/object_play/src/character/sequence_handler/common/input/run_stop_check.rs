@@ -14,9 +14,7 @@ use crate::{
 pub(crate) struct RunStopCheck;
 
 impl CharacterSequenceHandler for RunStopCheck {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         if SequenceHandlerUtil::input_matches_direction(
             components.controller_input,
             components.mirrored,

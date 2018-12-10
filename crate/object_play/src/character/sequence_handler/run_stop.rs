@@ -12,9 +12,7 @@ use crate::{
 pub(crate) struct RunStop;
 
 impl CharacterSequenceHandler for RunStop {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         [AliveCheck::update, AirborneCheck::update]
             .iter()
             .fold(None, |status_update, fn_update| {

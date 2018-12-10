@@ -14,9 +14,7 @@ use crate::{
 pub(crate) struct WalkXMovementCheck;
 
 impl CharacterSequenceHandler for WalkXMovementCheck {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         if components.controller_input.x_axis_value != 0. {
             let same_direction = SequenceHandlerUtil::input_matches_direction(
                 components.controller_input,

@@ -62,8 +62,7 @@ impl GamePlayState {
         //
         // * <https://github.com/rust-lang-nursery/rust-clippy/issues/1524>
         // * <https://github.com/rust-lang-nursery/rust-clippy/issues/2904>
-        #[allow(unknown_lints)]
-        #[allow(let_and_return)]
+        #[allow(clippy::let_and_return)]
         let entities = {
             let mut game_entities = world.write_resource::<GameEntities>();
             let entities = game_entities.drain().collect::<Vec<Entity>>();

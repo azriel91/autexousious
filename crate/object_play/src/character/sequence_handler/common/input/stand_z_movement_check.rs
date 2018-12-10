@@ -11,9 +11,7 @@ use crate::{
 pub(crate) struct StandZMovementCheck;
 
 impl CharacterSequenceHandler for StandZMovementCheck {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         if components.controller_input.z_axis_value != 0. {
             Some(CharacterSequenceId::Walk)
         } else {

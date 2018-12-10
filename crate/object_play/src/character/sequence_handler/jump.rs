@@ -8,9 +8,7 @@ use crate::{
 pub(crate) struct Jump;
 
 impl CharacterSequenceHandler for Jump {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         if components.sequence_status == SequenceStatus::End {
             Some(CharacterSequenceId::JumpOff)
         } else {

@@ -9,9 +9,7 @@ use crate::{
 pub(crate) struct AirborneCheck;
 
 impl CharacterSequenceHandler for AirborneCheck {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         if components.grounding == Grounding::Airborne {
             Some(CharacterSequenceId::JumpDescend)
         } else {

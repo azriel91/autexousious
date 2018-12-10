@@ -11,9 +11,7 @@ const STAND_ON_SEQUENCE_END: SwitchSequenceOnEnd = SwitchSequenceOnEnd(Character
 pub(crate) struct StandOnSequenceEnd;
 
 impl CharacterSequenceHandler for StandOnSequenceEnd {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         STAND_ON_SEQUENCE_END.update(components.sequence_status)
     }
 }

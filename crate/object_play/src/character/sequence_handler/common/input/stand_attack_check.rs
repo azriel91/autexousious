@@ -9,9 +9,7 @@ use crate::{
 pub(crate) struct StandAttackCheck;
 
 impl CharacterSequenceHandler for StandAttackCheck {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         if components.controller_input.attack {
             Some(CharacterSequenceId::StandAttack)
         } else {

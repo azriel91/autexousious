@@ -12,9 +12,7 @@ const FALL_FORWARD_ASCEND: SwitchSequenceOnDescend =
 pub(crate) struct FallForwardAscend;
 
 impl CharacterSequenceHandler for FallForwardAscend {
-    fn update<'c>(
-        components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         FALL_FORWARD_ASCEND.update(components)
     }
 }
