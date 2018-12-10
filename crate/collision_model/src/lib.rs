@@ -7,9 +7,6 @@
 #[macro_use]
 extern crate pretty_assertions;
 
-#[macro_use]
-extern crate serde_derive;
-
 #[cfg(test)]
 extern crate toml;
 

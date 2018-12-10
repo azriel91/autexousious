@@ -3,11 +3,12 @@ use amethyst::{
     ecs::prelude::*,
 };
 use derive_new::new;
+use serde::{Deserialize, Serialize};
 
 use crate::config::object::{CharacterSequenceId, ObjectDefinition};
 
 /// Contains all of the sequences for an `Object`.
-#[derive(Clone, Debug, Deserialize, PartialEq, new)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
 pub struct CharacterDefinition {
     /// Sequences of actions this object can perform.
     #[serde(flatten)]

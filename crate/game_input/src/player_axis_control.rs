@@ -1,4 +1,5 @@
 use derive_new::new;
+use serde::{Deserialize, Serialize};
 
 use crate::{Axis, ControllerId};
 

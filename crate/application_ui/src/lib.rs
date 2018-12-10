@@ -51,8 +51,6 @@
 #[cfg(test)]
 #[macro_use]
 extern crate log;
-#[macro_use]
-extern crate serde;
 
 pub use crate::{
     font_config::FontConfig, font_variant::FontVariant, theme::Theme, theme_loader::ThemeLoader,

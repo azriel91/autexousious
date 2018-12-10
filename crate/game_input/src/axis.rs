@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 /// Control axes for objects.
 #[derive(Clone, Copy, Debug, Deserialize, Hash, PartialEq, Eq, Serialize)]
 pub enum Axis {

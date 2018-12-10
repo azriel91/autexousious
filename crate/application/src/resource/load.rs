@@ -42,10 +42,9 @@ where
 /// // Cargo.toml
 /// //
 /// // [dependencies]
-/// // serde = "1.0"
+/// // serde_derive = "1.0"
 ///
-/// #[macro_use]
-/// extern crate serde;
+/// use serde::Deserialize;
 ///
 /// use application::{
 ///     development_base_dirs,
@@ -107,6 +106,7 @@ mod test {
     use std::path::PathBuf;
 
     use ron::{self, de::ParseError};
+    use serde::Deserialize;
     use toml;
 
     use super::{load, load_in};

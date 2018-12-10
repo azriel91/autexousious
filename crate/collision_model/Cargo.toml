@@ -11,7 +11,6 @@ derivative = "1.0"
 derive-new = "0.5"
 minterpolate = { version = "0.4", features = ["serde"] }
 serde = "1.0"
-serde_derive = "1.0"
 shape_model = { path = "../shape_model" }
 
 [dev-dependencies]

@@ -1,5 +1,7 @@
+use serde::{Deserialize, Serialize};
+
 /// Holds the paths to font files under the `assets` directory.
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct FontConfig {
     /// Regular text
     pub regular: String,

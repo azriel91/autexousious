@@ -2,6 +2,7 @@ use std::iter;
 
 use amethyst::input::{Axis as InputAxis, Bindings, Button};
 use derive_new::new;
+use serde::{Deserialize, Serialize};
 
 use crate::{config::ControllerConfig, PlayerActionControl, PlayerAxisControl};
 

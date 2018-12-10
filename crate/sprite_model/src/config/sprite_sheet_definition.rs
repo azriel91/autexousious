@@ -1,11 +1,12 @@
 use derive_new::new;
+use serde::{Deserialize, Serialize};
 
 use crate::config::SpriteOffset;
 
 /// Information about how sprites are laid out on the sprite sheet.
 ///
 /// This is used to calculate the texture coordinates of each sprite.
-#[derive(Debug, Deserialize, new)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
 pub struct SpriteSheetDefinition {
     /// Path to the sprite sheet, relative to the object's directory.
     ///

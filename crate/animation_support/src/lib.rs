@@ -3,9 +3,6 @@
 
 //! Provides types to make it easier to work with Amethyst animations.
 
-#[macro_use]
-extern crate serde_derive;
-
 pub use crate::{
     active_handle::ActiveHandle, active_handle_channel::ActiveHandleChannel,
     active_handle_primitive::ActiveHandlePrimitive,

@@ -37,9 +37,6 @@ extern crate log;
 #[cfg(test)]
 #[macro_use]
 extern crate pretty_assertions;
-#[cfg(test)]
-#[macro_use]
-extern crate serde;
 
 use toml;
 

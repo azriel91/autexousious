@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use strum_macros::Display;
 
 /// Axis to represent shape orientation.

@@ -1,9 +1,10 @@
 use derive_new::new;
+use serde::{Deserialize, Serialize};
 
 use crate::config::{Layer, MapHeader};
 
 /// Defines a playable area that objects can reside in.
-#[derive(Clone, Debug, Deserialize, PartialEq, new)]
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, new)]
 pub struct MapDefinition {
     /// Base information of the map.
     pub header: MapHeader,

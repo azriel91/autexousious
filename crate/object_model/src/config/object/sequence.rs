@@ -11,6 +11,7 @@ pub use self::{object_frame::ObjectFrame, sequence_id::SequenceId};
 
 use collision_loading::{BodyAnimationSequence, InteractionAnimationSequence};
 use derive_new::new;
+use serde::{Deserialize, Serialize};
 use sprite_loading::AnimationSequence;
 
 mod object_frame;
@@ -20,7 +21,7 @@ mod sequence_id;
 ///
 /// This carries the information necessary for an `Animation`, as well as the effects and
 /// interactions that happen during each frame of that animation.
-#[derive(Clone, Debug, Deserialize, PartialEq, new)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
 pub struct Sequence<SeqId: SequenceId> {
     /// ID of the sequence to switch to after this one has completed.
     ///
@@ -57,6 +58,7 @@ mod tests {
     use amethyst::ecs::{storage::DenseVecStorage, Component};
     use collision_model::config::{BodyFrame, Interaction, InteractionFrame};
     use derivative::Derivative;
+    use serde::{Deserialize, Serialize};
     use shape_model::Volume;
     use specs_derive::Component;
     use sprite_model::config::SpriteFrame;
@@ -201,7 +203,9 @@ mod tests {
         assert_eq!(expected, sequence);
     }
 
-    #[derive(Clone, Component, Copy, Debug, Derivative, Deserialize, PartialEq, Eq, Hash)]
+    #[derive(
+        Clone, Component, Copy, Debug, Derivative, Deserialize, PartialEq, Eq, Hash, Serialize,
+    )]
     #[derivative(Default)]
     enum TestSeqId {
         #[derivative(Default)]

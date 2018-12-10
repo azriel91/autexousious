@@ -71,6 +71,7 @@ mod test {
     use std::{io, path::PathBuf};
 
     use ron;
+    use serde::Deserialize;
     use toml;
 
     use super::{Error, ErrorKind};

@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::Axis;
 
 /// Represents a volume

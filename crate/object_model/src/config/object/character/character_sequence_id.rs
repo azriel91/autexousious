@@ -1,10 +1,11 @@
 use amethyst::ecs::{storage::VecStorage, Component};
 use derivative::Derivative;
+use serde::{Deserialize, Serialize};
 
 use crate::config::object::SequenceId;
 
 /// Object Sequence IDs.
-#[derive(Clone, Copy, Debug, Derivative, Deserialize, Eq, Hash, PartialEq)]
+#[derive(Clone, Copy, Debug, Derivative, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[derivative(Default)]
 #[serde(rename_all = "snake_case")]
 pub enum CharacterSequenceId {

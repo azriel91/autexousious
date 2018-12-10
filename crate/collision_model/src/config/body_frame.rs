@@ -4,6 +4,7 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
+use serde::{Deserialize, Serialize};
 use shape_model::Volume;
 
 /// Frame for an interactable object.

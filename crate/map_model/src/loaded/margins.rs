@@ -1,9 +1,10 @@
 use derive_new::new;
+use serde::{Deserialize, Serialize};
 
 use crate::config::MapBounds;
 
 /// Coordinates of the limits of the playable area.
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, new)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, new)]
 pub struct Margins {
     /// X coordinate of the map's left boundary.
     pub left: f32,

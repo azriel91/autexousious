@@ -1,7 +1,8 @@
 use derive_new::new;
+use serde::{Deserialize, Serialize};
 
 /// Boundary of the playable area of the map.
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, new)]
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, new)]
 pub struct MapBounds {
     /// X coordinate of the map's left boundary.
     pub x: u32,

@@ -1,10 +1,11 @@
 use derive_new::new;
+use serde::{Deserialize, Serialize};
 
 /// Pixel offsets of the sprite relative to the entity's position in the world.
 ///
 /// A positive x value shifts the sprite to the left by that many pixels.
 /// A positive y value shifts the sprite upwards by that many pixels.
-#[derive(Debug, Deserialize, new)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, new)]
 pub struct SpriteOffset {
     /// Number of pixels to shift the sprite to the left, relative to the entity's position.
     pub x: i32,

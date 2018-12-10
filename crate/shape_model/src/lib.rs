@@ -3,9 +3,6 @@
 
 //! Types used to represent shapes.
 
-#[macro_use]
-extern crate serde_derive;
-
 pub use crate::{axis::Axis, volume::Volume};
 
 mod axis;

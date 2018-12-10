@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use derive_new::new;
+use serde::{Deserialize, Serialize};
 
 use crate::config::object::{Sequence, SequenceId};
 
@@ -11,7 +12,7 @@ use crate::config::object::{Sequence, SequenceId};
 /// [char_definition] for characters.
 ///
 /// [char_definition]: ../character/struct.CharacterDefinition.html
-#[derive(Clone, Debug, Deserialize, PartialEq, new)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
 pub struct ObjectDefinition<SeqId: SequenceId> {
     /// Sequences of actions this object can perform.
     pub sequences: HashMap<SeqId, Sequence<SeqId>>,
