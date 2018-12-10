@@ -48,8 +48,6 @@
 //! For the code example, please see the `01_draw_text` example in this repository, which renders
 //! text in regular, bold, italic, and bold italic fonts.
 
-#[macro_use]
-extern crate derive_more;
 #[cfg(test)]
 #[macro_use]
 extern crate log;

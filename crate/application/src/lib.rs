@@ -29,8 +29,6 @@
 //! [find_in]: resource/fn.find_in.html
 //! [load_in]: resource/fn.load_in.html
 
-#[macro_use]
-extern crate derive_more;
 #[cfg(test)]
 #[macro_use]
 extern crate lazy_static;

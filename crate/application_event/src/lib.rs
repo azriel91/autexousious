@@ -26,9 +26,6 @@
 #[macro_use]
 extern crate amethyst;
 
-#[macro_use]
-extern crate derive_more;
-
 pub use crate::{
     app_event::{AppEvent, AppEventReader, AppEventVariant},
     from_app_event::FromAppEvent,

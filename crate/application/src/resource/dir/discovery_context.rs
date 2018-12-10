@@ -1,11 +1,12 @@
 use std::{fmt, io};
 
 use derivative::Derivative;
+use derive_new::new;
 
 use crate::resource::io_support;
 
 /// Information around the failure to discover a directory.
-#[derive(Constructor, Debug, Derivative)]
+#[derive(Debug, Derivative, new)]
 #[derivative(PartialEq)]
 pub struct DiscoveryContext {
     // kcov-ignore-start
