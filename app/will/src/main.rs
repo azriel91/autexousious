@@ -10,7 +10,7 @@ use amethyst::{
     input::InputBundle,
     prelude::*,
     renderer::{
-        ColorMask, DepthMode, DisplayConfig, DrawSprite, Pipeline, RenderBundle, SpriteRender,
+        ColorMask, DepthMode, DisplayConfig, DrawFlat2D, Pipeline, RenderBundle, SpriteRender,
         Stage, ALPHA,
     },
     ui::{DrawUi, UiBundle},
@@ -90,7 +90,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         let pipe = Pipeline::build().with_stage(
             Stage::with_backbuffer()
                 .clear_target([0., 0., 0., 1.], 0.)
-                .with_pass(DrawSprite::new().with_transparency(
+                .with_pass(DrawFlat2D::new().with_transparency(
                     ColorMask::all(),
                     ALPHA,
                     Some(DepthMode::LessEqualWrite),

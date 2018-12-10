@@ -1,7 +1,7 @@
 use amethyst::{
     animation::{get_animation_set, ControlState},
     ecs::{Entities, Join, ReadStorage, System, WriteStorage},
-    renderer::SpriteRender,
+    renderer::Flipped,
 };
 use derive_new::new;
 use game_input::ControllerInput;
@@ -35,7 +35,7 @@ pub struct CharacterSequenceUpdateSystemData<'s> {
     sequence_statuses: WriteStorage<'s, SequenceStatus>,
     mirroreds: WriteStorage<'s, Mirrored>,
     groundings: WriteStorage<'s, Grounding>,
-    sprite_renders: WriteStorage<'s, SpriteRender>,
+    flippeds: WriteStorage<'s, Flipped>,
     object_acses: ObjectAnimationStorages<'s, CharacterSequenceId>,
 }
 
@@ -56,7 +56,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             mut sequence_statuses,
             mut mirroreds,
             mut groundings,
-            mut sprite_renders,
+            mut flippeds,
             object_acses,
         }: Self::SystemData,
     ) {
@@ -73,7 +73,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             sequence_status,
             mirrored,
             grounding,
-            sprite_render,
+            flipped,
         ) in (
             &*entities,
             &controller_inputs,
@@ -86,7 +86,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             &mut sequence_statuses,
             &mut mirroreds,
             &mut groundings,
-            &mut sprite_renders,
+            &mut flippeds,
         )
             .join()
         {
@@ -134,7 +134,11 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             *mirrored =
                 MirroredUpdater::update(controller_input, *character_sequence_id, *mirrored);
 
-            sprite_render.flip_horizontal = mirrored.0;
+            *flipped = if mirrored.0 {
+                Flipped::Horizontal
+            } else {
+                Flipped::None
+            };
 
             if let Some(next_character_sequence_id) = next_character_sequence_id {
                 *character_sequence_id = next_character_sequence_id;
