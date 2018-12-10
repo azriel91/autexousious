@@ -23,9 +23,6 @@
 //! * The state *should* have transitioned, but did not.
 //! * There are multiple event senders that are not catering for each other.
 
-#[macro_use]
-extern crate amethyst;
-
 pub use crate::{
     app_event::{AppEvent, AppEventReader, AppEventVariant},
     from_app_event::FromAppEvent,

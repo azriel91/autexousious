@@ -1,4 +1,6 @@
-use amethyst::{core::EventReader, ecs::*, renderer::Event, shrev::EventChannel};
+use amethyst::{
+    core::EventReader, derive::EventReader, ecs::*, renderer::Event, shrev::EventChannel,
+};
 use character_selection_model::CharacterSelectionEvent;
 use derivative::Derivative;
 use derive_more::From;
