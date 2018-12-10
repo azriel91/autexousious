@@ -1,5 +1,7 @@
 use std::path::PathBuf;
 
+use lazy_static::lazy_static;
+
 /// Crate specific "assets" directory name.
 const ASSETS: &str = "assets";
 

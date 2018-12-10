@@ -2,6 +2,7 @@ use std::path::PathBuf;
 
 use game_model::config::ConfigType;
 use heck::SnakeCase;
+use lazy_static::lazy_static;
 
 use crate::NAMESPACE_TEST_PATH;
 

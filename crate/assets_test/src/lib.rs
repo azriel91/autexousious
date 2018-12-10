@@ -10,9 +10,6 @@
 //!
 //! For assets that should be compiled into the executable, please use the `assets_built_in` crate.
 
-#[macro_use]
-extern crate lazy_static;
-
 pub use crate::{
     common::{ASSETS_PATH, NAMESPACE_TEST, NAMESPACE_TEST_PATH},
     map::{
