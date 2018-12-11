@@ -33,6 +33,5 @@ pub enum AppEvent {
     /// `map_selection` events.
     MapSelection(MapSelectionEvent),
     /// Events sent by the winit window.
-    // TODO: Pending <https://github.com/amethyst/amethyst/pull/1131>
-    Window(#[derivative(PartialEq = "ignore")] Event),
+    Window(Event),
 }
