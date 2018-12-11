@@ -98,6 +98,7 @@ linux:debug:
     - build/workspace_coverage.sh
     - source xvfb_stop
     - grep -F merged_files ./target/coverage/merged/index.json | grep -o '"covered":"[0-9]\+\.[0-9]\+"'
+    - bash <(curl -s https://codecov.io/bash) -s ./target/coverage/merged
   coverage: '/"covered":"\d+\.\d+"/'
 
 linux:release:
