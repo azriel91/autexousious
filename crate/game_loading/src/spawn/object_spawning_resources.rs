@@ -1,8 +1,10 @@
 use amethyst::{
-    assets::AssetStorage,
+    assets::{Asset, AssetStorage},
     ecs::{world::Entities, Read},
 };
-use object_model::loaded::Object;
+use derivative::Derivative;
+use object_model::{config::object::SequenceId, loaded::Object};
+use shred_derive::SystemData;
 
 /// Resources needed to spawn a game object.
 ///
@@ -10,8 +12,20 @@ use object_model::loaded::Object;
 ///
 /// * `ObTy`: Loaded form of the object, such as `Character`.
 /// * `SeqId`: Sequence ID of the object, such as `CharacterSequenceId`.
-pub type ObjectSpawningResources<'res, ObTy, SeqId> = (
-    Entities<'res>,
-    Read<'res, AssetStorage<ObTy>>,
-    Read<'res, AssetStorage<Object<SeqId>>>,
-);
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub struct ObjectSpawningResources<'res, ObTy, SeqId>
+where
+    ObTy: Asset,
+    SeqId: SequenceId + 'static,
+{
+    /// `Entities` resource.
+    #[derivative(Debug = "ignore")]
+    pub entities: Entities<'res>,
+    /// Object type loaded assets, such as `Character`.
+    #[derivative(Debug = "ignore")]
+    pub ob_ty_assets: Read<'res, AssetStorage<ObTy>>,
+    /// `Object` loaded assets.
+    #[derivative(Debug = "ignore")]
+    pub object_assets: Read<'res, AssetStorage<Object<SeqId>>>,
+}

@@ -49,18 +49,20 @@ where
 {
     fn swap_animation(
         object: &Object<SeqId>,
-        (ref mut sprite_acs, ref mut body_frame_acs, ref mut interaction_acs): &mut ObjectAnimationStorages<
-            '_, SeqId,
-        >,
+        ObjectAnimationStorages {
+            ref mut sprite_render_acses,
+            ref mut body_acses,
+            ref mut interaction_acses,
+        }: &mut ObjectAnimationStorages<'_, SeqId>,
         entity: Entity,
         last_sequence_id: SeqId,
         next_sequence_id: SeqId,
     ) {
-        let mut sprite_animation_set = get_animation_set(sprite_acs, entity)
+        let mut sprite_animation_set = get_animation_set(sprite_render_acses, entity)
             .expect("Sprite animation should exist as entity should be valid.");
-        let mut body_animation_set = get_animation_set(body_frame_acs, entity)
+        let mut body_animation_set = get_animation_set(body_acses, entity)
             .expect("Body animation should exist as entity should be valid.");
-        let mut interaction_animation_set = get_animation_set(interaction_acs, entity)
+        let mut interaction_animation_set = get_animation_set(interaction_acses, entity)
             .expect("Interaction animation should exist as entity should be valid.");
 
         let animations = &object.animations.get(&next_sequence_id).unwrap_or_else(|| {

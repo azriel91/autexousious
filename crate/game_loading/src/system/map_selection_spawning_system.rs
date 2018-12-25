@@ -1,21 +1,21 @@
-use amethyst::{assets::AssetStorage, ecs::prelude::*};
+use amethyst::ecs::prelude::*;
 use derive_new::new;
 use game_model::play::GameEntities;
-use map_model::loaded::Map;
 use map_selection_model::MapSelection;
 use typename_derive::TypeName;
 
-use crate::{GameLoadingStatus, MapLayerComponentStorages, MapLayerEntitySpawner};
+use crate::{
+    GameLoadingStatus, MapLayerComponentStorages, MapLayerEntitySpawner, MapSpawningResources,
+};
 
-/// Spawns character entities based on the character selection.
+/// Spawns map entities based on the map selection.
 #[derive(Debug, Default, TypeName, new)]
 pub(crate) struct MapSelectionSpawningSystem;
 
 type MapSelectionSpawningSystemData<'s> = (
     Write<'s, GameLoadingStatus>,
     ReadExpect<'s, MapSelection>,
-    Read<'s, AssetStorage<Map>>,
-    Entities<'s>,
+    MapSpawningResources<'s>,
     MapLayerComponentStorages<'s>,
     Write<'s, GameEntities>,
 );
@@ -28,8 +28,7 @@ impl<'s> System<'s> for MapSelectionSpawningSystem {
         (
             mut game_loading_status,
             map_selection,
-            loaded_maps,
-            entities,
+            map_spawning_resources,
             mut map_component_storages,
             mut game_entities,
         ): Self::SystemData,
@@ -38,7 +37,6 @@ impl<'s> System<'s> for MapSelectionSpawningSystem {
             return;
         }
 
-        let map_spawning_resources = (&*entities, &*loaded_maps);
         let map_layer_entities = MapLayerEntitySpawner::spawn_system(
             &map_spawning_resources,
             &mut map_component_storages,

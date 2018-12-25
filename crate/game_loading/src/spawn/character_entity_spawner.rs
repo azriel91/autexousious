@@ -45,39 +45,35 @@ impl CharacterEntitySpawner {
         input_controlled: InputControlled,
     ) -> Entity {
         let entities = Read::from(world.read_resource::<EntitiesRes>());
-        let loaded_characters = Read::from(world.read_resource::<AssetStorage<Character>>());
-        let loaded_objects =
+        let ob_ty_assets = Read::from(world.read_resource::<AssetStorage<Character>>());
+        let object_assets =
             Read::from(world.read_resource::<AssetStorage<Object<CharacterSequenceId>>>());
         Self::spawn_system(
-            &(entities, loaded_characters, loaded_objects),
-            &mut (
-                world.write_storage::<InputControlled>(),
-                world.write_storage::<ControllerInput>(),
-                world.write_storage::<CharacterHandle>(),
-                world.write_storage::<ObjectHandle<CharacterSequenceId>>(),
-                world.write_storage::<SequenceEndTransitions<CharacterSequenceId>>(),
-                world.write_storage::<HealthPoints>(),
-                world.write_storage::<CharacterSequenceId>(),
-                world.write_storage::<SequenceStatus>(),
-                world.write_storage::<RunCounter>(),
-                world.write_storage::<Mirrored>(),
-                world.write_storage::<Grounding>(),
-            ), // kcov-ignore
-            &mut (
-                world.write_storage::<SpriteRender>(),
-                world.write_storage::<Flipped>(),
-                world.write_storage::<Transparent>(),
-                world.write_storage::<Position<f32>>(),
-                world.write_storage::<Velocity<f32>>(),
-                world.write_storage::<Transform>(),
-                world.write_storage::<BodyFrameActiveHandle>(),
-                world.write_storage::<InteractionFrameActiveHandle>(),
-            ), // kcov-ignore
-            &mut (
-                world.write_storage::<SpriteRenderAcs<CharacterSequenceId>>(),
-                world.write_storage::<BodyAcs<CharacterSequenceId>>(),
-                world.write_storage::<InteractionAcs<CharacterSequenceId>>(),
-            ),
+            &ObjectSpawningResources {
+                entities,
+                ob_ty_assets,
+                object_assets,
+            },
+            &mut CharacterComponentStorages {
+                input_controlleds: world.write_storage::<InputControlled>(),
+                controller_inputs: world.write_storage::<ControllerInput>(),
+                character_handles: world.write_storage::<CharacterHandle>(),
+                object_handles: world.write_storage::<ObjectHandle<CharacterSequenceId>>(),
+                sequence_end_transitionses: world
+                    .write_storage::<SequenceEndTransitions<CharacterSequenceId>>(),
+                health_pointses: world.write_storage::<HealthPoints>(),
+                character_sequence_ids: world.write_storage::<CharacterSequenceId>(),
+                sequence_statuses: world.write_storage::<SequenceStatus>(),
+                run_counters: world.write_storage::<RunCounter>(),
+                mirroreds: world.write_storage::<Mirrored>(),
+                groundings: world.write_storage::<Grounding>(),
+            }, // kcov-ignore
+            &mut ObjectComponentStorages::fetch(&world.res),
+            &mut ObjectAnimationStorages {
+                sprite_render_acses: world.write_storage::<SpriteRenderAcs<CharacterSequenceId>>(),
+                body_acses: world.write_storage::<BodyAcs<CharacterSequenceId>>(),
+                interaction_acses: world.write_storage::<InteractionAcs<CharacterSequenceId>>(),
+            },
             position,
             velocity,
             slug_and_handle,
@@ -97,38 +93,39 @@ impl CharacterEntitySpawner {
     /// * `slug_and_handle`: Slug and handle of the character to spawn.
     /// * `input_controlled`: `Component` that links the character entity to the controller.
     pub fn spawn_system<'res, 's>(
-        (entities, loaded_characters, loaded_objects): &ObjectSpawningResources<
-            'res,
-            Character,
-            CharacterSequenceId,
-        >,
-        (
-            ref mut input_controlled_storage,
-            ref mut controller_input_storage,
-            ref mut character_handle_storage,
-            ref mut object_handle_storage,
-            ref mut sequence_end_transitions_storage,
-            ref mut health_points_storage,
+        ObjectSpawningResources {
+            entities,
+            ob_ty_assets,
+            object_assets,
+        }: &ObjectSpawningResources<'res, Character, CharacterSequenceId>,
+        CharacterComponentStorages {
+            ref mut input_controlleds,
+            ref mut controller_inputs,
+            ref mut character_handles,
+            ref mut object_handles,
+            ref mut sequence_end_transitionses,
+            ref mut health_pointses,
             ref mut character_sequence_ids,
-            ref mut sequence_status_storage,
-            ref mut run_counter_storage,
-            ref mut mirrored_storage,
-            ref mut grounding_storage,
-        ): &mut CharacterComponentStorages<'s>,
-        (
-            ref mut sprite_render_storage,
-            ref mut flipped_storage,
-            ref mut transparent_storage,
-            ref mut position_storage,
-            ref mut velocity_storage,
-            ref mut transform_storage,
-            ref mut body_frame_active_handle_storage,
-            ref mut interaction_frame_active_handle_storage,
-        ): &mut ObjectComponentStorages<'s>,
-        (ref mut sprite_acs, ref mut body_frame_acs, ref mut interaction_acs): &mut ObjectAnimationStorages<
-            's,
-            CharacterSequenceId,
-        >,
+            ref mut sequence_statuses,
+            ref mut run_counters,
+            ref mut mirroreds,
+            ref mut groundings,
+        }: &mut CharacterComponentStorages<'s>,
+        ObjectComponentStorages {
+            ref mut sprite_renders,
+            ref mut flippeds,
+            ref mut transparents,
+            ref mut positions,
+            ref mut velocities,
+            ref mut transforms,
+            ref mut body_frame_active_handles,
+            ref mut interaction_frame_active_handles,
+        }: &mut ObjectComponentStorages<'s>,
+        ObjectAnimationStorages {
+            ref mut sprite_render_acses,
+            ref mut body_acses,
+            ref mut interaction_acses,
+        }: &mut ObjectAnimationStorages<'s, CharacterSequenceId>,
         position: Position<f32>,
         velocity: Velocity<f32>,
         slug_and_handle: &SlugAndHandle<Character>,
@@ -143,11 +140,11 @@ impl CharacterEntitySpawner {
 
         debug!("Spawning `{}`", slug);
 
-        let character = loaded_characters
+        let character = ob_ty_assets
             .get(character_handle)
             .unwrap_or_else(|| panic!("Expected `{}` character to be loaded.", slug));
         let object_handle = &character.object_handle;
-        let object = loaded_objects
+        let object = object_assets
             .get(object_handle)
             .unwrap_or_else(|| panic!("Expected `{}` object to be loaded.", slug));
         let sequence_end_transitions = &character.sequence_end_transitions;
@@ -165,27 +162,27 @@ impl CharacterEntitySpawner {
         let entity = entities.create();
 
         // Controller of this entity
-        input_controlled_storage
+        input_controlleds
             .insert(entity, input_controlled)
             .expect("Failed to insert input_controlled component.");
         // Controller of this entity
-        controller_input_storage
+        controller_inputs
             .insert(entity, ControllerInput::default())
             .expect("Failed to insert controller_input component.");
         // Loaded `Character` for this entity.
-        character_handle_storage
+        character_handles
             .insert(entity, character_handle.clone())
             .expect("Failed to insert character_handle component.");
         // Loaded animations.
-        object_handle_storage
+        object_handles
             .insert(entity, object_handle.clone())
             .expect("Failed to insert object_handle component.");
         // Loaded animations.
-        sequence_end_transitions_storage
+        sequence_end_transitionses
             .insert(entity, sequence_end_transitions.clone())
             .expect("Failed to insert sequence_end_transitions component.");
         // Health points.
-        health_points_storage
+        health_pointses
             .insert(entity, HealthPoints::default())
             .expect("Failed to insert health_points component.");
         // Object status attributes.
@@ -193,39 +190,39 @@ impl CharacterEntitySpawner {
             .insert(entity, character_sequence_id)
             .expect("Failed to insert character_sequence_id component.");
         // Sequence status attributes.
-        sequence_status_storage
+        sequence_statuses
             .insert(entity, SequenceStatus::default())
             .expect("Failed to insert sequence_status component.");
         // Run counter.
-        run_counter_storage
+        run_counters
             .insert(entity, RunCounter::default())
             .expect("Failed to insert run_counter component.");
         // Mirrored.
-        mirrored_storage
+        mirroreds
             .insert(entity, Mirrored::default())
             .expect("Failed to insert mirrored component.");
         // Grounding.
-        grounding_storage
+        groundings
             .insert(entity, Grounding::default())
             .expect("Failed to insert grounding component.");
         // Whether the sprite should be flipped
-        flipped_storage
+        flippeds
             .insert(entity, Flipped::None)
             .expect("Failed to insert flipped component.");
         // Enable transparency for visibility sorting
-        transparent_storage
+        transparents
             .insert(entity, Transparent)
             .expect("Failed to insert transparent component.");
         // Position of the entity in game.
-        position_storage
+        positions
             .insert(entity, position)
             .expect("Failed to insert position component.");
         // Velocity of the entity in game.
-        velocity_storage
+        velocities
             .insert(entity, velocity)
             .expect("Failed to insert velocity component.");
         // Render location of the entity on screen.
-        transform_storage
+        transforms
             .insert(entity, transform)
             .expect("Failed to insert transform component.");
 
@@ -234,19 +231,19 @@ impl CharacterEntitySpawner {
             .for_each(|animation_default| match animation_default {
                 AnimatedComponentDefault::SpriteRender(ref sprite_render) => {
                     // The starting pose
-                    sprite_render_storage
+                    sprite_renders
                         .insert(entity, sprite_render.clone())
                         .expect("Failed to insert `SpriteRender` component.");
                 }
                 AnimatedComponentDefault::BodyFrame(ref active_handle) => {
                     // Default body active handle
-                    body_frame_active_handle_storage
+                    body_frame_active_handles
                         .insert(entity, active_handle.clone())
                         .expect("Failed to insert `BodyFrameActiveHandle` component.");
                 }
                 AnimatedComponentDefault::InteractionFrame(ref active_handle) => {
                     // Default interaction active handle
-                    interaction_frame_active_handle_storage
+                    interaction_frame_active_handles
                         .insert(entity, active_handle.clone())
                         .expect("Failed to insert `InteractionFrameActiveHandle` component.");
                 }
@@ -254,15 +251,15 @@ impl CharacterEntitySpawner {
 
         // We also need to trigger the animation, not just attach it to the entity
         let mut sprite_animation_set =
-            get_animation_set::<CharacterSequenceId, SpriteRender>(sprite_acs, entity)
+            get_animation_set::<CharacterSequenceId, SpriteRender>(sprite_render_acses, entity)
                 .expect("Sprite animation should exist as new entity should be valid.");
         let mut body_animation_set =
-            get_animation_set::<CharacterSequenceId, BodyFrameActiveHandle>(body_frame_acs, entity)
+            get_animation_set::<CharacterSequenceId, BodyFrameActiveHandle>(body_acses, entity)
                 .expect("Body animation should exist as new entity should be valid.");
         let mut interaction_animation_set = get_animation_set::<
             CharacterSequenceId,
             InteractionFrameActiveHandle,
-        >(interaction_acs, entity)
+        >(interaction_acses, entity)
         .expect("Interaction animation should exist as new entity should be valid.");
 
         first_sequence_animations
