@@ -29,7 +29,7 @@ type CharacterSelectionSpawningSystemData<'s> = (
     Read<'s, AssetStorage<Map>>,
     ObjectSpawningResources<'s, Character, CharacterSequenceId>,
     CharacterComponentStorages<'s>,
-    ObjectComponentStorages<'s>,
+    ObjectComponentStorages<'s, CharacterSequenceId>,
     ObjectAnimationStorages<'s, CharacterSequenceId>,
     Write<'s, GameEntities>,
 );
@@ -44,7 +44,7 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             map_selection,
             character_selections,
             loaded_maps,
-            object_spawning_resources,
+            mut object_spawning_resources,
             mut character_component_storages,
             mut object_component_storages,
             mut object_animation_storages,
@@ -82,7 +82,7 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             })
             .map(|(input_controlled, slug_and_handle)| {
                 CharacterEntitySpawner::spawn_system(
-                    &object_spawning_resources,
+                    &mut object_spawning_resources,
                     &mut character_component_storages,
                     &mut object_component_storages,
                     &mut object_animation_storages,

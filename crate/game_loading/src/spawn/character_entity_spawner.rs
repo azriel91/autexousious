@@ -1,8 +1,7 @@
 use amethyst::{
     animation::get_animation_set,
-    assets::AssetStorage,
     core::{nalgebra::Vector3, transform::Transform},
-    ecs::{prelude::*, world::EntitiesRes},
+    ecs::prelude::*,
     renderer::{Flipped, SpriteRender, Transparent},
 };
 use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
@@ -12,15 +11,12 @@ use log::debug;
 use object_model::{
     config::object::CharacterSequenceId,
     entity::{Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity},
-    loaded::{
-        AnimatedComponentAnimation, AnimatedComponentDefault, Character, CharacterHandle, Object,
-        ObjectHandle, SequenceEndTransitions,
-    },
+    loaded::{AnimatedComponentAnimation, AnimatedComponentDefault, Character},
 };
 
 use crate::{
-    AnimationRunner, BodyAcs, CharacterComponentStorages, InteractionAcs, ObjectAnimationStorages,
-    ObjectComponentStorages, ObjectSpawningResources, SpriteRenderAcs,
+    AnimationRunner, CharacterComponentStorages, ObjectAnimationStorages, ObjectComponentStorages,
+    ObjectSpawningResources,
 };
 
 /// Spawns character entities into the world.
@@ -44,36 +40,11 @@ impl CharacterEntitySpawner {
         slug_and_handle: &SlugAndHandle<Character>,
         input_controlled: InputControlled,
     ) -> Entity {
-        let entities = Read::from(world.read_resource::<EntitiesRes>());
-        let ob_ty_assets = Read::from(world.read_resource::<AssetStorage<Character>>());
-        let object_assets =
-            Read::from(world.read_resource::<AssetStorage<Object<CharacterSequenceId>>>());
         Self::spawn_system(
-            &ObjectSpawningResources {
-                entities,
-                ob_ty_assets,
-                object_assets,
-            },
-            &mut CharacterComponentStorages {
-                input_controlleds: world.write_storage::<InputControlled>(),
-                controller_inputs: world.write_storage::<ControllerInput>(),
-                character_handles: world.write_storage::<CharacterHandle>(),
-                object_handles: world.write_storage::<ObjectHandle<CharacterSequenceId>>(),
-                sequence_end_transitionses: world
-                    .write_storage::<SequenceEndTransitions<CharacterSequenceId>>(),
-                health_pointses: world.write_storage::<HealthPoints>(),
-                character_sequence_ids: world.write_storage::<CharacterSequenceId>(),
-                sequence_statuses: world.write_storage::<SequenceStatus>(),
-                run_counters: world.write_storage::<RunCounter>(),
-                mirroreds: world.write_storage::<Mirrored>(),
-                groundings: world.write_storage::<Grounding>(),
-            }, // kcov-ignore
+            &mut ObjectSpawningResources::fetch(&world.res),
+            &mut CharacterComponentStorages::fetch(&world.res),
             &mut ObjectComponentStorages::fetch(&world.res),
-            &mut ObjectAnimationStorages {
-                sprite_render_acses: world.write_storage::<SpriteRenderAcs<CharacterSequenceId>>(),
-                body_acses: world.write_storage::<BodyAcs<CharacterSequenceId>>(),
-                interaction_acses: world.write_storage::<InteractionAcs<CharacterSequenceId>>(),
-            },
+            &mut ObjectAnimationStorages::fetch(&world.res),
             position,
             velocity,
             slug_and_handle,
@@ -95,20 +66,16 @@ impl CharacterEntitySpawner {
     pub fn spawn_system<'res, 's>(
         ObjectSpawningResources {
             entities,
-            ob_ty_assets,
+            ref mut object_handles,
             object_assets,
-        }: &ObjectSpawningResources<'res, Character, CharacterSequenceId>,
+            ref mut ob_ty_handles,
+            ob_ty_assets,
+        }: &mut ObjectSpawningResources<'res, Character, CharacterSequenceId>,
         CharacterComponentStorages {
             ref mut input_controlleds,
             ref mut controller_inputs,
-            ref mut character_handles,
-            ref mut object_handles,
-            ref mut sequence_end_transitionses,
             ref mut health_pointses,
-            ref mut character_sequence_ids,
-            ref mut sequence_statuses,
             ref mut run_counters,
-            ref mut mirroreds,
             ref mut groundings,
         }: &mut CharacterComponentStorages<'s>,
         ObjectComponentStorages {
@@ -118,9 +85,13 @@ impl CharacterEntitySpawner {
             ref mut positions,
             ref mut velocities,
             ref mut transforms,
+            ref mut mirroreds,
+            ref mut sequence_end_transitionses,
+            ref mut sequence_ids,
+            ref mut sequence_statuses,
             ref mut body_frame_active_handles,
             ref mut interaction_frame_active_handles,
-        }: &mut ObjectComponentStorages<'s>,
+        }: &mut ObjectComponentStorages<'s, CharacterSequenceId>,
         ObjectAnimationStorages {
             ref mut sprite_render_acses,
             ref mut body_acses,
@@ -170,7 +141,7 @@ impl CharacterEntitySpawner {
             .insert(entity, ControllerInput::default())
             .expect("Failed to insert controller_input component.");
         // Loaded `Character` for this entity.
-        character_handles
+        ob_ty_handles
             .insert(entity, character_handle.clone())
             .expect("Failed to insert character_handle component.");
         // Loaded animations.
@@ -186,7 +157,7 @@ impl CharacterEntitySpawner {
             .insert(entity, HealthPoints::default())
             .expect("Failed to insert health_points component.");
         // Object status attributes.
-        character_sequence_ids
+        sequence_ids
             .insert(entity, character_sequence_id)
             .expect("Failed to insert character_sequence_id component.");
         // Sequence status attributes.
@@ -399,7 +370,7 @@ mod test {
     type TestSystemData<'s> = (
         CharacterComponentStorages<'s>,
         ObjectAnimationStorages<'s, CharacterSequenceId>,
-        ObjectComponentStorages<'s>,
+        ObjectComponentStorages<'s, CharacterSequenceId>,
         ObjectSpawningResources<'s, Character, CharacterSequenceId>,
         Read<'s, AssetStorage<Map>>,
     );
