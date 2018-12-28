@@ -8,6 +8,7 @@ pub use self::{
         BodyAcs, InteractionAcs, ObjectAnimationStorages, SpriteRenderAcs,
     },
     object_component_storages::ObjectComponentStorages,
+    object_entity_augmenter::ObjectEntityAugmenter,
     object_spawning_resources::ObjectSpawningResources,
 };
 
@@ -18,4 +19,5 @@ mod map_layer_entity_spawner;
 mod map_spawning_resources;
 mod object_animation_storages;
 mod object_component_storages;
+mod object_entity_augmenter;
 mod object_spawning_resources;

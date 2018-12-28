@@ -11,6 +11,9 @@
 #[macro_use]
 extern crate pretty_assertions;
 
+// Re-export derive
+pub use object_model_derive::GameObject;
+
 pub use crate::object_type::ObjectType;
 
 pub mod config;
