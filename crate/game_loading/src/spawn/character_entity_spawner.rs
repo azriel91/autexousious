@@ -40,7 +40,9 @@ impl CharacterEntitySpawner {
         slug_and_handle: &SlugAndHandle<Character>,
         input_controlled: InputControlled,
     ) -> Entity {
+        let entity = world.create_entity().build();
         Self::spawn_system(
+            entity,
             &mut ObjectSpawningResources::fetch(&world.res),
             &mut CharacterComponentStorages::fetch(&world.res),
             &mut ObjectComponentStorages::fetch(&world.res),
@@ -49,7 +51,8 @@ impl CharacterEntitySpawner {
             velocity,
             slug_and_handle,
             input_controlled,
-        )
+        );
+        entity
     }
 
     /// Spawns a player controlled character entity.
@@ -64,8 +67,8 @@ impl CharacterEntitySpawner {
     /// * `slug_and_handle`: Slug and handle of the character to spawn.
     /// * `input_controlled`: `Component` that links the character entity to the controller.
     pub fn spawn_system<'res, 's>(
+        entity: Entity,
         ObjectSpawningResources {
-            entities,
             ref mut object_handles,
             object_assets,
             ref mut ob_ty_handles,
@@ -101,7 +104,7 @@ impl CharacterEntitySpawner {
         velocity: Velocity<f32>,
         slug_and_handle: &SlugAndHandle<Character>,
         input_controlled: InputControlled,
-    ) -> Entity {
+    ) {
         let character_sequence_id = CharacterSequenceId::default();
 
         let SlugAndHandle {
@@ -129,8 +132,6 @@ impl CharacterEntitySpawner {
 
         let mut transform = Transform::default();
         transform.set_position(Vector3::new(position.x, position.y + position.z, 0.));
-
-        let entity = entities.create();
 
         // Controller of this entity
         input_controlleds
@@ -254,8 +255,6 @@ impl CharacterEntitySpawner {
                     );
                 }
             });
-
-        entity
     }
 }
 

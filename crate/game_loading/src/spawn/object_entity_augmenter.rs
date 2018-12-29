@@ -33,8 +33,8 @@ impl ObjectEntityAugmenter {
     /// * `velocity`: Velocity of the entity in game.
     /// * `slug_and_handle`: Slug and handle of the object to spawn.
     pub fn spawn_system<'s, ObTy, SeqId>(
+        entity: Entity,
         ObjectSpawningResources {
-            entities,
             ref mut object_handles,
             object_assets,
             ref mut ob_ty_handles,
@@ -91,8 +91,6 @@ impl ObjectEntityAugmenter {
 
         let mut transform = Transform::default();
         transform.set_position(Vector3::new(position.x, position.y + position.z, 0.));
-
-        let entity = entities.create();
 
         flippeds
             .insert(entity, Flipped::None)
@@ -223,21 +221,23 @@ mod test {
             let position = Position::new(100., -10., -20.);
             let velocity = Velocity::default();
 
-            let entity = {
+            let entity = world.create_entity().build();
+            {
                 let slug_and_handle =
                     SlugAndHandle::<Character>::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
                 let mut object_spawning_resources = ObjectSpawningResources::fetch(&world.res);
                 let mut object_component_storages = ObjectComponentStorages::fetch(&world.res);
                 let mut object_animation_storages = ObjectAnimationStorages::fetch(&world.res);
                 ObjectEntityAugmenter::spawn_system(
+                    entity,
                     &mut object_spawning_resources,
                     &mut object_component_storages,
                     &mut object_animation_storages,
                     position,
                     velocity,
                     &slug_and_handle,
-                )
-            };
+                );
+            }
 
             world.add_resource(EffectReturn(entity));
         };

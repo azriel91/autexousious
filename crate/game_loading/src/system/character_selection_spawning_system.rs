@@ -23,6 +23,7 @@ use crate::{
 pub(crate) struct CharacterSelectionSpawningSystem;
 
 type CharacterSelectionSpawningSystemData<'s> = (
+    Entities<'s>,
     Write<'s, GameLoadingStatus>,
     ReadExpect<'s, MapSelection>,
     Read<'s, CharacterSelections>,
@@ -40,6 +41,7 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
     fn run(
         &mut self,
         (
+            entities,
             mut game_loading_status,
             map_selection,
             character_selections,
@@ -81,7 +83,9 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
                 (InputControlled::new(*controller_id), slug_and_handle)
             })
             .map(|(input_controlled, slug_and_handle)| {
+                let entity = entities.create();
                 CharacterEntitySpawner::spawn_system(
+                    entity,
                     &mut object_spawning_resources,
                     &mut character_component_storages,
                     &mut object_component_storages,
@@ -90,7 +94,8 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
                     velocity,
                     &slug_and_handle,
                     input_controlled,
-                )
+                );
+                entity
             })
             .collect::<Vec<Entity>>();
 

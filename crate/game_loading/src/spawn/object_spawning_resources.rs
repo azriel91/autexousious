@@ -1,6 +1,6 @@
 use amethyst::{
     assets::{Asset, AssetStorage, Handle},
-    ecs::{Entities, Read, WriteStorage},
+    ecs::{Read, WriteStorage},
 };
 use derivative::Derivative;
 use object_model::{
@@ -22,9 +22,6 @@ where
     ObTy: Asset,
     SeqId: SequenceId + 'static,
 {
-    /// `Entities` resource.
-    #[derivative(Debug = "ignore")]
-    pub entities: Entities<'s>,
     /// `ObjectHandle` component storage.
     #[derivative(Debug = "ignore")]
     pub object_handles: WriteStorage<'s, ObjectHandle<SeqId>>,
