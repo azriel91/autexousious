@@ -1599,6 +1599,8 @@ dependencies = [
  "map_selection_model 0.7.0",
  "object_loading 0.7.0",
  "object_model 0.7.0",
+ "shred 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -2695,6 +2697,7 @@ name = "object_model"
 version = "0.7.0"
 dependencies = [
  "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "collision_loading 0.7.0",
  "collision_model 0.7.0",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2702,6 +2705,7 @@ dependencies = [
  "derive_deref 1.0.1 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-and-quote)",
  "derive_more 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "fnv 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "object_model_derive 0.8.0",
  "pretty_assertions 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.82 (registry+https://github.com/rust-lang/crates.io-index)",
  "shape_model 0.7.0",
@@ -2711,6 +2715,15 @@ dependencies = [
  "strum 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum_macros 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "toml 0.4.10 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "object_model_derive"
+version = "0.8.0"
+dependencies = [
+ "proc-macro2 0.4.24 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quote 0.6.10 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 0.15.23 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

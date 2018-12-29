@@ -23,16 +23,20 @@ impl MapLayerEntitySpawner {
     /// * `world`: `World` to spawn the character into.
     /// * `map_handle`: Handle of the map whose layers to spawn.
     pub fn spawn_world(world: &mut World, map_handle: &MapHandle) -> Vec<Entity> {
-        let entities = &*world.read_resource::<EntitiesRes>();
-        let loaded_maps = &*world.read_resource::<AssetStorage<Map>>();
+        let entities = Read::from(world.read_resource::<EntitiesRes>());
+        let map_assets = Read::from(world.read_resource::<AssetStorage<Map>>());
         Self::spawn_system(
-            &(entities, loaded_maps),
-            &mut (
-                world.write_storage::<SpriteRender>(),
-                world.write_storage::<Transparent>(),
-                world.write_storage::<Transform>(),
-                world.write_storage::<AnimationControlSet<u32, SpriteRender>>(),
-            ),
+            &MapSpawningResources {
+                entities,
+                map_assets,
+            },
+            &mut MapLayerComponentStorages {
+                sprite_renders: world.write_storage::<SpriteRender>(),
+                transparents: world.write_storage::<Transparent>(),
+                transforms: world.write_storage::<Transform>(),
+                sprite_render_acses: world
+                    .write_storage::<AnimationControlSet<u32, SpriteRender>>(),
+            },
             map_handle,
         )
     }
@@ -45,17 +49,20 @@ impl MapLayerEntitySpawner {
     /// * `map_layer_component_storages`: Component storages for the spawned entities.
     /// * `map_handle`: Handle of the map whose layers to spawn.
     pub fn spawn_system<'res, 's>(
-        (entities, loaded_maps): &MapSpawningResources<'res>,
-        (
-            ref mut sprite_render_storage,
-            ref mut transparent_storage,
-            ref mut transform_storage,
-            ref mut animation_control_set_storage,
-        ): &mut MapLayerComponentStorages<'s>,
+        MapSpawningResources {
+            entities,
+            map_assets,
+        }: &MapSpawningResources<'res>,
+        MapLayerComponentStorages {
+            ref mut sprite_renders,
+            ref mut transparents,
+            ref mut transforms,
+            ref mut sprite_render_acses,
+        }: &mut MapLayerComponentStorages<'s>,
         map_handle: &MapHandle,
     ) -> Vec<Entity> {
         let components_and_animation = {
-            let map = loaded_maps
+            let map = map_assets
                 .get(map_handle)
                 .expect("Expected map to be loaded.");
 
@@ -106,14 +113,14 @@ impl MapLayerEntitySpawner {
                 .map(|(transform, sprite_render)| {
                     let entity = entities.create();
 
-                    sprite_render_storage
+                    sprite_renders
                         .insert(entity, sprite_render)
                         .expect("Failed to insert sprite_render component.");
                     // Enable transparency for visibility sorting
-                    transparent_storage
+                    transparents
                         .insert(entity, Transparent)
                         .expect("Failed to insert transparent component.");
-                    transform_storage
+                    transforms
                         .insert(entity, transform)
                         .expect("Failed to insert transform component.");
 
@@ -127,11 +134,9 @@ impl MapLayerEntitySpawner {
                 .for_each(|(entity, animation_handle)| {
                     // We also need to trigger the animation, not just attach it to the entity
                     let animation_id = 0;
-                    let mut animation_set = get_animation_set::<u32, SpriteRender>(
-                        animation_control_set_storage,
-                        *entity,
-                    )
-                    .expect("Animation should exist as new entity should be valid.");
+                    let mut animation_set =
+                        get_animation_set::<u32, SpriteRender>(sprite_render_acses, *entity)
+                            .expect("Animation should exist as new entity should be valid.");
 
                     AnimationRunner::start_loop(animation_id, &mut animation_set, animation_handle);
                 });

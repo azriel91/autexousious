@@ -60,7 +60,10 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             object_acses,
         }: Self::SystemData,
     ) {
-        let (mut sprite_acs, _body_frame_acs, _interaction_acs) = object_acses;
+        let ObjectAnimationStorages {
+            mut sprite_render_acses,
+            ..
+        } = object_acses;
         for (
             entity,
             controller_input,
@@ -90,7 +93,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
         )
             .join()
         {
-            let sprite_animation_set = get_animation_set(&mut sprite_acs, entity)
+            let sprite_animation_set = get_animation_set(&mut sprite_render_acses, entity)
                 .expect("Sprite animation should exist as entity should be valid.");
 
             // Mark sequence as `Ongoing` for subsequent tick.

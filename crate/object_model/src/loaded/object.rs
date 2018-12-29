@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use amethyst::{
-    assets::{Asset, Error, Handle, ProcessingState},
+    assets::{Asset, Handle},
     ecs::{
         storage::{DenseVecStorage, VecStorage},
         Component,
@@ -85,12 +85,16 @@ where
 //     }
 // }
 
+#[macro_export]
 macro_rules! impl_processing_state_from_object {
     ($seq_id_ty:ty) => {
-        impl From<Object<$seq_id_ty>> for Result<ProcessingState<Object<$seq_id_ty>>, Error> {
+        use amethyst::assets::{Error, ProcessingState};
+        impl From<Object<$seq_id_ty>>
+            for std::result::Result<ProcessingState<Object<$seq_id_ty>>, Error>
+        {
             fn from(
                 object: Object<$seq_id_ty>,
-            ) -> Result<ProcessingState<Object<$seq_id_ty>>, Error> {
+            ) -> std::result::Result<ProcessingState<Object<$seq_id_ty>>, Error> {
                 Ok(ProcessingState::Loaded(object))
             }
         }

@@ -14,8 +14,9 @@ use object_model::{
 use typename_derive::TypeName;
 
 use crate::{
-    CharacterComponentStorages, CharacterEntitySpawner, GameLoadingStatus, ObjectAnimationStorages,
-    ObjectComponentStorages, ObjectSpawningResources,
+    CharacterComponentStorages, CharacterEntityAugmenter, GameLoadingStatus,
+    ObjectAnimationStorages, ObjectComponentStorages, ObjectEntityAugmenter,
+    ObjectSpawningResources,
 };
 
 /// Spawns character entities based on the character selection.
@@ -23,13 +24,14 @@ use crate::{
 pub(crate) struct CharacterSelectionSpawningSystem;
 
 type CharacterSelectionSpawningSystemData<'s> = (
+    Entities<'s>,
     Write<'s, GameLoadingStatus>,
     ReadExpect<'s, MapSelection>,
     Read<'s, CharacterSelections>,
     Read<'s, AssetStorage<Map>>,
     ObjectSpawningResources<'s, Character, CharacterSequenceId>,
     CharacterComponentStorages<'s>,
-    ObjectComponentStorages<'s>,
+    ObjectComponentStorages<'s, CharacterSequenceId>,
     ObjectAnimationStorages<'s, CharacterSequenceId>,
     Write<'s, GameEntities>,
 );
@@ -40,11 +42,12 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
     fn run(
         &mut self,
         (
+            entities,
             mut game_loading_status,
             map_selection,
             character_selections,
             loaded_maps,
-            object_spawning_resources,
+            mut object_spawning_resources,
             mut character_component_storages,
             mut object_component_storages,
             mut object_animation_storages,
@@ -81,16 +84,23 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
                 (InputControlled::new(*controller_id), slug_and_handle)
             })
             .map(|(input_controlled, slug_and_handle)| {
-                CharacterEntitySpawner::spawn_system(
-                    &object_spawning_resources,
+                let entity = entities.create();
+                CharacterEntityAugmenter::augment(
+                    entity,
                     &mut character_component_storages,
+                    &slug_and_handle.slug,
+                    input_controlled,
+                );
+                ObjectEntityAugmenter::augment(
+                    entity,
+                    &mut object_spawning_resources,
                     &mut object_component_storages,
                     &mut object_animation_storages,
                     position,
                     velocity,
                     &slug_and_handle,
-                    input_controlled,
-                )
+                );
+                entity
             })
             .collect::<Vec<Entity>>();
 

@@ -89,7 +89,7 @@ impl TextureLoader {
         loader.load(
             path,
             PngFormat,
-            TextureMetadata::srgb(),
+            TextureMetadata::srgb(), // TODO: perhaps this should be srgb_scale
             (),
             &world.read_resource::<AssetStorage<Texture>>(),
         )
