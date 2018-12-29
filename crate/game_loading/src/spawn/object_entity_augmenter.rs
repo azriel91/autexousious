@@ -90,7 +90,7 @@ impl ObjectEntityAugmenter {
             .expect("Expected ob_ty to have at least one sequence.");
 
         let mut transform = Transform::default();
-        transform.set_position(Vector3::new(position.x, position.y + position.z, 0.));
+        transform.set_position(Vector3::new(position.x, position.y - position.z, 0.));
 
         flippeds
             .insert(entity, Flipped::None)
@@ -214,7 +214,7 @@ mod test {
     };
 
     #[test]
-    fn spawn_for_player_creates_entity_with_object_components() {
+    fn augments_entity_with_object_components() {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
         let setup = |world: &mut World| {
@@ -262,32 +262,29 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::render_base(
-                "spawn_for_player_creates_entity_with_object_components",
-                false
-            )
-            .with_custom_event_type::<AppEvent, AppEventReader>()
-            .with_bundle(
-                AnimationBundle::<CharacterSequenceId, BodyFrameActiveHandle>::new(
-                    "character_body_frame_acs",
-                    "character_body_frame_sis",
+            AmethystApplication::render_base("augments_entity_with_object_components", false)
+                .with_custom_event_type::<AppEvent, AppEventReader>()
+                .with_bundle(
+                    AnimationBundle::<CharacterSequenceId, BodyFrameActiveHandle>::new(
+                        "character_body_frame_acs",
+                        "character_body_frame_sis",
+                    )
                 )
-            )
-            .with_bundle(AnimationBundle::<
-                CharacterSequenceId,
-                InteractionFrameActiveHandle,
-            >::new(
-                "character_interaction_acs", "character_interaction_sis",
-            ))
-            .with_bundle(CollisionLoadingBundle::new())
-            .with_bundle(MapLoadingBundle::new())
-            .with_bundle(ObjectLoadingBundle::new())
-            .with_system(TestSystem, TestSystem::type_name(), &[])
-            .with_state(|| LoadingState::new(ASSETS_PATH.clone(), PopState))
-            .with_setup(setup)
-            .with_assertion(assertion)
-            .run()
-            .is_ok()
+                .with_bundle(AnimationBundle::<
+                    CharacterSequenceId,
+                    InteractionFrameActiveHandle,
+                >::new(
+                    "character_interaction_acs", "character_interaction_sis",
+                ))
+                .with_bundle(CollisionLoadingBundle::new())
+                .with_bundle(MapLoadingBundle::new())
+                .with_bundle(ObjectLoadingBundle::new())
+                .with_system(TestSystem, TestSystem::type_name(), &[])
+                .with_state(|| LoadingState::new(ASSETS_PATH.clone(), PopState))
+                .with_setup(setup)
+                .with_assertion(assertion)
+                .run()
+                .is_ok()
         );
     }
 

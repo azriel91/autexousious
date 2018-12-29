@@ -14,7 +14,8 @@ pub use crate::{
     spawn::{
         BodyAcs, CharacterComponentStorages, CharacterEntityAugmenter, InteractionAcs,
         MapLayerComponentStorages, MapLayerEntitySpawner, MapSpawningResources,
-        ObjectAnimationStorages, ObjectComponentStorages, ObjectSpawningResources, SpriteRenderAcs,
+        ObjectAnimationStorages, ObjectComponentStorages, ObjectEntityAugmenter,
+        ObjectSpawningResources, SpriteRenderAcs,
     },
 };
 pub(crate) use crate::{
