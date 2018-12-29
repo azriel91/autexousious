@@ -16,8 +16,10 @@ pub enum CharacterSelectionEventArgs {
         /// Controller ID.
         ///
         /// 0 for the first player, 1 for the second player, etcetera.
+        #[structopt(short, long)]
         controller_id: ControllerId,
         /// Slug of the character or random, e.g. "default/heat", "random".
+        #[structopt(short, long)]
         selection: String,
     },
     /// Deselect event.
@@ -25,6 +27,7 @@ pub enum CharacterSelectionEventArgs {
         /// Controller ID.
         ///
         /// 0 for the first player, 1 for the second player, etcetera.
+        #[structopt(short, long)]
         controller_id: ControllerId,
     },
     /// Confirm event.
