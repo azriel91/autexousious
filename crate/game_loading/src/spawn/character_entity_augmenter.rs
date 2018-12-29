@@ -21,40 +21,9 @@ use crate::{
 
 /// Spawns character entities into the world.
 #[derive(Debug)]
-pub struct CharacterEntitySpawner;
+pub struct CharacterEntityAugmenter;
 
-impl CharacterEntitySpawner {
-    /// Spawns a player controlled character entity.
-    ///
-    /// # Parameters
-    ///
-    /// * `world`: `World` to spawn the character into.
-    /// * `position`: Position of the entity in game.
-    /// * `velocity`: Velocity of the entity in game.
-    /// * `slug_and_handle`: Slug of the character to spawn.
-    /// * `input_controlled`: `Component` that links the character entity to the controller.
-    pub fn spawn_world(
-        world: &mut World,
-        position: Position<f32>,
-        velocity: Velocity<f32>,
-        slug_and_handle: &SlugAndHandle<Character>,
-        input_controlled: InputControlled,
-    ) -> Entity {
-        let entity = world.create_entity().build();
-        Self::spawn_system(
-            entity,
-            &mut ObjectSpawningResources::fetch(&world.res),
-            &mut CharacterComponentStorages::fetch(&world.res),
-            &mut ObjectComponentStorages::fetch(&world.res),
-            &mut ObjectAnimationStorages::fetch(&world.res),
-            position,
-            velocity,
-            slug_and_handle,
-            input_controlled,
-        );
-        entity
-    }
-
+impl CharacterEntityAugmenter {
     /// Spawns a player controlled character entity.
     ///
     /// # Parameters
@@ -66,7 +35,7 @@ impl CharacterEntitySpawner {
     /// * `velocity`: Velocity of the entity in game.
     /// * `slug_and_handle`: Slug and handle of the character to spawn.
     /// * `input_controlled`: `Component` that links the character entity to the controller.
-    pub fn spawn_system<'res, 's>(
+    pub fn augment<'res, 's>(
         entity: Entity,
         ObjectSpawningResources {
             ref mut object_handles,
@@ -288,7 +257,7 @@ mod test {
     use typename::TypeName as TypeNameTrait;
     use typename_derive::TypeName;
 
-    use super::CharacterEntitySpawner;
+    use super::CharacterEntityAugmenter;
     use crate::{
         CharacterComponentStorages, ObjectAnimationStorages, ObjectComponentStorages,
         ObjectSpawningResources,
@@ -304,14 +273,27 @@ mod test {
             let controller_id = 0;
             let input_controlled = InputControlled::new(controller_id);
 
-            let slug_and_handle = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
-            let entity = CharacterEntitySpawner::spawn_world(
-                world,
-                position,
-                velocity,
-                &slug_and_handle,
-                input_controlled,
-            );
+            let entity = world.create_entity().build();
+            {
+                let slug_and_handle =
+                    SlugAndHandle::<Character>::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
+                let mut object_spawning_resources = ObjectSpawningResources::fetch(&world.res);
+                let mut character_component_storages =
+                    CharacterComponentStorages::fetch(&world.res);
+                let mut object_component_storages = ObjectComponentStorages::fetch(&world.res);
+                let mut object_animation_storages = ObjectAnimationStorages::fetch(&world.res);
+                CharacterEntityAugmenter::augment(
+                    entity,
+                    &mut object_spawning_resources,
+                    &mut character_component_storages,
+                    &mut object_component_storages,
+                    &mut object_animation_storages,
+                    position,
+                    velocity,
+                    &slug_and_handle,
+                    input_controlled,
+                );
+            }
 
             assert!(world.read_storage::<InputControlled>().contains(entity));
             assert!(world.read_storage::<ControllerInput>().contains(entity));

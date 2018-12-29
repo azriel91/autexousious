@@ -14,8 +14,8 @@ use object_model::{
 use typename_derive::TypeName;
 
 use crate::{
-    CharacterComponentStorages, CharacterEntitySpawner, GameLoadingStatus, ObjectAnimationStorages,
-    ObjectComponentStorages, ObjectSpawningResources,
+    CharacterComponentStorages, CharacterEntityAugmenter, GameLoadingStatus,
+    ObjectAnimationStorages, ObjectComponentStorages, ObjectSpawningResources,
 };
 
 /// Spawns character entities based on the character selection.
@@ -84,7 +84,7 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             })
             .map(|(input_controlled, slug_and_handle)| {
                 let entity = entities.create();
-                CharacterEntitySpawner::spawn_system(
+                CharacterEntityAugmenter::augment(
                     entity,
                     &mut object_spawning_resources,
                     &mut character_component_storages,

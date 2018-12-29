@@ -32,7 +32,7 @@ impl ObjectEntityAugmenter {
     /// * `position`: Position of the entity in game.
     /// * `velocity`: Velocity of the entity in game.
     /// * `slug_and_handle`: Slug and handle of the object to spawn.
-    pub fn spawn_system<'s, ObTy, SeqId>(
+    pub fn augment<'s, ObTy, SeqId>(
         entity: Entity,
         ObjectSpawningResources {
             ref mut object_handles,
@@ -228,7 +228,7 @@ mod test {
                 let mut object_spawning_resources = ObjectSpawningResources::fetch(&world.res);
                 let mut object_component_storages = ObjectComponentStorages::fetch(&world.res);
                 let mut object_animation_storages = ObjectAnimationStorages::fetch(&world.res);
-                ObjectEntityAugmenter::spawn_system(
+                ObjectEntityAugmenter::augment(
                     entity,
                     &mut object_spawning_resources,
                     &mut object_component_storages,

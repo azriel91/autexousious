@@ -12,7 +12,7 @@ pub use crate::{
     game_loading_state::GameLoadingState,
     multi_animation_runner::MultiAnimationRunner,
     spawn::{
-        BodyAcs, CharacterComponentStorages, CharacterEntitySpawner, InteractionAcs,
+        BodyAcs, CharacterComponentStorages, CharacterEntityAugmenter, InteractionAcs,
         MapLayerComponentStorages, MapLayerEntitySpawner, MapSpawningResources,
         ObjectAnimationStorages, ObjectComponentStorages, ObjectSpawningResources, SpriteRenderAcs,
     },
