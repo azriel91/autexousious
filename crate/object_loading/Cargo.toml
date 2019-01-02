@@ -7,6 +7,7 @@ edition = "2018"
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 application = { path = "../application" }
+character_model = { path = "../character_model" }
 collision_loading = { path = "../collision_loading" }
 collision_model = { path = "../collision_model" }
 derive-new = "0.5"

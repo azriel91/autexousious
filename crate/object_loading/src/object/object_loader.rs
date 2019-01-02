@@ -144,13 +144,11 @@ mod test {
     use amethyst_test::AmethystApplication;
     use application::{load_in, Format};
     use assets_test::{ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SLUG};
+    use character_model::config::{CharacterDefinition, CharacterSequenceId};
     use collision_loading::CollisionLoadingBundle;
     use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
     use game_model::config::AssetRecord;
-    use object_model::{
-        config::{object::CharacterSequenceId, CharacterDefinition},
-        loaded::{Object, ObjectHandle},
-    };
+    use object_model::loaded::{Object, ObjectHandle};
 
     use super::ObjectLoader;
     use crate::ObjectLoadingBundle;

@@ -1,10 +1,10 @@
 use amethyst::{assets::Loader, prelude::*};
 use application::{load_in, Format, Result};
-use game_model::config::AssetRecord;
-use object_model::{
+use character_model::{
     config::CharacterDefinition,
     loaded::{Character, CharacterHandle},
 };
+use game_model::config::AssetRecord;
 
 use crate::object::ObjectLoader;
 
@@ -42,13 +42,11 @@ mod test {
     use amethyst::{animation::AnimationBundle, assets::AssetStorage};
     use amethyst_test::prelude::*;
     use assets_test::{ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SLUG};
+    use character_model::config::CharacterSequenceId;
+    use character_model::loaded::{Character, CharacterHandle};
     use collision_loading::CollisionLoadingBundle;
     use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
     use game_model::config::AssetRecord;
-    use object_model::{
-        config::object::CharacterSequenceId,
-        loaded::{Character, CharacterHandle},
-    };
 
     use super::CharacterLoader;
     use crate::ObjectLoadingBundle;

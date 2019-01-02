@@ -1,11 +1,11 @@
 // See comment on struct. This attribute isn't detected if we put it on the struct.
 #![allow(clippy::too_many_arguments)]
 
+use character_model::config::CharacterSequenceId;
 use derive_new::new;
 use game_input::ControllerInput;
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity},
+use object_model::entity::{
+    Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
 };
 
 /// Components used to compute character sequence updates.

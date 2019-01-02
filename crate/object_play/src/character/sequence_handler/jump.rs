@@ -1,4 +1,5 @@
-use object_model::{config::object::CharacterSequenceId, entity::SequenceStatus};
+use character_model::config::CharacterSequenceId;
+use object_model::entity::SequenceStatus;
 
 use crate::{
     character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
@@ -19,12 +20,10 @@ impl CharacterSequenceHandler for Jump {
 
 #[cfg(test)]
 mod test {
+    use character_model::config::CharacterSequenceId;
     use game_input::ControllerInput;
-    use object_model::{
-        config::object::CharacterSequenceId,
-        entity::{
-            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
-        },
+    use object_model::entity::{
+        Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
     };
 
     use super::Jump;

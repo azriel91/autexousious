@@ -11,7 +11,7 @@ use derivative::Derivative;
 use derive_new::new;
 
 use crate::{
-    config::object::{CharacterSequenceId, SequenceId},
+    config::object::SequenceId,
     loaded::{AnimatedComponentAnimation, AnimatedComponentDefault},
 };
 
@@ -87,21 +87,25 @@ where
 
 #[macro_export]
 macro_rules! impl_processing_state_from_object {
-    ($seq_id_ty:ty) => {
+    ($obj:ty) => {
+        use amethyst::{
+            assets::{Asset, Handle},
+            ecs::storage::VecStorage,
+        };
+        impl Asset for $obj {
+            const NAME: &'static str = concat!(module_path!(), "::", stringify!($obj));
+            type Data = Self;
+            type HandleStorage = VecStorage<Handle<Self>>;
+        }
+
         use amethyst::assets::{Error, ProcessingState};
-        impl From<Object<$seq_id_ty>>
-            for std::result::Result<ProcessingState<Object<$seq_id_ty>>, Error>
-        {
-            fn from(
-                object: Object<$seq_id_ty>,
-            ) -> std::result::Result<ProcessingState<Object<$seq_id_ty>>, Error> {
+        impl From<$obj> for std::result::Result<ProcessingState<$obj>, Error> {
+            fn from(object: $obj) -> std::result::Result<ProcessingState<$obj>, Error> {
                 Ok(ProcessingState::Loaded(object))
             }
         }
     };
 }
-
-impl_processing_state_from_object!(CharacterSequenceId);
 
 /// Handle to an Object
 pub type ObjectHandle<SeqId> = Handle<Object<SeqId>>;

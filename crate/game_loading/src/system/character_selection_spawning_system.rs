@@ -1,4 +1,5 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
+use character_model::{config::CharacterSequenceId, loaded::Character};
 use character_selection_model::CharacterSelections;
 use derive_new::new;
 use game_input::InputControlled;
@@ -6,9 +7,7 @@ use game_model::play::GameEntities;
 use map_model::loaded::Map;
 use map_selection_model::MapSelection;
 use object_model::{
-    config::object::CharacterSequenceId,
     entity::{Position, Velocity},
-    loaded::Character,
     ObjectType,
 };
 use typename_derive::TypeName;
@@ -120,6 +119,7 @@ mod tests {
     use amethyst_test::prelude::*;
     use application_event::{AppEvent, AppEventReader};
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
+    use character_model::config::CharacterSequenceId;
     use character_selection_model::CharacterSelections;
     use collision_loading::CollisionLoadingBundle;
     use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
@@ -133,7 +133,7 @@ mod tests {
     use map_selection::MapSelectionStatus;
     use map_selection_model::MapSelection;
     use object_loading::ObjectLoadingBundle;
-    use object_model::{config::object::CharacterSequenceId, ObjectType};
+    use object_model::ObjectType;
     use typename::TypeName;
 
     use super::CharacterSelectionSpawningSystem;

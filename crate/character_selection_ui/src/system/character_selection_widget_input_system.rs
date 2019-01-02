@@ -243,10 +243,10 @@ mod test {
     use amethyst_test::prelude::*;
     use application_test_support::AutexousiousApplication;
     use assets_test::ASSETS_CHAR_BAT_SLUG;
+    use character_model::loaded::Character;
     use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
     use game_input::{ControllerInput, InputControlled};
     use game_model::loaded::{CharacterAssets, SlugAndHandle};
-    use object_model::loaded::Character;
     use tracker::Last;
     use typename::TypeName;
 

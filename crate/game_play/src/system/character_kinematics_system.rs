@@ -1,11 +1,11 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
-use derive_new::new;
-use game_input::ControllerInput;
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{Mirrored, SequenceStatus, Velocity},
+use character_model::{
+    config::CharacterSequenceId,
     loaded::{Character, CharacterHandle},
 };
+use derive_new::new;
+use game_input::ControllerInput;
+use object_model::entity::{Mirrored, SequenceStatus, Velocity};
 use typename_derive::TypeName;
 
 /// Updates `Character` velocity based on sequence.
@@ -108,13 +108,11 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
 mod tests {
     use amethyst::{assets::AssetStorage, ecs::prelude::*};
     use application_test_support::AutexousiousApplication;
+    use character_model::config::CharacterSequenceId;
     use game_input::ControllerInput;
     use map_model::loaded::Map;
     use map_selection_model::MapSelection;
-    use object_model::{
-        config::object::CharacterSequenceId,
-        entity::{Grounding, Mirrored, Position, SequenceStatus, Velocity},
-    };
+    use object_model::entity::{Grounding, Mirrored, Position, SequenceStatus, Velocity};
     use typename::TypeName;
 
     use super::CharacterKinematicsSystem;

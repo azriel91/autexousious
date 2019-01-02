@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-use object_model::loaded::CharacterHandle;
+use character_model::loaded::CharacterHandle;
 
 use crate::config::AssetSlug;
 

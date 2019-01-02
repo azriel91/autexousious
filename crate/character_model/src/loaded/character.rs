@@ -4,12 +4,12 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
-use object_model_derive::GameObject;
-
-use crate::{
-    config::object::CharacterSequenceId,
+use object_model::{
     loaded::{GameObject, ObjectHandle, SequenceEndTransitions},
+    GameObject,
 };
+
+use crate::config::CharacterSequenceId;
 
 /// Represents an in-game character that has been loaded.
 ///
@@ -24,7 +24,7 @@ pub struct Character {
 }
 
 impl Asset for Character {
-    const NAME: &'static str = "object_model::loaded::Character";
+    const NAME: &'static str = "character_model::loaded::Character";
     type Data = Self;
     type HandleStorage = VecStorage<Handle<Self>>;
 }

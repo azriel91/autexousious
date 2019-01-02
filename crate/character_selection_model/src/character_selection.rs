@@ -1,7 +1,7 @@
 use std::fmt;
 
+use character_model::loaded::{Character, CharacterHandle};
 use game_model::loaded::SlugAndHandle;
-use object_model::loaded::{Character, CharacterHandle};
 
 /// Selected character ID or random for a particular controller.
 #[derive(Clone, Debug, PartialEq)]

@@ -1,4 +1,4 @@
-use object_model::config::object::CharacterSequenceId;
+use character_model::config::CharacterSequenceId;
 
 use crate::{
     character::sequence_handler::{CharacterSequenceHandler, SwitchSequenceOnDescend},

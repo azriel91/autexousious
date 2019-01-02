@@ -435,6 +435,7 @@ dependencies = [
  "application_event 0.8.0",
  "asset_loading 0.8.0",
  "assets_test 0.8.0",
+ "character_model 0.8.0",
  "character_selection 0.8.0",
  "character_selection_model 0.8.0",
  "collision_loading 0.8.0",
@@ -711,6 +712,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "character_model"
+version = "0.8.0"
+dependencies = [
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "collision_model 0.8.0",
+ "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive_deref 1.0.1 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-and-quote)",
+ "object_model 0.8.0",
+ "pretty_assertions 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde 1.0.82 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sprite_model 0.8.0",
+ "toml 0.4.10 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "character_selection"
 version = "0.8.0"
 dependencies = [
@@ -720,6 +737,7 @@ dependencies = [
  "application_state 0.8.0",
  "asset_loading 0.8.0",
  "assets_test 0.8.0",
+ "character_model 0.8.0",
  "character_selection_model 0.8.0",
  "collision_loading 0.8.0",
  "collision_model 0.8.0",
@@ -741,6 +759,7 @@ name = "character_selection_model"
 version = "0.8.0"
 dependencies = [
  "amethyst_utils 0.5.0 (git+https://github.com/amethyst/amethyst.git)",
+ "character_model 0.8.0",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input 0.8.0",
@@ -779,6 +798,7 @@ dependencies = [
  "application_test_support 0.8.0",
  "application_ui 0.8.0",
  "assets_test 0.8.0",
+ "character_model 0.8.0",
  "character_selection_model 0.8.0",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1584,6 +1604,7 @@ dependencies = [
  "application_state 0.8.0",
  "asset_loading 0.8.0",
  "assets_test 0.8.0",
+ "character_model 0.8.0",
  "character_selection_model 0.8.0",
  "collision_loading 0.8.0",
  "collision_model 0.8.0",
@@ -1677,6 +1698,7 @@ name = "game_model"
 version = "0.8.0"
 dependencies = [
  "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "character_model 0.8.0",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_builder 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_model 0.8.0",
@@ -1695,6 +1717,7 @@ dependencies = [
  "application 0.8.0",
  "application_event 0.8.0",
  "application_test_support 0.8.0",
+ "character_model 0.8.0",
  "character_selection 0.8.0",
  "collision_model 0.8.0",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2678,6 +2701,7 @@ dependencies = [
  "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application 0.8.0",
  "assets_test 0.8.0",
+ "character_model 0.8.0",
  "collision_loading 0.8.0",
  "collision_model 0.8.0",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2732,6 +2756,7 @@ version = "0.8.0"
 dependencies = [
  "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
+ "character_model 0.8.0",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input 0.8.0",
  "object_model 0.8.0",
@@ -3960,6 +3985,7 @@ dependencies = [
  "application_state 0.8.0",
  "application_ui 0.8.0",
  "assert_cmd 0.9.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "character_model 0.8.0",
  "character_selection_stdio 0.8.0",
  "collision_loading 0.8.0",
  "collision_model 0.8.0",
@@ -3973,7 +3999,6 @@ dependencies = [
  "map_loading 0.8.0",
  "map_selection_stdio 0.8.0",
  "object_loading 0.8.0",
- "object_model 0.8.0",
  "stdio_view 0.8.0",
  "structopt 0.2.14 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt-derive 0.2.14 (registry+https://github.com/rust-lang/crates.io-index)",
