@@ -5,6 +5,7 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use object_model::{
+    game_object,
     loaded::{GameObject, ObjectHandle, SequenceEndTransitions},
     GameObject,
 };
@@ -14,14 +15,10 @@ use crate::config::CharacterSequenceId;
 /// Represents an in-game character that has been loaded.
 ///
 /// Each of these fields should be a component that is attached to the character entity.
+#[game_object(CharacterSequenceId)]
 #[derive(Clone, Derivative, GameObject, PartialEq, new)]
 #[derivative(Debug)]
-pub struct Character {
-    /// Handle to loaded object data.
-    pub object_handle: ObjectHandle<CharacterSequenceId>,
-    /// Component sequence transitions when a sequence ends.
-    pub sequence_end_transitions: SequenceEndTransitions<CharacterSequenceId>,
-}
+pub struct Character;
 
 impl Asset for Character {
     const NAME: &'static str = "character_model::loaded::Character";

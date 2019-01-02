@@ -12,7 +12,7 @@
 extern crate pretty_assertions;
 
 // Re-export derive
-pub use object_model_derive::GameObject;
+pub use object_model_derive::{game_object, GameObject};
 
 pub use crate::object_type::ObjectType;
 
