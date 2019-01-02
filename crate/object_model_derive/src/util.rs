@@ -57,19 +57,6 @@ pub fn ensure_fields_named(fields: &Fields, error_message: &'static str) {
     };
 }
 
-/// Panics if the fields are for a tuple struct.
-///
-/// # Parameters
-///
-/// * `fields`: The fields to search through.
-/// * `error_message`: Panic message if the `Fields` are `Unnamed`.
-pub fn ensure_fields_named_or_unit(fields: &Fields, error_message: &'static str) {
-    match fields {
-        Fields::Named(_) | Fields::Unit => {}
-        Fields::Unnamed(_) => panic!(error_message),
-    };
-}
-
 /// Returns the `Field` whose top level type name matches the search string.
 ///
 /// Note: This returns the first field with the given type, and does not attempt to detect and fail
