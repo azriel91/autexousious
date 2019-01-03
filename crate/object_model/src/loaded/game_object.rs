@@ -1,6 +1,6 @@
 use crate::{
     config::object::SequenceId,
-    loaded::{ObjectHandle, SequenceEndTransitions},
+    loaded::{ObjectHandle, ObjectWrapper, SequenceEndTransitions},
 };
 
 /// Components common to object types, parameterized by sequence ID.
@@ -30,6 +30,9 @@ pub trait GameObject<SeqId>
 where
     SeqId: SequenceId + 'static,
 {
+    /// Newtype wrapper for `Object<SeqId>`.
+    type ObjectWrapper: ObjectWrapper;
+
     /// Returns the handle to the loaded `Object` for this `GameObject`.
     fn object_handle(&self) -> &ObjectHandle<SeqId>;
     /// Returns the sequence end transitions for this `GameObject`.

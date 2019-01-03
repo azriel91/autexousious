@@ -21,8 +21,6 @@ pub fn game_object_gen(args: GameObjectAttributeArgs, mut ast: DeriveInput) -> T
     object_fields_gen(&args.sequence_id, &mut data_struct.fields);
     derive_gen(&mut ast);
 
-    // panic!("{:?}", &ast.attrs);
-
     ast.into_token_stream().into()
 }
 
@@ -44,9 +42,9 @@ fn object_fields_gen(sequence_id: &Path, mut fields: &mut Fields) {
 fn object_fields_additional(sequence_id: &Path) -> FieldsNamed {
     parse_quote!({
         /// Handle to loaded object data.
-        pub object_handle: ObjectHandle<#sequence_id>,
+        pub object_handle: object_model::loaded::ObjectHandle<#sequence_id>,
         /// Component sequence transitions when a sequence ends.
-        pub sequence_end_transitions: SequenceEndTransitions<#sequence_id>,
+        pub sequence_end_transitions: object_model::loaded::SequenceEndTransitions<#sequence_id>,
     })
 }
 

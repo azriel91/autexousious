@@ -7,10 +7,12 @@ pub use self::{
     animation::{AnimatedComponentAnimation, AnimatedComponentDefault},
     game_object::GameObject,
     object::{Object, ObjectHandle},
+    object_wrapper::ObjectWrapper,
     sequence::{SequenceEndTransition, SequenceEndTransitions},
 };
 
 mod animation;
 mod game_object;
 mod object;
+mod object_wrapper;
 mod sequence;
