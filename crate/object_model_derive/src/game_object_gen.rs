@@ -21,6 +21,8 @@ pub fn game_object_gen(args: GameObjectAttributeArgs, mut ast: DeriveInput) -> T
     object_fields_gen(&args.sequence_id, &mut data_struct.fields);
     derive_gen(&mut ast);
 
+    // panic!("{:?}", &ast.attrs);
+
     ast.into_token_stream().into()
 }
 
@@ -50,14 +52,15 @@ fn object_fields_additional(sequence_id: &Path) -> FieldsNamed {
 
 /// Adds the `GameObject` derive to the list of derives.
 fn derive_gen(ast: &mut DeriveInput) {
-    let derive_meta_list = ast
+    let derive_meta_list_opt = ast
         .attrs
-        .iter()
-        .filter_map(|attr| attr.parse_meta().ok())
-        .filter_map(|meta| match meta {
+        .iter_mut()
+        // Note: `parse_meta()` returns a `Meta`, which is not referenced by the `DeriveInput`.
+        .filter_map(|attr| attr.parse_meta().ok().map(|meta| (attr, meta)))
+        .filter_map(|(attr, meta)| match meta {
             Meta::List(meta_list) => {
                 if meta_list.ident == "derive" {
-                    Some(meta_list)
+                    Some((attr, meta_list))
                 } else {
                     None
                 }
@@ -66,7 +69,7 @@ fn derive_gen(ast: &mut DeriveInput) {
         })
         .next();
 
-    if let Some(mut derive_meta_list) = derive_meta_list {
+    if let Some((attr, mut derive_meta_list)) = derive_meta_list_opt {
         // Emit warning if the user derives `GameObject`, as we can do that for them.
         if meta_list_contains(&derive_meta_list, "GameObject") {
             // TODO: Emit warning, pending <https://github.com/rust-lang/rust/issues/54140>
@@ -83,7 +86,10 @@ fn derive_gen(ast: &mut DeriveInput) {
                 .push(NestedMeta::Meta(Meta::Word(Ident::new(
                     "GameObject",
                     Span::call_site(),
-                ))))
+                ))));
+
+            // Replace the existing `Attribute`.
+            *attr = parse_quote!(#[#derive_meta_list]);
         }
     } else {
         // Add a new `#[derive(GameObject)]` attribute.

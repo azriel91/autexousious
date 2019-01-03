@@ -9,10 +9,11 @@ use amethyst_test::AmethystApplication;
 use derivative::Derivative;
 use object_model::{
     config::object::SequenceId,
+    game_object,
     // impl_processing_state_from_object,
     loaded::{GameObject, Object, ObjectHandle, SequenceEndTransition, SequenceEndTransitions},
+    GameObject,
 };
-use object_model_derive::GameObject;
 use specs_derive::Component;
 
 #[derive(Clone, Component, Copy, Debug, Derivative, PartialEq, Eq, Hash)]
@@ -35,16 +36,12 @@ impl SequenceId for TestSequenceId {}
 //
 // impl_processing_state_from_object!(TestSequenceId);
 
-#[derive(Debug, GameObject)]
-struct MagicObject {
-    /// Handle to loaded object data.
-    pub handle: ObjectHandle<TestSequenceId>,
-    /// Component sequence transitions when a sequence ends.
-    pub transitions: SequenceEndTransitions<TestSequenceId>,
-}
+#[game_object(TestSequenceId)]
+#[derive(Debug)]
+struct MagicObject;
 
 #[test]
-fn derived_game_object_returns_handle_and_transitions() -> Result<()> {
+fn game_object_attribute_generates_handle_and_transitions_fields() -> Result<()> {
     AmethystApplication::blank()
         .with_assertion(|world| {
             let sequence_end_transitions = {
@@ -63,12 +60,9 @@ fn derived_game_object_returns_handle_and_transitions() -> Result<()> {
                 )
             };
 
-            let transitions = sequence_end_transitions.clone();
-            let handle = object_handle.clone();
-
             let magic_object = MagicObject {
-                handle,
-                transitions,
+                object_handle: object_handle.clone(),
+                sequence_end_transitions: sequence_end_transitions.clone(),
             };
 
             assert_eq!(&object_handle, magic_object.object_handle());
