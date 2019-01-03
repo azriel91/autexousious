@@ -1,8 +1,14 @@
 use proc_macro::TokenStream;
+use proc_macro2::Span;
 use quote::{quote, ToTokens};
-use syn::{parse_quote, DeriveInput, Fields, FieldsNamed, Path};
+use syn::{
+    parse_quote, Attribute, DeriveInput, Fields, FieldsNamed, Ident, Meta, NestedMeta, Path,
+};
 
-use crate::{game_object_attribute_args::GameObjectAttributeArgs, util::data_struct_mut};
+use crate::{
+    game_object_attribute_args::GameObjectAttributeArgs,
+    util::{data_struct_mut, meta_list_contains},
+};
 
 const ERR_MUST_BE_STRUCT: &str = "`game_object` attribute must be used on a struct.";
 const ERR_MUST_BE_UNIT_OR_NAMED: &str =
@@ -13,6 +19,7 @@ pub fn game_object_gen(args: GameObjectAttributeArgs, mut ast: DeriveInput) -> T
     let data_struct = data_struct_mut(&mut ast, ERR_MUST_BE_STRUCT);
 
     object_fields_gen(&args.sequence_id, &mut data_struct.fields);
+    derive_gen(&mut ast);
 
     ast.into_token_stream().into()
 }
@@ -39,4 +46,48 @@ fn object_fields_additional(sequence_id: &Path) -> FieldsNamed {
         /// Component sequence transitions when a sequence ends.
         pub sequence_end_transitions: SequenceEndTransitions<#sequence_id>,
     })
+}
+
+/// Adds the `GameObject` derive to the list of derives.
+fn derive_gen(ast: &mut DeriveInput) {
+    let derive_meta_list = ast
+        .attrs
+        .iter()
+        .filter_map(|attr| attr.parse_meta().ok())
+        .filter_map(|meta| match meta {
+            Meta::List(meta_list) => {
+                if meta_list.ident == "derive" {
+                    Some(meta_list)
+                } else {
+                    None
+                }
+            }
+            _ => None,
+        })
+        .next();
+
+    if let Some(mut derive_meta_list) = derive_meta_list {
+        // Emit warning if the user derives `GameObject`, as we can do that for them.
+        if meta_list_contains(&derive_meta_list, "GameObject") {
+            // TODO: Emit warning, pending <https://github.com/rust-lang/rust/issues/54140>
+            // derive_meta_list
+            //     .span()
+            //     .warning(
+            //         "`GameObject` derive not necessary when the `game_object` attribute is used.",
+            //     )
+            //     .emit();
+            panic!("`GameObject` derive not necessary when the `game_object` attribute is used.");
+        } else {
+            derive_meta_list
+                .nested
+                .push(NestedMeta::Meta(Meta::Word(Ident::new(
+                    "GameObject",
+                    Span::call_site(),
+                ))))
+        }
+    } else {
+        // Add a new `#[derive(GameObject)]` attribute.
+        let derive_attribute: Attribute = parse_quote!(#[derive(GameObject)]);
+        ast.attrs.push(derive_attribute);
+    }
 }

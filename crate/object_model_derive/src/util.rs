@@ -1,6 +1,6 @@
 use syn::{
     punctuated::Pair, AngleBracketedGenericArguments, Data, DataStruct, DeriveInput, Field, Fields,
-    GenericArgument, Path, PathArguments, Type, TypePath,
+    GenericArgument, Meta, MetaList, NestedMeta, Path, PathArguments, Type, TypePath,
 };
 
 const IMPOSSIBLE_PATH_TRAILING_COLON2: &str = "`Path` cannot have a trailing `Colon2`.";
@@ -55,6 +55,28 @@ pub fn ensure_fields_named(fields: &Fields, error_message: &'static str) {
         Fields::Named(_) => {}
         Fields::Unnamed(_) | Fields::Unit => panic!(error_message),
     };
+}
+
+/// Returns whether the `MetaList` contains a `Meta::Word` with the given ident.
+///
+/// This can be used to check if a `#[derive(..)]` contains `SomeDerive`.
+///
+/// # Parameters
+///
+/// * `meta_list`: The `MetaList` to check.
+/// * `ident`: Ident that may be in the list.
+pub fn meta_list_contains(meta_list: &MetaList, ident: &str) -> bool {
+    meta_list
+        .nested
+        .iter()
+        .find(|nested_meta| {
+            if let NestedMeta::Meta(Meta::Word(word)) = nested_meta {
+                word == ident
+            } else {
+                false
+            }
+        })
+        .is_some()
 }
 
 /// Returns the `Field` whose top level type name matches the search string.

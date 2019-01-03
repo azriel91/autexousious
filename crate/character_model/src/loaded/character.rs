@@ -6,8 +6,7 @@ use derivative::Derivative;
 use derive_new::new;
 use object_model::{
     game_object,
-    loaded::{GameObject, ObjectHandle, SequenceEndTransitions},
-    GameObject,
+    loaded::{ObjectHandle, SequenceEndTransitions},
 };
 
 use crate::config::CharacterSequenceId;
@@ -16,7 +15,7 @@ use crate::config::CharacterSequenceId;
 ///
 /// Each of these fields should be a component that is attached to the character entity.
 #[game_object(CharacterSequenceId)]
-#[derive(Clone, Derivative, GameObject, PartialEq, new)]
+#[derive(Clone, Derivative, PartialEq, new)]
 #[derivative(Debug)]
 pub struct Character;
 
