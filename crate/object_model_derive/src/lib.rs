@@ -10,12 +10,12 @@ use syn::{parse_macro_input, DeriveInput};
 
 use crate::{
     game_object_attribute_args::GameObjectAttributeArgs, game_object_gen::game_object_gen,
-    game_object_impl::game_object_impl,
 };
 
 mod game_object_attribute_args;
 mod game_object_gen;
 mod game_object_impl;
+mod object_wrapper_gen;
 mod util;
 
 #[proc_macro_attribute]
@@ -24,13 +24,4 @@ pub fn game_object(args: TokenStream, item: TokenStream) -> TokenStream {
     let ast = parse_macro_input!(item as DeriveInput);
 
     game_object_gen(args, ast)
-}
-
-/// Derives `GameObject` on a struct.
-#[proc_macro_derive(GameObject)]
-pub fn game_object_derive(input: TokenStream) -> TokenStream {
-    let ast = syn::parse::<DeriveInput>(input)
-        .unwrap_or_else(|e| panic!("Failed to parse token stream. Error: {}", e));
-
-    game_object_impl(&ast)
 }

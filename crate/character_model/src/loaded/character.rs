@@ -3,7 +3,7 @@ use amethyst::{
     ecs::prelude::*,
 };
 use derive_new::new;
-use object_model::{game_object, GameObject};
+use object_model::game_object;
 
 use crate::config::CharacterSequenceId;
 

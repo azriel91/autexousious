@@ -10,9 +10,7 @@ use derivative::Derivative;
 use object_model::{
     config::object::SequenceId,
     game_object,
-    // impl_processing_state_from_object,
-    loaded::{GameObject, Object, ObjectHandle, SequenceEndTransition, SequenceEndTransitions},
-    GameObject,
+    loaded::{GameObject, Object, SequenceEndTransition, SequenceEndTransitions},
 };
 use specs_derive::Component;
 
@@ -24,17 +22,6 @@ enum TestSequenceId {
     Boo,
 }
 impl SequenceId for TestSequenceId {}
-// TODO: Pending <https://github.com/rust-lang/rfcs/issues/1856>
-//
-// Due to orphan rules being too strict, we cannot implement:
-//
-// ```rust,ignore
-// impl From<Object<TestSequenceId>> for Result<ProcessingState<Object<TestSequenceId>>, Error>
-// ```
-//
-// It works within the `object_model` crate because `Object` originates from that crate.
-//
-// impl_processing_state_from_object!(TestSequenceId);
 
 #[game_object(TestSequenceId)]
 #[derive(Debug)]

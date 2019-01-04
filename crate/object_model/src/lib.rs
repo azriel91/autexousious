@@ -11,8 +11,8 @@
 #[macro_use]
 extern crate pretty_assertions;
 
-// Re-export derive
-pub use object_model_derive::{game_object, GameObject};
+// Re-export proc macro attribute.
+pub use object_model_derive::game_object;
 
 pub use crate::object_type::ObjectType;
 
