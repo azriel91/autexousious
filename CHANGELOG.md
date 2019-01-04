@@ -1,12 +1,14 @@
 # Changelog
 
-## Unreleased
+## 0.8.0 (2019-01-04)
 
 ### Changed
 
 * Object animations are updated in a dedicated system. ([#81][#81])
 * Components are now more granular. ([#83][#83])
+* Components are augmented onto existing entities instead of added when built. ([#56][#56])
 
+[#56]: https://gitlab.com/azriel91/autexousious/issues/56
 [#81]: https://gitlab.com/azriel91/autexousious/issues/81
 [#83]: https://gitlab.com/azriel91/autexousious/issues/83
 
