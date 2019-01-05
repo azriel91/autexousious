@@ -3,7 +3,7 @@ use amethyst::{
     core::bundle::{Result, SystemBundle},
     ecs::prelude::*,
 };
-use character_model::loaded::{Character, CharacterObject};
+use character_model::loaded::{Character, CharacterObjectWrapper};
 use derive_new::new;
 
 /// Adds `Processor::<`*`ObjectType`*`>` to the `World` with id
@@ -16,7 +16,7 @@ pub struct ObjectLoadingBundle;
 impl<'a, 'b> SystemBundle<'a, 'b> for ObjectLoadingBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
         builder.add(
-            Processor::<CharacterObject>::new(),
+            Processor::<CharacterObjectWrapper>::new(),
             "character_object_processor",
             &[],
         );
@@ -29,7 +29,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for ObjectLoadingBundle {
 mod test {
     use amethyst::assets::AssetStorage;
     use amethyst_test::AmethystApplication;
-    use character_model::loaded::{Character, CharacterObject};
+    use character_model::loaded::{Character, CharacterObjectWrapper};
     use object_model::ObjectType;
     use strum::IntoEnumIterator;
 
@@ -48,7 +48,7 @@ mod test {
                             ObjectType::Character => {
                                 // Next line will panic if the Processor wasn't added
                                 world.read_resource::<AssetStorage<Character>>();
-                                world.read_resource::<AssetStorage<CharacterObject>>();
+                                world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
                             }
                         }
                     });

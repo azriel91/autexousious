@@ -6,7 +6,7 @@
 pub use self::{
     animation::{AnimatedComponentAnimation, AnimatedComponentDefault},
     game_object::GameObject,
-    object::{Object, ObjectHandle},
+    object::Object,
     object_wrapper::ObjectWrapper,
     sequence::{SequenceEndTransition, SequenceEndTransitions},
 };

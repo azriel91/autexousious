@@ -27,8 +27,11 @@ impl CharacterLoader {
             None,
         )?;
 
-        let (sequence_end_transitions, object_handle) =
-            ObjectLoader::load(world, asset_record, &character_definition.object_definition)?;
+        let (object_handle, sequence_end_transitions) = ObjectLoader::load::<Character>(
+            world,
+            asset_record,
+            &character_definition.object_definition,
+        )?;
         let character = Character::new(object_handle, sequence_end_transitions);
 
         let loader = world.read_resource::<Loader>();

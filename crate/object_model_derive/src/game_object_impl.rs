@@ -16,11 +16,12 @@ pub fn game_object_impl(
 
     // TODO: Trait delegation pending <https://github.com/rust-lang/rfcs/pull/2393>
     quote! {
-        impl #impl_generics object_model::loaded::GameObject<#sequence_id_type> for
+        impl #impl_generics object_model::loaded::GameObject for
             #ty_name #ty_generics #where_clause {
+            type SequenceId = #sequence_id_type;
             type ObjectWrapper = #object_wrapper_type;
 
-            fn object_handle(&self) -> &object_model::loaded::ObjectHandle<#sequence_id_type> {
+            fn object_handle(&self) -> &amethyst::assets::Handle<#object_wrapper_type> {
                 &self.#object_handle_field_name
             }
 

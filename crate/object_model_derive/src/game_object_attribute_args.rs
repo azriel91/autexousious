@@ -8,8 +8,10 @@ use syn::{
 /// This is how the compiler passes in arguments to our attribute -- it is
 /// everything inside the delimiters after the attribute name.
 ///
-///     #[game_object(CharacterSequenceId)]
-///                   ^^^^^^^^^^^^^^^^^^^
+/// ```rust,ignore
+/// #[game_object(CharacterSequenceId)]
+///               ^^^^^^^^^^^^^^^^^^^
+/// ```
 #[derive(Debug)]
 pub struct GameObjectAttributeArgs {
     /// The sequence ID for the `GameObject`.

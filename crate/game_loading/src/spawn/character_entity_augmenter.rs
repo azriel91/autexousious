@@ -147,7 +147,7 @@ mod test {
         CharacterComponentStorages<'s>,
         ObjectAnimationStorages<'s, CharacterSequenceId>,
         ObjectComponentStorages<'s, CharacterSequenceId>,
-        ObjectSpawningResources<'s, Character, CharacterSequenceId>,
+        ObjectSpawningResources<'s, Character>,
         Read<'s, AssetStorage<Map>>,
     );
     impl<'s> System<'s> for TestSystem {

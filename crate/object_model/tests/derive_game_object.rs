@@ -25,7 +25,7 @@ impl SequenceId for TestSequenceId {}
 
 #[game_object(TestSequenceId)]
 #[derive(Debug)]
-struct MagicObject;
+struct Magic;
 
 #[test]
 fn game_object_attribute_generates_handle_and_transitions_fields() -> Result<()> {
@@ -40,14 +40,13 @@ fn game_object_attribute_generates_handle_and_transitions_fields() -> Result<()>
             };
             let object_handle = {
                 let object = Object::new(Vec::new(), HashMap::new());
-                world.exec(
-                    |asset_loader: AssetLoaderSystemData<Object<TestSequenceId>>| {
-                        asset_loader.load_from_data(object, ())
-                    },
-                )
+                let magic_object_wrapper = MagicObjectWrapper(object);
+                world.exec(|asset_loader: AssetLoaderSystemData<MagicObjectWrapper>| {
+                    asset_loader.load_from_data(magic_object_wrapper, ())
+                })
             };
 
-            let magic_object = MagicObject {
+            let magic_object = Magic {
                 object_handle: object_handle.clone(),
                 sequence_end_transitions: sequence_end_transitions.clone(),
             };

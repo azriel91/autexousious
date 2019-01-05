@@ -17,24 +17,23 @@ const ERR_MUST_BE_UNIT_OR_NAMED: &str =
      This derive does not work on tuple structs.";
 
 pub fn game_object_gen(args: GameObjectAttributeArgs, mut ast: DeriveInput) -> TokenStream {
-    let data_struct = data_struct_mut(&mut ast, ERR_MUST_BE_STRUCT);
-
     let sequence_id_type = &args.sequence_id;
-
-    let object_handle_field = Ident::new(OBJECT_HANDLE, Span::call_site());
-    let sequence_end_transitions_field = Ident::new(SEQUENCE_END_TRANSITIONS, Span::call_site());
-
-    object_fields_gen(
-        sequence_id_type,
-        &mut data_struct.fields,
-        &object_handle_field,
-        &sequence_end_transitions_field,
-    );
-
     let object_wrapper_type = {
         let object_wrapper_type_name = ast.ident.to_string() + "ObjectWrapper";
         Ident::new(&object_wrapper_type_name, Span::call_site())
     };
+
+    let object_handle_field = Ident::new(OBJECT_HANDLE, Span::call_site());
+    let sequence_end_transitions_field = Ident::new(SEQUENCE_END_TRANSITIONS, Span::call_site());
+    let additional_fields = object_fields_additional(
+        &object_wrapper_type,
+        sequence_id_type,
+        &object_handle_field,
+        &sequence_end_transitions_field,
+    );
+
+    let data_struct = data_struct_mut(&mut ast, ERR_MUST_BE_STRUCT);
+    object_fields_gen(&mut data_struct.fields, additional_fields);
 
     let mut object_wrapper_impl =
         object_wrapper_gen(sequence_id_type, &object_wrapper_type, &ast.vis);
@@ -50,18 +49,7 @@ pub fn game_object_gen(args: GameObjectAttributeArgs, mut ast: DeriveInput) -> T
     TokenStream::from(object_wrapper_impl)
 }
 
-fn object_fields_gen(
-    sequence_id: &Path,
-    mut fields: &mut Fields,
-    object_handle_field: &Ident,
-    sequence_end_transitions_field: &Ident,
-) {
-    let additional_fields = object_fields_additional(
-        sequence_id,
-        object_handle_field,
-        sequence_end_transitions_field,
-    );
-
+fn object_fields_gen(mut fields: &mut Fields, additional_fields: FieldsNamed) {
     match &mut fields {
         Fields::Named(ref mut fields_named) => {
             additional_fields
@@ -75,13 +63,14 @@ fn object_fields_gen(
 }
 
 fn object_fields_additional(
+    object_wrapper_type: &Ident,
     sequence_id: &Path,
     object_handle_field: &Ident,
     sequence_end_transitions_field: &Ident,
 ) -> FieldsNamed {
     parse_quote!({
         /// Handle to loaded object data.
-        pub #object_handle_field: object_model::loaded::ObjectHandle<#sequence_id>,
+        pub #object_handle_field: amethyst::assets::Handle<#object_wrapper_type>,
         /// Component sequence transitions when a sequence ends.
         pub #sequence_end_transitions_field: object_model::loaded::SequenceEndTransitions<#sequence_id>,
     })

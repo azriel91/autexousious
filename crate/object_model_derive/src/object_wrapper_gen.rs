@@ -30,13 +30,21 @@ pub fn object_wrapper_gen(
 
         #[doc = #doc_string]
         #[derive(Debug, Deref, DerefMut)]
-        #vis struct #object_wrapper_type(#vis object_model::loaded::ObjectHandle<#sequence_id_type>);
+        #vis struct #object_wrapper_type(#vis object_model::loaded::Object<#sequence_id_type>);
 
         impl object_model::loaded::ObjectWrapper for #object_wrapper_type {
             type SequenceId = #sequence_id_type;
 
-            fn new(object_handle: object_model::loaded::ObjectHandle<Self::SequenceId>) -> Self {
-                #object_wrapper_type(object_handle)
+            fn new(object: object_model::loaded::Object<Self::SequenceId>) -> Self {
+                #object_wrapper_type(object)
+            }
+
+            fn inner(&self) -> &object_model::loaded::Object<Self::SequenceId> {
+                &self.0
+            }
+
+            fn inner_mut(&mut self) -> &mut object_model::loaded::Object<Self::SequenceId> {
+                &mut self.0
             }
         }
 

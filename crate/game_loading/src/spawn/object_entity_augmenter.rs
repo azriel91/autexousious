@@ -9,9 +9,8 @@ use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHa
 use game_model::loaded::SlugAndHandle;
 use log::debug;
 use object_model::{
-    config::object::SequenceId,
     entity::{Mirrored, Position, SequenceStatus, Velocity},
-    loaded::{AnimatedComponentAnimation, AnimatedComponentDefault, GameObject},
+    loaded::{AnimatedComponentAnimation, AnimatedComponentDefault, GameObject, ObjectWrapper},
 };
 
 use crate::{
@@ -32,14 +31,14 @@ impl ObjectEntityAugmenter {
     /// * `position`: Position of the entity in game.
     /// * `velocity`: Velocity of the entity in game.
     /// * `slug_and_handle`: Slug and handle of the object to spawn.
-    pub fn augment<'s, ObTy, SeqId>(
+    pub fn augment<'s, ObTy>(
         entity: Entity,
         ObjectSpawningResources {
             ref mut object_handles,
             object_assets,
             ref mut ob_ty_handles,
             ob_ty_assets,
-        }: &mut ObjectSpawningResources<'s, ObTy, SeqId>,
+        }: &mut ObjectSpawningResources<'s, ObTy>,
         ObjectComponentStorages {
             ref mut sprite_renders,
             ref mut flippeds,
@@ -53,12 +52,12 @@ impl ObjectEntityAugmenter {
             ref mut sequence_statuses,
             ref mut body_frame_active_handles,
             ref mut interaction_frame_active_handles,
-        }: &mut ObjectComponentStorages<'s, SeqId>,
+        }: &mut ObjectComponentStorages<'s, ObTy::SequenceId>,
         ObjectAnimationStorages {
             ref mut sprite_render_acses,
             ref mut body_acses,
             ref mut interaction_acses,
-        }: &mut ObjectAnimationStorages<'s, SeqId>,
+        }: &mut ObjectAnimationStorages<'s, ObTy::SequenceId>,
         position: Position<f32>,
         velocity: Velocity<f32>,
         SlugAndHandle {
@@ -67,8 +66,7 @@ impl ObjectEntityAugmenter {
         }: &SlugAndHandle<ObTy>,
     ) -> Entity
     where
-        ObTy: Asset + GameObject<SeqId>,
-        SeqId: SequenceId + 'static,
+        ObTy: Asset + GameObject,
     {
         debug!("Augmenting `{}`", slug);
 
@@ -81,10 +79,10 @@ impl ObjectEntityAugmenter {
             .unwrap_or_else(|| panic!("Expected `{}` object to be loaded.", slug));
         let sequence_end_transitions = ob_ty.sequence_end_transitions();
 
-        let animation_defaults = &object.animation_defaults;
+        let animation_defaults = &object.inner().animation_defaults;
 
-        let sequence_id = SeqId::default();
-        let all_animations = object.animations.get(&sequence_id);
+        let sequence_id = ObTy::SequenceId::default();
+        let all_animations = object.inner().animations.get(&sequence_id);
         let first_sequence_animations = all_animations
             .as_ref()
             .expect("Expected ob_ty to have at least one sequence.");
@@ -151,14 +149,16 @@ impl ObjectEntityAugmenter {
 
         // We also need to trigger the animation, not just attach it to the entity
         let mut sprite_animation_set =
-            get_animation_set::<SeqId, SpriteRender>(sprite_render_acses, entity)
+            get_animation_set::<ObTy::SequenceId, SpriteRender>(sprite_render_acses, entity)
                 .expect("Sprite animation should exist as new entity should be valid.");
         let mut body_animation_set =
-            get_animation_set::<SeqId, BodyFrameActiveHandle>(body_acses, entity)
+            get_animation_set::<ObTy::SequenceId, BodyFrameActiveHandle>(body_acses, entity)
                 .expect("Body animation should exist as new entity should be valid.");
-        let mut interaction_animation_set =
-            get_animation_set::<SeqId, InteractionFrameActiveHandle>(interaction_acses, entity)
-                .expect("Interaction animation should exist as new entity should be valid.");
+        let mut interaction_animation_set = get_animation_set::<
+            ObTy::SequenceId,
+            InteractionFrameActiveHandle,
+        >(interaction_acses, entity)
+        .expect("Interaction animation should exist as new entity should be valid.");
 
         first_sequence_animations
             .iter()
@@ -184,7 +184,7 @@ mod test {
 
     use amethyst::{
         animation::AnimationBundle,
-        assets::AssetStorage,
+        assets::{AssetStorage, Handle},
         core::transform::Transform,
         ecs::prelude::*,
         renderer::{Flipped, SpriteRender, Transparent},
@@ -194,7 +194,7 @@ mod test {
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
     use character_model::{
         config::CharacterSequenceId,
-        loaded::{Character, CharacterHandle},
+        loaded::{Character, CharacterHandle, CharacterObjectWrapper},
     };
     use collision_loading::CollisionLoadingBundle;
     use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
@@ -203,10 +203,7 @@ mod test {
     use map_loading::MapLoadingBundle;
     use map_model::loaded::Map;
     use object_loading::ObjectLoadingBundle;
-    use object_model::{
-        entity::{Mirrored, Position, SequenceStatus, Velocity},
-        loaded::ObjectHandle,
-    };
+    use object_model::entity::{Mirrored, Position, SequenceStatus, Velocity};
     use typename::TypeName as TypeNameTrait;
     use typename_derive::TypeName;
 
@@ -249,7 +246,7 @@ mod test {
             let entity = world.read_resource::<EffectReturn<Entity>>().0;
             assert!(world.read_storage::<CharacterHandle>().contains(entity));
             assert!(world
-                .read_storage::<ObjectHandle<CharacterSequenceId>>()
+                .read_storage::<Handle<CharacterObjectWrapper>>()
                 .contains(entity));
             assert!(world.read_storage::<CharacterSequenceId>().contains(entity));
             assert!(world.read_storage::<SequenceStatus>().contains(entity));
@@ -298,7 +295,7 @@ mod test {
         CharacterComponentStorages<'s>,
         ObjectAnimationStorages<'s, CharacterSequenceId>,
         ObjectComponentStorages<'s, CharacterSequenceId>,
-        ObjectSpawningResources<'s, Character, CharacterSequenceId>,
+        ObjectSpawningResources<'s, Character>,
         Read<'s, AssetStorage<Map>>,
     );
     impl<'s> System<'s> for TestSystem {
