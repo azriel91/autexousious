@@ -3,11 +3,11 @@ use amethyst::{
     ecs::{Entities, Join, ReadStorage, System, WriteStorage},
     renderer::Flipped,
 };
+use character_model::config::CharacterSequenceId;
 use derive_new::new;
 use game_input::ControllerInput;
 use game_loading::ObjectAnimationStorages;
 use object_model::{
-    config::object::CharacterSequenceId,
     entity::{Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity},
     loaded::SequenceEndTransitions,
 };
@@ -155,13 +155,11 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
 mod tests {
     use amethyst::{assets::AssetStorage, ecs::prelude::*};
     use application_test_support::AutexousiousApplication;
+    use character_model::config::CharacterSequenceId;
     use game_input::ControllerInput;
     use map_model::loaded::Map;
     use map_selection_model::MapSelection;
-    use object_model::{
-        config::object::CharacterSequenceId,
-        entity::{Grounding, Mirrored, Position, SequenceStatus},
-    };
+    use object_model::entity::{Grounding, Mirrored, Position, SequenceStatus};
     use typename::TypeName;
 
     use super::CharacterSequenceUpdateSystem;

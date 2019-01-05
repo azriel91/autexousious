@@ -9,10 +9,9 @@ use amethyst_test::AmethystApplication;
 use derivative::Derivative;
 use object_model::{
     config::object::SequenceId,
-    // impl_processing_state_from_object,
-    loaded::{GameObject, Object, ObjectHandle, SequenceEndTransition, SequenceEndTransitions},
+    game_object,
+    loaded::{GameObject, Object, SequenceEndTransition, SequenceEndTransitions},
 };
-use object_model_derive::GameObject;
 use specs_derive::Component;
 
 #[derive(Clone, Component, Copy, Debug, Derivative, PartialEq, Eq, Hash)]
@@ -23,28 +22,13 @@ enum TestSequenceId {
     Boo,
 }
 impl SequenceId for TestSequenceId {}
-// TODO: Pending <https://github.com/rust-lang/rfcs/issues/1856>
-//
-// Due to orphan rules being too strict, we cannot implement:
-//
-// ```rust,ignore
-// impl From<Object<TestSequenceId>> for Result<ProcessingState<Object<TestSequenceId>>, Error>
-// ```
-//
-// It works within the `object_model` crate because `Object` originates from that crate.
-//
-// impl_processing_state_from_object!(TestSequenceId);
 
-#[derive(Debug, GameObject)]
-struct MagicObject {
-    /// Handle to loaded object data.
-    pub handle: ObjectHandle<TestSequenceId>,
-    /// Component sequence transitions when a sequence ends.
-    pub transitions: SequenceEndTransitions<TestSequenceId>,
-}
+#[game_object(TestSequenceId)]
+#[derive(Debug)]
+struct Magic;
 
 #[test]
-fn derived_game_object_returns_handle_and_transitions() -> Result<()> {
+fn game_object_attribute_generates_handle_and_transitions_fields() -> Result<()> {
     AmethystApplication::blank()
         .with_assertion(|world| {
             let sequence_end_transitions = {
@@ -56,19 +40,15 @@ fn derived_game_object_returns_handle_and_transitions() -> Result<()> {
             };
             let object_handle = {
                 let object = Object::new(Vec::new(), HashMap::new());
-                world.exec(
-                    |asset_loader: AssetLoaderSystemData<Object<TestSequenceId>>| {
-                        asset_loader.load_from_data(object, ())
-                    },
-                )
+                let magic_object_wrapper = MagicObjectWrapper(object);
+                world.exec(|asset_loader: AssetLoaderSystemData<MagicObjectWrapper>| {
+                    asset_loader.load_from_data(magic_object_wrapper, ())
+                })
             };
 
-            let transitions = sequence_end_transitions.clone();
-            let handle = object_handle.clone();
-
-            let magic_object = MagicObject {
-                handle,
-                transitions,
+            let magic_object = Magic {
+                object_handle: object_handle.clone(),
+                sequence_end_transitions: sequence_end_transitions.clone(),
             };
 
             assert_eq!(&object_handle, magic_object.object_handle());

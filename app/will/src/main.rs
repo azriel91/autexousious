@@ -27,6 +27,7 @@ use application::{
 use application_event::{AppEvent, AppEventReader};
 use application_robot::RobotState;
 use application_state::{HookFn, HookableFn};
+use character_model::config::CharacterSequenceId;
 use character_selection_stdio::CharacterSelectionStdioBundle;
 use collision_loading::CollisionLoadingBundle;
 use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
@@ -40,7 +41,6 @@ use log::info;
 use map_loading::MapLoadingBundle;
 use map_selection_stdio::MapSelectionStdioBundle;
 use object_loading::ObjectLoadingBundle;
-use object_model::config::object::CharacterSequenceId;
 use stdio_view::StdioViewBundle;
 use structopt::StructOpt;
 

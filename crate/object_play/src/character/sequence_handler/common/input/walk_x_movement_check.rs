@@ -1,4 +1,5 @@
-use object_model::{config::object::CharacterSequenceId, entity::RunCounter};
+use character_model::config::CharacterSequenceId;
+use object_model::entity::RunCounter;
 
 use crate::{
     character::sequence_handler::{
@@ -45,12 +46,10 @@ impl CharacterSequenceHandler for WalkXMovementCheck {
 
 #[cfg(test)]
 mod tests {
+    use character_model::config::CharacterSequenceId;
     use game_input::ControllerInput;
-    use object_model::{
-        config::object::CharacterSequenceId,
-        entity::{
-            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
-        },
+    use object_model::entity::{
+        Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
     };
 
     use super::WalkXMovementCheck;

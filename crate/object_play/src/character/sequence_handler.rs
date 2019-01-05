@@ -1,4 +1,4 @@
-use object_model::config::object::CharacterSequenceId;
+use character_model::config::CharacterSequenceId;
 
 use crate::CharacterSequenceUpdateComponents;
 
@@ -51,12 +51,10 @@ pub(super) trait CharacterSequenceHandler {
 
 #[cfg(test)]
 mod test {
+    use character_model::config::CharacterSequenceId;
     use game_input::ControllerInput;
-    use object_model::{
-        config::object::CharacterSequenceId,
-        entity::{
-            Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
-        },
+    use object_model::entity::{
+        Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
     };
 
     use super::CharacterSequenceHandler;

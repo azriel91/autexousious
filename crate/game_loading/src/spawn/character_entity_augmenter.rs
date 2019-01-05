@@ -67,6 +67,7 @@ mod test {
     use amethyst_test::prelude::*;
     use application_event::{AppEvent, AppEventReader};
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
+    use character_model::{config::CharacterSequenceId, loaded::Character};
     use collision_loading::CollisionLoadingBundle;
     use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
     use game_input::{ControllerInput, InputControlled};
@@ -74,11 +75,7 @@ mod test {
     use map_loading::MapLoadingBundle;
     use map_model::loaded::Map;
     use object_loading::ObjectLoadingBundle;
-    use object_model::{
-        config::object::CharacterSequenceId,
-        entity::{Grounding, HealthPoints, RunCounter},
-        loaded::Character,
-    };
+    use object_model::entity::{Grounding, HealthPoints, RunCounter};
     use typename::TypeName as TypeNameTrait;
     use typename_derive::TypeName;
 
@@ -150,7 +147,7 @@ mod test {
         CharacterComponentStorages<'s>,
         ObjectAnimationStorages<'s, CharacterSequenceId>,
         ObjectComponentStorages<'s, CharacterSequenceId>,
-        ObjectSpawningResources<'s, Character, CharacterSequenceId>,
+        ObjectSpawningResources<'s, Character>,
         Read<'s, AssetStorage<Map>>,
     );
     impl<'s> System<'s> for TestSystem {

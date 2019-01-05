@@ -3,35 +3,30 @@ use amethyst::{
     ecs::{Read, WriteStorage},
 };
 use derivative::Derivative;
-use object_model::{
-    config::object::SequenceId,
-    loaded::{Object, ObjectHandle},
-};
+use object_model::loaded::GameObject;
 use shred_derive::SystemData;
 
 /// Resources needed to spawn a game object.
 ///
 /// # Type Parameters:
 ///
-/// * `ObTy`: Loaded form of the object, such as `Character`.
-/// * `SeqId`: Sequence ID of the object, such as `CharacterSequenceId`.
+/// * `O`: Loaded form of the object, such as `Character`.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct ObjectSpawningResources<'s, ObTy, SeqId>
+pub struct ObjectSpawningResources<'s, O>
 where
-    ObTy: Asset,
-    SeqId: SequenceId + 'static,
+    O: Asset + GameObject,
 {
-    /// `ObjectHandle` component storage.
+    /// `Handle<O::ObjectWrapper>` component storage.
     #[derivative(Debug = "ignore")]
-    pub object_handles: WriteStorage<'s, ObjectHandle<SeqId>>,
+    pub object_handles: WriteStorage<'s, Handle<O::ObjectWrapper>>,
     /// `Object` loaded assets.
     #[derivative(Debug = "ignore")]
-    pub object_assets: Read<'s, AssetStorage<Object<SeqId>>>,
-    /// `Handle<ObTy>` component storage.
+    pub object_assets: Read<'s, AssetStorage<O::ObjectWrapper>>,
+    /// `Handle<O>` component storage.
     #[derivative(Debug = "ignore")]
-    pub ob_ty_handles: WriteStorage<'s, Handle<ObTy>>,
+    pub ob_ty_handles: WriteStorage<'s, Handle<O>>,
     /// Object type loaded assets, such as `Character`.
     #[derivative(Debug = "ignore")]
-    pub ob_ty_assets: Read<'s, AssetStorage<ObTy>>,
+    pub ob_ty_assets: Read<'s, AssetStorage<O>>,
 }

@@ -2,10 +2,10 @@ use amethyst::{
     core::bundle::{Result, SystemBundle},
     ecs::prelude::*,
 };
+use character_model::{config::CharacterSequenceId, loaded::Character};
 use derive_new::new;
 use game_input::ControllerInput;
 use named_type::NamedType;
-use object_model::config::object::CharacterSequenceId;
 use tracker::LastTrackerSystem;
 use typename::TypeName;
 
@@ -66,10 +66,10 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[&CharacterCollisionEffectSystem::type_name()],
         ); // kcov-ignore
 
-        // Depends on the LastTrackerSystem<CharacterSequenceId>, so must run before it.
+        // Depends on the LastTrackerSystem<Character>, so must run before it.
         builder.add(
-            ObjectAnimationUpdateSystem::<CharacterSequenceId>::new(),
-            &ObjectAnimationUpdateSystem::<CharacterSequenceId>::type_name(),
+            ObjectAnimationUpdateSystem::<Character>::new(),
+            &ObjectAnimationUpdateSystem::<Character>::type_name(),
             &[&CharacterCollisionEffectSystem::type_name()],
         ); // kcov-ignore
 

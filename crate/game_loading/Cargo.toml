@@ -9,6 +9,7 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 animation_support = { path = "../animation_support" }
 application_event = { path = "../application_event" }
 application_state = { path = "../application_state" }
+character_model = { path = "../character_model" }
 character_selection_model = { path = "../character_selection_model" }
 collision_model = { path = "../collision_model" }
 derivative = "1.0"

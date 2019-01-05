@@ -3,9 +3,10 @@ use amethyst::{
     ecs::prelude::*,
 };
 use derive_new::new;
+use object_model::config::object::ObjectDefinition;
 use serde::{Deserialize, Serialize};
 
-use crate::config::object::{CharacterSequenceId, ObjectDefinition};
+use crate::config::CharacterSequenceId;
 
 /// Contains all of the sequences for an `Object`.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]

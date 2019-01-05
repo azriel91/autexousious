@@ -1,6 +1,10 @@
 use std::collections::HashMap;
 
-use amethyst::{assets::Loader, prelude::*, renderer::SpriteRender};
+use amethyst::{
+    assets::{Handle, Loader},
+    prelude::*,
+    renderer::SpriteRender,
+};
 use application::Result;
 use collision_loading::{BodyAnimationLoader, InteractionAnimationLoader};
 use collision_model::{
@@ -11,9 +15,9 @@ use fnv::FnvHashMap;
 use game_model::config::AssetRecord;
 use log::debug;
 use object_model::{
-    config::{object::SequenceId, ObjectDefinition},
+    config::ObjectDefinition,
     loaded::{
-        AnimatedComponentAnimation, AnimatedComponentDefault, Object, ObjectHandle,
+        AnimatedComponentAnimation, AnimatedComponentDefault, GameObject, Object, ObjectWrapper,
         SequenceEndTransition, SequenceEndTransitions,
     },
 };
@@ -31,13 +35,16 @@ impl ObjectLoader {
     /// * `world`: `World` to store the object's assets.
     /// * `asset_record`: Entry of the object's configuration.
     /// * `object_definition`: Object definition configuration.
-    pub fn load<SeqId>(
+    pub fn load<O>(
         world: &World,
         asset_record: &AssetRecord,
-        object_definition: &ObjectDefinition<SeqId>,
-    ) -> Result<(SequenceEndTransitions<SeqId>, ObjectHandle<SeqId>)>
+        object_definition: &ObjectDefinition<O::SequenceId>,
+    ) -> Result<(
+        Handle<O::ObjectWrapper>,
+        SequenceEndTransitions<O::SequenceId>,
+    )>
     where
-        SeqId: SequenceId + 'static,
+        O: GameObject,
     {
         debug!("Loading object assets in `{}`", asset_record.path.display());
 
@@ -129,28 +136,32 @@ impl ObjectLoader {
             .collect::<HashMap<_, _>>();
 
         let object = Object::new(animation_defaults, animations);
+        let object_wrapper = O::ObjectWrapper::new(object);
         let object_handle = {
             let loader = world.read_resource::<Loader>();
-            loader.load_from_data(object, (), &world.read_resource())
+            loader.load_from_data(object_wrapper, (), &world.read_resource())
         };
 
-        Ok((sequence_end_transitions.into(), object_handle))
+        Ok((object_handle, sequence_end_transitions.into()))
     }
 }
 
 #[cfg(test)]
 mod test {
-    use amethyst::{animation::AnimationBundle, assets::AssetStorage};
+    use amethyst::{
+        animation::AnimationBundle,
+        assets::{AssetStorage, Handle},
+    };
     use amethyst_test::AmethystApplication;
     use application::{load_in, Format};
     use assets_test::{ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SLUG};
+    use character_model::{
+        config::{CharacterDefinition, CharacterSequenceId},
+        loaded::{Character, CharacterObjectWrapper},
+    };
     use collision_loading::CollisionLoadingBundle;
     use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
     use game_model::config::AssetRecord;
-    use object_model::{
-        config::{object::CharacterSequenceId, CharacterDefinition},
-        loaded::{Object, ObjectHandle},
-    };
 
     use super::ObjectLoader;
     use crate::ObjectLoadingBundle;
@@ -190,19 +201,20 @@ mod test {
                     )
                     .expect("Failed to load object.toml into CharacterDefinition");
 
-                    let (_sequence_end_transitions, object_handle) = ObjectLoader::load(
-                        world,
-                        &asset_record,
-                        &character_definition.object_definition,
-                    )
-                    .expect("Failed to load object");
+                    let (object_handle, _sequence_end_transitions) =
+                        ObjectLoader::load::<Character>(
+                            world,
+                            &asset_record,
+                            &character_definition.object_definition,
+                        )
+                        .expect("Failed to load object");
 
                     world.add_resource(object_handle);
                 })
                 .with_assertion(|world| {
-                    let object_handle = world.read_resource::<ObjectHandle<CharacterSequenceId>>();
+                    let object_handle = world.read_resource::<Handle<CharacterObjectWrapper>>();
                     let object_assets =
-                        world.read_resource::<AssetStorage<Object<CharacterSequenceId>>>();
+                        world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
                     let object = object_assets
                         .get(&object_handle)
                         .expect("Expected object to be loaded after one tick.");

@@ -1,8 +1,7 @@
-//! Configuration types for `Character`s.
+//! Contains the types that represent the configuration on disk.
 
-pub use self::{
-    character_definition::CharacterDefinition, character_sequence_id::CharacterSequenceId,
-};
+pub use self::character_definition::CharacterDefinition;
+pub use self::character_sequence_id::CharacterSequenceId;
 
 mod character_definition;
 mod character_sequence_id;
@@ -12,11 +11,11 @@ mod test {
     use std::collections::HashMap;
 
     use collision_model::config::{BodyFrame, InteractionFrame};
+    use object_model::config::object::{ObjectDefinition, ObjectFrame, Sequence};
     use sprite_model::config::SpriteFrame;
     use toml;
 
     use super::{CharacterDefinition, CharacterSequenceId};
-    use crate::config::object::{sequence::ObjectFrame, ObjectDefinition, Sequence};
 
     const OBJECT_TOML: &str = r#"
         [sequences.stand]

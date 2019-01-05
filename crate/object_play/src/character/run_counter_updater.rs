@@ -1,8 +1,6 @@
+use character_model::config::CharacterSequenceId;
 use game_input::ControllerInput;
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{Grounding, Mirrored, RunCounter},
-};
+use object_model::entity::{Grounding, Mirrored, RunCounter};
 
 use crate::character::sequence_handler::SequenceHandlerUtil;
 
@@ -66,11 +64,9 @@ impl RunCounterUpdater {
 
 #[cfg(test)]
 mod tests {
+    use character_model::config::CharacterSequenceId;
     use game_input::ControllerInput;
-    use object_model::{
-        config::object::CharacterSequenceId,
-        entity::{Grounding, Mirrored, RunCounter},
-    };
+    use object_model::entity::{Grounding, Mirrored, RunCounter};
 
     use super::RunCounterUpdater;
 

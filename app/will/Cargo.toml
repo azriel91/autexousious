@@ -13,6 +13,7 @@ application_input = { path = "../../crate/application_input" }
 application_robot = { path = "../../crate/application_robot" }
 application_state = { path = "../../crate/application_state" }
 application_ui = { path = "../../crate/application_ui" }
+character_model = { path = "../../crate/character_model" }
 character_selection_stdio = { path = "../../crate/character_selection_stdio" }
 collision_loading = { path = "../../crate/collision_loading" }
 collision_model = { path = "../../crate/collision_model" }
@@ -26,7 +27,6 @@ map_loading = { path = "../../crate/map_loading" }
 map_selection_stdio = { path = "../../crate/map_selection_stdio" }
 log = "0.4"
 object_loading = { path = "../../crate/object_loading" }
-object_model = { path = "../../crate/object_model" }
 stdio_view = { path = "../../crate/stdio_view" }
 structopt = "0.2"
 structopt-derive = "0.2"

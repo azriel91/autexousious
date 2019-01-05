@@ -1,4 +1,5 @@
-use object_model::{config::object::CharacterSequenceId, entity::SequenceStatus};
+use character_model::config::CharacterSequenceId;
+use object_model::entity::SequenceStatus;
 
 #[derive(Debug)]
 pub(crate) struct SwitchSequenceOnEnd(
@@ -18,7 +19,8 @@ impl SwitchSequenceOnEnd {
 
 #[cfg(test)]
 mod test {
-    use object_model::{config::object::CharacterSequenceId, entity::SequenceStatus};
+    use character_model::config::CharacterSequenceId;
+    use object_model::entity::SequenceStatus;
 
     use super::SwitchSequenceOnEnd;
 

@@ -5,14 +5,14 @@
 
 pub use self::{
     animation::{AnimatedComponentAnimation, AnimatedComponentDefault},
-    character::{Character, CharacterHandle},
     game_object::GameObject,
-    object::{Object, ObjectHandle},
+    object::Object,
+    object_wrapper::ObjectWrapper,
     sequence::{SequenceEndTransition, SequenceEndTransitions},
 };
 
 mod animation;
-mod character;
 mod game_object;
 mod object;
+mod object_wrapper;
 mod sequence;

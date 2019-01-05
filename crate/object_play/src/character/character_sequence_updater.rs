@@ -1,6 +1,5 @@
-use object_model::{
-    config::object::CharacterSequenceId, entity::SequenceStatus, loaded::SequenceEndTransitions,
-};
+use character_model::config::CharacterSequenceId;
+use object_model::{entity::SequenceStatus, loaded::SequenceEndTransitions};
 
 use crate::{
     character::sequence_handler::{

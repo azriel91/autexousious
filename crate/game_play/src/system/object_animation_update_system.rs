@@ -2,7 +2,7 @@ use std::marker::PhantomData;
 
 use amethyst::{
     animation::get_animation_set,
-    assets::AssetStorage,
+    assets::{AssetStorage, Handle},
     ecs::{Entities, Entity, Join, Read, ReadStorage, System},
 };
 use derive_new::new;
@@ -10,9 +10,8 @@ use game_loading::{AnimationRunner, ObjectAnimationStorages};
 use named_type::NamedType;
 use named_type_derive::NamedType;
 use object_model::{
-    config::object::SequenceId,
     entity::SequenceStatus,
-    loaded::{AnimatedComponentAnimation, Object, ObjectHandle},
+    loaded::{AnimatedComponentAnimation, GameObject, ObjectWrapper},
 };
 use shred_derive::SystemData;
 use tracker::Last;
@@ -21,42 +20,42 @@ use tracker::Last;
 ///
 /// # Type Parameters
 ///
-/// * `SeqId`: Sequence ID type, e.g. `CharacterSequenceId`.
+/// * `O`: `GameObject` type, e.g. `Character`.
 #[derive(Debug, Default, NamedType, new)]
-pub(crate) struct ObjectAnimationUpdateSystem<SeqId> {
+pub(crate) struct ObjectAnimationUpdateSystem<O> {
     /// PhantomData.
-    phantom_data: PhantomData<SeqId>,
+    phantom_data: PhantomData<O>,
 }
 
 #[allow(missing_debug_implementations)]
 #[derive(SystemData)]
-pub struct ObjectAnimationUpdateSystemData<'s, SeqId>
+pub struct ObjectAnimationUpdateSystemData<'s, O>
 where
-    SeqId: SequenceId + 'static,
+    O: GameObject,
 {
     entities: Entities<'s>,
     sequence_statuses: ReadStorage<'s, SequenceStatus>,
-    last_sequence_ids: ReadStorage<'s, Last<SeqId>>,
-    sequence_ids: ReadStorage<'s, SeqId>,
-    object_handles: ReadStorage<'s, ObjectHandle<SeqId>>,
-    object_assets: Read<'s, AssetStorage<Object<SeqId>>>,
-    object_acses: ObjectAnimationStorages<'s, SeqId>,
+    last_sequence_ids: ReadStorage<'s, Last<O::SequenceId>>,
+    sequence_ids: ReadStorage<'s, O::SequenceId>,
+    object_handles: ReadStorage<'s, Handle<O::ObjectWrapper>>,
+    object_assets: Read<'s, AssetStorage<O::ObjectWrapper>>,
+    object_acses: ObjectAnimationStorages<'s, O::SequenceId>,
 }
 
-impl<SeqId> ObjectAnimationUpdateSystem<SeqId>
+impl<O> ObjectAnimationUpdateSystem<O>
 where
-    SeqId: SequenceId + 'static,
+    O: GameObject,
 {
     fn swap_animation(
-        object: &Object<SeqId>,
+        object: &O::ObjectWrapper,
         ObjectAnimationStorages {
             ref mut sprite_render_acses,
             ref mut body_acses,
             ref mut interaction_acses,
-        }: &mut ObjectAnimationStorages<'_, SeqId>,
+        }: &mut ObjectAnimationStorages<'_, O::SequenceId>,
         entity: Entity,
-        last_sequence_id: SeqId,
-        next_sequence_id: SeqId,
+        last_sequence_id: O::SequenceId,
+        next_sequence_id: O::SequenceId,
     ) {
         let mut sprite_animation_set = get_animation_set(sprite_render_acses, entity)
             .expect("Sprite animation should exist as entity should be valid.");
@@ -65,12 +64,16 @@ where
         let mut interaction_animation_set = get_animation_set(interaction_acses, entity)
             .expect("Interaction animation should exist as entity should be valid.");
 
-        let animations = &object.animations.get(&next_sequence_id).unwrap_or_else(|| {
-            panic!(
-                "Failed to get animations for sequence: `{:?}`",
-                next_sequence_id
-            )
-        });
+        let animations = object
+            .inner()
+            .animations
+            .get(&next_sequence_id)
+            .unwrap_or_else(|| {
+                panic!(
+                    "Failed to get animations for sequence: `{:?}`",
+                    next_sequence_id
+                )
+            });
 
         animations
             .iter()
@@ -103,11 +106,11 @@ where
     }
 }
 
-impl<'s, SeqId> System<'s> for ObjectAnimationUpdateSystem<SeqId>
+impl<'s, O> System<'s> for ObjectAnimationUpdateSystem<O>
 where
-    SeqId: SequenceId + 'static,
+    O: GameObject,
 {
-    type SystemData = ObjectAnimationUpdateSystemData<'s, SeqId>;
+    type SystemData = ObjectAnimationUpdateSystemData<'s, O>;
 
     fn run(
         &mut self,

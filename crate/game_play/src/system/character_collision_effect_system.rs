@@ -2,12 +2,10 @@ use amethyst::{
     ecs::{Read, Resources, System, SystemData, WriteStorage},
     shrev::{EventChannel, ReaderId},
 };
+use character_model::config::CharacterSequenceId;
 use collision_model::{config::Interaction, play::CollisionEvent};
 use derive_new::new;
-use object_model::{
-    config::object::CharacterSequenceId,
-    entity::{HealthPoints, SequenceStatus},
-};
+use object_model::entity::{HealthPoints, SequenceStatus};
 use typename_derive::TypeName;
 
 /// Determines collision effects for characters.
