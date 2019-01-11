@@ -32,11 +32,15 @@ pub fn game_object_gen(args: GameObjectAttributeArgs, mut ast: DeriveInput) -> T
         &sequence_end_transitions_field,
     );
 
+    // Add object related fields.
     let data_struct = data_struct_mut(&mut ast, ERR_MUST_BE_STRUCT);
     object_fields_gen(&mut data_struct.fields, additional_fields);
 
+    // Generate `<Type>ObjectWrapper` newtype.
     let mut object_wrapper_impl =
         object_wrapper_gen(sequence_id_type, &object_wrapper_type, &ast.vis);
+
+    // Implement `GameObject` trait.
     let game_object_trait_impl = game_object_impl(
         &ast,
         sequence_id_type,
