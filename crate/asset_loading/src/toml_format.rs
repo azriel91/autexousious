@@ -20,12 +20,12 @@ where
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
+    use std::{collections::HashMap, thread, time::Duration};
 
     use amethyst::{
         assets::{
             self, Asset, AssetStorage, Error, ErrorKind, Handle, Loader, ProcessingState,
-            Processor, Source,
+            Processor, ProgressCounter, Source,
         },
         ecs::storage::VecStorage,
     };
@@ -50,6 +50,7 @@ mod tests {
                 loader.add_source(CODE_SOURCE_ID, code_source);
             })
             .with_effect(|world| {
+                let mut progress_counter = ProgressCounter::new();
                 let thing_handle = {
                     let loader = world.read_resource::<Loader>();
                     loader.load_from(
@@ -57,14 +58,21 @@ mod tests {
                         TomlFormat,
                         (), // Options
                         CODE_SOURCE_ID,
-                        (), // Progress
+                        &mut progress_counter,
                         &world.read_resource::<AssetStorage<TomlThing>>(),
                     )
                 };
 
                 world.add_resource(thing_handle);
+                world.add_resource(progress_counter);
             })
             .with_assertion(|world| {
+                let progress_counter = world.read_resource::<ProgressCounter>();
+                while !progress_counter.is_complete() {
+                    // Should load pretty quickly.
+                    thread::sleep(Duration::from_millis(3));
+                }
+
                 let thing_handle = world.read_resource::<Handle<TomlThing>>();
                 let toml_thing_assets = world.read_resource::<AssetStorage<TomlThing>>();
                 let toml_thing = toml_thing_assets
