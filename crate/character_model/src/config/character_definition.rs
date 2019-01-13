@@ -1,6 +1,6 @@
 use amethyst::{
     assets::{Asset, Handle},
-    ecs::prelude::*,
+    ecs::storage::VecStorage,
 };
 use derive_new::new;
 use object_model::config::object::ObjectDefinition;
