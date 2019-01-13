@@ -20,7 +20,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use std::{collections::HashMap, thread, time::Duration};
+    use std::collections::HashMap;
 
     use amethyst::{
         assets::{
@@ -28,8 +28,9 @@ mod tests {
             Processor, ProgressCounter, Source,
         },
         ecs::storage::VecStorage,
+        State, StateData, Trans,
     };
-    use amethyst_test::AmethystApplication;
+    use amethyst_test::{AmethystApplication, GameUpdate};
     use derive_deref::{Deref, DerefMut};
     use derive_new::new;
     use serde::{Deserialize, Serialize};
@@ -66,17 +67,8 @@ mod tests {
                 world.add_resource(thing_handle);
                 world.add_resource(progress_counter);
             })
+            .with_state(|| WaitForLoad)
             .with_assertion(|world| {
-                let progress_counter = world.read_resource::<ProgressCounter>();
-                for _ in 0..10 {
-                    if !progress_counter.is_complete() {
-                        // Should load pretty quickly.
-                        thread::sleep(Duration::from_millis(3));
-                    } else {
-                        break;
-                    }
-                }
-
                 let thing_handle = world.read_resource::<Handle<TomlThing>>();
                 let toml_thing_assets = world.read_resource::<AssetStorage<TomlThing>>();
                 let toml_thing = toml_thing_assets
@@ -86,6 +78,25 @@ mod tests {
                 assert_eq!(&TomlThing { val: 123 }, toml_thing);
             })
             .run()
+    }
+
+    #[derive(Debug)]
+    struct WaitForLoad;
+    impl<T, E> State<T, E> for WaitForLoad
+    where
+        T: GameUpdate,
+        E: Send + Sync + 'static,
+    {
+        fn update(&mut self, data: StateData<'_, T>) -> Trans<T, E> {
+            data.data.update(&data.world);
+
+            let progress_counter = data.world.read_resource::<ProgressCounter>();
+            if !progress_counter.is_complete() {
+                Trans::None
+            } else {
+                Trans::Pop
+            }
+        }
     }
 
     #[derive(Debug, Deserialize, PartialEq, Serialize)]
