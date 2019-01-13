@@ -68,9 +68,13 @@ mod tests {
             })
             .with_assertion(|world| {
                 let progress_counter = world.read_resource::<ProgressCounter>();
-                while !progress_counter.is_complete() {
-                    // Should load pretty quickly.
-                    thread::sleep(Duration::from_millis(3));
+                for _ in 0..10 {
+                    if !progress_counter.is_complete() {
+                        // Should load pretty quickly.
+                        thread::sleep(Duration::from_millis(3));
+                    } else {
+                        break;
+                    }
                 }
 
                 let thing_handle = world.read_resource::<Handle<TomlThing>>();
