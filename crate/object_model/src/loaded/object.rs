@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-use amethyst::ecs::{storage::DenseVecStorage, Component};
 use derivative::Derivative;
 use derive_new::new;
 
@@ -20,11 +19,4 @@ where
     pub animation_defaults: Vec<AnimatedComponentDefault>,
     /// Handles to the animations that this object uses, keyed by sequence ID.
     pub animations: HashMap<SeqId, Vec<AnimatedComponentAnimation>>,
-}
-
-impl<SeqId> Component for Object<SeqId>
-where
-    SeqId: SequenceId + 'static,
-{
-    type Storage = DenseVecStorage<Self>;
 }

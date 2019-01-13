@@ -1,6 +1,6 @@
 use amethyst::{
     assets::{Asset, Error, Handle, ProcessingState},
-    ecs::prelude::*,
+    ecs::storage::VecStorage,
 };
 use derive_new::new;
 use object_model::game_object;
@@ -18,10 +18,6 @@ impl Asset for Character {
     const NAME: &'static str = "character_model::loaded::Character";
     type Data = Self;
     type HandleStorage = VecStorage<Handle<Self>>;
-}
-
-impl Component for Character {
-    type Storage = DenseVecStorage<Self>;
 }
 
 impl From<Character> for Result<ProcessingState<Character>, Error> {
