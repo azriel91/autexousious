@@ -9,4 +9,5 @@ extern crate pretty_assertions;
 
 pub mod animation;
 pub mod config;
+pub mod loaded;
 pub mod play;

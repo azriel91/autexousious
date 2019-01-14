@@ -6,11 +6,8 @@ use amethyst::{
     renderer::SpriteRender,
     Error,
 };
-use collision_loading::{BodyAnimationLoader, InteractionAnimationLoader};
-use collision_model::{
-    animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle},
-    config::{BodyFrame, InteractionFrame},
-};
+use collision_loading::InteractionAnimationLoader;
+use collision_model::{animation::InteractionFrameActiveHandle, config::InteractionFrame};
 use fnv::FnvHashMap;
 use game_model::config::AssetRecord;
 use log::debug;
@@ -83,15 +80,6 @@ impl ObjectLoader {
             };
             animation_defaults.push(AnimatedComponentDefault::SpriteRender(sprite_render));
 
-            let body_frame_handle = {
-                let loader = world.read_resource::<Loader>();
-                loader.load_from_data(BodyFrame::default(), (), &world.read_resource())
-            };
-            let body_frame_active_handle = BodyFrameActiveHandle::new(body_frame_handle);
-            animation_defaults.push(AnimatedComponentDefault::BodyFrame(
-                body_frame_active_handle,
-            ));
-
             let interaction_frame_handle = {
                 let loader = world.read_resource::<Loader>();
                 loader.load_from_data(InteractionFrame::default(), (), &world.read_resource())
@@ -112,8 +100,6 @@ impl ObjectLoader {
             &object_definition.sequences,
             &sprite_sheet_handles,
         );
-        let mut body_frame_animations =
-            BodyAnimationLoader::load_into_map(world, &object_definition.sequences);
         let mut interaction_frame_animations =
             InteractionAnimationLoader::load_into_map(world, &object_definition.sequences);
 
@@ -124,9 +110,6 @@ impl ObjectLoader {
                 let mut animations = Vec::new();
                 if let Some(sprite_render) = sprite_render_animations.remove(sequence_id) {
                     animations.push(AnimatedComponentAnimation::SpriteRender(sprite_render));
-                }
-                if let Some(body_frame) = body_frame_animations.remove(sequence_id) {
-                    animations.push(AnimatedComponentAnimation::BodyFrame(body_frame));
                 }
                 if let Some(interaction_frame) = interaction_frame_animations.remove(sequence_id) {
                     animations.push(AnimatedComponentAnimation::InteractionFrame(
@@ -229,7 +212,8 @@ mod test {
                         .animations
                         .get(&CharacterSequenceId::StandAttack)
                         .expect("Expected to read `StandAttack` animations.");
-                    assert_eq!(3, stand_attack_animations.len());
+                    // InteractionFrame and SpriteRender
+                    assert_eq!(2, stand_attack_animations.len());
                 })
                 .run()
                 .is_ok()

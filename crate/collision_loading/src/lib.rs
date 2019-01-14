@@ -10,8 +10,7 @@ extern crate pretty_assertions;
 pub(crate) use crate::system::CollisionLoadingSystem;
 pub use crate::{
     animation::{
-        BodyAnimationFrame, BodyAnimationLoader, BodyAnimationSequence, InteractionAnimationFrame,
-        InteractionAnimationLoader, InteractionAnimationSequence,
+        InteractionAnimationFrame, InteractionAnimationLoader, InteractionAnimationSequence,
     },
     collision_loading_bundle::CollisionLoadingBundle,
 };

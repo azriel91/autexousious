@@ -1,5 +1,8 @@
-use collision_loading::{BodyAnimationFrame, InteractionAnimationFrame};
-use collision_model::config::{BodyFrame, Interaction, InteractionFrame};
+use collision_loading::InteractionAnimationFrame;
+use collision_model::{
+    animation::BodyAnimationFrame,
+    config::{BodyFrame, Interaction, InteractionFrame},
+};
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 use shape_model::Volume;
