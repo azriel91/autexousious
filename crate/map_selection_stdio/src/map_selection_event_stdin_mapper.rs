@@ -1,11 +1,12 @@
 use std::str::FromStr;
 
+use amethyst::Error;
 use game_model::{
     config::AssetSlug,
     loaded::{MapAssets, SlugAndHandle},
 };
 use map_selection_model::{MapSelection, MapSelectionEvent};
-use stdio_spi::{Result, StdinMapper};
+use stdio_spi::{StdinMapper, StdioError};
 use typename_derive::TypeName;
 
 use crate::MapSelectionEventArgs;
@@ -15,7 +16,10 @@ use crate::MapSelectionEventArgs;
 pub struct MapSelectionEventStdinMapper;
 
 impl MapSelectionEventStdinMapper {
-    fn map_select_event(map_assets: &MapAssets, selection: &str) -> Result<MapSelectionEvent> {
+    fn map_select_event(
+        map_assets: &MapAssets,
+        selection: &str,
+    ) -> Result<MapSelectionEvent, Error> {
         let map_selection = match selection {
             "random" => {
                 let snh = SlugAndHandle::from(
@@ -27,10 +31,11 @@ impl MapSelectionEventStdinMapper {
                 MapSelection::Random(snh)
             }
             slug_str => {
-                let slug = AssetSlug::from_str(slug_str)?;
+                let slug = AssetSlug::from_str(slug_str).map_err(StdioError::Msg)?;
                 let handle = map_assets
                     .get(&slug)
-                    .ok_or_else(|| format!("No map found with asset slug `{}`.", slug))?
+                    .ok_or_else(|| format!("No map found with asset slug `{}`.", slug))
+                    .map_err(StdioError::Msg)?
                     .clone();
 
                 let snh = SlugAndHandle { slug, handle };
@@ -49,7 +54,7 @@ impl StdinMapper for MapSelectionEventStdinMapper {
     type Event = MapSelectionEvent;
     type Args = MapSelectionEventArgs;
 
-    fn map(map_assets: &MapAssets, args: Self::Args) -> Result<Self::Event> {
+    fn map(map_assets: &MapAssets, args: Self::Args) -> Result<Self::Event, Error> {
         match args {
             MapSelectionEventArgs::Select { selection } => {
                 Self::map_select_event(map_assets, &selection)
@@ -60,11 +65,12 @@ impl StdinMapper for MapSelectionEventStdinMapper {
 
 #[cfg(test)]
 mod tests {
+    use amethyst::Error;
     use application_test_support::AutexousiousApplication;
     use assets_test::ASSETS_MAP_FADE_SLUG;
     use game_model::loaded::{MapAssets, SlugAndHandle};
     use map_selection_model::{MapSelection, MapSelectionEvent};
-    use stdio_spi::{ErrorKind, Result, StdinMapper};
+    use stdio_spi::{StdinMapper, StdioError};
 
     use super::MapSelectionEventStdinMapper;
     use crate::MapSelectionEventArgs;
@@ -147,13 +153,19 @@ mod tests {
         );
     }
 
-    fn expect_err_msg(result: Result<MapSelectionEvent>, expected: &str) {
+    fn expect_err_msg(result: Result<MapSelectionEvent, Error>, expected: &str) {
         assert!(result.is_err());
-        match result.unwrap_err().kind() {
-            ErrorKind::Msg(ref s) => assert_eq!(expected, s),
-            // kcov-ignore-start
-            _ => panic!("Expected `ErrorKind::Msg({:?})`.", expected),
-            // kcov-ignore-end
+        if let Some(stdio_error) = result
+            .unwrap_err()
+            .as_error()
+            .downcast_ref::<Box<StdioError>>()
+        {
+            assert_eq!(
+                &Box::new(StdioError::Msg(expected.to_string())),
+                stdio_error
+            );
+        } else {
+            panic!("Expected `StdioError::Msg({:?})`.", expected); // kcov-ignore
         }
     }
 }

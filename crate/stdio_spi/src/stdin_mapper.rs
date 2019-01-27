@@ -1,6 +1,5 @@
+use amethyst::Error;
 use structopt::StructOpt;
-
-use crate::Result;
 
 /// Maps tokens from stdin to a state specific event.
 pub trait StdinMapper {
@@ -24,5 +23,5 @@ pub trait StdinMapper {
     /// # Parameters
     ///
     /// * `tokens`: Tokens received from stdin.
-    fn map(resource: &Self::Resource, args: Self::Args) -> Result<Self::Event>;
+    fn map(resource: &Self::Resource, args: Self::Args) -> Result<Self::Event, Error>;
 }

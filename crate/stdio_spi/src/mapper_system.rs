@@ -1,6 +1,10 @@
 use std::marker::PhantomData;
 
-use amethyst::{ecs::prelude::*, shrev::EventChannel};
+use amethyst::{
+    ecs::{Read, Resources, System, SystemData, Write},
+    shrev::{EventChannel, ReaderId},
+    Error,
+};
 use application_event::AppEventVariant;
 use derive_new::new;
 use log::error;
@@ -8,7 +12,7 @@ use structopt::StructOpt;
 use typename::TypeName as TypeNameTrait;
 use typename_derive::TypeName;
 
-use crate::{Result, StdinMapper, VariantAndTokens};
+use crate::{StdinMapper, VariantAndTokens};
 
 /// Type to fetch the application event channel.
 type MapperSystemData<'s, E, SysData> = (
@@ -49,7 +53,7 @@ where
                     None
                 }
             })
-            .map(|tokens| -> Result<M::Event> {
+            .map(|tokens| -> Result<M::Event, Error> {
                 let args = M::Args::from_iter_safe(tokens.iter())?;
                 M::map(&resources, args)
             })

@@ -4,13 +4,11 @@
 //! Types and traits to allow the `stdio_view` to control a state.
 
 pub use crate::{
-    error_kind::{Error, ErrorKind, Result},
-    mapper_system::MapperSystem,
-    stdin_mapper::StdinMapper,
+    mapper_system::MapperSystem, stdin_mapper::StdinMapper, stdio_error::StdioError,
     variant_and_tokens::VariantAndTokens,
 };
 
-mod error_kind;
 mod mapper_system;
 mod stdin_mapper;
+mod stdio_error;
 mod variant_and_tokens;
