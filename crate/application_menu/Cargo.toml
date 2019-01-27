@@ -21,3 +21,7 @@ structopt-derive = "0.2.14"
 [[example]]
 name = "01_menu"
 path = "examples/01_menu/main.rs"
+
+[build-dependencies]
+rustc_version = "0.2.3"
+

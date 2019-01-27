@@ -31,3 +31,7 @@ strum = "0.13.0"
 
 [features]
 nightly = ["amethyst/nightly"]
+
+[build-dependencies]
+rustc_version = "0.2.3"
+

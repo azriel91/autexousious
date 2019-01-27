@@ -14,3 +14,7 @@ log = "0.4.6"
 structopt = "0.2.14"
 typename = "0.1.0"
 typename_derive = "0.1.1"
+
+[build-dependencies]
+rustc_version = "0.2.3"
+

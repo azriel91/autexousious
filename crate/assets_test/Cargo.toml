@@ -11,3 +11,7 @@ heck = "0.3.1"
 lazy_static = "1.2.0"
 object_model = { path = "../object_model" }
 strum = "0.13.0"
+
+[build-dependencies]
+rustc_version = "0.2.3"
+

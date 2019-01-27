@@ -17,3 +17,7 @@ collision_model = { path = "../collision_model"}
 pretty_assertions = "0.5.1"
 sprite_model = { path = "../sprite_model" }
 toml = "0.4.10"
+
+[build-dependencies]
+rustc_version = "0.2.3"
+

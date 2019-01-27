@@ -34,8 +34,8 @@ structopt-derive = "0.2.14"
 [dev-dependencies]
 assert_cmd = "0.10.2"
 
-[build-dependencies]
-application = { path = "../../crate/application" }
-
 [features]
 nightly = ["amethyst/nightly",]
+
+[build-dependencies]
+rustc_version = "0.2.3"

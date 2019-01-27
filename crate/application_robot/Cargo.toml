@@ -16,3 +16,7 @@ debug_util_amethyst = { path = "../debug_util_amethyst" }
 default = []
 # Used to control compilation on CI
 test_ui = []
+
+[build-dependencies]
+rustc_version = "0.2.3"
+

@@ -8,3 +8,7 @@ edition = "2018"
 serde = "1.0.85"
 strum = "0.13.0"
 strum_macros = "0.13.0"
+
+[build-dependencies]
+rustc_version = "0.2.3"
+

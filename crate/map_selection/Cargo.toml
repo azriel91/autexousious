@@ -25,3 +25,7 @@ map_loading = { path = "../map_loading" }
 
 [features]
 nightly = ["amethyst/nightly", "amethyst_test/nightly"]
+
+[build-dependencies]
+rustc_version = "0.2.3"
+

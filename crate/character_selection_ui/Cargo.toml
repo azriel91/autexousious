@@ -28,3 +28,7 @@ assets_test = { path = "../assets_test" }
 
 [features]
 nightly = ["amethyst/nightly", "amethyst_test/nightly"]
+
+[build-dependencies]
+rustc_version = "0.2.3"
+

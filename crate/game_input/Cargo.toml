@@ -20,3 +20,7 @@ application = { path = "../application" }
 amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
 hamcrest = "0.1.5"
 winit = "0.18.1"
+
+[build-dependencies]
+rustc_version = "0.2.3"
+

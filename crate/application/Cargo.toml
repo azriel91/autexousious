@@ -17,3 +17,7 @@ toml = "0.4.10"
 pretty_assertions = "0.5.1"
 lazy_static = "1.2.0"
 tempfile = "3.0.5"
+
+[build-dependencies]
+rustc_version = "0.2.3"
+

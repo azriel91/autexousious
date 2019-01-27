@@ -24,3 +24,7 @@ derive_deref = "1.0.1"
 hamcrest = "0.1.5"
 pretty_assertions = "0.5.1"
 tempfile = "3.0.5"
+
+[build-dependencies]
+rustc_version = "0.2.3"
+

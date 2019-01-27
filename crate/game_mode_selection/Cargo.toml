@@ -25,3 +25,7 @@ debug_util_amethyst = { path = "../debug_util_amethyst" }
 
 [features]
 nightly = ["amethyst/nightly"]
+
+[build-dependencies]
+rustc_version = "0.2.3"
+

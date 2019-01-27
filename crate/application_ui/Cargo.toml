@@ -27,3 +27,7 @@ nightly = ["amethyst/nightly", "amethyst_test/nightly"]
 [[example]]
 name = "01_draw_text"
 path = "examples/01_draw_text/main.rs"
+
+[build-dependencies]
+rustc_version = "0.2.3"
+

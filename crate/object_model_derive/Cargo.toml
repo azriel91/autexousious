@@ -11,3 +11,7 @@ proc-macro = true
 syn = { version = "0.15.26", features = ["extra-traits", "visit"] }
 quote = "0.6.11"
 proc-macro2 = "0.4.26"
+
+[build-dependencies]
+rustc_version = "0.2.3"
+

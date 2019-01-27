@@ -14,3 +14,7 @@ sprite_model = { path = "../sprite_model" }
 [dev-dependencies]
 pretty_assertions = "0.5.1"
 toml = "0.4.10"
+
+[build-dependencies]
+rustc_version = "0.2.3"
+
