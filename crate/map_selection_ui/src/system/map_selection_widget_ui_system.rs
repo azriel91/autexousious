@@ -108,7 +108,6 @@ impl MapSelectionWidgetUiSystem {
                 1.,
                 text_w,
                 text_h,
-                0,
             );
 
             let ui_text = UiText::new(font.clone(), String::from(""), [1., 1., 1., 1.], FONT_SIZE);

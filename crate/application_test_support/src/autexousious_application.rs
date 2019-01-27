@@ -163,7 +163,7 @@ impl AutexousiousApplication {
 
 #[cfg(test)]
 mod test {
-    use amethyst::{input::InputHandler, ui::MouseReactive};
+    use amethyst::{input::InputHandler, ui::Interactable};
     use amethyst_test::SpriteRenderAnimationFixture;
     use game_input::{PlayerActionControl, PlayerAxisControl};
     use game_model::{
@@ -184,7 +184,7 @@ mod test {
                 .with_assertion(|world| {
                     // Panics if the type parameters used are not these ones.
                     world.read_resource::<InputHandler<PlayerAxisControl, PlayerActionControl>>();
-                    world.read_storage::<MouseReactive>();
+                    world.read_storage::<Interactable>();
                 })
                 .run()
                 .is_ok()
@@ -219,7 +219,7 @@ mod test {
             .with_assertion(|world| {
                 // Panics if the type parameters used are not these ones.
                 world.read_resource::<InputHandler<PlayerAxisControl, PlayerActionControl>>();
-                world.read_storage::<MouseReactive>();
+                world.read_storage::<Interactable>();
             })
             .run()
             .is_ok()

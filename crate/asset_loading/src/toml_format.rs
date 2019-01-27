@@ -1,4 +1,8 @@
-use amethyst::assets::{Asset, Error, ResultExt, SimpleFormat};
+use amethyst::{
+    assets::{Asset, SimpleFormat},
+    error::{format_err, ResultExt},
+    Error,
+};
 use serde::{Deserialize, Serialize};
 
 /// Format for loading from TOML files.
@@ -14,7 +18,8 @@ where
     type Options = ();
 
     fn import(&self, bytes: Vec<u8>, _: ()) -> Result<A::Data, Error> {
-        toml::from_slice::<A::Data>(&bytes).chain_err(|| "Failed to deserialize TOML file")
+        toml::from_slice::<A::Data>(&bytes)
+            .with_context(|_| format_err!("Failed to deserialize TOML file"))
     }
 }
 
@@ -24,11 +29,12 @@ mod tests {
 
     use amethyst::{
         assets::{
-            self, Asset, AssetStorage, Error, ErrorKind, Handle, Loader, ProcessingState,
-            Processor, ProgressCounter, Source,
+            Asset, AssetStorage, Handle, Loader, ProcessingState, Processor, ProgressCounter,
+            Source,
         },
         ecs::storage::VecStorage,
-        State, StateData, Trans,
+        error::format_err,
+        Error, State, StateData, Trans,
     };
     use amethyst_test::{AmethystApplication, GameUpdate};
     use derive_deref::{Deref, DerefMut};
@@ -40,7 +46,7 @@ mod tests {
     const CODE_SOURCE_ID: &str = "code_source";
 
     #[test]
-    fn loads_asset_with_toml_format() -> amethyst::Result<()> {
+    fn loads_asset_with_toml_format() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_system(Processor::<TomlThing>::new(), "toml_thing_processor", &[])
             .with_setup(|world| {
@@ -120,16 +126,16 @@ mod tests {
     struct CodeSource(#[new(default)] HashMap<String, Vec<u8>>);
 
     impl Source for CodeSource {
-        fn modified(&self, _path: &str) -> assets::Result<u64> {
+        fn modified(&self, _path: &str) -> Result<u64, Error> {
             Ok(0)
         }
 
-        fn load(&self, path: &str) -> assets::Result<Vec<u8>> {
+        fn load(&self, path: &str) -> Result<Vec<u8>, Error> {
             let path = path.to_string();
-            self.0
-                .get(&path)
-                .cloned()
-                .ok_or(Error::from_kind(ErrorKind::Asset(path)))
+            self.0.get(&path).cloned().ok_or(format_err!(
+                "The `{}` asset is not registered in the `CodeSource` asset source",
+                path
+            ))
         }
     }
 }

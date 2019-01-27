@@ -1,6 +1,7 @@
 use amethyst::{
-    assets::{Asset, Error, Handle, ProcessingState},
+    assets::{Asset, Handle, ProcessingState},
     ecs::storage::VecStorage,
+    Error,
 };
 use derive_new::new;
 use object_model::game_object;

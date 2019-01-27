@@ -1,3 +1,5 @@
+use std::fmt;
+
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 
@@ -10,4 +12,10 @@ pub struct PlayerAxisControl {
     pub player: ControllerId,
     /// Game coordinate axis that this controls.
     pub axis: Axis,
+}
+
+impl fmt::Display for PlayerAxisControl {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Player {} {} axis", self.player, self.axis)
+    }
 }

@@ -1,7 +1,4 @@
-use amethyst::{
-    core::bundle::{Result, SystemBundle},
-    ecs::prelude::*,
-};
+use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
 use application_event::AppEventVariant;
 use derive_new::new;
 use stdio_spi::MapperSystem;
@@ -14,7 +11,7 @@ use crate::GameModeSelectionEventStdinMapper;
 pub struct GameModeSelectionStdioBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for GameModeSelectionStdioBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
+    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
         builder.add(
             MapperSystem::<GameModeSelectionEventStdinMapper>::new(
                 AppEventVariant::GameModeSelection,

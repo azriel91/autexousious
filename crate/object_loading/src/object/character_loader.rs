@@ -1,5 +1,5 @@
-use amethyst::{assets::Loader, prelude::*};
-use application::{load_in, Format, Result};
+use amethyst::{assets::Loader, prelude::*, Error};
+use application::{load_in, Format};
 use character_model::{
     config::CharacterDefinition,
     loaded::{Character, CharacterHandle},
@@ -19,7 +19,7 @@ impl CharacterLoader {
     ///
     /// * `world`: `World` to load animations into.
     /// * `asset_record`: Entry of the object's configuration.
-    pub fn load(world: &World, asset_record: &AssetRecord) -> Result<CharacterHandle> {
+    pub fn load(world: &World, asset_record: &AssetRecord) -> Result<CharacterHandle, Error> {
         let character_definition = load_in::<CharacterDefinition, _>(
             &asset_record.path,
             "object.toml",

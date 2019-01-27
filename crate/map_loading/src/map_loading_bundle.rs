@@ -1,8 +1,4 @@
-use amethyst::{
-    assets::Processor,
-    core::bundle::{Result, SystemBundle},
-    ecs::prelude::*,
-};
+use amethyst::{assets::Processor, core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
 use derive_new::new;
 use map_model::loaded::Map;
 
@@ -13,7 +9,7 @@ use map_model::loaded::Map;
 pub struct MapLoadingBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for MapLoadingBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
+    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
         builder.add(Processor::<Map>::new(), "map_processor", &[]);
         Ok(())
     }

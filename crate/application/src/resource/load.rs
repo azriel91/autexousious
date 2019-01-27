@@ -4,11 +4,12 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use amethyst::Error;
 use ron;
 use serde::Deserialize;
 use toml;
 
-use crate::{find, find_in, resource::error::Result, Format, IoUtils};
+use crate::{find, find_in, Format, IoUtils};
 
 /// Loads and returns the data from the specified file.
 ///
@@ -16,7 +17,7 @@ use crate::{find, find_in, resource::error::Result, Format, IoUtils};
 ///
 /// * `file_name`: Name of the file to search for relative to the executable.
 /// * `format`: File format.
-pub fn load<T>(file_name: &str, format: Format) -> Result<T>
+pub fn load<T>(file_name: &str, format: Format) -> Result<T, Error>
 where
     for<'de> T: Deserialize<'de>,
 {
@@ -75,7 +76,7 @@ pub fn load_in<T, P>(
     file_name: &str,
     format: Format,
     additional_base_dirs: Option<Vec<PathBuf>>,
-) -> Result<T>
+) -> Result<T, Error>
 where
     for<'de> T: Deserialize<'de>,
     P: AsRef<Path> + AsRef<ffi::OsStr>,
@@ -84,7 +85,7 @@ where
     load_internal(file_path, format)
 }
 
-fn load_internal<T, P>(file_path: P, format: Format) -> Result<T>
+fn load_internal<T, P>(file_path: P, format: Format) -> Result<T, Error>
 where
     for<'de> T: Deserialize<'de>,
     P: AsRef<Path> + AsRef<ffi::OsStr>,
@@ -105,7 +106,10 @@ where
 mod test {
     use std::path::PathBuf;
 
-    use ron::{self, de::ParseError};
+    use ron::{
+        self,
+        de::{ParseError, Position},
+    };
     use serde::Deserialize;
     use toml;
 
@@ -114,7 +118,6 @@ mod test {
         development_base_dirs,
         resource::{
             dir,
-            error::ErrorKind,
             test_support::{exe_dir, setup_temp_file},
             FindContext, Format,
         },
@@ -172,7 +175,11 @@ mod test {
                 None,
             );
 
-            if let &ErrorKind::Find(ref find_context) = load_result.unwrap_err().kind() {
+            if let Some(find_context) = load_result
+                .unwrap_err()
+                .as_error()
+                .downcast_ref::<Box<FindContext>>()
+            {
                 let base_dirs = vec![exe_dir()];
                 let expected = FindContext {
                     base_dirs,
@@ -180,7 +187,7 @@ mod test {
                     file_name: "test__load_config.ron".to_owned(),
                 }; // kcov-ignore
 
-                assert_eq!(&expected, find_context);
+                assert_eq!(&Box::new(expected), find_context);
             } else {
                 panic!("Expected `load_in` to return error"); // kcov-ignore
             }
@@ -191,8 +198,10 @@ mod test {
         fn load_ron_returns_error_when_file_does_not_exist() {
             // We don't setup_temp_file(..);
 
-            if let &ErrorKind::Find(ref find_context) =
-                load::<Data>("test__load_config.ron", Format::Ron).unwrap_err().kind()
+            if let Some(find_context) = load::<Data>("test__load_config.ron", Format::Ron)
+                .unwrap_err()
+                .as_error()
+                .downcast_ref::<Box<FindContext>>()
             {
                 let base_dirs = vec![exe_dir()];
                 let expected = FindContext {
@@ -201,7 +210,7 @@ mod test {
                     file_name: "test__load_config.ron".to_owned(),
                 }; // kcov-ignore
 
-                assert_eq!(&expected, find_context);
+                assert_eq!(&Box::new(expected), find_context);
             } else {
                 panic!("Expected `load` to return error"); // kcov-ignore
             }
@@ -220,13 +229,21 @@ mod test {
             resource_path.close().unwrap();
 
             // We cannot use `assert_eq!` because `ron::parse::Position` is private
-            match load_result.expect_err("Expected parse failure.").kind() {
-                &ErrorKind::RonDeserialization(ron::de::Error::Parser(
-                    ParseError::ExpectedStruct,
-                    ..
-                )) => (),
-                _ => panic!("Expected RonDeserialization error"), // kcov-ignore
-            };
+            if let Some(boxed_error) = load_result
+                .expect_err("Expected parse failure.")
+                .as_error()
+                .downcast_ref::<Box<ron::de::Error>>()
+            {
+                assert_eq!(
+                    &Box::new(ron::de::Error::Parser(
+                        ParseError::ExpectedStruct,
+                        Position { col: 1, line: 1 }
+                    )),
+                    boxed_error
+                )
+            } else {
+                panic!("Expected `ron::de::Error`."); // kcov-ignore
+            }
         }
     }
 
@@ -266,10 +283,15 @@ mod test {
             let load_result = load::<Data>("test__load_config.toml", Format::Toml);
             resource_path.close().unwrap();
 
-            match load_result.expect_err("Expected parse failure.").kind() {
-                &ErrorKind::TomlDeserialization(toml::de::Error { .. }) => (),
-                _ => panic!("Expected TomlDeserialization error"), // kcov-ignore
-            };
+            if let Some(_toml_error) = load_result
+                .expect_err("Expected parse failure.")
+                .as_error()
+                .downcast_ref::<Box<toml::de::Error>>()
+            {
+                // pass
+            } else {
+                panic!("Expected `toml::de::Error`."); // kcov-ignore
+            }
         }
     }
 

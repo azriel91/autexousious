@@ -1,7 +1,4 @@
-use amethyst::{
-    core::bundle::{Result, SystemBundle},
-    ecs::prelude::*,
-};
+use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
 use derive_new::new;
 use typename::TypeName;
 
@@ -12,7 +9,7 @@ use crate::StdinSystem;
 pub struct StdioViewBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for StdioViewBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
+    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
         builder.add(StdinSystem::new(), &StdinSystem::type_name(), &[]);
         Ok(())
     }

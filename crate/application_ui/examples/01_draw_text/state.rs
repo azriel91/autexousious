@@ -79,7 +79,6 @@ fn initialize_text(world: &mut World) {
                     1.,
                     text_w,
                     text_h,
-                    0,
                 );
 
                 let ui_text =

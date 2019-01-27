@@ -1,7 +1,7 @@
 use std::path::Path;
 
-use amethyst::{assets::Loader, prelude::*};
-use application::{load_in, ErrorKind, Format, Result};
+use amethyst::{assets::Loader, ecs::World, Error};
+use application::{load_in, resource::FindContext, Format};
 use log::debug;
 use map_model::{
     config::MapDefinition,
@@ -20,7 +20,7 @@ impl MapLoader {
     ///
     /// * `world`: `World` to store the map's assets.
     /// * `base_dir`: Base directory from which to load the map.
-    pub fn load(world: &World, base_dir: &Path) -> Result<MapHandle> {
+    pub fn load(world: &World, base_dir: &Path) -> Result<MapHandle, Error> {
         debug!("Loading map in `{}`", base_dir.display());
 
         let map_definition = load_in::<MapDefinition, _>(base_dir, "map.toml", Format::Toml, None)?;
@@ -28,10 +28,13 @@ impl MapLoader {
         let sprite_load_result = SpriteLoader::load(world, base_dir);
         let loaded_sprites = match sprite_load_result {
             Ok(loaded_sprites) => Ok(Some(loaded_sprites)),
-            Err(e) => match e.kind() {
-                ErrorKind::Find(..) => Ok(None),
-                _ => Err(e),
-            },
+            Err(e) => {
+                if e.as_error().downcast_ref::<Box<FindContext>>().is_some() {
+                    Ok(None)
+                } else {
+                    Err(e)
+                }
+            }
         }?;
 
         let (sprite_sheet_handles, animation_handles) = {

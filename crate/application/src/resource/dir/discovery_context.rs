@@ -1,4 +1,4 @@
-use std::{fmt, io};
+use std::{error, fmt, io};
 
 use derivative::Derivative;
 use derive_new::new;
@@ -35,6 +35,8 @@ impl fmt::Display for DiscoveryContext {
         writeln!(f, "* **Message:** '{}'\n", &self.message)
     }
 }
+
+impl error::Error for DiscoveryContext {}
 
 #[cfg(test)]
 mod test {

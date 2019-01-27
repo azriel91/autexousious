@@ -75,7 +75,7 @@ where
             .for_each(|(order, index)| {
                 let index_id = index.to_string();
                 let index_text = index_id.to_title_case();
-                let entity = UiButtonBuilder::new(index_id, index_text)
+                let entity = UiButtonBuilder::<()>::new(index_id, index_text)
                     .with_position(
                         0.,
                         ((item_count - order) as f32 * text_h) - (item_count as f32 * text_h / 2.),
@@ -86,7 +86,7 @@ where
                     .with_press_text_color([0.5; 4])
                     .with_font_size(FONT_SIZE)
                     .with_size(text_w, text_h)
-                    .with_tab_order(order as i32)
+                    .with_tab_order(order as u32)
                     .with_anchor(Anchor::Middle)
                     .with_font(font.clone())
                     .build_from_world(world);

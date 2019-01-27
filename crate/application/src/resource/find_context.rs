@@ -1,4 +1,4 @@
-use std::{fmt, path::PathBuf};
+use std::{error, fmt, path::PathBuf};
 
 /// Context of a find operation
 ///
@@ -33,6 +33,8 @@ impl fmt::Display for FindContext {
         writeln!(f)
     }
 }
+
+impl error::Error for FindContext {}
 
 #[cfg(test)]
 mod tests {
