@@ -1,7 +1,4 @@
-use amethyst::{
-    core::bundle::{Result, SystemBundle},
-    ecs::prelude::*,
-};
+use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
 use derive_new::new;
 use typename::TypeName;
 
@@ -28,7 +25,7 @@ impl MapSelectionBundle {
 }
 
 impl<'a, 'b> SystemBundle<'a, 'b> for MapSelectionBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
+    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
         let deps = self
             .system_dependencies
             .as_ref()

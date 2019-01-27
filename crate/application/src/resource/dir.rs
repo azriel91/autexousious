@@ -1,17 +1,15 @@
 //! Constants for resource directories.
 
 mod discovery_context;
-mod error;
 
-pub use self::{
-    discovery_context::DiscoveryContext,
-    error::{Error, ErrorKind, Result},
-};
+pub use self::discovery_context::DiscoveryContext;
 
 use std::{
     env, io,
     path::{Path, PathBuf},
 };
+
+use amethyst::Error;
 
 use crate::resource::find::find_in_internal;
 
@@ -44,7 +42,7 @@ pub const RESOURCES: &str = "resources";
 ///
 /// [res_err]: resource/dir/struct.Error.html
 /// [dir_disc]: resource/dir/enum.ErrorKind.html#variant.Discovery
-pub fn assets_dir(additional_base_dirs: Option<Vec<PathBuf>>) -> Result<PathBuf> {
+pub fn assets_dir(additional_base_dirs: Option<Vec<PathBuf>>) -> Result<PathBuf, Error> {
     assets_dir_internal(env::current_exe(), additional_base_dirs)
 }
 
@@ -52,7 +50,7 @@ pub fn assets_dir(additional_base_dirs: Option<Vec<PathBuf>>) -> Result<PathBuf>
 fn assets_dir_internal(
     current_exe_result: io::Result<PathBuf>,
     additional_base_dirs: Option<Vec<PathBuf>>,
-) -> Result<PathBuf> {
+) -> Result<PathBuf, Error> {
     let dir = find_in_internal(
         current_exe_result,
         Path::new(""),
@@ -93,33 +91,26 @@ mod test {
         path::{Path, PathBuf},
     };
 
+    use amethyst::Error;
     use tempfile::tempdir;
 
     use super::{assets_dir_internal, ASSETS};
-    use crate::resource::{
-        self,
-        dir::{DiscoveryContext, Error, ErrorKind},
-        FindContext,
-    };
+    use crate::resource::{dir::DiscoveryContext, FindContext};
 
     // kcov-ignore-start
     fn assert_dir_discovery_error(
         // kcov-ignore-end
         expected_context: DiscoveryContext,
-        assets_dir: Result<PathBuf, Error>,
+        assets_dir_result: Result<PathBuf, Error>,
     ) {
-        match *assets_dir.unwrap_err().kind() {
-            ErrorKind::Discovery(ref discovery_context) => {
-                assert_eq!(expected_context, *discovery_context);
-            }
-            // kcov-ignore-start
-            ref kind @ _ => {
-                panic!(
-                    "Expected error with kind `{:?}` but was `{:?}`",
-                    ErrorKind::Discovery(expected_context),
-                    kind
-                );
-            } // kcov-ignore-end
+        let error = assets_dir_result.unwrap_err();
+        if let Some(discovery_context) = error.as_error().downcast_ref::<Box<DiscoveryContext>>() {
+            assert_eq!(&Box::new(expected_context), discovery_context);
+        } else {
+            panic!(
+                "Expected `DiscoveryContext` error but was `{:?}`",
+                error.as_error()
+            ); // kcov-ignore
         }
     }
 
@@ -127,42 +118,27 @@ mod test {
     fn assert_discovery_resource_find_error(
         // kcov-ignore-end
         expected_find_context: FindContext,
-        assets_dir: Result<PathBuf, Error>,
+        assets_dir_result: Result<PathBuf, Error>,
     ) {
-        let expected: Result<PathBuf, Error> = Err(Error::from(resource::Error::from(
-            expected_find_context.clone(),
-        )));
-        let error = match assets_dir {
+        let expected_err = Error::new(expected_find_context.clone());
+        let error = match assets_dir_result {
             // kcov-ignore-start
             Ok(ref _path) => panic!(
                 "Expected error `{:?}` but was `{:?}`",
-                expected, &assets_dir
+                expected_err, &assets_dir_result
             ),
             // kcov-ignore-end
             Err(e) => e,
         }; // kcov-ignore
-        let expected_err = expected.unwrap_err();
-        let expected_kind = &expected_err.kind();
-        let resource_error_kind = match *error.kind() {
-            ErrorKind::Resource(ref resource_error_kind) => resource_error_kind,
-            // kcov-ignore-start
-            ref kind @ _ => {
-                panic!(
-                    "Expected error kind: `{:?}` but was `{:?}`",
-                    expected_kind, kind
-                );
-            } // kcov-ignore-end
-        };
-        match *resource_error_kind {
-            resource::ErrorKind::Find(ref find_context) => {
-                assert_eq!(&expected_find_context, find_context)
-            }
-            // kcov-ignore-start
-            _ => panic!(
-                "Expected `{:?}` but was `{:?}`",
-                expected_kind, resource_error_kind
-            ),
-        }; // kcov-ignore-end
+
+        if let Some(find_context) = error.as_error().downcast_ref::<Box<FindContext>>() {
+            assert_eq!(Box::new(expected_find_context), *find_context);
+        } else {
+            panic!(
+                "Expected `FindContext` error but was `{:?}`",
+                error.as_error()
+            ); // kcov-ignore
+        }
     }
 
     // kcov-ignore-start
@@ -172,39 +148,25 @@ mod test {
         assets_dir: Result<PathBuf, Error>,
     ) {
         let expected_io_error_kind = expected_io_error.kind().clone();
-        let expected: Result<PathBuf, Error> =
-            Err(Error::from(resource::Error::from(expected_io_error)));
+        let expected_err = Error::new(expected_io_error);
         let error = match assets_dir {
             // kcov-ignore-start
             Ok(ref _path) => panic!(
                 "Expected error `{:?}` but was `{:?}`",
-                expected, &assets_dir
+                expected_err, &assets_dir
             ),
             // kcov-ignore-end
             Err(e) => e,
         }; // kcov-ignore
-        let expected_err = expected.unwrap_err();
-        let expected_kind = &expected_err.kind();
-        let resource_error_kind = match *error.kind() {
-            ErrorKind::Resource(ref resource_error_kind) => resource_error_kind,
-            // kcov-ignore-start
-            ref kind @ _ => {
-                panic!(
-                    "Expected error kind: `{:?}` but was `{:?}`",
-                    expected_kind, kind
-                );
-            } // kcov-ignore-end
-        };
-        match *resource_error_kind {
-            resource::ErrorKind::Io(ref io_error) => {
-                assert_eq!(expected_io_error_kind, io_error.kind())
-            }
-            // kcov-ignore-start
-            _ => panic!(
-                "Expected `{:?}` but was `{:?}`",
-                expected_kind, resource_error_kind
-            ),
-        }; // kcov-ignore-end
+
+        if let Some(io_error) = error.as_error().downcast_ref::<Box<io::Error>>() {
+            assert_eq!(expected_io_error_kind, io_error.kind());
+        } else {
+            panic!(
+                "Expected `io::Error` error but was `{:?}`",
+                error.as_error()
+            ); // kcov-ignore
+        }
     }
 
     #[test]

@@ -36,7 +36,6 @@ impl OtherState {
             1.,
             text_w,
             text_h,
-            0,
         );
 
         let info_entity = world

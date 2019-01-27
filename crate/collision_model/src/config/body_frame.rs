@@ -1,6 +1,7 @@
 use amethyst::{
-    assets::{Asset, Handle, ProcessingState, Result as AssetsResult},
+    assets::{Asset, Handle, ProcessingState},
     ecs::VecStorage,
+    Error,
 };
 use derivative::Derivative;
 use derive_new::new;
@@ -25,8 +26,8 @@ impl Asset for BodyFrame {
     type HandleStorage = VecStorage<Handle<Self>>;
 }
 
-impl From<BodyFrame> for AssetsResult<ProcessingState<BodyFrame>> {
-    fn from(body_frame: BodyFrame) -> AssetsResult<ProcessingState<BodyFrame>> {
+impl From<BodyFrame> for Result<ProcessingState<BodyFrame>, Error> {
+    fn from(body_frame: BodyFrame) -> Result<ProcessingState<BodyFrame>, Error> {
         Ok(ProcessingState::Loaded(body_frame))
     }
 }

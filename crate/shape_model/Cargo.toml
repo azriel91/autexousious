@@ -5,6 +5,10 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
 [dependencies]
-serde = "1.0"
-strum = "0.11"
-strum_macros = "0.11"
+serde = "1.0.85"
+strum = "0.13.0"
+strum_macros = "0.13.0"
+
+[build-dependencies]
+rustc_version = "0.2.3"
+

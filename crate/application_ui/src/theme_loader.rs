@@ -2,12 +2,13 @@ use std::collections::HashMap;
 
 use amethyst::{
     assets::{AssetStorage, Loader},
-    prelude::*,
+    ecs::World,
     ui::{FontAsset, FontHandle, TtfFormat},
+    Error,
 };
 use application::{
     development_base_dirs,
-    resource::{self, dir, load_in},
+    resource::{dir, load_in},
     Format,
 };
 
@@ -23,12 +24,12 @@ impl ThemeLoader {
     /// # Parameters
     ///
     /// * `world`: `World` to load the theme into.
-    pub fn load(world: &mut World) -> Result<(), resource::Error> {
+    pub fn load(world: &mut World) -> Result<(), Error> {
         Self::load_internal(world, "font_config.ron")
     }
 
     #[inline]
-    fn load_internal(world: &mut World, font_config_name: &str) -> Result<(), resource::Error> {
+    fn load_internal(world: &mut World, font_config_name: &str) -> Result<(), Error> {
         let font_config: FontConfig = load_in(
             dir::RESOURCES,
             font_config_name,
@@ -63,7 +64,8 @@ impl ThemeLoader {
 mod test {
     use amethyst::{prelude::*, renderer::ScreenDimensions};
     use amethyst_test::prelude::*;
-    use application::resource;
+    use application::FindContext;
+    use ron;
     use strum::IntoEnumIterator;
 
     use super::ThemeLoader;
@@ -94,17 +96,15 @@ mod test {
     #[test]
     fn fails_with_useful_error_when_font_config_does_not_exist() {
         let assertion = |world: &mut World| {
-            if let Err(e) = ThemeLoader::load_internal(world, "non_existent.ron") {
-                match *e.kind() {
-                    resource::ErrorKind::Find(ref find_context) => {
-                        assert_eq!("non_existent.ron", &find_context.file_name);
-                        return; // pass
-                    }
-                    _ => {}
-                }
+            if let Some(find_context) = ThemeLoader::load_internal(world, "non_existent.ron")
+                .unwrap_err()
+                .as_error()
+                .downcast_ref::<Box<FindContext>>()
+            {
+                assert_eq!("non_existent.ron", find_context.file_name);
+            } else {
+                panic!("Expected resource `Find` error containing `non_existent.ron`"); // kcov-ignore
             }
-
-            panic!("Expected resource `Find` error containing `non_existent.ron`"); // kcov-ignore
         };
 
         // kcov-ignore-start
@@ -121,16 +121,15 @@ mod test {
     #[test]
     fn fails_with_useful_error_when_font_config_fails_to_parse() {
         let assertion = |world: &mut World| {
-            if let Err(e) = ThemeLoader::load_internal(world, "bad_config.ron") {
-                match *e.kind() {
-                    resource::ErrorKind::RonDeserialization(ref _ron_error) => {
-                        return; // pass
-                    }
-                    _ => {}
-                }
+            if let Some(_ron_error) = ThemeLoader::load_internal(world, "bad_config.ron")
+                .unwrap_err()
+                .as_error()
+                .downcast_ref::<Box<ron::de::Error>>()
+            {
+                // pass
+            } else {
+                panic!("Expected resource deserialization error"); // kcov-ignore
             }
-
-            panic!("Expected resource deserialization error"); // kcov-ignore
         };
 
         // kcov-ignore-start

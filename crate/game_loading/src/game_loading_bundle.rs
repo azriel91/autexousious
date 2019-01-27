@@ -1,7 +1,4 @@
-use amethyst::{
-    core::bundle::{Result, SystemBundle},
-    ecs::prelude::*,
-};
+use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
 use derive_new::new;
 use typename::TypeName;
 
@@ -12,7 +9,7 @@ use crate::{CharacterSelectionSpawningSystem, MapSelectionSpawningSystem};
 pub(crate) struct GameLoadingBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for GameLoadingBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
+    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
         builder.add(
             CharacterSelectionSpawningSystem::new(),
             &CharacterSelectionSpawningSystem::type_name(),

@@ -1,7 +1,6 @@
 //! Contains modules for various application configuration
 
 pub use self::{
-    error::{Error, ErrorKind, Result},
     find::{find, find_in},
     find_context::FindContext,
     format::Format,
@@ -14,7 +13,6 @@ pub use self::{
 mod test_support;
 
 pub mod dir;
-mod error;
 mod find;
 mod find_context;
 mod format;

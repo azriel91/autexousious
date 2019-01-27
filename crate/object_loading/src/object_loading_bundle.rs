@@ -1,8 +1,4 @@
-use amethyst::{
-    assets::Processor,
-    core::bundle::{Result, SystemBundle},
-    ecs::prelude::*,
-};
+use amethyst::{assets::Processor, core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
 use character_model::loaded::{Character, CharacterObjectWrapper};
 use derive_new::new;
 
@@ -14,7 +10,7 @@ use derive_new::new;
 pub struct ObjectLoadingBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for ObjectLoadingBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
+    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
         builder.add(
             Processor::<CharacterObjectWrapper>::new(),
             "character_object_processor",

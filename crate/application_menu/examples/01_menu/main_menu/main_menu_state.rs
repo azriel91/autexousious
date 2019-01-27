@@ -5,7 +5,7 @@ use amethyst::{
     prelude::*,
     shred::ParSeq,
     shrev::{EventChannel, ReaderId},
-    ui::{Anchor, FontHandle, MouseReactive, UiText, UiTransform},
+    ui::{Anchor, FontHandle, Interactable, UiText, UiTransform},
 };
 use application_menu::{MenuEvent, MenuItem};
 use application_ui::{FontVariant, Theme, ThemeLoader};
@@ -77,7 +77,6 @@ impl MainMenuState {
                     1.,
                     text_w,
                     text_h,
-                    0,
                 );
 
                 let menu_item_entity = world
@@ -89,7 +88,7 @@ impl MainMenuState {
                         [1., 1., 1., 1.],
                         FONT_SIZE,
                     ))
-                    .with(MouseReactive)
+                    .with(Interactable)
                     .with(MenuItem { index })
                     .build();
 

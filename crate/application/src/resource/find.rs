@@ -3,7 +3,9 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use crate::resource::{error::Result, FindContext};
+use amethyst::Error;
+
+use crate::resource::FindContext;
 
 /// Returns development-time base directories as a `Vec<::std::path::Path>`.
 ///
@@ -44,7 +46,7 @@ macro_rules! development_base_dirs {
 /// # Parameters:
 ///
 /// * `file_name`: Name of the file to search for which should be next to the executable.
-pub fn find(file_name: &str) -> Result<PathBuf> {
+pub fn find(file_name: &str) -> Result<PathBuf, Error> {
     find_in(Path::new(""), file_name, None)
 }
 
@@ -88,7 +90,7 @@ pub fn find_in<P: AsRef<Path> + AsRef<ffi::OsStr>>(
     conf_dir: P,
     file_name: &str,
     additional_base_dirs: Option<Vec<PathBuf>>,
-) -> Result<PathBuf> {
+) -> Result<PathBuf, Error> {
     find_in_internal(
         env::current_exe(),
         conf_dir,
@@ -103,7 +105,7 @@ pub(crate) fn find_in_internal<P: AsRef<Path> + AsRef<ffi::OsStr>>(
     conf_dir: P,
     file_name: &str,
     additional_base_dirs: Option<Vec<PathBuf>>,
-) -> Result<PathBuf> {
+) -> Result<PathBuf, Error> {
     let mut exe_dir = current_exe_result?;
     exe_dir.pop();
 
@@ -156,7 +158,6 @@ mod test {
         development_base_dirs,
         resource::{
             dir,
-            error::ErrorKind,
             test_support::{exe_dir, setup_temp_file},
             FindContext,
         },
@@ -203,8 +204,11 @@ mod test {
         fn find_returns_error_when_file_does_not_exist() {
             // We don't setup_temp_file(..);
 
-            if let &ErrorKind::Find(ref find_context) =
-                find("test__find_config.ron").unwrap_err().kind()
+            if let Some(find_context) =
+                find("test__find_config.ron")
+                    .unwrap_err()
+                    .as_error()
+                    .downcast_ref::<Box<FindContext>>()
             {
                 let base_dirs = vec![exe_dir()];
                 let expected = FindContext {
@@ -213,7 +217,7 @@ mod test {
                     file_name: "test__find_config.ron".to_owned(),
                 }; // kcov-ignore
 
-                assert_eq!(&expected, find_context);
+                assert_eq!(&Box::new(expected), find_context);
             } else {
                 panic!("Expected `find` to return error"); // kcov-ignore
             }
@@ -230,7 +234,11 @@ mod test {
                 None,
             );
 
-            if let &ErrorKind::Find(ref find_context) = find_result.unwrap_err().kind() {
+            if let Some(find_context) = find_result
+                .unwrap_err()
+                .as_error()
+                .downcast_ref::<Box<FindContext>>()
+            {
                 let base_dirs = vec![exe_dir()];
                 let expected = FindContext {
                     base_dirs,
@@ -238,7 +246,7 @@ mod test {
                     file_name: "test__find_config.ron".to_owned(),
                 }; // kcov-ignore
 
-                assert_eq!(&expected, find_context);
+                assert_eq!(&Box::new(expected), find_context);
             } else {
                 panic!("Expected `find_in` to return error"); // kcov-ignore
             }

@@ -1,7 +1,11 @@
 use amethyst::{
-    assets::{Asset, Error, Handle, ProcessingState},
-    ecs::prelude::*,
+    assets::{Asset, Handle, ProcessingState},
+    ecs::{
+        storage::{DenseVecStorage, VecStorage},
+        Component,
+    },
     renderer::SpriteSheetHandle,
+    Error,
 };
 use derive_new::new;
 use sprite_loading::SpriteAnimationHandle;

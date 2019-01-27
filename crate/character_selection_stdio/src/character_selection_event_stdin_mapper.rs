@@ -1,12 +1,13 @@
 use std::str::FromStr;
 
+use amethyst::Error;
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
 use game_input::ControllerId;
 use game_model::{
     config::AssetSlug,
     loaded::{CharacterAssets, SlugAndHandle},
 };
-use stdio_spi::{Result, StdinMapper};
+use stdio_spi::{StdinMapper, StdioError};
 use typename_derive::TypeName;
 
 use crate::CharacterSelectionEventArgs;
@@ -20,7 +21,7 @@ impl CharacterSelectionEventStdinMapper {
         character_assets: &CharacterAssets,
         controller_id: ControllerId,
         selection: &str,
-    ) -> Result<CharacterSelectionEvent> {
+    ) -> Result<CharacterSelectionEvent, Error> {
         let character_selection = match selection {
             "random" => {
                 let snh = SlugAndHandle::from(
@@ -32,10 +33,11 @@ impl CharacterSelectionEventStdinMapper {
                 CharacterSelection::Random(snh)
             }
             slug_str => {
-                let slug = AssetSlug::from_str(slug_str)?;
+                let slug = AssetSlug::from_str(slug_str).map_err(StdioError::Msg)?;
                 let handle = character_assets
                     .get(&slug)
-                    .ok_or_else(|| format!("No character found with asset slug `{}`.", slug))?
+                    .ok_or_else(|| format!("No character found with asset slug `{}`.", slug))
+                    .map_err(StdioError::Msg)?
                     .clone();
 
                 let snh = SlugAndHandle { slug, handle };
@@ -57,7 +59,7 @@ impl StdinMapper for CharacterSelectionEventStdinMapper {
     type Event = CharacterSelectionEvent;
     type Args = CharacterSelectionEventArgs;
 
-    fn map(character_assets: &CharacterAssets, args: Self::Args) -> Result<Self::Event> {
+    fn map(character_assets: &CharacterAssets, args: Self::Args) -> Result<Self::Event, Error> {
         match args {
             CharacterSelectionEventArgs::Select {
                 controller_id,
@@ -73,11 +75,12 @@ impl StdinMapper for CharacterSelectionEventStdinMapper {
 
 #[cfg(test)]
 mod tests {
+    use amethyst::Error;
     use application_test_support::AutexousiousApplication;
     use assets_test::ASSETS_CHAR_BAT_SLUG;
     use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
     use game_model::loaded::{CharacterAssets, SlugAndHandle};
-    use stdio_spi::{ErrorKind, Result, StdinMapper};
+    use stdio_spi::{StdinMapper, StdioError};
 
     use super::CharacterSelectionEventStdinMapper;
     use crate::CharacterSelectionEventArgs;
@@ -214,13 +217,19 @@ mod tests {
         assert_eq!(CharacterSelectionEvent::Confirm, result.unwrap())
     }
 
-    fn expect_err_msg(result: Result<CharacterSelectionEvent>, expected: &str) {
+    fn expect_err_msg(result: Result<CharacterSelectionEvent, Error>, expected: &str) {
         assert!(result.is_err());
-        match result.unwrap_err().kind() {
-            ErrorKind::Msg(ref s) => assert_eq!(expected, s),
-            // kcov-ignore-start
-            _ => panic!("Expected `ErrorKind::Msg({:?})`.", expected),
-            // kcov-ignore-end
+        if let Some(stdio_error) = result
+            .unwrap_err()
+            .as_error()
+            .downcast_ref::<Box<StdioError>>()
+        {
+            assert_eq!(
+                &Box::new(StdioError::Msg(expected.to_string())),
+                stdio_error
+            );
+        } else {
+            panic!("Expected `StdioError::Msg({:?})`.", expected); // kcov-ignore
         }
     }
 }

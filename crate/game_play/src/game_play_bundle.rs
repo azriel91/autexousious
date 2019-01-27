@@ -1,7 +1,4 @@
-use amethyst::{
-    core::bundle::{Result, SystemBundle},
-    ecs::prelude::*,
-};
+use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
 use character_model::{config::CharacterSequenceId, loaded::Character};
 use derive_new::new;
 use game_input::ControllerInput;
@@ -21,7 +18,7 @@ use crate::{
 pub struct GamePlayBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
+    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
         // Note: The `CharacterSequenceUpdateSystem` depends on
         // `game_input::ControllerInputUpdateSystem`. We rely on the main dispatcher to be run
         // before the `GamePlayState` dispatcher.

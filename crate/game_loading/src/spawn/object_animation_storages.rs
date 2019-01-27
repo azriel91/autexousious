@@ -1,4 +1,4 @@
-use amethyst::{animation::AnimationControlSet, ecs::prelude::*, renderer::SpriteRender};
+use amethyst::{animation::AnimationControlSet, ecs::WriteStorage, renderer::SpriteRender};
 use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
 use derivative::Derivative;
 use object_model::config::object::SequenceId;

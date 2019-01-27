@@ -1,8 +1,4 @@
-use amethyst::{
-    assets::Processor,
-    core::bundle::{Result, SystemBundle},
-    ecs::prelude::*,
-};
+use amethyst::{assets::Processor, core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
 use collision_model::config::{BodyFrame, InteractionFrame};
 use derive_new::new;
 use typename::TypeName;
@@ -17,7 +13,7 @@ use crate::CollisionLoadingSystem;
 pub struct CollisionLoadingBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for CollisionLoadingBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
+    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
         builder.add(
             CollisionLoadingSystem::new(),
             &CollisionLoadingSystem::type_name(),

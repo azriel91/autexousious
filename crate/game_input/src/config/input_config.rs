@@ -1,7 +1,12 @@
 use std::iter;
 
-use amethyst::input::{Axis as InputAxis, Bindings, Button};
+use amethyst::{
+    error::{format_err, ResultExt},
+    input::{Axis as InputAxis, Bindings, Button},
+    Error,
+};
 use derive_new::new;
+use log::error;
 use serde::{Deserialize, Serialize};
 
 use crate::{config::ControllerConfig, PlayerActionControl, PlayerAxisControl};
@@ -20,7 +25,7 @@ impl<'config> From<&'config InputConfig> for Bindings<PlayerAxisControl, PlayerA
         let mut bindings = Bindings::new();
 
         // Axis controls
-        input_config
+        let axis_result = input_config
             .controller_configs
             .iter()
             .enumerate()
@@ -38,12 +43,21 @@ impl<'config> From<&'config InputConfig> for Bindings<PlayerAxisControl, PlayerA
                     })
                     .collect::<Vec<(PlayerAxisControl, InputAxis)>>()
             })
-            .for_each(|(player_axis_control, input_axis)| {
-                bindings.insert_axis(player_axis_control, input_axis);
-            });
+            .fold(
+                Ok(None),
+                |cumulative_result, (player_axis_control, input_axis)| {
+                    cumulative_result.and(
+                        bindings
+                            .insert_axis(player_axis_control, input_axis)
+                            .with_context(|_| {
+                                Error::from_string(format!("{}", player_axis_control))
+                            }),
+                    )
+                },
+            );
 
         // Action controls
-        input_config
+        let action_result = input_config
             .controller_configs
             .iter()
             .enumerate()
@@ -58,9 +72,30 @@ impl<'config> From<&'config InputConfig> for Bindings<PlayerAxisControl, PlayerA
                     })
                     .collect::<Vec<(PlayerActionControl, Button)>>()
             })
-            .for_each(|(player_action_control, input_button)| {
-                bindings.insert_action_binding(player_action_control, iter::once(input_button));
-            });
+            .fold(
+                Ok(()),
+                |cumulative_result, (player_action_control, input_button)| {
+                    cumulative_result.and(
+                        bindings
+                            .insert_action_binding(player_action_control, iter::once(input_button))
+                            .with_context(|_| {
+                                Error::from_string(format!("{}", player_action_control))
+                            }),
+                    )
+                },
+            );
+
+        // TODO: Bubble up result with `TryFrom`.
+        // TODO: Pending <https://github.com/rust-lang/rust/issues/33417>
+        if let Err(e) = &axis_result {
+            error!("{}", format_err!("{}", e));
+        }
+        if let Err(e) = &action_result {
+            error!("{}", format_err!("{}", e));
+        }
+        if axis_result.and(action_result).is_err() {
+            panic!("Failed to convert `InputConfig` into `Bindings`.");
+        }
 
         bindings
     }
@@ -93,14 +128,14 @@ mod tests {
         let bindings = Bindings::<PlayerAxisControl, PlayerActionControl>::from(&input_config);
 
         assert_that!(
-            &bindings.axes(),
+            &bindings.axes().map(Clone::clone).collect::<Vec<_>>(),
             contains(vec![
                 PlayerAxisControl::new(0, Axis::X),
                 PlayerAxisControl::new(1, Axis::X)
             ])
         );
         assert_that!(
-            &bindings.actions(),
+            &bindings.actions().map(Clone::clone).collect::<Vec<_>>(),
             contains(vec![
                 PlayerActionControl::new(0, ControlAction::Jump),
                 PlayerActionControl::new(1, ControlAction::Jump)

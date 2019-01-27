@@ -1,6 +1,7 @@
 use amethyst::{
-    assets::{Asset, Handle, ProcessingState, Result as AssetsResult},
+    assets::{Asset, Handle, ProcessingState},
     ecs::VecStorage,
+    Error,
 };
 use derivative::Derivative;
 use derive_new::new;
@@ -26,10 +27,10 @@ impl Asset for InteractionFrame {
     type HandleStorage = VecStorage<Handle<Self>>;
 }
 
-impl From<InteractionFrame> for AssetsResult<ProcessingState<InteractionFrame>> {
+impl From<InteractionFrame> for Result<ProcessingState<InteractionFrame>, Error> {
     fn from(
         interaction_frame: InteractionFrame,
-    ) -> AssetsResult<ProcessingState<InteractionFrame>> {
+    ) -> Result<ProcessingState<InteractionFrame>, Error> {
         Ok(ProcessingState::Loaded(interaction_frame))
     }
 }

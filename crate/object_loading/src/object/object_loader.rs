@@ -4,8 +4,8 @@ use amethyst::{
     assets::{Handle, Loader},
     prelude::*,
     renderer::SpriteRender,
+    Error,
 };
-use application::Result;
 use collision_loading::{BodyAnimationLoader, InteractionAnimationLoader};
 use collision_model::{
     animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle},
@@ -39,10 +39,13 @@ impl ObjectLoader {
         world: &World,
         asset_record: &AssetRecord,
         object_definition: &ObjectDefinition<O::SequenceId>,
-    ) -> Result<(
-        Handle<O::ObjectWrapper>,
-        SequenceEndTransitions<O::SequenceId>,
-    )>
+    ) -> Result<
+        (
+            Handle<O::ObjectWrapper>,
+            SequenceEndTransitions<O::SequenceId>,
+        ),
+        Error,
+    >
     where
         O: GameObject,
     {

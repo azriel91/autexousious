@@ -22,7 +22,7 @@ impl CharacterEntityAugmenter {
     /// * `velocity`: Velocity of the entity in game.
     /// * `slug_and_handle`: Slug and handle of the character to spawn.
     /// * `input_controlled`: `Component` that links the character entity to the controller.
-    pub fn augment<'res, 's>(
+    pub fn augment<'s>(
         entity: Entity,
         CharacterComponentStorages {
             ref mut input_controlleds,

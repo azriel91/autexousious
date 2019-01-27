@@ -33,8 +33,6 @@
 #[macro_use]
 extern crate pretty_assertions;
 
-pub use crate::resource::{
-    find, find_in, load, load_in, Error, ErrorKind, FindContext, Format, IoUtils, Result,
-};
+pub use crate::resource::{find, find_in, load, load_in, FindContext, Format, IoUtils};
 
 pub mod resource;

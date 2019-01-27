@@ -11,12 +11,16 @@ application_state = { path = "../application_state" }
 application_ui = { path = "../application_ui" }
 asset_loading = { path = "../asset_loading" }
 assets_built_in = { path = "../assets_built_in" }
-derivative = "1.0"
+derivative = "1.0.2"
 game_model = { path = "../game_model" }
-log = "0.4"
+log = "0.4.6"
 map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }
 object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
-strum = "0.11"
-toml = "0.4"
+strum = "0.13.0"
+toml = "0.4.10"
+
+[build-dependencies]
+rustc_version = "0.2.3"
+

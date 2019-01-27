@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
+use strum_macros::Display;
 
 /// Control axes for objects.
-#[derive(Clone, Copy, Debug, Deserialize, Hash, PartialEq, Eq, Serialize)]
+#[derive(Clone, Copy, Debug, Display, Deserialize, Hash, PartialEq, Eq, Serialize)]
 pub enum Axis {
     /// X axis, positive is to the right, negative is to the left.
     X,

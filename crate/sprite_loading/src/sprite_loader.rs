@@ -3,8 +3,9 @@ use std::path::Path;
 use amethyst::{
     prelude::*,
     renderer::{SpriteSheetHandle, TextureHandle},
+    Error,
 };
-use application::{load_in, Format, Result};
+use application::{load_in, Format};
 use sprite_model::config::SpritesDefinition;
 
 use crate::{SpriteSheetLoader, TextureLoader};
@@ -28,7 +29,7 @@ impl SpriteLoader {
     pub fn load(
         world: &World,
         base_dir: &Path,
-    ) -> Result<(Vec<SpriteSheetHandle>, Vec<TextureHandle>)> {
+    ) -> Result<(Vec<SpriteSheetHandle>, Vec<TextureHandle>), Error> {
         let sprites_definition =
             load_in::<SpritesDefinition, _>(base_dir, "sprites.toml", Format::Toml, None)?;
 

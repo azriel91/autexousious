@@ -2,10 +2,10 @@ use std::path::Path;
 
 use amethyst::{
     assets::{AssetStorage, Loader},
-    prelude::*,
+    ecs::World,
     renderer::{PngFormat, Texture, TextureHandle, TextureMetadata},
+    Error,
 };
-use application::{self, ErrorKind};
 use log::error;
 use sprite_model::config::SpriteSheetDefinition;
 
@@ -24,7 +24,7 @@ impl TextureLoader {
         world: &World,
         object_directory: &Path,
         sprite_sheet_definitions: &[SpriteSheetDefinition],
-    ) -> application::Result<Vec<TextureHandle>> {
+    ) -> Result<Vec<TextureHandle>, Error> {
         let texture_results = sprite_sheet_definitions
             .iter()
             .map(|sheet_definition| {
@@ -61,7 +61,7 @@ impl TextureLoader {
 
                 error!("{}", &error_message);
 
-                return Err(ErrorKind::Msg(error_message).into());
+                return Err(Error::from_string(error_message));
             } // kcov-ignore-end
         }
 

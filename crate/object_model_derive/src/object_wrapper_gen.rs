@@ -61,11 +61,11 @@ pub fn object_wrapper_gen(
 
         impl From<#object_wrapper_type> for std::result::Result<
             amethyst::assets::ProcessingState<#object_wrapper_type>,
-            amethyst::assets::Error
+            amethyst::Error
         > {
             fn from(object: #object_wrapper_type) -> std::result::Result<
                 amethyst::assets::ProcessingState<#object_wrapper_type>,
-                amethyst::assets::Error
+                amethyst::Error
             > {
                 Ok(amethyst::assets::ProcessingState::Loaded(object))
             }

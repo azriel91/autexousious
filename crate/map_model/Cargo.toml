@@ -6,11 +6,15 @@ edition = "2018"
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git" }
-derive-new = "0.5"
-serde = "1.0"
+derive-new = "0.5.6"
+serde = "1.0.85"
 sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }
 
 [dev-dependencies]
-pretty_assertions = "0.5"
-toml = "0.4"
+pretty_assertions = "0.5.1"
+toml = "0.4.10"
+
+[build-dependencies]
+rustc_version = "0.2.3"
+

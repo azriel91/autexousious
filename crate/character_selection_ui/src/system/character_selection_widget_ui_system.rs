@@ -105,7 +105,6 @@ impl CharacterSelectionWidgetUiSystem {
                     1.,
                     text_w,
                     text_h,
-                    0,
                 );
 
                 let ui_text = UiText::new(

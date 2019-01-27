@@ -1,7 +1,4 @@
-use amethyst::{
-    core::bundle::{Result, SystemBundle},
-    ecs::prelude::*,
-};
+use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
 use derive_new::new;
 use game_input::ControllerInput;
 use tracker::LastTrackerSystem;
@@ -28,7 +25,7 @@ impl CharacterSelectionUiBundle {
 }
 
 impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionUiBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
+    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
         builder.add(
             CharacterSelectionWidgetInputSystem::new(),
             &CharacterSelectionWidgetInputSystem::type_name(),

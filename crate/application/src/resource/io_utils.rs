@@ -1,12 +1,10 @@
 use std::{
     fs::File,
-    io::prelude::*,
+    io::{self, Read},
     path::{Component, Path},
 };
 
 use log::debug;
-
-use crate::resource::{Error, Result};
 
 /// One-liner functions to interact with files.
 #[derive(Debug)]
@@ -21,7 +19,7 @@ impl IoUtils {
     /// # Parameters
     ///
     /// * `file_path`: `Path` to the file to read.
-    pub fn read_file(file_path: &Path) -> Result<Vec<u8>> {
+    pub fn read_file(file_path: &Path) -> io::Result<Vec<u8>> {
         debug!("Reading file: {}", file_path.display());
         let mut file = File::open(file_path)?;
         let mut buffer = Vec::new();
@@ -45,7 +43,7 @@ impl IoUtils {
     /// assert_eq!("child", basename);
     /// # }
     /// ```
-    pub fn basename(path: &Path) -> Result<String> {
+    pub fn basename(path: &Path) -> io::Result<String> {
         let mut components = path.components();
 
         // <https://doc.rust-lang.org/std/path/enum.Component.html>
@@ -57,29 +55,37 @@ impl IoUtils {
                 // kcov-ignore-start
                 // We can't actually construct an invalid unicode path, but just in case we hit this
                 // in the wild, the code is here.
-                Err(Error::from(format!(
-                    "Failed to convert basename `{}` into String. It is not valid unicode.",
-                    basename_os_str.to_string_lossy()
-                )))
+                Err(io::Error::new(
+                    io::ErrorKind::Other,
+                    format!(
+                        "Failed to convert basename `{}` into String. It is not valid unicode.",
+                        basename_os_str.to_string_lossy()
+                    ),
+                ))
                 // kcov-ignore-end
             } // kcov-ignore
         } else {
-            Err(Error::from(format!(
-                "Failed to determine basename component of path: `{}`.",
-                path.display()
-            )))
+            Err(io::Error::new(
+                io::ErrorKind::Other,
+                format!(
+                    "Failed to determine basename component of path: `{}`.",
+                    path.display()
+                ),
+            ))
         }
     }
 }
 
 #[cfg(test)]
 mod test {
-    use std::{io::prelude::*, path::Path};
+    use std::{
+        io::{self, Write},
+        path::Path,
+    };
 
     use tempfile::NamedTempFile;
 
     use super::IoUtils;
-    use crate::ErrorKind;
 
     #[test]
     fn reads_file_to_bytes() {
@@ -98,10 +104,7 @@ mod test {
     fn returns_crate_error_when_file_fails_to_open() {
         match IoUtils::read_file(Path::new("")) {
             Ok(_) => panic!("Expected failure to read invalid file path."), // kcov-ignore
-            Err(e) => match *e.kind() {
-                ErrorKind::Io(ref _io_error) => {}       // pass
-                _ => panic!("Expected `ErrorKind::Io`"), // kcov-ignore
-            },
+            Err(e) => assert_eq!(io::ErrorKind::NotFound, e.kind()),
         }
     }
 
@@ -119,8 +122,11 @@ mod test {
         let error = IoUtils::basename(&path).expect_err("Expected basename to fail.");
 
         match error.kind() {
-            ErrorKind::Msg(msg) => {
-                assert_eq!("Failed to determine basename component of path: `/`.", msg);
+            io::ErrorKind::Other => {
+                assert_eq!(
+                    "Failed to determine basename component of path: `/`.",
+                    format!("{}", error)
+                );
             }
             _ => panic!("Expected `ErrorKind::Msg`."), // kcov-ignore
         }

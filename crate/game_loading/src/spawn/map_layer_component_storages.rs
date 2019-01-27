@@ -1,7 +1,7 @@
 use amethyst::{
     animation::AnimationControlSet,
     core::Transform,
-    ecs::prelude::*,
+    ecs::WriteStorage,
     renderer::{SpriteRender, Transparent},
 };
 use derivative::Derivative;

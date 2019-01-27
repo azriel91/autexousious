@@ -6,5 +6,9 @@ edition = "2018"
 
 [dependencies]
 game_model = { path = "../game_model" }
-lazy_static = "1.1"
+lazy_static = "1.2.0"
 map_model = { path = "../map_model" }
+
+[build-dependencies]
+rustc_version = "0.2.3"
+
