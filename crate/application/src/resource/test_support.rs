@@ -17,6 +17,9 @@ macro_rules! test_mutex {
     };
 }
 
+/// Creates a test function guarded by a mutex.
+///
+/// TODO: Use the `serial_test` crate: <https://crates.io/crates/serial_test>.
 #[macro_export]
 macro_rules! test {
     (fn $name:ident() $body:block) => {

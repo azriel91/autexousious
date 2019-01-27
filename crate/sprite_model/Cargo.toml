@@ -6,8 +6,8 @@ edition = "2018"
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git" }
-derive-new = "0.5"
-serde = "1.0"
+derive-new = "0.5.6"
+serde = "1.0.85"
 
 [dev-dependencies]
-toml = "0.4"
+toml = "0.4.10"

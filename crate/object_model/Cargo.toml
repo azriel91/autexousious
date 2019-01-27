@@ -8,21 +8,21 @@ edition = "2018"
 amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 collision_loading = { path = "../collision_loading" }
 collision_model = { path = "../collision_model" }
-derivative = "1.0"
-derive_deref = "1.0"
-derive_more = "0.13"
-derive-new = "0.5"
-fnv = "1.0"
+derivative = "1.0.2"
+derive_deref = "1.0.1"
+derive_more = "0.13.0"
+derive-new = "0.5.6"
+fnv = "1.0.6"
 object_model_derive = { path = "../object_model_derive" }
-serde = "1.0"
+serde = "1.0.85"
 shape_model = { path = "../shape_model" }
-specs-derive = "0.3"
+specs-derive = "0.4.0"
 sprite_model = { path = "../sprite_model" }
 sprite_loading = { path = "../sprite_loading" }
-strum = "0.11"
-strum_macros = "0.11"
+strum = "0.13.0"
+strum_macros = "0.13.0"
 
 [dev-dependencies]
 amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
-pretty_assertions = "0.5"
-toml = "0.4"
+pretty_assertions = "0.5.1"
+toml = "0.4.10"

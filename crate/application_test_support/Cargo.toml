@@ -27,7 +27,7 @@ object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
 
 [dev-dependencies]
-strum = "0.11"
+strum = "0.13.0"
 
 [features]
 nightly = ["amethyst/nightly"]

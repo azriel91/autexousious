@@ -7,7 +7,7 @@ publish = false
 
 [dependencies]
 game_model = { path = "../game_model" }
-heck = "0.3"
-lazy_static = "1.1"
+heck = "0.3.1"
+lazy_static = "1.2.0"
 object_model = { path = "../object_model" }
-strum = "0.11"
+strum = "0.13.0"

@@ -2,10 +2,6 @@ use std::{cell::RefCell, rc::Rc};
 
 use amethyst::prelude::*;
 use derivative::Derivative;
-use itertools::{
-    FoldWhile::{Continue, Done},
-    Itertools,
-};
 
 use crate::state::{intercept::ApplicationEventIntercept, Intercept};
 
@@ -60,21 +56,11 @@ where
         vec![Rc::new(RefCell::new(ApplicationEventIntercept::new()))]
     }
 
-    fn fold_trans_begin<F>(&mut self, mut intercept_fn: F) -> Option<Trans<T, E>>
+    fn fold_trans_begin<F>(&mut self, intercept_fn: F) -> Option<Trans<T, E>>
     where
         F: FnMut(&mut Rc<RefCell<dyn Intercept<T, E>>>) -> Option<Trans<T, E>>,
     {
-        let trans_opt = self
-            .intercepts
-            .iter_mut()
-            .fold_while(None, |trans, intercept| {
-                if trans.is_none() {
-                    Continue(intercept_fn(intercept))
-                } else {
-                    Done(trans)
-                }
-            })
-            .into_inner();
+        let trans_opt = self.intercepts.iter_mut().find_map(intercept_fn);
 
         trans_opt.map(|trans| self.wrap_trans(trans))
     }
@@ -87,14 +73,7 @@ where
             let state_trans_ref = &state_trans;
             self.intercepts
                 .iter_mut()
-                .fold_while(None, |trans, intercept| {
-                    if trans.is_none() {
-                        Continue(intercept_fn(intercept, state_trans_ref))
-                    } else {
-                        Done(trans)
-                    }
-                })
-                .into_inner()
+                .find_map(|intercept| intercept_fn(intercept, state_trans_ref))
         };
         self.wrap_trans(intercept_trans.unwrap_or(state_trans))
     }

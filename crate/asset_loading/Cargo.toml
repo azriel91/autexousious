@@ -7,20 +7,20 @@ edition = "2018"
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 application = { path = "../application" }
-derive-new = "0.5"
+derive-new = "0.5.6"
 game_model = { path = "../game_model" }
-heck = "0.3"
-itertools = "~0.7.8"
-log = "0.4"
+heck = "0.3.1"
+itertools = "0.8.0"
+log = "0.4.6"
 map_model = { path = "../map_model" }
 object_model = { path = "../object_model" }
-serde = "1.0"
-strum = "0.11"
-toml = "0.4"
+serde = "1.0.85"
+strum = "0.13.0"
+toml = "0.4.10"
 
 [dev-dependencies]
 amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
-derive_deref = "1.0"
-hamcrest = "*"
-pretty_assertions = "0.5"
-tempfile = "3.0"
+derive_deref = "1.0.1"
+hamcrest = "0.1.5"
+pretty_assertions = "0.5.1"
+tempfile = "3.0.5"

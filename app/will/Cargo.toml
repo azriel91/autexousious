@@ -25,14 +25,14 @@ game_play_stdio = { path = "../../crate/game_play_stdio" }
 loading = { path = "../../crate/loading" }
 map_loading = { path = "../../crate/map_loading" }
 map_selection_stdio = { path = "../../crate/map_selection_stdio" }
-log = "0.4"
+log = "0.4.6"
 object_loading = { path = "../../crate/object_loading" }
 stdio_view = { path = "../../crate/stdio_view" }
-structopt = "0.2"
-structopt-derive = "0.2"
+structopt = "0.2.14"
+structopt-derive = "0.2.14"
 
 [dev-dependencies]
-assert_cmd = "0.9"
+assert_cmd = "0.10.2"
 
 [build-dependencies]
 application = { path = "../../crate/application" }

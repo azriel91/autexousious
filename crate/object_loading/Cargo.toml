@@ -10,20 +10,20 @@ application = { path = "../application" }
 character_model = { path = "../character_model" }
 collision_loading = { path = "../collision_loading" }
 collision_model = { path = "../collision_model" }
-derive-new = "0.5"
-fnv = "1.0"
+derive-new = "0.5.6"
+fnv = "1.0.6"
 game_model = { path = "../game_model" }
-log = "0.4"
+log = "0.4.6"
 object_model = { path = "../object_model" }
 sprite_loading = { path = "../sprite_loading" }
 
 [dev-dependencies]
 amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
 assets_test = { path = "../assets_test" }
-pretty_assertions = "0.5"
-serde = "1.0"
-strum = "0.11"
-tempfile = "3.0"
+pretty_assertions = "0.5.1"
+serde = "1.0.85"
+strum = "0.13.0"
+tempfile = "3.0.5"
 
 [features]
 nightly = ["amethyst/nightly", "amethyst_test/nightly"]

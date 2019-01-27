@@ -1,6 +1,6 @@
 use amethyst::{
     core::Transform,
-    ecs::prelude::*,
+    ecs::WriteStorage,
     renderer::{Flipped, SpriteRender, Transparent},
 };
 use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};

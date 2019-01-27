@@ -11,12 +11,12 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 application = { path = "../application" }
 application_robot = { path = "../application_robot" }
 application_ui = { path = "../application_ui" }
-assert_cmd = "0.9"
-derivative = "1.0"
-log = "0.4"
-rayon = "1.0"
-structopt = "0.2"
-structopt-derive = "0.2"
+assert_cmd = "0.10.2"
+derivative = "1.0.2"
+log = "0.4.6"
+rayon = "1.0.3"
+structopt = "0.2.14"
+structopt-derive = "0.2.14"
 
 [[example]]
 name = "01_menu"
