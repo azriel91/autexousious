@@ -1,11 +1,9 @@
 use amethyst::{ecs::prelude::*, input::InputHandler};
 use derive_new::new;
+use game_input_model::{Axis, ControlAction, InputConfig, PlayerActionControl, PlayerAxisControl};
 use typename_derive::TypeName;
 
-use crate::{
-    Axis, ControlAction, ControllerInput, InputConfig, InputControlled, PlayerActionControl,
-    PlayerAxisControl,
-};
+use crate::{ControllerInput, InputControlled};
 
 /// Updates `Character` sequence based on input
 #[derive(Debug, Default, TypeName, new)]
@@ -31,7 +29,7 @@ impl<'s> System<'s> for ControllerInputUpdateSystem {
             input_controlleds,
             entities,
             mut controller_input_storage,
-): Self::SystemData,
+        ): Self::SystemData,
     ) {
         for (entity, input_controlled) in (&*entities, &input_controlleds).join() {
             let player = input_controlled.controller_id;
@@ -75,12 +73,11 @@ impl<'s> System<'s> for ControllerInputUpdateSystem {
 mod test {
     use amethyst::ecs::prelude::*;
     use amethyst_test::*;
+    use game_input_model::{InputConfig, PlayerActionControl, PlayerAxisControl};
     use typename::TypeName;
 
     use super::ControllerInputUpdateSystem;
-    use crate::{
-        ControllerInput, InputConfig, InputControlled, PlayerActionControl, PlayerAxisControl,
-    };
+    use crate::{ControllerInput, InputControlled};
 
     #[test]
     fn updates_controller_input_from_input_bindings() {

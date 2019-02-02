@@ -12,7 +12,7 @@ use character_selection::CharacterSelectionBundle;
 use character_selection_model::{CharacterSelections, CharacterSelectionsStatus};
 use collision_loading::CollisionLoadingBundle;
 use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
-use game_input::{PlayerActionControl, PlayerAxisControl};
+use game_input_model::{PlayerActionControl, PlayerAxisControl};
 use game_loading::GameLoadingState;
 use game_model::loaded::SlugAndHandle;
 use loading::LoadingState;
@@ -165,7 +165,7 @@ impl AutexousiousApplication {
 mod test {
     use amethyst::{input::InputHandler, ui::Interactable};
     use amethyst_test::SpriteRenderAnimationFixture;
-    use game_input::{PlayerActionControl, PlayerAxisControl};
+    use game_input_model::{PlayerActionControl, PlayerAxisControl};
     use game_model::{
         loaded::{CharacterAssets, MapAssets},
         play::GameEntities,

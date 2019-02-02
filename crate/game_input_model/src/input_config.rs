@@ -9,7 +9,7 @@ use derive_new::new;
 use log::error;
 use serde::{Deserialize, Serialize};
 
-use crate::{config::ControllerConfig, PlayerActionControl, PlayerAxisControl};
+use crate::{ControllerConfig, PlayerActionControl, PlayerAxisControl};
 
 /// Structure for holding the input configuration.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, new)]

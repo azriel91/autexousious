@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use amethyst::Error;
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
-use game_input::ControllerId;
+use game_input_model::ControllerId;
 use game_model::{
     config::AssetSlug,
     loaded::{CharacterAssets, SlugAndHandle},

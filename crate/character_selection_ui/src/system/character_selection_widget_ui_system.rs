@@ -8,7 +8,8 @@ use character_selection_model::{
     CharacterSelection, CharacterSelectionEvent, CharacterSelectionsStatus,
 };
 use derive_new::new;
-use game_input::{ControllerId, ControllerInput, InputConfig, InputControlled};
+use game_input::{ControllerInput, InputControlled};
+use game_input_model::{ControllerId, InputConfig};
 use game_model::loaded::{CharacterAssets, SlugAndHandle};
 use log::debug;
 use typename_derive::TypeName;
@@ -231,7 +232,7 @@ mod test {
     use character_selection_model::{
         CharacterSelection, CharacterSelectionEvent, CharacterSelectionsStatus,
     };
-    use game_input::{Axis, ControlAction, ControllerConfig, InputConfig};
+    use game_input_model::{Axis, ControlAction, ControllerConfig, InputConfig};
     use game_model::loaded::{CharacterAssets, SlugAndHandle};
     use typename::TypeName;
 

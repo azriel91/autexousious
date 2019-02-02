@@ -57,7 +57,8 @@ mod test {
     use std::env;
 
     use amethyst_test::prelude::*;
-    use game_input::{GameInputBundle, InputConfig, PlayerActionControl, PlayerAxisControl};
+    use game_input::GameInputBundle;
+    use game_input_model::{InputConfig, PlayerActionControl, PlayerAxisControl};
 
     use super::CharacterSelectionUiBundle;
 

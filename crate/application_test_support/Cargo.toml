@@ -15,7 +15,7 @@ character_selection = { path = "../character_selection" }
 character_selection_model = { path = "../character_selection_model" }
 collision_loading = { path = "../collision_loading" }
 collision_model = { path = "../collision_model" }
-game_input = { path = "../game_input" }
+game_input_model = { path = "../game_input_model" }
 game_loading = { path = "../game_loading" }
 game_model = { path = "../game_model" }
 loading = { path = "../loading" }

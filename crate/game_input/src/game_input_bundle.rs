@@ -1,8 +1,9 @@
 use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
 use derive_new::new;
+use game_input_model::InputConfig;
 use typename::TypeName;
 
-use crate::{ControllerInputUpdateSystem, InputConfig, SharedControllerInputUpdateSystem};
+use crate::{ControllerInputUpdateSystem, SharedControllerInputUpdateSystem};
 
 /// Adds the game input update systems to the provided dispatcher.
 ///
@@ -34,9 +35,9 @@ mod test {
     use std::env;
 
     use amethyst_test::prelude::*;
+    use game_input_model::{InputConfig, PlayerActionControl, PlayerAxisControl};
 
     use super::GameInputBundle;
-    use crate::{InputConfig, PlayerActionControl, PlayerAxisControl};
 
     #[test]
     fn bundle_build_should_succeed() {
