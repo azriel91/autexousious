@@ -89,7 +89,7 @@ linux:debug:
   <<: *linux_job_common
   script:
     - time cargo test --no-run
-    - time hull each -- cargo build --examples --bins
+    - time cargo build --examples --bins
     - source xvfb_start
     - time cargo test
     - source xvfb_stop
@@ -105,7 +105,7 @@ linux:release:
   <<: *linux_job_common
   script:
     - time cargo test --no-run --release
-    - time hull each -- cargo build --examples --bins --release
+    - time cargo build --examples --bins --release
     - source xvfb_start
     - time cargo test --release
     - source xvfb_stop
@@ -134,7 +134,7 @@ windows:debug:
   <<: *windows_job_common
   script:
     - cargo test --no-run
-    - hull each -- cargo build --examples --bins
+    - cargo build --examples --bins
     - cargo build
     - cargo test
 
@@ -142,7 +142,7 @@ windows:release:
   <<: *windows_job_common
   script:
     - cargo test --no-run --release
-    - hull each -- cargo build --examples --bins --release
+    - cargo build --examples --bins --release
     - cargo build --release
     - cargo test --release
     - .\build\publish_prepare_app.bat
