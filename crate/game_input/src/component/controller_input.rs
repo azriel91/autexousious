@@ -1,4 +1,4 @@
-use amethyst::ecs::prelude::*;
+use amethyst::ecs::{storage::DenseVecStorage, Component};
 use derive_new::new;
 
 /// Input for a character entity.
@@ -28,5 +28,5 @@ pub struct ControllerInput {
 }
 
 impl Component for ControllerInput {
-    type Storage = VecStorage<Self>;
+    type Storage = DenseVecStorage<Self>;
 }

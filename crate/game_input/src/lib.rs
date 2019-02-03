@@ -3,10 +3,16 @@
 
 //! Provides types to link control input into Amethyst.
 
+#[cfg(test)]
+#[macro_use]
+extern crate hamcrest;
+
 pub use crate::{
     component::{ControllerInput, InputControlled, SharedInputControlled},
     game_input_bundle::GameInputBundle,
-    system::{ControllerInputUpdateSystem, SharedControllerInputUpdateSystem},
+    system::{
+        ControllerInputUpdateSystem, InputToControlInputSystem, SharedControllerInputUpdateSystem,
+    },
 };
 
 mod component;

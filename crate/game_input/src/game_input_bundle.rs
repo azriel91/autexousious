@@ -3,7 +3,9 @@ use derive_new::new;
 use game_input_model::InputConfig;
 use typename::TypeName;
 
-use crate::{ControllerInputUpdateSystem, SharedControllerInputUpdateSystem};
+use crate::{
+    ControllerInputUpdateSystem, InputToControlInputSystem, SharedControllerInputUpdateSystem,
+};
 
 /// Adds the game input update systems to the provided dispatcher.
 ///
@@ -17,9 +19,14 @@ pub struct GameInputBundle {
 impl<'a, 'b> SystemBundle<'a, 'b> for GameInputBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
         builder.add(
-            ControllerInputUpdateSystem::new(self.input_config),
-            &ControllerInputUpdateSystem::type_name(),
+            InputToControlInputSystem::new(self.input_config),
+            &InputToControlInputSystem::type_name(),
             &["input_system"],
+        ); // kcov-ignore
+        builder.add(
+            ControllerInputUpdateSystem::new(),
+            &ControllerInputUpdateSystem::type_name(),
+            &[&InputToControlInputSystem::type_name()],
         ); // kcov-ignore
         builder.add(
             SharedControllerInputUpdateSystem::new(),
