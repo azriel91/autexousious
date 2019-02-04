@@ -1,15 +1,22 @@
 use std::str::FromStr;
 
-use amethyst::Error;
+use amethyst::{ecs::Read, Error};
 use game_model::{
     config::AssetSlug,
     loaded::{MapAssets, SlugAndHandle},
 };
 use map_selection_model::{MapSelection, MapSelectionEvent};
-use stdio_spi::{StdinMapper, StdioError};
+use stdio_spi::{MapperSystemData, StdinMapper, StdioError};
 use typename_derive::TypeName;
 
 use crate::MapSelectionEventArgs;
+
+#[derive(Debug)]
+pub struct MapSelectionEventStdinMapperData;
+
+impl<'s> MapperSystemData<'s> for MapSelectionEventStdinMapperData {
+    type SystemData = Read<'s, MapAssets>;
+}
 
 /// Builds a `MapSelectionEvent` from stdin tokens.
 #[derive(Debug, TypeName)]
@@ -50,11 +57,11 @@ impl MapSelectionEventStdinMapper {
 }
 
 impl StdinMapper for MapSelectionEventStdinMapper {
-    type Resource = MapAssets;
+    type SystemData = MapSelectionEventStdinMapperData;
     type Event = MapSelectionEvent;
     type Args = MapSelectionEventArgs;
 
-    fn map(map_assets: &MapAssets, args: Self::Args) -> Result<Self::Event, Error> {
+    fn map(map_assets: &Read<MapAssets>, args: Self::Args) -> Result<Self::Event, Error> {
         match args {
             MapSelectionEventArgs::Select { selection } => {
                 Self::map_select_event(map_assets, &selection)
@@ -65,7 +72,10 @@ impl StdinMapper for MapSelectionEventStdinMapper {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::Error;
+    use amethyst::{
+        ecs::{Read, Resources},
+        Error,
+    };
     use application_test_support::AutexousiousApplication;
     use assets_test::ASSETS_MAP_FADE_SLUG;
     use game_model::loaded::{MapAssets, SlugAndHandle};
@@ -79,9 +89,11 @@ mod tests {
     fn returns_err_when_asset_slug_invalid() {
         let selection = "invalid".to_string();
         let args = MapSelectionEventArgs::Select { selection };
-        let map_assets = MapAssets::new();
+        let mut resources = Resources::new();
+        resources.insert(MapAssets::new());
 
-        let result = MapSelectionEventStdinMapper::map(&map_assets, args);
+        let result =
+            MapSelectionEventStdinMapper::map(&Read::from(resources.fetch::<MapAssets>()), args);
 
         expect_err_msg(
             result,
@@ -93,9 +105,11 @@ mod tests {
     fn returns_err_when_map_does_not_exist_for_slug() {
         let selection = "test/non_existent".to_string();
         let args = MapSelectionEventArgs::Select { selection };
-        let map_assets = MapAssets::new();
+        let mut resources = Resources::new();
+        resources.insert(MapAssets::new());
 
-        let result = MapSelectionEventStdinMapper::map(&map_assets, args);
+        let result =
+            MapSelectionEventStdinMapper::map(&Read::from(resources.fetch::<MapAssets>()), args);
 
         expect_err_msg(result, "No map found with asset slug `test/non_existent`.");
     }
@@ -111,11 +125,11 @@ mod tests {
                         selection: ASSETS_MAP_FADE_SLUG.to_string(),
                     };
                     let map_assets = world.read_resource::<MapAssets>();
+                    let snh = SlugAndHandle::from((&*map_assets, ASSETS_MAP_FADE_SLUG.clone()));
 
-                    let result = MapSelectionEventStdinMapper::map(&*map_assets, args);
+                    let result = MapSelectionEventStdinMapper::map(&Read::from(map_assets), args);
 
                     assert!(result.is_ok());
-                    let snh = SlugAndHandle::from((&*map_assets, ASSETS_MAP_FADE_SLUG.clone()));
                     let map_selection = MapSelection::Id(snh);
                     assert_eq!(MapSelectionEvent::Select { map_selection }, result.unwrap())
                 })
@@ -135,16 +149,16 @@ mod tests {
                         selection: "random".to_string(),
                     };
                     let map_assets = world.read_resource::<MapAssets>();
-
-                    let result = MapSelectionEventStdinMapper::map(&*map_assets, args);
-
-                    assert!(result.is_ok());
                     let snh = SlugAndHandle::from(
                         map_assets
                             .iter()
                             .next()
                             .expect("Expected at least one map to be loaded."),
                     );
+
+                    let result = MapSelectionEventStdinMapper::map(&Read::from(map_assets), args);
+
+                    assert!(result.is_ok());
                     let map_selection = MapSelection::Random(snh);
                     assert_eq!(MapSelectionEvent::Select { map_selection }, result.unwrap())
                 })

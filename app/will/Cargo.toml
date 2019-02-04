@@ -18,18 +18,23 @@ character_selection_stdio = { path = "../../crate/character_selection_stdio" }
 collision_loading = { path = "../../crate/collision_loading" }
 collision_model = { path = "../../crate/collision_model" }
 game_input = { path = "../../crate/game_input" }
+game_input_model = { path = "../../crate/game_input_model" }
+game_input_stdio = { path = "../../crate/game_input_stdio" }
+game_input_ui = { path = "../../crate/game_input_ui" }
 game_mode_selection = { path = "../../crate/game_mode_selection" }
-game_mode_selection_ui = { path = "../../crate/game_mode_selection_ui" }
 game_mode_selection_stdio = { path = "../../crate/game_mode_selection_stdio" }
+game_mode_selection_ui = { path = "../../crate/game_mode_selection_ui" }
 game_play_stdio = { path = "../../crate/game_play_stdio" }
 loading = { path = "../../crate/loading" }
 map_loading = { path = "../../crate/map_loading" }
 map_selection_stdio = { path = "../../crate/map_selection_stdio" }
 log = "0.4.6"
 object_loading = { path = "../../crate/object_loading" }
+stdio_spi = { path = "../../crate/stdio_spi" }
 stdio_view = { path = "../../crate/stdio_view" }
 structopt = "0.2.14"
 structopt-derive = "0.2.14"
+typename = "0.1.0"
 
 [dev-dependencies]
 assert_cmd = "0.10.2"

@@ -68,13 +68,11 @@ impl<'s> System<'s> for SharedControllerInputUpdateSystem {
 mod test {
     use amethyst::ecs::prelude::*;
     use amethyst_test::*;
+    use game_input_model::{ControllerId, PlayerActionControl, PlayerAxisControl};
     use typename::TypeName;
 
     use super::SharedControllerInputUpdateSystem;
-    use crate::{
-        ControllerId, ControllerInput, InputControlled, PlayerActionControl, PlayerAxisControl,
-        SharedInputControlled,
-    };
+    use crate::{ControllerInput, InputControlled, SharedInputControlled};
 
     #[test]
     fn merges_axes_controller_input_with_limit_correction() {

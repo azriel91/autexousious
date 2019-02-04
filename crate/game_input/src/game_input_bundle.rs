@@ -2,24 +2,44 @@ use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
 use derive_new::new;
 use typename::TypeName;
 
-use crate::{ControllerInputUpdateSystem, InputConfig, SharedControllerInputUpdateSystem};
+use crate::{ControllerInputUpdateSystem, SharedControllerInputUpdateSystem};
 
 /// Adds the game input update systems to the provided dispatcher.
 ///
 /// The Amethyst `InputBundle` must be added before this bundle.
 #[derive(Debug, new)]
 pub struct GameInputBundle {
-    /// All controller input configuration.
-    input_config: InputConfig,
+    /// System names that the `ControllerInputUpdateSystem` should wait on.
+    #[new(default)]
+    system_dependencies: Option<Vec<String>>,
+}
+
+impl GameInputBundle {
+    /// Specifies system dependencies for the `ControllerInputUpdateSystem`.
+    ///
+    /// # Parameters
+    ///
+    /// * `dependencies`: Names of the systems to depend on.
+    pub fn with_system_dependencies(mut self, dependencies: &[String]) -> Self {
+        self.system_dependencies = Some(Vec::from(dependencies));
+        self
+    }
 }
 
 impl<'a, 'b> SystemBundle<'a, 'b> for GameInputBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
+        let deps = self
+            .system_dependencies
+            .as_ref()
+            .map_or_else(Vec::new, |deps| {
+                deps.iter().map(|dep| dep.as_ref()).collect::<Vec<&str>>()
+            });
         builder.add(
-            ControllerInputUpdateSystem::new(self.input_config),
+            ControllerInputUpdateSystem::new(),
             &ControllerInputUpdateSystem::type_name(),
-            &["input_system"],
+            &deps,
         ); // kcov-ignore
+
         builder.add(
             SharedControllerInputUpdateSystem::new(),
             &SharedControllerInputUpdateSystem::type_name(),
@@ -33,22 +53,18 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameInputBundle {
 mod test {
     use std::env;
 
-    use amethyst_test::prelude::*;
+    use amethyst::Error;
+    use amethyst_test::AmethystApplication;
+    use game_input_model::{PlayerActionControl, PlayerAxisControl};
 
     use super::GameInputBundle;
-    use crate::{InputConfig, PlayerActionControl, PlayerAxisControl};
 
     #[test]
-    fn bundle_build_should_succeed() {
+    fn bundle_build_should_succeed() -> Result<(), Error> {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
-                .with_bundle(GameInputBundle::new(InputConfig::default()))
-                .run()
-                .is_ok()
-        );
+        AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
+            .with_bundle(GameInputBundle::new())
+            .run()
     }
 }

@@ -1,4 +1,4 @@
-use game_input::ControllerId;
+use game_input_model::ControllerId;
 
 use crate::CharacterSelection;
 

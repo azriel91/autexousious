@@ -69,7 +69,7 @@ impl<'s> System<'s> for StdinSystem {
             Ok(input) => {
                 debug!("Input from StdinReader: `{:?}`.", &input);
 
-                if input == "exit" {
+                if input == StdinReader::EXIT_PHRASE {
                     application_event_channel.single_write(ApplicationEvent::Exit);
                     return;
                 }

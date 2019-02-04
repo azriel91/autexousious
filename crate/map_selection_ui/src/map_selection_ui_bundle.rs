@@ -56,23 +56,20 @@ impl<'a, 'b> SystemBundle<'a, 'b> for MapSelectionUiBundle {
 mod test {
     use std::env;
 
-    use amethyst_test::prelude::*;
-    use game_input::{GameInputBundle, InputConfig, PlayerActionControl, PlayerAxisControl};
+    use amethyst::Error;
+    use amethyst_test::AmethystApplication;
+    use game_input::GameInputBundle;
+    use game_input_model::{PlayerActionControl, PlayerAxisControl};
 
     use super::MapSelectionUiBundle;
 
     #[test]
-    fn bundle_build_should_succeed() {
+    fn bundle_build_should_succeed() -> Result<(), Error> {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
-                .with_bundle(GameInputBundle::new(InputConfig::default()))
-                .with_bundle(MapSelectionUiBundle::new())
-                .run()
-                .is_ok()
-        );
+        AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
+            .with_bundle(GameInputBundle::new())
+            .with_bundle(MapSelectionUiBundle::new())
+            .run()
     }
 }

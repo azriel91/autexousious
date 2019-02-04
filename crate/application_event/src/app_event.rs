@@ -4,6 +4,7 @@ use amethyst::{
 use character_selection_model::CharacterSelectionEvent;
 use derivative::Derivative;
 use derive_more::From;
+use game_input_model::ControlInputEvent;
 use game_mode_selection_model::GameModeSelectionEvent;
 use game_play_model::GamePlayEvent;
 use map_selection_model::MapSelectionEvent;
@@ -26,6 +27,10 @@ use strum_macros::{Display, EnumDiscriminants, EnumIter, EnumString};
 pub enum AppEvent {
     /// `character_selection` events.
     CharacterSelection(CharacterSelectionEvent),
+    /// `control_input` events.
+    ///
+    /// Note: This is defined in the `game_input*` crates.
+    ControlInput(ControlInputEvent),
     /// `game_mode_selection` events.
     GameModeSelection(GameModeSelectionEvent),
     /// `game_play` events.

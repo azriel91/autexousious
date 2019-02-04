@@ -23,7 +23,7 @@ asset_loading = { path = "../asset_loading" }
 assets_test = { path = "../assets_test" }
 collision_loading = { path = "../collision_loading" }
 collision_model = { path = "../collision_model" }
-game_input = { path = "../game_input" }
+game_input_model = { path = "../game_input_model" }
 game_model = { path = "../game_model" }
 loading = { path = "../loading" }
 map_loading = { path = "../map_loading" }

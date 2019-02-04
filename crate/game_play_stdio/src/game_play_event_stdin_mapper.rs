@@ -10,7 +10,7 @@ use crate::GamePlayEventArgs;
 pub struct GamePlayEventStdinMapper;
 
 impl StdinMapper for GamePlayEventStdinMapper {
-    type Resource = ();
+    type SystemData = ();
     type Event = GamePlayEvent;
     type Args = GamePlayEventArgs;
 

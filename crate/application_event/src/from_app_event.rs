@@ -1,4 +1,5 @@
 use character_selection_model::CharacterSelectionEvent;
+use game_input_model::ControlInputEvent;
 use game_mode_selection_model::GameModeSelectionEvent;
 use game_play_model::GamePlayEvent;
 use map_selection_model::MapSelectionEvent;
@@ -25,8 +26,8 @@ macro_rules! impl_from_app_event {
         impl FromAppEvent for $state_specific_event {
             /// Returns the state specific event contained in this `AppEvent`, or the app event.
             ///
-            /// Ideally we can use the [`TryFrom`][try_from] trait, but it's not yet stable, pending:
-            /// <https://github.com/rust-lang/rust/issues/33417>
+            /// TODO: Ideally we can use the [`TryFrom`][try_from] trait, but it's not yet stable,
+            /// pending: <https://github.com/rust-lang/rust/issues/33417>
             ///
             /// [try_from]: https://doc.rust-lang.org/std/convert/trait.TryFrom.html
             fn from(app_event: AppEvent) -> Result<$state_specific_event, AppEvent> {
@@ -40,6 +41,7 @@ macro_rules! impl_from_app_event {
 }
 
 impl_from_app_event!(CharacterSelection, CharacterSelectionEvent);
+impl_from_app_event!(ControlInput, ControlInputEvent);
 impl_from_app_event!(GameModeSelection, GameModeSelectionEvent);
 impl_from_app_event!(GamePlay, GamePlayEvent);
 impl_from_app_event!(MapSelection, MapSelectionEvent);

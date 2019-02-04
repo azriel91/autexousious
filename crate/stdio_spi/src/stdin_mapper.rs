@@ -1,6 +1,8 @@
 use amethyst::Error;
 use structopt::StructOpt;
 
+use crate::MapperSystemData;
+
 /// Maps tokens from stdin to a state specific event.
 pub trait StdinMapper {
     /// Resource needed by the mapper to construct the state specific event.
@@ -13,7 +15,11 @@ pub trait StdinMapper {
     ///
     /// * <https://users.rust-lang.org/t/17444>
     /// * <https://github.com/rust-lang/rust/issues/44265>
-    type Resource;
+    ///
+    /// As of 2019-01-19, this workaround was posted:
+    ///
+    /// * <https://gist.github.com/ExpHP/7a464c184c876eaf27056a83c41356ee>
+    type SystemData: for<'s> MapperSystemData<'s>;
     /// State specific event type that this maps tokens to.
     type Event: Send + Sync + 'static;
     /// Data structure representing the arguments.
@@ -22,6 +28,10 @@ pub trait StdinMapper {
     ///
     /// # Parameters
     ///
-    /// * `tokens`: Tokens received from stdin.
-    fn map(resource: &Self::Resource, args: Self::Args) -> Result<Self::Event, Error>;
+    /// * `system_data`: Borrowed resources from the world.
+    /// * `args`: Tokens parsed from stdin.
+    fn map(
+        system_data: &<Self::SystemData as MapperSystemData>::SystemData,
+        args: Self::Args,
+    ) -> Result<Self::Event, Error>;
 }

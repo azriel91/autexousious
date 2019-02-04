@@ -390,6 +390,7 @@ dependencies = [
  "character_selection_model 0.8.0",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_more 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "game_input_model 0.9.0",
  "game_mode_selection_model 0.8.0",
  "game_play_model 0.8.0",
  "map_selection_model 0.8.0",
@@ -464,7 +465,7 @@ dependencies = [
  "character_selection_model 0.8.0",
  "collision_loading 0.8.0",
  "collision_model 0.8.0",
- "game_input 0.8.0",
+ "game_input_model 0.9.0",
  "game_loading 0.8.0",
  "game_model 0.8.0",
  "loading 0.8.0",
@@ -778,7 +779,7 @@ dependencies = [
  "collision_model 0.8.0",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "game_input 0.8.0",
+ "game_input_model 0.9.0",
  "game_model 0.8.0",
  "loading 0.8.0",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -798,7 +799,7 @@ dependencies = [
  "character_model 0.8.0",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "game_input 0.8.0",
+ "game_input_model 0.9.0",
  "game_model 0.8.0",
  "object_model 0.8.0",
  "rustc_version 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -817,7 +818,7 @@ dependencies = [
  "assets_test 0.8.0",
  "character_selection_model 0.8.0",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "game_input 0.8.0",
+ "game_input_model 0.9.0",
  "game_model 0.8.0",
  "rustc_version 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "stdio_spi 0.8.0",
@@ -841,6 +842,7 @@ dependencies = [
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input 0.8.0",
+ "game_input_model 0.9.0",
  "game_model 0.8.0",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "object_model 0.8.0",
@@ -1621,13 +1623,66 @@ version = "0.8.0"
 dependencies = [
  "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
- "application 0.8.0",
+ "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "game_input_model 0.9.0",
+ "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rustc_version 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde 1.0.85 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typename_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "game_input_model"
+version = "0.9.0"
+dependencies = [
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "hamcrest 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc_version 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.85 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "winit 0.18.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "game_input_stdio"
+version = "0.9.0"
+dependencies = [
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
+ "application_event 0.8.0",
+ "application_test_support 0.8.0",
+ "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "game_input 0.8.0",
+ "game_input_model 0.9.0",
+ "rustc_version 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "stdio_spi 0.8.0",
+ "structopt 0.2.14 (registry+https://github.com/rust-lang/crates.io-index)",
+ "structopt-derive 0.2.14 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typename_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "game_input_ui"
+version = "0.9.0"
+dependencies = [
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
+ "approx 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "game_input 0.8.0",
+ "game_input_model 0.9.0",
+ "hamcrest 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum_macros 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1771,6 +1826,7 @@ dependencies = [
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input 0.8.0",
+ "game_input_model 0.9.0",
  "game_loading 0.8.0",
  "game_model 0.8.0",
  "game_play_model 0.8.0",
@@ -2411,6 +2467,7 @@ dependencies = [
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input 0.8.0",
+ "game_input_model 0.9.0",
  "game_model 0.8.0",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_model 0.8.0",
@@ -4037,6 +4094,9 @@ dependencies = [
  "collision_loading 0.8.0",
  "collision_model 0.8.0",
  "game_input 0.8.0",
+ "game_input_model 0.9.0",
+ "game_input_stdio 0.9.0",
+ "game_input_ui 0.9.0",
  "game_mode_selection 0.8.0",
  "game_mode_selection_stdio 0.8.0",
  "game_mode_selection_ui 0.8.0",
@@ -4047,9 +4107,11 @@ dependencies = [
  "map_selection_stdio 0.8.0",
  "object_loading 0.8.0",
  "rustc_version 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "stdio_spi 0.8.0",
  "stdio_view 0.8.0",
  "structopt 0.2.14 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt-derive 0.2.14 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

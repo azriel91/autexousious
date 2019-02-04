@@ -11,7 +11,7 @@ use crate::GameModeSelectionEventArgs;
 pub struct GameModeSelectionEventStdinMapper;
 
 impl StdinMapper for GameModeSelectionEventStdinMapper {
-    type Resource = ();
+    type SystemData = ();
     type Event = GameModeSelectionEvent;
     type Args = GameModeSelectionEventArgs;
 

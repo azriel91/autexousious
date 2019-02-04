@@ -110,7 +110,7 @@ mod test {
     use std::env;
 
     use amethyst_test::prelude::*;
-    use game_input::{PlayerActionControl, PlayerAxisControl};
+    use game_input_model::{PlayerActionControl, PlayerAxisControl};
 
     use super::GamePlayBundle;
 

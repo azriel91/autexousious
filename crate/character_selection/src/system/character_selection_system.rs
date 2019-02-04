@@ -85,7 +85,7 @@ mod tests {
     };
     use collision_loading::CollisionLoadingBundle;
     use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
-    use game_input::{PlayerActionControl, PlayerAxisControl};
+    use game_input_model::{PlayerActionControl, PlayerAxisControl};
     use game_model::loaded::SlugAndHandle;
     use loading::LoadingState;
     use map_loading::MapLoadingBundle;
