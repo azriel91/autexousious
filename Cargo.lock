@@ -1622,6 +1622,7 @@ version = "0.8.0"
 dependencies = [
  "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
+ "approx 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input_model 0.9.0",

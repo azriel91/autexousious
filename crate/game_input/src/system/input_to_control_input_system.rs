@@ -3,6 +3,7 @@ use amethyst::{
     input::InputHandler,
     shrev::EventChannel,
 };
+use approx::relative_ne;
 use derive_new::new;
 use game_input_model::{
     Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent, InputConfig,
@@ -55,10 +56,10 @@ impl<'s> System<'s> for InputToControlInputSystem {
                         Axis::Z => controller_input.z_axis_value,
                     };
 
-                    if previous_value != value {
+                    if relative_ne!(previous_value, value) {
                         self.input_events
                             .push(ControlInputEvent::Axis(AxisEventData {
-                                entity: entity.clone(),
+                                entity,
                                 axis,
                                 value,
                             }))
@@ -80,7 +81,7 @@ impl<'s> System<'s> for InputToControlInputSystem {
                     if previous_value != value {
                         self.input_events.push(ControlInputEvent::ControlAction(
                             ControlActionEventData {
-                                entity: entity.clone(),
+                                entity,
                                 control_action,
                                 value,
                             },
