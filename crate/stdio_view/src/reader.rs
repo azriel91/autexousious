@@ -4,7 +4,7 @@ use std::{
 };
 
 use console::{style, Term};
-use log::{trace, warn};
+use log::{debug, info, trace, warn};
 
 /// Name of this reader, useful when naming threads.
 pub const NAME: &str = concat!(module_path!(), "::StdinReader");
@@ -20,6 +20,9 @@ pub struct StdinReader {
 }
 
 impl StdinReader {
+    /// Phrase that signals the application should quit.
+    pub const EXIT_PHRASE: &'static str = "exit";
+
     // kcov-ignore-start
     /// Returns a StdinReader.
     ///
@@ -44,16 +47,30 @@ impl StdinReader {
                         buffer.truncate(n);
                         trace!("Read input from stdin: \"{}\".", buffer);
 
-                        if let Err(payload) = self.system_tx.send(buffer.trim().to_string()) {
+                        let payload = buffer.trim().to_string();
+                        let should_exit = payload == Self::EXIT_PHRASE;
+                        if let Err(payload) = self.system_tx.send(payload) {
                             warn!(
                                 "Channel sender to `StdinSystem` disconnected. Payload: \"{}\"",
                                 payload
                             );
                             break;
                         }
+
+                        // This prevents the thread that is running this function from panicking due
+                        // to accessing stdin while the application is exiting.
+                        if should_exit {
+                            info!("StdinReader thread terminating.");
+                            break;
+                        }
                     }
                 }
-                Err(e) => panic!("{:?}", e),
+                Err(e) => {
+                    debug!("{}", e);
+                    debug!("ErrorKind: {:?}", e.kind());
+                    info!("StdinReader thread terminating.");
+                    break;
+                }
             }
 
             buffer.clear();
