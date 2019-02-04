@@ -34,6 +34,7 @@ use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHa
 use game_input::GameInputBundle;
 use game_input_model::{InputConfig, PlayerActionControl, PlayerAxisControl};
 use game_input_stdio::{ControlInputEventStdinMapper, GameInputStdioBundle};
+use game_input_ui::{GameInputUiBundle, InputToControlInputSystem};
 use game_mode_selection::{GameModeSelectionStateBuilder, GameModeSelectionStateDelegate};
 use game_mode_selection_stdio::GameModeSelectionStdioBundle;
 use game_mode_selection_ui::{GameModeSelectionUiBuildFn, GameModeSelectionUiBundle};
@@ -154,13 +155,17 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                     .with_bindings((&input_config).into()),
             )?
             .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?
-            .with_bundle(GameInputStdioBundle::new())?
+            .with_bundle(GameInputUiBundle::new(input_config))?
             .with_bundle(
-                GameInputBundle::new(input_config)
-                    .with_system_dependencies(&[
-                        MapperSystem::<ControlInputEventStdinMapper>::type_name(),
-                    ]),
+                GameInputStdioBundle::new()
+                    // Note: Depend on the input handler updated system, so that stdin input takes
+                    // priority
+                    .with_system_dependencies(&[InputToControlInputSystem::type_name()]),
             )?
+            .with_bundle(GameInputBundle::new().with_system_dependencies(&[
+                MapperSystem::<ControlInputEventStdinMapper>::type_name(),
+                InputToControlInputSystem::type_name(),
+            ]))?
             .with_bundle(StdioViewBundle::new())?
             .with_bundle(CharacterSelectionStdioBundle::new())?
             .with_bundle(GamePlayStdioBundle::new())?

@@ -5,14 +5,13 @@ use amethyst::{
 };
 use approx::relative_ne;
 use derive_new::new;
+use game_input::{ControllerInput, InputControlled};
 use game_input_model::{
     Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent, InputConfig,
     PlayerActionControl, PlayerAxisControl,
 };
 use strum::IntoEnumIterator;
 use typename_derive::TypeName;
-
-use crate::{ControllerInput, InputControlled};
 
 /// Sends `ControlInputEvent`s based on the `InputHandler` state.
 #[derive(Debug, Default, TypeName, new)]
@@ -114,6 +113,7 @@ mod test {
         Error,
     };
     use amethyst_test::{AmethystApplication, HIDPI};
+    use game_input::{ControllerInput, InputControlled};
     use game_input_model::{
         Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent,
         ControllerConfig, InputConfig, PlayerActionControl, PlayerAxisControl,
@@ -126,7 +126,6 @@ mod test {
     };
 
     use super::InputToControlInputSystem;
-    use crate::{ControllerInput, InputControlled};
 
     #[test]
     fn sends_control_input_events_for_key_presses() -> Result<(), Error> {
