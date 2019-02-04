@@ -12,14 +12,7 @@ use structopt::StructOpt;
 use typename::TypeName as TypeNameTrait;
 use typename_derive::TypeName;
 
-use crate::{StdinMapper, VariantAndTokens};
-
-/// Type to fetch the application event channel.
-type MapperSystemData<'s, E, SysData> = (
-    Read<'s, EventChannel<VariantAndTokens>>,
-    Write<'s, EventChannel<E>>,
-    SysData,
-);
+use crate::{MapperSystemData, StdinMapper, VariantAndTokens};
 
 /// Rendering system.
 #[derive(Debug, TypeName, new)]
@@ -39,11 +32,17 @@ where
 impl<'s, M> System<'s> for MapperSystem<M>
 where
     M: StdinMapper + TypeNameTrait,
-    M::Resource: Default + Send + Sync + 'static,
 {
-    type SystemData = MapperSystemData<'s, M::Event, Read<'s, M::Resource>>;
+    type SystemData = (
+        Read<'s, EventChannel<VariantAndTokens>>,
+        Write<'s, EventChannel<M::Event>>,
+        <M::SystemData as MapperSystemData<'s>>::SystemData,
+    );
 
-    fn run(&mut self, (variant_channel, mut app_event_channel, resources): Self::SystemData) {
+    fn run(
+        &mut self,
+        (variant_channel, mut app_event_channel, mapper_system_data): Self::SystemData,
+    ) {
         let mut events = variant_channel
             .read(self.reader_id.as_mut().unwrap())
             .filter_map(|&(variant, ref tokens)| {
@@ -55,7 +54,7 @@ where
             })
             .map(|tokens| -> Result<M::Event, Error> {
                 let args = M::Args::from_iter_safe(tokens.iter())?;
-                M::map(&resources, args)
+                M::map(&mapper_system_data, args)
             })
             .filter_map(|result| match result {
                 Ok(event) => Some(event),

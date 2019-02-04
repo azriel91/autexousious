@@ -2,13 +2,25 @@
 
 use derivative::Derivative;
 use serde::{Deserialize, Serialize};
-use strum_macros::{Display, EnumIter};
+use strum_macros::{Display, EnumIter, EnumString};
 
 /// Control actions for characters.
 #[derive(
-    Clone, Copy, Debug, Derivative, Deserialize, Display, EnumIter, Hash, PartialEq, Eq, Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Derivative,
+    Deserialize,
+    Display,
+    EnumIter,
+    EnumString,
+    Hash,
+    PartialEq,
+    Eq,
+    Serialize,
 )]
 #[derivative(Default)]
+#[strum(serialize_all = "snake_case")]
 pub enum ControlAction {
     /// Defend button.
     Defend,

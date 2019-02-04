@@ -1,16 +1,23 @@
 use std::str::FromStr;
 
-use amethyst::Error;
+use amethyst::{ecs::Read, Error};
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
 use game_input_model::ControllerId;
 use game_model::{
     config::AssetSlug,
     loaded::{CharacterAssets, SlugAndHandle},
 };
-use stdio_spi::{StdinMapper, StdioError};
+use stdio_spi::{MapperSystemData, StdinMapper, StdioError};
 use typename_derive::TypeName;
 
 use crate::CharacterSelectionEventArgs;
+
+#[derive(Debug)]
+pub struct CharacterSelectionEventStdinMapperData;
+
+impl<'s> MapperSystemData<'s> for CharacterSelectionEventStdinMapperData {
+    type SystemData = Read<'s, CharacterAssets>;
+}
 
 /// Builds a `CharacterSelectionEvent` from stdin tokens.
 #[derive(Debug, TypeName)]
@@ -55,11 +62,14 @@ impl CharacterSelectionEventStdinMapper {
 }
 
 impl StdinMapper for CharacterSelectionEventStdinMapper {
-    type Resource = CharacterAssets;
+    type SystemData = CharacterSelectionEventStdinMapperData;
     type Event = CharacterSelectionEvent;
     type Args = CharacterSelectionEventArgs;
 
-    fn map(character_assets: &CharacterAssets, args: Self::Args) -> Result<Self::Event, Error> {
+    fn map(
+        character_assets: &Read<CharacterAssets>,
+        args: Self::Args,
+    ) -> Result<Self::Event, Error> {
         match args {
             CharacterSelectionEventArgs::Select {
                 controller_id,
@@ -75,7 +85,10 @@ impl StdinMapper for CharacterSelectionEventStdinMapper {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::Error;
+    use amethyst::{
+        ecs::{Read, Resources},
+        Error,
+    };
     use application_test_support::AutexousiousApplication;
     use assets_test::ASSETS_CHAR_BAT_SLUG;
     use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
@@ -93,9 +106,13 @@ mod tests {
             controller_id,
             selection,
         };
-        let character_assets = CharacterAssets::new();
+        let mut resources = Resources::new();
+        resources.insert(CharacterAssets::new());
 
-        let result = CharacterSelectionEventStdinMapper::map(&character_assets, args);
+        let result = CharacterSelectionEventStdinMapper::map(
+            &Read::from(resources.fetch::<CharacterAssets>()),
+            args,
+        );
 
         expect_err_msg(
             result,
@@ -111,9 +128,13 @@ mod tests {
             controller_id,
             selection,
         };
-        let character_assets = CharacterAssets::new();
+        let mut resources = Resources::new();
+        resources.insert(CharacterAssets::new());
 
-        let result = CharacterSelectionEventStdinMapper::map(&character_assets, args);
+        let result = CharacterSelectionEventStdinMapper::map(
+            &Read::from(resources.fetch::<CharacterAssets>()),
+            args,
+        );
 
         expect_err_msg(
             result,
@@ -134,12 +155,15 @@ mod tests {
                         selection: ASSETS_CHAR_BAT_SLUG.to_string(),
                     };
                     let character_assets = world.read_resource::<CharacterAssets>();
-
-                    let result = CharacterSelectionEventStdinMapper::map(&*character_assets, args);
-
-                    assert!(result.is_ok());
                     let snh =
                         SlugAndHandle::from((&*character_assets, ASSETS_CHAR_BAT_SLUG.clone()));
+
+                    let result = CharacterSelectionEventStdinMapper::map(
+                        &Read::from(character_assets),
+                        args,
+                    );
+
+                    assert!(result.is_ok());
                     let character_selection = CharacterSelection::Id(snh);
                     assert_eq!(
                         CharacterSelectionEvent::Select {
@@ -167,16 +191,19 @@ mod tests {
                         selection: "random".to_string(),
                     };
                     let character_assets = world.read_resource::<CharacterAssets>();
-
-                    let result = CharacterSelectionEventStdinMapper::map(&*character_assets, args);
-
-                    assert!(result.is_ok());
                     let snh = SlugAndHandle::from(
                         character_assets
                             .iter()
                             .next()
                             .expect("Expected at least one character to be loaded."),
                     );
+
+                    let result = CharacterSelectionEventStdinMapper::map(
+                        &Read::from(character_assets),
+                        args,
+                    );
+
+                    assert!(result.is_ok());
                     let character_selection = CharacterSelection::Random(snh);
                     assert_eq!(
                         CharacterSelectionEvent::Select {
@@ -195,9 +222,13 @@ mod tests {
     fn maps_deselect_event() {
         let controller_id = 0;
         let args = CharacterSelectionEventArgs::Deselect { controller_id };
-        let character_assets = CharacterAssets::new();
+        let mut resources = Resources::new();
+        resources.insert(CharacterAssets::new());
 
-        let result = CharacterSelectionEventStdinMapper::map(&character_assets, args);
+        let result = CharacterSelectionEventStdinMapper::map(
+            &Read::from(resources.fetch::<CharacterAssets>()),
+            args,
+        );
 
         assert!(result.is_ok());
         assert_eq!(
@@ -209,9 +240,13 @@ mod tests {
     #[test]
     fn maps_confirm_event() {
         let args = CharacterSelectionEventArgs::Confirm;
-        let character_assets = CharacterAssets::new();
+        let mut resources = Resources::new();
+        resources.insert(CharacterAssets::new());
 
-        let result = CharacterSelectionEventStdinMapper::map(&character_assets, args);
+        let result = CharacterSelectionEventStdinMapper::map(
+            &Read::from(resources.fetch::<CharacterAssets>()),
+            args,
+        );
 
         assert!(result.is_ok());
         assert_eq!(CharacterSelectionEvent::Confirm, result.unwrap())

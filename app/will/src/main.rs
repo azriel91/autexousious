@@ -33,6 +33,7 @@ use collision_loading::CollisionLoadingBundle;
 use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
 use game_input::GameInputBundle;
 use game_input_model::{InputConfig, PlayerActionControl, PlayerAxisControl};
+use game_input_stdio::{ControlInputEventStdinMapper, GameInputStdioBundle};
 use game_mode_selection::{GameModeSelectionStateBuilder, GameModeSelectionStateDelegate};
 use game_mode_selection_stdio::GameModeSelectionStdioBundle;
 use game_mode_selection_ui::{GameModeSelectionUiBuildFn, GameModeSelectionUiBundle};
@@ -42,8 +43,10 @@ use log::info;
 use map_loading::MapLoadingBundle;
 use map_selection_stdio::MapSelectionStdioBundle;
 use object_loading::ObjectLoadingBundle;
+use stdio_spi::MapperSystem;
 use stdio_view::StdioViewBundle;
 use structopt::StructOpt;
+use typename::TypeName;
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "Will")]
@@ -151,11 +154,17 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                     .with_bindings((&input_config).into()),
             )?
             .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?
-            .with_bundle(GameInputBundle::new(input_config))?
+            .with_bundle(GameInputStdioBundle::new())?
+            .with_bundle(
+                GameInputBundle::new(input_config)
+                    .with_system_dependencies(&[
+                        MapperSystem::<ControlInputEventStdinMapper>::type_name(),
+                    ]),
+            )?
             .with_bundle(StdioViewBundle::new())?
             .with_bundle(CharacterSelectionStdioBundle::new())?
-            .with_bundle(GameModeSelectionStdioBundle::new())?
             .with_bundle(GamePlayStdioBundle::new())?
+            .with_bundle(GameModeSelectionStdioBundle::new())?
             .with_bundle(MapSelectionStdioBundle::new())?
             .with_bundle(CollisionLoadingBundle::new())?
             .with_bundle(MapLoadingBundle::new())?
