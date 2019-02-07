@@ -1,11 +1,6 @@
 use std::collections::HashMap;
 
-use amethyst::{
-    assets::{Handle, Loader},
-    prelude::*,
-    renderer::SpriteRender,
-    Error,
-};
+use amethyst::{renderer::SpriteRender, Error};
 use collision_loading::InteractionAnimationLoader;
 use collision_model::{animation::InteractionFrameActiveHandle, config::InteractionFrame};
 use fnv::FnvHashMap;
@@ -20,6 +15,8 @@ use object_model::{
 };
 use sprite_loading::{SpriteLoader, SpriteRenderAnimationLoader};
 
+use crate::ObjectLoaderParams;
+
 /// Loads assets specified by object configuration into the loaded object model.
 #[derive(Debug)]
 pub struct ObjectLoader;
@@ -29,20 +26,23 @@ impl ObjectLoader {
     ///
     /// # Parameters
     ///
-    /// * `world`: `World` to store the object's assets.
+    /// * `object_loader_params`: Entry of the object's configuration.
     /// * `asset_record`: Entry of the object's configuration.
     /// * `object_definition`: Object definition configuration.
     pub fn load<O>(
-        world: &World,
+        ObjectLoaderParams {
+            loader,
+            texture_assets,
+            sprite_sheet_assets,
+            sprite_render_primitive_sampler_assets,
+            sprite_render_animation_assets,
+            interaction_frame_assets,
+            interaction_frame_primitive_sampler_assets,
+            interaction_frame_animation_assets,
+        }: ObjectLoaderParams,
         asset_record: &AssetRecord,
         object_definition: &ObjectDefinition<O::SequenceId>,
-    ) -> Result<
-        (
-            Handle<O::ObjectWrapper>,
-            SequenceEndTransitions<O::SequenceId>,
-        ),
-        Error,
-    >
+    ) -> Result<(O::ObjectWrapper, SequenceEndTransitions<O::SequenceId>), Error>
     where
         O: GameObject,
     {
@@ -56,8 +56,12 @@ impl ObjectLoader {
             })
             .collect::<FnvHashMap<_, _>>();
 
-        let (sprite_sheet_handles, _texture_handles) =
-            SpriteLoader::load(world, &asset_record.path)?;
+        let (sprite_sheet_handles, _texture_handles) = SpriteLoader::load(
+            loader,
+            texture_assets,
+            sprite_sheet_assets,
+            &asset_record.path,
+        )?;
 
         // === Animation Component Defaults === //
 
@@ -81,8 +85,7 @@ impl ObjectLoader {
             animation_defaults.push(AnimatedComponentDefault::SpriteRender(sprite_render));
 
             let interaction_frame_handle = {
-                let loader = world.read_resource::<Loader>();
-                loader.load_from_data(InteractionFrame::default(), (), &world.read_resource())
+                loader.load_from_data(InteractionFrame::default(), (), interaction_frame_assets)
             };
             let interaction_frame_active_handle =
                 InteractionFrameActiveHandle::new(interaction_frame_handle);
@@ -96,12 +99,19 @@ impl ObjectLoader {
         // === Animations === //
 
         let mut sprite_render_animations = SpriteRenderAnimationLoader::load_into_map(
-            world,
+            loader,
+            sprite_render_primitive_sampler_assets,
+            sprite_render_animation_assets,
             &object_definition.sequences,
             &sprite_sheet_handles,
         );
-        let mut interaction_frame_animations =
-            InteractionAnimationLoader::load_into_map(world, &object_definition.sequences);
+        let mut interaction_frame_animations = InteractionAnimationLoader::load_into_map(
+            loader,
+            interaction_frame_assets,
+            interaction_frame_primitive_sampler_assets,
+            interaction_frame_animation_assets,
+            &object_definition.sequences,
+        );
 
         let animations = object_definition
             .sequences
@@ -121,22 +131,21 @@ impl ObjectLoader {
             })
             .collect::<HashMap<_, _>>();
 
-        let object = Object::new(animation_defaults, animations);
-        let object_wrapper = O::ObjectWrapper::new(object);
-        let object_handle = {
-            let loader = world.read_resource::<Loader>();
-            loader.load_from_data(object_wrapper, (), &world.read_resource())
-        };
+        // TODO: implement -- load component sequences
+        let component_sequences = HashMap::new();
+        let object = Object::new(animation_defaults, animations, component_sequences);
+        let wrapper = O::ObjectWrapper::new(object);
 
-        Ok((object_handle, sequence_end_transitions.into()))
+        Ok((wrapper, sequence_end_transitions.into()))
     }
 }
 
 #[cfg(test)]
 mod test {
     use amethyst::{
-        animation::AnimationBundle,
-        assets::{AssetStorage, Handle},
+        animation::{Animation, AnimationBundle, Sampler, SpriteRenderPrimitive},
+        assets::{AssetStorage, Loader},
+        renderer::{SpriteRender, SpriteSheet, Texture},
     };
     use amethyst_test::AmethystApplication;
     use application::{load_in, Format};
@@ -146,11 +155,16 @@ mod test {
         loaded::{Character, CharacterObjectWrapper},
     };
     use collision_loading::CollisionLoadingBundle;
-    use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
+    use collision_model::{
+        animation::{
+            BodyFrameActiveHandle, InteractionFrameActiveHandle, InteractionFramePrimitive,
+        },
+        config::InteractionFrame,
+    };
     use game_model::config::AssetRecord;
 
     use super::ObjectLoader;
-    use crate::ObjectLoadingBundle;
+    use crate::{object::object_loader_params::ObjectLoaderParams, ObjectLoadingBundle};
 
     #[test]
     fn loads_object_assets() {
@@ -187,23 +201,40 @@ mod test {
                     )
                     .expect("Failed to load object.toml into CharacterDefinition");
 
-                    let (object_handle, _sequence_end_transitions) =
-                        ObjectLoader::load::<Character>(
-                            world,
-                            &asset_record,
-                            &character_definition.object_definition,
-                        )
-                        .expect("Failed to load object");
+                    let loader = &world.read_resource::<Loader>();
+                    let texture_assets = &world.read_resource::<AssetStorage<Texture>>();
+                    let sprite_sheet_assets = &world.read_resource::<AssetStorage<SpriteSheet>>();
+                    let sprite_render_primitive_sampler_assets =
+                        &world.read_resource::<AssetStorage<Sampler<SpriteRenderPrimitive>>>();
+                    let sprite_render_animation_assets =
+                        &world.read_resource::<AssetStorage<Animation<SpriteRender>>>();
+                    let interaction_frame_assets =
+                        &world.read_resource::<AssetStorage<InteractionFrame>>();
+                    let interaction_frame_primitive_sampler_assets =
+                        &world.read_resource::<AssetStorage<Sampler<InteractionFramePrimitive>>>();
+                    let interaction_frame_animation_assets = &world
+                        .read_resource::<AssetStorage<Animation<InteractionFrameActiveHandle>>>();
 
-                    world.add_resource(object_handle);
+                    let (object, _sequence_end_transitions) = ObjectLoader::load::<Character>(
+                        ObjectLoaderParams {
+                            loader,
+                            texture_assets,
+                            sprite_sheet_assets,
+                            sprite_render_primitive_sampler_assets,
+                            sprite_render_animation_assets,
+                            interaction_frame_assets,
+                            interaction_frame_primitive_sampler_assets,
+                            interaction_frame_animation_assets,
+                        },
+                        &asset_record,
+                        &character_definition.object_definition,
+                    )
+                    .expect("Failed to load object");
+
+                    world.add_resource(object);
                 })
                 .with_assertion(|world| {
-                    let object_handle = world.read_resource::<Handle<CharacterObjectWrapper>>();
-                    let object_assets =
-                        world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
-                    let object = object_assets
-                        .get(&object_handle)
-                        .expect("Expected object to be loaded after one tick.");
+                    let object = world.read_resource::<CharacterObjectWrapper>();
 
                     // See bat/object.toml
                     assert_eq!(16, object.animations.len());

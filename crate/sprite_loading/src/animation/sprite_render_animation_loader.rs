@@ -4,8 +4,7 @@ use amethyst::{
     animation::{
         Animation, InterpolationFunction, Sampler, SpriteRenderChannel, SpriteRenderPrimitive,
     },
-    assets::Loader,
-    prelude::*,
+    assets::{AssetStorage, Loader},
     renderer::{SpriteRender, SpriteSheetHandle},
 };
 
@@ -20,11 +19,15 @@ impl SpriteRenderAnimationLoader {
     ///
     /// # Parameters
     ///
-    /// * `world`: `World` to load animations into.
+    /// * `loader`: `Loader` to load assets.
+    /// * `sprite_render_primitive_sampler_assets`: `AssetStorage` for `Sampler<SpriteRenderPrimitive>`s.
+    /// * `sprite_render_animation_assets`: `AssetStorage` for `Animation<SpriteRender>`s.
     /// * `sequences`: Sequences of the animation.
     /// * `sprite_sheet_handles`: Sprite sheet handles of the object.
     pub fn load_into_map<'seq, SequenceId, Sequence, Frame>(
-        world: &'seq World,
+        loader: &'seq Loader,
+        sprite_render_primitive_sampler_assets: &'seq AssetStorage<Sampler<SpriteRenderPrimitive>>,
+        sprite_render_animation_assets: &'seq AssetStorage<Animation<SpriteRender>>,
         sequences: &HashMap<SequenceId, Sequence>,
         sprite_sheet_handles: &[SpriteSheetHandle],
     ) -> HashMap<SequenceId, SpriteAnimationHandle>
@@ -33,20 +36,30 @@ impl SpriteRenderAnimationLoader {
         Frame: AnimationFrame,
         Sequence: AnimationSequence<Frame = Frame> + 'seq,
     {
-        Self::load(world, sequences.iter(), sprite_sheet_handles)
-            .map(|(id, handle)| (*id, handle))
-            .collect::<HashMap<SequenceId, SpriteAnimationHandle>>()
+        Self::load(
+            loader,
+            sprite_render_primitive_sampler_assets,
+            sprite_render_animation_assets,
+            sequences.iter(),
+            sprite_sheet_handles,
+        )
+        .map(|(id, handle)| (*id, handle))
+        .collect::<HashMap<SequenceId, SpriteAnimationHandle>>()
     }
 
     /// Loads `SpriteRender` animations and returns a vector of their handles in order.
     ///
     /// # Parameters
     ///
-    /// * `world`: `World` to load animations into.
+    /// * `loader`: `Loader` to load assets.
+    /// * `sprite_render_primitive_sampler_assets`: `AssetStorage` for `Sampler<SpriteRenderPrimitive>`s.
+    /// * `sprite_render_animation_assets`: `AssetStorage` for `Animation<SpriteRender>`s.
     /// * `sequences`: Sequences of the animation.
     /// * `sprite_sheet_handles`: Sprite sheet handles of the object.
     pub fn load_into_vec<'seq, Sequences, Sequence, Frame>(
-        world: &'seq World,
+        loader: &'seq Loader,
+        sprite_render_primitive_sampler_assets: &'seq AssetStorage<Sampler<SpriteRenderPrimitive>>,
+        sprite_render_animation_assets: &'seq AssetStorage<Animation<SpriteRender>>,
         sequences: Sequences,
         sprite_sheet_handles: &[SpriteSheetHandle],
     ) -> Vec<SpriteAnimationHandle>
@@ -56,11 +69,15 @@ impl SpriteRenderAnimationLoader {
         Sequence: AnimationSequence<Frame = Frame> + 'seq,
     {
         sequences
-            .map(|sequence| Self::sequence_to_animation(world, sprite_sheet_handles, sequence))
-            .map(|animation| {
-                let loader = world.read_resource::<Loader>();
-                loader.load_from_data(animation, (), &world.read_resource())
+            .map(|sequence| {
+                Self::sequence_to_animation(
+                    loader,
+                    sprite_render_primitive_sampler_assets,
+                    sprite_sheet_handles,
+                    sequence,
+                )
             })
+            .map(|animation| loader.load_from_data(animation, (), sprite_render_animation_assets))
             .collect::<Vec<SpriteAnimationHandle>>()
     }
 
@@ -70,11 +87,15 @@ impl SpriteRenderAnimationLoader {
     ///
     /// # Parameters
     ///
-    /// * `world`: `World` to load animations into.
+    /// * `loader`: `Loader` to load assets.
+    /// * `sprite_render_primitive_sampler_assets`: `AssetStorage` for `Sampler<SpriteRenderPrimitive>`s.
+    /// * `sprite_render_animation_assets`: `AssetStorage` for `Animation<SpriteRender>`s.
     /// * `sequences`: Sequences of the animation.
     /// * `sprite_sheet_handles`: Sprite sheet handles of the object.
     pub fn load<'seq, Sequences, SequenceId, Sequence, Frame>(
-        world: &'seq World,
+        loader: &'seq Loader,
+        sprite_render_primitive_sampler_assets: &'seq AssetStorage<Sampler<SpriteRenderPrimitive>>,
+        sprite_render_animation_assets: &'seq AssetStorage<Animation<SpriteRender>>,
         sequences: Sequences,
         sprite_sheet_handles: &'seq [SpriteSheetHandle],
     ) -> impl Iterator<Item = (&'seq SequenceId, SpriteAnimationHandle)>
@@ -88,12 +109,17 @@ impl SpriteRenderAnimationLoader {
             .map(move |(id, sequence)| {
                 (
                     id,
-                    Self::sequence_to_animation(world, sprite_sheet_handles, sequence),
+                    Self::sequence_to_animation(
+                        loader,
+                        sprite_render_primitive_sampler_assets,
+                        sprite_sheet_handles,
+                        sequence,
+                    ),
                 )
             })
             .map(move |(id, animation)| {
-                let loader = world.read_resource::<Loader>();
-                let animation_handle = loader.load_from_data(animation, (), &world.read_resource());
+                let animation_handle =
+                    loader.load_from_data(animation, (), sprite_render_animation_assets);
                 (id, animation_handle)
             })
     }
@@ -102,11 +128,13 @@ impl SpriteRenderAnimationLoader {
     ///
     /// # Parameters
     ///
-    /// * `world`: `World` to store the `Animation`s.
+    /// * `loader`: `Loader` to load assets.
+    /// * `sprite_render_primitive_sampler_assets`: `AssetStorage` for `Sampler<SpriteRenderPrimitive>`s.
     /// * `sprite_sheet_handles`: Sprite sheet handles of the object.
     /// * `sequence`: `Sequence` to create the animation from.
     fn sequence_to_animation<Sequence: AnimationSequence<Frame = F>, F: AnimationFrame>(
-        world: &World,
+        loader: &Loader,
+        sprite_render_primitive_sampler_assets: &AssetStorage<Sampler<SpriteRenderPrimitive>>,
         sprite_sheet_handles: &[SpriteSheetHandle],
         sequence: &Sequence,
     ) -> Animation<SpriteRender> {
@@ -123,11 +151,16 @@ impl SpriteRenderAnimationLoader {
             Self::sprite_sheet_sampler(sprite_sheet_handles, sequence, input.clone());
         let sprite_index_sampler = Self::sprite_index_sampler(sequence, input);
 
-        let loader = world.read_resource::<Loader>();
-        let sprite_sheet_sampler_handle =
-            loader.load_from_data(sprite_sheet_sampler, (), &world.read_resource());
-        let sprite_index_sampler_handle =
-            loader.load_from_data(sprite_index_sampler, (), &world.read_resource());
+        let sprite_sheet_sampler_handle = loader.load_from_data(
+            sprite_sheet_sampler,
+            (),
+            sprite_render_primitive_sampler_assets,
+        );
+        let sprite_index_sampler_handle = loader.load_from_data(
+            sprite_index_sampler,
+            (),
+            sprite_render_primitive_sampler_assets,
+        );
 
         Animation {
             nodes: vec![
@@ -201,9 +234,9 @@ mod test {
         animation::{
             Animation, InterpolationFunction, Sampler, SpriteRenderChannel, SpriteRenderPrimitive,
         },
-        assets::AssetStorage,
-        prelude::*,
-        renderer::{SpriteRender, SpriteSheetHandle},
+        assets::{AssetStorage, Loader},
+        ecs::World,
+        renderer::{SpriteRender, SpriteSheet, SpriteSheetHandle, Texture},
     };
     use amethyst_test::prelude::*;
     use assets_test::ASSETS_CHAR_BAT_PATH;
@@ -218,11 +251,21 @@ mod test {
             let test_sequences = test_sequences();
             let sprite_sheet_handles = test_sprite_sheet_handles(world);
 
-            let animation_handles = SpriteRenderAnimationLoader::load_into_map(
-                world,
-                &test_sequences,
-                &sprite_sheet_handles,
-            );
+            let animation_handles = {
+                let loader = world.read_resource::<Loader>();
+                let sprite_render_primitive_sampler_assets =
+                    world.read_resource::<AssetStorage<Sampler<SpriteRenderPrimitive>>>();
+                let sprite_render_animation_assets =
+                    world.read_resource::<AssetStorage<Animation<SpriteRender>>>();
+
+                SpriteRenderAnimationLoader::load_into_map(
+                    &loader,
+                    &sprite_render_primitive_sampler_assets,
+                    &sprite_render_animation_assets,
+                    &test_sequences,
+                    &sprite_sheet_handles,
+                )
+            };
 
             world.add_resource(EffectReturn(sprite_sheet_handles));
             world.add_resource(EffectReturn(animation_handles));
@@ -260,11 +303,21 @@ mod test {
             let test_sequences = test_sequences();
             let sprite_sheet_handles = test_sprite_sheet_handles(world);
 
-            let animation_handles = SpriteRenderAnimationLoader::load_into_vec(
-                world,
-                test_sequences.values(),
-                &sprite_sheet_handles,
-            );
+            let animation_handles = {
+                let loader = world.read_resource::<Loader>();
+                let sprite_render_primitive_sampler_assets =
+                    world.read_resource::<AssetStorage<Sampler<SpriteRenderPrimitive>>>();
+                let sprite_render_animation_assets =
+                    world.read_resource::<AssetStorage<Animation<SpriteRender>>>();
+
+                SpriteRenderAnimationLoader::load_into_vec(
+                    &loader,
+                    &sprite_render_primitive_sampler_assets,
+                    &sprite_render_animation_assets,
+                    test_sequences.values(),
+                    &sprite_sheet_handles,
+                )
+            };
 
             world.add_resource(EffectReturn(sprite_sheet_handles));
             world.add_resource(EffectReturn(animation_handles));
@@ -369,9 +422,17 @@ mod test {
     }
 
     fn test_sprite_sheet_handles(world: &mut World) -> Vec<SpriteSheetHandle> {
-        let (sprite_sheet_handles, _texture_handles) =
-            SpriteLoader::load(world, &ASSETS_CHAR_BAT_PATH)
-                .expect("Failed to load sprites for test.");
+        let loader = world.read_resource::<Loader>();
+        let texture_assets = world.read_resource::<AssetStorage<Texture>>();
+        let sprite_sheet_assets = world.read_resource::<AssetStorage<SpriteSheet>>();
+
+        let (sprite_sheet_handles, _texture_handles) = SpriteLoader::load(
+            &loader,
+            &texture_assets,
+            &sprite_sheet_assets,
+            &ASSETS_CHAR_BAT_PATH,
+        )
+        .expect("Failed to load sprites for test.");
 
         sprite_sheet_handles
     }

@@ -1,12 +1,22 @@
-use amethyst::{assets::Loader, prelude::*, Error};
+use amethyst::{
+    animation::{Animation, Sampler, SpriteRenderPrimitive},
+    assets::{AssetStorage, Loader},
+    ecs::World,
+    renderer::{SpriteRender, SpriteSheet, Texture},
+    Error,
+};
 use application::{load_in, Format};
 use character_model::{
     config::CharacterDefinition,
     loaded::{Character, CharacterHandle},
 };
+use collision_model::{
+    animation::{InteractionFrameActiveHandle, InteractionFramePrimitive},
+    config::InteractionFrame,
+};
 use game_model::config::AssetRecord;
 
-use crate::object::ObjectLoader;
+use crate::object::{ObjectLoader, ObjectLoaderParams};
 
 /// Loads `Character`s from configuration.
 #[derive(Debug)]
@@ -27,12 +37,42 @@ impl CharacterLoader {
             None,
         )?;
 
-        let (object_handle, sequence_end_transitions) = ObjectLoader::load::<Character>(
-            world,
-            asset_record,
-            &character_definition.object_definition,
-        )?;
-        let character = Character::new(object_handle, sequence_end_transitions);
+        // TODO: Put sequence_end_transitions in `Object`
+        let (_object_wrapper, sequence_end_transitions) = {
+            let loader = &world.read_resource::<Loader>();
+            let texture_assets = &world.read_resource::<AssetStorage<Texture>>();
+            let sprite_sheet_assets = &world.read_resource::<AssetStorage<SpriteSheet>>();
+            let sprite_render_primitive_sampler_assets =
+                &world.read_resource::<AssetStorage<Sampler<SpriteRenderPrimitive>>>();
+            let sprite_render_animation_assets =
+                &world.read_resource::<AssetStorage<Animation<SpriteRender>>>();
+            let interaction_frame_assets = &world.read_resource::<AssetStorage<InteractionFrame>>();
+            let interaction_frame_primitive_sampler_assets =
+                &world.read_resource::<AssetStorage<Sampler<InteractionFramePrimitive>>>();
+            let interaction_frame_animation_assets =
+                &world.read_resource::<AssetStorage<Animation<InteractionFrameActiveHandle>>>();
+
+            ObjectLoader::load::<Character>(
+                ObjectLoaderParams {
+                    loader,
+                    texture_assets,
+                    sprite_sheet_assets,
+                    sprite_render_primitive_sampler_assets,
+                    sprite_render_animation_assets,
+                    interaction_frame_assets,
+                    interaction_frame_primitive_sampler_assets,
+                    interaction_frame_animation_assets,
+                },
+                asset_record,
+                &character_definition.object_definition,
+            )?
+        };
+
+        let loader = world.read_resource::<Loader>();
+        let definition_handle =
+            loader.load_from_data(character_definition, (), &world.read_resource());
+        let wrapper_handle = loader.load_from_data(definition_handle, (), &world.read_resource());
+        let character = Character::new(wrapper_handle, sequence_end_transitions);
 
         let loader = world.read_resource::<Loader>();
         let character_handle = loader.load_from_data(character, (), &world.read_resource());
@@ -45,8 +85,10 @@ mod test {
     use amethyst::{animation::AnimationBundle, assets::AssetStorage};
     use amethyst_test::prelude::*;
     use assets_test::{ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SLUG};
-    use character_model::config::CharacterSequenceId;
-    use character_model::loaded::{Character, CharacterHandle};
+    use character_model::{
+        config::CharacterSequenceId,
+        loaded::{Character, CharacterHandle},
+    };
     use collision_loading::CollisionLoadingBundle;
     use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
     use game_model::config::AssetRecord;

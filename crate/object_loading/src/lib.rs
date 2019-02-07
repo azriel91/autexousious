@@ -8,7 +8,7 @@
 extern crate pretty_assertions;
 
 pub use crate::{
-    object::{CharacterLoader, ObjectLoader},
+    object::{CharacterLoader, ObjectLoader, ObjectLoaderParams},
     object_loading_bundle::ObjectLoadingBundle,
 };
 
