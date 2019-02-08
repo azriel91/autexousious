@@ -7,6 +7,7 @@ use amethyst::{
 use amethyst_test::prelude::*;
 use application_event::{AppEvent, AppEventReader};
 use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
+use character_loading::CharacterLoadingBundle;
 use character_model::config::CharacterSequenceId;
 use character_selection::CharacterSelectionBundle;
 use character_selection_model::{CharacterSelections, CharacterSelectionsStatus};
@@ -17,7 +18,6 @@ use game_loading::GameLoadingState;
 use game_model::loaded::SlugAndHandle;
 use loading::LoadingState;
 use map_loading::MapLoadingBundle;
-use object_loading::ObjectLoadingBundle;
 
 use crate::SetupFunction;
 
@@ -122,7 +122,7 @@ impl AutexousiousApplication {
 
         AutexousiousApplication::render_and_ui(test_name, visibility)
             .with_bundle(MapLoadingBundle::new())
-            .with_bundle(ObjectLoadingBundle::new())
+            .with_bundle(CharacterLoadingBundle::new())
             .with_bundle(CharacterSelectionBundle::new())
             .with_state(|| LoadingState::new(ASSETS_PATH.clone(), PopState))
     }

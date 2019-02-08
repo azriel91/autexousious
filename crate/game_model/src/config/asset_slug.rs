@@ -1,6 +1,7 @@
 use std::{char, fmt, str::FromStr};
 
 use derive_builder::Builder;
+use serde::{Deserialize, Serialize};
 
 /// Namespaced reference to identify assets.
 ///
@@ -31,7 +32,7 @@ use derive_builder::Builder;
 ///     Ok(())
 /// }
 /// ```
-#[derive(Builder, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Builder, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
 #[builder(derive(Debug), build_fn(validate = "Self::validate"))]
 pub struct AssetSlug {
     // kcov-ignore-start

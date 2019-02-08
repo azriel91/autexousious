@@ -460,6 +460,7 @@ dependencies = [
  "application_event 0.8.0",
  "asset_loading 0.8.0",
  "assets_test 0.8.0",
+ "character_loading 0.9.0",
  "character_model 0.8.0",
  "character_selection 0.8.0",
  "character_selection_model 0.8.0",
@@ -473,7 +474,6 @@ dependencies = [
  "map_model 0.8.0",
  "map_selection 0.8.0",
  "map_selection_model 0.8.0",
- "object_loading 0.8.0",
  "object_model 0.8.0",
  "rustc_version 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -747,6 +747,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "character_loading"
+version = "0.9.0"
+dependencies = [
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
+ "asset_loading 0.8.0",
+ "character_model 0.8.0",
+ "collision_loading 0.8.0",
+ "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "game_model 0.8.0",
+ "object_loading 0.8.0",
+ "serde 1.0.85 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "character_model"
 version = "0.8.0"
 dependencies = [
@@ -761,6 +778,8 @@ dependencies = [
  "serde 1.0.85 (registry+https://github.com/rust-lang/crates.io-index)",
  "sprite_model 0.8.0",
  "toml 0.4.10 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typename_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -773,6 +792,7 @@ dependencies = [
  "application_state 0.8.0",
  "asset_loading 0.8.0",
  "assets_test 0.8.0",
+ "character_loading 0.9.0",
  "character_model 0.8.0",
  "character_selection_model 0.8.0",
  "collision_loading 0.8.0",
@@ -784,7 +804,6 @@ dependencies = [
  "loading 0.8.0",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_loading 0.8.0",
- "object_loading 0.8.0",
  "object_model 0.8.0",
  "rustc_version 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1702,6 +1721,7 @@ dependencies = [
  "application_state 0.8.0",
  "asset_loading 0.8.0",
  "assets_test 0.8.0",
+ "character_loading 0.9.0",
  "character_model 0.8.0",
  "character_selection_model 0.8.0",
  "collision_loading 0.8.0",
@@ -1716,7 +1736,6 @@ dependencies = [
  "map_model 0.8.0",
  "map_selection 0.8.0",
  "map_selection_model 0.8.0",
- "object_loading 0.8.0",
  "object_model 0.8.0",
  "rustc_version 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "shred 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2281,6 +2300,7 @@ name = "loading"
 version = "0.8.0"
 dependencies = [
  "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "application 0.8.0",
  "application_event 0.8.0",
  "application_state 0.8.0",
  "application_ui 0.8.0",
@@ -2294,6 +2314,8 @@ dependencies = [
  "object_loading 0.8.0",
  "object_model 0.8.0",
  "rustc_version 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sprite_loading 0.8.0",
+ "sprite_model 0.8.0",
  "strum 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "toml 0.4.10 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -2385,6 +2407,7 @@ dependencies = [
  "map_model 0.8.0",
  "rustc_version 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "sprite_loading 0.8.0",
+ "sprite_model 0.8.0",
 ]
 
 [[package]]
@@ -2822,11 +2845,15 @@ dependencies = [
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "object_model 0.8.0",
  "pretty_assertions 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rayon 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc_version 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.85 (registry+https://github.com/rust-lang/crates.io-index)",
  "sprite_loading 0.8.0",
+ "sprite_model 0.8.0",
  "strum 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "tempfile 3.0.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typename_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -4111,6 +4138,7 @@ dependencies = [
  "application_state 0.8.0",
  "application_ui 0.8.0",
  "assert_cmd 0.10.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "character_loading 0.9.0",
  "character_model 0.8.0",
  "character_selection_stdio 0.8.0",
  "collision_loading 0.8.0",
@@ -4127,7 +4155,6 @@ dependencies = [
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_loading 0.8.0",
  "map_selection_stdio 0.8.0",
- "object_loading 0.8.0",
  "rustc_version 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "stdio_spi 0.8.0",
  "stdio_view 0.8.0",

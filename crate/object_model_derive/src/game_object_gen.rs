@@ -11,7 +11,6 @@ use crate::{
 };
 
 const OBJECT_HANDLE: &str = "object_handle";
-const SEQUENCE_END_TRANSITIONS: &str = "sequence_end_transitions";
 
 const ERR_MUST_BE_STRUCT: &str = "`game_object` attribute must be used on a struct.";
 const ERR_MUST_BE_UNIT_OR_NAMED: &str =
@@ -27,13 +26,7 @@ pub fn game_object_gen(args: GameObjectAttributeArgs, mut ast: DeriveInput) -> T
     let object_wrapper_name = ident_concat(&game_object_name, "ObjectWrapper");
 
     let object_handle_field = Ident::new(OBJECT_HANDLE, Span::call_site());
-    let sequence_end_transitions_field = Ident::new(SEQUENCE_END_TRANSITIONS, Span::call_site());
-    let additional_fields = object_fields_additional(
-        &object_wrapper_name,
-        sequence_id,
-        &object_handle_field,
-        &sequence_end_transitions_field,
-    );
+    let additional_fields = object_fields_additional(&object_wrapper_name, &object_handle_field);
 
     // Add object related fields.
     let data_struct = data_struct_mut(&mut ast, ERR_MUST_BE_STRUCT);
@@ -51,9 +44,9 @@ pub fn game_object_gen(args: GameObjectAttributeArgs, mut ast: DeriveInput) -> T
     let game_object_trait_impl = game_object_impl(
         &ast,
         sequence_id,
-        &object_handle_field,
-        &sequence_end_transitions_field,
+        &object_definition_type,
         &object_wrapper_name,
+        &object_handle_field,
     );
     object_wrapper_impl.extend(ast.into_token_stream());
     object_wrapper_impl.extend(game_object_trait_impl);
@@ -75,14 +68,10 @@ fn object_fields_gen(mut fields: &mut Fields, additional_fields: FieldsNamed) {
 
 fn object_fields_additional(
     object_wrapper_name: &Ident,
-    sequence_id: &Path,
     object_handle_field: &Ident,
-    sequence_end_transitions_field: &Ident,
 ) -> FieldsNamed {
     parse_quote!({
         /// Handle to loaded object data.
         pub #object_handle_field: amethyst::assets::Handle<#object_wrapper_name>,
-        /// Component sequence transitions when a sequence ends.
-        pub #sequence_end_transitions_field: object_model::loaded::SequenceEndTransitions<#sequence_id>,
     })
 }

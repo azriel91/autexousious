@@ -2,35 +2,6 @@
 #![deny(missing_debug_implementations)]
 
 //! Processes sprite configuration into the loaded sprite model.
-//!
-//! # Examples
-//!
-//! ```rust
-//! use std::path::{Path, PathBuf};
-//!
-//! use amethyst::{
-//!     assets::{AssetStorage, Loader},
-//!     ecs::World,
-//!     renderer::{SpriteSheet, Texture},
-//! };
-//! use assets_test::ASSETS_CHAR_BAT_PATH;
-//! use sprite_loading::SpriteLoader;
-//!
-//! fn my_function(world: &mut World) {
-//!     let loader = world.read_resource::<Loader>();
-//!     let texture_assets = world.read_resource::<AssetStorage<Texture>>();
-//!     let sprite_sheet_assets = world.read_resource::<AssetStorage<SpriteSheet>>();
-//!
-//!     let result = SpriteLoader::load(
-//!         &loader,
-//!         &texture_assets,
-//!         &sprite_sheet_assets,
-//!         &ASSETS_CHAR_BAT_PATH
-//!     );
-//!
-//!     assert!(result.is_ok());
-//! }
-//! ```
 
 #[cfg(test)]
 #[macro_use]
@@ -61,7 +32,9 @@ mod test {
         Error,
     };
     use amethyst_test::AmethystApplication;
+    use application::{load_in, resource::Format};
     use assets_test::ASSETS_CHAR_BAT_PATH;
+    use sprite_model::config::SpritesDefinition;
 
     use super::SpriteLoader;
 
@@ -69,6 +42,14 @@ mod test {
     fn loads_textures_and_sprite_sheets() -> Result<(), Error> {
         AmethystApplication::render_base("loads_textures_and_sprite_sheets", false)
             .with_assertion(|world| {
+                let sprites_definition = load_in::<SpritesDefinition, _>(
+                    &*ASSETS_CHAR_BAT_PATH,
+                    "sprites.toml",
+                    Format::Toml,
+                    None,
+                )
+                .expect("Failed to load sprites_definition.");
+
                 let loader = world.read_resource::<Loader>();
                 let texture_assets = world.read_resource::<AssetStorage<Texture>>();
                 let sprite_sheet_assets = world.read_resource::<AssetStorage<SpriteSheet>>();
@@ -77,6 +58,7 @@ mod test {
                     &loader,
                     &texture_assets,
                     &sprite_sheet_assets,
+                    &sprites_definition,
                     &ASSETS_CHAR_BAT_PATH,
                 );
 

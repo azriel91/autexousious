@@ -1,7 +1,7 @@
 use amethyst::{
     animation::{Animation, Sampler, SpriteRenderPrimitive},
     assets::{AssetStorage, Loader},
-    renderer::{SpriteRender, SpriteSheet, Texture},
+    renderer::{SpriteRender, SpriteSheetHandle},
 };
 use collision_model::{
     animation::{InteractionFrameActiveHandle, InteractionFramePrimitive},
@@ -16,12 +16,8 @@ pub struct ObjectLoaderParams<'s> {
     /// `Loader` to load assets.
     #[derivative(Debug = "ignore")]
     pub loader: &'s Loader,
-    /// `AssetStorage` for `Texture`s.
-    #[derivative(Debug = "ignore")]
-    pub texture_assets: &'s AssetStorage<Texture>,
-    /// `AssetStorage` for `SpriteSheet`s.
-    #[derivative(Debug = "ignore")]
-    pub sprite_sheet_assets: &'s AssetStorage<SpriteSheet>,
+    /// Handles to the sprite sheets for this `Object`.
+    pub sprite_sheet_handles: &'s [SpriteSheetHandle],
     /// `AssetStorage` for `Sampler<SpriteRenderPrimitive>`s.
     #[derivative(Debug = "ignore")]
     pub sprite_render_primitive_sampler_assets: &'s AssetStorage<Sampler<SpriteRenderPrimitive>>,

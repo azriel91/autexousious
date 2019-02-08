@@ -119,6 +119,7 @@ mod tests {
     use amethyst_test::prelude::*;
     use application_event::{AppEvent, AppEventReader};
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
+    use character_loading::CharacterLoadingBundle;
     use character_model::config::CharacterSequenceId;
     use character_selection_model::CharacterSelections;
     use collision_loading::CollisionLoadingBundle;
@@ -132,7 +133,6 @@ mod tests {
     use map_loading::MapLoadingBundle;
     use map_selection::MapSelectionStatus;
     use map_selection_model::MapSelection;
-    use object_loading::ObjectLoadingBundle;
     use object_model::ObjectType;
     use typename::TypeName;
 
@@ -160,7 +160,7 @@ mod tests {
                 ))
                 .with_bundle(CollisionLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
-                .with_bundle(ObjectLoadingBundle::new())
+                .with_bundle(CharacterLoadingBundle::new())
                 .with_state(|| LoadingState::new(ASSETS_PATH.clone(), PopState))
                 .with_setup(map_selection(ASSETS_MAP_FADE_SLUG.clone()))
                 .with_setup(|world| {
@@ -225,7 +225,7 @@ mod tests {
             ))
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
-            .with_bundle(ObjectLoadingBundle::new())
+            .with_bundle(CharacterLoadingBundle::new())
             .with_state(|| LoadingState::new(ASSETS_PATH.clone(), PopState))
             .with_setup(map_selection(ASSETS_MAP_FADE_SLUG.clone()))
             .with_setup(|world| {

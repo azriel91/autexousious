@@ -1,9 +1,11 @@
 use std::{collections::HashMap, path::Path};
 
 use amethyst::{
-    assets::{Loader, Progress},
-    prelude::*,
+    assets::{AssetStorage, Loader, Progress},
+    ecs::World,
+    renderer::{SpriteSheet, Texture},
 };
+use application::{load_in, resource::Format};
 use asset_loading::AssetDiscovery;
 use assets_built_in::{MAP_BLANK, MAP_BLANK_SLUG};
 use game_model::{
@@ -15,6 +17,8 @@ use map_loading::MapLoader;
 use map_model::loaded::MapHandle;
 use object_loading::CharacterLoader;
 use object_model::ObjectType;
+use sprite_loading::SpriteLoader;
+use sprite_model::config::SpritesDefinition;
 use strum::IntoEnumIterator;
 
 /// Provides functions to load game assets.
@@ -75,7 +79,35 @@ impl AssetLoader {
                                     asset_record.path.display()
                                 );
 
-                                let load_result = CharacterLoader::load(world, &asset_record);
+                                let sprites_definition = load_in::<SpritesDefinition, _>(
+                                    &asset_record.path,
+                                    "sprites.toml",
+                                    Format::Toml,
+                                    None,
+                                )
+                                .expect("Failed to load sprites_definition.");
+
+                                let loader = &world.read_resource::<Loader>();
+                                let texture_assets =
+                                    &world.read_resource::<AssetStorage<Texture>>();
+                                let sprite_sheet_assets =
+                                    &world.read_resource::<AssetStorage<SpriteSheet>>();
+
+                                // TODO: <https://gitlab.com/azriel91/autexousious/issues/94>
+                                let sprite_sheet_handles = SpriteLoader::load(
+                                    loader,
+                                    texture_assets,
+                                    sprite_sheet_assets,
+                                    &sprites_definition,
+                                    &asset_record.path,
+                                )
+                                .expect("Failed to load textures and sprite sheets.");
+
+                                let load_result = CharacterLoader::load(
+                                    world,
+                                    &asset_record,
+                                    sprite_sheet_handles,
+                                );
 
                                 if let Err(e) = load_result {
                                     error!("Failed to load character. Reason: \n\n```\n{}\n```", e);

@@ -27,6 +27,7 @@ use application::{
 use application_event::{AppEvent, AppEventReader};
 use application_robot::RobotState;
 use application_state::{HookFn, HookableFn};
+use character_loading::CharacterLoadingBundle;
 use character_model::config::CharacterSequenceId;
 use character_selection_stdio::CharacterSelectionStdioBundle;
 use collision_loading::CollisionLoadingBundle;
@@ -43,7 +44,6 @@ use loading::LoadingState;
 use log::info;
 use map_loading::MapLoadingBundle;
 use map_selection_stdio::MapSelectionStdioBundle;
-use object_loading::ObjectLoadingBundle;
 use stdio_spi::MapperSystem;
 use stdio_view::StdioViewBundle;
 use structopt::StructOpt;
@@ -173,7 +173,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(MapSelectionStdioBundle::new())?
             .with_bundle(CollisionLoadingBundle::new())?
             .with_bundle(MapLoadingBundle::new())?
-            .with_bundle(ObjectLoadingBundle::new())?;
+            .with_bundle(CharacterLoadingBundle::new())?;
     }
 
     info!("Building application.");

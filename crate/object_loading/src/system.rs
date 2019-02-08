@@ -1,0 +1,3 @@
+pub use self::object_definition_to_wrapper_processor::ObjectDefinitionToWrapperProcessor;
+
+mod object_definition_to_wrapper_processor;

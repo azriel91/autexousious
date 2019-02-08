@@ -239,8 +239,10 @@ mod test {
         renderer::{SpriteRender, SpriteSheet, SpriteSheetHandle, Texture},
     };
     use amethyst_test::prelude::*;
+    use application::{load_in, resource::Format};
     use assets_test::ASSETS_CHAR_BAT_PATH;
     use derive_new::new;
+    use sprite_model::config::SpritesDefinition;
 
     use super::SpriteRenderAnimationLoader;
     use crate::{AnimationFrame, AnimationSequence, SpriteAnimationHandle, SpriteLoader};
@@ -422,14 +424,23 @@ mod test {
     }
 
     fn test_sprite_sheet_handles(world: &mut World) -> Vec<SpriteSheetHandle> {
+        let sprites_definition = load_in::<SpritesDefinition, _>(
+            &*ASSETS_CHAR_BAT_PATH,
+            "sprites.toml",
+            Format::Toml,
+            None,
+        )
+        .expect("Failed to load sprites_definition.");
+
         let loader = world.read_resource::<Loader>();
         let texture_assets = world.read_resource::<AssetStorage<Texture>>();
         let sprite_sheet_assets = world.read_resource::<AssetStorage<SpriteSheet>>();
 
-        let (sprite_sheet_handles, _texture_handles) = SpriteLoader::load(
+        let sprite_sheet_handles = SpriteLoader::load(
             &loader,
             &texture_assets,
             &sprite_sheet_assets,
+            &sprites_definition,
             &ASSETS_CHAR_BAT_PATH,
         )
         .expect("Failed to load sprites for test.");

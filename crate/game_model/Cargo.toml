@@ -11,6 +11,7 @@ derive-new = "0.5.6"
 derive_builder = "0.7.0"
 map_model = { path = "../map_model" }
 object_model = { path = "../object_model" }
+serde = "1.0.85"
 strum = "0.13.0"
 strum_macros = "0.13.0"
 

@@ -2,10 +2,9 @@ use std::path::Path;
 
 use amethyst::{
     assets::{AssetStorage, Loader},
-    renderer::{SpriteSheet, SpriteSheetHandle, Texture, TextureHandle},
+    renderer::{SpriteSheet, SpriteSheetHandle, Texture},
     Error,
 };
-use application::{load_in, Format};
 use sprite_model::config::SpritesDefinition;
 
 use crate::{SpriteSheetLoader, TextureLoader};
@@ -27,16 +26,14 @@ impl SpriteLoader {
     /// * `loader`: `Loader` to load assets.
     /// * `texture_assets`: `AssetStorage` for `Texture`s.
     /// * `sprite_sheet_assets`: `AssetStorage` for `SpriteSheet`s.
-    /// * `base_dir`: Base directory from which to load sprites.
+    /// * `sprites_definition`: The loaded `sprites.toml`.
     pub fn load(
         loader: &Loader,
         texture_assets: &AssetStorage<Texture>,
         sprite_sheet_assets: &AssetStorage<SpriteSheet>,
+        sprites_definition: &SpritesDefinition,
         base_dir: &Path,
-    ) -> Result<(Vec<SpriteSheetHandle>, Vec<TextureHandle>), Error> {
-        let sprites_definition =
-            load_in::<SpritesDefinition, _>(base_dir, "sprites.toml", Format::Toml, None)?;
-
+    ) -> Result<Vec<SpriteSheetHandle>, Error> {
         let texture_handles = TextureLoader::load_textures(
             loader,
             texture_assets,
@@ -51,6 +48,6 @@ impl SpriteLoader {
             &sprites_definition.sheets,
         );
 
-        Ok((sprite_sheet_handles, texture_handles))
+        Ok(sprite_sheet_handles)
     }
 }

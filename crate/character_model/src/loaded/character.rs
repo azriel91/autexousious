@@ -5,14 +5,15 @@ use amethyst::{
 };
 use derive_new::new;
 use object_model::game_object;
+use typename_derive::TypeName;
 
-use crate::config::CharacterSequenceId;
+use crate::config::{CharacterDefinition, CharacterSequenceId};
 
 /// Represents an in-game character that has been loaded.
 ///
 /// Each of these fields should be a component that is attached to the character entity.
-#[game_object(CharacterSequenceId)]
-#[derive(Clone, Debug, PartialEq, new)]
+#[game_object(CharacterSequenceId, CharacterDefinition)]
+#[derive(Clone, Debug, PartialEq, TypeName, new)]
 pub struct Character;
 
 impl Asset for Character {

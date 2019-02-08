@@ -9,8 +9,8 @@ extern crate pretty_assertions;
 
 pub use crate::{
     object::{CharacterLoader, ObjectLoader, ObjectLoaderParams},
-    object_loading_bundle::ObjectLoadingBundle,
+    system::ObjectDefinitionToWrapperProcessor,
 };
 
 mod object;
-mod object_loading_bundle;
+mod system;

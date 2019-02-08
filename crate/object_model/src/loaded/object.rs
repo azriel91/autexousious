@@ -5,7 +5,10 @@ use derive_new::new;
 
 use crate::{
     config::object::SequenceId,
-    loaded::{AnimatedComponentAnimation, AnimatedComponentDefault, ComponentSequence},
+    loaded::{
+        AnimatedComponentAnimation, AnimatedComponentDefault, ComponentSequence,
+        SequenceEndTransitions,
+    },
 };
 
 /// Represents an in-game object that has been loaded.
@@ -21,4 +24,6 @@ where
     pub animations: HashMap<SeqId, Vec<AnimatedComponentAnimation>>,
     /// Handles to the sequences that this object uses, keyed by sequence ID.
     pub component_sequences: HashMap<SeqId, Vec<ComponentSequence<SeqId>>>,
+    /// Component sequence transitions when a sequence ends.
+    pub sequence_end_transitions: SequenceEndTransitions<SeqId>,
 }

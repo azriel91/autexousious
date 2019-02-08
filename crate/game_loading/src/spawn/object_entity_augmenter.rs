@@ -77,7 +77,7 @@ impl ObjectEntityAugmenter {
         let object = object_assets
             .get(object_handle)
             .unwrap_or_else(|| panic!("Expected `{}` object to be loaded.", slug));
-        let sequence_end_transitions = ob_ty.sequence_end_transitions();
+        let sequence_end_transitions = &object.inner().sequence_end_transitions;
 
         let animation_defaults = &object.inner().animation_defaults;
 
@@ -192,6 +192,7 @@ mod test {
     use amethyst_test::prelude::*;
     use application_event::{AppEvent, AppEventReader};
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
+    use character_loading::CharacterLoadingBundle;
     use character_model::{
         config::CharacterSequenceId,
         loaded::{Character, CharacterHandle, CharacterObjectWrapper},
@@ -202,7 +203,6 @@ mod test {
     use loading::LoadingState;
     use map_loading::MapLoadingBundle;
     use map_model::loaded::Map;
-    use object_loading::ObjectLoadingBundle;
     use object_model::entity::{Mirrored, Position, SequenceStatus, Velocity};
     use typename::TypeName as TypeNameTrait;
     use typename_derive::TypeName;
@@ -278,7 +278,7 @@ mod test {
                 ))
                 .with_bundle(CollisionLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
-                .with_bundle(ObjectLoadingBundle::new())
+                .with_bundle(CharacterLoadingBundle::new())
                 .with_system(TestSystem, TestSystem::type_name(), &[])
                 .with_state(|| LoadingState::new(ASSETS_PATH.clone(), PopState))
                 .with_setup(setup)

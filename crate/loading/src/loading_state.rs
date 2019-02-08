@@ -11,7 +11,7 @@ use crate::AssetLoader;
 
 /// `State` where resource loading takes place.
 ///
-/// If you use this `State`, you **MUST** ensure that both the `ObjectLoadingBundle` and
+/// If you use this `State`, you **MUST** ensure that both the `CharacterLoadingBundle` and
 /// `MapLoadingBundle`s are included in the application dispatcher that this `State` delegates to
 /// to load the assets.
 ///
@@ -84,7 +84,7 @@ where
         } else {
             warn!(
                 "If loading never completes, please ensure that you have registered both the \
-                 `ObjectLoadingBundle` and `MapLoadingBundle`s to the application dispatcher, as \
+                 `CharacterLoadingBundle` and `MapLoadingBundle`s to the application dispatcher, as \
                  those provide the necessary `System`s to process the loaded assets."
             );
             debug!(

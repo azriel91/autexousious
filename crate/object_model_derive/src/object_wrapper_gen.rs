@@ -26,12 +26,15 @@ pub fn object_wrapper_gen(
         }
     };
 
+    let doc_fn_new = format!("Returns a new {}", object_wrapper_name);
+
     quote! {
         #[doc = #doc_string]
         #[derive(Debug)]
         #vis struct #object_wrapper_name(#vis object_model::loaded::Object<#sequence_id_type>);
 
         impl #object_wrapper_name {
+            #[doc = #doc_fn_new]
             pub fn new(object: object_model::loaded::Object<#sequence_id_type>) -> Self {
                 #object_wrapper_name(object)
             }
@@ -73,7 +76,7 @@ pub fn object_wrapper_gen(
                 stringify!(#object_wrapper_name),
             );
 
-            type Data = amethyst::assets::Handle<#object_definition_type>;
+            type Data = object_model::config::ObjectAssetData<#object_definition_type>;
             type HandleStorage = amethyst::ecs::storage::VecStorage<amethyst::assets::Handle<Self>>;
         }
     }

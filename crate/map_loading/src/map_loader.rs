@@ -1,6 +1,12 @@
 use std::path::Path;
 
-use amethyst::{assets::Loader, ecs::World, Error};
+use amethyst::{
+    animation::{Animation, Sampler, SpriteRenderPrimitive},
+    assets::{AssetStorage, Loader},
+    ecs::World,
+    renderer::{SpriteRender, SpriteSheet, Texture},
+    Error,
+};
 use application::{load_in, resource::FindContext, Format};
 use log::debug;
 use map_model::{
@@ -8,6 +14,7 @@ use map_model::{
     loaded::{Map, MapHandle, Margins},
 };
 use sprite_loading::{SpriteLoader, SpriteRenderAnimationLoader};
+use sprite_model::config::SpritesDefinition;
 
 /// Loads assets specified by map configuration into the loaded map model.
 #[derive(Debug)]
@@ -24,8 +31,22 @@ impl MapLoader {
         debug!("Loading map in `{}`", base_dir.display());
 
         let map_definition = load_in::<MapDefinition, _>(base_dir, "map.toml", Format::Toml, None)?;
+        let sprite_load_result =
+            load_in::<SpritesDefinition, _>(&base_dir, "sprites.toml", Format::Toml, None)
+                .and_then(|sprites_definition| {
+                    let loader = &world.read_resource::<Loader>();
+                    let texture_assets = &world.read_resource::<AssetStorage<Texture>>();
+                    let sprite_sheet_assets = &world.read_resource::<AssetStorage<SpriteSheet>>();
 
-        let sprite_load_result = SpriteLoader::load(world, base_dir);
+                    SpriteLoader::load(
+                        loader,
+                        texture_assets,
+                        sprite_sheet_assets,
+                        &sprites_definition,
+                        &base_dir,
+                    )
+                });
+
         let loaded_sprites = match sprite_load_result {
             Ok(loaded_sprites) => Ok(Some(loaded_sprites)),
             Err(e) => {
@@ -38,9 +59,17 @@ impl MapLoader {
         }?;
 
         let (sprite_sheet_handles, animation_handles) = {
-            if let Some((sprite_sheet_handles, _texture_handles)) = loaded_sprites {
+            if let Some(sprite_sheet_handles) = loaded_sprites {
+                let loader = world.read_resource::<Loader>();
+                let sprite_render_primitive_sampler_assets =
+                    world.read_resource::<AssetStorage<Sampler<SpriteRenderPrimitive>>>();
+                let sprite_render_animation_assets =
+                    world.read_resource::<AssetStorage<Animation<SpriteRender>>>();
+
                 let animation_handles = SpriteRenderAnimationLoader::load_into_vec(
-                    world,
+                    &loader,
+                    &sprite_render_primitive_sampler_assets,
+                    &sprite_render_animation_assets,
                     map_definition.layers.iter(),
                     &sprite_sheet_handles,
                 );
