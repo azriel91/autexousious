@@ -1,6 +1,7 @@
 use amethyst::{
-    assets::{Asset, Handle},
+    assets::{Asset, Handle, ProcessingState},
     ecs::storage::VecStorage,
+    Error,
 };
 use derive_new::new;
 use object_model::config::{object::ObjectDefinition, GameObjectDefinition};
@@ -27,5 +28,13 @@ impl GameObjectDefinition for CharacterDefinition {
 
     fn object_definition(&self) -> &ObjectDefinition<Self::SequenceId> {
         &self.object_definition
+    }
+}
+
+impl From<CharacterDefinition> for Result<ProcessingState<CharacterDefinition>, Error> {
+    fn from(
+        character_definition: CharacterDefinition,
+    ) -> Result<ProcessingState<CharacterDefinition>, Error> {
+        Ok(ProcessingState::Loaded(character_definition))
     }
 }

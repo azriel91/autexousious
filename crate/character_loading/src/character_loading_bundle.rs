@@ -1,5 +1,5 @@
 use amethyst::{assets::Processor, core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
-use character_model::loaded::Character;
+use character_model::{config::CharacterDefinition, loaded::Character};
 use derive_new::new;
 use object_loading::ObjectDefinitionToWrapperProcessor;
 use typename::TypeName;
@@ -19,6 +19,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterLoadingBundle {
             &[],
         );
         builder.add(Processor::<Character>::new(), "character_processor", &[]);
+        builder.add(
+            Processor::<CharacterDefinition>::new(),
+            "character_definition_processor",
+            &[],
+        );
         Ok(())
     }
 }
@@ -27,7 +32,10 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterLoadingBundle {
 mod test {
     use amethyst::assets::AssetStorage;
     use amethyst_test::AmethystApplication;
-    use character_model::loaded::{Character, CharacterObjectWrapper};
+    use character_model::{
+        config::CharacterDefinition,
+        loaded::{Character, CharacterObjectWrapper},
+    };
 
     use super::CharacterLoadingBundle;
 
@@ -42,6 +50,7 @@ mod test {
                     // Panics if the Processors are not added.
                     world.read_resource::<AssetStorage<Character>>();
                     world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
+                    world.read_resource::<AssetStorage<CharacterDefinition>>();
                 })
                 .run()
                 .is_ok()
