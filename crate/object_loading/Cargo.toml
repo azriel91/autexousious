@@ -18,6 +18,8 @@ log = "0.4.6"
 object_model = { path = "../object_model" }
 rayon = "1.0.3"
 serde = "1.0.85"
+shred = "0.7.1"
+shred-derive = "0.5.1"
 sprite_model = { path = "../sprite_model" }
 sprite_loading = { path = "../sprite_loading" }
 typename = "0.1.0"

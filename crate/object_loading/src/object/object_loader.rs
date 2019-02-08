@@ -1,8 +1,11 @@
 use std::collections::HashMap;
 
 use amethyst::{renderer::SpriteRender, Error};
-use collision_loading::InteractionAnimationLoader;
-use collision_model::{animation::InteractionFrameActiveHandle, config::InteractionFrame};
+use collision_loading::{BodyAnimationLoader, InteractionAnimationLoader};
+use collision_model::{
+    animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle},
+    config::{BodyFrame, InteractionFrame},
+};
 use fnv::FnvHashMap;
 use object_model::{
     config::ObjectDefinition,
@@ -32,6 +35,9 @@ impl ObjectLoader {
             sprite_sheet_handles,
             sprite_render_primitive_sampler_assets,
             sprite_render_animation_assets,
+            body_frame_assets,
+            body_frame_primitive_sampler_assets,
+            body_frame_animation_assets,
             interaction_frame_assets,
             interaction_frame_primitive_sampler_assets,
             interaction_frame_animation_assets,
@@ -70,9 +76,15 @@ impl ObjectLoader {
             };
             animation_defaults.push(AnimatedComponentDefault::SpriteRender(sprite_render));
 
-            let interaction_frame_handle = {
-                loader.load_from_data(InteractionFrame::default(), (), interaction_frame_assets)
-            };
+            let body_frame_handle =
+                loader.load_from_data(BodyFrame::default(), (), body_frame_assets);
+            let body_frame_active_handle = BodyFrameActiveHandle::new(body_frame_handle);
+            animation_defaults.push(AnimatedComponentDefault::BodyFrame(
+                body_frame_active_handle,
+            ));
+
+            let interaction_frame_handle =
+                loader.load_from_data(InteractionFrame::default(), (), interaction_frame_assets);
             let interaction_frame_active_handle =
                 InteractionFrameActiveHandle::new(interaction_frame_handle);
             animation_defaults.push(AnimatedComponentDefault::InteractionFrame(
@@ -91,6 +103,13 @@ impl ObjectLoader {
             &object_definition.sequences,
             &sprite_sheet_handles,
         );
+        let mut body_frame_animations = BodyAnimationLoader::load_into_map(
+            loader,
+            body_frame_assets,
+            body_frame_primitive_sampler_assets,
+            body_frame_animation_assets,
+            &object_definition.sequences,
+        );
         let mut interaction_frame_animations = InteractionAnimationLoader::load_into_map(
             loader,
             interaction_frame_assets,
@@ -106,6 +125,9 @@ impl ObjectLoader {
                 let mut animations = Vec::new();
                 if let Some(sprite_render) = sprite_render_animations.remove(sequence_id) {
                     animations.push(AnimatedComponentAnimation::SpriteRender(sprite_render));
+                }
+                if let Some(body_frame) = body_frame_animations.remove(sequence_id) {
+                    animations.push(AnimatedComponentAnimation::BodyFrame(body_frame));
                 }
                 if let Some(interaction_frame) = interaction_frame_animations.remove(sequence_id) {
                     animations.push(AnimatedComponentAnimation::InteractionFrame(
@@ -149,9 +171,10 @@ mod test {
     use collision_loading::CollisionLoadingBundle;
     use collision_model::{
         animation::{
-            BodyFrameActiveHandle, InteractionFrameActiveHandle, InteractionFramePrimitive,
+            BodyFrameActiveHandle, BodyFramePrimitive, InteractionFrameActiveHandle,
+            InteractionFramePrimitive,
         },
-        config::InteractionFrame,
+        config::{BodyFrame, InteractionFrame},
     };
     use game_model::config::AssetRecord;
     use sprite_loading::SpriteLoader;
@@ -221,6 +244,11 @@ mod test {
                             &world.read_resource::<AssetStorage<Sampler<SpriteRenderPrimitive>>>();
                         let sprite_render_animation_assets =
                             &world.read_resource::<AssetStorage<Animation<SpriteRender>>>();
+                        let body_frame_assets = &world.read_resource::<AssetStorage<BodyFrame>>();
+                        let body_frame_primitive_sampler_assets =
+                            &world.read_resource::<AssetStorage<Sampler<BodyFramePrimitive>>>();
+                        let body_frame_animation_assets = &world
+                            .read_resource::<AssetStorage<Animation<BodyFrameActiveHandle>>>();
                         let interaction_frame_assets =
                             &world.read_resource::<AssetStorage<InteractionFrame>>();
                         let interaction_frame_primitive_sampler_assets = &world
@@ -246,6 +274,9 @@ mod test {
                                 sprite_sheet_handles,
                                 sprite_render_primitive_sampler_assets,
                                 sprite_render_animation_assets,
+                                body_frame_assets,
+                                body_frame_primitive_sampler_assets,
+                                body_frame_animation_assets,
                                 interaction_frame_assets,
                                 interaction_frame_primitive_sampler_assets,
                                 interaction_frame_animation_assets,
@@ -267,8 +298,8 @@ mod test {
                         .animations
                         .get(&CharacterSequenceId::StandAttack)
                         .expect("Expected to read `StandAttack` animations.");
-                    // InteractionFrame and SpriteRender
-                    assert_eq!(2, stand_attack_animations.len());
+                    // SpriteRender, BodyFrame, and InteractionFrame
+                    assert_eq!(3, stand_attack_animations.len());
                 })
                 .run()
                 .is_ok()

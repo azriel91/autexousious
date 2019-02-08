@@ -4,8 +4,11 @@ use amethyst::{
     renderer::{SpriteRender, SpriteSheetHandle},
 };
 use collision_model::{
-    animation::{InteractionFrameActiveHandle, InteractionFramePrimitive},
-    config::InteractionFrame,
+    animation::{
+        BodyFrameActiveHandle, BodyFramePrimitive, InteractionFrameActiveHandle,
+        InteractionFramePrimitive,
+    },
+    config::{BodyFrame, InteractionFrame},
 };
 use derivative::Derivative;
 
@@ -24,6 +27,15 @@ pub struct ObjectLoaderParams<'s> {
     /// `AssetStorage` for `Animation<SpriteRender>`s.
     #[derivative(Debug = "ignore")]
     pub sprite_render_animation_assets: &'s AssetStorage<Animation<SpriteRender>>,
+    /// `AssetStorage` for `BodyFrame`s.
+    #[derivative(Debug = "ignore")]
+    pub body_frame_assets: &'s AssetStorage<BodyFrame>,
+    /// `AssetStorage` for `Sampler<BodyFramePrimitive>`s.
+    #[derivative(Debug = "ignore")]
+    pub body_frame_primitive_sampler_assets: &'s AssetStorage<Sampler<BodyFramePrimitive>>,
+    /// `AssetStorage` for `Animation<BodyFrameActiveHandle>`s.
+    #[derivative(Debug = "ignore")]
+    pub body_frame_animation_assets: &'s AssetStorage<Animation<BodyFrameActiveHandle>>,
     /// `AssetStorage` for `InteractionFrame`s.
     #[derivative(Debug = "ignore")]
     pub interaction_frame_assets: &'s AssetStorage<InteractionFrame>,
