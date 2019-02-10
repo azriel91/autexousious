@@ -1,6 +1,6 @@
-use amethyst::ecs::prelude::*;
+use amethyst::ecs::WriteStorage;
 use derivative::Derivative;
-use game_input::{ControllerInput, InputControlled};
+use game_input::ControllerInput;
 use object_model::entity::{Grounding, HealthPoints, RunCounter};
 use shred_derive::SystemData;
 
@@ -11,9 +11,6 @@ use shred_derive::SystemData;
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct CharacterComponentStorages<'s> {
-    /// `InputControlled` component storage.
-    #[derivative(Debug = "ignore")]
-    pub input_controlleds: WriteStorage<'s, InputControlled>,
     /// `ControllerInput` component storage.
     #[derivative(Debug = "ignore")]
     pub controller_inputs: WriteStorage<'s, ControllerInput>,

@@ -1,22 +1,24 @@
-use amethyst::{assets::AssetStorage, ecs::prelude::*};
-use character_model::{config::CharacterSequenceId, loaded::Character};
+use amethyst::{
+    assets::{AssetStorage, Handle},
+    core::Transform,
+    ecs::{Entities, Entity, Read, ReadExpect, System, Write, WriteStorage},
+};
+use character_loading::{CharacterComponentStorages, CharacterEntityAugmenter};
+use character_model::{
+    config::CharacterSequenceId,
+    loaded::{Character, CharacterObjectWrapper},
+};
 use character_selection_model::CharacterSelections;
 use derive_new::new;
 use game_input::InputControlled;
 use game_model::play::GameEntities;
 use map_model::loaded::Map;
 use map_selection_model::MapSelection;
-use object_model::{
-    entity::{Position, Velocity},
-    ObjectType,
-};
+use object_loading::{ObjectAnimationStorages, ObjectComponentStorages, ObjectEntityAugmenter};
+use object_model::{entity::Position, loaded::GameObject, ObjectType};
 use typename_derive::TypeName;
 
-use crate::{
-    CharacterComponentStorages, CharacterEntityAugmenter, GameLoadingStatus,
-    ObjectAnimationStorages, ObjectComponentStorages, ObjectEntityAugmenter,
-    ObjectSpawningResources,
-};
+use crate::GameLoadingStatus;
 
 /// Spawns character entities based on the character selection.
 #[derive(Debug, Default, TypeName, new)]
@@ -28,7 +30,10 @@ type CharacterSelectionSpawningSystemData<'s> = (
     ReadExpect<'s, MapSelection>,
     Read<'s, CharacterSelections>,
     Read<'s, AssetStorage<Map>>,
-    ObjectSpawningResources<'s, Character>,
+    Read<'s, AssetStorage<Character>>,
+    Read<'s, AssetStorage<CharacterObjectWrapper>>,
+    WriteStorage<'s, Handle<CharacterObjectWrapper>>,
+    WriteStorage<'s, InputControlled>,
     CharacterComponentStorages<'s>,
     ObjectComponentStorages<'s, CharacterSequenceId>,
     ObjectAnimationStorages<'s, CharacterSequenceId>,
@@ -46,7 +51,10 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             map_selection,
             character_selections,
             loaded_maps,
-            mut object_spawning_resources,
+            game_object_assets,
+            object_wrapper_assets,
+            mut object_wrapper_handles,
+            mut input_controlleds,
             mut character_component_storages,
             mut object_component_storages,
             mut object_animation_storages,
@@ -74,31 +82,55 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
 
         // This `Position` moves the entity to the middle of a "screen wide" map.
         let position = Position::new(width / 2., height / 2., depth / 2.);
-        let velocity = Velocity::default();
+        let mut transform = Transform::default();
+        transform.set_x(position.x);
+        transform.set_y(position.y - position.z);
+        transform.set_z(position.z);
 
         let character_entities = character_selections
             .selections
             .iter()
             .map(|(controller_id, slug_and_handle)| {
-                (InputControlled::new(*controller_id), slug_and_handle)
+                let game_object = game_object_assets
+                    .get(&slug_and_handle.handle)
+                    .expect("Expected character to be loaded.");
+                let object_wrapper_handle = game_object.object_handle().clone();
+
+                (InputControlled::new(*controller_id), object_wrapper_handle)
             })
-            .map(|(input_controlled, slug_and_handle)| {
+            .map(|(input_controlled, object_wrapper_handle)| {
                 let entity = entities.create();
-                CharacterEntityAugmenter::augment(
-                    entity,
-                    &mut character_component_storages,
-                    &slug_and_handle.slug,
-                    input_controlled,
-                );
+
+                let object_wrapper = object_wrapper_assets
+                    .get(&object_wrapper_handle)
+                    .expect("Expected object to be loaded.");
+                object_wrapper_handles
+                    .insert(entity, object_wrapper_handle)
+                    .expect("Failed to insert object_wrapper_handle for entity.");
+
+                // Controller of this entity
+                input_controlleds
+                    .insert(entity, input_controlled)
+                    .expect("Failed to insert input_controlled component.");
+
+                CharacterEntityAugmenter::augment(entity, &mut character_component_storages);
                 ObjectEntityAugmenter::augment(
                     entity,
-                    &mut object_spawning_resources,
                     &mut object_component_storages,
                     &mut object_animation_storages,
-                    position,
-                    velocity,
-                    &slug_and_handle,
+                    object_wrapper,
                 );
+
+                // Set character `position` and `transform` based on the map.
+                object_component_storages
+                    .positions
+                    .insert(entity, position)
+                    .expect("Failed to insert position for character.");
+                object_component_storages
+                    .transforms
+                    .insert(entity, transform.clone())
+                    .expect("Failed to insert transform for character.");
+
                 entity
             })
             .collect::<Vec<Entity>>();

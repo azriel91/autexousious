@@ -11,7 +11,8 @@ pub trait GameObject {
     type SequenceId: SequenceId;
     /// Type representing this `GameObject`'s configuration.
     type Definition: GameObjectDefinition<SequenceId = Self::SequenceId>
-        + Asset<Data = Self::Definition>;
+        + Asset<Data = Self::Definition>
+        + Clone;
     /// Newtype wrapper for `Object<SequenceId>`.
     type ObjectWrapper: ObjectWrapper<SequenceId = Self::SequenceId>
         + Asset<Data = ObjectAssetData<Self::Definition>>;

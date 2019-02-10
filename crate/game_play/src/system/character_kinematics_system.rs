@@ -1,8 +1,5 @@
-use amethyst::{assets::AssetStorage, ecs::prelude::*};
-use character_model::{
-    config::CharacterSequenceId,
-    loaded::{Character, CharacterHandle},
-};
+use amethyst::ecs::{Join, ReadStorage, System, WriteStorage};
+use character_model::config::CharacterSequenceId;
 use derive_new::new;
 use game_input::ControllerInput;
 use object_model::entity::{Mirrored, SequenceStatus, Velocity};
@@ -13,8 +10,6 @@ use typename_derive::TypeName;
 pub(crate) struct CharacterKinematicsSystem;
 
 type CharacterKinematicsSystemData<'s> = (
-    Read<'s, AssetStorage<Character>>,
-    ReadStorage<'s, CharacterHandle>,
     ReadStorage<'s, ControllerInput>,
     ReadStorage<'s, CharacterSequenceId>,
     ReadStorage<'s, SequenceStatus>,
@@ -28,8 +23,6 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
     fn run(
         &mut self,
         (
-            characters,
-            handle_storage,
             controller_inputs,
             character_sequence_ids,
             sequence_statuses,
@@ -37,15 +30,7 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
             mut mirroreds,
         ): Self::SystemData,
     ) {
-        for (
-            character_handle,
-            controller_input,
-            character_sequence_id,
-            sequence_status,
-            velocity,
-            mirrored,
-        ) in (
-            &handle_storage,
+        for (controller_input, character_sequence_id, sequence_status, velocity, mirrored) in (
             &controller_inputs,
             &character_sequence_ids,
             &sequence_statuses,
@@ -55,10 +40,7 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
             .join()
         {
             // TODO: Character stats should be configuration.
-            // Use the stats from the character definition.
-            let _character = characters
-                .get(character_handle)
-                .expect("Expected character to be loaded.");
+            // Use a stats component from the character definition.
 
             match character_sequence_id {
                 CharacterSequenceId::Stand

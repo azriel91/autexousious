@@ -6,7 +6,7 @@ use amethyst::{
 use character_model::config::CharacterSequenceId;
 use derive_new::new;
 use game_input::ControllerInput;
-use game_loading::ObjectAnimationStorages;
+use object_loading::ObjectAnimationStorages;
 use object_model::{
     entity::{Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity},
     loaded::SequenceEndTransitions,

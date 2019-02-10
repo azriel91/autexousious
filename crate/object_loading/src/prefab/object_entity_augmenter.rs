@@ -1,23 +1,19 @@
 use amethyst::{
     animation::get_animation_set,
-    assets::Asset,
-    core::{nalgebra::Vector3, transform::Transform},
-    ecs::prelude::*,
+    core::transform::Transform,
+    ecs::Entity,
     renderer::{Flipped, SpriteRender, Transparent},
 };
+use animation_support::AnimationRunner;
 use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
-use game_model::loaded::SlugAndHandle;
-use log::debug;
 use object_model::{
     entity::{Mirrored, Position, SequenceStatus, Velocity},
-    loaded::{AnimatedComponentAnimation, AnimatedComponentDefault, GameObject, ObjectWrapper},
+    loaded::{AnimatedComponentAnimation, AnimatedComponentDefault, ObjectWrapper},
 };
 
-use crate::{
-    AnimationRunner, ObjectAnimationStorages, ObjectComponentStorages, ObjectSpawningResources,
-};
+use crate::{ObjectAnimationStorages, ObjectComponentStorages};
 
-/// Augments an entity with game object.
+/// Augments an entity with `Object` components.
 #[derive(Debug)]
 pub struct ObjectEntityAugmenter;
 
@@ -26,19 +22,12 @@ impl ObjectEntityAugmenter {
     ///
     /// # Parameters
     ///
-    /// * `object_spawning_resources`: Resources to construct the object with.
-    /// * `object_component_storages`: Common object `Component` storages.
-    /// * `position`: Position of the entity in game.
-    /// * `velocity`: Velocity of the entity in game.
-    /// * `slug_and_handle`: Slug and handle of the object to spawn.
-    pub fn augment<'s, ObTy>(
+    /// * `entity`: The entity to augment.
+    /// * `object_component_storages`: Common `Component` storages for objects.
+    /// * `object_animation_storages`: Common animation storages for objects.
+    /// * `object_wrapper`: Slug and handle of the object to spawn.
+    pub fn augment<'s, W>(
         entity: Entity,
-        ObjectSpawningResources {
-            ref mut object_handles,
-            object_assets,
-            ref mut ob_ty_handles,
-            ob_ty_assets,
-        }: &mut ObjectSpawningResources<'s, ObTy>,
         ObjectComponentStorages {
             ref mut sprite_renders,
             ref mut flippeds,
@@ -52,43 +41,19 @@ impl ObjectEntityAugmenter {
             ref mut sequence_statuses,
             ref mut body_frame_active_handles,
             ref mut interaction_frame_active_handles,
-        }: &mut ObjectComponentStorages<'s, ObTy::SequenceId>,
+        }: &mut ObjectComponentStorages<'s, W::SequenceId>,
         ObjectAnimationStorages {
             ref mut sprite_render_acses,
             ref mut body_acses,
             ref mut interaction_acses,
-        }: &mut ObjectAnimationStorages<'s, ObTy::SequenceId>,
-        position: Position<f32>,
-        velocity: Velocity<f32>,
-        SlugAndHandle {
-            ref slug,
-            handle: ref ob_ty_handle,
-        }: &SlugAndHandle<ObTy>,
-    ) -> Entity
-    where
-        ObTy: Asset + GameObject,
+        }: &mut ObjectAnimationStorages<'s, W::SequenceId>,
+        object_wrapper: &W,
+    ) where
+        W: ObjectWrapper,
     {
-        debug!("Augmenting `{}`", slug);
+        let sequence_end_transitions = &object_wrapper.inner().sequence_end_transitions;
 
-        let ob_ty = ob_ty_assets
-            .get(ob_ty_handle)
-            .unwrap_or_else(|| panic!("Expected `{}` ob_ty to be loaded.", slug));
-        let object_handle = ob_ty.object_handle();
-        let object = object_assets
-            .get(object_handle)
-            .unwrap_or_else(|| panic!("Expected `{}` object to be loaded.", slug));
-        let sequence_end_transitions = &object.inner().sequence_end_transitions;
-
-        let animation_defaults = &object.inner().animation_defaults;
-
-        let sequence_id = ObTy::SequenceId::default();
-        let all_animations = object.inner().animations.get(&sequence_id);
-        let first_sequence_animations = all_animations
-            .as_ref()
-            .expect("Expected ob_ty to have at least one sequence.");
-
-        let mut transform = Transform::default();
-        transform.set_position(Vector3::new(position.x, position.y - position.z, 0.));
+        let sequence_id = W::SequenceId::default();
 
         flippeds
             .insert(entity, Flipped::None)
@@ -97,13 +62,13 @@ impl ObjectEntityAugmenter {
             .insert(entity, Transparent)
             .expect("Failed to insert transparent component.");
         positions
-            .insert(entity, position)
+            .insert(entity, Position::default())
             .expect("Failed to insert position component.");
         velocities
-            .insert(entity, velocity)
+            .insert(entity, Velocity::default())
             .expect("Failed to insert velocity component.");
         transforms
-            .insert(entity, transform)
+            .insert(entity, Transform::default())
             .expect("Failed to insert transform component.");
         mirroreds
             .insert(entity, Mirrored::default())
@@ -117,12 +82,12 @@ impl ObjectEntityAugmenter {
         sequence_statuses
             .insert(entity, SequenceStatus::default())
             .expect("Failed to insert sequence_status component.");
-        ob_ty_handles
-            .insert(entity, ob_ty_handle.clone())
-            .expect("Failed to insert ob_ty_handle component.");
-        object_handles
-            .insert(entity, object_handle.clone())
-            .expect("Failed to insert object_handle component.");
+
+        let all_animations = object_wrapper.inner().animations.get(&sequence_id);
+        let animation_defaults = &object_wrapper.inner().animation_defaults;
+        let first_sequence_animations = all_animations
+            .as_ref()
+            .expect("Expected game object to have at least one sequence.");
 
         animation_defaults
             .iter()
@@ -149,13 +114,13 @@ impl ObjectEntityAugmenter {
 
         // We also need to trigger the animation, not just attach it to the entity
         let mut sprite_animation_set =
-            get_animation_set::<ObTy::SequenceId, SpriteRender>(sprite_render_acses, entity)
+            get_animation_set::<W::SequenceId, SpriteRender>(sprite_render_acses, entity)
                 .expect("Sprite animation should exist as new entity should be valid.");
         let mut body_animation_set =
-            get_animation_set::<ObTy::SequenceId, BodyFrameActiveHandle>(body_acses, entity)
+            get_animation_set::<W::SequenceId, BodyFrameActiveHandle>(body_acses, entity)
                 .expect("Body animation should exist as new entity should be valid.");
         let mut interaction_animation_set = get_animation_set::<
-            ObTy::SequenceId,
+            W::SequenceId,
             InteractionFrameActiveHandle,
         >(interaction_acses, entity)
         .expect("Interaction animation should exist as new entity should be valid.");
@@ -173,8 +138,6 @@ impl ObjectEntityAugmenter {
                     AnimationRunner::start(sequence_id, &mut interaction_animation_set, handle);
                 }
             });
-
-        entity
     }
 }
 
@@ -184,18 +147,18 @@ mod test {
 
     use amethyst::{
         animation::AnimationBundle,
-        assets::{AssetStorage, Handle},
+        assets::AssetStorage,
         core::transform::Transform,
-        ecs::prelude::*,
+        ecs::{Builder, Entity, Read, System, SystemData, World},
         renderer::{Flipped, SpriteRender, Transparent},
     };
     use amethyst_test::prelude::*;
     use application_event::{AppEvent, AppEventReader};
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
-    use character_loading::CharacterLoadingBundle;
+    use character_loading::{CharacterComponentStorages, CharacterLoadingBundle};
     use character_model::{
         config::CharacterSequenceId,
-        loaded::{Character, CharacterHandle, CharacterObjectWrapper},
+        loaded::{Character, CharacterObjectWrapper},
     };
     use collision_loading::CollisionLoadingBundle;
     use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
@@ -203,39 +166,44 @@ mod test {
     use loading::LoadingState;
     use map_loading::MapLoadingBundle;
     use map_model::loaded::Map;
-    use object_model::entity::{Mirrored, Position, SequenceStatus, Velocity};
+    use object_model::{
+        entity::{Mirrored, Position, SequenceStatus, Velocity},
+        loaded::GameObject,
+    };
     use typename::TypeName as TypeNameTrait;
     use typename_derive::TypeName;
 
     use super::ObjectEntityAugmenter;
-    use crate::{
-        CharacterComponentStorages, ObjectAnimationStorages, ObjectComponentStorages,
-        ObjectSpawningResources,
-    };
+    use crate::{ObjectAnimationStorages, ObjectComponentStorages};
 
     #[test]
     fn augments_entity_with_object_components() {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
         let setup = |world: &mut World| {
-            let position = Position::new(100., -10., -20.);
-            let velocity = Velocity::default();
-
             let entity = world.create_entity().build();
             {
                 let slug_and_handle =
                     SlugAndHandle::<Character>::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
-                let mut object_spawning_resources = ObjectSpawningResources::fetch(&world.res);
+                let game_object_assets = world.read_resource::<AssetStorage<Character>>();
+                let game_object = game_object_assets
+                    .get(&slug_and_handle.handle)
+                    .expect("Expected bat character to be loaded.");
+                let object_wrapper_handle = game_object.object_handle();
+
+                let object_wrapper_assets =
+                    world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
+                let object_wrapper = object_wrapper_assets
+                    .get(object_wrapper_handle)
+                    .expect("Expected bat object to be loaded.");
+
                 let mut object_component_storages = ObjectComponentStorages::fetch(&world.res);
                 let mut object_animation_storages = ObjectAnimationStorages::fetch(&world.res);
                 ObjectEntityAugmenter::augment(
                     entity,
-                    &mut object_spawning_resources,
                     &mut object_component_storages,
                     &mut object_animation_storages,
-                    position,
-                    velocity,
-                    &slug_and_handle,
+                    object_wrapper,
                 );
             }
 
@@ -244,10 +212,6 @@ mod test {
 
         let assertion = |world: &mut World| {
             let entity = world.read_resource::<EffectReturn<Entity>>().0;
-            assert!(world.read_storage::<CharacterHandle>().contains(entity));
-            assert!(world
-                .read_storage::<Handle<CharacterObjectWrapper>>()
-                .contains(entity));
             assert!(world.read_storage::<CharacterSequenceId>().contains(entity));
             assert!(world.read_storage::<SequenceStatus>().contains(entity));
             assert!(world.read_storage::<Mirrored>().contains(entity));
@@ -295,7 +259,6 @@ mod test {
         CharacterComponentStorages<'s>,
         ObjectAnimationStorages<'s, CharacterSequenceId>,
         ObjectComponentStorages<'s, CharacterSequenceId>,
-        ObjectSpawningResources<'s, Character>,
         Read<'s, AssetStorage<Map>>,
     );
     impl<'s> System<'s> for TestSystem {

@@ -9,8 +9,12 @@ extern crate pretty_assertions;
 
 pub use crate::{
     object::{CharacterLoader, ObjectLoader, ObjectLoaderParams},
+    prefab::{ObjectEntityAugmenter, ObjectPrefab, ObjectPrefabError},
     system::ObjectDefinitionToWrapperProcessor,
+    system_data::{ObjectAnimationStorages, ObjectComponentStorages},
 };
 
 mod object;
+mod prefab;
 mod system;
+mod system_data;
