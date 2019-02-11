@@ -7,13 +7,10 @@ edition = "2018"
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
-asset_loading = { path = "../asset_loading" }
 character_model = { path = "../character_model" }
-collision_loading = { path = "../collision_loading" }
 derivative = "1.0"
 derive-new = "0.5"
 game_input = { path = "../game_input" }
-game_model = { path = "../game_model" }
 object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
 serde = "1.0"
