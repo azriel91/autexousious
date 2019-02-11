@@ -165,11 +165,11 @@ impl AutexousiousApplication {
 mod test {
     use amethyst::{input::InputHandler, ui::Interactable};
     use amethyst_test::SpriteRenderAnimationFixture;
-    use asset_model::{
+    use game_input_model::{PlayerActionControl, PlayerAxisControl};
+    use game_model::{
         loaded::{CharacterAssets, MapAssets},
         play::GameEntities,
     };
-    use game_input_model::{PlayerActionControl, PlayerAxisControl};
     use object_model::ObjectType;
     use strum::IntoEnumIterator;
 

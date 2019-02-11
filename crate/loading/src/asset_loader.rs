@@ -7,11 +7,9 @@ use amethyst::{
 };
 use application::{load_in, resource::Format};
 use asset_loading::AssetDiscovery;
-use asset_model::{
-    config::AssetRecord,
-    loaded::{CharacterAssets, MapAssets},
-};
+use asset_model::config::AssetRecord;
 use assets_built_in::{MAP_BLANK, MAP_BLANK_SLUG};
+use game_model::loaded::{CharacterAssets, MapAssets};
 use log::{debug, error};
 use map_loading::MapLoader;
 use map_model::loaded::MapHandle;

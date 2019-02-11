@@ -1,6 +1,6 @@
 use amethyst::ecs::prelude::*;
-use asset_model::play::GameEntities;
 use derive_new::new;
+use game_model::play::GameEntities;
 use map_selection_model::MapSelection;
 use typename_derive::TypeName;
 
@@ -55,12 +55,9 @@ mod tests {
     use amethyst::{assets::ProgressCounter, ecs::prelude::*};
     use amethyst_test::prelude::*;
     use asset_loading::AssetDiscovery;
-    use asset_model::{
-        config::AssetSlug,
-        loaded::{MapAssets, SlugAndHandle},
-        play::GameEntities,
-    };
+    use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
     use assets_test::{ASSETS_MAP_EMPTY_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
+    use game_model::{loaded::MapAssets, play::GameEntities};
     use loading::AssetLoader;
     use map_loading::MapLoadingBundle;
     use map_selection::MapSelectionStatus;

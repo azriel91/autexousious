@@ -27,7 +27,7 @@ mod test {
 
     use amethyst::shrev::EventChannel;
     use amethyst_test::prelude::*;
-    use asset_model::loaded::MapAssets;
+    use game_model::loaded::MapAssets;
     use stdio_spi::VariantAndTokens;
 
     use super::MapSelectionStdioBundle;

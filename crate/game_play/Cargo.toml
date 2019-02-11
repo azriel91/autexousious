@@ -14,7 +14,7 @@ collision_model = { path = "../collision_model" }
 derivative = "1.0.2"
 derive-new = "0.5.6"
 game_input = { path = "../game_input" }
-asset_model = { path = "../asset_model" }
+game_model = { path = "../game_model" }
 game_play_model = { path = "../game_play_model" }
 log = "0.4.6"
 map_model = { path = "../map_model" }

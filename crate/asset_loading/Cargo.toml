@@ -7,8 +7,8 @@ edition = "2018"
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 application = { path = "../application" }
-derive-new = "0.5.6"
 asset_model = { path = "../asset_model" }
+derive-new = "0.5.6"
 heck = "0.3.1"
 itertools = "0.8.0"
 log = "0.4.6"

@@ -1,8 +1,6 @@
 use amethyst::ecs::World;
-use asset_model::{
-    config::AssetSlug,
-    loaded::{MapAssets, SlugAndHandle},
-};
+use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
+use game_model::loaded::MapAssets;
 use map_selection::MapSelectionStatus;
 use map_selection_model::MapSelection;
 
