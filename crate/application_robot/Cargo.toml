@@ -11,11 +11,7 @@ derivative = "1.0.2"
 
 [dev-dependencies]
 debug_util_amethyst = { path = "../debug_util_amethyst" }
-
-[features]
-default = []
-# Used to control compilation on CI
-test_ui = []
+winit = "0.18.1"
 
 [build-dependencies]
 rustc_version = "0.2.3"

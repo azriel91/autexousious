@@ -30,119 +30,83 @@ impl<T> Intercept<T, StateEvent> for KeyboardEscapeIntercept {
 }
 
 #[cfg(test)]
-#[cfg(all(windows, feature = "test_ui"))]
 mod test {
     use amethyst::{
-        prelude::*,
+        ecs::World,
         renderer::{Event, WindowEvent},
+        StateData, StateEvent, Trans,
     };
     use debug_util_amethyst::assert_eq_opt_trans;
-    use enigo::{Enigo, Key, KeyboardControllable};
-    use winit::{ControlFlow, EventsLoop, Window};
+    use winit::{
+        DeviceId, ElementState, KeyboardInput, ModifiersState, ScanCode, VirtualKeyCode, WindowId,
+    };
 
     use super::KeyboardEscapeIntercept;
-    use state::Intercept;
+    use crate::state::Intercept;
 
-    fn setup() -> (KeyboardEscapeIntercept, World) {
-        (KeyboardEscapeIntercept, World::new())
+    // Development Note: See content of this file at revision `f3fc60f` if you attempt to use enigo.
+
+    #[test]
+    fn handle_event_begin_returns_none_on_non_quit_key() {
+        let mut intercept = KeyboardEscapeIntercept;
+        let mut world = World::new();
+        let world = &mut world;
+
+        let event = key_event(0x15, VirtualKeyCode::Back);
+
+        assert_eq_opt_trans(
+            None,
+            intercept
+                .handle_event_begin(
+                    &mut StateData {
+                        world,
+                        data: &mut (),
+                    },
+                    &mut StateEvent::Window(event),
+                )
+                .as_ref(),
+        );
     }
 
-    /// We have to run multiple tests in a single function because:
-    ///
-    /// * Test functions are run in parallel.
-    /// * We _could_ use a mutex to prevent windowed tests from running simultaneously, as input
-    ///   generated from the `Enigo` library is transmitted operating system wide. However, this
-    ///   does not work because of the next point.
-    /// * When two windowed tests run sequentially, the test executable will fail in one of the
-    ///   following modes:
-    ///
-    ///     - An incorrectly failing test: `Expected Trans::None but was Trans::Quit`
-    ///     - Illegal application signal: `(signal: 4, SIGILL: illegal instruction)`
-    ///
-    ///         This is possibly a bug in `winit`, but there is not enough information to conclude
-    ///         that this is true. I've tried both `winit` 0.10.0 and `0.11.0` (latest at time of
-    ///         writing).
-    ///
-    ///         Possibly this bug: https://github.com/tomaka/winit/issues/347
-    ///
-    /// I have tried using `thread::sleep`s to check if it is a race condition between opening the
-    /// window and the programmatic input, but it does not appear to be the case - it fails in the
-    /// same way even with the `sleep`s.
-    ///
-    /// On Ubuntu 17.10, the window that starts up during the test does not get destroyed until
-    /// after the entire test executable ends, even if you `drop(window)` and `drop(events_loop)`.
-    /// This may be a symptom of the problem.
-    ///
-    /// On Windows, this test works if run interactively. However it does not when run through a
-    /// Gitlab CI runner.
     #[test]
-    fn handle_event_begin_returns_correct_transition_on_keyboard_input() {
-        let (mut intercept, mut world) = setup();
+    fn handle_event_begin_returns_trans_quit_on_escape_key() {
+        let mut intercept = KeyboardEscapeIntercept;
+        let mut world = World::new();
+        let world = &mut world;
 
-        let mut events_loop = EventsLoop::new();
-        let _window = Window::new(&events_loop).unwrap();
+        let event = key_event(0x1, VirtualKeyCode::Escape);
 
-        let mut attempts = 3;
+        assert_eq_opt_trans(
+            Some(&Trans::Quit),
+            intercept
+                .handle_event_begin(
+                    &mut StateData {
+                        world,
+                        data: &mut (),
+                    },
+                    &mut StateEvent::Window(event),
+                )
+                .as_ref(),
+        );
+    }
 
-        // None on Backspace key
-        match_window_event(&mut events_loop, Key::Backspace, |mut event| {
-            let trans = intercept.handle_event_begin(&mut world, &mut event);
-            if trans.is_none() {
-                return Some(Ok(()));
-            }
-            assert_eq_opt_trans(None, trans.as_ref()); // kcov-ignore
-            unreachable!(); // kcov-ignore
-        }); // kcov-ignore
-
-        // Trans::Quit on Escape key
-        match_window_event(&mut events_loop, Key::Escape, |mut event| {
-            let trans = intercept.handle_event_begin(&mut world, &mut event);
-            if let Some(Trans::Quit) = trans {
-                return Some(Ok(()));
-            }
-            // kcov-ignore-start
-            attempts -= 1;
-            if attempts == 0 {
-                assert_eq_opt_trans(Some(Trans::Quit).as_ref(), trans.as_ref());
-            }
-            None
-            // kcov-ignore-end
-        });
-    } // kcov-ignore
-
-    fn match_window_event<F>(events_loop: &mut EventsLoop, key: Key, mut assertion_fn: F)
-    where
-        F: FnMut(Event) -> Option<Result<(), &'static str>>,
-    {
-        let mut enigo = Enigo::new();
-        enigo.key_click(key);
-
-        let mut test_result = None;
-
-        events_loop.run_forever(|event| {
-            let result_opt = match event {
-                Event::WindowEvent {
-                    event: ref window_event,
-                    ..
-                } => match window_event {
-                    &WindowEvent::KeyboardInput { .. } => assertion_fn(event.clone()),
-                    _ => None,
+    fn key_event(scancode: ScanCode, virtual_keycode: VirtualKeyCode) -> Event {
+        Event::WindowEvent {
+            window_id: unsafe { WindowId::dummy() },
+            event: WindowEvent::KeyboardInput {
+                device_id: unsafe { DeviceId::dummy() },
+                input: KeyboardInput {
+                    scancode,
+                    state: ElementState::Pressed,
+                    virtual_keycode: Some(virtual_keycode),
+                    modifiers: ModifiersState {
+                        shift: false,
+                        ctrl: false,
+                        alt: false,
+                        logo: false,
+                    },
                 },
-                _ => None,
-            };
-            match result_opt {
-                None => ControlFlow::Continue,
-                Some(result) => {
-                    test_result = Some(result);
-                    ControlFlow::Break
-                }
-            }
-        });
-
-        events_loop.poll_events(|_event| {}); // empty event queue
-
-        test_result
-            .unwrap()
-            .unwrap_or_else(|failure: &str| panic!(failure)); // kcov-ignore
+            },
+        }
     }
 }
