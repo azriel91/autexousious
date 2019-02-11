@@ -30,7 +30,7 @@ pub fn object_wrapper_gen(
 
     quote! {
         #[doc = #doc_string]
-        #[derive(Debug)]
+        #[derive(Clone, Debug, PartialEq)]
         #vis struct #object_wrapper_name(#vis object_model::loaded::Object<#sequence_id_type>);
 
         impl #object_wrapper_name {

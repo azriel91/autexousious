@@ -1,21 +1,18 @@
 use amethyst::{
-    assets::{AssetStorage, Handle},
+    assets::AssetStorage,
     core::Transform,
     ecs::{Entities, Entity, Read, ReadExpect, System, Write, WriteStorage},
 };
-use character_loading::{CharacterComponentStorages, CharacterEntityAugmenter};
-use character_model::{
-    config::CharacterSequenceId,
-    loaded::{Character, CharacterObjectWrapper},
-};
+use character_loading::CharacterPrefabHandle;
+use character_model::config::CharacterSequenceId;
 use character_selection_model::CharacterSelections;
 use derive_new::new;
 use game_input::InputControlled;
 use game_model::play::GameEntities;
 use map_model::loaded::Map;
 use map_selection_model::MapSelection;
-use object_loading::{ObjectAnimationStorages, ObjectComponentStorages, ObjectEntityAugmenter};
-use object_model::{entity::Position, loaded::GameObject, ObjectType};
+use object_loading::ObjectComponentStorages;
+use object_model::{entity::Position, ObjectType};
 use typename_derive::TypeName;
 
 use crate::GameLoadingStatus;
@@ -30,13 +27,9 @@ type CharacterSelectionSpawningSystemData<'s> = (
     ReadExpect<'s, MapSelection>,
     Read<'s, CharacterSelections>,
     Read<'s, AssetStorage<Map>>,
-    Read<'s, AssetStorage<Character>>,
-    Read<'s, AssetStorage<CharacterObjectWrapper>>,
-    WriteStorage<'s, Handle<CharacterObjectWrapper>>,
+    WriteStorage<'s, CharacterPrefabHandle>,
     WriteStorage<'s, InputControlled>,
-    CharacterComponentStorages<'s>,
     ObjectComponentStorages<'s, CharacterSequenceId>,
-    ObjectAnimationStorages<'s, CharacterSequenceId>,
     Write<'s, GameEntities>,
 );
 
@@ -51,13 +44,9 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             map_selection,
             character_selections,
             loaded_maps,
-            game_object_assets,
-            object_wrapper_assets,
-            mut object_wrapper_handles,
+            mut character_prefab_handles,
             mut input_controlleds,
-            mut character_component_storages,
             mut object_component_storages,
-            mut object_animation_storages,
             mut game_entities,
         ): Self::SystemData,
     ) {
@@ -91,35 +80,15 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             .selections
             .iter()
             .map(|(controller_id, slug_and_handle)| {
-                let game_object = game_object_assets
-                    .get(&slug_and_handle.handle)
-                    .expect("Expected character to be loaded.");
-                let object_wrapper_handle = game_object.object_handle().clone();
-
-                (InputControlled::new(*controller_id), object_wrapper_handle)
-            })
-            .map(|(input_controlled, object_wrapper_handle)| {
                 let entity = entities.create();
 
-                let object_wrapper = object_wrapper_assets
-                    .get(&object_wrapper_handle)
-                    .expect("Expected object to be loaded.");
-                object_wrapper_handles
-                    .insert(entity, object_wrapper_handle)
-                    .expect("Failed to insert object_wrapper_handle for entity.");
-
-                // Controller of this entity
                 input_controlleds
-                    .insert(entity, input_controlled)
-                    .expect("Failed to insert input_controlled component.");
+                    .insert(entity, InputControlled::new(*controller_id))
+                    .expect("Failed to insert input_controlled for character.");
 
-                CharacterEntityAugmenter::augment(entity, &mut character_component_storages);
-                ObjectEntityAugmenter::augment(
-                    entity,
-                    &mut object_component_storages,
-                    &mut object_animation_storages,
-                    object_wrapper,
-                );
+                character_prefab_handles
+                    .insert(entity, slug_and_handle.handle.clone())
+                    .expect("Failed to insert character_prefab_handle for character.");
 
                 // Set character `position` and `transform` based on the map.
                 object_component_storages

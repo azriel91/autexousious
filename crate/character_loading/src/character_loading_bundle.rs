@@ -1,8 +1,15 @@
-use amethyst::{assets::Processor, core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
+use amethyst::{
+    assets::{PrefabLoaderSystem, Processor},
+    core::bundle::SystemBundle,
+    ecs::DispatcherBuilder,
+    Error,
+};
 use character_model::{config::CharacterDefinition, loaded::Character};
 use derive_new::new;
 use object_loading::ObjectDefinitionToWrapperProcessor;
 use typename::TypeName;
+
+use crate::CharacterPrefab;
 
 /// Adds the following processor `System`s to the world:
 ///
@@ -22,6 +29,16 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterLoadingBundle {
         builder.add(
             Processor::<CharacterDefinition>::new(),
             "character_definition_processor",
+            &[],
+        );
+        // builder.add(
+        //     Processor::<CharacterPrefab>::new(),
+        //     "character_prefab_processor",
+        //     &[],
+        // );
+        builder.add(
+            PrefabLoaderSystem::<CharacterPrefab>::default(),
+            "character_prefab_loader_system",
             &[],
         );
         Ok(())

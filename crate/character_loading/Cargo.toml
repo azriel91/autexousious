@@ -7,6 +7,7 @@ edition = "2018"
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
+application = { path = "../application" }
 character_model = { path = "../character_model" }
 derivative = "1.0"
 derive-new = "0.5"
@@ -17,3 +18,14 @@ serde = "1.0"
 shred = "0.7.1"
 shred-derive = "0.5.1"
 typename = "0.1.0"
+
+[dev-dependencies]
+asset_model = { path = "../asset_model" }
+assets_test = { path = "../assets_test" }
+collision_loading = { path = "../collision_loading" }
+collision_model = { path = "../collision_model" }
+sprite_loading = { path = "../sprite_loading" }
+sprite_model = { path = "../sprite_model" }
+
+[build-dependencies]
+rustc_version = "0.2.3"

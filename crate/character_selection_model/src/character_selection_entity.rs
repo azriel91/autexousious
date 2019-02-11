@@ -1,4 +1,4 @@
-use amethyst_utils::removal::Removal;
+use amethyst::utils::removal::Removal;
 
 use crate::CharacterSelectionEntityId;
 

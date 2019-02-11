@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 
 use asset_model::config::AssetSlug;
-use character_model::loaded::CharacterHandle;
+use character_loading::CharacterPrefabHandle;
 
-/// Map of `Character` asset handles, keyed by their `AssetSlug`.
-pub type CharacterAssets = BTreeMap<AssetSlug, CharacterHandle>;
+/// Map of `CharacterPrefab` handles, keyed by their `AssetSlug`.
+pub type CharacterAssets = BTreeMap<AssetSlug, CharacterPrefabHandle>;

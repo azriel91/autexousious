@@ -238,14 +238,15 @@ impl<'s> System<'s> for CharacterSelectionWidgetInputSystem {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        ecs::prelude::*,
+        assets::Prefab,
+        ecs::{Builder, Entity, SystemData, World},
         shrev::{EventChannel, ReaderId},
     };
     use amethyst_test::prelude::*;
     use application_test_support::AutexousiousApplication;
     use asset_model::loaded::SlugAndHandle;
     use assets_test::ASSETS_CHAR_BAT_SLUG;
-    use character_model::loaded::Character;
+    use character_loading::CharacterPrefab;
     use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
     use game_input::{ControllerInput, InputControlled};
     use game_model::loaded::CharacterAssets;
@@ -667,7 +668,7 @@ mod test {
         );
     }
 
-    fn first_character(world: &mut World) -> SlugAndHandle<Character> {
+    fn first_character(world: &mut World) -> SlugAndHandle<Prefab<CharacterPrefab>> {
         world
             .read_resource::<CharacterAssets>()
             .iter()
@@ -676,7 +677,7 @@ mod test {
             .into()
     }
 
-    fn last_character(world: &mut World) -> SlugAndHandle<Character> {
+    fn last_character(world: &mut World) -> SlugAndHandle<Prefab<CharacterPrefab>> {
         world
             .read_resource::<CharacterAssets>()
             .iter()

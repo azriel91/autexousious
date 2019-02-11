@@ -4,15 +4,14 @@ use amethyst::{
     Error,
 };
 use character_model::loaded::Character;
+use derive_new::new;
 use object_loading::ObjectPrefab;
 use serde::{Deserialize, Serialize};
 
 use crate::{CharacterComponentStorages, CharacterEntityAugmenter};
 
 /// Loads `CharacterDefinition`s and attaches components to character entities.
-///
-// TODO: Faster `PartialEq` pending <https://github.com/mcarton/rust-derivative/issues/3>
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
 pub struct CharacterPrefab {
     /// Assets needed to load an object.
     ///

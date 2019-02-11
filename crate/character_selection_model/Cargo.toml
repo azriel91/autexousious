@@ -5,8 +5,9 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
 [dependencies]
-amethyst_utils = { git = "https://github.com/amethyst/amethyst.git" }
+amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 asset_model = { path = "../asset_model" }
+character_loading = { path = "../character_loading" }
 character_model = { path = "../character_model" }
 derivative = "1.0.2"
 derive-new = "0.5.6"

@@ -1,20 +1,21 @@
 use std::fmt;
 
+use amethyst::assets::Prefab;
 use asset_model::loaded::SlugAndHandle;
-use character_model::loaded::{Character, CharacterHandle};
+use character_loading::{CharacterPrefab, CharacterPrefabHandle};
 
 /// Selected character ID or random for a particular controller.
 #[derive(Clone, Debug, PartialEq)]
 pub enum CharacterSelection {
     /// User has selected *Random*.
-    Random(SlugAndHandle<Character>),
+    Random(SlugAndHandle<Prefab<CharacterPrefab>>),
     /// User has selected a character.
-    Id(SlugAndHandle<Character>),
+    Id(SlugAndHandle<Prefab<CharacterPrefab>>),
 }
 
 impl CharacterSelection {
-    /// Returns the character handle of this `CharacterSelection`.
-    pub fn handle(&self) -> &CharacterHandle {
+    /// Returns the character prefab handle of this `CharacterSelection`.
+    pub fn handle(&self) -> &CharacterPrefabHandle {
         match self {
             CharacterSelection::Random(SlugAndHandle { ref handle, .. })
             | CharacterSelection::Id(SlugAndHandle { ref handle, .. }) => handle,
