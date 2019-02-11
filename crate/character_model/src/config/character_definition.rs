@@ -1,15 +1,16 @@
 use amethyst::{
-    assets::{Asset, Handle},
+    assets::{Asset, Handle, ProcessingState},
     ecs::storage::VecStorage,
+    Error,
 };
 use derive_new::new;
-use object_model::config::object::ObjectDefinition;
+use object_model::config::{object::ObjectDefinition, GameObjectDefinition};
 use serde::{Deserialize, Serialize};
 
 use crate::config::CharacterSequenceId;
 
 /// Contains all of the sequences for an `Object`.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, new)]
 pub struct CharacterDefinition {
     /// Sequences of actions this object can perform.
     #[serde(flatten)]
@@ -20,4 +21,20 @@ impl Asset for CharacterDefinition {
     const NAME: &'static str = "object_model::config::CharacterDefinition";
     type Data = Self;
     type HandleStorage = VecStorage<Handle<Self>>;
+}
+
+impl GameObjectDefinition for CharacterDefinition {
+    type SequenceId = CharacterSequenceId;
+
+    fn object_definition(&self) -> &ObjectDefinition<Self::SequenceId> {
+        &self.object_definition
+    }
+}
+
+impl From<CharacterDefinition> for Result<ProcessingState<CharacterDefinition>, Error> {
+    fn from(
+        character_definition: CharacterDefinition,
+    ) -> Result<ProcessingState<CharacterDefinition>, Error> {
+        Ok(ProcessingState::Loaded(character_definition))
+    }
 }

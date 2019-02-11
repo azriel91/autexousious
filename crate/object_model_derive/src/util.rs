@@ -1,4 +1,5 @@
-use syn::{Data, DataStruct, DeriveInput};
+use proc_macro2::Span;
+use syn::{Data, DataStruct, DeriveInput, Ident};
 
 /// Returns the `DataStruct` of this struct's `DeriveInput`.
 ///
@@ -18,4 +19,13 @@ pub fn data_struct_mut<'ast>(
         Data::Struct(data_struct) => data_struct,
         _ => panic!(error_message),
     }
+}
+
+/// Returns an `Ident` by concatenating `String` representations.
+pub fn ident_concat(part_a: &str, part_b: &str) -> Ident {
+    let mut combined = String::with_capacity(part_a.len() + part_b.len());
+    combined.push_str(part_a);
+    combined.push_str(part_b);
+
+    Ident::new(&combined, Span::call_site())
 }

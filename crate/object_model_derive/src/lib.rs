@@ -1,4 +1,4 @@
-#![recursion_limit = "128"]
+#![recursion_limit = "512"]
 //! Provides the `#[derive(GameObject)]` proc_macro to implement the `GameObject` trait.
 //!
 //! For example usage of this macro, refer to the documentation for the `GameObject` trait.
@@ -21,7 +21,7 @@ mod util;
 /// For the following code:
 ///
 /// ```rust,ignore
-/// #[game_object(MagicSequenceId)]
+/// #[game_object(MagicSequenceId, MagicDefinition)]
 /// pub struct Magic;
 /// ```
 ///
@@ -62,7 +62,7 @@ mod util;
 ///
 /// impl Asset for MagicObjectWrapper {
 ///     const NAME: &'static str = concat!(module_path!(), "::", stringify!(MagicObjectWrapper));
-///     type Data = Self;
+///     type Data = MagicDefinition;
 ///     type HandleStorage = VecStorage<Handle<Self>>;
 /// }
 ///

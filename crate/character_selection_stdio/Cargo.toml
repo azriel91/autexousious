@@ -7,6 +7,7 @@ edition = "2018"
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 application_event = { path = "../application_event" }
+asset_model = { path = "../asset_model" }
 character_selection_model = { path = "../character_selection_model" }
 derive-new = "0.5.6"
 game_input_model = { path = "../game_input_model" }

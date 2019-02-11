@@ -13,6 +13,7 @@ application_input = { path = "../../crate/application_input" }
 application_robot = { path = "../../crate/application_robot" }
 application_state = { path = "../../crate/application_state" }
 application_ui = { path = "../../crate/application_ui" }
+character_loading = { path = "../../crate/character_loading" }
 character_model = { path = "../../crate/character_model" }
 character_selection_stdio = { path = "../../crate/character_selection_stdio" }
 collision_loading = { path = "../../crate/collision_loading" }
@@ -26,10 +27,9 @@ game_mode_selection_stdio = { path = "../../crate/game_mode_selection_stdio" }
 game_mode_selection_ui = { path = "../../crate/game_mode_selection_ui" }
 game_play_stdio = { path = "../../crate/game_play_stdio" }
 loading = { path = "../../crate/loading" }
+log = "0.4.6"
 map_loading = { path = "../../crate/map_loading" }
 map_selection_stdio = { path = "../../crate/map_selection_stdio" }
-log = "0.4.6"
-object_loading = { path = "../../crate/object_loading" }
 stdio_spi = { path = "../../crate/stdio_spi" }
 stdio_view = { path = "../../crate/stdio_view" }
 structopt = "0.2.14"

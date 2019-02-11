@@ -1,6 +1,6 @@
 use std::fmt;
 
-use game_model::loaded::SlugAndHandle;
+use asset_model::loaded::SlugAndHandle;
 use map_model::loaded::{Map, MapHandle};
 
 /// Selected map ID or random for a particular controller.

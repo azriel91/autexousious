@@ -2,16 +2,16 @@ use std::{collections::HashMap, hash::Hash};
 
 use amethyst::{
     animation::{Animation, InterpolationFunction, Sampler},
-    assets::Loader,
-    prelude::*,
+    assets::{AssetStorage, Loader},
 };
 use animation_support::{ActiveHandleChannel, ActiveHandlePrimitive};
 use collision_model::{
-    animation::{BodyAnimationHandle, BodyFrameActiveHandle, BodyFramePrimitive},
+    animation::{
+        BodyAnimationFrame, BodyAnimationHandle, BodyAnimationSequence, BodyFrameActiveHandle,
+        BodyFramePrimitive,
+    },
     config::BodyFrame,
 };
-
-use crate::{BodyAnimationFrame, BodyAnimationSequence};
 
 /// Loads `Animation`s from character sequences.
 #[derive(Debug)]
@@ -22,10 +22,16 @@ impl BodyAnimationLoader {
     ///
     /// # Parameters
     ///
-    /// * `world`: `World` to load animations into.
+    /// * `loader`: `Loader` to load assets.
+    /// * `body_frame_assets`: `AssetStorage` for `BodyFrame`s.
+    /// * `body_frame_primitive_sampler_assets`: `AssetStorage` for `Sampler<BodyFramePrimitive>`s.
+    /// * `body_frame_animation_assets`: `AssetStorage` for `Animation<BodyFrameActiveHandle>`s.
     /// * `sequences`: Sequences of the animation.
     pub fn load_into_map<'seq, SequenceId, Sequence, Frame>(
-        world: &'seq World,
+        loader: &'seq Loader,
+        body_frame_assets: &'seq AssetStorage<BodyFrame>,
+        body_frame_primitive_sampler_assets: &'seq AssetStorage<Sampler<BodyFramePrimitive>>,
+        body_frame_animation_assets: &'seq AssetStorage<Animation<BodyFrameActiveHandle>>,
         sequences: &HashMap<SequenceId, Sequence>,
     ) -> HashMap<SequenceId, BodyAnimationHandle>
     where
@@ -33,19 +39,31 @@ impl BodyAnimationLoader {
         Frame: BodyAnimationFrame,
         Sequence: BodyAnimationSequence<Frame = Frame> + 'seq,
     {
-        Self::load(world, sequences.iter())
-            .map(|(id, handle)| (*id, handle))
-            .collect::<HashMap<SequenceId, BodyAnimationHandle>>()
+        Self::load(
+            loader,
+            body_frame_assets,
+            body_frame_primitive_sampler_assets,
+            body_frame_animation_assets,
+            sequences.iter(),
+        )
+        .map(|(id, handle)| (*id, handle))
+        .collect::<HashMap<SequenceId, BodyAnimationHandle>>()
     }
 
     /// Loads `BodyFrame` animations and returns a vector of their handles in order.
     ///
     /// # Parameters
     ///
-    /// * `world`: `World` to load animations into.
+    /// * `loader`: `Loader` to load assets.
+    /// * `body_frame_assets`: `AssetStorage` for `BodyFrame`s.
+    /// * `body_frame_primitive_sampler_assets`: `AssetStorage` for `Sampler<BodyFramePrimitive>`s.
+    /// * `body_frame_animation_assets`: `AssetStorage` for `Animation<BodyFrameActiveHandle>`s.
     /// * `sequences`: Sequences of the animation.
     pub fn load_into_vec<'seq, Sequences, Sequence, Frame>(
-        world: &'seq World,
+        loader: &'seq Loader,
+        body_frame_assets: &'seq AssetStorage<BodyFrame>,
+        body_frame_primitive_sampler_assets: &'seq AssetStorage<Sampler<BodyFramePrimitive>>,
+        body_frame_animation_assets: &'seq AssetStorage<Animation<BodyFrameActiveHandle>>,
         sequences: Sequences,
     ) -> Vec<BodyAnimationHandle>
     where
@@ -54,11 +72,15 @@ impl BodyAnimationLoader {
         Sequence: BodyAnimationSequence<Frame = Frame> + 'seq,
     {
         sequences
-            .map(|sequence| Self::sequence_to_animation(world, sequence))
-            .map(|animation| {
-                let loader = world.read_resource::<Loader>();
-                loader.load_from_data(animation, (), &world.read_resource())
+            .map(|sequence| {
+                Self::sequence_to_animation(
+                    loader,
+                    body_frame_assets,
+                    body_frame_primitive_sampler_assets,
+                    sequence,
+                )
             })
+            .map(|animation| loader.load_from_data(animation, (), body_frame_animation_assets))
             .collect::<Vec<BodyAnimationHandle>>()
     }
 
@@ -68,10 +90,16 @@ impl BodyAnimationLoader {
     ///
     /// # Parameters
     ///
-    /// * `world`: `World` to load animations into.
+    /// * `loader`: `Loader` to load assets.
+    /// * `body_frame_assets`: `AssetStorage` for `BodyFrame`s.
+    /// * `body_frame_primitive_sampler_assets`: `AssetStorage` for `Sampler<BodyFramePrimitive>`s.
+    /// * `body_frame_animation_assets`: `AssetStorage` for `Animation<BodyFrameActiveHandle>`s.
     /// * `sequences`: Sequences of the animation.
     pub fn load<'seq, Sequences, SequenceId, Sequence, Frame>(
-        world: &'seq World,
+        loader: &'seq Loader,
+        body_frame_assets: &'seq AssetStorage<BodyFrame>,
+        body_frame_primitive_sampler_assets: &'seq AssetStorage<Sampler<BodyFramePrimitive>>,
+        body_frame_animation_assets: &'seq AssetStorage<Animation<BodyFrameActiveHandle>>,
         sequences: Sequences,
     ) -> impl Iterator<Item = (&'seq SequenceId, BodyAnimationHandle)>
     where
@@ -81,10 +109,20 @@ impl BodyAnimationLoader {
         Sequence: BodyAnimationSequence<Frame = Frame> + 'seq,
     {
         sequences
-            .map(move |(id, sequence)| (id, Self::sequence_to_animation(world, sequence)))
+            .map(move |(id, sequence)| {
+                (
+                    id,
+                    Self::sequence_to_animation(
+                        loader,
+                        body_frame_assets,
+                        body_frame_primitive_sampler_assets,
+                        sequence,
+                    ),
+                )
+            })
             .map(move |(id, animation)| {
-                let loader = world.read_resource::<Loader>();
-                let animation_handle = loader.load_from_data(animation, (), &world.read_resource());
+                let animation_handle =
+                    loader.load_from_data(animation, (), body_frame_animation_assets);
                 (id, animation_handle)
             })
     }
@@ -93,10 +131,14 @@ impl BodyAnimationLoader {
     ///
     /// # Parameters
     ///
-    /// * `world`: `World` to store the `Animation`s.
+    /// * `loader`: `Loader` to load assets.
+    /// * `body_frame_assets`: `AssetStorage` for `BodyFrame`s.
+    /// * `body_frame_primitive_sampler_assets`: `AssetStorage` for `Sampler<BodyFramePrimitive>`s.
     /// * `sequence`: `Sequence` to create the animation from.
     fn sequence_to_animation<Sequence: BodyAnimationSequence<Frame = F>, F: BodyAnimationFrame>(
-        world: &World,
+        loader: &Loader,
+        body_frame_assets: &AssetStorage<BodyFrame>,
+        body_frame_primitive_sampler_assets: &AssetStorage<Sampler<BodyFramePrimitive>>,
         sequence: &Sequence,
     ) -> Animation<BodyFrameActiveHandle> {
         let frames = sequence.frames();
@@ -108,10 +150,9 @@ impl BodyAnimationLoader {
         }
         input.push(tick_counter);
 
-        let frame_sampler = Self::frame_sampler(world, sequence, input.clone());
-
-        let loader = world.read_resource::<Loader>();
-        let frame_sampler_handle = loader.load_from_data(frame_sampler, (), &world.read_resource());
+        let frame_sampler = Self::frame_sampler(loader, body_frame_assets, sequence, input.clone());
+        let frame_sampler_handle =
+            loader.load_from_data(frame_sampler, (), body_frame_primitive_sampler_assets);
 
         Animation {
             nodes: vec![(0, ActiveHandleChannel::Handle, frame_sampler_handle)],
@@ -119,7 +160,8 @@ impl BodyAnimationLoader {
     }
 
     fn frame_sampler<Sequence: BodyAnimationSequence<Frame = F>, F: BodyAnimationFrame>(
-        world: &World,
+        loader: &Loader,
+        body_frame_assets: &AssetStorage<BodyFrame>,
         sequence: &Sequence,
         input: Vec<f32>,
     ) -> Sampler<BodyFramePrimitive> {
@@ -127,12 +169,10 @@ impl BodyAnimationLoader {
         let mut output = Vec::with_capacity(frame_count);
         sequence.frames().iter().for_each(|frame| {
             // TODO: load `BodyFrame`s and pass `Handle`s in.
-            let loader = world.read_resource::<Loader>();
-            let store = world.read_resource();
             let handle = loader.load_from_data(
                 BodyFrame::new(frame.body().map(Clone::clone), frame.wait()),
                 (),
-                &store,
+                body_frame_assets,
             );
 
             output.push(ActiveHandlePrimitive::Handle(handle));
@@ -157,25 +197,44 @@ mod test {
 
     use amethyst::{
         animation::{Animation, AnimationBundle, InterpolationFunction, Sampler},
-        assets::AssetStorage,
-        prelude::*,
+        assets::{AssetStorage, Loader},
+        ecs::World,
     };
     use amethyst_test::prelude::*;
     use animation_support::ActiveHandleChannel;
     use collision_model::{
-        animation::{BodyAnimationHandle, BodyFrameActiveHandle, BodyFramePrimitive},
+        animation::{
+            BodyAnimationHandle, BodyAnimationSequence, BodyFrameActiveHandle, BodyFramePrimitive,
+        },
         config::BodyFrame,
     };
     use derive_new::new;
 
     use super::BodyAnimationLoader;
-    use crate::{BodyAnimationSequence, CollisionLoadingBundle};
+    use crate::CollisionLoadingBundle;
 
     #[test]
     fn loads_body_animations_into_map() {
         let effect = |world: &mut World| {
             let test_sequences = test_sequences();
-            let animation_handles = BodyAnimationLoader::load_into_map(world, &test_sequences);
+
+            let animation_handles = {
+                let loader = world.read_resource::<Loader>();
+                let body_frame_assets = world.read_resource::<AssetStorage<BodyFrame>>();
+                let body_frame_primitive_sampler_assets =
+                    world.read_resource::<AssetStorage<Sampler<BodyFramePrimitive>>>();
+                let body_frame_animation_assets =
+                    world.read_resource::<AssetStorage<Animation<BodyFrameActiveHandle>>>();
+
+                BodyAnimationLoader::load_into_map(
+                    &loader,
+                    &body_frame_assets,
+                    &body_frame_primitive_sampler_assets,
+                    &body_frame_animation_assets,
+                    &test_sequences,
+                )
+            };
+
             world.add_resource(EffectReturn(animation_handles));
         }; // kcov-ignore
         let assertion = |world: &mut World| {
@@ -207,8 +266,24 @@ mod test {
     fn loads_body_animations_into_vec() {
         let effect = |world: &mut World| {
             let test_sequences = test_sequences();
-            let animation_handles =
-                BodyAnimationLoader::load_into_vec(world, test_sequences.values());
+
+            let animation_handles = {
+                let loader = world.read_resource::<Loader>();
+                let body_frame_assets = world.read_resource::<AssetStorage<BodyFrame>>();
+                let body_frame_primitive_sampler_assets =
+                    world.read_resource::<AssetStorage<Sampler<BodyFramePrimitive>>>();
+                let body_frame_animation_assets =
+                    world.read_resource::<AssetStorage<Animation<BodyFrameActiveHandle>>>();
+
+                BodyAnimationLoader::load_into_vec(
+                    &loader,
+                    &body_frame_assets,
+                    &body_frame_primitive_sampler_assets,
+                    &body_frame_animation_assets,
+                    test_sequences.values(),
+                )
+            };
+
             world.add_resource(EffectReturn(animation_handles));
         };
         let assertion = |world: &mut World| {

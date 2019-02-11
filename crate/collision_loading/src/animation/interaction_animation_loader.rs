@@ -2,8 +2,7 @@ use std::{collections::HashMap, hash::Hash};
 
 use amethyst::{
     animation::{Animation, InterpolationFunction, Sampler},
-    assets::Loader,
-    prelude::*,
+    assets::{AssetStorage, Loader},
 };
 use animation_support::{ActiveHandleChannel, ActiveHandlePrimitive};
 use collision_model::{
@@ -24,10 +23,20 @@ impl InteractionAnimationLoader {
     ///
     /// # Parameters
     ///
-    /// * `world`: `World` to load animations into.
+    /// * `loader`: `Loader` to load assets.
+    /// * `interaction_frame_assets`: `AssetStorage` for `InteractionFrame`s.
+    /// * `interaction_frame_primitive_sampler_assets`: `AssetStorage` for `Sampler<InteractionFramePrimitive>`s.
+    /// * `interaction_frame_animation_assets`: `AssetStorage` for `Animation<InteractionFrameActiveHandle>`s.
     /// * `sequences`: Sequences of the animation.
     pub fn load_into_map<'seq, SequenceId, Sequence, Frame>(
-        world: &'seq World,
+        loader: &'seq Loader,
+        interaction_frame_assets: &'seq AssetStorage<InteractionFrame>,
+        interaction_frame_primitive_sampler_assets: &'seq AssetStorage<
+            Sampler<InteractionFramePrimitive>,
+        >,
+        interaction_frame_animation_assets: &'seq AssetStorage<
+            Animation<InteractionFrameActiveHandle>,
+        >,
         sequences: &HashMap<SequenceId, Sequence>,
     ) -> HashMap<SequenceId, InteractionAnimationHandle>
     where
@@ -35,19 +44,35 @@ impl InteractionAnimationLoader {
         Frame: InteractionAnimationFrame,
         Sequence: InteractionAnimationSequence<Frame = Frame> + 'seq,
     {
-        Self::load(world, sequences.iter())
-            .map(|(id, handle)| (*id, handle))
-            .collect::<HashMap<SequenceId, InteractionAnimationHandle>>()
+        Self::load(
+            loader,
+            interaction_frame_assets,
+            interaction_frame_primitive_sampler_assets,
+            interaction_frame_animation_assets,
+            sequences.iter(),
+        )
+        .map(|(id, handle)| (*id, handle))
+        .collect::<HashMap<SequenceId, InteractionAnimationHandle>>()
     }
 
     /// Loads `InteractionFrame` animations and returns a vector of their handles in order.
     ///
     /// # Parameters
     ///
-    /// * `world`: `World` to load animations into.
+    /// * `loader`: `Loader` to load assets.
+    /// * `interaction_frame_assets`: `AssetStorage` for `InteractionFrame`s.
+    /// * `interaction_frame_primitive_sampler_assets`: `AssetStorage` for `Sampler<InteractionFramePrimitive>`s.
+    /// * `interaction_frame_animation_assets`: `AssetStorage` for `Animation<InteractionFrameActiveHandle>`s.
     /// * `sequences`: Sequences of the animation.
     pub fn load_into_vec<'seq, Sequences, Sequence, Frame>(
-        world: &'seq World,
+        loader: &'seq Loader,
+        interaction_frame_assets: &'seq AssetStorage<InteractionFrame>,
+        interaction_frame_primitive_sampler_assets: &'seq AssetStorage<
+            Sampler<InteractionFramePrimitive>,
+        >,
+        interaction_frame_animation_assets: &'seq AssetStorage<
+            Animation<InteractionFrameActiveHandle>,
+        >,
         sequences: Sequences,
     ) -> Vec<InteractionAnimationHandle>
     where
@@ -56,10 +81,16 @@ impl InteractionAnimationLoader {
         Sequence: InteractionAnimationSequence<Frame = Frame> + 'seq,
     {
         sequences
-            .map(|sequence| Self::sequence_to_animation(world, sequence))
+            .map(|sequence| {
+                Self::sequence_to_animation(
+                    loader,
+                    interaction_frame_assets,
+                    interaction_frame_primitive_sampler_assets,
+                    sequence,
+                )
+            })
             .map(|animation| {
-                let loader = world.read_resource::<Loader>();
-                loader.load_from_data(animation, (), &world.read_resource())
+                loader.load_from_data(animation, (), interaction_frame_animation_assets)
             })
             .collect::<Vec<InteractionAnimationHandle>>()
     }
@@ -70,10 +101,20 @@ impl InteractionAnimationLoader {
     ///
     /// # Parameters
     ///
-    /// * `world`: `World` to load animations into.
+    /// * `loader`: `Loader` to load assets.
+    /// * `interaction_frame_assets`: `AssetStorage` for `InteractionFrame`s.
+    /// * `interaction_frame_primitive_sampler_assets`: `AssetStorage` for `Sampler<InteractionFramePrimitive>`s.
+    /// * `interaction_frame_animation_assets`: `AssetStorage` for `Animation<InteractionFrameActiveHandle>`s.
     /// * `sequences`: Sequences of the animation.
     pub fn load<'seq, Sequences, SequenceId, Sequence, Frame>(
-        world: &'seq World,
+        loader: &'seq Loader,
+        interaction_frame_assets: &'seq AssetStorage<InteractionFrame>,
+        interaction_frame_primitive_sampler_assets: &'seq AssetStorage<
+            Sampler<InteractionFramePrimitive>,
+        >,
+        interaction_frame_animation_assets: &'seq AssetStorage<
+            Animation<InteractionFrameActiveHandle>,
+        >,
         sequences: Sequences,
     ) -> impl Iterator<Item = (&'seq SequenceId, InteractionAnimationHandle)>
     where
@@ -83,10 +124,20 @@ impl InteractionAnimationLoader {
         Sequence: InteractionAnimationSequence<Frame = Frame> + 'seq,
     {
         sequences
-            .map(move |(id, sequence)| (id, Self::sequence_to_animation(world, sequence)))
+            .map(move |(id, sequence)| {
+                (
+                    id,
+                    Self::sequence_to_animation(
+                        loader,
+                        interaction_frame_assets,
+                        interaction_frame_primitive_sampler_assets,
+                        sequence,
+                    ),
+                )
+            })
             .map(move |(id, animation)| {
-                let loader = world.read_resource::<Loader>();
-                let animation_handle = loader.load_from_data(animation, (), &world.read_resource());
+                let animation_handle =
+                    loader.load_from_data(animation, (), &interaction_frame_animation_assets);
                 (id, animation_handle)
             })
     }
@@ -95,13 +146,19 @@ impl InteractionAnimationLoader {
     ///
     /// # Parameters
     ///
-    /// * `world`: `World` to store the `Animation`s.
+    /// * `loader`: `Loader` to load assets.
+    /// * `interaction_frame_assets`: `AssetStorage` for `InteractionFrame`s.
+    /// * `interaction_frame_primitive_sampler_assets`: `AssetStorage` for `Sampler<InteractionFramePrimitive>`s.
     /// * `sequence`: `Sequence` to create the animation from.
     fn sequence_to_animation<
         Sequence: InteractionAnimationSequence<Frame = F>,
         F: InteractionAnimationFrame,
     >(
-        world: &World,
+        loader: &Loader,
+        interaction_frame_assets: &AssetStorage<InteractionFrame>,
+        interaction_frame_primitive_sampler_assets: &AssetStorage<
+            Sampler<InteractionFramePrimitive>,
+        >,
         sequence: &Sequence,
     ) -> Animation<InteractionFrameActiveHandle> {
         let frames = sequence.frames();
@@ -113,10 +170,13 @@ impl InteractionAnimationLoader {
         }
         input.push(tick_counter);
 
-        let frame_sampler = Self::frame_sampler(world, sequence, input.clone());
-
-        let loader = world.read_resource::<Loader>();
-        let frame_sampler_handle = loader.load_from_data(frame_sampler, (), &world.read_resource());
+        let frame_sampler =
+            Self::frame_sampler(loader, interaction_frame_assets, sequence, input.clone());
+        let frame_sampler_handle = loader.load_from_data(
+            frame_sampler,
+            (),
+            &interaction_frame_primitive_sampler_assets,
+        );
 
         Animation {
             nodes: vec![(0, ActiveHandleChannel::Handle, frame_sampler_handle)],
@@ -127,7 +187,8 @@ impl InteractionAnimationLoader {
         Sequence: InteractionAnimationSequence<Frame = F>,
         F: InteractionAnimationFrame,
     >(
-        world: &World,
+        loader: &Loader,
+        interaction_frame_assets: &AssetStorage<InteractionFrame>,
         sequence: &Sequence,
         input: Vec<f32>,
     ) -> Sampler<InteractionFramePrimitive> {
@@ -135,12 +196,10 @@ impl InteractionAnimationLoader {
         let mut output = Vec::with_capacity(frame_count);
         sequence.frames().iter().for_each(|frame| {
             // TODO: load `InteractionFrame`s and pass `Handle`s in.
-            let loader = world.read_resource::<Loader>();
-            let store = world.read_resource();
             let handle = loader.load_from_data(
                 InteractionFrame::new(frame.interactions().map(Clone::clone), frame.wait()),
                 (),
-                &store,
+                &interaction_frame_assets,
             );
 
             output.push(ActiveHandlePrimitive::Handle(handle));
@@ -165,7 +224,7 @@ mod test {
 
     use amethyst::{
         animation::{Animation, AnimationBundle, InterpolationFunction, Sampler},
-        assets::AssetStorage,
+        assets::{AssetStorage, Loader},
         prelude::*,
     };
     use amethyst_test::prelude::*;
@@ -185,8 +244,25 @@ mod test {
     fn loads_interaction_animations_into_map() {
         let effect = |world: &mut World| {
             let test_sequences = test_sequences();
-            let animation_handles =
-                InteractionAnimationLoader::load_into_map(world, &test_sequences);
+
+            let animation_handles = {
+                let loader = world.read_resource::<Loader>();
+                let interaction_frame_assets =
+                    world.read_resource::<AssetStorage<InteractionFrame>>();
+                let interaction_frame_primitive_sampler_assets =
+                    world.read_resource::<AssetStorage<Sampler<InteractionFramePrimitive>>>();
+                let interaction_frame_animation_assets =
+                    world.read_resource::<AssetStorage<Animation<InteractionFrameActiveHandle>>>();
+
+                InteractionAnimationLoader::load_into_map(
+                    &loader,
+                    &interaction_frame_assets,
+                    &interaction_frame_primitive_sampler_assets,
+                    &interaction_frame_animation_assets,
+                    &test_sequences,
+                )
+            };
+
             world.add_resource(EffectReturn(animation_handles));
         }; // kcov-ignore
         let assertion = |world: &mut World| {
@@ -219,8 +295,25 @@ mod test {
     fn loads_interaction_animations_into_vec() {
         let effect = |world: &mut World| {
             let test_sequences = test_sequences();
-            let animation_handles =
-                InteractionAnimationLoader::load_into_vec(world, test_sequences.values());
+
+            let animation_handles = {
+                let loader = world.read_resource::<Loader>();
+                let interaction_frame_assets =
+                    world.read_resource::<AssetStorage<InteractionFrame>>();
+                let interaction_frame_primitive_sampler_assets =
+                    world.read_resource::<AssetStorage<Sampler<InteractionFramePrimitive>>>();
+                let interaction_frame_animation_assets =
+                    world.read_resource::<AssetStorage<Animation<InteractionFrameActiveHandle>>>();
+
+                InteractionAnimationLoader::load_into_vec(
+                    &loader,
+                    &interaction_frame_assets,
+                    &interaction_frame_primitive_sampler_assets,
+                    &interaction_frame_animation_assets,
+                    test_sequences.values(),
+                )
+            };
+
             world.add_resource(EffectReturn(animation_handles));
         };
         let assertion = |world: &mut World| {

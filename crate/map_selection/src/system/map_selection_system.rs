@@ -1,7 +1,8 @@
 use amethyst::{ecs::prelude::*, shrev::EventChannel};
 
+use asset_model::loaded::SlugAndHandle;
 use derive_new::new;
-use game_model::loaded::{MapAssets, SlugAndHandle};
+use game_model::loaded::MapAssets;
 use log::warn;
 use map_selection_model::{MapSelection, MapSelectionEvent};
 use typename_derive::TypeName;
@@ -77,8 +78,8 @@ mod test {
     use amethyst::{assets::ProgressCounter, ecs::SystemData, prelude::*, shrev::EventChannel};
     use amethyst_test::prelude::*;
     use asset_loading::AssetDiscovery;
+    use asset_model::loaded::SlugAndHandle;
     use assets_test::{ASSETS_MAP_EMPTY_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
-    use game_model::loaded::SlugAndHandle;
     use loading::AssetLoader;
     use map_loading::MapLoadingBundle;
     use map_selection_model::{MapSelection, MapSelectionEvent};

@@ -1,22 +1,21 @@
-use amethyst::{assets::AssetStorage, ecs::prelude::*};
-use character_model::{config::CharacterSequenceId, loaded::Character};
+use amethyst::{
+    assets::AssetStorage,
+    core::Transform,
+    ecs::{Entities, Entity, Read, ReadExpect, System, Write, WriteStorage},
+};
+use character_loading::CharacterPrefabHandle;
+use character_model::config::CharacterSequenceId;
 use character_selection_model::CharacterSelections;
 use derive_new::new;
 use game_input::InputControlled;
 use game_model::play::GameEntities;
 use map_model::loaded::Map;
 use map_selection_model::MapSelection;
-use object_model::{
-    entity::{Position, Velocity},
-    ObjectType,
-};
+use object_loading::ObjectComponentStorages;
+use object_model::{entity::Position, ObjectType};
 use typename_derive::TypeName;
 
-use crate::{
-    CharacterComponentStorages, CharacterEntityAugmenter, GameLoadingStatus,
-    ObjectAnimationStorages, ObjectComponentStorages, ObjectEntityAugmenter,
-    ObjectSpawningResources,
-};
+use crate::GameLoadingStatus;
 
 /// Spawns character entities based on the character selection.
 #[derive(Debug, Default, TypeName, new)]
@@ -28,10 +27,9 @@ type CharacterSelectionSpawningSystemData<'s> = (
     ReadExpect<'s, MapSelection>,
     Read<'s, CharacterSelections>,
     Read<'s, AssetStorage<Map>>,
-    ObjectSpawningResources<'s, Character>,
-    CharacterComponentStorages<'s>,
+    WriteStorage<'s, CharacterPrefabHandle>,
+    WriteStorage<'s, InputControlled>,
     ObjectComponentStorages<'s, CharacterSequenceId>,
-    ObjectAnimationStorages<'s, CharacterSequenceId>,
     Write<'s, GameEntities>,
 );
 
@@ -46,10 +44,9 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             map_selection,
             character_selections,
             loaded_maps,
-            mut object_spawning_resources,
-            mut character_component_storages,
+            mut character_prefab_handles,
+            mut input_controlleds,
             mut object_component_storages,
-            mut object_animation_storages,
             mut game_entities,
         ): Self::SystemData,
     ) {
@@ -74,31 +71,35 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
 
         // This `Position` moves the entity to the middle of a "screen wide" map.
         let position = Position::new(width / 2., height / 2., depth / 2.);
-        let velocity = Velocity::default();
+        let mut transform = Transform::default();
+        transform.set_x(position.x);
+        transform.set_y(position.y - position.z);
+        transform.set_z(position.z);
 
         let character_entities = character_selections
             .selections
             .iter()
             .map(|(controller_id, slug_and_handle)| {
-                (InputControlled::new(*controller_id), slug_and_handle)
-            })
-            .map(|(input_controlled, slug_and_handle)| {
                 let entity = entities.create();
-                CharacterEntityAugmenter::augment(
-                    entity,
-                    &mut character_component_storages,
-                    &slug_and_handle.slug,
-                    input_controlled,
-                );
-                ObjectEntityAugmenter::augment(
-                    entity,
-                    &mut object_spawning_resources,
-                    &mut object_component_storages,
-                    &mut object_animation_storages,
-                    position,
-                    velocity,
-                    &slug_and_handle,
-                );
+
+                input_controlleds
+                    .insert(entity, InputControlled::new(*controller_id))
+                    .expect("Failed to insert input_controlled for character.");
+
+                character_prefab_handles
+                    .insert(entity, slug_and_handle.handle.clone())
+                    .expect("Failed to insert character_prefab_handle for character.");
+
+                // Set character `position` and `transform` based on the map.
+                object_component_storages
+                    .positions
+                    .insert(entity, position)
+                    .expect("Failed to insert position for character.");
+                object_component_storages
+                    .transforms
+                    .insert(entity, transform.clone())
+                    .expect("Failed to insert transform for character.");
+
                 entity
             })
             .collect::<Vec<Entity>>();
@@ -118,21 +119,18 @@ mod tests {
     use amethyst::{animation::AnimationBundle, ecs::prelude::*};
     use amethyst_test::prelude::*;
     use application_event::{AppEvent, AppEventReader};
+    use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
+    use character_loading::CharacterLoadingBundle;
     use character_model::config::CharacterSequenceId;
     use character_selection_model::CharacterSelections;
     use collision_loading::CollisionLoadingBundle;
     use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
-    use game_model::{
-        config::AssetSlug,
-        loaded::{MapAssets, SlugAndHandle},
-        play::GameEntities,
-    };
+    use game_model::{loaded::MapAssets, play::GameEntities};
     use loading::LoadingState;
     use map_loading::MapLoadingBundle;
     use map_selection::MapSelectionStatus;
     use map_selection_model::MapSelection;
-    use object_loading::ObjectLoadingBundle;
     use object_model::ObjectType;
     use typename::TypeName;
 
@@ -160,7 +158,7 @@ mod tests {
                 ))
                 .with_bundle(CollisionLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
-                .with_bundle(ObjectLoadingBundle::new())
+                .with_bundle(CharacterLoadingBundle::new())
                 .with_state(|| LoadingState::new(ASSETS_PATH.clone(), PopState))
                 .with_setup(map_selection(ASSETS_MAP_FADE_SLUG.clone()))
                 .with_setup(|world| {
@@ -225,7 +223,7 @@ mod tests {
             ))
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
-            .with_bundle(ObjectLoadingBundle::new())
+            .with_bundle(CharacterLoadingBundle::new())
             .with_state(|| LoadingState::new(ASSETS_PATH.clone(), PopState))
             .with_setup(map_selection(ASSETS_MAP_FADE_SLUG.clone()))
             .with_setup(|world| {

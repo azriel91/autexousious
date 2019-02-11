@@ -16,7 +16,7 @@ use crate::{config::object::SequenceId, loaded::Object};
 /// &ndash; we have to use this workaround.
 ///
 /// TODO: Orphan rules too strict pending <https://github.com/rust-lang/rfcs/issues/1856>
-pub trait ObjectWrapper: Asset<Data = Self>
+pub trait ObjectWrapper: Asset
 where
     Self: Sized,
 {

@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use game_model::config::AssetIndex;
+use asset_model::config::AssetIndex;
 
 use crate::{AssetIndexer, NamespaceDiscoverer};
 
@@ -32,7 +32,7 @@ impl AssetDiscovery {
 mod tests {
     use std::{fs, io, path::PathBuf};
 
-    use game_model::config::{AssetRecord, AssetSlugBuilder};
+    use asset_model::config::{AssetRecord, AssetSlugBuilder};
     use hamcrest::prelude::*;
     use object_model::ObjectType;
     use tempfile::tempdir;

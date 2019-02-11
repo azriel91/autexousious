@@ -62,14 +62,17 @@
 //! strongly, so instead going with animating each component separately.
 
 pub use self::{
-    body_animation_handle::BodyAnimationHandle, body_frame_active_handle::BodyFrameActiveHandle,
-    body_frame_primitive::BodyFramePrimitive,
+    body_animation_frame::BodyAnimationFrame, body_animation_handle::BodyAnimationHandle,
+    body_animation_sequence::BodyAnimationSequence,
+    body_frame_active_handle::BodyFrameActiveHandle, body_frame_primitive::BodyFramePrimitive,
     interaction_animation_handle::InteractionAnimationHandle,
     interaction_frame_active_handle::InteractionFrameActiveHandle,
     interaction_frame_primitive::InteractionFramePrimitive,
 };
 
+mod body_animation_frame;
 mod body_animation_handle;
+mod body_animation_sequence;
 mod body_frame_active_handle;
 mod body_frame_primitive;
 mod interaction_animation_handle;

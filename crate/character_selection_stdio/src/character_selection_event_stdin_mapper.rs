@@ -1,12 +1,10 @@
 use std::str::FromStr;
 
 use amethyst::{ecs::Read, Error};
+use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
 use game_input_model::ControllerId;
-use game_model::{
-    config::AssetSlug,
-    loaded::{CharacterAssets, SlugAndHandle},
-};
+use game_model::loaded::CharacterAssets;
 use stdio_spi::{MapperSystemData, StdinMapper, StdioError};
 use typename_derive::TypeName;
 
@@ -90,9 +88,10 @@ mod tests {
         Error,
     };
     use application_test_support::AutexousiousApplication;
+    use asset_model::loaded::SlugAndHandle;
     use assets_test::ASSETS_CHAR_BAT_SLUG;
     use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
-    use game_model::loaded::{CharacterAssets, SlugAndHandle};
+    use game_model::loaded::CharacterAssets;
     use stdio_spi::{StdinMapper, StdioError};
 
     use super::CharacterSelectionEventStdinMapper;

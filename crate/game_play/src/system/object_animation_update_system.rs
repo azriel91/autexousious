@@ -5,10 +5,11 @@ use amethyst::{
     assets::{AssetStorage, Handle},
     ecs::{Entities, Entity, Join, Read, ReadStorage, System},
 };
+use animation_support::AnimationRunner;
 use derive_new::new;
-use game_loading::{AnimationRunner, ObjectAnimationStorages};
 use named_type::NamedType;
 use named_type_derive::NamedType;
+use object_loading::ObjectAnimationStorages;
 use object_model::{
     entity::SequenceStatus,
     loaded::{AnimatedComponentAnimation, GameObject, ObjectWrapper},

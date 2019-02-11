@@ -1,9 +1,6 @@
-//! Types representing the loaded form of assets.
+//! Loaded form of game object model and map types.
 
-pub use self::{
-    character_assets::CharacterAssets, map_assets::MapAssets, slug_and_handle::SlugAndHandle,
-};
+pub use self::{character_assets::CharacterAssets, map_assets::MapAssets};
 
 mod character_assets;
 mod map_assets;
-mod slug_and_handle;

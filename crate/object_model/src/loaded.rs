@@ -4,7 +4,7 @@
 //! that will be used in game.
 
 pub use self::{
-    animation::{AnimatedComponentAnimation, AnimatedComponentDefault},
+    animation::{AnimatedComponentAnimation, AnimatedComponentDefault, ComponentSequence},
     game_object::GameObject,
     object::Object,
     object_wrapper::ObjectWrapper,

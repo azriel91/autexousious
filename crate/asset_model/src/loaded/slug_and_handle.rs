@@ -1,12 +1,14 @@
 use std::collections::BTreeMap;
 
-use amethyst::{assets::Handle, prelude::*};
+use amethyst::{assets::Handle, ecs::World};
+use derivative::Derivative;
 use derive_new::new;
 
 use crate::config::AssetSlug;
 
 /// Type that holds an asset's slug and handle.
-#[derive(Clone, Debug, PartialEq, new)]
+#[derive(Derivative, new)]
+#[derivative(Clone(bound = ""), Debug(bound = ""), PartialEq(bound = ""))]
 pub struct SlugAndHandle<T> {
     /// The asset slug
     pub slug: AssetSlug,

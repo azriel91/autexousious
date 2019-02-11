@@ -177,8 +177,9 @@ impl SpriteSheetMapper {
 #[cfg(test)]
 mod test {
     use amethyst::{
+        assets::{AssetStorage, Loader},
         ecs::World,
-        renderer::{SpriteSheet, TextureHandle},
+        renderer::{SpriteSheet, Texture, TextureHandle},
     };
     use amethyst_test::AmethystApplication;
     use assets_test::{
@@ -425,9 +426,16 @@ mod test {
         world: &mut World,
         sprite_sheet_definitions: &[SpriteSheetDefinition],
     ) -> Vec<TextureHandle> {
-        let texture_handles =
-            TextureLoader::load_textures(world, &ASSETS_CHAR_BAT_PATH, sprite_sheet_definitions)
-                .expect("Failed to load textures for test.");
+        let loader = world.read_resource::<Loader>();
+        let texture_assets = world.read_resource::<AssetStorage<Texture>>();
+
+        let texture_handles = TextureLoader::load_textures(
+            &loader,
+            &texture_assets,
+            &ASSETS_CHAR_BAT_PATH,
+            sprite_sheet_definitions,
+        )
+        .expect("Failed to load textures for test.");
 
         texture_handles
     }

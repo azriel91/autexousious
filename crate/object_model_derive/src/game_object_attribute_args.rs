@@ -1,6 +1,8 @@
+use proc_macro2::Span;
 use syn::{
     parse::{Parse, ParseStream},
-    Path, Result,
+    punctuated::Punctuated,
+    Error, Path, Result, Token,
 };
 
 /// Parses the `Path` for the type to use as a `GameObject`'s `SequenceId`.
@@ -16,11 +18,23 @@ use syn::{
 pub struct GameObjectAttributeArgs {
     /// The sequence ID for the `GameObject`.
     pub sequence_id: Path,
+    /// Type that `impl GameObjectDefinition`, e.g. `CharacterDefinition`.
+    pub object_definition: Option<Path>,
 }
 
 impl Parse for GameObjectAttributeArgs {
     fn parse(input: ParseStream) -> Result<Self> {
-        let sequence_id = input.parse()?;
-        Ok(GameObjectAttributeArgs { sequence_id })
+        let paths = Punctuated::<Path, Token![,]>::parse_terminated(input)?;
+        let mut paths_iter = paths.into_iter();
+
+        let sequence_id = paths_iter
+            .next()
+            .ok_or_else(|| Error::new(Span::call_site(), "Must provide `SequenceId` type."))?;
+        let object_definition = paths_iter.next();
+
+        Ok(GameObjectAttributeArgs {
+            sequence_id,
+            object_definition,
+        })
     }
 }

@@ -5,9 +5,10 @@ use amethyst::{
     ecs::{prelude::*, world::EntitiesRes},
     renderer::{SpriteRender, Transparent},
 };
+use animation_support::AnimationRunner;
 use map_model::loaded::{Map, MapHandle};
 
-use crate::{AnimationRunner, MapLayerComponentStorages, MapSpawningResources};
+use crate::{MapLayerComponentStorages, MapSpawningResources};
 
 /// Spawns map layer entities into the world.
 #[derive(Debug)]

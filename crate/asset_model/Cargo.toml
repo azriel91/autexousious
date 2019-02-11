@@ -1,0 +1,24 @@
+[package]
+name = "asset_model"
+version = "0.8.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+edition = "2018"
+
+[dependencies]
+amethyst = { git = "https://github.com/amethyst/amethyst.git" }
+character_model = { path = "../character_model" }
+derivative = "1.0.2"
+derive-new = "0.5.6"
+derive_builder = "0.7.0"
+map_model = { path = "../map_model" }
+object_model = { path = "../object_model" }
+serde = "1.0.85"
+strum = "0.13.0"
+strum_macros = "0.13.0"
+
+[dev-dependencies]
+tempfile = "3.0.5"
+
+[build-dependencies]
+rustc_version = "0.2.3"
+

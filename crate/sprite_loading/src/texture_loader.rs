@@ -2,7 +2,6 @@ use std::path::Path;
 
 use amethyst::{
     assets::{AssetStorage, Loader},
-    ecs::World,
     renderer::{PngFormat, Texture, TextureHandle, TextureMetadata},
     Error,
 };
@@ -17,11 +16,13 @@ impl TextureLoader {
     ///
     /// # Parameters
     ///
-    /// * `world`: `World` to store the sprite sheet textures.
+    /// * `loader`: `Loader` to load assets.
+    /// * `texture_assets`: `AssetStorage` for `Texture`s.
     /// * `object_directory`: Object configuration base directory.
     /// * `sprite_sheet_definitions`: List of metadata for sprite sheets to load.
     pub(crate) fn load_textures(
-        world: &World,
+        loader: &Loader,
+        texture_assets: &AssetStorage<Texture>,
         object_directory: &Path,
         sprite_sheet_definitions: &[SpriteSheetDefinition],
     ) -> Result<Vec<TextureHandle>, Error> {
@@ -37,7 +38,11 @@ impl TextureLoader {
 
                 let sprite_image_path = sprite_image_path.to_str().ok_or(error_msg)?;
 
-                Ok(Self::load(world, String::from(sprite_image_path)))
+                Ok(Self::load(
+                    loader,
+                    texture_assets,
+                    String::from(sprite_image_path),
+                ))
             })
             .collect::<Vec<Result<TextureHandle, String>>>();
 
@@ -81,17 +86,16 @@ impl TextureLoader {
     ///
     /// * `world`: `World` that stores resources.
     /// * `path`: Path to the sprite sheet.
-    fn load<N>(world: &World, path: N) -> TextureHandle
+    fn load<N>(loader: &Loader, texture_assets: &AssetStorage<Texture>, path: N) -> TextureHandle
     where
         N: Into<String>,
     {
-        let loader = world.read_resource::<Loader>();
         loader.load(
             path,
             PngFormat,
             TextureMetadata::srgb(), // TODO: perhaps this should be srgb_scale
             (),
-            &world.read_resource::<AssetStorage<Texture>>(),
+            &texture_assets,
         )
     }
 }

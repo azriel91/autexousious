@@ -1,4 +1,4 @@
-use game_model::config::{AssetSlug, AssetSlugBuilder};
+use asset_model::config::{AssetSlug, AssetSlugBuilder};
 use lazy_static::lazy_static;
 use map_model::{
     config::{MapBounds, MapDefinition, MapHeader},

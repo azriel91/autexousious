@@ -1,10 +1,8 @@
 use std::str::FromStr;
 
 use amethyst::{ecs::Read, Error};
-use game_model::{
-    config::AssetSlug,
-    loaded::{MapAssets, SlugAndHandle},
-};
+use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
+use game_model::loaded::MapAssets;
 use map_selection_model::{MapSelection, MapSelectionEvent};
 use stdio_spi::{MapperSystemData, StdinMapper, StdioError};
 use typename_derive::TypeName;
@@ -77,8 +75,9 @@ mod tests {
         Error,
     };
     use application_test_support::AutexousiousApplication;
+    use asset_model::loaded::SlugAndHandle;
     use assets_test::ASSETS_MAP_FADE_SLUG;
-    use game_model::loaded::{MapAssets, SlugAndHandle};
+    use game_model::loaded::MapAssets;
     use map_selection_model::{MapSelection, MapSelectionEvent};
     use stdio_spi::{StdinMapper, StdioError};
 

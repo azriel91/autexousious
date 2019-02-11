@@ -6,7 +6,8 @@ use syn::{punctuated::Pair, Ident, Path, Visibility};
 /// See `object_model::loaded::ObjectWrapper`.
 pub fn object_wrapper_gen(
     sequence_id_type: &Path,
-    object_wrapper_type: &Ident,
+    object_definition_type: &Path,
+    object_wrapper_name: &Ident,
     vis: &Visibility,
 ) -> proc_macro2::TokenStream {
     // TODO: Trait delegation pending <https://github.com/rust-lang/rfcs/pull/2393>
@@ -25,18 +26,38 @@ pub fn object_wrapper_gen(
         }
     };
 
+    let doc_fn_new = format!("Returns a new {}", object_wrapper_name);
+
     quote! {
-        use derive_deref::{Deref, DerefMut};
-
         #[doc = #doc_string]
-        #[derive(Debug, Deref, DerefMut)]
-        #vis struct #object_wrapper_type(#vis object_model::loaded::Object<#sequence_id_type>);
+        #[derive(Clone, Debug, PartialEq)]
+        #vis struct #object_wrapper_name(#vis object_model::loaded::Object<#sequence_id_type>);
 
-        impl object_model::loaded::ObjectWrapper for #object_wrapper_type {
+        impl #object_wrapper_name {
+            #[doc = #doc_fn_new]
+            pub fn new(object: object_model::loaded::Object<#sequence_id_type>) -> Self {
+                #object_wrapper_name(object)
+            }
+        }
+
+        impl std::ops::Deref for #object_wrapper_name {
+            type Target = object_model::loaded::Object<#sequence_id_type>;
+            fn deref(&self) -> &Self::Target {
+                &self.0
+            }
+        }
+
+        impl std::ops::DerefMut for #object_wrapper_name {
+            fn deref_mut(&mut self) -> &mut object_model::loaded::Object<#sequence_id_type> {
+                &mut self.0
+            }
+        }
+
+        impl object_model::loaded::ObjectWrapper for #object_wrapper_name {
             type SequenceId = #sequence_id_type;
 
             fn new(object: object_model::loaded::Object<Self::SequenceId>) -> Self {
-                #object_wrapper_type(object)
+                #object_wrapper_name::new(object)
             }
 
             fn inner(&self) -> &object_model::loaded::Object<Self::SequenceId> {
@@ -48,27 +69,15 @@ pub fn object_wrapper_gen(
             }
         }
 
-        impl amethyst::assets::Asset for #object_wrapper_type {
+        impl amethyst::assets::Asset for #object_wrapper_name {
             const NAME: &'static str = concat!(
                 module_path!(),
                 "::",
-                stringify!(#object_wrapper_type)
+                stringify!(#object_wrapper_name),
             );
 
-            type Data = Self;
+            type Data = object_model::config::ObjectAssetData<#object_definition_type>;
             type HandleStorage = amethyst::ecs::storage::VecStorage<amethyst::assets::Handle<Self>>;
-        }
-
-        impl From<#object_wrapper_type> for std::result::Result<
-            amethyst::assets::ProcessingState<#object_wrapper_type>,
-            amethyst::Error
-        > {
-            fn from(object: #object_wrapper_type) -> std::result::Result<
-                amethyst::assets::ProcessingState<#object_wrapper_type>,
-                amethyst::Error
-            > {
-                Ok(amethyst::assets::ProcessingState::Loaded(object))
-            }
         }
     }
 }

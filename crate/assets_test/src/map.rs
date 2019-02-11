@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use game_model::config::{AssetSlug, AssetSlugBuilder, ConfigType};
+use asset_model::config::{AssetSlug, AssetSlugBuilder, ConfigType};
 use heck::SnakeCase;
 use lazy_static::lazy_static;
 

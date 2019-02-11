@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use game_model::config::ConfigType;
+use asset_model::config::ConfigType;
 use heck::SnakeCase;
 use lazy_static::lazy_static;
 

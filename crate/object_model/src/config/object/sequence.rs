@@ -9,7 +9,8 @@
 
 pub use self::{object_frame::ObjectFrame, sequence_id::SequenceId};
 
-use collision_loading::{BodyAnimationSequence, InteractionAnimationSequence};
+use collision_loading::InteractionAnimationSequence;
+use collision_model::animation::BodyAnimationSequence;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 use sprite_loading::AnimationSequence;

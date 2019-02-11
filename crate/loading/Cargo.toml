@@ -6,18 +6,22 @@ edition = "2018"
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git" }
+application = { path = "../application" }
 application_event = { path = "../application_event" }
 application_state = { path = "../application_state" }
 application_ui = { path = "../application_ui" }
 asset_loading = { path = "../asset_loading" }
+asset_model = { path = "../asset_model" }
 assets_built_in = { path = "../assets_built_in" }
+character_loading = { path = "../character_loading" }
 derivative = "1.0.2"
 game_model = { path = "../game_model" }
 log = "0.4.6"
 map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }
-object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
+sprite_loading = { path = "../sprite_loading" }
+sprite_model = { path = "../sprite_model" }
 strum = "0.13.0"
 toml = "0.4.10"
 

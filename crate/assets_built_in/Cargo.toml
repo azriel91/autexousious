@@ -5,7 +5,7 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
 [dependencies]
-game_model = { path = "../game_model" }
+asset_model = { path = "../asset_model" }
 lazy_static = "1.2.0"
 map_model = { path = "../map_model" }
 
