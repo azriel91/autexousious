@@ -140,3 +140,5 @@ impl ObjectEntityAugmenter {
             });
     }
 }
+
+// See tests/object_entity_augmenter.rs
