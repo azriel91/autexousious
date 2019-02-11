@@ -1,7 +1,7 @@
 use amethyst::{ecs::prelude::*, shrev::EventChannel};
+use asset_model::loaded::{MapAssets, SlugAndHandle};
 use derive_new::new;
 use game_input::ControllerInput;
-use game_model::loaded::{MapAssets, SlugAndHandle};
 use log::debug;
 use map_selection_model::{MapSelection, MapSelectionEvent};
 use tracker::Last;
@@ -159,9 +159,9 @@ mod test {
     };
     use amethyst_test::prelude::*;
     use application_test_support::AutexousiousApplication;
+    use asset_model::loaded::{MapAssets, SlugAndHandle};
     use assets_test::ASSETS_MAP_EMPTY_SLUG;
     use game_input::ControllerInput;
-    use game_model::loaded::{MapAssets, SlugAndHandle};
     use map_model::loaded::Map;
     use map_selection_model::{MapSelection, MapSelectionEvent};
     use tracker::Last;

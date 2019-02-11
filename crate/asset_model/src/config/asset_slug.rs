@@ -19,7 +19,7 @@ use serde::{Deserialize, Serialize};
 /// # Examples
 ///
 /// ```rust
-/// use game_model::config::{AssetSlug, AssetSlugBuilder};
+/// use asset_model::config::{AssetSlug, AssetSlugBuilder};
 ///
 /// fn main() -> Result<(), String> {
 ///     let asset_slug: AssetSlug = AssetSlugBuilder::default()

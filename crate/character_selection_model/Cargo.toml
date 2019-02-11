@@ -10,7 +10,7 @@ character_model = { path = "../character_model" }
 derivative = "1.0.2"
 derive-new = "0.5.6"
 game_input_model = { path = "../game_input_model" }
-game_model = { path = "../game_model" }
+asset_model = { path = "../asset_model" }
 object_model = { path = "../object_model" }
 strum = "0.13.0"
 strum_macros = "0.13.0"

@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use game_model::config::AssetRecord;
+use asset_model::config::AssetRecord;
 
 use crate::{AssetIndexingUtils, DirTraverse};
 
@@ -29,7 +29,7 @@ impl MapIndexer {
 mod tests {
     use std::{fs, io, path::PathBuf};
 
-    use game_model::config::{AssetRecord, AssetSlugBuilder};
+    use asset_model::config::{AssetRecord, AssetSlugBuilder};
     use hamcrest::prelude::*;
     use tempfile::tempdir;
 

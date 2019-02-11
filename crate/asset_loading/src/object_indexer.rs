@@ -1,6 +1,6 @@
 use std::{collections::HashMap, path::Path};
 
-use game_model::config::AssetRecord;
+use asset_model::config::AssetRecord;
 use heck::SnakeCase;
 use object_model::ObjectType;
 use strum::IntoEnumIterator;
@@ -45,7 +45,7 @@ impl ObjectIndexer {
 mod tests {
     use std::{fs, io, path::PathBuf};
 
-    use game_model::config::{AssetRecord, AssetSlugBuilder};
+    use asset_model::config::{AssetRecord, AssetSlugBuilder};
     use hamcrest::prelude::*;
     use object_model::ObjectType;
     use tempfile::tempdir;

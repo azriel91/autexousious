@@ -1,4 +1,4 @@
-use game_model::config::{AssetIndex, ConfigType};
+use asset_model::config::{AssetIndex, ConfigType};
 use heck::SnakeCase;
 use strum::IntoEnumIterator;
 
@@ -39,7 +39,7 @@ impl AssetIndexer {
 mod tests {
     use std::{fs, io, path::PathBuf};
 
-    use game_model::config::{AssetRecord, AssetSlugBuilder};
+    use asset_model::config::{AssetRecord, AssetSlugBuilder};
     use hamcrest::prelude::*;
     use object_model::ObjectType;
     use tempfile::tempdir;

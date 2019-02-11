@@ -4,10 +4,10 @@ use amethyst::{
     ui::{Anchor, UiText, UiTransform},
 };
 use application_ui::{FontVariant, Theme};
+use asset_model::loaded::{MapAssets, SlugAndHandle};
 use derive_new::new;
 use game_input::{ControllerInput, InputControlled, SharedInputControlled};
 use game_input_model::{ControllerId, InputConfig};
-use game_model::loaded::{MapAssets, SlugAndHandle};
 use log::debug;
 use map_selection::MapSelectionStatus;
 use map_selection_model::{MapSelection, MapSelectionEvent};
@@ -236,9 +236,9 @@ mod test {
         ui::UiText,
     };
     use application_test_support::AutexousiousApplication;
+    use asset_model::loaded::{MapAssets, SlugAndHandle};
     use assets_test::ASSETS_MAP_EMPTY_SLUG;
     use game_input_model::{Axis, ControlAction, ControllerConfig, InputConfig};
-    use game_model::loaded::{MapAssets, SlugAndHandle};
     use map_selection::MapSelectionStatus;
     use map_selection_model::{MapSelection, MapSelectionEvent};
     use typename::TypeName;

@@ -13,7 +13,7 @@ application_ui = { path = "../application_ui" }
 asset_loading = { path = "../asset_loading" }
 assets_built_in = { path = "../assets_built_in" }
 derivative = "1.0.2"
-game_model = { path = "../game_model" }
+asset_model = { path = "../asset_model" }
 log = "0.4.6"
 map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }

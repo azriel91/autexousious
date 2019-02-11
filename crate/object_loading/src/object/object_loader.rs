@@ -163,6 +163,7 @@ mod test {
     };
     use amethyst_test::AmethystApplication;
     use application::{load_in, Format};
+    use asset_model::config::AssetRecord;
     use assets_test::{ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SLUG};
     use character_model::{
         config::{CharacterDefinition, CharacterSequenceId},
@@ -176,7 +177,6 @@ mod test {
         },
         config::{BodyFrame, InteractionFrame},
     };
-    use game_model::config::AssetRecord;
     use sprite_loading::SpriteLoader;
     use sprite_model::config::SpritesDefinition;
     use typename::TypeName;

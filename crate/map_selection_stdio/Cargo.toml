@@ -9,7 +9,7 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 application_event = { path = "../application_event" }
 map_selection_model = { path = "../map_selection_model" }
 derive-new = "0.5.6"
-game_model = { path = "../game_model" }
+asset_model = { path = "../asset_model" }
 stdio_spi = { path = "../stdio_spi" }
 structopt = "0.2.14"
 structopt-derive = "0.2.14"

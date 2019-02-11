@@ -4,13 +4,13 @@ use amethyst::{
     ui::{Anchor, UiText, UiTransform},
 };
 use application_ui::{FontVariant, Theme};
+use asset_model::loaded::{CharacterAssets, SlugAndHandle};
 use character_selection_model::{
     CharacterSelection, CharacterSelectionEvent, CharacterSelectionsStatus,
 };
 use derive_new::new;
 use game_input::{ControllerInput, InputControlled};
 use game_input_model::{ControllerId, InputConfig};
-use game_model::loaded::{CharacterAssets, SlugAndHandle};
 use log::debug;
 use typename_derive::TypeName;
 
@@ -228,12 +228,12 @@ mod test {
         winit::VirtualKeyCode,
     };
     use application_test_support::AutexousiousApplication;
+    use asset_model::loaded::{CharacterAssets, SlugAndHandle};
     use assets_test::ASSETS_CHAR_BAT_SLUG;
     use character_selection_model::{
         CharacterSelection, CharacterSelectionEvent, CharacterSelectionsStatus,
     };
     use game_input_model::{Axis, ControlAction, ControllerConfig, InputConfig};
-    use game_model::loaded::{CharacterAssets, SlugAndHandle};
     use typename::TypeName;
 
     use super::CharacterSelectionWidgetUiSystem;

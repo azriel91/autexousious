@@ -8,7 +8,7 @@ edition = "2018"
 amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 application = { path = "../application" }
 derive-new = "0.5.6"
-game_model = { path = "../game_model" }
+asset_model = { path = "../asset_model" }
 heck = "0.3.1"
 itertools = "0.8.0"
 log = "0.4.6"

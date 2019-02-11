@@ -6,6 +6,7 @@ use amethyst::{
 };
 use amethyst_test::prelude::*;
 use application_event::{AppEvent, AppEventReader};
+use asset_model::loaded::SlugAndHandle;
 use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
 use character_loading::CharacterLoadingBundle;
 use character_model::config::CharacterSequenceId;
@@ -15,7 +16,6 @@ use collision_loading::CollisionLoadingBundle;
 use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
 use game_input_model::{PlayerActionControl, PlayerAxisControl};
 use game_loading::GameLoadingState;
-use game_model::loaded::SlugAndHandle;
 use loading::LoadingState;
 use map_loading::MapLoadingBundle;
 
@@ -165,11 +165,11 @@ impl AutexousiousApplication {
 mod test {
     use amethyst::{input::InputHandler, ui::Interactable};
     use amethyst_test::SpriteRenderAnimationFixture;
-    use game_input_model::{PlayerActionControl, PlayerAxisControl};
-    use game_model::{
+    use asset_model::{
         loaded::{CharacterAssets, MapAssets},
         play::GameEntities,
     };
+    use game_input_model::{PlayerActionControl, PlayerAxisControl};
     use object_model::ObjectType;
     use strum::IntoEnumIterator;
 

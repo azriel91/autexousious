@@ -18,7 +18,7 @@ collision_loading = { path = "../collision_loading" }
 collision_model = { path = "../collision_model" }
 game_input_model = { path = "../game_input_model" }
 game_loading = { path = "../game_loading" }
-game_model = { path = "../game_model" }
+asset_model = { path = "../asset_model" }
 loading = { path = "../loading" }
 map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }

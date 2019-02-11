@@ -1,10 +1,10 @@
 use amethyst::{assets::Loader, ecs::World, renderer::SpriteSheetHandle, Error};
 use application::{load_in, Format};
+use asset_model::config::AssetRecord;
 use character_model::{
     config::CharacterDefinition,
     loaded::{Character, CharacterHandle},
 };
-use game_model::config::AssetRecord;
 use object_model::config::ObjectAssetData;
 
 /// Loads `Character`s from configuration.
@@ -53,6 +53,7 @@ mod test {
     };
     use amethyst_test::prelude::*;
     use application::{load_in, resource::Format};
+    use asset_model::config::AssetRecord;
     use assets_test::{ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SLUG};
     use character_model::{
         config::CharacterSequenceId,
@@ -60,7 +61,6 @@ mod test {
     };
     use collision_loading::CollisionLoadingBundle;
     use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
-    use game_model::config::AssetRecord;
     use sprite_loading::SpriteLoader;
     use sprite_model::config::SpritesDefinition;
     use typename::TypeName;

@@ -78,6 +78,7 @@ mod tests {
     use amethyst::{animation::AnimationBundle, ecs::prelude::*, shrev::EventChannel};
     use amethyst_test::prelude::*;
     use application_event::{AppEvent, AppEventReader};
+    use asset_model::loaded::SlugAndHandle;
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
     use character_loading::CharacterLoadingBundle;
     use character_model::config::CharacterSequenceId;
@@ -87,7 +88,6 @@ mod tests {
     use collision_loading::CollisionLoadingBundle;
     use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
     use game_input_model::{PlayerActionControl, PlayerAxisControl};
-    use game_model::loaded::SlugAndHandle;
     use loading::LoadingState;
     use map_loading::MapLoadingBundle;
     use typename::TypeName;

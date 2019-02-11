@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
+use asset_model::loaded::SlugAndHandle;
 use character_model::loaded::Character;
 use derive_new::new;
 use game_input_model::ControllerId;
-use game_model::loaded::SlugAndHandle;
 
 /// Stores the selected characters for each controller.
 ///

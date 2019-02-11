@@ -3,6 +3,7 @@ use amethyst::{
     core::Transform,
     ecs::{Entities, Entity, Read, ReadExpect, System, Write, WriteStorage},
 };
+use asset_model::play::GameEntities;
 use character_loading::{CharacterComponentStorages, CharacterEntityAugmenter};
 use character_model::{
     config::CharacterSequenceId,
@@ -11,7 +12,6 @@ use character_model::{
 use character_selection_model::CharacterSelections;
 use derive_new::new;
 use game_input::InputControlled;
-use game_model::play::GameEntities;
 use map_model::loaded::Map;
 use map_selection_model::MapSelection;
 use object_loading::{ObjectAnimationStorages, ObjectComponentStorages, ObjectEntityAugmenter};
@@ -150,17 +150,17 @@ mod tests {
     use amethyst::{animation::AnimationBundle, ecs::prelude::*};
     use amethyst_test::prelude::*;
     use application_event::{AppEvent, AppEventReader};
+    use asset_model::{
+        config::AssetSlug,
+        loaded::{MapAssets, SlugAndHandle},
+        play::GameEntities,
+    };
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
     use character_loading::CharacterLoadingBundle;
     use character_model::config::CharacterSequenceId;
     use character_selection_model::CharacterSelections;
     use collision_loading::CollisionLoadingBundle;
     use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
-    use game_model::{
-        config::AssetSlug,
-        loaded::{MapAssets, SlugAndHandle},
-        play::GameEntities,
-    };
     use loading::LoadingState;
     use map_loading::MapLoadingBundle;
     use map_selection::MapSelectionStatus;

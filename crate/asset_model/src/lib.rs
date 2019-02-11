@@ -20,9 +20,9 @@
 //! ## Game Entities
 //!
 //! ```rust,ignore
-//! extern crate game_model;
+//! extern crate asset_model;
 //!
-//! use game_model::play::GameEntities;
+//! use asset_model::play::GameEntities;
 //!
 //! // Game setup state
 //! fn update(&mut self, data: StateData<GameData>) -> Trans<GameData, E> {

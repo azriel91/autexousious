@@ -1,5 +1,5 @@
 use amethyst::ecs::World;
-use game_model::{
+use asset_model::{
     config::AssetSlug,
     loaded::{MapAssets, SlugAndHandle},
 };

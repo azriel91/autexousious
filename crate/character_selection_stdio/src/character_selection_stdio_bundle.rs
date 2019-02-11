@@ -29,7 +29,7 @@ mod test {
 
     use amethyst::shrev::EventChannel;
     use amethyst_test::prelude::*;
-    use game_model::loaded::CharacterAssets;
+    use asset_model::loaded::CharacterAssets;
     use stdio_spi::VariantAndTokens;
 
     use super::CharacterSelectionStdioBundle;

@@ -10,7 +10,7 @@ application_event = { path = "../application_event" }
 character_selection_model = { path = "../character_selection_model" }
 derive-new = "0.5.6"
 game_input_model = { path = "../game_input_model" }
-game_model = { path = "../game_model" }
+asset_model = { path = "../asset_model" }
 stdio_spi = { path = "../stdio_spi" }
 structopt = "0.2.14"
 structopt-derive = "0.2.14"

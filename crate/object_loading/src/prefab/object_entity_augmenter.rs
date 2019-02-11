@@ -154,6 +154,7 @@ mod test {
     };
     use amethyst_test::prelude::*;
     use application_event::{AppEvent, AppEventReader};
+    use asset_model::loaded::SlugAndHandle;
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
     use character_loading::{CharacterComponentStorages, CharacterLoadingBundle};
     use character_model::{
@@ -162,7 +163,6 @@ mod test {
     };
     use collision_loading::CollisionLoadingBundle;
     use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
-    use game_model::loaded::SlugAndHandle;
     use loading::LoadingState;
     use map_loading::MapLoadingBundle;
     use map_model::loaded::Map;
