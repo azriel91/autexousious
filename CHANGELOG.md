@@ -9,7 +9,9 @@
 ### Changed
 
 * Characters and objects are now instantiated using prefabs. ([#56])
+* `KeyboardEscapeIntercept` is now tested properly without simulating input. ([#15])
 
+[#15]: https://gitlab.com/azriel91/autexousious/issues/15
 [#93]: https://gitlab.com/azriel91/autexousious/issues/93
 
 ## 0.8.0 (2019-01-04)
