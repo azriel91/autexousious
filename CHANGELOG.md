@@ -6,6 +6,10 @@
 
 * Control input via stdin. ([#93])
 
+### Changed
+
+* Characters and objects are now instantiated using prefabs. ([#56])
+
 [#93]: https://gitlab.com/azriel91/autexousious/issues/93
 
 ## 0.8.0 (2019-01-04)
