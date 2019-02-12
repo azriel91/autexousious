@@ -1,13 +1,13 @@
-use std::{fmt::Debug, marker::PhantomData, path::PathBuf};
+use std::{fmt::Debug, marker::PhantomData};
 
-use amethyst::{assets::ProgressCounter, prelude::*};
+use amethyst::{GameData, State, StateData, Trans};
 use application_event::AppEvent;
 use application_state::AutexState;
 use application_ui::ThemeLoader;
 use derivative::Derivative;
-use log::{debug, error, warn};
+use log::{debug, error};
 
-use crate::AssetLoader;
+use crate::LoadingStatus;
 
 /// `State` where resource loading takes place.
 ///
@@ -24,14 +24,9 @@ pub struct LoadingState<'a, 'b, S>
 where
     S: AutexState<'a, 'b>,
 {
-    /// Path to the assets directory.
-    assets_dir: PathBuf,
     /// The `State` that follows this one.
     #[derivative(Debug(bound = "S: Debug"))]
     next_state: Option<S>,
-    /// Tracks loaded assets.
-    #[derivative(Debug = "ignore")]
-    progress_counter: ProgressCounter,
     /// Lifetime tracker.
     phantom_data: PhantomData<dyn AutexState<'a, 'b>>,
 }
@@ -41,11 +36,9 @@ where
     S: AutexState<'a, 'b>,
 {
     /// Returns a new `State`
-    pub fn new(assets_dir: PathBuf, next_state: S) -> Self {
+    pub fn new(next_state: S) -> Self {
         LoadingState {
-            assets_dir,
             next_state: Some(next_state),
-            progress_counter: ProgressCounter::new(),
             phantom_data: PhantomData,
         }
     }
@@ -61,12 +54,6 @@ where
             error!("{}", &err_msg);
             panic!(err_msg);
         }
-
-        AssetLoader::load(
-            &mut data.world,
-            &mut self.progress_counter,
-            &self.assets_dir,
-        );
     }
 
     fn update(
@@ -75,22 +62,22 @@ where
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
         data.data.update(&data.world);
 
-        if self.progress_counter.is_complete() {
+        if *data.world.read_resource::<LoadingStatus>() == LoadingStatus::Complete {
             Trans::Switch(Box::new(
                 self.next_state
                     .take()
                     .expect("Expected `next_state` to be set"),
             ))
         } else {
-            warn!(
-                "If loading never completes, please ensure that you have registered both the \
-                 `CharacterLoadingBundle` and `MapLoadingBundle`s to the application dispatcher, as \
-                 those provide the necessary `System`s to process the loaded assets."
-            );
             debug!(
-                "Loading progress: {}/{}",
-                self.progress_counter.num_finished(),
-                self.progress_counter.num_assets()
+                "If loading never completes, please ensure that you have registered the following \
+                 bundles with the application dispatcher:\n\
+                 \n\
+                 * `SpriteLoadingBundle`\n\
+                 * `CharacterLoadingBundle`\n\
+                 * `MapLoadingBundle`\n\
+                 \n\
+                 These provide the necessary `System`s to process the loaded assets.\n"
             );
 
             Trans::None

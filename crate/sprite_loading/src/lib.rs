@@ -11,6 +11,7 @@ pub use crate::{
     animation::{AnimationFrame, AnimationSequence, SpriteRenderAnimationLoader},
     sprite_animation_handle::SpriteAnimationHandle,
     sprite_loader::SpriteLoader,
+    sprite_loading_bundle::SpriteLoadingBundle,
 };
 pub(crate) use crate::{
     sprite_sheet_loader::SpriteSheetLoader, sprite_sheet_mapper::SpriteSheetMapper,
@@ -20,6 +21,7 @@ pub(crate) use crate::{
 mod animation;
 mod sprite_animation_handle;
 mod sprite_loader;
+mod sprite_loading_bundle;
 mod sprite_sheet_loader;
 mod sprite_sheet_mapper;
 mod texture_loader;

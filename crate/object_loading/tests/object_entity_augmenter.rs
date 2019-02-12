@@ -40,9 +40,10 @@ use character_model::{
 };
 use collision_loading::CollisionLoadingBundle;
 use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
-use loading::LoadingState;
+use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
 use object_model::entity::{Mirrored, Position, SequenceStatus, Velocity};
+use sprite_loading::SpriteLoadingBundle;
 
 use object_loading::{
     ObjectAnimationStorages, ObjectComponentStorages, ObjectEntityAugmenter, ObjectPrefab,
@@ -125,10 +126,12 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
         >::new(
             "character_interaction_acs", "character_interaction_sis"
         ))
+        .with_bundle(SpriteLoadingBundle::new())
+        .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
         .with_bundle(CollisionLoadingBundle::new())
         .with_bundle(MapLoadingBundle::new())
         .with_bundle(CharacterLoadingBundle::new())
-        .with_state(|| LoadingState::new(ASSETS_PATH.clone(), PopState))
+        .with_state(|| LoadingState::new(PopState))
         .with_assertion(assertion)
         .run()
 }

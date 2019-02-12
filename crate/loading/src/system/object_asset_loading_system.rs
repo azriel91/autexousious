@@ -19,7 +19,7 @@ use sprite_model::config::SpritesDefinition;
 use typename::TypeName as TypeNameTrait;
 use typename_derive::TypeName;
 
-use crate::ObjectAssetHandles;
+use crate::{LoadingStatus, ObjectAssetHandles};
 
 /// Loads game object assets.
 #[derive(Default, Derivative, TypeName, new)]
@@ -74,6 +74,7 @@ where
         PrefabLoader<'s, Pf>,
         Read<'s, AssetStorage<Prefab<Pf>>>,
         Write<'s, GameObjectPrefabs<Pf>>,
+        Write<'s, LoadingStatus>,
     );
 
     fn run(
@@ -87,6 +88,7 @@ where
             game_object_prefab_loader,
             game_object_prefab_assets,
             mut game_object_prefabs,
+            mut loading_status,
         ): Self::SystemData,
     ) {
         // TODO: Do a diff between existing index and directory based on a file watch / notify.
@@ -201,6 +203,18 @@ where
                     self.prefabs_in_progress.insert(asset_record, prefab_handle);
                 }
             });
+
+        *loading_status = if self.progress_counter.is_complete() {
+            LoadingStatus::Complete
+        } else {
+            LoadingStatus::InProgress
+        };
+
+        debug!(
+            "Loading progress: {}/{}",
+            self.progress_counter.num_finished(),
+            self.progress_counter.num_assets()
+        );
     }
 }
 

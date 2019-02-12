@@ -15,6 +15,8 @@ use crate::CharacterPrefab;
 ///
 /// * `ObjectDefinitionToWrapperProcessor::<Character>`
 /// * `Processor::<Character>`
+/// * `Processor::<CharacterDefinition>`
+/// * `PrefabLoaderSystem::<CharacterPrefab>`
 #[derive(Debug, new)]
 pub struct CharacterLoadingBundle;
 
@@ -31,11 +33,6 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterLoadingBundle {
             "character_definition_processor",
             &[],
         );
-        // builder.add(
-        //     Processor::<CharacterPrefab>::new(),
-        //     "character_prefab_processor",
-        //     &[],
-        // );
         builder.add(
             PrefabLoaderSystem::<CharacterPrefab>::default(),
             "character_prefab_loader_system",
@@ -47,7 +44,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterLoadingBundle {
 
 #[cfg(test)]
 mod test {
-    use amethyst::assets::AssetStorage;
+    use amethyst::{assets::AssetStorage, Error};
     use amethyst_test::AmethystApplication;
     use character_model::{
         config::CharacterDefinition,
@@ -57,20 +54,15 @@ mod test {
     use super::CharacterLoadingBundle;
 
     #[test]
-    fn bundle_build_adds_character_processor() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AmethystApplication::blank()
-                .with_bundle(CharacterLoadingBundle)
-                .with_assertion(|world| {
-                    // Panics if the Processors are not added.
-                    world.read_resource::<AssetStorage<Character>>();
-                    world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
-                    world.read_resource::<AssetStorage<CharacterDefinition>>();
-                })
-                .run()
-                .is_ok()
-        );
+    fn bundle_build_adds_character_processor() -> Result<(), Error> {
+        AmethystApplication::blank()
+            .with_bundle(CharacterLoadingBundle)
+            .with_assertion(|world| {
+                // Panics if the Processors are not added.
+                world.read_resource::<AssetStorage<Character>>();
+                world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
+                world.read_resource::<AssetStorage<CharacterDefinition>>();
+            })
+            .run()
     }
 }

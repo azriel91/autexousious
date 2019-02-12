@@ -38,6 +38,7 @@ game_model = { path = "../game_model" }
 loading = { path = "../loading" }
 map_loading = { path = "../map_loading" }
 map_selection = { path = "../map_selection" }
+sprite_loading = { path = "../sprite_loading" }
 
 [features]
 nightly = ["amethyst/nightly", "amethyst_test/nightly"]
