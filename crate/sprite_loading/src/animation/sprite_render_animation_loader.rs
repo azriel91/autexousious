@@ -234,7 +234,7 @@ mod test {
         animation::{
             Animation, InterpolationFunction, Sampler, SpriteRenderChannel, SpriteRenderPrimitive,
         },
-        assets::{AssetStorage, Loader},
+        assets::{AssetStorage, Loader, ProgressCounter},
         ecs::World,
         renderer::{SpriteRender, SpriteSheet, SpriteSheetHandle, Texture},
     };
@@ -437,6 +437,7 @@ mod test {
         let sprite_sheet_assets = world.read_resource::<AssetStorage<SpriteSheet>>();
 
         let sprite_sheet_handles = SpriteLoader::load(
+            &mut ProgressCounter::default(),
             &loader,
             &texture_assets,
             &sprite_sheet_assets,

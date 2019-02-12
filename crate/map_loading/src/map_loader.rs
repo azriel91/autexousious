@@ -2,7 +2,7 @@ use std::path::Path;
 
 use amethyst::{
     animation::{Animation, Sampler, SpriteRenderPrimitive},
-    assets::{AssetStorage, Loader},
+    assets::{AssetStorage, Loader, ProgressCounter},
     ecs::World,
     renderer::{SpriteRender, SpriteSheet, Texture},
     Error,
@@ -39,6 +39,7 @@ impl MapLoader {
                     let sprite_sheet_assets = &world.read_resource::<AssetStorage<SpriteSheet>>();
 
                     SpriteLoader::load(
+                        &mut ProgressCounter::default(),
                         loader,
                         texture_assets,
                         sprite_sheet_assets,

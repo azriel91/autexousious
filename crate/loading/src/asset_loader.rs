@@ -1,7 +1,7 @@
 use std::{collections::HashMap, path::Path};
 
 use amethyst::{
-    assets::{AssetStorage, Loader, Progress},
+    assets::{AssetStorage, Loader, ProgressCounter},
     ecs::World,
     renderer::{SpriteSheet, Texture},
 };
@@ -32,18 +32,15 @@ impl AssetLoader {
     /// # Parameters
     ///
     /// * `world`: `World` to load the game assets into.
+    /// * `progress_counter`: Tracker for loading progress.
     /// * `assets_dir`: Base directory containing all assets to load.
-    /// * `progress`: Tracker for loading progress.
-    pub fn load<P>(world: &mut World, assets_dir: &Path, progress: P)
-    where
-        P: Progress,
-    {
+    pub fn load(world: &mut World, progress_counter: &mut ProgressCounter, assets_dir: &Path) {
         let asset_index = AssetDiscovery::asset_index(assets_dir);
 
         debug!("Indexed assets: {:?}", &asset_index);
 
-        Self::load_objects(world, asset_index.objects);
-        Self::load_maps(world, progress, asset_index.maps);
+        Self::load_objects(world, progress_counter, asset_index.objects);
+        Self::load_maps(world, progress_counter, asset_index.maps);
     }
 
     /// Loads object configuration into the `World` from the specified assets directory.
@@ -57,9 +54,11 @@ impl AssetLoader {
     /// # Parameters
     ///
     /// * `world`: `World` to load the object assets into.
+    /// * `progress_counter`: Tracker for loading progress.
     /// * `indexed_objects`: Index of object assets.
     pub fn load_objects(
         world: &mut World,
+        progress_counter: &mut ProgressCounter,
         mut indexed_objects: HashMap<ObjectType, Vec<AssetRecord>>,
     ) {
         ObjectType::iter()
@@ -94,6 +93,7 @@ impl AssetLoader {
                                         &world.read_resource::<AssetStorage<SpriteSheet>>();
 
                                     SpriteLoader::load(
+                                        progress_counter,
                                         loader,
                                         texture_assets,
                                         sprite_sheet_assets,
@@ -137,12 +137,13 @@ impl AssetLoader {
     /// # Parameters
     ///
     /// * `world`: `World` to load the map assets into.
-    /// * `progress`: Tracker for loading progress.
+    /// * `progress_counter`: Tracker for loading progress.
     /// * `indexed_maps`: Index of map assets.
-    pub fn load_maps<P>(world: &mut World, progress: P, indexed_maps: Vec<AssetRecord>)
-    where
-        P: Progress,
-    {
+    pub fn load_maps(
+        world: &mut World,
+        progress_counter: &mut ProgressCounter,
+        indexed_maps: Vec<AssetRecord>,
+    ) {
         let mut map_assets = indexed_maps
             .into_iter()
             .filter_map(|asset_record| {
@@ -160,7 +161,7 @@ impl AssetLoader {
 
         let map_handle: MapHandle = {
             let loader = world.read_resource::<Loader>();
-            loader.load_from_data(MAP_BLANK.clone(), progress, &world.read_resource())
+            loader.load_from_data(MAP_BLANK.clone(), progress_counter, &world.read_resource())
         };
 
         map_assets.insert(MAP_BLANK_SLUG.clone(), map_handle);

@@ -177,7 +177,7 @@ impl SpriteSheetMapper {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        assets::{AssetStorage, Loader},
+        assets::{AssetStorage, Loader, ProgressCounter},
         ecs::World,
         renderer::{SpriteSheet, Texture, TextureHandle},
     };
@@ -430,6 +430,7 @@ mod test {
         let texture_assets = world.read_resource::<AssetStorage<Texture>>();
 
         let texture_handles = TextureLoader::load_textures(
+            &mut ProgressCounter::default(),
             &loader,
             &texture_assets,
             &ASSETS_CHAR_BAT_PATH,

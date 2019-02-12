@@ -64,8 +64,8 @@ where
 
         AssetLoader::load(
             &mut data.world,
-            &self.assets_dir,
             &mut self.progress_counter,
+            &self.assets_dir,
         );
     }
 

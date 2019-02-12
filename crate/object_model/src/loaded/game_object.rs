@@ -3,10 +3,13 @@ use amethyst::assets::{Asset, Handle};
 use crate::{
     config::{object::SequenceId, GameObjectDefinition, ObjectAssetData},
     loaded::ObjectWrapper,
+    ObjectType,
 };
 
 /// Components common to object types, parameterized by sequence ID.
 pub trait GameObject {
+    /// The object type, such as `Character`.
+    const OBJECT_TYPE: ObjectType;
     /// Sequence ID that this `GameObject` uses.
     type SequenceId: SequenceId;
     /// Type representing this `GameObject`'s configuration.

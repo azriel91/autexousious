@@ -27,7 +27,7 @@ mod texture_loader;
 #[cfg(test)]
 mod test {
     use amethyst::{
-        assets::{AssetStorage, Loader},
+        assets::{AssetStorage, Loader, ProgressCounter},
         renderer::{SpriteSheet, Texture},
         Error,
     };
@@ -55,6 +55,7 @@ mod test {
                 let sprite_sheet_assets = world.read_resource::<AssetStorage<SpriteSheet>>();
 
                 let result = SpriteLoader::load(
+                    &mut ProgressCounter::default(),
                     &loader,
                     &texture_assets,
                     &sprite_sheet_assets,

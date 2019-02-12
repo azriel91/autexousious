@@ -1,7 +1,7 @@
 use std::path::Path;
 
 use amethyst::{
-    assets::{AssetStorage, Loader},
+    assets::{AssetStorage, Loader, ProgressCounter},
     renderer::{PngFormat, Texture, TextureHandle, TextureMetadata},
     Error,
 };
@@ -16,11 +16,13 @@ impl TextureLoader {
     ///
     /// # Parameters
     ///
+    /// * `progress_counter`: `ProgressCounter` to track loading.
     /// * `loader`: `Loader` to load assets.
     /// * `texture_assets`: `AssetStorage` for `Texture`s.
     /// * `object_directory`: Object configuration base directory.
     /// * `sprite_sheet_definitions`: List of metadata for sprite sheets to load.
     pub(crate) fn load_textures(
+        progress_counter: &mut ProgressCounter,
         loader: &Loader,
         texture_assets: &AssetStorage<Texture>,
         object_directory: &Path,
@@ -39,6 +41,7 @@ impl TextureLoader {
                 let sprite_image_path = sprite_image_path.to_str().ok_or(error_msg)?;
 
                 Ok(Self::load(
+                    progress_counter,
                     loader,
                     texture_assets,
                     String::from(sprite_image_path),
@@ -84,9 +87,16 @@ impl TextureLoader {
     ///
     /// # Parameters
     ///
-    /// * `world`: `World` that stores resources.
+    /// * `progress_counter`: `ProgressCounter` to track loading.
+    /// * `loader`: `Loader` to load assets.
+    /// * `texture_assets`: `AssetStorage` for `Texture`s.
     /// * `path`: Path to the sprite sheet.
-    fn load<N>(loader: &Loader, texture_assets: &AssetStorage<Texture>, path: N) -> TextureHandle
+    fn load<N>(
+        progress_counter: &mut ProgressCounter,
+        loader: &Loader,
+        texture_assets: &AssetStorage<Texture>,
+        path: N,
+    ) -> TextureHandle
     where
         N: Into<String>,
     {
@@ -94,7 +104,7 @@ impl TextureLoader {
             path,
             PngFormat,
             TextureMetadata::srgb(), // TODO: perhaps this should be srgb_scale
-            (),
+            progress_counter,
             &texture_assets,
         )
     }
