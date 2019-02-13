@@ -6,6 +6,7 @@ use std::{process, time::Duration};
 
 use amethyst::{
     animation::AnimationBundle,
+    assets::HotReloadBundle,
     core::{frame_limiter::FrameRateLimitStrategy, transform::TransformBundle},
     input::InputBundle,
     prelude::*,
@@ -156,6 +157,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                     .with_bindings((&input_config).into()),
             )?
             .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?
+            .with_bundle(HotReloadBundle::default())?
             .with_bundle(SpriteLoadingBundle::new())?
             .with_bundle(LoadingBundle::new(assets_dir.clone()))?
             .with_bundle(GameInputUiBundle::new(input_config))?
