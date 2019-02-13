@@ -1,16 +1,26 @@
 use amethyst::{assets::Processor, core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
 use derive_new::new;
-use map_model::loaded::Map;
+use map_model::{config::MapDefinition, loaded::Map};
 
-/// Adds `Processor<Map>` to the `World`.
+/// Adds the following `System`s to the `World`:
 ///
-/// This is needed to allow the `loaded::Map` type to be stored in `AssetStorage`.
+/// * `Processor<Map>`
+/// * `Processor<MapDefinition>`
 #[derive(Debug, new)]
 pub struct MapLoadingBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for MapLoadingBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
-        builder.add(Processor::<Map>::new(), "map_processor", &[]);
+        builder.add(
+            Processor::<MapDefinition>::new(),
+            "map_definition_processor",
+            &[],
+        );
+        builder.add(
+            Processor::<Map>::new(),
+            "map_processor",
+            &["map_definition_processor"],
+        );
         Ok(())
     }
 }

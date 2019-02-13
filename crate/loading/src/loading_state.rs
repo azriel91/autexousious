@@ -7,7 +7,7 @@ use application_ui::ThemeLoader;
 use derivative::Derivative;
 use log::{debug, error};
 
-use crate::LoadingStatus;
+use crate::{MapLoadingStatus, ObjectLoadingStatus};
 
 /// `State` where resource loading takes place.
 ///
@@ -62,7 +62,9 @@ where
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
         data.data.update(&data.world);
 
-        if *data.world.read_resource::<LoadingStatus>() == LoadingStatus::Complete {
+        if *data.world.read_resource::<ObjectLoadingStatus>() == ObjectLoadingStatus::Complete
+            && *data.world.read_resource::<MapLoadingStatus>() == MapLoadingStatus::Complete
+        {
             Trans::Switch(Box::new(
                 self.next_state
                     .take()

@@ -19,7 +19,7 @@ use sprite_model::config::SpritesDefinition;
 use typename::TypeName as TypeNameTrait;
 use typename_derive::TypeName;
 
-use crate::{LoadingStatus, ObjectAssetHandles};
+use crate::{ObjectAssetHandles, ObjectLoadingStatus};
 
 /// Loads game object assets.
 #[derive(Default, Derivative, TypeName, new)]
@@ -74,7 +74,7 @@ where
         PrefabLoader<'s, Pf>,
         Read<'s, AssetStorage<Prefab<Pf>>>,
         Write<'s, GameObjectPrefabs<Pf>>,
-        Write<'s, LoadingStatus>,
+        Write<'s, ObjectLoadingStatus>,
     );
 
     fn run(
@@ -97,12 +97,6 @@ where
             let asset_index = AssetDiscovery::asset_index(&self.assets_dir);
             debug!("Indexed assets: {:?}", &self.asset_index);
 
-            // For each asset record:
-            //
-            // 1. Check if `XObjectDefinition` and `SpritesDefinition` are loaded.
-            // 2. Otherwise kick off loading.
-            // 3. When they are loaded, reload the prefab, somehow.
-
             // Borrow self piecewise.
             let assets_in_progress = &self.assets_in_progress;
             let prefabs_in_progress = &self.prefabs_in_progress;
@@ -116,13 +110,12 @@ where
 
             let new_asset_records = asset_records.into_iter().filter(|asset_record| {
                 !(assets_in_progress.contains_key(asset_record)
-                    || prefabs_in_progress.contains_key(asset_record))
+                    || prefabs_in_progress.contains_key(asset_record)
+                    || game_object_prefabs.contains_key(&asset_record.asset_slug))
             });
 
             let new_object_asset_handles = new_asset_records
                 .map(|asset_record| {
-                    // We need to make it an instance method to pass through `&mut progress_counter`
-                    // twice, otherwise Rust complains that it is moved.
                     let object_asset_handles = Self::asset_record_to_handles(
                         progress_counter,
                         &loader,
@@ -205,10 +198,11 @@ where
             });
 
         *loading_status = if self.progress_counter.is_complete() {
-            LoadingStatus::Complete
+            ObjectLoadingStatus::Complete
         } else {
-            LoadingStatus::InProgress
+            ObjectLoadingStatus::InProgress
         };
+        debug!("Object loading status: {:?}", *loading_status);
 
         debug!(
             "Loading progress: {}/{}",

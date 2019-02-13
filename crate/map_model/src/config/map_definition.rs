@@ -1,3 +1,8 @@
+use amethyst::{
+    assets::{Asset, Handle, ProcessingState},
+    ecs::storage::VecStorage,
+    Error,
+};
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 
@@ -11,6 +16,18 @@ pub struct MapDefinition {
     /// Image layers to draw.
     #[serde(default, rename = "layer")]
     pub layers: Vec<Layer>,
+}
+
+impl Asset for MapDefinition {
+    const NAME: &'static str = concat!(module_path!(), "::", stringify!(MapDefinition));
+    type Data = Self;
+    type HandleStorage = VecStorage<Handle<Self>>;
+}
+
+impl From<MapDefinition> for Result<ProcessingState<MapDefinition>, Error> {
+    fn from(character_definition: MapDefinition) -> Result<ProcessingState<MapDefinition>, Error> {
+        Ok(ProcessingState::Loaded(character_definition))
+    }
 }
 
 #[cfg(test)]

@@ -23,18 +23,18 @@ impl Asset for CharacterDefinition {
     type HandleStorage = VecStorage<Handle<Self>>;
 }
 
-impl GameObjectDefinition for CharacterDefinition {
-    type SequenceId = CharacterSequenceId;
-
-    fn object_definition(&self) -> &ObjectDefinition<Self::SequenceId> {
-        &self.object_definition
-    }
-}
-
 impl From<CharacterDefinition> for Result<ProcessingState<CharacterDefinition>, Error> {
     fn from(
         character_definition: CharacterDefinition,
     ) -> Result<ProcessingState<CharacterDefinition>, Error> {
         Ok(ProcessingState::Loaded(character_definition))
+    }
+}
+
+impl GameObjectDefinition for CharacterDefinition {
+    type SequenceId = CharacterSequenceId;
+
+    fn object_definition(&self) -> &ObjectDefinition<Self::SequenceId> {
+        &self.object_definition
     }
 }
