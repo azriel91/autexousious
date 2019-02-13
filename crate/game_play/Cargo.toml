@@ -39,8 +39,4 @@ game_input_model = { path = "../game_input_model" }
 loading = { path = "../loading" }
 
 [features]
-nightly = ["amethyst/nightly", "amethyst_test/nightly"]
-
-[build-dependencies]
-rustc_version = "0.2.3"
-
+nightly = ["amethyst/nightly"]

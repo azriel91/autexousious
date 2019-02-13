@@ -16,6 +16,5 @@ map_selection_model = { path = "../map_selection_model" }
 strum = "0.13.0"
 strum_macros = "0.13.0"
 
-[build-dependencies]
-rustc_version = "0.2.3"
-
+[features]
+nightly = ["amethyst/nightly"]

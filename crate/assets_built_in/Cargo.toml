@@ -8,7 +8,3 @@ edition = "2018"
 asset_model = { path = "../asset_model" }
 lazy_static = "1.2.0"
 map_model = { path = "../map_model" }
-
-[build-dependencies]
-rustc_version = "0.2.3"
-

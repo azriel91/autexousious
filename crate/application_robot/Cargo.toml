@@ -13,6 +13,5 @@ derivative = "1.0.2"
 debug_util_amethyst = { path = "../debug_util_amethyst" }
 winit = "0.18.1"
 
-[build-dependencies]
-rustc_version = "0.2.3"
-
+[features]
+nightly = ["amethyst/nightly"]

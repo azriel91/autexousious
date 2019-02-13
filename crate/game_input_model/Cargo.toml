@@ -17,5 +17,5 @@ strum_macros = "0.13.0"
 hamcrest = "0.1.5"
 winit = "0.18.1"
 
-[build-dependencies]
-rustc_version = "0.2.3"
+[features]
+nightly = ["amethyst/nightly"]

@@ -22,12 +22,8 @@ structopt = "0.2.14"
 structopt-derive = "0.2.14"
 
 [features]
-nightly = ["amethyst/nightly", "amethyst_test/nightly"]
+nightly = ["amethyst/nightly"]
 
 [[example]]
 name = "01_draw_text"
 path = "examples/01_draw_text/main.rs"
-
-[build-dependencies]
-rustc_version = "0.2.3"
-

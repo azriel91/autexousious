@@ -12,6 +12,5 @@ serde = "1.0.85"
 [dev-dependencies]
 toml = "0.4.10"
 
-[build-dependencies]
-rustc_version = "0.2.3"
-
+[features]
+nightly = ["amethyst/nightly"]

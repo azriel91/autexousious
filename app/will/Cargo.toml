@@ -41,7 +41,4 @@ typename = "0.1.0"
 assert_cmd = "0.10.2"
 
 [features]
-nightly = ["amethyst/nightly",]
-
-[build-dependencies]
-rustc_version = "0.2.3"
+nightly = ["amethyst/nightly"]

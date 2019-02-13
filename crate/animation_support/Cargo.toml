@@ -13,6 +13,5 @@ named_type = "0.1.6"
 named_type_derive = "0.1.6"
 serde = "1.0.85"
 
-[build-dependencies]
-rustc_version = "0.2.3"
-
+[features]
+nightly = ["amethyst/nightly"]

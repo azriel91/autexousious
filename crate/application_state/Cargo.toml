@@ -19,7 +19,3 @@ rayon = "1.0.3"
 
 [features]
 nightly = ["amethyst/nightly"]
-
-[build-dependencies]
-rustc_version = "0.2.3"
-
