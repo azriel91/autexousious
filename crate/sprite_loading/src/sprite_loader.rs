@@ -1,7 +1,7 @@
 use std::path::Path;
 
 use amethyst::{
-    assets::{AssetStorage, Loader},
+    assets::{AssetStorage, Loader, ProgressCounter},
     renderer::{SpriteSheet, SpriteSheetHandle, Texture},
     Error,
 };
@@ -23,11 +23,13 @@ impl SpriteLoader {
     ///
     /// # Parameters
     ///
+    /// * `progress_counter`: `ProgressCounter` to track loading.
     /// * `loader`: `Loader` to load assets.
     /// * `texture_assets`: `AssetStorage` for `Texture`s.
     /// * `sprite_sheet_assets`: `AssetStorage` for `SpriteSheet`s.
     /// * `sprites_definition`: The loaded `sprites.toml`.
     pub fn load(
+        progress_counter: &mut ProgressCounter,
         loader: &Loader,
         texture_assets: &AssetStorage<Texture>,
         sprite_sheet_assets: &AssetStorage<SpriteSheet>,
@@ -35,6 +37,7 @@ impl SpriteLoader {
         base_dir: &Path,
     ) -> Result<Vec<SpriteSheetHandle>, Error> {
         let texture_handles = TextureLoader::load_textures(
+            progress_counter,
             loader,
             texture_assets,
             base_dir,
@@ -42,6 +45,7 @@ impl SpriteLoader {
         )?;
 
         let sprite_sheet_handles = SpriteSheetLoader::load(
+            progress_counter,
             loader,
             sprite_sheet_assets,
             &texture_handles,

@@ -22,7 +22,7 @@ pub enum MagicSequenceId {
 }
 impl SequenceId for MagicSequenceId {}
 
-#[game_object(MagicSequenceId, config::MagicDefinition)]
+#[game_object(MagicSequenceId, definition = config::MagicDefinition, object_type = Character)]
 #[derive(Debug)]
 struct Magic;
 

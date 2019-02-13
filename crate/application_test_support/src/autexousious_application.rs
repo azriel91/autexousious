@@ -16,8 +16,9 @@ use collision_loading::CollisionLoadingBundle;
 use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
 use game_input_model::{PlayerActionControl, PlayerAxisControl};
 use game_loading::GameLoadingState;
-use loading::LoadingState;
+use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
+use sprite_loading::SpriteLoadingBundle;
 
 use crate::SetupFunction;
 
@@ -121,10 +122,12 @@ impl AutexousiousApplication {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
         AutexousiousApplication::render_and_ui(test_name, visibility)
+            .with_bundle(SpriteLoadingBundle::new())
+            .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_bundle(CharacterSelectionBundle::new())
-            .with_state(|| LoadingState::new(ASSETS_PATH.clone(), PopState))
+            .with_state(|| LoadingState::new(PopState))
     }
 
     /// Returns an application with game objects loaded.

@@ -1,9 +1,13 @@
-use proc_macro2::Span;
 use syn::{
     parse::{Parse, ParseStream},
-    punctuated::Punctuated,
-    Error, Path, Result, Token,
+    Path, Result, Token, Variant,
 };
+
+/// https://docs.rs/syn/latest/syn/macro.custom_keyword.html
+mod kw {
+    syn::custom_keyword!(definition);
+    syn::custom_keyword!(object_type);
+}
 
 /// Parses the `Path` for the type to use as a `GameObject`'s `SequenceId`.
 ///
@@ -14,27 +18,71 @@ use syn::{
 /// #[game_object(CharacterSequenceId)]
 ///               ^^^^^^^^^^^^^^^^^^^
 /// ```
+///
+/// There are two optional parameters:
+///
+/// * `definition`: Specifies the game object definition type.
+/// * `object_type`: Specifies the object type variant.
+///
+/// ```rust,ignore
+/// #[game_object(
+///     CharacterSequenceId,
+///     definition = CharacterDefinition,
+///     object_type = ObjectType::Character,
+/// )]
+/// ```
 #[derive(Debug)]
 pub struct GameObjectAttributeArgs {
     /// The sequence ID for the `GameObject`.
     pub sequence_id: Path,
     /// Type that `impl GameObjectDefinition`, e.g. `CharacterDefinition`.
     pub object_definition: Option<Path>,
+    /// `ObjectType` variant, e.g. `ObjectType::Character`.
+    pub object_type: Option<Variant>,
 }
 
 impl Parse for GameObjectAttributeArgs {
     fn parse(input: ParseStream) -> Result<Self> {
-        let paths = Punctuated::<Path, Token![,]>::parse_terminated(input)?;
-        let mut paths_iter = paths.into_iter();
+        let sequence_id = input.parse()?;
+        let mut object_definition = None;
+        let mut object_type = None;
 
-        let sequence_id = paths_iter
-            .next()
-            .ok_or_else(|| Error::new(Span::call_site(), "Must provide `SequenceId` type."))?;
-        let object_definition = paths_iter.next();
+        let mut comma: Option<Token![,]> = input.parse()?;
+        while comma.is_some() && !input.is_empty() {
+            if input.peek(kw::definition) {
+                input
+                    .parse::<kw::definition>()
+                    .map_err(|_| input.error("Impossible: peek definition"))?;
+                input
+                    .parse::<Token![=]>()
+                    .map_err(|_| input.error("Expected `=` after `definition` parameter name."))?;
+                object_definition =
+                    Some(input.parse().map_err(|_| {
+                        input.error("Expected path to `GameObjectDefinition` type.")
+                    })?);
+
+                comma = input.parse()?;
+            } else if input.peek(kw::object_type) {
+                input
+                    .parse::<kw::object_type>()
+                    .map_err(|_| input.error("Impossible: peek object_type"))?;
+                input
+                    .parse::<Token![=]>()
+                    .map_err(|_| input.error("Expected `=` after `object_type` parameter name."))?;
+                object_type = Some(
+                    input
+                        .parse()
+                        .map_err(|_| input.error("Expected path to `ObjectType` variant."))?,
+                );
+
+                comma = input.parse()?;
+            }
+        }
 
         Ok(GameObjectAttributeArgs {
             sequence_id,
             object_definition,
+            object_type,
         })
     }
 }

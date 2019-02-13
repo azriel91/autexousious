@@ -30,6 +30,7 @@ loading = { path = "../../crate/loading" }
 log = "0.4.6"
 map_loading = { path = "../../crate/map_loading" }
 map_selection_stdio = { path = "../../crate/map_selection_stdio" }
+sprite_loading = { path = "../../crate/sprite_loading" }
 stdio_spi = { path = "../../crate/stdio_spi" }
 stdio_view = { path = "../../crate/stdio_view" }
 structopt = "0.2.14"

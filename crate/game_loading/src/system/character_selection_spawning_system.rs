@@ -127,11 +127,12 @@ mod tests {
     use collision_loading::CollisionLoadingBundle;
     use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
     use game_model::{loaded::MapAssets, play::GameEntities};
-    use loading::LoadingState;
+    use loading::{LoadingBundle, LoadingState};
     use map_loading::MapLoadingBundle;
     use map_selection::MapSelectionStatus;
     use map_selection_model::MapSelection;
     use object_model::ObjectType;
+    use sprite_loading::SpriteLoadingBundle;
     use typename::TypeName;
 
     use super::CharacterSelectionSpawningSystem;
@@ -156,10 +157,12 @@ mod tests {
                 >::new(
                     "character_interaction_acs", "character_interaction_sis",
                 ))
+                .with_bundle(SpriteLoadingBundle::new())
+                .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
                 .with_bundle(CollisionLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_bundle(CharacterLoadingBundle::new())
-                .with_state(|| LoadingState::new(ASSETS_PATH.clone(), PopState))
+                .with_state(|| LoadingState::new(PopState))
                 .with_setup(map_selection(ASSETS_MAP_FADE_SLUG.clone()))
                 .with_setup(|world| {
                     let mut game_loading_status = GameLoadingStatus::new();
@@ -221,10 +224,12 @@ mod tests {
             >::new(
                 "character_interaction_acs", "character_interaction_sis",
             ))
+            .with_bundle(SpriteLoadingBundle::new())
+            .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
-            .with_state(|| LoadingState::new(ASSETS_PATH.clone(), PopState))
+            .with_state(|| LoadingState::new(PopState))
             .with_setup(map_selection(ASSETS_MAP_FADE_SLUG.clone()))
             .with_setup(|world| {
                 let mut character_selections = CharacterSelections::default();

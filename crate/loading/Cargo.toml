@@ -13,17 +13,27 @@ application_ui = { path = "../application_ui" }
 asset_loading = { path = "../asset_loading" }
 asset_model = { path = "../asset_model" }
 assets_built_in = { path = "../assets_built_in" }
+character_model = { path = "../character_model" }
 character_loading = { path = "../character_loading" }
 derivative = "1.0.2"
+derive-new = "0.5.6"
 game_model = { path = "../game_model" }
 log = "0.4.6"
 map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }
+object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
 sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }
+serde = "1.0.85"
 strum = "0.13.0"
 toml = "0.4.10"
+typename = "0.1.0"
+typename_derive = "0.1.1"
+
+[dev-dependencies]
+amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
+assets_test = { path = "../assets_test" }
 
 [build-dependencies]
 rustc_version = "0.2.3"

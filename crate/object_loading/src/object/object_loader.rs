@@ -158,7 +158,7 @@ impl ObjectLoader {
 mod test {
     use amethyst::{
         animation::{Animation, AnimationBundle, Sampler, SpriteRenderPrimitive},
-        assets::{AssetStorage, Loader, Processor},
+        assets::{AssetStorage, Loader, Processor, ProgressCounter},
         renderer::{SpriteRender, SpriteSheet, Texture},
     };
     use amethyst_test::AmethystApplication;
@@ -259,6 +259,7 @@ mod test {
 
                         // TODO: <https://gitlab.com/azriel91/autexousious/issues/94>
                         let sprite_sheet_handles = SpriteLoader::load(
+                            &mut ProgressCounter::default(),
                             loader,
                             texture_assets,
                             sprite_sheet_assets,

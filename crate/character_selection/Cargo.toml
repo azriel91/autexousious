@@ -28,6 +28,7 @@ collision_model = { path = "../collision_model" }
 game_input_model = { path = "../game_input_model" }
 loading = { path = "../loading" }
 map_loading = { path = "../map_loading" }
+sprite_loading = { path = "../sprite_loading" }
 
 [features]
 nightly = ["amethyst/nightly", "amethyst_test/nightly"]

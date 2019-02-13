@@ -12,7 +12,7 @@ use crate::config::AssetSlug;
 /// * Path to the asset directory.
 ///
 /// [asset_slug]: config/struct.AssetSlug.html
-#[derive(Clone, Debug, PartialEq, new)]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, new)]
 pub struct AssetRecord {
     /// Human readable slug to the asset.
     pub asset_slug: AssetSlug,

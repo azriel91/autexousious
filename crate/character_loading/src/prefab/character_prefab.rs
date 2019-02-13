@@ -5,13 +5,14 @@ use amethyst::{
 };
 use character_model::loaded::Character;
 use derive_new::new;
-use object_loading::ObjectPrefab;
+use object_loading::{GameObjectPrefab, ObjectPrefab};
 use serde::{Deserialize, Serialize};
+use typename_derive::TypeName;
 
 use crate::{CharacterComponentStorages, CharacterEntityAugmenter};
 
 /// Loads `CharacterDefinition`s and attaches components to character entities.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TypeName, new)]
 pub struct CharacterPrefab {
     /// Assets needed to load an object.
     ///
@@ -47,5 +48,13 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
     ) -> Result<bool, Error> {
         self.object_prefab
             .load_sub_assets(progress, object_prefab_system_data)
+    }
+}
+
+impl<'s> GameObjectPrefab<'s> for CharacterPrefab {
+    type GameObject = Character;
+
+    fn new(object_prefab: ObjectPrefab<Self::GameObject>) -> Self {
+        CharacterPrefab::new(object_prefab)
     }
 }

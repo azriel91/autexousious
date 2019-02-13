@@ -88,8 +88,9 @@ mod tests {
     use collision_loading::CollisionLoadingBundle;
     use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
     use game_input_model::{PlayerActionControl, PlayerAxisControl};
-    use loading::LoadingState;
+    use loading::{LoadingBundle, LoadingState};
     use map_loading::MapLoadingBundle;
+    use sprite_loading::SpriteLoadingBundle;
     use typename::TypeName;
 
     use super::CharacterSelectionSystem;
@@ -116,10 +117,12 @@ mod tests {
                     "character_interaction_frame_acs",
                     "character_interaction_frame_sis",
                 ))
+                .with_bundle(SpriteLoadingBundle::new())
+                .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
                 .with_bundle(CollisionLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_bundle(CharacterLoadingBundle::new())
-                .with_state(|| LoadingState::new(ASSETS_PATH.clone(), PopState))
+                .with_state(|| LoadingState::new(PopState))
                 .with_system(
                     CharacterSelectionSystem::new(),
                     CharacterSelectionSystem::type_name(),
@@ -178,10 +181,12 @@ mod tests {
                 "character_interaction_frame_acs",
                 "character_interaction_frame_sis",
             ))
+            .with_bundle(SpriteLoadingBundle::new())
+            .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
-            .with_state(|| LoadingState::new(ASSETS_PATH.clone(), PopState))
+            .with_state(|| LoadingState::new(PopState))
             .with_system(
                 CharacterSelectionSystem::new(),
                 CharacterSelectionSystem::type_name(),

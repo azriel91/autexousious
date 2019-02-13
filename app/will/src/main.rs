@@ -6,6 +6,7 @@ use std::{process, time::Duration};
 
 use amethyst::{
     animation::AnimationBundle,
+    assets::HotReloadBundle,
     core::{frame_limiter::FrameRateLimitStrategy, transform::TransformBundle},
     input::InputBundle,
     prelude::*,
@@ -40,10 +41,11 @@ use game_mode_selection::{GameModeSelectionStateBuilder, GameModeSelectionStateD
 use game_mode_selection_stdio::GameModeSelectionStdioBundle;
 use game_mode_selection_ui::{GameModeSelectionUiBuildFn, GameModeSelectionUiBundle};
 use game_play_stdio::GamePlayStdioBundle;
-use loading::LoadingState;
+use loading::{LoadingBundle, LoadingState};
 use log::info;
 use map_loading::MapLoadingBundle;
 use map_selection_stdio::MapSelectionStdioBundle;
+use sprite_loading::SpriteLoadingBundle;
 use stdio_spi::MapperSystem;
 use stdio_view::StdioViewBundle;
 use structopt::StructOpt;
@@ -80,7 +82,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 HookFn(*GameModeSelectionUiBuildFn::new()),
             )
             .build();
-    let loading_state = LoadingState::<_>::new(assets_dir.clone(), game_mode_selection_state);
+    let loading_state = LoadingState::<_>::new(game_mode_selection_state);
     let state = RobotState::new(Box::new(loading_state));
 
     let mut game_data = GameDataBuilder::default();
@@ -155,6 +157,9 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                     .with_bindings((&input_config).into()),
             )?
             .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?
+            .with_bundle(HotReloadBundle::default())?
+            .with_bundle(SpriteLoadingBundle::new())?
+            .with_bundle(LoadingBundle::new(assets_dir.clone()))?
             .with_bundle(GameInputUiBundle::new(input_config))?
             .with_bundle(
                 GameInputStdioBundle::new()

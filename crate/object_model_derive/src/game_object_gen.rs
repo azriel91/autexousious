@@ -18,11 +18,15 @@ const ERR_MUST_BE_UNIT_OR_NAMED: &str =
      This derive does not work on tuple structs.";
 
 pub fn game_object_gen(args: GameObjectAttributeArgs, mut ast: DeriveInput) -> TokenStream {
-    let game_object_name = ast.ident.to_string();
+    let game_object_ident = &ast.ident;
+    let game_object_name = game_object_ident.to_string();
     let sequence_id = &args.sequence_id;
     let object_definition_type = &args
         .object_definition
         .unwrap_or_else(|| Path::from(ident_concat(&game_object_name, "Definition")));
+    let object_type_variant = &args
+        .object_type
+        .unwrap_or_else(|| parse_quote!(#game_object_ident));
     let object_wrapper_name = ident_concat(&game_object_name, "ObjectWrapper");
 
     let object_handle_field = Ident::new(OBJECT_HANDLE, Span::call_site());
@@ -43,6 +47,7 @@ pub fn game_object_gen(args: GameObjectAttributeArgs, mut ast: DeriveInput) -> T
     // Implement `GameObject` trait.
     let game_object_trait_impl = game_object_impl(
         &ast,
+        object_type_variant,
         sequence_id,
         &object_definition_type,
         &object_wrapper_name,

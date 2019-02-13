@@ -51,7 +51,7 @@ impl CharacterLoader {
 mod test {
     use amethyst::{
         animation::AnimationBundle,
-        assets::{AssetStorage, Loader, Prefab},
+        assets::{AssetStorage, Loader, Prefab, ProgressCounter},
         renderer::{SpriteSheet, Texture},
         Error, State, StateData, Trans,
     };
@@ -105,6 +105,7 @@ mod test {
                     let sprite_sheet_assets = &world.read_resource::<AssetStorage<SpriteSheet>>();
 
                     SpriteLoader::load(
+                        &mut ProgressCounter::default(),
                         loader,
                         texture_assets,
                         sprite_sheet_assets,
