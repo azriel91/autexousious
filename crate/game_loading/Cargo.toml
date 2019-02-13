@@ -1,6 +1,6 @@
 [package]
 name = "game_loading"
-version = "0.8.0"
+version = "0.9.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
@@ -41,8 +41,4 @@ map_selection = { path = "../map_selection" }
 sprite_loading = { path = "../sprite_loading" }
 
 [features]
-nightly = ["amethyst/nightly", "amethyst_test/nightly"]
-
-[build-dependencies]
-rustc_version = "0.2.3"
-
+nightly = ["amethyst/nightly"]

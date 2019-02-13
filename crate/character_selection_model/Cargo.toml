@@ -1,6 +1,6 @@
 [package]
 name = "character_selection_model"
-version = "0.8.0"
+version = "0.9.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
@@ -16,6 +16,5 @@ object_model = { path = "../object_model" }
 strum = "0.13.0"
 strum_macros = "0.13.0"
 
-[build-dependencies]
-rustc_version = "0.2.3"
-
+[features]
+nightly = ["amethyst/nightly"]

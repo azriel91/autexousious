@@ -1,6 +1,6 @@
 [package]
 name = "sprite_model"
-version = "0.8.0"
+version = "0.9.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
@@ -12,6 +12,5 @@ serde = "1.0.85"
 [dev-dependencies]
 toml = "0.4.10"
 
-[build-dependencies]
-rustc_version = "0.2.3"
-
+[features]
+nightly = ["amethyst/nightly"]

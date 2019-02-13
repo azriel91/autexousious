@@ -1,6 +1,6 @@
 [package]
 name = "application_event"
-version = "0.8.0"
+version = "0.9.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
@@ -16,6 +16,5 @@ map_selection_model = { path = "../map_selection_model" }
 strum = "0.13.0"
 strum_macros = "0.13.0"
 
-[build-dependencies]
-rustc_version = "0.2.3"
-
+[features]
+nightly = ["amethyst/nightly"]

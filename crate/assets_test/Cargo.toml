@@ -1,6 +1,6 @@
 [package]
 name = "assets_test"
-version = "0.8.0"
+version = "0.9.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 publish = false
@@ -11,7 +11,3 @@ heck = "0.3.1"
 lazy_static = "1.2.0"
 object_model = { path = "../object_model" }
 strum = "0.13.0"
-
-[build-dependencies]
-rustc_version = "0.2.3"
-

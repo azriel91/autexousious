@@ -28,5 +28,5 @@ collision_model = { path = "../collision_model" }
 sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }
 
-[build-dependencies]
-rustc_version = "0.2.3"
+[features]
+nightly = ["amethyst/nightly"]

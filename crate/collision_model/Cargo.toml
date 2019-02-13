@@ -1,6 +1,6 @@
 [package]
 name = "collision_model"
-version = "0.8.0"
+version = "0.9.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
@@ -17,6 +17,5 @@ shape_model = { path = "../shape_model" }
 pretty_assertions = "0.5.1"
 toml = "0.4.10"
 
-[build-dependencies]
-rustc_version = "0.2.3"
-
+[features]
+nightly = ["amethyst/nightly"]

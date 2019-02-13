@@ -1,6 +1,6 @@
 [package]
 name = "game_mode_selection_ui"
-version = "0.8.0"
+version = "0.9.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
@@ -22,7 +22,3 @@ amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
 
 [features]
 nightly = ["amethyst/nightly"]
-
-[build-dependencies]
-rustc_version = "0.2.3"
-

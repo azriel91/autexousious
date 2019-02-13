@@ -1,6 +1,6 @@
 [package]
 name = "map_selection_ui"
-version = "0.8.0"
+version = "0.9.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
@@ -29,8 +29,4 @@ application_test_support = { path = "../application_test_support" }
 assets_test = { path = "../assets_test" }
 
 [features]
-nightly = ["amethyst/nightly", "amethyst_test/nightly"]
-
-[build-dependencies]
-rustc_version = "0.2.3"
-
+nightly = ["amethyst/nightly"]
