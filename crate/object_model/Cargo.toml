@@ -9,12 +9,12 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 collision_loading = { path = "../collision_loading" }
 collision_model = { path = "../collision_model" }
 derivative = "1.0.2"
-derive_deref = "1.0.1"
-derive_more = "0.13.0"
+derive_deref = "1.0.2"
+derive_more = "0.14.0"
 derive-new = "0.5.6"
 fnv = "1.0.6"
 object_model_derive = { path = "../object_model_derive" }
-serde = "1.0.85"
+serde = "1.0.87"
 shape_model = { path = "../shape_model" }
 specs-derive = "0.4.0"
 sprite_model = { path = "../sprite_model" }

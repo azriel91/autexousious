@@ -10,7 +10,7 @@ animation_support = { path = "../animation_support" }
 application = { path = "../application" }
 collision_model = { path = "../collision_model" }
 derive-new = "0.5.6"
-serde = "1.0.85"
+serde = "1.0.87"
 shape_model = { path = "../shape_model" }
 typename = "0.1.0"
 typename_derive = "0.1.1"

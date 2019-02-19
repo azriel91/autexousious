@@ -18,7 +18,7 @@ fnv = "1.0.6"
 log = "0.4.6"
 object_model = { path = "../object_model" }
 rayon = "1.0.3"
-serde = "1.0.85"
+serde = "1.0.87"
 shred = "0.7.1"
 shred-derive = "0.5.1"
 sprite_loading = { path = "../sprite_loading" }
@@ -35,9 +35,9 @@ loading = { path = "../loading" }
 map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }
 pretty_assertions = "0.5.1"
-serde = "1.0.85"
+serde = "1.0.87"
 strum = "0.13.0"
-tempfile = "3.0.5"
+tempfile = "3.0.6"
 
 [features]
 nightly = ["amethyst/nightly"]

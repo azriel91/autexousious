@@ -11,8 +11,9 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 application = { path = "../application" }
 application_robot = { path = "../application_robot" }
 application_ui = { path = "../application_ui" }
-assert_cmd = "0.10.2"
+assert_cmd = "0.11.0"
 derivative = "1.0.2"
+escargot = "0.4.0"
 log = "0.4.6"
 rayon = "1.0.3"
 structopt = "0.2.14"

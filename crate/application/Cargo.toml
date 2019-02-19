@@ -10,13 +10,13 @@ derivative = "1.0.2"
 derive-new = "0.5.6"
 log = "0.4.6"
 ron = "0.4.1"
-serde = "1.0.85"
+serde = "1.0.87"
 toml = "0.4.10"
 
 [dev-dependencies]
 pretty_assertions = "0.5.1"
 lazy_static = "1.2.0"
-tempfile = "3.0.5"
+tempfile = "3.0.6"
 
 [features]
 nightly = ["amethyst/nightly"]
