@@ -9,6 +9,7 @@ use escargot::CargoBuild;
 fn read_and_exit() -> Result<(), OutputError> {
     CargoBuild::new()
         .example("01_read_and_exit")
+        .current_release()
         .run()
         .expect("Failed to create `cargo` command")
         .command()
@@ -24,6 +25,7 @@ fn read_and_exit() -> Result<(), OutputError> {
 fn read_and_exit_timeout() -> Result<(), OutputError> {
     CargoBuild::new()
         .example("01_read_and_exit")
+        .current_release()
         .run()
         .expect("Failed to create `cargo` command")
         .command()

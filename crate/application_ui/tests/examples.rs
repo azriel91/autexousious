@@ -8,6 +8,7 @@ use escargot::CargoBuild;
 fn example_01_draw_text() -> Result<(), OutputError> {
     CargoBuild::new()
         .example("01_draw_text")
+        .current_release()
         .run()
         .expect("Failed to create `cargo` command")
         .command()

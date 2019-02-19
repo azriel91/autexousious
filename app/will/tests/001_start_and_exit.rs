@@ -9,6 +9,7 @@ use escargot::CargoBuild;
 fn start_and_exit() -> Result<(), OutputError> {
     CargoBuild::new()
         .bin("will")
+        .current_release()
         .run()
         .expect("Failed to create `cargo` command")
         .command()
