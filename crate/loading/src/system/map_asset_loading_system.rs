@@ -16,6 +16,7 @@ use map_model::{
     config::MapDefinition,
     loaded::{Map, Margins},
 };
+use shred_derive::SystemData;
 use sprite_loading::{SpriteLoader, SpriteRenderAnimationLoader};
 use sprite_model::config::SpritesDefinition;
 use typename_derive::TypeName;
@@ -45,23 +46,47 @@ pub struct MapAssetLoadingSystem {
     maps_in_progress: HashMap<AssetRecord, Handle<Map>>,
 }
 
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub struct MapAssetLoadingSystemData<'s> {
+    /// `Loader` to load assets.
+    #[derivative(Debug = "ignore")]
+    loader: ReadExpect<'s, Loader>,
+    /// `AssetStorage` for `MapDefinition`s.
+    #[derivative(Debug = "ignore")]
+    map_definition_assets: Read<'s, AssetStorage<MapDefinition>>,
+    /// `AssetStorage` for `SpritesDefinition`s.
+    #[derivative(Debug = "ignore")]
+    sprites_definition_assets: Read<'s, AssetStorage<SpritesDefinition>>,
+    /// `AssetStorage` for `Texture`s.
+    #[derivative(Debug = "ignore")]
+    texture_assets: Read<'s, AssetStorage<Texture>>,
+    /// `AssetStorage` for `SpriteSheet`s.
+    #[derivative(Debug = "ignore")]
+    sprite_sheet_assets: Read<'s, AssetStorage<SpriteSheet>>,
+    /// `AssetStorage` for `Sampler<SpriteRenderPrimitive>`s.
+    #[derivative(Debug = "ignore")]
+    sprite_render_primitive_sampler_assets: Read<'s, AssetStorage<Sampler<SpriteRenderPrimitive>>>,
+    /// `AssetStorage` for `Animation<SpriteRender>`s.
+    #[derivative(Debug = "ignore")]
+    sprite_render_animation_assets: Read<'s, AssetStorage<Animation<SpriteRender>>>,
+    /// `AssetStorage` for `Map`s.
+    #[derivative(Debug = "ignore")]
+    map_assets: Read<'s, AssetStorage<Map>>,
+    /// `MapAssets` resource.
+    #[derivative(Debug = "ignore")]
+    loaded_maps: Write<'s, MapAssets>,
+    /// `MapLoadingStatus` resource.
+    #[derivative(Debug = "ignore")]
+    loading_status: Write<'s, MapLoadingStatus>,
+}
+
 impl<'s> System<'s> for MapAssetLoadingSystem {
-    type SystemData = (
-        ReadExpect<'s, Loader>,
-        Read<'s, AssetStorage<MapDefinition>>,
-        Read<'s, AssetStorage<SpritesDefinition>>,
-        Read<'s, AssetStorage<Texture>>,
-        Read<'s, AssetStorage<SpriteSheet>>,
-        Read<'s, AssetStorage<Sampler<SpriteRenderPrimitive>>>,
-        Read<'s, AssetStorage<Animation<SpriteRender>>>,
-        Read<'s, AssetStorage<Map>>,
-        Write<'s, MapAssets>,
-        Write<'s, MapLoadingStatus>,
-    );
+    type SystemData = MapAssetLoadingSystemData<'s>;
 
     fn run(
         &mut self,
-        (
+        MapAssetLoadingSystemData {
             loader,
             map_definition_assets,
             sprites_definition_assets,
@@ -72,7 +97,7 @@ impl<'s> System<'s> for MapAssetLoadingSystem {
             map_assets,
             mut loaded_maps,
             mut loading_status,
-        ): Self::SystemData,
+        }: Self::SystemData,
     ) {
         // TODO: Do a diff between existing index and directory based on a file watch / notify.
         // TODO: See <https://github.com/polachok/derive-diff>

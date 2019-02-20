@@ -14,17 +14,17 @@ pub struct LogicClock {
 
 impl LogicClock {
     /// Returns whether this clock has reached its limit.
-    pub fn is_beginning(&self) -> bool {
+    pub fn is_beginning(self) -> bool {
         self.value == 0
     }
 
     /// Returns whether this clock has reached its limit.
-    pub fn is_complete(&self) -> bool {
+    pub fn is_complete(self) -> bool {
         self.value == self.limit
     }
 
     /// Returns whether this clock has ticked, but not yet reached its limit.
-    pub fn is_ongoing(&self) -> bool {
+    pub fn is_ongoing(self) -> bool {
         // Logically the same as:
         //
         // ```rust

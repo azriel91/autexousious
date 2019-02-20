@@ -130,7 +130,7 @@ where
                     let wrapper = ObjectLoader::load::<O>(
                         ObjectLoaderParams {
                             loader: &loader,
-                            sprite_sheet_handles: sprite_sheet_handles,
+                            sprite_sheet_handles,
                             sprite_render_primitive_sampler_assets:
                                 &sprite_render_primitive_sampler_assets,
                             sprite_render_animation_assets: &sprite_render_animation_assets,

@@ -14,6 +14,7 @@ use log::debug;
 use object_loading::{GameObjectPrefab, ObjectPrefab};
 use object_model::{config::ObjectAssetData, loaded::GameObject};
 use serde::Deserialize;
+use shred_derive::SystemData;
 use sprite_loading::SpriteLoader;
 use sprite_model::config::SpritesDefinition;
 use typename::TypeName as TypeNameTrait;
@@ -54,6 +55,47 @@ where
     prefabs_in_progress: HashMap<AssetRecord, Handle<Prefab<Pf>>>,
 }
 
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub struct ObjectAssetLoadingSystemData<'s, O, Pf>
+where
+    O: GameObject,
+    Pf: for<'p> GameObjectPrefab<'p, GameObject = O>
+        + Debug
+        + TypeNameTrait
+        + Send
+        + Sync
+        + 'static,
+{
+    /// `Loader` to load assets.
+    #[derivative(Debug = "ignore")]
+    loader: ReadExpect<'s, Loader>,
+    /// `AssetStorage` for `O::Definition`s.
+    #[derivative(Debug = "ignore")]
+    game_object_definition_assets: Read<'s, AssetStorage<O::Definition>>,
+    /// `AssetStorage` for `SpritesDefinition`s.
+    #[derivative(Debug = "ignore")]
+    sprites_definition_assets: Read<'s, AssetStorage<SpritesDefinition>>,
+    /// `AssetStorage` for `Texture`s.
+    #[derivative(Debug = "ignore")]
+    texture_assets: Read<'s, AssetStorage<Texture>>,
+    /// `AssetStorage` for `SpriteSheet`s.
+    #[derivative(Debug = "ignore")]
+    sprite_sheet_assets: Read<'s, AssetStorage<SpriteSheet>>,
+    /// `PrefabLoader` system data.
+    #[derivative(Debug = "ignore")]
+    game_object_prefab_loader: PrefabLoader<'s, Pf>,
+    /// `AssetStorage` for `Prefab<Pf>`s.
+    #[derivative(Debug = "ignore")]
+    game_object_prefab_assets: Read<'s, AssetStorage<Prefab<Pf>>>,
+    /// `GameObjectPrefabs<Pf>` resource.
+    #[derivative(Debug = "ignore")]
+    game_object_prefabs: Write<'s, GameObjectPrefabs<Pf>>,
+    /// `ObjectLoadingStatus` resource.
+    #[derivative(Debug = "ignore")]
+    loading_status: Write<'s, ObjectLoadingStatus>,
+}
+
 impl<'s, O, Pf> System<'s> for ObjectAssetLoadingSystem<O, Pf>
 where
     O: GameObject + TypeNameTrait,
@@ -65,21 +107,11 @@ where
         + Sync
         + 'static,
 {
-    type SystemData = (
-        ReadExpect<'s, Loader>,
-        Read<'s, AssetStorage<O::Definition>>,
-        Read<'s, AssetStorage<SpritesDefinition>>,
-        Read<'s, AssetStorage<Texture>>,
-        Read<'s, AssetStorage<SpriteSheet>>,
-        PrefabLoader<'s, Pf>,
-        Read<'s, AssetStorage<Prefab<Pf>>>,
-        Write<'s, GameObjectPrefabs<Pf>>,
-        Write<'s, ObjectLoadingStatus>,
-    );
+    type SystemData = ObjectAssetLoadingSystemData<'s, O, Pf>;
 
     fn run(
         &mut self,
-        (
+        ObjectAssetLoadingSystemData {
             loader,
             game_object_definition_assets,
             sprites_definition_assets,
@@ -89,7 +121,7 @@ where
             game_object_prefab_assets,
             mut game_object_prefabs,
             mut loading_status,
-        ): Self::SystemData,
+        }: Self::SystemData,
     ) {
         // TODO: Do a diff between existing index and directory based on a file watch / notify.
         // TODO: See <https://github.com/polachok/derive-diff>
