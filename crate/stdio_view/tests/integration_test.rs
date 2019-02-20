@@ -1,26 +1,38 @@
-use assert_cmd::{cargo::CargoError, prelude::*};
-use std::process::Command;
+use assert_cmd::{
+    assert::OutputAssertExt,
+    cmd::{OutputError, OutputOkExt},
+    stdin::CommandStdInExt,
+};
+use escargot::CargoBuild;
 
 #[test]
-fn read_and_exit() -> Result<(), CargoError> {
-    Command::cargo_example("01_read_and_exit")?
+fn read_and_exit() -> Result<(), OutputError> {
+    CargoBuild::new()
+        .example("01_read_and_exit")
+        .current_release()
+        .run()
+        .expect("Failed to create `cargo` command")
+        .command()
         .with_stdin()
         .buffer("exit\n")
-        .output()
-        .unwrap()
+        .ok()?
         .assert()
         .success();
     Ok(())
 }
 
 #[test]
-fn read_and_exit_timeout() -> Result<(), CargoError> {
-    Command::cargo_example("01_read_and_exit")?
+fn read_and_exit_timeout() -> Result<(), OutputError> {
+    CargoBuild::new()
+        .example("01_read_and_exit")
+        .current_release()
+        .run()
+        .expect("Failed to create `cargo` command")
+        .command()
         .args(&["-t", "0"])
         .with_stdin()
         .buffer("abc\n")
-        .output()
-        .unwrap()
+        .ok()?
         .assert()
         .success();
     Ok(())

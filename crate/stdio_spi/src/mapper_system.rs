@@ -29,15 +29,17 @@ where
     marker: PhantomData<M>,
 }
 
+type MapperSystemSystemData<'s, E, SD> = (
+    Read<'s, EventChannel<VariantAndTokens>>,
+    Write<'s, EventChannel<E>>,
+    <SD as MapperSystemData<'s>>::SystemData,
+);
+
 impl<'s, M> System<'s> for MapperSystem<M>
 where
     M: StdinMapper + TypeNameTrait,
 {
-    type SystemData = (
-        Read<'s, EventChannel<VariantAndTokens>>,
-        Write<'s, EventChannel<M::Event>>,
-        <M::SystemData as MapperSystemData<'s>>::SystemData,
-    );
+    type SystemData = MapperSystemSystemData<'s, M::Event, M::SystemData>;
 
     fn run(
         &mut self,

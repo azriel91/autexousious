@@ -5,8 +5,10 @@ use amethyst::{
     ecs::{Entity, Read, ReadExpect, WriteStorage},
     Error,
 };
+use derivative::Derivative;
 use object_model::{config::ObjectAssetData, loaded::GameObject};
 use serde::{Deserialize, Serialize};
+use shred_derive::SystemData;
 
 use crate::{
     ObjectAnimationStorages, ObjectComponentStorages, ObjectEntityAugmenter, ObjectPrefabError,
@@ -31,30 +33,45 @@ where
     Invalid,
 }
 
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub struct ObjectPrefabSystemData<'s, O>
+where
+    O: GameObject,
+{
+    /// `Loader` to load assets.
+    #[derivative(Debug = "ignore")]
+    loader: ReadExpect<'s, Loader>,
+    /// `AssetStorage` for `ObjectWrapper`s.
+    #[derivative(Debug = "ignore")]
+    object_wrapper_assets: Read<'s, AssetStorage<O::ObjectWrapper>>,
+    /// `Handle<ObjectWrapper>` component storage.
+    #[derivative(Debug = "ignore")]
+    object_wrapper_handles: WriteStorage<'s, Handle<O::ObjectWrapper>>,
+    /// Common game object `Component` storages.
+    object_component_storages: ObjectComponentStorages<'s, O::SequenceId>,
+    /// Common game object `Animation` storages.
+    object_animation_storages: ObjectAnimationStorages<'s, O::SequenceId>,
+}
+
 impl<'s, O> PrefabData<'s> for ObjectPrefab<O>
 where
     O: GameObject,
     O::ObjectWrapper: Debug,
 {
-    type SystemData = (
-        ReadExpect<'s, Loader>,
-        Read<'s, AssetStorage<O::ObjectWrapper>>,
-        WriteStorage<'s, Handle<O::ObjectWrapper>>,
-        ObjectComponentStorages<'s, O::SequenceId>,
-        ObjectAnimationStorages<'s, O::SequenceId>,
-    );
+    type SystemData = ObjectPrefabSystemData<'s, O>;
     type Result = ();
 
     fn add_to_entity(
         &self,
         entity: Entity,
-        (
+        ObjectPrefabSystemData {
             loader,
             object_wrapper_assets,
             object_wrapper_handles,
             object_component_storages,
             object_animation_storages,
-        ): &mut Self::SystemData,
+        }: &mut Self::SystemData,
         _: &[Entity],
     ) -> Result<(), Error> {
         let object_wrapper_handle = match self {
@@ -87,7 +104,11 @@ where
     fn load_sub_assets(
         &mut self,
         progress: &mut ProgressCounter,
-        (loader, object_wrapper_assets, _, _, _): &mut Self::SystemData,
+        ObjectPrefabSystemData {
+            loader,
+            object_wrapper_assets,
+            ..
+        }: &mut Self::SystemData,
     ) -> Result<bool, Error> {
         let (self_, needs_loading_result) = match mem::replace(self, ObjectPrefab::Invalid) {
             ObjectPrefab::Data(object_asset_data) => {

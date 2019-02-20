@@ -10,7 +10,7 @@ animation_support = { path = "../animation_support" }
 derivative = "1.0.2"
 derive-new = "0.5.6"
 minterpolate = { version = "0.4.0", features = ["serde"] }
-serde = "1.0.85"
+serde = "1.0.87"
 shape_model = { path = "../shape_model" }
 
 [dev-dependencies]

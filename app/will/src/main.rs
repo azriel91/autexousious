@@ -9,13 +9,9 @@ use amethyst::{
     assets::HotReloadBundle,
     core::{frame_limiter::FrameRateLimitStrategy, transform::TransformBundle},
     input::InputBundle,
-    prelude::*,
-    renderer::{
-        ColorMask, DepthMode, DisplayConfig, DrawFlat2D, Pipeline, RenderBundle, SpriteRender,
-        Stage, ALPHA,
-    },
+    renderer::{DisplayConfig, DrawFlat2D, Pipeline, RenderBundle, SpriteRender, Stage},
     ui::{DrawUi, UiBundle},
-    LogLevelFilter, LoggerConfig,
+    CoreApplication, GameDataBuilder, LogLevelFilter, LoggerConfig,
 };
 use application::{
     development_base_dirs,
@@ -97,11 +93,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         let pipe = Pipeline::build().with_stage(
             Stage::with_backbuffer()
                 .clear_target([0., 0., 0., 1.], 0.)
-                .with_pass(DrawFlat2D::new().with_transparency(
-                    ColorMask::all(),
-                    ALPHA,
-                    Some(DepthMode::LessEqualWrite),
-                ))
+                .with_pass(DrawFlat2D::new())
                 .with_pass(DrawUi::new()),
         );
 

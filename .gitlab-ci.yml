@@ -88,8 +88,7 @@ nightly:conformance:
 linux:debug:
   <<: *linux_job_common
   script:
-    - time cargo test --no-run
-    - time cargo build --examples --bins
+    - time cargo test -j 4 --no-run
     - source xvfb_start
     - time cargo test
     - source xvfb_stop
@@ -104,8 +103,7 @@ linux:debug:
 linux:release:
   <<: *linux_job_common
   script:
-    - time cargo test --no-run --release
-    - time cargo build --examples --bins --release
+    - time cargo test -j 4 --no-run --release
     - source xvfb_start
     - time cargo test --release
     - source xvfb_stop
@@ -134,16 +132,12 @@ windows:debug:
   <<: *windows_job_common
   script:
     - cargo test --no-run
-    - cargo build --examples --bins
-    - cargo build
     - cargo test
 
 windows:release:
   <<: *windows_job_common
   script:
     - cargo test --no-run --release
-    - cargo build --examples --bins --release
-    - cargo build --release
     - cargo test --release
     - .\build\publish_prepare_app.bat
   artifacts:

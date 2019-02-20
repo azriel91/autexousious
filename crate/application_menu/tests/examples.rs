@@ -1,14 +1,17 @@
-use assert_cmd::{cargo::CargoError, prelude::*};
-use std::process::Command;
+use assert_cmd::assert::OutputAssertExt;
+use escargot::{error::CargoError, CargoBuild};
 
 #[test]
 fn example_01_menu() -> Result<(), CargoError> {
-    Command::cargo_example("01_menu")?
+    CargoBuild::new()
+        .example("01_menu")
+        .current_release()
+        .run()?
+        .command()
         .env("APP_DIR", env!("CARGO_MANIFEST_DIR"))
         .args(&["--timeout", "0"])
-        .output()
-        .unwrap()
         .assert()
         .success();
+
     Ok(())
 }

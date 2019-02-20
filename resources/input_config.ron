@@ -28,6 +28,20 @@ InputConfig(
                 Attack: Key(Key3),
                 Special: Key(Key4),
             },
-        )
+        ),
+
+        // 2
+        ControllerConfig(
+            axes: {
+                X: Emulated(pos: Key(J), neg: Key(G)),
+                Z: Emulated(pos: Key(H), neg: Key(Y)),
+            },
+            actions: {
+                Defend: Key(Key5),
+                Jump: Key(Key6),
+                Attack: Key(Key7),
+                Special: Key(Key8),
+            },
+        ),
     ],
 )
