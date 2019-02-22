@@ -197,7 +197,7 @@ impl InteractionAnimationLoader {
         sequence.frames().iter().for_each(|frame| {
             // TODO: load `InteractionFrame`s and pass `Handle`s in.
             let handle = loader.load_from_data(
-                InteractionFrame::new(frame.interactions().map(Clone::clone), frame.wait()),
+                InteractionFrame::new(frame.interactions().clone(), frame.wait()),
                 (),
                 &interaction_frame_assets,
             );
@@ -395,8 +395,8 @@ mod test {
         sequences
     }
 
-    fn test_interactions() -> Option<Vec<Interaction>> {
-        Some(vec![Interaction::Physical {
+    fn test_interactions() -> Vec<Interaction> {
+        vec![Interaction::Physical {
             bounds: vec![Volume::Sphere {
                 x: 1,
                 y: 2,
@@ -406,7 +406,7 @@ mod test {
             hp_damage: 10,
             sp_damage: 20,
             multiple: true,
-        }])
+        }]
     }
 
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]

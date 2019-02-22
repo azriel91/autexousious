@@ -14,7 +14,7 @@ use shape_model::Volume;
 pub struct BodyFrame {
     /// Hittable volumes of the object.
     #[serde(default)]
-    pub body: Option<Vec<Volume>>,
+    pub body: Vec<Volume>,
     /// Number of ticks to wait before the sequence switches to the next frame.
     #[serde(default)]
     pub wait: u32,
@@ -94,7 +94,7 @@ mod tests {
                 r: 17,
             },
         ];
-        assert_eq!(BodyFrame::new(Some(body_volumes), 0), frame);
+        assert_eq!(BodyFrame::new(body_volumes, 0), frame);
     }
 
     #[test]
@@ -118,6 +118,6 @@ mod tests {
                 r: 17,
             },
         ];
-        assert_eq!(BodyFrame::new(Some(body_volumes), 0), frame);
+        assert_eq!(BodyFrame::new(body_volumes, 0), frame);
     }
 }

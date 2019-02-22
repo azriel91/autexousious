@@ -170,7 +170,7 @@ impl BodyAnimationLoader {
         sequence.frames().iter().for_each(|frame| {
             // TODO: load `BodyFrame`s and pass `Handle`s in.
             let handle = loader.load_from_data(
-                BodyFrame::new(frame.body().map(Clone::clone), frame.wait()),
+                BodyFrame::new(frame.body().clone(), frame.wait()),
                 (),
                 body_frame_assets,
             );
@@ -362,13 +362,13 @@ mod test {
         sequences
     }
 
-    fn test_body() -> Option<Vec<Volume>> {
-        Some(vec![Volume::Sphere {
+    fn test_body() -> Vec<Volume> {
+        vec![Volume::Sphere {
             x: 1,
             y: 2,
             z: 3,
             r: 4,
-        }])
+        }]
     }
 
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]

@@ -11,13 +11,13 @@ use collision_model::config::{Interaction, InteractionFrame};
 /// * **Wait:** Number of ticks to wait before the animation switches to the next frame.
 pub trait InteractionAnimationFrame: Clone + Debug + Hash + PartialEq + Eq {
     /// Returns the number of ticks to wait before the animation switches to the next frame.
-    fn interactions(&self) -> Option<&Vec<Interaction>>;
+    fn interactions(&self) -> &Vec<Interaction>;
     /// Returns the number of ticks to wait before the animation switches to the next frame.
     fn wait(&self) -> u32;
 }
 
 impl InteractionAnimationFrame for InteractionFrame {
-    fn interactions(&self) -> Option<&Vec<Interaction>> {
+    fn interactions(&self) -> &Vec<Interaction> {
         self.interactions.as_ref()
     }
 

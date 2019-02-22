@@ -199,38 +199,36 @@ impl<'s> System<'s> for ObjectCollisionDetectionSystem {
                     .get(bfah.current())
                     .expect("Expected `BodyFrame` from handle to exist.");
 
-                let mut collision_events = match (&interaction_frame.interactions, &body_frame.body)
-                {
-                    (Some(ref interactions), Some(ref body_volumes)) => {
-                        interactions
-                            .iter()
-                            .flat_map(|interaction| {
-                                // loop through each body, if it hits, generate a collision event.
+                let mut collision_events = {
+                    let interactions = &interaction_frame.interactions;
+                    let body_volumes = &body_frame.body;
+                    interactions
+                        .iter()
+                        .flat_map(|interaction| {
+                            // loop through each body, if it hits, generate a collision event.
 
-                                body_volumes.iter().filter_map(move |volume| {
-                                    if Self::intersects(
-                                        &relative_pos,
-                                        (
-                                            interaction,
-                                            interaction_offsets,
-                                            *from_flipped == Flipped::Horizontal,
-                                        ),
-                                        (volume, body_offsets, *to_flipped == Flipped::Horizontal),
-                                    ) {
-                                        Some(CollisionEvent::new(
-                                            from,
-                                            to,
-                                            interaction.clone(),
-                                            *volume,
-                                        ))
-                                    } else {
-                                        None
-                                    }
-                                })
+                            body_volumes.iter().filter_map(move |volume| {
+                                if Self::intersects(
+                                    &relative_pos,
+                                    (
+                                        interaction,
+                                        interaction_offsets,
+                                        *from_flipped == Flipped::Horizontal,
+                                    ),
+                                    (volume, body_offsets, *to_flipped == Flipped::Horizontal),
+                                ) {
+                                    Some(CollisionEvent::new(
+                                        from,
+                                        to,
+                                        interaction.clone(),
+                                        *volume,
+                                    ))
+                                } else {
+                                    None
+                                }
                             })
-                            .collect::<Vec<CollisionEvent>>()
-                    }
-                    _ => Vec::new(),
+                        })
+                        .collect::<Vec<CollisionEvent>>()
                 };
 
                 if !collision_events.is_empty() {

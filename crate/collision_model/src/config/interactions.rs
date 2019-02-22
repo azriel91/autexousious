@@ -10,7 +10,9 @@ use serde::{Deserialize, Serialize};
 use crate::config::Interaction;
 
 /// Effects on other objects.
-#[derive(Clone, Debug, Default, Deref, DerefMut, Deserialize, PartialEq, Eq, Serialize, new)]
+#[derive(
+    Clone, Debug, Default, Deref, DerefMut, Deserialize, Hash, PartialEq, Eq, Serialize, new,
+)]
 pub struct Interactions(
     /// Backing vector of `Interaction`s.
     #[serde(default)]

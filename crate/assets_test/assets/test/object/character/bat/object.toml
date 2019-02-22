@@ -3,47 +3,41 @@
 
 [sequences.stand]
   [[sequences.stand.frames]]
-    sheet = 0
-    sprite = 5
     wait = 1
+    sprite = { sheet = 0, index = 5 }
     body = [{ box = { x = 169, y = 5, w = 12, h = 20 } }]
 
 [sequences.stand_attack]
   [[sequences.stand_attack.frames]]
-    sheet = 1
-    sprite = 0
+    sprite = { sheet = 1, index = 0 }
     body = [{ box = { x = 16, y = 11, w = 15, h = 12 } }]
     interactions = [
       { physical = { bounds = [{ box = { x = 16, y = 11, w = 15, h = 12 } }], damage_hp = 20 } },
     ]
 
   [[sequences.stand_attack.frames]]
-    sheet = 1
-    sprite = 1
+    sprite = { sheet = 1, index = 1 }
     body = [{ box = { x = 48, y = 13, w = 15, h = 12 } }]
     interactions = [
       { physical = { bounds = [{ box = { x = 48, y = 13, w = 15, h = 12 } }], damage_hp = 20 } },
     ]
 
   [[sequences.stand_attack.frames]]
-    sheet = 1
-    sprite = 2
+    sprite = { sheet = 1, index = 2 }
     body = [{ box = { x = 81, y = 0, w = 14, h = 12 } }]
     interactions = [
       { physical = { bounds = [{ box = { x = 81, y = 0, w = 14, h = 12 } }], damage_hp = 20 } },
     ]
 
   [[sequences.stand_attack.frames]]
-    sheet = 1
-    sprite = 3
+    sprite = { sheet = 1, index = 3 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
     interactions = [
       { physical = { bounds = [{ box = { x = 113, y = 10, w = 14, h = 13 } }], damage_hp = 20 } },
     ]
 
   [[sequences.stand_attack.frames]]
-    sheet = 1
-    sprite = 4
+    sprite = { sheet = 1, index = 4 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
     interactions = [
       { physical = { bounds = [{ box = { x = 113, y = 10, w = 14, h = 13 } }], damage_hp = 20 } },
@@ -51,95 +45,80 @@
 
 [sequences.walk]
   [[sequences.walk.frames]]
-    sheet = 0
-    sprite = 0
     wait = 2
+    sprite = { sheet = 0, index = 0 }
     body = [{ box = { x = 16, y = 11, w = 15, h = 12 } }]
 
   [[sequences.walk.frames]]
-    sheet = 0
-    sprite = 1
     wait = 2
+    sprite = { sheet = 0, index = 1 }
     body = [{ box = { x = 48, y = 13, w = 15, h = 12 } }]
 
   [[sequences.walk.frames]]
-    sheet = 0
-    sprite = 2
     wait = 2
+    sprite = { sheet = 0, index = 2 }
     body = [{ box = { x = 81, y = 0, w = 14, h = 12 } }]
 
   [[sequences.walk.frames]]
-    sheet = 0
-    sprite = 3
     wait = 2
+    sprite = { sheet = 0, index = 3 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
   [[sequences.walk.frames]]
-    sheet = 0
-    sprite = 4
     wait = 2
+    sprite = { sheet = 0, index = 4 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
 [sequences.run]
   [[sequences.run.frames]]
-    sheet = 0
-    sprite = 0
     wait = 2
+    sprite = { sheet = 0, index = 0 }
     body = [{ box = { x = 16, y = 11, w = 15, h = 12 } }]
 
   [[sequences.run.frames]]
-    sheet = 0
-    sprite = 1
     wait = 2
+    sprite = { sheet = 0, index = 1 }
     body = [{ box = { x = 48, y = 13, w = 15, h = 12 } }]
 
   [[sequences.run.frames]]
-    sheet = 0
-    sprite = 2
     wait = 2
+    sprite = { sheet = 0, index = 2 }
     body = [{ box = { x = 81, y = 0, w = 14, h = 12 } }]
 
   [[sequences.run.frames]]
-    sheet = 0
-    sprite = 3
     wait = 2
+    sprite = { sheet = 0, index = 3 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
   [[sequences.run.frames]]
-    sheet = 0
-    sprite = 4
     wait = 2
+    sprite = { sheet = 0, index = 4 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
 [sequences.run_stop]
   [[sequences.run_stop.frames]]
-    sheet = 0
-    sprite = 0
     wait = 2
+    sprite = { sheet = 0, index = 0 }
     body = [{ box = { x = 16, y = 11, w = 15, h = 12 } }]
 
   [[sequences.run_stop.frames]]
-    sheet = 0
-    sprite = 1
     wait = 2
+    sprite = { sheet = 0, index = 1 }
     body = [{ box = { x = 48, y = 13, w = 15, h = 12 } }]
 
   [[sequences.run_stop.frames]]
-    sheet = 0
-    sprite = 2
     wait = 2
+    sprite = { sheet = 0, index = 2 }
     body = [{ box = { x = 81, y = 0, w = 14, h = 12 } }]
 
   [[sequences.run_stop.frames]]
-    sheet = 0
-    sprite = 3
     wait = 2
+    sprite = { sheet = 0, index = 3 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
   [[sequences.run_stop.frames]]
-    sheet = 0
-    sprite = 4
     wait = 2
+    sprite = { sheet = 0, index = 4 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
 # There are 3 sequences for jumping up:
@@ -149,170 +128,142 @@
 # * `jump_ascend`: The character is moving upwards, but has not yet reached the peak of its jump.
 [sequences.jump]
   [[sequences.jump.frames]]
-    sheet = 0
-    sprite = 0
+    sprite = { sheet = 0, index = 0 }
     body = [{ box = { x = 16, y = 11, w = 15, h = 12 } }]
 
   [[sequences.jump.frames]]
-    sheet = 0
-    sprite = 1
+    sprite = { sheet = 0, index = 1 }
     body = [{ box = { x = 48, y = 13, w = 15, h = 12 } }]
 
   [[sequences.jump.frames]]
-    sheet = 0
-    sprite = 2
+    sprite = { sheet = 0, index = 2 }
     body = [{ box = { x = 81, y = 0, w = 14, h = 12 } }]
 
   [[sequences.jump.frames]]
-    sheet = 0
-    sprite = 3
+    sprite = { sheet = 0, index = 3 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
   [[sequences.jump.frames]]
-    sheet = 0
-    sprite = 4
+    sprite = { sheet = 0, index = 4 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
 [sequences.jump_off]
   [[sequences.jump_off.frames]]
-    sheet = 1
-    sprite = 3
     wait = 1
+    sprite = { sheet = 1, index = 3 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
   [[sequences.jump_off.frames]]
-    sheet = 1
-    sprite = 4
     wait = 1
+    sprite = { sheet = 1, index = 4 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
 [sequences.jump_ascend]
   [[sequences.jump_ascend.frames]]
-    sheet = 1
-    sprite = 3
     wait = 1
+    sprite = { sheet = 1, index = 3 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
   [[sequences.jump_ascend.frames]]
-    sheet = 1
-    sprite = 4
     wait = 1
+    sprite = { sheet = 1, index = 4 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
 [sequences.jump_descend]
   [[sequences.jump_descend.frames]]
-    sheet = 1
-    sprite = 3
     wait = 1
+    sprite = { sheet = 1, index = 3 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
   [[sequences.jump_descend.frames]]
-    sheet = 1
-    sprite = 4
     wait = 1
+    sprite = { sheet = 1, index = 4 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
 [sequences.jump_descend_land]
   [[sequences.jump_descend_land.frames]]
-    sheet = 0
-    sprite = 4
+    sprite = { sheet = 0, index = 4 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
   [[sequences.jump_descend_land.frames]]
-    sheet = 0
-    sprite = 3
+    sprite = { sheet = 0, index = 3 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
   [[sequences.jump_descend_land.frames]]
-    sheet = 0
-    sprite = 2
+    sprite = { sheet = 0, index = 2 }
     body = [{ box = { x = 81, y = 0, w = 14, h = 12 } }]
 
   [[sequences.jump_descend_land.frames]]
-    sheet = 0
-    sprite = 1
+    sprite = { sheet = 0, index = 1 }
     body = [{ box = { x = 48, y = 13, w = 15, h = 12 } }]
 
   [[sequences.jump_descend_land.frames]]
-    sheet = 0
-    sprite = 0
+    sprite = { sheet = 0, index = 0 }
     body = [{ box = { x = 16, y = 11, w = 15, h = 12 } }]
 
 [sequences.flinch_0]
   [[sequences.flinch_0.frames]]
-    sheet = 0
-    sprite = 4
     wait = 0
+    sprite = { sheet = 0, index = 4 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
   [[sequences.flinch_0.frames]]
-    sheet = 0
-    sprite = 3
     wait = 0
+    sprite = { sheet = 0, index = 3 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
   [[sequences.flinch_0.frames]]
-    sheet = 0
-    sprite = 5
     wait = 3
+    sprite = { sheet = 0, index = 5 }
     body = [{ box = { x = 169, y = 5, w = 12, h = 20 } }]
 
 [sequences.flinch_1]
   [[sequences.flinch_1.frames]]
-    sheet = 0
-    sprite = 4
     wait = 0
+    sprite = { sheet = 0, index = 4 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
   [[sequences.flinch_1.frames]]
-    sheet = 0
-    sprite = 3
     wait = 0
+    sprite = { sheet = 0, index = 3 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
   [[sequences.flinch_1.frames]]
-    sheet = 0
-    sprite = 5
     wait = 3
+    sprite = { sheet = 0, index = 5 }
     body = [{ box = { x = 169, y = 5, w = 12, h = 20 } }]
 
 # Fall when knocked down.
 [sequences.fall_forward_ascend]
   [[sequences.fall_forward_ascend.frames]]
-    sheet = 0
-    sprite = 1
     wait = 2
+    sprite = { sheet = 0, index = 1 }
     body = [{ box = { x = 48, y = 13, w = 15, h = 12 } }]
 
 [sequences.fall_forward_descend]
   [[sequences.fall_forward_descend.frames]]
-    sheet = 0
-    sprite = 0
     wait = 2
+    sprite = { sheet = 0, index = 0 }
     body = [{ box = { x = 16, y = 11, w = 15, h = 12 } }]
 
   [[sequences.fall_forward_descend.frames]]
-    sheet = 0
-    sprite = 4
     wait = 2
+    sprite = { sheet = 0, index = 4 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
 [sequences.fall_forward_land]
   [[sequences.fall_forward_land.frames]]
-    sheet = 0
-    sprite = 3
     wait = 2
+    sprite = { sheet = 0, index = 3 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
   [[sequences.fall_forward_land.frames]]
-    sheet = 0
-    sprite = 4
     wait = 2
+    sprite = { sheet = 0, index = 4 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
 [sequences.lie_face_down]
   [[sequences.lie_face_down.frames]]
-    sheet = 0
-    sprite = 3
     wait = 30
+    sprite = { sheet = 0, index = 3 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]

@@ -15,7 +15,7 @@ use crate::config::Interaction;
 pub struct InteractionFrame {
     /// Effects on other objects.
     #[serde(default)]
-    pub interactions: Option<Vec<Interaction>>,
+    pub interactions: Vec<Interaction>,
     /// Number of ticks to wait before the sequence switches to the next frame.
     #[serde(default)]
     pub wait: u32,
@@ -70,7 +70,7 @@ mod tests {
             sp_damage: 50,
             multiple: true,
         }];
-        assert_eq!(InteractionFrame::new(Some(interactions), 0), frame);
+        assert_eq!(InteractionFrame::new(interactions, 0), frame);
     }
 
     #[test]
@@ -89,6 +89,6 @@ mod tests {
             sp_damage: 0,
             multiple: false,
         }];
-        assert_eq!(InteractionFrame::new(Some(interactions), 0), frame);
+        assert_eq!(InteractionFrame::new(interactions, 0), frame);
     }
 }
