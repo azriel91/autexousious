@@ -9,6 +9,8 @@ use shape_model::Volume;
 use sprite_loading::AnimationFrame;
 use sprite_model::config::SpriteRef;
 
+use crate::config::object::Wait;
+
 /// Animation and interaction information to use on this frame.
 ///
 /// Frames are the level of detail that should carry the following information:
@@ -22,7 +24,7 @@ use sprite_model::config::SpriteRef;
 #[serde(default)]
 pub struct ObjectFrame {
     /// Number of ticks to wait before the sequence switches to the next frame.
-    pub wait: u32,
+    pub wait: Wait,
     /// Sprite to render.
     pub sprite: SpriteRef,
     /// Hittable volume of the object.

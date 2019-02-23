@@ -2,7 +2,7 @@
 
 pub use self::{
     object_definition::ObjectDefinition,
-    sequence::{ObjectFrame, Sequence, SequenceId},
+    sequence::{ObjectFrame, Sequence, SequenceId, Wait},
 };
 
 mod object_definition;

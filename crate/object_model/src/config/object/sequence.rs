@@ -7,7 +7,7 @@
 //! because different object types have different valid sequence IDs, and we want to be able to
 //! define this at compile time rather than needing to process this at run time.
 
-pub use self::{object_frame::ObjectFrame, sequence_id::SequenceId};
+pub use self::{object_frame::ObjectFrame, sequence_id::SequenceId, wait::Wait};
 
 use collision_loading::InteractionAnimationSequence;
 use collision_model::animation::BodyAnimationSequence;
@@ -17,6 +17,7 @@ use sprite_loading::AnimationSequence;
 
 mod object_frame;
 mod sequence_id;
+mod wait;
 
 /// Represents an independent action sequence of an object.
 ///
