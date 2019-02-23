@@ -1,20 +1,22 @@
 use std::collections::HashMap;
 
-use amethyst::{renderer::SpriteRender, Error};
+use amethyst::{assets::Handle, renderer::SpriteRender, Error};
 use collision_loading::{BodyAnimationLoader, InteractionAnimationLoader};
 use collision_model::{
     animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle},
-    config::{BodyFrame, InteractionFrame},
+    config::{Body, BodyFrame, InteractionFrame, Interactions},
+    loaded::{BodySequence, InteractionsSequence},
 };
 use fnv::FnvHashMap;
 use object_model::{
-    config::ObjectDefinition,
+    config::{object::Wait, ObjectDefinition},
     loaded::{
-        AnimatedComponentAnimation, AnimatedComponentDefault, GameObject, Object, ObjectWrapper,
-        SequenceEndTransition,
+        AnimatedComponentAnimation, AnimatedComponentDefault, ComponentSequence,
+        ComponentSequences, GameObject, Object, ObjectWrapper, SequenceEndTransition, WaitSequence,
     },
 };
 use sprite_loading::SpriteRenderAnimationLoader;
+use sprite_model::loaded::SpriteRenderSequence;
 
 use crate::ObjectLoaderParams;
 
@@ -41,6 +43,8 @@ impl ObjectLoader {
             interaction_frame_assets,
             interaction_frame_primitive_sampler_assets,
             interaction_frame_animation_assets,
+            body_assets,
+            interactions_assets,
         }: ObjectLoaderParams,
         object_definition: &ObjectDefinition<O::SequenceId>,
     ) -> Result<O::ObjectWrapper, Error>
@@ -139,8 +143,64 @@ impl ObjectLoader {
             })
             .collect::<HashMap<_, _>>();
 
-        // TODO: implement -- load component sequences
-        let component_sequences = HashMap::new();
+        // Load component sequences
+        let component_sequences = object_definition
+            .sequences
+            .iter()
+            .map(|(sequence_id, sequence)| {
+                let wait_sequence = WaitSequence::new(
+                    sequence
+                        .frames
+                        .iter()
+                        .map(|frame| frame.wait)
+                        .collect::<Vec<Wait>>(),
+                );
+                let sprite_render_sequence = SpriteRenderSequence::new(
+                    sequence
+                        .frames
+                        .iter()
+                        .map(|frame| {
+                            let sprite_ref = &frame.sprite;
+                            let sprite_sheet = sprite_sheet_handles[sprite_ref.sheet].clone();
+                            let sprite_number = sprite_ref.index;
+                            SpriteRender {
+                                sprite_sheet,
+                                sprite_number,
+                            }
+                        })
+                        .collect::<Vec<SpriteRender>>(),
+                );
+                let body_sequence = BodySequence::new(
+                    sequence
+                        .frames
+                        .iter()
+                        .map(|frame| loader.load_from_data(frame.body.clone(), (), body_assets))
+                        .collect::<Vec<Handle<Body>>>(),
+                );
+                let interactions_sequence = InteractionsSequence::new(
+                    sequence
+                        .frames
+                        .iter()
+                        .map(|frame| {
+                            loader.load_from_data(
+                                frame.interactions.clone(),
+                                (),
+                                interactions_assets,
+                            )
+                        })
+                        .collect::<Vec<Handle<Interactions>>>(),
+                );
+
+                let mut component_sequences = Vec::new();
+                component_sequences.push(ComponentSequence::Wait(wait_sequence));
+                component_sequences.push(ComponentSequence::SpriteRender(sprite_render_sequence));
+                component_sequences.push(ComponentSequence::Body(body_sequence));
+                component_sequences.push(ComponentSequence::Interactions(interactions_sequence));
+
+                let component_sequences = ComponentSequences::new(component_sequences);
+                (*sequence_id, component_sequences)
+            })
+            .collect::<HashMap<O::SequenceId, ComponentSequences>>();
 
         let object = Object::new(
             animation_defaults,
@@ -175,7 +235,7 @@ mod test {
             BodyFrameActiveHandle, BodyFramePrimitive, InteractionFrameActiveHandle,
             InteractionFramePrimitive,
         },
-        config::{BodyFrame, InteractionFrame},
+        config::{Body, BodyFrame, InteractionFrame, Interactions},
     };
     use sprite_loading::SpriteLoader;
     use sprite_model::config::SpritesDefinition;
@@ -256,6 +316,9 @@ mod test {
                         let interaction_frame_animation_assets = &world
                             .read_resource::<AssetStorage<Animation<InteractionFrameActiveHandle>>>(
                             );
+                        let body_assets = &world.read_resource::<AssetStorage<Body>>();
+                        let interactions_assets =
+                            &world.read_resource::<AssetStorage<Interactions>>();
 
                         // TODO: <https://gitlab.com/azriel91/autexousious/issues/94>
                         let sprite_sheet_handles = SpriteLoader::load(
@@ -281,6 +344,8 @@ mod test {
                                 interaction_frame_assets,
                                 interaction_frame_primitive_sampler_assets,
                                 interaction_frame_animation_assets,
+                                body_assets,
+                                interactions_assets,
                             },
                             &character_definition.object_definition,
                         )

@@ -1,3 +1,4 @@
+use collision_model::config::{Body, Interactions};
 use std::{marker::PhantomData, ops::Deref, sync::Arc};
 
 use amethyst::{
@@ -85,6 +86,12 @@ where
     #[derivative(Debug = "ignore")]
     pub interaction_frame_animation_assets:
         Read<'s, AssetStorage<Animation<InteractionFrameActiveHandle>>>,
+    /// `AssetStorage` for `Body`s.
+    #[derivative(Debug = "ignore")]
+    pub body_assets: Read<'s, AssetStorage<Body>>,
+    /// `AssetStorage` for `Interactions`s.
+    #[derivative(Debug = "ignore")]
+    pub interactions_assets: Read<'s, AssetStorage<Interactions>>,
     /// Marker.
     phantom_data: PhantomData<O>,
 }
@@ -112,6 +119,8 @@ where
             interaction_frame_assets,
             interaction_frame_primitive_sampler_assets,
             interaction_frame_animation_assets,
+            body_assets,
+            interactions_assets,
             ..
         }: Self::SystemData,
     ) {
@@ -142,6 +151,8 @@ where
                             interaction_frame_primitive_sampler_assets:
                                 &interaction_frame_primitive_sampler_assets,
                             interaction_frame_animation_assets: &interaction_frame_animation_assets,
+                            body_assets: &body_assets,
+                            interactions_assets: &interactions_assets,
                         },
                         object_definition,
                     )?;

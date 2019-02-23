@@ -7,11 +7,11 @@ use crate::loaded::WaitSequence;
 #[derive(Clone, Debug, PartialEq)]
 pub enum ComponentSequence {
     /// Number of ticks to stay on the current frame before switching to the next frame.
-    WaitSequence(WaitSequence),
+    Wait(WaitSequence),
     /// Information for rendering a sprite.
-    SpriteRenderSequence(SpriteRenderSequence),
+    SpriteRender(SpriteRenderSequence),
     /// Hittable volumes of an interactable object.
-    BodySequence(BodySequence),
+    Body(BodySequence),
     /// Effects on other objects.
-    InteractionsSequence(InteractionsSequence),
+    Interactions(InteractionsSequence),
 }

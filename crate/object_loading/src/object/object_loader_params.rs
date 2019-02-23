@@ -8,7 +8,7 @@ use collision_model::{
         BodyFrameActiveHandle, BodyFramePrimitive, InteractionFrameActiveHandle,
         InteractionFramePrimitive,
     },
-    config::{BodyFrame, InteractionFrame},
+    config::{Body, BodyFrame, InteractionFrame, Interactions},
 };
 use derivative::Derivative;
 
@@ -47,4 +47,10 @@ pub struct ObjectLoaderParams<'s> {
     #[derivative(Debug = "ignore")]
     pub interaction_frame_animation_assets:
         &'s AssetStorage<Animation<InteractionFrameActiveHandle>>,
+    /// `AssetStorage` for `Body`s.
+    #[derivative(Debug = "ignore")]
+    pub body_assets: &'s AssetStorage<Body>,
+    /// `AssetStorage` for `Interactions`s.
+    #[derivative(Debug = "ignore")]
+    pub interactions_assets: &'s AssetStorage<Interactions>,
 }
