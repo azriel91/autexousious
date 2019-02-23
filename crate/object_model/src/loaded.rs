@@ -10,6 +10,7 @@ pub use self::{
     object_wrapper::ObjectWrapper,
     sequence::{
         ComponentSequence, ComponentSequences, SequenceEndTransition, SequenceEndTransitions,
+        WaitSequence,
     },
 };
 

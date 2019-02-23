@@ -12,7 +12,7 @@ mod test {
     use std::collections::HashMap;
 
     use collision_model::config::{Body, Interactions};
-    use object_model::config::object::{ObjectDefinition, ObjectFrame, Sequence};
+    use object_model::config::object::{ObjectDefinition, ObjectFrame, Sequence, Wait};
     use sprite_model::config::SpriteRef;
     use toml;
 
@@ -38,37 +38,37 @@ mod test {
 
         let frames = vec![
             ObjectFrame::new(
-                2,
+                Wait::new(2),
                 SpriteRef::new(0, 4),
                 Body::default(),
                 Interactions::default(),
             ),
             ObjectFrame::new(
-                2,
+                Wait::new(2),
                 SpriteRef::new(0, 5),
                 Body::default(),
                 Interactions::default(),
             ),
             ObjectFrame::new(
-                1,
+                Wait::new(1),
                 SpriteRef::new(1, 6),
                 Body::default(),
                 Interactions::default(),
             ),
             ObjectFrame::new(
-                1,
+                Wait::new(1),
                 SpriteRef::new(1, 7),
                 Body::default(),
                 Interactions::default(),
             ),
             ObjectFrame::new(
-                2,
+                Wait::new(2),
                 SpriteRef::new(0, 6),
                 Body::default(),
                 Interactions::default(),
             ),
             ObjectFrame::new(
-                2,
+                Wait::new(2),
                 SpriteRef::new(0, 5),
                 Body::default(),
                 Interactions::default(),

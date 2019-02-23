@@ -67,6 +67,7 @@ mod tests {
     use toml;
 
     use super::{ObjectFrame, Sequence, SequenceId};
+    use crate::config::object::Wait;
 
     const SEQUENCE_WITH_FRAMES: &str = r#"
         next = "Boo"
@@ -114,37 +115,37 @@ mod tests {
 
         let frames = vec![
             ObjectFrame::new(
-                2,
+                Wait::new(2),
                 SpriteRef::new(0, 4),
                 Body::default(),
                 Interactions::default(),
             ),
             ObjectFrame::new(
-                2,
+                Wait::new(2),
                 SpriteRef::new(0, 5),
                 Body::default(),
                 Interactions::default(),
             ),
             ObjectFrame::new(
-                1,
+                Wait::new(1),
                 SpriteRef::new(1, 6),
                 Body::default(),
                 Interactions::default(),
             ),
             ObjectFrame::new(
-                1,
+                Wait::new(1),
                 SpriteRef::new(1, 7),
                 Body::default(),
                 Interactions::default(),
             ),
             ObjectFrame::new(
-                2,
+                Wait::new(2),
                 SpriteRef::new(0, 6),
                 Body::default(),
                 Interactions::default(),
             ),
             ObjectFrame::new(
-                2,
+                Wait::new(2),
                 SpriteRef::new(0, 5),
                 Body::default(),
                 Interactions::default(),
@@ -176,7 +177,7 @@ mod tests {
             },
         ];
         let frames = vec![ObjectFrame::new(
-            0,
+            Wait::new(0),
             SpriteRef::new(0, 0),
             Body::new(body_volumes),
             Interactions::new(Vec::new()),
@@ -202,7 +203,7 @@ mod tests {
             multiple: false,
         }];
         let frames = vec![ObjectFrame::new(
-            0,
+            Wait::new(0),
             SpriteRef::new(0, 0),
             Body::new(Vec::new()),
             Interactions::new(interactions),

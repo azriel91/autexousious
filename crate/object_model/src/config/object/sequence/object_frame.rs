@@ -43,7 +43,7 @@ impl AnimationFrame for ObjectFrame {
     }
 
     fn wait(&self) -> u32 {
-        self.wait
+        self.wait.0
     }
 }
 
@@ -53,7 +53,7 @@ impl BodyAnimationFrame for ObjectFrame {
     }
 
     fn wait(&self) -> u32 {
-        self.wait
+        self.wait.0
     }
 }
 
@@ -63,6 +63,6 @@ impl InteractionAnimationFrame for ObjectFrame {
     }
 
     fn wait(&self) -> u32 {
-        self.wait
+        self.wait.0
     }
 }
