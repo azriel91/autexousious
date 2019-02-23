@@ -1,8 +1,12 @@
+use amethyst::ecs::{storage::DenseVecStorage, Component};
 use derive_new::new;
 use serde::{Deserialize, Serialize};
+use specs_derive::Component;
 
 /// Animation frame that displays a sprite.
-#[derive(Clone, Copy, Debug, Default, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
+#[derive(
+    Clone, Component, Copy, Debug, Default, Deserialize, Hash, PartialEq, Eq, Serialize, new,
+)]
 pub struct SpriteRef {
     /// Sprite sheet number.
     ///

@@ -1020,6 +1020,7 @@ dependencies = [
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "minterpolate 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "object_model_spi 0.10.0",
  "pretty_assertions 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.88 (registry+https://github.com/rust-lang/crates.io-index)",
  "shape_model 0.9.0",
@@ -2897,6 +2898,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "object_model_spi"
+version = "0.10.0"
+dependencies = [
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive_deref 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "object_play"
 version = "0.9.0"
 dependencies = [
@@ -3697,6 +3707,7 @@ dependencies = [
  "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.88 (registry+https://github.com/rust-lang/crates.io-index)",
+ "specs-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "toml 0.4.10 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
