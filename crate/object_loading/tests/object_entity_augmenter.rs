@@ -22,7 +22,6 @@
 use std::env;
 
 use amethyst::{
-    animation::AnimationBundle,
     assets::{AssetStorage, Prefab},
     core::transform::Transform,
     ecs::{Builder, SystemData, World},
@@ -39,14 +38,17 @@ use character_model::{
     loaded::{Character, CharacterObjectWrapper},
 };
 use collision_loading::CollisionLoadingBundle;
-use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
 use loading::{LoadingBundle, LoadingState};
+use logic_clock::LogicClock;
 use map_loading::MapLoadingBundle;
-use object_model::entity::{Mirrored, Position, SequenceStatus, Velocity};
+use object_model::{
+    config::object::FrameIndex,
+    entity::{Mirrored, Position, SequenceStatus, Velocity},
+};
 use sprite_loading::SpriteLoadingBundle;
 
 use object_loading::{
-    ObjectAnimationStorages, ObjectComponentStorages, ObjectEntityAugmenter, ObjectPrefab,
+    ObjectComponentStorages, ObjectEntityAugmenter, ObjectFrameComponentStorages, ObjectPrefab,
 };
 
 #[test]
@@ -56,7 +58,8 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
     let assertion = |world: &mut World| {
         let entity = world.create_entity().build();
         {
-            let mut object_animation_storages = ObjectAnimationStorages::fetch(&world.res);
+            let mut object_frame_component_storages =
+                ObjectFrameComponentStorages::fetch(&world.res);
             let mut object_component_storages = ObjectComponentStorages::fetch(&world.res);
 
             let object_wrapper_handle = {
@@ -92,7 +95,7 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
             ObjectEntityAugmenter::augment(
                 entity,
                 &mut object_component_storages,
-                &mut object_animation_storages,
+                &mut object_frame_component_storages,
                 object_wrapper,
             );
         }
@@ -106,26 +109,16 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
         assert!(world.read_storage::<Position<f32>>().contains(entity));
         assert!(world.read_storage::<Velocity<f32>>().contains(entity));
         assert!(world.read_storage::<Transform>().contains(entity));
+        assert!(world.read_storage::<FrameIndex>().contains(entity));
+        assert!(world.read_storage::<LogicClock>().contains(entity));
     };
 
     AmethystApplication::render_base("augments_entity_with_object_components", false)
         .with_custom_event_type::<AppEvent, AppEventReader>()
         .with_setup(|world| {
-            <ObjectAnimationStorages<CharacterSequenceId> as SystemData>::setup(&mut world.res);
+            <ObjectFrameComponentStorages as SystemData>::setup(&mut world.res);
             <ObjectComponentStorages<CharacterSequenceId> as SystemData>::setup(&mut world.res);
         })
-        .with_bundle(
-            AnimationBundle::<CharacterSequenceId, BodyFrameActiveHandle>::new(
-                "character_body_frame_acs",
-                "character_body_frame_sis",
-            ),
-        )
-        .with_bundle(AnimationBundle::<
-            CharacterSequenceId,
-            InteractionFrameActiveHandle,
-        >::new(
-            "character_interaction_acs", "character_interaction_sis"
-        ))
         .with_bundle(SpriteLoadingBundle::new())
         .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
         .with_bundle(CollisionLoadingBundle::new())

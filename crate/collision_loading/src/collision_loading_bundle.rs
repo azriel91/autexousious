@@ -1,14 +1,14 @@
 use amethyst::{assets::Processor, core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
-use collision_model::config::{BodyFrame, InteractionFrame};
+use collision_model::config::{Body, Interactions};
 use derive_new::new;
 use typename::TypeName;
 
 use crate::CollisionLoadingSystem;
 
-/// Adds `BodyFrame` and `InteractionFrame` processors to the `World`.
+/// Adds `Body` and `Interactions` processors to the `World`.
 ///
-/// * `Processor::<BodyFrame>` is added with id `"body_frame_processor"`.
-/// * `Processor::<InteractionFrame>` is added with id `"interaction_frame_processor"`.
+/// * `Processor::<Body>` is added with id `"body_frame_processor"`.
+/// * `Processor::<Interactions>` is added with id `"interaction_frame_processor"`.
 #[derive(Debug, new)]
 pub struct CollisionLoadingBundle;
 
@@ -20,12 +20,12 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CollisionLoadingBundle {
             &[],
         );
         builder.add(
-            Processor::<BodyFrame>::new(),
+            Processor::<Body>::new(),
             "body_frame_processor",
             &[&CollisionLoadingSystem::type_name()],
         );
         builder.add(
-            Processor::<InteractionFrame>::new(),
+            Processor::<Interactions>::new(),
             "interaction_frame_processor",
             &[&CollisionLoadingSystem::type_name()],
         );
@@ -37,7 +37,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CollisionLoadingBundle {
 mod test {
     use amethyst::assets::AssetStorage;
     use amethyst_test::AmethystApplication;
-    use collision_model::config::{BodyFrame, InteractionFrame};
+    use collision_model::config::{Body, Interactions};
 
     use super::CollisionLoadingBundle;
 
@@ -50,8 +50,8 @@ mod test {
                 .with_bundle(CollisionLoadingBundle::new())
                 .with_assertion(|world| {
                     // Next line will panic if the Processors aren't added
-                    world.read_resource::<AssetStorage<BodyFrame>>();
-                    world.read_resource::<AssetStorage<InteractionFrame>>();
+                    world.read_resource::<AssetStorage<Body>>();
+                    world.read_resource::<AssetStorage<Interactions>>();
                 })
                 .run()
                 .is_ok()

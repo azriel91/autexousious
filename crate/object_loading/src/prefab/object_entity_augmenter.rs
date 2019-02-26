@@ -118,15 +118,15 @@ impl ObjectEntityAugmenter {
                         .expect("Failed to insert `SpriteRender` component for object.");
                 }
                 ComponentSequence::Body(body_sequence) => {
-                    let body = body_sequence[*frame_index].clone();
+                    let body_handle = body_sequence[*frame_index].clone();
                     bodies
-                        .insert(entity, body)
+                        .insert(entity, body_handle)
                         .expect("Failed to insert `Body` component for object.");
                 }
                 ComponentSequence::Interactions(interactions_sequence) => {
-                    let interactions = interactions_sequence[*frame_index].clone();
+                    let interactions_handle = interactions_sequence[*frame_index].clone();
                     interactionses
-                        .insert(entity, interactions)
+                        .insert(entity, interactions_handle)
                         .expect("Failed to insert `Interactions` component for object.");
                 }
             });

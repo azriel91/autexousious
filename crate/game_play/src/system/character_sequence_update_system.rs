@@ -134,67 +134,6 @@ mod tests {
     use super::CharacterSequenceUpdateSystem;
 
     #[test]
-    fn updates_sequence_status_begin_to_ongoing() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::game_base("updates_sequence_status_begin_to_ongoing", false)
-                .with_setup(|world| {
-                    world.exec(
-                        |(
-                            map_selection,
-                            maps,
-                            mut character_sequence_ids,
-                            mut sequence_statuses,
-                            mut positions,
-                            mut groundings,
-                        ): (
-                            ReadExpect<'_, MapSelection>,
-                            Read<'_, AssetStorage<Map>>,
-                            WriteStorage<'_, CharacterSequenceId>,
-                            WriteStorage<'_, SequenceStatus>,
-                            WriteStorage<'_, Position<f32>>,
-                            WriteStorage<'_, Grounding>,
-                        )| {
-                            let map = maps
-                                .get(map_selection.handle())
-                                .expect("Expected map to be loaded.");
-
-                            for (character_sequence_id, sequence_status, position, grounding) in (
-                                &mut character_sequence_ids,
-                                &mut sequence_statuses,
-                                &mut positions,
-                                &mut groundings,
-                            )
-                                .join()
-                            {
-                                *character_sequence_id = CharacterSequenceId::Stand;
-                                *sequence_status = SequenceStatus::Begin;
-                                *grounding = Grounding::OnGround;
-
-                                position[1] = map.margins.bottom;
-                            }
-                        },
-                    );
-                })
-                .with_system_single(
-                    CharacterSequenceUpdateSystem::new(),
-                    CharacterSequenceUpdateSystem::type_name(),
-                    &[]
-                )
-                .with_assertion(|world| {
-                    world.exec(|sequence_statuses: ReadStorage<'_, SequenceStatus>| {
-                        for sequence_status in sequence_statuses.join() {
-                            assert_eq!(SequenceStatus::Ongoing, *sequence_status);
-                        }
-                    });
-                })
-                .run()
-                .is_ok()
-        );
-    }
-
-    #[test]
     fn updates_walk_x_and_z_velocity() {
         // kcov-ignore-start
         assert!(
