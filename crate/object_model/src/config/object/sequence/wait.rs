@@ -4,6 +4,7 @@ use std::{
 };
 
 use amethyst::ecs::{storage::VecStorage, Component};
+use derive_deref::{Deref, DerefMut};
 use derive_more::{Add, AddAssign, Display, From, Sub, SubAssign};
 use derive_new::new;
 use serde::{Deserialize, Serialize};
@@ -20,6 +21,8 @@ use specs_derive::Component;
     Copy,
     Debug,
     Default,
+    Deref,
+    DerefMut,
     Deserialize,
     Display,
     From,

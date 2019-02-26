@@ -1849,6 +1849,7 @@ dependencies = [
  "game_play_model 0.9.0",
  "loading 0.9.0",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "logic_clock 0.9.0",
  "map_model 0.9.0",
  "map_selection_model 0.9.0",
  "named_type 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
