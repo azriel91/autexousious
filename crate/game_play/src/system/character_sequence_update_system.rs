@@ -1,12 +1,10 @@
 use amethyst::{
-    animation::{get_animation_set, ControlState},
-    ecs::{Entities, Join, ReadStorage, System, WriteStorage},
+    ecs::{Join, ReadStorage, System, WriteStorage},
     renderer::Flipped,
 };
 use character_model::config::CharacterSequenceId;
 use derive_new::new;
 use game_input::ControllerInput;
-use object_loading::ObjectAnimationStorages;
 use object_model::{
     entity::{Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity},
     loaded::SequenceEndTransitions,
@@ -24,7 +22,6 @@ pub(crate) struct CharacterSequenceUpdateSystem;
 #[allow(missing_debug_implementations)]
 #[derive(SystemData)]
 pub struct CharacterSequenceUpdateSystemData<'s> {
-    entities: Entities<'s>,
     controller_inputs: ReadStorage<'s, ControllerInput>,
     sequence_end_transitionses: ReadStorage<'s, SequenceEndTransitions<CharacterSequenceId>>,
     positions: ReadStorage<'s, Position<f32>>,
@@ -36,7 +33,6 @@ pub struct CharacterSequenceUpdateSystemData<'s> {
     mirroreds: WriteStorage<'s, Mirrored>,
     groundings: WriteStorage<'s, Grounding>,
     flippeds: WriteStorage<'s, Flipped>,
-    object_acses: ObjectAnimationStorages<'s, CharacterSequenceId>,
 }
 
 impl<'s> System<'s> for CharacterSequenceUpdateSystem {
@@ -45,7 +41,6 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
     fn run(
         &mut self,
         CharacterSequenceUpdateSystemData {
-            entities,
             controller_inputs,
             sequence_end_transitionses,
             positions,
@@ -57,15 +52,9 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             mut mirroreds,
             mut groundings,
             mut flippeds,
-            object_acses,
         }: Self::SystemData,
     ) {
-        let ObjectAnimationStorages {
-            mut sprite_render_acses,
-            ..
-        } = object_acses;
         for (
-            entity,
             controller_input,
             sequence_end_transitions,
             position,
@@ -78,7 +67,6 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             grounding,
             flipped,
         ) in (
-            &*entities,
             &controller_inputs,
             &sequence_end_transitionses,
             &positions,
@@ -93,25 +81,6 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
         )
             .join()
         {
-            let sprite_animation_set = get_animation_set(&mut sprite_render_acses, entity)
-                .expect("Sprite animation should exist as entity should be valid.");
-
-            // Mark sequence as `Ongoing` for subsequent tick.
-            if *sequence_status == SequenceStatus::Begin {
-                *sequence_status = SequenceStatus::Ongoing;
-            }
-
-            let sequence_ended = {
-                sprite_animation_set
-                    .animations
-                    .iter()
-                    .find(|&&(ref id, ref _control)| id == character_sequence_id)
-                    .map_or(true, |(_id, control)| control.state == ControlState::Done)
-            };
-            if sequence_ended {
-                *sequence_status = SequenceStatus::End;
-            }
-
             let next_character_sequence_id = CharacterSequenceUpdater::update(
                 sequence_end_transitions,
                 CharacterSequenceUpdateComponents::new(

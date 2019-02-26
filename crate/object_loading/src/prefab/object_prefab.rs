@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 use shred_derive::SystemData;
 
 use crate::{
-    ObjectAnimationStorages, ObjectComponentStorages, ObjectEntityAugmenter, ObjectPrefabError,
+    ObjectComponentStorages, ObjectEntityAugmenter, ObjectFrameComponentStorages, ObjectPrefabError,
 };
 
 /// Sequence for volumes that can be hit.
@@ -50,8 +50,8 @@ where
     object_wrapper_handles: WriteStorage<'s, Handle<O::ObjectWrapper>>,
     /// Common game object `Component` storages.
     object_component_storages: ObjectComponentStorages<'s, O::SequenceId>,
-    /// Common game object `Animation` storages.
-    object_animation_storages: ObjectAnimationStorages<'s, O::SequenceId>,
+    /// Common game object frame component storages.
+    object_frame_component_storages: ObjectFrameComponentStorages<'s>,
 }
 
 impl<'s, O> PrefabData<'s> for ObjectPrefab<O>
@@ -70,7 +70,7 @@ where
             object_wrapper_assets,
             object_wrapper_handles,
             object_component_storages,
-            object_animation_storages,
+            object_frame_component_storages,
         }: &mut Self::SystemData,
         _: &[Entity],
     ) -> Result<(), Error> {
@@ -94,7 +94,7 @@ where
         ObjectEntityAugmenter::augment(
             entity,
             object_component_storages,
-            object_animation_storages,
+            object_frame_component_storages,
             object_wrapper,
         );
 

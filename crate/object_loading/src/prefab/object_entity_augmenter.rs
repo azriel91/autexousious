@@ -1,17 +1,16 @@
 use amethyst::{
-    animation::get_animation_set,
     core::transform::Transform,
     ecs::Entity,
-    renderer::{Flipped, SpriteRender, Transparent},
+    renderer::{Flipped, Transparent},
 };
-use animation_support::AnimationRunner;
-use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
+use logic_clock::LogicClock;
 use object_model::{
+    config::object::FrameIndex,
     entity::{Mirrored, Position, SequenceStatus, Velocity},
-    loaded::{AnimatedComponentAnimation, AnimatedComponentDefault, ObjectWrapper},
+    loaded::{ComponentSequence, ObjectWrapper},
 };
 
-use crate::{ObjectAnimationStorages, ObjectComponentStorages};
+use crate::{ObjectComponentStorages, ObjectFrameComponentStorages};
 
 /// Augments an entity with `Object` components.
 #[derive(Debug)]
@@ -29,7 +28,6 @@ impl ObjectEntityAugmenter {
     pub fn augment<'s, W>(
         entity: Entity,
         ObjectComponentStorages {
-            ref mut sprite_renders,
             ref mut flippeds,
             ref mut transparents,
             ref mut positions,
@@ -39,14 +37,15 @@ impl ObjectEntityAugmenter {
             ref mut sequence_end_transitionses,
             ref mut sequence_ids,
             ref mut sequence_statuses,
-            ref mut body_frame_active_handles,
-            ref mut interaction_frame_active_handles,
+            ref mut frame_indicies,
+            ref mut logic_clocks,
         }: &mut ObjectComponentStorages<'s, W::SequenceId>,
-        ObjectAnimationStorages {
-            ref mut sprite_render_acses,
-            ref mut body_acses,
-            ref mut interaction_acses,
-        }: &mut ObjectAnimationStorages<'s, W::SequenceId>,
+        ObjectFrameComponentStorages {
+            ref mut waits,
+            ref mut sprite_renders,
+            ref mut bodies,
+            ref mut interactionses,
+        }: &mut ObjectFrameComponentStorages<'s>,
         object_wrapper: &W,
     ) where
         W: ObjectWrapper,
@@ -83,61 +82,58 @@ impl ObjectEntityAugmenter {
             .insert(entity, SequenceStatus::default())
             .expect("Failed to insert sequence_status component.");
 
-        let all_animations = object_wrapper.inner().animations.get(&sequence_id);
-        let animation_defaults = &object_wrapper.inner().animation_defaults;
-        let first_sequence_animations = all_animations
-            .as_ref()
-            .expect("Expected game object to have at least one sequence.");
+        let frame_index = FrameIndex::default();
+        frame_indicies
+            .insert(entity, frame_index)
+            .expect("Failed to insert frame_index component.");
+        let mut logic_clock = LogicClock::new(1);
 
-        animation_defaults
+        let component_sequences = object_wrapper
+            .inner()
+            .component_sequences
+            .get(&sequence_id)
+            .unwrap_or_else(|| {
+                panic!(
+                    "Failed to get `ComponentSequences` for sequence ID: \
+                     `{:?}`.",
+                    sequence_id
+                );
+            });
+
+        component_sequences
             .iter()
-            .for_each(|animation_default| match animation_default {
-                AnimatedComponentDefault::SpriteRender(ref sprite_render) => {
-                    // The starting pose
+            .for_each(|component_sequence| match component_sequence {
+                ComponentSequence::Wait(wait_sequence) => {
+                    let wait = wait_sequence[*frame_index];
+                    waits
+                        .insert(entity, wait)
+                        .expect("Failed to insert `Wait` component for object.");
+
+                    logic_clock.limit = *wait;
+                }
+                ComponentSequence::SpriteRender(sprite_render_sequence) => {
+                    let sprite_render = sprite_render_sequence[*frame_index].clone();
                     sprite_renders
-                        .insert(entity, sprite_render.clone())
-                        .expect("Failed to insert `SpriteRender` component.");
+                        .insert(entity, sprite_render)
+                        .expect("Failed to insert `SpriteRender` component for object.");
                 }
-                AnimatedComponentDefault::BodyFrame(ref active_handle) => {
-                    // Default body active handle
-                    body_frame_active_handles
-                        .insert(entity, active_handle.clone())
-                        .expect("Failed to insert `BodyFrameActiveHandle` component.");
+                ComponentSequence::Body(body_sequence) => {
+                    let body = body_sequence[*frame_index].clone();
+                    bodies
+                        .insert(entity, body)
+                        .expect("Failed to insert `Body` component for object.");
                 }
-                AnimatedComponentDefault::InteractionFrame(ref active_handle) => {
-                    // Default interaction active handle
-                    interaction_frame_active_handles
-                        .insert(entity, active_handle.clone())
-                        .expect("Failed to insert `InteractionFrameActiveHandle` component.");
+                ComponentSequence::Interactions(interactions_sequence) => {
+                    let interactions = interactions_sequence[*frame_index].clone();
+                    interactionses
+                        .insert(entity, interactions)
+                        .expect("Failed to insert `Interactions` component for object.");
                 }
             });
 
-        // We also need to trigger the animation, not just attach it to the entity
-        let mut sprite_animation_set =
-            get_animation_set::<W::SequenceId, SpriteRender>(sprite_render_acses, entity)
-                .expect("Sprite animation should exist as new entity should be valid.");
-        let mut body_animation_set =
-            get_animation_set::<W::SequenceId, BodyFrameActiveHandle>(body_acses, entity)
-                .expect("Body animation should exist as new entity should be valid.");
-        let mut interaction_animation_set = get_animation_set::<
-            W::SequenceId,
-            InteractionFrameActiveHandle,
-        >(interaction_acses, entity)
-        .expect("Interaction animation should exist as new entity should be valid.");
-
-        first_sequence_animations
-            .iter()
-            .for_each(|animated_component| match animated_component {
-                AnimatedComponentAnimation::SpriteRender(ref handle) => {
-                    AnimationRunner::start(sequence_id, &mut sprite_animation_set, handle);
-                }
-                AnimatedComponentAnimation::BodyFrame(ref handle) => {
-                    AnimationRunner::start(sequence_id, &mut body_animation_set, handle);
-                }
-                AnimatedComponentAnimation::InteractionFrame(ref handle) => {
-                    AnimationRunner::start(sequence_id, &mut interaction_animation_set, handle);
-                }
-            });
+        logic_clocks
+            .insert(entity, logic_clock)
+            .expect("Failed to insert logic_clock component.");
     }
 }
 

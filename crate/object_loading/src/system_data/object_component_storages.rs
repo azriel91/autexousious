@@ -1,12 +1,12 @@
 use amethyst::{
     core::Transform,
     ecs::WriteStorage,
-    renderer::{Flipped, SpriteRender, Transparent},
+    renderer::{Flipped, Transparent},
 };
-use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
 use derivative::Derivative;
+use logic_clock::LogicClock;
 use object_model::{
-    config::object::SequenceId,
+    config::object::{FrameIndex, SequenceId},
     entity::{Mirrored, Position, SequenceStatus, Velocity},
     loaded::SequenceEndTransitions,
 };
@@ -25,9 +25,6 @@ pub struct ObjectComponentStorages<'s, SeqId>
 where
     SeqId: SequenceId + 'static,
 {
-    /// `SpriteRender` component storage.
-    #[derivative(Debug = "ignore")]
-    pub sprite_renders: WriteStorage<'s, SpriteRender>,
     /// `Flipped` component storage.
     #[derivative(Debug = "ignore")]
     pub flippeds: WriteStorage<'s, Flipped>,
@@ -55,10 +52,10 @@ where
     /// `SequenceStatus` component storage.
     #[derivative(Debug = "ignore")]
     pub sequence_statuses: WriteStorage<'s, SequenceStatus>,
-    /// `BodyFrameActiveHandle` component storage.
+    /// `FrameIndex` component storage.
     #[derivative(Debug = "ignore")]
-    pub body_frame_active_handles: WriteStorage<'s, BodyFrameActiveHandle>,
-    /// `InteractionFrameActiveHandle` component storage.
+    pub frame_indicies: WriteStorage<'s, FrameIndex>,
+    /// `LogicClock` component storage.
     #[derivative(Debug = "ignore")]
-    pub interaction_frame_active_handles: WriteStorage<'s, InteractionFrameActiveHandle>,
+    pub logic_clocks: WriteStorage<'s, LogicClock>,
 }
