@@ -2,12 +2,12 @@
 
 //! Opens an empty window.
 
-use std::{process, time::Duration};
+use std::process;
 
 use amethyst::{
     animation::AnimationBundle,
     assets::HotReloadBundle,
-    core::{frame_limiter::FrameRateLimitStrategy, transform::TransformBundle},
+    core::transform::TransformBundle,
     input::InputBundle,
     renderer::{DisplayConfig, DrawFlat2D, Pipeline, RenderBundle, SpriteRender, Stage},
     ui::{DrawUi, UiBundle},
@@ -29,6 +29,7 @@ use character_model::config::CharacterSequenceId;
 use character_selection_stdio::CharacterSelectionStdioBundle;
 use collision_loading::CollisionLoadingBundle;
 use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
+use frame_rate::strategy::FRAME_RATE_DEFAULT;
 use game_input::GameInputBundle;
 use game_input_model::{InputConfig, PlayerActionControl, PlayerAxisControl};
 use game_input_stdio::{ControlInputEventStdinMapper, GameInputStdioBundle};
@@ -175,10 +176,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
 
     info!("Building application.");
     let mut app = CoreApplication::<_, AppEvent, AppEventReader>::build(assets_dir, state)?
-        .with_frame_limit(
-            FrameRateLimitStrategy::SleepAndYield(Duration::from_micros(1000)),
-            60,
-        )
+        .with_frame_limit_config(FRAME_RATE_DEFAULT)
         .build(game_data)?;
 
     app.run();
