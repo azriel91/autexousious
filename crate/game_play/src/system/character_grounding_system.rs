@@ -42,7 +42,7 @@ impl<'s> System<'s> for CharacterGroundingSystem {
 
             // Y axis
             if position[1] > map_margins.bottom {
-                velocity[1] += -3.4;
+                velocity[1] += -1.7;
                 *grounding = Grounding::Airborne;
 
                 if position[1] > map_margins.top {
