@@ -8,13 +8,13 @@ use amethyst::core::frame_limiter::{FrameRateLimitConfig, FrameRateLimitStrategy
 //
 // These are the high level types passed to Amethyst.
 
-/// Use the "normal" frame rate of 30 FPS.
+/// Use the "normal" frame rate of 60 FPS.
 pub const FRAME_RATE_DEFAULT: FrameRateLimitConfig = FrameRateLimitConfig {
     strategy: SLEEP_AND_YIELD,
     fps: FPS_DEFAULT,
 };
 
-/// Use the double frame rate of 60 FPS.
+/// Use the double frame rate of 120 FPS.
 pub const FRAME_RATE_DOUBLE: FrameRateLimitConfig = FrameRateLimitConfig {
     strategy: SLEEP_AND_YIELD,
     fps: FPS_DOUBLE,
@@ -29,7 +29,7 @@ pub const FRAME_RATE_NO_LIMIT: FrameRateLimitConfig = FrameRateLimitConfig {
 // === FPS numeric constants === //
 
 /// Default number of frames per second to limit the game to.
-pub const FPS_DEFAULT: u32 = 30;
+pub const FPS_DEFAULT: u32 = 60;
 /// Double the default number of frames per second.
 pub const FPS_DOUBLE: u32 = FPS_DEFAULT * 2;
 /// "FPS limit" for the non-limited frame rate limit.
@@ -39,8 +39,8 @@ pub const FPS_NO_LIMIT: u32 = 9999;
 
 /// Sleep until the given duration remains, then yield.
 ///
-/// At 30 FPS, we have 33 ms per frame, so we should be able to risk not spin-looping a thread until
-/// the last 1 ms. At 60 FPS, we have 16 ms per frame, and the error margin increases, but should
+/// At 60 FPS, we have 16 ms per frame, so we should be able to risk not spin-looping a thread until
+/// the last 1 ms. At 120 FPS, we have 8 ms per frame, and the error margin increases, but should
 /// not be too high to cause an inconsistent frame rate.
 pub const SLEEP_AND_YIELD: FrameRateLimitStrategy =
     FrameRateLimitStrategy::SleepAndYield(Duration::from_millis(1));
