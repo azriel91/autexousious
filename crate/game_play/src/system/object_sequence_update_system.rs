@@ -164,6 +164,8 @@ where
                                         .expect("Expected object to have a `FrameIndex`.");
                                     *frame_index += 1;
 
+                                    logic_clock.reset();
+
                                     Some(component_sequences)
                                 }
                             } else {
