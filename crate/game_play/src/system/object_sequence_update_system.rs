@@ -151,19 +151,7 @@ where
                                         .get(entity)
                                         .expect("Expected object to have a `FrameIndex`.");
 
-                                    let frame_count = match component_sequences
-                                        .iter()
-                                        .next()
-                                        .expect(
-                                            "Expected object to have at least one \
-                                             `ComponentSequence`.",
-                                        ) {
-                                        ComponentSequence::Wait(sequence) => sequence.len(),
-                                        ComponentSequence::SpriteRender(sequence) => sequence.len(),
-                                        ComponentSequence::Body(sequence) => sequence.len(),
-                                        ComponentSequence::Interactions(sequence) => sequence.len(),
-                                    };
-
+                                    let frame_count = component_sequences.frame_count();
                                     *frame_index == frame_count - 1
                                 };
 

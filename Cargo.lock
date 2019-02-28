@@ -2879,6 +2879,8 @@ version = "0.9.0"
 dependencies = [
  "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
+ "application 0.9.0",
+ "assets_test 0.9.0",
  "collision_loading 0.9.0",
  "collision_model 0.9.0",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
