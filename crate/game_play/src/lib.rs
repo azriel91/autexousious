@@ -12,7 +12,8 @@ pub(crate) use crate::{
     system::{
         CharacterCollisionEffectSystem, CharacterGroundingSystem, CharacterKinematicsSystem,
         CharacterSequenceUpdateSystem, GamePlayEndDetectionSystem, GamePlayEndTransitionSystem,
-        ObjectCollisionDetectionSystem, ObjectKinematicsUpdateSystem, ObjectSequenceUpdateSystem,
+        ObjectCollisionDetectionSystem, ObjectFrameComponentUpdateSystem,
+        ObjectKinematicsUpdateSystem, ObjectSequenceUpdateEvent, ObjectSequenceUpdateSystem,
         ObjectTransformUpdateSystem,
     },
 };

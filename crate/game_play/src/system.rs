@@ -8,8 +8,10 @@ pub(crate) use self::{
     object_animation_update_system::ObjectAnimationUpdateSystem,
     object_collision_detection_system::ObjectCollisionDetectionSystem,
     object_kinematics_update_system::ObjectKinematicsUpdateSystem,
-    object_sequence_update_system::ObjectSequenceUpdateSystem,
     object_transform_update_system::ObjectTransformUpdateSystem,
+    sequence::{
+        ObjectFrameComponentUpdateSystem, ObjectSequenceUpdateEvent, ObjectSequenceUpdateSystem,
+    },
 };
 
 mod character_collision_effect_system;
@@ -21,5 +23,5 @@ mod game_play_end_transition_system;
 mod object_animation_update_system;
 mod object_collision_detection_system;
 mod object_kinematics_update_system;
-mod object_sequence_update_system;
 mod object_transform_update_system;
+mod sequence;
