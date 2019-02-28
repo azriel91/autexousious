@@ -5,6 +5,7 @@
 
 pub use self::{
     character::RunCounter,
+    frame_index_clock::FrameIndexClock,
     grounding::Grounding,
     health_points::HealthPoints,
     kinematic::{Position, Velocity},
@@ -13,6 +14,7 @@ pub use self::{
 };
 
 mod character;
+mod frame_index_clock;
 mod grounding;
 mod health_points;
 mod kinematic;

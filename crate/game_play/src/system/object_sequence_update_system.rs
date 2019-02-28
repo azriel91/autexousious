@@ -11,8 +11,7 @@ use named_type::NamedType;
 use named_type_derive::NamedType;
 use object_loading::ObjectFrameComponentStorages;
 use object_model::{
-    config::object::FrameIndex,
-    entity::SequenceStatus,
+    entity::{FrameIndexClock, SequenceStatus},
     loaded::{ComponentSequence, GameObject, ObjectWrapper},
 };
 use shred_derive::SystemData;
@@ -43,9 +42,9 @@ where
     /// `O::ObjectWrapper` assets.
     #[derivative(Debug = "ignore")]
     pub object_assets: Read<'s, AssetStorage<O::ObjectWrapper>>,
-    /// `FrameIndex` component storage.
+    /// `FrameIndexClock` component storage.
     #[derivative(Debug = "ignore")]
-    pub frame_indicies: WriteStorage<'s, FrameIndex>,
+    pub frame_index_clocks: WriteStorage<'s, FrameIndexClock>,
     /// `LogicClock` component storage.
     #[derivative(Debug = "ignore")]
     pub logic_clocks: WriteStorage<'s, LogicClock>,
@@ -71,7 +70,7 @@ where
             entities,
             object_handles,
             object_assets,
-            mut frame_indicies,
+            mut frame_index_clocks,
             mut logic_clocks,
             mut sequence_ids,
             mut sequence_statuses,
@@ -88,13 +87,21 @@ where
         (
             &entities,
             &object_handles,
+            &mut frame_index_clocks,
             &mut logic_clocks,
             &mut sequence_ids,
             &mut sequence_statuses,
         )
             .join()
             .for_each(
-                |(entity, object_handle, logic_clock, sequence_id, sequence_status)| {
+                |(
+                    entity,
+                    object_handle,
+                    frame_index_clock,
+                    logic_clock,
+                    sequence_id,
+                    sequence_status,
+                )| {
                     let object = object_assets
                         .get(object_handle)
                         .expect("Expected object to be loaded.");
@@ -103,10 +110,7 @@ where
                         SequenceStatus::Begin => {
                             // Retrieve frame indicies separately as we use a `FlaggedStorage` to
                             // track if it has been changed, to update frame components.
-                            let frame_index = frame_indicies
-                                .get_mut(entity)
-                                .expect("Expected object to have a `FrameIndex`.");
-                            **frame_index = 0;
+                            frame_index_clock.reset();
                             logic_clock.reset();
 
                             // Set to ongoing, meaning we must be sure that this is the only system
@@ -125,6 +129,8 @@ where
                                     );
                                 });
 
+                            (*frame_index_clock).limit = component_sequences.frame_count();
+
                             Some(component_sequences)
                         }
                         SequenceStatus::Ongoing => {
@@ -134,38 +140,24 @@ where
                                 // Switch to next frame, or if there is no next frame, switch
                                 // `SequenceStatus` to `End`.
 
-                                let component_sequences = object
-                                    .inner()
-                                    .component_sequences
-                                    .get(sequence_id)
-                                    .unwrap_or_else(|| {
-                                        panic!(
-                                            "Failed to get `ComponentSequences` for sequence ID: \
-                                             `{:?}`.",
-                                            sequence_id
-                                        );
-                                    });
+                                logic_clock.reset();
+                                frame_index_clock.tick();
 
-                                let sequence_ended = {
-                                    let frame_index = frame_indicies
-                                        .get(entity)
-                                        .expect("Expected object to have a `FrameIndex`.");
-
-                                    let frame_count = component_sequences.frame_count();
-                                    *frame_index == frame_count - 1
-                                };
-
-                                if sequence_ended {
+                                if frame_index_clock.is_complete() {
                                     *sequence_status = SequenceStatus::End;
                                     None
                                 } else {
-                                    let frame_index = frame_indicies
-                                        .get_mut(entity)
-                                        .expect("Expected object to have a `FrameIndex`.");
-                                    *frame_index += 1;
-
-                                    logic_clock.reset();
-
+                                    let component_sequences = object
+                                        .inner()
+                                        .component_sequences
+                                        .get(sequence_id)
+                                        .unwrap_or_else(|| {
+                                            panic!(
+                                                "Failed to get `ComponentSequences` for sequence ID: \
+                                                 `{:?}`.",
+                                                sequence_id
+                                            );
+                                        });
                                     Some(component_sequences)
                                 }
                             } else {
@@ -175,37 +167,34 @@ where
                         SequenceStatus::End => None, // do nothing
                     };
 
-                    let frame_index = frame_indicies
-                        .get(entity)
-                        .expect("Expected object to have a `FrameIndex`.");
+                    let frame_index = (*frame_index_clock).value;
 
                     // TODO: split this into a separate system.
                     if let Some(component_sequences) = component_sequences {
                         component_sequences.iter().for_each(|component_sequence| {
                             match component_sequence {
                                 ComponentSequence::Wait(wait_sequence) => {
-                                    let wait = wait_sequence[**frame_index];
+                                    let wait = wait_sequence[frame_index];
                                     waits
                                         .insert(entity, wait)
                                         .expect("Failed to insert `Wait` component for object.");
 
-                                    logic_clock.limit = *wait;
+                                    logic_clock.limit = *wait as usize;
                                 }
                                 ComponentSequence::SpriteRender(sprite_render_sequence) => {
-                                    let sprite_render =
-                                        sprite_render_sequence[**frame_index].clone();
+                                    let sprite_render = sprite_render_sequence[frame_index].clone();
                                     sprite_renders.insert(entity, sprite_render).expect(
                                         "Failed to insert `SpriteRender` component for object.",
                                     );
                                 }
                                 ComponentSequence::Body(body_sequence) => {
-                                    let body = body_sequence[**frame_index].clone();
+                                    let body = body_sequence[frame_index].clone();
                                     bodies
                                         .insert(entity, body)
                                         .expect("Failed to insert `Body` component for object.");
                                 }
                                 ComponentSequence::Interactions(interactions_sequence) => {
-                                    let interactions = interactions_sequence[**frame_index].clone();
+                                    let interactions = interactions_sequence[frame_index].clone();
                                     interactionses.insert(entity, interactions).expect(
                                         "Failed to insert `Interactions` component for object.",
                                     );

@@ -41,10 +41,7 @@ use collision_loading::CollisionLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
 use logic_clock::LogicClock;
 use map_loading::MapLoadingBundle;
-use object_model::{
-    config::object::FrameIndex,
-    entity::{Mirrored, Position, SequenceStatus, Velocity},
-};
+use object_model::entity::{FrameIndexClock, Mirrored, Position, SequenceStatus, Velocity};
 use sprite_loading::SpriteLoadingBundle;
 
 use object_loading::{
@@ -109,7 +106,7 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
         assert!(world.read_storage::<Position<f32>>().contains(entity));
         assert!(world.read_storage::<Velocity<f32>>().contains(entity));
         assert!(world.read_storage::<Transform>().contains(entity));
-        assert!(world.read_storage::<FrameIndex>().contains(entity));
+        assert!(world.read_storage::<FrameIndexClock>().contains(entity));
         assert!(world.read_storage::<LogicClock>().contains(entity));
     };
 

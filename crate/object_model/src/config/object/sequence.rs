@@ -7,9 +7,7 @@
 //! because different object types have different valid sequence IDs, and we want to be able to
 //! define this at compile time rather than needing to process this at run time.
 
-pub use self::{
-    frame_index::FrameIndex, object_frame::ObjectFrame, sequence_id::SequenceId, wait::Wait,
-};
+pub use self::{object_frame::ObjectFrame, sequence_id::SequenceId, wait::Wait};
 
 use collision_loading::InteractionAnimationSequence;
 use collision_model::animation::BodyAnimationSequence;
@@ -17,7 +15,6 @@ use derive_new::new;
 use serde::{Deserialize, Serialize};
 use sprite_loading::AnimationSequence;
 
-mod frame_index;
 mod object_frame;
 mod sequence_id;
 mod wait;

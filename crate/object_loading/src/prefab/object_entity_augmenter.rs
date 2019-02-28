@@ -5,8 +5,7 @@ use amethyst::{
 };
 use logic_clock::LogicClock;
 use object_model::{
-    config::object::FrameIndex,
-    entity::{Mirrored, Position, SequenceStatus, Velocity},
+    entity::{FrameIndexClock, Mirrored, Position, SequenceStatus, Velocity},
     loaded::{ComponentSequence, ObjectWrapper},
 };
 
@@ -37,7 +36,7 @@ impl ObjectEntityAugmenter {
             ref mut sequence_end_transitionses,
             ref mut sequence_ids,
             ref mut sequence_statuses,
-            ref mut frame_indicies,
+            ref mut frame_index_clocks,
             ref mut logic_clocks,
         }: &mut ObjectComponentStorages<'s, W::SequenceId>,
         ObjectFrameComponentStorages {
@@ -82,12 +81,6 @@ impl ObjectEntityAugmenter {
             .insert(entity, SequenceStatus::default())
             .expect("Failed to insert sequence_status component.");
 
-        let frame_index = FrameIndex::default();
-        frame_indicies
-            .insert(entity, frame_index)
-            .expect("Failed to insert frame_index component.");
-        let mut logic_clock = LogicClock::new(1);
-
         let component_sequences = object_wrapper
             .inner()
             .component_sequences
@@ -100,31 +93,39 @@ impl ObjectEntityAugmenter {
                 );
             });
 
+        let frame_index_clock =
+            FrameIndexClock::new(LogicClock::new(component_sequences.frame_count()));
+        let starting_frame_index = (*frame_index_clock).value;
+        frame_index_clocks
+            .insert(entity, frame_index_clock)
+            .expect("Failed to insert frame_index_clock component.");
+        let mut logic_clock = LogicClock::new(1);
+
         component_sequences
             .iter()
             .for_each(|component_sequence| match component_sequence {
                 ComponentSequence::Wait(wait_sequence) => {
-                    let wait = wait_sequence[*frame_index];
+                    let wait = wait_sequence[starting_frame_index];
                     waits
                         .insert(entity, wait)
                         .expect("Failed to insert `Wait` component for object.");
 
-                    logic_clock.limit = *wait;
+                    logic_clock.limit = *wait as usize;
                 }
                 ComponentSequence::SpriteRender(sprite_render_sequence) => {
-                    let sprite_render = sprite_render_sequence[*frame_index].clone();
+                    let sprite_render = sprite_render_sequence[starting_frame_index].clone();
                     sprite_renders
                         .insert(entity, sprite_render)
                         .expect("Failed to insert `SpriteRender` component for object.");
                 }
                 ComponentSequence::Body(body_sequence) => {
-                    let body_handle = body_sequence[*frame_index].clone();
+                    let body_handle = body_sequence[starting_frame_index].clone();
                     bodies
                         .insert(entity, body_handle)
                         .expect("Failed to insert `Body` component for object.");
                 }
                 ComponentSequence::Interactions(interactions_sequence) => {
-                    let interactions_handle = interactions_sequence[*frame_index].clone();
+                    let interactions_handle = interactions_sequence[starting_frame_index].clone();
                     interactionses
                         .insert(entity, interactions_handle)
                         .expect("Failed to insert `Interactions` component for object.");

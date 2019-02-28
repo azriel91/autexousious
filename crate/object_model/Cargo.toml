@@ -13,6 +13,7 @@ derive_deref = "1.0.2"
 derive_more = "0.14.0"
 derive-new = "0.5.6"
 fnv = "1.0.6"
+logic_clock = { path = "../logic_clock" }
 object_model_derive = { path = "../object_model_derive" }
 object_model_spi = { path = "../object_model_spi" }
 serde = "1.0.87"

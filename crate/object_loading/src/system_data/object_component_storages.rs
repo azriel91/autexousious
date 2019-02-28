@@ -6,8 +6,8 @@ use amethyst::{
 use derivative::Derivative;
 use logic_clock::LogicClock;
 use object_model::{
-    config::object::{FrameIndex, SequenceId},
-    entity::{Mirrored, Position, SequenceStatus, Velocity},
+    config::object::SequenceId,
+    entity::{FrameIndexClock, Mirrored, Position, SequenceStatus, Velocity},
     loaded::SequenceEndTransitions,
 };
 use shred_derive::SystemData;
@@ -52,9 +52,9 @@ where
     /// `SequenceStatus` component storage.
     #[derivative(Debug = "ignore")]
     pub sequence_statuses: WriteStorage<'s, SequenceStatus>,
-    /// `FrameIndex` component storage.
+    /// `FrameIndexClock` component storage.
     #[derivative(Debug = "ignore")]
-    pub frame_indicies: WriteStorage<'s, FrameIndex>,
+    pub frame_index_clocks: WriteStorage<'s, FrameIndexClock>,
     /// `LogicClock` component storage.
     #[derivative(Debug = "ignore")]
     pub logic_clocks: WriteStorage<'s, LogicClock>,
