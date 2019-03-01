@@ -95,6 +95,8 @@
     sprite = { sheet = 0, index = 4 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
+# This sequence is used in the `ObjectSequenceUpdateSystem` tests for number of frames --
+# `frame_index_clock.limit`.
 [sequences.run_stop]
   [[sequences.run_stop.frames]]
     wait = 2
