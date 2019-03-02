@@ -183,3 +183,240 @@ where
         );
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use amethyst::{
+        assets::AssetStorage,
+        ecs::{Entities, Join, ReadStorage, World, WriteStorage},
+        shrev::EventChannel,
+        Error,
+    };
+    use application_test_support::AutexousiousApplication;
+    use character_model::{config::CharacterSequenceId, loaded::Character};
+    use collision_model::config::{Body, Interaction, Interactions};
+    use logic_clock::LogicClock;
+    use object_loading::ObjectFrameComponentStorages;
+    use object_model::{config::object::Wait, entity::FrameIndexClock};
+    use shape_model::Volume;
+
+    use super::ObjectFrameComponentUpdateSystem;
+    use crate::ObjectSequenceUpdateEvent;
+
+    #[test]
+    fn updates_all_frame_components_on_sequence_begin_event() -> Result<(), Error> {
+        let test_name = "updates_all_frame_components_on_sequence_begin_event";
+        AutexousiousApplication::game_base(test_name, false)
+            .with_system(
+                ObjectFrameComponentUpdateSystem::<Character>::new(),
+                "",
+                &[],
+            )
+            .with_setup(|world| {
+                initial_values(
+                    world,
+                    // third frame in the sequence, though it doesn't make sense for sequence begin
+                    2,
+                    5,
+                    0,
+                    5,
+                    CharacterSequenceId::StandAttack,
+                )
+            })
+            .with_setup(|world| {
+                let events = sequence_begin_events(world);
+                send_events(world, events);
+            })
+            .with_assertion(|world| expect_values(world, 0, 2))
+            .with_assertion(|world| {
+                expect_component_values(world, Wait::new(2), 2, body(), interactions())
+            })
+            .run()
+    }
+
+    #[test]
+    fn updates_all_frame_components_on_frame_begin_event() -> Result<(), Error> {
+        let test_name = "updates_all_frame_components_on_frame_begin_event";
+        AutexousiousApplication::game_base(test_name, false)
+            .with_system(
+                ObjectFrameComponentUpdateSystem::<Character>::new(),
+                "",
+                &[],
+            )
+            .with_setup(|world| {
+                initial_values(
+                    world,
+                    2, // third frame in the sequence
+                    5,
+                    0,
+                    5,
+                    CharacterSequenceId::StandAttack,
+                )
+            })
+            .with_setup(|world| {
+                let events = frame_begin_events(world);
+                send_events(world, events);
+            })
+            .with_assertion(|world| expect_values(world, 0, 2))
+            .with_assertion(|world| {
+                expect_component_values(world, Wait::new(2), 2, body(), interactions())
+            })
+            .run()
+    }
+
+    fn initial_values(
+        world: &mut World,
+        frame_index_clock_value: usize,
+        frame_index_clock_limit: usize,
+        logic_clock_value: usize,
+        logic_clock_limit: usize,
+        sequence_id_initial: CharacterSequenceId,
+    ) {
+        let (_entities, mut frame_index_clocks, mut logic_clocks, mut sequence_ids, ..) =
+            world.system_data::<TestSystemData>();
+
+        (
+            &mut frame_index_clocks,
+            &mut logic_clocks,
+            &mut sequence_ids,
+        )
+            .join()
+            .for_each(|(frame_index_clock, logic_clock, sequence_id)| {
+                (*frame_index_clock).value = frame_index_clock_value;
+                (*frame_index_clock).limit = frame_index_clock_limit;
+
+                (*logic_clock).value = logic_clock_value;
+                (*logic_clock).limit = logic_clock_limit;
+
+                *sequence_id = sequence_id_initial;
+            });
+    }
+
+    fn expect_values(world: &mut World, logic_clock_value: usize, logic_clock_limit: usize) {
+        let (logic_clocks, sequence_statuses) =
+            world.system_data::<(WriteStorage<LogicClock>, ReadStorage<CharacterSequenceId>)>();
+
+        (&logic_clocks, &sequence_statuses)
+            .join()
+            .for_each(|(logic_clock, _sequence_status)| {
+                assert_eq!(logic_clock_value, (*logic_clock).value);
+                assert_eq!(logic_clock_limit, (*logic_clock).limit);
+            });
+    }
+
+    fn expect_component_values(
+        world: &mut World,
+        expected_wait: Wait,
+        expected_sprite_number: usize,
+        expected_body: Body,
+        expected_interactions: Interactions,
+    ) {
+        let (object_frame_component_storages, sequence_statuses) = world.system_data::<(
+            ObjectFrameComponentStorages,
+            ReadStorage<'_, CharacterSequenceId>,
+        )>();
+        let body_assets = world.read_resource::<AssetStorage<Body>>();
+        let interactions_assets = world.read_resource::<AssetStorage<Interactions>>();
+
+        let ObjectFrameComponentStorages {
+            waits,
+            sprite_renders,
+            bodies,
+            interactionses,
+        } = object_frame_component_storages;
+
+        (
+            &waits,
+            &sprite_renders,
+            &bodies,
+            &interactionses,
+            &sequence_statuses,
+        )
+            .join()
+            .for_each(
+                |(wait, sprite_render, body_handle, interactions_handle, _sequence_status)| {
+                    let body = body_assets
+                        .get(body_handle)
+                        .expect("Expected `Body` to be loaded.");
+                    let interactions = interactions_assets
+                        .get(interactions_handle)
+                        .expect("Expected `Interactions` to be loaded.");
+
+                    assert_eq!(&expected_wait, wait);
+                    assert_eq!(expected_sprite_number, sprite_render.sprite_number);
+                    assert_eq!(&expected_body, body);
+                    assert_eq!(&expected_interactions, interactions);
+                },
+            );
+    }
+
+    fn body() -> Body {
+        Body::new(vec![Volume::Box {
+            x: 81,
+            y: 0,
+            z: 0,
+            w: 14,
+            h: 12,
+            d: 26,
+        }])
+    }
+
+    fn interactions() -> Interactions {
+        Interactions::new(vec![Interaction::Physical {
+            bounds: vec![Volume::Box {
+                x: 81,
+                y: 0,
+                z: 0,
+                w: 14,
+                h: 12,
+                d: 26,
+            }],
+            hp_damage: 20,
+            sp_damage: 0,
+            multiple: false,
+        }])
+    }
+
+    fn send_events(world: &mut World, events: Vec<ObjectSequenceUpdateEvent>) {
+        let mut ec = world.write_resource::<EventChannel<ObjectSequenceUpdateEvent>>();
+        ec.iter_write(events.into_iter())
+    }
+
+    fn sequence_begin_events(world: &mut World) -> Vec<ObjectSequenceUpdateEvent> {
+        let (
+            entities,
+            frame_index_clocks,
+            logic_clocks,
+            sequence_ids,
+            _object_frame_component_storages,
+        ) = world.system_data::<TestSystemData>();
+
+        (&entities, &frame_index_clocks, &logic_clocks, &sequence_ids)
+            .join()
+            .map(|(entity, _, _, _)| ObjectSequenceUpdateEvent::SequenceBegin { entity })
+            .collect::<Vec<_>>()
+    }
+
+    fn frame_begin_events(world: &mut World) -> Vec<ObjectSequenceUpdateEvent> {
+        let (
+            entities,
+            frame_index_clocks,
+            logic_clocks,
+            sequence_ids,
+            _object_frame_component_storages,
+        ) = world.system_data::<TestSystemData>();
+
+        (&entities, &frame_index_clocks, &logic_clocks, &sequence_ids)
+            .join()
+            .map(|(entity, _, _, _)| ObjectSequenceUpdateEvent::FrameBegin { entity })
+            .collect::<Vec<_>>()
+    }
+
+    type TestSystemData<'s> = (
+        Entities<'s>,
+        WriteStorage<'s, FrameIndexClock>,
+        WriteStorage<'s, LogicClock>,
+        WriteStorage<'s, CharacterSequenceId>,
+        ObjectFrameComponentStorages<'s>,
+    );
+}

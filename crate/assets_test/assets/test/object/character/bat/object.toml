@@ -12,35 +12,36 @@
     sprite = { sheet = 1, index = 0 }
     body = [{ box = { x = 16, y = 11, w = 15, h = 12 } }]
     interactions = [
-      { physical = { bounds = [{ box = { x = 16, y = 11, w = 15, h = 12 } }], damage_hp = 20 } },
+      { physical = { bounds = [{ box = { x = 16, y = 11, w = 15, h = 12 } }], hp_damage = 20 } },
     ]
 
   [[sequences.stand_attack.frames]]
     sprite = { sheet = 1, index = 1 }
     body = [{ box = { x = 48, y = 13, w = 15, h = 12 } }]
     interactions = [
-      { physical = { bounds = [{ box = { x = 48, y = 13, w = 15, h = 12 } }], damage_hp = 20 } },
+      { physical = { bounds = [{ box = { x = 48, y = 13, w = 15, h = 12 } }], hp_damage = 20 } },
     ]
 
   [[sequences.stand_attack.frames]]
+    wait = 2
     sprite = { sheet = 1, index = 2 }
     body = [{ box = { x = 81, y = 0, w = 14, h = 12 } }]
     interactions = [
-      { physical = { bounds = [{ box = { x = 81, y = 0, w = 14, h = 12 } }], damage_hp = 20 } },
+      { physical = { bounds = [{ box = { x = 81, y = 0, w = 14, h = 12 } }], hp_damage = 20 } },
     ]
 
   [[sequences.stand_attack.frames]]
     sprite = { sheet = 1, index = 3 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
     interactions = [
-      { physical = { bounds = [{ box = { x = 113, y = 10, w = 14, h = 13 } }], damage_hp = 20 } },
+      { physical = { bounds = [{ box = { x = 113, y = 10, w = 14, h = 13 } }], hp_damage = 20 } },
     ]
 
   [[sequences.stand_attack.frames]]
     sprite = { sheet = 1, index = 4 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
     interactions = [
-      { physical = { bounds = [{ box = { x = 113, y = 10, w = 14, h = 13 } }], damage_hp = 20 } },
+      { physical = { bounds = [{ box = { x = 113, y = 10, w = 14, h = 13 } }], hp_damage = 20 } },
     ]
 
 [sequences.walk]
