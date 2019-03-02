@@ -32,6 +32,7 @@ impl From<MapDefinition> for Result<ProcessingState<MapDefinition>, Error> {
 
 #[cfg(test)]
 mod test {
+    use object_model::config::object::Wait;
     use sprite_model::config::SpriteRef;
     use toml;
 
@@ -82,13 +83,13 @@ mod test {
         let layer_0 = Layer::new(
             Position::new(1, 4, 0),
             vec![
-                LayerFrame::new(7, SpriteRef::new(0, 0)),
-                LayerFrame::new(7, SpriteRef::new(0, 1)),
+                LayerFrame::new(Wait::new(7), SpriteRef::new(0, 0)),
+                LayerFrame::new(Wait::new(7), SpriteRef::new(0, 1)),
             ],
         );
         let layer_1 = Layer::new(
             Position::new(-1, -2, -3),
-            vec![LayerFrame::new(1, SpriteRef::new(0, 0))],
+            vec![LayerFrame::new(Wait::new(1), SpriteRef::new(0, 0))],
         );
         let layers = vec![layer_0, layer_1];
         let expected = MapDefinition::new(header, layers);

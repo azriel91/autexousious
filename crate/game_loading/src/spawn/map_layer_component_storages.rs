@@ -1,5 +1,4 @@
 use amethyst::{
-    animation::AnimationControlSet,
     core::Transform,
     ecs::WriteStorage,
     renderer::{SpriteRender, Transparent},
@@ -20,7 +19,4 @@ pub struct MapLayerComponentStorages<'s> {
     /// `Transform` components.
     #[derivative(Debug = "ignore")]
     pub transforms: WriteStorage<'s, Transform>,
-    /// `SpriteRender` animation control set storage.
-    #[derivative(Debug = "ignore")]
-    pub sprite_render_acses: WriteStorage<'s, AnimationControlSet<u32, SpriteRender>>,
 }

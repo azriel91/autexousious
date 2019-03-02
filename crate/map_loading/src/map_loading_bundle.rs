@@ -58,10 +58,10 @@ mod test {
                     // See fade/map.toml
                     assert_eq!(
                         2,
-                        map.animation_handles
+                        map.component_sequences
                             .as_ref()
                             .expect(&format!(
-                                "Expected '{}' map to contain animations.",
+                                "Expected '{}' map to contain component_sequences.",
                                 *ASSETS_MAP_FADE_SLUG
                             ))
                             .len()

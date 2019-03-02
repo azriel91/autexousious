@@ -1,6 +1,5 @@
 use derive_new::new;
 use serde::{Deserialize, Serialize};
-use sprite_loading::AnimationSequence;
 
 use crate::config::{LayerFrame, Position};
 
@@ -12,12 +11,4 @@ pub struct Layer {
     pub position: Position,
     /// Key frames in the animation sequence.
     pub frames: Vec<LayerFrame>,
-}
-
-impl AnimationSequence for Layer {
-    type Frame = LayerFrame;
-
-    fn frames(&self) -> &[LayerFrame] {
-        &self.frames
-    }
 }

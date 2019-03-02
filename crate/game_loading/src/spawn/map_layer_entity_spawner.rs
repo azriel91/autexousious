@@ -1,11 +1,9 @@
 use amethyst::{
-    animation::{get_animation_set, AnimationControlSet},
     assets::AssetStorage,
     core::{nalgebra::Vector3, transform::Transform},
     ecs::{prelude::*, world::EntitiesRes},
     renderer::{SpriteRender, Transparent},
 };
-use animation_support::AnimationRunner;
 use map_model::loaded::{Map, MapHandle};
 
 use crate::{MapLayerComponentStorages, MapSpawningResources};
@@ -21,7 +19,7 @@ impl MapLayerEntitySpawner {
     ///
     /// # Parameters
     ///
-    /// * `world`: `World` to spawn the character into.
+    /// * `world`: `World` to spawn the map into.
     /// * `map_handle`: Handle of the map whose layers to spawn.
     pub fn spawn_world(world: &mut World, map_handle: &MapHandle) -> Vec<Entity> {
         let entities = Read::from(world.read_resource::<EntitiesRes>());
@@ -35,8 +33,6 @@ impl MapLayerEntitySpawner {
                 sprite_renders: world.write_storage::<SpriteRender>(),
                 transparents: world.write_storage::<Transparent>(),
                 transforms: world.write_storage::<Transform>(),
-                sprite_render_acses: world
-                    .write_storage::<AnimationControlSet<u32, SpriteRender>>(),
             },
             map_handle,
         )
@@ -58,24 +54,16 @@ impl MapLayerEntitySpawner {
             ref mut sprite_renders,
             ref mut transparents,
             ref mut transforms,
-            ref mut sprite_render_acses,
         }: &mut MapLayerComponentStorages<'s>,
         map_handle: &MapHandle,
     ) -> Vec<Entity> {
-        let components_and_animation = {
+        let components = {
             let map = map_assets
                 .get(map_handle)
                 .expect("Expected map to be loaded.");
 
             // Spawn map layer entities
-            let map_animations = &map.animation_handles;
-            if map_animations.is_some() {
-                let sprite_sheet_handles = map.sprite_sheet_handles.as_ref().expect(
-                    "Expected sprite_sheet_handles to be present when there are animations.",
-                );
-
-                let map_animations = map_animations.as_ref().unwrap().clone();
-
+            if let Some(sprite_sheet_handles) = &map.sprite_sheet_handles {
                 let components = map
                     .definition
                     .layers
@@ -99,7 +87,7 @@ impl MapLayerEntitySpawner {
                     })
                     .collect::<Vec<(Transform, SpriteRender)>>();
 
-                Some((components, map_animations))
+                Some(components)
 
             // kcov-ignore-start
             } else {
@@ -108,7 +96,7 @@ impl MapLayerEntitySpawner {
             }
         };
 
-        if let Some((layers_entity_components, map_animations)) = components_and_animation {
+        if let Some(layers_entity_components) = components {
             let entities = layers_entity_components
                 .into_iter()
                 .map(|(transform, sprite_render)| {
@@ -128,19 +116,6 @@ impl MapLayerEntitySpawner {
                     entity
                 })
                 .collect::<Vec<_>>();
-
-            entities
-                .iter()
-                .zip(map_animations.iter())
-                .for_each(|(entity, animation_handle)| {
-                    // We also need to trigger the animation, not just attach it to the entity
-                    let animation_id = 0;
-                    let mut animation_set =
-                        get_animation_set::<u32, SpriteRender>(sprite_render_acses, *entity)
-                            .expect("Animation should exist as new entity should be valid.");
-
-                    AnimationRunner::start_loop(animation_id, &mut animation_set, animation_handle);
-                });
 
             entities
 
