@@ -22,7 +22,7 @@ impl CharacterLoader {
     ///
     /// # Parameters
     ///
-    /// * `world`: `World` to load animations into.
+    /// * `world`: `World` to load character into.
     /// * `path`: Path to the character asset directory.
     pub fn load(
         world: &mut World,
@@ -50,7 +50,6 @@ impl CharacterLoader {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        animation::AnimationBundle,
         assets::{AssetStorage, Loader, Prefab, ProgressCounter},
         renderer::{SpriteSheet, Texture},
         Error, State, StateData, Trans,
@@ -59,9 +58,7 @@ mod test {
     use application::{load_in, resource::Format};
     use asset_model::config::AssetRecord;
     use assets_test::{ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SLUG};
-    use character_model::config::CharacterSequenceId;
     use collision_loading::CollisionLoadingBundle;
-    use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
     use sprite_loading::SpriteLoader;
     use sprite_model::config::SpritesDefinition;
 
@@ -71,19 +68,6 @@ mod test {
     #[test]
     fn loads_character() -> Result<(), Error> {
         AmethystApplication::render_base("loads_character", false)
-            .with_bundle(
-                AnimationBundle::<CharacterSequenceId, BodyFrameActiveHandle>::new(
-                    "character_body_frame_acs",
-                    "character_body_frame_sis",
-                ),
-            )
-            .with_bundle(AnimationBundle::<
-                CharacterSequenceId,
-                InteractionFrameActiveHandle,
-            >::new(
-                "character_interaction_frame_acs",
-                "character_interaction_frame_sis",
-            ))
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_effect(|world| {

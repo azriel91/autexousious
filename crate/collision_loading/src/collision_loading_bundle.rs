@@ -7,8 +7,8 @@ use crate::CollisionLoadingSystem;
 
 /// Adds `Body` and `Interactions` processors to the `World`.
 ///
-/// * `Processor::<Body>` is added with id `"body_frame_processor"`.
-/// * `Processor::<Interactions>` is added with id `"interaction_frame_processor"`.
+/// * `Processor::<Body>` is added with id `"body_processor"`.
+/// * `Processor::<Interactions>` is added with id `"interactions_processor"`.
 #[derive(Debug, new)]
 pub struct CollisionLoadingBundle;
 
@@ -21,12 +21,12 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CollisionLoadingBundle {
         );
         builder.add(
             Processor::<Body>::new(),
-            "body_frame_processor",
+            "body_processor",
             &[&CollisionLoadingSystem::type_name()],
         );
         builder.add(
             Processor::<Interactions>::new(),
-            "interaction_frame_processor",
+            "interactions_processor",
             &[&CollisionLoadingSystem::type_name()],
         );
         Ok(())
@@ -42,7 +42,7 @@ mod test {
     use super::CollisionLoadingBundle;
 
     #[test]
-    fn bundle_build_adds_body_frame_processor() {
+    fn bundle_build_adds_body_and_interactions_processor() {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end

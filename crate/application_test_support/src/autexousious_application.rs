@@ -1,19 +1,14 @@
 use std::env;
 
-use amethyst::{
-    animation::AnimationBundle, core::transform::TransformBundle, prelude::*,
-    renderer::SpriteRender,
-};
+use amethyst::{core::transform::TransformBundle, prelude::*};
 use amethyst_test::prelude::*;
 use application_event::{AppEvent, AppEventReader};
 use asset_model::loaded::SlugAndHandle;
 use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
 use character_loading::CharacterLoadingBundle;
-use character_model::config::CharacterSequenceId;
 use character_selection::CharacterSelectionBundle;
 use character_selection_model::{CharacterSelections, CharacterSelectionsStatus};
 use collision_loading::CollisionLoadingBundle;
-use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
 use game_input_model::{PlayerActionControl, PlayerAxisControl};
 use game_loading::GameLoadingState;
 use loading::{LoadingBundle, LoadingState};
@@ -42,8 +37,8 @@ impl AutexousiousApplication {
     /// Returns an application with the Animation, Transform, and Render bundles.
     ///
     /// The difference between this and `AmethystApplication::render_base()` is the type parameters
-    /// to the Input and UI bundles are the `PlayerAxisControl` and `PlayerActionControl`, and the
-    /// Animation bundle uses the object type sequence IDs for animation control sets.
+    /// to the Input and UI bundles are the `PlayerAxisControl` and `PlayerActionControl`, and there
+    /// are no animation bundles.
     ///
     /// # Parameters
     ///
@@ -60,23 +55,6 @@ impl AutexousiousApplication {
         // specify the `TransformBundle`'s dependencies.
         AmethystApplication::blank()
             .with_custom_event_type::<AppEvent, AppEventReader>()
-            .with_bundle(AnimationBundle::<CharacterSequenceId, SpriteRender>::new(
-                "character_sprite_acs",
-                "character_sprite_sis",
-            ))
-            .with_bundle(
-                AnimationBundle::<CharacterSequenceId, BodyFrameActiveHandle>::new(
-                    "character_body_frame_acs",
-                    "character_body_frame_sis",
-                ),
-            )
-            .with_bundle(AnimationBundle::<
-                CharacterSequenceId,
-                InteractionFrameActiveHandle,
-            >::new(
-                "character_interaction_frame_acs",
-                "character_interaction_frame_sis",
-            ))
             .with_bundle(TransformBundle::new())
             .with_bundle(CollisionLoadingBundle::new())
             .with_render_bundle(test_name, visibility)
@@ -167,7 +145,6 @@ impl AutexousiousApplication {
 #[cfg(test)]
 mod test {
     use amethyst::{input::InputHandler, ui::Interactable};
-    use amethyst_test::SpriteRenderAnimationFixture;
     use game_input_model::{PlayerActionControl, PlayerAxisControl};
     use game_model::{
         loaded::{CharacterAssets, MapAssets},
@@ -191,22 +168,6 @@ mod test {
                 })
                 .run()
                 .is_ok()
-        );
-    }
-
-    #[test]
-    fn render_base_application_can_load_sprite_render_animations() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::render_base(
-                "render_base_application_can_load_sprite_render_animations",
-                false
-            )
-            .with_effect(SpriteRenderAnimationFixture::effect)
-            .with_assertion(SpriteRenderAnimationFixture::assertion)
-            .run()
-            .is_ok()
         );
     }
 

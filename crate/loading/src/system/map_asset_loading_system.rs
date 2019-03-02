@@ -1,7 +1,6 @@
 use std::{collections::HashMap, mem, path::PathBuf};
 
 use amethyst::{
-    animation::{Animation, Sampler, SpriteRenderPrimitive},
     assets::{AssetStorage, Handle, Loader, ProgressCounter},
     ecs::{Read, ReadExpect, System, Write},
     renderer::{SpriteRender, SpriteSheet, Texture},
@@ -16,9 +15,13 @@ use map_model::{
     config::MapDefinition,
     loaded::{Map, Margins},
 };
+use object_model::{
+    config::object::Wait,
+    loaded::{ComponentSequence, ComponentSequences, WaitSequence},
+};
 use shred_derive::SystemData;
-use sprite_loading::{SpriteLoader, SpriteRenderAnimationLoader};
-use sprite_model::config::SpritesDefinition;
+use sprite_loading::SpriteLoader;
+use sprite_model::{config::SpritesDefinition, loaded::SpriteRenderSequence};
 use typename_derive::TypeName;
 
 use crate::{MapAssetHandles, MapLoadingStatus};
@@ -64,12 +67,6 @@ pub struct MapAssetLoadingSystemData<'s> {
     /// `AssetStorage` for `SpriteSheet`s.
     #[derivative(Debug = "ignore")]
     sprite_sheet_assets: Read<'s, AssetStorage<SpriteSheet>>,
-    /// `AssetStorage` for `Sampler<SpriteRenderPrimitive>`s.
-    #[derivative(Debug = "ignore")]
-    sprite_render_primitive_sampler_assets: Read<'s, AssetStorage<Sampler<SpriteRenderPrimitive>>>,
-    /// `AssetStorage` for `Animation<SpriteRender>`s.
-    #[derivative(Debug = "ignore")]
-    sprite_render_animation_assets: Read<'s, AssetStorage<Animation<SpriteRender>>>,
     /// `AssetStorage` for `Map`s.
     #[derivative(Debug = "ignore")]
     map_assets: Read<'s, AssetStorage<Map>>,
@@ -92,8 +89,6 @@ impl<'s> System<'s> for MapAssetLoadingSystem {
             sprites_definition_assets,
             texture_assets,
             sprite_sheet_assets,
-            sprite_render_primitive_sampler_assets,
-            sprite_render_animation_assets,
             map_assets,
             mut loaded_maps,
             mut loading_status,
@@ -160,7 +155,7 @@ impl<'s> System<'s> for MapAssetLoadingSystem {
                     // If there is no sprites definition.
                     (Some(map_definition), None) => {
                         let sprite_sheet_handles = None;
-                        let animation_handles = None;
+                        let component_sequences = None;
 
                         let margins = Margins::from(map_definition.header.bounds);
                         let map = Map::new(
@@ -168,7 +163,7 @@ impl<'s> System<'s> for MapAssetLoadingSystem {
                             map_definition.clone(),
                             margins,
                             sprite_sheet_handles,
-                            animation_handles,
+                            component_sequences,
                         );
 
                         let map_handle =
@@ -187,13 +182,42 @@ impl<'s> System<'s> for MapAssetLoadingSystem {
                             &asset_record.path,
                         )
                         .expect("Failed to load textures and sprite sheets.");
-                        let animation_handles = SpriteRenderAnimationLoader::load_into_vec(
-                            &loader,
-                            &sprite_render_primitive_sampler_assets,
-                            &sprite_render_animation_assets,
-                            map_definition.layers.iter(),
-                            &sprite_sheet_handles,
-                        );
+                        let component_sequences = map_definition
+                            .layers
+                            .iter()
+                            .map(|layer| {
+                                let wait_sequence = WaitSequence::new(
+                                    layer
+                                        .frames
+                                        .iter()
+                                        .map(|frame| frame.wait)
+                                        .collect::<Vec<Wait>>(),
+                                );
+                                let sprite_render_sequence = SpriteRenderSequence::new(
+                                    layer
+                                        .frames
+                                        .iter()
+                                        .map(|frame| {
+                                            let sprite_ref = &frame.sprite;
+                                            let sprite_sheet =
+                                                sprite_sheet_handles[sprite_ref.sheet].clone();
+                                            let sprite_number = sprite_ref.index;
+                                            SpriteRender {
+                                                sprite_sheet,
+                                                sprite_number,
+                                            }
+                                        })
+                                        .collect::<Vec<SpriteRender>>(),
+                                );
+
+                                let mut component_sequences = Vec::new();
+                                component_sequences.push(ComponentSequence::Wait(wait_sequence));
+                                component_sequences
+                                    .push(ComponentSequence::SpriteRender(sprite_render_sequence));
+
+                                ComponentSequences::new(component_sequences)
+                            })
+                            .collect::<Vec<ComponentSequences>>();
 
                         let margins = Margins::from(map_definition.header.bounds);
                         let map = Map::new(
@@ -201,7 +225,7 @@ impl<'s> System<'s> for MapAssetLoadingSystem {
                             map_definition.clone(),
                             margins,
                             Some(sprite_sheet_handles),
-                            Some(animation_handles),
+                            Some(component_sequences),
                         );
 
                         let map_handle =

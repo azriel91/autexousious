@@ -1,12 +1,6 @@
-use collision_loading::InteractionAnimationFrame;
-use collision_model::{
-    animation::BodyAnimationFrame,
-    config::{Body, Interaction, Interactions},
-};
+use collision_model::config::{Body, Interactions};
 use derive_new::new;
 use serde::{Deserialize, Serialize};
-use shape_model::Volume;
-use sprite_loading::AnimationFrame;
 use sprite_model::config::SpriteRef;
 
 use crate::config::object::Wait;
@@ -31,38 +25,4 @@ pub struct ObjectFrame {
     pub body: Body,
     /// Interaction volumes of the object.
     pub interactions: Interactions,
-}
-
-impl AnimationFrame for ObjectFrame {
-    fn texture_index(&self) -> usize {
-        self.sprite.sheet
-    }
-
-    fn sprite_index(&self) -> usize {
-        self.sprite.index
-    }
-
-    fn wait(&self) -> u32 {
-        self.wait.0
-    }
-}
-
-impl BodyAnimationFrame for ObjectFrame {
-    fn body(&self) -> &Vec<Volume> {
-        &*self.body
-    }
-
-    fn wait(&self) -> u32 {
-        self.wait.0
-    }
-}
-
-impl InteractionAnimationFrame for ObjectFrame {
-    fn interactions(&self) -> &Vec<Interaction> {
-        &*self.interactions.as_ref()
-    }
-
-    fn wait(&self) -> u32 {
-        self.wait.0
-    }
 }

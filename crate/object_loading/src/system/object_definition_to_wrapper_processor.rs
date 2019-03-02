@@ -2,18 +2,9 @@ use collision_model::config::{Body, Interactions};
 use std::{marker::PhantomData, ops::Deref, sync::Arc};
 
 use amethyst::{
-    animation::{Animation, Sampler, SpriteRenderPrimitive},
     assets::{AssetStorage, HotReloadStrategy, Loader, ProcessingState},
     core::Time,
     ecs::{Read, ReadExpect, System, Write},
-    renderer::SpriteRender,
-};
-use collision_model::{
-    animation::{
-        BodyFrameActiveHandle, BodyFramePrimitive, InteractionFrameActiveHandle,
-        InteractionFramePrimitive,
-    },
-    config::{BodyFrame, InteractionFrame},
 };
 use derivative::Derivative;
 use derive_new::new;
@@ -59,33 +50,6 @@ where
     /// `AssetStorage` for `ObjectWrapper`s.
     #[derivative(Debug = "ignore")]
     pub object_wrapper_assets: Write<'s, AssetStorage<O::ObjectWrapper>>,
-    /// `AssetStorage` for `Sampler<SpriteRenderPrimitive>`s.
-    #[derivative(Debug = "ignore")]
-    pub sprite_render_primitive_sampler_assets:
-        Read<'s, AssetStorage<Sampler<SpriteRenderPrimitive>>>,
-    /// `AssetStorage` for `Animation<SpriteRender>`s.
-    #[derivative(Debug = "ignore")]
-    pub sprite_render_animation_assets: Read<'s, AssetStorage<Animation<SpriteRender>>>,
-    /// `AssetStorage` for `BodyFrame`s.
-    #[derivative(Debug = "ignore")]
-    pub body_frame_assets: Read<'s, AssetStorage<BodyFrame>>,
-    /// `AssetStorage` for `Sampler<BodyFramePrimitive>`s.
-    #[derivative(Debug = "ignore")]
-    pub body_frame_primitive_sampler_assets: Read<'s, AssetStorage<Sampler<BodyFramePrimitive>>>,
-    /// `AssetStorage` for `Animation<BodyFrameActiveHandle>`s.
-    #[derivative(Debug = "ignore")]
-    pub body_frame_animation_assets: Read<'s, AssetStorage<Animation<BodyFrameActiveHandle>>>,
-    /// `AssetStorage` for `InteractionFrame`s.
-    #[derivative(Debug = "ignore")]
-    pub interaction_frame_assets: Read<'s, AssetStorage<InteractionFrame>>,
-    /// `AssetStorage` for `Sampler<InteractionFramePrimitive>`s.
-    #[derivative(Debug = "ignore")]
-    pub interaction_frame_primitive_sampler_assets:
-        Read<'s, AssetStorage<Sampler<InteractionFramePrimitive>>>,
-    /// `AssetStorage` for `Animation<InteractionFrameActiveHandle>`s.
-    #[derivative(Debug = "ignore")]
-    pub interaction_frame_animation_assets:
-        Read<'s, AssetStorage<Animation<InteractionFrameActiveHandle>>>,
     /// `AssetStorage` for `Body`s.
     #[derivative(Debug = "ignore")]
     pub body_assets: Read<'s, AssetStorage<Body>>,
@@ -111,14 +75,6 @@ where
             hot_reload_strategy,
             game_object_definition_assets,
             mut object_wrapper_assets,
-            sprite_render_primitive_sampler_assets,
-            sprite_render_animation_assets,
-            body_frame_assets,
-            body_frame_primitive_sampler_assets,
-            body_frame_animation_assets,
-            interaction_frame_assets,
-            interaction_frame_primitive_sampler_assets,
-            interaction_frame_animation_assets,
             body_assets,
             interactions_assets,
             ..
@@ -140,17 +96,6 @@ where
                         ObjectLoaderParams {
                             loader: &loader,
                             sprite_sheet_handles,
-                            sprite_render_primitive_sampler_assets:
-                                &sprite_render_primitive_sampler_assets,
-                            sprite_render_animation_assets: &sprite_render_animation_assets,
-                            body_frame_assets: &body_frame_assets,
-                            body_frame_primitive_sampler_assets:
-                                &body_frame_primitive_sampler_assets,
-                            body_frame_animation_assets: &body_frame_animation_assets,
-                            interaction_frame_assets: &interaction_frame_assets,
-                            interaction_frame_primitive_sampler_assets:
-                                &interaction_frame_primitive_sampler_assets,
-                            interaction_frame_animation_assets: &interaction_frame_animation_assets,
                             body_assets: &body_assets,
                             interactions_assets: &interactions_assets,
                         },

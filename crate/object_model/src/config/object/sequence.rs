@@ -9,11 +9,8 @@
 
 pub use self::{object_frame::ObjectFrame, sequence_id::SequenceId, wait::Wait};
 
-use collision_loading::InteractionAnimationSequence;
-use collision_model::animation::BodyAnimationSequence;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
-use sprite_loading::AnimationSequence;
 
 mod object_frame;
 mod sequence_id;
@@ -32,27 +29,6 @@ pub struct Sequence<SeqId: SequenceId> {
     pub next: Option<SeqId>,
     /// Key frames in the animation sequence.
     pub frames: Vec<ObjectFrame>,
-}
-
-impl<SeqId: SequenceId> AnimationSequence for Sequence<SeqId> {
-    type Frame = ObjectFrame;
-    fn frames(&self) -> &[ObjectFrame] {
-        &self.frames
-    }
-}
-
-impl<SeqId: SequenceId> BodyAnimationSequence for Sequence<SeqId> {
-    type Frame = ObjectFrame;
-    fn frames(&self) -> &[ObjectFrame] {
-        &self.frames
-    }
-}
-
-impl<SeqId: SequenceId> InteractionAnimationSequence for Sequence<SeqId> {
-    type Frame = ObjectFrame;
-    fn frames(&self) -> &[ObjectFrame] {
-        &self.frames
-    }
 }
 
 #[cfg(test)]
