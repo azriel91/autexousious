@@ -68,22 +68,30 @@ impl MapLayerEntitySpawner {
                     .definition
                     .layers
                     .iter()
-                    .zip(sprite_sheet_handles.iter())
-                    .map(|(layer, sprite_sheet_handle)| {
-                        let position = layer.position;
-                        let mut transform = Transform::default();
-                        transform.set_position(Vector3::new(
-                            position.x as f32,
-                            position.y as f32,
-                            position.z as f32,
-                        ));
+                    .filter_map(|layer| {
+                        // This only spawns an entity if the layer specifies a frame.
+                        // In the future it should spawn an entity for shape-based layers.
+                        layer.frames.iter().next().map(|frame| {
+                            let sheet = frame.sprite.sheet;
+                            let sprite_sheet_handle =
+                                sprite_sheet_handles.get(sheet).unwrap_or_else(|| {
+                                    panic!("Map layer contained invalid sheet number: `{}`", sheet)
+                                });
+                            let position = layer.position;
+                            let mut transform = Transform::default();
+                            transform.set_position(Vector3::new(
+                                position.x as f32,
+                                (position.y - position.z) as f32,
+                                position.z as f32,
+                            ));
 
-                        let sprite_render = SpriteRender {
-                            sprite_sheet: sprite_sheet_handle.clone(),
-                            sprite_number: 0,
-                        };
+                            let sprite_render = SpriteRender {
+                                sprite_sheet: sprite_sheet_handle.clone(),
+                                sprite_number: frame.sprite.index,
+                            };
 
-                        (transform, sprite_render.clone())
+                            (transform, sprite_render.clone())
+                        })
                     })
                     .collect::<Vec<(Transform, SpriteRender)>>();
 
