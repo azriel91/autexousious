@@ -1,3 +1,8 @@
+use amethyst::{
+    assets::{Asset, Handle, ProcessingState},
+    ecs::storage::VecStorage,
+    Error,
+};
 use derive_deref::{Deref, DerefMut};
 use derive_new::new;
 
@@ -9,6 +14,23 @@ pub struct ComponentSequences(
     /// The underlying vector.
     pub Vec<ComponentSequence>,
 );
+
+/// Handle to a `ComponentSequences` asset.
+pub type ComponentSequencesHandle = Handle<ComponentSequences>;
+
+impl Asset for ComponentSequences {
+    const NAME: &'static str = concat!(module_path!(), "::", stringify!(ComponentSequences));
+    type Data = Self;
+    type HandleStorage = VecStorage<Handle<Self>>;
+}
+
+impl From<ComponentSequences> for Result<ProcessingState<ComponentSequences>, Error> {
+    fn from(
+        component_sequences: ComponentSequences,
+    ) -> Result<ProcessingState<ComponentSequences>, Error> {
+        Ok(ProcessingState::Loaded(component_sequences))
+    }
+}
 
 impl ComponentSequences {
     /// Returns the number of frames in the component sequences.

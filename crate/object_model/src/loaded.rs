@@ -8,8 +8,8 @@ pub use self::{
     object::Object,
     object_wrapper::ObjectWrapper,
     sequence::{
-        ComponentSequence, ComponentSequences, SequenceEndTransition, SequenceEndTransitions,
-        WaitSequence,
+        ComponentSequence, ComponentSequences, ComponentSequencesHandle, SequenceEndTransition,
+        SequenceEndTransitions, WaitSequence,
     },
 };
 
