@@ -1,5 +1,5 @@
 use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
-use character_model::{config::CharacterSequenceId, loaded::Character};
+use character_model::config::CharacterSequenceId;
 use derive_new::new;
 use game_input::ControllerInput;
 use named_type::NamedType;
@@ -64,14 +64,14 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         ); // kcov-ignore
 
         builder.add(
-            ObjectSequenceUpdateSystem::<Character>::new(),
-            &ObjectSequenceUpdateSystem::<Character>::type_name(),
+            ObjectSequenceUpdateSystem::new(),
+            &ObjectSequenceUpdateSystem::type_name(),
             &[&CharacterCollisionEffectSystem::type_name()],
         ); // kcov-ignore
         builder.add(
-            ObjectFrameComponentUpdateSystem::<Character>::new(),
-            &ObjectFrameComponentUpdateSystem::<Character>::type_name(),
-            &[&ObjectSequenceUpdateSystem::<Character>::type_name()],
+            ObjectFrameComponentUpdateSystem::new(),
+            &ObjectFrameComponentUpdateSystem::type_name(),
+            &[&ObjectSequenceUpdateSystem::type_name()],
         ); // kcov-ignore
 
         // Depends on the LastTrackerSystem<ControllerInput>, so must run before it.

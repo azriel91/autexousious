@@ -1,8 +1,5 @@
-use object_model::loaded::ComponentSequences;
-use std::marker::PhantomData;
-
 use amethyst::{
-    assets::{AssetStorage, Handle},
+    assets::AssetStorage,
     ecs::{Read, ReadStorage, System, SystemData, WriteStorage},
     shred::Resources,
     shrev::{EventChannel, ReaderId},
@@ -15,95 +12,53 @@ use named_type_derive::NamedType;
 use object_loading::ObjectFrameComponentStorages;
 use object_model::{
     entity::FrameIndexClock,
-    loaded::{ComponentSequence, GameObject, ObjectWrapper},
+    loaded::{ComponentSequence, ComponentSequences, ComponentSequencesHandle},
 };
 use shred_derive::SystemData;
 
 use crate::ObjectSequenceUpdateEvent;
 
 /// Updates the logic clock and sequence ID for objects.
-///
-/// # Type Parameters
-///
-/// * `O`: `GameObject` type, e.g. `Character`.
 #[derive(Debug, Default, NamedType, new)]
-pub struct ObjectFrameComponentUpdateSystem<O> {
+pub struct ObjectFrameComponentUpdateSystem {
     /// Reader ID for the `ObjectSequenceUpdateEvent` event channel.
     #[new(default)]
     reader_id: Option<ReaderId<ObjectSequenceUpdateEvent>>,
-    /// PhantomData.
-    phantom_data: PhantomData<O>,
 }
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct ObjectFrameComponentUpdateSystemData<'s, O>
-where
-    O: GameObject,
-{
+pub struct ObjectFrameComponentUpdateSystemData<'s> {
     /// Event channel for `ObjectSequenceUpdateEvent`s.
     #[derivative(Debug = "ignore")]
     pub object_sequence_update_ec: Read<'s, EventChannel<ObjectSequenceUpdateEvent>>,
-    /// `Handle<O::ObjectWrapper>` component storage.
+    /// `ComponentSequencesHandle` component storage.
     #[derivative(Debug = "ignore")]
-    pub object_handles: ReadStorage<'s, Handle<O::ObjectWrapper>>,
-    /// `O::ObjectWrapper` assets.
+    pub component_sequences_handles: ReadStorage<'s, ComponentSequencesHandle>,
+    /// `ComponentSequences` assets.
     #[derivative(Debug = "ignore")]
-    pub object_assets: Read<'s, AssetStorage<O::ObjectWrapper>>,
+    pub component_sequences_assets: Read<'s, AssetStorage<ComponentSequences>>,
     /// `FrameIndexClock` component storage.
     #[derivative(Debug = "ignore")]
     pub frame_index_clocks: ReadStorage<'s, FrameIndexClock>,
     /// `LogicClock` component storage.
     #[derivative(Debug = "ignore")]
     pub logic_clocks: WriteStorage<'s, LogicClock>,
-    /// `O::SequenceId` component storage.
-    #[derivative(Debug = "ignore")]
-    pub sequence_ids: WriteStorage<'s, O::SequenceId>,
     /// Game object `Component` storages.
     pub object_frame_component_storages: ObjectFrameComponentStorages<'s>,
 }
 
-impl<O> ObjectFrameComponentUpdateSystem<O>
-where
-    O: GameObject,
-{
-    fn component_sequences<'res>(
-        object_assets: &'res AssetStorage<O::ObjectWrapper>,
-        object_handle: &Handle<O::ObjectWrapper>,
-        sequence_id: O::SequenceId,
-    ) -> &'res ComponentSequences {
-        let object = object_assets
-            .get(object_handle)
-            .expect("Expected object to be loaded.");
-        object
-            .inner()
-            .component_sequences
-            .get(&sequence_id)
-            .unwrap_or_else(|| {
-                panic!(
-                    "Failed to get `ComponentSequences` for sequence ID: \
-                     `{:?}`.",
-                    sequence_id
-                );
-            })
-    }
-}
-
-impl<'s, O> System<'s> for ObjectFrameComponentUpdateSystem<O>
-where
-    O: GameObject,
-{
-    type SystemData = ObjectFrameComponentUpdateSystemData<'s, O>;
+impl<'s> System<'s> for ObjectFrameComponentUpdateSystem {
+    type SystemData = ObjectFrameComponentUpdateSystemData<'s>;
 
     fn run(
         &mut self,
         ObjectFrameComponentUpdateSystemData {
             object_sequence_update_ec,
-            object_handles,
-            object_assets,
+            component_sequences_handles,
+            component_sequences_assets,
             frame_index_clocks,
             mut logic_clocks,
-            sequence_ids,
             object_frame_component_storages,
         }: Self::SystemData,
     ) {
@@ -123,21 +78,19 @@ where
             .for_each(|ev| match ev {
                 ObjectSequenceUpdateEvent::SequenceBegin { entity }
                 | ObjectSequenceUpdateEvent::FrameBegin { entity } => {
-                    let object_handle = object_handles
+                    let component_sequences_handle = component_sequences_handles
                         .get(*entity)
-                        .expect("Expected entity to have an `ObjectHandle` component.");
+                        .expect("Expected entity to have a `ComponentSequencesHandle` component.");
                     let frame_index_clock = frame_index_clocks
                         .get(*entity)
                         .expect("Expected entity to have a `FrameIndexClock` component.");
                     let logic_clock = logic_clocks
                         .get_mut(*entity)
                         .expect("Expected entity to have a `LogicClock` component.");
-                    let sequence_id = sequence_ids
-                        .get(*entity)
-                        .expect("Expected entity to have a `SequenceId` component.");
 
-                    let component_sequences =
-                        Self::component_sequences(&object_assets, &object_handle, *sequence_id);
+                    let component_sequences = component_sequences_assets
+                        .get(component_sequences_handle)
+                        .expect("Expected component_sequences to be loaded.");
 
                     let frame_index = (*frame_index_clock).value;
 
@@ -187,17 +140,24 @@ where
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        assets::AssetStorage,
+        assets::{AssetStorage, Prefab},
         ecs::{Entities, Join, ReadStorage, World, WriteStorage},
         shrev::EventChannel,
         Error,
     };
     use application_test_support::AutexousiousApplication;
-    use character_model::{config::CharacterSequenceId, loaded::Character};
+    use asset_model::loaded::SlugAndHandle;
+    use assets_test::ASSETS_CHAR_BAT_SLUG;
+    use character_loading::CharacterPrefab;
+    use character_model::{config::CharacterSequenceId, loaded::CharacterObjectWrapper};
     use collision_model::config::{Body, Interaction, Interactions};
     use logic_clock::LogicClock;
-    use object_loading::ObjectFrameComponentStorages;
-    use object_model::{config::object::Wait, entity::FrameIndexClock};
+    use object_loading::{ObjectFrameComponentStorages, ObjectPrefab};
+    use object_model::{
+        config::object::Wait,
+        entity::FrameIndexClock,
+        loaded::{ComponentSequencesHandle, ObjectWrapper},
+    };
     use shape_model::Volume;
 
     use super::ObjectFrameComponentUpdateSystem;
@@ -207,12 +167,10 @@ mod tests {
     fn updates_all_frame_components_on_sequence_begin_event() -> Result<(), Error> {
         let test_name = "updates_all_frame_components_on_sequence_begin_event";
         AutexousiousApplication::game_base(test_name, false)
-            .with_system(
-                ObjectFrameComponentUpdateSystem::<Character>::new(),
-                "",
-                &[],
-            )
+            .with_system(ObjectFrameComponentUpdateSystem::new(), "", &[])
             .with_setup(|world| {
+                let component_sequences_handle =
+                    component_sequences_handle(world, CharacterSequenceId::StandAttack);
                 initial_values(
                     world,
                     // third frame in the sequence, though it doesn't make sense for sequence begin
@@ -220,7 +178,7 @@ mod tests {
                     5,
                     0,
                     5,
-                    CharacterSequenceId::StandAttack,
+                    component_sequences_handle,
                 )
             })
             .with_setup(|world| {
@@ -238,19 +196,17 @@ mod tests {
     fn updates_all_frame_components_on_frame_begin_event() -> Result<(), Error> {
         let test_name = "updates_all_frame_components_on_frame_begin_event";
         AutexousiousApplication::game_base(test_name, false)
-            .with_system(
-                ObjectFrameComponentUpdateSystem::<Character>::new(),
-                "",
-                &[],
-            )
+            .with_system(ObjectFrameComponentUpdateSystem::new(), "", &[])
             .with_setup(|world| {
+                let component_sequences_handle =
+                    component_sequences_handle(world, CharacterSequenceId::StandAttack);
                 initial_values(
                     world,
                     2, // third frame in the sequence
                     5,
                     0,
                     5,
-                    CharacterSequenceId::StandAttack,
+                    component_sequences_handle,
                 )
             })
             .with_setup(|world| {
@@ -270,26 +226,71 @@ mod tests {
         frame_index_clock_limit: usize,
         logic_clock_value: usize,
         logic_clock_limit: usize,
-        sequence_id_initial: CharacterSequenceId,
+        component_sequences_handle_initial: ComponentSequencesHandle,
     ) {
-        let (_entities, mut frame_index_clocks, mut logic_clocks, mut sequence_ids, ..) =
-            world.system_data::<TestSystemData>();
+        let (
+            _entities,
+            mut frame_index_clocks,
+            mut logic_clocks,
+            mut component_sequences_handles,
+            ..
+        ) = world.system_data::<TestSystemData>();
 
         (
             &mut frame_index_clocks,
             &mut logic_clocks,
-            &mut sequence_ids,
+            &mut component_sequences_handles,
         )
             .join()
-            .for_each(|(frame_index_clock, logic_clock, sequence_id)| {
-                (*frame_index_clock).value = frame_index_clock_value;
-                (*frame_index_clock).limit = frame_index_clock_limit;
+            .for_each(
+                |(frame_index_clock, logic_clock, component_sequences_handle)| {
+                    (*frame_index_clock).value = frame_index_clock_value;
+                    (*frame_index_clock).limit = frame_index_clock_limit;
 
-                (*logic_clock).value = logic_clock_value;
-                (*logic_clock).limit = logic_clock_limit;
+                    (*logic_clock).value = logic_clock_value;
+                    (*logic_clock).limit = logic_clock_limit;
 
-                *sequence_id = sequence_id_initial;
-            });
+                    *component_sequences_handle = component_sequences_handle_initial.clone();
+                },
+            );
+    }
+
+    // Quite unergonomic =/
+    fn component_sequences_handle(
+        world: &mut World,
+        sequence_id: CharacterSequenceId,
+    ) -> ComponentSequencesHandle {
+        let snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
+        let character_prefab_assets =
+            world.read_resource::<AssetStorage<Prefab<CharacterPrefab>>>();
+        let bat_char_prefab = character_prefab_assets
+            .get(&snh.handle)
+            .expect("Expected bat character prefab to be loaded.");
+        let object_wrapper_handle = {
+            let object_prefab = &bat_char_prefab
+                .entities()
+                .next()
+                .expect("Expected bat character main entity to exist.")
+                .data()
+                .expect("Expected bat character prefab to contain data.")
+                .object_prefab;
+            if let ObjectPrefab::Handle(handle) = object_prefab {
+                handle.clone()
+            } else {
+                panic!("Expected bat object prefab to be loaded.")
+            }
+        };
+
+        let object_wrapper_assets = world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
+        let object_wrapper = object_wrapper_assets
+            .get(&object_wrapper_handle)
+            .expect("Expected bat object wrapper to be loaded.");
+        object_wrapper
+            .inner()
+            .component_sequences_handles
+            .get(&sequence_id)
+            .expect("Expected `RunStop` sequence to exist.")
+            .clone()
     }
 
     fn expect_values(world: &mut World, logic_clock_value: usize, logic_clock_limit: usize) {
@@ -387,11 +388,16 @@ mod tests {
             entities,
             frame_index_clocks,
             logic_clocks,
-            sequence_ids,
+            component_sequences_handles,
             _object_frame_component_storages,
         ) = world.system_data::<TestSystemData>();
 
-        (&entities, &frame_index_clocks, &logic_clocks, &sequence_ids)
+        (
+            &entities,
+            &frame_index_clocks,
+            &logic_clocks,
+            &component_sequences_handles,
+        )
             .join()
             .map(|(entity, _, _, _)| ObjectSequenceUpdateEvent::SequenceBegin { entity })
             .collect::<Vec<_>>()
@@ -402,11 +408,16 @@ mod tests {
             entities,
             frame_index_clocks,
             logic_clocks,
-            sequence_ids,
+            component_sequences_handles,
             _object_frame_component_storages,
         ) = world.system_data::<TestSystemData>();
 
-        (&entities, &frame_index_clocks, &logic_clocks, &sequence_ids)
+        (
+            &entities,
+            &frame_index_clocks,
+            &logic_clocks,
+            &component_sequences_handles,
+        )
             .join()
             .map(|(entity, _, _, _)| ObjectSequenceUpdateEvent::FrameBegin { entity })
             .collect::<Vec<_>>()
@@ -416,7 +427,7 @@ mod tests {
         Entities<'s>,
         WriteStorage<'s, FrameIndexClock>,
         WriteStorage<'s, LogicClock>,
-        WriteStorage<'s, CharacterSequenceId>,
+        WriteStorage<'s, ComponentSequencesHandle>,
         ObjectFrameComponentStorages<'s>,
     );
 }
