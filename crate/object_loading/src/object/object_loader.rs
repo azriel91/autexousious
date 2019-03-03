@@ -9,8 +9,8 @@ use fnv::FnvHashMap;
 use object_model::{
     config::{object::Wait, ObjectDefinition},
     loaded::{
-        ComponentSequence, ComponentSequences, GameObject, Object, ObjectWrapper,
-        SequenceEndTransition, WaitSequence,
+        ComponentSequence, ComponentSequences, ComponentSequencesHandle, GameObject, Object,
+        ObjectWrapper, SequenceEndTransition, WaitSequence,
     },
 };
 use sprite_model::loaded::SpriteRenderSequence;
@@ -31,6 +31,7 @@ impl ObjectLoader {
     pub fn load<O>(
         ObjectLoaderParams {
             loader,
+            component_sequences_assets,
             sprite_sheet_handles,
             body_assets,
             interactions_assets,
@@ -49,7 +50,7 @@ impl ObjectLoader {
             .collect::<FnvHashMap<_, _>>();
 
         // Load component sequences
-        let component_sequences = object_definition
+        let component_sequences_handles = object_definition
             .sequences
             .iter()
             .map(|(sequence_id, sequence)| {
@@ -103,11 +104,14 @@ impl ObjectLoader {
                 component_sequences.push(ComponentSequence::Interactions(interactions_sequence));
 
                 let component_sequences = ComponentSequences::new(component_sequences);
-                (*sequence_id, component_sequences)
-            })
-            .collect::<HashMap<O::SequenceId, ComponentSequences>>();
+                let component_sequences_handle =
+                    loader.load_from_data(component_sequences, (), component_sequences_assets);
 
-        let object = Object::new(component_sequences, sequence_end_transitions.into());
+                (*sequence_id, component_sequences_handle)
+            })
+            .collect::<HashMap<O::SequenceId, ComponentSequencesHandle>>();
+
+        let object = Object::new(component_sequences_handles, sequence_end_transitions.into());
         let wrapper = O::ObjectWrapper::new(object);
 
         Ok(wrapper)
@@ -130,6 +134,7 @@ mod test {
     };
     use collision_loading::CollisionLoadingBundle;
     use collision_model::config::{Body, Interactions};
+    use object_model::loaded::ComponentSequences;
     use sprite_loading::SpriteLoader;
     use sprite_model::config::SpritesDefinition;
     use typename::TypeName;
@@ -176,6 +181,8 @@ mod test {
                         .expect("Failed to load sprites_definition.");
 
                         let loader = &world.read_resource::<Loader>();
+                        let component_sequences_assets =
+                            &world.read_resource::<AssetStorage<ComponentSequences>>();
                         let texture_assets = &world.read_resource::<AssetStorage<Texture>>();
                         let sprite_sheet_assets =
                             &world.read_resource::<AssetStorage<SpriteSheet>>();
@@ -199,6 +206,7 @@ mod test {
                         ObjectLoader::load::<Character>(
                             ObjectLoaderParams {
                                 loader,
+                                component_sequences_assets,
                                 sprite_sheet_handles,
                                 body_assets,
                                 interactions_assets,
@@ -214,12 +222,19 @@ mod test {
                     let object_wrapper = world.read_resource::<CharacterObjectWrapper>();
 
                     // See bat/object.toml
-                    assert_eq!(16, object_wrapper.component_sequences.len());
+                    assert_eq!(16, object_wrapper.component_sequences_handles.len());
 
-                    let stand_attack_component_sequences = object_wrapper
-                        .component_sequences
+                    let component_sequences_assets =
+                        world.read_resource::<AssetStorage<ComponentSequences>>();
+
+                    let stand_attack_handle = object_wrapper
+                        .component_sequences_handles
                         .get(&CharacterSequenceId::StandAttack)
                         .expect("Expected to read `StandAttack` component_sequences.");
+                    let stand_attack_component_sequences = component_sequences_assets
+                        .get(stand_attack_handle)
+                        .expect("Expected `StandAttack` component sequences to be loaded.");
+
                     // Wait, SpriteRender, Body, and Interactions
                     assert_eq!(4, stand_attack_component_sequences.len());
                 })

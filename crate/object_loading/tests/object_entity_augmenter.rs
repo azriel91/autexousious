@@ -41,7 +41,10 @@ use collision_loading::CollisionLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
 use logic_clock::LogicClock;
 use map_loading::MapLoadingBundle;
-use object_model::entity::{FrameIndexClock, Mirrored, Position, SequenceStatus, Velocity};
+use object_model::{
+    entity::{FrameIndexClock, Mirrored, Position, SequenceStatus, Velocity},
+    loaded::{ComponentSequences, ComponentSequencesHandle},
+};
 use sprite_loading::SpriteLoadingBundle;
 
 use object_loading::{
@@ -55,6 +58,8 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
     let assertion = |world: &mut World| {
         let entity = world.create_entity().build();
         {
+            let component_sequences_assets =
+                world.read_resource::<AssetStorage<ComponentSequences>>();
             let mut object_frame_component_storages =
                 ObjectFrameComponentStorages::fetch(&world.res);
             let mut object_component_storages = ObjectComponentStorages::fetch(&world.res);
@@ -91,6 +96,7 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
 
             ObjectEntityAugmenter::augment(
                 entity,
+                &component_sequences_assets,
                 &mut object_component_storages,
                 &mut object_frame_component_storages,
                 object_wrapper,
@@ -106,6 +112,9 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
         assert!(world.read_storage::<Position<f32>>().contains(entity));
         assert!(world.read_storage::<Velocity<f32>>().contains(entity));
         assert!(world.read_storage::<Transform>().contains(entity));
+        assert!(world
+            .read_storage::<ComponentSequencesHandle>()
+            .contains(entity));
         assert!(world.read_storage::<FrameIndexClock>().contains(entity));
         assert!(world.read_storage::<LogicClock>().contains(entity));
     };

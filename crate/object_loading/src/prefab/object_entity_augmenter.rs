@@ -1,4 +1,5 @@
 use amethyst::{
+    assets::AssetStorage,
     core::transform::Transform,
     ecs::Entity,
     renderer::{Flipped, Transparent},
@@ -6,7 +7,7 @@ use amethyst::{
 use logic_clock::LogicClock;
 use object_model::{
     entity::{FrameIndexClock, Mirrored, Position, SequenceStatus, Velocity},
-    loaded::{ComponentSequence, ObjectWrapper},
+    loaded::{ComponentSequence, ComponentSequences, ObjectWrapper},
 };
 
 use crate::{ObjectComponentStorages, ObjectFrameComponentStorages};
@@ -21,11 +22,13 @@ impl ObjectEntityAugmenter {
     /// # Parameters
     ///
     /// * `entity`: The entity to augment.
-    /// * `object_component_storages`: Common `Component` storages for objects.
-    /// * `object_animation_storages`: Common animation storages for objects.
+    /// * `component_sequences_assets`: Asset storage for `ComponentSequences`.
+    /// * `object_component_storages`: Non-frame-dependent `Component` storages for objects.
+    /// * `object_frame_component_storages`: Frame component storages for objects.
     /// * `object_wrapper`: Slug and handle of the object to spawn.
     pub fn augment<'s, W>(
         entity: Entity,
+        component_sequences_assets: &AssetStorage<ComponentSequences>,
         ObjectComponentStorages {
             ref mut flippeds,
             ref mut transparents,
@@ -33,6 +36,7 @@ impl ObjectEntityAugmenter {
             ref mut velocities,
             ref mut transforms,
             ref mut mirroreds,
+            ref mut component_sequences_handles,
             ref mut sequence_end_transitionses,
             ref mut sequence_ids,
             ref mut sequence_statuses,
@@ -81,16 +85,25 @@ impl ObjectEntityAugmenter {
             .insert(entity, SequenceStatus::default())
             .expect("Failed to insert sequence_status component.");
 
-        let component_sequences = object_wrapper
+        let component_sequences_handle = object_wrapper
             .inner()
-            .component_sequences
+            .component_sequences_handles
             .get(&sequence_id)
             .unwrap_or_else(|| {
                 panic!(
-                    "Failed to get `ComponentSequences` for sequence ID: \
+                    "Failed to get `ComponentSequencesHandle` for sequence ID: \
                      `{:?}`.",
                     sequence_id
                 );
+            });
+
+        let component_sequences = component_sequences_assets
+            .get(component_sequences_handle)
+            .unwrap_or_else(|| {
+                panic!(
+                    "Expected component_sequences to be loaded for sequence_id: `{:?}`",
+                    sequence_id
+                )
             });
 
         let frame_index_clock =
@@ -131,6 +144,10 @@ impl ObjectEntityAugmenter {
                         .expect("Failed to insert `Interactions` component for object.");
                 }
             });
+
+        component_sequences_handles
+            .insert(entity, component_sequences_handle.clone())
+            .expect("Failed to insert component_sequences_handle component.");
 
         logic_clocks
             .insert(entity, logic_clock)

@@ -5,7 +5,7 @@ use derive_new::new;
 
 use crate::{
     config::object::SequenceId,
-    loaded::{ComponentSequences, SequenceEndTransitions},
+    loaded::{ComponentSequencesHandle, SequenceEndTransitions},
 };
 
 /// Represents an in-game object that has been loaded.
@@ -15,8 +15,8 @@ pub struct Object<SeqId>
 where
     SeqId: SequenceId,
 {
-    /// Sequences of components that this object uses, keyed by sequence ID.
-    pub component_sequences: HashMap<SeqId, ComponentSequences>,
+    /// Handle to sequences of components that this object uses, keyed by sequence ID.
+    pub component_sequences_handles: HashMap<SeqId, ComponentSequencesHandle>,
     /// Component sequence transitions when a sequence ends.
     pub sequence_end_transitions: SequenceEndTransitions<SeqId>,
 }

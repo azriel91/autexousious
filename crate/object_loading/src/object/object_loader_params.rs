@@ -4,6 +4,7 @@ use amethyst::{
 };
 use collision_model::config::{Body, Interactions};
 use derivative::Derivative;
+use object_model::loaded::ComponentSequences;
 
 /// Resources needed to load an object.
 #[derive(Derivative)]
@@ -12,6 +13,9 @@ pub struct ObjectLoaderParams<'s> {
     /// `Loader` to load assets.
     #[derivative(Debug = "ignore")]
     pub loader: &'s Loader,
+    /// `AssetStorage` for `ComponentSequences`s.
+    #[derivative(Debug = "ignore")]
+    pub component_sequences_assets: &'s AssetStorage<ComponentSequences>,
     /// Handles to the sprite sheets for this `Object`.
     pub sprite_sheet_handles: &'s [SpriteSheetHandle],
     /// `AssetStorage` for `Body`s.

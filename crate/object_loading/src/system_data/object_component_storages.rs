@@ -8,7 +8,7 @@ use logic_clock::LogicClock;
 use object_model::{
     config::object::SequenceId,
     entity::{FrameIndexClock, Mirrored, Position, SequenceStatus, Velocity},
-    loaded::SequenceEndTransitions,
+    loaded::{ComponentSequencesHandle, SequenceEndTransitions},
 };
 use shred_derive::SystemData;
 
@@ -43,6 +43,9 @@ where
     /// `Mirrored` component storage.
     #[derivative(Debug = "ignore")]
     pub mirroreds: WriteStorage<'s, Mirrored>,
+    /// `ComponentSequencesHandle` component storage.
+    #[derivative(Debug = "ignore")]
+    pub component_sequences_handles: WriteStorage<'s, ComponentSequencesHandle>,
     /// `SequenceEndTransitions` component storage.
     #[derivative(Debug = "ignore")]
     pub sequence_end_transitionses: WriteStorage<'s, SequenceEndTransitions<SeqId>>,

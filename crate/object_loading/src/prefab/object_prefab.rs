@@ -2,11 +2,14 @@ use std::{fmt::Debug, mem};
 
 use amethyst::{
     assets::{AssetStorage, Handle, Loader, PrefabData, ProgressCounter},
-    ecs::{Entity, Read, ReadExpect, WriteStorage},
+    ecs::{Entity, Read, ReadExpect},
     Error,
 };
 use derivative::Derivative;
-use object_model::{config::ObjectAssetData, loaded::GameObject};
+use object_model::{
+    config::ObjectAssetData,
+    loaded::{ComponentSequences, GameObject},
+};
 use serde::{Deserialize, Serialize};
 use shred_derive::SystemData;
 
@@ -42,12 +45,12 @@ where
     /// `Loader` to load assets.
     #[derivative(Debug = "ignore")]
     loader: ReadExpect<'s, Loader>,
+    /// `AssetStorage` for `ComponentSequences`.
+    #[derivative(Debug = "ignore")]
+    component_sequences_assets: Read<'s, AssetStorage<ComponentSequences>>,
     /// `AssetStorage` for `ObjectWrapper`s.
     #[derivative(Debug = "ignore")]
     object_wrapper_assets: Read<'s, AssetStorage<O::ObjectWrapper>>,
-    /// `Handle<ObjectWrapper>` component storage.
-    #[derivative(Debug = "ignore")]
-    object_wrapper_handles: WriteStorage<'s, Handle<O::ObjectWrapper>>,
     /// Common game object `Component` storages.
     object_component_storages: ObjectComponentStorages<'s, O::SequenceId>,
     /// Common game object frame component storages.
@@ -67,8 +70,8 @@ where
         entity: Entity,
         ObjectPrefabSystemData {
             loader,
+            component_sequences_assets,
             object_wrapper_assets,
-            object_wrapper_handles,
             object_component_storages,
             object_frame_component_storages,
         }: &mut Self::SystemData,
@@ -89,10 +92,9 @@ where
                 object_wrapper_handle: object_wrapper_handle.clone(),
             })?;
 
-        object_wrapper_handles.insert(entity, object_wrapper_handle.clone())?;
-
         ObjectEntityAugmenter::augment(
             entity,
+            component_sequences_assets,
             object_component_storages,
             object_frame_component_storages,
             object_wrapper,

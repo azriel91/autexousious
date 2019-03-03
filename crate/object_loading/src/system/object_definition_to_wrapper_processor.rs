@@ -1,4 +1,3 @@
-use collision_model::config::{Body, Interactions};
 use std::{marker::PhantomData, ops::Deref, sync::Arc};
 
 use amethyst::{
@@ -6,9 +5,13 @@ use amethyst::{
     core::Time,
     ecs::{Read, ReadExpect, System, Write},
 };
+use collision_model::config::{Body, Interactions};
 use derivative::Derivative;
 use derive_new::new;
-use object_model::{config::GameObjectDefinition, loaded::GameObject};
+use object_model::{
+    config::GameObjectDefinition,
+    loaded::{ComponentSequences, GameObject},
+};
 use rayon::ThreadPool;
 use shred_derive::SystemData;
 use typename::TypeName as TypeNameTrait;
@@ -47,6 +50,9 @@ where
     /// `AssetStorage` for the `GameObjectDefinition`s.
     #[derivative(Debug = "ignore")]
     pub game_object_definition_assets: Read<'s, AssetStorage<O::Definition>>,
+    /// `AssetStorage` for `ComponentSequences`.
+    #[derivative(Debug = "ignore")]
+    pub component_sequences_assets: Read<'s, AssetStorage<ComponentSequences>>,
     /// `AssetStorage` for `ObjectWrapper`s.
     #[derivative(Debug = "ignore")]
     pub object_wrapper_assets: Write<'s, AssetStorage<O::ObjectWrapper>>,
@@ -74,6 +80,7 @@ where
             time,
             hot_reload_strategy,
             game_object_definition_assets,
+            component_sequences_assets,
             mut object_wrapper_assets,
             body_assets,
             interactions_assets,
@@ -95,6 +102,7 @@ where
                     let wrapper = ObjectLoader::load::<O>(
                         ObjectLoaderParams {
                             loader: &loader,
+                            component_sequences_assets: &component_sequences_assets,
                             sprite_sheet_handles,
                             body_assets: &body_assets,
                             interactions_assets: &interactions_assets,
