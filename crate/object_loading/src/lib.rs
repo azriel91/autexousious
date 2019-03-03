@@ -11,7 +11,7 @@ pub use crate::{
     object::{ObjectLoader, ObjectLoaderParams},
     prefab::{GameObjectPrefab, ObjectEntityAugmenter, ObjectPrefab, ObjectPrefabError},
     system::ObjectDefinitionToWrapperProcessor,
-    system_data::{ObjectComponentStorages, ObjectFrameComponentStorages},
+    system_data::{FrameComponentStorages, ObjectComponentStorages},
 };
 
 mod object;

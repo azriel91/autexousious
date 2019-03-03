@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 use shred_derive::SystemData;
 
 use crate::{
-    ObjectComponentStorages, ObjectEntityAugmenter, ObjectFrameComponentStorages, ObjectPrefabError,
+    FrameComponentStorages, ObjectComponentStorages, ObjectEntityAugmenter, ObjectPrefabError,
 };
 
 /// Sequence for volumes that can be hit.
@@ -54,7 +54,7 @@ where
     /// Common game object `Component` storages.
     object_component_storages: ObjectComponentStorages<'s, O::SequenceId>,
     /// Common game object frame component storages.
-    object_frame_component_storages: ObjectFrameComponentStorages<'s>,
+    frame_component_storages: FrameComponentStorages<'s>,
 }
 
 impl<'s, O> PrefabData<'s> for ObjectPrefab<O>
@@ -73,7 +73,7 @@ where
             component_sequences_assets,
             object_wrapper_assets,
             object_component_storages,
-            object_frame_component_storages,
+            frame_component_storages,
         }: &mut Self::SystemData,
         _: &[Entity],
     ) -> Result<(), Error> {
@@ -96,7 +96,7 @@ where
             entity,
             component_sequences_assets,
             object_component_storages,
-            object_frame_component_storages,
+            frame_component_storages,
             object_wrapper,
         );
 

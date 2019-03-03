@@ -8,9 +8,7 @@ pub(crate) use self::{
     object_collision_detection_system::ObjectCollisionDetectionSystem,
     object_kinematics_update_system::ObjectKinematicsUpdateSystem,
     object_transform_update_system::ObjectTransformUpdateSystem,
-    sequence::{
-        ObjectFrameComponentUpdateSystem, ObjectSequenceUpdateEvent, ObjectSequenceUpdateSystem,
-    },
+    sequence::{FrameComponentUpdateSystem, SequenceUpdateEvent, SequenceUpdateSystem},
 };
 
 mod character_collision_effect_system;

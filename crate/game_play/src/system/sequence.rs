@@ -1,9 +1,8 @@
 pub use self::{
-    object_frame_component_update_system::ObjectFrameComponentUpdateSystem,
-    object_sequence_update_event::ObjectSequenceUpdateEvent,
-    object_sequence_update_system::ObjectSequenceUpdateSystem,
+    frame_component_update_system::FrameComponentUpdateSystem,
+    sequence_update_event::SequenceUpdateEvent, sequence_update_system::SequenceUpdateSystem,
 };
 
-mod object_frame_component_update_system;
-mod object_sequence_update_event;
-mod object_sequence_update_system;
+mod frame_component_update_system;
+mod sequence_update_event;
+mod sequence_update_system;

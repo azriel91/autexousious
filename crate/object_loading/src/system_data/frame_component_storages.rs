@@ -4,10 +4,10 @@ use derivative::Derivative;
 use object_model::config::object::Wait;
 use shred_derive::SystemData;
 
-/// Game object `Component` storages for components that change per sequence frame.
+/// `Component` storages for components that change per sequence frame.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct ObjectFrameComponentStorages<'s> {
+pub struct FrameComponentStorages<'s> {
     /// `Wait` component storage.
     #[derivative(Debug = "ignore")]
     pub waits: WriteStorage<'s, Wait>,

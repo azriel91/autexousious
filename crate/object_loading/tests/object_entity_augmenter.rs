@@ -48,7 +48,7 @@ use object_model::{
 use sprite_loading::SpriteLoadingBundle;
 
 use object_loading::{
-    ObjectComponentStorages, ObjectEntityAugmenter, ObjectFrameComponentStorages, ObjectPrefab,
+    FrameComponentStorages, ObjectComponentStorages, ObjectEntityAugmenter, ObjectPrefab,
 };
 
 #[test]
@@ -60,8 +60,7 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
         {
             let component_sequences_assets =
                 world.read_resource::<AssetStorage<ComponentSequences>>();
-            let mut object_frame_component_storages =
-                ObjectFrameComponentStorages::fetch(&world.res);
+            let mut frame_component_storages = FrameComponentStorages::fetch(&world.res);
             let mut object_component_storages = ObjectComponentStorages::fetch(&world.res);
 
             let object_wrapper_handle = {
@@ -98,7 +97,7 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
                 entity,
                 &component_sequences_assets,
                 &mut object_component_storages,
-                &mut object_frame_component_storages,
+                &mut frame_component_storages,
                 object_wrapper,
             );
         }
@@ -122,7 +121,7 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
     AmethystApplication::render_base("augments_entity_with_object_components", false)
         .with_custom_event_type::<AppEvent, AppEventReader>()
         .with_setup(|world| {
-            <ObjectFrameComponentStorages as SystemData>::setup(&mut world.res);
+            <FrameComponentStorages as SystemData>::setup(&mut world.res);
             <ObjectComponentStorages<CharacterSequenceId> as SystemData>::setup(&mut world.res);
         })
         .with_bundle(SpriteLoadingBundle::new())

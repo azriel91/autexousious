@@ -8,9 +8,9 @@ use typename::TypeName;
 
 use crate::{
     CharacterCollisionEffectSystem, CharacterGroundingSystem, CharacterKinematicsSystem,
-    CharacterSequenceUpdateSystem, GamePlayEndDetectionSystem, GamePlayEndTransitionSystem,
-    ObjectCollisionDetectionSystem, ObjectFrameComponentUpdateSystem, ObjectKinematicsUpdateSystem,
-    ObjectSequenceUpdateSystem, ObjectTransformUpdateSystem,
+    CharacterSequenceUpdateSystem, FrameComponentUpdateSystem, GamePlayEndDetectionSystem,
+    GamePlayEndTransitionSystem, ObjectCollisionDetectionSystem, ObjectKinematicsUpdateSystem,
+    ObjectTransformUpdateSystem, SequenceUpdateSystem,
 };
 
 /// Adds the object type update systems to the provided dispatcher.
@@ -64,14 +64,14 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         ); // kcov-ignore
 
         builder.add(
-            ObjectSequenceUpdateSystem::new(),
-            &ObjectSequenceUpdateSystem::type_name(),
+            SequenceUpdateSystem::new(),
+            &SequenceUpdateSystem::type_name(),
             &[&CharacterCollisionEffectSystem::type_name()],
         ); // kcov-ignore
         builder.add(
-            ObjectFrameComponentUpdateSystem::new(),
-            &ObjectFrameComponentUpdateSystem::type_name(),
-            &[&ObjectSequenceUpdateSystem::type_name()],
+            FrameComponentUpdateSystem::new(),
+            &FrameComponentUpdateSystem::type_name(),
+            &[&SequenceUpdateSystem::type_name()],
         ); // kcov-ignore
 
         // Depends on the LastTrackerSystem<ControllerInput>, so must run before it.

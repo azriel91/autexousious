@@ -9,29 +9,29 @@ use derive_new::new;
 use logic_clock::LogicClock;
 use named_type::NamedType;
 use named_type_derive::NamedType;
-use object_loading::ObjectFrameComponentStorages;
+use object_loading::FrameComponentStorages;
 use object_model::{
     entity::FrameIndexClock,
     loaded::{ComponentSequence, ComponentSequences, ComponentSequencesHandle},
 };
 use shred_derive::SystemData;
 
-use crate::ObjectSequenceUpdateEvent;
+use crate::SequenceUpdateEvent;
 
-/// Updates the logic clock and sequence ID for objects.
+/// Updates frame components.
 #[derive(Debug, Default, NamedType, new)]
-pub struct ObjectFrameComponentUpdateSystem {
-    /// Reader ID for the `ObjectSequenceUpdateEvent` event channel.
+pub struct FrameComponentUpdateSystem {
+    /// Reader ID for the `SequenceUpdateEvent` event channel.
     #[new(default)]
-    reader_id: Option<ReaderId<ObjectSequenceUpdateEvent>>,
+    reader_id: Option<ReaderId<SequenceUpdateEvent>>,
 }
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct ObjectFrameComponentUpdateSystemData<'s> {
-    /// Event channel for `ObjectSequenceUpdateEvent`s.
+pub struct FrameComponentUpdateSystemData<'s> {
+    /// Event channel for `SequenceUpdateEvent`s.
     #[derivative(Debug = "ignore")]
-    pub object_sequence_update_ec: Read<'s, EventChannel<ObjectSequenceUpdateEvent>>,
+    pub sequence_update_ec: Read<'s, EventChannel<SequenceUpdateEvent>>,
     /// `ComponentSequencesHandle` component storage.
     #[derivative(Debug = "ignore")]
     pub component_sequences_handles: ReadStorage<'s, ComponentSequencesHandle>,
@@ -44,40 +44,40 @@ pub struct ObjectFrameComponentUpdateSystemData<'s> {
     /// `LogicClock` component storage.
     #[derivative(Debug = "ignore")]
     pub logic_clocks: WriteStorage<'s, LogicClock>,
-    /// Game object `Component` storages.
-    pub object_frame_component_storages: ObjectFrameComponentStorages<'s>,
+    /// Frame `Component` storages.
+    pub frame_component_storages: FrameComponentStorages<'s>,
 }
 
-impl<'s> System<'s> for ObjectFrameComponentUpdateSystem {
-    type SystemData = ObjectFrameComponentUpdateSystemData<'s>;
+impl<'s> System<'s> for FrameComponentUpdateSystem {
+    type SystemData = FrameComponentUpdateSystemData<'s>;
 
     fn run(
         &mut self,
-        ObjectFrameComponentUpdateSystemData {
-            object_sequence_update_ec,
+        FrameComponentUpdateSystemData {
+            sequence_update_ec,
             component_sequences_handles,
             component_sequences_assets,
             frame_index_clocks,
             mut logic_clocks,
-            object_frame_component_storages,
+            frame_component_storages,
         }: Self::SystemData,
     ) {
-        let ObjectFrameComponentStorages {
+        let FrameComponentStorages {
             mut waits,
             mut sprite_renders,
             mut bodies,
             mut interactionses,
-        } = object_frame_component_storages;
+        } = frame_component_storages;
 
-        object_sequence_update_ec
+        sequence_update_ec
             .read(
                 self.reader_id
                     .as_mut()
-                    .expect("Expected reader ID to exist for ObjectFrameComponentUpdateSystem."),
+                    .expect("Expected reader ID to exist for FrameComponentUpdateSystem."),
             )
             .for_each(|ev| match ev {
-                ObjectSequenceUpdateEvent::SequenceBegin { entity }
-                | ObjectSequenceUpdateEvent::FrameBegin { entity } => {
+                SequenceUpdateEvent::SequenceBegin { entity }
+                | SequenceUpdateEvent::FrameBegin { entity } => {
                     let component_sequences_handle = component_sequences_handles
                         .get(*entity)
                         .expect("Expected entity to have a `ComponentSequencesHandle` component.");
@@ -100,27 +100,27 @@ impl<'s> System<'s> for ObjectFrameComponentUpdateSystem {
                                 let wait = wait_sequence[frame_index];
                                 waits
                                     .insert(*entity, wait)
-                                    .expect("Failed to insert `Wait` component for object.");
+                                    .expect("Failed to insert `Wait` component.");
 
                                 logic_clock.limit = *wait as usize;
                             }
                             ComponentSequence::SpriteRender(sprite_render_sequence) => {
                                 let sprite_render = sprite_render_sequence[frame_index].clone();
-                                sprite_renders.insert(*entity, sprite_render).expect(
-                                    "Failed to insert `SpriteRender` component for object.",
-                                );
+                                sprite_renders
+                                    .insert(*entity, sprite_render)
+                                    .expect("Failed to insert `SpriteRender` component.");
                             }
                             ComponentSequence::Body(body_sequence) => {
                                 let body = body_sequence[frame_index].clone();
                                 bodies
                                     .insert(*entity, body)
-                                    .expect("Failed to insert `Body` component for object.");
+                                    .expect("Failed to insert `Body` component.");
                             }
                             ComponentSequence::Interactions(interactions_sequence) => {
                                 let interactions = interactions_sequence[frame_index].clone();
-                                interactionses.insert(*entity, interactions).expect(
-                                    "Failed to insert `Interactions` component for object.",
-                                );
+                                interactionses
+                                    .insert(*entity, interactions)
+                                    .expect("Failed to insert `Interactions` component.");
                             }
                         }
                     });
@@ -131,7 +131,7 @@ impl<'s> System<'s> for ObjectFrameComponentUpdateSystem {
     fn setup(&mut self, res: &mut Resources) {
         Self::SystemData::setup(res);
         self.reader_id = Some(
-            res.fetch_mut::<EventChannel<ObjectSequenceUpdateEvent>>()
+            res.fetch_mut::<EventChannel<SequenceUpdateEvent>>()
                 .register_reader(),
         );
     }
@@ -152,7 +152,7 @@ mod tests {
     use character_model::{config::CharacterSequenceId, loaded::CharacterObjectWrapper};
     use collision_model::config::{Body, Interaction, Interactions};
     use logic_clock::LogicClock;
-    use object_loading::{ObjectFrameComponentStorages, ObjectPrefab};
+    use object_loading::{FrameComponentStorages, ObjectPrefab};
     use object_model::{
         config::object::Wait,
         entity::FrameIndexClock,
@@ -160,14 +160,14 @@ mod tests {
     };
     use shape_model::Volume;
 
-    use super::ObjectFrameComponentUpdateSystem;
-    use crate::ObjectSequenceUpdateEvent;
+    use super::FrameComponentUpdateSystem;
+    use crate::SequenceUpdateEvent;
 
     #[test]
     fn updates_all_frame_components_on_sequence_begin_event() -> Result<(), Error> {
         let test_name = "updates_all_frame_components_on_sequence_begin_event";
         AutexousiousApplication::game_base(test_name, false)
-            .with_system(ObjectFrameComponentUpdateSystem::new(), "", &[])
+            .with_system(FrameComponentUpdateSystem::new(), "", &[])
             .with_setup(|world| {
                 let component_sequences_handle =
                     component_sequences_handle(world, CharacterSequenceId::StandAttack);
@@ -196,7 +196,7 @@ mod tests {
     fn updates_all_frame_components_on_frame_begin_event() -> Result<(), Error> {
         let test_name = "updates_all_frame_components_on_frame_begin_event";
         AutexousiousApplication::game_base(test_name, false)
-            .with_system(ObjectFrameComponentUpdateSystem::new(), "", &[])
+            .with_system(FrameComponentUpdateSystem::new(), "", &[])
             .with_setup(|world| {
                 let component_sequences_handle =
                     component_sequences_handle(world, CharacterSequenceId::StandAttack);
@@ -312,19 +312,17 @@ mod tests {
         expected_body: Body,
         expected_interactions: Interactions,
     ) {
-        let (object_frame_component_storages, sequence_statuses) = world.system_data::<(
-            ObjectFrameComponentStorages,
-            ReadStorage<'_, CharacterSequenceId>,
-        )>();
+        let (frame_component_storages, sequence_statuses) =
+            world.system_data::<(FrameComponentStorages, ReadStorage<'_, CharacterSequenceId>)>();
         let body_assets = world.read_resource::<AssetStorage<Body>>();
         let interactions_assets = world.read_resource::<AssetStorage<Interactions>>();
 
-        let ObjectFrameComponentStorages {
+        let FrameComponentStorages {
             waits,
             sprite_renders,
             bodies,
             interactionses,
-        } = object_frame_component_storages;
+        } = frame_component_storages;
 
         (
             &waits,
@@ -378,18 +376,18 @@ mod tests {
         }])
     }
 
-    fn send_events(world: &mut World, events: Vec<ObjectSequenceUpdateEvent>) {
-        let mut ec = world.write_resource::<EventChannel<ObjectSequenceUpdateEvent>>();
+    fn send_events(world: &mut World, events: Vec<SequenceUpdateEvent>) {
+        let mut ec = world.write_resource::<EventChannel<SequenceUpdateEvent>>();
         ec.iter_write(events.into_iter())
     }
 
-    fn sequence_begin_events(world: &mut World) -> Vec<ObjectSequenceUpdateEvent> {
+    fn sequence_begin_events(world: &mut World) -> Vec<SequenceUpdateEvent> {
         let (
             entities,
             frame_index_clocks,
             logic_clocks,
             component_sequences_handles,
-            _object_frame_component_storages,
+            _frame_component_storages,
         ) = world.system_data::<TestSystemData>();
 
         (
@@ -399,17 +397,17 @@ mod tests {
             &component_sequences_handles,
         )
             .join()
-            .map(|(entity, _, _, _)| ObjectSequenceUpdateEvent::SequenceBegin { entity })
+            .map(|(entity, _, _, _)| SequenceUpdateEvent::SequenceBegin { entity })
             .collect::<Vec<_>>()
     }
 
-    fn frame_begin_events(world: &mut World) -> Vec<ObjectSequenceUpdateEvent> {
+    fn frame_begin_events(world: &mut World) -> Vec<SequenceUpdateEvent> {
         let (
             entities,
             frame_index_clocks,
             logic_clocks,
             component_sequences_handles,
-            _object_frame_component_storages,
+            _frame_component_storages,
         ) = world.system_data::<TestSystemData>();
 
         (
@@ -419,7 +417,7 @@ mod tests {
             &component_sequences_handles,
         )
             .join()
-            .map(|(entity, _, _, _)| ObjectSequenceUpdateEvent::FrameBegin { entity })
+            .map(|(entity, _, _, _)| SequenceUpdateEvent::FrameBegin { entity })
             .collect::<Vec<_>>()
     }
 
@@ -428,6 +426,6 @@ mod tests {
         WriteStorage<'s, FrameIndexClock>,
         WriteStorage<'s, LogicClock>,
         WriteStorage<'s, ComponentSequencesHandle>,
-        ObjectFrameComponentStorages<'s>,
+        FrameComponentStorages<'s>,
     );
 }

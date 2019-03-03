@@ -10,7 +10,7 @@ use object_model::{
     loaded::{ComponentSequence, ComponentSequences, ObjectWrapper},
 };
 
-use crate::{ObjectComponentStorages, ObjectFrameComponentStorages};
+use crate::{FrameComponentStorages, ObjectComponentStorages};
 
 /// Augments an entity with `Object` components.
 #[derive(Debug)]
@@ -24,7 +24,7 @@ impl ObjectEntityAugmenter {
     /// * `entity`: The entity to augment.
     /// * `component_sequences_assets`: Asset storage for `ComponentSequences`.
     /// * `object_component_storages`: Non-frame-dependent `Component` storages for objects.
-    /// * `object_frame_component_storages`: Frame component storages for objects.
+    /// * `frame_component_storages`: Frame component storages for objects.
     /// * `object_wrapper`: Slug and handle of the object to spawn.
     pub fn augment<'s, W>(
         entity: Entity,
@@ -43,12 +43,12 @@ impl ObjectEntityAugmenter {
             ref mut frame_index_clocks,
             ref mut logic_clocks,
         }: &mut ObjectComponentStorages<'s, W::SequenceId>,
-        ObjectFrameComponentStorages {
+        FrameComponentStorages {
             ref mut waits,
             ref mut sprite_renders,
             ref mut bodies,
             ref mut interactionses,
-        }: &mut ObjectFrameComponentStorages<'s>,
+        }: &mut FrameComponentStorages<'s>,
         object_wrapper: &W,
     ) where
         W: ObjectWrapper,

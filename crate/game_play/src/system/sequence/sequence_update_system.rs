@@ -14,15 +14,15 @@ use object_model::{
 };
 use shred_derive::SystemData;
 
-use crate::ObjectSequenceUpdateEvent;
+use crate::SequenceUpdateEvent;
 
 /// Updates the frame limit clock and logic clock for entities with sequences.
 #[derive(Debug, Default, NamedType, new)]
-pub struct ObjectSequenceUpdateSystem;
+pub struct SequenceUpdateSystem;
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct ObjectSequenceUpdateSystemData<'s> {
+pub struct SequenceUpdateSystemData<'s> {
     /// `Entities`.
     #[derivative(Debug = "ignore")]
     pub entities: Entities<'s>,
@@ -41,24 +41,24 @@ pub struct ObjectSequenceUpdateSystemData<'s> {
     /// `SequenceStatus` component storage.
     #[derivative(Debug = "ignore")]
     pub sequence_statuses: WriteStorage<'s, SequenceStatus>,
-    /// Event channel for `ObjectSequenceUpdateEvent`s.
+    /// Event channel for `SequenceUpdateEvent`s.
     #[derivative(Debug = "ignore")]
-    pub object_sequence_update_ec: Write<'s, EventChannel<ObjectSequenceUpdateEvent>>,
+    pub sequence_update_ec: Write<'s, EventChannel<SequenceUpdateEvent>>,
 }
 
-impl<'s> System<'s> for ObjectSequenceUpdateSystem {
-    type SystemData = ObjectSequenceUpdateSystemData<'s>;
+impl<'s> System<'s> for SequenceUpdateSystem {
+    type SystemData = SequenceUpdateSystemData<'s>;
 
     fn run(
         &mut self,
-        ObjectSequenceUpdateSystemData {
+        SequenceUpdateSystemData {
             entities,
             component_sequences_handles,
             component_sequences_assets,
             mut frame_index_clocks,
             mut logic_clocks,
             mut sequence_statuses,
-            mut object_sequence_update_ec,
+            mut sequence_update_ec,
         }: Self::SystemData,
     ) {
         (
@@ -95,8 +95,8 @@ impl<'s> System<'s> for ObjectSequenceUpdateSystem {
                                 .expect("Expected component_sequences to be loaded.")
                                 .frame_count();
 
-                            object_sequence_update_ec
-                                .single_write(ObjectSequenceUpdateEvent::SequenceBegin { entity });
+                            sequence_update_ec
+                                .single_write(SequenceUpdateEvent::SequenceBegin { entity });
                         }
                         SequenceStatus::Ongoing => {
                             logic_clock.tick();
@@ -111,9 +111,8 @@ impl<'s> System<'s> for ObjectSequenceUpdateSystem {
                                     *sequence_status = SequenceStatus::End;
                                 } else {
                                     logic_clock.reset();
-                                    object_sequence_update_ec.single_write(
-                                        ObjectSequenceUpdateEvent::FrameBegin { entity },
-                                    );
+                                    sequence_update_ec
+                                        .single_write(SequenceUpdateEvent::FrameBegin { entity });
                                 }
                             }
                         }
@@ -144,22 +143,22 @@ mod tests {
         loaded::{ComponentSequencesHandle, ObjectWrapper},
     };
 
-    use super::{ObjectSequenceUpdateSystem, ObjectSequenceUpdateSystemData};
-    use crate::ObjectSequenceUpdateEvent;
+    use super::{SequenceUpdateSystem, SequenceUpdateSystemData};
+    use crate::SequenceUpdateEvent;
 
     /// Asserts the following:
     ///
     /// * Resets `FrameIndexClock`.
     /// * Updates the `FrameIndexClock` limit to the new sequence's limit.
     /// * Resets `LogicClock` (frame wait counter).
-    /// * `ObjectSequenceUpdateEvent::SequenceBegin` events are sent.
+    /// * `SequenceUpdateEvent::SequenceBegin` events are sent.
     #[test]
     fn resets_logic_clocks_and_sends_event_on_sequence_begin() -> Result<(), Error> {
         let test_name = "resets_logic_clocks_and_sends_event_on_sequence_begin";
         AutexousiousApplication::game_base(test_name, false)
             .with_setup(setup_system_data)
             .with_setup(|world| initial_values(world, 10, 10, 10, 10, SequenceStatus::Begin))
-            .with_system_single(ObjectSequenceUpdateSystem::new(), "", &[])
+            .with_system_single(SequenceUpdateSystem::new(), "", &[])
             .with_assertion(|world| expect_values(world, 0, 5, 0, SequenceStatus::Ongoing))
             .with_assertion(|world| {
                 let events = sequence_begin_events(world);
@@ -173,14 +172,14 @@ mod tests {
     /// * No change to `FrameIndexClock` value.
     /// * No change to `FrameIndexClock` limit.
     /// * Ticks `LogicClock`.
-    /// * No `ObjectSequenceUpdateEvent`s are sent.
+    /// * No `SequenceUpdateEvent`s are sent.
     #[test]
     fn ticks_logic_clock_when_sequence_ongoing() -> Result<(), Error> {
         let test_name = "ticks_logic_clock_when_sequence_ongoing";
         AutexousiousApplication::game_base(test_name, false)
             .with_setup(setup_system_data)
             .with_setup(|world| initial_values(world, 0, 5, 0, 2, SequenceStatus::Ongoing))
-            .with_system_single(ObjectSequenceUpdateSystem::new(), "", &[])
+            .with_system_single(SequenceUpdateSystem::new(), "", &[])
             .with_assertion(|world| expect_values(world, 0, 5, 1, SequenceStatus::Ongoing))
             .with_assertion(|world| expect_events(world, vec![]))
             .run()
@@ -191,7 +190,7 @@ mod tests {
     /// * Ticks `FrameIndexClock` value.
     /// * No change to `FrameIndexClock` limit.
     /// * Resets `LogicClock` (frame wait counter).
-    /// * `ObjectSequenceUpdateEvent::FrameBegin` events are sent.
+    /// * `SequenceUpdateEvent::FrameBegin` events are sent.
     #[test]
     fn resets_logic_clock_and_sends_event_when_frame_ends_and_sequence_ongoing() -> Result<(), Error>
     {
@@ -199,7 +198,7 @@ mod tests {
         AutexousiousApplication::game_base(test_name, false)
             .with_setup(setup_system_data)
             .with_setup(|world| initial_values(world, 0, 5, 1, 2, SequenceStatus::Ongoing))
-            .with_system_single(ObjectSequenceUpdateSystem::new(), "", &[])
+            .with_system_single(SequenceUpdateSystem::new(), "", &[])
             .with_assertion(|world| expect_values(world, 1, 5, 0, SequenceStatus::Ongoing))
             .with_assertion(|world| {
                 let events = frame_begin_events(world);
@@ -213,7 +212,7 @@ mod tests {
     /// * Ticks `FrameIndexClock` value.
     /// * No change to `FrameIndexClock` limit.
     /// * Ticks `LogicClock` value.
-    /// * No `ObjectSequenceUpdateEvent`s are sent.
+    /// * No `SequenceUpdateEvent`s are sent.
     /// * Sets `SequenceStatus` to `SequenceStatus::End`.
     #[test]
     fn resets_logic_clock_and_sequence_end_when_frame_ends_and_sequence_ongoing(
@@ -222,7 +221,7 @@ mod tests {
         AutexousiousApplication::game_base(test_name, false)
             .with_setup(setup_system_data)
             .with_setup(|world| initial_values(world, 4, 5, 1, 2, SequenceStatus::Ongoing))
-            .with_system_single(ObjectSequenceUpdateSystem::new(), "", &[])
+            .with_system_single(SequenceUpdateSystem::new(), "", &[])
             .with_assertion(|world| expect_values(world, 5, 5, 2, SequenceStatus::End))
             .with_assertion(|world| expect_events(world, vec![]))
             .run()
@@ -234,16 +233,16 @@ mod tests {
         AutexousiousApplication::game_base(test_name, false)
             .with_setup(setup_system_data)
             .with_setup(|world| initial_values(world, 5, 5, 2, 2, SequenceStatus::Ongoing))
-            .with_system_single(ObjectSequenceUpdateSystem::new(), "", &[])
+            .with_system_single(SequenceUpdateSystem::new(), "", &[])
             .with_assertion(|world| expect_values(world, 5, 5, 2, SequenceStatus::End))
             .with_assertion(|world| expect_events(world, vec![]))
             .run()
     }
 
     fn setup_system_data(world: &mut World) {
-        ObjectSequenceUpdateSystemData::setup(&mut world.res);
+        SequenceUpdateSystemData::setup(&mut world.res);
         let reader_id = {
-            let mut ec = world.write_resource::<EventChannel<ObjectSequenceUpdateEvent>>();
+            let mut ec = world.write_resource::<EventChannel<SequenceUpdateEvent>>();
             ec.register_reader()
         };
         world.add_resource(reader_id);
@@ -346,16 +345,16 @@ mod tests {
             });
     }
 
-    fn expect_events(world: &mut World, expect_events: Vec<ObjectSequenceUpdateEvent>) {
-        let mut reader_id = world.write_resource::<ReaderId<ObjectSequenceUpdateEvent>>();
-        let ec = world.read_resource::<EventChannel<ObjectSequenceUpdateEvent>>();
+    fn expect_events(world: &mut World, expect_events: Vec<SequenceUpdateEvent>) {
+        let mut reader_id = world.write_resource::<ReaderId<SequenceUpdateEvent>>();
+        let ec = world.read_resource::<EventChannel<SequenceUpdateEvent>>();
 
         // Map owned values into references.
         let expect_events = expect_events.iter().collect::<Vec<_>>();
         assert_eq!(expect_events, ec.read(&mut reader_id).collect::<Vec<_>>())
     }
 
-    fn sequence_begin_events(world: &mut World) -> Vec<ObjectSequenceUpdateEvent> {
+    fn sequence_begin_events(world: &mut World) -> Vec<SequenceUpdateEvent> {
         let (entities, frame_index_clocks, logic_clocks, _, sequence_statuses) =
             world.system_data::<TestSystemData>();
 
@@ -366,11 +365,11 @@ mod tests {
             &sequence_statuses,
         )
             .join()
-            .map(|(entity, _, _, _)| ObjectSequenceUpdateEvent::SequenceBegin { entity })
+            .map(|(entity, _, _, _)| SequenceUpdateEvent::SequenceBegin { entity })
             .collect::<Vec<_>>()
     }
 
-    fn frame_begin_events(world: &mut World) -> Vec<ObjectSequenceUpdateEvent> {
+    fn frame_begin_events(world: &mut World) -> Vec<SequenceUpdateEvent> {
         let (entities, frame_index_clocks, logic_clocks, _, sequence_statuses) =
             world.system_data::<TestSystemData>();
 
@@ -381,7 +380,7 @@ mod tests {
             &sequence_statuses,
         )
             .join()
-            .map(|(entity, _, _, _)| ObjectSequenceUpdateEvent::FrameBegin { entity })
+            .map(|(entity, _, _, _)| SequenceUpdateEvent::FrameBegin { entity })
             .collect::<Vec<_>>()
     }
 
