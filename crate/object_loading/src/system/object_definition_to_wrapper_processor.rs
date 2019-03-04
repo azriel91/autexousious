@@ -8,11 +8,9 @@ use amethyst::{
 use collision_model::config::{Body, Interactions};
 use derivative::Derivative;
 use derive_new::new;
-use object_model::{
-    config::GameObjectDefinition,
-    loaded::{ComponentSequences, GameObject},
-};
+use object_model::{config::GameObjectDefinition, loaded::GameObject};
 use rayon::ThreadPool;
+use sequence_model::loaded::ComponentSequences;
 use shred_derive::SystemData;
 use typename::TypeName as TypeNameTrait;
 use typename_derive::TypeName;

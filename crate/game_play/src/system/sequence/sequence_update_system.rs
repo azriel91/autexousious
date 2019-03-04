@@ -8,7 +8,7 @@ use derive_new::new;
 use logic_clock::LogicClock;
 use named_type::NamedType;
 use named_type_derive::NamedType;
-use object_model::{
+use sequence_model::{
     entity::{FrameIndexClock, SequenceStatus},
     loaded::{ComponentSequences, ComponentSequencesHandle},
 };
@@ -138,9 +138,10 @@ mod tests {
     use character_model::{config::CharacterSequenceId, loaded::CharacterObjectWrapper};
     use logic_clock::LogicClock;
     use object_loading::ObjectPrefab;
-    use object_model::{
+    use object_model::loaded::ObjectWrapper;
+    use sequence_model::{
         entity::{FrameIndexClock, SequenceStatus},
-        loaded::{ComponentSequencesHandle, ObjectWrapper},
+        loaded::ComponentSequencesHandle,
     };
 
     use super::{SequenceUpdateSystem, SequenceUpdateSystemData};

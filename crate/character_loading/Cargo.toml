@@ -25,6 +25,7 @@ asset_model = { path = "../asset_model" }
 assets_test = { path = "../assets_test" }
 collision_loading = { path = "../collision_loading" }
 collision_model = { path = "../collision_model" }
+sequence_loading = { path = "../sequence_loading" }
 sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }
 

@@ -9,18 +9,19 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 collision_loading = { path = "../collision_loading" }
 collision_model = { path = "../collision_model" }
 derivative = "1.0.2"
+derive-new = "0.5.6"
 derive_deref = "1.0.2"
 derive_more = "0.14.0"
-derive-new = "0.5.6"
 fnv = "1.0.6"
 logic_clock = { path = "../logic_clock" }
 object_model_derive = { path = "../object_model_derive" }
-object_model_spi = { path = "../object_model_spi" }
+sequence_model = { path = "../sequence_model" }
+sequence_model_spi = { path = "../sequence_model_spi" }
 serde = "1.0.87"
 shape_model = { path = "../shape_model" }
 specs-derive = "0.4.0"
-sprite_model = { path = "../sprite_model" }
 sprite_loading = { path = "../sprite_loading" }
+sprite_model = { path = "../sprite_model" }
 strum = "0.13.0"
 strum_macros = "0.13.0"
 

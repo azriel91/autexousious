@@ -6,8 +6,12 @@ use amethyst::{
 };
 use logic_clock::LogicClock;
 use object_model::{
-    entity::{FrameIndexClock, Mirrored, Position, SequenceStatus, Velocity},
-    loaded::{ComponentSequence, ComponentSequences, ObjectWrapper},
+    entity::{Mirrored, Position, Velocity},
+    loaded::ObjectWrapper,
+};
+use sequence_model::{
+    entity::{FrameIndexClock, SequenceStatus},
+    loaded::{ComponentSequence, ComponentSequences},
 };
 
 use crate::{FrameComponentStorages, ObjectComponentStorages};

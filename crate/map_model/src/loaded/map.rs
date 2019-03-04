@@ -8,7 +8,7 @@ use amethyst::{
     Error,
 };
 use derive_new::new;
-use object_model::loaded::ComponentSequences;
+use sequence_model::loaded::ComponentSequences;
 
 use crate::{config::MapDefinition, loaded::Margins};
 

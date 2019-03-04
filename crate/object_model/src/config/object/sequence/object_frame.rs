@@ -1,9 +1,8 @@
 use collision_model::config::{Body, Interactions};
 use derive_new::new;
+use sequence_model::config::Wait;
 use serde::{Deserialize, Serialize};
 use sprite_model::config::SpriteRef;
-
-use crate::config::object::Wait;
 
 /// Animation and interaction information to use on this frame.
 ///

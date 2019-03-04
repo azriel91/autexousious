@@ -7,7 +7,6 @@ use amethyst::{
 use character_model::{config::CharacterDefinition, loaded::Character};
 use derive_new::new;
 use object_loading::ObjectDefinitionToWrapperProcessor;
-use object_model::loaded::ComponentSequences;
 use typename::TypeName;
 
 use crate::CharacterPrefab;
@@ -26,12 +25,6 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterLoadingBundle {
         builder.add(
             ObjectDefinitionToWrapperProcessor::<Character>::new(),
             &ObjectDefinitionToWrapperProcessor::<Character>::type_name(),
-            &[],
-        );
-        // HACK: To be removed when we move `Sequence` types to their own crate.
-        builder.add(
-            Processor::<ComponentSequences>::new(),
-            "component_sequences_processor",
             &[],
         );
         builder.add(Processor::<Character>::new(), "character_processor", &[]);

@@ -12,7 +12,8 @@ mod test {
     use std::collections::HashMap;
 
     use collision_model::config::{Body, Interactions};
-    use object_model::config::object::{ObjectDefinition, ObjectFrame, Sequence, Wait};
+    use object_model::config::object::{ObjectDefinition, ObjectFrame, Sequence};
+    use sequence_model::config::Wait;
     use sprite_model::config::SpriteRef;
     use toml;
 

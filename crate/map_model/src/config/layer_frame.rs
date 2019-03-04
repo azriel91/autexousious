@@ -1,5 +1,5 @@
 use derive_new::new;
-use object_model::config::object::Wait;
+use sequence_model::config::Wait;
 use serde::{Deserialize, Serialize};
 use sprite_model::config::SpriteRef;
 

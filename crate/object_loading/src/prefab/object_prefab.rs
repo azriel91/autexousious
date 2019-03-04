@@ -6,10 +6,8 @@ use amethyst::{
     Error,
 };
 use derivative::Derivative;
-use object_model::{
-    config::ObjectAssetData,
-    loaded::{ComponentSequences, GameObject},
-};
+use object_model::{config::ObjectAssetData, loaded::GameObject};
+use sequence_model::loaded::ComponentSequences;
 use serde::{Deserialize, Serialize};
 use shred_derive::SystemData;
 

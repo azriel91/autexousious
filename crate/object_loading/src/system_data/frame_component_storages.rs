@@ -1,7 +1,7 @@
 use amethyst::{assets::Handle, ecs::WriteStorage, renderer::SpriteRender};
 use collision_model::config::{Body, Interactions};
 use derivative::Derivative;
-use object_model::config::object::Wait;
+use sequence_model::config::Wait;
 use shred_derive::SystemData;
 
 /// `Component` storages for components that change per sequence frame.

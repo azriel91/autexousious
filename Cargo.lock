@@ -473,6 +473,7 @@ dependencies = [
  "map_selection 0.9.0",
  "map_selection_model 0.9.0",
  "object_model 0.9.0",
+ "sequence_loading 0.1.0",
  "sprite_loading 0.9.0",
  "strum 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -776,6 +777,7 @@ dependencies = [
  "game_input 0.9.0",
  "object_loading 0.9.0",
  "object_model 0.9.0",
+ "sequence_loading 0.1.0",
  "serde 1.0.88 (registry+https://github.com/rust-lang/crates.io-index)",
  "shred 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -796,6 +798,7 @@ dependencies = [
  "derive_deref 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "object_model 0.9.0",
  "pretty_assertions 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sequence_model 0.10.0",
  "serde 1.0.88 (registry+https://github.com/rust-lang/crates.io-index)",
  "sprite_model 0.9.0",
  "toml 0.4.10 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -826,6 +829,7 @@ dependencies = [
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_loading 0.9.0",
  "object_model 0.9.0",
+ "sequence_loading 0.1.0",
  "sprite_loading 0.9.0",
  "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1019,8 +1023,8 @@ dependencies = [
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "minterpolate 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "object_model_spi 0.10.0",
  "pretty_assertions 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sequence_model_spi 0.10.0",
  "serde 1.0.88 (registry+https://github.com/rust-lang/crates.io-index)",
  "shape_model 0.9.0",
  "toml 0.4.10 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1748,6 +1752,7 @@ dependencies = [
  "map_selection_model 0.9.0",
  "object_loading 0.9.0",
  "object_model 0.9.0",
+ "sequence_loading 0.1.0",
  "shred 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "sprite_loading 0.9.0",
@@ -1866,6 +1871,7 @@ dependencies = [
  "object_loading 0.9.0",
  "object_model 0.9.0",
  "object_play 0.9.0",
+ "sequence_model 0.10.0",
  "shape_model 0.9.0",
  "shred 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2322,6 +2328,7 @@ dependencies = [
  "map_model 0.9.0",
  "object_loading 0.9.0",
  "object_model 0.9.0",
+ "sequence_model 0.10.0",
  "serde 1.0.88 (registry+https://github.com/rust-lang/crates.io-index)",
  "shred 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2419,7 +2426,7 @@ dependencies = [
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_model 0.9.0",
- "object_model 0.9.0",
+ "sequence_model 0.10.0",
  "sprite_loading 0.9.0",
  "sprite_model 0.9.0",
 ]
@@ -2430,8 +2437,8 @@ version = "0.9.0"
 dependencies = [
  "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "object_model 0.9.0",
  "pretty_assertions 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sequence_model 0.10.0",
  "serde 1.0.88 (registry+https://github.com/rust-lang/crates.io-index)",
  "sprite_model 0.9.0",
  "toml 0.4.10 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2865,6 +2872,8 @@ dependencies = [
  "object_model 0.9.0",
  "pretty_assertions 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "rayon 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sequence_loading 0.1.0",
+ "sequence_model 0.10.0",
  "serde 1.0.88 (registry+https://github.com/rust-lang/crates.io-index)",
  "shred 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2893,8 +2902,9 @@ dependencies = [
  "fnv 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "logic_clock 0.9.0",
  "object_model_derive 0.9.0",
- "object_model_spi 0.10.0",
  "pretty_assertions 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sequence_model 0.10.0",
+ "sequence_model_spi 0.10.0",
  "serde 1.0.88 (registry+https://github.com/rust-lang/crates.io-index)",
  "shape_model 0.9.0",
  "specs-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2915,15 +2925,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "object_model_spi"
-version = "0.10.0"
-dependencies = [
- "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
- "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "derive_deref 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
 name = "object_play"
 version = "0.9.0"
 dependencies = [
@@ -2934,6 +2935,7 @@ dependencies = [
  "game_input 0.9.0",
  "object_model 0.9.0",
  "pretty_assertions 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sequence_model 0.10.0",
 ]
 
 [[package]]
@@ -3512,6 +3514,47 @@ version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "sequence_loading"
+version = "0.1.0"
+dependencies = [
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
+ "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sequence_model 0.10.0",
+]
+
+[[package]]
+name = "sequence_model"
+version = "0.10.0"
+dependencies = [
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
+ "application 0.9.0",
+ "assets_test 0.9.0",
+ "collision_loading 0.9.0",
+ "collision_model 0.9.0",
+ "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive_deref 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive_more 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "logic_clock 0.9.0",
+ "sequence_model_spi 0.10.0",
+ "serde 1.0.88 (registry+https://github.com/rust-lang/crates.io-index)",
+ "specs-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sprite_loading 0.9.0",
+ "sprite_model 0.9.0",
+]
+
+[[package]]
+name = "sequence_model_spi"
+version = "0.10.0"
+dependencies = [
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive_deref 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "serde"
 version = "1.0.88"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3723,7 +3766,7 @@ version = "0.9.0"
 dependencies = [
  "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "object_model_spi 0.10.0",
+ "sequence_model_spi 0.10.0",
  "serde 1.0.88 (registry+https://github.com/rust-lang/crates.io-index)",
  "specs-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "toml 0.4.10 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4179,6 +4222,7 @@ dependencies = [
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_loading 0.9.0",
  "map_selection_stdio 0.9.0",
+ "sequence_loading 0.1.0",
  "sprite_loading 0.9.0",
  "stdio_spi 0.9.0",
  "stdio_view 0.9.0",

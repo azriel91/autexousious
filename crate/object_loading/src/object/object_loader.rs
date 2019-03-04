@@ -7,11 +7,12 @@ use collision_model::{
 };
 use fnv::FnvHashMap;
 use object_model::{
-    config::{object::Wait, ObjectDefinition},
-    loaded::{
-        ComponentSequence, ComponentSequences, ComponentSequencesHandle, GameObject, Object,
-        ObjectWrapper, SequenceEndTransition, WaitSequence,
-    },
+    config::ObjectDefinition,
+    loaded::{GameObject, Object, ObjectWrapper, SequenceEndTransition},
+};
+use sequence_model::{
+    config::Wait,
+    loaded::{ComponentSequence, ComponentSequences, ComponentSequencesHandle, WaitSequence},
 };
 use sprite_model::loaded::SpriteRenderSequence;
 
@@ -134,7 +135,8 @@ mod test {
     };
     use collision_loading::CollisionLoadingBundle;
     use collision_model::config::{Body, Interactions};
-    use object_model::loaded::ComponentSequences;
+    use sequence_loading::SequenceLoadingBundle;
+    use sequence_model::loaded::ComponentSequences;
     use sprite_loading::SpriteLoader;
     use sprite_model::config::SpritesDefinition;
     use typename::TypeName;
@@ -151,6 +153,7 @@ mod test {
             // kcov-ignore-end
             AmethystApplication::render_base("loads_object_assets", false)
                 .with_bundle(CollisionLoadingBundle::new())
+                .with_bundle(SequenceLoadingBundle::new())
                 .with_system(
                     ObjectDefinitionToWrapperProcessor::<Character>::new(),
                     ObjectDefinitionToWrapperProcessor::<Character>::type_name(),

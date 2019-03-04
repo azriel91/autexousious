@@ -32,7 +32,7 @@ impl From<MapDefinition> for Result<ProcessingState<MapDefinition>, Error> {
 
 #[cfg(test)]
 mod test {
-    use object_model::config::object::Wait;
+    use sequence_model::config::Wait;
     use sprite_model::config::SpriteRef;
     use toml;
 

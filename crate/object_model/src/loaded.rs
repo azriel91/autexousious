@@ -7,10 +7,7 @@ pub use self::{
     game_object::GameObject,
     object::Object,
     object_wrapper::ObjectWrapper,
-    sequence::{
-        ComponentSequence, ComponentSequences, ComponentSequencesHandle, SequenceEndTransition,
-        SequenceEndTransitions, WaitSequence,
-    },
+    sequence::{SequenceEndTransition, SequenceEndTransitions},
 };
 
 mod game_object;

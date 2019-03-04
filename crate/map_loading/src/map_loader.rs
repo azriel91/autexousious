@@ -12,8 +12,8 @@ use map_model::{
     config::MapDefinition,
     loaded::{Map, MapHandle, Margins},
 };
-use object_model::{
-    config::object::Wait,
+use sequence_model::{
+    config::Wait,
     loaded::{ComponentSequence, ComponentSequences, WaitSequence},
 };
 use sprite_loading::SpriteLoader;

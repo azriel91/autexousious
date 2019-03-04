@@ -2,7 +2,8 @@ use amethyst::ecs::{Join, ReadStorage, System, WriteStorage};
 use character_model::config::CharacterSequenceId;
 use derive_new::new;
 use game_input::ControllerInput;
-use object_model::entity::{Mirrored, SequenceStatus, Velocity};
+use object_model::entity::{Mirrored, Velocity};
+use sequence_model::entity::SequenceStatus;
 use typename_derive::TypeName;
 
 /// Updates `Character` velocity based on sequence.
@@ -94,7 +95,8 @@ mod tests {
     use game_input::ControllerInput;
     use map_model::loaded::Map;
     use map_selection_model::MapSelection;
-    use object_model::entity::{Grounding, Mirrored, Position, SequenceStatus, Velocity};
+    use object_model::entity::{Grounding, Mirrored, Position, Velocity};
+    use sequence_model::entity::SequenceStatus;
     use typename::TypeName;
 
     use super::CharacterKinematicsSystem;

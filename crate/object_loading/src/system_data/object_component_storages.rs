@@ -7,8 +7,12 @@ use derivative::Derivative;
 use logic_clock::LogicClock;
 use object_model::{
     config::object::SequenceId,
-    entity::{FrameIndexClock, Mirrored, Position, SequenceStatus, Velocity},
-    loaded::{ComponentSequencesHandle, SequenceEndTransitions},
+    entity::{Mirrored, Position, Velocity},
+    loaded::SequenceEndTransitions,
+};
+use sequence_model::{
+    entity::{FrameIndexClock, SequenceStatus},
+    loaded::ComponentSequencesHandle,
 };
 use shred_derive::SystemData;
 

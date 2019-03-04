@@ -69,7 +69,7 @@ mod tests {
 
     use super::ComponentSequences;
     use crate::{
-        config::object::Wait,
+        config::Wait,
         loaded::{ComponentSequence, WaitSequence},
     };
 

@@ -10,7 +10,7 @@ use logic_clock::LogicClock;
 use named_type::NamedType;
 use named_type_derive::NamedType;
 use object_loading::FrameComponentStorages;
-use object_model::{
+use sequence_model::{
     entity::FrameIndexClock,
     loaded::{ComponentSequence, ComponentSequences, ComponentSequencesHandle},
 };
@@ -153,11 +153,8 @@ mod tests {
     use collision_model::config::{Body, Interaction, Interactions};
     use logic_clock::LogicClock;
     use object_loading::{FrameComponentStorages, ObjectPrefab};
-    use object_model::{
-        config::object::Wait,
-        entity::FrameIndexClock,
-        loaded::{ComponentSequencesHandle, ObjectWrapper},
-    };
+    use object_model::loaded::ObjectWrapper;
+    use sequence_model::{config::Wait, entity::FrameIndexClock, loaded::ComponentSequencesHandle};
     use shape_model::Volume;
 
     use super::FrameComponentUpdateSystem;

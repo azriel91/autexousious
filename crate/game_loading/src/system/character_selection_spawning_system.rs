@@ -130,6 +130,7 @@ mod tests {
     use map_selection::MapSelectionStatus;
     use map_selection_model::MapSelection;
     use object_model::ObjectType;
+    use sequence_loading::SequenceLoadingBundle;
     use sprite_loading::SpriteLoadingBundle;
     use typename::TypeName;
 
@@ -144,6 +145,7 @@ mod tests {
             AmethystApplication::render_base("returns_if_characters_already_loaded", false)
                 .with_custom_event_type::<AppEvent, AppEventReader>()
                 .with_bundle(SpriteLoadingBundle::new())
+                .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
                 .with_bundle(CollisionLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
@@ -199,6 +201,7 @@ mod tests {
             )
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_bundle(SpriteLoadingBundle::new())
+            .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())

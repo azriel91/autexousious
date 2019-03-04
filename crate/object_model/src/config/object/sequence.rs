@@ -7,14 +7,13 @@
 //! because different object types have different valid sequence IDs, and we want to be able to
 //! define this at compile time rather than needing to process this at run time.
 
-pub use self::{object_frame::ObjectFrame, sequence_id::SequenceId, wait::Wait};
+pub use self::{object_frame::ObjectFrame, sequence_id::SequenceId};
 
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 
 mod object_frame;
 mod sequence_id;
-mod wait;
 
 /// Represents an independent action sequence of an object.
 ///
@@ -36,6 +35,7 @@ mod tests {
     use amethyst::ecs::{storage::DenseVecStorage, Component};
     use collision_model::config::{Body, Interaction, Interactions};
     use derivative::Derivative;
+    use sequence_model::config::Wait;
     use serde::{Deserialize, Serialize};
     use shape_model::Volume;
     use specs_derive::Component;
@@ -43,7 +43,6 @@ mod tests {
     use toml;
 
     use super::{ObjectFrame, Sequence, SequenceId};
-    use crate::config::object::Wait;
 
     const SEQUENCE_WITH_FRAMES: &str = r#"
         next = "Boo"

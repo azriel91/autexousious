@@ -1,5 +1,5 @@
 use amethyst::renderer::SpriteRender;
-use object_model_spi::loaded::ComponentFrames;
+use sequence_model_spi::loaded::ComponentFrames;
 
 /// Sequence for sprites to draw.
 ///

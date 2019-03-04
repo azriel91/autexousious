@@ -13,6 +13,7 @@ use game_input_model::{PlayerActionControl, PlayerAxisControl};
 use game_loading::GameLoadingState;
 use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
+use sequence_loading::SequenceLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
 
 use crate::SetupFunction;
@@ -101,6 +102,7 @@ impl AutexousiousApplication {
 
         AutexousiousApplication::render_and_ui(test_name, visibility)
             .with_bundle(SpriteLoadingBundle::new())
+            .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())

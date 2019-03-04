@@ -39,6 +39,7 @@ use loading::{LoadingBundle, LoadingState};
 use log::info;
 use map_loading::MapLoadingBundle;
 use map_selection_stdio::MapSelectionStdioBundle;
+use sequence_loading::SequenceLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
 use stdio_spi::MapperSystem;
 use stdio_view::StdioViewBundle;
@@ -119,6 +120,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?
             .with_bundle(HotReloadBundle::default())?
             .with_bundle(SpriteLoadingBundle::new())?
+            .with_bundle(SequenceLoadingBundle::new())?
             .with_bundle(LoadingBundle::new(assets_dir.clone()))?
             .with_bundle(GameInputUiBundle::new(input_config))?
             .with_bundle(

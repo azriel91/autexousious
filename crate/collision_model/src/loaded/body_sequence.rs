@@ -1,5 +1,5 @@
 use amethyst::assets::Handle;
-use object_model_spi::loaded::ComponentFrames;
+use sequence_model_spi::loaded::ComponentFrames;
 
 use crate::config::Body;
 

@@ -15,8 +15,8 @@ use map_model::{
     config::MapDefinition,
     loaded::{Map, Margins},
 };
-use object_model::{
-    config::object::Wait,
+use sequence_model::{
+    config::Wait,
     loaded::{ComponentSequence, ComponentSequences, WaitSequence},
 };
 use shred_derive::SystemData;

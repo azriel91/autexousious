@@ -88,6 +88,7 @@ mod tests {
     use game_input_model::{PlayerActionControl, PlayerAxisControl};
     use loading::{LoadingBundle, LoadingState};
     use map_loading::MapLoadingBundle;
+    use sequence_loading::SequenceLoadingBundle;
     use sprite_loading::SpriteLoadingBundle;
     use typename::TypeName;
 
@@ -103,6 +104,7 @@ mod tests {
             AmethystApplication::render_base("inserts_character_selection_on_select_event", false)
                 .with_custom_event_type::<AppEvent, AppEventReader>()
                 .with_bundle(SpriteLoadingBundle::new())
+                .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
                 .with_bundle(CollisionLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
@@ -154,6 +156,7 @@ mod tests {
             )
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_bundle(SpriteLoadingBundle::new())
+            .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())

@@ -26,6 +26,7 @@ map_model = { path = "../map_model" }
 map_selection = { path = "../map_selection" }
 map_selection_model = { path = "../map_selection_model" }
 object_model = { path = "../object_model" }
+sequence_loading = { path = "../sequence_loading" }
 sprite_loading = { path = "../sprite_loading" }
 
 [dev-dependencies]

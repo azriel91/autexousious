@@ -59,6 +59,7 @@ mod test {
     use asset_model::config::AssetRecord;
     use assets_test::{ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SLUG};
     use collision_loading::CollisionLoadingBundle;
+    use sequence_loading::SequenceLoadingBundle;
     use sprite_loading::SpriteLoader;
     use sprite_model::config::SpritesDefinition;
 
@@ -68,6 +69,7 @@ mod test {
     #[test]
     fn loads_character() -> Result<(), Error> {
         AmethystApplication::render_base("loads_character", false)
+            .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_effect(|world| {

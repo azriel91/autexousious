@@ -41,8 +41,10 @@ use collision_loading::CollisionLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
 use logic_clock::LogicClock;
 use map_loading::MapLoadingBundle;
-use object_model::{
-    entity::{FrameIndexClock, Mirrored, Position, SequenceStatus, Velocity},
+use object_model::entity::{Mirrored, Position, Velocity};
+use sequence_loading::SequenceLoadingBundle;
+use sequence_model::{
+    entity::{FrameIndexClock, SequenceStatus},
     loaded::{ComponentSequences, ComponentSequencesHandle},
 };
 use sprite_loading::SpriteLoadingBundle;
@@ -125,6 +127,7 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
             <ObjectComponentStorages<CharacterSequenceId> as SystemData>::setup(&mut world.res);
         })
         .with_bundle(SpriteLoadingBundle::new())
+        .with_bundle(SequenceLoadingBundle::new())
         .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
         .with_bundle(CollisionLoadingBundle::new())
         .with_bundle(MapLoadingBundle::new())

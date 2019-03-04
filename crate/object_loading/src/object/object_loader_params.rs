@@ -4,7 +4,7 @@ use amethyst::{
 };
 use collision_model::config::{Body, Interactions};
 use derivative::Derivative;
-use object_model::loaded::ComponentSequences;
+use sequence_model::loaded::ComponentSequences;
 
 /// Resources needed to load an object.
 #[derive(Derivative)]
