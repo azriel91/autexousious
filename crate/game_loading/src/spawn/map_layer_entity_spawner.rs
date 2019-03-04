@@ -5,6 +5,7 @@ use amethyst::{
     renderer::{SpriteRender, Transparent},
 };
 use map_model::loaded::{Map, MapHandle};
+use sequence_model::loaded::ComponentSequencesHandle;
 
 use crate::{MapLayerComponentStorages, MapSpawningResources};
 
@@ -30,9 +31,10 @@ impl MapLayerEntitySpawner {
                 map_assets,
             },
             &mut MapLayerComponentStorages {
-                sprite_renders: world.write_storage::<SpriteRender>(),
                 transparents: world.write_storage::<Transparent>(),
                 transforms: world.write_storage::<Transform>(),
+                sprite_renders: world.write_storage::<SpriteRender>(),
+                component_sequences_handles: world.write_storage::<ComponentSequencesHandle>(),
             },
             map_handle,
         )
@@ -51,9 +53,10 @@ impl MapLayerEntitySpawner {
             map_assets,
         }: &MapSpawningResources<'res>,
         MapLayerComponentStorages {
-            ref mut sprite_renders,
             ref mut transparents,
             ref mut transforms,
+            ref mut sprite_renders,
+            ref mut component_sequences_handles,
         }: &mut MapLayerComponentStorages<'s>,
         map_handle: &MapHandle,
     ) -> Vec<Entity> {
@@ -63,12 +66,15 @@ impl MapLayerEntitySpawner {
                 .expect("Expected map to be loaded.");
 
             // Spawn map layer entities
-            if let Some(sprite_sheet_handles) = &map.sprite_sheet_handles {
+            if let (Some(sprite_sheet_handles), Some(component_sequences_handles)) =
+                (&map.sprite_sheet_handles, &map.component_sequences_handles)
+            {
                 let components = map
                     .definition
                     .layers
                     .iter()
-                    .filter_map(|layer| {
+                    .zip(component_sequences_handles.iter())
+                    .filter_map(|(layer, component_sequences_handles)| {
                         // This only spawns an entity if the layer specifies a frame.
                         // In the future it should spawn an entity for shape-based layers.
                         layer.frames.iter().next().map(|frame| {
@@ -90,10 +96,14 @@ impl MapLayerEntitySpawner {
                                 sprite_number: frame.sprite.index,
                             };
 
-                            (transform, sprite_render.clone())
+                            (
+                                transform,
+                                sprite_render.clone(),
+                                component_sequences_handles.clone(),
+                            )
                         })
                     })
-                    .collect::<Vec<(Transform, SpriteRender)>>();
+                    .collect::<Vec<(Transform, SpriteRender, ComponentSequencesHandle)>>();
 
                 Some(components)
 
@@ -107,12 +117,9 @@ impl MapLayerEntitySpawner {
         if let Some(layers_entity_components) = components {
             let entities = layers_entity_components
                 .into_iter()
-                .map(|(transform, sprite_render)| {
+                .map(|(transform, sprite_render, component_sequences_handle)| {
                     let entity = entities.create();
 
-                    sprite_renders
-                        .insert(entity, sprite_render)
-                        .expect("Failed to insert sprite_render component.");
                     // Enable transparency for visibility sorting
                     transparents
                         .insert(entity, Transparent)
@@ -120,6 +127,12 @@ impl MapLayerEntitySpawner {
                     transforms
                         .insert(entity, transform)
                         .expect("Failed to insert transform component.");
+                    sprite_renders
+                        .insert(entity, sprite_render)
+                        .expect("Failed to insert sprite_render component.");
+                    component_sequences_handles
+                        .insert(entity, component_sequences_handle)
+                        .expect("Failed to insert component_sequences_handle component.");
 
                     entity
                 })

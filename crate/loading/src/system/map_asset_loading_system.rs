@@ -17,7 +17,7 @@ use map_model::{
 };
 use sequence_model::{
     config::Wait,
-    loaded::{ComponentSequence, ComponentSequences, WaitSequence},
+    loaded::{ComponentSequence, ComponentSequences, ComponentSequencesHandle, WaitSequence},
 };
 use shred_derive::SystemData;
 use sprite_loading::SpriteLoader;
@@ -61,6 +61,9 @@ pub struct MapAssetLoadingSystemData<'s> {
     /// `AssetStorage` for `SpritesDefinition`s.
     #[derivative(Debug = "ignore")]
     sprites_definition_assets: Read<'s, AssetStorage<SpritesDefinition>>,
+    /// `AssetStorage` for `ComponentSequences`s.
+    #[derivative(Debug = "ignore")]
+    component_sequences_assets: Read<'s, AssetStorage<ComponentSequences>>,
     /// `AssetStorage` for `Texture`s.
     #[derivative(Debug = "ignore")]
     texture_assets: Read<'s, AssetStorage<Texture>>,
@@ -87,6 +90,7 @@ impl<'s> System<'s> for MapAssetLoadingSystem {
             loader,
             map_definition_assets,
             sprites_definition_assets,
+            component_sequences_assets,
             texture_assets,
             sprite_sheet_assets,
             map_assets,
@@ -155,7 +159,7 @@ impl<'s> System<'s> for MapAssetLoadingSystem {
                     // If there is no sprites definition.
                     (Some(map_definition), None) => {
                         let sprite_sheet_handles = None;
-                        let component_sequences = None;
+                        let component_sequences_handles = None;
 
                         let margins = Margins::from(map_definition.header.bounds);
                         let map = Map::new(
@@ -163,7 +167,7 @@ impl<'s> System<'s> for MapAssetLoadingSystem {
                             map_definition.clone(),
                             margins,
                             sprite_sheet_handles,
-                            component_sequences,
+                            component_sequences_handles,
                         );
 
                         let map_handle =
@@ -182,7 +186,7 @@ impl<'s> System<'s> for MapAssetLoadingSystem {
                             &asset_record.path,
                         )
                         .expect("Failed to load textures and sprite sheets.");
-                        let component_sequences = map_definition
+                        let component_sequences_handles = map_definition
                             .layers
                             .iter()
                             .map(|layer| {
@@ -215,9 +219,15 @@ impl<'s> System<'s> for MapAssetLoadingSystem {
                                 component_sequences
                                     .push(ComponentSequence::SpriteRender(sprite_render_sequence));
 
-                                ComponentSequences::new(component_sequences)
+                                let component_sequences =
+                                    ComponentSequences::new(component_sequences);
+                                loader.load_from_data(
+                                    component_sequences,
+                                    (),
+                                    &component_sequences_assets,
+                                )
                             })
-                            .collect::<Vec<ComponentSequences>>();
+                            .collect::<Vec<ComponentSequencesHandle>>();
 
                         let margins = Margins::from(map_definition.header.bounds);
                         let map = Map::new(
@@ -225,7 +235,7 @@ impl<'s> System<'s> for MapAssetLoadingSystem {
                             map_definition.clone(),
                             margins,
                             Some(sprite_sheet_handles),
-                            Some(component_sequences),
+                            Some(component_sequences_handles),
                         );
 
                         let map_handle =

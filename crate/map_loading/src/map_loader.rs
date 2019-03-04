@@ -14,7 +14,7 @@ use map_model::{
 };
 use sequence_model::{
     config::Wait,
-    loaded::{ComponentSequence, ComponentSequences, WaitSequence},
+    loaded::{ComponentSequence, ComponentSequences, ComponentSequencesHandle, WaitSequence},
 };
 use sprite_loading::SpriteLoader;
 use sprite_model::{config::SpritesDefinition, loaded::SpriteRenderSequence};
@@ -62,9 +62,13 @@ impl MapLoader {
             }
         }?;
 
-        let (sprite_sheet_handles, component_sequences) = {
+        let (sprite_sheet_handles, component_sequences_handles) = {
             if let Some(sprite_sheet_handles) = loaded_sprites {
-                let component_sequences = map_definition
+                let loader = world.read_resource::<Loader>();
+                let component_sequences_assets =
+                    world.read_resource::<AssetStorage<ComponentSequences>>();
+
+                let component_sequences_handles = map_definition
                     .layers
                     .iter()
                     .map(|layer| {
@@ -97,10 +101,14 @@ impl MapLoader {
                         component_sequences
                             .push(ComponentSequence::SpriteRender(sprite_render_sequence));
 
-                        ComponentSequences::new(component_sequences)
+                        let component_sequences = ComponentSequences::new(component_sequences);
+                        loader.load_from_data(component_sequences, (), &component_sequences_assets)
                     })
-                    .collect::<Vec<ComponentSequences>>();
-                (Some(sprite_sheet_handles), Some(component_sequences))
+                    .collect::<Vec<ComponentSequencesHandle>>();
+                (
+                    Some(sprite_sheet_handles),
+                    Some(component_sequences_handles),
+                )
             } else {
                 (None, None)
             }
@@ -112,7 +120,7 @@ impl MapLoader {
             map_definition,
             margins,
             sprite_sheet_handles,
-            component_sequences,
+            component_sequences_handles,
         );
 
         let loader = world.read_resource::<Loader>();
@@ -154,7 +162,7 @@ mod tests {
                         .expect("Expected map to be loaded.");
 
                     // See empty/map.toml
-                    assert!(map.component_sequences.is_none());
+                    assert!(map.component_sequences_handles.is_none());
                 })
                 .run()
                 .is_ok()
