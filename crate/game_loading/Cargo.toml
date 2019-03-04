@@ -18,6 +18,7 @@ derive-new = "0.5.6"
 game_input = { path = "../game_input" }
 game_model = { path = "../game_model" }
 log = "0.4.6"
+logic_clock = { path = "../logic_clock" }
 map_model = { path = "../map_model" }
 map_selection_model = { path = "../map_selection_model" }
 object_loading = { path = "../object_loading" }

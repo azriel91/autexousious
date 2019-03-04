@@ -4,7 +4,12 @@ use amethyst::{
     renderer::{SpriteRender, Transparent},
 };
 use derivative::Derivative;
-use sequence_model::loaded::ComponentSequencesHandle;
+use logic_clock::LogicClock;
+use sequence_model::{
+    config::Wait,
+    entity::{FrameIndexClock, SequenceStatus},
+    loaded::ComponentSequencesHandle,
+};
 use shred_derive::SystemData;
 
 /// Map layer `Component` storages.
@@ -17,6 +22,18 @@ pub struct MapLayerComponentStorages<'s> {
     /// `Transform` components.
     #[derivative(Debug = "ignore")]
     pub transforms: WriteStorage<'s, Transform>,
+    /// `Wait` components.
+    #[derivative(Debug = "ignore")]
+    pub waits: WriteStorage<'s, Wait>,
+    /// `SequenceStatus` components.
+    #[derivative(Debug = "ignore")]
+    pub sequence_statuses: WriteStorage<'s, SequenceStatus>,
+    /// `FrameIndexClock` components.
+    #[derivative(Debug = "ignore")]
+    pub frame_index_clocks: WriteStorage<'s, FrameIndexClock>,
+    /// `LogicClock` components.
+    #[derivative(Debug = "ignore")]
+    pub logic_clocks: WriteStorage<'s, LogicClock>,
     /// `SpriteRender` components.
     #[derivative(Debug = "ignore")]
     pub sprite_renders: WriteStorage<'s, SpriteRender>,

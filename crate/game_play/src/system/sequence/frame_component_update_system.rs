@@ -1,6 +1,6 @@
 use amethyst::{
     assets::AssetStorage,
-    ecs::{Read, ReadStorage, System, SystemData, WriteStorage},
+    ecs::{Entity, Read, ReadStorage, System, SystemData, WriteStorage},
     shred::Resources,
     shrev::{EventChannel, ReaderId},
 };
@@ -48,6 +48,58 @@ pub struct FrameComponentUpdateSystemData<'s> {
     pub frame_component_storages: FrameComponentStorages<'s>,
 }
 
+impl FrameComponentUpdateSystem {
+    fn update_frame_components(
+        logic_clocks: &mut WriteStorage<'_, LogicClock>,
+        frame_component_storages: &mut FrameComponentStorages,
+        component_sequences: &ComponentSequences,
+        entity: Entity,
+        frame_index: usize,
+    ) {
+        let FrameComponentStorages {
+            ref mut waits,
+            ref mut sprite_renders,
+            ref mut bodies,
+            ref mut interactionses,
+        } = frame_component_storages;
+
+        let logic_clock = logic_clocks
+            .get_mut(entity)
+            .expect("Expected entity to have a `LogicClock` component.");
+
+        component_sequences
+            .iter()
+            .for_each(|component_sequence| match component_sequence {
+                ComponentSequence::Wait(wait_sequence) => {
+                    let wait = wait_sequence[frame_index];
+                    waits
+                        .insert(entity, wait)
+                        .expect("Failed to insert `Wait` component.");
+
+                    logic_clock.limit = *wait as usize;
+                }
+                ComponentSequence::SpriteRender(sprite_render_sequence) => {
+                    let sprite_render = sprite_render_sequence[frame_index].clone();
+                    sprite_renders
+                        .insert(entity, sprite_render)
+                        .expect("Failed to insert `SpriteRender` component.");
+                }
+                ComponentSequence::Body(body_sequence) => {
+                    let body = body_sequence[frame_index].clone();
+                    bodies
+                        .insert(entity, body)
+                        .expect("Failed to insert `Body` component.");
+                }
+                ComponentSequence::Interactions(interactions_sequence) => {
+                    let interactions = interactions_sequence[frame_index].clone();
+                    interactionses
+                        .insert(entity, interactions)
+                        .expect("Failed to insert `Interactions` component.");
+                }
+            });
+    }
+}
+
 impl<'s> System<'s> for FrameComponentUpdateSystem {
     type SystemData = FrameComponentUpdateSystemData<'s>;
 
@@ -59,73 +111,43 @@ impl<'s> System<'s> for FrameComponentUpdateSystem {
             component_sequences_assets,
             frame_index_clocks,
             mut logic_clocks,
-            frame_component_storages,
+            mut frame_component_storages,
         }: Self::SystemData,
     ) {
-        let FrameComponentStorages {
-            mut waits,
-            mut sprite_renders,
-            mut bodies,
-            mut interactionses,
-        } = frame_component_storages;
-
         sequence_update_ec
             .read(
                 self.reader_id
                     .as_mut()
                     .expect("Expected reader ID to exist for FrameComponentUpdateSystem."),
             )
-            .for_each(|ev| match ev {
-                SequenceUpdateEvent::SequenceBegin { entity }
-                | SequenceUpdateEvent::FrameBegin { entity } => {
-                    let component_sequences_handle = component_sequences_handles
-                        .get(*entity)
-                        .expect("Expected entity to have a `ComponentSequencesHandle` component.");
-                    let frame_index_clock = frame_index_clocks
-                        .get(*entity)
-                        .expect("Expected entity to have a `FrameIndexClock` component.");
-                    let logic_clock = logic_clocks
-                        .get_mut(*entity)
-                        .expect("Expected entity to have a `LogicClock` component.");
+            .for_each(|ev| {
+                let (entity, frame_index) = match ev {
+                    SequenceUpdateEvent::SequenceBegin { entity }
+                    | SequenceUpdateEvent::FrameBegin { entity } => {
+                        let frame_index_clock = frame_index_clocks
+                            .get(*entity)
+                            .expect("Expected entity to have a `FrameIndexClock` component.");
+                        let frame_index = (*frame_index_clock).value;
 
-                    let component_sequences = component_sequences_assets
-                        .get(component_sequences_handle)
-                        .expect("Expected component_sequences to be loaded.");
+                        (entity, frame_index)
+                    }
+                    SequenceUpdateEvent::SequenceEnd { entity } => (entity, 0),
+                };
 
-                    let frame_index = (*frame_index_clock).value;
+                let component_sequences_handle = component_sequences_handles
+                    .get(*entity)
+                    .expect("Expected entity to have a `ComponentSequencesHandle` component.");
+                let component_sequences = component_sequences_assets
+                    .get(component_sequences_handle)
+                    .expect("Expected component_sequences to be loaded.");
 
-                    component_sequences.iter().for_each(|component_sequence| {
-                        match component_sequence {
-                            ComponentSequence::Wait(wait_sequence) => {
-                                let wait = wait_sequence[frame_index];
-                                waits
-                                    .insert(*entity, wait)
-                                    .expect("Failed to insert `Wait` component.");
-
-                                logic_clock.limit = *wait as usize;
-                            }
-                            ComponentSequence::SpriteRender(sprite_render_sequence) => {
-                                let sprite_render = sprite_render_sequence[frame_index].clone();
-                                sprite_renders
-                                    .insert(*entity, sprite_render)
-                                    .expect("Failed to insert `SpriteRender` component.");
-                            }
-                            ComponentSequence::Body(body_sequence) => {
-                                let body = body_sequence[frame_index].clone();
-                                bodies
-                                    .insert(*entity, body)
-                                    .expect("Failed to insert `Body` component.");
-                            }
-                            ComponentSequence::Interactions(interactions_sequence) => {
-                                let interactions = interactions_sequence[frame_index].clone();
-                                interactionses
-                                    .insert(*entity, interactions)
-                                    .expect("Failed to insert `Interactions` component.");
-                            }
-                        }
-                    });
-                }
-                SequenceUpdateEvent::SequenceEnd { .. } => {}
+                Self::update_frame_components(
+                    &mut logic_clocks,
+                    &mut frame_component_storages,
+                    component_sequences,
+                    *entity,
+                    frame_index,
+                );
             });
     }
 
