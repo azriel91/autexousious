@@ -1,5 +1,5 @@
 use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
-use character_model::config::CharacterSequenceId;
+use character_model::{config::CharacterSequenceId, loaded::Character};
 use derive_new::new;
 use game_input::ControllerInput;
 use named_type::NamedType;
@@ -8,9 +8,9 @@ use typename::TypeName;
 
 use crate::{
     CharacterCollisionEffectSystem, CharacterGroundingSystem, CharacterKinematicsSystem,
-    CharacterSequenceUpdateSystem, FrameComponentUpdateSystem, GamePlayEndDetectionSystem,
-    GamePlayEndTransitionSystem, ObjectCollisionDetectionSystem, ObjectKinematicsUpdateSystem,
-    ObjectTransformUpdateSystem, SequenceUpdateSystem,
+    CharacterSequenceUpdateSystem, ComponentSequencesUpdateSystem, FrameComponentUpdateSystem,
+    GamePlayEndDetectionSystem, GamePlayEndTransitionSystem, ObjectCollisionDetectionSystem,
+    ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem, SequenceUpdateSystem,
 };
 
 /// Adds the object type update systems to the provided dispatcher.
@@ -42,6 +42,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &CharacterGroundingSystem::type_name(),
             &[&ObjectKinematicsUpdateSystem::type_name()],
         ); // kcov-ignore
+
         builder.add(
             ObjectTransformUpdateSystem::new(),
             &ObjectTransformUpdateSystem::type_name(),
@@ -63,10 +64,20 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[&CharacterCollisionEffectSystem::type_name()],
         ); // kcov-ignore
 
+        // TODO: autogenerate these
+        builder.add(
+            ComponentSequencesUpdateSystem::<Character>::new(),
+            &ComponentSequencesUpdateSystem::<Character>::type_name(),
+            &[
+                &CharacterSequenceUpdateSystem::type_name(),
+                &CharacterCollisionEffectSystem::type_name(),
+            ],
+        ); // kcov-ignore
+
         builder.add(
             SequenceUpdateSystem::new(),
             &SequenceUpdateSystem::type_name(),
-            &[&CharacterCollisionEffectSystem::type_name()],
+            &[&ComponentSequencesUpdateSystem::<Character>::type_name()],
         ); // kcov-ignore
         builder.add(
             FrameComponentUpdateSystem::new(),

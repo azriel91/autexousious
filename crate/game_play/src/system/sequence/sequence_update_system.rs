@@ -79,8 +79,6 @@ impl<'s> System<'s> for SequenceUpdateSystem {
                 )| {
                     match sequence_status {
                         SequenceStatus::Begin => {
-                            // Retrieve frame indicies separately as we use a `FlaggedStorage` to
-                            // track if it has been changed, to update frame components.
                             frame_index_clock.reset();
                             logic_clock.reset();
 

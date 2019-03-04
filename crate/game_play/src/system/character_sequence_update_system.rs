@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Join, ReadStorage, System, WriteStorage},
+    ecs::{Entities, Join, ReadStorage, System, WriteStorage},
     renderer::Flipped,
 };
 use character_model::config::CharacterSequenceId;
@@ -23,6 +23,7 @@ pub(crate) struct CharacterSequenceUpdateSystem;
 #[allow(missing_debug_implementations)]
 #[derive(SystemData)]
 pub struct CharacterSequenceUpdateSystemData<'s> {
+    entities: Entities<'s>,
     controller_inputs: ReadStorage<'s, ControllerInput>,
     sequence_end_transitionses: ReadStorage<'s, SequenceEndTransitions<CharacterSequenceId>>,
     positions: ReadStorage<'s, Position<f32>>,
@@ -42,6 +43,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
     fn run(
         &mut self,
         CharacterSequenceUpdateSystemData {
+            entities,
             controller_inputs,
             sequence_end_transitionses,
             positions,
@@ -56,25 +58,25 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
         }: Self::SystemData,
     ) {
         for (
+            entity,
             controller_input,
             sequence_end_transitions,
             position,
             velocity,
             run_counter,
             health_points,
-            character_sequence_id,
             sequence_status,
             mirrored,
             grounding,
             flipped,
         ) in (
+            &entities,
             &controller_inputs,
             &sequence_end_transitionses,
             &positions,
             &velocities,
             &mut run_counters,
             &health_pointses,
-            &mut character_sequence_ids,
             &mut sequence_statuses,
             &mut mirroreds,
             &mut groundings,
@@ -82,6 +84,15 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
         )
             .join()
         {
+            // Retrieve sequence ID separately as we use a `FlaggedStorage` to track if it has been
+            // changed.
+            let character_sequence_id = character_sequence_ids.get(entity);
+            if character_sequence_id.is_none() {
+                continue;
+            }
+            let character_sequence_id =
+                character_sequence_id.expect("Expected `CharacterSequenceId` to exist.");
+
             let next_character_sequence_id = CharacterSequenceUpdater::update(
                 sequence_end_transitions,
                 CharacterSequenceUpdateComponents::new(
@@ -114,6 +125,10 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             };
 
             if let Some(next_character_sequence_id) = next_character_sequence_id {
+                let character_sequence_id = character_sequence_ids
+                    .get_mut(entity)
+                    .expect("Expected `CharacterSequenceId` to exist.");
+
                 *character_sequence_id = next_character_sequence_id;
                 *sequence_status = SequenceStatus::Begin;
             }

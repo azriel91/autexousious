@@ -3,6 +3,7 @@ pub(crate) use self::{
     character_grounding_system::CharacterGroundingSystem,
     character_kinematics_system::CharacterKinematicsSystem,
     character_sequence_update_system::CharacterSequenceUpdateSystem,
+    component_sequences_update_system::ComponentSequencesUpdateSystem,
     game_play_end_detection_system::GamePlayEndDetectionSystem,
     game_play_end_transition_system::GamePlayEndTransitionSystem,
     object_collision_detection_system::ObjectCollisionDetectionSystem,
@@ -15,6 +16,7 @@ mod character_collision_effect_system;
 mod character_grounding_system;
 mod character_kinematics_system;
 mod character_sequence_update_system;
+mod component_sequences_update_system;
 mod game_play_end_detection_system;
 mod game_play_end_transition_system;
 mod object_collision_detection_system;

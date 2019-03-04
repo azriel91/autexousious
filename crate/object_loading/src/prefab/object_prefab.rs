@@ -2,7 +2,7 @@ use std::{fmt::Debug, mem};
 
 use amethyst::{
     assets::{AssetStorage, Handle, Loader, PrefabData, ProgressCounter},
-    ecs::{Entity, Read, ReadExpect},
+    ecs::{Entity, Read, ReadExpect, WriteStorage},
     Error,
 };
 use derivative::Derivative;
@@ -49,6 +49,9 @@ where
     /// `AssetStorage` for `ObjectWrapper`s.
     #[derivative(Debug = "ignore")]
     object_wrapper_assets: Read<'s, AssetStorage<O::ObjectWrapper>>,
+    /// `Handle<O::ObjectWrapper>` component storage.
+    #[derivative(Debug = "ignore")]
+    object_wrapper_handles: WriteStorage<'s, Handle<O::ObjectWrapper>>,
     /// Common game object `Component` storages.
     object_component_storages: ObjectComponentStorages<'s, O::SequenceId>,
     /// Common game object frame component storages.
@@ -70,6 +73,7 @@ where
             loader,
             component_sequences_assets,
             object_wrapper_assets,
+            object_wrapper_handles,
             object_component_storages,
             frame_component_storages,
         }: &mut Self::SystemData,
@@ -89,6 +93,10 @@ where
             .ok_or_else(|| ObjectPrefabError::NotLoaded {
                 object_wrapper_handle: object_wrapper_handle.clone(),
             })?;
+
+        object_wrapper_handles
+            .insert(entity, object_wrapper_handle)
+            .expect("Failed to insert `Handle<O::ObjectWrapper>` component.");
 
         ObjectEntityAugmenter::augment(
             entity,
