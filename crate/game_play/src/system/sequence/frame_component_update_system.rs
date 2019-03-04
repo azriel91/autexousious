@@ -125,6 +125,7 @@ impl<'s> System<'s> for FrameComponentUpdateSystem {
                         }
                     });
                 }
+                SequenceUpdateEvent::SequenceEnd { .. } => {}
             });
     }
 

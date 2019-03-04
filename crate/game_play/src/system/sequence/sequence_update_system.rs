@@ -114,7 +114,8 @@ impl<'s> System<'s> for SequenceUpdateSystem {
                                 }
                             }
                         }
-                        SequenceStatus::End => {} // do nothing
+                        SequenceStatus::End => sequence_update_ec
+                            .single_write(SequenceUpdateEvent::SequenceEnd { entity }),
                     }
                 },
             );
@@ -227,14 +228,17 @@ mod tests {
     }
 
     #[test]
-    fn does_nothing_when_sequence_end() -> Result<(), Error> {
+    fn sends_event_when_sequence_end() -> Result<(), Error> {
         let test_name = "does_nothing_when_sequence_end";
         AutexousiousApplication::game_base(test_name, false)
             .with_setup(setup_system_data)
             .with_setup(|world| initial_values(world, 5, 5, 2, 2, SequenceStatus::Ongoing))
             .with_system_single(SequenceUpdateSystem::new(), "", &[])
             .with_assertion(|world| expect_values(world, 5, 5, 2, SequenceStatus::End))
-            .with_assertion(|world| expect_events(world, vec![]))
+            .with_assertion(|world| {
+                let events = sequence_end_events(world);
+                expect_events(world, events);
+            })
             .run()
     }
 
@@ -380,6 +384,21 @@ mod tests {
         )
             .join()
             .map(|(entity, _, _, _)| SequenceUpdateEvent::FrameBegin { entity })
+            .collect::<Vec<_>>()
+    }
+
+    fn sequence_end_events(world: &mut World) -> Vec<SequenceUpdateEvent> {
+        let (entities, frame_index_clocks, logic_clocks, _, sequence_statuses) =
+            world.system_data::<TestSystemData>();
+
+        (
+            &entities,
+            &frame_index_clocks,
+            &logic_clocks,
+            &sequence_statuses,
+        )
+            .join()
+            .map(|(entity, _, _, _)| SequenceUpdateEvent::SequenceEnd { entity })
             .collect::<Vec<_>>()
     }
 
