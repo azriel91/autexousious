@@ -1,5 +1,3 @@
-#![cfg(not(windows))] // Windows CI fails to run and exit for some reason =/
-
 use assert_cmd::assert::OutputAssertExt;
 use escargot::{error::CargoError, CargoBuild};
 

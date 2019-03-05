@@ -1,3 +1,5 @@
+#![windows_subsystem = "windows"]
+
 //! Draws text using loaded fonts.
 //!
 //! This example uses the following resources and assets:
