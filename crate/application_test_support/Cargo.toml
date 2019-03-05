@@ -32,7 +32,7 @@ sequence_model = { path = "../sequence_model" }
 sprite_loading = { path = "../sprite_loading" }
 
 [dev-dependencies]
-strum = "0.13.0"
+strum = "0.14.0"
 
 [features]
 nightly = ["amethyst/nightly"]

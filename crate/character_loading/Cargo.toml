@@ -14,7 +14,7 @@ derive-new = "0.5.6"
 game_input = { path = "../game_input" }
 object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
-serde = "1.0.87"
+serde = "1.0.89"
 shred = "0.7.1"
 shred-derive = "0.5.1"
 typename = "0.1.0"

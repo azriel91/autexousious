@@ -11,11 +11,11 @@ derive-new = "0.5.6"
 derive_deref = "1.0.2"
 minterpolate = { version = "0.4.0", features = ["serde"] }
 sequence_model_spi = { path = "../sequence_model_spi" }
-serde = "1.0.87"
+serde = "1.0.89"
 shape_model = { path = "../shape_model" }
 
 [dev-dependencies]
-pretty_assertions = "0.5.1"
+pretty_assertions = "0.6.1"
 toml = "0.4.10"
 
 [features]
