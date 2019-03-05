@@ -13,7 +13,7 @@ derive_deref = "1.0.2"
 derive_more = "0.14.0"
 logic_clock = { path = "../logic_clock" }
 sequence_model_spi = { path = "../sequence_model_spi" }
-serde = "1.0.87"
+serde = "1.0.89"
 specs-derive = "0.4.0"
 sprite_model = { path = "../sprite_model" }
 

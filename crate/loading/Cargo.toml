@@ -28,8 +28,8 @@ shred = "0.7.1"
 shred-derive = "0.5.1"
 sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }
-serde = "1.0.87"
-strum = "0.13.0"
+serde = "1.0.89"
+strum = "0.14.0"
 toml = "0.4.10"
 typename = "0.1.0"
 typename_derive = "0.1.1"

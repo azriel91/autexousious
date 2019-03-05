@@ -13,8 +13,8 @@ game_input_model = { path = "../game_input_model" }
 game_mode_selection_model = { path = "../game_mode_selection_model" }
 game_play_model = { path = "../game_play_model" }
 map_selection_model = { path = "../map_selection_model" }
-strum = "0.13.0"
-strum_macros = "0.13.0"
+strum = "0.14.0"
+strum_macros = "0.14.0"
 
 [features]
 nightly = ["amethyst/nightly"]
