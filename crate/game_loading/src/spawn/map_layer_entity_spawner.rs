@@ -6,6 +6,7 @@ use amethyst::{
 use logic_clock::LogicClock;
 use map_model::loaded::MapHandle;
 use sequence_model::{
+    config::Repeat,
     entity::{FrameIndexClock, SequenceStatus},
     loaded::ComponentSequence,
 };
@@ -50,6 +51,7 @@ impl MapLayerEntitySpawner {
             ref mut transparents,
             ref mut transforms,
             ref mut waits,
+            ref mut repeats,
             ref mut sequence_statuses,
             ref mut frame_index_clocks,
             ref mut logic_clocks,
@@ -119,6 +121,9 @@ impl MapLayerEntitySpawner {
                     transforms
                         .insert(entity, transform)
                         .expect("Failed to insert transform component.");
+                    repeats
+                        .insert(entity, Repeat)
+                        .expect("Failed to insert repeat component.");
                     sequence_statuses
                         .insert(entity, SequenceStatus::default())
                         .expect("Failed to insert sequence_status component.");

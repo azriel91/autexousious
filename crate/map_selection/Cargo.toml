@@ -23,6 +23,7 @@ asset_loading = { path = "../asset_loading" }
 assets_test = { path = "../assets_test" }
 loading = { path = "../loading" }
 map_loading = { path = "../map_loading" }
+sequence_loading = { path = "../sequence_loading" }
 
 [features]
 nightly = ["amethyst/nightly"]

@@ -6,7 +6,7 @@ use amethyst::{
 use derivative::Derivative;
 use logic_clock::LogicClock;
 use sequence_model::{
-    config::Wait,
+    config::{Repeat, Wait},
     entity::{FrameIndexClock, SequenceStatus},
     loaded::ComponentSequencesHandle,
 };
@@ -25,6 +25,9 @@ pub struct MapLayerComponentStorages<'s> {
     /// `Wait` components.
     #[derivative(Debug = "ignore")]
     pub waits: WriteStorage<'s, Wait>,
+    /// `Repeat` components.
+    #[derivative(Debug = "ignore")]
+    pub repeats: WriteStorage<'s, Repeat>,
     /// `SequenceStatus` components.
     #[derivative(Debug = "ignore")]
     pub sequence_statuses: WriteStorage<'s, SequenceStatus>,
