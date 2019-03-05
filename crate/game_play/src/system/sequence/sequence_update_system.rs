@@ -165,19 +165,14 @@ impl<'s> System<'s> for SequenceUpdateSystem {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        assets::{AssetStorage, Prefab},
         ecs::{Entities, Entity, SystemData, World, WriteStorage},
         shrev::{EventChannel, ReaderId},
         Error,
     };
-    use application_test_support::AutexousiousApplication;
-    use asset_model::loaded::SlugAndHandle;
+    use application_test_support::{AutexousiousApplication, SequenceQueries};
     use assets_test::ASSETS_CHAR_BAT_SLUG;
-    use character_loading::CharacterPrefab;
-    use character_model::{config::CharacterSequenceId, loaded::CharacterObjectWrapper};
+    use character_model::config::CharacterSequenceId;
     use logic_clock::LogicClock;
-    use object_loading::ObjectPrefab;
-    use object_model::loaded::ObjectWrapper;
     use sequence_model::{
         config::Repeat,
         entity::{FrameIndexClock, SequenceStatus},
@@ -322,7 +317,11 @@ mod tests {
         sequence_status: SequenceStatus,
         repeat: bool,
     ) {
-        let run_stop_handle = component_sequences_handle(world, CharacterSequenceId::RunStop);
+        let run_stop_handle = SequenceQueries::component_sequences_handle(
+            world,
+            &ASSETS_CHAR_BAT_SLUG.clone(),
+            CharacterSequenceId::RunStop,
+        );
 
         let entity = {
             let (
@@ -366,44 +365,6 @@ mod tests {
         };
 
         world.add_resource(entity);
-    }
-
-    // Quite unergonomic =/
-    fn component_sequences_handle(
-        world: &mut World,
-        sequence_id: CharacterSequenceId,
-    ) -> ComponentSequencesHandle {
-        let snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
-        let character_prefab_assets =
-            world.read_resource::<AssetStorage<Prefab<CharacterPrefab>>>();
-        let bat_char_prefab = character_prefab_assets
-            .get(&snh.handle)
-            .expect("Expected bat character prefab to be loaded.");
-        let object_wrapper_handle = {
-            let object_prefab = &bat_char_prefab
-                .entities()
-                .next()
-                .expect("Expected bat character main entity to exist.")
-                .data()
-                .expect("Expected bat character prefab to contain data.")
-                .object_prefab;
-            if let ObjectPrefab::Handle(handle) = object_prefab {
-                handle.clone()
-            } else {
-                panic!("Expected bat object prefab to be loaded.")
-            }
-        };
-
-        let object_wrapper_assets = world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
-        let object_wrapper = object_wrapper_assets
-            .get(&object_wrapper_handle)
-            .expect("Expected bat object wrapper to be loaded.");
-        object_wrapper
-            .inner()
-            .component_sequences_handles
-            .get(&sequence_id)
-            .expect("Expected `RunStop` sequence to exist.")
-            .clone()
     }
 
     fn expect_values(

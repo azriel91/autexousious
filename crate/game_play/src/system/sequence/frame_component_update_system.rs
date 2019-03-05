@@ -163,20 +163,17 @@ impl<'s> System<'s> for FrameComponentUpdateSystem {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        assets::{AssetStorage, Prefab},
+        assets::AssetStorage,
         ecs::{Entities, Join, ReadStorage, World, WriteStorage},
         shrev::EventChannel,
         Error,
     };
-    use application_test_support::AutexousiousApplication;
-    use asset_model::loaded::SlugAndHandle;
+    use application_test_support::{AutexousiousApplication, SequenceQueries};
     use assets_test::ASSETS_CHAR_BAT_SLUG;
-    use character_loading::CharacterPrefab;
-    use character_model::{config::CharacterSequenceId, loaded::CharacterObjectWrapper};
+    use character_model::config::CharacterSequenceId;
     use collision_model::config::{Body, Interaction, Interactions};
     use logic_clock::LogicClock;
-    use object_loading::{FrameComponentStorages, ObjectPrefab};
-    use object_model::loaded::ObjectWrapper;
+    use object_loading::FrameComponentStorages;
     use sequence_model::{config::Wait, entity::FrameIndexClock, loaded::ComponentSequencesHandle};
     use shape_model::Volume;
 
@@ -189,8 +186,11 @@ mod tests {
         AutexousiousApplication::game_base(test_name, false)
             .with_system(FrameComponentUpdateSystem::new(), "", &[])
             .with_setup(|world| {
-                let component_sequences_handle =
-                    component_sequences_handle(world, CharacterSequenceId::StandAttack);
+                let component_sequences_handle = SequenceQueries::component_sequences_handle(
+                    world,
+                    &ASSETS_CHAR_BAT_SLUG.clone(),
+                    CharacterSequenceId::StandAttack,
+                );
                 initial_values(
                     world,
                     // third frame in the sequence, though it doesn't make sense for sequence begin
@@ -218,8 +218,11 @@ mod tests {
         AutexousiousApplication::game_base(test_name, false)
             .with_system(FrameComponentUpdateSystem::new(), "", &[])
             .with_setup(|world| {
-                let component_sequences_handle =
-                    component_sequences_handle(world, CharacterSequenceId::StandAttack);
+                let component_sequences_handle = SequenceQueries::component_sequences_handle(
+                    world,
+                    &ASSETS_CHAR_BAT_SLUG.clone(),
+                    CharacterSequenceId::StandAttack,
+                );
                 initial_values(
                     world,
                     2, // third frame in the sequence
@@ -273,44 +276,6 @@ mod tests {
                     *component_sequences_handle = component_sequences_handle_initial.clone();
                 },
             );
-    }
-
-    // Quite unergonomic =/
-    fn component_sequences_handle(
-        world: &mut World,
-        sequence_id: CharacterSequenceId,
-    ) -> ComponentSequencesHandle {
-        let snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
-        let character_prefab_assets =
-            world.read_resource::<AssetStorage<Prefab<CharacterPrefab>>>();
-        let bat_char_prefab = character_prefab_assets
-            .get(&snh.handle)
-            .expect("Expected bat character prefab to be loaded.");
-        let object_wrapper_handle = {
-            let object_prefab = &bat_char_prefab
-                .entities()
-                .next()
-                .expect("Expected bat character main entity to exist.")
-                .data()
-                .expect("Expected bat character prefab to contain data.")
-                .object_prefab;
-            if let ObjectPrefab::Handle(handle) = object_prefab {
-                handle.clone()
-            } else {
-                panic!("Expected bat object prefab to be loaded.")
-            }
-        };
-
-        let object_wrapper_assets = world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
-        let object_wrapper = object_wrapper_assets
-            .get(&object_wrapper_handle)
-            .expect("Expected bat object wrapper to be loaded.");
-        object_wrapper
-            .inner()
-            .component_sequences_handles
-            .get(&sequence_id)
-            .expect("Expected `RunStop` sequence to exist.")
-            .clone()
     }
 
     fn expect_values(world: &mut World, logic_clock_value: usize, logic_clock_limit: usize) {
