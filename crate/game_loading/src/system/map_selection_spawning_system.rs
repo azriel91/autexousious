@@ -62,16 +62,19 @@ mod tests {
     use map_loading::MapLoadingBundle;
     use map_selection::MapSelectionStatus;
     use map_selection_model::MapSelection;
+    use sequence_loading::SequenceLoadingBundle;
     use typename::TypeName;
 
-    use super::MapSelectionSpawningSystem;
+    use super::{MapSelectionSpawningSystem, MapSelectionSpawningSystemData};
     use crate::GameLoadingStatus;
 
     #[test]
     fn returns_if_map_already_loaded() {
         assert!(
             AmethystApplication::render_base("returns_if_map_already_loaded", false)
+                .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
+                .with_setup(setup_system_data)
                 .with_setup(load_maps)
                 .with_setup(map_selection(ASSETS_MAP_EMPTY_SLUG.clone()))
                 .with_setup(|world| {
@@ -119,7 +122,9 @@ mod tests {
                 "spawns_map_layers_when_they_havent_been_spawned",
                 false
             )
+            .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
+            .with_setup(setup_system_data)
             .with_setup(load_maps)
             .with_setup(map_selection(ASSETS_MAP_FADE_SLUG.clone()))
             .with_system_single(
@@ -147,7 +152,9 @@ mod tests {
                 "spawns_map_layers_when_they_havent_been_spawned",
                 false
             )
+            .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
+            .with_setup(setup_system_data)
             .with_setup(load_maps)
             .with_setup(map_selection(ASSETS_MAP_EMPTY_SLUG.clone()))
             .with_system_single(
@@ -162,6 +169,10 @@ mod tests {
             .run()
             .is_ok()
         );
+    }
+
+    fn setup_system_data(world: &mut World) {
+        MapSelectionSpawningSystemData::setup(&mut world.res);
     }
 
     fn load_maps(world: &mut World) {

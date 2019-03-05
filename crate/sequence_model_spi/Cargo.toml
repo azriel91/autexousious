@@ -1,0 +1,13 @@
+[package]
+name = "sequence_model_spi"
+version = "0.10.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+edition = "2018"
+
+[dependencies]
+amethyst = { git = "https://github.com/amethyst/amethyst.git" }
+derive_deref = "1.0.2"
+derive-new = "0.5.6"
+
+[features]
+nightly = ["amethyst/nightly"]

@@ -1,16 +1,10 @@
 use amethyst::{
-    animation::{Animation, Sampler, SpriteRenderPrimitive},
     assets::{AssetStorage, Loader},
-    renderer::{SpriteRender, SpriteSheetHandle},
+    renderer::SpriteSheetHandle,
 };
-use collision_model::{
-    animation::{
-        BodyFrameActiveHandle, BodyFramePrimitive, InteractionFrameActiveHandle,
-        InteractionFramePrimitive,
-    },
-    config::{BodyFrame, InteractionFrame},
-};
+use collision_model::config::{Body, Interactions};
 use derivative::Derivative;
+use sequence_model::loaded::ComponentSequences;
 
 /// Resources needed to load an object.
 #[derive(Derivative)]
@@ -19,32 +13,15 @@ pub struct ObjectLoaderParams<'s> {
     /// `Loader` to load assets.
     #[derivative(Debug = "ignore")]
     pub loader: &'s Loader,
+    /// `AssetStorage` for `ComponentSequences`s.
+    #[derivative(Debug = "ignore")]
+    pub component_sequences_assets: &'s AssetStorage<ComponentSequences>,
     /// Handles to the sprite sheets for this `Object`.
     pub sprite_sheet_handles: &'s [SpriteSheetHandle],
-    /// `AssetStorage` for `Sampler<SpriteRenderPrimitive>`s.
+    /// `AssetStorage` for `Body`s.
     #[derivative(Debug = "ignore")]
-    pub sprite_render_primitive_sampler_assets: &'s AssetStorage<Sampler<SpriteRenderPrimitive>>,
-    /// `AssetStorage` for `Animation<SpriteRender>`s.
+    pub body_assets: &'s AssetStorage<Body>,
+    /// `AssetStorage` for `Interactions`s.
     #[derivative(Debug = "ignore")]
-    pub sprite_render_animation_assets: &'s AssetStorage<Animation<SpriteRender>>,
-    /// `AssetStorage` for `BodyFrame`s.
-    #[derivative(Debug = "ignore")]
-    pub body_frame_assets: &'s AssetStorage<BodyFrame>,
-    /// `AssetStorage` for `Sampler<BodyFramePrimitive>`s.
-    #[derivative(Debug = "ignore")]
-    pub body_frame_primitive_sampler_assets: &'s AssetStorage<Sampler<BodyFramePrimitive>>,
-    /// `AssetStorage` for `Animation<BodyFrameActiveHandle>`s.
-    #[derivative(Debug = "ignore")]
-    pub body_frame_animation_assets: &'s AssetStorage<Animation<BodyFrameActiveHandle>>,
-    /// `AssetStorage` for `InteractionFrame`s.
-    #[derivative(Debug = "ignore")]
-    pub interaction_frame_assets: &'s AssetStorage<InteractionFrame>,
-    /// `AssetStorage` for `Sampler<InteractionFramePrimitive>`s.
-    #[derivative(Debug = "ignore")]
-    pub interaction_frame_primitive_sampler_assets:
-        &'s AssetStorage<Sampler<InteractionFramePrimitive>>,
-    /// `AssetStorage` for `Animation<InteractionFrameActiveHandle>`s.
-    #[derivative(Debug = "ignore")]
-    pub interaction_frame_animation_assets:
-        &'s AssetStorage<Animation<InteractionFrameActiveHandle>>,
+    pub interactions_assets: &'s AssetStorage<Interactions>,
 }

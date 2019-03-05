@@ -31,6 +31,7 @@ mod test {
     use amethyst_test::prelude::*;
     use assets_test::{ASSETS_MAP_FADE_PATH, ASSETS_MAP_FADE_SLUG};
     use map_model::loaded::{Map, MapHandle};
+    use sequence_loading::SequenceLoadingBundle;
 
     use super::MapLoadingBundle;
     use crate::MapLoader;
@@ -41,7 +42,8 @@ mod test {
         assert!(
             // kcov-ignore-end
             AmethystApplication::render_base("bundle_build_adds_map_processor", false)
-                .with_bundle(MapLoadingBundle)
+                .with_bundle(SequenceLoadingBundle::new())
+                .with_bundle(MapLoadingBundle::new())
                 .with_effect(|world| {
                     let map_handle =
                         MapLoader::load(world, &ASSETS_MAP_FADE_PATH).expect("Failed to load map");
@@ -58,10 +60,10 @@ mod test {
                     // See fade/map.toml
                     assert_eq!(
                         2,
-                        map.animation_handles
+                        map.component_sequences_handles
                             .as_ref()
                             .expect(&format!(
-                                "Expected '{}' map to contain animations.",
+                                "Expected '{}' map to contain component_sequences_handles.",
                                 *ASSETS_MAP_FADE_SLUG
                             ))
                             .len()

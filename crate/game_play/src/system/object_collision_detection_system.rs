@@ -1,13 +1,12 @@
 use amethyst::{
-    assets::AssetStorage,
+    assets::{AssetStorage, Handle},
     core::{nalgebra::Vector3, transform::Transform},
     ecs::{Entities, Join, Read, ReadStorage, System, Write},
     renderer::{Flipped, SpriteRender, SpriteSheet},
     shrev::EventChannel,
 };
 use collision_model::{
-    animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle},
-    config::{BodyFrame, Interaction, InteractionFrame},
+    config::{Body, Interaction, Interactions},
     play::CollisionEvent,
 };
 use derive_new::new;
@@ -22,10 +21,10 @@ pub(crate) struct ObjectCollisionDetectionSystem;
 type ObjectCollisionDetectionSystemData<'s> = (
     Entities<'s>,
     ReadStorage<'s, Transform>,
-    ReadStorage<'s, InteractionFrameActiveHandle>,
-    Read<'s, AssetStorage<InteractionFrame>>,
-    ReadStorage<'s, BodyFrameActiveHandle>,
-    Read<'s, AssetStorage<BodyFrame>>,
+    ReadStorage<'s, Handle<Interactions>>,
+    Read<'s, AssetStorage<Interactions>>,
+    ReadStorage<'s, Handle<Body>>,
+    Read<'s, AssetStorage<Body>>,
     ReadStorage<'s, SpriteRender>,
     ReadStorage<'s, Flipped>,
     Read<'s, AssetStorage<SpriteSheet>>,
@@ -139,10 +138,10 @@ impl<'s> System<'s> for ObjectCollisionDetectionSystem {
         (
             entities,
             transforms,
-            ifahs,
-            interaction_frame_assets,
-            bfahs,
-            body_frame_assets,
+            interactions_handles,
+            interactions_assets,
+            body_handles,
+            body_assets,
             sprite_renders,
             flippeds,
             sprite_sheet_assets,
@@ -151,11 +150,23 @@ impl<'s> System<'s> for ObjectCollisionDetectionSystem {
     ) {
         // Naive collision detection.
         // TODO: Use broad sweep + narrow sweep for optimization.
-        for (from, from_transform, ifah, from_sprite_render, from_flipped) in
-            (&entities, &transforms, &ifahs, &sprite_renders, &flippeds).join()
+        for (from, from_transform, interactions_handle, from_sprite_render, from_flipped) in (
+            &entities,
+            &transforms,
+            &interactions_handles,
+            &sprite_renders,
+            &flippeds,
+        )
+            .join()
         {
-            for (to, to_transform, bfah, to_sprite_render, to_flipped) in
-                (&entities, &transforms, &bfahs, &sprite_renders, &flippeds).join()
+            for (to, to_transform, body_handle, to_sprite_render, to_flipped) in (
+                &entities,
+                &transforms,
+                &body_handles,
+                &sprite_renders,
+                &flippeds,
+            )
+                .join()
             {
                 if from == to {
                     // Skip self
@@ -192,45 +203,41 @@ impl<'s> System<'s> for ObjectCollisionDetectionSystem {
                 // Undo the Z shift from both entities, see `ObjectTransformUpdateSystem`
                 relative_pos[1] += to_transform.translation()[2] - from_transform.translation()[2];
 
-                let interaction_frame = interaction_frame_assets
-                    .get(ifah.current())
-                    .expect("Expected `InteractionFrame` from handle to exist.");
-                let body_frame = body_frame_assets
-                    .get(bfah.current())
-                    .expect("Expected `BodyFrame` from handle to exist.");
+                let interactions = interactions_assets
+                    .get(interactions_handle)
+                    .expect("Expected `Interactions` from handle to exist.");
+                let body = body_assets
+                    .get(body_handle)
+                    .expect("Expected `Body` from handle to exist.");
 
-                let mut collision_events = match (&interaction_frame.interactions, &body_frame.body)
-                {
-                    (Some(ref interactions), Some(ref body_volumes)) => {
-                        interactions
-                            .iter()
-                            .flat_map(|interaction| {
-                                // loop through each body, if it hits, generate a collision event.
+                let mut collision_events = {
+                    interactions
+                        .iter()
+                        .flat_map(|interaction| {
+                            // loop through each body, if it hits, generate a collision event.
 
-                                body_volumes.iter().filter_map(move |volume| {
-                                    if Self::intersects(
-                                        &relative_pos,
-                                        (
-                                            interaction,
-                                            interaction_offsets,
-                                            *from_flipped == Flipped::Horizontal,
-                                        ),
-                                        (volume, body_offsets, *to_flipped == Flipped::Horizontal),
-                                    ) {
-                                        Some(CollisionEvent::new(
-                                            from,
-                                            to,
-                                            interaction.clone(),
-                                            *volume,
-                                        ))
-                                    } else {
-                                        None
-                                    }
-                                })
+                            body.iter().filter_map(move |volume| {
+                                if Self::intersects(
+                                    &relative_pos,
+                                    (
+                                        interaction,
+                                        interaction_offsets,
+                                        *from_flipped == Flipped::Horizontal,
+                                    ),
+                                    (volume, body_offsets, *to_flipped == Flipped::Horizontal),
+                                ) {
+                                    Some(CollisionEvent::new(
+                                        from,
+                                        to,
+                                        interaction.clone(),
+                                        *volume,
+                                    ))
+                                } else {
+                                    None
+                                }
                             })
-                            .collect::<Vec<CollisionEvent>>()
-                    }
-                    _ => Vec::new(),
+                        })
+                        .collect::<Vec<CollisionEvent>>()
                 };
 
                 if !collision_events.is_empty() {

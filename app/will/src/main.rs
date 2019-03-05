@@ -2,14 +2,13 @@
 
 //! Opens an empty window.
 
-use std::{process, time::Duration};
+use std::process;
 
 use amethyst::{
-    animation::AnimationBundle,
     assets::HotReloadBundle,
-    core::{frame_limiter::FrameRateLimitStrategy, transform::TransformBundle},
+    core::transform::TransformBundle,
     input::InputBundle,
-    renderer::{DisplayConfig, DrawFlat2D, Pipeline, RenderBundle, SpriteRender, Stage},
+    renderer::{DisplayConfig, DrawFlat2D, Pipeline, RenderBundle, Stage},
     ui::{DrawUi, UiBundle},
     CoreApplication, GameDataBuilder, LogLevelFilter, LoggerConfig,
 };
@@ -25,10 +24,9 @@ use application_event::{AppEvent, AppEventReader};
 use application_robot::RobotState;
 use application_state::{HookFn, HookableFn};
 use character_loading::CharacterLoadingBundle;
-use character_model::config::CharacterSequenceId;
 use character_selection_stdio::CharacterSelectionStdioBundle;
 use collision_loading::CollisionLoadingBundle;
-use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
+use frame_rate::strategy::FRAME_RATE_DEFAULT;
 use game_input::GameInputBundle;
 use game_input_model::{InputConfig, PlayerActionControl, PlayerAxisControl};
 use game_input_stdio::{ControlInputEventStdinMapper, GameInputStdioBundle};
@@ -41,6 +39,7 @@ use loading::{LoadingBundle, LoadingState};
 use log::info;
 use map_loading::MapLoadingBundle;
 use map_selection_stdio::MapSelectionStdioBundle;
+use sequence_loading::SequenceLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
 use stdio_spi::MapperSystem;
 use stdio_view::StdioViewBundle;
@@ -107,36 +106,6 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         // `InputBundle` provides `InputHandler<A, B>`, needed by the `UiBundle` for mouse events.
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
         game_data = game_data
-            // === Animation bundles === //
-            //
-            // Shorthand:
-            //
-            // * `acs`: animation control system
-            // * `sis`: sampler_interpolation_system
-            //
-            // Object/Character animations
-            .with_bundle(AnimationBundle::<CharacterSequenceId, SpriteRender>::new(
-                "character_sprite_acs",
-                "character_sprite_sis",
-            ))?
-            .with_bundle(
-                AnimationBundle::<CharacterSequenceId, BodyFrameActiveHandle>::new(
-                    "character_body_frame_acs",
-                    "character_body_frame_sis",
-                ),
-            )?
-            .with_bundle(AnimationBundle::<
-                CharacterSequenceId,
-                InteractionFrameActiveHandle,
-            >::new(
-                "character_interaction_frame_acs",
-                "character_interaction_frame_sis",
-            ))?
-            // Used for map layer animations.
-            .with_bundle(AnimationBundle::<u32, SpriteRender>::new(
-                "map_layer_sprite_acs",
-                "map_layer_sprite_sis",
-            ))?
             // Handles transformations of textures
             .with_bundle(TransformBundle::new())?
             .with_bundle(
@@ -151,6 +120,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?
             .with_bundle(HotReloadBundle::default())?
             .with_bundle(SpriteLoadingBundle::new())?
+            .with_bundle(SequenceLoadingBundle::new())?
             .with_bundle(LoadingBundle::new(assets_dir.clone()))?
             .with_bundle(GameInputUiBundle::new(input_config))?
             .with_bundle(
@@ -175,10 +145,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
 
     info!("Building application.");
     let mut app = CoreApplication::<_, AppEvent, AppEventReader>::build(assets_dir, state)?
-        .with_frame_limit(
-            FrameRateLimitStrategy::SleepAndYield(Duration::from_micros(1000)),
-            60,
-        )
+        .with_frame_limit_config(FRAME_RATE_DEFAULT)
         .build(game_data)?;
 
     app.run();

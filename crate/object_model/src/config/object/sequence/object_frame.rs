@@ -1,13 +1,8 @@
-use collision_loading::InteractionAnimationFrame;
-use collision_model::{
-    animation::BodyAnimationFrame,
-    config::{BodyFrame, Interaction, InteractionFrame},
-};
+use collision_model::config::{Body, Interactions};
 use derive_new::new;
+use sequence_model::config::Wait;
 use serde::{Deserialize, Serialize};
-use shape_model::Volume;
-use sprite_loading::AnimationFrame;
-use sprite_model::config::SpriteFrame;
+use sprite_model::config::SpriteRef;
 
 /// Animation and interaction information to use on this frame.
 ///
@@ -18,49 +13,15 @@ use sprite_model::config::SpriteFrame;
 /// * **Effects:** Sound(s) to play.
 /// * **Spawning:** Spawning additional object(s).
 /// * **Weapon:** Where an active weapon should be.
-#[derive(Clone, Debug, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
+#[derive(Clone, Debug, Default, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
+#[serde(default)]
 pub struct ObjectFrame {
+    /// Number of ticks to wait before the sequence switches to the next frame.
+    pub wait: Wait,
     /// Sprite to render.
-    #[serde(flatten)]
-    pub sprite: SpriteFrame,
+    pub sprite: SpriteRef,
     /// Hittable volume of the object.
-    #[serde(flatten)]
-    pub body: BodyFrame,
+    pub body: Body,
     /// Interaction volumes of the object.
-    #[serde(flatten)]
-    pub interaction: InteractionFrame,
-}
-
-impl AnimationFrame for ObjectFrame {
-    fn texture_index(&self) -> usize {
-        self.sprite.sheet
-    }
-
-    fn sprite_index(&self) -> usize {
-        self.sprite.sprite
-    }
-
-    fn wait(&self) -> u32 {
-        self.sprite.wait
-    }
-}
-
-impl BodyAnimationFrame for ObjectFrame {
-    fn body(&self) -> Option<&Vec<Volume>> {
-        self.body.body.as_ref()
-    }
-
-    fn wait(&self) -> u32 {
-        self.body.wait
-    }
-}
-
-impl InteractionAnimationFrame for ObjectFrame {
-    fn interactions(&self) -> Option<&Vec<Interaction>> {
-        self.interaction.interactions.as_ref()
-    }
-
-    fn wait(&self) -> u32 {
-        self.body.wait
-    }
+    pub interactions: Interactions,
 }

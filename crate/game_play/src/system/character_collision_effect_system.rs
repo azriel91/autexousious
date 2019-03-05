@@ -5,7 +5,8 @@ use amethyst::{
 use character_model::config::CharacterSequenceId;
 use collision_model::{config::Interaction, play::CollisionEvent};
 use derive_new::new;
-use object_model::entity::{HealthPoints, SequenceStatus};
+use object_model::entity::HealthPoints;
+use sequence_model::entity::SequenceStatus;
 use typename_derive::TypeName;
 
 /// Determines collision effects for characters.

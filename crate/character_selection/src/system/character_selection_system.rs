@@ -75,21 +75,20 @@ impl<'s> System<'s> for CharacterSelectionSystem {
 mod tests {
     use std::env;
 
-    use amethyst::{animation::AnimationBundle, ecs::prelude::*, shrev::EventChannel};
+    use amethyst::{ecs::prelude::*, shrev::EventChannel};
     use amethyst_test::prelude::*;
     use application_event::{AppEvent, AppEventReader};
     use asset_model::loaded::SlugAndHandle;
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
     use character_loading::CharacterLoadingBundle;
-    use character_model::config::CharacterSequenceId;
     use character_selection_model::{
         CharacterSelection, CharacterSelectionEvent, CharacterSelections, CharacterSelectionsStatus,
     };
     use collision_loading::CollisionLoadingBundle;
-    use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
     use game_input_model::{PlayerActionControl, PlayerAxisControl};
     use loading::{LoadingBundle, LoadingState};
     use map_loading::MapLoadingBundle;
+    use sequence_loading::SequenceLoadingBundle;
     use sprite_loading::SpriteLoadingBundle;
     use typename::TypeName;
 
@@ -104,20 +103,8 @@ mod tests {
             // kcov-ignore-end
             AmethystApplication::render_base("inserts_character_selection_on_select_event", false)
                 .with_custom_event_type::<AppEvent, AppEventReader>()
-                .with_bundle(
-                    AnimationBundle::<CharacterSequenceId, BodyFrameActiveHandle>::new(
-                        "character_body_frame_acs",
-                        "character_body_frame_sis",
-                    )
-                )
-                .with_bundle(AnimationBundle::<
-                    CharacterSequenceId,
-                    InteractionFrameActiveHandle,
-                >::new(
-                    "character_interaction_frame_acs",
-                    "character_interaction_frame_sis",
-                ))
                 .with_bundle(SpriteLoadingBundle::new())
+                .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
                 .with_bundle(CollisionLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
@@ -168,20 +155,8 @@ mod tests {
                 false
             )
             .with_custom_event_type::<AppEvent, AppEventReader>()
-            .with_bundle(
-                AnimationBundle::<CharacterSequenceId, BodyFrameActiveHandle>::new(
-                    "character_body_frame_acs",
-                    "character_body_frame_sis",
-                )
-            )
-            .with_bundle(AnimationBundle::<
-                CharacterSequenceId,
-                InteractionFrameActiveHandle,
-            >::new(
-                "character_interaction_frame_acs",
-                "character_interaction_frame_sis",
-            ))
             .with_bundle(SpriteLoadingBundle::new())
+            .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())

@@ -8,7 +8,7 @@ use amethyst::{
     Error,
 };
 use derive_new::new;
-use sprite_loading::SpriteAnimationHandle;
+use sequence_model::loaded::ComponentSequencesHandle;
 
 use crate::{config::MapDefinition, loaded::Margins};
 
@@ -21,8 +21,8 @@ pub struct Map {
     pub margins: Margins,
     /// Handle to the sprite sheets for layer entities.
     pub sprite_sheet_handles: Option<Vec<SpriteSheetHandle>>,
-    /// Handle to the animations for this map's layers.
-    pub animation_handles: Option<Vec<SpriteAnimationHandle>>,
+    /// Handles to sequences of components that each layer has.
+    pub component_sequences_handles: Option<Vec<ComponentSequencesHandle>>,
 }
 
 impl Asset for Map {

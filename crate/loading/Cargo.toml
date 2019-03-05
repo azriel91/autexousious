@@ -23,6 +23,7 @@ map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }
 object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
+sequence_model = { path = "../sequence_model" }
 shred = "0.7.1"
 shred-derive = "0.5.1"
 sprite_loading = { path = "../sprite_loading" }

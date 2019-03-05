@@ -18,10 +18,12 @@ derive-new = "0.5.6"
 game_input = { path = "../game_input" }
 game_model = { path = "../game_model" }
 log = "0.4.6"
+logic_clock = { path = "../logic_clock" }
 map_model = { path = "../map_model" }
 map_selection_model = { path = "../map_selection_model" }
 object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
+sequence_model = { path = "../sequence_model" }
 shred = "0.7.1"
 shred-derive = "0.5.1"
 typename = "0.1.0"
@@ -38,6 +40,7 @@ game_model = { path = "../game_model" }
 loading = { path = "../loading" }
 map_loading = { path = "../map_loading" }
 map_selection = { path = "../map_selection" }
+sequence_loading = { path = "../sequence_loading" }
 sprite_loading = { path = "../sprite_loading" }
 
 [features]

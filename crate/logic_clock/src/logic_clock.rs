@@ -1,15 +1,18 @@
 use amethyst::ecs::{storage::DenseVecStorage, Component};
 use derive_new::new;
+use serde::{Deserialize, Serialize};
 use specs_derive::Component;
 
 /// Logical clock that has a value and limit.
-#[derive(Clone, Component, Copy, Debug, new)]
+#[derive(
+    Clone, Component, Copy, Debug, Default, Deserialize, Hash, PartialEq, Eq, Serialize, new,
+)]
 pub struct LogicClock {
     /// Current value of this clock.
     #[new(default)]
-    pub value: u32,
+    pub value: usize,
     /// Limit of this clock.
-    pub limit: u32,
+    pub limit: usize,
 }
 
 impl LogicClock {

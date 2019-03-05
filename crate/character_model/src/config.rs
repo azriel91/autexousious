@@ -1,7 +1,8 @@
 //! Contains the types that represent the configuration on disk.
 
-pub use self::character_definition::CharacterDefinition;
-pub use self::character_sequence_id::CharacterSequenceId;
+pub use self::{
+    character_definition::CharacterDefinition, character_sequence_id::CharacterSequenceId,
+};
 
 mod character_definition;
 mod character_sequence_id;
@@ -10,9 +11,10 @@ mod character_sequence_id;
 mod test {
     use std::collections::HashMap;
 
-    use collision_model::config::{BodyFrame, InteractionFrame};
+    use collision_model::config::{Body, Interactions};
     use object_model::config::object::{ObjectDefinition, ObjectFrame, Sequence};
-    use sprite_model::config::SpriteFrame;
+    use sequence_model::config::Wait;
+    use sprite_model::config::SpriteRef;
     use toml;
 
     use super::{CharacterDefinition, CharacterSequenceId};
@@ -21,12 +23,12 @@ mod test {
         [sequences.stand]
           next = "walk"
           frames = [
-            { sheet = 0, sprite = 4, wait = 2 },
-            { sheet = 0, sprite = 5, wait = 2 },
-            { sheet = 1, sprite = 6, wait = 1 },
-            { sheet = 1, sprite = 7, wait = 1 },
-            { sheet = 0, sprite = 6, wait = 2 },
-            { sheet = 0, sprite = 5, wait = 2 },
+            { wait = 2, sprite = { sheet = 0, index = 4 } },
+            { wait = 2, sprite = { sheet = 0, index = 5 } },
+            { wait = 1, sprite = { sheet = 1, index = 6 } },
+            { wait = 1, sprite = { sheet = 1, index = 7 } },
+            { wait = 2, sprite = { sheet = 0, index = 6 } },
+            { wait = 2, sprite = { sheet = 0, index = 5 } },
           ]
     "#;
 
@@ -37,34 +39,40 @@ mod test {
 
         let frames = vec![
             ObjectFrame::new(
-                SpriteFrame::new(0, 4, 2),
-                BodyFrame::default(),
-                InteractionFrame::default(),
+                Wait::new(2),
+                SpriteRef::new(0, 4),
+                Body::default(),
+                Interactions::default(),
             ),
             ObjectFrame::new(
-                SpriteFrame::new(0, 5, 2),
-                BodyFrame::default(),
-                InteractionFrame::default(),
+                Wait::new(2),
+                SpriteRef::new(0, 5),
+                Body::default(),
+                Interactions::default(),
             ),
             ObjectFrame::new(
-                SpriteFrame::new(1, 6, 1),
-                BodyFrame::default(),
-                InteractionFrame::default(),
+                Wait::new(1),
+                SpriteRef::new(1, 6),
+                Body::default(),
+                Interactions::default(),
             ),
             ObjectFrame::new(
-                SpriteFrame::new(1, 7, 1),
-                BodyFrame::default(),
-                InteractionFrame::default(),
+                Wait::new(1),
+                SpriteRef::new(1, 7),
+                Body::default(),
+                Interactions::default(),
             ),
             ObjectFrame::new(
-                SpriteFrame::new(0, 6, 2),
-                BodyFrame::default(),
-                InteractionFrame::default(),
+                Wait::new(2),
+                SpriteRef::new(0, 6),
+                Body::default(),
+                Interactions::default(),
             ),
             ObjectFrame::new(
-                SpriteFrame::new(0, 5, 2),
-                BodyFrame::default(),
-                InteractionFrame::default(),
+                Wait::new(2),
+                SpriteRef::new(0, 5),
+                Body::default(),
+                Interactions::default(),
             ),
         ];
         let sequence = Sequence::new(Some(CharacterSequenceId::Walk), frames);

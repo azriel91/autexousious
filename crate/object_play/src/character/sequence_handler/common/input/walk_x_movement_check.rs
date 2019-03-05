@@ -48,9 +48,8 @@ impl CharacterSequenceHandler for WalkXMovementCheck {
 mod tests {
     use character_model::config::CharacterSequenceId;
     use game_input::ControllerInput;
-    use object_model::entity::{
-        Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity,
-    };
+    use object_model::entity::{Grounding, HealthPoints, Mirrored, Position, RunCounter, Velocity};
+    use sequence_model::entity::SequenceStatus;
 
     use super::WalkXMovementCheck;
     use crate::{

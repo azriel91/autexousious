@@ -1,0 +1,16 @@
+[package]
+name = "sequence_loading"
+version = "0.1.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+edition = "2018"
+
+[dependencies]
+amethyst = { git = "https://github.com/amethyst/amethyst.git" }
+derive-new = "0.5.6"
+sequence_model = { path = "../sequence_model" }
+
+[dev-dependencies]
+amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
+
+[features]
+nightly = ["amethyst/nightly"]

@@ -1,5 +1,24 @@
 # Changelog
 
+## master (unreleased)
+
+### Changed
+
+* Use logic clock based system to update object components each tick. ([#92])
+* Use logic clock based system to update map components each tick. ([#99])
+* ***Breaking:*** In objects and maps, sprites are now specified using `sprite = { sheet = 0, index = 0 }`. ([#92])
+
+### Fixed
+
+* Map layers are now positioned correctly.
+
+### Removed
+
+* No longer use `amethyst_animation` to update object and map components. ([#92], [#99])
+
+[#92]: https://gitlab.com/azriel91/autexousious/issues/92
+[#99]: https://gitlab.com/azriel91/autexousious/issues/99
+
 ## 0.9.0 (2019-02-15)
 
 ### Added

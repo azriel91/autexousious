@@ -18,6 +18,7 @@ character_model = { path = "../../crate/character_model" }
 character_selection_stdio = { path = "../../crate/character_selection_stdio" }
 collision_loading = { path = "../../crate/collision_loading" }
 collision_model = { path = "../../crate/collision_model" }
+frame_rate = { path = "../../crate/frame_rate" }
 game_input = { path = "../../crate/game_input" }
 game_input_model = { path = "../../crate/game_input_model" }
 game_input_stdio = { path = "../../crate/game_input_stdio" }
@@ -30,6 +31,7 @@ loading = { path = "../../crate/loading" }
 log = "0.4.6"
 map_loading = { path = "../../crate/map_loading" }
 map_selection_stdio = { path = "../../crate/map_selection_stdio" }
+sequence_loading = { path = "../../crate/sequence_loading" }
 sprite_loading = { path = "../../crate/sprite_loading" }
 stdio_spi = { path = "../../crate/stdio_spi" }
 stdio_view = { path = "../../crate/stdio_view" }

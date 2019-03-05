@@ -11,9 +11,10 @@ pub(crate) use crate::{
     game_play_bundle::GamePlayBundle,
     system::{
         CharacterCollisionEffectSystem, CharacterGroundingSystem, CharacterKinematicsSystem,
-        CharacterSequenceUpdateSystem, GamePlayEndDetectionSystem, GamePlayEndTransitionSystem,
-        ObjectAnimationUpdateSystem, ObjectCollisionDetectionSystem, ObjectKinematicsUpdateSystem,
-        ObjectTransformUpdateSystem,
+        CharacterSequenceUpdateSystem, ComponentSequencesUpdateSystem, FrameComponentUpdateSystem,
+        GamePlayEndDetectionSystem, GamePlayEndTransitionSystem, ObjectCollisionDetectionSystem,
+        ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem, SequenceUpdateEvent,
+        SequenceUpdateSystem,
     },
 };
 

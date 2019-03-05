@@ -18,6 +18,7 @@ typename_derive = "0.1.1"
 collision_model = { path = "../collision_model"}
 pretty_assertions = "0.5.1"
 sprite_model = { path = "../sprite_model" }
+sequence_model = { path = "../sequence_model" }
 toml = "0.4.10"
 
 [features]

@@ -1,0 +1,11 @@
+[package]
+name = "frame_rate"
+version = "0.10.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+edition = "2018"
+
+[dependencies]
+amethyst = { git = "https://github.com/amethyst/amethyst.git" }
+
+[features]
+nightly = ["amethyst/nightly"]

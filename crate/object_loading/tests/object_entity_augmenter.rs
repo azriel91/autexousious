@@ -22,7 +22,6 @@
 use std::env;
 
 use amethyst::{
-    animation::AnimationBundle,
     assets::{AssetStorage, Prefab},
     core::transform::Transform,
     ecs::{Builder, SystemData, World},
@@ -39,14 +38,19 @@ use character_model::{
     loaded::{Character, CharacterObjectWrapper},
 };
 use collision_loading::CollisionLoadingBundle;
-use collision_model::animation::{BodyFrameActiveHandle, InteractionFrameActiveHandle};
 use loading::{LoadingBundle, LoadingState};
+use logic_clock::LogicClock;
 use map_loading::MapLoadingBundle;
-use object_model::entity::{Mirrored, Position, SequenceStatus, Velocity};
+use object_model::entity::{Mirrored, Position, Velocity};
+use sequence_loading::SequenceLoadingBundle;
+use sequence_model::{
+    entity::{FrameIndexClock, SequenceStatus},
+    loaded::{ComponentSequences, ComponentSequencesHandle},
+};
 use sprite_loading::SpriteLoadingBundle;
 
 use object_loading::{
-    ObjectAnimationStorages, ObjectComponentStorages, ObjectEntityAugmenter, ObjectPrefab,
+    FrameComponentStorages, ObjectComponentStorages, ObjectEntityAugmenter, ObjectPrefab,
 };
 
 #[test]
@@ -56,7 +60,9 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
     let assertion = |world: &mut World| {
         let entity = world.create_entity().build();
         {
-            let mut object_animation_storages = ObjectAnimationStorages::fetch(&world.res);
+            let component_sequences_assets =
+                world.read_resource::<AssetStorage<ComponentSequences>>();
+            let mut frame_component_storages = FrameComponentStorages::fetch(&world.res);
             let mut object_component_storages = ObjectComponentStorages::fetch(&world.res);
 
             let object_wrapper_handle = {
@@ -91,8 +97,9 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
 
             ObjectEntityAugmenter::augment(
                 entity,
+                &component_sequences_assets,
                 &mut object_component_storages,
-                &mut object_animation_storages,
+                &mut frame_component_storages,
                 object_wrapper,
             );
         }
@@ -106,27 +113,21 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
         assert!(world.read_storage::<Position<f32>>().contains(entity));
         assert!(world.read_storage::<Velocity<f32>>().contains(entity));
         assert!(world.read_storage::<Transform>().contains(entity));
+        assert!(world
+            .read_storage::<ComponentSequencesHandle>()
+            .contains(entity));
+        assert!(world.read_storage::<FrameIndexClock>().contains(entity));
+        assert!(world.read_storage::<LogicClock>().contains(entity));
     };
 
     AmethystApplication::render_base("augments_entity_with_object_components", false)
         .with_custom_event_type::<AppEvent, AppEventReader>()
         .with_setup(|world| {
-            <ObjectAnimationStorages<CharacterSequenceId> as SystemData>::setup(&mut world.res);
+            <FrameComponentStorages as SystemData>::setup(&mut world.res);
             <ObjectComponentStorages<CharacterSequenceId> as SystemData>::setup(&mut world.res);
         })
-        .with_bundle(
-            AnimationBundle::<CharacterSequenceId, BodyFrameActiveHandle>::new(
-                "character_body_frame_acs",
-                "character_body_frame_sis",
-            ),
-        )
-        .with_bundle(AnimationBundle::<
-            CharacterSequenceId,
-            InteractionFrameActiveHandle,
-        >::new(
-            "character_interaction_acs", "character_interaction_sis"
-        ))
         .with_bundle(SpriteLoadingBundle::new())
+        .with_bundle(SequenceLoadingBundle::new())
         .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
         .with_bundle(CollisionLoadingBundle::new())
         .with_bundle(MapLoadingBundle::new())

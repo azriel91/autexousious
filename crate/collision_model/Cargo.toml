@@ -6,10 +6,11 @@ edition = "2018"
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git" }
-animation_support = { path = "../animation_support" }
 derivative = "1.0.2"
 derive-new = "0.5.6"
+derive_deref = "1.0.2"
 minterpolate = { version = "0.4.0", features = ["serde"] }
+sequence_model_spi = { path = "../sequence_model_spi" }
 serde = "1.0.87"
 shape_model = { path = "../shape_model" }
 

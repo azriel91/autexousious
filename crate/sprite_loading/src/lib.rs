@@ -7,19 +7,12 @@
 #[macro_use]
 extern crate pretty_assertions;
 
-pub use crate::{
-    animation::{AnimationFrame, AnimationSequence, SpriteRenderAnimationLoader},
-    sprite_animation_handle::SpriteAnimationHandle,
-    sprite_loader::SpriteLoader,
-    sprite_loading_bundle::SpriteLoadingBundle,
-};
+pub use crate::{sprite_loader::SpriteLoader, sprite_loading_bundle::SpriteLoadingBundle};
 pub(crate) use crate::{
     sprite_sheet_loader::SpriteSheetLoader, sprite_sheet_mapper::SpriteSheetMapper,
     texture_loader::TextureLoader,
 };
 
-mod animation;
-mod sprite_animation_handle;
 mod sprite_loader;
 mod sprite_loading_bundle;
 mod sprite_sheet_loader;

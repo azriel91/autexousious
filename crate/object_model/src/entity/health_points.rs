@@ -5,6 +5,7 @@ use std::{
 
 use amethyst::ecs::{storage::VecStorage, Component};
 use derivative::Derivative;
+use derive_deref::{Deref, DerefMut};
 use derive_more::{Add, AddAssign, Display, From, Sub, SubAssign};
 use specs_derive::Component;
 
@@ -18,6 +19,8 @@ use specs_derive::Component;
     Component,
     Copy,
     Debug,
+    Deref,
+    DerefMut,
     Derivative,
     Display,
     From,

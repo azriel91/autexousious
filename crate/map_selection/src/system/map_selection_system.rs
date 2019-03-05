@@ -83,6 +83,7 @@ mod test {
     use loading::AssetLoader;
     use map_loading::MapLoadingBundle;
     use map_selection_model::{MapSelection, MapSelectionEvent};
+    use sequence_loading::SequenceLoadingBundle;
     use typename::TypeName;
 
     use super::{MapSelectionSystem, MapSelectionSystemData};
@@ -94,6 +95,7 @@ mod test {
         assert!(
             // kcov-ignore-end
             AmethystApplication::render_base("returns_when_map_selection_status_confirmed", false)
+                .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_resource(MapSelectionStatus::Confirmed)
                 .with_setup(setup_components)
@@ -134,6 +136,7 @@ mod test {
         assert!(
             // kcov-ignore-end
             AmethystApplication::render_base("returns_when_map_selection_status_confirmed", false)
+                .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_setup(setup_components)
                 .with_setup(load_maps)

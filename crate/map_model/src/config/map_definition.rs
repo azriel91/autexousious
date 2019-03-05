@@ -32,11 +32,12 @@ impl From<MapDefinition> for Result<ProcessingState<MapDefinition>, Error> {
 
 #[cfg(test)]
 mod test {
-    use sprite_model::config::SpriteFrame;
+    use sequence_model::config::Wait;
+    use sprite_model::config::SpriteRef;
     use toml;
 
     use super::MapDefinition;
-    use crate::config::{Layer, MapBounds, MapHeader, Position};
+    use crate::config::{Layer, LayerFrame, MapBounds, MapHeader, Position};
 
     const MAP_NO_LAYERS: &str = r#"
         [header]
@@ -52,13 +53,13 @@ mod test {
         [[layer]]
         position = { x = 1, y = 4 } # missing z
         frames = [
-          { sheet = 0, sprite = 0, wait = 7 },
-          { sheet = 0, sprite = 1, wait = 7 },
+          { wait = 7, sprite = { sheet = 0, index = 0 } },
+          { wait = 7, sprite = { sheet = 0, index = 1 } },
         ]
 
         [[layer]]
         position = { x = -1, y = -2, z = -3 }
-        frames = [{ sheet = 0, sprite = 0, wait = 1 }]
+        frames = [{ wait = 1, sprite = { sheet = 0, index = 0 } }]
     "#;
 
     #[test]
@@ -81,9 +82,15 @@ mod test {
         let header = MapHeader::new("Layered Map".to_string(), bounds);
         let layer_0 = Layer::new(
             Position::new(1, 4, 0),
-            vec![SpriteFrame::new(0, 0, 7), SpriteFrame::new(0, 1, 7)],
+            vec![
+                LayerFrame::new(Wait::new(7), SpriteRef::new(0, 0)),
+                LayerFrame::new(Wait::new(7), SpriteRef::new(0, 1)),
+            ],
         );
-        let layer_1 = Layer::new(Position::new(-1, -2, -3), vec![SpriteFrame::new(0, 0, 1)]);
+        let layer_1 = Layer::new(
+            Position::new(-1, -2, -3),
+            vec![LayerFrame::new(Wait::new(1), SpriteRef::new(0, 0))],
+        );
         let layers = vec![layer_0, layer_1];
         let expected = MapDefinition::new(header, layers);
         assert_eq!(expected, map_definition);

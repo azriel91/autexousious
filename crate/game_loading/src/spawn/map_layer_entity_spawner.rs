@@ -1,12 +1,15 @@
 use amethyst::{
-    animation::{get_animation_set, AnimationControlSet},
-    assets::AssetStorage,
     core::{nalgebra::Vector3, transform::Transform},
-    ecs::{prelude::*, world::EntitiesRes},
-    renderer::{SpriteRender, Transparent},
+    ecs::{Entity, SystemData, World},
+    renderer::Transparent,
 };
-use animation_support::AnimationRunner;
-use map_model::loaded::{Map, MapHandle};
+use logic_clock::LogicClock;
+use map_model::loaded::MapHandle;
+use sequence_model::{
+    config::Repeat,
+    entity::{FrameIndexClock, SequenceStatus},
+    loaded::ComponentSequence,
+};
 
 use crate::{MapLayerComponentStorages, MapSpawningResources};
 
@@ -21,23 +24,12 @@ impl MapLayerEntitySpawner {
     ///
     /// # Parameters
     ///
-    /// * `world`: `World` to spawn the character into.
+    /// * `world`: `World` to spawn the map into.
     /// * `map_handle`: Handle of the map whose layers to spawn.
     pub fn spawn_world(world: &mut World, map_handle: &MapHandle) -> Vec<Entity> {
-        let entities = Read::from(world.read_resource::<EntitiesRes>());
-        let map_assets = Read::from(world.read_resource::<AssetStorage<Map>>());
         Self::spawn_system(
-            &MapSpawningResources {
-                entities,
-                map_assets,
-            },
-            &mut MapLayerComponentStorages {
-                sprite_renders: world.write_storage::<SpriteRender>(),
-                transparents: world.write_storage::<Transparent>(),
-                transforms: world.write_storage::<Transform>(),
-                sprite_render_acses: world
-                    .write_storage::<AnimationControlSet<u32, SpriteRender>>(),
-            },
+            &MapSpawningResources::fetch(&world.res),
+            &mut MapLayerComponentStorages::fetch(&world.res),
             map_handle,
         )
     }
@@ -53,70 +45,75 @@ impl MapLayerEntitySpawner {
         MapSpawningResources {
             entities,
             map_assets,
+            component_sequences_assets,
         }: &MapSpawningResources<'res>,
         MapLayerComponentStorages {
-            ref mut sprite_renders,
             ref mut transparents,
             ref mut transforms,
-            ref mut sprite_render_acses,
+            ref mut waits,
+            ref mut repeats,
+            ref mut sequence_statuses,
+            ref mut frame_index_clocks,
+            ref mut logic_clocks,
+            ref mut sprite_renders,
+            ref mut component_sequences_handles,
         }: &mut MapLayerComponentStorages<'s>,
         map_handle: &MapHandle,
     ) -> Vec<Entity> {
-        let components_and_animation = {
-            let map = map_assets
-                .get(map_handle)
-                .expect("Expected map to be loaded.");
+        let map = map_assets
+            .get(map_handle)
+            .expect("Expected map to be loaded.");
 
-            // Spawn map layer entities
-            let map_animations = &map.animation_handles;
-            if map_animations.is_some() {
-                let sprite_sheet_handles = map.sprite_sheet_handles.as_ref().expect(
-                    "Expected sprite_sheet_handles to be present when there are animations.",
-                );
-
-                let map_animations = map_animations.as_ref().unwrap().clone();
-
-                let components = map
-                    .definition
-                    .layers
-                    .iter()
-                    .zip(sprite_sheet_handles.iter())
-                    .map(|(layer, sprite_sheet_handle)| {
-                        let position = layer.position;
-                        let mut transform = Transform::default();
-                        transform.set_position(Vector3::new(
-                            position.x as f32,
-                            position.y as f32,
-                            position.z as f32,
-                        ));
-
-                        let sprite_render = SpriteRender {
-                            sprite_sheet: sprite_sheet_handle.clone(),
-                            sprite_number: 0,
-                        };
-
-                        (transform, sprite_render.clone())
-                    })
-                    .collect::<Vec<(Transform, SpriteRender)>>();
-
-                Some((components, map_animations))
-
-            // kcov-ignore-start
-            } else {
-                // kcov-ignore-end
-                None
-            }
-        };
-
-        if let Some((layers_entity_components, map_animations)) = components_and_animation {
-            let entities = layers_entity_components
-                .into_iter()
-                .map(|(transform, sprite_render)| {
+        // Spawn map layer entities
+        if let Some(map_comp_seq_handles) = &map.component_sequences_handles {
+            map.definition
+                .layers
+                .iter()
+                .zip(map_comp_seq_handles.iter())
+                .map(|(layer, component_sequences_handle)| {
                     let entity = entities.create();
 
-                    sprite_renders
-                        .insert(entity, sprite_render)
-                        .expect("Failed to insert sprite_render component.");
+                    let position = layer.position;
+                    let mut transform = Transform::default();
+                    transform.set_position(Vector3::new(
+                        position.x as f32,
+                        (position.y - position.z) as f32,
+                        position.z as f32,
+                    ));
+
+                    let component_sequences = component_sequences_assets
+                        .get(component_sequences_handle)
+                        .expect("Expected `ComponentSequences` to be loaded.");
+
+                    let frame_index_clock =
+                        FrameIndexClock::new(LogicClock::new(component_sequences.frame_count()));
+                    frame_index_clocks
+                        .insert(entity, frame_index_clock)
+                        .expect("Failed to insert frame_index_clock component.");
+                    let starting_frame_index = (*frame_index_clock).value;
+                    let mut logic_clock = LogicClock::new(1);
+
+                    component_sequences.iter().for_each(|component_sequence| {
+                        match component_sequence {
+                            ComponentSequence::Wait(wait_sequence) => {
+                                let wait = wait_sequence[starting_frame_index];
+                                waits
+                                    .insert(entity, wait)
+                                    .expect("Failed to insert `Wait` component for object.");
+
+                                logic_clock.limit = *wait as usize;
+                            }
+                            ComponentSequence::SpriteRender(sprite_render_sequence) => {
+                                let sprite_render =
+                                    sprite_render_sequence[starting_frame_index].clone();
+                                sprite_renders.insert(entity, sprite_render).expect(
+                                    "Failed to insert `SpriteRender` component for object.",
+                                );
+                            }
+                            _ => {} // do nothing
+                        }
+                    });
+
                     // Enable transparency for visibility sorting
                     transparents
                         .insert(entity, Transparent)
@@ -124,26 +121,22 @@ impl MapLayerEntitySpawner {
                     transforms
                         .insert(entity, transform)
                         .expect("Failed to insert transform component.");
+                    repeats
+                        .insert(entity, Repeat)
+                        .expect("Failed to insert repeat component.");
+                    sequence_statuses
+                        .insert(entity, SequenceStatus::default())
+                        .expect("Failed to insert sequence_status component.");
+                    component_sequences_handles
+                        .insert(entity, component_sequences_handle.clone())
+                        .expect("Failed to insert component_sequences_handle component.");
+                    logic_clocks
+                        .insert(entity, logic_clock)
+                        .expect("Failed to insert logic_clock component.");
 
                     entity
                 })
-                .collect::<Vec<_>>();
-
-            entities
-                .iter()
-                .zip(map_animations.iter())
-                .for_each(|(entity, animation_handle)| {
-                    // We also need to trigger the animation, not just attach it to the entity
-                    let animation_id = 0;
-                    let mut animation_set =
-                        get_animation_set::<u32, SpriteRender>(sprite_render_acses, *entity)
-                            .expect("Animation should exist as new entity should be valid.");
-
-                    AnimationRunner::start_loop(animation_id, &mut animation_set, animation_handle);
-                });
-
-            entities
-
+                .collect::<Vec<Entity>>()
         // kcov-ignore-start
         } else {
             // kcov-ignore-end

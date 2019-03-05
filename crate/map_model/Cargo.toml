@@ -7,8 +7,8 @@ edition = "2018"
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 derive-new = "0.5.6"
+sequence_model = { path = "../sequence_model" }
 serde = "1.0.87"
-sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }
 
 [dev-dependencies]

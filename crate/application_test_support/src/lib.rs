@@ -6,8 +6,14 @@
 //! This builds on top of the `amethyst_test` crate by providing single calls to common
 //! application setups necessary to test Autexousious applications.
 
-pub use crate::{autexousious_application::AutexousiousApplication, setup_function::SetupFunction};
+pub use crate::{
+    autexousious_application::AutexousiousApplication,
+    queries::{ObjectQueries, SequenceQueries},
+    setup_function::SetupFunction,
+};
+
+pub mod prelude;
 
 mod autexousious_application;
-pub mod prelude;
+mod queries;
 mod setup_function;

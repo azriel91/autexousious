@@ -2,17 +2,17 @@ use amethyst::{
     assets::AssetStorage,
     ecs::{Read, System},
 };
-use collision_model::config::{BodyFrame, InteractionFrame};
+use collision_model::config::{Body, Interactions};
 use derive_new::new;
 use typename_derive::TypeName;
 
-/// Adds a default `BodyFrame` to the resources.
+/// Adds a default `Body` to the resources.
 #[derive(Debug, Default, TypeName, new)]
 pub(crate) struct CollisionLoadingSystem;
 
 type CollisionLoadingSystemData<'s> = (
-    Read<'s, AssetStorage<BodyFrame>>,
-    Read<'s, AssetStorage<InteractionFrame>>,
+    Read<'s, AssetStorage<Body>>,
+    Read<'s, AssetStorage<Interactions>>,
 );
 
 impl<'s> System<'s> for CollisionLoadingSystem {
@@ -25,7 +25,7 @@ impl<'s> System<'s> for CollisionLoadingSystem {
 mod test {
     use amethyst::{assets::AssetStorage, ecs::System};
     use amethyst_test::AmethystApplication;
-    use collision_model::config::{BodyFrame, InteractionFrame};
+    use collision_model::config::{Body, Interactions};
 
     use super::CollisionLoadingSystem;
 
@@ -37,10 +37,10 @@ mod test {
             AmethystApplication::ui_base::<String, String>()
                 .with_setup(|world| CollisionLoadingSystem::new().setup(&mut world.res))
                 .with_assertion(|world| {
-                    assert!(world.res.try_fetch::<AssetStorage<BodyFrame>>().is_some());
+                    assert!(world.res.try_fetch::<AssetStorage<Body>>().is_some());
                     assert!(world
                         .res
-                        .try_fetch::<AssetStorage<InteractionFrame>>()
+                        .try_fetch::<AssetStorage<Interactions>>()
                         .is_some());
                 })
                 .run()

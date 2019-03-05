@@ -8,9 +8,9 @@ use typename::TypeName;
 
 use crate::{
     CharacterCollisionEffectSystem, CharacterGroundingSystem, CharacterKinematicsSystem,
-    CharacterSequenceUpdateSystem, GamePlayEndDetectionSystem, GamePlayEndTransitionSystem,
-    ObjectAnimationUpdateSystem, ObjectCollisionDetectionSystem, ObjectKinematicsUpdateSystem,
-    ObjectTransformUpdateSystem,
+    CharacterSequenceUpdateSystem, ComponentSequencesUpdateSystem, FrameComponentUpdateSystem,
+    GamePlayEndDetectionSystem, GamePlayEndTransitionSystem, ObjectCollisionDetectionSystem,
+    ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem, SequenceUpdateSystem,
 };
 
 /// Adds the object type update systems to the provided dispatcher.
@@ -42,6 +42,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &CharacterGroundingSystem::type_name(),
             &[&ObjectKinematicsUpdateSystem::type_name()],
         ); // kcov-ignore
+
         builder.add(
             ObjectTransformUpdateSystem::new(),
             &ObjectTransformUpdateSystem::type_name(),
@@ -63,11 +64,25 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[&CharacterCollisionEffectSystem::type_name()],
         ); // kcov-ignore
 
-        // Depends on the LastTrackerSystem<Character>, so must run before it.
+        // TODO: autogenerate these
         builder.add(
-            ObjectAnimationUpdateSystem::<Character>::new(),
-            &ObjectAnimationUpdateSystem::<Character>::type_name(),
-            &[&CharacterCollisionEffectSystem::type_name()],
+            ComponentSequencesUpdateSystem::<Character>::new(),
+            &ComponentSequencesUpdateSystem::<Character>::type_name(),
+            &[
+                &CharacterSequenceUpdateSystem::type_name(),
+                &CharacterCollisionEffectSystem::type_name(),
+            ],
+        ); // kcov-ignore
+
+        builder.add(
+            SequenceUpdateSystem::new(),
+            &SequenceUpdateSystem::type_name(),
+            &[&ComponentSequencesUpdateSystem::<Character>::type_name()],
+        ); // kcov-ignore
+        builder.add(
+            FrameComponentUpdateSystem::new(),
+            &FrameComponentUpdateSystem::type_name(),
+            &[&SequenceUpdateSystem::type_name()],
         ); // kcov-ignore
 
         // Depends on the LastTrackerSystem<ControllerInput>, so must run before it.
@@ -98,7 +113,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         builder.add(
             character_sequence_id_tracker_system,
             &character_sequence_id_tracker_system_name,
-            &[&ObjectAnimationUpdateSystem::<CharacterSequenceId>::type_name()],
+            &[&GamePlayEndTransitionSystem::type_name()],
         ); // kcov-ignore
 
         Ok(())

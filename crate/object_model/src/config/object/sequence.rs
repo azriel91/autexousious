@@ -9,11 +9,8 @@
 
 pub use self::{object_frame::ObjectFrame, sequence_id::SequenceId};
 
-use collision_loading::InteractionAnimationSequence;
-use collision_model::animation::BodyAnimationSequence;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
-use sprite_loading::AnimationSequence;
 
 mod object_frame;
 mod sequence_id;
@@ -33,36 +30,16 @@ pub struct Sequence<SeqId: SequenceId> {
     pub frames: Vec<ObjectFrame>,
 }
 
-impl<SeqId: SequenceId> AnimationSequence for Sequence<SeqId> {
-    type Frame = ObjectFrame;
-    fn frames(&self) -> &[ObjectFrame] {
-        &self.frames
-    }
-}
-
-impl<SeqId: SequenceId> BodyAnimationSequence for Sequence<SeqId> {
-    type Frame = ObjectFrame;
-    fn frames(&self) -> &[ObjectFrame] {
-        &self.frames
-    }
-}
-
-impl<SeqId: SequenceId> InteractionAnimationSequence for Sequence<SeqId> {
-    type Frame = ObjectFrame;
-    fn frames(&self) -> &[ObjectFrame] {
-        &self.frames
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use amethyst::ecs::{storage::DenseVecStorage, Component};
-    use collision_model::config::{BodyFrame, Interaction, InteractionFrame};
+    use collision_model::config::{Body, Interaction, Interactions};
     use derivative::Derivative;
+    use sequence_model::config::Wait;
     use serde::{Deserialize, Serialize};
     use shape_model::Volume;
     use specs_derive::Component;
-    use sprite_model::config::SpriteFrame;
+    use sprite_model::config::SpriteRef;
     use toml;
 
     use super::{ObjectFrame, Sequence, SequenceId};
@@ -70,12 +47,12 @@ mod tests {
     const SEQUENCE_WITH_FRAMES: &str = r#"
         next = "Boo"
         frames = [
-          { sheet = 0, sprite = 4, wait = 2 },
-          { sheet = 0, sprite = 5, wait = 2 },
-          { sheet = 1, sprite = 6, wait = 1 },
-          { sheet = 1, sprite = 7, wait = 1 },
-          { sheet = 0, sprite = 6, wait = 2 },
-          { sheet = 0, sprite = 5, wait = 2 },
+          { wait = 2, sprite = { sheet = 0, index = 4 } },
+          { wait = 2, sprite = { sheet = 0, index = 5 } },
+          { wait = 1, sprite = { sheet = 1, index = 6 } },
+          { wait = 1, sprite = { sheet = 1, index = 7 } },
+          { wait = 2, sprite = { sheet = 0, index = 6 } },
+          { wait = 2, sprite = { sheet = 0, index = 5 } },
         ]
     "#;
     const SEQUENCE_WITH_FRAMES_EMPTY: &str = r#"
@@ -83,8 +60,7 @@ mod tests {
     "#;
     const SEQUENCE_WITH_BODY: &str = r#"
         [[frames]]
-        sheet = 0
-        sprite = 0
+        sprite = { sheet = 0, index = 0 }
         body = [
           { box = { x = -1, y = -2, z = -3, w = 11, h = 12, d = 13 } },
           { sphere = { x = -7, y = -8, z = -9, r = 17 } },
@@ -92,8 +68,7 @@ mod tests {
     "#;
     const SEQUENCE_WITH_ITR: &str = r#"
         [[frames]]
-        sheet = 0
-        sprite = 0
+        sprite = { sheet = 0, index = 0 }
         interactions = [
           { physical = { bounds = [{ sphere = { x = 1, y = 1, r = 1 } }] } },
         ]
@@ -115,34 +90,40 @@ mod tests {
 
         let frames = vec![
             ObjectFrame::new(
-                SpriteFrame::new(0, 4, 2),
-                BodyFrame::default(),
-                InteractionFrame::default(),
+                Wait::new(2),
+                SpriteRef::new(0, 4),
+                Body::default(),
+                Interactions::default(),
             ),
             ObjectFrame::new(
-                SpriteFrame::new(0, 5, 2),
-                BodyFrame::default(),
-                InteractionFrame::default(),
+                Wait::new(2),
+                SpriteRef::new(0, 5),
+                Body::default(),
+                Interactions::default(),
             ),
             ObjectFrame::new(
-                SpriteFrame::new(1, 6, 1),
-                BodyFrame::default(),
-                InteractionFrame::default(),
+                Wait::new(1),
+                SpriteRef::new(1, 6),
+                Body::default(),
+                Interactions::default(),
             ),
             ObjectFrame::new(
-                SpriteFrame::new(1, 7, 1),
-                BodyFrame::default(),
-                InteractionFrame::default(),
+                Wait::new(1),
+                SpriteRef::new(1, 7),
+                Body::default(),
+                Interactions::default(),
             ),
             ObjectFrame::new(
-                SpriteFrame::new(0, 6, 2),
-                BodyFrame::default(),
-                InteractionFrame::default(),
+                Wait::new(2),
+                SpriteRef::new(0, 6),
+                Body::default(),
+                Interactions::default(),
             ),
             ObjectFrame::new(
-                SpriteFrame::new(0, 5, 2),
-                BodyFrame::default(),
-                InteractionFrame::default(),
+                Wait::new(2),
+                SpriteRef::new(0, 5),
+                Body::default(),
+                Interactions::default(),
             ),
         ];
         let expected = Sequence::new(Some(TestSeqId::Boo), frames);
@@ -171,9 +152,10 @@ mod tests {
             },
         ];
         let frames = vec![ObjectFrame::new(
-            SpriteFrame::new(0, 0, 0),
-            BodyFrame::new(Some(body_volumes), 0),
-            InteractionFrame::new(None, 0),
+            Wait::new(0),
+            SpriteRef::new(0, 0),
+            Body::new(body_volumes),
+            Interactions::new(Vec::new()),
         )];
         let expected = Sequence::new(None, frames);
         assert_eq!(expected, sequence);
@@ -196,9 +178,10 @@ mod tests {
             multiple: false,
         }];
         let frames = vec![ObjectFrame::new(
-            SpriteFrame::new(0, 0, 0),
-            BodyFrame::new(None, 0),
-            InteractionFrame::new(Some(interactions), 0),
+            Wait::new(0),
+            SpriteRef::new(0, 0),
+            Body::new(Vec::new()),
+            Interactions::new(interactions),
         )];
         let expected = Sequence::new(None, frames);
         assert_eq!(expected, sequence);

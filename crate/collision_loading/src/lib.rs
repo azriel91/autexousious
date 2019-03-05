@@ -3,19 +3,8 @@
 
 //! Processes collision configuration into the loaded collision model.
 
-#[cfg(test)]
-#[macro_use]
-extern crate pretty_assertions;
-
+pub use crate::collision_loading_bundle::CollisionLoadingBundle;
 pub(crate) use crate::system::CollisionLoadingSystem;
-pub use crate::{
-    animation::{
-        BodyAnimationLoader, InteractionAnimationFrame, InteractionAnimationLoader,
-        InteractionAnimationSequence,
-    },
-    collision_loading_bundle::CollisionLoadingBundle,
-};
 
-mod animation;
 mod collision_loading_bundle;
 mod system;

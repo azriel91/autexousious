@@ -7,11 +7,12 @@ use amethyst::{
 };
 use derivative::Derivative;
 use object_model::{config::ObjectAssetData, loaded::GameObject};
+use sequence_model::loaded::ComponentSequences;
 use serde::{Deserialize, Serialize};
 use shred_derive::SystemData;
 
 use crate::{
-    ObjectAnimationStorages, ObjectComponentStorages, ObjectEntityAugmenter, ObjectPrefabError,
+    FrameComponentStorages, ObjectComponentStorages, ObjectEntityAugmenter, ObjectPrefabError,
 };
 
 /// Sequence for volumes that can be hit.
@@ -42,16 +43,19 @@ where
     /// `Loader` to load assets.
     #[derivative(Debug = "ignore")]
     loader: ReadExpect<'s, Loader>,
+    /// `AssetStorage` for `ComponentSequences`.
+    #[derivative(Debug = "ignore")]
+    component_sequences_assets: Read<'s, AssetStorage<ComponentSequences>>,
     /// `AssetStorage` for `ObjectWrapper`s.
     #[derivative(Debug = "ignore")]
     object_wrapper_assets: Read<'s, AssetStorage<O::ObjectWrapper>>,
-    /// `Handle<ObjectWrapper>` component storage.
+    /// `Handle<O::ObjectWrapper>` component storage.
     #[derivative(Debug = "ignore")]
     object_wrapper_handles: WriteStorage<'s, Handle<O::ObjectWrapper>>,
     /// Common game object `Component` storages.
     object_component_storages: ObjectComponentStorages<'s, O::SequenceId>,
-    /// Common game object `Animation` storages.
-    object_animation_storages: ObjectAnimationStorages<'s, O::SequenceId>,
+    /// Common game object frame component storages.
+    frame_component_storages: FrameComponentStorages<'s>,
 }
 
 impl<'s, O> PrefabData<'s> for ObjectPrefab<O>
@@ -67,10 +71,11 @@ where
         entity: Entity,
         ObjectPrefabSystemData {
             loader,
+            component_sequences_assets,
             object_wrapper_assets,
             object_wrapper_handles,
             object_component_storages,
-            object_animation_storages,
+            frame_component_storages,
         }: &mut Self::SystemData,
         _: &[Entity],
     ) -> Result<(), Error> {
@@ -89,12 +94,15 @@ where
                 object_wrapper_handle: object_wrapper_handle.clone(),
             })?;
 
-        object_wrapper_handles.insert(entity, object_wrapper_handle.clone())?;
+        object_wrapper_handles
+            .insert(entity, object_wrapper_handle)
+            .expect("Failed to insert `Handle<O::ObjectWrapper>` component.");
 
         ObjectEntityAugmenter::augment(
             entity,
+            component_sequences_assets,
             object_component_storages,
-            object_animation_storages,
+            frame_component_storages,
             object_wrapper,
         );
 

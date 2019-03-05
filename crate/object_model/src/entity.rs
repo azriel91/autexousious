@@ -9,7 +9,6 @@ pub use self::{
     health_points::HealthPoints,
     kinematic::{Position, Velocity},
     mirrored::Mirrored,
-    sequence_status::SequenceStatus,
 };
 
 mod character;
@@ -17,4 +16,3 @@ mod grounding;
 mod health_points;
 mod kinematic;
 mod mirrored;
-mod sequence_status;

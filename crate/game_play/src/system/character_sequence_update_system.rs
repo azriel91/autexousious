@@ -1,19 +1,18 @@
 use amethyst::{
-    animation::{get_animation_set, ControlState},
     ecs::{Entities, Join, ReadStorage, System, WriteStorage},
     renderer::Flipped,
 };
 use character_model::config::CharacterSequenceId;
 use derive_new::new;
 use game_input::ControllerInput;
-use object_loading::ObjectAnimationStorages;
 use object_model::{
-    entity::{Grounding, HealthPoints, Mirrored, Position, RunCounter, SequenceStatus, Velocity},
+    entity::{Grounding, HealthPoints, Mirrored, Position, RunCounter, Velocity},
     loaded::SequenceEndTransitions,
 };
 use object_play::{
     CharacterSequenceUpdateComponents, CharacterSequenceUpdater, MirroredUpdater, RunCounterUpdater,
 };
+use sequence_model::entity::SequenceStatus;
 use shred_derive::SystemData;
 use typename_derive::TypeName;
 
@@ -36,7 +35,6 @@ pub struct CharacterSequenceUpdateSystemData<'s> {
     mirroreds: WriteStorage<'s, Mirrored>,
     groundings: WriteStorage<'s, Grounding>,
     flippeds: WriteStorage<'s, Flipped>,
-    object_acses: ObjectAnimationStorages<'s, CharacterSequenceId>,
 }
 
 impl<'s> System<'s> for CharacterSequenceUpdateSystem {
@@ -57,13 +55,8 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             mut mirroreds,
             mut groundings,
             mut flippeds,
-            object_acses,
         }: Self::SystemData,
     ) {
-        let ObjectAnimationStorages {
-            mut sprite_render_acses,
-            ..
-        } = object_acses;
         for (
             entity,
             controller_input,
@@ -72,20 +65,18 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             velocity,
             run_counter,
             health_points,
-            character_sequence_id,
             sequence_status,
             mirrored,
             grounding,
             flipped,
         ) in (
-            &*entities,
+            &entities,
             &controller_inputs,
             &sequence_end_transitionses,
             &positions,
             &velocities,
             &mut run_counters,
             &health_pointses,
-            &mut character_sequence_ids,
             &mut sequence_statuses,
             &mut mirroreds,
             &mut groundings,
@@ -93,24 +84,14 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
         )
             .join()
         {
-            let sprite_animation_set = get_animation_set(&mut sprite_render_acses, entity)
-                .expect("Sprite animation should exist as entity should be valid.");
-
-            // Mark sequence as `Ongoing` for subsequent tick.
-            if *sequence_status == SequenceStatus::Begin {
-                *sequence_status = SequenceStatus::Ongoing;
+            // Retrieve sequence ID separately as we use a `FlaggedStorage` to track if it has been
+            // changed.
+            let character_sequence_id = character_sequence_ids.get(entity);
+            if character_sequence_id.is_none() {
+                continue;
             }
-
-            let sequence_ended = {
-                sprite_animation_set
-                    .animations
-                    .iter()
-                    .find(|&&(ref id, ref _control)| id == character_sequence_id)
-                    .map_or(true, |(_id, control)| control.state == ControlState::Done)
-            };
-            if sequence_ended {
-                *sequence_status = SequenceStatus::End;
-            }
+            let character_sequence_id =
+                character_sequence_id.expect("Expected `CharacterSequenceId` to exist.");
 
             let next_character_sequence_id = CharacterSequenceUpdater::update(
                 sequence_end_transitions,
@@ -144,6 +125,10 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             };
 
             if let Some(next_character_sequence_id) = next_character_sequence_id {
+                let character_sequence_id = character_sequence_ids
+                    .get_mut(entity)
+                    .expect("Expected `CharacterSequenceId` to exist.");
+
                 *character_sequence_id = next_character_sequence_id;
                 *sequence_status = SequenceStatus::Begin;
             }
@@ -159,71 +144,11 @@ mod tests {
     use game_input::ControllerInput;
     use map_model::loaded::Map;
     use map_selection_model::MapSelection;
-    use object_model::entity::{Grounding, Mirrored, Position, SequenceStatus};
+    use object_model::entity::{Grounding, Mirrored, Position};
+    use sequence_model::entity::SequenceStatus;
     use typename::TypeName;
 
     use super::CharacterSequenceUpdateSystem;
-
-    #[test]
-    fn updates_sequence_status_begin_to_ongoing() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::game_base("updates_sequence_status_begin_to_ongoing", false)
-                .with_setup(|world| {
-                    world.exec(
-                        |(
-                            map_selection,
-                            maps,
-                            mut character_sequence_ids,
-                            mut sequence_statuses,
-                            mut positions,
-                            mut groundings,
-                        ): (
-                            ReadExpect<'_, MapSelection>,
-                            Read<'_, AssetStorage<Map>>,
-                            WriteStorage<'_, CharacterSequenceId>,
-                            WriteStorage<'_, SequenceStatus>,
-                            WriteStorage<'_, Position<f32>>,
-                            WriteStorage<'_, Grounding>,
-                        )| {
-                            let map = maps
-                                .get(map_selection.handle())
-                                .expect("Expected map to be loaded.");
-
-                            for (character_sequence_id, sequence_status, position, grounding) in (
-                                &mut character_sequence_ids,
-                                &mut sequence_statuses,
-                                &mut positions,
-                                &mut groundings,
-                            )
-                                .join()
-                            {
-                                *character_sequence_id = CharacterSequenceId::Stand;
-                                *sequence_status = SequenceStatus::Begin;
-                                *grounding = Grounding::OnGround;
-
-                                position[1] = map.margins.bottom;
-                            }
-                        },
-                    );
-                })
-                .with_system_single(
-                    CharacterSequenceUpdateSystem::new(),
-                    CharacterSequenceUpdateSystem::type_name(),
-                    &[]
-                )
-                .with_assertion(|world| {
-                    world.exec(|sequence_statuses: ReadStorage<'_, SequenceStatus>| {
-                        for sequence_status in sequence_statuses.join() {
-                            assert_eq!(SequenceStatus::Ongoing, *sequence_status);
-                        }
-                    });
-                })
-                .run()
-                .is_ok()
-        );
-    }
 
     #[test]
     fn updates_walk_x_and_z_velocity() {

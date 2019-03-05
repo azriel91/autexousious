@@ -1,7 +1,6 @@
 use std::path::Path;
 
 use amethyst::{
-    animation::{Animation, Sampler, SpriteRenderPrimitive},
     assets::{AssetStorage, Loader, ProgressCounter},
     ecs::World,
     renderer::{SpriteRender, SpriteSheet, Texture},
@@ -13,8 +12,12 @@ use map_model::{
     config::MapDefinition,
     loaded::{Map, MapHandle, Margins},
 };
-use sprite_loading::{SpriteLoader, SpriteRenderAnimationLoader};
-use sprite_model::config::SpritesDefinition;
+use sequence_model::{
+    config::Wait,
+    loaded::{ComponentSequence, ComponentSequences, ComponentSequencesHandle, WaitSequence},
+};
+use sprite_loading::SpriteLoader;
+use sprite_model::{config::SpritesDefinition, loaded::SpriteRenderSequence};
 
 /// Loads assets specified by map configuration into the loaded map model.
 #[derive(Debug)]
@@ -59,22 +62,53 @@ impl MapLoader {
             }
         }?;
 
-        let (sprite_sheet_handles, animation_handles) = {
+        let (sprite_sheet_handles, component_sequences_handles) = {
             if let Some(sprite_sheet_handles) = loaded_sprites {
                 let loader = world.read_resource::<Loader>();
-                let sprite_render_primitive_sampler_assets =
-                    world.read_resource::<AssetStorage<Sampler<SpriteRenderPrimitive>>>();
-                let sprite_render_animation_assets =
-                    world.read_resource::<AssetStorage<Animation<SpriteRender>>>();
+                let component_sequences_assets =
+                    world.read_resource::<AssetStorage<ComponentSequences>>();
 
-                let animation_handles = SpriteRenderAnimationLoader::load_into_vec(
-                    &loader,
-                    &sprite_render_primitive_sampler_assets,
-                    &sprite_render_animation_assets,
-                    map_definition.layers.iter(),
-                    &sprite_sheet_handles,
-                );
-                (Some(sprite_sheet_handles), Some(animation_handles))
+                let component_sequences_handles = map_definition
+                    .layers
+                    .iter()
+                    .map(|layer| {
+                        let wait_sequence = WaitSequence::new(
+                            layer
+                                .frames
+                                .iter()
+                                .map(|frame| frame.wait)
+                                .collect::<Vec<Wait>>(),
+                        );
+                        let sprite_render_sequence = SpriteRenderSequence::new(
+                            layer
+                                .frames
+                                .iter()
+                                .map(|frame| {
+                                    let sprite_ref = &frame.sprite;
+                                    let sprite_sheet =
+                                        sprite_sheet_handles[sprite_ref.sheet].clone();
+                                    let sprite_number = sprite_ref.index;
+                                    SpriteRender {
+                                        sprite_sheet,
+                                        sprite_number,
+                                    }
+                                })
+                                .collect::<Vec<SpriteRender>>(),
+                        );
+
+                        let mut component_sequences = Vec::new();
+                        component_sequences.push(ComponentSequence::Wait(wait_sequence));
+                        component_sequences
+                            .push(ComponentSequence::SpriteRender(sprite_render_sequence));
+
+                        let component_sequences = ComponentSequences::new(component_sequences);
+                        loader.load_from_data(component_sequences, (), &component_sequences_assets)
+                    })
+                    .collect::<Vec<ComponentSequencesHandle>>();
+                (
+                    Some(sprite_sheet_handles),
+                    Some(component_sequences_handles),
+                )
             } else {
                 (None, None)
             }
@@ -86,7 +120,7 @@ impl MapLoader {
             map_definition,
             margins,
             sprite_sheet_handles,
-            animation_handles,
+            component_sequences_handles,
         );
 
         let loader = world.read_resource::<Loader>();
@@ -128,7 +162,7 @@ mod tests {
                         .expect("Expected map to be loaded.");
 
                     // See empty/map.toml
-                    assert!(map.animation_handles.is_none());
+                    assert!(map.component_sequences_handles.is_none());
                 })
                 .run()
                 .is_ok()
