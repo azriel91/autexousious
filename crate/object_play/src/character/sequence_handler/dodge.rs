@@ -1,23 +1,26 @@
 use character_model::config::CharacterSequenceId;
 
-use crate::character::sequence_handler::{
-    common::input::DodgeCheck, switch_sequence_on_end::SwitchSequenceOnEnd,
-    CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+use crate::{
+    character::sequence_handler::{
+        common::{grounding::AirborneCheck, status::AliveCheck},
+        CharacterSequenceHandler, SwitchSequenceOnEnd,
+    },
+    CharacterSequenceUpdateComponents,
 };
 
-const JUMP_DESCEND_LAND: SwitchSequenceOnEnd = SwitchSequenceOnEnd(CharacterSequenceId::Stand);
+const DODGE: SwitchSequenceOnEnd = SwitchSequenceOnEnd(CharacterSequenceId::Stand);
 
 #[derive(Debug)]
-pub(crate) struct JumpDescendLand;
+pub(crate) struct Dodge;
 
-impl CharacterSequenceHandler for JumpDescendLand {
+impl CharacterSequenceHandler for Dodge {
     fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
-        [DodgeCheck::update]
+        [AliveCheck::update, AirborneCheck::update]
             .iter()
             .fold(None, |status_update, fn_update| {
                 status_update.or_else(|| fn_update(components))
             })
-            .or_else(|| JUMP_DESCEND_LAND.update(components.sequence_status))
+            .or_else(|| DODGE.update(components.sequence_status))
     }
 }
 
@@ -28,10 +31,28 @@ mod test {
     use object_model::entity::{Grounding, HealthPoints, Mirrored, Position, RunCounter, Velocity};
     use sequence_model::entity::SequenceStatus;
 
-    use super::JumpDescendLand;
+    use super::Dodge;
     use crate::{
         character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
     };
+
+    #[test]
+    fn jump_descend_when_airborne() {
+        assert_eq!(
+            Some(CharacterSequenceId::JumpDescend),
+            Dodge::update(CharacterSequenceUpdateComponents::new(
+                &ControllerInput::default(),
+                HealthPoints::default(),
+                CharacterSequenceId::Dodge,
+                SequenceStatus::default(),
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored::default(),
+                Grounding::Airborne,
+                RunCounter::default()
+            ))
+        );
+    }
 
     #[test]
     fn no_update_when_sequence_not_ended() {
@@ -39,30 +60,10 @@ mod test {
 
         assert_eq!(
             None,
-            JumpDescendLand::update(CharacterSequenceUpdateComponents::new(
+            Dodge::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::JumpDescendLand,
-                SequenceStatus::default(),
-                &Position::default(),
-                &Velocity::default(),
-                Mirrored::default(),
-                Grounding::default(),
-                RunCounter::default()
-            ))
-        );
-    }
-
-    #[test]
-    fn dodge_when_defend() {
-        let input = ControllerInput::new(0., 0., true, false, false, false);
-
-        assert_eq!(
-            Some(CharacterSequenceId::Dodge),
-            JumpDescendLand::update(CharacterSequenceUpdateComponents::new(
-                &input,
-                HealthPoints::default(),
-                CharacterSequenceId::JumpDescendLand,
+                CharacterSequenceId::Dodge,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -79,10 +80,10 @@ mod test {
 
         assert_eq!(
             Some(CharacterSequenceId::Stand),
-            JumpDescendLand::update(CharacterSequenceUpdateComponents::new(
+            Dodge::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::JumpDescendLand,
+                CharacterSequenceId::Dodge,
                 SequenceStatus::End,
                 &Position::default(),
                 &Velocity::default(),

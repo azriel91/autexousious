@@ -4,8 +4,8 @@ use sequence_model::entity::SequenceStatus;
 
 use crate::{
     character::sequence_handler::{
-        CharacterSequenceHandler, FallForwardAscend, FallForwardDescend, FallForwardLand, Jump,
-        JumpAscend, JumpDescend, JumpDescendLand, JumpOff, LieFaceDown, Run, RunStop, Stand,
+        CharacterSequenceHandler, Dodge, FallForwardAscend, FallForwardDescend, FallForwardLand,
+        Jump, JumpAscend, JumpDescend, JumpDescendLand, JumpOff, LieFaceDown, Run, RunStop, Stand,
         StandAttack, StandOnSequenceEnd, Walk,
     },
     CharacterSequenceUpdateComponents,
@@ -33,6 +33,7 @@ impl CharacterSequenceUpdater {
             CharacterSequenceId::Walk => &Walk::update,
             CharacterSequenceId::Run => &Run::update,
             CharacterSequenceId::RunStop => &RunStop::update,
+            CharacterSequenceId::Dodge => &Dodge::update,
             CharacterSequenceId::Jump => &Jump::update,
             CharacterSequenceId::JumpOff => &JumpOff::update,
             CharacterSequenceId::JumpAscend => &JumpAscend::update,

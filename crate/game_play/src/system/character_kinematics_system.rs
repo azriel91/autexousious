@@ -63,6 +63,11 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                     velocity[0] = if mirrored.0 { -2. } else { 2. };
                     velocity[2] = controller_input.z_axis_value as f32 * 0.5;
                 }
+                // TODO: velocity as config
+                CharacterSequenceId::Dodge => {
+                    velocity[0] = if mirrored.0 { -3. } else { 3. };
+                    velocity[2] = controller_input.z_axis_value as f32;
+                }
                 CharacterSequenceId::JumpOff => {
                     if *sequence_status == SequenceStatus::Begin {
                         velocity[0] = controller_input.x_axis_value as f32 * 5.;
@@ -403,6 +408,102 @@ mod tests {
                             for (_, velocity) in (&character_sequence_ids, &velocities).join() {
                                 assert_eq!(vx, velocity[0]);
                                 assert_eq!(0.5, velocity[2]);
+                            }
+                        },
+                    );
+                };
+
+                // kcov-ignore-start
+                assert!(
+                    // kcov-ignore-end
+                    AutexousiousApplication::game_base(
+                        "updates_run_stop_x_and_z_velocity_non_mirrored",
+                        false
+                    )
+                    .with_setup(setup_fn)
+                    .with_system_single(
+                        CharacterKinematicsSystem::new(),
+                        CharacterKinematicsSystem::type_name(),
+                        &[]
+                    )
+                    .with_assertion(assertion_fn)
+                    .run()
+                    .is_ok()
+                );
+            });
+    }
+
+    #[test]
+    fn updates_dodge_x_and_z_velocity() {
+        vec![(false, 3.), (true, -3.)]
+            .into_iter()
+            .for_each(|(mirrored_bool, vx)| {
+                let setup_fn = move |world: &mut World| {
+                    world.exec(
+                        |(
+                            map_selection,
+                            maps,
+                            mut controller_inputs,
+                            mut character_sequence_ids,
+                            mut positions,
+                            mut velocities,
+                            mut mirroreds,
+                            mut groundings,
+                        ): (
+                            ReadExpect<'_, MapSelection>,
+                            Read<'_, AssetStorage<Map>>,
+                            WriteStorage<'_, ControllerInput>,
+                            WriteStorage<'_, CharacterSequenceId>,
+                            WriteStorage<'_, Position<f32>>,
+                            WriteStorage<'_, Velocity<f32>>,
+                            WriteStorage<'_, Mirrored>,
+                            WriteStorage<'_, Grounding>,
+                        )| {
+                            let map = maps
+                                .get(map_selection.handle())
+                                .expect("Expected map to be loaded.");
+
+                            for (
+                                controller_input,
+                                character_sequence_id,
+                                position,
+                                velocity,
+                                mirrored,
+                                grounding,
+                            ) in (
+                                &mut controller_inputs,
+                                &mut character_sequence_ids,
+                                &mut positions,
+                                &mut velocities,
+                                &mut mirroreds,
+                                &mut groundings,
+                            )
+                                .join()
+                            {
+                                controller_input.z_axis_value = 1.;
+
+                                *character_sequence_id = CharacterSequenceId::Dodge;
+                                *grounding = Grounding::OnGround;
+                                *mirrored = mirrored_bool.into();
+
+                                position[1] = map.margins.bottom;
+                                velocity[0] = 0.;
+                                velocity[1] = 0.;
+                                velocity[2] = 0.;
+                            }
+                        },
+                    );
+                };
+
+                let assertion_fn = move |world: &mut World| {
+                    world.exec(
+                        |(character_sequence_ids, velocities): (
+                            ReadStorage<'_, CharacterSequenceId>,
+                            ReadStorage<'_, Velocity<f32>>,
+                        )| {
+                            for (_, velocity) in (&character_sequence_ids, &velocities).join() {
+                                assert_eq!(vx, velocity[0]);
+                                assert_eq!(1., velocity[2]);
                             }
                         },
                     );

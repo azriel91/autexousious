@@ -124,6 +124,14 @@
     sprite = { sheet = 0, index = 4 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
+[sequences.dodge]
+  frames = [
+    { wait = 4, sprite = { sheet = 0, index = 1 } },
+    { wait = 4, sprite = { sheet = 0, index = 3 } },
+    { wait = 4, sprite = { sheet = 0, index = 1 } },
+    { wait = 4, sprite = { sheet = 0, index = 3 } },
+  ]
+
 # There are 3 sequences for jumping up:
 #
 # * `jump`: The character squats and gets ready to jump.

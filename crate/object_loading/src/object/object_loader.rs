@@ -225,7 +225,7 @@ mod test {
                     let object_wrapper = world.read_resource::<CharacterObjectWrapper>();
 
                     // See bat/object.toml
-                    assert_eq!(16, object_wrapper.component_sequences_handles.len());
+                    assert_eq!(17, object_wrapper.component_sequences_handles.len());
 
                     let component_sequences_assets =
                         world.read_resource::<AssetStorage<ComponentSequences>>();

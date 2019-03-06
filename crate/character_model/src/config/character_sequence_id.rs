@@ -22,6 +22,8 @@ pub enum CharacterSequenceId {
     Run,
     /// Running stop sequence.
     RunStop,
+    /// Dodge while running.
+    Dodge,
     /// Character is about to jump.
     Jump,
     /// Character has just jumped off the ground.

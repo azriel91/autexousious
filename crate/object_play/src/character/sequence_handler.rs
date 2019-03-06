@@ -4,7 +4,7 @@ use crate::CharacterSequenceUpdateComponents;
 
 pub(crate) use self::sequence_handler_util::SequenceHandlerUtil;
 pub(super) use self::{
-    fall_forward_ascend::FallForwardAscend, fall_forward_descend::FallForwardDescend,
+    dodge::Dodge, fall_forward_ascend::FallForwardAscend, fall_forward_descend::FallForwardDescend,
     fall_forward_land::FallForwardLand, jump::Jump, jump_ascend::JumpAscend,
     jump_descend::JumpDescend, jump_descend_land::JumpDescendLand, jump_off::JumpOff,
     lie_face_down::LieFaceDown, run::Run, run_stop::RunStop, stand::Stand,
@@ -15,6 +15,7 @@ pub(super) use self::{
 };
 
 pub(super) mod common;
+mod dodge;
 mod fall_forward_ascend;
 mod fall_forward_descend;
 mod fall_forward_land;
