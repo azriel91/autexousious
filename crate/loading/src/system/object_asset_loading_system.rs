@@ -127,7 +127,7 @@ where
         // TODO: See <https://github.com/polachok/derive-diff>
         if self.asset_index.is_none() {
             let asset_index = AssetDiscovery::asset_index(&self.assets_dir);
-            debug!("Indexed assets: {:?}", &self.asset_index);
+            debug!("Indexed assets: {:?}", &asset_index);
 
             // Borrow self piecewise.
             let assets_in_progress = &self.assets_in_progress;
@@ -229,18 +229,29 @@ where
                 }
             });
 
-        *loading_status = if self.progress_counter.is_complete() {
+        // Unique asset handles are considered to be assets that failed to load:
+        // <https://github.com/amethyst/amethyst/blob/v0.10.0/amethyst_assets/src/storage.rs#L190>
+        //
+        // `ProgressCounter#is_complete()` then never returns `true`:
+        // <https://github.com/amethyst/amethyst/blob/v0.10.0/amethyst_assets/src/progress.rs#L89>
+        //
+        // As a compromise, we just check if there are no assets that are still loading.
+        //
+        // TODO: Check if num_loading() == 0, pending:
+        // TODO: <https://github.com/amethyst/amethyst/pull/1452>
+        *loading_status = if self.progress_counter.num_assets()
+            == self.progress_counter.num_finished() + self.progress_counter.num_failed()
+        {
             ObjectLoadingStatus::Complete
         } else {
+            debug!(
+                "Loading progress: {}/{}",
+                self.progress_counter.num_finished(),
+                self.progress_counter.num_assets()
+            );
+
             ObjectLoadingStatus::InProgress
         };
-        debug!("Object loading status: {:?}", *loading_status);
-
-        debug!(
-            "Loading progress: {}/{}",
-            self.progress_counter.num_finished(),
-            self.progress_counter.num_assets()
-        );
     }
 }
 
