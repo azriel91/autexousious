@@ -10,7 +10,8 @@
 
 ### Fixed
 
-* Map layers are now positioned correctly.
+* Map layers are now positioned correctly. ([#99])
+* Game does not go past loading when asset loading has error. ([#101])
 
 ### Removed
 
@@ -18,6 +19,7 @@
 
 [#92]: https://gitlab.com/azriel91/autexousious/issues/92
 [#99]: https://gitlab.com/azriel91/autexousious/issues/99
+[#101]: https://gitlab.com/azriel91/autexousious/issues/101
 
 ## 0.9.0 (2019-02-15)
 
