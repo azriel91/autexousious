@@ -2,6 +2,11 @@
 
 ## master (unreleased)
 
+### Added
+
+* Added `dodge` sequence. ([#102])
+* Added `dash_forward` and `dash_back` sequences. ([#102])
+
 ### Changed
 
 * Use logic clock based system to update object components each tick. ([#92])
@@ -20,6 +25,7 @@
 [#92]: https://gitlab.com/azriel91/autexousious/issues/92
 [#99]: https://gitlab.com/azriel91/autexousious/issues/99
 [#101]: https://gitlab.com/azriel91/autexousious/issues/101
+[#102]: https://gitlab.com/azriel91/autexousious/issues/102
 
 ## 0.9.0 (2019-02-15)
 
