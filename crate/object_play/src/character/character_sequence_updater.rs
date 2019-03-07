@@ -4,9 +4,10 @@ use sequence_model::entity::SequenceStatus;
 
 use crate::{
     character::sequence_handler::{
-        CharacterSequenceHandler, Dodge, FallForwardAscend, FallForwardDescend, FallForwardLand,
-        Jump, JumpAscend, JumpDescend, JumpDescendLand, JumpOff, LieFaceDown, Run, RunStop, Stand,
-        StandAttack, StandOnSequenceEnd, Walk,
+        CharacterSequenceHandler, DashBack, DashBackAscend, DashBackDescend, DashDescendLand,
+        DashForward, DashForwardAscend, DashForwardDescend, Dodge, FallForwardAscend,
+        FallForwardDescend, FallForwardLand, Jump, JumpAscend, JumpDescend, JumpDescendLand,
+        JumpOff, LieFaceDown, Run, RunStop, Stand, StandAttack, StandOnSequenceEnd, Walk,
     },
     CharacterSequenceUpdateComponents,
 };
@@ -46,6 +47,13 @@ impl CharacterSequenceUpdater {
             CharacterSequenceId::FallForwardDescend => &FallForwardDescend::update,
             CharacterSequenceId::FallForwardLand => &FallForwardLand::update,
             CharacterSequenceId::LieFaceDown => &LieFaceDown::update,
+            CharacterSequenceId::DashForward => &DashForward::update,
+            CharacterSequenceId::DashForwardAscend => &DashForwardAscend::update,
+            CharacterSequenceId::DashForwardDescend => &DashForwardDescend::update,
+            CharacterSequenceId::DashBack => &DashBack::update,
+            CharacterSequenceId::DashBackAscend => &DashBackAscend::update,
+            CharacterSequenceId::DashBackDescend => &DashBackDescend::update,
+            CharacterSequenceId::DashDescendLand => &DashDescendLand::update,
         };
 
         let mut sequence_id = sequence_handler(components);

@@ -1,20 +1,18 @@
 use character_model::config::CharacterSequenceId;
-use sequence_model::entity::SequenceStatus;
 
 use crate::{
-    character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
+    character::sequence_handler::{CharacterSequenceHandler, SwitchSequenceOnEnd},
+    CharacterSequenceUpdateComponents,
 };
+
+const JUMP: SwitchSequenceOnEnd = SwitchSequenceOnEnd(CharacterSequenceId::JumpOff);
 
 #[derive(Debug)]
 pub(crate) struct Jump;
 
 impl CharacterSequenceHandler for Jump {
     fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
-        if components.sequence_status == SequenceStatus::End {
-            Some(CharacterSequenceId::JumpOff)
-        } else {
-            None
-        }
+        JUMP.update(components.sequence_status)
     }
 }
 
