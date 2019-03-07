@@ -5,14 +5,14 @@ use crate::{
     CharacterSequenceUpdateComponents,
 };
 
-const JUMP_ASCEND: SwitchSequenceOnDescend =
-    SwitchSequenceOnDescend(CharacterSequenceId::JumpDescend);
+const DASH_FORWARD_ASCEND: SwitchSequenceOnDescend =
+    SwitchSequenceOnDescend(CharacterSequenceId::DashForwardDescend);
 
 #[derive(Debug)]
-pub(crate) struct JumpAscend;
+pub(crate) struct DashForwardAscend;
 
-impl CharacterSequenceHandler for JumpAscend {
+impl CharacterSequenceHandler for DashForwardAscend {
     fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
-        JUMP_ASCEND.update(components)
+        DASH_FORWARD_ASCEND.update(components)
     }
 }

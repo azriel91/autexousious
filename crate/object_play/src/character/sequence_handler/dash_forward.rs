@@ -7,14 +7,14 @@ use crate::{
 
 const SWITCH_SEQUENCE_ON_END_Y_VELOCITY: SwitchSequenceOnEndYVelocity =
     SwitchSequenceOnEndYVelocity {
-        upwards: CharacterSequenceId::JumpAscend,
-        downwards: CharacterSequenceId::JumpDescend,
+        upwards: CharacterSequenceId::DashForwardAscend,
+        downwards: CharacterSequenceId::DashForwardDescend,
     };
 
 #[derive(Debug)]
-pub(crate) struct JumpOff;
+pub(crate) struct DashForward;
 
-impl CharacterSequenceHandler for JumpOff {
+impl CharacterSequenceHandler for DashForward {
     fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         SWITCH_SEQUENCE_ON_END_Y_VELOCITY.update(components)
     }

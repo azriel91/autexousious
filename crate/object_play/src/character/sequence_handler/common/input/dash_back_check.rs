@@ -4,17 +4,17 @@ use crate::{
     character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
 };
 
-/// Returns a `Jump` update if jump is pressed.
+/// Returns a `DashBack` update if jump is pressed.
 #[derive(Debug)]
-pub(crate) struct JumpCheck;
+pub(crate) struct DashBackCheck;
 
-impl CharacterSequenceHandler for JumpCheck {
+impl CharacterSequenceHandler for DashBackCheck {
     fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         // TODO: Don't handle action buttons in `CharacterSequenceHandler`s. Instead, each sequence
         // has default sequence update IDs for each action button, which are overridden by
         // configuration.
         if components.controller_input.jump {
-            Some(CharacterSequenceId::Jump)
+            Some(CharacterSequenceId::DashBack)
         } else {
             None
         }
@@ -28,7 +28,7 @@ mod tests {
     use object_model::entity::{Grounding, HealthPoints, Mirrored, Position, RunCounter, Velocity};
     use sequence_model::entity::SequenceStatus;
 
-    use super::JumpCheck;
+    use super::DashBackCheck;
     use crate::{
         character::sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents,
     };
@@ -39,7 +39,7 @@ mod tests {
         controller_input.jump = false;
         assert_eq!(
             None,
-            JumpCheck::update(CharacterSequenceUpdateComponents::new(
+            DashBackCheck::update(CharacterSequenceUpdateComponents::new(
                 &controller_input,
                 HealthPoints::default(),
                 CharacterSequenceId::default(),
@@ -54,12 +54,12 @@ mod tests {
     }
 
     #[test]
-    fn switches_to_jump_when_jump_is_pressed() {
+    fn switches_to_dash_back_when_jump_is_pressed() {
         let mut controller_input = ControllerInput::default();
         controller_input.jump = true;
         assert_eq!(
-            Some(CharacterSequenceId::Jump),
-            JumpCheck::update(CharacterSequenceUpdateComponents::new(
+            Some(CharacterSequenceId::DashBack),
+            DashBackCheck::update(CharacterSequenceUpdateComponents::new(
                 &controller_input,
                 HealthPoints::default(),
                 CharacterSequenceId::default(),

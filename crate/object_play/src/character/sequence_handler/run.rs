@@ -2,7 +2,11 @@ use character_model::config::CharacterSequenceId;
 
 use crate::{
     character::sequence_handler::{
-        common::{grounding::AirborneCheck, input::RunStopCheck, status::AliveCheck},
+        common::{
+            grounding::AirborneCheck,
+            input::{DashForwardCheck, DodgeCheck, RunStopCheck},
+            status::AliveCheck,
+        },
         CharacterSequenceHandler,
     },
     CharacterSequenceUpdateComponents,
@@ -17,6 +21,8 @@ impl CharacterSequenceHandler for Run {
         [
             AliveCheck::update,
             AirborneCheck::update,
+            DashForwardCheck::update,
+            DodgeCheck::update,
             RunStopCheck::update,
         ]
         .iter()
@@ -51,6 +57,46 @@ mod test {
                 &Velocity::default(),
                 Mirrored::default(),
                 Grounding::Airborne,
+                RunCounter::default()
+            ))
+        );
+    }
+
+    #[test]
+    fn dash_forward_when_forward_jump() {
+        let input = ControllerInput::new(1., 0., false, true, false, false);
+
+        assert_eq!(
+            Some(CharacterSequenceId::DashForward),
+            Run::update(CharacterSequenceUpdateComponents::new(
+                &input,
+                HealthPoints::default(),
+                CharacterSequenceId::Run,
+                SequenceStatus::default(),
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
+            ))
+        );
+    }
+
+    #[test]
+    fn dodge_when_defend() {
+        let input = ControllerInput::new(0., 0., true, false, false, false);
+
+        assert_eq!(
+            Some(CharacterSequenceId::Dodge),
+            Run::update(CharacterSequenceUpdateComponents::new(
+                &input,
+                HealthPoints::default(),
+                CharacterSequenceId::Run,
+                SequenceStatus::default(),
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored::default(),
+                Grounding::default(),
                 RunCounter::default()
             ))
         );

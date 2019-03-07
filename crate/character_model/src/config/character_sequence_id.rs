@@ -22,11 +22,17 @@ pub enum CharacterSequenceId {
     Run,
     /// Running stop sequence.
     RunStop,
+    /// Dodge while running.
+    Dodge,
     /// Character is about to jump.
     Jump,
     /// Character has just jumped off the ground.
+    ///
+    /// The beginning of this sequence is when the jump velocity is applied. This is separate from
+    /// `JumpAscend` as there may be characters that have a separate ascending animation that
+    /// repeats while the velocity is still upwards.
     JumpOff,
-    /// Character is moving upwards from jumping.
+    /// Character is moving upwards while jumping.
     ///
     /// This is distinct from the `JumpDescend` state as this is when the jump velocity is
     /// effective, and characters may have different animations and attacks when moving upwards from
@@ -38,6 +44,36 @@ pub enum CharacterSequenceId {
     JumpDescend,
     /// Character landed from jumping.
     JumpDescendLand,
+    /// Character has dashed off the ground facing forward.
+    ///
+    /// The beginning of this sequence is when the dash velocity is applied. This is separate from
+    /// `DashAscendForward` as there may be characters that have a separate ascending animation that
+    /// repeats while the velocity is still upwards.
+    DashForward,
+    /// Character is moving upwards while dashing facing forward.
+    ///
+    /// This is distinct from the `DashAscendForward` state as this is when the dash velocity is
+    /// effective, and characters may have different animations and attacks when moving upwards from
+    /// a dash.
+    DashForwardAscend,
+    /// Character is descending from a dash facing forward.
+    DashForwardDescend,
+    /// Character has dashed off the ground facing back.
+    ///
+    /// The beginning of this sequence is when the dash velocity is applied. This is separate from
+    /// `DashForwardAscend` as there may be characters that have a separate ascending animation that
+    /// repeats while the velocity is still upwards.
+    DashBack,
+    /// Character is moving upwards while dashing facing back.
+    ///
+    /// This is distinct from the `DashBackAscend` state as this is when the dash velocity is
+    /// effective, and characters may have different animations and attacks when moving upwards from
+    /// a dash.
+    DashBackAscend,
+    /// Character is descending from a dash facing back.
+    DashBackDescend,
+    /// Character landed from dashing.
+    DashDescendLand,
     /// Character is hit while on ground.
     #[serde(rename = "flinch_0")]
     Flinch0,
