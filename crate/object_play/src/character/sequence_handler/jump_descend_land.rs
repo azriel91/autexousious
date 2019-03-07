@@ -1,7 +1,8 @@
 use character_model::config::CharacterSequenceId;
 
 use crate::character::sequence_handler::{
-    common::input::DodgeCheck, switch_sequence_on_end::SwitchSequenceOnEnd,
+    common::input::{DashBackCheck, DashForwardCheck, DodgeCheck},
+    switch_sequence_on_end::SwitchSequenceOnEnd,
     CharacterSequenceHandler, CharacterSequenceUpdateComponents,
 };
 
@@ -12,12 +13,16 @@ pub(crate) struct JumpDescendLand;
 
 impl CharacterSequenceHandler for JumpDescendLand {
     fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
-        [DodgeCheck::update]
-            .iter()
-            .fold(None, |status_update, fn_update| {
-                status_update.or_else(|| fn_update(components))
-            })
-            .or_else(|| JUMP_DESCEND_LAND.update(components.sequence_status))
+        [
+            DashForwardCheck::update,
+            DashBackCheck::update,
+            DodgeCheck::update,
+        ]
+        .iter()
+        .fold(None, |status_update, fn_update| {
+            status_update.or_else(|| fn_update(components))
+        })
+        .or_else(|| JUMP_DESCEND_LAND.update(components.sequence_status))
     }
 }
 
@@ -39,6 +44,46 @@ mod test {
 
         assert_eq!(
             None,
+            JumpDescendLand::update(CharacterSequenceUpdateComponents::new(
+                &input,
+                HealthPoints::default(),
+                CharacterSequenceId::JumpDescendLand,
+                SequenceStatus::default(),
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
+            ))
+        );
+    }
+
+    #[test]
+    fn dash_forward_when_forward_jump() {
+        let input = ControllerInput::new(1., 0., false, true, false, false);
+
+        assert_eq!(
+            Some(CharacterSequenceId::DashForward),
+            JumpDescendLand::update(CharacterSequenceUpdateComponents::new(
+                &input,
+                HealthPoints::default(),
+                CharacterSequenceId::JumpDescendLand,
+                SequenceStatus::default(),
+                &Position::default(),
+                &Velocity::default(),
+                Mirrored::default(),
+                Grounding::default(),
+                RunCounter::default()
+            ))
+        );
+    }
+
+    #[test]
+    fn dash_forward_when_only_jump() {
+        let input = ControllerInput::new(0., 0., false, true, false, false);
+
+        assert_eq!(
+            Some(CharacterSequenceId::DashBack),
             JumpDescendLand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),

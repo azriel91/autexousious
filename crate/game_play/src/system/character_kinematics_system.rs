@@ -77,7 +77,7 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                 }
                 CharacterSequenceId::DashForward => {
                     if *sequence_status == SequenceStatus::Begin {
-                        velocity[0] = if mirrored.0 { 12. } else { -12. };
+                        velocity[0] = if mirrored.0 { -12. } else { 12. };
                         velocity[1] = 13.;
                         velocity[2] = controller_input.z_axis_value as f32 * 2.5;
                     }
@@ -710,7 +710,7 @@ mod tests {
                             ReadStorage<'_, Velocity<f32>>,
                         )| {
                             for (_, velocity) in (&character_sequence_ids, &velocities).join() {
-                                assert_eq!(-12., velocity[0]);
+                                assert_eq!(12., velocity[0]);
                                 assert_eq!(13., velocity[1]);
                                 assert_eq!(2.5, velocity[2]);
                             }

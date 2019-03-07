@@ -18,7 +18,7 @@ impl SwitchSequenceOnLand {
         if components.grounding == Grounding::OnGround {
             Some(self.0)
         } else if components.sequence_status == SequenceStatus::End {
-            Some(CharacterSequenceId::FallForwardDescend)
+            Some(components.character_sequence_id)
         } else {
             None
         }
