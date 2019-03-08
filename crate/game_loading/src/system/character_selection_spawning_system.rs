@@ -1,21 +1,13 @@
-use amethyst::{
-    assets::AssetStorage,
-    core::Transform,
-    ecs::{Entities, Entity, Read, ReadExpect, System, Write, WriteStorage},
-};
+use amethyst::ecs::{Entities, Entity, Read, System, Write, WriteStorage};
 use character_loading::CharacterPrefabHandle;
-use character_model::config::CharacterSequenceId;
 use character_selection_model::CharacterSelections;
 use derive_new::new;
 use game_input::InputControlled;
 use game_model::play::GameEntities;
-use map_model::loaded::Map;
-use map_selection_model::MapSelection;
-use object_loading::ObjectComponentStorages;
-use object_model::{entity::Position, ObjectType};
+use object_model::ObjectType;
 use typename_derive::TypeName;
 
-use crate::GameLoadingStatus;
+use crate::{CharacterAugmentStatus, GameLoadingStatus};
 
 /// Spawns character entities based on the character selection.
 #[derive(Debug, Default, TypeName, new)]
@@ -24,12 +16,9 @@ pub(crate) struct CharacterSelectionSpawningSystem;
 type CharacterSelectionSpawningSystemData<'s> = (
     Entities<'s>,
     Write<'s, GameLoadingStatus>,
-    ReadExpect<'s, MapSelection>,
     Read<'s, CharacterSelections>,
-    Read<'s, AssetStorage<Map>>,
     WriteStorage<'s, CharacterPrefabHandle>,
     WriteStorage<'s, InputControlled>,
-    ObjectComponentStorages<'s, CharacterSequenceId>,
     Write<'s, GameEntities>,
 );
 
@@ -41,40 +30,15 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
         (
             entities,
             mut game_loading_status,
-            map_selection,
             character_selections,
-            loaded_maps,
             mut character_prefab_handles,
             mut input_controlleds,
-            mut object_component_storages,
             mut game_entities,
         ): Self::SystemData,
     ) {
-        if game_loading_status.characters_loaded {
+        if game_loading_status.character_augment_status != CharacterAugmentStatus::Prefab {
             return;
         }
-
-        // Read map to determine bounds where the characters can be spawned.
-        let (width, height, depth) = {
-            loaded_maps
-                .get(map_selection.handle())
-                .map(|map| {
-                    let bounds = &map.definition.header.bounds;
-                    (
-                        bounds.width as f32,
-                        bounds.height as f32,
-                        bounds.depth as f32,
-                    )
-                })
-                .expect("Expected map to be loaded.")
-        };
-
-        // This `Position` moves the entity to the middle of a "screen wide" map.
-        let position = Position::new(width / 2., height / 2., depth / 2.);
-        let mut transform = Transform::default();
-        transform.set_x(position.x);
-        transform.set_y(position.y - position.z);
-        transform.set_z(position.z);
 
         let character_entities = character_selections
             .selections
@@ -90,16 +54,6 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
                     .insert(entity, slug_and_handle.handle.clone())
                     .expect("Failed to insert character_prefab_handle for character.");
 
-                // Set character `position` and `transform` based on the map.
-                object_component_storages
-                    .positions
-                    .insert(entity, position)
-                    .expect("Failed to insert position for character.");
-                object_component_storages
-                    .transforms
-                    .insert(entity, transform.clone())
-                    .expect("Failed to insert transform for character.");
-
                 entity
             })
             .collect::<Vec<Entity>>();
@@ -108,7 +62,7 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             .objects
             .insert(ObjectType::Character, character_entities);
 
-        game_loading_status.characters_loaded = true;
+        game_loading_status.character_augment_status = CharacterAugmentStatus::Rectify;
     }
 }
 
@@ -119,30 +73,28 @@ mod tests {
     use amethyst::ecs::prelude::*;
     use amethyst_test::{AmethystApplication, EffectReturn, PopState};
     use application_event::{AppEvent, AppEventReader};
-    use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
-    use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
+    use asset_model::loaded::SlugAndHandle;
+    use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
     use character_loading::CharacterLoadingBundle;
     use character_selection_model::CharacterSelections;
     use collision_loading::CollisionLoadingBundle;
-    use game_model::{loaded::MapAssets, play::GameEntities};
+    use game_model::play::GameEntities;
     use loading::{LoadingBundle, LoadingState};
     use map_loading::MapLoadingBundle;
-    use map_selection::MapSelectionStatus;
-    use map_selection_model::MapSelection;
     use object_model::ObjectType;
     use sequence_loading::SequenceLoadingBundle;
     use sprite_loading::SpriteLoadingBundle;
     use typename::TypeName;
 
     use super::CharacterSelectionSpawningSystem;
-    use crate::GameLoadingStatus;
+    use crate::{CharacterAugmentStatus, GameLoadingStatus};
 
     #[test]
-    fn returns_if_characters_already_loaded() {
+    fn returns_if_augment_status_is_not_prefab() {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::render_base("returns_if_characters_already_loaded", false)
+            AmethystApplication::render_base("returns_if_augment_status_is_not_prefab", false)
                 .with_custom_event_type::<AppEvent, AppEventReader>()
                 .with_bundle(SpriteLoadingBundle::new())
                 .with_bundle(SequenceLoadingBundle::new())
@@ -151,10 +103,9 @@ mod tests {
                 .with_bundle(MapLoadingBundle::new())
                 .with_bundle(CharacterLoadingBundle::new())
                 .with_state(|| LoadingState::new(PopState))
-                .with_setup(map_selection(ASSETS_MAP_FADE_SLUG.clone()))
                 .with_setup(|world| {
                     let mut game_loading_status = GameLoadingStatus::new();
-                    game_loading_status.characters_loaded = true;
+                    game_loading_status.character_augment_status = CharacterAugmentStatus::Rectify;
                     world.add_resource(game_loading_status);
 
                     let char_entity = world.create_entity().build();
@@ -207,7 +158,6 @@ mod tests {
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_state(|| LoadingState::new(PopState))
-            .with_setup(map_selection(ASSETS_MAP_FADE_SLUG.clone()))
             .with_setup(|world| {
                 let mut character_selections = CharacterSelections::default();
                 character_selections.selections.insert(
@@ -228,34 +178,15 @@ mod tests {
                     .get(&ObjectType::Character)
                     .expect("Expected `ObjectType::Character` key in `GameEntities`.")
                     .is_empty());
-                assert!(world.read_resource::<GameLoadingStatus>().characters_loaded);
+                assert_eq!(
+                    CharacterAugmentStatus::Rectify,
+                    world
+                        .read_resource::<GameLoadingStatus>()
+                        .character_augment_status
+                );
             })
             .run()
             .is_ok()
         );
-    }
-
-    /// Returns a function that adds a `MapSelection` and `MapSelectionStatus::Confirmed`.
-    ///
-    /// See `application_test_support::SetupFunction`.
-    ///
-    /// # Parameters
-    ///
-    /// * `slug`: Asset slug of the map to select.
-    fn map_selection(slug: AssetSlug) -> impl Fn(&mut World) {
-        move |world| {
-            let slug_and_handle = {
-                let map_handle = world
-                    .read_resource::<MapAssets>()
-                    .get(&slug)
-                    .unwrap_or_else(|| panic!("Expected `{}` to be loaded.", slug))
-                    .clone();
-
-                SlugAndHandle::from((slug.clone(), map_handle))
-            };
-
-            world.add_resource(MapSelection::Id(slug_and_handle));
-            world.add_resource(MapSelectionStatus::Confirmed);
-        }
     }
 }
