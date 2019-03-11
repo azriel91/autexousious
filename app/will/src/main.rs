@@ -8,7 +8,7 @@ use amethyst::{
     assets::HotReloadBundle,
     core::transform::TransformBundle,
     input::InputBundle,
-    renderer::{DisplayConfig, DrawFlat2D, Pipeline, RenderBundle, Stage},
+    renderer::{DisplayConfig, DrawFlat, DrawFlat2D, Pipeline, PosTex, RenderBundle, Stage},
     ui::{DrawUi, UiBundle},
     CoreApplication, GameDataBuilder, LogLevelFilter, LoggerConfig,
 };
@@ -93,6 +93,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             Stage::with_backbuffer()
                 .clear_target([0., 0., 0., 1.], 0.)
                 .with_pass(DrawFlat2D::new())
+                .with_pass(DrawFlat::<PosTex>::new())
                 .with_pass(DrawUi::new()),
         );
 
