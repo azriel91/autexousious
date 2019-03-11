@@ -1,12 +1,16 @@
 use amethyst::{
-    assets::AssetStorage,
+    assets::{AssetStorage, PrefabData},
     ecs::{Entities, Join, Read, ReadExpect, ReadStorage, System, Write, WriteStorage},
+    utils::removal::Removal,
 };
 use character_loading::CharacterPrefabHandle;
 use derive_new::new;
+use game_input::InputControlled;
+use game_play_hud::HpBarPrefab;
+use game_play_model::{GamePlayEntity, GamePlayEntityId};
 use map_model::loaded::Map;
 use map_selection_model::MapSelection;
-use object_model::entity::Position;
+use object_model::entity::{HealthPoints, Position};
 use typename_derive::TypeName;
 
 use crate::{CharacterAugmentStatus, GameLoadingStatus};
@@ -21,7 +25,11 @@ type CharacterAugmentRectifySystemData<'s> = (
     ReadExpect<'s, MapSelection>,
     Read<'s, AssetStorage<Map>>,
     ReadStorage<'s, CharacterPrefabHandle>,
+    ReadStorage<'s, InputControlled>,
+    ReadStorage<'s, HealthPoints>,
     WriteStorage<'s, Position<f32>>,
+    WriteStorage<'s, GamePlayEntity>,
+    <HpBarPrefab as PrefabData<'s>>::SystemData,
 );
 
 impl<'s> System<'s> for CharacterAugmentRectifySystem {
@@ -35,7 +43,11 @@ impl<'s> System<'s> for CharacterAugmentRectifySystem {
             map_selection,
             loaded_maps,
             character_prefab_handles,
+            input_controlleds,
+            health_pointses,
             mut positions,
+            mut game_play_entities,
+            mut hp_bar_prefab_system_data,
         ): Self::SystemData,
     ) {
         if game_loading_status.character_augment_status != CharacterAugmentStatus::Rectify {
@@ -67,6 +79,21 @@ impl<'s> System<'s> for CharacterAugmentRectifySystem {
                 positions
                     .insert(entity, position)
                     .expect("Failed to insert position for character.");
+            });
+
+        (&entities, &input_controlleds, &health_pointses)
+            .join()
+            .for_each(|(game_object_entity, _, _)| {
+                let hp_bar_entity = entities.create();
+
+                let hp_bar_prefab = HpBarPrefab::new(game_object_entity);
+                hp_bar_prefab
+                    .add_to_entity(hp_bar_entity, &mut hp_bar_prefab_system_data, &[])
+                    .expect("`HpBarPrefab` failed to augment entity.");
+
+                game_play_entities
+                    .insert(hp_bar_entity, Removal::new(GamePlayEntityId))
+                    .expect("Failed to insert `GamePlayEntity` component.");
             });
 
         game_loading_status.character_augment_status = CharacterAugmentStatus::Complete;
