@@ -2,16 +2,15 @@ use amethyst::{
     assets::{AssetStorage, Loader, PrefabData},
     core::{Parent, Transform},
     ecs::{Entity, Read, ReadExpect, WriteStorage},
-    renderer::{Material, Mesh, MeshHandle, PosTex, Shape},
-    utils::render::MaterialCreator,
+    renderer::{Sprite, SpriteRender, SpriteSheet, Texture, Transparent},
     Error,
 };
 use derive_new::new;
 
 use crate::HpBar;
 
-const HP_BAR_LENGTH: f32 = 50.;
-const HP_BAR_HEIGHT: f32 = 2.;
+const HP_BAR_LENGTH: f32 = 100.;
+const HP_BAR_HEIGHT: f32 = 3.;
 const HP_COLOUR: [f32; 4] = [1., 0.2, 0.1, 1.];
 
 /// Prefab to attach all components of a HP bar.
@@ -21,8 +20,8 @@ const HP_COLOUR: [f32; 4] = [1., 0.2, 0.1, 1.];
 /// * `HpBar`: Tag component.
 /// * `Transform`: Coordinates of the HP bar to draw.
 /// * `Parent`: Link to the parent entity whose `HealthPoints` the `HpBar` entity will display.
-/// * `Material`: Material that determines the `HpBar`'s colour.
-/// * `MeshHandle`: Handle to the mesh for drawing coordinates.
+/// * `SpriteRender`: Indicates which "sprite" (colour) of the `HpBar` to draw.
+/// * `Transparent`: Tags the `HpBar` for sorting when rendering.
 ///
 /// Ideally, the `Parent` component will be inserted by the `PrefabLoaderSystem`, so the (game
 /// object) entity whose `HealthPoints` should displayed is specified as the `parent` of the `HpBar`
@@ -40,11 +39,11 @@ impl<'s> PrefabData<'s> for HpBarPrefab {
         WriteStorage<'s, HpBar>,
         WriteStorage<'s, Transform>,
         WriteStorage<'s, Parent>,
-        MaterialCreator<'s>,
         ReadExpect<'s, Loader>,
-        Read<'s, AssetStorage<Mesh>>,
-        WriteStorage<'s, Material>,
-        WriteStorage<'s, MeshHandle>,
+        Read<'s, AssetStorage<Texture>>,
+        Read<'s, AssetStorage<SpriteSheet>>,
+        WriteStorage<'s, SpriteRender>,
+        WriteStorage<'s, Transparent>,
     );
     type Result = ();
 
@@ -55,11 +54,11 @@ impl<'s> PrefabData<'s> for HpBarPrefab {
             hp_bars,
             transforms,
             parents,
-            material_creator,
             loader,
-            mesh_assets,
-            materials,
-            mesh_handles,
+            texture_assets,
+            sprite_sheet_assets,
+            sprite_renders,
+            transparents,
         ): &mut Self::SystemData,
         _entities: &[Entity],
     ) -> Result<(), Error> {
@@ -70,12 +69,24 @@ impl<'s> PrefabData<'s> for HpBarPrefab {
         transforms.insert(entity, transform)?;
         parents.insert(entity, Parent::new(self.game_object_entity))?;
 
-        let material = material_creator.material_from_color(HP_COLOUR, ());
-        materials.insert(entity, material)?;
+        let sprite_sheet_handle = {
+            let texture_handle = loader.load_from_data(HP_COLOUR.into(), (), &texture_assets);
+            let sprite = Sprite::from_pixel_values(1, 1, 1, 1, 0, 0, [0.; 2]);
+            let sprites = vec![sprite];
 
-        let vertices = Shape::Plane(None).generate::<Vec<PosTex>>(Some((1., 1., 0.)));
-        let mesh_handle = loader.load_from_data(vertices, (), &mesh_assets);
-        mesh_handles.insert(entity, mesh_handle)?;
+            let sprite_sheet = SpriteSheet {
+                texture: texture_handle,
+                sprites,
+            };
+
+            loader.load_from_data(sprite_sheet, (), sprite_sheet_assets)
+        };
+        let sprite_render = SpriteRender {
+            sprite_sheet: sprite_sheet_handle,
+            sprite_number: 0,
+        };
+        sprite_renders.insert(entity, sprite_render)?;
+        transparents.insert(entity, Transparent)?;
 
         Ok(())
     }
