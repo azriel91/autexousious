@@ -7,10 +7,8 @@ use amethyst::{
 };
 use derive_new::new;
 
-use crate::HpBar;
+use crate::{HpBar, HP_BAR_HEIGHT, HP_BAR_LENGTH};
 
-const HP_BAR_LENGTH: f32 = 100.;
-const HP_BAR_HEIGHT: f32 = 3.;
 const HP_COLOUR: [f32; 4] = [1., 0.2, 0.1, 1.];
 
 /// Prefab to attach all components of a HP bar.

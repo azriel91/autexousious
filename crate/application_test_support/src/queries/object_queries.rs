@@ -1,17 +1,46 @@
 use amethyst::{
     assets::{AssetStorage, Handle, Prefab},
-    ecs::World,
+    ecs::{Entity, World},
 };
 use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
 use character_loading::CharacterPrefab;
 use character_model::loaded::CharacterObjectWrapper;
+use game_model::play::GameEntities;
 use object_loading::ObjectPrefab;
+use object_model::ObjectType;
 
 /// Functions to retrieve object data from a running world.
 #[derive(Debug)]
 pub struct ObjectQueries;
 
 impl ObjectQueries {
+    /// Returns the first entity in the World for the specified `ObjectType`.
+    ///
+    /// This is generally used with an application instantiated with `game_base`.
+    ///
+    /// # Parameters
+    ///
+    /// * `world`: `World` of the running application.
+    /// * `object_type`: `ObjectType` for which to retrieve an entity.
+    ///
+    /// # Panics
+    ///
+    /// * Panics if the `GameEntities` resource does not exist.
+    /// * Panics if there are no entities for the specified `ObjectType`.
+    pub fn game_object_entity(world: &mut World, object_type: ObjectType) -> Entity {
+        let game_entities = &*world.read_resource::<GameEntities>();
+        let objects = game_entities.objects.get(&object_type);
+        let object_entities = objects
+            .unwrap_or_else(|| panic!("Expected entry for the `{}` object type.", object_type));
+        *object_entities.iter().next().unwrap_or_else(|| {
+            panic!(
+                "No entities were initialized for the `{}` object type.\n\
+                 Ensure you are using `game_base` or are using the `GameLoadingState` to set up \
+                 the application."
+            )
+        })
+    }
+
     // TODO: Implement this for all game object types.
     /// Returns the `Handle<O::ObjectWrapper>` for the specified asset slug.
     ///

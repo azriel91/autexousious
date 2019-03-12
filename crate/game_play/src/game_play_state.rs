@@ -13,6 +13,7 @@ use application_event::AppEvent;
 use derivative::Derivative;
 use derive_new::new;
 use game_model::play::GameEntities;
+use game_play_hud::GamePlayHudBundle;
 use game_play_model::{GamePlayEvent, GamePlayStatus};
 use log::{debug, warn};
 
@@ -43,6 +44,9 @@ impl GamePlayState {
         GamePlayBundle::new()
             .build(&mut dispatcher_builder)
             .expect("Failed to register `GamePlayBundle`.");
+        GamePlayHudBundle::new()
+            .build(&mut dispatcher_builder)
+            .expect("Failed to register `GamePlayHudBundle`.");
 
         let mut dispatcher = dispatcher_builder.build();
         dispatcher.setup(&mut world.res);
