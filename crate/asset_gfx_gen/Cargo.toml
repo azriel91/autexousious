@@ -1,0 +1,17 @@
+[package]
+name = "asset_gfx_gen"
+version = "0.10.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+edition = "2018"
+
+[dependencies]
+amethyst = { git = "https://github.com/amethyst/amethyst.git" }
+derivative = "1.0.2"
+shred = "0.7.1"
+shred-derive = "0.5.1"
+
+[dev-dependencies]
+amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
+
+[features]
+nightly = ["amethyst/nightly"]
