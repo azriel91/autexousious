@@ -7,7 +7,7 @@ use derive_new::new;
 use object_model::entity::HealthPoints;
 use typename_derive::TypeName;
 
-use crate::{HpBar, HP_BAR_LENGTH, HP_BAR_SPRITE_COUNT, HP_BAR_SPRITE_SIZE};
+use crate::{HpBar, HP_BAR_LENGTH, HP_BAR_SPRITE_COUNT};
 
 /// Updates `HpBar` length based on its parent entity's `HealthPoints`.
 #[derive(Debug, Default, TypeName, new)]
@@ -47,7 +47,7 @@ impl<'s> System<'s> for HpBarUpdateSystem {
                 transform.set_x(-half_hp_lost);
 
                 let scale = transform.scale_mut();
-                scale[0] = hp / HP_BAR_SPRITE_SIZE as f32;
+                scale[0] = hp;
 
                 sprite_render.sprite_number = (HP_BAR_SPRITE_COUNT - 1)
                     * ((**health_points) as usize)

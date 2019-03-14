@@ -8,9 +8,9 @@ use amethyst::{
 use asset_gfx_gen::{ColourSpriteSheetGen, ColourSpriteSheetGenData};
 use derive_new::new;
 
-use crate::{HpBar, HP_BAR_HEIGHT, HP_BAR_LENGTH, HP_BAR_SPRITE_COUNT, HP_BAR_SPRITE_SIZE};
+use crate::{HpBar, HP_BAR_HEIGHT, HP_BAR_LENGTH, HP_BAR_SPRITE_COUNT};
 
-const COLOUR_HP_LOW: [f32; 4] = [0.7, 0., 0., 1.];
+const COLOUR_HP_LOW: [f32; 4] = [1., 0.2, 0.1, 1.];
 const COLOUR_HP_HIGH: [f32; 4] = [0.2, 1., 0.1, 1.];
 
 /// Prefab to attach all components of a HP bar.
@@ -61,11 +61,7 @@ impl<'s> PrefabData<'s> for HpBarPrefab {
         hp_bars.insert(entity, HpBar::default())?;
         let mut transform = Transform::default();
         transform.set_z(1.);
-        transform.set_scale(
-            HP_BAR_LENGTH / HP_BAR_SPRITE_SIZE as f32,
-            HP_BAR_HEIGHT / HP_BAR_SPRITE_SIZE as f32,
-            1.,
-        );
+        transform.set_scale(HP_BAR_LENGTH, HP_BAR_HEIGHT, 1.);
         transforms.insert(entity, transform)?;
         parents.insert(entity, Parent::new(self.game_object_entity))?;
 
@@ -74,8 +70,6 @@ impl<'s> PrefabData<'s> for HpBarPrefab {
             COLOUR_HP_LOW,
             COLOUR_HP_HIGH,
             HP_BAR_SPRITE_COUNT,
-            HP_BAR_SPRITE_SIZE,
-            HP_BAR_SPRITE_SIZE,
         );
         sprite_renders.insert(entity, sprite_render)?;
         transparents.insert(entity, Transparent)?;
