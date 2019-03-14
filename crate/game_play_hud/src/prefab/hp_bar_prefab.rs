@@ -1,15 +1,17 @@
 use amethyst::{
-    assets::{AssetStorage, Loader, PrefabData},
+    assets::PrefabData,
     core::{Parent, Transform},
-    ecs::{Entity, Read, ReadExpect, WriteStorage},
-    renderer::{Sprite, SpriteRender, SpriteSheet, Texture, Transparent},
+    ecs::{Entity, WriteStorage},
+    renderer::{SpriteRender, Transparent},
     Error,
 };
+use asset_gfx_gen::{ColourSpriteSheetGen, ColourSpriteSheetGenData};
 use derive_new::new;
 
-use crate::{HpBar, HP_BAR_HEIGHT, HP_BAR_LENGTH};
+use crate::{HpBar, HP_BAR_HEIGHT, HP_BAR_LENGTH, HP_BAR_SPRITE_COUNT};
 
-const HP_COLOUR: [f32; 4] = [1., 0.2, 0.1, 1.];
+const COLOUR_HP_LOW: [f32; 4] = [1., 0.2, 0.1, 1.];
+const COLOUR_HP_HIGH: [f32; 4] = [0.2, 1., 0.1, 1.];
 
 /// Prefab to attach all components of a HP bar.
 ///
@@ -37,9 +39,7 @@ impl<'s> PrefabData<'s> for HpBarPrefab {
         WriteStorage<'s, HpBar>,
         WriteStorage<'s, Transform>,
         WriteStorage<'s, Parent>,
-        ReadExpect<'s, Loader>,
-        Read<'s, AssetStorage<Texture>>,
-        Read<'s, AssetStorage<SpriteSheet>>,
+        ColourSpriteSheetGenData<'s>,
         WriteStorage<'s, SpriteRender>,
         WriteStorage<'s, Transparent>,
     );
@@ -52,9 +52,7 @@ impl<'s> PrefabData<'s> for HpBarPrefab {
             hp_bars,
             transforms,
             parents,
-            loader,
-            texture_assets,
-            sprite_sheet_assets,
+            colour_sprite_sheet_gen_data,
             sprite_renders,
             transparents,
         ): &mut Self::SystemData,
@@ -67,22 +65,12 @@ impl<'s> PrefabData<'s> for HpBarPrefab {
         transforms.insert(entity, transform)?;
         parents.insert(entity, Parent::new(self.game_object_entity))?;
 
-        let sprite_sheet_handle = {
-            let texture_handle = loader.load_from_data(HP_COLOUR.into(), (), &texture_assets);
-            let sprite = Sprite::from_pixel_values(1, 1, 1, 1, 0, 0, [0.; 2]);
-            let sprites = vec![sprite];
-
-            let sprite_sheet = SpriteSheet {
-                texture: texture_handle,
-                sprites,
-            };
-
-            loader.load_from_data(sprite_sheet, (), sprite_sheet_assets)
-        };
-        let sprite_render = SpriteRender {
-            sprite_sheet: sprite_sheet_handle,
-            sprite_number: 0,
-        };
+        let sprite_render = ColourSpriteSheetGen::gradient(
+            colour_sprite_sheet_gen_data,
+            COLOUR_HP_LOW,
+            COLOUR_HP_HIGH,
+            HP_BAR_SPRITE_COUNT,
+        );
         sprite_renders.insert(entity, sprite_render)?;
         transparents.insert(entity, Transparent)?;
 

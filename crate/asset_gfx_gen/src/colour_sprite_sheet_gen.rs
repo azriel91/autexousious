@@ -4,6 +4,7 @@ use amethyst::renderer::{
     Sprite, SpriteRender, SpriteSheet, SurfaceType, TextureData, TextureMetadata,
 };
 use gfx::format::ChannelType;
+use integer_sqrt::IntegerSquareRoot;
 
 use crate::{ColourSpriteSheetGenData, ColourSpriteSheetParams};
 
@@ -77,12 +78,17 @@ impl ColourSpriteSheetGen {
         }
 
         let sprite_sheet_handle = {
+            let column_count = sprite_count.integer_sqrt();
+            let row_count = {
+                let needs_buffer = column_count * column_count < sprite_count;
+                sprite_count / column_count + if needs_buffer { 1 } else { 0 }
+            };
             let params = ColourSpriteSheetParams {
                 sprite_w: 1,
                 sprite_h: 1,
                 padded: true,
-                row_count: 1,
-                column_count: sprite_count,
+                row_count,
+                column_count,
             };
 
             let (texture_metadata, colours) =

@@ -1,12 +1,13 @@
 use amethyst::{
     core::{Parent, Transform},
     ecs::{Join, ReadStorage, System, WriteStorage},
+    renderer::SpriteRender,
 };
 use derive_new::new;
 use object_model::entity::HealthPoints;
 use typename_derive::TypeName;
 
-use crate::{HpBar, HP_BAR_LENGTH};
+use crate::{HpBar, HP_BAR_LENGTH, HP_BAR_SPRITE_COUNT};
 
 /// Updates `HpBar` length based on its parent entity's `HealthPoints`.
 #[derive(Debug, Default, TypeName, new)]
@@ -17,20 +18,24 @@ type HpBarUpdateSystemData<'s> = (
     ReadStorage<'s, Parent>,
     ReadStorage<'s, HealthPoints>,
     WriteStorage<'s, Transform>,
+    WriteStorage<'s, SpriteRender>,
 );
 
 impl<'s> System<'s> for HpBarUpdateSystem {
     type SystemData = HpBarUpdateSystemData<'s>;
 
-    fn run(&mut self, (hp_bars, parents, health_pointses, mut transforms): Self::SystemData) {
-        (&hp_bars, &parents, &mut transforms)
+    fn run(
+        &mut self,
+        (hp_bars, parents, health_pointses, mut transforms, mut sprite_renders): Self::SystemData,
+    ) {
+        (&hp_bars, &parents, &mut transforms, &mut sprite_renders)
             .join()
-            .filter_map(|(_, parent, transform)| {
+            .filter_map(|(_, parent, transform, sprite_render)| {
                 health_pointses
                     .get(parent.entity)
-                    .map(|health_points| (transform, health_points))
+                    .map(|health_points| (transform, sprite_render, health_points))
             })
-            .for_each(|(transform, health_points)| {
+            .for_each(|(transform, sprite_render, health_points)| {
                 let hp = (**health_points) as f32;
 
                 // This is here because the `DrawFlat2D` pass renders sprites centered -- i.e. the
@@ -43,6 +48,10 @@ impl<'s> System<'s> for HpBarUpdateSystem {
 
                 let scale = transform.scale_mut();
                 scale[0] = hp;
+
+                sprite_render.sprite_number = (HP_BAR_SPRITE_COUNT - 1)
+                    * ((**health_points) as usize)
+                    / HP_BAR_LENGTH as usize;
             });
     }
 }

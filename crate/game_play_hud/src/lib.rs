@@ -4,7 +4,7 @@
 //! Heads-up-display (HUD) types to provide information in game.
 
 pub use crate::{
-    constants::{HP_BAR_HEIGHT, HP_BAR_LENGTH},
+    constants::{HP_BAR_HEIGHT, HP_BAR_LENGTH, HP_BAR_SPRITE_COUNT},
     game_play_hud_bundle::GamePlayHudBundle,
     hp_bar::HpBar,
     prefab::HpBarPrefab,
