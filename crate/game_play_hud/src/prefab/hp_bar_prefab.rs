@@ -10,8 +10,8 @@ use derive_new::new;
 
 use crate::{HpBar, HP_BAR_HEIGHT, HP_BAR_LENGTH, HP_BAR_SPRITE_COUNT};
 
-const COLOUR_HP_LOW: [f32; 4] = [1., 0.2, 0.1, 1.];
-const COLOUR_HP_HIGH: [f32; 4] = [0.2, 1., 0.1, 1.];
+const COLOUR_HP_LOW: [f32; 4] = [0.8, 0., 0., 1.];
+const COLOUR_HP_HIGH: [f32; 4] = [0.1, 0.9, 0.1, 1.];
 
 /// Prefab to attach all components of a HP bar.
 ///
