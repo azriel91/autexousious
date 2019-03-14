@@ -1,5 +1,7 @@
 use derive_new::new;
 
+use crate::CharacterAugmentStatus;
+
 /// Status of setting up entities for game play.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, new)]
 pub struct GameLoadingStatus {
@@ -8,13 +10,13 @@ pub struct GameLoadingStatus {
     pub map_loaded: bool,
     /// Whether characters are loaded.
     #[new(default)]
-    pub characters_loaded: bool,
+    pub character_augment_status: CharacterAugmentStatus,
 }
 
 impl GameLoadingStatus {
     /// Returns whether all parts of game loading have been completed.
     pub fn loaded(self) -> bool {
-        self.map_loaded && self.characters_loaded
+        self.map_loaded && self.character_augment_status == CharacterAugmentStatus::Complete
     }
 
     /// Sets all parts of this status to false.
@@ -26,6 +28,7 @@ impl GameLoadingStatus {
 #[cfg(test)]
 mod tests {
     use super::GameLoadingStatus;
+    use crate::CharacterAugmentStatus;
 
     #[test]
     fn loaded_is_false_when_map_and_characters_not_loaded() {
@@ -37,7 +40,7 @@ mod tests {
     #[test]
     fn loaded_is_false_when_map_not_loaded() {
         let mut status = GameLoadingStatus::new();
-        status.characters_loaded = true;
+        status.character_augment_status = CharacterAugmentStatus::Complete;
 
         assert!(!status.loaded())
     }
@@ -51,10 +54,10 @@ mod tests {
     }
 
     #[test]
-    fn loaded_is_true_when_map_and_characters_loaded() {
+    fn loaded_is_true_when_map_and_character_augment_status() {
         let mut status = GameLoadingStatus::new();
         status.map_loaded = true;
-        status.characters_loaded = true;
+        status.character_augment_status = CharacterAugmentStatus::Complete;
 
         assert!(status.loaded())
     }
@@ -63,10 +66,13 @@ mod tests {
     fn reset_sets_all_fields_to_false() {
         let mut status = GameLoadingStatus::new();
         status.map_loaded = true;
-        status.characters_loaded = true;
+        status.character_augment_status = CharacterAugmentStatus::Complete;
         status.reset();
 
         assert!(!status.map_loaded);
-        assert!(!status.characters_loaded);
+        assert_eq!(
+            CharacterAugmentStatus::Prefab,
+            status.character_augment_status
+        );
     }
 }

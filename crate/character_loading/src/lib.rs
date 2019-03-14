@@ -3,10 +3,12 @@
 
 //! Processes character configuration into the loaded character model.
 
-pub use character_loader::CharacterLoader;
-pub use character_loading_bundle::CharacterLoadingBundle;
-pub use prefab::{CharacterEntityAugmenter, CharacterPrefab, CharacterPrefabHandle};
-pub use system_data::CharacterComponentStorages;
+pub use crate::{
+    character_loader::CharacterLoader,
+    character_loading_bundle::{CharacterLoadingBundle, CHARACTER_PREFAB_LOADER_SYSTEM},
+    prefab::{CharacterEntityAugmenter, CharacterPrefab, CharacterPrefabHandle},
+    system_data::CharacterComponentStorages,
+};
 
 mod character_loader;
 mod character_loading_bundle;

@@ -15,6 +15,7 @@ derivative = "1.0.2"
 derive-new = "0.5.6"
 game_input = { path = "../game_input" }
 game_model = { path = "../game_model" }
+game_play_hud = { path = "../game_play_hud" }
 game_play_model = { path = "../game_play_model" }
 logic_clock = { path = "../logic_clock" }
 log = "0.4.6"

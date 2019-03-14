@@ -20,6 +20,9 @@ use crate::CharacterPrefab;
 #[derive(Debug, new)]
 pub struct CharacterLoadingBundle;
 
+/// Name of the `CharacterPrefab` `PrefabLoaderSystem`.
+pub const CHARACTER_PREFAB_LOADER_SYSTEM: &str = "character_prefab_loader_system";
+
 impl<'a, 'b> SystemBundle<'a, 'b> for CharacterLoadingBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
         builder.add(
@@ -35,7 +38,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterLoadingBundle {
         );
         builder.add(
             PrefabLoaderSystem::<CharacterPrefab>::default(),
-            "character_prefab_loader_system",
+            CHARACTER_PREFAB_LOADER_SYSTEM,
             &[],
         );
         Ok(())

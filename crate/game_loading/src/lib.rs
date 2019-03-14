@@ -7,16 +7,20 @@
 //! depend on this crate and spawn objects for use by other crates. The `game_play` crate can then
 //! depend on the `application_test_support` crate for testing its systems.
 
-pub(crate) use crate::{
-    game_loading_bundle::GameLoadingBundle,
-    game_loading_status::GameLoadingStatus,
-    system::{CharacterSelectionSpawningSystem, MapSelectionSpawningSystem},
-};
 pub use crate::{
+    character_augment_status::CharacterAugmentStatus,
     game_loading_state::GameLoadingState,
     spawn::{MapLayerComponentStorages, MapLayerEntitySpawner, MapSpawningResources},
 };
+pub(crate) use crate::{
+    game_loading_bundle::GameLoadingBundle,
+    game_loading_status::GameLoadingStatus,
+    system::{
+        CharacterAugmentRectifySystem, CharacterSelectionSpawningSystem, MapSelectionSpawningSystem,
+    },
+};
 
+mod character_augment_status;
 mod game_loading_bundle;
 mod game_loading_state;
 mod game_loading_status;

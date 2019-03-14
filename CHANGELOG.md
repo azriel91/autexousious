@@ -6,6 +6,7 @@
 
 * Added `dodge` sequence. ([#102])
 * Added `dash_forward` and `dash_back` sequences. ([#102])
+* Added basic health bars to characters. ([#104])
 
 ### Changed
 
@@ -26,6 +27,7 @@
 [#99]: https://gitlab.com/azriel91/autexousious/issues/99
 [#101]: https://gitlab.com/azriel91/autexousious/issues/101
 [#102]: https://gitlab.com/azriel91/autexousious/issues/102
+[#104]: https://gitlab.com/azriel91/autexousious/issues/104
 
 ## 0.9.0 (2019-02-15)
 
