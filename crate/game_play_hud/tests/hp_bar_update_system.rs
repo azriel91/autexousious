@@ -70,7 +70,10 @@ fn sets_transform_x_and_scale() -> Result<(), Error> {
             // 100 - 20 = 80
             // -80 / 2  = -40
             assert_eq!(-40., transform.translation()[0]);
-            assert_eq!(20., transform.scale()[0]);
+
+            // Divide by gradient sprite size
+            // 20. / 25.
+            assert_eq!(0.8, transform.scale()[0]);
         })
         .run()
 }

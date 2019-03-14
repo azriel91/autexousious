@@ -60,6 +60,8 @@ impl ColourSpriteSheetGen {
     /// * `colour_begin`: The beginning colour's RGBA values, each between `0.` and `1.`.
     /// * `colour_end`: The ending colour's RGBA values, each between `0.` and `1.`.
     /// * `sprite_count`: Number of discreet colour sprites to generate, minimum 2.
+    /// * `sprite_w`: Width of each sprite to generate.
+    /// * `sprite_h`: Height of each sprite to generate.
     pub fn gradient(
         ColourSpriteSheetGenData {
             loader,
@@ -69,6 +71,8 @@ impl ColourSpriteSheetGen {
         colour_begin: [f32; 4],
         colour_end: [f32; 4],
         sprite_count: usize,
+        sprite_w: u32,
+        sprite_h: u32,
     ) -> SpriteRender {
         if sprite_count < 2 {
             panic!(
@@ -84,8 +88,8 @@ impl ColourSpriteSheetGen {
                 sprite_count / column_count + if needs_buffer { 1 } else { 0 }
             };
             let params = ColourSpriteSheetParams {
-                sprite_w: 1,
-                sprite_h: 1,
+                sprite_w,
+                sprite_h,
                 padded: true,
                 row_count,
                 column_count,
@@ -332,6 +336,8 @@ mod tests {
                         COLOUR_BEGIN,
                         COLOUR_END,
                         5,
+                        1,
+                        1,
                     )
                 };
                 world.add_resource(sprite_render);
