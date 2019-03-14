@@ -6,7 +6,7 @@ use amethyst::renderer::{
 use gfx::format::ChannelType;
 use integer_sqrt::IntegerSquareRoot;
 
-use crate::{ColourSpriteSheetGenData, ColourSpriteSheetParams};
+use crate::{ColourSpriteSheetGenData, ColourSpriteSheetParams, SpriteSheetGen};
 
 const COLOUR_TRANSPARENT: [f32; 4] = [0.; 4];
 
@@ -93,45 +93,21 @@ impl ColourSpriteSheetGen {
 
             let (texture_metadata, colours) =
                 Self::gradient_colours(params, colour_begin, colour_end, sprite_count);
-            let (image_width, image_height) = texture_metadata
+            let (image_w, image_h) = texture_metadata
                 .size
                 .as_ref()
                 .cloned()
                 .expect("Expected `texture_metadata` image size to exist.");
 
-            let mut sprites = Vec::with_capacity(sprite_count);
-
-            let padding_pixels = if params.padded { 1 } else { 0 };
-            let offset_w = params.sprite_w + padding_pixels;
-            let offset_h = params.sprite_h + padding_pixels;
-            'outer: for row in 0..params.row_count {
-                for col in 0..params.column_count {
-                    let offset_x = offset_w * col as u32;
-                    let offset_y = offset_h * row as u32;
-                    let sprite = Sprite::from_pixel_values(
-                        image_width as u32,
-                        image_height as u32,
-                        params.sprite_w,
-                        params.sprite_h,
-                        offset_x,
-                        offset_y,
-                        [0.; 2],
-                    );
-
-                    sprites.push(sprite);
-
-                    if sprites.len() == sprite_count {
-                        break 'outer;
-                    }
-                }
-            }
-
             let texture_data = TextureData::F32(colours, texture_metadata);
             let texture_handle = loader.load_from_data(texture_data, (), &texture_assets);
-            let sprite_sheet = SpriteSheet {
-                texture: texture_handle,
-                sprites,
-            };
+            let sprite_sheet = SpriteSheetGen::HalfPixel.generate(
+                texture_handle,
+                params,
+                sprite_count,
+                image_w as u32,
+                image_h as u32,
+            );
 
             loader.load_from_data(sprite_sheet, (), sprite_sheet_assets)
         };
