@@ -1,5 +1,6 @@
 #![recursion_limit = "512"]
-//! Provides the `#[derive(GameObject)]` proc_macro to implement the `GameObject` trait.
+
+//! Provides the `#[game_object]` proc_macro_attribute to implement the `GameObject` trait.
 //!
 //! For example usage of this macro, refer to the documentation for the `GameObject` trait.
 

@@ -7,6 +7,7 @@
 * Added `dodge` sequence. ([#102])
 * Added `dash_forward` and `dash_back` sequences. ([#102])
 * Added basic health bars to characters. ([#104])
+* `#[numeric_newtype]` proc macro attribute to derive numeric traits. ([#98])
 
 ### Changed
 
@@ -24,6 +25,7 @@
 * No longer use `amethyst_animation` to update object and map components. ([#92], [#99])
 
 [#92]: https://gitlab.com/azriel91/autexousious/issues/92
+[#98]: https://gitlab.com/azriel91/autexousious/issues/98
 [#99]: https://gitlab.com/azriel91/autexousious/issues/99
 [#101]: https://gitlab.com/azriel91/autexousious/issues/101
 [#102]: https://gitlab.com/azriel91/autexousious/issues/102
