@@ -17,8 +17,10 @@
 //!
 //!         let plain: $ty = $v0;
 //!         let plain_small: $ty = $v1;
+//!
+//!         // Check `From::from` and `$name::new`.
 //!         let points = $name::from(plain);
-//!         let points_small = $name::from(plain_small);
+//!         let points_small = $name::new(plain_small);
 //!
 //!         // std::ops::_ + PartialEq
 //!         assert_eq!(points, plain);
@@ -79,8 +81,16 @@ pub fn numeric_newtype(_args: TokenStream, item: TokenStream) -> TokenStream {
 
     derive_gen(attrs, is_eq_ord(inner_type));
 
+    let doc_fn_new = format!("Returns a new {}.", type_name);
     let token_stream_2 = quote! {
         #ast
+
+        impl #type_name {
+            #[doc = #doc_fn_new]
+            pub fn new(value: #inner_type) -> Self {
+                #type_name(value)
+            }
+        }
 
         impl std::ops::Deref for #type_name {
             type Target = #inner_type;
