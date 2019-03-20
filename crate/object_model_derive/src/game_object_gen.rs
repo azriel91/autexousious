@@ -1,6 +1,6 @@
 use proc_macro::TokenStream;
 use proc_macro2::Span;
-use quote::{quote, ToTokens};
+use quote::ToTokens;
 use syn::{parse_quote, DeriveInput, Fields, FieldsNamed, Ident, Path};
 
 use crate::{

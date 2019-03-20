@@ -60,7 +60,7 @@ impl<'s> PrefabData<'s> for HpBarPrefab {
     ) -> Result<(), Error> {
         hp_bars.insert(entity, HpBar::default())?;
         let mut transform = Transform::default();
-        transform.set_z(1.);
+        transform.set_translation_z(1.);
         transform.set_scale(HP_BAR_LENGTH, HP_BAR_HEIGHT, 1.);
         transforms.insert(entity, transform)?;
         parents.insert(entity, Parent::new(self.game_object_entity))?;

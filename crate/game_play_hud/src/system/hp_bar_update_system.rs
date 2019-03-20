@@ -44,7 +44,7 @@ impl<'s> System<'s> for HpBarUpdateSystem {
                 // Since the `HpBar` is drawn centered, and we want it to be on the left in a fixed
                 // position, we calculate how far it should be.
                 let half_hp_lost = (HP_BAR_LENGTH - hp) / 2.;
-                transform.set_x(-half_hp_lost);
+                transform.set_translation_x(-half_hp_lost);
 
                 let scale = transform.scale_mut();
                 scale[0] = hp;

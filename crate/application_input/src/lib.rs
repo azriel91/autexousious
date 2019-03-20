@@ -26,10 +26,10 @@
 //!
 //! The following documentation was useful while writing this
 //!
-//! * <https://docs.rs/specs/0.10.0/specs/struct.World.html>
-//! * <https://docs.rs/shred/0.5.2/shred/>
-//! * <https://docs.rs/shrev/0.8.1/shrev/struct.EventChannel.html>
-//! * <https://www.amethyst.rs/doc/develop/doc/amethyst/struct.Engine.html>
+//! * <https://docs.rs/specs/latest/specs/struct.World.html>
+//! * <https://docs.rs/shred/latest/shred/>
+//! * <https://docs.rs/shrev/latest/shrev/struct.EventChannel.html>
+//! * <https://www.amethyst.rs/doc/master/doc/amethyst/enum.StateEvent.html>
 
 pub use crate::event::ApplicationEvent;
 

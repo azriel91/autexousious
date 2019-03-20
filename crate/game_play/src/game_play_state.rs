@@ -1,6 +1,6 @@
 use amethyst::{
     core::{
-        nalgebra::{Orthographic3, Translation3},
+        math::{Orthographic3, Translation3},
         transform::GlobalTransform,
         SystemBundle,
     },

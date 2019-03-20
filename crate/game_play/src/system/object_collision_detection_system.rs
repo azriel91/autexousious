@@ -1,6 +1,6 @@
 use amethyst::{
     assets::{AssetStorage, Handle},
-    core::{nalgebra::Vector3, transform::Transform},
+    core::{math::Vector3, transform::Transform},
     ecs::{Entities, Join, Read, ReadStorage, System, Write},
     renderer::{Flipped, SpriteRender, SpriteSheet},
     shrev::EventChannel,
