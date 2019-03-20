@@ -236,12 +236,7 @@ where
         // <https://github.com/amethyst/amethyst/blob/v0.10.0/amethyst_assets/src/progress.rs#L89>
         //
         // As a compromise, we just check if there are no assets that are still loading.
-        //
-        // TODO: Check if num_loading() == 0, pending:
-        // TODO: <https://github.com/amethyst/amethyst/pull/1452>
-        *loading_status = if self.progress_counter.num_assets()
-            == self.progress_counter.num_finished() + self.progress_counter.num_failed()
-        {
+        *loading_status = if self.progress_counter.num_loading() == 0 {
             ObjectLoadingStatus::Complete
         } else {
             debug!(
