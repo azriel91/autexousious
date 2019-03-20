@@ -4,7 +4,7 @@ use std::{
 };
 
 use amethyst::{
-    core::nalgebra::Vector3,
+    core::math::Vector3,
     ecs::{storage::DenseVecStorage, Component},
 };
 use specs_derive::Component;
@@ -143,7 +143,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use amethyst::core::nalgebra::Vector3;
+    use amethyst::core::math::Vector3;
 
     use super::Velocity;
 

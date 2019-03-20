@@ -1,5 +1,5 @@
 use amethyst::{
-    core::{nalgebra::Vector3, transform::Transform},
+    core::{math::Vector3, transform::Transform},
     ecs::{Entity, SystemData, World},
     renderer::Transparent,
 };
@@ -75,7 +75,7 @@ impl MapLayerEntitySpawner {
 
                     let position = layer.position;
                     let mut transform = Transform::default();
-                    transform.set_position(Vector3::new(
+                    transform.set_translation(Vector3::new(
                         position.x as f32,
                         (position.y - position.z) as f32,
                         position.z as f32,

@@ -30,7 +30,7 @@ sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }
 serde = "1.0.89"
 strum = "0.14.0"
-toml = "0.4.10"
+toml = "0.5.0"
 typename = "0.1.0"
 typename_derive = "0.1.1"
 

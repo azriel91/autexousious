@@ -266,7 +266,7 @@ mod tests {
     fn solid_returns_sprite_render() -> Result<(), Error> {
         const RED: [f32; 4] = [1., 0.2, 0.1, 1.];
 
-        AmethystApplication::render_base("solid_returns_sprite_render_with_colour", false)
+        AmethystApplication::render_base("solid_returns_sprite_render", false)
             .with_setup(|world| {
                 let sprite_render = {
                     let colour_sprite_gen_data = world.system_data::<ColourSpriteSheetGenData>();
@@ -299,7 +299,7 @@ mod tests {
         const COLOUR_BEGIN: [f32; 4] = [1., 0., 0., 0.5];
         const COLOUR_END: [f32; 4] = [0., 1., 0., 1.];
 
-        AmethystApplication::render_base("solid_returns_sprite_render_with_colour", false)
+        AmethystApplication::render_base("gradient_returns_sprite_render", false)
             .with_setup(|world| {
                 let sprite_render = {
                     let colour_sprite_gen_data = world.system_data::<ColourSpriteSheetGenData>();

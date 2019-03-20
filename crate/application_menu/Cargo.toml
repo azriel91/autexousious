@@ -16,8 +16,8 @@ derivative = "1.0.2"
 escargot = "0.4.0"
 log = "0.4.6"
 rayon = "1.0.3"
-structopt = "0.2.14"
-structopt-derive = "0.2.14"
+structopt = "0.2.15"
+structopt-derive = "0.2.15"
 
 [features]
 nightly = ["amethyst/nightly"]

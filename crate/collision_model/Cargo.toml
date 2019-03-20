@@ -16,7 +16,7 @@ shape_model = { path = "../shape_model" }
 
 [dev-dependencies]
 pretty_assertions = "0.6.1"
-toml = "0.4.10"
+toml = "0.5.0"
 
 [features]
 nightly = ["amethyst/nightly"]
