@@ -6,7 +6,6 @@ use derivative::Derivative;
 use derive_new::new;
 use game_mode_selection_model::{GameModeSelectionEntityId, GameModeSelectionEvent};
 use log::debug;
-use state_inventory;
 
 use crate::GameModeSelectionTrans;
 
@@ -25,8 +24,6 @@ pub type GameModeSelectionState =
 /// builder.
 pub type GameModeSelectionStateBuilder =
     AppStateBuilder<'static, 'static, GameModeSelectionStateDelegate, GameModeSelectionEntityId>;
-
-state_inventory::submit!(GameModeSelectionState);
 
 /// Delegate `State` for game mode selection.
 ///

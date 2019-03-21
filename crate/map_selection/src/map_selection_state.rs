@@ -7,7 +7,6 @@ use derivative::Derivative;
 use derive_new::new;
 use log::{debug, info};
 use map_selection_model::{MapSelection, MapSelectionEntityId, MapSelectionEvent};
-use state_inventory;
 
 use crate::MapSelectionStatus;
 
@@ -36,8 +35,6 @@ pub type MapSelectionState<'a, 'b, F, S> =
 /// * `S`: `State` to delegate to.
 pub type MapSelectionStateBuilder<'a, 'b, F, S> =
     AppStateBuilder<'a, 'b, MapSelectionStateDelegate<'a, 'b, F, S>, MapSelectionEntityId>;
-
-state_inventory::submit!(MapSelectionState);
 
 /// Delegate `State` for map selection.
 ///

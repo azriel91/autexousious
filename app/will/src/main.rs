@@ -35,14 +35,11 @@ use game_mode_selection::{GameModeSelectionStateBuilder, GameModeSelectionStateD
 use game_mode_selection_stdio::GameModeSelectionStdioBundle;
 use game_mode_selection_ui::{GameModeSelectionUiBuildFn, GameModeSelectionUiBundle};
 use game_play_stdio::GamePlayStdioBundle;
-use inventory;
 use loading::{LoadingBundle, LoadingState};
-use log::debug;
 use map_loading::MapLoadingBundle;
 use map_selection_stdio::MapSelectionStdioBundle;
 use sequence_loading::SequenceLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
-use state_inventory::StateEntry;
 use stdio_spi::MapperSystem;
 use stdio_view::StdioViewBundle;
 use structopt::StructOpt;
@@ -145,19 +142,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(CharacterLoadingBundle::new())?;
     }
 
-    // State entries registered in the `state_inventory`.
-    //
-    // This will contain an entry for each of the states that was submitted to the state inventory.
-    // This is used to inform users of valid values of states they can probe for.
-    let state_entries = inventory::iter::<StateEntry>
-        .into_iter()
-        .collect::<Vec<&'static StateEntry>>();
-
-    debug!("State entries: {:?}", state_entries);
-
     let mut app = CoreApplication::<_, AppEvent, AppEventReader>::build(assets_dir, state)?
         .with_frame_limit_config(FRAME_RATE_DEFAULT)
-        .with_resource(state_entries)
         .build(game_data)?;
 
     app.run();

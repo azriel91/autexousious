@@ -16,7 +16,6 @@ use game_model::play::GameEntities;
 use game_play_hud::GamePlayHudBundle;
 use game_play_model::{GamePlayEvent, GamePlayStatus};
 use log::{debug, warn};
-use state_inventory;
 
 use crate::GamePlayBundle;
 
@@ -32,8 +31,6 @@ pub struct GamePlayState {
     #[new(default)]
     camera: Option<Entity>,
 }
-
-state_inventory::submit!(GamePlayState);
 
 impl GamePlayState {
     /// Sets up the dispatcher for this state.

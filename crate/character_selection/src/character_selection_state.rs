@@ -10,7 +10,6 @@ use character_selection_model::{
 use derivative::Derivative;
 use derive_new::new;
 use log::{debug, info};
-use state_inventory;
 
 /// `State` where character selection takes place.
 ///
@@ -25,8 +24,6 @@ use state_inventory;
 /// [state_builder]: character_selection_state/struct.CharacterSelectionStateBuilder.html
 pub type CharacterSelectionState<'a, 'b, F, S> =
     AppState<'a, 'b, CharacterSelectionStateDelegate<'a, 'b, F, S>, CharacterSelectionEntityId>;
-
-state_inventory::submit!(CharacterSelectionState);
 
 /// Builder for a `CharacterSelectionState`.
 ///
