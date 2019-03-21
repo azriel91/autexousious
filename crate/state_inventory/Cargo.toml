@@ -1,0 +1,9 @@
+[package]
+name = "state_inventory"
+version = "0.10.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+edition = "2018"
+
+[dependencies]
+derive-new = "0.5.6"
+inventory = "0.1.3"

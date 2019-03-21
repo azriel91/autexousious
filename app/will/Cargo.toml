@@ -27,12 +27,14 @@ game_mode_selection = { path = "../../crate/game_mode_selection" }
 game_mode_selection_stdio = { path = "../../crate/game_mode_selection_stdio" }
 game_mode_selection_ui = { path = "../../crate/game_mode_selection_ui" }
 game_play_stdio = { path = "../../crate/game_play_stdio" }
+inventory = "0.1.3"
 loading = { path = "../../crate/loading" }
 log = "0.4.6"
 map_loading = { path = "../../crate/map_loading" }
 map_selection_stdio = { path = "../../crate/map_selection_stdio" }
 sequence_loading = { path = "../../crate/sequence_loading" }
 sprite_loading = { path = "../../crate/sprite_loading" }
+state_inventory = { path = "../../crate/state_inventory" }
 stdio_spi = { path = "../../crate/stdio_spi" }
 stdio_view = { path = "../../crate/stdio_view" }
 structopt = "0.2.15"

@@ -50,6 +50,7 @@ impl GameModeSelectionTrans {
                             .with_system_dependencies(&CharacterSelectionUiBundle::system_names()),
                     )
                     .build();
+
                     Box::new(state)
                 };
 

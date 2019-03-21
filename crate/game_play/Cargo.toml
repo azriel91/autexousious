@@ -30,6 +30,7 @@ sequence_model = { path = "../sequence_model" }
 shape_model = { path = "../shape_model" }
 shred = "0.7.1"
 shred-derive = "0.5.1"
+state_inventory = { path = "../state_inventory" }
 tracker = { path = "../tracker" }
 typename = "0.1.0"
 typename_derive = "0.1.1"

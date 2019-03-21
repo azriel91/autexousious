@@ -14,6 +14,7 @@ derive-new = "0.5.6"
 game_model = { path = "../game_model" }
 log = "0.4.6"
 map_selection_model = { path = "../map_selection_model" }
+state_inventory = { path = "../state_inventory" }
 typename = "0.1.0"
 typename_derive = "0.1.1"
 
