@@ -3,19 +3,25 @@ use std::{
     thread,
 };
 
-use amethyst::{ecs::prelude::*, shrev::EventChannel};
+use amethyst::{
+    ecs::{ReadExpect, System, Write},
+    shrev::EventChannel,
+};
 use application_input::ApplicationEvent;
 use log::{debug, error, trace, warn};
+use state_registry::StateId;
 use stdio_spi::VariantAndTokens;
 use typename_derive::TypeName;
 
 use crate::{
     reader::{self, StdinReader},
-    IoAppEventUtils,
+    IoAppEventUtils, StdinCommandBarrier,
 };
 
 /// Type to fetch the application event channel.
 type StdinSystemData<'s> = (
+    ReadExpect<'s, StateId>,
+    Write<'s, StdinCommandBarrier>,
     Write<'s, EventChannel<ApplicationEvent>>,
     Write<'s, EventChannel<VariantAndTokens>>,
 );
@@ -64,7 +70,31 @@ impl Default for StdinSystem {
 impl<'s> System<'s> for StdinSystem {
     type SystemData = StdinSystemData<'s>;
 
-    fn run(&mut self, (mut application_event_channel, mut variant_channel): Self::SystemData) {
+    fn run(
+        &mut self,
+        (state_id, mut stdin_command_barrier, mut application_event_channel, mut variant_channel): Self::SystemData,
+    ) {
+        let state_id = &*state_id;
+        match &(*stdin_command_barrier).state_id {
+            Some(state_id_barrier) => {
+                if state_id == state_id_barrier {
+                    debug!("State `{:?}` running, removing `StateIdBarrier`.", state_id);
+
+                    // Reset to `None` because we have reached this barrier.
+                    (*stdin_command_barrier).state_id = None;
+                } else {
+                    debug!(
+                        "Current state: `{:?}`, waiting for `{:?}`.",
+                        state_id, state_id_barrier
+                    );
+
+                    // Skip sending events.
+                    return;
+                }
+            }
+            None => {}
+        };
+
         match self.rx.try_recv() {
             Ok(input) => {
                 debug!("Input from StdinReader: `{:?}`.", &input);
@@ -105,9 +135,11 @@ mod test {
     };
     use application_event::AppEventVariant;
     use application_input::ApplicationEvent;
+    use state_registry::StateId;
+    use stdio_spi::VariantAndTokens;
 
     use super::{StdinSystem, StdinSystemData};
-    use stdio_spi::VariantAndTokens;
+    use crate::StdinCommandBarrier;
 
     fn setup() -> (
         StdinSystem,
@@ -116,7 +148,29 @@ mod test {
         ReaderId<ApplicationEvent>,
         ReaderId<VariantAndTokens>,
     ) {
+        setup_with_barrier(None)
+    }
+
+    fn setup_with_barrier(
+        with_barrier: Option<bool>,
+    ) -> (
+        StdinSystem,
+        Sender<String>,
+        Resources,
+        ReaderId<ApplicationEvent>,
+        ReaderId<VariantAndTokens>,
+    ) {
         let mut res = Resources::new();
+        res.insert(StateId::CharacterSelection);
+        let barrier_state_id = with_barrier.map(|barrier_matches| {
+            if barrier_matches {
+                StateId::CharacterSelection
+            } else {
+                StateId::Loading
+            }
+        });
+        let stdin_command_barrier = StdinCommandBarrier::new(barrier_state_id);
+        res.insert(stdin_command_barrier);
         res.insert(EventChannel::<ApplicationEvent>::with_capacity(10));
         res.insert(EventChannel::<VariantAndTokens>::with_capacity(10));
 
@@ -124,7 +178,8 @@ mod test {
         let stdin_system = StdinSystem::internal_new(rx, || {});
 
         let (application_ev_id, variant_and_tokens_id) = {
-            let (mut application_events, mut variant_and_tokens) = StdinSystemData::fetch(&res);
+            let (_, _, mut application_events, mut variant_and_tokens) =
+                StdinSystemData::fetch(&res);
             (
                 application_events.register_reader(),
                 variant_and_tokens.register_reader(),
@@ -147,7 +202,7 @@ mod test {
         tx.send("exit".to_string()).unwrap();
         stdin_system.run_now(&res);
 
-        let (application_events, _) = StdinSystemData::fetch(&res);
+        let (_, _, application_events, _) = StdinSystemData::fetch(&res);
 
         expect_event(
             &application_events,
@@ -163,7 +218,7 @@ mod test {
         tx.send("abc".to_string()).unwrap();
         stdin_system.run_now(&res);
 
-        let (application_events, _) = StdinSystemData::fetch(&res);
+        let (_, _, application_events, _) = StdinSystemData::fetch(&res);
         expect_event(&application_events, &mut application_ev_id, None);
     } // kcov-ignore
 
@@ -174,7 +229,7 @@ mod test {
         // we don't call tx.send(..)
         stdin_system.run_now(&res);
 
-        let (application_events, _) = StdinSystemData::fetch(&res);
+        let (_, _, application_events, _) = StdinSystemData::fetch(&res);
         expect_event(&application_events, &mut application_ev_id, None);
     } // kcov-ignore
 
@@ -185,7 +240,7 @@ mod test {
         drop(tx); // ensure channel is disconnected
         stdin_system.run_now(&res);
 
-        let (application_events, _) = StdinSystemData::fetch(&res);
+        let (_, _, application_events, _) = StdinSystemData::fetch(&res);
         expect_event(&application_events, &mut application_ev_id, None);
     } // kcov-ignore
 
@@ -196,7 +251,66 @@ mod test {
         tx.send("character_selection confirm".to_string()).unwrap();
         stdin_system.run_now(&res);
 
-        let (_, vat_events) = StdinSystemData::fetch(&res);
+        let (_, _, _, vat_events) = StdinSystemData::fetch(&res);
+
+        expect_vat_event(
+            &vat_events,
+            &mut vat_ev_id,
+            Some(&(
+                AppEventVariant::CharacterSelection,
+                vec!["character_selection".to_string(), "confirm".to_string()],
+            )),
+        ); // kcov-ignore
+    }
+
+    #[test]
+    fn does_not_send_exit_event_when_barrier_does_not_match() {
+        let (mut stdin_system, tx, res, mut application_ev_id, _) = setup_with_barrier(Some(false));
+
+        tx.send("exit".to_string()).unwrap();
+        stdin_system.run_now(&res);
+
+        let (_, _, application_events, _) = StdinSystemData::fetch(&res);
+
+        expect_event(&application_events, &mut application_ev_id, None);
+    }
+
+    #[test]
+    fn sends_exit_event_when_barrier_matches() {
+        let (mut stdin_system, tx, res, mut application_ev_id, _) = setup_with_barrier(Some(true));
+
+        tx.send("exit".to_string()).unwrap();
+        stdin_system.run_now(&res);
+
+        let (_, _, application_events, _) = StdinSystemData::fetch(&res);
+
+        expect_event(
+            &application_events,
+            &mut application_ev_id,
+            Some(&ApplicationEvent::Exit),
+        );
+    }
+
+    #[test]
+    fn does_not_send_vat_event_when_barrier_does_not_match() {
+        let (mut stdin_system, tx, res, _, mut vat_ev_id) = setup_with_barrier(Some(false));
+
+        tx.send("character_selection confirm".to_string()).unwrap();
+        stdin_system.run_now(&res);
+
+        let (_, _, _, vat_events) = StdinSystemData::fetch(&res);
+
+        expect_vat_event(&vat_events, &mut vat_ev_id, None); // kcov-ignore
+    }
+
+    #[test]
+    fn sends_vat_event_when_barrier_matches() {
+        let (mut stdin_system, tx, res, _, mut vat_ev_id) = setup_with_barrier(Some(true));
+
+        tx.send("character_selection confirm".to_string()).unwrap();
+        stdin_system.run_now(&res);
+
+        let (_, _, _, vat_events) = StdinSystemData::fetch(&res);
 
         expect_vat_event(
             &vat_events,

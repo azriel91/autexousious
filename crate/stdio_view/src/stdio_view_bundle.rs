@@ -22,6 +22,7 @@ mod test {
     use amethyst::shrev::EventChannel;
     use amethyst_test::prelude::*;
     use application_input::ApplicationEvent;
+    use state_registry::StateId;
 
     use super::StdioViewBundle;
 
@@ -33,6 +34,7 @@ mod test {
             // kcov-ignore-end
             AmethystApplication::blank()
                 .with_bundle(StdioViewBundle)
+                .with_resource(StateId::Loading)
                 // kcov-ignore-start
                 .with_effect(|world| {
                     world.read_resource::<EventChannel<ApplicationEvent>>();
