@@ -6,10 +6,10 @@
 pub(crate) use crate::{
     io_app_event_utils::IoAppEventUtils, stdin_command_barrier::StdinCommandBarrier,
 };
-pub use crate::{stdio_view_bundle::StdioViewBundle, system::StdinSystem};
+pub use crate::{stdio_input_bundle::StdioInputBundle, system::StdinSystem};
 
 mod io_app_event_utils;
 pub(crate) mod reader;
 mod stdin_command_barrier;
-mod stdio_view_bundle;
+mod stdio_input_bundle;
 mod system;

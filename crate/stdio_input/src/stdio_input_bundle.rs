@@ -6,9 +6,9 @@ use crate::StdinSystem;
 
 /// Adds the `StdinSystem` to the `World`.
 #[derive(Debug, new)]
-pub struct StdioViewBundle;
+pub struct StdioInputBundle;
 
-impl<'a, 'b> SystemBundle<'a, 'b> for StdioViewBundle {
+impl<'a, 'b> SystemBundle<'a, 'b> for StdioInputBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
         builder.add(StdinSystem::new(), &StdinSystem::type_name(), &[]);
         Ok(())
@@ -24,7 +24,7 @@ mod test {
     use application_input::ApplicationEvent;
     use state_registry::StateId;
 
-    use super::StdioViewBundle;
+    use super::StdioInputBundle;
 
     #[test]
     fn bundle_should_add_stdin_system_to_dispatcher() {
@@ -33,7 +33,7 @@ mod test {
         assert!(
             // kcov-ignore-end
             AmethystApplication::blank()
-                .with_bundle(StdioViewBundle)
+                .with_bundle(StdioInputBundle)
                 .with_resource(StateId::Loading)
                 // kcov-ignore-start
                 .with_effect(|world| {

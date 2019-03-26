@@ -6,7 +6,7 @@ use std::{cell::RefCell, process, rc::Rc, time::Duration};
 
 use amethyst::{prelude::*, StateEventReader};
 use application_robot::{state::FixedTimeoutIntercept, RobotState};
-use stdio_view::StdioViewBundle;
+use stdio_input::StdioInputBundle;
 use structopt::StructOpt as StructOptTrait;
 use structopt_derive::StructOpt;
 
@@ -47,7 +47,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     }
 
     let state = RobotState::new_with_intercepts(Box::new(EmptyState), intercepts);
-    let game_data = GameDataBuilder::default().with_bundle(StdioViewBundle::new())?;
+    let game_data = GameDataBuilder::default().with_bundle(StdioInputBundle::new())?;
     let assets_dir = format!("{}/assets", env!("CARGO_MANIFEST_DIR"));
     CoreApplication::<_, _, StateEventReader>::new(assets_dir, state, game_data)?.run();
     Ok(())
