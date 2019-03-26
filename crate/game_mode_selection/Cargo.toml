@@ -19,6 +19,7 @@ game_play = { path = "../game_play" }
 log = "0.4.6"
 map_selection = { path = "../map_selection" }
 map_selection_ui = { path = "../map_selection_ui" }
+state_registry = { path = "../state_registry" }
 
 [dev-dependencies]
 debug_util_amethyst = { path = "../debug_util_amethyst" }

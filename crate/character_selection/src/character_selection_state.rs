@@ -10,6 +10,7 @@ use character_selection_model::{
 use derivative::Derivative;
 use derive_new::new;
 use log::{debug, info};
+use state_registry::StateId;
 
 /// `State` where character selection takes place.
 ///
@@ -82,10 +83,14 @@ where
     S: AutexState<'a, 'b> + 'static,
 {
     fn on_start(&mut self, mut data: StateData<'_, GameData<'a, 'b>>) {
+        data.world.add_resource(StateId::CharacterSelection);
+
         self.initialize_character_selections(&mut data.world);
     }
 
     fn on_resume(&mut self, data: StateData<'_, GameData<'a, 'b>>) {
+        data.world.add_resource(StateId::CharacterSelection);
+
         let mut selections_status = data.world.write_resource::<CharacterSelectionsStatus>();
         *selections_status = CharacterSelectionsStatus::Confirmed;
     }

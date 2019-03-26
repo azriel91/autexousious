@@ -6,6 +6,7 @@ use derivative::Derivative;
 use derive_new::new;
 use game_mode_selection_model::{GameModeSelectionEntityId, GameModeSelectionEvent};
 use log::debug;
+use state_registry::StateId;
 
 use crate::GameModeSelectionTrans;
 
@@ -57,11 +58,17 @@ impl GameModeSelectionStateDelegate {
 
 impl State<GameData<'static, 'static>, AppEvent> for GameModeSelectionStateDelegate {
     fn on_start(&mut self, mut data: StateData<'_, GameData<'static, 'static>>) {
+        data.world.add_resource(StateId::GameModeSelection);
+
         self.initialize_menu_event_channel(&mut data.world);
     }
 
     fn on_stop(&mut self, _data: StateData<'_, GameData<'static, 'static>>) {
         self.terminate_menu_event_channel();
+    }
+
+    fn on_resume(&mut self, data: StateData<'_, GameData<'static, 'static>>) {
+        data.world.add_resource(StateId::GameModeSelection);
     }
 
     fn handle_event(

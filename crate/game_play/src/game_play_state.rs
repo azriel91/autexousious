@@ -16,6 +16,7 @@ use game_model::play::GameEntities;
 use game_play_hud::GamePlayHudBundle;
 use game_play_model::{GamePlayEvent, GamePlayStatus};
 use log::{debug, warn};
+use state_registry::StateId;
 
 use crate::GamePlayBundle;
 
@@ -131,10 +132,22 @@ impl GamePlayState {
 
 impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
     fn on_start(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
+        data.world.add_resource(StateId::GamePlay);
+
         self.initialize_dispatcher(&mut data.world);
         self.initialize_camera(&mut data.world);
 
         data.world.add_resource(GamePlayStatus::Playing);
+    }
+
+    fn on_stop(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
+        self.terminate_entities(&mut data.world);
+        self.terminate_camera(&mut data.world);
+        self.terminate_dispatcher();
+    }
+
+    fn on_resume(&mut self, data: StateData<'_, GameData<'a, 'b>>) {
+        data.world.add_resource(StateId::GamePlay);
     }
 
     fn handle_event(
@@ -182,12 +195,6 @@ impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
             }
             _ => Trans::None,
         }
-    }
-
-    fn on_stop(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
-        self.terminate_entities(&mut data.world);
-        self.terminate_camera(&mut data.world);
-        self.terminate_dispatcher();
     }
 
     fn update(

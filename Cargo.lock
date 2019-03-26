@@ -858,6 +858,7 @@ dependencies = [
  "object_model 0.9.0",
  "sequence_loading 0.1.0",
  "sprite_loading 0.9.0",
+ "state_registry 0.10.0",
  "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -1796,6 +1797,7 @@ dependencies = [
  "shred 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "sprite_loading 0.9.0",
+ "state_registry 0.10.0",
  "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -1819,6 +1821,7 @@ dependencies = [
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_selection 0.9.0",
  "map_selection_ui 0.9.0",
+ "state_registry 0.10.0",
 ]
 
 [[package]]
@@ -1914,6 +1917,7 @@ dependencies = [
  "shape_model 0.9.0",
  "shred 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "state_registry 0.10.0",
  "tracker 0.9.0",
  "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2413,6 +2417,7 @@ dependencies = [
  "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "sprite_loading 0.9.0",
  "sprite_model 0.9.0",
+ "state_registry 0.10.0",
  "strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "toml 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2555,6 +2560,7 @@ dependencies = [
  "map_loading 0.9.0",
  "map_selection_model 0.9.0",
  "sequence_loading 0.1.0",
+ "state_registry 0.10.0",
  "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -3897,6 +3903,14 @@ version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "unreachable 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "state_registry"
+version = "0.10.0"
+dependencies = [
+ "strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
