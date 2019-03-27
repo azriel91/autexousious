@@ -3,6 +3,7 @@ use game_input_model::ControlInputEvent;
 use game_mode_selection_model::GameModeSelectionEvent;
 use game_play_model::GamePlayEvent;
 use map_selection_model::MapSelectionEvent;
+use stdio_command_model::StdioCommandEvent;
 
 use crate::AppEvent;
 
@@ -45,3 +46,4 @@ impl_from_app_event!(ControlInput, ControlInputEvent);
 impl_from_app_event!(GameModeSelection, GameModeSelectionEvent);
 impl_from_app_event!(GamePlay, GamePlayEvent);
 impl_from_app_event!(MapSelection, MapSelectionEvent);
+impl_from_app_event!(StdioCommand, StdioCommandEvent);
