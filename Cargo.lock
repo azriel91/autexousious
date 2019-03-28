@@ -3931,6 +3931,7 @@ dependencies = [
 name = "stdio_command_model"
 version = "0.10.0"
 dependencies = [
+ "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "state_registry 0.10.0",
  "structopt 0.2.15 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -3944,8 +3945,10 @@ dependencies = [
  "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.9.0",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "state_registry 0.10.0",
  "stdio_command_model 0.10.0",
+ "stdio_input 0.9.0",
  "stdio_spi 0.9.0",
  "structopt 0.2.15 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -3970,6 +3973,7 @@ dependencies = [
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "shell-words 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "state_registry 0.10.0",
+ "stdio_command_model 0.10.0",
  "stdio_spi 0.9.0",
  "structopt 0.2.15 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt-derive 0.2.15 (registry+https://github.com/rust-lang/crates.io-index)",

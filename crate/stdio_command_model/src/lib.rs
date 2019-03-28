@@ -3,7 +3,11 @@
 
 //! Types used for controlling stdio behaviour.
 
-pub use crate::{barrier::Barrier, stdio_command_event::StdioCommandEvent};
+pub use crate::{
+    barrier::Barrier, stdin_command_barrier::StdinCommandBarrier,
+    stdio_command_event::StdioCommandEvent,
+};
 
 mod barrier;
+mod stdin_command_barrier;
 mod stdio_command_event;

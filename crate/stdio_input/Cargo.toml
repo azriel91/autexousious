@@ -15,6 +15,7 @@ itertools = "0.8.0"
 log = "0.4.6"
 shell-words = "0.1.0"
 state_registry = { path = "../state_registry" }
+stdio_command_model = { path = "../stdio_command_model" }
 stdio_spi = { path = "../stdio_spi" }
 structopt = "0.2.15"
 strum = "0.14.0"

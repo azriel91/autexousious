@@ -10,12 +10,13 @@ use amethyst::{
 use application_input::ApplicationEvent;
 use log::{debug, error, trace, warn};
 use state_registry::StateId;
+use stdio_command_model::StdinCommandBarrier;
 use stdio_spi::VariantAndTokens;
 use typename_derive::TypeName;
 
 use crate::{
     reader::{self, StdinReader},
-    IoAppEventUtils, StdinCommandBarrier,
+    IoAppEventUtils,
 };
 
 /// Type to fetch the application event channel.
@@ -136,10 +137,10 @@ mod test {
     use application_event::AppEventVariant;
     use application_input::ApplicationEvent;
     use state_registry::StateId;
+    use stdio_command_model::StdinCommandBarrier;
     use stdio_spi::VariantAndTokens;
 
     use super::{StdinSystem, StdinSystemData};
-    use crate::StdinCommandBarrier;
 
     fn setup() -> (
         StdinSystem,

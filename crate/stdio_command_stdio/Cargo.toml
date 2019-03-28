@@ -8,7 +8,9 @@ edition = "2018"
 amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 application_event = { path = "../application_event" }
 derive-new = "0.5.6"
+log = "0.4.6"
 stdio_command_model = { path = "../stdio_command_model" }
+stdio_input = { path = "../stdio_input" }
 stdio_spi = { path = "../stdio_spi" }
 structopt = "0.2.15"
 typename = "0.1.0"
