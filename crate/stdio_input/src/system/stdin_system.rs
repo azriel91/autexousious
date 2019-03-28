@@ -16,7 +16,7 @@ use typename_derive::TypeName;
 
 use crate::{
     reader::{self, StdinReader},
-    IoAppEventUtils,
+    IoAppEventUtils, StatementSplitter, StatementVariant,
 };
 
 /// Type to fetch the application event channel.
@@ -97,22 +97,36 @@ impl<'s> System<'s> for StdinSystem {
         };
 
         match self.rx.try_recv() {
-            Ok(input) => {
-                debug!("Input from StdinReader: `{:?}`.", &input);
+            Ok(command_chain) => {
+                debug!("`command_chain` from StdinReader: `{:?}`.", &command_chain);
 
-                if input == StdinReader::EXIT_PHRASE {
+                if command_chain == StdinReader::EXIT_PHRASE {
                     application_event_channel.single_write(ApplicationEvent::Exit);
                     return;
                 }
 
-                match IoAppEventUtils::input_to_variant_and_tokens(&input) {
-                    Ok(variant_and_tokens) => {
-                        if let Some(variant_and_tokens) = variant_and_tokens {
-                            variant_channel.single_write(variant_and_tokens);
+                let statements = StatementSplitter::new(&command_chain).collect::<Vec<_>>();
+                statements
+                    .into_iter()
+                    .filter_map(|statement| match statement {
+                        Ok(StatementVariant::Default(command))
+                        | Ok(StatementVariant::And(command))
+                        | Ok(StatementVariant::Or(command)) => Some(command),
+                        Err(statement_error) => {
+                            error!("{}", statement_error);
+                            None
                         }
-                    }
-                    Err(e) => error!("Failed to parse input. Error: `{}`.", e),
-                }
+                    })
+                    .for_each(|command| {
+                        match IoAppEventUtils::input_to_variant_and_tokens(&command) {
+                            Ok(variant_and_tokens) => {
+                                if let Some(variant_and_tokens) = variant_and_tokens {
+                                    variant_channel.single_write(variant_and_tokens);
+                                }
+                            }
+                            Err(e) => error!("Failed to parse command. Error: `{}`.", e),
+                        }
+                    });
             }
             Err(TryRecvError::Empty) => {
                 // do nothing

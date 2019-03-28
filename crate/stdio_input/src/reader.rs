@@ -6,6 +6,8 @@ use std::{
 use console::{style, Term};
 use log::{debug, info, trace, warn};
 
+use crate::Terminator;
+
 /// Name of this reader, useful when naming threads.
 pub const NAME: &str = concat!(module_path!(), "::StdinReader");
 
@@ -45,23 +47,39 @@ impl StdinReader {
                 Ok(n) => {
                     if n > 0 {
                         buffer.truncate(n);
-                        trace!("Read input from stdin: \"{}\".", buffer);
+                        trace!("Input from stdin: `{:?}`.", buffer);
 
-                        let payload = buffer.trim().to_string();
-                        let should_exit = payload == Self::EXIT_PHRASE;
-                        if let Err(payload) = self.system_tx.send(payload) {
-                            warn!(
-                                "Channel sender to `StdinSystem` disconnected. Payload: \"{}\"",
-                                payload
-                            );
-                            break;
+                        let trimmed = buffer.trim();
+                        if trimmed.is_empty() {
+                            continue;
                         }
 
-                        // This prevents the thread that is running this function from panicking due
-                        // to accessing stdin while the application is exiting.
-                        if should_exit {
-                            info!("StdinReader thread terminating.");
-                            break;
+                        // TODO: Terminator does some chomping, so we cannot use the returned string
+                        // to attempt to read multiple commands in one line.
+                        let payload = Terminator::new(trimmed.bytes()).terminate();
+                        match &payload {
+                            // `command_chain`: command_one args && command_two args
+                            Some(Ok(command_chain)) => {
+                                let should_exit = command_chain == Self::EXIT_PHRASE;
+
+                                if let Err(command_chain) =
+                                    self.system_tx.send(command_chain.to_string())
+                                {
+                                    warn!(
+                                        "Channel sender to `StdinSystem` disconnected. Payload: \"{}\"",
+                                        command_chain
+                                    );
+                                    break;
+                                }
+
+                                // This prevents the thread that is running this function from panicking due
+                                // to accessing stdin while the application is exiting.
+                                if should_exit {
+                                    info!("StdinReader thread terminating.");
+                                    break;
+                                }
+                            }
+                            Some(Err(())) | None => {}
                         }
                     }
                 }
