@@ -8,12 +8,14 @@
 * Added `dash_forward` and `dash_back` sequences. ([#102])
 * Added basic health bars to characters. ([#104])
 * `#[numeric_newtype]` proc macro attribute to derive numeric traits. ([#98])
+* `stdio_command state_barrier <state_id>` blocks stdin until the given state is running. ([#105])
 
 ### Changed
 
 * Use logic clock based system to update object components each tick. ([#92])
 * Use logic clock based system to update map components each tick. ([#99])
 * ***Breaking:*** In objects and maps, sprites are now specified using `sprite = { sheet = 0, index = 0 }`. ([#92])
+* Stdin command input now needs a comment line to indicate "no input this frame". ([#105])
 
 ### Fixed
 
@@ -30,6 +32,7 @@
 [#101]: https://gitlab.com/azriel91/autexousious/issues/101
 [#102]: https://gitlab.com/azriel91/autexousious/issues/102
 [#104]: https://gitlab.com/azriel91/autexousious/issues/104
+[#105]: https://gitlab.com/azriel91/autexousious/issues/105
 
 ## 0.9.0 (2019-02-15)
 
