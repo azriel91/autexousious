@@ -8,6 +8,7 @@ use game_input_model::ControlInputEvent;
 use game_mode_selection_model::GameModeSelectionEvent;
 use game_play_model::GamePlayEvent;
 use map_selection_model::MapSelectionEvent;
+use stdio_command_model::StdioCommandEvent;
 use strum_macros::{Display, EnumDiscriminants, EnumIter, EnumString};
 
 /// Type encompassing all state event types.
@@ -37,6 +38,8 @@ pub enum AppEvent {
     GamePlay(GamePlayEvent),
     /// `map_selection` events.
     MapSelection(MapSelectionEvent),
+    /// `stdio_command` events.
+    StdioCommand(StdioCommandEvent),
     /// Events sent by the winit window.
     Window(Event),
 }

@@ -6,6 +6,7 @@ use application_state::AutexState;
 use application_ui::ThemeLoader;
 use derivative::Derivative;
 use log::{debug, error};
+use state_registry::StateId;
 
 use crate::{MapLoadingStatus, ObjectLoadingStatus};
 
@@ -49,11 +50,17 @@ where
     S: AutexState<'a, 'b> + 'static,
 {
     fn on_start(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
+        data.world.add_resource(StateId::Loading);
+
         if let Err(e) = ThemeLoader::load(&mut data.world) {
             let err_msg = format!("Failed to load theme: {}", e);
             error!("{}", &err_msg);
             panic!(err_msg);
         }
+    }
+
+    fn on_resume(&mut self, data: StateData<'_, GameData<'a, 'b>>) {
+        data.world.add_resource(StateId::Loading);
     }
 
     fn update(

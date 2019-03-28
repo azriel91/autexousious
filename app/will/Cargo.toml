@@ -33,8 +33,9 @@ map_loading = { path = "../../crate/map_loading" }
 map_selection_stdio = { path = "../../crate/map_selection_stdio" }
 sequence_loading = { path = "../../crate/sequence_loading" }
 sprite_loading = { path = "../../crate/sprite_loading" }
+stdio_command_stdio = { path = "../../crate/stdio_command_stdio" }
+stdio_input = { path = "../../crate/stdio_input" }
 stdio_spi = { path = "../../crate/stdio_spi" }
-stdio_view = { path = "../../crate/stdio_view" }
 structopt = "0.2.15"
 structopt-derive = "0.2.15"
 typename = "0.1.0"

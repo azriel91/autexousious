@@ -4,9 +4,12 @@
 
 use std::{cell::RefCell, process, rc::Rc, time::Duration};
 
-use amethyst::{prelude::*, StateEventReader};
+use amethyst::{
+    CoreApplication, Error, GameData, GameDataBuilder, LogLevelFilter, LoggerConfig, State,
+    StateData, StateEvent, StateEventReader, Trans,
+};
 use application_robot::{state::FixedTimeoutIntercept, RobotState};
-use stdio_view::StdioViewBundle;
+use stdio_input::StdioInputBundle;
 use structopt::StructOpt as StructOptTrait;
 use structopt_derive::StructOpt;
 
@@ -38,7 +41,7 @@ impl<'a, 'b> State<GameData<'a, 'b>, StateEvent> for EmptyState {
     }
 }
 
-fn run(opt: &Opt) -> Result<(), amethyst::Error> {
+fn run(opt: &Opt) -> Result<(), Error> {
     let mut intercepts = RobotState::default_intercepts();
     if let Some(timeout) = opt.timeout {
         intercepts.push(Rc::new(RefCell::new(FixedTimeoutIntercept::new(
@@ -47,13 +50,22 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     }
 
     let state = RobotState::new_with_intercepts(Box::new(EmptyState), intercepts);
-    let game_data = GameDataBuilder::default().with_bundle(StdioViewBundle::new())?;
+    let game_data = GameDataBuilder::default().with_bundle(StdioInputBundle::new())?;
     let assets_dir = format!("{}/assets", env!("CARGO_MANIFEST_DIR"));
     CoreApplication::<_, _, StateEventReader>::new(assets_dir, state, game_data)?.run();
     Ok(())
 }
 
 fn main() {
+    amethyst::start_logger(LoggerConfig {
+        level_filter: if cfg!(debug_assertions) {
+            LogLevelFilter::Debug
+        } else {
+            LogLevelFilter::Info
+        },
+        ..Default::default()
+    });
+
     let opt = Opt::from_args();
     if let Err(e) = run(&opt) {
         println!("Failed to execute example: {}", e);

@@ -7,6 +7,7 @@ use derivative::Derivative;
 use derive_new::new;
 use log::{debug, info};
 use map_selection_model::{MapSelection, MapSelectionEntityId, MapSelectionEvent};
+use state_registry::StateId;
 
 use crate::MapSelectionStatus;
 
@@ -76,10 +77,14 @@ where
     S: AutexState<'a, 'b> + 'static,
 {
     fn on_start(&mut self, mut data: StateData<'_, GameData<'a, 'b>>) {
+        data.world.add_resource(StateId::MapSelection);
+
         self.reset_map_selection_state(&mut data.world);
     }
 
     fn on_resume(&mut self, data: StateData<'_, GameData<'a, 'b>>) {
+        data.world.add_resource(StateId::GameModeSelection);
+
         self.reset_map_selection_state(data.world);
     }
 

@@ -36,13 +36,13 @@ use game_mode_selection_stdio::GameModeSelectionStdioBundle;
 use game_mode_selection_ui::{GameModeSelectionUiBuildFn, GameModeSelectionUiBundle};
 use game_play_stdio::GamePlayStdioBundle;
 use loading::{LoadingBundle, LoadingState};
-use log::info;
 use map_loading::MapLoadingBundle;
 use map_selection_stdio::MapSelectionStdioBundle;
 use sequence_loading::SequenceLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
+use stdio_command_stdio::StdioCommandStdioBundle;
+use stdio_input::StdioInputBundle;
 use stdio_spi::MapperSystem;
-use stdio_view::StdioViewBundle;
 use structopt::StructOpt;
 use typename::TypeName;
 
@@ -133,7 +133,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 MapperSystem::<ControlInputEventStdinMapper>::type_name(),
                 InputToControlInputSystem::type_name(),
             ]))?
-            .with_bundle(StdioViewBundle::new())?
+            .with_bundle(StdioInputBundle::new())?
+            .with_bundle(StdioCommandStdioBundle::new())?
             .with_bundle(CharacterSelectionStdioBundle::new())?
             .with_bundle(GamePlayStdioBundle::new())?
             .with_bundle(GameModeSelectionStdioBundle::new())?
@@ -143,7 +144,6 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(CharacterLoadingBundle::new())?;
     }
 
-    info!("Building application.");
     let mut app = CoreApplication::<_, AppEvent, AppEventReader>::build(assets_dir, state)?
         .with_frame_limit_config(FRAME_RATE_DEFAULT)
         .build(game_data)?;
