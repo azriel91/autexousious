@@ -4407,6 +4407,7 @@ dependencies = [
  "map_selection_stdio 0.9.0",
  "sequence_loading 0.1.0",
  "sprite_loading 0.9.0",
+ "stdio_command_stdio 0.10.0",
  "stdio_input 0.9.0",
  "stdio_spi 0.9.0",
  "structopt 0.2.15 (registry+https://github.com/rust-lang/crates.io-index)",

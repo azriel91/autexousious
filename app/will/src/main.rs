@@ -40,6 +40,7 @@ use map_loading::MapLoadingBundle;
 use map_selection_stdio::MapSelectionStdioBundle;
 use sequence_loading::SequenceLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
+use stdio_command_stdio::StdioCommandStdioBundle;
 use stdio_input::StdioInputBundle;
 use stdio_spi::MapperSystem;
 use structopt::StructOpt;
@@ -133,6 +134,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 InputToControlInputSystem::type_name(),
             ]))?
             .with_bundle(StdioInputBundle::new())?
+            .with_bundle(StdioCommandStdioBundle::new())?
             .with_bundle(CharacterSelectionStdioBundle::new())?
             .with_bundle(GamePlayStdioBundle::new())?
             .with_bundle(GameModeSelectionStdioBundle::new())?
