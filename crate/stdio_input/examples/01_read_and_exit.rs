@@ -4,7 +4,10 @@
 
 use std::{cell::RefCell, process, rc::Rc, time::Duration};
 
-use amethyst::{prelude::*, StateEventReader};
+use amethyst::{
+    CoreApplication, Error, GameData, GameDataBuilder, LogLevelFilter, LoggerConfig, State,
+    StateData, StateEvent, StateEventReader, Trans,
+};
 use application_robot::{state::FixedTimeoutIntercept, RobotState};
 use stdio_input::StdioInputBundle;
 use structopt::StructOpt as StructOptTrait;
@@ -38,7 +41,7 @@ impl<'a, 'b> State<GameData<'a, 'b>, StateEvent> for EmptyState {
     }
 }
 
-fn run(opt: &Opt) -> Result<(), amethyst::Error> {
+fn run(opt: &Opt) -> Result<(), Error> {
     let mut intercepts = RobotState::default_intercepts();
     if let Some(timeout) = opt.timeout {
         intercepts.push(Rc::new(RefCell::new(FixedTimeoutIntercept::new(
@@ -54,6 +57,15 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
 }
 
 fn main() {
+    amethyst::start_logger(LoggerConfig {
+        level_filter: if cfg!(debug_assertions) {
+            LogLevelFilter::Debug
+        } else {
+            LogLevelFilter::Info
+        },
+        ..Default::default()
+    });
+
     let opt = Opt::from_args();
     if let Err(e) = run(&opt) {
         println!("Failed to execute example: {}", e);
