@@ -4,7 +4,7 @@ use amethyst::{
 };
 use derive_new::new;
 use log::warn;
-use stdio_command_model::{Barrier, StdinCommandBarrier, StdioCommandEvent};
+use stdio_command_model::{StateBarrier, StdinCommandBarrier, StdioCommandEvent};
 use typename_derive::TypeName;
 
 /// Updates how `stdin_input` operates based on stdio command events.
@@ -32,7 +32,7 @@ impl<'s> System<'s> for StdioCommandProcessingSystem {
         input_events
             .read(stdio_command_events_id)
             .for_each(|ev| match ev {
-                StdioCommandEvent::Barrier(Barrier { state_id }) => {
+                StdioCommandEvent::StateBarrier(StateBarrier { state_id }) => {
                     if let Some(state_id_existing) = (*stdin_command_barrier).state_id.as_ref() {
                         warn!(
                             "Existing stdio command barrier exists waiting for state: `{}`.",
@@ -60,7 +60,7 @@ mod test {
     use amethyst::{shrev::EventChannel, Error};
     use amethyst_test::AmethystApplication;
     use state_registry::StateId;
-    use stdio_command_model::{Barrier, StdinCommandBarrier, StdioCommandEvent};
+    use stdio_command_model::{StateBarrier, StdinCommandBarrier, StdioCommandEvent};
     use typename::TypeName;
 
     use super::StdioCommandProcessingSystem;
@@ -76,7 +76,7 @@ mod test {
             .with_setup(|world| {
                 world
                     .write_resource::<EventChannel<StdioCommandEvent>>()
-                    .single_write(StdioCommandEvent::Barrier(Barrier {
+                    .single_write(StdioCommandEvent::StateBarrier(StateBarrier {
                         state_id: StateId::GamePlay,
                     }));
             })
