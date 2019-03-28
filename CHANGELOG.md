@@ -1,6 +1,6 @@
 # Changelog
 
-## master (unreleased)
+## 0.10.0 (2019-03-29)
 
 ### Added
 
