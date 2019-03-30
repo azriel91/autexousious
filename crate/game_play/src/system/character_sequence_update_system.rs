@@ -3,14 +3,14 @@ use amethyst::{
     renderer::Flipped,
 };
 use character_model::config::CharacterSequenceId;
+use character_play::{
+    CharacterSequenceUpdateComponents, CharacterSequenceUpdater, MirroredUpdater, RunCounterUpdater,
+};
 use derive_new::new;
 use game_input::ControllerInput;
 use object_model::{
     entity::{Grounding, HealthPoints, Mirrored, Position, RunCounter, Velocity},
     loaded::SequenceEndTransitions,
-};
-use object_play::{
-    CharacterSequenceUpdateComponents, CharacterSequenceUpdater, MirroredUpdater, RunCounterUpdater,
 };
 use sequence_model::entity::SequenceStatus;
 use shred_derive::SystemData;
