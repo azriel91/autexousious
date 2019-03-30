@@ -1,5 +1,4 @@
-use character_model::config::CharacterSequenceId;
-use object_model::entity::RunCounter;
+use character_model::{config::CharacterSequenceId, play::RunCounter};
 
 use crate::{
     sequence_handler::{CharacterSequenceHandler, SequenceHandlerUtil},
@@ -39,9 +38,9 @@ impl CharacterSequenceHandler for StandXMovementCheck {
 
 #[cfg(test)]
 mod tests {
-    use character_model::config::CharacterSequenceId;
+    use character_model::{config::CharacterSequenceId, play::RunCounter};
     use game_input::ControllerInput;
-    use object_model::entity::{Grounding, HealthPoints, Mirrored, Position, RunCounter, Velocity};
+    use object_model::entity::{Grounding, HealthPoints, Mirrored, Position, Velocity};
     use sequence_model::entity::SequenceStatus;
 
     use super::StandXMovementCheck;

@@ -34,9 +34,9 @@ impl CharacterSequenceHandler for Run {
 
 #[cfg(test)]
 mod test {
-    use character_model::config::CharacterSequenceId;
+    use character_model::{config::CharacterSequenceId, play::RunCounter};
     use game_input::ControllerInput;
-    use object_model::entity::{Grounding, HealthPoints, Mirrored, Position, RunCounter, Velocity};
+    use object_model::entity::{Grounding, HealthPoints, Mirrored, Position, Velocity};
     use sequence_model::entity::SequenceStatus;
 
     use super::Run;

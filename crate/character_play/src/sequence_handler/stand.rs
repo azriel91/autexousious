@@ -18,7 +18,7 @@ pub(crate) struct Stand;
 
 impl CharacterSequenceHandler for Stand {
     fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
-        use object_model::entity::RunCounter::*;
+        use character_model::play::RunCounter::*;
         match components.run_counter {
             Exceeded | Increase(_) => panic!(
                 "Invalid run_counter state during `Stand` sequence: `{:?}`",
@@ -45,9 +45,9 @@ impl CharacterSequenceHandler for Stand {
 
 #[cfg(test)]
 mod test {
-    use character_model::config::CharacterSequenceId;
+    use character_model::{config::CharacterSequenceId, play::RunCounter};
     use game_input::ControllerInput;
-    use object_model::entity::{Grounding, HealthPoints, Mirrored, Position, RunCounter, Velocity};
+    use object_model::entity::{Grounding, HealthPoints, Mirrored, Position, Velocity};
     use sequence_model::entity::SequenceStatus;
 
     use super::Stand;

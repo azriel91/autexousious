@@ -1,6 +1,7 @@
 use amethyst::ecs::Entity;
+use character_model::play::RunCounter;
 use game_input::ControllerInput;
-use object_model::entity::{Grounding, HealthPoints, RunCounter};
+use object_model::entity::{Grounding, HealthPoints};
 
 use crate::CharacterComponentStorages;
 
@@ -50,8 +51,9 @@ mod test {
         Error,
     };
     use amethyst_test::AmethystApplication;
+    use character_model::play::RunCounter;
     use game_input::ControllerInput;
-    use object_model::entity::{Grounding, HealthPoints, RunCounter};
+    use object_model::entity::{Grounding, HealthPoints};
 
     use super::CharacterEntityAugmenter;
     use crate::CharacterComponentStorages;
