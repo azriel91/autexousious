@@ -10,7 +10,7 @@ use object_model::{
     loaded::ObjectWrapper,
 };
 use sequence_model::{
-    entity::{FrameIndexClock, SequenceStatus},
+    entity::{FrameIndexClock, FrameWaitClock, SequenceStatus},
     loaded::{ComponentSequence, ComponentSequences},
 };
 
@@ -45,7 +45,7 @@ impl ObjectEntityAugmenter {
             ref mut sequence_ids,
             ref mut sequence_statuses,
             ref mut frame_index_clocks,
-            ref mut logic_clocks,
+            ref mut frame_wait_clocks,
         }: &mut ObjectComponentStorages<'s, W::SequenceId>,
         FrameComponentStorages {
             ref mut waits,
@@ -116,7 +116,7 @@ impl ObjectEntityAugmenter {
         frame_index_clocks
             .insert(entity, frame_index_clock)
             .expect("Failed to insert frame_index_clock component.");
-        let mut logic_clock = LogicClock::new(1);
+        let mut frame_wait_clock = FrameWaitClock::new(LogicClock::new(1));
 
         component_sequences
             .iter()
@@ -127,7 +127,7 @@ impl ObjectEntityAugmenter {
                         .insert(entity, wait)
                         .expect("Failed to insert `Wait` component for object.");
 
-                    logic_clock.limit = *wait as usize;
+                    (*frame_wait_clock).limit = *wait as usize;
                 }
                 ComponentSequence::SpriteRender(sprite_render_sequence) => {
                     let sprite_render = sprite_render_sequence[starting_frame_index].clone();
@@ -153,9 +153,9 @@ impl ObjectEntityAugmenter {
             .insert(entity, component_sequences_handle.clone())
             .expect("Failed to insert component_sequences_handle component.");
 
-        logic_clocks
-            .insert(entity, logic_clock)
-            .expect("Failed to insert logic_clock component.");
+        frame_wait_clocks
+            .insert(entity, frame_wait_clock)
+            .expect("Failed to insert frame_wait_clock component.");
     }
 }
 

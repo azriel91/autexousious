@@ -4,14 +4,13 @@ use amethyst::{
     renderer::{Flipped, Transparent},
 };
 use derivative::Derivative;
-use logic_clock::LogicClock;
 use object_model::{
     config::object::SequenceId,
     entity::{Mirrored, Position, Velocity},
     loaded::SequenceEndTransitions,
 };
 use sequence_model::{
-    entity::{FrameIndexClock, SequenceStatus},
+    entity::{FrameIndexClock, FrameWaitClock, SequenceStatus},
     loaded::ComponentSequencesHandle,
 };
 use shred_derive::SystemData;
@@ -62,7 +61,7 @@ where
     /// `FrameIndexClock` component storage.
     #[derivative(Debug = "ignore")]
     pub frame_index_clocks: WriteStorage<'s, FrameIndexClock>,
-    /// `LogicClock` component storage.
+    /// `FrameWaitClock` component storage.
     #[derivative(Debug = "ignore")]
-    pub logic_clocks: WriteStorage<'s, LogicClock>,
+    pub frame_wait_clocks: WriteStorage<'s, FrameWaitClock>,
 }

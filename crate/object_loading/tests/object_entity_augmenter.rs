@@ -39,12 +39,11 @@ use character_model::{
 };
 use collision_loading::CollisionLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
-use logic_clock::LogicClock;
 use map_loading::MapLoadingBundle;
 use object_model::entity::{Mirrored, Position, Velocity};
 use sequence_loading::SequenceLoadingBundle;
 use sequence_model::{
-    entity::{FrameIndexClock, SequenceStatus},
+    entity::{FrameIndexClock, FrameWaitClock, SequenceStatus},
     loaded::{ComponentSequences, ComponentSequencesHandle},
 };
 use sprite_loading::SpriteLoadingBundle;
@@ -117,7 +116,7 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
             .read_storage::<ComponentSequencesHandle>()
             .contains(entity));
         assert!(world.read_storage::<FrameIndexClock>().contains(entity));
-        assert!(world.read_storage::<LogicClock>().contains(entity));
+        assert!(world.read_storage::<FrameWaitClock>().contains(entity));
     };
 
     AmethystApplication::render_base("augments_entity_with_object_components", false)

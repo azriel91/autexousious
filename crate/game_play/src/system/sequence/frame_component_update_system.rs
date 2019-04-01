@@ -6,12 +6,11 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
-use logic_clock::LogicClock;
 use named_type::NamedType;
 use named_type_derive::NamedType;
 use object_loading::FrameComponentStorages;
 use sequence_model::{
-    entity::FrameIndexClock,
+    entity::{FrameIndexClock, FrameWaitClock},
     loaded::{ComponentSequence, ComponentSequences, ComponentSequencesHandle},
 };
 use shred_derive::SystemData;
@@ -41,16 +40,16 @@ pub struct FrameComponentUpdateSystemData<'s> {
     /// `FrameIndexClock` component storage.
     #[derivative(Debug = "ignore")]
     pub frame_index_clocks: ReadStorage<'s, FrameIndexClock>,
-    /// `LogicClock` component storage.
+    /// `FrameWaitClock` component storage.
     #[derivative(Debug = "ignore")]
-    pub logic_clocks: WriteStorage<'s, LogicClock>,
+    pub frame_wait_clocks: WriteStorage<'s, FrameWaitClock>,
     /// Frame `Component` storages.
     pub frame_component_storages: FrameComponentStorages<'s>,
 }
 
 impl FrameComponentUpdateSystem {
     fn update_frame_components(
-        logic_clocks: &mut WriteStorage<'_, LogicClock>,
+        frame_wait_clocks: &mut WriteStorage<'_, FrameWaitClock>,
         frame_component_storages: &mut FrameComponentStorages,
         component_sequences: &ComponentSequences,
         entity: Entity,
@@ -63,9 +62,9 @@ impl FrameComponentUpdateSystem {
             ref mut interactionses,
         } = frame_component_storages;
 
-        let logic_clock = logic_clocks
+        let frame_wait_clock = frame_wait_clocks
             .get_mut(entity)
-            .expect("Expected entity to have a `LogicClock` component.");
+            .expect("Expected entity to have a `FrameWaitClock` component.");
 
         component_sequences
             .iter()
@@ -76,7 +75,7 @@ impl FrameComponentUpdateSystem {
                         .insert(entity, wait)
                         .expect("Failed to insert `Wait` component.");
 
-                    logic_clock.limit = *wait as usize;
+                    (*frame_wait_clock).limit = *wait as usize;
                 }
                 ComponentSequence::SpriteRender(sprite_render_sequence) => {
                     let sprite_render = sprite_render_sequence[frame_index].clone();
@@ -110,7 +109,7 @@ impl<'s> System<'s> for FrameComponentUpdateSystem {
             component_sequences_handles,
             component_sequences_assets,
             frame_index_clocks,
-            mut logic_clocks,
+            mut frame_wait_clocks,
             mut frame_component_storages,
         }: Self::SystemData,
     ) {
@@ -142,7 +141,7 @@ impl<'s> System<'s> for FrameComponentUpdateSystem {
                     .expect("Expected component_sequences to be loaded.");
 
                 Self::update_frame_components(
-                    &mut logic_clocks,
+                    &mut frame_wait_clocks,
                     &mut frame_component_storages,
                     component_sequences,
                     *entity,
@@ -172,9 +171,12 @@ mod tests {
     use assets_test::ASSETS_CHAR_BAT_SLUG;
     use character_model::config::CharacterSequenceId;
     use collision_model::config::{Body, Interaction, Interactions};
-    use logic_clock::LogicClock;
     use object_loading::FrameComponentStorages;
-    use sequence_model::{config::Wait, entity::FrameIndexClock, loaded::ComponentSequencesHandle};
+    use sequence_model::{
+        config::Wait,
+        entity::{FrameIndexClock, FrameWaitClock},
+        loaded::ComponentSequencesHandle,
+    };
     use shape_model::Volume;
 
     use super::FrameComponentUpdateSystem;
@@ -247,47 +249,53 @@ mod tests {
         world: &mut World,
         frame_index_clock_value: usize,
         frame_index_clock_limit: usize,
-        logic_clock_value: usize,
-        logic_clock_limit: usize,
+        frame_wait_clock_value: usize,
+        frame_wait_clock_limit: usize,
         component_sequences_handle_initial: ComponentSequencesHandle,
     ) {
         let (
             _entities,
             mut frame_index_clocks,
-            mut logic_clocks,
+            mut frame_wait_clocks,
             mut component_sequences_handles,
             ..
         ) = world.system_data::<TestSystemData>();
 
         (
             &mut frame_index_clocks,
-            &mut logic_clocks,
+            &mut frame_wait_clocks,
             &mut component_sequences_handles,
         )
             .join()
             .for_each(
-                |(frame_index_clock, logic_clock, component_sequences_handle)| {
+                |(frame_index_clock, frame_wait_clock, component_sequences_handle)| {
                     (*frame_index_clock).value = frame_index_clock_value;
                     (*frame_index_clock).limit = frame_index_clock_limit;
 
-                    (*logic_clock).value = logic_clock_value;
-                    (*logic_clock).limit = logic_clock_limit;
+                    (*frame_wait_clock).value = frame_wait_clock_value;
+                    (*frame_wait_clock).limit = frame_wait_clock_limit;
 
                     *component_sequences_handle = component_sequences_handle_initial.clone();
                 },
             );
     }
 
-    fn expect_values(world: &mut World, logic_clock_value: usize, logic_clock_limit: usize) {
-        let (logic_clocks, sequence_statuses) =
-            world.system_data::<(WriteStorage<LogicClock>, ReadStorage<CharacterSequenceId>)>();
+    fn expect_values(
+        world: &mut World,
+        frame_wait_clock_value: usize,
+        frame_wait_clock_limit: usize,
+    ) {
+        let (frame_wait_clocks, sequence_statuses) = world.system_data::<(
+            WriteStorage<FrameWaitClock>,
+            ReadStorage<CharacterSequenceId>,
+        )>();
 
-        (&logic_clocks, &sequence_statuses)
-            .join()
-            .for_each(|(logic_clock, _sequence_status)| {
-                assert_eq!(logic_clock_value, (*logic_clock).value);
-                assert_eq!(logic_clock_limit, (*logic_clock).limit);
-            });
+        (&frame_wait_clocks, &sequence_statuses).join().for_each(
+            |(frame_wait_clock, _sequence_status)| {
+                assert_eq!(frame_wait_clock_value, (*frame_wait_clock).value);
+                assert_eq!(frame_wait_clock_limit, (*frame_wait_clock).limit);
+            },
+        );
     }
 
     fn expect_component_values(
@@ -370,7 +378,7 @@ mod tests {
         let (
             entities,
             frame_index_clocks,
-            logic_clocks,
+            frame_wait_clocks,
             component_sequences_handles,
             _frame_component_storages,
         ) = world.system_data::<TestSystemData>();
@@ -378,7 +386,7 @@ mod tests {
         (
             &entities,
             &frame_index_clocks,
-            &logic_clocks,
+            &frame_wait_clocks,
             &component_sequences_handles,
         )
             .join()
@@ -390,7 +398,7 @@ mod tests {
         let (
             entities,
             frame_index_clocks,
-            logic_clocks,
+            frame_wait_clocks,
             component_sequences_handles,
             _frame_component_storages,
         ) = world.system_data::<TestSystemData>();
@@ -398,7 +406,7 @@ mod tests {
         (
             &entities,
             &frame_index_clocks,
-            &logic_clocks,
+            &frame_wait_clocks,
             &component_sequences_handles,
         )
             .join()
@@ -409,7 +417,7 @@ mod tests {
     type TestSystemData<'s> = (
         Entities<'s>,
         WriteStorage<'s, FrameIndexClock>,
-        WriteStorage<'s, LogicClock>,
+        WriteStorage<'s, FrameWaitClock>,
         WriteStorage<'s, ComponentSequencesHandle>,
         FrameComponentStorages<'s>,
     );
