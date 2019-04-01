@@ -1,6 +1,6 @@
 [package]
-name = "numeric_newtype_derive"
-version = "0.10.0"
+name = "logic_clock_derive"
+version = "0.11.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
@@ -12,6 +12,3 @@ proc-macro2 = "0.4.27"
 proc_macro_roids = "0.2.0"
 quote = "0.6.11"
 syn = { version = "0.15.29", features = ["extra-traits", "visit"] }
-
-[dev-dependencies]
-derive_more = "0.14.0"
