@@ -1,13 +1,13 @@
 //! Types representing collision configuration.
 
 pub use self::{
-    body::Body, collision_mode::CollisionMode, impact::Impact,
-    impact_repeat_delay::ImpactRepeatDelay, interaction::Interaction, interactions::Interactions,
+    body::Body, impact::Impact, impact_repeat_delay::ImpactRepeatDelay, interaction::Interaction,
+    interaction_kind::InteractionKind, interactions::Interactions,
 };
 
 mod body;
-mod collision_mode;
 mod impact;
 mod impact_repeat_delay;
 mod interaction;
+mod interaction_kind;
 mod interactions;

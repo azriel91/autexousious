@@ -2,7 +2,7 @@ use derive_new::new;
 use serde::{Deserialize, Serialize};
 use shape_model::Volume;
 
-use crate::config::CollisionMode;
+use crate::config::InteractionKind;
 
 /// Effects of one object on another
 #[derive(Clone, Debug, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
@@ -10,7 +10,7 @@ use crate::config::CollisionMode;
 pub struct Interaction {
     /// Effect behaviour of the collision -- impact, continuous, and so on.
     #[serde(flatten)]
-    pub mode: CollisionMode,
+    pub kind: InteractionKind,
     /// Effect volume.
     pub bounds: Vec<Volume>,
     /// Amount of health points (HP) to subtract on collision.

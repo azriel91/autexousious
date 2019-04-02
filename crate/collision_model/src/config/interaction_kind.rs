@@ -7,7 +7,7 @@ use crate::config::Impact;
 #[derive(Clone, Copy, Debug, Derivative, Deserialize, PartialEq, Eq, Hash, Serialize)]
 #[derivative(Default)]
 #[serde(rename_all = "snake_case")]
-pub enum CollisionMode {
+pub enum InteractionKind {
     /// Collision happens on first impact, and requires a cooldown period before the from entity can
     /// re-impact other entities.
     #[derivative(Default)]

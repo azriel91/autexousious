@@ -38,7 +38,7 @@ mod tests {
     use toml;
 
     use super::Interactions;
-    use crate::config::{CollisionMode, Interaction};
+    use crate::config::{Interaction, InteractionKind};
 
     const ITR_PHYSICAL_ALL_SPECIFIED: &str = "
         interactions = [
@@ -58,7 +58,7 @@ mod tests {
             .expect("Failed to deserialize frame.");
 
         let interactions = vec![Interaction {
-            mode: CollisionMode::default(),
+            kind: InteractionKind::default(),
             bounds: vec![Volume::Sphere {
                 x: 1,
                 y: 1,
@@ -78,7 +78,7 @@ mod tests {
             .expect("Failed to deserialize frame.");
 
         let interactions = vec![Interaction {
-            mode: CollisionMode::default(),
+            kind: InteractionKind::default(),
             bounds: vec![Volume::Sphere {
                 x: 1,
                 y: 1,
