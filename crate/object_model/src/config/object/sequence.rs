@@ -72,8 +72,7 @@ mod tests {
         [[frames]]
         sprite = { sheet = 0, index = 0 }
         interactions = [
-          { mode = { impact = { repeat_delay = 5 } }, \
-            bounds = [{ sphere = { x = 1, y = 1, r = 1 } }] },
+          { impact = { repeat_delay = 5 }, bounds = [{ sphere = { x = 1, y = 1, r = 1 } }] },
         ]
     ";
 

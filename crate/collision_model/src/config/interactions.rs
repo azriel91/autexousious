@@ -40,14 +40,15 @@ mod tests {
     use super::Interactions;
     use crate::config::{CollisionMode, Interaction};
 
-    const ITR_PHYSICAL_ALL_SPECIFIED: &str = r#"
+    const ITR_PHYSICAL_ALL_SPECIFIED: &str = "
         interactions = [
-          { bounds = [{ sphere = { x = 1, y = 1, r = 1 } }], hp_damage = 40, sp_damage = 50, multiple = true },
+          { impact = {}, bounds = [{ sphere = { x = 1, y = 1, r = 1 } }], \
+            hp_damage = 40, sp_damage = 50, multiple = true },
         ]
-    "#;
+    ";
     const ITR_PHYSICAL_MINIMUM_SPECIFIED: &str = r#"
         interactions = [
-          { bounds = [{ sphere = { x = 1, y = 1, r = 1 } }] },
+          { impact = {}, bounds = [{ sphere = { x = 1, y = 1, r = 1 } }] },
         ]
     "#;
 

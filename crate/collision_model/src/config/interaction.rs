@@ -9,7 +9,7 @@ use crate::config::CollisionMode;
 #[serde(rename_all = "snake_case")]
 pub struct Interaction {
     /// Effect behaviour of the collision -- impact, continuous, and so on.
-    #[serde(default)]
+    #[serde(flatten)]
     pub mode: CollisionMode,
     /// Effect volume.
     pub bounds: Vec<Volume>,
