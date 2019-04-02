@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.11.0 (unreleased)
+
+### Changed
+
+* ***Breaking:*** Interactions' collision mode is now a field instead of a variant. ([#103])
+
+[#103]: https://gitlab.com/azriel91/autexousious/issues/103
+
 ## 0.10.0 (2019-03-29)
 
 ### Added
