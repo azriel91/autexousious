@@ -38,12 +38,12 @@ mod tests {
     use toml;
 
     use super::Interactions;
-    use crate::config::{Interaction, InteractionKind};
+    use crate::config::{Impact, ImpactRepeatDelay, Interaction, InteractionKind};
 
     const ITR_PHYSICAL_ALL_SPECIFIED: &str = "
         interactions = [
-          { impact = {}, bounds = [{ sphere = { x = 1, y = 1, r = 1 } }], \
-            hp_damage = 40, sp_damage = 50, multiple = true },
+          { impact = { repeat_delay = 5, hp_damage = 40, sp_damage = 50 }, \
+            bounds = [{ sphere = { x = 1, y = 1, r = 1 } }], multiple = true },
         ]
     ";
     const ITR_PHYSICAL_MINIMUM_SPECIFIED: &str = r#"
@@ -58,15 +58,17 @@ mod tests {
             .expect("Failed to deserialize frame.");
 
         let interactions = vec![Interaction {
-            kind: InteractionKind::default(),
+            kind: InteractionKind::Impact(Impact {
+                hp_damage: 40,
+                sp_damage: 50,
+                repeat_delay: ImpactRepeatDelay::new(5),
+            }),
             bounds: vec![Volume::Sphere {
                 x: 1,
                 y: 1,
                 z: 0,
                 r: 1,
             }],
-            hp_damage: 40,
-            sp_damage: 50,
             multiple: true,
         }];
         assert_eq!(Interactions::new(interactions), frame.interactions);
@@ -78,16 +80,14 @@ mod tests {
             .expect("Failed to deserialize frame.");
 
         let interactions = vec![Interaction {
-            kind: InteractionKind::default(),
             bounds: vec![Volume::Sphere {
                 x: 1,
                 y: 1,
                 z: 0,
                 r: 1,
             }],
-            hp_damage: 0,
-            sp_damage: 0,
-            multiple: false,
+            kind: Default::default(),
+            multiple: Default::default(),
         }];
         assert_eq!(Interactions::new(interactions), frame.interactions);
     }

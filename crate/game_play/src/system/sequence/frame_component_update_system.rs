@@ -170,7 +170,9 @@ mod tests {
     use application_test_support::{AutexousiousApplication, SequenceQueries};
     use assets_test::ASSETS_CHAR_BAT_SLUG;
     use character_model::config::CharacterSequenceId;
-    use collision_model::config::{Body, Interaction, InteractionKind, Interactions};
+    use collision_model::config::{
+        Body, Impact, ImpactRepeatDelay, Interaction, InteractionKind, Interactions,
+    };
     use object_loading::FrameComponentStorages;
     use sequence_model::{
         config::Wait,
@@ -355,7 +357,11 @@ mod tests {
 
     fn interactions() -> Interactions {
         Interactions::new(vec![Interaction {
-            kind: InteractionKind::default(),
+            kind: InteractionKind::Impact(Impact {
+                repeat_delay: ImpactRepeatDelay::default(),
+                hp_damage: 20,
+                sp_damage: 0,
+            }),
             bounds: vec![Volume::Box {
                 x: 81,
                 y: 0,
@@ -364,8 +370,6 @@ mod tests {
                 h: 12,
                 d: 26,
             }],
-            hp_damage: 20,
-            sp_damage: 0,
             multiple: false,
         }])
     }

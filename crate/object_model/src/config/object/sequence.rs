@@ -169,15 +169,17 @@ mod tests {
             .expect("Failed to deserialize sequence.");
 
         let interactions = vec![Interaction {
-            kind: InteractionKind::Impact(Impact::new(ImpactRepeatDelay::new(5))),
+            kind: InteractionKind::Impact(Impact {
+                repeat_delay: ImpactRepeatDelay::new(5),
+                hp_damage: 0,
+                sp_damage: 0,
+            }),
             bounds: vec![Volume::Sphere {
                 x: 1,
                 y: 1,
                 z: 0,
                 r: 1,
             }],
-            hp_damage: 0,
-            sp_damage: 0,
             multiple: false,
         }];
         let frames = vec![ObjectFrame::new(

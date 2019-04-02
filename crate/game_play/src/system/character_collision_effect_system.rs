@@ -3,7 +3,10 @@ use amethyst::{
     shrev::{EventChannel, ReaderId},
 };
 use character_model::config::CharacterSequenceId;
-use collision_model::{config::Interaction, play::CollisionEvent};
+use collision_model::{
+    config::{Impact, Interaction, InteractionKind},
+    play::CollisionEvent,
+};
 use derive_new::new;
 use object_model::entity::HealthPoints;
 use sequence_model::entity::SequenceStatus;
@@ -49,7 +52,10 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
                 {
                     // TODO: Select damage sequence based on status.
                     // TODO: Split this system with health check system.
-                    let Interaction { hp_damage, .. } = ev.interaction;
+                    let Interaction {
+                        kind: InteractionKind::Impact(Impact { hp_damage, .. }),
+                        ..
+                    } = ev.interaction;
                     if health_points.0 < hp_damage {
                         *health_points = HealthPoints(0);
                     } else {

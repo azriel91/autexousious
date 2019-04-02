@@ -9,4 +9,8 @@ use crate::config::ImpactRepeatDelay;
 pub struct Impact {
     /// Number of ticks to wait before another impact may occur.
     pub repeat_delay: ImpactRepeatDelay,
+    /// Amount of health points (HP) to subtract on collision.
+    pub hp_damage: u32,
+    /// Amount of skill points (SP) to subtract on collision.
+    pub sp_damage: u32,
 }
