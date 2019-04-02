@@ -6,7 +6,7 @@ use crate::config::InteractionKind;
 
 /// Effects of one object on another
 #[derive(Clone, Debug, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
-#[serde(rename_all = "snake_case")]
+#[serde(deny_unknown_fields)]
 pub struct Interaction {
     /// Effect behaviour of the collision -- impact, continuous, and so on.
     #[serde(flatten)]
