@@ -49,7 +49,7 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
                 {
                     // TODO: Select damage sequence based on status.
                     // TODO: Split this system with health check system.
-                    let Interaction::Physical { hp_damage, .. } = ev.interaction;
+                    let Interaction { hp_damage, .. } = ev.interaction;
                     if health_points.0 < hp_damage {
                         *health_points = HealthPoints(0);
                     } else {

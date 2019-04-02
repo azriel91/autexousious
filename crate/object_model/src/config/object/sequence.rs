@@ -33,7 +33,9 @@ pub struct Sequence<SeqId: SequenceId> {
 #[cfg(test)]
 mod tests {
     use amethyst::ecs::{storage::DenseVecStorage, Component};
-    use collision_model::config::{Body, Interaction, Interactions};
+    use collision_model::config::{
+        Body, CollisionMode, Impact, ImpactRepeatDelay, Interaction, Interactions,
+    };
     use derivative::Derivative;
     use sequence_model::config::Wait;
     use serde::{Deserialize, Serialize};
@@ -66,13 +68,14 @@ mod tests {
           { sphere = { x = -7, y = -8, z = -9, r = 17 } },
         ]
     "#;
-    const SEQUENCE_WITH_ITR: &str = r#"
+    const SEQUENCE_WITH_ITR: &str = "
         [[frames]]
         sprite = { sheet = 0, index = 0 }
         interactions = [
-          { physical = { bounds = [{ sphere = { x = 1, y = 1, r = 1 } }] } },
+          { mode = { impact = { repeat_delay = 5 } }, \
+            bounds = [{ sphere = { x = 1, y = 1, r = 1 } }] },
         ]
-    "#;
+    ";
 
     #[test]
     fn sequence_with_empty_frames_list_deserializes_successfully() {
@@ -166,7 +169,8 @@ mod tests {
         let sequence = toml::from_str::<Sequence<TestSeqId>>(SEQUENCE_WITH_ITR)
             .expect("Failed to deserialize sequence.");
 
-        let interactions = vec![Interaction::Physical {
+        let interactions = vec![Interaction {
+            mode: CollisionMode::Impact(Impact::new(ImpactRepeatDelay::new(5))),
             bounds: vec![Volume::Sphere {
                 x: 1,
                 y: 1,

@@ -170,7 +170,7 @@ mod tests {
     use application_test_support::{AutexousiousApplication, SequenceQueries};
     use assets_test::ASSETS_CHAR_BAT_SLUG;
     use character_model::config::CharacterSequenceId;
-    use collision_model::config::{Body, Interaction, Interactions};
+    use collision_model::config::{Body, CollisionMode, Interaction, Interactions};
     use object_loading::FrameComponentStorages;
     use sequence_model::{
         config::Wait,
@@ -354,7 +354,8 @@ mod tests {
     }
 
     fn interactions() -> Interactions {
-        Interactions::new(vec![Interaction::Physical {
+        Interactions::new(vec![Interaction {
+            mode: CollisionMode::default(),
             bounds: vec![Volume::Box {
                 x: 81,
                 y: 0,

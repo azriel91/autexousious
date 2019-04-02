@@ -38,16 +38,16 @@ mod tests {
     use toml;
 
     use super::Interactions;
-    use crate::config::Interaction;
+    use crate::config::{CollisionMode, Interaction};
 
     const ITR_PHYSICAL_ALL_SPECIFIED: &str = r#"
         interactions = [
-          { physical = { bounds = [{ sphere = { x = 1, y = 1, r = 1 } }], hp_damage = 40, sp_damage = 50, multiple = true } },
+          { bounds = [{ sphere = { x = 1, y = 1, r = 1 } }], hp_damage = 40, sp_damage = 50, multiple = true },
         ]
     "#;
     const ITR_PHYSICAL_MINIMUM_SPECIFIED: &str = r#"
         interactions = [
-          { physical = { bounds = [{ sphere = { x = 1, y = 1, r = 1 } }] } },
+          { bounds = [{ sphere = { x = 1, y = 1, r = 1 } }] },
         ]
     "#;
 
@@ -56,7 +56,8 @@ mod tests {
         let frame = toml::from_str::<InteractionsFrame>(ITR_PHYSICAL_ALL_SPECIFIED)
             .expect("Failed to deserialize frame.");
 
-        let interactions = vec![Interaction::Physical {
+        let interactions = vec![Interaction {
+            mode: CollisionMode::default(),
             bounds: vec![Volume::Sphere {
                 x: 1,
                 y: 1,
@@ -75,7 +76,8 @@ mod tests {
         let frame = toml::from_str::<InteractionsFrame>(ITR_PHYSICAL_MINIMUM_SPECIFIED)
             .expect("Failed to deserialize frame.");
 
-        let interactions = vec![Interaction::Physical {
+        let interactions = vec![Interaction {
+            mode: CollisionMode::default(),
             bounds: vec![Volume::Sphere {
                 x: 1,
                 y: 1,
