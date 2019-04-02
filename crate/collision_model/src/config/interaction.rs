@@ -8,7 +8,7 @@ use crate::config::InteractionKind;
 #[derive(Clone, Debug, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
 #[serde(deny_unknown_fields)]
 pub struct Interaction {
-    /// Effect behaviour of the collision -- impact, continuous, and so on.
+    /// Type of collision -- impact, picking weapon, grabbing, and so on.
     #[serde(flatten)]
     pub kind: InteractionKind,
     /// Effect volume.
