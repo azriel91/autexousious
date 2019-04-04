@@ -34,7 +34,7 @@ pub struct Sequence<SeqId: SequenceId> {
 mod tests {
     use amethyst::ecs::{storage::DenseVecStorage, Component};
     use collision_model::config::{
-        Body, Hit, HitRepeatDelay, Interaction, InteractionKind, Interactions,
+        Body, Hit, HitLimit, HitRepeatDelay, Interaction, InteractionKind, Interactions,
     };
     use derivative::Derivative;
     use sequence_model::config::Wait;
@@ -171,6 +171,7 @@ mod tests {
         let interactions = vec![Interaction {
             kind: InteractionKind::Hit(Hit {
                 repeat_delay: HitRepeatDelay::new(5),
+                hit_limit: HitLimit::default(),
                 hp_damage: 0,
                 sp_damage: 0,
             }),

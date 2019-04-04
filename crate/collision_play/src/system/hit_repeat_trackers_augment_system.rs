@@ -12,7 +12,7 @@ use typename_derive::TypeName;
 
 /// Creates `HitRepeatTrackers`s for new `Hit` collisions.
 ///
-/// This attaches ?? to the entity with the `Interaction`.
+/// This attaches `HitRepeatTrackers` to the entity with the `Interaction`.
 #[derive(Debug, Default, TypeName, new)]
 pub struct HitRepeatTrackersAugmentSystem {
     /// Reader ID for the `CollisionEvent` event channel.
@@ -95,7 +95,7 @@ mod tests {
     };
     use amethyst_test::AmethystApplication;
     use collision_model::{
-        config::{Hit, HitRepeatDelay, Interaction, InteractionKind},
+        config::{Hit, HitLimit, HitRepeatDelay, Interaction, InteractionKind},
         play::{CollisionEvent, HitRepeatClock, HitRepeatTracker, HitRepeatTrackers},
     };
     use logic_clock::LogicClock;
@@ -191,7 +191,7 @@ mod tests {
 
     fn interaction() -> Interaction {
         Interaction::new(
-            InteractionKind::Hit(Hit::new(HitRepeatDelay::new(4), 0, 0)),
+            InteractionKind::Hit(Hit::new(HitRepeatDelay::new(4), HitLimit::Unlimited, 0, 0)),
             vec![],
             true,
         )
