@@ -50,7 +50,7 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
                 if let (Some(health_points), Some(character_sequence_id), Some(sequence_status)) =
                     (health_points, character_sequence_id, sequence_status)
                 {
-                    // TODO: Select damage sequence based on status.
+                    // TODO: Select damage sequence based on balance / fall points.
                     // TODO: Split this system with health check system.
                     let Interaction {
                         kind: InteractionKind::Impact(Impact { hp_damage, .. }),

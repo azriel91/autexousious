@@ -1066,6 +1066,7 @@ dependencies = [
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_more 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "logic_clock 0.10.0",
  "minterpolate 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "numeric_newtype_derive 0.10.0",
  "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1074,6 +1075,20 @@ dependencies = [
  "shape_model 0.10.0",
  "specs-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "toml 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "collision_play"
+version = "0.11.0"
+dependencies = [
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
+ "collision_model 0.10.0",
+ "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "logic_clock 0.10.0",
+ "shape_model 0.10.0",
+ "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typename_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
