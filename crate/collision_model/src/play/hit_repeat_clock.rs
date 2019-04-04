@@ -6,6 +6,6 @@ use logic_clock::logic_clock;
 use serde::{Deserialize, Serialize};
 use specs_derive::Component;
 
-/// Logic clock to track the repeat timeout of an impact.
+/// Logic clock to track the repeat timeout of a hit.
 #[logic_clock]
-pub struct ImpactRepeatClock;
+pub struct HitRepeatClock;

@@ -4,7 +4,7 @@ use amethyst::{
 };
 use character_model::config::CharacterSequenceId;
 use collision_model::{
-    config::{Impact, Interaction, InteractionKind},
+    config::{Hit, Interaction, InteractionKind},
     play::CollisionEvent,
 };
 use derive_new::new;
@@ -53,7 +53,7 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
                     // TODO: Select damage sequence based on balance / fall points.
                     // TODO: Split this system with health check system.
                     let Interaction {
-                        kind: InteractionKind::Impact(Impact { hp_damage, .. }),
+                        kind: InteractionKind::Hit(Hit { hp_damage, .. }),
                         ..
                     } = ev.interaction;
                     if health_points.0 < hp_damage {

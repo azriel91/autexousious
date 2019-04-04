@@ -8,12 +8,12 @@ use crate::config::InteractionKind;
 #[derive(Clone, Debug, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
 #[serde(deny_unknown_fields)]
 pub struct Interaction {
-    /// Type of collision -- impact, picking weapon, grabbing, and so on.
+    /// Type of collision -- hit, picking weapon, grabbing, and so on.
     #[serde(flatten)]
     pub kind: InteractionKind,
     /// Effect volume.
     pub bounds: Vec<Volume>,
-    /// Whether this will hit multiple objects. Defaults to `false`.
+    /// Whether this will collide with multiple objects. Defaults to `false`.
     #[serde(default)]
     pub multiple: bool,
 }

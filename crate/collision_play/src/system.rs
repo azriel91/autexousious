@@ -1,3 +1,3 @@
-pub use self::impact_repeat_trackers_augment_system::ImpactRepeatTrackersAugmentSystem;
+pub use self::hit_repeat_trackers_augment_system::HitRepeatTrackersAugmentSystem;
 
-mod impact_repeat_trackers_augment_system;
+mod hit_repeat_trackers_augment_system;

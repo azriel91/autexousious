@@ -3,53 +3,50 @@ use amethyst::{
     shrev::{EventChannel, ReaderId},
 };
 use collision_model::{
-    config::{Impact, ImpactRepeatDelay, Interaction, InteractionKind},
-    play::{CollisionEvent, ImpactRepeatClock, ImpactRepeatTracker, ImpactRepeatTrackers},
+    config::{Hit, HitRepeatDelay, Interaction, InteractionKind},
+    play::{CollisionEvent, HitRepeatClock, HitRepeatTracker, HitRepeatTrackers},
 };
 use derive_new::new;
 use logic_clock::LogicClock;
 use typename_derive::TypeName;
 
-/// Creates `ImpactRepeatTrackers`s for new `Impact` collisions.
+/// Creates `HitRepeatTrackers`s for new `Hit` collisions.
 ///
 /// This attaches ?? to the entity with the `Interaction`.
 #[derive(Debug, Default, TypeName, new)]
-pub struct ImpactRepeatTrackersAugmentSystem {
+pub struct HitRepeatTrackersAugmentSystem {
     /// Reader ID for the `CollisionEvent` event channel.
     #[new(default)]
     collision_event_rid: Option<ReaderId<CollisionEvent>>,
 }
 
-type ImpactRepeatTrackersAugmentSystemData<'s> = (
+type HitRepeatTrackersAugmentSystemData<'s> = (
     Read<'s, EventChannel<CollisionEvent>>,
-    WriteStorage<'s, ImpactRepeatTrackers>,
+    WriteStorage<'s, HitRepeatTrackers>,
 );
 
-impl ImpactRepeatTrackersAugmentSystem {
-    fn impact_repeat_tracker(
-        entity_to: Entity,
-        repeat_delay: ImpactRepeatDelay,
-    ) -> ImpactRepeatTracker {
-        let impact_repeat_clock = ImpactRepeatClock::new(LogicClock::new(*repeat_delay as usize));
-        ImpactRepeatTracker::new(entity_to, impact_repeat_clock)
+impl HitRepeatTrackersAugmentSystem {
+    fn hit_repeat_tracker(entity_to: Entity, repeat_delay: HitRepeatDelay) -> HitRepeatTracker {
+        let hit_repeat_clock = HitRepeatClock::new(LogicClock::new(*repeat_delay as usize));
+        HitRepeatTracker::new(entity_to, hit_repeat_clock)
     }
 }
 
-impl<'s> System<'s> for ImpactRepeatTrackersAugmentSystem {
-    type SystemData = ImpactRepeatTrackersAugmentSystemData<'s>;
+impl<'s> System<'s> for HitRepeatTrackersAugmentSystem {
+    type SystemData = HitRepeatTrackersAugmentSystemData<'s>;
 
-    fn run(&mut self, (collision_ec, mut impact_repeat_trackerses): Self::SystemData) {
+    fn run(&mut self, (collision_ec, mut hit_repeat_trackerses): Self::SystemData) {
         // Read from channel
         collision_ec
             .read(
                 self.collision_event_rid
                     .as_mut()
-                    .expect("Expected reader ID to exist for ImpactRepeatTrackersAugmentSystem."),
+                    .expect("Expected reader ID to exist for HitRepeatTrackersAugmentSystem."),
             )
             .for_each(|ev| {
-                // Only add trackers for `Impact` interactions.
+                // Only add trackers for `Hit` interactions.
                 let Interaction {
-                    kind: InteractionKind::Impact(Impact { repeat_delay, .. }),
+                    kind: InteractionKind::Hit(Hit { repeat_delay, .. }),
                     ..
                 } = ev.interaction;
 
@@ -58,25 +55,23 @@ impl<'s> System<'s> for ImpactRepeatTrackersAugmentSystem {
                 // traverse the entity hierarchy to find the object entity.
                 let hit_object = ev.to;
 
-                match impact_repeat_trackerses.get_mut(ev.from) {
-                    Some(impact_repeat_trackers) => {
-                        if impact_repeat_trackers
+                match hit_repeat_trackerses.get_mut(ev.from) {
+                    Some(hit_repeat_trackers) => {
+                        if hit_repeat_trackers
                             .iter()
-                            .all(|impact_repeat_tracker| impact_repeat_tracker.entity != hit_object)
+                            .all(|hit_repeat_tracker| hit_repeat_tracker.entity != hit_object)
                         {
-                            let impact_repeat_tracker =
-                                Self::impact_repeat_tracker(hit_object, repeat_delay);
-                            impact_repeat_trackers.push(impact_repeat_tracker);
+                            let hit_repeat_tracker =
+                                Self::hit_repeat_tracker(hit_object, repeat_delay);
+                            hit_repeat_trackers.push(hit_repeat_tracker);
                         }
                     }
                     None => {
-                        let impact_repeat_tracker =
-                            Self::impact_repeat_tracker(hit_object, repeat_delay);
-                        let impact_repeat_trackers =
-                            ImpactRepeatTrackers::new(vec![impact_repeat_tracker]);
-                        impact_repeat_trackerses
-                            .insert(ev.from, impact_repeat_trackers)
-                            .expect("Failed to insert `ImpactRepeatTrackers`.");
+                        let hit_repeat_tracker = Self::hit_repeat_tracker(hit_object, repeat_delay);
+                        let hit_repeat_trackers = HitRepeatTrackers::new(vec![hit_repeat_tracker]);
+                        hit_repeat_trackerses
+                            .insert(ev.from, hit_repeat_trackers)
+                            .expect("Failed to insert `HitRepeatTrackers`.");
                     }
                 }
             });
@@ -100,18 +95,18 @@ mod tests {
     };
     use amethyst_test::AmethystApplication;
     use collision_model::{
-        config::{Impact, ImpactRepeatDelay, Interaction, InteractionKind},
-        play::{CollisionEvent, ImpactRepeatClock, ImpactRepeatTracker, ImpactRepeatTrackers},
+        config::{Hit, HitRepeatDelay, Interaction, InteractionKind},
+        play::{CollisionEvent, HitRepeatClock, HitRepeatTracker, HitRepeatTrackers},
     };
     use logic_clock::LogicClock;
     use shape_model::Volume;
 
-    use super::ImpactRepeatTrackersAugmentSystem;
+    use super::HitRepeatTrackersAugmentSystem;
 
     #[test]
-    fn inserts_impact_repeat_trackers_for_attacker() -> Result<(), Error> {
+    fn inserts_hit_repeat_trackers_for_attacker() -> Result<(), Error> {
         AmethystApplication::blank()
-            .with_system(ImpactRepeatTrackersAugmentSystem::new(), "", &[])
+            .with_system(HitRepeatTrackersAugmentSystem::new(), "", &[])
             .with_effect(|world| {
                 let entity_from = world.create_entity().build();
                 let entity_to = world.create_entity().build();
@@ -123,24 +118,24 @@ mod tests {
             })
             .with_assertion(|world| {
                 let (entity_from, entity_to) = *world.read_resource::<(Entity, Entity)>();
-                let impact_repeat_trackerses = world.read_storage::<ImpactRepeatTrackers>();
-                let impact_repeat_trackers = impact_repeat_trackerses.get(entity_from);
+                let hit_repeat_trackerses = world.read_storage::<HitRepeatTrackers>();
+                let hit_repeat_trackers = hit_repeat_trackerses.get(entity_from);
 
                 assert_eq!(
-                    Some(&ImpactRepeatTrackers::new(vec![ImpactRepeatTracker::new(
+                    Some(&HitRepeatTrackers::new(vec![HitRepeatTracker::new(
                         entity_to,
-                        ImpactRepeatClock::new(LogicClock::new(4))
+                        HitRepeatClock::new(LogicClock::new(4))
                     )])),
-                    impact_repeat_trackers
+                    hit_repeat_trackers
                 );
             })
             .run()
     }
 
     #[test]
-    fn inserts_impact_repeat_tracker_for_different_target() -> Result<(), Error> {
+    fn inserts_hit_repeat_tracker_for_different_target() -> Result<(), Error> {
         AmethystApplication::blank()
-            .with_system(ImpactRepeatTrackersAugmentSystem::new(), "", &[])
+            .with_system(HitRepeatTrackersAugmentSystem::new(), "", &[])
             .with_effect(|world| {
                 let entity_from = world.create_entity().build();
                 let entity_to_0 = world.create_entity().build();
@@ -154,15 +149,15 @@ mod tests {
             .with_assertion(|world| {
                 let (entity_from, entity_to_0, _entity_to_1) =
                     *world.read_resource::<(Entity, Entity, Entity)>();
-                let impact_repeat_trackerses = world.read_storage::<ImpactRepeatTrackers>();
-                let impact_repeat_trackers = impact_repeat_trackerses.get(entity_from);
+                let hit_repeat_trackerses = world.read_storage::<HitRepeatTrackers>();
+                let hit_repeat_trackers = hit_repeat_trackerses.get(entity_from);
 
                 assert_eq!(
-                    Some(&ImpactRepeatTrackers::new(vec![ImpactRepeatTracker::new(
+                    Some(&HitRepeatTrackers::new(vec![HitRepeatTracker::new(
                         entity_to_0,
-                        ImpactRepeatClock::new(LogicClock::new(4))
+                        HitRepeatClock::new(LogicClock::new(4))
                     )])),
-                    impact_repeat_trackers
+                    hit_repeat_trackers
                 );
             })
             .with_effect(|world| {
@@ -175,21 +170,15 @@ mod tests {
             .with_assertion(|world| {
                 let (entity_from, entity_to_0, entity_to_1) =
                     *world.read_resource::<(Entity, Entity, Entity)>();
-                let impact_repeat_trackerses = world.read_storage::<ImpactRepeatTrackers>();
-                let impact_repeat_trackers = impact_repeat_trackerses.get(entity_from);
+                let hit_repeat_trackerses = world.read_storage::<HitRepeatTrackers>();
+                let hit_repeat_trackers = hit_repeat_trackerses.get(entity_from);
 
                 assert_eq!(
-                    Some(&ImpactRepeatTrackers::new(vec![
-                        ImpactRepeatTracker::new(
-                            entity_to_0,
-                            ImpactRepeatClock::new(LogicClock::new(4))
-                        ),
-                        ImpactRepeatTracker::new(
-                            entity_to_1,
-                            ImpactRepeatClock::new(LogicClock::new(4))
-                        )
+                    Some(&HitRepeatTrackers::new(vec![
+                        HitRepeatTracker::new(entity_to_0, HitRepeatClock::new(LogicClock::new(4))),
+                        HitRepeatTracker::new(entity_to_1, HitRepeatClock::new(LogicClock::new(4)))
                     ])),
-                    impact_repeat_trackers
+                    hit_repeat_trackers
                 );
             })
             .run()
@@ -202,7 +191,7 @@ mod tests {
 
     fn interaction() -> Interaction {
         Interaction::new(
-            InteractionKind::Impact(Impact::new(ImpactRepeatDelay::new(4), 0, 0)),
+            InteractionKind::Hit(Hit::new(HitRepeatDelay::new(4), 0, 0)),
             vec![],
             true,
         )

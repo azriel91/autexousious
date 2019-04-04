@@ -34,7 +34,7 @@ pub struct Sequence<SeqId: SequenceId> {
 mod tests {
     use amethyst::ecs::{storage::DenseVecStorage, Component};
     use collision_model::config::{
-        Body, Impact, ImpactRepeatDelay, Interaction, InteractionKind, Interactions,
+        Body, Hit, HitRepeatDelay, Interaction, InteractionKind, Interactions,
     };
     use derivative::Derivative;
     use sequence_model::config::Wait;
@@ -72,7 +72,7 @@ mod tests {
         [[frames]]
         sprite = { sheet = 0, index = 0 }
         interactions = [
-          { impact = { repeat_delay = 5 }, bounds = [{ sphere = { x = 1, y = 1, r = 1 } }] },
+          { hit = { repeat_delay = 5 }, bounds = [{ sphere = { x = 1, y = 1, r = 1 } }] },
         ]
     ";
 
@@ -169,8 +169,8 @@ mod tests {
             .expect("Failed to deserialize sequence.");
 
         let interactions = vec![Interaction {
-            kind: InteractionKind::Impact(Impact {
-                repeat_delay: ImpactRepeatDelay::new(5),
+            kind: InteractionKind::Hit(Hit {
+                repeat_delay: HitRepeatDelay::new(5),
                 hp_damage: 0,
                 sp_damage: 0,
             }),

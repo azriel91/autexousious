@@ -1,6 +1,6 @@
 use derivative::Derivative;
 
-/// Number of objects an `Interaction` may collide with.
+/// Number of objects a `Hit` may collide with.
 #[derive(Clone, Copy, Debug, Derivative, PartialEq, Eq)]
 #[derivative(Default)]
 pub enum HitLimit {

@@ -38,17 +38,17 @@ mod tests {
     use toml;
 
     use super::Interactions;
-    use crate::config::{Impact, ImpactRepeatDelay, Interaction, InteractionKind};
+    use crate::config::{Hit, HitRepeatDelay, Interaction, InteractionKind};
 
     const ITR_PHYSICAL_ALL_SPECIFIED: &str = "
         interactions = [
-          { impact = { repeat_delay = 5, hp_damage = 40, sp_damage = 50 }, \
+          { hit = { repeat_delay = 5, hp_damage = 40, sp_damage = 50 }, \
             bounds = [{ sphere = { x = 1, y = 1, r = 1 } }], multiple = true },
         ]
     ";
     const ITR_PHYSICAL_MINIMUM_SPECIFIED: &str = r#"
         interactions = [
-          { impact = {}, bounds = [{ sphere = { x = 1, y = 1, r = 1 } }] },
+          { hit = {}, bounds = [{ sphere = { x = 1, y = 1, r = 1 } }] },
         ]
     "#;
 
@@ -58,10 +58,10 @@ mod tests {
             .expect("Failed to deserialize frame.");
 
         let interactions = vec![Interaction {
-            kind: InteractionKind::Impact(Impact {
+            kind: InteractionKind::Hit(Hit {
                 hp_damage: 40,
                 sp_damage: 50,
-                repeat_delay: ImpactRepeatDelay::new(5),
+                repeat_delay: HitRepeatDelay::new(5),
             }),
             bounds: vec![Volume::Sphere {
                 x: 1,

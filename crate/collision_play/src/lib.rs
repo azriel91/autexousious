@@ -3,6 +3,6 @@
 
 //! Provides logic used during game play.
 
-pub use crate::system::ImpactRepeatTrackersAugmentSystem;
+pub use crate::system::HitRepeatTrackersAugmentSystem;
 
 mod system;

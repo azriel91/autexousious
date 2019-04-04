@@ -171,7 +171,7 @@ mod tests {
     use assets_test::ASSETS_CHAR_BAT_SLUG;
     use character_model::config::CharacterSequenceId;
     use collision_model::config::{
-        Body, Impact, ImpactRepeatDelay, Interaction, InteractionKind, Interactions,
+        Body, Hit, HitRepeatDelay, Interaction, InteractionKind, Interactions,
     };
     use object_loading::FrameComponentStorages;
     use sequence_model::{
@@ -357,8 +357,8 @@ mod tests {
 
     fn interactions() -> Interactions {
         Interactions::new(vec![Interaction {
-            kind: InteractionKind::Impact(Impact {
-                repeat_delay: ImpactRepeatDelay::default(),
+            kind: InteractionKind::Hit(Hit {
+                repeat_delay: HitRepeatDelay::default(),
                 hp_damage: 20,
                 sp_damage: 0,
             }),
