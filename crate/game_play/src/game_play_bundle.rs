@@ -7,7 +7,7 @@ use tracker::LastTrackerSystem;
 use typename::TypeName;
 
 use crate::{
-    CharacterCollisionEffectSystem, CharacterGroundingSystem, CharacterKinematicsSystem,
+    CharacterGroundingSystem, CharacterHitEffectSystem, CharacterKinematicsSystem,
     CharacterSequenceUpdateSystem, ComponentSequencesUpdateSystem, FrameComponentUpdateSystem,
     GamePlayEndDetectionSystem, GamePlayEndTransitionSystem, ObjectCollisionDetectionSystem,
     ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem, SequenceUpdateSystem,
@@ -54,14 +54,14 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[&ObjectTransformUpdateSystem::type_name()],
         ); // kcov-ignore
         builder.add(
-            CharacterCollisionEffectSystem::new(),
-            &CharacterCollisionEffectSystem::type_name(),
+            CharacterHitEffectSystem::new(),
+            &CharacterHitEffectSystem::type_name(),
             &[&ObjectCollisionDetectionSystem::type_name()],
         ); // kcov-ignore
         builder.add(
             GamePlayEndDetectionSystem::new(),
             &GamePlayEndDetectionSystem::type_name(),
-            &[&CharacterCollisionEffectSystem::type_name()],
+            &[&CharacterHitEffectSystem::type_name()],
         ); // kcov-ignore
 
         // TODO: autogenerate these
@@ -70,7 +70,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &ComponentSequencesUpdateSystem::<Character>::type_name(),
             &[
                 &CharacterSequenceUpdateSystem::type_name(),
-                &CharacterCollisionEffectSystem::type_name(),
+                &CharacterHitEffectSystem::type_name(),
             ],
         ); // kcov-ignore
 

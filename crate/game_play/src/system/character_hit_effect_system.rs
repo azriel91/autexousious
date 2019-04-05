@@ -5,7 +5,7 @@ use amethyst::{
 use character_model::config::CharacterSequenceId;
 use collision_model::{
     config::{Hit, Interaction, InteractionKind},
-    play::CollisionEvent,
+    play::HitEvent,
 };
 use derive_new::new;
 use object_model::entity::HealthPoints;
@@ -14,32 +14,32 @@ use typename_derive::TypeName;
 
 /// Determines collision effects for characters.
 #[derive(Debug, Default, TypeName, new)]
-pub(crate) struct CharacterCollisionEffectSystem {
-    /// Reader ID for the `CollisionEvent` event channel.
+pub(crate) struct CharacterHitEffectSystem {
+    /// Reader ID for the `HitEvent` event channel.
     #[new(default)]
-    reader_id: Option<ReaderId<CollisionEvent>>,
+    hit_event_rid: Option<ReaderId<HitEvent>>,
 }
 
-type CharacterCollisionEffectSystemData<'s> = (
-    Read<'s, EventChannel<CollisionEvent>>,
+type CharacterHitEffectSystemData<'s> = (
+    Read<'s, EventChannel<HitEvent>>,
     WriteStorage<'s, HealthPoints>,
     WriteStorage<'s, CharacterSequenceId>,
     WriteStorage<'s, SequenceStatus>,
 );
 
-impl<'s> System<'s> for CharacterCollisionEffectSystem {
-    type SystemData = CharacterCollisionEffectSystemData<'s>;
+impl<'s> System<'s> for CharacterHitEffectSystem {
+    type SystemData = CharacterHitEffectSystemData<'s>;
 
     fn run(
         &mut self,
-        (collision_ec, mut health_pointses, mut character_sequence_ids, mut sequence_statuses): Self::SystemData,
+        (hit_ec, mut health_pointses, mut character_sequence_ids, mut sequence_statuses): Self::SystemData,
     ) {
         // Read from channel
-        collision_ec
+        hit_ec
             .read(
-                self.reader_id
+                self.hit_event_rid
                     .as_mut()
-                    .expect("Expected reader ID to exist for CharacterCollisionEffectSystem."),
+                    .expect("Expected reader ID to exist for CharacterHitEffectSystem."),
             )
             .for_each(|ev| {
                 // Fetch health points of the object that is hit.
@@ -79,9 +79,6 @@ impl<'s> System<'s> for CharacterCollisionEffectSystem {
 
     fn setup(&mut self, res: &mut Resources) {
         Self::SystemData::setup(res);
-        self.reader_id = Some(
-            res.fetch_mut::<EventChannel<CollisionEvent>>()
-                .register_reader(),
-        );
+        self.hit_event_rid = Some(res.fetch_mut::<EventChannel<HitEvent>>().register_reader());
     }
 }

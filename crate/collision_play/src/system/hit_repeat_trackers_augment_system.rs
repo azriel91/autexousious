@@ -4,7 +4,7 @@ use amethyst::{
 };
 use collision_model::{
     config::{Hit, HitRepeatDelay, Interaction, InteractionKind},
-    play::{CollisionEvent, HitRepeatClock, HitRepeatTracker, HitRepeatTrackers},
+    play::{HitEvent, HitRepeatClock, HitRepeatTracker, HitRepeatTrackers},
 };
 use derive_new::new;
 use logic_clock::LogicClock;
@@ -15,13 +15,13 @@ use typename_derive::TypeName;
 /// This attaches `HitRepeatTrackers` to the entity with the `Interaction`.
 #[derive(Debug, Default, TypeName, new)]
 pub struct HitRepeatTrackersAugmentSystem {
-    /// Reader ID for the `CollisionEvent` event channel.
+    /// Reader ID for the `HitEvent` event channel.
     #[new(default)]
-    collision_event_rid: Option<ReaderId<CollisionEvent>>,
+    hit_event_rid: Option<ReaderId<HitEvent>>,
 }
 
 type HitRepeatTrackersAugmentSystemData<'s> = (
-    Read<'s, EventChannel<CollisionEvent>>,
+    Read<'s, EventChannel<HitEvent>>,
     WriteStorage<'s, HitRepeatTrackers>,
 );
 
@@ -39,7 +39,7 @@ impl<'s> System<'s> for HitRepeatTrackersAugmentSystem {
         // Read from channel
         collision_ec
             .read(
-                self.collision_event_rid
+                self.hit_event_rid
                     .as_mut()
                     .expect("Expected reader ID to exist for HitRepeatTrackersAugmentSystem."),
             )
@@ -79,10 +79,7 @@ impl<'s> System<'s> for HitRepeatTrackersAugmentSystem {
 
     fn setup(&mut self, res: &mut Resources) {
         Self::SystemData::setup(res);
-        self.collision_event_rid = Some(
-            res.fetch_mut::<EventChannel<CollisionEvent>>()
-                .register_reader(),
-        );
+        self.hit_event_rid = Some(res.fetch_mut::<EventChannel<HitEvent>>().register_reader());
     }
 }
 
@@ -96,7 +93,7 @@ mod tests {
     use amethyst_test::AmethystApplication;
     use collision_model::{
         config::{Hit, HitLimit, HitRepeatDelay, Interaction, InteractionKind},
-        play::{CollisionEvent, HitRepeatClock, HitRepeatTracker, HitRepeatTrackers},
+        play::{HitEvent, HitRepeatClock, HitRepeatTracker, HitRepeatTrackers},
     };
     use logic_clock::LogicClock;
     use shape_model::Volume;
@@ -111,7 +108,7 @@ mod tests {
                 let entity_from = world.create_entity().build();
                 let entity_to = world.create_entity().build();
 
-                let event = CollisionEvent::new(entity_from, entity_to, interaction(), body());
+                let event = HitEvent::new(entity_from, entity_to, interaction(), body());
                 send_event(world, event);
 
                 world.add_resource((entity_from, entity_to));
@@ -141,7 +138,7 @@ mod tests {
                 let entity_to_0 = world.create_entity().build();
                 let entity_to_1 = world.create_entity().build();
 
-                let event = CollisionEvent::new(entity_from, entity_to_0, interaction(), body());
+                let event = HitEvent::new(entity_from, entity_to_0, interaction(), body());
                 send_event(world, event);
 
                 world.add_resource((entity_from, entity_to_0, entity_to_1));
@@ -164,7 +161,7 @@ mod tests {
                 let (entity_from, _entity_to_0, entity_to_1) =
                     *world.read_resource::<(Entity, Entity, Entity)>();
 
-                let event = CollisionEvent::new(entity_from, entity_to_1, interaction(), body());
+                let event = HitEvent::new(entity_from, entity_to_1, interaction(), body());
                 send_event(world, event);
             })
             .with_assertion(|world| {
@@ -184,8 +181,8 @@ mod tests {
             .run()
     }
 
-    fn send_event(world: &mut World, event: CollisionEvent) {
-        let mut ec = world.write_resource::<EventChannel<CollisionEvent>>();
+    fn send_event(world: &mut World, event: HitEvent) {
+        let mut ec = world.write_resource::<EventChannel<HitEvent>>();
         ec.single_write(event)
     }
 
