@@ -9,6 +9,7 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 collision_model = { path = "../collision_model" }
 derive-new = "0.5.6"
 logic_clock = { path = "../logic_clock" }
+slotmap = "0.3.0"
 typename = "0.1.0"
 typename_derive = "0.1.1"
 

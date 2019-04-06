@@ -80,7 +80,7 @@ impl<'s> System<'s> for HitDetectionSystem {
                         // If there is no clock, or the clock limit has been reached.
                         can_hit
                             && hit_repeat_trackers
-                                .iter()
+                                .values()
                                 .find(|hit_repeat_tracker| hit_repeat_tracker.entity == entity_hit)
                                 .map(|hit_repeat_tracker| hit_repeat_tracker.clock.is_complete())
                                 .unwrap_or(true)
@@ -120,6 +120,7 @@ mod tests {
     };
     use logic_clock::LogicClock;
     use shape_model::Volume;
+    use slotmap::SlotMap;
 
     use super::HitDetectionSystem;
 
@@ -211,10 +212,12 @@ mod tests {
     }
 
     fn hit_repeat_trackers(entity_to: Entity) -> HitRepeatTrackers {
-        HitRepeatTrackers::new(vec![HitRepeatTracker::new(
+        let mut slot_map = SlotMap::new();
+        slot_map.insert(HitRepeatTracker::new(
             entity_to,
             HitRepeatClock::new(LogicClock::new(4)),
-        )])
+        ));
+        HitRepeatTrackers::new(slot_map)
     }
 
     fn collision_event(entity_from: Entity, entity_to: Entity) -> CollisionEvent {

@@ -18,11 +18,11 @@ impl<'s> System<'s> for HitRepeatTrackersTickerSystem {
             .join()
             .for_each(|hit_repeat_trackers| {
                 hit_repeat_trackers
-                    .iter_mut()
+                    .values_mut()
                     .for_each(|hit_repeat_tracker| hit_repeat_tracker.clock.tick());
 
                 hit_repeat_trackers
-                    .retain(|hit_repeat_tracker| !hit_repeat_tracker.clock.is_complete());
+                    .retain(|_, hit_repeat_tracker| !hit_repeat_tracker.clock.is_complete());
             });
     }
 }
@@ -36,6 +36,7 @@ mod tests {
     use amethyst_test::AmethystApplication;
     use collision_model::play::{HitRepeatClock, HitRepeatTracker, HitRepeatTrackers};
     use logic_clock::LogicClock;
+    use slotmap::SlotMap;
 
     use super::HitRepeatTrackersTickerSystem;
 
@@ -70,7 +71,12 @@ mod tests {
                 let hit_repeat_trackers = hit_repeat_trackerses
                     .get_mut(entity_from_0)
                     .expect("Expected `HitRepeatTrackers` component to exist.");
-                (*(*hit_repeat_trackers)[0].clock).value = CLOCK_LIMIT;
+                (*(*hit_repeat_trackers)
+                    .values_mut()
+                    .next()
+                    .expect("Expected `HitRepeatTracker` to exist.")
+                    .clock)
+                    .value = CLOCK_LIMIT;
             })
             .with_assertion(|world| assert_clock_values(world, 2))
             .with_assertion(|world| {
@@ -120,7 +126,7 @@ mod tests {
                     .get(*entity_from)
                     .expect("Expected `HitRepeatTrackers` component to exist.");
                 hit_repeat_trackers
-                    .iter()
+                    .values()
                     .for_each(|HitRepeatTracker { clock, .. }| {
                         assert_eq!(expected_value, (*clock).value)
                     });
@@ -137,7 +143,14 @@ mod tests {
     }
 
     fn hit_repeat_trackers(entities: Vec<Entity>) -> HitRepeatTrackers {
-        HitRepeatTrackers::new(entities.into_iter().map(hit_repeat_tracker).collect())
+        let slot_map = entities.into_iter().map(hit_repeat_tracker).fold(
+            SlotMap::new(),
+            |mut slot_map, hit_repeat_tracker| {
+                slot_map.insert(hit_repeat_tracker);
+                slot_map
+            },
+        );
+        HitRepeatTrackers::new(slot_map)
     }
 
     fn hit_repeat_tracker(entity_to: Entity) -> HitRepeatTracker {
