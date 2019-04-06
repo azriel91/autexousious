@@ -1,10 +1,10 @@
 use amethyst::{
-    ecs::{Read, ReadStorage, Resources, System, SystemData, Write},
+    ecs::{Entity, Read, ReadStorage, Resources, System, SystemData, Write, WriteStorage},
     shrev::{EventChannel, ReaderId},
 };
 use collision_model::{
     config::{Hit, HitLimit, Interaction, InteractionKind},
-    play::{CollisionEvent, HitEvent, HitRepeatTrackers},
+    play::{CollisionEvent, HitEvent, HitObjectCount, HitRepeatTrackers},
 };
 use derive_new::new;
 
@@ -21,13 +21,35 @@ pub struct HitDetectionSystem {
 type HitDetectionSystemData<'s> = (
     Read<'s, EventChannel<CollisionEvent>>,
     ReadStorage<'s, HitRepeatTrackers>,
+    WriteStorage<'s, HitObjectCount>,
     Write<'s, EventChannel<HitEvent>>,
 );
+
+impl HitDetectionSystem {
+    fn update_hit_object_count(
+        hit_object_counts: &mut WriteStorage<'_, HitObjectCount>,
+        entity_hitter: Entity,
+    ) -> HitObjectCount {
+        if let Some(hit_object_count) = hit_object_counts.get_mut(entity_hitter) {
+            *hit_object_count += 1;
+            *hit_object_count
+        } else {
+            let hit_object_count = HitObjectCount::new(1);
+            hit_object_counts
+                .insert(entity_hitter, hit_object_count)
+                .expect("Failed to insert `HitObjectCount` component.");
+            hit_object_count
+        }
+    }
+}
 
 impl<'s> System<'s> for HitDetectionSystem {
     type SystemData = HitDetectionSystemData<'s>;
 
-    fn run(&mut self, (collision_ec, hit_repeat_trackerses, mut hit_ec): Self::SystemData) {
+    fn run(
+        &mut self,
+        (collision_ec, hit_repeat_trackerses, mut hit_object_counts, mut hit_ec): Self::SystemData,
+    ) {
         let hit_events = collision_ec
             .read(
                 self.collision_event_rid
@@ -58,39 +80,37 @@ impl<'s> System<'s> for HitDetectionSystem {
                     ..
                 } = ev.interaction;
 
-                match hit_repeat_trackerses.get(entity_hitter) {
-                    Some(hit_repeat_trackers) => {
-                        // FIXME: Incorrect limit enforcement.
-                        //
-                        // This is wrong because this means if we collide with multiple objects in
-                        // *this* frame, when previously there was 1 collision, and the hit limit is
-                        // 2, then we should only hit 1 more at most. Currently this would hit all
-                        // new objects.
-                        //
-                        // Also need to consider, if we have multiple `Interaction`s with different
-                        // `HitLimit`s (rare case?), interactions with a higher `HitLimit` should be
-                        // able to hit more objects.
-                        //
-                        // We need to count the sent `HitEvent`s for this case.
-                        let can_hit = match hit_limit {
-                            HitLimit::Limit(limit) => (hit_repeat_trackers.len() as u32) < limit,
-                            HitLimit::Unlimited => true,
-                        };
+                // If we collide with multiple objects in *this* frame, when previously
+                // there was 1 collision, and the hit limit is 2, then we should only hit 1
+                // more at most. Currently this would hit all new objects.
+                //
+                // Also need to consider, if we have multiple `Interaction`s with different
+                // `HitLimit`s (rare case?), interactions with a higher `HitLimit` should be
+                // able to hit more objects.
+                //
+                // We need to count the sent `HitEvent`s for this case.
+                let can_hit = match hit_limit {
+                    HitLimit::Limit(limit) => {
+                        // We use lesser or equal because the returned value is after the count has
+                        // been incremented.
+                        Self::update_hit_object_count(&mut hit_object_counts, entity_hitter)
+                            <= limit
+                    }
+                    HitLimit::Unlimited => true,
+                };
 
-                        // If there is no clock, or the clock limit has been reached.
-                        can_hit
-                            && hit_repeat_trackers
+                can_hit
+                    && match hit_repeat_trackerses.get(entity_hitter) {
+                        Some(hit_repeat_trackers) => {
+                            // If there is no clock, or the clock limit has been reached.
+                            hit_repeat_trackers
                                 .values()
                                 .find(|hit_repeat_tracker| hit_repeat_tracker.entity == entity_hit)
                                 .map(|hit_repeat_tracker| hit_repeat_tracker.clock.is_complete())
                                 .unwrap_or(true)
+                        }
+                        None => true,
                     }
-
-                    // FIXME: Incorrect limit enforcement.
-                    //
-                    // We need to count the sent `HitEvent`s for this case.
-                    None => true,
-                }
             })
             .map(|ev| HitEvent::new(ev.from, ev.to, ev.interaction.clone(), ev.body))
             .collect::<Vec<HitEvent>>();
@@ -119,10 +139,13 @@ mod tests {
         play::{CollisionEvent, HitEvent, HitRepeatClock, HitRepeatTracker, HitRepeatTrackers},
     };
     use logic_clock::LogicClock;
+    use pretty_assertions::assert_eq;
     use shape_model::Volume;
     use slotmap::SlotMap;
 
     use super::HitDetectionSystem;
+
+    const HIT_LIMIT: u32 = 3;
 
     #[test]
     fn inserts_hit_event_when_hit_repeat_trackers_does_not_exist() -> Result<(), Error> {
@@ -198,6 +221,47 @@ mod tests {
             .run()
     }
 
+    #[test]
+    fn limits_hit_events_to_remaining_hit_limit_count() -> Result<(), Error> {
+        AmethystApplication::blank()
+            .with_system(HitDetectionSystem::new(), "", &[])
+            .with_setup(setup_event_reader)
+            .with_effect(|world| {
+                let entity_from = world.create_entity().build();
+                let entity_tos = (0..HIT_LIMIT)
+                    .map(|_| {
+                        let entity_to = world.create_entity().build();
+                        send_event(world, collision_event(entity_from, entity_to));
+                        entity_to
+                    })
+                    .collect::<Vec<Entity>>();
+
+                // Send extra collision events, these should not map to hit events.
+                let collision_events = (0..5)
+                    .map(|_| {
+                        let entity_extra = world.create_entity().build();
+                        collision_event(entity_from, entity_extra)
+                    })
+                    .collect::<Vec<CollisionEvent>>();
+                send_events(world, collision_events);
+
+                world.add_resource((entity_from, entity_tos));
+            })
+            .with_assertion(|world| {
+                let (entity_from, entity_tos) = {
+                    let (entity_from, ref mut entity_tos) =
+                        &mut *world.write_resource::<(Entity, Vec<Entity>)>();
+                    (*entity_from, entity_tos.drain(..).collect::<Vec<Entity>>())
+                };
+                let hit_events = entity_tos
+                    .iter()
+                    .map(|entity_to| hit_event(entity_from, *entity_to))
+                    .collect::<Vec<HitEvent>>();
+                assert_events(world, hit_events);
+            })
+            .run()
+    }
+
     fn setup_event_reader(world: &mut World) {
         let hit_event_rid = world
             .write_resource::<EventChannel<HitEvent>>()
@@ -209,6 +273,11 @@ mod tests {
     fn send_event(world: &mut World, event: CollisionEvent) {
         let mut ec = world.write_resource::<EventChannel<CollisionEvent>>();
         ec.single_write(event)
+    }
+
+    fn send_events(world: &mut World, events: Vec<CollisionEvent>) {
+        let mut ec = world.write_resource::<EventChannel<CollisionEvent>>();
+        ec.iter_write(events)
     }
 
     fn hit_repeat_trackers(entity_to: Entity) -> HitRepeatTrackers {
@@ -224,7 +293,7 @@ mod tests {
         CollisionEvent::new(
             entity_from,
             entity_to,
-            interaction(HitLimit::Limit(2)),
+            interaction(HitLimit::Limit(HIT_LIMIT)),
             body(),
         )
     }
@@ -233,7 +302,7 @@ mod tests {
         HitEvent::new(
             entity_from,
             entity_to,
-            interaction(HitLimit::Limit(2)),
+            interaction(HitLimit::Limit(HIT_LIMIT)),
             body(),
         )
     }

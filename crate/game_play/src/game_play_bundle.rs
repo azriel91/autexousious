@@ -97,7 +97,10 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         builder.add(
             SequenceUpdateSystem::new(),
             &SequenceUpdateSystem::type_name(),
-            &[&ComponentSequencesUpdateSystem::<Character>::type_name()],
+            &[
+                &HitDetectionSystem::type_name(),
+                &ComponentSequencesUpdateSystem::<Character>::type_name(),
+            ],
         ); // kcov-ignore
         builder.add(
             FrameComponentUpdateSystem::new(),
