@@ -1,7 +1,7 @@
 use amethyst::{ecs::prelude::*, shrev::EventChannel};
 use derive_new::new;
 use game_play_model::{GamePlayEvent, GamePlayStatus};
-use object_model::entity::HealthPoints;
+use object_model::play::HealthPoints;
 use typename_derive::TypeName;
 
 /// Detects the end of a game play round, and fires a `GamePlayEvent::End`.
@@ -43,7 +43,7 @@ mod test {
     use amethyst::{ecs::prelude::*, shrev::EventChannel};
     use amethyst_test::*;
     use game_play_model::{GamePlayEvent, GamePlayStatus};
-    use object_model::entity::HealthPoints;
+    use object_model::play::HealthPoints;
     use typename::TypeName;
 
     use super::{GamePlayEndDetectionSystem, GamePlayEndDetectionSystemData};

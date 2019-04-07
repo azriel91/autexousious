@@ -1,6 +1,6 @@
 use character_model::config::CharacterSequenceId;
 use game_input::ControllerInput;
-use object_model::entity::Mirrored;
+use object_model::play::Mirrored;
 
 use crate::sequence_handler::SequenceHandlerUtil;
 
@@ -41,7 +41,7 @@ impl MirroredUpdater {
 mod tests {
     use character_model::config::CharacterSequenceId;
     use game_input::ControllerInput;
-    use object_model::entity::Mirrored;
+    use object_model::play::Mirrored;
 
     use super::MirroredUpdater;
 

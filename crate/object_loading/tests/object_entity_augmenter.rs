@@ -40,7 +40,7 @@ use character_model::{
 use collision_loading::CollisionLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
-use object_model::entity::{Mirrored, Position, Velocity};
+use object_model::play::{Mirrored, Position, Velocity};
 use sequence_loading::SequenceLoadingBundle;
 use sequence_model::{
     loaded::{ComponentSequences, ComponentSequencesHandle},

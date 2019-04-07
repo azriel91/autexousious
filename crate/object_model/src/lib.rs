@@ -17,6 +17,7 @@ pub use object_model_derive::game_object;
 pub use crate::object_type::ObjectType;
 
 pub mod config;
-pub mod entity;
 pub mod loaded;
+pub mod play;
+
 mod object_type;

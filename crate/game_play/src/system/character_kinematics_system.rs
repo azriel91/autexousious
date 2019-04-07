@@ -2,7 +2,7 @@ use amethyst::ecs::{Join, ReadStorage, System, WriteStorage};
 use character_model::config::CharacterSequenceId;
 use derive_new::new;
 use game_input::ControllerInput;
-use object_model::entity::{Mirrored, Velocity};
+use object_model::play::{Mirrored, Velocity};
 use sequence_model::play::SequenceStatus;
 use typename_derive::TypeName;
 
@@ -119,7 +119,7 @@ mod tests {
     use game_input::ControllerInput;
     use map_model::loaded::Map;
     use map_selection_model::MapSelection;
-    use object_model::entity::{Grounding, Mirrored, Position, Velocity};
+    use object_model::play::{Grounding, Mirrored, Position, Velocity};
     use sequence_model::play::SequenceStatus;
     use typename::TypeName;
 

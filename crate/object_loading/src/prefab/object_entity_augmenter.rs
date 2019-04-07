@@ -6,8 +6,8 @@ use amethyst::{
 };
 use logic_clock::LogicClock;
 use object_model::{
-    entity::{Mirrored, Position, Velocity},
     loaded::ObjectWrapper,
+    play::{Mirrored, Position, Velocity},
 };
 use sequence_model::{
     loaded::{ComponentSequence, ComponentSequences},

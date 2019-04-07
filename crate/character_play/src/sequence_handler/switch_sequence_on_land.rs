@@ -1,5 +1,5 @@
 use character_model::config::CharacterSequenceId;
-use object_model::entity::Grounding;
+use object_model::play::Grounding;
 use sequence_model::play::SequenceStatus;
 
 use crate::CharacterSequenceUpdateComponents;
@@ -29,7 +29,7 @@ impl SwitchSequenceOnLand {
 mod test {
     use character_model::{config::CharacterSequenceId, play::RunCounter};
     use game_input::ControllerInput;
-    use object_model::entity::{Grounding, HealthPoints, Mirrored, Position, Velocity};
+    use object_model::play::{Grounding, HealthPoints, Mirrored, Position, Velocity};
     use sequence_model::play::SequenceStatus;
 
     use super::SwitchSequenceOnLand;

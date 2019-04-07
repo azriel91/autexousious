@@ -6,8 +6,8 @@ use amethyst::{
 use derivative::Derivative;
 use object_model::{
     config::object::SequenceId,
-    entity::{Mirrored, Position, Velocity},
     loaded::SequenceEndTransitions,
+    play::{Mirrored, Position, Velocity},
 };
 use sequence_model::{
     loaded::ComponentSequencesHandle,

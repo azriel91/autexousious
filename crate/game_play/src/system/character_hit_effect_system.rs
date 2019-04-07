@@ -8,7 +8,7 @@ use collision_model::{
     play::HitEvent,
 };
 use derive_new::new;
-use object_model::entity::HealthPoints;
+use object_model::play::HealthPoints;
 use sequence_model::play::SequenceStatus;
 use typename_derive::TypeName;
 
