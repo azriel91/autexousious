@@ -6,6 +6,6 @@ use logic_clock::logic_clock;
 use serde::{Deserialize, Serialize};
 use specs_derive::Component;
 
-/// Logic clock to track wait value during a frame.
+/// Logic clock to extend wait value during a frame.
 #[logic_clock]
-pub struct FrameWaitClock;
+pub struct FrameFreezeClock;
