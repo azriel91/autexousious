@@ -105,7 +105,7 @@ mod tests {
     use super::HitRepeatTrackersAugmentSystem;
 
     #[test]
-    fn inserts_hit_repeat_trackers_for_attacker() -> Result<(), Error> {
+    fn inserts_hit_repeat_trackers_for_hitter() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_system(HitRepeatTrackersAugmentSystem::new(), "", &[])
             .with_effect(|world| {

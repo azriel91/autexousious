@@ -12,8 +12,9 @@ use typename::TypeName;
 use crate::{
     CharacterGroundingSystem, CharacterHitEffectSystem, CharacterKinematicsSystem,
     CharacterSequenceUpdateSystem, ComponentSequencesUpdateSystem, FrameComponentUpdateSystem,
-    GamePlayEndDetectionSystem, GamePlayEndTransitionSystem, ObjectCollisionDetectionSystem,
-    ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem, SequenceUpdateSystem,
+    FrameFreezeClockAugmentSystem, GamePlayEndDetectionSystem, GamePlayEndTransitionSystem,
+    ObjectCollisionDetectionSystem, ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
+    SequenceUpdateSystem,
 };
 
 /// Adds the object type update systems to the provided dispatcher.
@@ -95,10 +96,16 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         ); // kcov-ignore
 
         builder.add(
+            FrameFreezeClockAugmentSystem::new(),
+            &FrameFreezeClockAugmentSystem::type_name(),
+            &[&HitDetectionSystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
             SequenceUpdateSystem::new(),
             &SequenceUpdateSystem::type_name(),
             &[
                 &HitDetectionSystem::type_name(),
+                &FrameFreezeClockAugmentSystem::type_name(),
                 &ComponentSequencesUpdateSystem::<Character>::type_name(),
             ],
         ); // kcov-ignore

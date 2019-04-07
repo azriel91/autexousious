@@ -114,6 +114,11 @@ impl<'s> System<'s> for HitDetectionSystem {
             })
             .map(|ev| HitEvent::new(ev.from, ev.to, ev.interaction.clone(), ev.body))
             .collect::<Vec<HitEvent>>();
+
+        // Make sure we clear this before the next tick, otherwise the hitter can only hit more
+        // objects when it has an `Interaction` with a larger `HitLimit`.
+        hit_object_counts.clear();
+
         hit_ec.iter_write(hit_events);
     }
 
@@ -136,7 +141,10 @@ mod tests {
     use amethyst_test::AmethystApplication;
     use collision_model::{
         config::{Hit, HitLimit, HitRepeatDelay, Interaction, InteractionKind},
-        play::{CollisionEvent, HitEvent, HitRepeatClock, HitRepeatTracker, HitRepeatTrackers},
+        play::{
+            CollisionEvent, HitEvent, HitObjectCount, HitRepeatClock, HitRepeatTracker,
+            HitRepeatTrackers,
+        },
     };
     use logic_clock::LogicClock;
     use pretty_assertions::assert_eq;
@@ -258,6 +266,8 @@ mod tests {
                     .map(|entity_to| hit_event(entity_from, *entity_to))
                     .collect::<Vec<HitEvent>>();
                 assert_events(world, hit_events);
+
+                assert_eq!(0, world.read_storage::<HitObjectCount>().count());
             })
             .run()
     }
