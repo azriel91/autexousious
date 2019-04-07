@@ -4,7 +4,7 @@ use derive_new::new;
 use sequence_model::config::SequenceId;
 use serde::{Deserialize, Serialize};
 
-use crate::config::object::Sequence;
+use crate::config::object::ObjectSequence;
 
 /// Contains all of the sequences for an `Object`.
 ///
@@ -16,5 +16,5 @@ use crate::config::object::Sequence;
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, new)]
 pub struct ObjectDefinition<SeqId: SequenceId> {
     /// Sequences of actions this object can perform.
-    pub sequences: HashMap<SeqId, Sequence<SeqId>>,
+    pub sequences: HashMap<SeqId, ObjectSequence<SeqId>>,
 }

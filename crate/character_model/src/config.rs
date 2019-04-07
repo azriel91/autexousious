@@ -12,7 +12,7 @@ mod test {
     use std::collections::HashMap;
 
     use collision_model::config::{Body, Interactions};
-    use object_model::config::object::{ObjectDefinition, ObjectFrame, Sequence};
+    use object_model::config::object::{ObjectDefinition, ObjectFrame, ObjectSequence};
     use sequence_model::config::Wait;
     use sprite_model::config::SpriteRef;
     use toml;
@@ -75,7 +75,7 @@ mod test {
                 Interactions::default(),
             ),
         ];
-        let sequence = Sequence::new(Some(CharacterSequenceId::Walk), frames);
+        let sequence = ObjectSequence::new(Some(CharacterSequenceId::Walk), frames);
         let mut sequences = HashMap::new();
         sequences.insert(CharacterSequenceId::Stand, sequence);
         let object_definition = ObjectDefinition::new(sequences);
