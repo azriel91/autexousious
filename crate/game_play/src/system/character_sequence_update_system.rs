@@ -8,11 +8,8 @@ use character_play::{
 };
 use derive_new::new;
 use game_input::ControllerInput;
-use object_model::{
-    loaded::SequenceEndTransitions,
-    play::{Grounding, HealthPoints, Mirrored, Position, Velocity},
-};
-use sequence_model::play::SequenceStatus;
+use object_model::play::{Grounding, HealthPoints, Mirrored, Position, Velocity};
+use sequence_model::{loaded::SequenceEndTransitions, play::SequenceStatus};
 use shred_derive::SystemData;
 use typename_derive::TypeName;
 

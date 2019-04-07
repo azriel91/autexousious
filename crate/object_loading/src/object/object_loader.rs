@@ -8,11 +8,14 @@ use collision_model::{
 use fnv::FnvHashMap;
 use object_model::{
     config::ObjectDefinition,
-    loaded::{GameObject, Object, ObjectWrapper, SequenceEndTransition},
+    loaded::{GameObject, Object, ObjectWrapper},
 };
 use sequence_model::{
     config::Wait,
-    loaded::{ComponentSequence, ComponentSequences, ComponentSequencesHandle, WaitSequence},
+    loaded::{
+        ComponentSequence, ComponentSequences, ComponentSequencesHandle, SequenceEndTransition,
+        WaitSequence,
+    },
 };
 use sprite_model::loaded::SpriteRenderSequence;
 
