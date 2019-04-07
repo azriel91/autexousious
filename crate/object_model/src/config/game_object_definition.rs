@@ -1,6 +1,6 @@
 use sequence_model::config::SequenceId;
 
-use crate::config::object::ObjectDefinition;
+use crate::config::ObjectDefinition;
 
 /// Components common to object types' definitions, parameterized by sequence ID.
 pub trait GameObjectDefinition {

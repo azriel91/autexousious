@@ -4,7 +4,7 @@ use derive_new::new;
 use sequence_model::config::SequenceId;
 use serde::{Deserialize, Serialize};
 
-use crate::config::object::ObjectSequence;
+use crate::config::ObjectSequence;
 
 /// Contains all of the sequences for an `Object`.
 ///

@@ -11,7 +11,7 @@ use derive_new::new;
 use sequence_model::config::SequenceId;
 use serde::{Deserialize, Serialize};
 
-use crate::config::object::ObjectFrame;
+use crate::config::ObjectFrame;
 
 /// Represents an independent action sequence of an object.
 ///
@@ -43,7 +43,7 @@ mod tests {
     use toml;
 
     use super::ObjectSequence;
-    use crate::config::object::ObjectFrame;
+    use crate::config::ObjectFrame;
 
     const SEQUENCE_WITH_FRAMES: &str = r#"
         next = "Boo"

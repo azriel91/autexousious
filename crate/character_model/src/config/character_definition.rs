@@ -4,7 +4,7 @@ use amethyst::{
     Error,
 };
 use derive_new::new;
-use object_model::config::{object::ObjectDefinition, GameObjectDefinition};
+use object_model::config::{GameObjectDefinition, ObjectDefinition};
 use serde::{Deserialize, Serialize};
 
 use crate::config::CharacterSequenceId;
