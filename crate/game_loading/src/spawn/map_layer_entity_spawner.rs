@@ -7,7 +7,7 @@ use logic_clock::LogicClock;
 use map_model::loaded::MapHandle;
 use sequence_model::{
     config::Repeat,
-    entity::{FrameIndexClock, SequenceStatus},
+    entity::{FrameIndexClock, FrameWaitClock, SequenceStatus},
     loaded::ComponentSequence,
 };
 
@@ -54,7 +54,7 @@ impl MapLayerEntitySpawner {
             ref mut repeats,
             ref mut sequence_statuses,
             ref mut frame_index_clocks,
-            ref mut logic_clocks,
+            ref mut frame_wait_clocks,
             ref mut sprite_renders,
             ref mut component_sequences_handles,
         }: &mut MapLayerComponentStorages<'s>,
@@ -91,7 +91,7 @@ impl MapLayerEntitySpawner {
                         .insert(entity, frame_index_clock)
                         .expect("Failed to insert frame_index_clock component.");
                     let starting_frame_index = (*frame_index_clock).value;
-                    let mut logic_clock = LogicClock::new(1);
+                    let mut frame_wait_clock = FrameWaitClock::new(LogicClock::new(1));
 
                     component_sequences.iter().for_each(|component_sequence| {
                         match component_sequence {
@@ -101,7 +101,7 @@ impl MapLayerEntitySpawner {
                                     .insert(entity, wait)
                                     .expect("Failed to insert `Wait` component for object.");
 
-                                logic_clock.limit = *wait as usize;
+                                (*frame_wait_clock).limit = *wait as usize;
                             }
                             ComponentSequence::SpriteRender(sprite_render_sequence) => {
                                 let sprite_render =
@@ -130,9 +130,9 @@ impl MapLayerEntitySpawner {
                     component_sequences_handles
                         .insert(entity, component_sequences_handle.clone())
                         .expect("Failed to insert component_sequences_handle component.");
-                    logic_clocks
-                        .insert(entity, logic_clock)
-                        .expect("Failed to insert logic_clock component.");
+                    frame_wait_clocks
+                        .insert(entity, frame_wait_clock)
+                        .expect("Failed to insert frame_wait_clock component.");
 
                     entity
                 })

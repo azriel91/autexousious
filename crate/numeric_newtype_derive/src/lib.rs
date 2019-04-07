@@ -59,27 +59,32 @@
 extern crate proc_macro;
 
 use proc_macro::TokenStream;
-
+use proc_macro_roids::{DeriveInputDeriveExt, DeriveInputNewtypeExt};
 use quote::quote;
 use syn::{
-    parse_macro_input, parse_quote, punctuated::Punctuated, token::Comma, Attribute, DeriveInput,
-    Meta, NestedMeta,
+    parse_macro_input, parse_quote, punctuated::Punctuated, token::Comma, DeriveInput, NestedMeta,
+    Type, TypePath,
 };
 
-use crate::util::{inner_type, is_eq_ord, meta_list_contains, nested_meta_to_ident};
-
-mod util;
+/// Static list so we can do naive detection of types that `impl Eq + Ord`.
+const KNOWN_TYPES_EQ_ORD: &[&str] = &[
+    "u8", "u16", "u32", "u64", "u128", "usize", "i8", "i16", "i32", "i64", "i128", "isize",
+];
 
 #[proc_macro_attribute]
 pub fn numeric_newtype(_args: TokenStream, item: TokenStream) -> TokenStream {
     let mut ast = parse_macro_input!(item as DeriveInput);
 
-    let attrs = &mut ast.attrs;
-    let type_name = &ast.ident;
-    let inner_type = inner_type(&ast.data);
-    let inner_type = &inner_type.ty;
+    let is_eq_ord = {
+        let inner_type = ast.inner_type();
+        let inner_type = &inner_type.ty;
+        is_eq_ord(inner_type)
+    };
 
-    derive_gen(attrs, is_eq_ord(inner_type));
+    derive_gen(&mut ast, is_eq_ord);
+    let type_name = &ast.ident;
+    let inner_type = ast.inner_type();
+    let inner_type = &inner_type.ty;
 
     let doc_fn_new = format!("Returns a new {}.", type_name);
     let token_stream_2 = quote! {
@@ -164,7 +169,7 @@ pub fn numeric_newtype(_args: TokenStream, item: TokenStream) -> TokenStream {
 /// * `PartialOrd`
 ///
 /// Based on a static list, if the inner type derives `Eq + Ord`, those will also be derived.
-fn derive_gen(attrs: &mut Vec<Attribute>, derive_eq_ord: bool) {
+fn derive_gen(ast: &mut DeriveInput, derive_eq_ord: bool) {
     let derives = {
         let mut base_derives: Punctuated<NestedMeta, Comma> = parse_quote!(
             Add, AddAssign, Sub, SubAssign, Display, From, Clone, Copy, PartialEq, PartialOrd
@@ -177,54 +182,24 @@ fn derive_gen(attrs: &mut Vec<Attribute>, derive_eq_ord: bool) {
         base_derives
     };
 
-    let attr_existing_derives = attrs
-        .iter_mut()
-        // Note: `parse_meta()` returns a `Meta`, which is not referenced by the `DeriveInput`.
-        .filter_map(|attr| attr.parse_meta().ok().map(|meta| (attr, meta)))
-        .filter_map(|(attr, meta)| match meta {
-            Meta::List(meta_list) => {
-                if meta_list.ident == "derive" {
-                    Some((attr, meta_list))
-                } else {
-                    None
-                }
-            }
-            _ => None,
-        })
-        .next();
+    ast.append_derives(derives);
+}
 
-    if let Some((attr, mut existing_derives)) = attr_existing_derives {
-        // Emit warning if the user derives any of the existing derives, as we do that for them.
-        let superfluous = derives
-            .iter()
-            .filter(|derive_nested_meta| meta_list_contains(&existing_derives, derive_nested_meta))
-            .filter_map(nested_meta_to_ident)
-            .map(|ident| format!("{}", ident))
-            .collect::<Vec<_>>();
-        if !superfluous.is_empty() {
-            // TODO: Emit warning, pending <https://github.com/rust-lang/rust/issues/54140>
-            // existing_derives
-            //     .span()
-            //     .warning(
-            //         "The following are automatically derived when the `numeric_newtype` \
-            //          attribute is used.",
-            //     )
-            //     .emit();
-            panic!(
-                "The following are automatically derived when the `numeric_newtype` attribute \
-                 is used:\n\
-                 {:?}",
-                superfluous
-            );
-        } else {
-            existing_derives.nested.extend(derives);
-
-            // Replace the existing `Attribute`.
-            *attr = parse_quote!(#[#existing_derives]);
-        }
+/// Returns whether the type is known to be `Eq + Ord`.
+///
+/// Note: This is a static list, so any types not in the following list will give a false `false`:
+fn is_eq_ord(ty: &Type) -> bool {
+    if let Type::Path(TypePath { path, .. }) = ty {
+        path.segments
+            .last()
+            .map(|segment| {
+                let ty_ident = &segment.value().ident;
+                KNOWN_TYPES_EQ_ORD
+                    .iter()
+                    .any(|known_ty| ty_ident == known_ty)
+            })
+            .unwrap_or(false)
     } else {
-        // Add a new `#[derive(..)]` attribute with all the derives.
-        let derive_attribute: Attribute = parse_quote!(#[derive(GameObject)]);
-        attrs.push(derive_attribute);
+        false
     }
 }

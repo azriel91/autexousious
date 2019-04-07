@@ -38,7 +38,7 @@ impl ObjectCollisionDetectionSystem {
         (body, body_offsets, body_mirrored): (&Volume, [f32; 2], bool),
     ) -> bool {
         // TODO: Use a collision library.
-        let Interaction::Physical { bounds, .. } = interaction;
+        let Interaction { bounds, .. } = interaction;
 
         bounds.iter().any(|bound| match (*bound, *body) {
             (

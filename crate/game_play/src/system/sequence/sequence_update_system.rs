@@ -5,12 +5,11 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
-use logic_clock::LogicClock;
 use named_type::NamedType;
 use named_type_derive::NamedType;
 use sequence_model::{
     config::Repeat,
-    entity::{FrameIndexClock, SequenceStatus},
+    entity::{FrameFreezeClock, FrameIndexClock, FrameWaitClock, SequenceStatus},
     loaded::{ComponentSequences, ComponentSequencesHandle},
 };
 use shred_derive::SystemData;
@@ -39,9 +38,12 @@ pub struct SequenceUpdateSystemData<'s> {
     /// `FrameIndexClock` component storage.
     #[derivative(Debug = "ignore")]
     pub frame_index_clocks: WriteStorage<'s, FrameIndexClock>,
-    /// `LogicClock` component storage.
+    /// `FrameFreezeClock` component storage.
     #[derivative(Debug = "ignore")]
-    pub logic_clocks: WriteStorage<'s, LogicClock>,
+    pub frame_freeze_clocks: WriteStorage<'s, FrameFreezeClock>,
+    /// `FrameWaitClock` component storage.
+    #[derivative(Debug = "ignore")]
+    pub frame_wait_clocks: WriteStorage<'s, FrameWaitClock>,
     /// `SequenceStatus` component storage.
     #[derivative(Debug = "ignore")]
     pub sequence_statuses: WriteStorage<'s, SequenceStatus>,
@@ -57,11 +59,11 @@ impl SequenceUpdateSystem {
         sequence_update_ec: &mut EventChannel<SequenceUpdateEvent>,
         entity: Entity,
         frame_index_clock: &mut FrameIndexClock,
-        logic_clock: &mut LogicClock,
+        frame_wait_clock: &mut FrameWaitClock,
         sequence_status: &mut SequenceStatus,
     ) {
         frame_index_clock.reset();
-        logic_clock.reset();
+        frame_wait_clock.reset();
 
         // Set to ongoing, meaning we must be sure that this is the only system
         // that needs to read the `SequenceStatus::Begin` status.
@@ -76,6 +78,65 @@ impl SequenceUpdateSystem {
 
         sequence_update_ec.single_write(SequenceUpdateEvent::SequenceBegin { entity });
     }
+
+    /// Returns true if the entity is **not frozen**, ticks the clock otherwise.
+    fn entity_unfrozen_tick(
+        frame_freeze_clocks: &mut WriteStorage<'_, FrameFreezeClock>,
+        entity: Entity,
+    ) -> bool {
+        frame_freeze_clocks
+            .get_mut(entity)
+            .map(|frame_freeze_clock| {
+                if frame_freeze_clock.is_complete() {
+                    true
+                } else {
+                    frame_freeze_clock.tick();
+                    false
+                }
+            })
+            .unwrap_or(true)
+    }
+
+    fn entity_frame_wait_tick(
+        component_sequences_assets: &AssetStorage<ComponentSequences>,
+        component_sequences_handle: &ComponentSequencesHandle,
+        mut sequence_update_ec: &mut EventChannel<SequenceUpdateEvent>,
+        entity: Entity,
+        mut frame_index_clock: &mut FrameIndexClock,
+        mut frame_wait_clock: &mut FrameWaitClock,
+        mut sequence_status: &mut SequenceStatus,
+        repeats: &ReadStorage<'_, Repeat>,
+    ) {
+        frame_wait_clock.tick();
+
+        if frame_wait_clock.is_complete() {
+            // Switch to next frame, or if there is no next frame, switch
+            // `SequenceStatus` to `End`.
+
+            frame_index_clock.tick();
+
+            if frame_index_clock.is_complete() {
+                *sequence_status = SequenceStatus::End;
+
+                sequence_update_ec.single_write(SequenceUpdateEvent::SequenceEnd { entity });
+
+                if repeats.contains(entity) {
+                    Self::start_sequence(
+                        &component_sequences_assets,
+                        &component_sequences_handle,
+                        &mut sequence_update_ec,
+                        entity,
+                        &mut frame_index_clock,
+                        &mut frame_wait_clock,
+                        &mut sequence_status,
+                    );
+                }
+            } else {
+                frame_wait_clock.reset();
+                sequence_update_ec.single_write(SequenceUpdateEvent::FrameBegin { entity });
+            }
+        }
+    }
 }
 
 impl<'s> System<'s> for SequenceUpdateSystem {
@@ -89,7 +150,8 @@ impl<'s> System<'s> for SequenceUpdateSystem {
             component_sequences_handles,
             component_sequences_assets,
             mut frame_index_clocks,
-            mut logic_clocks,
+            mut frame_freeze_clocks,
+            mut frame_wait_clocks,
             mut sequence_statuses,
             mut sequence_update_ec,
         }: Self::SystemData,
@@ -98,7 +160,7 @@ impl<'s> System<'s> for SequenceUpdateSystem {
             &entities,
             &component_sequences_handles,
             &mut frame_index_clocks,
-            &mut logic_clocks,
+            &mut frame_wait_clocks,
             &mut sequence_statuses,
         )
             .join()
@@ -107,7 +169,7 @@ impl<'s> System<'s> for SequenceUpdateSystem {
                     entity,
                     component_sequences_handle,
                     mut frame_index_clock,
-                    mut logic_clock,
+                    mut frame_wait_clock,
                     mut sequence_status,
                 )| {
                     match sequence_status {
@@ -118,41 +180,22 @@ impl<'s> System<'s> for SequenceUpdateSystem {
                                 &mut sequence_update_ec,
                                 entity,
                                 &mut frame_index_clock,
-                                &mut logic_clock,
+                                &mut frame_wait_clock,
                                 &mut sequence_status,
                             );
                         }
                         SequenceStatus::Ongoing => {
-                            logic_clock.tick();
-
-                            if logic_clock.is_complete() {
-                                // Switch to next frame, or if there is no next frame, switch
-                                // `SequenceStatus` to `End`.
-
-                                frame_index_clock.tick();
-
-                                if frame_index_clock.is_complete() {
-                                    *sequence_status = SequenceStatus::End;
-
-                                    sequence_update_ec
-                                        .single_write(SequenceUpdateEvent::SequenceEnd { entity });
-
-                                    if repeats.contains(entity) {
-                                        Self::start_sequence(
-                                            &component_sequences_assets,
-                                            &component_sequences_handle,
-                                            &mut sequence_update_ec,
-                                            entity,
-                                            &mut frame_index_clock,
-                                            &mut logic_clock,
-                                            &mut sequence_status,
-                                        );
-                                    }
-                                } else {
-                                    logic_clock.reset();
-                                    sequence_update_ec
-                                        .single_write(SequenceUpdateEvent::FrameBegin { entity });
-                                }
+                            if Self::entity_unfrozen_tick(&mut frame_freeze_clocks, entity) {
+                                Self::entity_frame_wait_tick(
+                                    &component_sequences_assets,
+                                    &component_sequences_handle,
+                                    &mut sequence_update_ec,
+                                    entity,
+                                    &mut frame_index_clock,
+                                    &mut frame_wait_clock,
+                                    &mut sequence_status,
+                                    &repeats,
+                                );
                             }
                         }
                         SequenceStatus::End => {} // do nothing
@@ -175,7 +218,7 @@ mod tests {
     use logic_clock::LogicClock;
     use sequence_model::{
         config::Repeat,
-        entity::{FrameIndexClock, SequenceStatus},
+        entity::{FrameFreezeClock, FrameIndexClock, FrameWaitClock, SequenceStatus},
         loaded::ComponentSequencesHandle,
     };
 
@@ -189,13 +232,30 @@ mod tests {
     /// * Resets `LogicClock` (frame wait counter).
     /// * `SequenceUpdateEvent::SequenceBegin` events are sent.
     #[test]
-    fn resets_logic_clocks_and_sends_event_on_sequence_begin() -> Result<(), Error> {
-        let test_name = "resets_logic_clocks_and_sends_event_on_sequence_begin";
+    fn resets_frame_wait_clocks_and_sends_event_on_sequence_begin() -> Result<(), Error> {
+        let test_name = "resets_frame_wait_clocks_and_sends_event_on_sequence_begin";
         AutexousiousApplication::game_base(test_name, false)
             .with_setup(setup_system_data)
-            .with_setup(|world| initial_values(world, 10, 10, 10, 10, SequenceStatus::Begin, false))
+            .with_setup(|world| {
+                initial_values(
+                    world,
+                    frame_index_clock(10, 10),
+                    frame_wait_clock(10, 10),
+                    None,
+                    SequenceStatus::Begin,
+                    false,
+                )
+            })
             .with_system_single(SequenceUpdateSystem::new(), "", &[])
-            .with_assertion(|world| expect_values(world, 0, 5, 0, SequenceStatus::Ongoing))
+            .with_assertion(|world| {
+                expect_values(
+                    world,
+                    frame_index_clock(0, 5),
+                    frame_wait_clock(0, 10),
+                    None,
+                    SequenceStatus::Ongoing,
+                )
+            })
             .with_assertion(|world| {
                 let events = sequence_begin_events(world);
                 expect_events(world, events);
@@ -207,16 +267,108 @@ mod tests {
     ///
     /// * No change to `FrameIndexClock` value.
     /// * No change to `FrameIndexClock` limit.
-    /// * Ticks `LogicClock`.
+    /// * Ticks `FrameWaitClock`.
     /// * No `SequenceUpdateEvent`s are sent.
     #[test]
-    fn ticks_logic_clock_when_sequence_ongoing() -> Result<(), Error> {
-        let test_name = "ticks_logic_clock_when_sequence_ongoing";
+    fn ticks_frame_wait_clock_when_sequence_ongoing_and_no_frame_freeze_clock() -> Result<(), Error>
+    {
+        let test_name = "ticks_frame_wait_clock_when_sequence_ongoing";
         AutexousiousApplication::game_base(test_name, false)
             .with_setup(setup_system_data)
-            .with_setup(|world| initial_values(world, 0, 5, 0, 2, SequenceStatus::Ongoing, false))
+            .with_setup(|world| {
+                initial_values(
+                    world,
+                    frame_index_clock(0, 5),
+                    frame_wait_clock(0, 2),
+                    None,
+                    SequenceStatus::Ongoing,
+                    false,
+                )
+            })
             .with_system_single(SequenceUpdateSystem::new(), "", &[])
-            .with_assertion(|world| expect_values(world, 0, 5, 1, SequenceStatus::Ongoing))
+            .with_assertion(|world| {
+                expect_values(
+                    world,
+                    frame_index_clock(0, 5),
+                    frame_wait_clock(1, 2),
+                    None,
+                    SequenceStatus::Ongoing,
+                )
+            })
+            .with_assertion(|world| expect_events(world, vec![]))
+            .run()
+    }
+
+    /// Asserts the following when a frame is still in progress but entity is frozen:
+    ///
+    /// * No change to `FrameIndexClock` value.
+    /// * No change to `FrameIndexClock` limit.
+    /// * Ticks `FrameFreezeClock`.
+    /// * No change to `LogicClock`.
+    /// * No `SequenceUpdateEvent`s are sent.
+    #[test]
+    fn ticks_frame_freeze_clock_when_sequence_ongoing_and_frame_freeze_clock_not_complete(
+    ) -> Result<(), Error> {
+        let test_name = "ticks_frame_wait_clock_when_sequence_ongoing";
+        AutexousiousApplication::game_base(test_name, false)
+            .with_setup(setup_system_data)
+            .with_setup(|world| {
+                initial_values(
+                    world,
+                    frame_index_clock(0, 5),
+                    frame_wait_clock(1, 2),
+                    Some(frame_freeze_clock(1, 2)),
+                    SequenceStatus::Ongoing,
+                    false,
+                )
+            })
+            .with_system_single(SequenceUpdateSystem::new(), "", &[])
+            .with_assertion(|world| {
+                expect_values(
+                    world,
+                    frame_index_clock(0, 5),
+                    frame_wait_clock(1, 2),
+                    Some(frame_freeze_clock(2, 2)),
+                    SequenceStatus::Ongoing,
+                )
+            })
+            .with_assertion(|world| expect_events(world, vec![]))
+            .run()
+    }
+
+    /// Asserts the following when a frame is still in progress but entity is frozen:
+    ///
+    /// * No change to `FrameIndexClock` value.
+    /// * No change to `FrameIndexClock` limit.
+    /// * No change to `FrameFreezeClock`.
+    /// * Ticks `FrameWaitClock`.
+    /// * No `SequenceUpdateEvent`s are sent.
+    #[test]
+    fn ticks_frame_freeze_clock_when_sequence_ongoing_and_frame_freeze_clock_complete(
+    ) -> Result<(), Error> {
+        let test_name = "ticks_frame_wait_clock_when_sequence_ongoing";
+        AutexousiousApplication::game_base(test_name, false)
+            .with_setup(setup_system_data)
+            .with_setup(|world| {
+                initial_values(
+                    world,
+                    frame_index_clock(0, 5),
+                    frame_wait_clock(0, 2),
+                    Some(frame_freeze_clock(2, 2)),
+                    SequenceStatus::Ongoing,
+                    false,
+                )
+            })
+            .with_system_single(SequenceUpdateSystem::new(), "", &[])
+            .with_assertion(|world| {
+                expect_values(
+                    world,
+                    frame_index_clock(0, 5),
+                    frame_wait_clock(1, 2),
+                    Some(frame_freeze_clock(2, 2)),
+                    SequenceStatus::Ongoing,
+                )
+            })
             .with_assertion(|world| expect_events(world, vec![]))
             .run()
     }
@@ -228,14 +380,32 @@ mod tests {
     /// * Resets `LogicClock` (frame wait counter).
     /// * `SequenceUpdateEvent::FrameBegin` events are sent.
     #[test]
-    fn resets_logic_clock_and_sends_event_when_frame_ends_and_sequence_ongoing() -> Result<(), Error>
-    {
-        let test_name = "resets_logic_clock_and_sends_event_when_frame_ends_and_sequence_ongoing";
+    fn resets_frame_wait_clock_and_sends_event_when_frame_ends_and_sequence_ongoing(
+    ) -> Result<(), Error> {
+        let test_name =
+            "resets_frame_wait_clock_and_sends_event_when_frame_ends_and_sequence_ongoing";
         AutexousiousApplication::game_base(test_name, false)
             .with_setup(setup_system_data)
-            .with_setup(|world| initial_values(world, 0, 5, 1, 2, SequenceStatus::Ongoing, false))
+            .with_setup(|world| {
+                initial_values(
+                    world,
+                    frame_index_clock(0, 5),
+                    frame_wait_clock(1, 2),
+                    None,
+                    SequenceStatus::Ongoing,
+                    false,
+                )
+            })
             .with_system_single(SequenceUpdateSystem::new(), "", &[])
-            .with_assertion(|world| expect_values(world, 1, 5, 0, SequenceStatus::Ongoing))
+            .with_assertion(|world| {
+                expect_values(
+                    world,
+                    frame_index_clock(1, 5),
+                    frame_wait_clock(0, 2),
+                    None,
+                    SequenceStatus::Ongoing,
+                )
+            })
             .with_assertion(|world| {
                 let events = frame_begin_events(world);
                 expect_events(world, events);
@@ -247,7 +417,7 @@ mod tests {
     ///
     /// * Ticks `FrameIndexClock` value.
     /// * No change to `FrameIndexClock` limit.
-    /// * Ticks `LogicClock` value.
+    /// * Ticks `FrameWaitClock` value.
     /// * `SequenceUpdateEvent::SequenceEnd` event is sent.
     /// * Sets `SequenceStatus` to `SequenceStatus::End`.
     #[test]
@@ -255,9 +425,26 @@ mod tests {
         let test_name = "sends_end_event_when_frame_ends_and_sequence_ends";
         AutexousiousApplication::game_base(test_name, false)
             .with_setup(setup_system_data)
-            .with_setup(|world| initial_values(world, 4, 5, 1, 2, SequenceStatus::Ongoing, false))
+            .with_setup(|world| {
+                initial_values(
+                    world,
+                    frame_index_clock(4, 5),
+                    frame_wait_clock(1, 2),
+                    None,
+                    SequenceStatus::Ongoing,
+                    false,
+                )
+            })
             .with_system_single(SequenceUpdateSystem::new(), "", &[])
-            .with_assertion(|world| expect_values(world, 5, 5, 2, SequenceStatus::End))
+            .with_assertion(|world| {
+                expect_values(
+                    world,
+                    frame_index_clock(5, 5),
+                    frame_wait_clock(2, 2),
+                    None,
+                    SequenceStatus::End,
+                )
+            })
             .with_assertion(|world| {
                 let events = sequence_end_events(world);
                 expect_events(world, events);
@@ -277,9 +464,26 @@ mod tests {
         let test_name = "sends_events_when_frame_ends_and_sequence_ends_and_repeat";
         AutexousiousApplication::game_base(test_name, false)
             .with_setup(setup_system_data)
-            .with_setup(|world| initial_values(world, 4, 5, 1, 2, SequenceStatus::Ongoing, true))
+            .with_setup(|world| {
+                initial_values(
+                    world,
+                    frame_index_clock(4, 5),
+                    frame_wait_clock(1, 2),
+                    None,
+                    SequenceStatus::Ongoing,
+                    true,
+                )
+            })
             .with_system_single(SequenceUpdateSystem::new(), "", &[])
-            .with_assertion(|world| expect_values(world, 0, 5, 0, SequenceStatus::Ongoing))
+            .with_assertion(|world| {
+                expect_values(
+                    world,
+                    frame_index_clock(0, 5),
+                    frame_wait_clock(0, 2),
+                    None,
+                    SequenceStatus::Ongoing,
+                )
+            })
             .with_assertion(|world| {
                 let events = sequence_end_and_begin_events(world);
                 expect_events(world, events);
@@ -292,9 +496,26 @@ mod tests {
         let test_name = "does_nothing_when_sequence_end";
         AutexousiousApplication::game_base(test_name, false)
             .with_setup(setup_system_data)
-            .with_setup(|world| initial_values(world, 5, 5, 2, 2, SequenceStatus::End, false))
+            .with_setup(|world| {
+                initial_values(
+                    world,
+                    frame_index_clock(5, 5),
+                    frame_wait_clock(2, 2),
+                    None,
+                    SequenceStatus::End,
+                    false,
+                )
+            })
             .with_system_single(SequenceUpdateSystem::new(), "", &[])
-            .with_assertion(|world| expect_values(world, 5, 5, 2, SequenceStatus::End))
+            .with_assertion(|world| {
+                expect_values(
+                    world,
+                    frame_index_clock(5, 5),
+                    frame_wait_clock(2, 2),
+                    None,
+                    SequenceStatus::End,
+                )
+            })
             .with_assertion(|world| expect_events(world, vec![]))
             .run()
     }
@@ -310,10 +531,9 @@ mod tests {
 
     fn initial_values(
         world: &mut World,
-        frame_index_clock_value: usize,
-        frame_index_clock_limit: usize,
-        logic_clock_value: usize,
-        logic_clock_limit: usize,
+        frame_index_clock: FrameIndexClock,
+        frame_wait_clock: FrameWaitClock,
+        frame_freeze_clock: Option<FrameFreezeClock>,
         sequence_status: SequenceStatus,
         repeat: bool,
     ) {
@@ -327,7 +547,8 @@ mod tests {
             let (
                 entities,
                 mut frame_index_clocks,
-                mut logic_clocks,
+                mut frame_wait_clocks,
+                mut frame_freeze_clocks,
                 mut component_sequences_handles,
                 mut sequence_statuses,
             ) = world.system_data::<TestSystemData>();
@@ -335,20 +556,17 @@ mod tests {
 
             let entity = entities.create();
 
-            let mut frame_index_clock = FrameIndexClock::default();
-            (*frame_index_clock).value = frame_index_clock_value;
-            (*frame_index_clock).limit = frame_index_clock_limit;
-
-            let mut logic_clock = LogicClock::default();
-            logic_clock.value = logic_clock_value;
-            logic_clock.limit = logic_clock_limit;
-
             frame_index_clocks
                 .insert(entity, frame_index_clock)
                 .expect("Failed to insert frame_index_clock component.");
-            logic_clocks
-                .insert(entity, logic_clock)
-                .expect("Failed to insert logic_clock component.");
+            frame_wait_clocks
+                .insert(entity, frame_wait_clock)
+                .expect("Failed to insert frame_wait_clock component.");
+            if let Some(frame_freeze_clock) = frame_freeze_clock {
+                frame_freeze_clocks
+                    .insert(entity, frame_freeze_clock)
+                    .expect("Failed to insert frame_freeze_clock component.");
+            }
             component_sequences_handles
                 .insert(entity, run_stop_handle)
                 .expect("Failed to insert run_stop_handle component.");
@@ -367,32 +585,60 @@ mod tests {
         world.add_resource(entity);
     }
 
+    fn frame_index_clock(value: usize, limit: usize) -> FrameIndexClock {
+        let mut frame_index_clock = FrameIndexClock::new(LogicClock::default());
+        (*frame_index_clock).value = value;
+        (*frame_index_clock).limit = limit;
+        frame_index_clock
+    }
+
+    fn frame_wait_clock(value: usize, limit: usize) -> FrameWaitClock {
+        let mut frame_wait_clock = FrameWaitClock::new(LogicClock::default());
+        (*frame_wait_clock).value = value;
+        (*frame_wait_clock).limit = limit;
+        frame_wait_clock
+    }
+
+    fn frame_freeze_clock(value: usize, limit: usize) -> FrameFreezeClock {
+        let mut frame_freeze_clock = FrameFreezeClock::new(LogicClock::default());
+        (*frame_freeze_clock).value = value;
+        (*frame_freeze_clock).limit = limit;
+        frame_freeze_clock
+    }
+
     fn expect_values(
         world: &mut World,
-        frame_index_clock_value: usize,
-        frame_index_clock_limit: usize,
-        logic_clock_value: usize,
-        sequence_status_expected: SequenceStatus,
+        expected_frame_index_clock: FrameIndexClock,
+        expected_frame_wait_clock: FrameWaitClock,
+        expected_frame_freeze_clock: Option<FrameFreezeClock>,
+        expected_sequence_status: SequenceStatus,
     ) {
-        let (_entities, frame_index_clocks, logic_clocks, _, sequence_statuses) =
-            world.system_data::<TestSystemData>();
+        let (
+            _entities,
+            frame_index_clocks,
+            frame_wait_clocks,
+            frame_freeze_clocks,
+            _,
+            sequence_statuses,
+        ) = world.system_data::<TestSystemData>();
 
         let entity = *world.read_resource::<Entity>();
 
         let frame_index_clock = frame_index_clocks
             .get(entity)
             .expect("Expected entity to have frame_index_clock component.");
-        let logic_clock = logic_clocks
+        let frame_wait_clock = frame_wait_clocks
             .get(entity)
-            .expect("Expected entity to have logic_clock component.");
+            .expect("Expected entity to have frame_wait_clock component.");
+        let frame_freeze_clock = frame_freeze_clocks.get(entity);
         let sequence_status = sequence_statuses
             .get(entity)
             .expect("Expected entity to have sequence_status component.");
 
-        assert_eq!(frame_index_clock_value, (*frame_index_clock).value);
-        assert_eq!(frame_index_clock_limit, (*frame_index_clock).limit);
-        assert_eq!(logic_clock_value, (*logic_clock).value);
-        assert_eq!(sequence_status_expected, *sequence_status);
+        assert_eq!(&expected_frame_index_clock, frame_index_clock);
+        assert_eq!(&expected_frame_wait_clock, frame_wait_clock);
+        assert_eq!(expected_frame_freeze_clock.as_ref(), frame_freeze_clock);
+        assert_eq!(expected_sequence_status, *sequence_status);
     }
 
     fn expect_events(world: &mut World, expect_events: Vec<SequenceUpdateEvent>) {
@@ -443,7 +689,8 @@ mod tests {
     type TestSystemData<'s> = (
         Entities<'s>,
         WriteStorage<'s, FrameIndexClock>,
-        WriteStorage<'s, LogicClock>,
+        WriteStorage<'s, FrameWaitClock>,
+        WriteStorage<'s, FrameFreezeClock>,
         WriteStorage<'s, ComponentSequencesHandle>,
         WriteStorage<'s, SequenceStatus>,
     );

@@ -17,7 +17,6 @@ mod game_object_attribute_args;
 mod game_object_gen;
 mod game_object_impl;
 mod object_wrapper_gen;
-mod util;
 
 /// For the following code:
 ///

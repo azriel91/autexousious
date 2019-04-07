@@ -4,10 +4,9 @@ use amethyst::{
     renderer::{SpriteRender, Transparent},
 };
 use derivative::Derivative;
-use logic_clock::LogicClock;
 use sequence_model::{
     config::{Repeat, Wait},
-    entity::{FrameIndexClock, SequenceStatus},
+    entity::{FrameIndexClock, FrameWaitClock, SequenceStatus},
     loaded::ComponentSequencesHandle,
 };
 use shred_derive::SystemData;
@@ -34,9 +33,9 @@ pub struct MapLayerComponentStorages<'s> {
     /// `FrameIndexClock` components.
     #[derivative(Debug = "ignore")]
     pub frame_index_clocks: WriteStorage<'s, FrameIndexClock>,
-    /// `LogicClock` components.
+    /// `FrameWaitClock` components.
     #[derivative(Debug = "ignore")]
-    pub logic_clocks: WriteStorage<'s, LogicClock>,
+    pub frame_wait_clocks: WriteStorage<'s, FrameWaitClock>,
     /// `SpriteRender` components.
     #[derivative(Debug = "ignore")]
     pub sprite_renders: WriteStorage<'s, SpriteRender>,

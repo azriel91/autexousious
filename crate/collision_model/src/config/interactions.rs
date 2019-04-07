@@ -38,16 +38,22 @@ mod tests {
     use toml;
 
     use super::Interactions;
-    use crate::config::Interaction;
+    use crate::config::{Hit, HitLimit, HitRepeatDelay, Interaction, InteractionKind};
 
-    const ITR_PHYSICAL_ALL_SPECIFIED: &str = r#"
+    const ITR_PHYSICAL_ALL_SPECIFIED: &str = "
         interactions = [
-          { physical = { bounds = [{ sphere = { x = 1, y = 1, r = 1 } }], hp_damage = 40, sp_damage = 50, multiple = true } },
+          { hit = { repeat_delay = 5, hit_limit = \"unlimited\", hp_damage = 40, sp_damage = 50 }, \
+            bounds = [{ sphere = { x = 1, y = 1, r = 1 } }], multiple = true },
         ]
-    "#;
+    ";
     const ITR_PHYSICAL_MINIMUM_SPECIFIED: &str = r#"
         interactions = [
-          { physical = { bounds = [{ sphere = { x = 1, y = 1, r = 1 } }] } },
+          { hit = {}, bounds = [{ sphere = { x = 1, y = 1, r = 1 } }] },
+        ]
+    "#;
+    const ITR_PHYSICAL_HIT_LIMIT: &str = r#"
+        interactions = [
+          { hit = { hit_limit = 2 }, bounds = [{ sphere = { x = 1, y = 1, r = 1 } }] },
         ]
     "#;
 
@@ -56,15 +62,19 @@ mod tests {
         let frame = toml::from_str::<InteractionsFrame>(ITR_PHYSICAL_ALL_SPECIFIED)
             .expect("Failed to deserialize frame.");
 
-        let interactions = vec![Interaction::Physical {
+        let interactions = vec![Interaction {
+            kind: InteractionKind::Hit(Hit {
+                repeat_delay: HitRepeatDelay::new(5),
+                hit_limit: HitLimit::Unlimited,
+                hp_damage: 40,
+                sp_damage: 50,
+            }),
             bounds: vec![Volume::Sphere {
                 x: 1,
                 y: 1,
                 z: 0,
                 r: 1,
             }],
-            hp_damage: 40,
-            sp_damage: 50,
             multiple: true,
         }];
         assert_eq!(Interactions::new(interactions), frame.interactions);
@@ -75,16 +85,38 @@ mod tests {
         let frame = toml::from_str::<InteractionsFrame>(ITR_PHYSICAL_MINIMUM_SPECIFIED)
             .expect("Failed to deserialize frame.");
 
-        let interactions = vec![Interaction::Physical {
+        let interactions = vec![Interaction {
             bounds: vec![Volume::Sphere {
                 x: 1,
                 y: 1,
                 z: 0,
                 r: 1,
             }],
-            hp_damage: 0,
-            sp_damage: 0,
-            multiple: false,
+            kind: Default::default(),
+            multiple: Default::default(),
+        }];
+        assert_eq!(Interactions::new(interactions), frame.interactions);
+    }
+
+    #[test]
+    fn itr_physical_specify_hit_limit() {
+        let frame = toml::from_str::<InteractionsFrame>(ITR_PHYSICAL_HIT_LIMIT)
+            .expect("Failed to deserialize frame.");
+
+        let interactions = vec![Interaction {
+            bounds: vec![Volume::Sphere {
+                x: 1,
+                y: 1,
+                z: 0,
+                r: 1,
+            }],
+            kind: InteractionKind::Hit(Hit {
+                repeat_delay: HitRepeatDelay::default(),
+                hit_limit: HitLimit::Limit(2),
+                hp_damage: 0,
+                sp_damage: 0,
+            }),
+            multiple: Default::default(),
         }];
         assert_eq!(Interactions::new(interactions), frame.interactions);
     }

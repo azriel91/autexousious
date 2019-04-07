@@ -1,6 +1,6 @@
 pub(crate) use self::{
-    character_collision_effect_system::CharacterCollisionEffectSystem,
     character_grounding_system::CharacterGroundingSystem,
+    character_hit_effect_system::CharacterHitEffectSystem,
     character_kinematics_system::CharacterKinematicsSystem,
     character_sequence_update_system::CharacterSequenceUpdateSystem,
     component_sequences_update_system::ComponentSequencesUpdateSystem,
@@ -9,11 +9,14 @@ pub(crate) use self::{
     object_collision_detection_system::ObjectCollisionDetectionSystem,
     object_kinematics_update_system::ObjectKinematicsUpdateSystem,
     object_transform_update_system::ObjectTransformUpdateSystem,
-    sequence::{FrameComponentUpdateSystem, SequenceUpdateEvent, SequenceUpdateSystem},
+    sequence::{
+        FrameComponentUpdateSystem, FrameFreezeClockAugmentSystem, SequenceUpdateEvent,
+        SequenceUpdateSystem,
+    },
 };
 
-mod character_collision_effect_system;
 mod character_grounding_system;
+mod character_hit_effect_system;
 mod character_kinematics_system;
 mod character_sequence_update_system;
 mod component_sequences_update_system;

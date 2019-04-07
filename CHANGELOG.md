@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.11.0 (unreleased)
+
+### Added
+
+* Objects have a 2 tick delay upon `Hit` interactions. ([#103])
+* `hit_limit` determines the number of objects that the hitter can hit. ([#103])
+* `repeat_delay` specifies number of ticks that must pass before an object can be `hit` by the same hitter. ([#103])
+
+### Changed
+
+* ***Breaking:*** `hp_damage` is specified as part of `hit` interaction kind. ([#103])
+* ***Breaking:*** `sp_damage` is specified as part of `hit` interaction kind. ([#103])
+* ***Breaking:*** `physical` interaction kind is renamed to `hit`. ([#103])
+* ***Breaking:*** `Interaction` kind determines fields applicable to the interaction. ([#103])
+
+[#103]: https://gitlab.com/azriel91/autexousious/issues/103
+
 ## 0.10.0 (2019-03-29)
 
 ### Added

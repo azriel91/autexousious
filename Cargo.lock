@@ -835,6 +835,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "character_play"
+version = "0.10.0"
+dependencies = [
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
+ "character_model 0.10.0",
+ "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "game_input 0.10.0",
+ "object_model 0.10.0",
+ "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sequence_model 0.10.0",
+]
+
+[[package]]
 name = "character_selection"
 version = "0.10.0"
 dependencies = [
@@ -1051,12 +1065,35 @@ dependencies = [
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive_more 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "logic_clock 0.10.0",
  "minterpolate 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "numeric_newtype_derive 0.10.0",
  "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "sequence_model_spi 0.10.0",
  "serde 1.0.89 (registry+https://github.com/rust-lang/crates.io-index)",
  "shape_model 0.10.0",
+ "slotmap 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "specs-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "toml 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "collision_play"
+version = "0.11.0"
+dependencies = [
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
+ "collision_model 0.10.0",
+ "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "logic_clock 0.10.0",
+ "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shape_model 0.10.0",
+ "slotmap 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typename 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typename_derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -1895,8 +1932,10 @@ dependencies = [
  "application_test_support 0.10.0",
  "assets_test 0.10.0",
  "character_model 0.10.0",
+ "character_play 0.10.0",
  "character_selection 0.10.0",
  "collision_model 0.10.0",
+ "collision_play 0.11.0",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input 0.10.0",
@@ -1913,7 +1952,6 @@ dependencies = [
  "named_type_derive 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "object_loading 0.10.0",
  "object_model 0.10.0",
- "object_play 0.10.0",
  "sequence_model 0.10.0",
  "shape_model 0.10.0",
  "shred 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2457,8 +2495,21 @@ version = "0.10.0"
 dependencies = [
  "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive_deref 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive_more 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "logic_clock_derive 0.11.0",
  "serde 1.0.89 (registry+https://github.com/rust-lang/crates.io-index)",
  "specs-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "logic_clock_derive"
+version = "0.11.0"
+dependencies = [
+ "proc-macro2 0.4.27 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc_macro_roids 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quote 0.6.11 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 0.15.29 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -2926,6 +2977,7 @@ version = "0.10.0"
 dependencies = [
  "derive_more 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "proc-macro2 0.4.27 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc_macro_roids 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 0.6.11 (registry+https://github.com/rust-lang/crates.io-index)",
  "syn 0.15.29 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -3031,22 +3083,9 @@ name = "object_model_derive"
 version = "0.10.0"
 dependencies = [
  "proc-macro2 0.4.27 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc_macro_roids 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 0.6.11 (registry+https://github.com/rust-lang/crates.io-index)",
  "syn 0.15.29 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "object_play"
-version = "0.10.0"
-dependencies = [
- "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
- "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
- "character_model 0.10.0",
- "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "game_input 0.10.0",
- "object_model 0.10.0",
- "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "sequence_model 0.10.0",
 ]
 
 [[package]]
@@ -3257,6 +3296,16 @@ version = "0.4.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "unicode-xid 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "proc_macro_roids"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "proc-macro2 0.4.27 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quote 0.6.11 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 0.15.29 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -3800,6 +3849,11 @@ dependencies = [
  "mach 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "winapi 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
+
+[[package]]
+name = "slotmap"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "smallvec"
@@ -4773,6 +4827,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum proc-macro2 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)" = "cd07deb3c6d1d9ff827999c7f9b04cdfd66b1b17ae508e14fe47b620f2282ae0"
 "checksum proc-macro2 0.3.8 (registry+https://github.com/rust-lang/crates.io-index)" = "1b06e2f335f48d24442b35a19df506a835fb3547bc3c06ef27340da9acf5cae7"
 "checksum proc-macro2 0.4.27 (registry+https://github.com/rust-lang/crates.io-index)" = "4d317f9caece796be1980837fd5cb3dfec5613ebdb04ad0956deea83ce168915"
+"checksum proc_macro_roids 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "758469f0b24e02a3307e59912333aa68c50fef0455d46435da02f3d6c9aafe8f"
 "checksum quote 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)" = "7a6e920b65c65f10b2ae65c831a81a073a89edd28c7cce89475bff467ab4167a"
 "checksum quote 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)" = "1eca14c727ad12702eb4b6bfb5a232287dcf8385cb8ca83a3eeaf6519c44c408"
 "checksum quote 0.5.2 (registry+https://github.com/rust-lang/crates.io-index)" = "9949cfe66888ffe1d53e6ec9d9f3b70714083854be20fd5e271b232a017401e8"
@@ -4829,6 +4884,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum shrev 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "ec60ed6f60a4b3cdc2ceacf57215db3408fbd8990f66a38686a31558cd9da482"
 "checksum siphasher 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)" = "0b8de496cf83d4ed58b6be86c3a275b8602f6ffe98d3024a869e124147a9a3ac"
 "checksum slice-deque 0.1.16 (registry+https://github.com/rust-lang/crates.io-index)" = "d39fca478d10e201944a8e21f4393d6bfe38fa3b16a152050e4d097fe2bbf494"
+"checksum slotmap 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "759fd553261805f128e2900bf69ab3d034260bc338caf7f0ee54dbf035c85acd"
 "checksum smallvec 0.6.9 (registry+https://github.com/rust-lang/crates.io-index)" = "c4488ae950c49d403731982257768f48fada354a5203fe81f9bb6f43ca9002be"
 "checksum smithay-client-toolkit 0.4.5 (registry+https://github.com/rust-lang/crates.io-index)" = "aa4899558362a65589b53313935099835acf999740915e134dff20cca7c6a28b"
 "checksum specs 0.14.3 (registry+https://github.com/rust-lang/crates.io-index)" = "de65613ada4338aa7ba71eca60eca24c60483433eec0077bc4f33cfc31f4bdf0"
