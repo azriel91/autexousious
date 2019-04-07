@@ -5,11 +5,11 @@ use amethyst::{
 };
 use derivative::Derivative;
 use object_model::{
-    config::object::SequenceId,
     loaded::SequenceEndTransitions,
     play::{Mirrored, Position, Velocity},
 };
 use sequence_model::{
+    config::SequenceId,
     loaded::ComponentSequencesHandle,
     play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
 };

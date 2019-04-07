@@ -7,14 +7,11 @@
 //! because different object types have different valid sequence IDs, and we want to be able to
 //! define this at compile time rather than needing to process this at run time.
 
-pub use self::sequence_id::SequenceId;
-
 use derive_new::new;
+use sequence_model::config::SequenceId;
 use serde::{Deserialize, Serialize};
 
 use crate::config::object::ObjectFrame;
-
-mod sequence_id;
 
 /// Represents an independent action sequence of an object.
 ///
@@ -38,14 +35,14 @@ mod tests {
         Body, Hit, HitLimit, HitRepeatDelay, Interaction, InteractionKind, Interactions,
     };
     use derivative::Derivative;
-    use sequence_model::config::Wait;
+    use sequence_model::config::{SequenceId, Wait};
     use serde::{Deserialize, Serialize};
     use shape_model::Volume;
     use specs_derive::Component;
     use sprite_model::config::SpriteRef;
     use toml;
 
-    use super::{Sequence, SequenceId};
+    use super::Sequence;
     use crate::config::object::ObjectFrame;
 
     const SEQUENCE_WITH_FRAMES: &str = r#"

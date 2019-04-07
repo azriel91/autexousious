@@ -1,9 +1,10 @@
 use std::collections::HashMap;
 
 use derive_new::new;
+use sequence_model::config::SequenceId;
 use serde::{Deserialize, Serialize};
 
-use crate::config::object::{Sequence, SequenceId};
+use crate::config::object::Sequence;
 
 /// Contains all of the sequences for an `Object`.
 ///

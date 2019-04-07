@@ -5,11 +5,8 @@ use amethyst::{
 };
 use amethyst_test::AmethystApplication;
 use derivative::Derivative;
-use object_model::{
-    config::{object::SequenceId, ObjectAssetData},
-    game_object,
-    loaded::GameObject,
-};
+use object_model::{config::ObjectAssetData, game_object, loaded::GameObject};
+use sequence_model::config::SequenceId;
 use serde::{Deserialize, Serialize};
 use specs_derive::Component;
 

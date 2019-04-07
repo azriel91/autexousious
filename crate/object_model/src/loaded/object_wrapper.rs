@@ -1,6 +1,7 @@
 use amethyst::assets::Asset;
+use sequence_model::config::SequenceId;
 
-use crate::{config::object::SequenceId, loaded::Object};
+use crate::loaded::Object;
 
 /// Newtype for `Object<SequenceId>`.
 ///

@@ -1,7 +1,8 @@
 use amethyst::assets::{Asset, Handle};
+use sequence_model::config::SequenceId;
 
 use crate::{
-    config::{object::SequenceId, GameObjectDefinition, ObjectAssetData},
+    config::{GameObjectDefinition, ObjectAssetData},
     loaded::ObjectWrapper,
     ObjectType,
 };

@@ -2,9 +2,9 @@ use std::collections::HashMap;
 
 use derivative::Derivative;
 use derive_new::new;
-use sequence_model::loaded::ComponentSequencesHandle;
+use sequence_model::{config::SequenceId, loaded::ComponentSequencesHandle};
 
-use crate::{config::object::SequenceId, loaded::SequenceEndTransitions};
+use crate::loaded::SequenceEndTransitions;
 
 /// Represents an in-game object that has been loaded.
 #[derive(Clone, Derivative, PartialEq, new)]
