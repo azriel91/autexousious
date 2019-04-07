@@ -7,12 +7,13 @@
 //! because different object types have different valid sequence IDs, and we want to be able to
 //! define this at compile time rather than needing to process this at run time.
 
-pub use self::{object_frame::ObjectFrame, sequence_id::SequenceId};
+pub use self::sequence_id::SequenceId;
 
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 
-mod object_frame;
+use crate::config::object::ObjectFrame;
+
 mod sequence_id;
 
 /// Represents an independent action sequence of an object.
@@ -44,7 +45,8 @@ mod tests {
     use sprite_model::config::SpriteRef;
     use toml;
 
-    use super::{ObjectFrame, Sequence, SequenceId};
+    use super::{Sequence, SequenceId};
+    use crate::config::object::ObjectFrame;
 
     const SEQUENCE_WITH_FRAMES: &str = r#"
         next = "Boo"

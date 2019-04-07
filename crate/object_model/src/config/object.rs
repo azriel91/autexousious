@@ -2,8 +2,10 @@
 
 pub use self::{
     object_definition::ObjectDefinition,
-    sequence::{ObjectFrame, Sequence, SequenceId},
+    object_frame::ObjectFrame,
+    sequence::{Sequence, SequenceId},
 };
 
 mod object_definition;
+mod object_frame;
 mod sequence;
