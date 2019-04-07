@@ -3,7 +3,7 @@ use character_model::config::CharacterSequenceId;
 use derive_new::new;
 use game_input::ControllerInput;
 use object_model::entity::{Mirrored, Velocity};
-use sequence_model::entity::SequenceStatus;
+use sequence_model::play::SequenceStatus;
 use typename_derive::TypeName;
 
 /// Updates `Character` velocity based on sequence.
@@ -120,7 +120,7 @@ mod tests {
     use map_model::loaded::Map;
     use map_selection_model::MapSelection;
     use object_model::entity::{Grounding, Mirrored, Position, Velocity};
-    use sequence_model::entity::SequenceStatus;
+    use sequence_model::play::SequenceStatus;
     use typename::TypeName;
 
     use super::CharacterKinematicsSystem;

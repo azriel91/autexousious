@@ -10,8 +10,8 @@ use named_type::NamedType;
 use named_type_derive::NamedType;
 use object_loading::FrameComponentStorages;
 use sequence_model::{
-    entity::{FrameIndexClock, FrameWaitClock},
     loaded::{ComponentSequence, ComponentSequences, ComponentSequencesHandle},
+    play::{FrameIndexClock, FrameWaitClock},
 };
 use shred_derive::SystemData;
 
@@ -176,8 +176,8 @@ mod tests {
     use object_loading::FrameComponentStorages;
     use sequence_model::{
         config::Wait,
-        entity::{FrameIndexClock, FrameWaitClock},
         loaded::ComponentSequencesHandle,
+        play::{FrameIndexClock, FrameWaitClock},
     };
     use shape_model::Volume;
 

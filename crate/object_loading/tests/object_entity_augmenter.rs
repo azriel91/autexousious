@@ -43,8 +43,8 @@ use map_loading::MapLoadingBundle;
 use object_model::entity::{Mirrored, Position, Velocity};
 use sequence_loading::SequenceLoadingBundle;
 use sequence_model::{
-    entity::{FrameIndexClock, FrameWaitClock, SequenceStatus},
     loaded::{ComponentSequences, ComponentSequencesHandle},
+    play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
 };
 use sprite_loading::SpriteLoadingBundle;
 

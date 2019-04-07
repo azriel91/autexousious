@@ -8,5 +8,5 @@
 //! definitions.
 
 pub mod config;
-pub mod entity;
 pub mod loaded;
+pub mod play;

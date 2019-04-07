@@ -7,8 +7,8 @@ use logic_clock::LogicClock;
 use map_model::loaded::MapHandle;
 use sequence_model::{
     config::Repeat,
-    entity::{FrameIndexClock, FrameWaitClock, SequenceStatus},
     loaded::ComponentSequence,
+    play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
 };
 
 use crate::{MapLayerComponentStorages, MapSpawningResources};

@@ -12,7 +12,7 @@ use object_model::{
     entity::{Grounding, HealthPoints, Mirrored, Position, Velocity},
     loaded::SequenceEndTransitions,
 };
-use sequence_model::entity::SequenceStatus;
+use sequence_model::play::SequenceStatus;
 use shred_derive::SystemData;
 use typename_derive::TypeName;
 
@@ -145,7 +145,7 @@ mod tests {
     use map_model::loaded::Map;
     use map_selection_model::MapSelection;
     use object_model::entity::{Grounding, Mirrored, Position};
-    use sequence_model::entity::SequenceStatus;
+    use sequence_model::play::SequenceStatus;
     use typename::TypeName;
 
     use super::CharacterSequenceUpdateSystem;

@@ -26,7 +26,7 @@ mod tests {
     use character_model::{config::CharacterSequenceId, play::RunCounter};
     use game_input::ControllerInput;
     use object_model::entity::{Grounding, HealthPoints, Mirrored, Position, Velocity};
-    use sequence_model::entity::SequenceStatus;
+    use sequence_model::play::SequenceStatus;
 
     use super::WalkZMovementCheck;
     use crate::{sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents};

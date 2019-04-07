@@ -9,8 +9,8 @@ use named_type::NamedType;
 use named_type_derive::NamedType;
 use sequence_model::{
     config::Repeat,
-    entity::{FrameFreezeClock, FrameIndexClock, FrameWaitClock, SequenceStatus},
     loaded::{ComponentSequences, ComponentSequencesHandle},
+    play::{FrameFreezeClock, FrameIndexClock, FrameWaitClock, SequenceStatus},
 };
 use shred_derive::SystemData;
 
@@ -218,8 +218,8 @@ mod tests {
     use logic_clock::LogicClock;
     use sequence_model::{
         config::Repeat,
-        entity::{FrameFreezeClock, FrameIndexClock, FrameWaitClock, SequenceStatus},
         loaded::ComponentSequencesHandle,
+        play::{FrameFreezeClock, FrameIndexClock, FrameWaitClock, SequenceStatus},
     };
 
     use super::{SequenceUpdateSystem, SequenceUpdateSystemData};

@@ -10,8 +10,8 @@ use object_model::{
     loaded::ObjectWrapper,
 };
 use sequence_model::{
-    entity::{FrameIndexClock, FrameWaitClock, SequenceStatus},
     loaded::{ComponentSequence, ComponentSequences},
+    play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
 };
 
 use crate::{FrameComponentStorages, ObjectComponentStorages};

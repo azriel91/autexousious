@@ -10,8 +10,8 @@ use object_model::{
     loaded::SequenceEndTransitions,
 };
 use sequence_model::{
-    entity::{FrameIndexClock, FrameWaitClock, SequenceStatus},
     loaded::ComponentSequencesHandle,
+    play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
 };
 use shred_derive::SystemData;
 
