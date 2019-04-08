@@ -19,7 +19,7 @@ pub enum MagicSequenceId {
 }
 impl SequenceId for MagicSequenceId {}
 
-#[game_object(MagicSequenceId, definition = config::MagicDefinition, object_type = Character)]
+#[game_object(MagicSequenceId, sequence = config::MagicSequence, definition = config::MagicDefinition, object_type = Character)]
 #[derive(Debug)]
 struct Magic;
 
@@ -30,7 +30,9 @@ mod config {
         ecs::storage::VecStorage,
     };
     use derive_new::new;
-    use object_model::config::{GameObjectDefinition, ObjectDefinition};
+    use object_model::config::{
+        GameObjectDefinition, GameObjectSequence, ObjectDefinition, ObjectSequence,
+    };
     use serde::{Deserialize, Serialize};
 
     use super::MagicSequenceId;
@@ -40,7 +42,7 @@ mod config {
     pub struct MagicDefinition {
         /// Sequences of actions this object can perform.
         #[serde(flatten)]
-        pub object_definition: ObjectDefinition<MagicSequenceId>,
+        pub object_definition: ObjectDefinition<MagicSequence>,
     }
 
     impl Asset for MagicDefinition {
@@ -50,10 +52,25 @@ mod config {
     }
 
     impl GameObjectDefinition for MagicDefinition {
+        type GameObjectSequence = MagicSequence;
+
+        fn object_definition(&self) -> &ObjectDefinition<Self::GameObjectSequence> {
+            &self.object_definition
+        }
+    }
+
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct MagicSequence {
+        /// Object sequence for common object fields.
+        #[serde(flatten)]
+        pub object_sequence: ObjectSequence<MagicSequenceId>,
+    }
+
+    impl GameObjectSequence for MagicSequence {
         type SequenceId = MagicSequenceId;
 
-        fn object_definition(&self) -> &ObjectDefinition<Self::SequenceId> {
-            &self.object_definition
+        fn object_sequence(&self) -> &ObjectSequence<Self::SequenceId> {
+            &self.object_sequence
         }
     }
 }

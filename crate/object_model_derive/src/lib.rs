@@ -36,7 +36,10 @@ mod object_wrapper_gen;
 /// }
 ///
 /// impl GameObject for Magic {
+///     const OBJECT_TYPE: ObjectType = ObjectType::Character;
 ///     type SequenceId = MagicSequenceId;
+///     type GameObjectSequence = MagicSequence;
+///     type Definition = MagicObjectDefinition;
 ///     type ObjectWrapper = MagicObjectWrapper;
 ///
 ///     fn object_handle(&self) -> &Handle<MagicObjectWrapper> {

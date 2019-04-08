@@ -7,7 +7,7 @@ use derive_new::new;
 use object_model::game_object;
 use typename_derive::TypeName;
 
-use crate::config::{CharacterDefinition, CharacterSequenceId};
+use crate::config::{CharacterDefinition, CharacterSequence, CharacterSequenceId};
 
 /// Represents an in-game character that has been loaded.
 ///

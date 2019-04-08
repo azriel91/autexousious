@@ -1,10 +1,12 @@
 //! Contains the types that represent the configuration on disk.
 
 pub use self::{
-    character_definition::CharacterDefinition, character_sequence_id::CharacterSequenceId,
+    character_definition::CharacterDefinition, character_sequence::CharacterSequence,
+    character_sequence_id::CharacterSequenceId,
 };
 
 mod character_definition;
+mod character_sequence;
 mod character_sequence_id;
 
 #[cfg(test)]
@@ -17,7 +19,7 @@ mod test {
     use sprite_model::config::SpriteRef;
     use toml;
 
-    use super::{CharacterDefinition, CharacterSequenceId};
+    use super::{CharacterDefinition, CharacterSequence, CharacterSequenceId};
 
     const OBJECT_TOML: &str = r#"
         [sequences.stand]
@@ -75,7 +77,8 @@ mod test {
                 Interactions::default(),
             ),
         ];
-        let sequence = ObjectSequence::new(Some(CharacterSequenceId::Walk), frames);
+        let sequence =
+            CharacterSequence::new(ObjectSequence::new(Some(CharacterSequenceId::Walk), frames));
         let mut sequences = HashMap::new();
         sequences.insert(CharacterSequenceId::Stand, sequence);
         let object_definition = ObjectDefinition::new(sequences);

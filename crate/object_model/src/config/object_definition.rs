@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 
+use derivative::Derivative;
 use derive_new::new;
-use sequence_model::config::SequenceId;
 use serde::{Deserialize, Serialize};
 
-use crate::config::ObjectSequence;
+use crate::config::GameObjectSequence;
 
 /// Contains all of the sequences for an `Object`.
 ///
@@ -13,8 +13,13 @@ use crate::config::ObjectSequence;
 /// [char_definition] for characters.
 ///
 /// [char_definition]: ../character/struct.CharacterDefinition.html
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, new)]
-pub struct ObjectDefinition<SeqId: SequenceId> {
+#[derive(Clone, Debug, Derivative, Deserialize, PartialEq, Serialize, new)]
+#[derivative(Default(bound = ""))] // Don't require `ObjSeq: Default`
+pub struct ObjectDefinition<ObjSeq>
+where
+    ObjSeq: GameObjectSequence,
+    ObjSeq::SequenceId: for<'des> Deserialize<'des> + Serialize,
+{
     /// Sequences of actions this object can perform.
-    pub sequences: HashMap<SeqId, ObjectSequence<SeqId>>,
+    pub sequences: HashMap<ObjSeq::SequenceId, ObjSeq>,
 }
