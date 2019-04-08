@@ -5,7 +5,7 @@ use derive_new::new;
 use fnv::FnvHashMap;
 use specs_derive::Component;
 
-use crate::config::{ControlTransition, SequenceId};
+use crate::{config::SequenceId, loaded::ControlTransition};
 
 /// Component sequence transitions upon control input.
 #[derive(Clone, Component, Debug, Default, Deref, DerefMut, From, PartialEq, Eq, new)]

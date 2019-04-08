@@ -4,7 +4,10 @@ use derive_new::new;
 use serde::{Deserialize, Serialize};
 use specs_derive::Component;
 
-use crate::config::{ControlTransitionHold, ControlTransitionPress, SequenceId};
+use crate::{
+    config::SequenceId,
+    loaded::{ControlTransitionHold, ControlTransitionPress},
+};
 
 /// Sequence to transition to on control input.
 #[derive(Clone, Component, Copy, Debug, Derivative, Deserialize, PartialEq, Eq, Serialize, new)]
