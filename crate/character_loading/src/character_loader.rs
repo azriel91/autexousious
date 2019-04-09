@@ -8,7 +8,7 @@ use amethyst::{
 };
 use application::{load_in, Format};
 use character_model::config::CharacterDefinition;
-use object_loading::ObjectPrefab;
+
 use object_model::config::ObjectAssetData;
 
 use crate::{CharacterPrefab, CharacterPrefabHandle};
@@ -38,7 +38,7 @@ impl CharacterLoader {
         };
 
         let object_asset_data = ObjectAssetData::new(definition_handle, sprite_sheet_handles);
-        let character_prefab = CharacterPrefab::new(ObjectPrefab::Data(object_asset_data));
+        let character_prefab = CharacterPrefab::new(object_asset_data);
 
         let character_prefab_handle = world.exec(|loader: PrefabLoader<'_, CharacterPrefab>| {
             loader.load_from_data(Prefab::new_main(character_prefab), ())
