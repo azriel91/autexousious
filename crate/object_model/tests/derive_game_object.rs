@@ -31,7 +31,7 @@ mod config {
     };
     use derive_new::new;
     use object_model::config::{
-        GameObjectDefinition, GameObjectSequence, ObjectDefinition, ObjectSequence,
+        GameObjectDefinition, GameObjectSequence, ObjectDefinition, ObjectFrame, ObjectSequence,
     };
     use serde::{Deserialize, Serialize};
 
@@ -68,8 +68,9 @@ mod config {
 
     impl GameObjectSequence for MagicSequence {
         type SequenceId = MagicSequenceId;
+        type GameObjectFrame = ObjectFrame;
 
-        fn object_sequence(&self) -> &ObjectSequence<Self::SequenceId> {
+        fn object_sequence(&self) -> &ObjectSequence<Self::SequenceId, Self::GameObjectFrame> {
             &self.object_sequence
         }
     }

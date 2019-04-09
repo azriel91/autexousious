@@ -7,7 +7,7 @@ use collision_model::{
 };
 use fnv::FnvHashMap;
 use object_model::{
-    config::{GameObjectSequence, ObjectDefinition},
+    config::{GameObjectFrame, GameObjectSequence, ObjectDefinition},
     loaded::{GameObject, Object, ObjectWrapper},
 };
 use sequence_model::{
@@ -68,7 +68,7 @@ impl ObjectLoader {
                         .object_sequence()
                         .frames
                         .iter()
-                        .map(|frame| frame.wait)
+                        .map(|frame| frame.object_frame().wait)
                         .collect::<Vec<Wait>>(),
                 );
                 let sprite_render_sequence = SpriteRenderSequence::new(
@@ -77,7 +77,7 @@ impl ObjectLoader {
                         .frames
                         .iter()
                         .map(|frame| {
-                            let sprite_ref = &frame.sprite;
+                            let sprite_ref = &frame.object_frame().sprite;
                             let sprite_sheet = sprite_sheet_handles[sprite_ref.sheet].clone();
                             let sprite_number = sprite_ref.index;
                             SpriteRender {
@@ -92,7 +92,13 @@ impl ObjectLoader {
                         .object_sequence()
                         .frames
                         .iter()
-                        .map(|frame| loader.load_from_data(frame.body.clone(), (), body_assets))
+                        .map(|frame| {
+                            loader.load_from_data(
+                                frame.object_frame().body.clone(),
+                                (),
+                                body_assets,
+                            )
+                        })
                         .collect::<Vec<Handle<Body>>>(),
                 );
                 let interactions_sequence = InteractionsSequence::new(
@@ -102,7 +108,7 @@ impl ObjectLoader {
                         .iter()
                         .map(|frame| {
                             loader.load_from_data(
-                                frame.interactions.clone(),
+                                frame.object_frame().interactions.clone(),
                                 (),
                                 interactions_assets,
                             )

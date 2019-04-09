@@ -1,11 +1,12 @@
 //! Contains the types that represent the configuration on disk.
 
 pub use self::{
-    character_definition::CharacterDefinition, character_sequence::CharacterSequence,
-    character_sequence_id::CharacterSequenceId,
+    character_definition::CharacterDefinition, character_frame::CharacterFrame,
+    character_sequence::CharacterSequence, character_sequence_id::CharacterSequenceId,
 };
 
 mod character_definition;
+mod character_frame;
 mod character_sequence;
 mod character_sequence_id;
 
@@ -15,11 +16,11 @@ mod test {
 
     use collision_model::config::{Body, Interactions};
     use object_model::config::{ObjectDefinition, ObjectFrame, ObjectSequence};
-    use sequence_model::config::Wait;
+    use sequence_model::config::{ControlActionTransitions, Wait};
     use sprite_model::config::SpriteRef;
     use toml;
 
-    use super::{CharacterDefinition, CharacterSequence, CharacterSequenceId};
+    use super::{CharacterDefinition, CharacterFrame, CharacterSequence, CharacterSequenceId};
 
     const OBJECT_TOML: &str = r#"
         [sequences.stand]
@@ -40,41 +41,59 @@ mod test {
             .expect("Failed to deserialize character definition.");
 
         let frames = vec![
-            ObjectFrame::new(
-                Wait::new(2),
-                SpriteRef::new(0, 4),
-                Body::default(),
-                Interactions::default(),
+            CharacterFrame::new(
+                ObjectFrame::new(
+                    Wait::new(2),
+                    SpriteRef::new(0, 4),
+                    Body::default(),
+                    Interactions::default(),
+                ),
+                ControlActionTransitions::default(),
             ),
-            ObjectFrame::new(
-                Wait::new(2),
-                SpriteRef::new(0, 5),
-                Body::default(),
-                Interactions::default(),
+            CharacterFrame::new(
+                ObjectFrame::new(
+                    Wait::new(2),
+                    SpriteRef::new(0, 5),
+                    Body::default(),
+                    Interactions::default(),
+                ),
+                ControlActionTransitions::default(),
             ),
-            ObjectFrame::new(
-                Wait::new(1),
-                SpriteRef::new(1, 6),
-                Body::default(),
-                Interactions::default(),
+            CharacterFrame::new(
+                ObjectFrame::new(
+                    Wait::new(1),
+                    SpriteRef::new(1, 6),
+                    Body::default(),
+                    Interactions::default(),
+                ),
+                ControlActionTransitions::default(),
             ),
-            ObjectFrame::new(
-                Wait::new(1),
-                SpriteRef::new(1, 7),
-                Body::default(),
-                Interactions::default(),
+            CharacterFrame::new(
+                ObjectFrame::new(
+                    Wait::new(1),
+                    SpriteRef::new(1, 7),
+                    Body::default(),
+                    Interactions::default(),
+                ),
+                ControlActionTransitions::default(),
             ),
-            ObjectFrame::new(
-                Wait::new(2),
-                SpriteRef::new(0, 6),
-                Body::default(),
-                Interactions::default(),
+            CharacterFrame::new(
+                ObjectFrame::new(
+                    Wait::new(2),
+                    SpriteRef::new(0, 6),
+                    Body::default(),
+                    Interactions::default(),
+                ),
+                ControlActionTransitions::default(),
             ),
-            ObjectFrame::new(
-                Wait::new(2),
-                SpriteRef::new(0, 5),
-                Body::default(),
-                Interactions::default(),
+            CharacterFrame::new(
+                ObjectFrame::new(
+                    Wait::new(2),
+                    SpriteRef::new(0, 5),
+                    Body::default(),
+                    Interactions::default(),
+                ),
+                ControlActionTransitions::default(),
             ),
         ];
         let sequence =

@@ -4,11 +4,11 @@ use sequence_model::config::Wait;
 use serde::{Deserialize, Serialize};
 use sprite_model::config::SpriteRef;
 
-/// Animation and interaction information to use on this frame.
+/// Common object behaviour specification that can change each tick.
 ///
 /// Frames are the level of detail that should carry the following information:
 ///
-/// * **Animation Key Frame:** Sprite sheet, sprite, and transition delay.
+/// * **Render information:** Sprite sheet, sprite, and transition delay.
 /// * **Interaction:** Collision zones, type of interactions.
 /// * **Effects:** Sound(s) to play.
 /// * **Spawning:** Spawning additional object(s).

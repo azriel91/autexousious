@@ -11,21 +11,25 @@ use derive_new::new;
 use sequence_model::config::SequenceId;
 use serde::{Deserialize, Serialize};
 
-use crate::config::ObjectFrame;
+use crate::config::{GameObjectFrame, ObjectFrame};
 
 /// Represents an independent action sequence of an object.
 ///
 /// This carries the information necessary for an `Animation`, as well as the effects and
 /// interactions that happen during each frame of that animation.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
-pub struct ObjectSequence<SeqId: SequenceId> {
+pub struct ObjectSequence<SeqId, Frame = ObjectFrame>
+where
+    SeqId: SequenceId,
+    Frame: GameObjectFrame,
+{
     /// ID of the sequence to switch to after this one has completed.
     ///
     /// Note: This may not be immediately after the last frame of the sequence. For example, a
     /// character that is in mid-air should remain in the last frame until it lands on the ground.
     pub next: Option<SeqId>,
     /// Key frames in the animation sequence.
-    pub frames: Vec<ObjectFrame>,
+    pub frames: Vec<Frame>,
 }
 
 #[cfg(test)]
