@@ -6,7 +6,7 @@ use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
 use character_loading::CharacterPrefab;
 use character_model::loaded::CharacterObjectWrapper;
 use game_model::play::GameEntities;
-use object_loading::ObjectPrefab;
+use object_loading::{GameObjectPrefab, ObjectPrefab};
 use object_model::ObjectType;
 
 /// Functions to retrieve object data from a running world.
@@ -75,13 +75,13 @@ impl ObjectQueries {
             .get(&snh.handle)
             .expect("Expected game object prefab to be loaded.");
 
-        let object_prefab = &game_object_prefab
+        let object_prefab = game_object_prefab
             .entities()
             .next()
             .expect("Expected game object main entity to exist.")
             .data()
             .expect("Expected game object prefab to contain data.")
-            .object_prefab;
+            .object_prefab();
 
         if let ObjectPrefab::Handle(handle) = object_prefab {
             handle.clone()

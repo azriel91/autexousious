@@ -31,8 +31,6 @@ mod object_wrapper_gen;
 /// pub struct Magic {
 ///     /// Handle to loaded object data.
 ///     pub object_handle: Handle<MagicObjectWrapper>,
-///     /// Component sequence transitions when a sequence ends.
-///     pub sequence_end_transitions: SequenceEndTransitions<MagicSequenceId>,
 /// }
 ///
 /// impl GameObject for Magic {

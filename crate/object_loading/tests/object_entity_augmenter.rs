@@ -49,7 +49,8 @@ use sequence_model::{
 use sprite_loading::SpriteLoadingBundle;
 
 use object_loading::{
-    FrameComponentStorages, ObjectComponentStorages, ObjectEntityAugmenter, ObjectPrefab,
+    FrameComponentStorages, GameObjectPrefab, ObjectComponentStorages, ObjectEntityAugmenter,
+    ObjectPrefab,
 };
 
 #[test]
@@ -81,7 +82,7 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
                     .expect("Expected one main entity on character prefab.")
                     .data()
                     .expect("Expected character prefab data to be loaded.");
-                let object_prefab: &ObjectPrefab<Character> = &character_prefab.object_prefab;
+                let object_prefab: &ObjectPrefab<Character> = &character_prefab.object_prefab();
 
                 match object_prefab {
                     ObjectPrefab::Handle(handle) => handle.clone(),
