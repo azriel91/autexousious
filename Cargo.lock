@@ -3703,11 +3703,22 @@ dependencies = [
  "game_input_model 0.10.0",
  "logic_clock 0.10.0",
  "numeric_newtype_derive 0.10.0",
+ "sequence_model_derive 0.11.0",
  "sequence_model_spi 0.10.0",
  "serde 1.0.89 (registry+https://github.com/rust-lang/crates.io-index)",
  "specs-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sprite_loading 0.10.0",
  "sprite_model 0.10.0",
+]
+
+[[package]]
+name = "sequence_model_derive"
+version = "0.11.0"
+dependencies = [
+ "proc-macro2 0.4.27 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc_macro_roids 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quote 0.6.11 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 0.15.29 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

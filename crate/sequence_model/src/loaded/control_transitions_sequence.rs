@@ -1,6 +1,11 @@
-use sequence_model_spi::loaded::ComponentFrames;
+use derive_deref::{Deref, DerefMut};
+use derive_more::From;
+use derive_new::new;
 
-use crate::loaded::ControlTransitions;
+use crate::{component_sequence, config::SequenceId, loaded::ControlTransitions};
 
 /// Sequence of sequence transitions upon control input.
-pub type ControlTransitionsSequence<SeqId> = ComponentFrames<ControlTransitions<SeqId>>;
+#[component_sequence(ControlTransitions<SeqId>)]
+pub struct ControlTransitionsSequence<SeqId>
+where
+    SeqId: SequenceId;
