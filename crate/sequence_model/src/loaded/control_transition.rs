@@ -1,7 +1,6 @@
 use amethyst::ecs::{storage::VecStorage, Component};
 use derivative::Derivative;
 use derive_new::new;
-use serde::{Deserialize, Serialize};
 use specs_derive::Component;
 
 use crate::{
@@ -10,7 +9,7 @@ use crate::{
 };
 
 /// Sequence to transition to on control input.
-#[derive(Clone, Component, Copy, Debug, Derivative, Deserialize, PartialEq, Eq, Serialize, new)]
+#[derive(Clone, Component, Copy, Debug, Derivative, PartialEq, Eq, new)]
 #[derivative(Default)]
 #[storage(VecStorage)]
 pub enum ControlTransition<SeqId>

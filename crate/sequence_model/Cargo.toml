@@ -12,6 +12,7 @@ derive-new = "0.5.6"
 derive_deref = "1.0.2"
 derive_more = "0.14.0"
 fnv = "1.0.6"
+game_input_model = { path = "../game_input_model" }
 logic_clock = { path = "../logic_clock" }
 numeric_newtype_derive = { path = "../numeric_newtype_derive" }
 sequence_model_spi = { path = "../sequence_model_spi" }
