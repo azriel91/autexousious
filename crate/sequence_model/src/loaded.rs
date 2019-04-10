@@ -7,7 +7,7 @@ pub use self::{
     control_transition_hold::ControlTransitionHold,
     control_transition_press::ControlTransitionPress,
     control_transitions::ControlTransitions,
-    control_transitions_sequence::ControlTransitionsSequence,
+    control_transitions_sequence::{ControlTransitionsSequence, ControlTransitionsSequenceHandle},
     sequence_end_transition::SequenceEndTransition,
     sequence_end_transitions::SequenceEndTransitions,
     wait_sequence::WaitSequence,

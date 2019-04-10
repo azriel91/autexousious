@@ -7,31 +7,24 @@
 extern crate proc_macro;
 
 use proc_macro::TokenStream;
-use proc_macro_roids::{DeriveInputDeriveExt, FieldsUnnamedAppend};
+use proc_macro_roids::{DeriveInputDeriveExt, DeriveInputStructExt, FieldsUnnamedAppend, IdentExt};
 use quote::quote;
-use syn::{
-    parse_macro_input, parse_quote, Data, DataStruct, DeriveInput, Fields, FieldsUnnamed, Path,
-};
+use syn::{parse_macro_input, parse_quote, DeriveInput, FieldsUnnamed, Path};
 
 #[proc_macro_attribute]
 pub fn component_sequence(args: TokenStream, item: TokenStream) -> TokenStream {
     let mut ast = parse_macro_input!(item as DeriveInput);
     let component_path = parse_macro_input!(args as Path);
 
-    // Ensure this is a unit struct.
-    match &ast.data {
-        Data::Struct(DataStruct {
-            fields: Fields::Unit,
-            ..
-        }) => {}
-        _ => panic!("This macro must be used on a unit struct."),
-    }
+    ast.assert_fields_unit();
 
     derive_append(&mut ast);
     fields_append(&mut ast, &component_path);
 
     let type_name = &ast.ident;
     let (impl_generics, type_generics, where_clause) = ast.generics.split_for_impl();
+    let handle_name = type_name.append("Handle");
+    let handle_doc = format!("Handle to a {}", type_name);
 
     let token_stream_2 = quote! {
         #ast
@@ -46,6 +39,9 @@ pub fn component_sequence(args: TokenStream, item: TokenStream) -> TokenStream {
             type Data = Self;
             type HandleStorage = amethyst::ecs::storage::VecStorage<amethyst::assets::Handle<Self>>;
         }
+
+        #[doc = #handle_doc]
+        pub type #handle_name #impl_generics = amethyst::assets::Handle<#type_name #type_generics>;
     };
 
     TokenStream::from(token_stream_2)
