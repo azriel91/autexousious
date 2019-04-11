@@ -6,6 +6,7 @@ pub use self::{
     control_transition::ControlTransition,
     control_transition_hold::ControlTransitionHold,
     control_transition_press::ControlTransitionPress,
+    control_transition_release::ControlTransitionRelease,
     control_transitions::ControlTransitions,
     control_transitions_sequence::{ControlTransitionsSequence, ControlTransitionsSequenceHandle},
     sequence_end_transition::SequenceEndTransition,
@@ -18,6 +19,7 @@ mod component_sequences;
 mod control_transition;
 mod control_transition_hold;
 mod control_transition_press;
+mod control_transition_release;
 mod control_transitions;
 mod control_transitions_sequence;
 mod sequence_end_transition;

@@ -26,20 +26,26 @@ impl GameObjectSequence for CharacterSequence {
 mod tests {
     use collision_model::config::{Body, Interactions};
     use object_model::config::{ObjectFrame, ObjectSequence};
-    use sequence_model::config::{ControlActionTransitions, Wait};
+    use sequence_model::config::{ControlTransition, Wait};
     use sprite_model::config::SpriteRef;
     use toml;
 
     use super::CharacterSequence;
-    use crate::config::{CharacterFrame, CharacterSequenceId};
+    use crate::config::{
+        CharacterControlTransition, CharacterFrame, CharacterSequenceId,
+        ControlTransitionRequirement,
+    };
 
     const SEQUENCE_WITH_FRAMES_EMPTY: &str = "frames = []";
-    const SEQUENCE_WITH_CONTROL_ACTION_TRANSITIONS: &str =
-        "frames = [\n\
-         { wait = 2, sprite = { sheet = 0, index = 4 }, \
-         transitions = { press_attack = \"stand_attack\", hold_jump = \"jump\" } \
-         },\n\
-         ]";
+    const SEQUENCE_WITH_CONTROL_TRANSITIONS: &str = r#"
+        [[frames]]
+        wait = 2
+        sprite = { sheet = 0, index = 4 }
+        transitions = [
+          { press_attack = "stand_attack" },
+          { hold_jump = "jump" },
+        ]
+    "#;
 
     #[test]
     fn sequence_with_empty_frames_list_deserializes_successfully() {
@@ -51,10 +57,9 @@ mod tests {
     }
 
     #[test]
-    fn sequence_with_control_action_transitions() {
-        let sequence =
-            toml::from_str::<CharacterSequence>(SEQUENCE_WITH_CONTROL_ACTION_TRANSITIONS)
-                .expect("Failed to deserialize sequence.");
+    fn sequence_with_control_transitions() {
+        let sequence = toml::from_str::<CharacterSequence>(SEQUENCE_WITH_CONTROL_TRANSITIONS)
+            .expect("Failed to deserialize sequence.");
 
         let frames = vec![CharacterFrame::new(
             ObjectFrame::new(
@@ -63,15 +68,19 @@ mod tests {
                 Body::default(),
                 Interactions::default(),
             ),
-            ControlActionTransitions {
-                press_attack: Some(CharacterSequenceId::StandAttack),
-                hold_jump: Some(CharacterSequenceId::Jump),
-                ..Default::default()
-            },
+            vec![
+                CharacterControlTransition::new(
+                    ControlTransition::PressAttack(CharacterSequenceId::StandAttack),
+                    ControlTransitionRequirement::default(),
+                ),
+                CharacterControlTransition::new(
+                    ControlTransition::HoldJump(CharacterSequenceId::Jump),
+                    ControlTransitionRequirement::default(),
+                ),
+            ],
         )];
         let expected = CharacterSequence::new(ObjectSequence::new(None, frames));
 
-        // dbg!(toml::to_string(&expected).unwrap());
         assert_eq!(expected, sequence);
     }
 }
