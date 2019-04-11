@@ -1,40 +1,37 @@
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 
-use crate::config::SequenceId;
+use crate::config::{ControlTransitionMultiple, ControlTransitionSingle, SequenceId};
 
-/// Sequence ID to transition to when a `ControlAction` is interacted with.
+/// Variants of how a `ControlTransition` may be specified.
 ///
-/// This type is parallel to the `loaded` model to make it more ergonomic for creators to write
+/// This is primarily to make it more ergonomic for users to specify different kinds of values in
 /// configuration.
-#[derive(Clone, Copy, Debug, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
-#[serde(deny_unknown_fields, rename_all = "snake_case")]
-pub enum ControlTransition<SeqId>
+#[derive(Clone, Debug, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
+#[serde(deny_unknown_fields, rename_all = "snake_case", untagged)]
+pub enum ControlTransition<SeqId, Extra>
 where
     SeqId: SequenceId,
 {
-    /// Sequence ID to transition to when `Defend` is pressed.
-    PressDefend(SeqId),
-    /// Sequence ID to transition to when `Jump` is pressed.
-    PressJump(SeqId),
-    /// Sequence ID to transition to when `Attack` is pressed.
-    PressAttack(SeqId),
-    /// Sequence ID to transition to when `Special` is pressed.
-    PressSpecial(SeqId),
-    /// Sequence ID to transition to when `Defend` is held.
-    HoldDefend(SeqId),
-    /// Sequence ID to transition to when `Jump` is held.
-    HoldJump(SeqId),
-    /// Sequence ID to transition to when `Attack` is held.
-    HoldAttack(SeqId),
-    /// Sequence ID to transition to when `Special` is held.
-    HoldSpecial(SeqId),
-    /// Sequence ID to transition to when `Defend` is released.
-    ReleaseDefend(SeqId),
-    /// Sequence ID to transition to when `Jump` is released.
-    ReleaseJump(SeqId),
-    /// Sequence ID to transition to when `Attack` is released.
-    ReleaseAttack(SeqId),
-    /// Sequence ID to transition to when `Special` is released.
-    ReleaseSpecial(SeqId),
+    /// Transition that only has a sequence ID.
+    ///
+    /// ```toml
+    /// press_attack = "seq_id"
+    /// ```
+    SequenceId(SeqId),
+    /// Transition has a sequence ID and extra fields.
+    ///
+    /// ```toml
+    /// press_attack = { next = "seq_id", extra_0 = 0, extra_1 = "0" }
+    /// ```
+    Single(ControlTransitionSingle<SeqId, Extra>),
+    /// Multiple transitions with sequence ID and extra fields.
+    ///
+    /// ```toml
+    /// press_attack = [
+    ///   { next = "seq_id_0", extra_0 = 0, extra_1 = "0" },
+    ///   { next = "seq_id_1", extra_0 = 1, extra_1 = "1" },
+    /// ]
+    /// ```
+    Multiple(ControlTransitionMultiple<SeqId, Extra>),
 }

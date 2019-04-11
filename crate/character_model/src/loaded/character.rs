@@ -10,7 +10,10 @@ use object_model::game_object;
 use sequence_model::loaded::ControlTransitionsSequenceHandle;
 use typename_derive::TypeName;
 
-use crate::config::{CharacterDefinition, CharacterSequence, CharacterSequenceId};
+use crate::{
+    config::{CharacterDefinition, CharacterSequence, CharacterSequenceId},
+    loaded::CharacterControlTransition,
+};
 
 /// Represents an in-game character that has been loaded.
 ///
@@ -19,8 +22,10 @@ use crate::config::{CharacterDefinition, CharacterSequence, CharacterSequenceId}
 #[derive(Clone, Debug, PartialEq, TypeName, new)]
 pub struct Character {
     /// Handles of `ControlTransitions`es sequences that this character uses, keyed by sequence ID.
-    pub control_transitions_sequences:
-        HashMap<CharacterSequenceId, ControlTransitionsSequenceHandle<CharacterSequenceId>>,
+    pub control_transitions_sequences: HashMap<
+        CharacterSequenceId,
+        ControlTransitionsSequenceHandle<CharacterSequenceId, CharacterControlTransition>,
+    >,
 }
 
 impl Asset for Character {

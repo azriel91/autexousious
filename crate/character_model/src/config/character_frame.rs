@@ -2,7 +2,7 @@ use derive_new::new;
 use object_model::config::{GameObjectFrame, ObjectFrame};
 use serde::{Deserialize, Serialize};
 
-use crate::config::CharacterControlTransition;
+use crate::config::CharacterControlTransitions;
 
 /// Sequence frame type for characters.
 #[derive(Clone, Debug, Default, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
@@ -11,9 +11,9 @@ pub struct CharacterFrame {
     /// Common object behaviour specification that can change each tick.
     #[serde(flatten)]
     pub object_frame: ObjectFrame,
-    /// Sequence ID to transition to when a `ControlAction` is pressed.
+    /// Sequence ID to transition to when a `ControlAction` is pressed, held, or released.
     #[serde(default)]
-    pub transitions: Vec<CharacterControlTransition>,
+    pub transitions: CharacterControlTransitions,
 }
 
 impl GameObjectFrame for CharacterFrame {

@@ -6,12 +6,11 @@ use amethyst::{
     Error,
 };
 use character_model::{
-    config::{CharacterDefinition, CharacterSequenceId},
-    loaded::{Character, CharacterHandle},
+    config::CharacterDefinition,
+    loaded::{Character, CharacterControlTransitionsSequence, CharacterHandle},
 };
 use object_loading::{GameObjectPrefab, ObjectPrefab};
 use object_model::config::ObjectAssetData;
-use sequence_model::loaded::ControlTransitionsSequence;
 use typename_derive::TypeName;
 
 use crate::{
@@ -60,7 +59,7 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
         <ObjectPrefab<Character> as PrefabData<'s>>::SystemData,
         ReadExpect<'s, Loader>,
         Read<'s, AssetStorage<CharacterDefinition>>,
-        Read<'s, AssetStorage<ControlTransitionsSequence<CharacterSequenceId>>>,
+        Read<'s, AssetStorage<CharacterControlTransitionsSequence>>,
         Read<'s, AssetStorage<Character>>,
         WriteStorage<'s, CharacterHandle>,
         CharacterComponentStorages<'s>,
@@ -107,7 +106,7 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
             object_prefab_system_data,
             loader,
             character_definition_assets,
-            control_transitions_sequence_assets,
+            character_control_transitions_sequence_assets,
             character_assets,
             _character_handles,
             _character_component_storages,
@@ -125,7 +124,8 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
 
                     let character_loader_params = CharacterLoaderParams {
                         loader: &loader,
-                        control_transitions_sequence_assets: &control_transitions_sequence_assets,
+                        character_control_transitions_sequence_assets:
+                            &character_control_transitions_sequence_assets,
                     };
                     let character_definition = character_definition_assets
                         .get(&character_definition_handle)

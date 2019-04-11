@@ -1,13 +1,13 @@
 //! Contains the types that represent the configuration on disk.
 
 pub use self::{
-    character_control_transition::CharacterControlTransition,
+    character_control_transitions::CharacterControlTransitions,
     character_definition::CharacterDefinition, character_frame::CharacterFrame,
     character_sequence::CharacterSequence, character_sequence_id::CharacterSequenceId,
     control_transition_requirement::ControlTransitionRequirement,
 };
 
-mod character_control_transition;
+mod character_control_transitions;
 mod character_definition;
 mod character_frame;
 mod character_sequence;
@@ -23,13 +23,15 @@ mod test {
         config::{ObjectDefinition, ObjectFrame, ObjectSequence},
         play::{ChargePoints, HealthPoints, SkillPoints},
     };
-    use sequence_model::config::{ControlTransition, Wait};
+    use sequence_model::config::{
+        ControlTransition, ControlTransitionMultiple, ControlTransitionSingle, Wait,
+    };
     use shape_model::Volume;
     use sprite_model::config::SpriteRef;
     use toml;
 
     use crate::config::{
-        CharacterControlTransition, CharacterDefinition, CharacterFrame, CharacterSequence,
+        CharacterControlTransitions, CharacterDefinition, CharacterFrame, CharacterSequence,
         CharacterSequenceId, ControlTransitionRequirement,
     };
 
@@ -41,13 +43,17 @@ mod test {
             wait = 5
             sprite = { sheet = 1, index = 3 }
             body = [{ box = { x = 25, y = 11, w = 31, h = 68 } }]
-            transitions = [
-              { press_attack = "stand_attack" },
-              { release_attack = "walk", charge = 90 },
-              { release_attack = "run", sp = 50 },
-              { release_attack = "run_stop", hp = 30 },
-              { hold_jump = "jump" },
-            ]
+
+            [sequences.stand.frames.transitions]
+              press_attack = "stand_attack"
+
+              release_attack = [
+                { next = "walk", charge = 90 },
+                { next = "run", sp = 50 },
+                { next = "run_stop", hp = 30 },
+              ]
+
+              hold_jump = { next = "jump" }
     "#;
 
     #[test]
@@ -69,37 +75,41 @@ mod test {
                 }]),
                 Interactions::default(),
             ),
-            vec![
-                CharacterControlTransition::new(
-                    ControlTransition::PressAttack(CharacterSequenceId::StandAttack),
-                    ControlTransitionRequirement::default(),
-                ),
-                CharacterControlTransition::new(
-                    ControlTransition::ReleaseAttack(CharacterSequenceId::Walk),
-                    ControlTransitionRequirement {
-                        charge: ChargePoints::new(90),
-                        ..Default::default()
-                    },
-                ),
-                CharacterControlTransition::new(
-                    ControlTransition::ReleaseAttack(CharacterSequenceId::Run),
-                    ControlTransitionRequirement {
-                        sp: SkillPoints::new(50),
-                        ..Default::default()
-                    },
-                ),
-                CharacterControlTransition::new(
-                    ControlTransition::ReleaseAttack(CharacterSequenceId::RunStop),
-                    ControlTransitionRequirement {
-                        hp: HealthPoints::new(30),
-                        ..Default::default()
-                    },
-                ),
-                CharacterControlTransition::new(
-                    ControlTransition::HoldJump(CharacterSequenceId::Jump),
-                    ControlTransitionRequirement::default(),
-                ),
-            ],
+            CharacterControlTransitions {
+                press_attack: Some(ControlTransition::SequenceId(
+                    CharacterSequenceId::StandAttack,
+                )),
+                release_attack: Some(ControlTransition::Multiple(ControlTransitionMultiple::new(
+                    vec![
+                        ControlTransitionSingle {
+                            next: CharacterSequenceId::Walk,
+                            extra: ControlTransitionRequirement {
+                                charge: ChargePoints::new(90),
+                                ..Default::default()
+                            },
+                        },
+                        ControlTransitionSingle {
+                            next: CharacterSequenceId::Run,
+                            extra: ControlTransitionRequirement {
+                                sp: SkillPoints::new(50),
+                                ..Default::default()
+                            },
+                        },
+                        ControlTransitionSingle {
+                            next: CharacterSequenceId::RunStop,
+                            extra: ControlTransitionRequirement {
+                                hp: HealthPoints::new(30),
+                                ..Default::default()
+                            },
+                        },
+                    ],
+                ))),
+                hold_jump: Some(ControlTransition::Single(ControlTransitionSingle {
+                    next: CharacterSequenceId::Jump,
+                    extra: ControlTransitionRequirement::default(),
+                })),
+                ..Default::default()
+            },
         )];
         let sequence =
             CharacterSequence::new(ObjectSequence::new(Some(CharacterSequenceId::Walk), frames));

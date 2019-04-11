@@ -26,13 +26,13 @@ impl GameObjectSequence for CharacterSequence {
 mod tests {
     use collision_model::config::{Body, Interactions};
     use object_model::config::{ObjectFrame, ObjectSequence};
-    use sequence_model::config::{ControlTransition, Wait};
+    use sequence_model::config::{ControlTransition, ControlTransitionSingle, Wait};
     use sprite_model::config::SpriteRef;
     use toml;
 
     use super::CharacterSequence;
     use crate::config::{
-        CharacterControlTransition, CharacterFrame, CharacterSequenceId,
+        CharacterControlTransitions, CharacterFrame, CharacterSequenceId,
         ControlTransitionRequirement,
     };
 
@@ -41,10 +41,10 @@ mod tests {
         [[frames]]
         wait = 2
         sprite = { sheet = 0, index = 4 }
-        transitions = [
-          { press_attack = "stand_attack" },
-          { hold_jump = "jump" },
-        ]
+
+        [frames.transitions]
+          press_attack = "stand_attack"
+          hold_jump = { next = "jump" }
     "#;
 
     #[test]
@@ -68,16 +68,16 @@ mod tests {
                 Body::default(),
                 Interactions::default(),
             ),
-            vec![
-                CharacterControlTransition::new(
-                    ControlTransition::PressAttack(CharacterSequenceId::StandAttack),
-                    ControlTransitionRequirement::default(),
-                ),
-                CharacterControlTransition::new(
-                    ControlTransition::HoldJump(CharacterSequenceId::Jump),
-                    ControlTransitionRequirement::default(),
-                ),
-            ],
+            CharacterControlTransitions {
+                press_attack: Some(ControlTransition::SequenceId(
+                    CharacterSequenceId::StandAttack,
+                )),
+                hold_jump: Some(ControlTransition::Single(ControlTransitionSingle {
+                    next: CharacterSequenceId::Jump,
+                    extra: ControlTransitionRequirement::default(),
+                })),
+                ..Default::default()
+            },
         )];
         let expected = CharacterSequence::new(ObjectSequence::new(None, frames));
 
