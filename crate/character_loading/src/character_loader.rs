@@ -14,7 +14,6 @@ use sequence_model::{
     config::ControlTransitionSingle,
     loaded::{
         ControlTransition, ControlTransitionHold, ControlTransitionPress, ControlTransitionRelease,
-        ControlTransitionsSequence,
     },
 };
 
@@ -40,7 +39,7 @@ impl CharacterLoader {
         character_definition: &CharacterDefinition,
         object_wrapper_handle: Handle<CharacterObjectWrapper>,
     ) -> Result<Character, Error> {
-        let control_transitions_sequences = character_definition
+        let control_transitions_sequence_handles = character_definition
             .object_definition
             .sequences
             .iter()
@@ -59,7 +58,7 @@ impl CharacterLoader {
             .collect::<HashMap<_, _>>();
 
         Ok(Character::new(
-            control_transitions_sequences,
+            control_transitions_sequence_handles,
             object_wrapper_handle,
         ))
     }
@@ -75,7 +74,7 @@ impl CharacterLoader {
             .map(|frame| Self::config_to_loaded_transitions(&frame.transitions))
             .collect::<Vec<loaded::CharacterControlTransitions>>();
 
-        ControlTransitionsSequence::new(control_transitions_sequence)
+        CharacterControlTransitionsSequence::new(control_transitions_sequence)
     }
 
     /// Maps `config::CharacterControlTransitions` to `loaded::CharacterControlTransitions`

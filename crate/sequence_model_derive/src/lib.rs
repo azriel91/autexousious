@@ -40,6 +40,27 @@ pub fn component_sequence(args: TokenStream, item: TokenStream) -> TokenStream {
             type HandleStorage = amethyst::ecs::storage::VecStorage<amethyst::assets::Handle<Self>>;
         }
 
+        impl #impl_generics std::convert::From<#type_name #type_generics>
+            for std::result::Result<
+                amethyst::assets::ProcessingState<#type_name #type_generics>,
+                amethyst::Error
+            >
+        #where_clause
+        {
+            fn from(
+                component_sequence: #type_name #type_generics,
+            ) -> std::result::Result<
+                amethyst::assets::ProcessingState<#type_name #type_generics>,
+                amethyst::Error
+            >
+            {
+                Ok(amethyst::assets::ProcessingState::Loaded(
+                    component_sequence,
+                ))
+            }
+        }
+
+
         #[doc = #handle_doc]
         pub type #handle_name #impl_generics = amethyst::assets::Handle<#type_name #type_generics>;
     };

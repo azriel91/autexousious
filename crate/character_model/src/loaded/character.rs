@@ -7,12 +7,11 @@ use amethyst::{
 };
 use derive_new::new;
 use object_model::game_object;
-use sequence_model::loaded::ControlTransitionsSequenceHandle;
 use typename_derive::TypeName;
 
 use crate::{
     config::{CharacterDefinition, CharacterSequence, CharacterSequenceId},
-    loaded::CharacterControlTransition,
+    loaded::CharacterControlTransitionsSequenceHandle,
 };
 
 /// Represents an in-game character that has been loaded.
@@ -22,10 +21,8 @@ use crate::{
 #[derive(Clone, Debug, PartialEq, TypeName, new)]
 pub struct Character {
     /// Handles of `ControlTransitions`es sequences that this character uses, keyed by sequence ID.
-    pub control_transitions_sequences: HashMap<
-        CharacterSequenceId,
-        ControlTransitionsSequenceHandle<CharacterSequenceId, CharacterControlTransition>,
-    >,
+    pub control_transitions_sequence_handles:
+        HashMap<CharacterSequenceId, CharacterControlTransitionsSequenceHandle>,
 }
 
 impl Asset for Character {

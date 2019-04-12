@@ -4,7 +4,10 @@ use amethyst::{
     ecs::DispatcherBuilder,
     Error,
 };
-use character_model::{config::CharacterDefinition, loaded::Character};
+use character_model::{
+    config::CharacterDefinition,
+    loaded::{Character, CharacterControlTransitionsSequence},
+};
 use derive_new::new;
 use object_loading::ObjectDefinitionToWrapperProcessor;
 use typename::TypeName;
@@ -13,9 +16,10 @@ use crate::CharacterPrefab;
 
 /// Adds the following processor `System`s to the world:
 ///
-/// * `ObjectDefinitionToWrapperProcessor::<Character>`
-/// * `Processor::<Character>`
 /// * `Processor::<CharacterDefinition>`
+/// * `ObjectDefinitionToWrapperProcessor::<Character>`
+/// * `Processor::<CharacterControlTransitionsSequence>`
+/// * `Processor::<Character>`
 /// * `PrefabLoaderSystem::<CharacterPrefab>`
 #[derive(Debug, new)]
 pub struct CharacterLoadingBundle;
@@ -26,20 +30,29 @@ pub const CHARACTER_PREFAB_LOADER_SYSTEM: &str = "character_prefab_loader_system
 impl<'a, 'b> SystemBundle<'a, 'b> for CharacterLoadingBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
         builder.add(
-            ObjectDefinitionToWrapperProcessor::<Character>::new(),
-            &ObjectDefinitionToWrapperProcessor::<Character>::type_name(),
-            &[],
-        );
-        builder.add(Processor::<Character>::new(), "character_processor", &[]);
-        builder.add(
             Processor::<CharacterDefinition>::new(),
             "character_definition_processor",
-            &[],
+            &["component_sequences_processor"],
+        );
+        builder.add(
+            ObjectDefinitionToWrapperProcessor::<Character>::new(),
+            &ObjectDefinitionToWrapperProcessor::<Character>::type_name(),
+            &["character_definition_processor", "sprite_sheet_processor"],
+        );
+        builder.add(
+            Processor::<CharacterControlTransitionsSequence>::new(),
+            "character_control_transitions_sequence_processor",
+            &[&ObjectDefinitionToWrapperProcessor::<Character>::type_name()],
+        );
+        builder.add(
+            Processor::<Character>::new(),
+            "character_processor",
+            &["character_control_transitions_sequence_processor"],
         );
         builder.add(
             PrefabLoaderSystem::<CharacterPrefab>::default(),
             CHARACTER_PREFAB_LOADER_SYSTEM,
-            &[],
+            &["character_processor"],
         );
         Ok(())
     }
@@ -51,20 +64,23 @@ mod test {
     use amethyst_test::AmethystApplication;
     use character_model::{
         config::CharacterDefinition,
-        loaded::{Character, CharacterObjectWrapper},
+        loaded::{Character, CharacterControlTransitionsSequence, CharacterObjectWrapper},
     };
+    use sequence_loading::SequenceLoadingBundle;
 
     use super::CharacterLoadingBundle;
 
     #[test]
-    fn bundle_build_adds_character_processor() -> Result<(), Error> {
-        AmethystApplication::blank()
-            .with_bundle(CharacterLoadingBundle)
+    fn bundle_build() -> Result<(), Error> {
+        AmethystApplication::render_base("bundle_build", false)
+            .with_bundle(SequenceLoadingBundle::new())
+            .with_bundle(CharacterLoadingBundle::new())
             .with_assertion(|world| {
                 // Panics if the Processors are not added.
-                world.read_resource::<AssetStorage<Character>>();
-                world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
                 world.read_resource::<AssetStorage<CharacterDefinition>>();
+                world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
+                world.read_resource::<AssetStorage<CharacterControlTransitionsSequence>>();
+                world.read_resource::<AssetStorage<Character>>();
             })
             .run()
     }
