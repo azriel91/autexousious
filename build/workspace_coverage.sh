@@ -16,11 +16,16 @@ test -d "${coverage_dir}" || mkdir -p "${coverage_dir}"
 kcov_exclude_line="kcov-ignore"
 kcov_exclude_region="kcov-ignore-start:kcov-ignore-end"
 
-test_bins="$(cargo test --no-run --message-format=json | jq -r "select(.profile.test == true) | .filenames[]")"
+# 
+test_bins_by_crate="$(
+    cargo test --no-run --message-format=json |
+    jq -r "select(.profile.test == true) | (.package_id | split(\" \"))[0] + \";\" + .filenames[]"
+  )"
 crate_coverage_dirs=()
-for test_bin in $test_bins; do
-  test_bin_name=${test_bin##*/target/debug/}
-  crate_name=${test_bin_name%-*}
+for test_bin_by_crate in $test_bins_by_crate; do
+  crate_name=${test_bin_by_crate%%;*}
+  test_bin_path=${test_bin_by_crate##*;}
+  test_bin_name=${test_bin_path##*/target/debug/}
   crate_dir="${repository_dir}/crate/${crate_name}"
 
   test -d "${crate_dir}" || continue;
@@ -30,10 +35,10 @@ for test_bin in $test_bins; do
 
   (
     export CARGO_MANIFEST_DIR="$crate_dir"
-    kcov --include-pattern="${crate_dir}/src/" \
+    kcov --include-pattern="${crate_dir}/src/,${crate_dir}/tests/" \
       "--exclude-line=${kcov_exclude_line}" \
       "--exclude-region=${kcov_exclude_region}" \
-      "${crate_coverage_dir}" "${test_bin}"
+      "${crate_coverage_dir}" "${test_bin_path}"
   )
 done
 
