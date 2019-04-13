@@ -1,5 +1,6 @@
 use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
 use character_model::{config::CharacterSequenceId, loaded::Character};
+use character_play::CharacterCtsHandleUpdateSystem;
 use collision_play::{
     HitDetectionSystem, HitRepeatTrackersAugmentSystem, HitRepeatTrackersTickerSystem,
 };
@@ -85,6 +86,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[&CharacterHitEffectSystem::type_name()],
         ); // kcov-ignore
 
+        // === Systems to update component sequences handles when sequence ID changes === //
+
         // TODO: autogenerate these
         builder.add(
             ComponentSequencesUpdateSystem::<Character>::new(),
@@ -94,6 +97,16 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
                 &CharacterHitEffectSystem::type_name(),
             ],
         ); // kcov-ignore
+        builder.add(
+            CharacterCtsHandleUpdateSystem::new(),
+            &CharacterCtsHandleUpdateSystem::type_name(),
+            &[
+                &CharacterSequenceUpdateSystem::type_name(),
+                &CharacterHitEffectSystem::type_name(),
+            ],
+        ); // kcov-ignore
+
+        // === Systems to tick sequence logic clocks === //
 
         builder.add(
             FrameFreezeClockAugmentSystem::new(),
@@ -106,9 +119,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[
                 &HitDetectionSystem::type_name(),
                 &FrameFreezeClockAugmentSystem::type_name(),
-                &ComponentSequencesUpdateSystem::<Character>::type_name(),
             ],
         ); // kcov-ignore
+
+        // === Systems to update frame components attached to entities === //
+
         builder.add(
             FrameComponentUpdateSystem::new(),
             &FrameComponentUpdateSystem::type_name(),
