@@ -41,8 +41,37 @@ impl ObjectQueries {
         })
     }
 
+    /// Returns `Handle<Pf::GameObject>` for the specified asset slug.
+    ///
+    /// # Parameters
+    ///
+    /// * `world`: `World` of the running application.
+    /// * `asset_slug`: Object slug whose `Handle<O>` to retrieve.
+    pub fn game_object_handle<'s, Pf>(
+        world: &mut World,
+        asset_slug: &AssetSlug,
+    ) -> Option<Handle<Pf::GameObject>>
+    where
+        Pf: GameObjectPrefab<'s> + Send + Sync + 'static,
+    {
+        let snh = SlugAndHandle::from((&*world, asset_slug.clone()));
+        let game_object_prefab_assets = world.read_resource::<AssetStorage<Prefab<Pf>>>();
+        let game_object_prefab = game_object_prefab_assets
+            .get(&snh.handle)
+            .expect("Expected game object prefab to be loaded.");
+
+        let game_object_prefab = game_object_prefab
+            .entities()
+            .next()
+            .expect("Expected game object main entity to exist.")
+            .data()
+            .expect("Expected game object prefab to contain data.");
+
+        game_object_prefab.game_object_handle()
+    }
+
     // TODO: Implement this for all game object types.
-    /// Returns the `Handle<O::ObjectWrapper>` for the specified asset slug.
+    /// Returns `Handle<O::ObjectWrapper>` for the specified asset slug.
     ///
     /// This function assumes the game object is instantiated in the world.
     ///

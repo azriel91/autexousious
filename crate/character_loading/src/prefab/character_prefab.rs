@@ -173,6 +173,17 @@ impl<'s> GameObjectPrefab<'s> for CharacterPrefab {
         CharacterPrefab::new(object_asset_data)
     }
 
+    fn game_object_handle(&self) -> Option<CharacterHandle> {
+        if let CharacterPrefab::Loaded {
+            character_handle, ..
+        } = self
+        {
+            Some(character_handle.clone())
+        } else {
+            None
+        }
+    }
+
     fn object_prefab(&self) -> &ObjectPrefab<Self::GameObject> {
         match self {
             CharacterPrefab::Data { object_prefab, .. }

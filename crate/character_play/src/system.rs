@@ -1,0 +1,3 @@
+pub use self::character_cts_handle_update_system::CharacterCtsHandleUpdateSystem;
+
+mod character_cts_handle_update_system;

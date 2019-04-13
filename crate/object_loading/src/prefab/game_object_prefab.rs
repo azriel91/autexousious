@@ -1,4 +1,4 @@
-use amethyst::assets::PrefabData;
+use amethyst::assets::{Handle, PrefabData};
 use object_model::{config::ObjectAssetData, loaded::GameObject};
 
 use crate::ObjectPrefab;
@@ -12,6 +12,9 @@ pub trait GameObjectPrefab<'s>: PrefabData<'s> {
     fn new(
         object_asset_data: ObjectAssetData<<Self::GameObject as GameObject>::Definition>,
     ) -> Self;
+
+    /// Returns `Handle<Self::GameObject>` if it has been loaded. `None` otherwise.
+    fn game_object_handle(&self) -> Option<Handle<Self::GameObject>>;
 
     /// Returns a reference to this `GameObjectPrefab`'s inner `ObjectPrefab`.
     fn object_prefab(&self) -> &ObjectPrefab<Self::GameObject>;

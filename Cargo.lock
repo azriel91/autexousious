@@ -842,12 +842,21 @@ version = "0.10.0"
 dependencies = [
  "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
+ "application_test_support 0.10.0",
+ "assets_test 0.10.0",
+ "character_loading 0.10.0",
  "character_model 0.10.0",
+ "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input 0.10.0",
+ "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "named_type 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "named_type_derive 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "object_model 0.10.0",
  "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "sequence_model 0.10.0",
+ "shred 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
