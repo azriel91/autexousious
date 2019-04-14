@@ -11,11 +11,9 @@ use named_type_derive::NamedType;
 use object_loading::FrameComponentStorages;
 use sequence_model::{
     loaded::{ComponentSequence, ComponentSequences, ComponentSequencesHandle},
-    play::{FrameIndexClock, FrameWaitClock},
+    play::{FrameIndexClock, FrameWaitClock, SequenceUpdateEvent},
 };
 use shred_derive::SystemData;
-
-use crate::SequenceUpdateEvent;
 
 /// Updates frame components.
 #[derive(Debug, Default, NamedType, new)]
@@ -177,12 +175,11 @@ mod tests {
     use sequence_model::{
         config::Wait,
         loaded::ComponentSequencesHandle,
-        play::{FrameIndexClock, FrameWaitClock},
+        play::{FrameIndexClock, FrameWaitClock, SequenceUpdateEvent},
     };
     use shape_model::Volume;
 
     use super::FrameComponentUpdateSystem;
-    use crate::SequenceUpdateEvent;
 
     #[test]
     fn updates_all_frame_components_on_sequence_begin_event() -> Result<(), Error> {

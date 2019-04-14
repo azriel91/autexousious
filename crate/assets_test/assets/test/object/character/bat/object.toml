@@ -7,6 +7,10 @@
     sprite = { sheet = 0, index = 5 }
     body = [{ box = { x = 169, y = 5, w = 12, h = 20 } }]
 
+    [sequences.stand.frames.transitions]
+      press_attack = "stand_attack"
+      press_jump = "jump"
+
 [sequences.stand_attack]
   [[sequences.stand_attack.frames]]
     sprite = { sheet = 1, index = 0 }

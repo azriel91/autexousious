@@ -10,11 +10,11 @@ use named_type_derive::NamedType;
 use sequence_model::{
     config::Repeat,
     loaded::{ComponentSequences, ComponentSequencesHandle},
-    play::{FrameFreezeClock, FrameIndexClock, FrameWaitClock, SequenceStatus},
+    play::{
+        FrameFreezeClock, FrameIndexClock, FrameWaitClock, SequenceStatus, SequenceUpdateEvent,
+    },
 };
 use shred_derive::SystemData;
-
-use crate::SequenceUpdateEvent;
 
 /// Updates the frame limit clock and logic clock for entities with sequences.
 #[derive(Debug, Default, NamedType, new)]
@@ -219,11 +219,12 @@ mod tests {
     use sequence_model::{
         config::Repeat,
         loaded::ComponentSequencesHandle,
-        play::{FrameFreezeClock, FrameIndexClock, FrameWaitClock, SequenceStatus},
+        play::{
+            FrameFreezeClock, FrameIndexClock, FrameWaitClock, SequenceStatus, SequenceUpdateEvent,
+        },
     };
 
     use super::{SequenceUpdateSystem, SequenceUpdateSystemData};
-    use crate::SequenceUpdateEvent;
 
     /// Asserts the following:
     ///
