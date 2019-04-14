@@ -25,6 +25,7 @@ use pretty_assertions::assert_eq;
 use sequence_loading::SequenceLoadingBundle;
 use sequence_model::loaded::{
     ControlTransition, ControlTransitionHold, ControlTransitionPress, ControlTransitionRelease,
+    ControlTransitions,
 };
 use sprite_model::config::SpriteRef;
 
@@ -65,7 +66,7 @@ fn character_prefab_load() -> Result<(), Error> {
                 .expect("Expected `Character` to be loaded.");
             let character_control_transitions_sequence_assets =
                 world.read_resource::<AssetStorage<CharacterControlTransitionsSequence>>();
-            let control_transitions_sequences = {
+            let character_control_transitions_sequences = {
                 let handle = character
                     .control_transitions_sequence_handles
                     .get(&CharacterSequenceId::Stand)
@@ -76,66 +77,20 @@ fn character_prefab_load() -> Result<(), Error> {
                     .expect("Expected `CharacterControlTransitionsSequence` to be loaded.")
             };
 
-            let expected_control_transitions_sequences = {
-                CharacterControlTransitionsSequence::new(vec![CharacterControlTransitions::new(
-                    vec![
-                        CharacterControlTransition {
-                            control_transition: ControlTransition::Press(ControlTransitionPress {
-                                action: ControlAction::Attack,
-                                sequence_id: CharacterSequenceId::StandAttack,
-                            }),
-                            control_transition_requirement: None,
-                        },
-                        CharacterControlTransition {
-                            control_transition: ControlTransition::Hold(ControlTransitionHold {
-                                action: ControlAction::Jump,
-                                sequence_id: CharacterSequenceId::Jump,
-                            }),
-                            control_transition_requirement: None,
-                        },
-                        CharacterControlTransition {
-                            control_transition: ControlTransition::Release(
-                                ControlTransitionRelease {
-                                    action: ControlAction::Attack,
-                                    sequence_id: CharacterSequenceId::Walk,
-                                },
-                            ),
-                            control_transition_requirement: Some(ControlTransitionRequirement {
-                                charge: ChargePoints::new(90),
-                                ..Default::default()
-                            }),
-                        },
-                        CharacterControlTransition {
-                            control_transition: ControlTransition::Release(
-                                ControlTransitionRelease {
-                                    action: ControlAction::Attack,
-                                    sequence_id: CharacterSequenceId::Run,
-                                },
-                            ),
-                            control_transition_requirement: Some(ControlTransitionRequirement {
-                                sp: SkillPoints::new(50),
-                                ..Default::default()
-                            }),
-                        },
-                        CharacterControlTransition {
-                            control_transition: ControlTransition::Release(
-                                ControlTransitionRelease {
-                                    action: ControlAction::Attack,
-                                    sequence_id: CharacterSequenceId::RunStop,
-                                },
-                            ),
-                            control_transition_requirement: Some(ControlTransitionRequirement {
-                                hp: HealthPoints::new(30),
-                                ..Default::default()
-                            }),
-                        },
-                    ],
-                )])
-            };
+            // Assert the values for each handle.
+            let character_control_transitions_assets =
+                world.read_resource::<AssetStorage<CharacterControlTransitions>>();
 
+            let expected_character_control_transitions = expected_control_transitions();
+            let character_control_transitions_handle = character_control_transitions_sequences
+                .first()
+                .expect("Expected `CharacterControlTransitionsHandle` to exist.");
+            let character_control_transitions = character_control_transitions_assets
+                .get(character_control_transitions_handle)
+                .expect("Expected `CharacterControlTransitions` to be loaded.");
             assert_eq!(
-                &expected_control_transitions_sequences,
-                control_transitions_sequences
+                &expected_character_control_transitions,
+                character_control_transitions
             );
         })
         .run()
@@ -233,3 +188,52 @@ type TestSystemData<'s> = (
     Read<'s, AssetStorage<CharacterDefinition>>,
     PrefabLoader<'s, CharacterPrefab>,
 );
+
+fn expected_control_transitions() -> CharacterControlTransitions {
+    CharacterControlTransitions::new(ControlTransitions::new(vec![
+        CharacterControlTransition {
+            control_transition: ControlTransition::Press(ControlTransitionPress {
+                action: ControlAction::Attack,
+                sequence_id: CharacterSequenceId::StandAttack,
+            }),
+            control_transition_requirement: None,
+        },
+        CharacterControlTransition {
+            control_transition: ControlTransition::Hold(ControlTransitionHold {
+                action: ControlAction::Jump,
+                sequence_id: CharacterSequenceId::Jump,
+            }),
+            control_transition_requirement: None,
+        },
+        CharacterControlTransition {
+            control_transition: ControlTransition::Release(ControlTransitionRelease {
+                action: ControlAction::Attack,
+                sequence_id: CharacterSequenceId::Walk,
+            }),
+            control_transition_requirement: Some(ControlTransitionRequirement {
+                charge: ChargePoints::new(90),
+                ..Default::default()
+            }),
+        },
+        CharacterControlTransition {
+            control_transition: ControlTransition::Release(ControlTransitionRelease {
+                action: ControlAction::Attack,
+                sequence_id: CharacterSequenceId::Run,
+            }),
+            control_transition_requirement: Some(ControlTransitionRequirement {
+                sp: SkillPoints::new(50),
+                ..Default::default()
+            }),
+        },
+        CharacterControlTransition {
+            control_transition: ControlTransition::Release(ControlTransitionRelease {
+                action: ControlAction::Attack,
+                sequence_id: CharacterSequenceId::RunStop,
+            }),
+            control_transition_requirement: Some(ControlTransitionRequirement {
+                hp: HealthPoints::new(30),
+                ..Default::default()
+            }),
+        },
+    ]))
+}

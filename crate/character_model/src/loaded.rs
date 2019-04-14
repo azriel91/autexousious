@@ -6,7 +6,9 @@
 pub use self::{
     character::{Character, CharacterHandle, CharacterObjectWrapper},
     character_control_transition::CharacterControlTransition,
-    character_control_transitions::CharacterControlTransitions,
+    character_control_transitions::{
+        CharacterControlTransitions, CharacterControlTransitionsHandle,
+    },
     character_control_transitions_sequence::{
         CharacterControlTransitionsSequence, CharacterControlTransitionsSequenceHandle,
     },

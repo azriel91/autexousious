@@ -7,7 +7,10 @@ use amethyst::{
 };
 use character_model::{
     config::CharacterDefinition,
-    loaded::{Character, CharacterControlTransitionsSequence, CharacterHandle},
+    loaded::{
+        Character, CharacterControlTransitions, CharacterControlTransitionsSequence,
+        CharacterHandle,
+    },
 };
 use object_loading::{GameObjectPrefab, ObjectPrefab};
 use object_model::config::ObjectAssetData;
@@ -59,6 +62,7 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
         <ObjectPrefab<Character> as PrefabData<'s>>::SystemData,
         ReadExpect<'s, Loader>,
         Read<'s, AssetStorage<CharacterDefinition>>,
+        Read<'s, AssetStorage<CharacterControlTransitions>>,
         Read<'s, AssetStorage<CharacterControlTransitionsSequence>>,
         Read<'s, AssetStorage<Character>>,
         WriteStorage<'s, CharacterHandle>,
@@ -73,7 +77,8 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
             object_prefab_system_data,
             _loader,
             _character_definition_assets,
-            _control_transitions_sequence_assets,
+            _character_control_transitions_assets,
+            _character_control_transitions_sequence_assets,
             _character_assets,
             ref mut character_handles,
             ref mut character_component_storages,
@@ -106,6 +111,7 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
             object_prefab_system_data,
             loader,
             character_definition_assets,
+            character_control_transitions_assets,
             character_control_transitions_sequence_assets,
             character_assets,
             _character_handles,
@@ -124,6 +130,7 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
 
                     let character_loader_params = CharacterLoaderParams {
                         loader: &loader,
+                        character_control_transitions_assets: &character_control_transitions_assets,
                         character_control_transitions_sequence_assets:
                             &character_control_transitions_sequence_assets,
                     };

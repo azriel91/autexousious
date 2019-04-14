@@ -1,11 +1,14 @@
 use std::collections::HashMap;
 
-use amethyst::{assets::Handle, Error};
+use amethyst::{
+    assets::{AssetStorage, Handle, Loader},
+    Error,
+};
 use character_model::{
     config::{self, CharacterDefinition, CharacterSequence, ControlTransitionRequirement},
     loaded::{
         self, Character, CharacterControlTransition, CharacterControlTransitionsSequence,
-        CharacterObjectWrapper,
+        CharacterControlTransitionsSequenceHandle, CharacterObjectWrapper,
     },
 };
 use game_input_model::ControlAction;
@@ -14,6 +17,7 @@ use sequence_model::{
     config::ControlTransitionSingle,
     loaded::{
         ControlTransition, ControlTransitionHold, ControlTransitionPress, ControlTransitionRelease,
+        ControlTransitions,
     },
 };
 
@@ -32,10 +36,7 @@ impl CharacterLoader {
     /// * `character_definition`: Character definition asset.
     /// * `object_wrapper_handle`: Handle to the loaded `Object` for this character.
     pub fn load(
-        CharacterLoaderParams {
-            loader,
-            character_control_transitions_sequence_assets,
-        }: CharacterLoaderParams,
+        character_loader_params: CharacterLoaderParams,
         character_definition: &CharacterDefinition,
         object_wrapper_handle: Handle<CharacterObjectWrapper>,
     ) -> Result<Character, Error> {
@@ -44,16 +45,10 @@ impl CharacterLoader {
             .sequences
             .iter()
             .map(|(sequence_id, sequence)| {
-                (*sequence_id, Self::control_transitions_sequence(sequence))
-            })
-            .map(|(sequence_id, character_control_transitions_sequence)| {
-                let handle = loader.load_from_data(
-                    character_control_transitions_sequence,
-                    (),
-                    character_control_transitions_sequence_assets,
-                );
-
-                (sequence_id, handle)
+                (
+                    *sequence_id,
+                    Self::control_transitions_sequence_handle(&character_loader_params, sequence),
+                )
             })
             .collect::<HashMap<_, _>>();
 
@@ -64,23 +59,43 @@ impl CharacterLoader {
     }
 
     /// Extracts a `CharacterControlTransitionsSequence` from a `CharacterSequence`.
-    fn control_transitions_sequence(
+    fn control_transitions_sequence_handle(
+        CharacterLoaderParams {
+            loader,
+            character_control_transitions_assets,
+            character_control_transitions_sequence_assets,
+        }: &CharacterLoaderParams,
         sequence: &CharacterSequence,
-    ) -> CharacterControlTransitionsSequence {
+    ) -> CharacterControlTransitionsSequenceHandle {
         let control_transitions_sequence = sequence
             .object_sequence()
             .frames
             .iter()
-            .map(|frame| Self::config_to_loaded_transitions(&frame.transitions))
-            .collect::<Vec<loaded::CharacterControlTransitions>>();
+            .map(|frame| {
+                Self::config_to_loaded_transitions_handle(
+                    loader,
+                    character_control_transitions_assets,
+                    &frame.transitions,
+                )
+            })
+            .collect::<Vec<loaded::CharacterControlTransitionsHandle>>();
 
-        CharacterControlTransitionsSequence::new(control_transitions_sequence)
+        let character_control_transitions_sequence =
+            CharacterControlTransitionsSequence::new(control_transitions_sequence);
+
+        loader.load_from_data(
+            character_control_transitions_sequence,
+            (),
+            character_control_transitions_sequence_assets,
+        )
     }
 
     /// Maps `config::CharacterControlTransitions` to `loaded::CharacterControlTransitions`
-    fn config_to_loaded_transitions(
+    fn config_to_loaded_transitions_handle(
+        loader: &Loader,
+        character_control_transitions_assets: &AssetStorage<loaded::CharacterControlTransitions>,
         config_transitions: &config::CharacterControlTransitions,
-    ) -> loaded::CharacterControlTransitions {
+    ) -> loaded::CharacterControlTransitionsHandle {
         let mut loaded_transitions = Vec::new();
 
         macro_rules! push_transitions {
@@ -139,7 +154,14 @@ impl CharacterLoader {
         push_transitions!(release_attack, Release, ControlTransitionRelease, Attack);
         push_transitions!(release_special, Release, ControlTransitionRelease, Special);
 
-        loaded::CharacterControlTransitions::new(loaded_transitions)
+        let character_control_transitions =
+            loaded::CharacterControlTransitions::new(ControlTransitions::new(loaded_transitions));
+
+        loader.load_from_data(
+            character_control_transitions,
+            (),
+            character_control_transitions_assets,
+        )
     }
 
     #[inline]

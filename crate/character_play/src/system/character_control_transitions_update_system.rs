@@ -5,7 +5,7 @@ use amethyst::{
     shrev::{EventChannel, ReaderId},
 };
 use character_model::loaded::{
-    CharacterControlTransitions, CharacterControlTransitionsSequence,
+    CharacterControlTransitionsHandle, CharacterControlTransitionsSequence,
     CharacterControlTransitionsSequenceHandle,
 };
 use derivative::Derivative;
@@ -38,9 +38,9 @@ pub struct CharacterControlTransitionsUpdateSystemData<'s> {
     /// `FrameIndexClock` component storage.
     #[derivative(Debug = "ignore")]
     pub frame_index_clocks: ReadStorage<'s, FrameIndexClock>,
-    /// `CharacterControlTransitions` component storage.
+    /// `CharacterControlTransitionsHandle` component storage.
     #[derivative(Debug = "ignore")]
-    pub character_control_transitionses: WriteStorage<'s, CharacterControlTransitions>,
+    pub character_control_transitions_handles: WriteStorage<'s, CharacterControlTransitionsHandle>,
 }
 
 impl<'s> System<'s> for CharacterControlTransitionsUpdateSystem {
@@ -53,7 +53,7 @@ impl<'s> System<'s> for CharacterControlTransitionsUpdateSystem {
             character_cts_handles,
             character_cts_assets,
             frame_index_clocks,
-            mut character_control_transitionses,
+            mut character_control_transitions_handles,
         }: Self::SystemData,
     ) {
         sequence_update_ec
@@ -84,12 +84,11 @@ impl<'s> System<'s> for CharacterControlTransitionsUpdateSystem {
                     .get(character_cts_handle)
                     .expect("Expected `CharacterControlTransitionsSequence` to be loaded.");
 
-                let character_control_transitions =
+                let character_control_transitions_handle =
                     &character_control_transitions_sequence[frame_index];
 
-                // TODO: Store character_control_transitions as an asset.
-                character_control_transitionses
-                    .insert(*entity, character_control_transitions.clone())
+                character_control_transitions_handles
+                    .insert(*entity, character_control_transitions_handle.clone())
                     .expect("Failed to insert `CharacterControlTransitions` component.");
             });
     }
@@ -106,7 +105,8 @@ impl<'s> System<'s> for CharacterControlTransitionsUpdateSystem {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{Entities, Join, ReadStorage, World, WriteStorage},
+        assets::AssetStorage,
+        ecs::{Entities, Join, Read, ReadStorage, World, WriteStorage},
         shrev::EventChannel,
         Error,
     };
@@ -116,12 +116,12 @@ mod tests {
         config::CharacterSequenceId,
         loaded::{
             CharacterControlTransition, CharacterControlTransitions,
-            CharacterControlTransitionsSequenceHandle,
+            CharacterControlTransitionsHandle, CharacterControlTransitionsSequenceHandle,
         },
     };
     use game_input_model::ControlAction;
     use sequence_model::{
-        loaded::{ControlTransition, ControlTransitionPress},
+        loaded::{ControlTransition, ControlTransitionPress, ControlTransitions},
         play::{FrameIndexClock, SequenceUpdateEvent},
     };
 
@@ -189,7 +189,7 @@ mod tests {
         let (
             _entities,
             mut frame_index_clocks,
-            _character_control_transitionses,
+            _character_control_transitions_handles,
             mut character_cts_handles,
             ..
         ) = world.system_data::<TestSystemData>();
@@ -208,14 +208,23 @@ mod tests {
         world: &mut World,
         expected_character_control_transitions: CharacterControlTransitions,
     ) {
-        let (character_control_transitionses, sequence_statuses) = world.system_data::<(
-            WriteStorage<CharacterControlTransitions>,
+        let (
+            character_control_transitions_assets,
+            character_control_transitions_handles,
+            sequence_statuses,
+        ) = world.system_data::<(
+            Read<AssetStorage<CharacterControlTransitions>>,
+            ReadStorage<CharacterControlTransitionsHandle>,
             ReadStorage<CharacterSequenceId>,
         )>();
 
-        (&character_control_transitionses, &sequence_statuses)
+        (&character_control_transitions_handles, &sequence_statuses)
             .join()
-            .for_each(|(character_control_transitions, _sequence_status)| {
+            .for_each(|(character_control_transitions_handle, _sequence_status)| {
+                let character_control_transitions = character_control_transitions_assets
+                    .get(character_control_transitions_handle)
+                    .expect("Expected `CharacterControlTransitions` to be loaded.");
+
                 assert_eq!(
                     &expected_character_control_transitions,
                     character_control_transitions
@@ -224,7 +233,7 @@ mod tests {
     }
 
     fn transitions() -> CharacterControlTransitions {
-        CharacterControlTransitions::new(vec![
+        CharacterControlTransitions::new(ControlTransitions::new(vec![
             CharacterControlTransition::new(
                 ControlTransition::Press(ControlTransitionPress::new(
                     ControlAction::Attack,
@@ -239,7 +248,7 @@ mod tests {
                 )),
                 None,
             ),
-        ])
+        ]))
     }
 
     fn send_events(world: &mut World, events: Vec<SequenceUpdateEvent>) {
@@ -248,13 +257,17 @@ mod tests {
     }
 
     fn sequence_begin_events(world: &mut World) -> Vec<SequenceUpdateEvent> {
-        let (entities, frame_index_clocks, character_control_transitionses, character_cts_handles) =
-            world.system_data::<TestSystemData>();
+        let (
+            entities,
+            frame_index_clocks,
+            character_control_transitions_handles,
+            character_cts_handles,
+        ) = world.system_data::<TestSystemData>();
 
         (
             &entities,
             &frame_index_clocks,
-            &character_control_transitionses,
+            &character_control_transitions_handles,
             &character_cts_handles,
         )
             .join()
@@ -263,13 +276,17 @@ mod tests {
     }
 
     fn frame_begin_events(world: &mut World) -> Vec<SequenceUpdateEvent> {
-        let (entities, frame_index_clocks, character_control_transitionses, character_cts_handles) =
-            world.system_data::<TestSystemData>();
+        let (
+            entities,
+            frame_index_clocks,
+            character_control_transitions_handles,
+            character_cts_handles,
+        ) = world.system_data::<TestSystemData>();
 
         (
             &entities,
             &frame_index_clocks,
-            &character_control_transitionses,
+            &character_control_transitions_handles,
             &character_cts_handles,
         )
             .join()
@@ -280,7 +297,7 @@ mod tests {
     type TestSystemData<'s> = (
         Entities<'s>,
         WriteStorage<'s, FrameIndexClock>,
-        WriteStorage<'s, CharacterControlTransitions>,
+        WriteStorage<'s, CharacterControlTransitionsHandle>,
         WriteStorage<'s, CharacterControlTransitionsSequenceHandle>,
     );
 }

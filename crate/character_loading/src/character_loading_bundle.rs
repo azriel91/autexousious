@@ -6,7 +6,7 @@ use amethyst::{
 };
 use character_model::{
     config::CharacterDefinition,
-    loaded::{Character, CharacterControlTransitionsSequence},
+    loaded::{Character, CharacterControlTransitions, CharacterControlTransitionsSequence},
 };
 use derive_new::new;
 use object_loading::ObjectDefinitionToWrapperProcessor;
@@ -40,9 +40,14 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterLoadingBundle {
             &["character_definition_processor", "sprite_sheet_processor"],
         );
         builder.add(
+            Processor::<CharacterControlTransitions>::new(),
+            "character_control_transitions_processor",
+            &[&ObjectDefinitionToWrapperProcessor::<Character>::type_name()],
+        );
+        builder.add(
             Processor::<CharacterControlTransitionsSequence>::new(),
             "character_control_transitions_sequence_processor",
-            &[&ObjectDefinitionToWrapperProcessor::<Character>::type_name()],
+            &["character_control_transitions_processor"],
         );
         builder.add(
             Processor::<Character>::new(),
