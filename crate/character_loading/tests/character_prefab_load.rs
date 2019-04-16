@@ -199,13 +199,6 @@ fn expected_control_transitions() -> CharacterControlTransitions {
             control_transition_requirement: None,
         },
         CharacterControlTransition {
-            control_transition: ControlTransition::Hold(ControlTransitionHold {
-                action: ControlAction::Jump,
-                sequence_id: CharacterSequenceId::Jump,
-            }),
-            control_transition_requirement: None,
-        },
-        CharacterControlTransition {
             control_transition: ControlTransition::Release(ControlTransitionRelease {
                 action: ControlAction::Attack,
                 sequence_id: CharacterSequenceId::Walk,
@@ -234,6 +227,13 @@ fn expected_control_transitions() -> CharacterControlTransitions {
                 hp: HealthPoints::new(30),
                 ..Default::default()
             }),
+        },
+        CharacterControlTransition {
+            control_transition: ControlTransition::Hold(ControlTransitionHold {
+                action: ControlAction::Jump,
+                sequence_id: CharacterSequenceId::Jump,
+            }),
+            control_transition_requirement: None,
         },
     ]))
 }

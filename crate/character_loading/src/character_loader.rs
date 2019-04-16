@@ -145,14 +145,16 @@ impl CharacterLoader {
         push_transitions!(press_jump, Press, ControlTransitionPress, Jump);
         push_transitions!(press_attack, Press, ControlTransitionPress, Attack);
         push_transitions!(press_special, Press, ControlTransitionPress, Special);
-        push_transitions!(hold_defend, Hold, ControlTransitionHold, Defend);
-        push_transitions!(hold_jump, Hold, ControlTransitionHold, Jump);
-        push_transitions!(hold_attack, Hold, ControlTransitionHold, Attack);
-        push_transitions!(hold_special, Hold, ControlTransitionHold, Special);
         push_transitions!(release_defend, Release, ControlTransitionRelease, Defend);
         push_transitions!(release_jump, Release, ControlTransitionRelease, Jump);
         push_transitions!(release_attack, Release, ControlTransitionRelease, Attack);
         push_transitions!(release_special, Release, ControlTransitionRelease, Special);
+        // It is a requirement that we push the `Hold` transitions last, to ensure the `Press` and
+        // `Release` transitions get higher priority.
+        push_transitions!(hold_defend, Hold, ControlTransitionHold, Defend);
+        push_transitions!(hold_jump, Hold, ControlTransitionHold, Jump);
+        push_transitions!(hold_attack, Hold, ControlTransitionHold, Attack);
+        push_transitions!(hold_special, Hold, ControlTransitionHold, Special);
 
         let character_control_transitions =
             loaded::CharacterControlTransitions::new(ControlTransitions::new(loaded_transitions));
