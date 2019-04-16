@@ -12,10 +12,10 @@ use derivative::Derivative;
 use derive_new::new;
 use named_type::NamedType;
 use named_type_derive::NamedType;
-use sequence_model::play::{FrameIndexClock, SequenceUpdateEvent};
+use sequence_model::play::SequenceUpdateEvent;
 use shred_derive::SystemData;
 
-/// Updates frame components.
+/// Updates the `CharacterControlTransitionsHandle` when sequence ID changes.
 #[derive(Debug, Default, NamedType, new)]
 pub struct CharacterControlTransitionsUpdateSystem {
     /// Reader ID for the `SequenceUpdateEvent` event channel.
@@ -35,9 +35,6 @@ pub struct CharacterControlTransitionsUpdateSystemData<'s> {
     /// `CharacterControlTransitionsSequence` assets.
     #[derivative(Debug = "ignore")]
     pub character_cts_assets: Read<'s, AssetStorage<CharacterControlTransitionsSequence>>,
-    /// `FrameIndexClock` component storage.
-    #[derivative(Debug = "ignore")]
-    pub frame_index_clocks: ReadStorage<'s, FrameIndexClock>,
     /// `CharacterControlTransitionsHandle` component storage.
     #[derivative(Debug = "ignore")]
     pub character_control_transitions_handles: WriteStorage<'s, CharacterControlTransitionsHandle>,
@@ -52,7 +49,6 @@ impl<'s> System<'s> for CharacterControlTransitionsUpdateSystem {
             sequence_update_ec,
             character_cts_handles,
             character_cts_assets,
-            frame_index_clocks,
             mut character_control_transitions_handles,
         }: Self::SystemData,
     ) {
@@ -63,33 +59,22 @@ impl<'s> System<'s> for CharacterControlTransitionsUpdateSystem {
                 ),
             )
             .for_each(|ev| {
-                let (entity, frame_index) = match ev {
-                    SequenceUpdateEvent::SequenceBegin { entity }
-                    | SequenceUpdateEvent::FrameBegin { entity } => {
-                        let frame_index_clock = frame_index_clocks
-                            .get(*entity)
-                            .expect("Expected entity to have a `FrameIndexClock` component.");
-                        let frame_index = (*frame_index_clock).value;
+                let entity = ev.entity();
+                let frame_index = ev.frame_index();
 
-                        (entity, frame_index)
-                    }
-                    SequenceUpdateEvent::SequenceEnd { entity } => (entity, 0),
-                };
+                // `SequenceUpdateEvent`s are also sent for non-object entities such as map layers
+                if let Some(character_cts_handle) = character_cts_handles.get(entity) {
+                    let character_control_transitions_sequence = character_cts_assets
+                        .get(character_cts_handle)
+                        .expect("Expected `CharacterControlTransitionsSequence` to be loaded.");
 
-                let character_cts_handle = character_cts_handles.get(*entity).expect(
-                    "Expected entity to have a `CharacterControlTransitionsSequenceHandle` \
-                     component.",
-                );
-                let character_control_transitions_sequence = character_cts_assets
-                    .get(character_cts_handle)
-                    .expect("Expected `CharacterControlTransitionsSequence` to be loaded.");
+                    let character_control_transitions_handle =
+                        &character_control_transitions_sequence[frame_index];
 
-                let character_control_transitions_handle =
-                    &character_control_transitions_sequence[frame_index];
-
-                character_control_transitions_handles
-                    .insert(*entity, character_control_transitions_handle.clone())
-                    .expect("Failed to insert `CharacterControlTransitions` component.");
+                    character_control_transitions_handles
+                        .insert(entity, character_control_transitions_handle.clone())
+                        .expect("Failed to insert `CharacterControlTransitions` component.");
+                }
             });
     }
 
@@ -128,8 +113,8 @@ mod tests {
     use super::CharacterControlTransitionsUpdateSystem;
 
     #[test]
-    fn updates_all_frame_components_on_sequence_begin_event() -> Result<(), Error> {
-        let test_name = "updates_all_frame_components_on_sequence_begin_event";
+    fn updates_transitions_on_sequence_begin_event() -> Result<(), Error> {
+        let test_name = "updates_transitions_on_sequence_begin_event";
         AutexousiousApplication::game_base(test_name, false)
             .with_system(CharacterControlTransitionsUpdateSystem::new(), "", &[])
             .with_setup(|world| {
@@ -140,8 +125,8 @@ mod tests {
                 );
                 initial_values(
                     world,
-                    // third frame in the sequence, though it doesn't make sense for sequence begin
-                    2,
+                    // first frame in the sequence
+                    0,
                     5,
                     character_cts_handle,
                 )
@@ -155,8 +140,8 @@ mod tests {
     }
 
     #[test]
-    fn updates_all_frame_components_on_frame_begin_event() -> Result<(), Error> {
-        let test_name = "updates_all_frame_components_on_frame_begin_event";
+    fn updates_transitions_on_frame_begin_event() -> Result<(), Error> {
+        let test_name = "updates_transitions_on_frame_begin_event";
         AutexousiousApplication::game_base(test_name, false)
             .with_system(CharacterControlTransitionsUpdateSystem::new(), "", &[])
             .with_setup(|world| {
@@ -290,7 +275,13 @@ mod tests {
             &character_cts_handles,
         )
             .join()
-            .map(|(entity, _, _, _)| SequenceUpdateEvent::FrameBegin { entity })
+            .map(|(entity, frame_index_clock, _, _)| {
+                let frame_index = (*frame_index_clock).value;
+                SequenceUpdateEvent::FrameBegin {
+                    entity,
+                    frame_index,
+                }
+            })
             .collect::<Vec<_>>()
     }
 

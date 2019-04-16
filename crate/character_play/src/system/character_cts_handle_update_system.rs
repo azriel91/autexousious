@@ -1,8 +1,8 @@
 use amethyst::{
     assets::AssetStorage,
     ecs::{
-        storage::ComponentEvent, BitSet, Join, Read, ReadStorage, ReaderId, System, SystemData,
-        WriteStorage,
+        storage::ComponentEvent, BitSet, Entities, Join, Read, ReadStorage, ReaderId, System,
+        SystemData, WriteStorage,
     },
     shred::Resources,
 };
@@ -31,6 +31,9 @@ pub struct CharacterCtsHandleUpdateSystem {
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct CharacterCtsHandleUpdateSystemData<'s> {
+    /// `Entities` resource.
+    #[derivative(Debug = "ignore")]
+    pub entities: Entities<'s>,
     /// `SequenceStatus` component storage.
     #[derivative(Debug = "ignore")]
     pub sequence_ids: ReadStorage<'s, CharacterSequenceId>,
@@ -51,6 +54,7 @@ impl<'s> System<'s> for CharacterCtsHandleUpdateSystem {
     fn run(
         &mut self,
         CharacterCtsHandleUpdateSystemData {
+            entities,
             sequence_ids,
             character_handles,
             character_assets,
@@ -74,47 +78,51 @@ impl<'s> System<'s> for CharacterCtsHandleUpdateSystem {
             });
 
         (
+            &entities,
             &sequence_ids,
             &character_handles,
-            &mut character_cts_handles,
             &self.sequence_id_updates,
         )
             .join()
-            .for_each(
-                |(sequence_id, character_handle, character_cts_handle, _)| {
-                    let character = character_assets
-                        .get(&character_handle)
-                        .expect("Expected `ObjectWrapper` to be loaded.");
-                    let character_cts_handles =
-                        &character.control_transitions_sequence_handles;
+            .for_each(|(entity, sequence_id, character_handle, _)| {
+                let character = character_assets
+                    .get(&character_handle)
+                    .expect("Expected `ObjectWrapper` to be loaded.");
+                let control_transitions_sequence_handles =
+                    &character.control_transitions_sequence_handles;
 
-                    *character_cts_handle = character_cts_handles
-                        .get(&sequence_id)
-                        .unwrap_or_else(|| {
-                            let message = format!(
-                                "Expected `CharacterControlTransitionsSequenceHandle` to exist for\
-                                 sequence ID: `{:?}`. Falling back to default sequence.",
-                                sequence_id
-                            );
-                            error!("{}", message);
+                let character_cts_handle = control_transitions_sequence_handles
+                    .get(&sequence_id)
+                    .unwrap_or_else(|| {
+                        let message = format!(
+                            "Expected `CharacterControlTransitionsSequenceHandle` to exist for \
+                             sequence ID: `{:?}`. Falling back to default sequence.",
+                            sequence_id
+                        );
+                        error!("{}", message);
 
-                            let default_sequence_id = CharacterSequenceId::default();
+                        let default_sequence_id = CharacterSequenceId::default();
 
-                            character_cts_handles
-                                .get(&default_sequence_id)
-                                .unwrap_or_else(|| {
-                                    let message = format!(
-                                        "Failed to get `CharacterControlTransitionsSequenceHandle` for \
-                                         sequence ID: `{:?}`.",
-                                        default_sequence_id
-                                    );
-                                    error!("{}", message);
-                                    panic!(message);
-                                })
-                        })
-                        .clone()
-                },
-            );
+                        control_transitions_sequence_handles
+                            .get(&default_sequence_id)
+                            .unwrap_or_else(|| {
+                                let message = format!(
+                                    "Failed to get `CharacterControlTransitionsSequenceHandle` \
+                                     for sequence ID: `{:?}`.",
+                                    default_sequence_id
+                                );
+                                error!("{}", message);
+                                panic!(message);
+                            })
+                    })
+                    .clone();
+
+                character_cts_handles
+                    .insert(entity, character_cts_handle)
+                    .expect(
+                        "Failed to insert `CharacterControlTransitionsSequenceHandle` component.",
+                    );
+            });
     }
 
     fn setup(&mut self, res: &mut Resources) {

@@ -11,7 +11,7 @@ use named_type_derive::NamedType;
 use object_loading::FrameComponentStorages;
 use sequence_model::{
     loaded::{ComponentSequence, ComponentSequences, ComponentSequencesHandle},
-    play::{FrameIndexClock, FrameWaitClock, SequenceUpdateEvent},
+    play::{FrameWaitClock, SequenceUpdateEvent},
 };
 use shred_derive::SystemData;
 
@@ -35,9 +35,6 @@ pub struct FrameComponentUpdateSystemData<'s> {
     /// `ComponentSequences` assets.
     #[derivative(Debug = "ignore")]
     pub component_sequences_assets: Read<'s, AssetStorage<ComponentSequences>>,
-    /// `FrameIndexClock` component storage.
-    #[derivative(Debug = "ignore")]
-    pub frame_index_clocks: ReadStorage<'s, FrameIndexClock>,
     /// `FrameWaitClock` component storage.
     #[derivative(Debug = "ignore")]
     pub frame_wait_clocks: WriteStorage<'s, FrameWaitClock>,
@@ -106,7 +103,6 @@ impl<'s> System<'s> for FrameComponentUpdateSystem {
             sequence_update_ec,
             component_sequences_handles,
             component_sequences_assets,
-            frame_index_clocks,
             mut frame_wait_clocks,
             mut frame_component_storages,
         }: Self::SystemData,
@@ -118,21 +114,11 @@ impl<'s> System<'s> for FrameComponentUpdateSystem {
                     .expect("Expected reader ID to exist for FrameComponentUpdateSystem."),
             )
             .for_each(|ev| {
-                let (entity, frame_index) = match ev {
-                    SequenceUpdateEvent::SequenceBegin { entity }
-                    | SequenceUpdateEvent::FrameBegin { entity } => {
-                        let frame_index_clock = frame_index_clocks
-                            .get(*entity)
-                            .expect("Expected entity to have a `FrameIndexClock` component.");
-                        let frame_index = (*frame_index_clock).value;
-
-                        (entity, frame_index)
-                    }
-                    SequenceUpdateEvent::SequenceEnd { entity } => (entity, 0),
-                };
+                let entity = ev.entity();
+                let frame_index = ev.frame_index();
 
                 let component_sequences_handle = component_sequences_handles
-                    .get(*entity)
+                    .get(entity)
                     .expect("Expected entity to have a `ComponentSequencesHandle` component.");
                 let component_sequences = component_sequences_assets
                     .get(component_sequences_handle)
@@ -142,7 +128,7 @@ impl<'s> System<'s> for FrameComponentUpdateSystem {
                     &mut frame_wait_clocks,
                     &mut frame_component_storages,
                     component_sequences,
-                    *entity,
+                    entity,
                     frame_index,
                 );
             });
@@ -194,8 +180,7 @@ mod tests {
                 );
                 initial_values(
                     world,
-                    // third frame in the sequence, though it doesn't make sense for sequence begin
-                    2,
+                    0, // first frame in sequence
                     5,
                     0,
                     5,
@@ -206,9 +191,9 @@ mod tests {
                 let events = sequence_begin_events(world);
                 send_events(world, events);
             })
-            .with_assertion(|world| expect_values(world, 0, 2))
             .with_assertion(|world| {
-                expect_component_values(world, Wait::new(2), 2, body(), interactions())
+                // See bat/object.toml for values.
+                expect_component_values(world, Wait::new(1), 0, body_0(), interactions_0())
             })
             .run()
     }
@@ -237,9 +222,9 @@ mod tests {
                 let events = frame_begin_events(world);
                 send_events(world, events);
             })
-            .with_assertion(|world| expect_values(world, 0, 2))
             .with_assertion(|world| {
-                expect_component_values(world, Wait::new(2), 2, body(), interactions())
+                // See bat/object.toml for values.
+                expect_component_values(world, Wait::new(2), 2, body_2(), interactions_2())
             })
             .run()
     }
@@ -277,24 +262,6 @@ mod tests {
                     *component_sequences_handle = component_sequences_handle_initial.clone();
                 },
             );
-    }
-
-    fn expect_values(
-        world: &mut World,
-        frame_wait_clock_value: usize,
-        frame_wait_clock_limit: usize,
-    ) {
-        let (frame_wait_clocks, sequence_statuses) = world.system_data::<(
-            WriteStorage<FrameWaitClock>,
-            ReadStorage<CharacterSequenceId>,
-        )>();
-
-        (&frame_wait_clocks, &sequence_statuses).join().for_each(
-            |(frame_wait_clock, _sequence_status)| {
-                assert_eq!(frame_wait_clock_value, (*frame_wait_clock).value);
-                assert_eq!(frame_wait_clock_limit, (*frame_wait_clock).limit);
-            },
-        );
     }
 
     fn expect_component_values(
@@ -341,7 +308,38 @@ mod tests {
             );
     }
 
-    fn body() -> Body {
+    fn body_0() -> Body {
+        Body::new(vec![Volume::Box {
+            x: 16,
+            y: 11,
+            z: 0,
+            w: 15,
+            h: 12,
+            d: 26,
+        }])
+    }
+
+    fn interactions_0() -> Interactions {
+        Interactions::new(vec![Interaction {
+            kind: InteractionKind::Hit(Hit {
+                repeat_delay: HitRepeatDelay::default(),
+                hit_limit: HitLimit::default(),
+                hp_damage: 20,
+                sp_damage: 0,
+            }),
+            bounds: vec![Volume::Box {
+                x: 16,
+                y: 11,
+                z: 0,
+                w: 15,
+                h: 12,
+                d: 26,
+            }],
+            multiple: false,
+        }])
+    }
+
+    fn body_2() -> Body {
         Body::new(vec![Volume::Box {
             x: 81,
             y: 0,
@@ -352,7 +350,7 @@ mod tests {
         }])
     }
 
-    fn interactions() -> Interactions {
+    fn interactions_2() -> Interactions {
         Interactions::new(vec![Interaction {
             kind: InteractionKind::Hit(Hit {
                 repeat_delay: HitRepeatDelay::default(),
@@ -413,7 +411,13 @@ mod tests {
             &component_sequences_handles,
         )
             .join()
-            .map(|(entity, _, _, _)| SequenceUpdateEvent::FrameBegin { entity })
+            .map(|(entity, frame_index_clock, _, _)| {
+                let frame_index = (*frame_index_clock).value;
+                SequenceUpdateEvent::FrameBegin {
+                    entity,
+                    frame_index,
+                }
+            })
             .collect::<Vec<_>>()
     }
 

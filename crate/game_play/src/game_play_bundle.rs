@@ -1,6 +1,9 @@
 use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
 use character_model::{config::CharacterSequenceId, loaded::Character};
-use character_play::CharacterCtsHandleUpdateSystem;
+use character_play::{
+    CharacterControlTransitionsTransitionSystem, CharacterControlTransitionsUpdateSystem,
+    CharacterCtsHandleUpdateSystem,
+};
 use collision_play::{
     HitDetectionSystem, HitRepeatTrackersAugmentSystem, HitRepeatTrackersTickerSystem,
 };
@@ -24,6 +27,103 @@ pub struct GamePlayBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
+        // === Component augmentation === //
+
+        builder.add(
+            ComponentSequencesUpdateSystem::<Character>::new(),
+            &ComponentSequencesUpdateSystem::<Character>::type_name(),
+            &[],
+        );
+        // Updates frame limit and ticks the sequence logic clocks.
+        builder.add(
+            SequenceUpdateSystem::new(),
+            &SequenceUpdateSystem::type_name(),
+            &[&ComponentSequencesUpdateSystem::<Character>::type_name()],
+        );
+        builder.add(
+            FrameComponentUpdateSystem::new(),
+            &FrameComponentUpdateSystem::type_name(),
+            &[
+                &ComponentSequencesUpdateSystem::<Character>::type_name(),
+                &SequenceUpdateSystem::type_name(),
+            ],
+        );
+        builder.add(
+            CharacterCtsHandleUpdateSystem::new(),
+            &CharacterCtsHandleUpdateSystem::type_name(),
+            &[],
+        );
+        builder.add(
+            CharacterControlTransitionsUpdateSystem::new(),
+            &CharacterControlTransitionsUpdateSystem::type_name(),
+            &[&CharacterCtsHandleUpdateSystem::type_name()],
+        );
+        builder.add(
+            FrameFreezeClockAugmentSystem::new(),
+            &FrameFreezeClockAugmentSystem::type_name(),
+            &[],
+        );
+        builder.add(
+            HitRepeatTrackersAugmentSystem::new(),
+            &HitRepeatTrackersAugmentSystem::type_name(),
+            &[],
+        );
+
+        builder.add_barrier();
+
+        // === Component value update === //
+
+        // Sets velocity based on sequence ID and input.
+        builder.add(
+            CharacterKinematicsSystem::new(),
+            &CharacterKinematicsSystem::type_name(),
+            &[],
+        );
+        // pos += vel
+        builder.add(
+            ObjectKinematicsUpdateSystem::new(),
+            &ObjectKinematicsUpdateSystem::type_name(),
+            &[&CharacterKinematicsSystem::type_name()],
+        );
+        // `Position` correction based on margins.
+        builder.add(
+            CharacterGroundingSystem::new(),
+            &CharacterGroundingSystem::type_name(),
+            &[&ObjectKinematicsUpdateSystem::type_name()],
+        );
+        builder.add(
+            ObjectTransformUpdateSystem::new(),
+            &ObjectTransformUpdateSystem::type_name(),
+            &[
+                &ObjectKinematicsUpdateSystem::type_name(),
+                &CharacterGroundingSystem::type_name(),
+            ],
+        );
+        builder.add(
+            HitRepeatTrackersTickerSystem::new(),
+            &HitRepeatTrackersTickerSystem::type_name(),
+            &[&HitRepeatTrackersAugmentSystem::type_name()],
+        );
+
+        builder.add_barrier();
+
+        // === Effect Detection === //
+
+        builder.add(
+            ObjectCollisionDetectionSystem::new(),
+            &ObjectCollisionDetectionSystem::type_name(),
+            &[],
+        );
+        builder.add(
+            HitDetectionSystem::new(),
+            &HitDetectionSystem::type_name(),
+            &[&ObjectCollisionDetectionSystem::type_name()],
+        );
+
+        builder.add_barrier();
+
+        // === Sequence ID Updates === //
+
         // Note: The `CharacterSequenceUpdateSystem` depends on
         // `game_input::ControllerInputUpdateSystem`. We rely on the main dispatcher to be run
         // before the `GamePlayState` dispatcher.
@@ -31,126 +131,30 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             CharacterSequenceUpdateSystem::new(),
             &CharacterSequenceUpdateSystem::type_name(),
             &[],
-        ); // kcov-ignore
+        );
         builder.add(
-            CharacterKinematicsSystem::new(),
-            &CharacterKinematicsSystem::type_name(),
+            CharacterControlTransitionsTransitionSystem::new(),
+            &CharacterControlTransitionsTransitionSystem::type_name(),
             &[&CharacterSequenceUpdateSystem::type_name()],
-        ); // kcov-ignore
-        builder.add(
-            ObjectKinematicsUpdateSystem::new(),
-            &ObjectKinematicsUpdateSystem::type_name(),
-            &[&CharacterKinematicsSystem::type_name()],
-        ); // kcov-ignore
-        builder.add(
-            CharacterGroundingSystem::new(),
-            &CharacterGroundingSystem::type_name(),
-            &[&ObjectKinematicsUpdateSystem::type_name()],
-        ); // kcov-ignore
-        builder.add(
-            ObjectTransformUpdateSystem::new(),
-            &ObjectTransformUpdateSystem::type_name(),
-            &[&CharacterGroundingSystem::type_name()],
-        ); // kcov-ignore
-
-        // === Collision === //
-        builder.add(
-            ObjectCollisionDetectionSystem::new(),
-            &ObjectCollisionDetectionSystem::type_name(),
-            &[&ObjectTransformUpdateSystem::type_name()],
-        ); // kcov-ignore
-        builder.add(
-            HitDetectionSystem::new(),
-            &HitDetectionSystem::type_name(),
-            &[&ObjectCollisionDetectionSystem::type_name()],
-        ); // kcov-ignore
-        builder.add(
-            HitRepeatTrackersAugmentSystem::new(),
-            &HitRepeatTrackersAugmentSystem::type_name(),
-            &[&HitDetectionSystem::type_name()],
-        ); // kcov-ignore
-        builder.add(
-            HitRepeatTrackersTickerSystem::new(),
-            &HitRepeatTrackersTickerSystem::type_name(),
-            &[&HitDetectionSystem::type_name()],
-        ); // kcov-ignore
+        );
         builder.add(
             CharacterHitEffectSystem::new(),
             &CharacterHitEffectSystem::type_name(),
-            &[&HitDetectionSystem::type_name()],
-        ); // kcov-ignore
+            &[&CharacterControlTransitionsTransitionSystem::type_name()],
+        );
 
-        builder.add(
-            GamePlayEndDetectionSystem::new(),
-            &GamePlayEndDetectionSystem::type_name(),
-            &[&CharacterHitEffectSystem::type_name()],
-        ); // kcov-ignore
+        builder.add_barrier();
 
-        // === Systems to update component sequences handles when sequence ID changes === //
-
-        // TODO: autogenerate these
-        builder.add(
-            ComponentSequencesUpdateSystem::<Character>::new(),
-            &ComponentSequencesUpdateSystem::<Character>::type_name(),
-            &[
-                &CharacterSequenceUpdateSystem::type_name(),
-                &CharacterHitEffectSystem::type_name(),
-            ],
-        ); // kcov-ignore
-        builder.add(
-            CharacterCtsHandleUpdateSystem::new(),
-            &CharacterCtsHandleUpdateSystem::type_name(),
-            &[
-                &CharacterSequenceUpdateSystem::type_name(),
-                &CharacterHitEffectSystem::type_name(),
-            ],
-        ); // kcov-ignore
-
-        // === Systems to tick sequence logic clocks === //
-
-        builder.add(
-            FrameFreezeClockAugmentSystem::new(),
-            &FrameFreezeClockAugmentSystem::type_name(),
-            &[&HitDetectionSystem::type_name()],
-        ); // kcov-ignore
-        builder.add(
-            SequenceUpdateSystem::new(),
-            &SequenceUpdateSystem::type_name(),
-            &[
-                &HitDetectionSystem::type_name(),
-                &FrameFreezeClockAugmentSystem::type_name(),
-            ],
-        ); // kcov-ignore
-
-        // === Systems to update frame components attached to entities === //
-
-        builder.add(
-            FrameComponentUpdateSystem::new(),
-            &FrameComponentUpdateSystem::type_name(),
-            &[&SequenceUpdateSystem::type_name()],
-        ); // kcov-ignore
-
-        // Depends on the LastTrackerSystem<ControllerInput>, so must run before it.
-        builder.add(
-            GamePlayEndTransitionSystem::new(),
-            &GamePlayEndTransitionSystem::type_name(),
-            &[],
-        ); // kcov-ignore
-
-        // === `LastTrackerSystem`s === //
+        // === Helper Systems === //
 
         let controller_input_tracker_system =
             LastTrackerSystem::<ControllerInput>::new(stringify!(game_input::ControllerInput));
         let controller_input_tracker_system_name = controller_input_tracker_system.system_name();
-
-        // This depends on `&ControllerInputUpdateSystem::type_name()`, but since it runs in a
-        // separate dispatcher, we have to omit it from here.
         builder.add(
             controller_input_tracker_system,
             &controller_input_tracker_system_name,
-            &[&GamePlayEndTransitionSystem::type_name()],
-        ); // kcov-ignore
-
+            &[],
+        );
         let character_sequence_id_tracker_system =
             LastTrackerSystem::<CharacterSequenceId>::new(stringify!(CharacterSequenceId));
         let character_sequence_id_tracker_system_name =
@@ -158,8 +162,21 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         builder.add(
             character_sequence_id_tracker_system,
             &character_sequence_id_tracker_system_name,
-            &[&GamePlayEndTransitionSystem::type_name()],
-        ); // kcov-ignore
+            &[],
+        );
+
+        // Detects when the winning condition has been met.
+        builder.add(
+            GamePlayEndDetectionSystem::new(),
+            &GamePlayEndDetectionSystem::type_name(),
+            &[],
+        );
+        // Sends a state transition when game play ends, and `Attack` is pressed.
+        builder.add(
+            GamePlayEndTransitionSystem::new(),
+            &GamePlayEndTransitionSystem::type_name(),
+            &[&GamePlayEndDetectionSystem::type_name()],
+        );
 
         Ok(())
     }

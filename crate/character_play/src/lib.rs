@@ -9,8 +9,13 @@ extern crate pretty_assertions;
 
 pub use crate::{
     character_sequence_update_components::CharacterSequenceUpdateComponents,
-    character_sequence_updater::CharacterSequenceUpdater, mirrored_updater::MirroredUpdater,
-    run_counter_updater::RunCounterUpdater, system::CharacterCtsHandleUpdateSystem,
+    character_sequence_updater::CharacterSequenceUpdater,
+    mirrored_updater::MirroredUpdater,
+    run_counter_updater::RunCounterUpdater,
+    system::{
+        CharacterControlTransitionsTransitionSystem, CharacterControlTransitionsUpdateSystem,
+        CharacterCtsHandleUpdateSystem,
+    },
 };
 
 mod character_sequence_update_components;

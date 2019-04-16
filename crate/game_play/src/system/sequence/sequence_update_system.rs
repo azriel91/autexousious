@@ -118,7 +118,11 @@ impl SequenceUpdateSystem {
             if frame_index_clock.is_complete() {
                 *sequence_status = SequenceStatus::End;
 
-                sequence_update_ec.single_write(SequenceUpdateEvent::SequenceEnd { entity });
+                let frame_index = (*frame_index_clock).value.checked_sub(1).unwrap_or(0);
+                sequence_update_ec.single_write(SequenceUpdateEvent::SequenceEnd {
+                    entity,
+                    frame_index,
+                });
 
                 if repeats.contains(entity) {
                     Self::start_sequence(
@@ -133,7 +137,12 @@ impl SequenceUpdateSystem {
                 }
             } else {
                 frame_wait_clock.reset();
-                sequence_update_ec.single_write(SequenceUpdateEvent::FrameBegin { entity });
+
+                let frame_index = (*frame_index_clock).value;
+                sequence_update_ec.single_write(SequenceUpdateEvent::FrameBegin {
+                    entity,
+                    frame_index,
+                });
             }
         }
     }
@@ -408,7 +417,7 @@ mod tests {
                 )
             })
             .with_assertion(|world| {
-                let events = frame_begin_events(world);
+                let events = frame_begin_events(world, 1);
                 expect_events(world, events);
             })
             .run()
@@ -447,7 +456,7 @@ mod tests {
                 )
             })
             .with_assertion(|world| {
-                let events = sequence_end_events(world);
+                let events = sequence_end_events(world, 4);
                 expect_events(world, events);
             })
             .run()
@@ -486,7 +495,7 @@ mod tests {
                 )
             })
             .with_assertion(|world| {
-                let events = sequence_end_and_begin_events(world);
+                let events = sequence_end_and_begin_events(world, 4);
                 expect_events(world, events);
             })
             .run()
@@ -655,8 +664,8 @@ mod tests {
             .read(&mut reader_id)
             .filter(|ev| match ev {
                 SequenceUpdateEvent::SequenceBegin { entity }
-                | SequenceUpdateEvent::FrameBegin { entity }
-                | SequenceUpdateEvent::SequenceEnd { entity } => target_entity == *entity,
+                | SequenceUpdateEvent::FrameBegin { entity, .. }
+                | SequenceUpdateEvent::SequenceEnd { entity, .. } => target_entity == *entity,
             })
             .collect::<Vec<_>>();
 
@@ -668,21 +677,33 @@ mod tests {
         vec![SequenceUpdateEvent::SequenceBegin { entity }]
     }
 
-    fn frame_begin_events(world: &mut World) -> Vec<SequenceUpdateEvent> {
+    fn frame_begin_events(world: &mut World, frame_index: usize) -> Vec<SequenceUpdateEvent> {
         let entity = *world.read_resource::<Entity>();
-        vec![SequenceUpdateEvent::FrameBegin { entity }]
+        vec![SequenceUpdateEvent::FrameBegin {
+            entity,
+            frame_index,
+        }]
     }
 
-    fn sequence_end_events(world: &mut World) -> Vec<SequenceUpdateEvent> {
+    fn sequence_end_events(world: &mut World, frame_index: usize) -> Vec<SequenceUpdateEvent> {
         let entity = *world.read_resource::<Entity>();
-        vec![SequenceUpdateEvent::SequenceEnd { entity }]
+        vec![SequenceUpdateEvent::SequenceEnd {
+            entity,
+            frame_index,
+        }]
     }
 
-    fn sequence_end_and_begin_events(world: &mut World) -> Vec<SequenceUpdateEvent> {
+    fn sequence_end_and_begin_events(
+        world: &mut World,
+        frame_index: usize,
+    ) -> Vec<SequenceUpdateEvent> {
         let entity = *world.read_resource::<Entity>();
 
         vec![
-            SequenceUpdateEvent::SequenceEnd { entity },
+            SequenceUpdateEvent::SequenceEnd {
+                entity,
+                frame_index,
+            },
             SequenceUpdateEvent::SequenceBegin { entity },
         ]
     }

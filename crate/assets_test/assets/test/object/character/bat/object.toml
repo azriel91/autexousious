@@ -13,6 +13,7 @@
 
 [sequences.stand_attack]
   [[sequences.stand_attack.frames]]
+    wait = 1
     sprite = { sheet = 1, index = 0 }
     body = [{ box = { x = 16, y = 11, w = 15, h = 12 } }]
     interactions = [
