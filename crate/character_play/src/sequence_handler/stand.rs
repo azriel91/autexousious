@@ -4,7 +4,7 @@ use crate::{
     sequence_handler::{
         common::{
             grounding::AirborneCheck,
-            input::{JumpCheck, StandAttackCheck, StandXMovementCheck, StandZMovementCheck},
+            input::{JumpCheck, StandXMovementCheck, StandZMovementCheck},
             status::AliveCheck,
             SequenceRepeat,
         },
@@ -31,7 +31,6 @@ impl CharacterSequenceHandler for Stand {
             AliveCheck::update,
             AirborneCheck::update,
             JumpCheck::update,
-            StandAttackCheck::update,
             StandXMovementCheck::update,
             StandZMovementCheck::update,
             SequenceRepeat::update,
@@ -311,26 +310,5 @@ mod test {
                     ))
                 );
             });
-    }
-
-    #[test]
-    fn stand_attack_when_attack_is_pressed() {
-        let mut input = ControllerInput::default();
-        input.attack = true;
-
-        assert_eq!(
-            Some(CharacterSequenceId::StandAttack),
-            Stand::update(CharacterSequenceUpdateComponents::new(
-                &input,
-                HealthPoints::default(),
-                CharacterSequenceId::default(),
-                SequenceStatus::default(),
-                &Position::default(),
-                &Velocity::default(),
-                Mirrored::default(),
-                Grounding::default(),
-                RunCounter::default()
-            ))
-        );
     }
 }
