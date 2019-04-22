@@ -10,6 +10,8 @@
     [sequences.stand.frames.transitions]
       press_attack = "stand_attack"
       press_jump = "jump"
+      hold_jump = "dash_forward"
+      release_special = "dash_back"
 
 [sequences.stand_attack]
   [[sequences.stand_attack.frames]]

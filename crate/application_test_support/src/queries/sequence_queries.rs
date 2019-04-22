@@ -3,7 +3,10 @@ use asset_model::config::AssetSlug;
 use character_loading::CharacterPrefab;
 use character_model::{
     config::CharacterSequenceId,
-    loaded::{Character, CharacterControlTransitionsSequenceHandle, CharacterObjectWrapper},
+    loaded::{
+        Character, CharacterControlTransitionsHandle, CharacterControlTransitionsSequence,
+        CharacterControlTransitionsSequenceHandle, CharacterObjectWrapper,
+    },
 };
 use object_model::loaded::ObjectWrapper;
 use sequence_model::loaded::ComponentSequencesHandle;
@@ -57,6 +60,33 @@ impl SequenceQueries {
                 )
             })
             .clone()
+    }
+
+    /// Returns the `CharacterControlTransitionsHandle` for the specified sequence ID.
+    ///
+    /// This function assumes the character for the specified slug is instantiated in the world.
+    ///
+    /// # Parameters
+    ///
+    /// * `world`: `World` of the running application.
+    /// * `asset_slug`: Object slug whose `Handle<O::ObjectWrapper>` to retrieve.
+    /// * `sequence_id`: Sequence ID whose `CharacterControlTransitionsSequenceHandle` to retrieve.
+    /// * `frame_index`: Frame index within the sequence whose control transitions to retrieve.
+    pub fn character_control_transitions_handle(
+        world: &mut World,
+        asset_slug: &AssetSlug,
+        sequence_id: CharacterSequenceId,
+        frame_index: usize,
+    ) -> CharacterControlTransitionsHandle {
+        let character_cts_handle = Self::character_cts_handle(world, asset_slug, sequence_id);
+
+        let character_cts_assets =
+            world.read_resource::<AssetStorage<CharacterControlTransitionsSequence>>();
+        let character_cts = character_cts_assets
+            .get(&character_cts_handle)
+            .expect("Expected `CharacterControlTransitionsSequence` to be loaded.");
+
+        character_cts[frame_index].clone()
     }
 
     /// Returns the `ComponentSequencesHandle` for the specified sequence ID.
