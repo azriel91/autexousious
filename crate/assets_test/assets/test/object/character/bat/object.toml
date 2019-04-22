@@ -7,10 +7,12 @@
     sprite = { sheet = 0, index = 5 }
     body = [{ box = { x = 169, y = 5, w = 12, h = 20 } }]
 
+    # Used in `CharacterControlTransitionsTransitionSystem` tests.
     [sequences.stand.frames.transitions]
       press_attack = "stand_attack"
       press_jump = "jump"
       hold_jump = "dash_forward"
+      hold_defend = "flinch_0"
       release_special = "dash_back"
 
 [sequences.stand_attack]

@@ -244,7 +244,7 @@ impl CharacterControlTransitionsTransitionSystem {
                 }
             }
         }
-    }
+    } // kcov-ignore
 }
 
 impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
@@ -334,6 +334,20 @@ mod tests {
     }
 
     #[test]
+    fn inserts_transition_for_hold() -> Result<(), Error> {
+        let mut controller_input = ControllerInput::default();
+        controller_input.defend = true;
+
+        run_test(
+            "inserts_transition_for_release_event",
+            CharacterSequenceId::Stand,
+            Some(controller_input),
+            None,
+            CharacterSequenceId::Flinch0,
+        )
+    }
+
+    #[test]
     fn prioritizes_press_over_hold_transition() -> Result<(), Error> {
         let mut controller_input = ControllerInput::default();
         controller_input.jump = true;
@@ -344,6 +358,25 @@ mod tests {
             Some(controller_input),
             None,
             CharacterSequenceId::DashForward,
+        )
+    }
+
+    #[test]
+    fn prioritizes_release_over_hold_transition() -> Result<(), Error> {
+        // hold `Defend` but release `Special`
+        let mut controller_input = ControllerInput::default();
+        controller_input.defend = true;
+
+        run_test(
+            "inserts_transition_for_release_event",
+            CharacterSequenceId::Stand,
+            Some(controller_input),
+            Some(|entity| ControlActionEventData {
+                entity,
+                control_action: ControlAction::Special,
+                value: false,
+            }),
+            CharacterSequenceId::DashBack,
         )
     }
 
@@ -414,5 +447,5 @@ mod tests {
 
         let mut ec = world.write_resource::<EventChannel<ControlInputEvent>>();
         ec.single_write(event);
-    }
+    } // kcov-ignore
 }

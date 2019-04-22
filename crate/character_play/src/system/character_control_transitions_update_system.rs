@@ -58,6 +58,7 @@ impl<'s> System<'s> for CharacterControlTransitionsUpdateSystem {
                     "Expected reader ID to exist for CharacterControlTransitionsUpdateSystem.",
                 ),
             )
+            // kcov-ignore-start
             .for_each(|ev| {
                 let entity = ev.entity();
                 let frame_index = ev.frame_index();
@@ -76,6 +77,7 @@ impl<'s> System<'s> for CharacterControlTransitionsUpdateSystem {
                         .expect("Failed to insert `CharacterControlTransitions` component.");
                 }
             });
+        // kcov-ignore-end
     }
 
     fn setup(&mut self, res: &mut Resources) {
@@ -181,12 +183,14 @@ mod tests {
 
         (&mut frame_index_clocks, &mut character_cts_handles)
             .join()
+            // kcov-ignore-start
             .for_each(|(frame_index_clock, character_cts_handle)| {
                 (*frame_index_clock).value = frame_index_clock_value;
                 (*frame_index_clock).limit = frame_index_clock_limit;
 
                 *character_cts_handle = character_cts_handle_initial.clone();
             });
+        // kcov-ignore-end
     }
 
     fn expect_transitions(
@@ -205,6 +209,7 @@ mod tests {
 
         (&character_control_transitions_handles, &sequence_statuses)
             .join()
+            // kcov-ignore-start
             .for_each(|(character_control_transitions_handle, _sequence_status)| {
                 let character_control_transitions = character_control_transitions_assets
                     .get(character_control_transitions_handle)
@@ -215,6 +220,7 @@ mod tests {
                     character_control_transitions
                 );
             });
+        // kcov-ignore-end
     }
 
     fn transitions() -> CharacterControlTransitions {
@@ -256,7 +262,9 @@ mod tests {
             &character_cts_handles,
         )
             .join()
+            // kcov-ignore-start
             .map(|(entity, _, _, _)| SequenceUpdateEvent::SequenceBegin { entity })
+            // kcov-ignore-end
             .collect::<Vec<_>>()
     }
 
@@ -275,6 +283,7 @@ mod tests {
             &character_cts_handles,
         )
             .join()
+            // kcov-ignore-start
             .map(|(entity, frame_index_clock, _, _)| {
                 let frame_index = (*frame_index_clock).value;
                 SequenceUpdateEvent::FrameBegin {
@@ -282,6 +291,7 @@ mod tests {
                     frame_index,
                 }
             })
+            // kcov-ignore-end
             .collect::<Vec<_>>()
     }
 

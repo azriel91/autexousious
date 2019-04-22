@@ -93,6 +93,7 @@ impl<'s> System<'s> for CharacterCtsHandleUpdateSystem {
 
                 let character_cts_handle = control_transitions_sequence_handles
                     .get(&sequence_id)
+                    // kcov-ignore-start
                     .unwrap_or_else(|| {
                         let message = format!(
                             "Expected `CharacterControlTransitionsSequenceHandle` to exist for \
@@ -115,6 +116,7 @@ impl<'s> System<'s> for CharacterCtsHandleUpdateSystem {
                                 panic!(message);
                             })
                     })
+                    // kcov-ignore-end
                     .clone();
 
                 character_cts_handles
@@ -175,7 +177,7 @@ mod tests {
             sequence_ids
                 .insert(entity, sequence_id)
                 .expect("Failed to insert `CharacterSequenceId`.");
-        }
+        } // kcov-ignore
 
         world.add_resource(entity);
     }
