@@ -4,7 +4,7 @@ use crate::{
     sequence_handler::{
         common::{
             grounding::AirborneCheck,
-            input::{JumpCheck, WalkNoMovementCheck, WalkXMovementCheck, WalkZMovementCheck},
+            input::{WalkNoMovementCheck, WalkXMovementCheck, WalkZMovementCheck},
             status::AliveCheck,
         },
         CharacterSequenceHandler,
@@ -20,7 +20,6 @@ impl CharacterSequenceHandler for Walk {
         [
             AliveCheck::update,
             AirborneCheck::update,
-            JumpCheck::update,
             WalkNoMovementCheck::update,
             WalkXMovementCheck::update,
             WalkZMovementCheck::update,
@@ -242,29 +241,5 @@ mod test {
                 RunCounter::Decrease(10)
             ))
         );
-    }
-
-    #[test]
-    fn jump_when_jump_is_pressed() {
-        vec![(0., 0.), (1., 0.), (-1., 0.), (0., 1.)]
-            .into_iter()
-            .for_each(|(x_input, z_input)| {
-                let input = ControllerInput::new(x_input, z_input, false, true, false, false);
-
-                assert_eq!(
-                    Some(CharacterSequenceId::Jump),
-                    Walk::update(CharacterSequenceUpdateComponents::new(
-                        &input,
-                        HealthPoints::default(),
-                        CharacterSequenceId::default(),
-                        SequenceStatus::default(),
-                        &Position::default(),
-                        &Velocity::default(),
-                        Mirrored::default(),
-                        Grounding::default(),
-                        RunCounter::default()
-                    ))
-                );
-            });
     }
 }
