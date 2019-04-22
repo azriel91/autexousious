@@ -24,8 +24,8 @@ impl CharacterSequenceHandler for WalkNoMovementCheck {
 mod tests {
     use character_model::{config::CharacterSequenceId, play::RunCounter};
     use game_input::ControllerInput;
-    use object_model::entity::{Grounding, HealthPoints, Mirrored, Position, Velocity};
-    use sequence_model::entity::SequenceStatus;
+    use object_model::play::{Grounding, HealthPoints, Mirrored, Position, Velocity};
+    use sequence_model::play::SequenceStatus;
 
     use super::WalkNoMovementCheck;
     use crate::{sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents};

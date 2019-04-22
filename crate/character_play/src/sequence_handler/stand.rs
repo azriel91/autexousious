@@ -4,7 +4,7 @@ use crate::{
     sequence_handler::{
         common::{
             grounding::AirborneCheck,
-            input::{JumpCheck, StandAttackCheck, StandXMovementCheck, StandZMovementCheck},
+            input::{StandXMovementCheck, StandZMovementCheck},
             status::AliveCheck,
             SequenceRepeat,
         },
@@ -30,8 +30,6 @@ impl CharacterSequenceHandler for Stand {
         [
             AliveCheck::update,
             AirborneCheck::update,
-            JumpCheck::update,
-            StandAttackCheck::update,
             StandXMovementCheck::update,
             StandZMovementCheck::update,
             SequenceRepeat::update,
@@ -47,8 +45,8 @@ impl CharacterSequenceHandler for Stand {
 mod test {
     use character_model::{config::CharacterSequenceId, play::RunCounter};
     use game_input::ControllerInput;
-    use object_model::entity::{Grounding, HealthPoints, Mirrored, Position, Velocity};
-    use sequence_model::entity::SequenceStatus;
+    use object_model::play::{Grounding, HealthPoints, Mirrored, Position, Velocity};
+    use sequence_model::play::SequenceStatus;
 
     use super::Stand;
     use crate::{sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents};
@@ -287,50 +285,5 @@ mod test {
                     ))
                 );
             });
-    }
-
-    #[test]
-    fn jump_when_jump_is_pressed() {
-        vec![(0., 0.), (1., 0.), (-1., 0.), (0., 1.)]
-            .into_iter()
-            .for_each(|(x_input, z_input)| {
-                let input = ControllerInput::new(x_input, z_input, false, true, false, false);
-
-                assert_eq!(
-                    Some(CharacterSequenceId::Jump),
-                    Stand::update(CharacterSequenceUpdateComponents::new(
-                        &input,
-                        HealthPoints::default(),
-                        CharacterSequenceId::default(),
-                        SequenceStatus::default(),
-                        &Position::default(),
-                        &Velocity::default(),
-                        Mirrored::default(),
-                        Grounding::default(),
-                        RunCounter::default()
-                    ))
-                );
-            });
-    }
-
-    #[test]
-    fn stand_attack_when_attack_is_pressed() {
-        let mut input = ControllerInput::default();
-        input.attack = true;
-
-        assert_eq!(
-            Some(CharacterSequenceId::StandAttack),
-            Stand::update(CharacterSequenceUpdateComponents::new(
-                &input,
-                HealthPoints::default(),
-                CharacterSequenceId::default(),
-                SequenceStatus::default(),
-                &Position::default(),
-                &Velocity::default(),
-                Mirrored::default(),
-                Grounding::default(),
-                RunCounter::default()
-            ))
-        );
     }
 }

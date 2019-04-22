@@ -1,5 +1,5 @@
 use character_model::config::CharacterSequenceId;
-use sequence_model::entity::SequenceStatus;
+use sequence_model::play::SequenceStatus;
 
 #[derive(Debug)]
 pub(crate) struct SwitchSequenceOnEnd(
@@ -20,7 +20,7 @@ impl SwitchSequenceOnEnd {
 #[cfg(test)]
 mod test {
     use character_model::config::CharacterSequenceId;
-    use sequence_model::entity::SequenceStatus;
+    use sequence_model::play::SequenceStatus;
 
     use super::SwitchSequenceOnEnd;
 

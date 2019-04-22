@@ -7,13 +7,17 @@ use collision_model::{
 };
 use fnv::FnvHashMap;
 use object_model::{
-    config::ObjectDefinition,
-    loaded::{GameObject, Object, ObjectWrapper, SequenceEndTransition},
+    config::{GameObjectFrame, GameObjectSequence, ObjectDefinition},
+    loaded::{GameObject, Object, ObjectWrapper},
 };
 use sequence_model::{
     config::Wait,
-    loaded::{ComponentSequence, ComponentSequences, ComponentSequencesHandle, WaitSequence},
+    loaded::{
+        ComponentSequence, ComponentSequences, ComponentSequencesHandle, SequenceEndTransition,
+        WaitSequence,
+    },
 };
+use serde::{Deserialize, Serialize};
 use sprite_model::loaded::SpriteRenderSequence;
 
 use crate::ObjectLoaderParams;
@@ -37,16 +41,20 @@ impl ObjectLoader {
             body_assets,
             interactions_assets,
         }: ObjectLoaderParams,
-        object_definition: &ObjectDefinition<O::SequenceId>,
+        object_definition: &ObjectDefinition<O::GameObjectSequence>,
     ) -> Result<O::ObjectWrapper, Error>
     where
         O: GameObject,
+        <O as GameObject>::SequenceId: for<'de> Deserialize<'de> + Serialize,
     {
         let sequence_end_transitions = object_definition
             .sequences
             .iter()
             .map(|(sequence_id, sequence)| {
-                (*sequence_id, SequenceEndTransition::new(sequence.next))
+                (
+                    *sequence_id,
+                    SequenceEndTransition::new(sequence.object_sequence().next),
+                )
             })
             .collect::<FnvHashMap<_, _>>();
 
@@ -57,17 +65,19 @@ impl ObjectLoader {
             .map(|(sequence_id, sequence)| {
                 let wait_sequence = WaitSequence::new(
                     sequence
+                        .object_sequence()
                         .frames
                         .iter()
-                        .map(|frame| frame.wait)
+                        .map(|frame| frame.object_frame().wait)
                         .collect::<Vec<Wait>>(),
                 );
                 let sprite_render_sequence = SpriteRenderSequence::new(
                     sequence
+                        .object_sequence()
                         .frames
                         .iter()
                         .map(|frame| {
-                            let sprite_ref = &frame.sprite;
+                            let sprite_ref = &frame.object_frame().sprite;
                             let sprite_sheet = sprite_sheet_handles[sprite_ref.sheet].clone();
                             let sprite_number = sprite_ref.index;
                             SpriteRender {
@@ -79,18 +89,26 @@ impl ObjectLoader {
                 );
                 let body_sequence = BodySequence::new(
                     sequence
-                        .frames
-                        .iter()
-                        .map(|frame| loader.load_from_data(frame.body.clone(), (), body_assets))
-                        .collect::<Vec<Handle<Body>>>(),
-                );
-                let interactions_sequence = InteractionsSequence::new(
-                    sequence
+                        .object_sequence()
                         .frames
                         .iter()
                         .map(|frame| {
                             loader.load_from_data(
-                                frame.interactions.clone(),
+                                frame.object_frame().body.clone(),
+                                (),
+                                body_assets,
+                            )
+                        })
+                        .collect::<Vec<Handle<Body>>>(),
+                );
+                let interactions_sequence = InteractionsSequence::new(
+                    sequence
+                        .object_sequence()
+                        .frames
+                        .iter()
+                        .map(|frame| {
+                            loader.load_from_data(
+                                frame.object_frame().interactions.clone(),
                                 (),
                                 interactions_assets,
                             )

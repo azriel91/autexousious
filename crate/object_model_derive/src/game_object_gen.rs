@@ -1,6 +1,6 @@
 use proc_macro::TokenStream;
 use proc_macro2::Span;
-use proc_macro_roids::{ident_concat, FieldsNamedAppend};
+use proc_macro_roids::{FieldsNamedAppend, IdentExt};
 use quote::ToTokens;
 use syn::{parse_quote, DeriveInput, Ident, Path};
 
@@ -13,15 +13,17 @@ const OBJECT_HANDLE: &str = "object_handle";
 
 pub fn game_object_gen(args: GameObjectAttributeArgs, mut ast: DeriveInput) -> TokenStream {
     let game_object_ident = &ast.ident;
-    let game_object_name = game_object_ident.to_string();
     let sequence_id = &args.sequence_id;
+    let sequence_type = &args
+        .sequence_type
+        .unwrap_or_else(|| Path::from(game_object_ident.append("Sequence")));
     let object_definition_type = &args
         .object_definition
-        .unwrap_or_else(|| Path::from(ident_concat(&game_object_name, "Definition")));
+        .unwrap_or_else(|| Path::from(game_object_ident.append("Definition")));
     let object_type_variant = &args
         .object_type
         .unwrap_or_else(|| parse_quote!(#game_object_ident));
-    let object_wrapper_name = ident_concat(&game_object_name, "ObjectWrapper");
+    let object_wrapper_name = game_object_ident.append("ObjectWrapper");
 
     let object_handle_field = Ident::new(OBJECT_HANDLE, Span::call_site());
 
@@ -41,6 +43,7 @@ pub fn game_object_gen(args: GameObjectAttributeArgs, mut ast: DeriveInput) -> T
         &ast,
         object_type_variant,
         sequence_id,
+        &sequence_type,
         &object_definition_type,
         &object_wrapper_name,
         &object_handle_field,

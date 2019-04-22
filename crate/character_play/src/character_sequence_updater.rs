@@ -1,6 +1,5 @@
 use character_model::config::CharacterSequenceId;
-use object_model::loaded::SequenceEndTransitions;
-use sequence_model::entity::SequenceStatus;
+use sequence_model::{loaded::SequenceEndTransitions, play::SequenceStatus};
 
 use crate::{
     sequence_handler::{

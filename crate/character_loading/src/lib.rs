@@ -5,12 +5,14 @@
 
 pub use crate::{
     character_loader::CharacterLoader,
+    character_loader_params::CharacterLoaderParams,
     character_loading_bundle::{CharacterLoadingBundle, CHARACTER_PREFAB_LOADER_SYSTEM},
     prefab::{CharacterEntityAugmenter, CharacterPrefab, CharacterPrefabHandle},
     system_data::CharacterComponentStorages,
 };
 
 mod character_loader;
+mod character_loader_params;
 mod character_loading_bundle;
 mod prefab;
 mod system_data;

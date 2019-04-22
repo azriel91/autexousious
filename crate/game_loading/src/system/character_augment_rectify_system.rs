@@ -10,7 +10,7 @@ use game_play_hud::HpBarPrefab;
 use game_play_model::{GamePlayEntity, GamePlayEntityId};
 use map_model::loaded::Map;
 use map_selection_model::MapSelection;
-use object_model::entity::Position;
+use object_model::play::Position;
 use typename_derive::TypeName;
 
 use crate::{CharacterAugmentStatus, GameLoadingStatus};
@@ -123,7 +123,7 @@ mod tests {
     use map_loading::MapLoadingBundle;
     use map_selection::MapSelectionStatus;
     use map_selection_model::MapSelection;
-    use object_model::entity::Position;
+    use object_model::play::Position;
     use sequence_loading::SequenceLoadingBundle;
     use sprite_loading::SpriteLoadingBundle;
     use typename::TypeName;

@@ -1,6 +1,6 @@
 use amethyst::ecs::prelude::*;
 use derive_new::new;
-use object_model::entity::{Position, Velocity};
+use object_model::play::{Position, Velocity};
 use typename_derive::TypeName;
 
 /// Updates each entity's `Position` based on their `Velocity` in game.
@@ -28,7 +28,7 @@ impl<'s> System<'s> for ObjectKinematicsUpdateSystem {
 mod test {
     use amethyst::ecs::prelude::*;
     use amethyst_test::*;
-    use object_model::entity::{Position, Velocity};
+    use object_model::play::{Position, Velocity};
     use typename::TypeName;
 
     use super::ObjectKinematicsUpdateSystem;

@@ -5,7 +5,7 @@ use derive_new::new;
 use fnv::FnvHashMap;
 use specs_derive::Component;
 
-use crate::{config::object::SequenceId, loaded::SequenceEndTransition};
+use crate::{config::SequenceId, loaded::SequenceEndTransition};
 
 /// Component sequence transitions when a sequence ends.
 #[derive(Clone, Component, Debug, Default, Deref, DerefMut, From, PartialEq, Eq, new)]

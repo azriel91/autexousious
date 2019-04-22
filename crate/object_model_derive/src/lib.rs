@@ -31,12 +31,13 @@ mod object_wrapper_gen;
 /// pub struct Magic {
 ///     /// Handle to loaded object data.
 ///     pub object_handle: Handle<MagicObjectWrapper>,
-///     /// Component sequence transitions when a sequence ends.
-///     pub sequence_end_transitions: SequenceEndTransitions<MagicSequenceId>,
 /// }
 ///
 /// impl GameObject for Magic {
+///     const OBJECT_TYPE: ObjectType = ObjectType::Character;
 ///     type SequenceId = MagicSequenceId;
+///     type GameObjectSequence = MagicSequence;
+///     type Definition = MagicObjectDefinition;
 ///     type ObjectWrapper = MagicObjectWrapper;
 ///
 ///     fn object_handle(&self) -> &Handle<MagicObjectWrapper> {

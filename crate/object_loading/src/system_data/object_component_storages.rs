@@ -4,14 +4,11 @@ use amethyst::{
     renderer::{Flipped, Transparent},
 };
 use derivative::Derivative;
-use object_model::{
-    config::object::SequenceId,
-    entity::{Mirrored, Position, Velocity},
-    loaded::SequenceEndTransitions,
-};
+use object_model::play::{Mirrored, Position, Velocity};
 use sequence_model::{
-    entity::{FrameIndexClock, FrameWaitClock, SequenceStatus},
-    loaded::ComponentSequencesHandle,
+    config::SequenceId,
+    loaded::{ComponentSequencesHandle, SequenceEndTransitions},
+    play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
 };
 use shred_derive::SystemData;
 

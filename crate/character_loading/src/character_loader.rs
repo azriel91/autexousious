@@ -1,142 +1,179 @@
-use std::path::Path;
+use std::collections::HashMap;
 
 use amethyst::{
-    assets::{Loader, Prefab, PrefabLoader},
-    ecs::World,
-    renderer::SpriteSheetHandle,
+    assets::{AssetStorage, Handle, Loader},
     Error,
 };
-use application::{load_in, Format};
-use character_model::config::CharacterDefinition;
-use object_loading::ObjectPrefab;
-use object_model::config::ObjectAssetData;
+use character_model::{
+    config::{self, CharacterDefinition, CharacterSequence, ControlTransitionRequirement},
+    loaded::{
+        self, Character, CharacterControlTransition, CharacterControlTransitionsSequence,
+        CharacterControlTransitionsSequenceHandle, CharacterObjectWrapper,
+    },
+};
+use game_input_model::ControlAction;
+use object_model::config::GameObjectSequence;
+use sequence_model::{
+    config::ControlTransitionSingle,
+    loaded::{
+        ControlTransition, ControlTransitionHold, ControlTransitionPress, ControlTransitionRelease,
+        ControlTransitions,
+    },
+};
 
-use crate::{CharacterPrefab, CharacterPrefabHandle};
+use crate::CharacterLoaderParams;
 
-/// Loads `Character`s from configuration.
+/// Loads assets specified by character configuration into the loaded character model.
 #[derive(Debug)]
-pub struct CharacterLoader;
+pub enum CharacterLoader {}
 
 impl CharacterLoader {
-    /// Returns the loaded `Character` model defined by character configuration.
+    /// Returns the loaded `Character`.
     ///
     /// # Parameters
     ///
-    /// * `world`: `World` to load character into.
-    /// * `path`: Path to the character asset directory.
+    /// * `character_loader_params`: Parameters needed to load the `Character`.
+    /// * `character_definition`: Character definition asset.
+    /// * `object_wrapper_handle`: Handle to the loaded `Object` for this character.
     pub fn load(
-        world: &mut World,
-        path: &Path,
-        sprite_sheet_handles: Vec<SpriteSheetHandle>,
-    ) -> Result<CharacterPrefabHandle, Error> {
-        let definition_handle = {
-            let character_definition =
-                load_in::<CharacterDefinition, _>(&path, "object.toml", Format::Toml, None)?;
-
-            let loader = world.read_resource::<Loader>();
-            loader.load_from_data(character_definition, (), &world.read_resource())
-        };
-
-        let object_asset_data = ObjectAssetData::new(definition_handle, sprite_sheet_handles);
-        let character_prefab = CharacterPrefab::new(ObjectPrefab::Data(object_asset_data));
-
-        let character_prefab_handle = world.exec(|loader: PrefabLoader<'_, CharacterPrefab>| {
-            loader.load_from_data(Prefab::new_main(character_prefab), ())
-        });
-        Ok(character_prefab_handle)
-    }
-}
-
-#[cfg(test)]
-mod test {
-    use amethyst::{
-        assets::{AssetStorage, Loader, Prefab, ProgressCounter},
-        renderer::{SpriteSheet, Texture},
-        Error, State, StateData, Trans,
-    };
-    use amethyst_test::{AmethystApplication, GameUpdate};
-    use application::{load_in, resource::Format};
-    use asset_model::config::AssetRecord;
-    use assets_test::{ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SLUG};
-    use collision_loading::CollisionLoadingBundle;
-    use sequence_loading::SequenceLoadingBundle;
-    use sprite_loading::SpriteLoader;
-    use sprite_model::config::SpritesDefinition;
-
-    use super::CharacterLoader;
-    use crate::{CharacterLoadingBundle, CharacterPrefab, CharacterPrefabHandle};
-
-    #[test]
-    fn loads_character() -> Result<(), Error> {
-        AmethystApplication::render_base("loads_character", false)
-            .with_bundle(SequenceLoadingBundle::new())
-            .with_bundle(CollisionLoadingBundle::new())
-            .with_bundle(CharacterLoadingBundle::new())
-            .with_effect(|world| {
-                let asset_record =
-                    AssetRecord::new(ASSETS_CHAR_BAT_SLUG.clone(), ASSETS_CHAR_BAT_PATH.clone());
-
-                let sprites_definition = load_in::<SpritesDefinition, _>(
-                    &asset_record.path,
-                    "sprites.toml",
-                    Format::Toml,
-                    None,
+        character_loader_params: CharacterLoaderParams,
+        character_definition: &CharacterDefinition,
+        object_wrapper_handle: Handle<CharacterObjectWrapper>,
+    ) -> Result<Character, Error> {
+        let control_transitions_sequence_handles = character_definition
+            .object_definition
+            .sequences
+            .iter()
+            .map(|(sequence_id, sequence)| {
+                (
+                    *sequence_id,
+                    Self::control_transitions_sequence_handle(&character_loader_params, sequence),
                 )
-                .expect("Failed to load sprites_definition.");
-
-                // TODO: <https://gitlab.com/azriel91/autexousious/issues/94>
-                let sprite_sheet_handles = {
-                    let loader = &world.read_resource::<Loader>();
-                    let texture_assets = &world.read_resource::<AssetStorage<Texture>>();
-                    let sprite_sheet_assets = &world.read_resource::<AssetStorage<SpriteSheet>>();
-
-                    SpriteLoader::load(
-                        &mut ProgressCounter::default(),
-                        loader,
-                        texture_assets,
-                        sprite_sheet_assets,
-                        &sprites_definition,
-                        &asset_record.path,
-                    )
-                    .expect("Failed to load sprites.")
-                };
-
-                let character_prefab_handle =
-                    CharacterLoader::load(world, &asset_record.path, sprite_sheet_handles)
-                        .expect("Failed to load character.");
-
-                world.add_resource(character_prefab_handle);
             })
-            .with_state(|| RetryAssertion(20))
-            .run()
+            .collect::<HashMap<_, _>>();
+
+        Ok(Character::new(
+            control_transitions_sequence_handles,
+            object_wrapper_handle,
+        ))
     }
 
-    #[derive(Debug)]
-    struct RetryAssertion(u32);
-    impl<T, E> State<T, E> for RetryAssertion
-    where
-        T: GameUpdate,
-        E: Send + Sync + 'static,
-    {
-        fn update(&mut self, data: StateData<'_, T>) -> Trans<T, E> {
-            data.data.update(&data.world);
+    /// Extracts a `CharacterControlTransitionsSequence` from a `CharacterSequence`.
+    fn control_transitions_sequence_handle(
+        CharacterLoaderParams {
+            loader,
+            character_control_transitions_assets,
+            character_control_transitions_sequence_assets,
+        }: &CharacterLoaderParams,
+        sequence: &CharacterSequence,
+    ) -> CharacterControlTransitionsSequenceHandle {
+        let control_transitions_sequence = sequence
+            .object_sequence()
+            .frames
+            .iter()
+            .map(|frame| {
+                Self::config_to_loaded_transitions_handle(
+                    loader,
+                    character_control_transitions_assets,
+                    &frame.transitions,
+                )
+            })
+            .collect::<Vec<loaded::CharacterControlTransitionsHandle>>();
 
-            let character_prefab_handle = &data.world.read_resource::<CharacterPrefabHandle>();
-            let character_prefab_assets = data
-                .world
-                .read_resource::<AssetStorage<Prefab<CharacterPrefab>>>();
+        let character_control_transitions_sequence =
+            CharacterControlTransitionsSequence::new(control_transitions_sequence);
 
-            if character_prefab_assets
-                .get(character_prefab_handle)
-                .is_some()
-            {
-                Trans::Pop
-            } else if self.0 > 0 {
-                self.0 -= 1;
-                Trans::Pop
-            } else {
-                panic!("CharacterPrefab failed to load within given retry limit.")
-            }
+        loader.load_from_data(
+            character_control_transitions_sequence,
+            (),
+            character_control_transitions_sequence_assets,
+        )
+    }
+
+    /// Maps `config::CharacterControlTransitions` to `loaded::CharacterControlTransitions`
+    fn config_to_loaded_transitions_handle(
+        loader: &Loader,
+        character_control_transitions_assets: &AssetStorage<loaded::CharacterControlTransitions>,
+        config_transitions: &config::CharacterControlTransitions,
+    ) -> loaded::CharacterControlTransitionsHandle {
+        let mut loaded_transitions = Vec::new();
+
+        macro_rules! push_transitions {
+            ($mode_action:ident, $mode:ident, $mode_data:ident, $action:ident) => {
+                if let Some(config_control_transition) = &config_transitions.$mode_action {
+                    use sequence_model::config::ControlTransition::*;
+                    match config_control_transition {
+                        SequenceId(sequence_id) => {
+                            loaded_transitions.push(CharacterControlTransition::new(
+                                ControlTransition::$mode($mode_data {
+                                    action: ControlAction::$action,
+                                    sequence_id: *sequence_id,
+                                }),
+                                None,
+                            ));
+                        }
+                        Single(ControlTransitionSingle {
+                            next: sequence_id,
+                            extra: control_transition_requirement,
+                        }) => loaded_transitions.push(CharacterControlTransition::new(
+                            ControlTransition::$mode($mode_data {
+                                action: ControlAction::$action,
+                                sequence_id: *sequence_id,
+                            }),
+                            Self::requirement_opt(*control_transition_requirement),
+                        )),
+                        Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
+                            |ControlTransitionSingle {
+                                 next: sequence_id,
+                                 extra: control_transition_requirement,
+                             }| {
+                                CharacterControlTransition::new(
+                                    ControlTransition::$mode($mode_data {
+                                        action: ControlAction::$action,
+                                        sequence_id: *sequence_id,
+                                    }),
+                                    Self::requirement_opt(*control_transition_requirement),
+                                )
+                            },
+                        )),
+                    }
+                }
+            };
+        }
+
+        push_transitions!(press_defend, Press, ControlTransitionPress, Defend);
+        push_transitions!(press_jump, Press, ControlTransitionPress, Jump);
+        push_transitions!(press_attack, Press, ControlTransitionPress, Attack);
+        push_transitions!(press_special, Press, ControlTransitionPress, Special);
+        push_transitions!(release_defend, Release, ControlTransitionRelease, Defend);
+        push_transitions!(release_jump, Release, ControlTransitionRelease, Jump);
+        push_transitions!(release_attack, Release, ControlTransitionRelease, Attack);
+        push_transitions!(release_special, Release, ControlTransitionRelease, Special);
+        // It is a requirement that we push the `Hold` transitions last, to ensure the `Press` and
+        // `Release` transitions get higher priority.
+        push_transitions!(hold_defend, Hold, ControlTransitionHold, Defend);
+        push_transitions!(hold_jump, Hold, ControlTransitionHold, Jump);
+        push_transitions!(hold_attack, Hold, ControlTransitionHold, Attack);
+        push_transitions!(hold_special, Hold, ControlTransitionHold, Special);
+
+        let character_control_transitions =
+            loaded::CharacterControlTransitions::new(ControlTransitions::new(loaded_transitions));
+
+        loader.load_from_data(
+            character_control_transitions,
+            (),
+            character_control_transitions_assets,
+        )
+    }
+
+    #[inline]
+    fn requirement_opt(
+        requirement: ControlTransitionRequirement,
+    ) -> Option<ControlTransitionRequirement> {
+        if requirement.is_blank() {
+            None
+        } else {
+            Some(requirement)
         }
     }
 }

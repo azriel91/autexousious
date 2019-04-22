@@ -2,7 +2,7 @@ use amethyst::{assets::AssetStorage, ecs::prelude::*};
 use derive_new::new;
 use map_model::loaded::Map;
 use map_selection_model::MapSelection;
-use object_model::entity::{Grounding, Position, Velocity};
+use object_model::play::{Grounding, Position, Velocity};
 use typename_derive::TypeName;
 
 /// Updates `Character` kinematics based on sequence.
@@ -68,7 +68,7 @@ impl<'s> System<'s> for CharacterGroundingSystem {
 mod tests {
     use amethyst::ecs::prelude::*;
     use application_test_support::AutexousiousApplication;
-    use object_model::entity::{Grounding, Position};
+    use object_model::play::{Grounding, Position};
     use typename::TypeName;
 
     use super::CharacterGroundingSystem;

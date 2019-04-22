@@ -5,11 +5,8 @@ use amethyst::{
 };
 use amethyst_test::AmethystApplication;
 use derivative::Derivative;
-use object_model::{
-    config::{object::SequenceId, ObjectAssetData},
-    game_object,
-    loaded::GameObject,
-};
+use object_model::{config::ObjectAssetData, game_object, loaded::GameObject};
+use sequence_model::config::SequenceId;
 use serde::{Deserialize, Serialize};
 use specs_derive::Component;
 
@@ -22,7 +19,7 @@ pub enum MagicSequenceId {
 }
 impl SequenceId for MagicSequenceId {}
 
-#[game_object(MagicSequenceId, definition = config::MagicDefinition, object_type = Character)]
+#[game_object(MagicSequenceId, sequence = config::MagicSequence, definition = config::MagicDefinition, object_type = Character)]
 #[derive(Debug)]
 struct Magic;
 
@@ -33,7 +30,9 @@ mod config {
         ecs::storage::VecStorage,
     };
     use derive_new::new;
-    use object_model::config::{object::ObjectDefinition, GameObjectDefinition};
+    use object_model::config::{
+        GameObjectDefinition, GameObjectSequence, ObjectDefinition, ObjectFrame, ObjectSequence,
+    };
     use serde::{Deserialize, Serialize};
 
     use super::MagicSequenceId;
@@ -43,7 +42,7 @@ mod config {
     pub struct MagicDefinition {
         /// Sequences of actions this object can perform.
         #[serde(flatten)]
-        pub object_definition: ObjectDefinition<MagicSequenceId>,
+        pub object_definition: ObjectDefinition<MagicSequence>,
     }
 
     impl Asset for MagicDefinition {
@@ -53,10 +52,26 @@ mod config {
     }
 
     impl GameObjectDefinition for MagicDefinition {
-        type SequenceId = MagicSequenceId;
+        type GameObjectSequence = MagicSequence;
 
-        fn object_definition(&self) -> &ObjectDefinition<Self::SequenceId> {
+        fn object_definition(&self) -> &ObjectDefinition<Self::GameObjectSequence> {
             &self.object_definition
+        }
+    }
+
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct MagicSequence {
+        /// Object sequence for common object fields.
+        #[serde(flatten)]
+        pub object_sequence: ObjectSequence<MagicSequenceId>,
+    }
+
+    impl GameObjectSequence for MagicSequence {
+        type SequenceId = MagicSequenceId;
+        type GameObjectFrame = ObjectFrame;
+
+        fn object_sequence(&self) -> &ObjectSequence<Self::SequenceId, Self::GameObjectFrame> {
+            &self.object_sequence
         }
     }
 }

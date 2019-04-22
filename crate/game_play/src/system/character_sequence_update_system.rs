@@ -8,11 +8,8 @@ use character_play::{
 };
 use derive_new::new;
 use game_input::ControllerInput;
-use object_model::{
-    entity::{Grounding, HealthPoints, Mirrored, Position, Velocity},
-    loaded::SequenceEndTransitions,
-};
-use sequence_model::entity::SequenceStatus;
+use object_model::play::{Grounding, HealthPoints, Mirrored, Position, Velocity};
+use sequence_model::{loaded::SequenceEndTransitions, play::SequenceStatus};
 use shred_derive::SystemData;
 use typename_derive::TypeName;
 
@@ -144,8 +141,8 @@ mod tests {
     use game_input::ControllerInput;
     use map_model::loaded::Map;
     use map_selection_model::MapSelection;
-    use object_model::entity::{Grounding, Mirrored, Position};
-    use sequence_model::entity::SequenceStatus;
+    use object_model::play::{Grounding, Mirrored, Position};
+    use sequence_model::play::SequenceStatus;
     use typename::TypeName;
 
     use super::CharacterSequenceUpdateSystem;

@@ -11,7 +11,7 @@ use derivative::Derivative;
 use derive_new::new;
 use game_model::loaded::GameObjectPrefabs;
 use log::debug;
-use object_loading::{GameObjectPrefab, ObjectPrefab};
+use object_loading::GameObjectPrefab;
 use object_model::{config::ObjectAssetData, loaded::GameObject};
 use serde::Deserialize;
 use shred_derive::SystemData;
@@ -195,7 +195,7 @@ where
                         object_asset_handles.game_object_definition_handle.clone(),
                         sprite_sheet_handles,
                     );
-                    let game_object_prefab = Pf::new(ObjectPrefab::Data(object_asset_data));
+                    let game_object_prefab = Pf::new(object_asset_data);
 
                     let game_object_prefab_handle = game_object_prefab_loader.load_from_data(
                         Prefab::new_main(game_object_prefab),

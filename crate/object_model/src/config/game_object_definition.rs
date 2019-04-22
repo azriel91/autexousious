@@ -1,10 +1,15 @@
-use crate::config::object::{ObjectDefinition, SequenceId};
+use serde::{Deserialize, Serialize};
 
-/// Components common to object types' definitions, parameterized by sequence ID.
+use crate::config::{GameObjectSequence, ObjectDefinition};
+
+/// Components common to object types' definitions, associated with a sequence.
 pub trait GameObjectDefinition {
-    /// Sequence ID that this `GameObjectDefinition` uses.
-    type SequenceId: SequenceId;
+    /// Sequence that this `GameObjectDefinition` uses.
+    type GameObjectSequence: GameObjectSequence;
 
     /// Returns the `ObjectDefinition` for this `GameObjectDefinition`.
-    fn object_definition(&self) -> &ObjectDefinition<Self::SequenceId>;
+    fn object_definition(&self) -> &ObjectDefinition<Self::GameObjectSequence>
+    where
+        <Self::GameObjectSequence as GameObjectSequence>::SequenceId:
+            for<'des> Deserialize<'des> + Serialize;
 }

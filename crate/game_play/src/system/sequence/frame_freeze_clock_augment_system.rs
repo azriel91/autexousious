@@ -8,7 +8,7 @@ use collision_model::{
 };
 use derive_new::new;
 use logic_clock::LogicClock;
-use sequence_model::entity::FrameFreezeClock;
+use sequence_model::play::FrameFreezeClock;
 
 use typename_derive::TypeName;
 
@@ -71,7 +71,7 @@ mod tests {
         play::HitEvent,
     };
     use logic_clock::LogicClock;
-    use sequence_model::entity::FrameFreezeClock;
+    use sequence_model::play::FrameFreezeClock;
     use shape_model::Volume;
 
     use super::FrameFreezeClockAugmentSystem;

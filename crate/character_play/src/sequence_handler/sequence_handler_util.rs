@@ -1,5 +1,5 @@
 use game_input::ControllerInput;
-use object_model::entity::Mirrored;
+use object_model::play::Mirrored;
 
 #[derive(Debug)]
 pub struct SequenceHandlerUtil;
@@ -35,7 +35,7 @@ impl SequenceHandlerUtil {
 #[cfg(test)]
 mod tests {
     use game_input::ControllerInput;
-    use object_model::entity::Mirrored;
+    use object_model::play::Mirrored;
 
     use super::SequenceHandlerUtil;
 

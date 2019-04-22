@@ -2,7 +2,7 @@ use amethyst::ecs::WriteStorage;
 use character_model::play::RunCounter;
 use derivative::Derivative;
 use game_input::ControllerInput;
-use object_model::entity::{Grounding, HealthPoints};
+use object_model::play::{Grounding, HealthPoints};
 use shred_derive::SystemData;
 
 /// Character specific `Component` storages.

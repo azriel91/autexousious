@@ -6,8 +6,8 @@ use amethyst::{
 use derivative::Derivative;
 use sequence_model::{
     config::{Repeat, Wait},
-    entity::{FrameIndexClock, FrameWaitClock, SequenceStatus},
     loaded::ComponentSequencesHandle,
+    play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
 };
 use shred_derive::SystemData;
 

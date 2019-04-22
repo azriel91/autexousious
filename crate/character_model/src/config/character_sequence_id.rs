@@ -3,7 +3,7 @@ use amethyst::ecs::{
     Component,
 };
 use derivative::Derivative;
-use object_model::config::object::SequenceId;
+use sequence_model::config::SequenceId;
 use serde::{Deserialize, Serialize};
 
 /// Object Sequence IDs.

@@ -29,7 +29,7 @@ use amethyst::{
 };
 use application_test_support::{AutexousiousApplication, ObjectQueries};
 use game_play_hud::{HpBar, HpBarUpdateSystem};
-use object_model::{entity::HealthPoints, ObjectType};
+use object_model::{play::HealthPoints, ObjectType};
 
 #[test]
 fn sets_transform_x_and_scale() -> Result<(), Error> {

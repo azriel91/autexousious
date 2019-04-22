@@ -7,27 +7,29 @@
 //! because different object types have different valid sequence IDs, and we want to be able to
 //! define this at compile time rather than needing to process this at run time.
 
-pub use self::{object_frame::ObjectFrame, sequence_id::SequenceId};
-
 use derive_new::new;
+use sequence_model::config::SequenceId;
 use serde::{Deserialize, Serialize};
 
-mod object_frame;
-mod sequence_id;
+use crate::config::{GameObjectFrame, ObjectFrame};
 
 /// Represents an independent action sequence of an object.
 ///
 /// This carries the information necessary for an `Animation`, as well as the effects and
 /// interactions that happen during each frame of that animation.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
-pub struct Sequence<SeqId: SequenceId> {
+pub struct ObjectSequence<SeqId, Frame = ObjectFrame>
+where
+    SeqId: SequenceId,
+    Frame: GameObjectFrame,
+{
     /// ID of the sequence to switch to after this one has completed.
     ///
     /// Note: This may not be immediately after the last frame of the sequence. For example, a
     /// character that is in mid-air should remain in the last frame until it lands on the ground.
     pub next: Option<SeqId>,
     /// Key frames in the animation sequence.
-    pub frames: Vec<ObjectFrame>,
+    pub frames: Vec<Frame>,
 }
 
 #[cfg(test)]
@@ -37,14 +39,15 @@ mod tests {
         Body, Hit, HitLimit, HitRepeatDelay, Interaction, InteractionKind, Interactions,
     };
     use derivative::Derivative;
-    use sequence_model::config::Wait;
+    use sequence_model::config::{SequenceId, Wait};
     use serde::{Deserialize, Serialize};
     use shape_model::Volume;
     use specs_derive::Component;
     use sprite_model::config::SpriteRef;
     use toml;
 
-    use super::{ObjectFrame, Sequence, SequenceId};
+    use super::ObjectSequence;
+    use crate::config::ObjectFrame;
 
     const SEQUENCE_WITH_FRAMES: &str = r#"
         next = "Boo"
@@ -78,16 +81,16 @@ mod tests {
 
     #[test]
     fn sequence_with_empty_frames_list_deserializes_successfully() {
-        let sequence = toml::from_str::<Sequence<TestSeqId>>(SEQUENCE_WITH_FRAMES_EMPTY)
+        let sequence = toml::from_str::<ObjectSequence<TestSeqId>>(SEQUENCE_WITH_FRAMES_EMPTY)
             .expect("Failed to deserialize sequence.");
 
-        let expected = Sequence::new(None, vec![]);
+        let expected = ObjectSequence::new(None, vec![]);
         assert_eq!(expected, sequence);
     }
 
     #[test]
     fn sequence_with_frames() {
-        let sequence = toml::from_str::<Sequence<TestSeqId>>(SEQUENCE_WITH_FRAMES)
+        let sequence = toml::from_str::<ObjectSequence<TestSeqId>>(SEQUENCE_WITH_FRAMES)
             .expect("Failed to deserialize sequence.");
 
         let frames = vec![
@@ -128,13 +131,13 @@ mod tests {
                 Interactions::default(),
             ),
         ];
-        let expected = Sequence::new(Some(TestSeqId::Boo), frames);
+        let expected = ObjectSequence::new(Some(TestSeqId::Boo), frames);
         assert_eq!(expected, sequence);
     }
 
     #[test]
     fn sequence_with_body() {
-        let sequence = toml::from_str::<Sequence<TestSeqId>>(SEQUENCE_WITH_BODY)
+        let sequence = toml::from_str::<ObjectSequence<TestSeqId>>(SEQUENCE_WITH_BODY)
             .expect("Failed to deserialize sequence.");
 
         let body_volumes = vec![
@@ -159,13 +162,13 @@ mod tests {
             Body::new(body_volumes),
             Interactions::new(Vec::new()),
         )];
-        let expected = Sequence::new(None, frames);
+        let expected = ObjectSequence::new(None, frames);
         assert_eq!(expected, sequence);
     }
 
     #[test]
     fn sequence_with_itr() {
-        let sequence = toml::from_str::<Sequence<TestSeqId>>(SEQUENCE_WITH_ITR)
+        let sequence = toml::from_str::<ObjectSequence<TestSeqId>>(SEQUENCE_WITH_ITR)
             .expect("Failed to deserialize sequence.");
 
         let interactions = vec![Interaction {
@@ -189,7 +192,7 @@ mod tests {
             Body::new(Vec::new()),
             Interactions::new(interactions),
         )];
-        let expected = Sequence::new(None, frames);
+        let expected = ObjectSequence::new(None, frames);
         assert_eq!(expected, sequence);
     }
 

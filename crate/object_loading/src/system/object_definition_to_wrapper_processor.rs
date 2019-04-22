@@ -11,6 +11,7 @@ use derive_new::new;
 use object_model::{config::GameObjectDefinition, loaded::GameObject};
 use rayon::ThreadPool;
 use sequence_model::loaded::ComponentSequences;
+use serde::{Deserialize, Serialize};
 use shred_derive::SystemData;
 use typename::TypeName as TypeNameTrait;
 use typename_derive::TypeName;
@@ -32,6 +33,7 @@ where
 pub struct ObjectDefinitionToWrapperProcessorData<'s, O>
 where
     O: GameObject,
+    <O as GameObject>::SequenceId: for<'de> Deserialize<'de> + Serialize,
 {
     /// `Loader` to load assets.
     #[derivative(Debug = "ignore")]
@@ -67,6 +69,7 @@ where
 impl<'s, O> System<'s> for ObjectDefinitionToWrapperProcessor<O>
 where
     O: GameObject + TypeNameTrait,
+    <O as GameObject>::SequenceId: for<'de> Deserialize<'de> + Serialize,
 {
     type SystemData = ObjectDefinitionToWrapperProcessorData<'s, O>;
 

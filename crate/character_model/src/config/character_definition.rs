@@ -4,17 +4,17 @@ use amethyst::{
     Error,
 };
 use derive_new::new;
-use object_model::config::{object::ObjectDefinition, GameObjectDefinition};
+use object_model::config::{GameObjectDefinition, ObjectDefinition};
 use serde::{Deserialize, Serialize};
 
-use crate::config::CharacterSequenceId;
+use crate::config::CharacterSequence;
 
 /// Contains all of the sequences for an `Object`.
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, new)]
 pub struct CharacterDefinition {
     /// Sequences of actions this object can perform.
     #[serde(flatten)]
-    pub object_definition: ObjectDefinition<CharacterSequenceId>,
+    pub object_definition: ObjectDefinition<CharacterSequence>,
 }
 
 impl Asset for CharacterDefinition {
@@ -32,9 +32,9 @@ impl From<CharacterDefinition> for Result<ProcessingState<CharacterDefinition>, 
 }
 
 impl GameObjectDefinition for CharacterDefinition {
-    type SequenceId = CharacterSequenceId;
+    type GameObjectSequence = CharacterSequence;
 
-    fn object_definition(&self) -> &ObjectDefinition<Self::SequenceId> {
+    fn object_definition(&self) -> &ObjectDefinition<Self::GameObjectSequence> {
         &self.object_definition
     }
 }

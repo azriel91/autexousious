@@ -4,7 +4,7 @@ use amethyst::{
     renderer::SpriteRender,
 };
 use derive_new::new;
-use object_model::entity::HealthPoints;
+use object_model::play::HealthPoints;
 use typename_derive::TypeName;
 
 use crate::{HpBar, HP_BAR_LENGTH, HP_BAR_SPRITE_COUNT};
