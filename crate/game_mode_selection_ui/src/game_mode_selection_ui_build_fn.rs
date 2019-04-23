@@ -73,9 +73,8 @@ where
         GameModeIndex::iter()
             .enumerate()
             .for_each(|(order, index)| {
-                let index_id = index.to_string();
-                let index_text = index_id.to_title_case();
-                let entity = UiButtonBuilder::<()>::new(index_id, index_text)
+                let index_text = index.to_string().to_title_case();
+                let (_widget_id, ui_button) = UiButtonBuilder::<(), u32>::new(index_text)
                     .with_position(
                         0.,
                         ((item_count - order) as f32 * text_h) - (item_count as f32 * text_h / 2.),
@@ -90,6 +89,8 @@ where
                     .with_anchor(Anchor::Middle)
                     .with_font(font.clone())
                     .build_from_world(world);
+
+                let entity = ui_button.text_entity;
 
                 world
                     .write_storage::<MenuItem<GameModeIndex>>()

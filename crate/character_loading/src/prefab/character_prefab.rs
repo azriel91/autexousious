@@ -84,13 +84,19 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
             ref mut character_component_storages,
         ): &mut Self::SystemData,
         entities: &[Entity],
+        children: &[Entity],
     ) -> Result<(), Error> {
         match self {
             CharacterPrefab::Loaded {
                 object_prefab,
                 character_handle,
             } => {
-                object_prefab.add_to_entity(entity, object_prefab_system_data, entities)?;
+                object_prefab.add_to_entity(
+                    entity,
+                    object_prefab_system_data,
+                    entities,
+                    children,
+                )?;
 
                 character_handles
                     .insert(entity, character_handle.clone())

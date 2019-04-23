@@ -57,6 +57,7 @@ impl<'s> PrefabData<'s> for HpBarPrefab {
             transparents,
         ): &mut Self::SystemData,
         _entities: &[Entity],
+        _children: &[Entity],
     ) -> Result<(), Error> {
         hp_bars.insert(entity, HpBar::default())?;
         let mut transform = Transform::default();

@@ -78,6 +78,7 @@ where
             frame_component_storages,
         }: &mut Self::SystemData,
         _: &[Entity],
+        _children: &[Entity],
     ) -> Result<(), Error> {
         let object_wrapper_handle = match self {
             ObjectPrefab::Data(object_asset_data) => {
