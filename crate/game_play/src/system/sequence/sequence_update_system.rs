@@ -52,15 +52,26 @@ pub struct SequenceUpdateSystemData<'s> {
     pub sequence_update_ec: Write<'s, EventChannel<SequenceUpdateEvent>>,
 }
 
+#[derive(Debug)]
+struct SequenceUpdateParams<'p> {
+    entity: Entity,
+    component_sequences_handle: &'p ComponentSequencesHandle,
+    frame_index_clock: &'p mut FrameIndexClock,
+    frame_wait_clock: &'p mut FrameWaitClock,
+    sequence_status: &'p mut SequenceStatus,
+}
+
 impl SequenceUpdateSystem {
     fn start_sequence(
         component_sequences_assets: &AssetStorage<ComponentSequences>,
-        component_sequences_handle: &ComponentSequencesHandle,
         sequence_update_ec: &mut EventChannel<SequenceUpdateEvent>,
-        entity: Entity,
-        frame_index_clock: &mut FrameIndexClock,
-        frame_wait_clock: &mut FrameWaitClock,
-        sequence_status: &mut SequenceStatus,
+        SequenceUpdateParams {
+            entity,
+            component_sequences_handle,
+            frame_index_clock,
+            frame_wait_clock,
+            sequence_status,
+        }: SequenceUpdateParams,
     ) {
         frame_index_clock.reset();
         frame_wait_clock.reset();
@@ -99,14 +110,18 @@ impl SequenceUpdateSystem {
 
     fn entity_frame_wait_tick(
         component_sequences_assets: &AssetStorage<ComponentSequences>,
-        component_sequences_handle: &ComponentSequencesHandle,
         mut sequence_update_ec: &mut EventChannel<SequenceUpdateEvent>,
-        entity: Entity,
-        mut frame_index_clock: &mut FrameIndexClock,
-        mut frame_wait_clock: &mut FrameWaitClock,
-        mut sequence_status: &mut SequenceStatus,
         repeats: &ReadStorage<'_, Repeat>,
+        sequence_update_params: SequenceUpdateParams,
     ) {
+        let SequenceUpdateParams {
+            entity,
+            component_sequences_handle,
+            frame_index_clock,
+            frame_wait_clock,
+            sequence_status,
+        } = sequence_update_params;
+
         frame_wait_clock.tick();
 
         if frame_wait_clock.is_complete() {
@@ -125,14 +140,18 @@ impl SequenceUpdateSystem {
                 });
 
                 if repeats.contains(entity) {
+                    let sequence_update_params = SequenceUpdateParams {
+                        entity,
+                        component_sequences_handle,
+                        frame_index_clock,
+                        frame_wait_clock,
+                        sequence_status,
+                    };
+
                     Self::start_sequence(
                         &component_sequences_assets,
-                        &component_sequences_handle,
                         &mut sequence_update_ec,
-                        entity,
-                        &mut frame_index_clock,
-                        &mut frame_wait_clock,
-                        &mut sequence_status,
+                        sequence_update_params,
                     );
                 }
             } else {
@@ -181,29 +200,28 @@ impl<'s> System<'s> for SequenceUpdateSystem {
                     mut frame_wait_clock,
                     mut sequence_status,
                 )| {
-                    match sequence_status {
+                    let sequence_update_params = SequenceUpdateParams {
+                        entity,
+                        component_sequences_handle: &component_sequences_handle,
+                        frame_index_clock: &mut frame_index_clock,
+                        frame_wait_clock: &mut frame_wait_clock,
+                        sequence_status: &mut sequence_status,
+                    };
+                    match sequence_update_params.sequence_status {
                         SequenceStatus::Begin => {
                             Self::start_sequence(
                                 &component_sequences_assets,
-                                &component_sequences_handle,
                                 &mut sequence_update_ec,
-                                entity,
-                                &mut frame_index_clock,
-                                &mut frame_wait_clock,
-                                &mut sequence_status,
+                                sequence_update_params,
                             );
                         }
                         SequenceStatus::Ongoing => {
                             if Self::entity_unfrozen_tick(&mut frame_freeze_clocks, entity) {
                                 Self::entity_frame_wait_tick(
                                     &component_sequences_assets,
-                                    &component_sequences_handle,
                                     &mut sequence_update_ec,
-                                    entity,
-                                    &mut frame_index_clock,
-                                    &mut frame_wait_clock,
-                                    &mut sequence_status,
                                     &repeats,
+                                    sequence_update_params,
                                 );
                             }
                         }

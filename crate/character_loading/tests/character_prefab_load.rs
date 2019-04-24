@@ -97,9 +97,7 @@ fn character_prefab_load() -> Result<(), Error> {
 }
 
 fn character_definition() -> CharacterDefinition {
-    use character_model::config::{
-        CharacterControlTransitions, CharacterDefinition, CharacterFrame, CharacterSequence,
-    };
+    use character_model::config::{CharacterControlTransitions, CharacterFrame, CharacterSequence};
     use sequence_model::config::{
         ControlTransition, ControlTransitionMultiple, ControlTransitionSingle, Wait,
     };

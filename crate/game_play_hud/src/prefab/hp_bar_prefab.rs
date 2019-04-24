@@ -6,7 +6,9 @@ use amethyst::{
     Error,
 };
 use asset_gfx_gen::{ColourSpriteSheetGen, ColourSpriteSheetGenData};
+use derivative::Derivative;
 use derive_new::new;
+use shred_derive::SystemData;
 
 use crate::{HpBar, HP_BAR_HEIGHT, HP_BAR_LENGTH, HP_BAR_SPRITE_COUNT};
 
@@ -34,28 +36,44 @@ pub struct HpBarPrefab {
     pub game_object_entity: Entity,
 }
 
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub struct HpBarPrefabSystemData<'s> {
+    /// `HpBar` components.
+    #[derivative(Debug = "ignore")]
+    pub hp_bars: WriteStorage<'s, HpBar>,
+    /// `Transform` components.
+    #[derivative(Debug = "ignore")]
+    pub transforms: WriteStorage<'s, Transform>,
+    /// `Parent` components.
+    #[derivative(Debug = "ignore")]
+    pub parents: WriteStorage<'s, Parent>,
+    /// System data needed to load colour sprites.
+    #[derivative(Debug = "ignore")]
+    pub colour_sprite_sheet_gen_data: ColourSpriteSheetGenData<'s>,
+    /// `SpriteRender` components.
+    #[derivative(Debug = "ignore")]
+    pub sprite_renders: WriteStorage<'s, SpriteRender>,
+    /// `Transparent` components.
+    #[derivative(Debug = "ignore")]
+    pub transparents: WriteStorage<'s, Transparent>,
+}
+
 impl<'s> PrefabData<'s> for HpBarPrefab {
-    type SystemData = (
-        WriteStorage<'s, HpBar>,
-        WriteStorage<'s, Transform>,
-        WriteStorage<'s, Parent>,
-        ColourSpriteSheetGenData<'s>,
-        WriteStorage<'s, SpriteRender>,
-        WriteStorage<'s, Transparent>,
-    );
+    type SystemData = HpBarPrefabSystemData<'s>;
     type Result = ();
 
     fn add_to_entity(
         &self,
         entity: Entity,
-        (
+        HpBarPrefabSystemData {
             hp_bars,
             transforms,
             parents,
             colour_sprite_sheet_gen_data,
             sprite_renders,
             transparents,
-        ): &mut Self::SystemData,
+        }: &mut Self::SystemData,
         _entities: &[Entity],
         _children: &[Entity],
     ) -> Result<(), Error> {

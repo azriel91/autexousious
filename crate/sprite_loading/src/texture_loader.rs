@@ -75,7 +75,7 @@ impl TextureLoader {
 
         let texture_handles = texture_results
             .into_iter()
-            .map(|result| result.unwrap())
+            .map(Result::unwrap)
             .collect::<Vec<TextureHandle>>();
 
         Ok(texture_handles)

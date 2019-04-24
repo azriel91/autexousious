@@ -32,7 +32,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionBundle {
             .system_dependencies
             .as_ref()
             .map_or_else(Vec::new, |deps| {
-                deps.iter().map(|dep| dep.as_ref()).collect::<Vec<&str>>()
+                deps.iter().map(AsRef::as_ref).collect::<Vec<&str>>()
             });
 
         builder.add(
