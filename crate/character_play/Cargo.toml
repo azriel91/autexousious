@@ -16,7 +16,7 @@ named_type = "0.2.1"
 named_type_derive = "0.2.1"
 object_model = { path = "../object_model" }
 sequence_model = { path = "../sequence_model" }
-shred = "0.7.1"
+shred = "0.7.0"
 shred-derive = "0.5.1"
 
 [dev-dependencies]

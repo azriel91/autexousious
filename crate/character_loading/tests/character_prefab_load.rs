@@ -9,7 +9,7 @@ use amethyst::{
 use amethyst_test::AmethystApplication;
 use character_loading::{CharacterLoadingBundle, CharacterPrefab, CharacterPrefabHandle};
 use character_model::{
-    config::{CharacterSequenceId, ControlTransitionRequirement},
+    config::{CharacterDefinition, CharacterSequenceId, ControlTransitionRequirement},
     loaded::{
         Character, CharacterControlTransition, CharacterControlTransitions,
         CharacterControlTransitionsSequence, CharacterHandle,
@@ -99,7 +99,6 @@ fn character_prefab_load() -> Result<(), Error> {
 fn character_definition() -> CharacterDefinition {
     use character_model::config::{
         CharacterControlTransitions, CharacterDefinition, CharacterFrame, CharacterSequence,
-        ControlTransitionRequirement,
     };
     use sequence_model::config::{
         ControlTransition, ControlTransitionMultiple, ControlTransitionSingle, Wait,

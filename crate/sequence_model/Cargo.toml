@@ -17,7 +17,7 @@ logic_clock = { path = "../logic_clock" }
 numeric_newtype_derive = { path = "../numeric_newtype_derive" }
 sequence_model_derive = { path = "../sequence_model_derive" }
 sequence_model_spi = { path = "../sequence_model_spi" }
-serde = "1.0.89"
+serde = "1.0.90"
 specs-derive = "0.4.0"
 sprite_model = { path = "../sprite_model" }
 

@@ -14,12 +14,12 @@ logic_clock = { path = "../logic_clock" }
 minterpolate = { version = "0.4.0", features = ["serde"] }
 numeric_newtype_derive = { path = "../numeric_newtype_derive" }
 sequence_model_spi = { path = "../sequence_model_spi" }
-serde = "1.0.89"
+serde = "1.0.90"
 shape_model = { path = "../shape_model" }
 slotmap = "0.3.0"
 specs-derive = "0.4.0"
-strum = "0.14.0"
-strum_macros = "0.14.0"
+strum = "0.15.0"
+strum_macros = "0.15.0"
 
 [dev-dependencies]
 pretty_assertions = "0.6.1"

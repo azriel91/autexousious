@@ -7,9 +7,9 @@ edition = "2018"
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 derivative = "1.0.2"
-gfx = "0.17.1"
+gfx = "0.17.0"
 integer-sqrt = "0.1.2"
-shred = "0.7.1"
+shred = "0.7.0"
 shred-derive = "0.5.1"
 
 [dev-dependencies]

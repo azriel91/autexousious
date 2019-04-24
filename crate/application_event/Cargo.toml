@@ -14,8 +14,8 @@ game_mode_selection_model = { path = "../game_mode_selection_model" }
 game_play_model = { path = "../game_play_model" }
 map_selection_model = { path = "../map_selection_model" }
 stdio_command_model = { path = "../stdio_command_model" }
-strum = "0.14.0"
-strum_macros = "0.14.0"
+strum = "0.15.0"
+strum_macros = "0.15.0"
 
 [features]
 nightly = ["amethyst/nightly"]

@@ -14,8 +14,8 @@ itertools = "0.8.0"
 log = "0.4.6"
 map_model = { path = "../map_model" }
 object_model = { path = "../object_model" }
-serde = "1.0.89"
-strum = "0.14.0"
+serde = "1.0.90"
+strum = "0.15.0"
 toml = "0.5.0"
 
 [dev-dependencies]

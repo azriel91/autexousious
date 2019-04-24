@@ -44,22 +44,22 @@ dependencies = [
 [[package]]
 name = "amethyst"
 version = "0.10.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities#3dde11413a088ebac7751a777dbe5401aa9273c2"
+source = "git+https://github.com/amethyst/amethyst.git#fc4327d0523587c838ed4ec8cd4f670a4379b86f"
 dependencies = [
- "amethyst_animation 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_assets 0.6.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_audio 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_config 0.9.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_controls 0.4.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_core 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_derive 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_error 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_input 0.6.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_locale 0.4.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_network 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_renderer 0.10.1 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_ui 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_utils 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst_animation 0.5.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_assets 0.6.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_audio 0.5.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_config 0.9.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_controls 0.4.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_core 0.5.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_derive 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_error 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_input 0.6.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_locale 0.4.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_network 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_renderer 0.10.1 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_ui 0.5.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_utils 0.5.0 (git+https://github.com/amethyst/amethyst.git)",
  "crossbeam-channel 0.3.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "fern 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -74,13 +74,13 @@ dependencies = [
 [[package]]
 name = "amethyst_animation"
 version = "0.5.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities#3dde11413a088ebac7751a777dbe5401aa9273c2"
+source = "git+https://github.com/amethyst/amethyst.git#fc4327d0523587c838ed4ec8cd4f670a4379b86f"
 dependencies = [
- "amethyst_assets 0.6.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_core 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_derive 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_error 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_renderer 0.10.1 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst_assets 0.6.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_core 0.5.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_derive 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_error 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_renderer 0.10.1 (git+https://github.com/amethyst/amethyst.git)",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "fnv 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "hibitset 0.5.4 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -94,28 +94,7 @@ dependencies = [
 [[package]]
 name = "amethyst_assets"
 version = "0.6.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities#3dde11413a088ebac7751a777dbe5401aa9273c2"
-dependencies = [
- "amethyst_core 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_error 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "crossbeam 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "err-derive 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
- "fnv 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "hibitset 0.5.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "parking_lot 0.6.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "rayon 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "ron 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde 1.0.90 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "amethyst_assets"
-version = "0.6.0"
-source = "git+https://github.com/amethyst/amethyst.git#a738b8692208ed27f467267d12beaf079c200bdc"
+source = "git+https://github.com/amethyst/amethyst.git#fc4327d0523587c838ed4ec8cd4f670a4379b86f"
 dependencies = [
  "amethyst_core 0.5.0 (git+https://github.com/amethyst/amethyst.git)",
  "amethyst_error 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
@@ -136,11 +115,11 @@ dependencies = [
 [[package]]
 name = "amethyst_audio"
 version = "0.5.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities#3dde11413a088ebac7751a777dbe5401aa9273c2"
+source = "git+https://github.com/amethyst/amethyst.git#fc4327d0523587c838ed4ec8cd4f670a4379b86f"
 dependencies = [
- "amethyst_assets 0.6.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_core 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_error 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst_assets 0.6.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_core 0.5.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_error 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "cpal 0.8.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "rodio 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -151,17 +130,7 @@ dependencies = [
 [[package]]
 name = "amethyst_config"
 version = "0.9.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities#3dde11413a088ebac7751a777dbe5401aa9273c2"
-dependencies = [
- "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "ron 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde 1.0.90 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "amethyst_config"
-version = "0.9.0"
-source = "git+https://github.com/amethyst/amethyst.git#a738b8692208ed27f467267d12beaf079c200bdc"
+source = "git+https://github.com/amethyst/amethyst.git#fc4327d0523587c838ed4ec8cd4f670a4379b86f"
 dependencies = [
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "ron 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -171,21 +140,7 @@ dependencies = [
 [[package]]
 name = "amethyst_controls"
 version = "0.4.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities#3dde11413a088ebac7751a777dbe5401aa9273c2"
-dependencies = [
- "amethyst_assets 0.6.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_core 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_error 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_input 0.6.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_renderer 0.10.1 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "serde 1.0.90 (registry+https://github.com/rust-lang/crates.io-index)",
- "winit 0.18.1 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "amethyst_controls"
-version = "0.4.0"
-source = "git+https://github.com/amethyst/amethyst.git#a738b8692208ed27f467267d12beaf079c200bdc"
+source = "git+https://github.com/amethyst/amethyst.git#fc4327d0523587c838ed4ec8cd4f670a4379b86f"
 dependencies = [
  "amethyst_assets 0.6.0 (git+https://github.com/amethyst/amethyst.git)",
  "amethyst_core 0.5.0 (git+https://github.com/amethyst/amethyst.git)",
@@ -199,27 +154,7 @@ dependencies = [
 [[package]]
 name = "amethyst_core"
 version = "0.5.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities#3dde11413a088ebac7751a777dbe5401aa9273c2"
-dependencies = [
- "amethyst_error 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "approx 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "fnv 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "hibitset 0.5.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "nalgebra 0.17.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "rayon 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde 1.0.90 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shrev 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "specs 0.14.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "specs-hierarchy 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "amethyst_core"
-version = "0.5.0"
-source = "git+https://github.com/amethyst/amethyst.git#a738b8692208ed27f467267d12beaf079c200bdc"
+source = "git+https://github.com/amethyst/amethyst.git#fc4327d0523587c838ed4ec8cd4f670a4379b86f"
 dependencies = [
  "amethyst_error 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "approx 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -239,17 +174,7 @@ dependencies = [
 [[package]]
 name = "amethyst_derive"
 version = "0.3.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities#3dde11413a088ebac7751a777dbe5401aa9273c2"
-dependencies = [
- "proc-macro2 0.4.28 (registry+https://github.com/rust-lang/crates.io-index)",
- "quote 0.6.12 (registry+https://github.com/rust-lang/crates.io-index)",
- "syn 0.15.32 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "amethyst_derive"
-version = "0.3.0"
-source = "git+https://github.com/amethyst/amethyst.git#a738b8692208ed27f467267d12beaf079c200bdc"
+source = "git+https://github.com/amethyst/amethyst.git#fc4327d0523587c838ed4ec8cd4f670a4379b86f"
 dependencies = [
  "proc-macro2 0.4.28 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 0.6.12 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -259,15 +184,7 @@ dependencies = [
 [[package]]
 name = "amethyst_error"
 version = "0.1.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities#3dde11413a088ebac7751a777dbe5401aa9273c2"
-dependencies = [
- "backtrace 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "amethyst_error"
-version = "0.1.0"
-source = "git+https://github.com/amethyst/amethyst.git#a738b8692208ed27f467267d12beaf079c200bdc"
+source = "git+https://github.com/amethyst/amethyst.git#fc4327d0523587c838ed4ec8cd4f670a4379b86f"
 dependencies = [
  "backtrace 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -275,23 +192,7 @@ dependencies = [
 [[package]]
 name = "amethyst_input"
 version = "0.6.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities#3dde11413a088ebac7751a777dbe5401aa9273c2"
-dependencies = [
- "amethyst_config 0.9.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_core 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_error 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_renderer 0.10.1 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "fnv 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde 1.0.90 (registry+https://github.com/rust-lang/crates.io-index)",
- "smallvec 0.6.9 (registry+https://github.com/rust-lang/crates.io-index)",
- "winit 0.18.1 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "amethyst_input"
-version = "0.6.0"
-source = "git+https://github.com/amethyst/amethyst.git#a738b8692208ed27f467267d12beaf079c200bdc"
+source = "git+https://github.com/amethyst/amethyst.git#fc4327d0523587c838ed4ec8cd4f670a4379b86f"
 dependencies = [
  "amethyst_config 0.9.0 (git+https://github.com/amethyst/amethyst.git)",
  "amethyst_core 0.5.0 (git+https://github.com/amethyst/amethyst.git)",
@@ -307,28 +208,28 @@ dependencies = [
 [[package]]
 name = "amethyst_locale"
 version = "0.4.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities#3dde11413a088ebac7751a777dbe5401aa9273c2"
+source = "git+https://github.com/amethyst/amethyst.git#fc4327d0523587c838ed4ec8cd4f670a4379b86f"
 dependencies = [
- "amethyst_assets 0.6.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_core 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_error 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst_assets 0.6.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_core 0.5.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_error 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "fluent 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "amethyst_network"
 version = "0.3.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities#3dde11413a088ebac7751a777dbe5401aa9273c2"
+source = "git+https://github.com/amethyst/amethyst.git#fc4327d0523587c838ed4ec8cd4f670a4379b86f"
 dependencies = [
- "amethyst_core 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_error 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst_core 0.5.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_error 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "bincode 1.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "crossbeam-channel 0.3.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "err-derive 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "laminar 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.90 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "shrev 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "uuid 0.7.4 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -336,40 +237,7 @@ dependencies = [
 [[package]]
 name = "amethyst_renderer"
 version = "0.10.1"
-source = "git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities#3dde11413a088ebac7751a777dbe5401aa9273c2"
-dependencies = [
- "amethyst_assets 0.6.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_core 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_derive 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_error 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "fnv 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "genmesh 0.6.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "gfx 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "gfx_core 0.8.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "gfx_device_gl 0.15.5 (registry+https://github.com/rust-lang/crates.io-index)",
- "gfx_macros 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "gfx_window_glutin 0.27.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "glsl-layout 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "glutin 0.19.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "hetseq 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "hibitset 0.5.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "image 0.20.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "rayon 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "ron 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde 1.0.90 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "smallvec 0.6.9 (registry+https://github.com/rust-lang/crates.io-index)",
- "wavefront_obj 6.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "winit 0.18.1 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "amethyst_renderer"
-version = "0.10.1"
-source = "git+https://github.com/amethyst/amethyst.git#a738b8692208ed27f467267d12beaf079c200bdc"
+source = "git+https://github.com/amethyst/amethyst.git#fc4327d0523587c838ed4ec8cd4f670a4379b86f"
 dependencies = [
  "amethyst_assets 0.6.0 (git+https://github.com/amethyst/amethyst.git)",
  "amethyst_core 0.5.0 (git+https://github.com/amethyst/amethyst.git)",
@@ -402,9 +270,9 @@ dependencies = [
 [[package]]
 name = "amethyst_test"
 version = "0.1.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities#3dde11413a088ebac7751a777dbe5401aa9273c2"
+source = "git+https://github.com/amethyst/amethyst.git#fc4327d0523587c838ed4ec8cd4f670a4379b86f"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "boxfnonce 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -415,14 +283,14 @@ dependencies = [
 [[package]]
 name = "amethyst_ui"
 version = "0.5.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities#3dde11413a088ebac7751a777dbe5401aa9273c2"
+source = "git+https://github.com/amethyst/amethyst.git#fc4327d0523587c838ed4ec8cd4f670a4379b86f"
 dependencies = [
- "amethyst_assets 0.6.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_audio 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_core 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_error 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_input 0.6.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_renderer 0.10.1 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst_assets 0.6.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_audio 0.5.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_core 0.5.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_error 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_input 0.6.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_renderer 0.10.1 (git+https://github.com/amethyst/amethyst.git)",
  "clipboard 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -448,26 +316,7 @@ dependencies = [
 [[package]]
 name = "amethyst_utils"
 version = "0.5.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities#3dde11413a088ebac7751a777dbe5401aa9273c2"
-dependencies = [
- "amethyst_assets 0.6.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_controls 0.4.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_core 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_derive 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_error 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_renderer 0.10.1 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde 1.0.90 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "specs-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "specs-hierarchy 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "amethyst_utils"
-version = "0.5.0"
-source = "git+https://github.com/amethyst/amethyst.git#a738b8692208ed27f467267d12beaf079c200bdc"
+source = "git+https://github.com/amethyst/amethyst.git#fc4327d0523587c838ed4ec8cd4f670a4379b86f"
 dependencies = [
  "amethyst_assets 0.6.0 (git+https://github.com/amethyst/amethyst.git)",
  "amethyst_controls 0.4.0 (git+https://github.com/amethyst/amethyst.git)",
@@ -505,7 +354,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "animation_support"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "fnv 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "minterpolate 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -534,13 +383,13 @@ dependencies = [
 name = "application"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static 1.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "ron 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ron 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.90 (registry+https://github.com/rust-lang/crates.io-index)",
  "tempfile 3.0.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "toml 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -550,7 +399,7 @@ dependencies = [
 name = "application_event"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "character_selection_model 0.10.0",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_more 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -559,28 +408,28 @@ dependencies = [
  "game_play_model 0.10.0",
  "map_selection_model 0.10.0",
  "stdio_command_model 0.10.0",
- "strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum_macros 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "application_input"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
 ]
 
 [[package]]
 name = "application_menu"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "application 0.10.0",
  "application_robot 0.10.0",
  "application_ui 0.10.0",
  "assert_cmd 0.11.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "escargot 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "escargot 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "rayon 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt 0.2.15 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -591,7 +440,7 @@ dependencies = [
 name = "application_robot"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_input 0.10.0",
  "debug_util_amethyst 0.10.0",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -602,7 +451,7 @@ dependencies = [
 name = "application_state"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "amethyst_utils 0.5.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.10.0",
  "character_selection_model 0.10.0",
@@ -617,8 +466,8 @@ dependencies = [
 name = "application_test_support"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.10.0",
  "asset_loading 0.10.0",
  "asset_model 0.10.0",
@@ -642,27 +491,27 @@ dependencies = [
  "sequence_loading 0.1.0",
  "sequence_model 0.10.0",
  "sprite_loading 0.10.0",
- "strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "application_ui"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application 0.10.0",
  "application_robot 0.10.0",
  "assert_cmd 0.11.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "escargot 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "escargot 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "ron 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ron 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.90 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt 0.2.15 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt-derive 0.2.15 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum_macros 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -710,8 +559,8 @@ dependencies = [
 name = "asset_gfx_gen"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "approx 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "gfx 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -725,8 +574,8 @@ dependencies = [
 name = "asset_loading"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application 0.10.0",
  "asset_model 0.10.0",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -739,7 +588,7 @@ dependencies = [
  "object_model 0.10.0",
  "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.90 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "tempfile 3.0.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "toml 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -748,7 +597,7 @@ dependencies = [
 name = "asset_model"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "character_model 0.10.0",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -756,8 +605,8 @@ dependencies = [
  "map_model 0.10.0",
  "object_model 0.10.0",
  "serde 1.0.90 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum_macros 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "tempfile 3.0.7 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -778,7 +627,7 @@ dependencies = [
  "heck 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static 1.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "object_model 0.10.0",
- "strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -946,8 +795,8 @@ dependencies = [
 name = "character_loading"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "assets_test 0.10.0",
  "character_model 0.10.0",
  "collision_model 0.10.0",
@@ -972,7 +821,7 @@ dependencies = [
 name = "character_model"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "collision_model 0.10.0",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -994,8 +843,8 @@ dependencies = [
 name = "character_play"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_test_support 0.10.0",
  "assets_test 0.10.0",
  "character_loading 0.10.0",
@@ -1018,8 +867,8 @@ dependencies = [
 name = "character_selection"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.10.0",
  "application_state 0.10.0",
  "asset_loading 0.10.0",
@@ -1048,7 +897,7 @@ dependencies = [
 name = "character_selection_model"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "asset_model 0.10.0",
  "character_loading 0.10.0",
  "character_model 0.10.0",
@@ -1056,16 +905,16 @@ dependencies = [
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input_model 0.10.0",
  "object_model 0.10.0",
- "strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum_macros 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "character_selection_stdio"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.10.0",
  "application_test_support 0.10.0",
  "asset_model 0.10.0",
@@ -1085,8 +934,8 @@ dependencies = [
 name = "character_selection_ui"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_test_support 0.10.0",
  "application_ui 0.10.0",
  "asset_model 0.10.0",
@@ -1100,8 +949,8 @@ dependencies = [
  "game_model 0.10.0",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "object_model 0.10.0",
- "strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum_macros 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "tracker 0.10.0",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1211,8 +1060,8 @@ dependencies = [
 name = "collision_loading"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "animation_support 0.10.0",
  "application 0.10.0",
  "collision_model 0.10.0",
@@ -1227,7 +1076,7 @@ dependencies = [
 name = "collision_model"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.0.2 (git+https://github.com/azriel91/derive_deref.git?branch=feature/allow-phantom-data-second-field)",
@@ -1241,8 +1090,8 @@ dependencies = [
  "shape_model 0.10.0",
  "slotmap 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "specs-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum_macros 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "toml 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -1250,8 +1099,8 @@ dependencies = [
 name = "collision_play"
 version = "0.11.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "collision_model 0.10.0",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "logic_clock 0.10.0",
@@ -1558,7 +1407,7 @@ dependencies = [
 name = "debug_util_amethyst"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
 ]
 
 [[package]]
@@ -1726,6 +1575,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "escargot"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "lazy_static 1.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde 1.0.90 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_json 1.0.39 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "euclid"
 version = "0.19.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1864,7 +1724,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "frame_rate"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
 ]
 
 [[package]]
@@ -1912,15 +1772,15 @@ dependencies = [
 name = "game_input"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input_model 0.10.0",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.90 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum_macros 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -1929,14 +1789,14 @@ dependencies = [
 name = "game_input_model"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "hamcrest 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.90 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum_macros 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "winit 0.18.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -1944,8 +1804,8 @@ dependencies = [
 name = "game_input_stdio"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.10.0",
  "application_test_support 0.10.0",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1954,8 +1814,8 @@ dependencies = [
  "stdio_spi 0.10.0",
  "structopt 0.2.15 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt-derive 0.2.15 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum_macros 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -1964,15 +1824,15 @@ dependencies = [
 name = "game_input_ui"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "approx 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input 0.10.0",
  "game_input_model 0.10.0",
  "hamcrest 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum_macros 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "winit 0.18.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1982,8 +1842,8 @@ dependencies = [
 name = "game_loading"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "animation_support 0.10.0",
  "application_event 0.10.0",
  "application_state 0.10.0",
@@ -2024,7 +1884,7 @@ dependencies = [
 name = "game_mode_selection"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.10.0",
  "application_menu 0.10.0",
  "application_state 0.10.0",
@@ -2046,18 +1906,18 @@ dependencies = [
 name = "game_mode_selection_model"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_menu 0.10.0",
- "strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum_macros 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "game_mode_selection_stdio"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.10.0",
  "application_menu 0.10.0",
  "assets_test 0.10.0",
@@ -2074,8 +1934,8 @@ dependencies = [
 name = "game_mode_selection_ui"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_menu 0.10.0",
  "application_ui 0.10.0",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2083,7 +1943,7 @@ dependencies = [
  "game_mode_selection_model 0.10.0",
  "heck 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -2092,7 +1952,7 @@ dependencies = [
 name = "game_model"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "asset_model 0.10.0",
  "character_loading 0.10.0",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2104,8 +1964,8 @@ dependencies = [
 name = "game_play"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "animation_support 0.10.0",
  "application 0.10.0",
  "application_event 0.10.0",
@@ -2146,8 +2006,8 @@ dependencies = [
 name = "game_play_hud"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_test_support 0.10.0",
  "asset_gfx_gen 0.10.0",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2161,15 +2021,15 @@ dependencies = [
 name = "game_play_model"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
 ]
 
 [[package]]
 name = "game_play_stdio"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.10.0",
  "assets_test 0.10.0",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2627,8 +2487,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "loading"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application 0.10.0",
  "application_event 0.10.0",
  "application_state 0.10.0",
@@ -2654,7 +2514,7 @@ dependencies = [
  "sprite_loading 0.10.0",
  "sprite_model 0.10.0",
  "state_registry 0.10.0",
- "strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "toml 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2690,7 +2550,7 @@ dependencies = [
 name = "logic_clock"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.0.2 (git+https://github.com/azriel91/derive_deref.git?branch=feature/allow-phantom-data-second-field)",
  "derive_more 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2752,8 +2612,8 @@ dependencies = [
 name = "map_loading"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application 0.10.0",
  "assets_test 0.10.0",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2769,7 +2629,7 @@ dependencies = [
 name = "map_model"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "sequence_model 0.10.0",
@@ -2782,8 +2642,8 @@ dependencies = [
 name = "map_play"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_model 0.10.0",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2794,8 +2654,8 @@ dependencies = [
 name = "map_selection"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.10.0",
  "application_state 0.10.0",
  "asset_loading 0.10.0",
@@ -2818,7 +2678,7 @@ dependencies = [
 name = "map_selection_model"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "asset_model 0.10.0",
  "map_model 0.10.0",
 ]
@@ -2827,8 +2687,8 @@ dependencies = [
 name = "map_selection_stdio"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.10.0",
  "application_test_support 0.10.0",
  "asset_model 0.10.0",
@@ -2847,8 +2707,8 @@ dependencies = [
 name = "map_selection_ui"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_test_support 0.10.0",
  "application_ui 0.10.0",
  "asset_model 0.10.0",
@@ -2862,8 +2722,8 @@ dependencies = [
  "map_model 0.10.0",
  "map_selection 0.10.0",
  "map_selection_model 0.10.0",
- "strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum_macros 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "tracker 0.10.0",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -3128,7 +2988,7 @@ dependencies = [
 
 [[package]]
 name = "num-derive"
-version = "0.2.4"
+version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "proc-macro2 0.4.28 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -3241,8 +3101,8 @@ dependencies = [
 name = "object_loading"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "animation_support 0.10.0",
  "application 0.10.0",
  "application_event 0.10.0",
@@ -3270,7 +3130,7 @@ dependencies = [
  "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "sprite_loading 0.10.0",
  "sprite_model 0.10.0",
- "strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "tempfile 3.0.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -3280,8 +3140,8 @@ dependencies = [
 name = "object_model"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application 0.10.0",
  "assets_test 0.10.0",
  "collision_loading 0.10.0",
@@ -3301,8 +3161,8 @@ dependencies = [
  "specs-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sprite_loading 0.10.0",
  "sprite_model 0.10.0",
- "strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum_macros 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "toml 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -3846,16 +3706,6 @@ dependencies = [
 
 [[package]]
 name = "ron"
-version = "0.4.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "base64 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "bitflags 1.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde 1.0.90 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "ron"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
@@ -3955,8 +3805,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "sequence_loading"
 version = "0.1.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "sequence_model 0.10.0",
 ]
@@ -3965,8 +3815,8 @@ dependencies = [
 name = "sequence_model"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application 0.10.0",
  "assets_test 0.10.0",
  "collision_loading 0.10.0",
@@ -4001,7 +3851,7 @@ dependencies = [
 name = "sequence_model_spi"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.0.2 (git+https://github.com/azriel91/derive_deref.git?branch=feature/allow-phantom-data-second-field)",
 ]
@@ -4067,8 +3917,8 @@ name = "shape_model"
 version = "0.10.0"
 dependencies = [
  "serde 1.0.90 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum_macros 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -4092,18 +3942,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "arrayvec 0.4.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "fxhash 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "mopa 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "rayon 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "smallvec 0.6.9 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "shred"
-version = "0.8.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "arrayvec 0.4.10 (registry+https://github.com/rust-lang/crates.io-index)",
- "hashbrown 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "mopa 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "rayon 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "smallvec 0.6.9 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4223,8 +4061,8 @@ dependencies = [
 name = "sprite_loading"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application 0.10.0",
  "assets_test 0.10.0",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4237,7 +4075,7 @@ dependencies = [
 name = "sprite_model"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "sequence_model_spi 0.10.0",
  "serde 1.0.90 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4262,8 +4100,8 @@ dependencies = [
 name = "state_registry"
 version = "0.10.0"
 dependencies = [
- "strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum_macros 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -4293,8 +4131,8 @@ dependencies = [
 name = "stdio_command_stdio"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.10.0",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4311,8 +4149,8 @@ dependencies = [
 name = "stdio_input"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.10.0",
  "application_input 0.10.0",
  "application_robot 0.10.0",
@@ -4321,7 +4159,7 @@ dependencies = [
  "console 0.7.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "escargot 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "escargot 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "itertools 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "shell-words 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4330,7 +4168,7 @@ dependencies = [
  "stdio_spi 0.10.0",
  "structopt 0.2.15 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt-derive 0.2.15 (registry+https://github.com/rust-lang/crates.io-index)",
- "strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -4339,7 +4177,7 @@ dependencies = [
 name = "stdio_spi"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "application_event 0.10.0",
  "clap 2.33.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4382,12 +4220,12 @@ dependencies = [
 
 [[package]]
 name = "strum"
-version = "0.14.0"
+version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "strum_macros"
-version = "0.14.0"
+version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "heck 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4500,7 +4338,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "byteorder 1.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "lzw 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "num-derive 0.2.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "num-derive 0.2.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-traits 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -4526,8 +4364,8 @@ dependencies = [
 name = "tracker"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
- "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "named_type 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "named_type_derive 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4732,7 +4570,7 @@ dependencies = [
 name = "will"
 version = "0.10.0"
 dependencies = [
- "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)",
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
  "application 0.10.0",
  "application_event 0.10.0",
  "application_input 0.10.0",
@@ -4745,7 +4583,7 @@ dependencies = [
  "character_selection_stdio 0.10.0",
  "collision_loading 0.10.0",
  "collision_model 0.10.0",
- "escargot 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "escargot 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "frame_rate 0.10.0",
  "game_input 0.10.0",
  "game_input_model 0.10.0",
@@ -4895,31 +4733,22 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum aho-corasick 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)" = "e6f484ae0c99fec2e858eb6134949117399f222608d84cadb3f58c1f97c2364c"
 "checksum alga 0.8.2 (registry+https://github.com/rust-lang/crates.io-index)" = "2cc836ad7a40dc9d8049574e2a29979f5dc77deeea4d7ebcd29773452f0e9694"
 "checksum alsa-sys 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "b0edcbbf9ef68f15ae1b620f722180b82a98b6f0628d30baa6b8d2a5abc87d58"
-"checksum amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)" = "<none>"
-"checksum amethyst_animation 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)" = "<none>"
+"checksum amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
+"checksum amethyst_animation 0.5.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
 "checksum amethyst_assets 0.6.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_assets 0.6.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)" = "<none>"
-"checksum amethyst_audio 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)" = "<none>"
+"checksum amethyst_audio 0.5.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
 "checksum amethyst_config 0.9.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_config 0.9.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)" = "<none>"
 "checksum amethyst_controls 0.4.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_controls 0.4.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)" = "<none>"
 "checksum amethyst_core 0.5.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_core 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)" = "<none>"
 "checksum amethyst_derive 0.3.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_derive 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)" = "<none>"
 "checksum amethyst_error 0.1.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_error 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)" = "<none>"
 "checksum amethyst_input 0.6.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_input 0.6.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)" = "<none>"
-"checksum amethyst_locale 0.4.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)" = "<none>"
-"checksum amethyst_network 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)" = "<none>"
+"checksum amethyst_locale 0.4.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
+"checksum amethyst_network 0.3.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
 "checksum amethyst_renderer 0.10.1 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_renderer 0.10.1 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)" = "<none>"
-"checksum amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)" = "<none>"
-"checksum amethyst_ui 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)" = "<none>"
+"checksum amethyst_test 0.1.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
+"checksum amethyst_ui 0.5.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
 "checksum amethyst_utils 0.5.0 (git+https://github.com/amethyst/amethyst.git)" = "<none>"
-"checksum amethyst_utils 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/expose-ui-widget-entities)" = "<none>"
 "checksum andrew 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "9b7f09f89872c2b6b29e319377b1fbe91c6f5947df19a25596e121cf19a7b35e"
 "checksum android_glue 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)" = "000444226fcff248f2bc4c7625be32c63caccfecc2723a2b9f78a7487a49c407"
 "checksum annotate-snippets 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "455e7e547c91cdb148034484ceee42779b0453d7fe166ce3f8c84ce97130ec86"
@@ -5007,6 +4836,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum env_logger 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)" = "3ddf21e73e016298f5cb37d6ef8e8da8e39f91f9ec8b0df44b7deb16a9f8cd5b"
 "checksum err-derive 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)" = "3d8ff65eb6c2fc68e76557239d16f5698fd56603925b89856d3f0f7105fd4543"
 "checksum escargot 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "ceb9adbf9874d5d028b5e4c5739d22b71988252b25c9c98fe7cf9738bee84597"
+"checksum escargot 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)" = "74cf96bec282dcdb07099f7e31d9fed323bca9435a09aba7b6d99b7617bca96d"
 "checksum euclid 0.19.8 (registry+https://github.com/rust-lang/crates.io-index)" = "7a4719a544a67ed3fc33784c2bd2c6581663dfe83b719a6ae05c6dabc3b51c73"
 "checksum euclid_macros 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "fdcb84c18ea5037a1c5a23039b4ff29403abce2e0d6b1daa11cf0bde2b30be15"
 "checksum expat-sys 2.1.6 (registry+https://github.com/rust-lang/crates.io-index)" = "658f19728920138342f68408b7cf7644d90d4784353d8ebc32e7e8663dbe45fa"
@@ -5115,7 +4945,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum num-bigint 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)" = "57450397855d951f1a41305e54851b1a7b8f5d2e349543a02a2effe25459f718"
 "checksum num-complex 0.1.43 (registry+https://github.com/rust-lang/crates.io-index)" = "b288631d7878aaf59442cffd36910ea604ecd7745c36054328595114001c9656"
 "checksum num-complex 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "107b9be86cd2481930688277b675b0114578227f034674726605b8a482d8baf8"
-"checksum num-derive 0.2.4 (registry+https://github.com/rust-lang/crates.io-index)" = "d9fe8fcafd1b86a37ce8a1cfa15ae504817e0c8c2e7ad42767371461ac1d316d"
+"checksum num-derive 0.2.5 (registry+https://github.com/rust-lang/crates.io-index)" = "eafd0b45c5537c3ba526f79d3e75120036502bebacbb3f3220914067ce39dbf2"
 "checksum num-integer 0.1.39 (registry+https://github.com/rust-lang/crates.io-index)" = "e83d528d2677f0518c570baf2b7abdcf0cd2d248860b68507bdcb3e91d4c0cea"
 "checksum num-iter 0.1.37 (registry+https://github.com/rust-lang/crates.io-index)" = "af3fdbbc3291a5464dc57b03860ec37ca6bf915ed6ee385e7c6c052c422b2124"
 "checksum num-rational 0.1.42 (registry+https://github.com/rust-lang/crates.io-index)" = "ee314c74bd753fc86b4780aa9475da469155f3848473a261d2d18e35245a784e"
@@ -5186,7 +5016,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum regex-syntax 0.6.6 (registry+https://github.com/rust-lang/crates.io-index)" = "dcfd8681eebe297b81d98498869d4aae052137651ad7b96822f09ceb690d0a96"
 "checksum remove_dir_all 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)" = "3488ba1b9a2084d38645c4c08276a1752dcbf2c7130d74f1569681ad5d2799c5"
 "checksum rodio 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)" = "10cb47941163cb747978d13a5c1b5c8fcd17f501817c4b77b9d69aed9ea240bc"
-"checksum ron 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)" = "17f52a24414403f81528b67488cf8edc4eda977d3af1646bb6b106a600ead78f"
 "checksum ron 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)" = "2ece421e0c4129b90e4a35b6f625e472e96c552136f5093a2f4fa2bbb75a62d5"
 "checksum rustc-demangle 0.1.14 (registry+https://github.com/rust-lang/crates.io-index)" = "ccc78bfd5acd7bf3e89cffcf899e5cb1a52d6fafa8dec2739ad70c9577a57288"
 "checksum rustc-hash 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "7540fc8b0c49f096ee9c961cda096467dce8084bec6bdca2fc83895fd9b28cb8"
@@ -5209,7 +5038,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum shared_library 0.1.9 (registry+https://github.com/rust-lang/crates.io-index)" = "5a9e7e0f2bfae24d8a5b5a66c5b257a83c7412304311512a0c054cd5e619da11"
 "checksum shell-words 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "39acde55a154c4cd3ae048ac78cc21c25f3a0145e44111b523279113dce0d94a"
 "checksum shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)" = "6ea122e6133568144fcfb5888737d4ac776ebc959f989dd65b907136ac22bfed"
-"checksum shred 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)" = "02ff8269646b9fa6a52fdc27ff61b5af745ec2a8c83226ccba9d276c7db6071a"
 "checksum shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)" = "9fcf34e5e5302d3024aba7afc291f6d1ca7573ed035d3c0796976ba3f10691a1"
 "checksum shrev 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "ec60ed6f60a4b3cdc2ceacf57215db3408fbd8990f66a38686a31558cd9da482"
 "checksum siphasher 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)" = "0b8de496cf83d4ed58b6be86c3a275b8602f6ffe98d3024a869e124147a9a3ac"
@@ -5229,8 +5057,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum strsim 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)" = "8ea5119cdb4c55b55d432abb513a0429384878c15dde60cc77b1c99de1a95a6a"
 "checksum structopt 0.2.15 (registry+https://github.com/rust-lang/crates.io-index)" = "3d0760c312538987d363c36c42339b55f5ee176ea8808bbe4543d484a291c8d1"
 "checksum structopt-derive 0.2.15 (registry+https://github.com/rust-lang/crates.io-index)" = "528aeb7351d042e6ffbc2a6fb76a86f9b622fdf7c25932798e7a82cb03bc94c6"
-"checksum strum 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)" = "1810e25f576e7ffce1ff5243b37066da5ded0310b3274c20baaeccb1145b2806"
-"checksum strum_macros 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)" = "572a2f4e53dd4c3483fd79e5cc10ddd773a3acb1169bbfe8762365e107110579"
+"checksum strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)" = "e5d1c33039533f051704951680f1adfd468fd37ac46816ded0d9ee068e60f05f"
+"checksum strum_macros 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)" = "47cd23f5c7dee395a00fa20135e2ec0fffcdfa151c56182966d7a3261343432e"
 "checksum syn 0.11.11 (registry+https://github.com/rust-lang/crates.io-index)" = "d3b891b9015c88c576343b9b3e41c2c11a51c219ef067b264bd9c8aa9b441dad"
 "checksum syn 0.13.11 (registry+https://github.com/rust-lang/crates.io-index)" = "14f9bf6292f3a61d2c716723fdb789a41bbe104168e6f496dc6497e531ea1b9b"
 "checksum syn 0.15.32 (registry+https://github.com/rust-lang/crates.io-index)" = "846620ec526c1599c070eff393bfeeeb88a93afa2513fc3b49f1fea84cf7b0ed"
