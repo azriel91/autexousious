@@ -1,10 +1,13 @@
 use amethyst::{
     assets::AssetStorage,
-    ecs::{BitSet, Entities, Join, Read, ReadStorage, Resources, System, SystemData, WriteStorage},
+    ecs::{
+        BitSet, Entities, Entity, Join, Read, ReadStorage, Resources, System, SystemData,
+        WriteStorage,
+    },
     shrev::{EventChannel, ReaderId},
 };
 use character_model::{
-    config::CharacterSequenceId,
+    config::{CharacterSequenceId, ControlTransitionRequirement},
     loaded::{CharacterControlTransitions, CharacterControlTransitionsHandle},
 };
 use derivative::Derivative;
@@ -22,6 +25,8 @@ use sequence_model::{
 };
 use shred_derive::SystemData;
 
+use crate::ControlTransitionRequirementSystemData;
+
 /// Updates `ControllerInput` based on input events.
 #[derive(Debug, Default, NamedType, new)]
 pub struct CharacterControlTransitionsTransitionSystem {
@@ -36,6 +41,7 @@ pub struct CharacterControlTransitionsTransitionSystem {
 type CharacterControlTransitionsTransitionSystemData<'s> = (
     Read<'s, EventChannel<ControlInputEvent>>,
     CharacterControlTransitionsTransitionResources<'s>,
+    ControlTransitionRequirementSystemData<'s>,
 );
 
 #[derive(Derivative, SystemData)]
@@ -44,19 +50,19 @@ pub struct CharacterControlTransitionsTransitionResources<'s> {
     /// `Entities` resource.
     #[derivative(Debug = "ignore")]
     pub entities: Entities<'s>,
-    /// `ControllerInput` component storage.
+    /// `ControllerInput` components.
     #[derivative(Debug = "ignore")]
     pub controller_inputs: ReadStorage<'s, ControllerInput>,
-    /// `CharacterControlTransitionsHandle` component storage.
+    /// `CharacterControlTransitionsHandle` components.
     #[derivative(Debug = "ignore")]
     pub character_control_transitions_handles: ReadStorage<'s, CharacterControlTransitionsHandle>,
     /// `CharacterControlTransitions` assets.
     #[derivative(Debug = "ignore")]
     pub character_control_transitions_assets: Read<'s, AssetStorage<CharacterControlTransitions>>,
-    /// `CharacterSequenceId` component storage.
+    /// `CharacterSequenceId` components.
     #[derivative(Debug = "ignore")]
     pub character_sequence_ids: WriteStorage<'s, CharacterSequenceId>,
-    /// `SequenceStatus` component storage.
+    /// `SequenceStatus` components.
     #[derivative(Debug = "ignore")]
     pub sequence_statuses: WriteStorage<'s, SequenceStatus>,
 }
@@ -72,6 +78,7 @@ impl CharacterControlTransitionsTransitionSystem {
             ref mut character_sequence_ids,
             ref mut sequence_statuses,
         }: &mut CharacterControlTransitionsTransitionResources,
+        control_transition_requirement_system_data: &ControlTransitionRequirementSystemData,
         ControlActionEventData {
             entity,
             control_action,
@@ -122,9 +129,20 @@ impl CharacterControlTransitionsTransitionSystem {
                         }
                     }
                 })
-                .filter_map(|(sequence_id, _control_transition_requirement)| {
-                    // TODO: Check if character meets requirement.
-                    Some(sequence_id)
+                .filter_map(|(sequence_id, control_transition_requirement)| {
+                    if let Some(control_transition_requirement) = control_transition_requirement {
+                        if Self::transition_requirement_met(
+                            control_transition_requirement_system_data,
+                            control_transition_requirement,
+                            entity,
+                        ) {
+                            Some(sequence_id)
+                        } else {
+                            None
+                        }
+                    } else {
+                        Some(sequence_id)
+                    }
                 })
                 .next();
 
@@ -152,6 +170,7 @@ impl CharacterControlTransitionsTransitionSystem {
             ref mut character_sequence_ids,
             ref mut sequence_statuses,
         }: &mut CharacterControlTransitionsTransitionResources,
+        control_transition_requirement_system_data: &ControlTransitionRequirementSystemData,
     ) {
         (
             entities,
@@ -183,9 +202,22 @@ impl CharacterControlTransitionsTransitionSystem {
                                 None
                             }
                         })
-                        .filter_map(|(sequence_id, _control_transition_requirement)| {
-                            // TODO: Check if character meets requirement.
-                            Some(sequence_id)
+                        .filter_map(|(sequence_id, control_transition_requirement)| {
+                            if let Some(control_transition_requirement) =
+                                control_transition_requirement
+                            {
+                                if Self::transition_requirement_met(
+                                    control_transition_requirement_system_data,
+                                    control_transition_requirement,
+                                    entity,
+                                ) {
+                                    Some(sequence_id)
+                                } else {
+                                    None
+                                }
+                            } else {
+                                Some(sequence_id)
+                            }
                         })
                         .next();
 
@@ -245,6 +277,19 @@ impl CharacterControlTransitionsTransitionSystem {
             }
         }
     } // kcov-ignore
+
+    fn transition_requirement_met(
+        ControlTransitionRequirementSystemData {
+            health_pointses: _health_pointses,
+            skill_pointses: _skill_pointses,
+            charge_pointses: _charge_pointses,
+        }: &ControlTransitionRequirementSystemData,
+        _control_transition_requirement: ControlTransitionRequirement,
+        _entity: Entity,
+    ) -> bool {
+        // TODO: Check if character meets requirement.
+        true
+    }
 }
 
 impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
@@ -252,7 +297,11 @@ impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
 
     fn run(
         &mut self,
-        (control_input_ec, mut character_control_transitions_transition_resources): Self::SystemData,
+        (
+            control_input_ec,
+            mut character_control_transitions_transition_resources,
+            control_transition_requirement_system_data,
+        ): Self::SystemData,
     ) {
         self.processed_entities.clear();
 
@@ -267,6 +316,7 @@ impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
                 if let ControlInputEvent::ControlAction(control_action_event_data) = ev {
                     self.handle_event(
                         &mut character_control_transitions_transition_resources,
+                        &control_transition_requirement_system_data,
                         *control_action_event_data,
                     );
                 }
@@ -274,6 +324,7 @@ impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
 
         self.process_control_transition_holds(
             &mut character_control_transitions_transition_resources,
+            &control_transition_requirement_system_data,
         );
     }
 

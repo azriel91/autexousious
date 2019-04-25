@@ -1,6 +1,6 @@
 use amethyst::renderer::{Sprite, SpriteSheet, TextureCoordinates, TextureHandle};
 
-use crate::ColourSpriteSheetParams;
+use crate::{ColourSpriteSheetParams, SpriteGenParams};
 
 /// Generates `SpriteSheet`s with various methods of texture coordinate calculation.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -52,16 +52,17 @@ impl SpriteSheetGen {
             for col in 0..params.column_count {
                 let offset_x = offset_w * col as u32;
                 let offset_y = offset_h * row as u32;
-                let sprite = Self::from_pixel_values(
-                    image_w as u32,
-                    image_h as u32,
-                    params.sprite_w,
-                    params.sprite_h,
-                    offset_x,
-                    offset_y,
-                    [0.; 2],
+                let sprite_gen_params = SpriteGenParams {
+                    image_w: image_w as u32,
+                    image_h: image_h as u32,
+                    sprite_w: params.sprite_w,
+                    sprite_h: params.sprite_h,
+                    pixel_left: offset_x,
+                    pixel_top: offset_y,
+                    offsets: [0; 2],
                     edge_shift,
-                );
+                };
+                let sprite = Self::from_pixel_values(sprite_gen_params);
 
                 sprites.push(sprite);
 
@@ -82,25 +83,18 @@ impl SpriteSheetGen {
     ///
     /// # Parameters
     ///
-    /// * `image_w`: Width of the full sprite sheet.
-    /// * `image_h`: Height of the full sprite sheet.
-    /// * `sprite_w`: Width of the sprite.
-    /// * `sprite_h`: Height of the sprite.
-    /// * `pixel_left`: Pixel X coordinate of the left side of the sprite.
-    /// * `pixel_top`: Pixel Y coordinate of the top of the sprite.
-    /// * `offsets`: Number of pixels to shift the sprite to the left and down relative to the
-    ///              entity.
-    /// * `edge_shift`: Fraction of pixels to shift inward from the edge as texture coordinate
-    ///                 adjustment. `0.` means texture coordinates lie exactly on the pixel edge.
+    /// * `sprite_gen_params`: Parameters to generate a sprite.
     pub fn from_pixel_values(
-        image_w: u32,
-        image_h: u32,
-        sprite_w: u32,
-        sprite_h: u32,
-        pixel_left: u32,
-        pixel_top: u32,
-        offsets: [f32; 2],
-        edge_shift: f32,
+        SpriteGenParams {
+            image_w,
+            image_h,
+            sprite_w,
+            sprite_h,
+            pixel_left,
+            pixel_top,
+            offsets,
+            edge_shift,
+        }: SpriteGenParams,
     ) -> Sprite {
         let image_w = image_w as f32;
         let image_h = image_h as f32;

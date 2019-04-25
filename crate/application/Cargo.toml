@@ -9,8 +9,8 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git" }
 derivative = "1.0.2"
 derive-new = "0.5.6"
 log = "0.4.6"
-ron = "0.4.2"
-serde = "1.0.89"
+ron = "0.5.1"
+serde = "1.0.90"
 toml = "0.5.0"
 
 [dev-dependencies]

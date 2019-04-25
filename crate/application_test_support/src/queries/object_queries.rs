@@ -36,7 +36,8 @@ impl ObjectQueries {
             panic!(
                 "No entities were initialized for the `{}` object type.\n\
                  Ensure you are using `game_base` or are using the `GameLoadingState` to set up \
-                 the application."
+                 the application.",
+                object_type
             )
         })
     }

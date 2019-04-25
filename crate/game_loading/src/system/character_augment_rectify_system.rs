@@ -91,7 +91,7 @@ impl<'s> System<'s> for CharacterAugmentRectifySystem {
 
                 let hp_bar_prefab = HpBarPrefab::new(game_object_entity);
                 hp_bar_prefab
-                    .add_to_entity(hp_bar_entity, &mut hp_bar_prefab_system_data, &[])
+                    .add_to_entity(hp_bar_entity, &mut hp_bar_prefab_system_data, &[], &[])
                     .expect("`HpBarPrefab` failed to augment entity.");
 
                 game_play_entities

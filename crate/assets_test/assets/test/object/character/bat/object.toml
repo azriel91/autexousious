@@ -11,9 +11,9 @@
     [sequences.stand.frames.transitions]
       press_attack = "stand_attack"
       press_jump = "jump"
-      hold_jump = "dash_forward"
+      hold_jump = { next = "dash_forward", sp = 10 }
       hold_defend = "flinch_0"
-      release_special = "dash_back"
+      release_special = [{ next = "dash_back", charge = 10 }]
 
 [sequences.stand_attack]
   [[sequences.stand_attack.frames]]

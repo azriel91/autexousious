@@ -33,7 +33,7 @@ impl DirTraverse {
     ///
     /// * `dir`: Path of the directory to list.
     pub fn entries(dir: &Path) -> Option<impl Iterator<Item = DirEntry>> {
-        Self::read_dir_opt(dir).map(|read_dir| read_dir.filter_map(|entry| entry.ok()))
+        Self::read_dir_opt(dir).map(|read_dir| read_dir.filter_map(Result::ok))
     }
 
     /// Returns `Some(ReadDir)` if the directory is successfully read.

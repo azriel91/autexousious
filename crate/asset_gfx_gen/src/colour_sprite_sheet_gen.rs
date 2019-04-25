@@ -105,8 +105,8 @@ impl ColourSpriteSheetGen {
                 texture_handle,
                 params,
                 sprite_count,
-                image_w as u32,
-                image_h as u32,
+                u32::from(image_w),
+                u32::from(image_h),
             );
 
             loader.load_from_data(sprite_sheet, (), sprite_sheet_assets)
@@ -185,7 +185,7 @@ impl ColourSpriteSheetGen {
                         unsafe {
                             ptr::copy_nonoverlapping(
                                 sprite_colour.as_ptr(),
-                                pixel_row.as_mut_ptr().offset(pixel_index as isize),
+                                pixel_row.as_mut_ptr().add(pixel_index),
                                 pixel_width,
                             )
                         }
@@ -207,9 +207,9 @@ impl ColourSpriteSheetGen {
             (0..sprite_h).for_each(|pixel_row_n| unsafe {
                 ptr::copy_nonoverlapping(
                     pixel_row.as_ptr(),
-                    pixel_data.as_mut_ptr().offset(
-                        (pixel_data_row_offset + pixel_row_n as usize * pixel_row_len) as isize,
-                    ),
+                    pixel_data
+                        .as_mut_ptr()
+                        .add(pixel_data_row_offset + pixel_row_n as usize * pixel_row_len),
                     pixel_row_len,
                 )
             });

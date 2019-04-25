@@ -12,8 +12,10 @@ use character_model::{
         CharacterHandle,
     },
 };
+use derivative::Derivative;
 use object_loading::{GameObjectPrefab, ObjectPrefab};
 use object_model::config::ObjectAssetData;
+use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 use crate::{
@@ -41,6 +43,34 @@ pub enum CharacterPrefab {
     Invalid,
 }
 
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub struct CharacterPrefabSystemData<'s> {
+    #[derivative(Debug = "ignore")]
+    pub object_prefab_system_data: <ObjectPrefab<Character> as PrefabData<'s>>::SystemData,
+    /// `Loader` to load assets.
+    #[derivative(Debug = "ignore")]
+    pub loader: ReadExpect<'s, Loader>,
+    /// `CharacterDefinition` assets.
+    #[derivative(Debug = "ignore")]
+    pub character_definition_assets: Read<'s, AssetStorage<CharacterDefinition>>,
+    /// `CharacterControlTransitions` assets.
+    #[derivative(Debug = "ignore")]
+    pub character_control_transitions_assets: Read<'s, AssetStorage<CharacterControlTransitions>>,
+    /// `CharacterControlTransitionsSequence` assets.
+    #[derivative(Debug = "ignore")]
+    pub character_control_transitions_sequence_assets:
+        Read<'s, AssetStorage<CharacterControlTransitionsSequence>>,
+    /// `Character` assets.
+    #[derivative(Debug = "ignore")]
+    pub character_assets: Read<'s, AssetStorage<Character>>,
+    /// `CharacterHandle` components.
+    #[derivative(Debug = "ignore")]
+    pub character_handles: WriteStorage<'s, CharacterHandle>,
+    /// `CharacterComponentStorages` system data.
+    pub character_component_storages: CharacterComponentStorages<'s>,
+}
+
 impl CharacterPrefab {
     /// Returns a new `CharacterPrefab`.
     ///
@@ -58,39 +88,32 @@ impl CharacterPrefab {
 }
 
 impl<'s> PrefabData<'s> for CharacterPrefab {
-    type SystemData = (
-        <ObjectPrefab<Character> as PrefabData<'s>>::SystemData,
-        ReadExpect<'s, Loader>,
-        Read<'s, AssetStorage<CharacterDefinition>>,
-        Read<'s, AssetStorage<CharacterControlTransitions>>,
-        Read<'s, AssetStorage<CharacterControlTransitionsSequence>>,
-        Read<'s, AssetStorage<Character>>,
-        WriteStorage<'s, CharacterHandle>,
-        CharacterComponentStorages<'s>,
-    );
+    type SystemData = CharacterPrefabSystemData<'s>;
     type Result = ();
 
     fn add_to_entity(
         &self,
         entity: Entity,
-        (
+        CharacterPrefabSystemData {
             object_prefab_system_data,
-            _loader,
-            _character_definition_assets,
-            _character_control_transitions_assets,
-            _character_control_transitions_sequence_assets,
-            _character_assets,
             ref mut character_handles,
             ref mut character_component_storages,
-        ): &mut Self::SystemData,
+            ..
+        }: &mut Self::SystemData,
         entities: &[Entity],
+        children: &[Entity],
     ) -> Result<(), Error> {
         match self {
             CharacterPrefab::Loaded {
                 object_prefab,
                 character_handle,
             } => {
-                object_prefab.add_to_entity(entity, object_prefab_system_data, entities)?;
+                object_prefab.add_to_entity(
+                    entity,
+                    object_prefab_system_data,
+                    entities,
+                    children,
+                )?;
 
                 character_handles
                     .insert(entity, character_handle.clone())
@@ -107,16 +130,15 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
     fn load_sub_assets(
         &mut self,
         progress: &mut ProgressCounter,
-        (
+        CharacterPrefabSystemData {
             object_prefab_system_data,
             loader,
             character_definition_assets,
             character_control_transitions_assets,
             character_control_transitions_sequence_assets,
             character_assets,
-            _character_handles,
-            _character_component_storages,
-        ): &mut Self::SystemData,
+            ..
+        }: &mut Self::SystemData,
     ) -> Result<bool, Error> {
         let (self_, needs_loading_result) = match mem::replace(self, CharacterPrefab::Invalid) {
             CharacterPrefab::Data {
