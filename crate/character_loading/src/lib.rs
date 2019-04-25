@@ -1,5 +1,4 @@
-#![deny(missing_docs)]
-#![deny(missing_debug_implementations)]
+#![deny(missing_debug_implementations, missing_docs)] // kcov-ignore
 
 //! Processes character configuration into the loaded character model.
 

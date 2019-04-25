@@ -1,5 +1,4 @@
-#![deny(missing_docs)]
-#![deny(missing_debug_implementations)]
+#![deny(missing_debug_implementations, missing_docs)] // kcov-ignore
 
 //! Provides the bridging logic to feed UI input to the `game_input` logic.
 

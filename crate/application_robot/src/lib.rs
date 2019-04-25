@@ -1,5 +1,4 @@
-#![deny(missing_docs)] // kcov-ignore
-#![deny(missing_debug_implementations)]
+#![deny(missing_debug_implementations, missing_docs)] // kcov-ignore
 
 //! This crate provides types to support automation of operations in an Amethyst application.
 //!
