@@ -31,9 +31,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameInputStdioBundle {
         let deps = self
             .system_dependencies
             .as_ref()
+            // kcov-ignore-start
             .map_or_else(Vec::new, |deps| {
                 deps.iter().map(AsRef::as_ref).collect::<Vec<&str>>()
             });
+        // kcov-ignore-end
         builder.add(
             MapperSystem::<ControlInputEventStdinMapper>::new(AppEventVariant::ControlInput),
             &MapperSystem::<ControlInputEventStdinMapper>::type_name(),

@@ -33,32 +33,32 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterLoadingBundle {
             Processor::<CharacterDefinition>::new(),
             "character_definition_processor",
             &["component_sequences_processor"],
-        );
+        ); // kcov-ignore
         builder.add(
             ObjectDefinitionToWrapperProcessor::<Character>::new(),
             &ObjectDefinitionToWrapperProcessor::<Character>::type_name(),
             &["character_definition_processor", "sprite_sheet_processor"],
-        );
+        ); // kcov-ignore
         builder.add(
             Processor::<CharacterControlTransitions>::new(),
             "character_control_transitions_processor",
             &[&ObjectDefinitionToWrapperProcessor::<Character>::type_name()],
-        );
+        ); // kcov-ignore
         builder.add(
             Processor::<CharacterControlTransitionsSequence>::new(),
             "character_control_transitions_sequence_processor",
             &["character_control_transitions_processor"],
-        );
+        ); // kcov-ignore
         builder.add(
             Processor::<Character>::new(),
             "character_processor",
             &["character_control_transitions_sequence_processor"],
-        );
+        ); // kcov-ignore
         builder.add(
             PrefabLoaderSystem::<CharacterPrefab>::default(),
             CHARACTER_PREFAB_LOADER_SYSTEM,
             &["character_processor"],
-        );
+        ); // kcov-ignore
         Ok(())
     }
 }

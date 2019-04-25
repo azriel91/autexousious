@@ -77,7 +77,7 @@ mod tests {
                     extra: ControlTransitionRequirement::default(),
                 })),
                 ..Default::default()
-            },
+            }, // kcov-ignore
         )];
         let expected = CharacterSequence::new(ObjectSequence::new(None, frames));
 

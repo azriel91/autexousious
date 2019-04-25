@@ -196,7 +196,7 @@ mod test {
                 MapSelectionWidgetInputSystem::new(),
                 MapSelectionWidgetInputSystem::type_name(),
                 &[]
-            )
+            ) // kcov-ignore
             .with_assertion(|world| assert_events(world, vec![]))
             .run()
             .is_ok()
@@ -230,7 +230,7 @@ mod test {
                 MapSelectionWidgetInputSystem::new(),
                 MapSelectionWidgetInputSystem::type_name(),
                 &[]
-            )
+            ) // kcov-ignore
             .with_assertion(|world| {
                 let empty_snh = SlugAndHandle::from((&*world, ASSETS_MAP_EMPTY_SLUG.clone()));
                 assert_widget(
@@ -279,7 +279,7 @@ mod test {
                 MapSelectionWidgetInputSystem::new(),
                 MapSelectionWidgetInputSystem::type_name(),
                 &[]
-            )
+            ) // kcov-ignore
             .with_assertion(|world| {
                 let last_snh = last_map(world);
                 assert_widget(
@@ -328,7 +328,7 @@ mod test {
                 MapSelectionWidgetInputSystem::new(),
                 MapSelectionWidgetInputSystem::type_name(),
                 &[]
-            )
+            ) // kcov-ignore
             .with_assertion(|world| {
                 let first_snh = first_map(world);
                 assert_widget(
@@ -377,7 +377,7 @@ mod test {
                 MapSelectionWidgetInputSystem::new(),
                 MapSelectionWidgetInputSystem::type_name(),
                 &[]
-            )
+            ) // kcov-ignore
             .with_assertion(|world| {
                 let first_snh = first_map(world);
                 assert_widget(

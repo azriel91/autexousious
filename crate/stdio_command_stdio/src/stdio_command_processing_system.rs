@@ -34,10 +34,12 @@ impl<'s> System<'s> for StdioCommandProcessingSystem {
             .for_each(|ev| match ev {
                 StdioCommandEvent::StateBarrier(StateBarrier { state_id }) => {
                     if let Some(state_id_existing) = (*stdin_command_barrier).state_id.as_ref() {
+                        // kcov-ignore-start
                         warn!(
                             "Existing stdio command barrier exists waiting for state: `{}`.",
                             state_id_existing
                         );
+                        // kcov-ignore-end
                     }
 
                     (*stdin_command_barrier).state_id = Some(*state_id);
@@ -72,13 +74,13 @@ mod test {
                 StdioCommandProcessingSystem::new(),
                 StdioCommandProcessingSystem::type_name(),
                 &[],
-            )
+            ) // kcov-ignore
             .with_setup(|world| {
                 world
                     .write_resource::<EventChannel<StdioCommandEvent>>()
                     .single_write(StdioCommandEvent::StateBarrier(StateBarrier {
                         state_id: StateId::GamePlay,
-                    }));
+                    })); // kcov-ignore
             })
             .with_assertion(|world| {
                 let stdin_command_barrier = world.read_resource::<StdinCommandBarrier>();

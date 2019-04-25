@@ -18,43 +18,38 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CollisionLoadingBundle {
             CollisionLoadingSystem::new(),
             &CollisionLoadingSystem::type_name(),
             &[],
-        );
+        ); // kcov-ignore
         builder.add(
             Processor::<Body>::new(),
             "body_processor",
             &[&CollisionLoadingSystem::type_name()],
-        );
+        ); // kcov-ignore
         builder.add(
             Processor::<Interactions>::new(),
             "interactions_processor",
             &[&CollisionLoadingSystem::type_name()],
-        );
+        ); // kcov-ignore
         Ok(())
     }
 }
 
 #[cfg(test)]
 mod test {
-    use amethyst::assets::AssetStorage;
+    use amethyst::{assets::AssetStorage, Error};
     use amethyst_test::AmethystApplication;
     use collision_model::config::{Body, Interactions};
 
     use super::CollisionLoadingBundle;
 
     #[test]
-    fn bundle_build_adds_body_and_interactions_processor() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AmethystApplication::blank()
-                .with_bundle(CollisionLoadingBundle::new())
-                .with_assertion(|world| {
-                    // Next line will panic if the Processors aren't added
-                    world.read_resource::<AssetStorage<Body>>();
-                    world.read_resource::<AssetStorage<Interactions>>();
-                })
-                .run()
-                .is_ok()
-        );
+    fn bundle_build_adds_body_and_interactions_processor() -> Result<(), Error> {
+        AmethystApplication::blank()
+            .with_bundle(CollisionLoadingBundle::new())
+            .with_assertion(|world| {
+                // Next line will panic if the Processors aren't added
+                world.read_resource::<AssetStorage<Body>>();
+                world.read_resource::<AssetStorage<Interactions>>();
+            })
+            .run()
     }
 }

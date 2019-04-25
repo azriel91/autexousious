@@ -241,8 +241,8 @@ mod test {
         assets::Prefab,
         ecs::{Builder, Entity, SystemData, World},
         shrev::{EventChannel, ReaderId},
+        Error,
     };
-    use amethyst_test::prelude::*;
     use application_test_support::AutexousiousApplication;
     use asset_model::loaded::SlugAndHandle;
     use assets_test::ASSETS_CHAR_BAT_SLUG;
@@ -257,415 +257,371 @@ mod test {
     use crate::{CharacterSelectionWidget, WidgetState};
 
     #[test]
-    fn does_not_send_event_when_controller_input_empty() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::config_base(
-                "does_not_send_event_when_controller_input_empty",
-                false
+    fn does_not_send_event_when_controller_input_empty() -> Result<(), Error> {
+        AutexousiousApplication::config_base(
+            "does_not_send_event_when_controller_input_empty",
+            false,
+        )
+        .with_setup(setup_components)
+        .with_setup(setup_event_reader)
+        .with_setup(|world| {
+            let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
+            setup_widget(
+                world,
+                WidgetState::Inactive,
+                CharacterSelection::Id(bat_snh),
+                ControllerInput::default(),
             )
-            .with_setup(setup_components)
-            .with_setup(setup_event_reader)
-            .with_setup(|world| {
-                let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
-                setup_widget(
-                    world,
-                    WidgetState::Inactive,
-                    CharacterSelection::Id(bat_snh),
-                    ControllerInput::default(),
-                )
-            })
-            .with_system_single(
-                CharacterSelectionWidgetInputSystem::new(),
-                CharacterSelectionWidgetInputSystem::type_name(),
-                &[]
-            )
-            .with_assertion(|world| assert_events(world, vec![]))
-            .run()
-            .is_ok()
-        );
+        })
+        .with_system_single(
+            CharacterSelectionWidgetInputSystem::new(),
+            CharacterSelectionWidgetInputSystem::type_name(),
+            &[],
+        ) // kcov-ignore
+        .with_assertion(|world| assert_events(world, vec![]))
+        .run()
     }
 
     #[test]
-    fn updates_widget_inactive_to_character_select_when_input_attack() {
+    fn updates_widget_inactive_to_character_select_when_input_attack() -> Result<(), Error> {
         let mut controller_input = ControllerInput::default();
         controller_input.attack = true;
 
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::config_base(
-                "updates_widget_inactive_to_character_select_when_input_attack",
-                false
+        AutexousiousApplication::config_base(
+            "updates_widget_inactive_to_character_select_when_input_attack",
+            false,
+        )
+        .with_setup(setup_components)
+        .with_setup(setup_event_reader)
+        .with_setup(move |world| {
+            let first_char = first_character(world);
+            setup_widget(
+                world,
+                WidgetState::Inactive,
+                CharacterSelection::Random(first_char),
+                controller_input,
             )
-            .with_setup(setup_components)
-            .with_setup(setup_event_reader)
-            .with_setup(move |world| {
-                let first_char = first_character(world);
-                setup_widget(
-                    world,
-                    WidgetState::Inactive,
-                    CharacterSelection::Random(first_char),
-                    controller_input,
-                )
-            })
-            .with_system_single(
-                CharacterSelectionWidgetInputSystem::new(),
-                CharacterSelectionWidgetInputSystem::type_name(),
-                &[]
-            )
-            .with_assertion(|world| {
-                let first_char = first_character(world);
-                assert_widget(
-                    world,
-                    CharacterSelectionWidget::new(
-                        WidgetState::CharacterSelect,
-                        CharacterSelection::Random(first_char),
-                    ),
-                )
-            })
-            .with_assertion(|world| assert_events(world, vec![]))
-            .run()
-            .is_ok()
-        );
-    }
-
-    #[test]
-    fn updates_widget_character_select_to_ready_and_sends_event_when_input_attack() {
-        let mut controller_input = ControllerInput::default();
-        controller_input.attack = true;
-
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::config_base(
-                "updates_widget_character_select_to_ready_and_sends_event_when_input_attack",
-                false
-            )
-            .with_setup(setup_components)
-            .with_setup(setup_event_reader)
-            .with_setup(move |world| {
-                let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
-                setup_widget(
-                    world,
+        })
+        .with_system_single(
+            CharacterSelectionWidgetInputSystem::new(),
+            CharacterSelectionWidgetInputSystem::type_name(),
+            &[],
+        ) // kcov-ignore
+        .with_assertion(|world| {
+            let first_char = first_character(world);
+            assert_widget(
+                world,
+                CharacterSelectionWidget::new(
                     WidgetState::CharacterSelect,
-                    CharacterSelection::Id(bat_snh),
-                    controller_input,
-                )
-            })
-            .with_system_single(
-                CharacterSelectionWidgetInputSystem::new(),
-                CharacterSelectionWidgetInputSystem::type_name(),
-                &[]
+                    CharacterSelection::Random(first_char),
+                ),
             )
-            .with_assertion(|world| {
-                let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
-                assert_widget(
-                    world,
-                    CharacterSelectionWidget::new(
-                        WidgetState::Ready,
-                        CharacterSelection::Id(bat_snh),
-                    ),
-                )
-            })
-            .with_assertion(|world| {
-                let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
-                assert_events(
-                    world,
-                    vec![CharacterSelectionEvent::Select {
-                        controller_id: 123,
-                        character_selection: CharacterSelection::Id(bat_snh),
-                    }],
-                )
-            })
-            .run()
-            .is_ok()
-        );
+        })
+        .with_assertion(|world| assert_events(world, vec![]))
+        .run()
     }
 
     #[test]
-    fn sends_confirm_event_when_widget_ready_and_input_attack() {
+    fn updates_widget_character_select_to_ready_and_sends_event_when_input_attack(
+    ) -> Result<(), Error> {
         let mut controller_input = ControllerInput::default();
         controller_input.attack = true;
 
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::config_base(
-                "updates_widget_character_select_to_ready_and_sends_event_when_input_attack",
-                false
+        AutexousiousApplication::config_base(
+            "updates_widget_character_select_to_ready_and_sends_event_when_input_attack",
+            false,
+        )
+        .with_setup(setup_components)
+        .with_setup(setup_event_reader)
+        .with_setup(move |world| {
+            let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
+            setup_widget(
+                world,
+                WidgetState::CharacterSelect,
+                CharacterSelection::Id(bat_snh),
+                controller_input,
             )
-            .with_setup(setup_components)
-            .with_setup(setup_event_reader)
-            .with_setup(move |world| {
-                let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
-                setup_widget(
-                    world,
-                    WidgetState::Ready,
-                    CharacterSelection::Id(bat_snh),
-                    controller_input,
-                )
-            })
-            .with_system_single(
-                CharacterSelectionWidgetInputSystem::new(),
-                CharacterSelectionWidgetInputSystem::type_name(),
-                &[]
+        })
+        .with_system_single(
+            CharacterSelectionWidgetInputSystem::new(),
+            CharacterSelectionWidgetInputSystem::type_name(),
+            &[],
+        ) // kcov-ignore
+        .with_assertion(|world| {
+            let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
+            assert_widget(
+                world,
+                CharacterSelectionWidget::new(WidgetState::Ready, CharacterSelection::Id(bat_snh)),
             )
-            .with_assertion(|world| assert_events(world, vec![CharacterSelectionEvent::Confirm]))
-            .run()
-            .is_ok()
-        );
+        })
+        .with_assertion(|world| {
+            let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
+            assert_events(
+                world,
+                vec![CharacterSelectionEvent::Select {
+                    controller_id: 123,
+                    character_selection: CharacterSelection::Id(bat_snh),
+                }],
+            )
+        })
+        .run()
     }
 
     #[test]
-    fn selects_last_character_when_input_left_and_selection_random() {
+    fn sends_confirm_event_when_widget_ready_and_input_attack() -> Result<(), Error> {
+        let mut controller_input = ControllerInput::default();
+        controller_input.attack = true;
+
+        AutexousiousApplication::config_base(
+            "updates_widget_character_select_to_ready_and_sends_event_when_input_attack",
+            false,
+        )
+        .with_setup(setup_components)
+        .with_setup(setup_event_reader)
+        .with_setup(move |world| {
+            let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
+            setup_widget(
+                world,
+                WidgetState::Ready,
+                CharacterSelection::Id(bat_snh),
+                controller_input,
+            )
+        })
+        .with_system_single(
+            CharacterSelectionWidgetInputSystem::new(),
+            CharacterSelectionWidgetInputSystem::type_name(),
+            &[],
+        ) // kcov-ignore
+        .with_assertion(|world| assert_events(world, vec![CharacterSelectionEvent::Confirm]))
+        .run()
+    }
+
+    #[test]
+    fn selects_last_character_when_input_left_and_selection_random() -> Result<(), Error> {
         let mut controller_input = ControllerInput::default();
         controller_input.x_axis_value = -1.;
 
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::config_base(
-                "selects_last_character_when_input_left_and_selection_random",
-                false
-            )
-            .with_setup(setup_components)
-            .with_setup(setup_event_reader)
-            .with_setup(move |world| {
-                let first_char = first_character(world);
-                setup_widget(
-                    world,
-                    WidgetState::CharacterSelect,
-                    CharacterSelection::Random(first_char),
-                    controller_input,
-                )
-            })
-            .with_system_single(
-                CharacterSelectionWidgetInputSystem::new(),
-                CharacterSelectionWidgetInputSystem::type_name(),
-                &[]
-            )
-            .with_assertion(|world| {
-                let last_char = last_character(world);
-                assert_widget(
-                    world,
-                    CharacterSelectionWidget::new(
-                        WidgetState::CharacterSelect,
-                        CharacterSelection::Id(last_char),
-                    ),
-                )
-            })
-            .with_assertion(|world| {
-                let last_char = last_character(world);
-                assert_events(
-                    world,
-                    vec![CharacterSelectionEvent::Select {
-                        controller_id: 123,
-                        character_selection: CharacterSelection::Id(last_char),
-                    }],
-                )
-            })
-            .run()
-            .is_ok()
-        );
-    }
-
-    #[test]
-    fn selects_first_character_when_input_right_and_selection_random() {
-        let mut controller_input = ControllerInput::default();
-        controller_input.x_axis_value = 1.;
-
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::config_base(
-                "selects_first_character_when_input_right_and_selection_random",
-                false
-            )
-            .with_setup(setup_components)
-            .with_setup(setup_event_reader)
-            .with_setup(move |world| {
-                let first_char = first_character(world);
-                setup_widget(
-                    world,
-                    WidgetState::CharacterSelect,
-                    CharacterSelection::Random(first_char),
-                    controller_input,
-                )
-            })
-            .with_system_single(
-                CharacterSelectionWidgetInputSystem::new(),
-                CharacterSelectionWidgetInputSystem::type_name(),
-                &[]
-            )
-            .with_assertion(|world| {
-                let first_char = first_character(world);
-                assert_widget(
-                    world,
-                    CharacterSelectionWidget::new(
-                        WidgetState::CharacterSelect,
-                        CharacterSelection::Id(first_char),
-                    ),
-                )
-            })
-            .with_assertion(|world| {
-                let first_char = first_character(world);
-                assert_events(
-                    world,
-                    vec![CharacterSelectionEvent::Select {
-                        controller_id: 123,
-                        character_selection: CharacterSelection::Id(first_char),
-                    }],
-                )
-            })
-            .run()
-            .is_ok()
-        );
-    }
-
-    #[test]
-    fn selects_random_when_input_right_and_selection_last_character() {
-        let mut controller_input = ControllerInput::default();
-        controller_input.x_axis_value = 1.;
-
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::config_base(
-                "selects_random_when_input_right_and_selection_last_character",
-                false
-            )
-            .with_setup(setup_components)
-            .with_setup(setup_event_reader)
-            .with_setup(move |world| {
-                let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
-                setup_widget(
-                    world,
-                    WidgetState::CharacterSelect,
-                    CharacterSelection::Id(bat_snh),
-                    controller_input,
-                )
-            })
-            .with_system_single(
-                CharacterSelectionWidgetInputSystem::new(),
-                CharacterSelectionWidgetInputSystem::type_name(),
-                &[]
-            )
-            .with_assertion(|world| {
-                let first_char = first_character(world);
-                assert_widget(
-                    world,
-                    CharacterSelectionWidget::new(
-                        WidgetState::CharacterSelect,
-                        CharacterSelection::Random(first_char),
-                    ),
-                )
-            })
-            .with_assertion(|world| {
-                let first_char = first_character(world);
-                assert_events(
-                    world,
-                    vec![CharacterSelectionEvent::Select {
-                        controller_id: 123,
-                        character_selection: CharacterSelection::Id(first_char),
-                    }],
-                )
-            })
-            .run()
-            .is_ok()
-        );
-    }
-
-    #[test]
-    fn updates_widget_ready_to_character_select_and_sends_event_when_input_jump() {
-        let mut controller_input = ControllerInput::default();
-        controller_input.jump = true;
-
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::config_base(
-                "updates_widget_ready_to_character_select_and_sends_event_when_input_jump",
-                false
-            )
-            .with_setup(setup_components)
-            .with_setup(setup_event_reader)
-            .with_setup(move |world| {
-                let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
-                setup_widget(
-                    world,
-                    WidgetState::Ready,
-                    CharacterSelection::Id(bat_snh),
-                    controller_input,
-                )
-            })
-            .with_system_single(
-                CharacterSelectionWidgetInputSystem::new(),
-                CharacterSelectionWidgetInputSystem::type_name(),
-                &[]
-            )
-            .with_assertion(|world| {
-                let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
-                assert_widget(
-                    world,
-                    CharacterSelectionWidget::new(
-                        WidgetState::CharacterSelect,
-                        CharacterSelection::Id(bat_snh),
-                    ),
-                )
-            })
-            .with_assertion(|world| assert_events(
+        AutexousiousApplication::config_base(
+            "selects_last_character_when_input_left_and_selection_random",
+            false,
+        )
+        .with_setup(setup_components)
+        .with_setup(setup_event_reader)
+        .with_setup(move |world| {
+            let first_char = first_character(world);
+            setup_widget(
                 world,
-                vec![CharacterSelectionEvent::Deselect { controller_id: 123 }]
-            ))
-            .run()
-            .is_ok()
-        );
+                WidgetState::CharacterSelect,
+                CharacterSelection::Random(first_char),
+                controller_input,
+            )
+        })
+        .with_system_single(
+            CharacterSelectionWidgetInputSystem::new(),
+            CharacterSelectionWidgetInputSystem::type_name(),
+            &[],
+        ) // kcov-ignore
+        .with_assertion(|world| {
+            let last_char = last_character(world);
+            assert_widget(
+                world,
+                CharacterSelectionWidget::new(
+                    WidgetState::CharacterSelect,
+                    CharacterSelection::Id(last_char),
+                ),
+            )
+        })
+        .with_assertion(|world| {
+            let last_char = last_character(world);
+            assert_events(
+                world,
+                vec![CharacterSelectionEvent::Select {
+                    controller_id: 123,
+                    character_selection: CharacterSelection::Id(last_char),
+                }],
+            )
+        })
+        .run()
     }
 
     #[test]
-    fn updates_widget_character_select_to_inactive_when_input_jump() {
+    fn selects_first_character_when_input_right_and_selection_random() -> Result<(), Error> {
+        let mut controller_input = ControllerInput::default();
+        controller_input.x_axis_value = 1.;
+
+        AutexousiousApplication::config_base(
+            "selects_first_character_when_input_right_and_selection_random",
+            false,
+        )
+        .with_setup(setup_components)
+        .with_setup(setup_event_reader)
+        .with_setup(move |world| {
+            let first_char = first_character(world);
+            setup_widget(
+                world,
+                WidgetState::CharacterSelect,
+                CharacterSelection::Random(first_char),
+                controller_input,
+            )
+        })
+        .with_system_single(
+            CharacterSelectionWidgetInputSystem::new(),
+            CharacterSelectionWidgetInputSystem::type_name(),
+            &[],
+        ) // kcov-ignore
+        .with_assertion(|world| {
+            let first_char = first_character(world);
+            assert_widget(
+                world,
+                CharacterSelectionWidget::new(
+                    WidgetState::CharacterSelect,
+                    CharacterSelection::Id(first_char),
+                ),
+            )
+        })
+        .with_assertion(|world| {
+            let first_char = first_character(world);
+            assert_events(
+                world,
+                vec![CharacterSelectionEvent::Select {
+                    controller_id: 123,
+                    character_selection: CharacterSelection::Id(first_char),
+                }],
+            )
+        })
+        .run()
+    }
+
+    #[test]
+    fn selects_random_when_input_right_and_selection_last_character() -> Result<(), Error> {
+        let mut controller_input = ControllerInput::default();
+        controller_input.x_axis_value = 1.;
+
+        AutexousiousApplication::config_base(
+            "selects_random_when_input_right_and_selection_last_character",
+            false,
+        )
+        .with_setup(setup_components)
+        .with_setup(setup_event_reader)
+        .with_setup(move |world| {
+            let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
+            setup_widget(
+                world,
+                WidgetState::CharacterSelect,
+                CharacterSelection::Id(bat_snh),
+                controller_input,
+            )
+        })
+        .with_system_single(
+            CharacterSelectionWidgetInputSystem::new(),
+            CharacterSelectionWidgetInputSystem::type_name(),
+            &[],
+        ) // kcov-ignore
+        .with_assertion(|world| {
+            let first_char = first_character(world);
+            assert_widget(
+                world,
+                CharacterSelectionWidget::new(
+                    WidgetState::CharacterSelect,
+                    CharacterSelection::Random(first_char),
+                ),
+            )
+        })
+        .with_assertion(|world| {
+            let first_char = first_character(world);
+            assert_events(
+                world,
+                vec![CharacterSelectionEvent::Select {
+                    controller_id: 123,
+                    character_selection: CharacterSelection::Id(first_char),
+                }],
+            )
+        })
+        .run()
+    }
+
+    #[test]
+    fn updates_widget_ready_to_character_select_and_sends_event_when_input_jump(
+    ) -> Result<(), Error> {
         let mut controller_input = ControllerInput::default();
         controller_input.jump = true;
 
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::config_base(
-                "updates_widget_character_select_to_inactive_when_input_jump",
-                false
+        AutexousiousApplication::config_base(
+            "updates_widget_ready_to_character_select_and_sends_event_when_input_jump",
+            false,
+        )
+        .with_setup(setup_components)
+        .with_setup(setup_event_reader)
+        .with_setup(move |world| {
+            let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
+            setup_widget(
+                world,
+                WidgetState::Ready,
+                CharacterSelection::Id(bat_snh),
+                controller_input,
             )
-            .with_setup(setup_components)
-            .with_setup(setup_event_reader)
-            .with_setup(move |world| {
-                let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
-                setup_widget(
-                    world,
+        })
+        .with_system_single(
+            CharacterSelectionWidgetInputSystem::new(),
+            CharacterSelectionWidgetInputSystem::type_name(),
+            &[],
+        ) // kcov-ignore
+        .with_assertion(|world| {
+            let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
+            assert_widget(
+                world,
+                CharacterSelectionWidget::new(
                     WidgetState::CharacterSelect,
                     CharacterSelection::Id(bat_snh),
-                    controller_input,
-                )
-            })
-            .with_system_single(
-                CharacterSelectionWidgetInputSystem::new(),
-                CharacterSelectionWidgetInputSystem::type_name(),
-                &[]
+                ),
             )
-            .with_assertion(|world| {
-                let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
-                assert_widget(
-                    world,
-                    CharacterSelectionWidget::new(
-                        WidgetState::Inactive,
-                        CharacterSelection::Id(bat_snh),
-                    ),
-                )
-            })
-            .with_assertion(|world| assert_events(world, vec![]))
-            .run()
-            .is_ok()
-        );
+        })
+        .with_assertion(|world| {
+            assert_events(
+                world,
+                vec![CharacterSelectionEvent::Deselect { controller_id: 123 }],
+            )
+        })
+        .run()
+    }
+
+    #[test]
+    fn updates_widget_character_select_to_inactive_when_input_jump() -> Result<(), Error> {
+        let mut controller_input = ControllerInput::default();
+        controller_input.jump = true;
+
+        AutexousiousApplication::config_base(
+            "updates_widget_character_select_to_inactive_when_input_jump",
+            false,
+        )
+        .with_setup(setup_components)
+        .with_setup(setup_event_reader)
+        .with_setup(move |world| {
+            let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
+            setup_widget(
+                world,
+                WidgetState::CharacterSelect,
+                CharacterSelection::Id(bat_snh),
+                controller_input,
+            )
+        })
+        .with_system_single(
+            CharacterSelectionWidgetInputSystem::new(),
+            CharacterSelectionWidgetInputSystem::type_name(),
+            &[],
+        ) // kcov-ignore
+        .with_assertion(|world| {
+            let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
+            assert_widget(
+                world,
+                CharacterSelectionWidget::new(
+                    WidgetState::Inactive,
+                    CharacterSelection::Id(bat_snh),
+                ),
+            )
+        })
+        .with_assertion(|world| assert_events(world, vec![]))
+        .run()
     }
 
     fn first_character(world: &mut World) -> SlugAndHandle<Prefab<CharacterPrefab>> {
@@ -695,7 +651,7 @@ mod test {
             .write_resource::<EventChannel<CharacterSelectionEvent>>()
             .register_reader(); // kcov-ignore
 
-        world.add_resource(EffectReturn(event_channel_reader));
+        world.add_resource(event_channel_reader);
     }
 
     fn setup_widget(
@@ -715,11 +671,11 @@ mod test {
             .with(Last(ControllerInput::default()))
             .build();
 
-        world.add_resource(EffectReturn(widget));
+        world.add_resource(widget);
     }
 
     fn assert_widget(world: &mut World, expected: CharacterSelectionWidget) {
-        let widget_entity = &world.read_resource::<EffectReturn<Entity>>().0;
+        let widget_entity = world.read_resource::<Entity>();
 
         let widgets = world.read_storage::<CharacterSelectionWidget>();
         let widget = widgets
@@ -730,9 +686,8 @@ mod test {
     }
 
     fn assert_events(world: &mut World, events: Vec<CharacterSelectionEvent>) {
-        let mut event_channel_reader = &mut world
-            .write_resource::<EffectReturn<ReaderId<CharacterSelectionEvent>>>()
-            .0;
+        let mut event_channel_reader =
+            &mut world.write_resource::<ReaderId<CharacterSelectionEvent>>();
 
         let character_selection_event_channel =
             world.read_resource::<EventChannel<CharacterSelectionEvent>>();

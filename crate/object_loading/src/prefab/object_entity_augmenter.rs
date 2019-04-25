@@ -94,20 +94,24 @@ impl ObjectEntityAugmenter {
             .component_sequences_handles
             .get(&sequence_id)
             .unwrap_or_else(|| {
+                // kcov-ignore-start
                 panic!(
                     "Failed to get `ComponentSequencesHandle` for sequence ID: \
                      `{:?}`.",
                     sequence_id
                 );
+                // kcov-ignore-end
             });
 
         let component_sequences = component_sequences_assets
             .get(component_sequences_handle)
             .unwrap_or_else(|| {
+                // kcov-ignore-start
                 panic!(
                     "Expected component_sequences to be loaded for sequence_id: `{:?}`",
                     sequence_id
                 )
+                // kcov-ignore-end
             });
 
         let frame_index_clock =

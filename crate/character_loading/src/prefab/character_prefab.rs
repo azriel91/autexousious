@@ -123,7 +123,9 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
 
                 Ok(())
             }
+            // kcov-ignore-start
             _ => panic!("Expected self to be in the `CharacterPrefab::Loaded` variant."),
+            // kcov-ignore-end
         }
     }
 
@@ -175,6 +177,8 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
                         Ok(true),
                     )
                 } else {
+                    // kcov-ignore-start
+                    // Should be `unreachable!()`, but would prefer a good error message.
                     (
                         CharacterPrefab::Data {
                             object_prefab,
@@ -184,10 +188,13 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
                             "Expected `object_prefab` to be `Handle` variant.",
                         ))),
                     )
+                    // kcov-ignore-end
                 }
             }
+            // kcov-ignore-start
             value @ CharacterPrefab::Loaded { .. } => (value, Ok(false)),
             CharacterPrefab::Invalid => unreachable!(),
+            // kcov-ignore-end
         };
         *self = self_;
 

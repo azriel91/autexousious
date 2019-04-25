@@ -1,3 +1,4 @@
+// kcov-ignore-start
 // We cannot test `HpBarUpdateSystem` directly in its own module due to Rust's behaviour in the
 // following scenario:
 //
@@ -21,6 +22,7 @@
 // `crate::ComponentA` gives us a different *version* of `ComponentA`.
 //
 // Paraphrased, `ComponentA` in the tests is different from `ComponentA` from `b_crate`.
+// kcov-ignore-end
 
 use amethyst::{
     core::{Parent, Transform},

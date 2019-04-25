@@ -22,7 +22,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for StdioCommandStdioBundle {
             StdioCommandProcessingSystem::new(),
             &StdioCommandProcessingSystem::type_name(),
             &[&MapperSystem::<StdioCommandEventStdinMapper>::type_name()],
-        );
+        ); // kcov-ignore
         Ok(())
     }
 }
