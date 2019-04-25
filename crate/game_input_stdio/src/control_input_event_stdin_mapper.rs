@@ -186,10 +186,12 @@ mod tests {
                     };
                     assert_eq!(&Box::new(expected_error), game_input_stdio_error);
                 } else {
+                    // kcov-ignore-start
                     panic!(
                         "Expected `GameInputStdioError` error but was `{:?}`",
                         error.as_error()
-                    ); // kcov-ignore
+                    );
+                    // kcov-ignore-end
                 }
             })
             .run()

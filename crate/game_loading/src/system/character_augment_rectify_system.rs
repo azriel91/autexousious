@@ -178,7 +178,9 @@ mod tests {
             },
             |world| {
                 let char_entity = *world.read_resource::<Entity>();
+                // kcov-ignore-start
                 assert_eq!(
+                    // kcov-ignore-end
                     // See assets_test/assets/test/map/fade/map.toml
                     Position::<f32>::new(400., 200., 100.),
                     *world
@@ -245,7 +247,7 @@ mod tests {
                 CharacterAugmentRectifySystem,
                 CharacterAugmentRectifySystem::type_name(),
                 &[],
-            )
+            ) // kcov-ignore
             .with_assertion(fn_assert)
             .run()
     }

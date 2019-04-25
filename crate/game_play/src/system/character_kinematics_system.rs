@@ -380,11 +380,13 @@ mod tests {
         velocity_expected: Velocity<f32>,
     ) -> Result<(), Error> {
         AutexousiousApplication::game_base(test_name, false)
+            // kcov-ignore-start
             .with_system(
                 CharacterKinematicsSystem::new(),
                 CharacterKinematicsSystem::type_name(),
                 &[],
             )
+            // kcov-ignore-end
             .with_setup(move |world| {
                 let (
                     entities,

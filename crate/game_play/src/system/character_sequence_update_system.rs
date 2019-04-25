@@ -85,7 +85,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             // changed.
             let character_sequence_id = character_sequence_ids.get(entity);
             if character_sequence_id.is_none() {
-                continue;
+                continue; // kcov-ignore
             }
             let character_sequence_id =
                 character_sequence_id.expect("Expected `CharacterSequenceId` to exist.");
@@ -135,7 +135,12 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::{assets::AssetStorage, ecs::prelude::*};
+    use amethyst::{
+        assets::AssetStorage,
+        ecs::{Join, Read, ReadExpect, ReadStorage, WriteStorage},
+        renderer::Flipped,
+        Error,
+    };
     use application_test_support::AutexousiousApplication;
     use character_model::config::CharacterSequenceId;
     use game_input::ControllerInput;
@@ -148,90 +153,159 @@ mod tests {
     use super::CharacterSequenceUpdateSystem;
 
     #[test]
-    fn updates_walk_x_and_z_velocity() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::game_base("updates_walk_x_and_z_velocity", false)
-                .with_setup(|world| {
-                    world.exec(
-                        |(
-                            map_selection,
-                            maps,
-                            mut controller_inputs,
-                            mut character_sequence_ids,
-                            mut sequence_statuses,
-                            mut positions,
-                            mut mirroreds,
-                            mut groundings,
-                        ): (
-                            ReadExpect<'_, MapSelection>,
-                            Read<'_, AssetStorage<Map>>,
-                            WriteStorage<'_, ControllerInput>,
-                            WriteStorage<'_, CharacterSequenceId>,
-                            WriteStorage<'_, SequenceStatus>,
-                            WriteStorage<'_, Position<f32>>,
-                            WriteStorage<'_, Mirrored>,
-                            WriteStorage<'_, Grounding>,
-                        )| {
-                            let map = maps
-                                .get(map_selection.handle())
-                                .expect("Expected map to be loaded.");
+    fn updates_walk_x_and_z_velocity() -> Result<(), Error> {
+        let mut controller_input = ControllerInput::default();
+        controller_input.x_axis_value = -1.;
+        controller_input.z_axis_value = -1.;
 
-                            for (
-                                controller_input,
-                                character_sequence_id,
-                                sequence_status,
-                                position,
-                                mirrored,
-                                grounding,
-                            ) in (
-                                &mut controller_inputs,
-                                &mut character_sequence_ids,
-                                &mut sequence_statuses,
-                                &mut positions,
-                                &mut mirroreds,
-                                &mut groundings,
-                            )
-                                .join()
-                            {
-                                controller_input.x_axis_value = -1.;
-                                controller_input.z_axis_value = -1.;
+        run_test(
+            "updates_walk_x_and_z_velocity",
+            SetupParams {
+                sequence_id: CharacterSequenceId::Stand,
+                controller_input,
+                mirrored: Mirrored(false),
+            },
+            ExpectedParams {
+                sequence_id: CharacterSequenceId::Walk,
+                mirrored: Mirrored(true),
+                flipped: Flipped::Horizontal,
+            },
+        )
+    }
 
-                                *character_sequence_id = CharacterSequenceId::Stand;
-                                *sequence_status = SequenceStatus::Ongoing;
-                                *mirrored = Mirrored(false);
-                                *grounding = Grounding::OnGround;
+    #[test]
+    fn flipped_is_none_when_walking_right() -> Result<(), Error> {
+        let mut controller_input = ControllerInput::default();
+        controller_input.x_axis_value = 1.;
 
-                                position[1] = map.margins.bottom;
-                            }
-                        },
-                    );
-                })
-                .with_system_single(
-                    CharacterSequenceUpdateSystem::new(),
-                    CharacterSequenceUpdateSystem::type_name(),
-                    &[]
+        run_test(
+            "updates_walk_x_and_z_velocity",
+            SetupParams {
+                sequence_id: CharacterSequenceId::Stand,
+                controller_input,
+                mirrored: Mirrored(false),
+            },
+            ExpectedParams {
+                sequence_id: CharacterSequenceId::Walk,
+                mirrored: Mirrored(false),
+                flipped: Flipped::None,
+            },
+        )
+    }
+
+    fn run_test(
+        test_name: &str,
+        SetupParams {
+            sequence_id: setup_sequence_id,
+            controller_input: setup_controller_input,
+            mirrored: setup_mirrored,
+        }: SetupParams,
+        ExpectedParams {
+            sequence_id: expected_sequence_id,
+            mirrored: expected_mirrored,
+            flipped: expected_flipped,
+        }: ExpectedParams,
+    ) -> Result<(), Error> {
+        AutexousiousApplication::game_base(test_name, false)
+            .with_setup(move |world| {
+                let (
+                    map_selection,
+                    maps,
+                    mut controller_inputs,
+                    mut character_sequence_ids,
+                    mut sequence_statuses,
+                    mut positions,
+                    mut mirroreds,
+                    mut groundings,
+                ) = world.system_data::<TestSystemData>();
+
+                let map = maps
+                    .get(map_selection.handle())
+                    .expect("Expected map to be loaded.");
+
+                (
+                    &mut controller_inputs,
+                    &mut character_sequence_ids,
+                    &mut sequence_statuses,
+                    &mut positions,
+                    &mut mirroreds,
+                    &mut groundings,
                 )
-                .with_assertion(|world| {
-                    world.exec(
-                        |(character_sequence_ids, sequence_statuses, mirroreds): (
-                            ReadStorage<'_, CharacterSequenceId>,
-                            ReadStorage<'_, SequenceStatus>,
-                            ReadStorage<'_, Mirrored>,
+                    .join()
+                    .for_each(
+                        |(
+                            controller_input,
+                            character_sequence_id,
+                            sequence_status,
+                            position,
+                            mirrored,
+                            grounding,
                         )| {
-                            for (character_sequence_id, sequence_status, mirrored) in
-                                (&character_sequence_ids, &sequence_statuses, &mirroreds).join()
-                            {
-                                assert_eq!(CharacterSequenceId::Walk, *character_sequence_id);
-                                assert_eq!(SequenceStatus::Begin, *sequence_status);
-                                assert_eq!(Mirrored(true), *mirrored);
-                            }
+                            *controller_input = setup_controller_input;
+
+                            *character_sequence_id = setup_sequence_id;
+                            *sequence_status = SequenceStatus::Ongoing;
+                            *mirrored = setup_mirrored;
+                            *grounding = Grounding::OnGround;
+
+                            position[1] = map.margins.bottom;
                         },
                     );
-                })
-                .run()
-                .is_ok()
-        );
+            })
+            .with_system_single(
+                CharacterSequenceUpdateSystem::new(),
+                CharacterSequenceUpdateSystem::type_name(),
+                &[],
+            ) // kcov-ignore
+            .with_assertion(move |world| {
+                world.exec(
+                    |(character_sequence_ids, sequence_statuses, mirroreds, flippeds): (
+                        ReadStorage<'_, CharacterSequenceId>,
+                        ReadStorage<'_, SequenceStatus>,
+                        ReadStorage<'_, Mirrored>,
+                        ReadStorage<'_, Flipped>,
+                    )| {
+                        for (character_sequence_id, sequence_status, mirrored, flipped) in (
+                            &character_sequence_ids,
+                            &sequence_statuses,
+                            &mirroreds,
+                            &flippeds,
+                        )
+                            .join()
+                        {
+                            assert_eq!(expected_sequence_id, *character_sequence_id);
+                            assert_eq!(SequenceStatus::Begin, *sequence_status);
+                            assert_eq!(expected_mirrored, *mirrored);
+                            assert_eq!(expected_flipped, *flipped);
+                        }
+                    },
+                );
+            })
+            .run()
+    }
+
+    type TestSystemData<'s> = (
+        ReadExpect<'s, MapSelection>,
+        Read<'s, AssetStorage<Map>>,
+        WriteStorage<'s, ControllerInput>,
+        WriteStorage<'s, CharacterSequenceId>,
+        WriteStorage<'s, SequenceStatus>,
+        WriteStorage<'s, Position<f32>>,
+        WriteStorage<'s, Mirrored>,
+        WriteStorage<'s, Grounding>,
+    );
+
+    #[derive(Debug)]
+    struct SetupParams {
+        sequence_id: CharacterSequenceId,
+        controller_input: ControllerInput,
+        mirrored: Mirrored,
+    }
+
+    #[derive(Debug)]
+    struct ExpectedParams {
+        sequence_id: CharacterSequenceId,
+        mirrored: Mirrored,
+        flipped: Flipped,
     }
 }

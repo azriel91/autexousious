@@ -306,7 +306,7 @@ mod tests {
                     assert_eq!(&expected_interactions, interactions);
                 },
             );
-    }
+    } // kcov-ignore
 
     fn body_0() -> Body {
         Body::new(vec![Volume::Box {

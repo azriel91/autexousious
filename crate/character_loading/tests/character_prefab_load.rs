@@ -143,7 +143,7 @@ fn character_definition() -> CharacterDefinition {
                 extra: ControlTransitionRequirement::default(),
             })),
             ..Default::default()
-        },
+        }, // kcov-ignore
     )];
     let sequence = CharacterSequence::new(ObjectSequence::new(
         Some(CharacterSequenceId::Stand),
@@ -175,7 +175,7 @@ fn sprite_sheet_handles(world: &World) -> Vec<SpriteSheetHandle> {
         sprites: vec![Sprite::from_pixel_values(
             image_w, image_h, sprite_w, sprite_h, pixel_left, pixel_top, offsets,
         )],
-    };
+    }; // kcov-ignore
 
     vec![loader.load_from_data(sprite_sheet, (), &sprite_sheet_assets)]
 }

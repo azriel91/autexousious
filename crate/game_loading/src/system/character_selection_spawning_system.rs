@@ -70,7 +70,10 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
 mod tests {
     use std::{collections::HashMap, env};
 
-    use amethyst::ecs::prelude::*;
+    use amethyst::{
+        ecs::{Builder, Entity},
+        Error,
+    };
     use amethyst_test::{AmethystApplication, EffectReturn, PopState};
     use application_event::{AppEvent, AppEventReader};
     use asset_model::loaded::SlugAndHandle;
@@ -90,66 +93,55 @@ mod tests {
     use crate::{CharacterAugmentStatus, GameLoadingStatus};
 
     #[test]
-    fn returns_if_augment_status_is_not_prefab() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AmethystApplication::render_base("returns_if_augment_status_is_not_prefab", false)
-                .with_custom_event_type::<AppEvent, AppEventReader>()
-                .with_bundle(SpriteLoadingBundle::new())
-                .with_bundle(SequenceLoadingBundle::new())
-                .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
-                .with_bundle(CollisionLoadingBundle::new())
-                .with_bundle(MapLoadingBundle::new())
-                .with_bundle(CharacterLoadingBundle::new())
-                .with_state(|| LoadingState::new(PopState))
-                .with_setup(|world| {
-                    let mut game_loading_status = GameLoadingStatus::new();
-                    game_loading_status.character_augment_status = CharacterAugmentStatus::Rectify;
-                    world.add_resource(game_loading_status);
+    fn returns_if_augment_status_is_not_prefab() -> Result<(), Error> {
+        AmethystApplication::render_base("returns_if_augment_status_is_not_prefab", false)
+            .with_custom_event_type::<AppEvent, AppEventReader>()
+            .with_bundle(SpriteLoadingBundle::new())
+            .with_bundle(SequenceLoadingBundle::new())
+            .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
+            .with_bundle(CollisionLoadingBundle::new())
+            .with_bundle(MapLoadingBundle::new())
+            .with_bundle(CharacterLoadingBundle::new())
+            .with_state(|| LoadingState::new(PopState))
+            .with_setup(|world| {
+                let mut game_loading_status = GameLoadingStatus::new();
+                game_loading_status.character_augment_status = CharacterAugmentStatus::Rectify;
+                world.add_resource(game_loading_status);
 
-                    let char_entity = world.create_entity().build();
-                    let mut objects = HashMap::new();
-                    objects.insert(ObjectType::Character, vec![char_entity.clone()]);
+                let char_entity = world.create_entity().build();
+                let mut objects = HashMap::new();
+                objects.insert(ObjectType::Character, vec![char_entity.clone()]);
 
-                    world.add_resource(GameEntities::new(objects, Vec::new()));
-                    world.add_resource(EffectReturn(char_entity));
-                })
-                .with_system_single(
-                    CharacterSelectionSpawningSystem,
-                    CharacterSelectionSpawningSystem::type_name(),
-                    &[],
-                )
-                .with_assertion(|world| {
-                    let char_entity = &world.read_resource::<EffectReturn<Entity>>().0;
-                    assert_eq!(
-                        char_entity,
-                        world
-                            .read_resource::<GameEntities>()
-                            .objects
-                            .get(&ObjectType::Character)
-                            .expect("Expected `ObjectType::Character` key in `GameEntities`.")
-                            .iter()
-                            .next()
-                            .expect("Expected characters to have an entity.")
-                    );
-                })
-                .run()
-                .is_ok()
-        );
+                world.add_resource(GameEntities::new(objects, Vec::new()));
+                world.add_resource(EffectReturn(char_entity));
+            })
+            .with_system_single(
+                CharacterSelectionSpawningSystem,
+                CharacterSelectionSpawningSystem::type_name(),
+                &[],
+            ) // kcov-ignore
+            .with_assertion(|world| {
+                let char_entity = &world.read_resource::<EffectReturn<Entity>>().0;
+                assert_eq!(
+                    char_entity,
+                    world
+                        .read_resource::<GameEntities>()
+                        .objects
+                        .get(&ObjectType::Character)
+                        .expect("Expected `ObjectType::Character` key in `GameEntities`.")
+                        .iter()
+                        .next()
+                        .expect("Expected characters to have an entity.")
+                );
+            })
+            .run()
     }
 
     #[test]
-    fn spawns_characters_when_they_havent_been_spawned() {
+    fn spawns_characters_when_they_havent_been_spawned() -> Result<(), Error> {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AmethystApplication::render_base(
-                "spawns_characters_when_they_havent_been_spawned",
-                false
-            )
+        AmethystApplication::render_base("spawns_characters_when_they_havent_been_spawned", false)
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
@@ -170,7 +162,7 @@ mod tests {
                 CharacterSelectionSpawningSystem,
                 CharacterSelectionSpawningSystem::type_name(),
                 &[],
-            )
+            ) // kcov-ignore
             .with_assertion(|world| {
                 assert!(!world
                     .read_resource::<GameEntities>()
@@ -186,7 +178,5 @@ mod tests {
                 );
             })
             .run()
-            .is_ok()
-        );
     }
 }

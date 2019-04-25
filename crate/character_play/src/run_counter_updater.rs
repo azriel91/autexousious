@@ -71,6 +71,22 @@ mod tests {
     use super::RunCounterUpdater;
 
     #[test]
+    fn unused_when_not_stand_or_walk() {
+        let input = ControllerInput::default();
+
+        assert_eq!(
+            RunCounter::Unused,
+            RunCounterUpdater::update(
+                RunCounter::Unused,
+                &input,
+                CharacterSequenceId::Jump,
+                Mirrored::default(),
+                Grounding::Airborne
+            )
+        );
+    }
+
+    #[test]
     fn none_when_grounding_is_airborne_and_unused() {
         let input = ControllerInput::default();
 

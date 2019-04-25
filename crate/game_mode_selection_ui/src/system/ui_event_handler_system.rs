@@ -54,9 +54,10 @@ impl<'s> System<'s> for UiEventHandlerSystem {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        ecs::prelude::*,
+        ecs::{Builder, World},
         shrev::{EventChannel, ReaderId},
         ui::{UiEvent, UiEventType},
+        Error,
     };
     use amethyst_test::prelude::*;
     use application_menu::{MenuEvent, MenuItem};
@@ -73,8 +74,8 @@ mod test {
     }
 
     #[test]
-    fn run_without_ui_events_does_not_send_menu_event() {
-        assert!(AmethystApplication::ui_base::<String, String>()
+    fn run_without_ui_events_does_not_send_menu_event() -> Result<(), Error> {
+        AmethystApplication::ui_base::<String, String>()
             .with_system(UiEventHandlerSystem::new(), "", &[])
             .with_setup(setup_menu_event_reader)
             .with_assertion(|world| {
@@ -88,12 +89,11 @@ mod test {
                 assert_eq!(None, menu_event_iter.next());
             })
             .run()
-            .is_ok());
     }
 
     #[test]
-    fn run_with_non_click_ui_event_does_not_send_menu_event() {
-        assert!(AmethystApplication::ui_base::<String, String>()
+    fn run_with_non_click_ui_event_does_not_send_menu_event() -> Result<(), Error> {
+        AmethystApplication::ui_base::<String, String>()
             .with_system(UiEventHandlerSystem::new(), "", &[])
             .with_setup(setup_menu_event_reader)
             .with_setup(|world| {
@@ -126,12 +126,11 @@ mod test {
                 assert_eq!(None, menu_event_iter.next());
             })
             .run()
-            .is_ok());
     }
 
     #[test]
-    fn run_with_click_ui_event_sends_select_menu_event() {
-        assert!(AmethystApplication::ui_base::<String, String>()
+    fn run_with_click_ui_event_sends_select_menu_event() -> Result<(), Error> {
+        AmethystApplication::ui_base::<String, String>()
             .with_system(UiEventHandlerSystem::new(), "", &[])
             .with_setup(setup_menu_event_reader)
             .with_setup(|world| {
@@ -147,7 +146,7 @@ mod test {
                     event_type: UiEventType::Click,
                     target: entity,
                 });
-            })
+            }) // kcov-ignore
             .with_assertion(|world| {
                 let mut menu_event_channel_reader = &mut world
                     .write_resource::<EffectReturn<ReaderId<MenuEvent<GameModeIndex>>>>()
@@ -163,12 +162,11 @@ mod test {
                 assert_eq!(None, menu_event_iter.next());
             })
             .run()
-            .is_ok());
     }
 
     #[test]
-    fn run_with_click_ui_event_on_non_menu_item_does_not_send_menu_event() {
-        assert!(AmethystApplication::ui_base::<String, String>()
+    fn run_with_click_ui_event_on_non_menu_item_does_not_send_menu_event() -> Result<(), Error> {
+        AmethystApplication::ui_base::<String, String>()
             .with_system(UiEventHandlerSystem::new(), "", &[])
             .with_setup(setup_menu_event_reader)
             .with_setup(|world| {
@@ -179,7 +177,7 @@ mod test {
                     event_type: UiEventType::Click,
                     target: entity,
                 });
-            })
+            }) // kcov-ignore
             .with_assertion(|world| {
                 let mut menu_event_channel_reader = &mut world
                     .write_resource::<EffectReturn<ReaderId<MenuEvent<GameModeIndex>>>>()
@@ -191,6 +189,5 @@ mod test {
                 assert_eq!(None, menu_event_iter.next());
             })
             .run()
-            .is_ok());
     }
 }

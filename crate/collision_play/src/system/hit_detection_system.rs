@@ -272,10 +272,51 @@ mod tests {
             .run()
     }
 
+    #[test]
+    fn does_not_limit_hit_events_to_when_hit_limit_unlimited() -> Result<(), Error> {
+        AmethystApplication::blank()
+            .with_system(HitDetectionSystem::new(), "", &[])
+            .with_setup(setup_event_reader)
+            .with_effect(|world| {
+                let entity_from = world.create_entity().build();
+                let entity_tos = (0..(HIT_LIMIT + 5))
+                    .map(|_| {
+                        let entity_to = world.create_entity().build();
+                        send_event(
+                            world,
+                            collision_event_with_hit_limit(
+                                entity_from,
+                                entity_to,
+                                HitLimit::Unlimited,
+                            ),
+                        );
+                        entity_to
+                    })
+                    .collect::<Vec<Entity>>();
+
+                world.add_resource((entity_from, entity_tos));
+            })
+            .with_assertion(|world| {
+                let (entity_from, entity_tos) = {
+                    let (entity_from, ref mut entity_tos) =
+                        &mut *world.write_resource::<(Entity, Vec<Entity>)>();
+                    (*entity_from, entity_tos.drain(..).collect::<Vec<Entity>>())
+                };
+                let hit_events = entity_tos
+                    .iter()
+                    .map(|entity_to| {
+                        hit_event_with_hit_limit(entity_from, *entity_to, HitLimit::Unlimited)
+                    })
+                    .collect::<Vec<HitEvent>>();
+                assert_events(world, hit_events);
+            })
+            .run()
+    }
+
     fn setup_event_reader(world: &mut World) {
         let hit_event_rid = world
             .write_resource::<EventChannel<HitEvent>>()
-            .register_reader();
+            .register_reader(); // kcov-ignore
 
         world.add_resource(hit_event_rid);
     }
@@ -283,12 +324,12 @@ mod tests {
     fn send_event(world: &mut World, event: CollisionEvent) {
         let mut ec = world.write_resource::<EventChannel<CollisionEvent>>();
         ec.single_write(event)
-    }
+    } // kcov-ignore
 
     fn send_events(world: &mut World, events: Vec<CollisionEvent>) {
         let mut ec = world.write_resource::<EventChannel<CollisionEvent>>();
         ec.iter_write(events)
-    }
+    } // kcov-ignore
 
     fn hit_repeat_trackers(entity_to: Entity) -> HitRepeatTrackers {
         let mut slot_map = SlotMap::new();
@@ -300,21 +341,27 @@ mod tests {
     }
 
     fn collision_event(entity_from: Entity, entity_to: Entity) -> CollisionEvent {
-        CollisionEvent::new(
-            entity_from,
-            entity_to,
-            interaction(HitLimit::Limit(HIT_LIMIT)),
-            body(),
-        )
+        collision_event_with_hit_limit(entity_from, entity_to, HitLimit::Limit(HIT_LIMIT))
+    }
+
+    fn collision_event_with_hit_limit(
+        entity_from: Entity,
+        entity_to: Entity,
+        hit_limit: HitLimit,
+    ) -> CollisionEvent {
+        CollisionEvent::new(entity_from, entity_to, interaction(hit_limit), body())
     }
 
     fn hit_event(entity_from: Entity, entity_to: Entity) -> HitEvent {
-        HitEvent::new(
-            entity_from,
-            entity_to,
-            interaction(HitLimit::Limit(HIT_LIMIT)),
-            body(),
-        )
+        hit_event_with_hit_limit(entity_from, entity_to, HitLimit::Limit(HIT_LIMIT))
+    }
+
+    fn hit_event_with_hit_limit(
+        entity_from: Entity,
+        entity_to: Entity,
+        hit_limit: HitLimit,
+    ) -> HitEvent {
+        HitEvent::new(entity_from, entity_to, interaction(hit_limit), body())
     }
 
     fn interaction(hit_limit: HitLimit) -> Interaction {

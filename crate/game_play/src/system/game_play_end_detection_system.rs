@@ -162,7 +162,7 @@ mod test {
         let reader_id = {
             let mut game_play_ec = world.write_resource::<EventChannel<GamePlayEvent>>();
             game_play_ec.register_reader()
-        };
+        }; // kcov-ignore
         world.add_resource(reader_id);
     }
 
