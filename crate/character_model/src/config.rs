@@ -109,7 +109,7 @@ mod test {
                     extra: ControlTransitionRequirement::default(),
                 })),
                 ..Default::default()
-            },
+            }, // kcov-ignore
         )];
         let sequence =
             CharacterSequence::new(ObjectSequence::new(Some(CharacterSequenceId::Walk), frames));

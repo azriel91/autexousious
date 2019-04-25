@@ -75,7 +75,7 @@ impl<'s> System<'s> for CharacterSelectionSystem {
 mod tests {
     use std::env;
 
-    use amethyst::{ecs::prelude::*, shrev::EventChannel};
+    use amethyst::{ecs::World, shrev::EventChannel, Error};
     use amethyst_test::prelude::*;
     use application_event::{AppEvent, AppEventReader};
     use asset_model::loaded::SlugAndHandle;
@@ -95,65 +95,10 @@ mod tests {
     use super::CharacterSelectionSystem;
 
     #[test]
-    fn inserts_character_selection_on_select_event() {
+    fn inserts_character_selection_on_select_event() -> Result<(), Error> {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AmethystApplication::render_base("inserts_character_selection_on_select_event", false)
-                .with_custom_event_type::<AppEvent, AppEventReader>()
-                .with_bundle(SpriteLoadingBundle::new())
-                .with_bundle(SequenceLoadingBundle::new())
-                .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
-                .with_bundle(CollisionLoadingBundle::new())
-                .with_bundle(MapLoadingBundle::new())
-                .with_bundle(CharacterLoadingBundle::new())
-                .with_state(|| LoadingState::new(PopState))
-                .with_system(
-                    CharacterSelectionSystem::new(),
-                    CharacterSelectionSystem::type_name(),
-                    &[]
-                )
-                .with_setup(|world| {
-                    let slug_and_handle =
-                        SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
-
-                    send_event(
-                        world,
-                        CharacterSelectionEvent::Select {
-                            controller_id: 123,
-                            character_selection: CharacterSelection::Id(slug_and_handle),
-                        },
-                    )
-                })
-                .with_assertion(|world| {
-                    let character_selections = world.read_resource::<CharacterSelections>();
-
-                    assert_eq!(
-                        Some(&SlugAndHandle::from((
-                            &*world,
-                            ASSETS_CHAR_BAT_SLUG.clone()
-                        ))),
-                        character_selections.selections.get(&123)
-                    );
-                })
-                .run()
-                .is_ok()
-        );
-    }
-
-    #[test]
-    fn removes_character_selection_on_deselect_event() {
-        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
-
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AmethystApplication::render_base(
-                "removes_character_selection_on_deselect_event",
-                false
-            )
+        AmethystApplication::render_base("inserts_character_selection_on_select_event", false)
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
@@ -165,7 +110,50 @@ mod tests {
             .with_system(
                 CharacterSelectionSystem::new(),
                 CharacterSelectionSystem::type_name(),
-                &[]
+                &[],
+            ) // kcov-ignore
+            .with_setup(|world| {
+                let slug_and_handle = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
+
+                send_event(
+                    world,
+                    CharacterSelectionEvent::Select {
+                        controller_id: 123,
+                        character_selection: CharacterSelection::Id(slug_and_handle),
+                    },
+                )
+            })
+            .with_assertion(|world| {
+                let character_selections = world.read_resource::<CharacterSelections>();
+
+                assert_eq!(
+                    Some(&SlugAndHandle::from((
+                        &*world,
+                        ASSETS_CHAR_BAT_SLUG.clone()
+                    ))),
+                    character_selections.selections.get(&123)
+                );
+            })
+            .run()
+    }
+
+    #[test]
+    fn removes_character_selection_on_deselect_event() -> Result<(), Error> {
+        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
+
+        AmethystApplication::render_base("removes_character_selection_on_deselect_event", false)
+            .with_custom_event_type::<AppEvent, AppEventReader>()
+            .with_bundle(SpriteLoadingBundle::new())
+            .with_bundle(SequenceLoadingBundle::new())
+            .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
+            .with_bundle(CollisionLoadingBundle::new())
+            .with_bundle(MapLoadingBundle::new())
+            .with_bundle(CharacterLoadingBundle::new())
+            .with_state(|| LoadingState::new(PopState))
+            .with_system(
+                CharacterSelectionSystem::new(),
+                CharacterSelectionSystem::type_name(),
+                &[],
             )
             .with_setup(|world| {
                 world
@@ -176,44 +164,39 @@ mod tests {
                         SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone())),
                     );
             })
-            .with_setup(|world| send_event(
-                world,
-                CharacterSelectionEvent::Deselect { controller_id: 123 }
-            ))
+            .with_setup(|world| {
+                send_event(
+                    world,
+                    CharacterSelectionEvent::Deselect { controller_id: 123 },
+                )
+            })
             .with_assertion(|world| {
                 let character_selections = world.read_resource::<CharacterSelections>();
 
                 assert_eq!(None, character_selections.selections.get(&123));
             })
             .run()
-            .is_ok()
-        );
     }
 
     #[test]
-    fn sets_character_selections_status_to_ready_on_confirm_event() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
-                .with_system(
-                    CharacterSelectionSystem::new(),
-                    CharacterSelectionSystem::type_name(),
-                    &[]
-                )
-                .with_setup(|world| send_event(world, CharacterSelectionEvent::Confirm))
-                .with_assertion(|world| {
-                    let character_selections_status =
-                        world.read_resource::<CharacterSelectionsStatus>();
+    fn sets_character_selections_status_to_ready_on_confirm_event() -> Result<(), Error> {
+        AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
+            .with_system(
+                CharacterSelectionSystem::new(),
+                CharacterSelectionSystem::type_name(),
+                &[],
+            ) // kcov-ignore
+            .with_setup(|world| send_event(world, CharacterSelectionEvent::Confirm))
+            .with_assertion(|world| {
+                let character_selections_status =
+                    world.read_resource::<CharacterSelectionsStatus>();
 
-                    assert_eq!(
-                        CharacterSelectionsStatus::Ready,
-                        *character_selections_status
-                    );
-                })
-                .run()
-                .is_ok()
-        );
+                assert_eq!(
+                    CharacterSelectionsStatus::Ready,
+                    *character_selections_status
+                );
+            })
+            .run()
     }
 
     fn send_event(world: &mut World, event: CharacterSelectionEvent) {

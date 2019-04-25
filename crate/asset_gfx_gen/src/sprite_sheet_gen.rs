@@ -39,11 +39,6 @@ impl SpriteSheetGen {
         image_w: u32,
         image_h: u32,
     ) -> Vec<Sprite> {
-        let edge_shift = match self {
-            SpriteSheetGen::Edge => 0.,
-            SpriteSheetGen::HalfPixel => 0.5,
-        };
-
         let mut sprites = Vec::with_capacity(sprite_count);
         let padding_pixels = if params.padded { 1 } else { 0 };
         let offset_w = params.sprite_w + padding_pixels;
@@ -59,10 +54,9 @@ impl SpriteSheetGen {
                     sprite_h: params.sprite_h,
                     pixel_left: offset_x,
                     pixel_top: offset_y,
-                    offsets: [0; 2],
-                    edge_shift,
+                    offsets: [0.; 2],
                 };
-                let sprite = Self::from_pixel_values(sprite_gen_params);
+                let sprite = self.sprite_from_pixel_values(sprite_gen_params);
 
                 sprites.push(sprite);
 
@@ -84,7 +78,8 @@ impl SpriteSheetGen {
     /// # Parameters
     ///
     /// * `sprite_gen_params`: Parameters to generate a sprite.
-    pub fn from_pixel_values(
+    pub fn sprite_from_pixel_values(
+        self,
         SpriteGenParams {
             image_w,
             image_h,
@@ -93,9 +88,17 @@ impl SpriteSheetGen {
             pixel_left,
             pixel_top,
             offsets,
-            edge_shift,
         }: SpriteGenParams,
     ) -> Sprite {
+        // Fraction of a pixel to shift inward from the edge of the sprite.
+        //
+        // `0.` means texture coordinates lie exactly on the pixel edge, which would make a sprite
+        // pixel perfect, assuming its position aligns exactly with a screen pixel.
+        let edge_shift = match self {
+            SpriteSheetGen::Edge => 0.,
+            SpriteSheetGen::HalfPixel => 0.5,
+        };
+
         let image_w = image_w as f32;
         let image_h = image_h as f32;
         let offsets = [offsets[0] as f32, offsets[1] as f32];

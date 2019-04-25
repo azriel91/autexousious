@@ -1,5 +1,4 @@
-#![deny(missing_docs)]
-#![deny(missing_debug_implementations)]
+#![deny(missing_debug_implementations, missing_docs)] // kcov-ignore
 
 //! Menu to allow the user to select game mode.
 

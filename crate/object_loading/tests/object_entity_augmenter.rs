@@ -81,12 +81,14 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
                     .next()
                     .expect("Expected one main entity on character prefab.")
                     .data()
-                    .expect("Expected character prefab data to be loaded.");
+                    .expect("Expected character prefab data to be loaded."); // kcov-ignore
                 let object_prefab: &ObjectPrefab<Character> = &character_prefab.object_prefab();
 
                 match object_prefab {
                     ObjectPrefab::Handle(handle) => handle.clone(),
+                    // kcov-ignore-start
                     _ => panic!("Expected `ObjectPrefab` to be loaded for bat character."),
+                    // kcov-ignore-end
                 }
             };
             let character_object_wrappers =

@@ -93,7 +93,7 @@ mod tests {
                     MapSelectionSpawningSystem,
                     MapSelectionSpawningSystem::type_name(),
                     &[],
-                )
+                ) // kcov-ignore
                 .with_assertion(|world| {
                     let layer_entity = &world.read_resource::<EffectReturn<Entity>>().0;
                     assert_eq!(
@@ -131,7 +131,7 @@ mod tests {
                 MapSelectionSpawningSystem,
                 MapSelectionSpawningSystem::type_name(),
                 &[],
-            )
+            ) // kcov-ignore
             .with_assertion(|world| {
                 assert!(!world.read_resource::<GameEntities>().map_layers.is_empty());
                 assert!(world.read_resource::<GameLoadingStatus>().map_loaded);
@@ -161,7 +161,7 @@ mod tests {
                 MapSelectionSpawningSystem,
                 MapSelectionSpawningSystem::type_name(),
                 &[],
-            )
+            ) // kcov-ignore
             .with_assertion(|world| {
                 assert!(world.read_resource::<GameEntities>().map_layers.is_empty());
                 assert!(world.read_resource::<GameLoadingStatus>().map_loaded);

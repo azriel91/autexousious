@@ -94,7 +94,7 @@ mod tests {
             }],
             kind: Default::default(),
             multiple: Default::default(),
-        }];
+        }]; // kcov-ignore
         assert_eq!(Interactions::new(interactions), frame.interactions);
     }
 
@@ -117,7 +117,7 @@ mod tests {
                 sp_damage: 0,
             }),
             multiple: Default::default(),
-        }];
+        }]; // kcov-ignore
         assert_eq!(Interactions::new(interactions), frame.interactions);
     }
 

@@ -107,10 +107,12 @@ mod test {
         if let Some(discovery_context) = error.as_error().downcast_ref::<Box<DiscoveryContext>>() {
             assert_eq!(&Box::new(expected_context), discovery_context);
         } else {
+            // kcov-ignore-start
             panic!(
                 "Expected `DiscoveryContext` error but was `{:?}`",
                 error.as_error()
-            ); // kcov-ignore
+            );
+            // kcov-ignore-end
         }
     }
 
@@ -134,10 +136,12 @@ mod test {
         if let Some(find_context) = error.as_error().downcast_ref::<Box<FindContext>>() {
             assert_eq!(Box::new(expected_find_context), *find_context);
         } else {
+            // kcov-ignore-start
             panic!(
                 "Expected `FindContext` error but was `{:?}`",
                 error.as_error()
-            ); // kcov-ignore
+            );
+            // kcov-ignore-end
         }
     }
 

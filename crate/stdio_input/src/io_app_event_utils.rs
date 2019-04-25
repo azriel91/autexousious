@@ -64,7 +64,9 @@ mod tests {
 
     #[test]
     fn maps_shell_words_error_to_readable_string() {
+        // kcov-ignore-start
         assert_eq!(
+            // kcov-ignore-end
             Err("Error splitting input string. Input:\n\
                  \n\
                  ```\n\
@@ -87,7 +89,9 @@ mod tests {
 
     #[test]
     fn returns_app_event_variants_and_all_tokens_when_input_matches_variant() {
+        // kcov-ignore-start
         assert_eq!(
+            // kcov-ignore-end
             Ok(Some((
                 AppEventVariant::CharacterSelection,
                 vec!["character_selection".to_string(), "confirm".to_string()]

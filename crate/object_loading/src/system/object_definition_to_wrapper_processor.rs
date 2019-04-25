@@ -112,8 +112,10 @@ where
                     )?;
 
                     Ok(ProcessingState::Loaded(wrapper))
+                // kcov-ignore-start
                 } else {
                     Ok(ProcessingState::Loading(object_asset_data))
+                    // kcov-ignore-end
                 }
             },
             time.frame_number(),

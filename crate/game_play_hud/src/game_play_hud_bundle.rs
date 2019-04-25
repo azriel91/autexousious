@@ -14,7 +14,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayHudBundle {
             HpBarUpdateSystem::new(),
             &HpBarUpdateSystem::type_name(),
             &[],
-        );
+        ); // kcov-ignore
         Ok(())
     }
 }

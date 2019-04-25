@@ -97,7 +97,7 @@ mod tests {
                     CharacterGroundingSystem::new(),
                     CharacterGroundingSystem::type_name(),
                     &[]
-                )
+                ) // kcov-ignore
                 .with_assertion(|world| {
                     world.exec(
                         |(positions, groundings): (
@@ -144,7 +144,7 @@ mod tests {
                     CharacterGroundingSystem::new(),
                     CharacterGroundingSystem::type_name(),
                     &[]
-                )
+                ) // kcov-ignore
                 .with_assertion(|world| {
                     world.exec(
                         |(positions, groundings): (
@@ -234,7 +234,7 @@ mod tests {
                     CharacterGroundingSystem::new(),
                     CharacterGroundingSystem::type_name(),
                     &[]
-                )
+                ) // kcov-ignore
                 .with_assertion(|world| {
                     world.exec(
                         |(positions, groundings): (

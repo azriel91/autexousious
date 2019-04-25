@@ -1082,6 +1082,7 @@ mod test {
         fn_trans!(update, Invocation::Update; [StateData<'_, T>]);
     }
 
+    // kcov-ignore-start
     fn format_trans<T, E>(trans: &Option<Trans<T, E>>) -> String {
         if trans.is_some() {
             format!("Some({})", display_trans(trans.as_ref().unwrap()))

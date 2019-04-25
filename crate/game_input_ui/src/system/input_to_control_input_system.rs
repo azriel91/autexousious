@@ -213,7 +213,7 @@ mod test {
                 InputToControlInputSystem::new(input_config),
                 InputToControlInputSystem::type_name(),
                 &[],
-            )
+            ) // kcov-ignore
             .with_setup(move |world| {
                 // HACK: This is what `InputSystem` does from `amethyst::input::InputBundle` in the
                 // system setup phase.
@@ -224,7 +224,7 @@ mod test {
 
                 let reader_id = world
                     .write_resource::<EventChannel<ControlInputEvent>>()
-                    .register_reader();
+                    .register_reader(); // kcov-ignore
                 world.add_resource(reader_id);
 
                 let controller_id = 0;

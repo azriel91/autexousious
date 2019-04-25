@@ -108,7 +108,7 @@ mod test {
                 ControllerInputUpdateSystem::new(),
                 ControllerInputUpdateSystem::type_name(),
                 &[],
-            )
+            ) // kcov-ignore
             .with_setup(|world| {
                 let e0 = world.create_entity().build();
                 let e1 = world.create_entity().build();
@@ -132,7 +132,7 @@ mod test {
                             control_action: ControlAction::Defend,
                             value: true,
                         }),
-                    ]);
+                    ]); // kcov-ignore
 
                 world.add_resource((e0, e1));
             })
@@ -160,7 +160,7 @@ mod test {
                 ControllerInputUpdateSystem::new(),
                 ControllerInputUpdateSystem::type_name(),
                 &[],
-            )
+            ) // kcov-ignore
             .with_setup(|world| {
                 let e0 = world
                     .create_entity()
@@ -207,7 +207,7 @@ mod test {
                             control_action: ControlAction::Special,
                             value: true,
                         }),
-                    ]);
+                    ]); // kcov-ignore
 
                 world.add_resource((e0, e1));
             })

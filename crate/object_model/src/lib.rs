@@ -1,5 +1,4 @@
-#![deny(missing_docs)] // kcov-ignore
-#![deny(missing_debug_implementations)]
+#![deny(missing_debug_implementations, missing_docs)] // kcov-ignore
 
 //! Types used to represent objects and their configuration.
 //!

@@ -65,7 +65,7 @@ mod test {
                     &mut StateEvent::Window(event),
                 )
                 .as_ref(),
-        );
+        ); // kcov-ignore
     }
 
     #[test]
@@ -87,7 +87,7 @@ mod test {
                     &mut StateEvent::Window(event),
                 )
                 .as_ref(),
-        );
+        ); // kcov-ignore
     }
 
     fn key_event(scancode: ScanCode, virtual_keycode: VirtualKeyCode) -> Event {

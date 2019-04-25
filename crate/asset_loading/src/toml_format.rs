@@ -19,7 +19,7 @@ where
 
     fn import(&self, bytes: Vec<u8>, _: ()) -> Result<A::Data, Error> {
         toml::from_slice::<A::Data>(&bytes)
-            .with_context(|_| format_err!("Failed to deserialize TOML file"))
+            .with_context(|_| format_err!("Failed to deserialize TOML file")) // kcov-ignore
     }
 }
 
@@ -55,7 +55,7 @@ mod tests {
 
                 let mut loader = world.write_resource::<Loader>();
                 loader.add_source(CODE_SOURCE_ID, code_source);
-            })
+            }) // kcov-ignore
             .with_effect(|world| {
                 let mut progress_counter = ProgressCounter::new();
                 let thing_handle = {
@@ -98,7 +98,7 @@ mod tests {
 
             let progress_counter = data.world.read_resource::<ProgressCounter>();
             if !progress_counter.is_complete() {
-                Trans::None
+                Trans::None // kcov-ignore
             } else {
                 Trans::Pop
             }

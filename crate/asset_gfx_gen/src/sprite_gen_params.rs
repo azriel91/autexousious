@@ -14,10 +14,5 @@ pub struct SpriteGenParams {
     /// Pixel top coordinate.
     pub pixel_top: u32,
     /// Number of pixels to shift the sprite to the left and down relative to the entity.
-    pub offsets: [u32; 2],
-    /// Fraction of a pixel to shift inward from the edge of the sprite.
-    ///
-    /// `0.` means texture coordinates lie exactly on the pixel edge, which would make a sprite
-    /// pixel perfect, assuming its position aligns exactly with a screen pixel.
-    pub edge_shift: f32,
+    pub offsets: [f32; 2],
 }

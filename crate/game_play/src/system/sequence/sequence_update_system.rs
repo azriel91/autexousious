@@ -229,7 +229,7 @@ impl<'s> System<'s> for SequenceUpdateSystem {
                     }
                 },
             );
-    }
+    } // kcov-ignore
 }
 
 #[cfg(test)]
@@ -553,7 +553,7 @@ mod tests {
         let reader_id = {
             let mut ec = world.write_resource::<EventChannel<SequenceUpdateEvent>>();
             ec.register_reader()
-        };
+        }; // kcov-ignore
         world.add_resource(reader_id);
     }
 

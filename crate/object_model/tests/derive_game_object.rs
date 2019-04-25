@@ -1,3 +1,4 @@
+// kcov-ignore-start
 use amethyst::{
     assets::{AssetStorage, Loader},
     ecs::{storage::VecStorage, Component},
@@ -9,6 +10,7 @@ use object_model::{config::ObjectAssetData, game_object, loaded::GameObject};
 use sequence_model::config::SequenceId;
 use serde::{Deserialize, Serialize};
 use specs_derive::Component;
+// kcov-ignore-end
 
 #[derive(Clone, Component, Copy, Debug, Derivative, Deserialize, PartialEq, Eq, Hash, Serialize)]
 #[derivative(Default)]

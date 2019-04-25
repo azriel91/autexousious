@@ -74,7 +74,7 @@ impl<'s> System<'s> for CharacterCtsHandleUpdateSystem {
                 ComponentEvent::Inserted(id) | ComponentEvent::Modified(id) => {
                     self.sequence_id_updates.add(*id);
                 }
-                ComponentEvent::Removed(_id) => {}
+                ComponentEvent::Removed(_id) => {} // kcov-ignore
             });
 
         (

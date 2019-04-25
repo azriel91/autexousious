@@ -71,10 +71,12 @@ impl ColourSpriteSheetGen {
         sprite_count: usize,
     ) -> SpriteRender {
         if sprite_count < 2 {
+            // kcov-ignore-start
             panic!(
                 "`sprite_count` must be at least 2, received: `{}`.",
                 sprite_count
             );
+            // kcov-ignore-end
         }
 
         let sprite_sheet_handle = {

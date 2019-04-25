@@ -49,9 +49,11 @@ impl<'config> From<&'config InputConfig> for Bindings<PlayerAxisControl, PlayerA
                     cumulative_result.and(
                         bindings
                             .insert_axis(player_axis_control, input_axis)
+                            // kcov-ignore-start
                             .with_context(|_| {
                                 Error::from_string(format!("{}", player_axis_control))
                             }),
+                        // kcov-ignore-end
                     )
                 },
             );
@@ -78,9 +80,11 @@ impl<'config> From<&'config InputConfig> for Bindings<PlayerAxisControl, PlayerA
                     cumulative_result.and(
                         bindings
                             .insert_action_binding(player_action_control, iter::once(input_button))
+                            // kcov-ignore-start
                             .with_context(|_| {
                                 Error::from_string(format!("{}", player_action_control))
                             }),
+                        // kcov-ignore-end
                     )
                 },
             );
@@ -88,13 +92,13 @@ impl<'config> From<&'config InputConfig> for Bindings<PlayerAxisControl, PlayerA
         // TODO: Bubble up result with `TryFrom`.
         // TODO: Pending <https://github.com/rust-lang/rust/issues/33417>
         if let Err(e) = &axis_result {
-            error!("{}", format_err!("{}", e));
+            error!("{}", format_err!("{}", e)); // kcov-ignore
         }
         if let Err(e) = &action_result {
-            error!("{}", format_err!("{}", e));
+            error!("{}", format_err!("{}", e)); // kcov-ignore
         }
         if axis_result.and(action_result).is_err() {
-            panic!("Failed to convert `InputConfig` into `Bindings`.");
+            panic!("Failed to convert `InputConfig` into `Bindings`."); // kcov-ignore
         }
 
         bindings
@@ -134,7 +138,9 @@ mod tests {
                 PlayerAxisControl::new(1, Axis::X)
             ])
         );
+        // kcov-ignore-start
         assert_that!(
+            // kcov-ignore-end
             &bindings.actions().map(Clone::clone).collect::<Vec<_>>(),
             contains(vec![
                 PlayerActionControl::new(0, ControlAction::Jump),

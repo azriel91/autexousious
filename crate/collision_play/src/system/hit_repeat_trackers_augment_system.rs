@@ -189,7 +189,7 @@ mod tests {
     fn send_event(world: &mut World, event: HitEvent) {
         let mut ec = world.write_resource::<EventChannel<HitEvent>>();
         ec.single_write(event)
-    }
+    } // kcov-ignore
 
     fn interaction() -> Interaction {
         Interaction::new(

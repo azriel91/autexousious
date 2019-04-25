@@ -24,7 +24,7 @@ impl<'s> System<'s> for HitRepeatTrackersTickerSystem {
                 hit_repeat_trackers
                     .retain(|_, hit_repeat_tracker| !hit_repeat_tracker.clock.is_complete());
             });
-    }
+    } // kcov-ignore
 }
 
 #[cfg(test)]
@@ -131,7 +131,7 @@ mod tests {
                         assert_eq!(expected_value, (*clock).value)
                     });
             })
-    }
+    } // kcov-ignore
 
     fn assert_trackers_count(world: &mut World, entity_from: Entity, expected_len: usize) {
         let hit_repeat_trackerses = world.read_storage::<HitRepeatTrackers>();
