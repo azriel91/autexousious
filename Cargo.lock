@@ -949,6 +949,8 @@ dependencies = [
  "game_model 0.10.0",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "object_model 0.10.0",
+ "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum_macros 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "tracker 0.10.0",
