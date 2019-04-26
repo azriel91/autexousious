@@ -149,24 +149,6 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 
         // === Helper Systems === //
 
-        let controller_input_tracker_system =
-            LastTrackerSystem::<ControllerInput>::new(stringify!(game_input::ControllerInput));
-        let controller_input_tracker_system_name = controller_input_tracker_system.system_name();
-        builder.add(
-            controller_input_tracker_system,
-            &controller_input_tracker_system_name,
-            &[],
-        ); // kcov-ignore
-        let character_sequence_id_tracker_system =
-            LastTrackerSystem::<CharacterSequenceId>::new(stringify!(CharacterSequenceId));
-        let character_sequence_id_tracker_system_name =
-            character_sequence_id_tracker_system.system_name();
-        builder.add(
-            character_sequence_id_tracker_system,
-            &character_sequence_id_tracker_system_name,
-            &[],
-        ); // kcov-ignore
-
         // Detects when the winning condition has been met.
         builder.add(
             GamePlayEndDetectionSystem::new(),
@@ -178,6 +160,24 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             GamePlayEndTransitionSystem::new(),
             &GamePlayEndTransitionSystem::type_name(),
             &[&GamePlayEndDetectionSystem::type_name()],
+        ); // kcov-ignore
+
+        let controller_input_tracker_system =
+            LastTrackerSystem::<ControllerInput>::new(stringify!(game_input::ControllerInput));
+        let controller_input_tracker_system_name = controller_input_tracker_system.system_name();
+        builder.add(
+            controller_input_tracker_system,
+            &controller_input_tracker_system_name,
+            &[&GamePlayEndTransitionSystem::type_name()],
+        ); // kcov-ignore
+        let character_sequence_id_tracker_system =
+            LastTrackerSystem::<CharacterSequenceId>::new(stringify!(CharacterSequenceId));
+        let character_sequence_id_tracker_system_name =
+            character_sequence_id_tracker_system.system_name();
+        builder.add(
+            character_sequence_id_tracker_system,
+            &character_sequence_id_tracker_system_name,
+            &[],
         ); // kcov-ignore
 
         Ok(())
