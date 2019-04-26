@@ -111,7 +111,7 @@ impl CharacterSelectionWidgetUiSystem {
 
                 let ui_text = UiText::new(
                     font.clone(),
-                    "Inactive".to_string(),
+                    "Press Attack To Join".to_string(),
                     [1., 1., 1., 1.],
                     FONT_SIZE,
                 );
@@ -137,7 +137,7 @@ impl CharacterSelectionWidgetUiSystem {
             .join()
             .for_each(|(widget, ui_text)| {
                 ui_text.text = match widget.state {
-                    WidgetState::Inactive => "Inactive".to_string(),
+                    WidgetState::Inactive => "Press Attack To Join".to_string(),
                     _ => format!("{}", widget.selection),
                 }
             });
@@ -258,7 +258,7 @@ mod test {
                 &[]
             )
             .with_assertion(|world| assert_widget_count(world, 2))
-            .with_assertion(|world| assert_widget_text(world, "Inactive"))
+            .with_assertion(|world| assert_widget_text(world, "Press Attack To Join"))
             .run()
             .is_ok()
         );

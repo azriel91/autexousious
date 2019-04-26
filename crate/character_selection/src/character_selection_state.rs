@@ -71,8 +71,12 @@ where
     S: AutexState<'a, 'b> + 'static,
 {
     fn initialize_character_selections(&mut self, world: &mut World) {
-        let mut selections_status = world.write_resource::<CharacterSelectionsStatus>();
+        let (mut selections_status, mut character_selections) = world.system_data::<(
+            Write<'_, CharacterSelectionsStatus>,
+            Write<'_, CharacterSelections>,
+        )>();
         *selections_status = CharacterSelectionsStatus::Waiting;
+        *character_selections = CharacterSelections::default();
     }
 }
 

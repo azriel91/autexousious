@@ -8,7 +8,7 @@ use game_input_model::ControllerId;
 ///
 /// We use a `HashMapStorage` because there wouldn't be that many entities that are controlled by
 /// `Controller`s. We will use a different `Component` for AI controllers.
-#[derive(Debug, new)]
+#[derive(Clone, Copy, Debug, new)]
 pub struct InputControlled {
     /// ID of the controller that controls the entity.
     pub controller_id: ControllerId,

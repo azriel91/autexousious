@@ -90,7 +90,7 @@ where
                     .with_font(font.clone())
                     .build_from_world(world);
 
-                let entity = ui_button.text_entity;
+                let entity = ui_button.image_entity;
 
                 world
                     .write_storage::<MenuItem<GameModeIndex>>()
