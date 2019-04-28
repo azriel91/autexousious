@@ -242,8 +242,12 @@ mod test {
                 .with_assertion(|world| {
                     let object_wrapper = world.read_resource::<CharacterObjectWrapper>();
 
-                    // See bat/object.toml
-                    assert_eq!(24, object_wrapper.component_sequences_handles.len());
+                    assert_eq!(
+                        25,
+                        object_wrapper.component_sequences_handles.len(),
+                        "Expected 25 sequences to be loaded. \
+                         Check `bat/object.toml` for number of sequences."
+                    );
 
                     let component_sequences_assets =
                         world.read_resource::<AssetStorage<ComponentSequences>>();

@@ -17,6 +17,11 @@ pub enum CharacterSequenceId {
     /// Attack while standing.
     #[serde(rename = "stand_attack_0")]
     StandAttack0,
+    /// Attack while standing, second sequence.
+    ///
+    /// This is generally used when pressing attack near the end of the `StandAttack0` sequence.
+    #[serde(rename = "stand_attack_1")]
+    StandAttack1,
     /// Walking sequence.
     Walk,
     /// Running sequence.

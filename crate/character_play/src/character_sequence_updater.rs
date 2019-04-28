@@ -6,7 +6,7 @@ use crate::{
         CharacterSequenceHandler, DashBack, DashBackAscend, DashBackDescend, DashDescendLand,
         DashForward, DashForwardAscend, DashForwardDescend, Dodge, FallForwardAscend,
         FallForwardDescend, FallForwardLand, Jump, JumpAscend, JumpDescend, JumpDescendLand,
-        JumpOff, LieFaceDown, Run, RunStop, Stand, StandAttack0, StandOnSequenceEnd, Walk,
+        JumpOff, LieFaceDown, Run, RunStop, Stand, StandAttack, StandOnSequenceEnd, Walk,
     },
     CharacterSequenceUpdateComponents,
 };
@@ -29,7 +29,9 @@ impl CharacterSequenceUpdater {
             CharacterSequenceUpdateComponents<'_>,
         ) -> Option<CharacterSequenceId> = match components.character_sequence_id {
             CharacterSequenceId::Stand => &Stand::update,
-            CharacterSequenceId::StandAttack0 => &StandAttack0::update,
+            CharacterSequenceId::StandAttack0 | CharacterSequenceId::StandAttack1 => {
+                &StandAttack::update
+            }
             CharacterSequenceId::Walk => &Walk::update,
             CharacterSequenceId::Run => &Run::update,
             CharacterSequenceId::RunStop => &RunStop::update,
