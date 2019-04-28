@@ -15,7 +15,8 @@ pub enum CharacterSequenceId {
     #[derivative(Default)]
     Stand,
     /// Attack while standing.
-    StandAttack,
+    #[serde(rename = "stand_attack_0")]
+    StandAttack0,
     /// Walking sequence.
     Walk,
     /// Running sequence.

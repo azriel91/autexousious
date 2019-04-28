@@ -111,7 +111,7 @@ fn character_definition() -> CharacterDefinition {
         ),
         CharacterControlTransitions {
             press_attack: Some(ControlTransition::SequenceId(
-                CharacterSequenceId::StandAttack,
+                CharacterSequenceId::StandAttack0,
             )),
             release_attack: Some(ControlTransition::Multiple(ControlTransitionMultiple::new(
                 vec![
@@ -191,7 +191,7 @@ fn expected_control_transitions() -> CharacterControlTransitions {
         CharacterControlTransition {
             control_transition: ControlTransition::Press(ControlTransitionPress {
                 action: ControlAction::Attack,
-                sequence_id: CharacterSequenceId::StandAttack,
+                sequence_id: CharacterSequenceId::StandAttack0,
             }),
             control_transition_requirement: None,
         },

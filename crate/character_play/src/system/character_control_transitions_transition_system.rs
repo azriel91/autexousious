@@ -365,7 +365,7 @@ mod tests {
                 control_action: ControlAction::Attack,
                 value: true,
             }),
-            CharacterSequenceId::StandAttack,
+            CharacterSequenceId::StandAttack0,
         )
     }
 

@@ -248,16 +248,16 @@ mod test {
                     let component_sequences_assets =
                         world.read_resource::<AssetStorage<ComponentSequences>>();
 
-                    let stand_attack_handle = object_wrapper
+                    let stand_attack_0_handle = object_wrapper
                         .component_sequences_handles
-                        .get(&CharacterSequenceId::StandAttack)
-                        .expect("Expected to read `StandAttack` component_sequences.");
-                    let stand_attack_component_sequences = component_sequences_assets
-                        .get(stand_attack_handle)
-                        .expect("Expected `StandAttack` component sequences to be loaded.");
+                        .get(&CharacterSequenceId::StandAttack0)
+                        .expect("Expected to read `StandAttack0` component_sequences.");
+                    let stand_attack_0_component_sequences = component_sequences_assets
+                        .get(stand_attack_0_handle)
+                        .expect("Expected `StandAttack0` component sequences to be loaded.");
 
                     // Wait, SpriteRender, Body, and Interactions
-                    assert_eq!(4, stand_attack_component_sequences.len());
+                    assert_eq!(4, stand_attack_0_component_sequences.len());
                 })
                 .run()
                 .is_ok()

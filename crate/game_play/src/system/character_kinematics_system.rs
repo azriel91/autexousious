@@ -52,7 +52,7 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
 
             match character_sequence_id {
                 CharacterSequenceId::Stand
-                | CharacterSequenceId::StandAttack
+                | CharacterSequenceId::StandAttack0
                 | CharacterSequenceId::Flinch0
                 | CharacterSequenceId::Flinch1 => {
                     velocity[0] = 0.;

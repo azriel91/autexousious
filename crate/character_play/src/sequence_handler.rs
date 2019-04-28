@@ -11,7 +11,7 @@ pub(super) use self::{
     fall_forward_land::FallForwardLand, jump::Jump, jump_ascend::JumpAscend,
     jump_descend::JumpDescend, jump_descend_land::JumpDescendLand, jump_off::JumpOff,
     lie_face_down::LieFaceDown, run::Run, run_stop::RunStop, stand::Stand,
-    stand_attack::StandAttack, stand_on_sequence_end::StandOnSequenceEnd,
+    stand_attack_0::StandAttack0, stand_on_sequence_end::StandOnSequenceEnd,
     switch_sequence_on_descend::SwitchSequenceOnDescend,
     switch_sequence_on_end::SwitchSequenceOnEnd,
     switch_sequence_on_end_y_velocity::SwitchSequenceOnEndYVelocity,
@@ -40,7 +40,7 @@ mod run;
 mod run_stop;
 mod sequence_handler_util;
 mod stand;
-mod stand_attack;
+mod stand_attack_0;
 mod stand_on_sequence_end;
 mod switch_sequence_on_descend;
 mod switch_sequence_on_end;

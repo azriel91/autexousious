@@ -4,9 +4,9 @@ use sequence_model::play::SequenceStatus;
 use crate::{sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents};
 
 #[derive(Debug)]
-pub(crate) struct StandAttack;
+pub(crate) struct StandAttack0;
 
-impl CharacterSequenceHandler for StandAttack {
+impl CharacterSequenceHandler for StandAttack0 {
     fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
         if components.sequence_status == SequenceStatus::End {
             Some(CharacterSequenceId::Stand)
@@ -23,7 +23,7 @@ mod test {
     use object_model::play::{Grounding, HealthPoints, Mirrored, Position, Velocity};
     use sequence_model::play::SequenceStatus;
 
-    use super::StandAttack;
+    use super::StandAttack0;
     use crate::{sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents};
 
     #[test]
@@ -32,10 +32,10 @@ mod test {
 
         assert_eq!(
             None,
-            StandAttack::update(CharacterSequenceUpdateComponents::new(
+            StandAttack0::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::StandAttack,
+                CharacterSequenceId::StandAttack0,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -52,10 +52,10 @@ mod test {
 
         assert_eq!(
             Some(CharacterSequenceId::Stand),
-            StandAttack::update(CharacterSequenceUpdateComponents::new(
+            StandAttack0::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::StandAttack,
+                CharacterSequenceId::StandAttack0,
                 SequenceStatus::End,
                 &Position::default(),
                 &Velocity::default(),
