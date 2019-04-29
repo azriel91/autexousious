@@ -77,7 +77,9 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                 CharacterSequenceId::JumpDescendLand
                 | CharacterSequenceId::DashDescendLand
                 | CharacterSequenceId::FallForwardLand
-                | CharacterSequenceId::LieFaceDown => {
+                | CharacterSequenceId::LieFaceDown
+                | CharacterSequenceId::StandAttack0
+                | CharacterSequenceId::StandAttack1 => {
                     velocity[0] /= 2.;
                     velocity[1] = 0.;
                     velocity[2] /= 2.;
