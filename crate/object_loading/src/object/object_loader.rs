@@ -243,9 +243,9 @@ mod test {
                     let object_wrapper = world.read_resource::<CharacterObjectWrapper>();
 
                     assert_eq!(
-                        25,
+                        26,
                         object_wrapper.component_sequences_handles.len(),
-                        "Expected 25 sequences to be loaded. \
+                        "Expected 26 sequences to be loaded. \
                          Check `bat/object.toml` for number of sequences."
                     );
 

@@ -224,22 +224,26 @@
     wait = 1
     sprite = { sheet = 1, index = 3 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
+    transitions = { press_attack = "jump_attack" }
 
   [[sequences.jump_ascend.frames]]
     wait = 1
     sprite = { sheet = 1, index = 4 }
     body = [{ box = { x = 145, y = 12, w = 14, h = 13 } }]
+    transitions = { press_attack = "jump_attack" }
 
 [sequences.jump_descend]
   [[sequences.jump_descend.frames]]
     wait = 1
     sprite = { sheet = 1, index = 3 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
+    transitions = { press_attack = "jump_attack" }
 
   [[sequences.jump_descend.frames]]
     wait = 1
     sprite = { sheet = 1, index = 4 }
     body = [{ box = { x = 145, y = 12, w = 14, h = 13 } }]
+    transitions = { press_attack = "jump_attack" }
 
 [sequences.jump_descend_land]
   [[sequences.jump_descend_land.frames]]
@@ -261,6 +265,44 @@
   [[sequences.jump_descend_land.frames]]
     sprite = { sheet = 0, index = 0 }
     body = [{ box = { x = 16, y = 11, w = 15, h = 12 } }]
+
+[sequences.jump_attack]
+  [[sequences.jump_attack.frames]]
+    wait = 1
+    sprite = { sheet = 1, index = 0 }
+    body = [{ box = { x = 16, y = 11, w = 15, h = 12 } }]
+    interactions = [
+      { hit = { hp_damage = 20 }, bounds = [{ box = { x = 16, y = 11, w = 15, h = 12 } }] },
+    ]
+
+  [[sequences.jump_attack.frames]]
+    sprite = { sheet = 1, index = 1 }
+    body = [{ box = { x = 48, y = 13, w = 15, h = 12 } }]
+    interactions = [
+      { hit = { hp_damage = 20 }, bounds = [{ box = { x = 48, y = 13, w = 15, h = 12 } }] },
+    ]
+
+  [[sequences.jump_attack.frames]]
+    wait = 2
+    sprite = { sheet = 1, index = 2 }
+    body = [{ box = { x = 81, y = 0, w = 14, h = 12 } }]
+    interactions = [
+      { hit = { hp_damage = 20 }, bounds = [{ box = { x = 81, y = 0, w = 14, h = 12 } }] },
+    ]
+
+  [[sequences.jump_attack.frames]]
+    sprite = { sheet = 1, index = 3 }
+    body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
+    interactions = [
+      { hit = { hp_damage = 20 }, bounds = [{ box = { x = 113, y = 10, w = 14, h = 13 } }] },
+    ]
+
+  [[sequences.jump_attack.frames]]
+    sprite = { sheet = 1, index = 4 }
+    body = [{ box = { x = 145, y = 12, w = 14, h = 13 } }]
+    interactions = [
+      { hit = { hp_damage = 20 }, bounds = [{ box = { x = 113, y = 10, w = 14, h = 13 } }] },
+    ]
 
 # There are 7 sequences for dashing:
 #

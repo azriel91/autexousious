@@ -5,8 +5,9 @@ use crate::{
     sequence_handler::{
         CharacterSequenceHandler, DashBack, DashBackAscend, DashBackDescend, DashDescendLand,
         DashForward, DashForwardAscend, DashForwardDescend, Dodge, FallForwardAscend,
-        FallForwardDescend, FallForwardLand, Jump, JumpAscend, JumpDescend, JumpDescendLand,
-        JumpOff, LieFaceDown, Run, RunStop, Stand, StandAttack, StandOnSequenceEnd, Walk,
+        FallForwardDescend, FallForwardLand, Jump, JumpAscend, JumpAttack, JumpDescend,
+        JumpDescendLand, JumpOff, LieFaceDown, Run, RunStop, Stand, StandAttack,
+        StandOnSequenceEnd, Walk,
     },
     CharacterSequenceUpdateComponents,
 };
@@ -41,6 +42,7 @@ impl CharacterSequenceUpdater {
             CharacterSequenceId::JumpAscend => &JumpAscend::update,
             CharacterSequenceId::JumpDescend => &JumpDescend::update,
             CharacterSequenceId::JumpDescendLand => &JumpDescendLand::update,
+            CharacterSequenceId::JumpAttack => &JumpAttack::update,
             CharacterSequenceId::Flinch0 | CharacterSequenceId::Flinch1 => {
                 &StandOnSequenceEnd::update
             }

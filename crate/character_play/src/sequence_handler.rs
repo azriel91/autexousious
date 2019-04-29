@@ -9,8 +9,8 @@ pub(super) use self::{
     dash_forward_ascend::DashForwardAscend, dash_forward_descend::DashForwardDescend, dodge::Dodge,
     fall_forward_ascend::FallForwardAscend, fall_forward_descend::FallForwardDescend,
     fall_forward_land::FallForwardLand, jump::Jump, jump_ascend::JumpAscend,
-    jump_descend::JumpDescend, jump_descend_land::JumpDescendLand, jump_off::JumpOff,
-    lie_face_down::LieFaceDown, run::Run, run_stop::RunStop, stand::Stand,
+    jump_attack::JumpAttack, jump_descend::JumpDescend, jump_descend_land::JumpDescendLand,
+    jump_off::JumpOff, lie_face_down::LieFaceDown, run::Run, run_stop::RunStop, stand::Stand,
     stand_attack::StandAttack, stand_on_sequence_end::StandOnSequenceEnd,
     switch_sequence_on_descend::SwitchSequenceOnDescend,
     switch_sequence_on_end::SwitchSequenceOnEnd,
@@ -32,6 +32,7 @@ mod fall_forward_descend;
 mod fall_forward_land;
 mod jump;
 mod jump_ascend;
+mod jump_attack;
 mod jump_descend;
 mod jump_descend_land;
 mod jump_off;

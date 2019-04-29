@@ -1,6 +1,5 @@
 use character_model::config::CharacterSequenceId;
 use object_model::play::Grounding;
-use sequence_model::play::SequenceStatus;
 
 use crate::CharacterSequenceUpdateComponents;
 
@@ -17,8 +16,6 @@ impl SwitchSequenceOnLand {
     ) -> Option<CharacterSequenceId> {
         if components.grounding == Grounding::OnGround {
             Some(self.0)
-        } else if components.sequence_status == SequenceStatus::End {
-            Some(components.character_sequence_id)
         } else {
             None
         }
@@ -49,30 +46,6 @@ mod test {
                     HealthPoints::default(),
                     CharacterSequenceId::FallForwardDescend,
                     SequenceStatus::default(),
-                    &Position::default(),
-                    &velocity,
-                    Mirrored::default(),
-                    Grounding::Airborne,
-                    RunCounter::default()
-                )
-            )
-        );
-    }
-
-    #[test]
-    fn restarts_jump_descend_when_sequence_ends() {
-        let input = ControllerInput::new(0., 0., false, false, false, false);
-        let mut velocity = Velocity::default();
-        velocity[1] = -1.;
-
-        assert_eq!(
-            Some(CharacterSequenceId::FallForwardDescend),
-            SwitchSequenceOnLand(CharacterSequenceId::FallForwardLand).update(
-                CharacterSequenceUpdateComponents::new(
-                    &input,
-                    HealthPoints::default(),
-                    CharacterSequenceId::FallForwardDescend,
-                    SequenceStatus::End,
                     &Position::default(),
                     &velocity,
                     Mirrored::default(),

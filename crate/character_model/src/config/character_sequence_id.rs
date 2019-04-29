@@ -50,6 +50,8 @@ pub enum CharacterSequenceId {
     JumpDescend,
     /// Character landed from jumping.
     JumpDescendLand,
+    /// Attack while jumping.
+    JumpAttack,
     /// Character has dashed off the ground facing forward.
     ///
     /// The beginning of this sequence is when the dash velocity is applied. This is separate from
