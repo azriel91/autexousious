@@ -82,6 +82,8 @@ pub enum CharacterSequenceId {
     DashBackDescend,
     /// Character landed from dashing.
     DashDescendLand,
+    /// Attack while dashing.
+    DashAttack,
     /// Character is hit while on ground.
     #[serde(rename = "flinch_0")]
     Flinch0,

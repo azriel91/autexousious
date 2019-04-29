@@ -3,10 +3,10 @@ use sequence_model::{loaded::SequenceEndTransitions, play::SequenceStatus};
 
 use crate::{
     sequence_handler::{
-        CharacterSequenceHandler, DashBack, DashBackAscend, DashBackDescend, DashDescendLand,
-        DashForward, DashForwardAscend, DashForwardDescend, Dodge, FallForwardAscend,
-        FallForwardDescend, FallForwardLand, Jump, JumpAscend, JumpAttack, JumpDescend,
-        JumpDescendLand, JumpOff, LieFaceDown, Run, RunStop, Stand, StandAttack,
+        CharacterSequenceHandler, DashAttack, DashBack, DashBackAscend, DashBackDescend,
+        DashDescendLand, DashForward, DashForwardAscend, DashForwardDescend, Dodge,
+        FallForwardAscend, FallForwardDescend, FallForwardLand, Jump, JumpAscend, JumpAttack,
+        JumpDescend, JumpDescendLand, JumpOff, LieFaceDown, Run, RunStop, Stand, StandAttack,
         StandOnSequenceEnd, Walk,
     },
     CharacterSequenceUpdateComponents,
@@ -57,6 +57,7 @@ impl CharacterSequenceUpdater {
             CharacterSequenceId::DashBackAscend => &DashBackAscend::update,
             CharacterSequenceId::DashBackDescend => &DashBackDescend::update,
             CharacterSequenceId::DashDescendLand => &DashDescendLand::update,
+            CharacterSequenceId::DashAttack => &DashAttack::update,
         };
 
         let mut sequence_id = sequence_handler(components);
