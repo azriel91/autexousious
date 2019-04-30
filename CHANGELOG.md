@@ -8,6 +8,10 @@
 * `hit_limit` determines the number of objects that the hitter can hit. ([#103])
 * `repeat_delay` specifies number of ticks that must pass before an object can be `hit` by the same hitter. ([#103])
 * Control input `transitions` can be specified per frame. ([#96])
+* Added `stand_attack_1` sequence. ([#117])
+* Added `jump_attack` sequence. ([#117])
+* Added `dash_attack` sequence. ([#117])
+* Added `--frame_rate` argument to control application frame rate. ([#117])
 
 ### Changed
 
@@ -16,6 +20,8 @@
 * ***Breaking:*** `sp_damage` is specified as part of `hit` interaction kind. ([#103])
 * ***Breaking:*** `physical` interaction kind is renamed to `hit`. ([#103])
 * ***Breaking:*** `Interaction` kind determines fields applicable to the interaction. ([#103])
+* ***Breaking:*** `stand_attack` is renamed to `stand_attack_0`. ([#117])
+* Default `hit_repeat` delay is increased from 3 ticks to to 9 ticks. ([#117])
 
 [#96]: https://gitlab.com/azriel91/autexousious/issues/96
 [#103]: https://gitlab.com/azriel91/autexousious/issues/103
