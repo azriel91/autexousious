@@ -26,7 +26,7 @@ use application_state::{HookFn, HookableFn};
 use character_loading::CharacterLoadingBundle;
 use character_selection_stdio::CharacterSelectionStdioBundle;
 use collision_loading::CollisionLoadingBundle;
-use frame_rate::strategy::FRAME_RATE_DEFAULT;
+use frame_rate::strategy::frame_rate_limit_config;
 use game_input::GameInputBundle;
 use game_input_model::{InputConfig, PlayerActionControl, PlayerAxisControl};
 use game_input_stdio::{ControlInputEventStdinMapper, GameInputStdioBundle};
@@ -47,10 +47,14 @@ use structopt::StructOpt;
 use typename::TypeName;
 
 #[derive(StructOpt, Debug)]
-#[structopt(name = "Will")]
+#[structopt(name = "Will", rename_all = "snake_case")]
 struct Opt {
-    #[structopt(long = "headless", help = "Run headlessly (no GUI)")]
+    /// Run headlessly (no GUI).
+    #[structopt(long)]
     headless: bool,
+    /// Frame rate to run the game at.
+    #[structopt(long)]
+    frame_rate: Option<u32>,
 }
 
 fn run(opt: &Opt) -> Result<(), amethyst::Error> {
@@ -145,7 +149,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     }
 
     let mut app = CoreApplication::<_, AppEvent, AppEventReader>::build(assets_dir, state)?
-        .with_frame_limit_config(FRAME_RATE_DEFAULT)
+        .with_frame_limit_config(frame_rate_limit_config(opt.frame_rate.clone()))
         .build(game_data)?;
 
     app.run();
