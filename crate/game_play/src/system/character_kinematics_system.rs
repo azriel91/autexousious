@@ -108,9 +108,12 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                         velocities.get_mut(*entity),
                     ) {
                         match character_sequence_id {
-                            CharacterSequenceId::StandAttack0
-                            | CharacterSequenceId::StandAttack1 => {
+                            CharacterSequenceId::StandAttack0 => {
                                 velocity[0] = controller_input.x_axis_value as f32 * 2.5;
+                                velocity[2] = controller_input.z_axis_value as f32 * 1.5;
+                            }
+                            CharacterSequenceId::StandAttack1 => {
+                                velocity[0] = if mirrored.0 { -2.5 } else { 2.5 };
                                 velocity[2] = controller_input.z_axis_value as f32 * 1.5;
                             }
                             CharacterSequenceId::JumpOff => {
