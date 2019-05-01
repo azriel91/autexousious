@@ -138,7 +138,8 @@ impl CharacterSelectionWidgetUiSystem {
             .for_each(|(widget, ui_text)| {
                 ui_text.text = match widget.state {
                     WidgetState::Inactive => "Press Attack To Join".to_string(),
-                    _ => format!("{}", widget.selection),
+                    WidgetState::CharacterSelect => format!("◀ {} ▶", widget.selection),
+                    WidgetState::Ready => format!("{}", widget.selection),
                 }
             });
     }
@@ -327,7 +328,7 @@ mod test {
                 CharacterSelectionWidgetUiSystem::type_name(),
                 &[]
             )
-            .with_assertion(|world| assert_widget_text(world, "Random"))
+            .with_assertion(|world| assert_widget_text(world, "◀ Random ▶"))
             .run()
             .is_ok()
         );
@@ -388,7 +389,7 @@ mod test {
                 )
                 .with_assertion(|world| assert_widget_text(
                     world,
-                    &format!("{}", *ASSETS_CHAR_BAT_SLUG)
+                    &format!("◀ {} ▶", *ASSETS_CHAR_BAT_SLUG)
                 ))
                 .run() // kcov-ignore
                 .is_ok()
