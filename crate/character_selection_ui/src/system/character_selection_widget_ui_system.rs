@@ -1,12 +1,13 @@
 use amethyst::{
     ecs::prelude::*,
     shrev::{EventChannel, ReaderId},
-    ui::{Anchor, UiText, UiTransform},
+    ui::{Anchor, LineMode, UiText, UiTransform},
 };
 use application_ui::{FontVariant, Theme};
 use asset_model::loaded::SlugAndHandle;
 use character_selection_model::{
-    CharacterSelection, CharacterSelectionEvent, CharacterSelectionsStatus,
+    CharacterSelection, CharacterSelectionEntity, CharacterSelectionEntityId,
+    CharacterSelectionEvent, CharacterSelectionsStatus,
 };
 use derive_new::new;
 use game_input::{ControllerInput, InputControlled};
@@ -17,7 +18,10 @@ use typename_derive::TypeName;
 
 use crate::{CharacterSelectionWidget, WidgetState};
 
-const FONT_SIZE: f32 = 20.;
+const FONT_SIZE_WIDGET: f32 = 30.;
+const FONT_SIZE_HELP: f32 = 17.;
+const LABEL_WIDTH: f32 = 400.;
+const LABEL_HEIGHT: f32 = 75.;
 
 /// System that creates and deletes `CharacterSelectionWidget` entities.
 ///
@@ -46,6 +50,7 @@ type WidgetUiResources<'s> = (
     ReadExpect<'s, Theme>,
     WriteStorage<'s, UiTransform>,
     WriteStorage<'s, UiText>,
+    WriteStorage<'s, CharacterSelectionEntity>,
 );
 
 type CharacterSelectionWidgetUiSystemData<'s> = (
@@ -69,16 +74,13 @@ impl CharacterSelectionWidgetUiSystem {
             input_controlleds,
             controller_inputs
         ): &mut WidgetComponentStorages<'_>,
-        (theme, ui_transforms, ui_texts): &mut WidgetUiResources<'_>,
+        (theme, ui_transforms, ui_texts, character_selection_entities): &mut WidgetUiResources<'_>,
     ) {
         if !self.ui_initialized {
             debug!("Initializing Character Selection UI.");
 
             self.ui_initialized = true;
             let controller_count = input_config.controller_configs.len();
-
-            let text_w = 250.;
-            let text_h = 50.;
 
             let font = theme
                 .fonts
@@ -99,25 +101,29 @@ impl CharacterSelectionWidgetUiSystem {
                 );
 
                 let ui_transform = UiTransform::new(
-                    format!("CharacterSelectionWidget#{}", controller_id),
+                    format!("character_selection_widget#{}", controller_id),
                     Anchor::Middle,
                     0.,
-                    ((controller_count - index) as f32 * text_h)
-                        - (controller_count as f32 * text_h / 2.),
+                    ((controller_count - index) as f32 * LABEL_HEIGHT)
+                        - (controller_count as f32 * LABEL_HEIGHT / 2.),
                     1.,
-                    text_w,
-                    text_h,
+                    LABEL_WIDTH,
+                    LABEL_HEIGHT,
                 );
 
                 let ui_text = UiText::new(
                     font.clone(),
                     "Press Attack To Join".to_string(),
                     [1., 1., 1., 1.],
-                    FONT_SIZE,
+                    FONT_SIZE_WIDGET,
                 );
 
                 entities
                     .build_entity()
+                    .with(
+                        CharacterSelectionEntity::new(CharacterSelectionEntityId),
+                        character_selection_entities,
+                    )
                     .with(character_selection_widget, character_selection_widgets)
                     .with(InputControlled::new(controller_id), input_controlleds)
                     .with(ControllerInput::default(), controller_inputs)
@@ -125,6 +131,41 @@ impl CharacterSelectionWidgetUiSystem {
                     .with(ui_text, ui_texts)
                     .build();
             });
+
+            // Instructions label
+            let ui_transform = UiTransform::new(
+                String::from("character_selection_instructions"),
+                Anchor::BottomMiddle,
+                0.,
+                LABEL_HEIGHT,
+                1.,
+                LABEL_WIDTH,
+                LABEL_HEIGHT * 5.,
+            );
+
+            let mut ui_text = UiText::new(
+                font.clone(),
+                String::from(
+                    "Press `Attack` to join.\n\
+                     Press `Left` / `Right` to select character.\n\
+                     Press `Attack` to confirm selection.\n\
+                     Press `Attack` to move to next screen.\n\
+                     Press `Jump` to go back.",
+                ),
+                [1., 1., 1., 1.],
+                FONT_SIZE_HELP,
+            );
+            ui_text.line_mode = LineMode::Wrap;
+
+            entities
+                .build_entity()
+                .with(
+                    CharacterSelectionEntity::new(CharacterSelectionEntityId),
+                    character_selection_entities,
+                )
+                .with(ui_transform, ui_transforms)
+                .with(ui_text, ui_texts)
+                .build();
         }
     }
 
@@ -138,8 +179,10 @@ impl CharacterSelectionWidgetUiSystem {
             .for_each(|(widget, ui_text)| {
                 ui_text.text = match widget.state {
                     WidgetState::Inactive => "Press Attack To Join".to_string(),
-                    WidgetState::CharacterSelect => format!("◀ {} ▶", widget.selection),
-                    WidgetState::Ready => format!("{}", widget.selection),
+                    WidgetState::CharacterSelect => {
+                        format!("◀ {:^16} ▶", format!("{}", widget.selection))
+                    }
+                    WidgetState::Ready => format!("{:^16}", format!("{}", widget.selection)),
                 }
             });
     }
@@ -328,7 +371,7 @@ mod test {
                 CharacterSelectionWidgetUiSystem::type_name(),
                 &[]
             )
-            .with_assertion(|world| assert_widget_text(world, "◀ Random ▶"))
+            .with_assertion(|world| assert_widget_text(world, "◀      Random      ▶"))
             .run()
             .is_ok()
         );
@@ -387,10 +430,7 @@ mod test {
                     CharacterSelectionWidgetUiSystem::type_name(),
                     &[]
                 )
-                .with_assertion(|world| assert_widget_text(
-                    world,
-                    &format!("◀ {} ▶", *ASSETS_CHAR_BAT_SLUG)
-                ))
+                .with_assertion(|world| assert_widget_text(world, "◀     test/bat     ▶"))
                 .run() // kcov-ignore
                 .is_ok()
         );
