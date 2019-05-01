@@ -15,7 +15,13 @@ pub enum CharacterSequenceId {
     #[derivative(Default)]
     Stand,
     /// Attack while standing.
-    StandAttack,
+    #[serde(rename = "stand_attack_0")]
+    StandAttack0,
+    /// Attack while standing, second sequence.
+    ///
+    /// This is generally used when pressing attack near the end of the `StandAttack0` sequence.
+    #[serde(rename = "stand_attack_1")]
+    StandAttack1,
     /// Walking sequence.
     Walk,
     /// Running sequence.
@@ -44,6 +50,8 @@ pub enum CharacterSequenceId {
     JumpDescend,
     /// Character landed from jumping.
     JumpDescendLand,
+    /// Attack while jumping.
+    JumpAttack,
     /// Character has dashed off the ground facing forward.
     ///
     /// The beginning of this sequence is when the dash velocity is applied. This is separate from
@@ -74,6 +82,8 @@ pub enum CharacterSequenceId {
     DashBackDescend,
     /// Character landed from dashing.
     DashDescendLand,
+    /// Attack while dashing.
+    DashAttack,
     /// Character is hit while on ground.
     #[serde(rename = "flinch_0")]
     Flinch0,

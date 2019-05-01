@@ -8,6 +8,16 @@ use amethyst::core::frame_limiter::{FrameRateLimitConfig, FrameRateLimitStrategy
 //
 // These are the high level types passed to Amethyst.
 
+/// Returns the `FrameRateLimitConfig` to use for the application.
+pub fn frame_rate_limit_config(frame_rate: Option<u32>) -> FrameRateLimitConfig {
+    frame_rate
+        .map(|frame_rate| FrameRateLimitConfig {
+            strategy: SLEEP_AND_YIELD,
+            fps: frame_rate,
+        })
+        .unwrap_or(FRAME_RATE_DEFAULT)
+}
+
 /// Use the "normal" frame rate of 60 FPS.
 pub const FRAME_RATE_DEFAULT: FrameRateLimitConfig = FrameRateLimitConfig {
     strategy: SLEEP_AND_YIELD,

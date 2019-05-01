@@ -45,7 +45,7 @@ mod test {
             body = [{ box = { x = 25, y = 11, w = 31, h = 68 } }]
 
             [sequences.stand.frames.transitions]
-              press_attack = "stand_attack"
+              press_attack = "stand_attack_0"
 
               release_attack = [
                 { next = "walk", charge = 90 },
@@ -77,7 +77,7 @@ mod test {
             ),
             CharacterControlTransitions {
                 press_attack: Some(ControlTransition::SequenceId(
-                    CharacterSequenceId::StandAttack,
+                    CharacterSequenceId::StandAttack0,
                 )),
                 release_attack: Some(ControlTransition::Multiple(ControlTransitionMultiple::new(
                     vec![

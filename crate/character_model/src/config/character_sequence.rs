@@ -43,7 +43,7 @@ mod tests {
         sprite = { sheet = 0, index = 4 }
 
         [frames.transitions]
-          press_attack = "stand_attack"
+          press_attack = "stand_attack_0"
           hold_jump = { next = "jump" }
     "#;
 
@@ -70,7 +70,7 @@ mod tests {
             ),
             CharacterControlTransitions {
                 press_attack: Some(ControlTransition::SequenceId(
-                    CharacterSequenceId::StandAttack,
+                    CharacterSequenceId::StandAttack0,
                 )),
                 hold_jump: Some(ControlTransition::Single(ControlTransitionSingle {
                     next: CharacterSequenceId::Jump,

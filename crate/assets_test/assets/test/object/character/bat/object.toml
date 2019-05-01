@@ -9,14 +9,14 @@
 
     # Used in `CharacterControlTransitionsTransitionSystem` tests.
     [sequences.stand.frames.transitions]
-      press_attack = "stand_attack"
+      press_attack = "stand_attack_0"
       press_jump = "jump"
       hold_jump = { next = "dash_forward", sp = 10 }
       hold_defend = "flinch_0"
       release_special = [{ next = "dash_back", charge = 10 }]
 
-[sequences.stand_attack]
-  [[sequences.stand_attack.frames]]
+[sequences.stand_attack_0]
+  [[sequences.stand_attack_0.frames]]
     wait = 1
     sprite = { sheet = 1, index = 0 }
     body = [{ box = { x = 16, y = 11, w = 15, h = 12 } }]
@@ -24,14 +24,14 @@
       { hit = { hp_damage = 20 }, bounds = [{ box = { x = 16, y = 11, w = 15, h = 12 } }] },
     ]
 
-  [[sequences.stand_attack.frames]]
+  [[sequences.stand_attack_0.frames]]
     sprite = { sheet = 1, index = 1 }
     body = [{ box = { x = 48, y = 13, w = 15, h = 12 } }]
     interactions = [
       { hit = { hp_damage = 20 }, bounds = [{ box = { x = 48, y = 13, w = 15, h = 12 } }] },
     ]
 
-  [[sequences.stand_attack.frames]]
+  [[sequences.stand_attack_0.frames]]
     wait = 2
     sprite = { sheet = 1, index = 2 }
     body = [{ box = { x = 81, y = 0, w = 14, h = 12 } }]
@@ -39,14 +39,53 @@
       { hit = { hp_damage = 20 }, bounds = [{ box = { x = 81, y = 0, w = 14, h = 12 } }] },
     ]
 
-  [[sequences.stand_attack.frames]]
+  [[sequences.stand_attack_0.frames]]
     sprite = { sheet = 1, index = 3 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
     interactions = [
       { hit = { hp_damage = 20 }, bounds = [{ box = { x = 113, y = 10, w = 14, h = 13 } }] },
     ]
 
-  [[sequences.stand_attack.frames]]
+  [[sequences.stand_attack_0.frames]]
+    sprite = { sheet = 1, index = 4 }
+    body = [{ box = { x = 145, y = 12, w = 14, h = 13 } }]
+    interactions = [
+      { hit = { hp_damage = 20 }, bounds = [{ box = { x = 113, y = 10, w = 14, h = 13 } }] },
+    ]
+    transitions = { press_attack = "stand_attack_1" }
+
+[sequences.stand_attack_1]
+  [[sequences.stand_attack_1.frames]]
+    wait = 1
+    sprite = { sheet = 1, index = 0 }
+    body = [{ box = { x = 16, y = 11, w = 15, h = 12 } }]
+    interactions = [
+      { hit = { hp_damage = 20 }, bounds = [{ box = { x = 16, y = 11, w = 15, h = 12 } }] },
+    ]
+
+  [[sequences.stand_attack_1.frames]]
+    sprite = { sheet = 1, index = 1 }
+    body = [{ box = { x = 48, y = 13, w = 15, h = 12 } }]
+    interactions = [
+      { hit = { hp_damage = 20 }, bounds = [{ box = { x = 48, y = 13, w = 15, h = 12 } }] },
+    ]
+
+  [[sequences.stand_attack_1.frames]]
+    wait = 2
+    sprite = { sheet = 1, index = 2 }
+    body = [{ box = { x = 81, y = 0, w = 14, h = 12 } }]
+    interactions = [
+      { hit = { hp_damage = 20 }, bounds = [{ box = { x = 81, y = 0, w = 14, h = 12 } }] },
+    ]
+
+  [[sequences.stand_attack_1.frames]]
+    sprite = { sheet = 1, index = 3 }
+    body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
+    interactions = [
+      { hit = { hp_damage = 20 }, bounds = [{ box = { x = 113, y = 10, w = 14, h = 13 } }] },
+    ]
+
+  [[sequences.stand_attack_1.frames]]
     sprite = { sheet = 1, index = 4 }
     body = [{ box = { x = 145, y = 12, w = 14, h = 13 } }]
     interactions = [
@@ -185,22 +224,26 @@
     wait = 1
     sprite = { sheet = 1, index = 3 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
+    transitions = { press_attack = "jump_attack" }
 
   [[sequences.jump_ascend.frames]]
     wait = 1
     sprite = { sheet = 1, index = 4 }
     body = [{ box = { x = 145, y = 12, w = 14, h = 13 } }]
+    transitions = { press_attack = "jump_attack" }
 
 [sequences.jump_descend]
   [[sequences.jump_descend.frames]]
     wait = 1
     sprite = { sheet = 1, index = 3 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
+    transitions = { press_attack = "jump_attack" }
 
   [[sequences.jump_descend.frames]]
     wait = 1
     sprite = { sheet = 1, index = 4 }
     body = [{ box = { x = 145, y = 12, w = 14, h = 13 } }]
+    transitions = { press_attack = "jump_attack" }
 
 [sequences.jump_descend_land]
   [[sequences.jump_descend_land.frames]]
@@ -222,6 +265,44 @@
   [[sequences.jump_descend_land.frames]]
     sprite = { sheet = 0, index = 0 }
     body = [{ box = { x = 16, y = 11, w = 15, h = 12 } }]
+
+[sequences.jump_attack]
+  [[sequences.jump_attack.frames]]
+    wait = 1
+    sprite = { sheet = 1, index = 0 }
+    body = [{ box = { x = 16, y = 11, w = 15, h = 12 } }]
+    interactions = [
+      { hit = { hp_damage = 20 }, bounds = [{ box = { x = 16, y = 11, w = 15, h = 12 } }] },
+    ]
+
+  [[sequences.jump_attack.frames]]
+    sprite = { sheet = 1, index = 1 }
+    body = [{ box = { x = 48, y = 13, w = 15, h = 12 } }]
+    interactions = [
+      { hit = { hp_damage = 20 }, bounds = [{ box = { x = 48, y = 13, w = 15, h = 12 } }] },
+    ]
+
+  [[sequences.jump_attack.frames]]
+    wait = 2
+    sprite = { sheet = 1, index = 2 }
+    body = [{ box = { x = 81, y = 0, w = 14, h = 12 } }]
+    interactions = [
+      { hit = { hp_damage = 20 }, bounds = [{ box = { x = 81, y = 0, w = 14, h = 12 } }] },
+    ]
+
+  [[sequences.jump_attack.frames]]
+    sprite = { sheet = 1, index = 3 }
+    body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
+    interactions = [
+      { hit = { hp_damage = 20 }, bounds = [{ box = { x = 113, y = 10, w = 14, h = 13 } }] },
+    ]
+
+  [[sequences.jump_attack.frames]]
+    sprite = { sheet = 1, index = 4 }
+    body = [{ box = { x = 145, y = 12, w = 14, h = 13 } }]
+    interactions = [
+      { hit = { hp_damage = 20 }, bounds = [{ box = { x = 113, y = 10, w = 14, h = 13 } }] },
+    ]
 
 # There are 7 sequences for dashing:
 #
@@ -259,33 +340,39 @@
     wait = 1
     sprite = { sheet = 1, index = 3 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
+    transitions = { press_attack = "dash_attack" }
 
   [[sequences.dash_forward.frames]]
     wait = 1
     sprite = { sheet = 1, index = 4 }
     body = [{ box = { x = 145, y = 12, w = 14, h = 13 } }]
+    transitions = { press_attack = "dash_attack" }
 
 [sequences.dash_forward_ascend]
   [[sequences.dash_forward_ascend.frames]]
     wait = 1
     sprite = { sheet = 1, index = 3 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
+    transitions = { press_attack = "dash_attack" }
 
   [[sequences.dash_forward_ascend.frames]]
     wait = 1
     sprite = { sheet = 1, index = 4 }
     body = [{ box = { x = 145, y = 12, w = 14, h = 13 } }]
+    transitions = { press_attack = "dash_attack" }
 
 [sequences.dash_forward_descend]
   [[sequences.dash_forward_descend.frames]]
     wait = 1
     sprite = { sheet = 1, index = 3 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
+    transitions = { press_attack = "dash_attack" }
 
   [[sequences.dash_forward_descend.frames]]
     wait = 1
     sprite = { sheet = 1, index = 4 }
     body = [{ box = { x = 145, y = 12, w = 14, h = 13 } }]
+    transitions = { press_attack = "dash_attack" }
 
 [sequences.dash_back]
   [[sequences.dash_back.frames]]
@@ -330,6 +417,44 @@
   [[sequences.dash_descend_land.frames]]
     sprite = { sheet = 0, index = 0 }
     body = [{ box = { x = 16, y = 11, w = 15, h = 12 } }]
+
+[sequences.dash_attack]
+  [[sequences.dash_attack.frames]]
+    wait = 1
+    sprite = { sheet = 1, index = 0 }
+    body = [{ box = { x = 16, y = 11, w = 15, h = 12 } }]
+    interactions = [
+      { hit = { hp_damage = 20 }, bounds = [{ box = { x = 16, y = 11, w = 15, h = 12 } }] },
+    ]
+
+  [[sequences.dash_attack.frames]]
+    sprite = { sheet = 1, index = 1 }
+    body = [{ box = { x = 48, y = 13, w = 15, h = 12 } }]
+    interactions = [
+      { hit = { hp_damage = 20 }, bounds = [{ box = { x = 48, y = 13, w = 15, h = 12 } }] },
+    ]
+
+  [[sequences.dash_attack.frames]]
+    wait = 2
+    sprite = { sheet = 1, index = 2 }
+    body = [{ box = { x = 81, y = 0, w = 14, h = 12 } }]
+    interactions = [
+      { hit = { hp_damage = 20 }, bounds = [{ box = { x = 81, y = 0, w = 14, h = 12 } }] },
+    ]
+
+  [[sequences.dash_attack.frames]]
+    sprite = { sheet = 1, index = 3 }
+    body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
+    interactions = [
+      { hit = { hp_damage = 20 }, bounds = [{ box = { x = 113, y = 10, w = 14, h = 13 } }] },
+    ]
+
+  [[sequences.dash_attack.frames]]
+    sprite = { sheet = 1, index = 4 }
+    body = [{ box = { x = 145, y = 12, w = 14, h = 13 } }]
+    interactions = [
+      { hit = { hp_damage = 20 }, bounds = [{ box = { x = 113, y = 10, w = 14, h = 13 } }] },
+    ]
 
 # # Flinching
 #

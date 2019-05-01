@@ -176,7 +176,7 @@ mod tests {
                 let component_sequences_handle = SequenceQueries::component_sequences_handle(
                     world,
                     &ASSETS_CHAR_BAT_SLUG.clone(),
-                    CharacterSequenceId::StandAttack,
+                    CharacterSequenceId::StandAttack0,
                 );
                 initial_values(
                     world,
@@ -207,7 +207,7 @@ mod tests {
                 let component_sequences_handle = SequenceQueries::component_sequences_handle(
                     world,
                     &ASSETS_CHAR_BAT_SLUG.clone(),
-                    CharacterSequenceId::StandAttack,
+                    CharacterSequenceId::StandAttack0,
                 );
                 initial_values(
                     world,

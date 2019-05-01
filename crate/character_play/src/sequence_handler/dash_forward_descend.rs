@@ -1,7 +1,7 @@
 use character_model::config::CharacterSequenceId;
 
 use crate::{
-    sequence_handler::{CharacterSequenceHandler, SwitchSequenceOnLand},
+    sequence_handler::{common::SequenceRepeat, CharacterSequenceHandler, SwitchSequenceOnLand},
     CharacterSequenceUpdateComponents,
 };
 
@@ -13,6 +13,8 @@ pub(crate) struct DashForwardDescend;
 
 impl CharacterSequenceHandler for DashForwardDescend {
     fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
-        DASH_FORWARD_DESCEND.update(components)
+        DASH_FORWARD_DESCEND
+            .update(components)
+            .or_else(|| SequenceRepeat::update(components))
     }
 }

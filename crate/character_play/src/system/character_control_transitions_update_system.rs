@@ -123,7 +123,7 @@ mod tests {
                 let character_cts_handle = SequenceQueries::character_cts_handle(
                     world,
                     &ASSETS_CHAR_BAT_SLUG.clone(),
-                    CharacterSequenceId::StandAttack,
+                    CharacterSequenceId::StandAttack0,
                 );
                 initial_values(
                     world,
@@ -150,7 +150,7 @@ mod tests {
                 let character_cts_handle = SequenceQueries::character_cts_handle(
                     world,
                     &ASSETS_CHAR_BAT_SLUG.clone(),
-                    CharacterSequenceId::StandAttack,
+                    CharacterSequenceId::StandAttack0,
                 );
                 initial_values(
                     world,
@@ -228,7 +228,7 @@ mod tests {
             CharacterControlTransition::new(
                 ControlTransition::Press(ControlTransitionPress::new(
                     ControlAction::Attack,
-                    CharacterSequenceId::StandAttack,
+                    CharacterSequenceId::StandAttack0,
                 )),
                 None,
             ),

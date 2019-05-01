@@ -52,7 +52,6 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
 
             match character_sequence_id {
                 CharacterSequenceId::Stand
-                | CharacterSequenceId::StandAttack
                 | CharacterSequenceId::Flinch0
                 | CharacterSequenceId::Flinch1 => {
                     velocity[0] = 0.;
@@ -78,7 +77,9 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                 CharacterSequenceId::JumpDescendLand
                 | CharacterSequenceId::DashDescendLand
                 | CharacterSequenceId::FallForwardLand
-                | CharacterSequenceId::LieFaceDown => {
+                | CharacterSequenceId::LieFaceDown
+                | CharacterSequenceId::StandAttack0
+                | CharacterSequenceId::StandAttack1 => {
                     velocity[0] /= 2.;
                     velocity[1] = 0.;
                     velocity[2] /= 2.;
@@ -107,6 +108,14 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                         velocities.get_mut(*entity),
                     ) {
                         match character_sequence_id {
+                            CharacterSequenceId::StandAttack0 => {
+                                velocity[0] = controller_input.x_axis_value as f32 * 2.5;
+                                velocity[2] = controller_input.z_axis_value as f32 * 1.5;
+                            }
+                            CharacterSequenceId::StandAttack1 => {
+                                velocity[0] = if mirrored.0 { -2.5 } else { 2.5 };
+                                velocity[2] = controller_input.z_axis_value as f32 * 1.5;
+                            }
                             CharacterSequenceId::JumpOff => {
                                 velocity[0] = controller_input.x_axis_value as f32 * 5.;
                                 velocity[1] = 17.;
@@ -171,6 +180,33 @@ mod tests {
             },
             Velocity::new(0., 0., 0.),
         )
+    }
+
+    #[test]
+    fn updates_stand_attack_x_and_z_velocity() -> Result<(), Error> {
+        vec![
+            CharacterSequenceId::StandAttack0,
+            CharacterSequenceId::StandAttack1,
+        ]
+        .into_iter()
+        .try_for_each(|stand_attack_id| {
+            let mut controller_input = ControllerInput::default();
+            controller_input.x_axis_value = 1.;
+            controller_input.z_axis_value = -1.;
+
+            run_test(
+                "updates_stand_attack_x_and_z_velocity",
+                ParamsSetup {
+                    velocity: Velocity::new(0., 0., 0.),
+                    grounding: Grounding::OnGround,
+                    sequence_id: stand_attack_id,
+                    controller_input: Some(controller_input),
+                    mirrored: None,
+                    event_fn: Some(|entity| SequenceUpdateEvent::SequenceBegin { entity }),
+                },
+                Velocity::new(2.5, 0., -1.5),
+            )
+        })
     }
 
     #[test]

@@ -1,7 +1,7 @@
 use character_model::config::CharacterSequenceId;
 
 use crate::{
-    sequence_handler::{CharacterSequenceHandler, SwitchSequenceOnLand},
+    sequence_handler::{common::SequenceRepeat, CharacterSequenceHandler, SwitchSequenceOnLand},
     CharacterSequenceUpdateComponents,
 };
 
@@ -20,5 +20,6 @@ impl CharacterSequenceHandler for FallForwardDescend {
         } else {
             FALL_FORWARD_DESCEND_LIE.update(components)
         }
+        .or_else(|| SequenceRepeat::update(components))
     }
 }
