@@ -210,7 +210,7 @@ impl CharacterSelectionWidgetUiSystem {
                     WidgetState::CharacterSelect => {
                         format!("◀ {:^16} ▶", format!("{}", widget.selection))
                     }
-                    WidgetState::Ready => format!("{:^16}", format!("{}", widget.selection)),
+                    WidgetState::Ready => format!("» {:^16} «", format!("{}", widget.selection)),
                 }
             });
     }
