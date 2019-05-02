@@ -1,7 +1,8 @@
 use amethyst::{
-    ecs::prelude::*,
+    core::transform::Parent,
+    ecs::{Entities, Join, Read, ReadExpect, Resources, System, SystemData, WriteStorage},
     shrev::{EventChannel, ReaderId},
-    ui::{Anchor, LineMode, UiText, UiTransform},
+    ui::{Anchor, UiText, UiTransform},
 };
 use application_ui::{FontVariant, Theme};
 use asset_model::loaded::SlugAndHandle;
@@ -22,6 +23,7 @@ const FONT_SIZE_WIDGET: f32 = 30.;
 const FONT_SIZE_HELP: f32 = 17.;
 const LABEL_WIDTH: f32 = 400.;
 const LABEL_HEIGHT: f32 = 75.;
+const LABEL_HEIGHT_HELP: f32 = 20.;
 
 /// System that creates and deletes `CharacterSelectionWidget` entities.
 ///
@@ -50,6 +52,7 @@ type WidgetUiResources<'s> = (
     ReadExpect<'s, Theme>,
     WriteStorage<'s, UiTransform>,
     WriteStorage<'s, UiText>,
+    WriteStorage<'s, Parent>,
     WriteStorage<'s, CharacterSelectionEntity>,
 );
 
@@ -74,7 +77,7 @@ impl CharacterSelectionWidgetUiSystem {
             input_controlleds,
             controller_inputs
         ): &mut WidgetComponentStorages<'_>,
-        (theme, ui_transforms, ui_texts, character_selection_entities): &mut WidgetUiResources<'_>,
+        (theme, ui_transforms, ui_texts, parents, character_selection_entities): &mut WidgetUiResources<'_>,
     ) {
         if !self.ui_initialized {
             debug!("Initializing Character Selection UI.");
@@ -133,39 +136,64 @@ impl CharacterSelectionWidgetUiSystem {
             });
 
             // Instructions label
-            let ui_transform = UiTransform::new(
-                String::from("character_selection_instructions"),
-                Anchor::BottomMiddle,
-                0.,
-                LABEL_HEIGHT,
-                1.,
-                LABEL_WIDTH,
-                LABEL_HEIGHT * 5.,
-            );
+            //
+            // Need to create a container to left justify everything.
+            let container_height = LABEL_HEIGHT_HELP * 5.;
+            let container_entity = {
+                let ui_transform = UiTransform::new(
+                    String::from("character_selection_instructions"),
+                    Anchor::BottomMiddle,
+                    0.,
+                    0.,
+                    1.,
+                    LABEL_WIDTH,
+                    container_height,
+                );
 
-            let mut ui_text = UiText::new(
-                font.clone(),
-                String::from(
-                    "Press `Attack` to join.\n\
-                     Press `Left` / `Right` to select character.\n\
-                     Press `Attack` to confirm selection.\n\
-                     Press `Attack` to move to next screen.\n\
-                     Press `Jump` to go back.",
-                ),
-                [1., 1., 1., 1.],
-                FONT_SIZE_HELP,
-            );
-            ui_text.line_mode = LineMode::Wrap;
+                entities
+                    .build_entity()
+                    .with(
+                        CharacterSelectionEntity::new(CharacterSelectionEntityId),
+                        character_selection_entities,
+                    )
+                    .with(ui_transform, ui_transforms)
+                    .build()
+            };
+            vec![
+                String::from("Press `Attack` to join. ----------------------"),
+                String::from("Press `Left` / `Right` to select character. --"),
+                String::from("Press `Attack` to confirm selection. ---------"),
+                String::from("Press `Attack` to move to next screen. -------"),
+                String::from("Press `Jump` to go back. ---------------------"),
+            ]
+            .into_iter()
+            .enumerate()
+            .for_each(|(index, string)| {
+                let ui_transform = UiTransform::new(
+                    format!("character_selection_instructions#{}", index),
+                    Anchor::TopLeft,
+                    LABEL_WIDTH / 2.,
+                    container_height - LABEL_HEIGHT_HELP * index as f32,
+                    1.,
+                    LABEL_WIDTH,
+                    LABEL_HEIGHT_HELP,
+                );
 
-            entities
-                .build_entity()
-                .with(
-                    CharacterSelectionEntity::new(CharacterSelectionEntityId),
-                    character_selection_entities,
-                )
-                .with(ui_transform, ui_transforms)
-                .with(ui_text, ui_texts)
-                .build();
+                let ui_text = UiText::new(font.clone(), string, [1., 1., 1., 1.], FONT_SIZE_HELP);
+
+                let parent = Parent::new(container_entity);
+
+                entities
+                    .build_entity()
+                    .with(
+                        CharacterSelectionEntity::new(CharacterSelectionEntityId),
+                        character_selection_entities,
+                    )
+                    .with(ui_transform, ui_transforms)
+                    .with(ui_text, ui_texts)
+                    .with(parent, parents)
+                    .build();
+            });
         }
     }
 
