@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::prelude::*,
+    ecs::{Entities, Join, Read, ReadExpect, System, WriteStorage},
     ui::{Anchor, UiText, UiTransform},
 };
 use application_ui::{FontVariant, Theme};
@@ -171,10 +171,11 @@ mod test {
     use std::collections::HashMap;
 
     use amethyst::{
-        ecs::prelude::*,
+        ecs::{Join, Read, ReadStorage, World, WriteStorage},
         input::{Axis as InputAxis, Button},
         renderer::VirtualKeyCode,
         ui::UiText,
+        Error,
     };
     use application_test_support::AutexousiousApplication;
     use game_input_model::{Axis, ControlAction, ControllerConfig, InputConfig};
@@ -186,36 +187,22 @@ mod test {
     use crate::{MapSelectionWidget, WidgetState};
 
     #[test]
-    fn initializes_ui_when_map_selections_waiting() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::config_base(
-                "initializes_ui_when_map_selections_waiting",
-                false
-            )
+    fn initializes_ui_when_map_selections_waiting() -> Result<(), Error> {
+        AutexousiousApplication::config_base("initializes_ui_when_map_selections_waiting", false)
             .with_resource(input_config())
             .with_system_single(
                 MapSelectionWidgetUiSystem::new(),
                 MapSelectionWidgetUiSystem::type_name(),
-                &[]
+                &[],
             )
             .with_assertion(|world| assert_widget_count(world, 1))
             .with_assertion(|world| assert_widget_text(world, "Random"))
             .run()
-            .is_ok()
-        );
     }
 
     #[test]
-    fn refreshes_ui_when_selections_select_random() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::config_base(
-                "refreshes_ui_when_selections_select_random",
-                false
-            )
+    fn refreshes_ui_when_selections_select_random() -> Result<(), Error> {
+        AutexousiousApplication::config_base("refreshes_ui_when_selections_select_random", false)
             // Set up UI
             .with_resource(input_config())
             // Run this in its own dispatcher, otherwise the LoadingState hasn't had time to
@@ -223,7 +210,7 @@ mod test {
             .with_system_single(
                 MapSelectionWidgetUiSystem::new(),
                 MapSelectionWidgetUiSystem::type_name(),
-                &[]
+                &[],
             )
             .with_assertion(|world| assert_widget_count(world, 1))
             // Select map and send event
@@ -251,12 +238,10 @@ mod test {
             .with_system_single(
                 MapSelectionWidgetUiSystem::new(),
                 MapSelectionWidgetUiSystem::type_name(),
-                &[]
+                &[],
             )
             .with_assertion(|world| assert_widget_text(world, "Random"))
             .run()
-            .is_ok()
-        );
     }
 
     fn input_config() -> InputConfig {
