@@ -165,6 +165,8 @@ impl CharacterSelectionWidgetUiSystem {
                 String::from("Press `Attack` to confirm selection. ---------"),
                 String::from("Press `Attack` to move to next screen. -------"),
                 String::from("Press `Jump` to go back. ---------------------"),
+                String::from(""),
+                String::from("See `resources/input_config.ron` for controls."),
             ]
             .into_iter()
             .enumerate()
