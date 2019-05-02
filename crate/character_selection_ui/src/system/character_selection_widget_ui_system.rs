@@ -1,14 +1,12 @@
 use amethyst::{
     core::transform::Parent,
-    ecs::{Entities, Join, Read, ReadExpect, Resources, System, SystemData, WriteStorage},
-    shrev::{EventChannel, ReaderId},
+    ecs::{Entities, Join, Read, ReadExpect, System, WriteStorage},
     ui::{Anchor, UiText, UiTransform},
 };
 use application_ui::{FontVariant, Theme};
 use asset_model::loaded::SlugAndHandle;
 use character_selection_model::{
     CharacterSelection, CharacterSelectionEntity, CharacterSelectionEntityId,
-    CharacterSelectionEvent, CharacterSelectionsStatus,
 };
 use derive_new::new;
 use game_input::{ControllerInput, InputControlled};
@@ -30,17 +28,7 @@ const LABEL_HEIGHT_HELP: f32 = 20.;
 /// This is not private because consumers may use `CharacterSelectionWidgetUiSystem::type_name()` to
 /// specify this as a dependency of another system.
 #[derive(Debug, Default, TypeName, new)]
-pub(crate) struct CharacterSelectionWidgetUiSystem {
-    /// Whether the UI is initialized.
-    #[new(value = "false")]
-    ui_initialized: bool,
-    /// Reader ID for the `CharacterSelectionEvent` event channel.
-    ///
-    /// This is used to determine to delete the UI entities, as the `CharacterSelectionsStatus` is
-    /// only updated by the `CharacterSelectionsSystem` which happens after this system runs.
-    #[new(default)]
-    reader_id: Option<ReaderId<CharacterSelectionEvent>>,
-}
+pub(crate) struct CharacterSelectionWidgetUiSystem;
 
 type WidgetComponentStorages<'s> = (
     WriteStorage<'s, CharacterSelectionWidget>,
@@ -57,8 +45,6 @@ type WidgetUiResources<'s> = (
 );
 
 type CharacterSelectionWidgetUiSystemData<'s> = (
-    Read<'s, EventChannel<CharacterSelectionEvent>>,
-    Read<'s, CharacterSelectionsStatus>,
     Read<'s, CharacterAssets>,
     Read<'s, InputConfig>,
     Entities<'s>,
@@ -79,10 +65,9 @@ impl CharacterSelectionWidgetUiSystem {
         ): &mut WidgetComponentStorages<'_>,
         (theme, ui_transforms, ui_texts, parents, character_selection_entities): &mut WidgetUiResources<'_>,
     ) {
-        if !self.ui_initialized {
+        if character_selection_widgets.count() == 0 {
             debug!("Initializing Character Selection UI.");
 
-            self.ui_initialized = true;
             let controller_count = input_config.controller_configs.len();
 
             let font = theme
@@ -216,23 +201,6 @@ impl CharacterSelectionWidgetUiSystem {
                 }
             });
     }
-
-    fn terminate_ui(
-        &mut self,
-        entities: &Entities<'_>,
-        character_selection_widgets: &mut WriteStorage<'_, CharacterSelectionWidget>,
-    ) {
-        if self.ui_initialized {
-            (&**entities, character_selection_widgets)
-                .join()
-                .for_each(|(entity, _widget)| {
-                    entities
-                        .delete(entity)
-                        .expect("Failed to delete `CharacterSelectionWidget` entity.")
-                });
-            self.ui_initialized = false;
-        }
-    }
 }
 
 impl<'s> System<'s> for CharacterSelectionWidgetUiSystem {
@@ -241,8 +209,6 @@ impl<'s> System<'s> for CharacterSelectionWidgetUiSystem {
     fn run(
         &mut self,
         (
-            character_selection_events,
-            character_selections_status,
             character_assets,
             input_config,
             entities,
@@ -250,44 +216,15 @@ impl<'s> System<'s> for CharacterSelectionWidgetUiSystem {
             mut widget_ui_resources,
         ): Self::SystemData,
     ) {
-        // We need to do this because the `CharacterSelectionsStatus` is not updated until after
-        // this system has run, and so we don't actually get a chance to delete the UI entities.
-        if character_selection_events
-            .read(
-                self.reader_id
-                    .as_mut()
-                    .expect("Expected to read `CharacterSelectionEvent`s."),
-            )
-            .any(|ev| CharacterSelectionEvent::Confirm == *ev)
-        {
-            self.terminate_ui(&entities, &mut widget_component_storages.0);
-            return;
-        }
-
-        match *character_selections_status {
-            CharacterSelectionsStatus::Waiting => {
-                self.initialize_ui(
-                    &character_assets,
-                    &input_config,
-                    &entities,
-                    &mut widget_component_storages,
-                    &mut widget_ui_resources,
-                );
-                self.refresh_ui(&mut widget_component_storages.0, &mut widget_ui_resources.2);
-            }
-            CharacterSelectionsStatus::Ready => {
-                self.terminate_ui(&entities, &mut widget_component_storages.0)
-            }
-            _ => self.refresh_ui(&mut widget_component_storages.0, &mut widget_ui_resources.2),
-        };
-    }
-
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
-        self.reader_id = Some(
-            res.fetch_mut::<EventChannel<CharacterSelectionEvent>>()
-                .register_reader(),
+        self.initialize_ui(
+            &character_assets,
+            &input_config,
+            &entities,
+            &mut widget_component_storages,
+            &mut widget_ui_resources,
         );
+
+        self.refresh_ui(&mut widget_component_storages.0, &mut widget_ui_resources.2)
     }
 }
 
@@ -296,18 +233,15 @@ mod test {
     use std::collections::HashMap;
 
     use amethyst::{
-        ecs::prelude::*,
+        ecs::{Join, Read, ReadStorage, World, WriteStorage},
         input::{Axis as InputAxis, Button},
-        shrev::EventChannel,
         ui::UiText,
         winit::VirtualKeyCode,
     };
     use application_test_support::AutexousiousApplication;
     use asset_model::loaded::SlugAndHandle;
     use assets_test::ASSETS_CHAR_BAT_SLUG;
-    use character_selection_model::{
-        CharacterSelection, CharacterSelectionEvent, CharacterSelectionsStatus,
-    };
+    use character_selection_model::CharacterSelection;
     use game_input_model::{Axis, ControlAction, ControllerConfig, InputConfig};
     use game_model::loaded::CharacterAssets;
     use typename::TypeName;
@@ -324,7 +258,6 @@ mod test {
                 "initializes_ui_when_character_selections_waiting",
                 false
             )
-            .with_resource(CharacterSelectionsStatus::Waiting)
             .with_setup(|world| world.add_resource(input_config()))
             .with_system_single(
                 CharacterSelectionWidgetUiSystem::new(),
@@ -348,7 +281,6 @@ mod test {
                 false
             )
             // Set up UI
-            .with_resource(CharacterSelectionsStatus::Waiting)
             .with_resource(input_config())
             // Run this in its own dispatcher, otherwise the LoadingState hasn't had time to
             // complete.
@@ -359,7 +291,6 @@ mod test {
             )
             .with_assertion(|world| assert_widget_count(world, 2))
             // Select character and send event
-            .with_effect(|world| world.add_resource(CharacterSelectionsStatus::CharacterSelect))
             .with_effect(|world| {
                 world.exec(
                     |(mut widgets, character_assets): (
@@ -380,21 +311,6 @@ mod test {
                         widget.selection = CharacterSelection::Random(first_character.into());
                     },
                 );
-
-                let first_character = world
-                    .read_resource::<CharacterAssets>()
-                    .iter()
-                    .next()
-                    .expect("Expected at least one character to be loaded.")
-                    .into();
-
-                send_event(
-                    world,
-                    CharacterSelectionEvent::Select {
-                        controller_id: 123,
-                        character_selection: CharacterSelection::Random(first_character),
-                    },
-                )
             })
             .with_system_single(
                 CharacterSelectionWidgetUiSystem::new(),
@@ -415,7 +331,6 @@ mod test {
             AutexousiousApplication::config_base("refreshes_ui_when_selections_select_id", false)
                 // Set up UI
                 .with_resource(input_config())
-                .with_resource(CharacterSelectionsStatus::Waiting)
                 .with_system_single(
                     CharacterSelectionWidgetUiSystem::new(),
                     CharacterSelectionWidgetUiSystem::type_name(),
@@ -423,7 +338,6 @@ mod test {
                 )
                 .with_assertion(|world| assert_widget_count(world, 2))
                 // Select character and send event
-                .with_effect(|world| world.add_resource(CharacterSelectionsStatus::CharacterSelect))
                 .with_effect(|world| {
                     world.exec(
                         |(mut widgets, character_assets): (
@@ -441,19 +355,6 @@ mod test {
                             )));
                         },
                     );
-
-                    let bat_snh = SlugAndHandle::from((
-                        &*world.read_resource::<CharacterAssets>(),
-                        ASSETS_CHAR_BAT_SLUG.clone(),
-                    ));
-
-                    send_event(
-                        world,
-                        CharacterSelectionEvent::Select {
-                            controller_id: 123,
-                            character_selection: CharacterSelection::Id(bat_snh),
-                        },
-                    )
                 })
                 .with_system_single(
                     CharacterSelectionWidgetUiSystem::new(),
@@ -462,36 +363,6 @@ mod test {
                 )
                 .with_assertion(|world| assert_widget_text(world, "◀     test/bat     ▶"))
                 .run() // kcov-ignore
-                .is_ok()
-        );
-    }
-
-    #[test]
-    #[ignore = "Reader ID and ui_initialized value are forgotten when we reinitialize the System."]
-    fn terminates_ui_when_confirm_event_sent() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::config_base("terminates_ui_when_confirm_event_sent", false)
-                // Set up UI
-                .with_resource(input_config())
-                .with_resource(CharacterSelectionsStatus::Waiting)
-                .with_system_single(
-                    CharacterSelectionWidgetUiSystem::new(),
-                    CharacterSelectionWidgetUiSystem::type_name(),
-                    &[]
-                )
-                .with_assertion(|world| assert_widget_count(world, 2))
-                // Confirm selection and send event
-                .with_effect(|world| world.add_resource(CharacterSelectionsStatus::Ready))
-                .with_effect(|world| send_event(world, CharacterSelectionEvent::Confirm))
-                .with_system_single(
-                    CharacterSelectionWidgetUiSystem::new(),
-                    CharacterSelectionWidgetUiSystem::type_name(),
-                    &[]
-                )
-                .with_assertion(|world| assert_widget_count(world, 0))
-                .run()
                 .is_ok()
         );
     }
@@ -521,12 +392,6 @@ mod test {
         let mut actions = HashMap::new();
         actions.insert(ControlAction::Jump, Button::Key(keys[2]));
         ControllerConfig::new(axes, actions)
-    }
-
-    fn send_event(world: &mut World, event: CharacterSelectionEvent) {
-        world
-            .write_resource::<EventChannel<CharacterSelectionEvent>>()
-            .single_write(event);
     }
 
     fn assert_widget_count(world: &mut World, count: usize) {
