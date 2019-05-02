@@ -1,4 +1,5 @@
 use amethyst::{
+    core::transform::Parent,
     ecs::{Entities, Join, Read, ReadExpect, System, WriteStorage},
     ui::{Anchor, UiText, UiTransform},
 };
@@ -14,7 +15,11 @@ use typename_derive::TypeName;
 
 use crate::{MapSelectionWidget, WidgetState};
 
-const FONT_SIZE: f32 = 20.;
+const FONT_SIZE_WIDGET: f32 = 30.;
+const FONT_SIZE_HELP: f32 = 17.;
+const LABEL_WIDTH: f32 = 400.;
+const LABEL_HEIGHT: f32 = 75.;
+const LABEL_HEIGHT_HELP: f32 = 20.;
 
 /// System that creates and deletes `MapSelectionWidget` entities.
 ///
@@ -33,6 +38,7 @@ type WidgetUiResources<'s> = (
     ReadExpect<'s, Theme>,
     WriteStorage<'s, UiTransform>,
     WriteStorage<'s, UiText>,
+    WriteStorage<'s, Parent>,
     WriteStorage<'s, MapSelectionEntity>,
 );
 
@@ -57,13 +63,12 @@ impl MapSelectionWidgetUiSystem {
             shared_input_controlleds,
             controller_inputs
         ): &mut WidgetComponentStorages<'_>,
-        (theme, ui_transforms, ui_texts, map_selection_entities): &mut WidgetUiResources<'_>,
+        (theme, ui_transforms, ui_texts, parents, map_selection_entities): &mut WidgetUiResources<
+            '_,
+        >,
     ) {
         if map_selection_widgets.count() == 0 {
             debug!("Initializing Map Selection UI.");
-
-            let text_w = 250.;
-            let text_h = 50.;
 
             let font = theme
                 .fonts
@@ -84,13 +89,18 @@ impl MapSelectionWidgetUiSystem {
                 "MapSelectionWidget".to_string(),
                 Anchor::Middle,
                 0.,
-                text_h / 2.,
+                LABEL_HEIGHT / 2.,
                 1.,
-                text_w,
-                text_h,
+                LABEL_WIDTH,
+                LABEL_HEIGHT,
             );
 
-            let ui_text = UiText::new(font.clone(), String::from(""), [1., 1., 1., 1.], FONT_SIZE);
+            let ui_text = UiText::new(
+                font.clone(),
+                String::from(""),
+                [1., 1., 1., 1.],
+                FONT_SIZE_WIDGET,
+            );
 
             entities
                 .build_entity()
@@ -124,6 +134,67 @@ impl MapSelectionWidgetUiSystem {
                     )
                     .with(InputControlled::new(controller_id), input_controlleds)
                     .with(ControllerInput::default(), controller_inputs)
+                    .build();
+            });
+
+            // Instructions label
+            //
+            // Need to create a container to left justify everything.
+            let container_height = LABEL_HEIGHT_HELP * 5.;
+            let container_entity = {
+                let ui_transform = UiTransform::new(
+                    String::from("character_selection_instructions"),
+                    Anchor::BottomMiddle,
+                    0.,
+                    0.,
+                    1.,
+                    LABEL_WIDTH,
+                    container_height,
+                );
+
+                entities
+                    .build_entity()
+                    .with(
+                        MapSelectionEntity::new(MapSelectionEntityId),
+                        map_selection_entities,
+                    )
+                    .with(ui_transform, ui_transforms)
+                    .build()
+            };
+            vec![
+                String::from("Press `Left` / `Right` to select map. --------"),
+                String::from("Press `Attack` to confirm selection. ---------"),
+                String::from("Press `Attack` to move to next screen. -------"),
+                String::from("Press `Jump` to go back. ---------------------"),
+                String::from(""),
+                String::from("See `resources/input_config.ron` for controls."),
+            ]
+            .into_iter()
+            .enumerate()
+            .for_each(|(index, string)| {
+                let ui_transform = UiTransform::new(
+                    format!("character_selection_instructions#{}", index),
+                    Anchor::TopLeft,
+                    LABEL_WIDTH / 2.,
+                    container_height - LABEL_HEIGHT_HELP * index as f32,
+                    1.,
+                    LABEL_WIDTH,
+                    LABEL_HEIGHT_HELP,
+                );
+
+                let ui_text = UiText::new(font.clone(), string, [1., 1., 1., 1.], FONT_SIZE_HELP);
+
+                let parent = Parent::new(container_entity);
+
+                entities
+                    .build_entity()
+                    .with(
+                        MapSelectionEntity::new(MapSelectionEntityId),
+                        map_selection_entities,
+                    )
+                    .with(ui_transform, ui_transforms)
+                    .with(ui_text, ui_texts)
+                    .with(parent, parents)
                     .build();
             });
         }
