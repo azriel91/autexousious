@@ -2,9 +2,7 @@ use amethyst::{
     ecs::prelude::*,
     shrev::{EventChannel, ReaderId},
 };
-use character_selection_model::{
-    CharacterSelection, CharacterSelectionEvent, CharacterSelections, CharacterSelectionsStatus,
-};
+use character_selection_model::{CharacterSelection, CharacterSelectionEvent, CharacterSelections};
 use derive_new::new;
 use typename_derive::TypeName;
 
@@ -13,31 +11,23 @@ use typename_derive::TypeName;
 pub struct CharacterSelectionSystem {
     /// Reader ID for the `CharacterSelectionEvent` event channel.
     #[new(default)]
-    reader_id: Option<ReaderId<CharacterSelectionEvent>>,
+    character_selection_event_rid: Option<ReaderId<CharacterSelectionEvent>>,
 }
 
 type CharacterSelectionSystemData<'s> = (
     Read<'s, EventChannel<CharacterSelectionEvent>>,
     Write<'s, CharacterSelections>,
-    Write<'s, CharacterSelectionsStatus>,
 );
 
 impl<'s> System<'s> for CharacterSelectionSystem {
     type SystemData = CharacterSelectionSystemData<'s>;
 
-    fn run(
-        &mut self,
-        (
-            character_selection_events,
-            mut character_selections,
-            mut character_selections_status
-        ): Self::SystemData,
-    ) {
-        character_selection_events
+    fn run(&mut self, (character_selection_ec, mut character_selections): Self::SystemData) {
+        character_selection_ec
             .read(
-                self.reader_id
+                self.character_selection_event_rid
                     .as_mut()
-                    .expect("Expected to read `CharacterSelectionEvent`s."),
+                    .expect("Expected `character_selection_event_rid` to be set."),
             )
             .for_each(|ev| match ev {
                 CharacterSelectionEvent::Select {
@@ -56,15 +46,13 @@ impl<'s> System<'s> for CharacterSelectionSystem {
                 CharacterSelectionEvent::Deselect { controller_id } => {
                     character_selections.selections.remove(&controller_id);
                 }
-                CharacterSelectionEvent::Confirm => {
-                    *character_selections_status = CharacterSelectionsStatus::Ready;
-                }
+                _ => {}
             });
     }
 
     fn setup(&mut self, res: &mut Resources) {
         Self::SystemData::setup(res);
-        self.reader_id = Some(
+        self.character_selection_event_rid = Some(
             res.fetch_mut::<EventChannel<CharacterSelectionEvent>>()
                 .register_reader(),
         );
@@ -82,10 +70,9 @@ mod tests {
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
     use character_loading::CharacterLoadingBundle;
     use character_selection_model::{
-        CharacterSelection, CharacterSelectionEvent, CharacterSelections, CharacterSelectionsStatus,
+        CharacterSelection, CharacterSelectionEvent, CharacterSelections,
     };
     use collision_loading::CollisionLoadingBundle;
-    use game_input_model::{PlayerActionControl, PlayerAxisControl};
     use loading::{LoadingBundle, LoadingState};
     use map_loading::MapLoadingBundle;
     use sequence_loading::SequenceLoadingBundle;
@@ -174,27 +161,6 @@ mod tests {
                 let character_selections = world.read_resource::<CharacterSelections>();
 
                 assert_eq!(None, character_selections.selections.get(&123));
-            })
-            .run()
-    }
-
-    #[test]
-    fn sets_character_selections_status_to_ready_on_confirm_event() -> Result<(), Error> {
-        AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
-            .with_system(
-                CharacterSelectionSystem::new(),
-                CharacterSelectionSystem::type_name(),
-                &[],
-            ) // kcov-ignore
-            .with_setup(|world| send_event(world, CharacterSelectionEvent::Confirm))
-            .with_assertion(|world| {
-                let character_selections_status =
-                    world.read_resource::<CharacterSelectionsStatus>();
-
-                assert_eq!(
-                    CharacterSelectionsStatus::Ready,
-                    *character_selections_status
-                );
             })
             .run()
     }

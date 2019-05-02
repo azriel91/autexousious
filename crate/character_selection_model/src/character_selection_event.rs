@@ -5,6 +5,8 @@ use crate::CharacterSelection;
 /// Event signalling a change in character selection state.
 #[derive(Clone, Debug, PartialEq)]
 pub enum CharacterSelectionEvent {
+    /// Signal to return from `CharacterSelectionState`.
+    Return,
     /// Character has been selected.
     Select {
         /// ID of the controller of the selection.

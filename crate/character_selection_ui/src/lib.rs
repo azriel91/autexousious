@@ -5,7 +5,10 @@
 pub use crate::character_selection_ui_bundle::CharacterSelectionUiBundle;
 pub(crate) use crate::{
     component::{CharacterSelectionWidget, WidgetState},
-    system::{CharacterSelectionWidgetInputSystem, CharacterSelectionWidgetUiSystem},
+    system::{
+        CharacterSelectionInputSystem, CharacterSelectionWidgetInputSystem,
+        CharacterSelectionWidgetUiSystem,
+    },
 };
 
 mod character_selection_ui_bundle;
