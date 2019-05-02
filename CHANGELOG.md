@@ -12,6 +12,7 @@
 * Added `jump_attack` sequence. ([#117])
 * Added `dash_attack` sequence. ([#117])
 * Added `--frame_rate` argument to control application frame rate. ([#117])
+* Players can now return to game mode selection from the character selection UI. ([#110])
 
 ### Changed
 
@@ -26,6 +27,8 @@
 
 [#96]: https://gitlab.com/azriel91/autexousious/issues/96
 [#103]: https://gitlab.com/azriel91/autexousious/issues/103
+[#110]: https://gitlab.com/azriel91/autexousious/issues/110
+[#117]: https://gitlab.com/azriel91/autexousious/issues/117
 
 ## 0.10.0 (2019-03-29)
 
@@ -60,8 +63,6 @@
 [#102]: https://gitlab.com/azriel91/autexousious/issues/102
 [#104]: https://gitlab.com/azriel91/autexousious/issues/104
 [#105]: https://gitlab.com/azriel91/autexousious/issues/105
-[#110]: https://gitlab.com/azriel91/autexousious/issues/110
-[#117]: https://gitlab.com/azriel91/autexousious/issues/117
 
 ## 0.9.0 (2019-02-15)
 
