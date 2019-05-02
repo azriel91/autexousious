@@ -15,7 +15,6 @@ game_input_model = { path = "../game_input_model" }
 game_model = { path = "../game_model" }
 log = "0.4.6"
 map_model = { path = "../map_model" }
-map_selection = { path = "../map_selection" }
 map_selection_model = { path = "../map_selection_model" }
 strum = "0.15.0"
 strum_macros = "0.15.0"
