@@ -233,14 +233,6 @@ impl CharacterSelectionWidgetInputSystem {
                 );
                 character_selection_ec.single_write(character_selection_event);
             }
-            (WidgetState::Ready, ControlAction::Attack, true) => {
-                let character_selection_event = CharacterSelectionEvent::Confirm;
-                debug!(
-                    "Sending character selection event: {:?}",
-                    &character_selection_event // kcov-ignore
-                );
-                character_selection_ec.single_write(character_selection_event);
-            }
             _ => {}
         }
     }
@@ -301,7 +293,7 @@ mod test {
     #[test]
     fn does_not_send_event_when_controller_input_empty() -> Result<(), Error> {
         run_test(
-            "updates_widget_character_select_to_ready_and_sends_event_when_input_attack",
+            "does_not_send_event_when_controller_input_empty",
             SetupParams {
                 widget_state: WidgetState::Inactive,
                 character_selection_fn: character_selection_random,
@@ -356,27 +348,6 @@ mod test {
                         character_selection: CharacterSelection::Id(bat_snh),
                     }]
                 },
-            },
-        )
-    }
-
-    #[test]
-    fn sends_confirm_event_when_widget_ready_and_input_attack() -> Result<(), Error> {
-        run_test(
-            "sends_confirm_event_when_widget_ready_and_input_attack",
-            SetupParams {
-                widget_state: WidgetState::Ready,
-                character_selection_fn: |world| {
-                    character_selection_id(world, ASSETS_CHAR_BAT_SLUG.clone())
-                },
-                control_input_event_fn: Some(press_attack),
-            },
-            ExpectedParams {
-                widget_state: WidgetState::Ready,
-                character_selection_fn: |world| {
-                    character_selection_id(world, ASSETS_CHAR_BAT_SLUG.clone())
-                },
-                character_selection_events_fn: |_world| vec![CharacterSelectionEvent::Confirm],
             },
         )
     }

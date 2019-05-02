@@ -1,10 +1,11 @@
 use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
 use derive_new::new;
-use game_input::ControllerInput;
-use tracker::LastTrackerSystem;
 use typename::TypeName;
 
-use crate::{CharacterSelectionWidgetInputSystem, CharacterSelectionWidgetUiSystem};
+use crate::{
+    CharacterSelectionInputSystem, CharacterSelectionWidgetInputSystem,
+    CharacterSelectionWidgetUiSystem,
+};
 
 /// Adds the systems that set up and manage the `CharacterSelectionUi`.
 ///
@@ -26,28 +27,24 @@ impl CharacterSelectionUiBundle {
 
 impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionUiBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
+        // Order this first, as it means we don't transition until attach has been pressed *after*
+        // widgets are ready.
+        builder.add(
+            CharacterSelectionInputSystem::new(),
+            &CharacterSelectionInputSystem::type_name(),
+            &[],
+        ); // kcov-ignore
         builder.add(
             CharacterSelectionWidgetInputSystem::new(),
             &CharacterSelectionWidgetInputSystem::type_name(),
-            &[],
+            &[&CharacterSelectionInputSystem::type_name()],
         ); // kcov-ignore
         builder.add(
             CharacterSelectionWidgetUiSystem::new(),
             &CharacterSelectionWidgetUiSystem::type_name(),
-            &[&CharacterSelectionWidgetInputSystem::type_name()],
+            &[&CharacterSelectionInputSystem::type_name()],
         ); // kcov-ignore
 
-        let controller_input_tracker_system =
-            LastTrackerSystem::<ControllerInput>::new(stringify!(game_input::ControllerInput));
-        let controller_input_tracker_system_name = controller_input_tracker_system.system_name();
-
-        // This depends on `&ControllerInputUpdateSystem::type_name()`, but since it runs in a
-        // separate dispatcher, we have to omit it from here.
-        builder.add(
-            controller_input_tracker_system,
-            &controller_input_tracker_system_name,
-            &[&CharacterSelectionWidgetUiSystem::type_name()],
-        ); // kcov-ignore
         Ok(())
     }
 }
