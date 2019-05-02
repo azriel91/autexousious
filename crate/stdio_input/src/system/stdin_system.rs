@@ -8,7 +8,7 @@ use amethyst::{
     shrev::EventChannel,
 };
 use application_input::ApplicationEvent;
-use log::{debug, error, trace, warn};
+use log::{debug, error, info, trace, warn};
 use state_registry::StateId;
 use stdio_command_model::StdinCommandBarrier;
 use stdio_spi::VariantAndTokens;
@@ -75,9 +75,11 @@ impl<'s> System<'s> for StdinSystem {
         &mut self,
         (state_id, mut stdin_command_barrier, mut application_event_channel, mut variant_channel): Self::SystemData,
     ) {
+        // Get an `Option<StateId>` from `Option<Read<StateId>>`.
+        let state_id = state_id.map(|state_id| *state_id);
         if let Some(state_id) = state_id {
-            let state_id = &*state_id;
-            match &(*stdin_command_barrier).state_id {
+            let state_id = state_id;
+            match (*stdin_command_barrier).state_id {
                 Some(state_id_barrier) => {
                     if state_id == state_id_barrier {
                         debug!("State `{:?}` running, removing `StateIdBarrier`.", state_id);
@@ -107,6 +109,14 @@ impl<'s> System<'s> for StdinSystem {
                 if command_chain == StdinReader::EXIT_PHRASE {
                     application_event_channel.single_write(ApplicationEvent::Exit);
                     return;
+                }
+
+                // TODO: Proper command for this.
+                if command_chain == "current_state" {
+                    if let Some(state_id) = state_id {
+                        info!("StateId: {}", state_id);
+                        return;
+                    }
                 }
 
                 let statements = StatementSplitter::new(&command_chain).collect::<Vec<_>>();
