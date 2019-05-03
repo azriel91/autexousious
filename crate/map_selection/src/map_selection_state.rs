@@ -56,6 +56,9 @@ where
     /// The `State` that follows this one.
     #[derivative(Debug(bound = "F: Debug"))]
     next_state_fn: F,
+    /// Reader ID for the `MapSelectionEvent` event channel.
+    #[new(default)]
+    map_selection_event_rid: Option<ReaderId<MapSelectionEvent>>,
     /// `PhantomData`.
     marker: PhantomData<dyn AutexState<'a, 'b>>,
 }
@@ -66,8 +69,12 @@ where
     S: AutexState<'a, 'b> + 'static,
 {
     fn reset_map_selection_state(&self, world: &mut World) {
-        let mut map_selection_status = world.write_resource::<MapSelectionStatus>();
-        *map_selection_status = MapSelectionStatus::Pending;
+        world.add_resource(MapSelectionStatus::Pending);
+    }
+
+    fn initialize_map_selection_event_rid(&mut self, world: &mut World) {
+        let mut map_selection_ec = world.write_resource::<EventChannel<MapSelectionEvent>>();
+        self.map_selection_event_rid = Some(map_selection_ec.register_reader());
     }
 }
 
@@ -80,6 +87,7 @@ where
         data.world.add_resource(StateId::MapSelection);
 
         self.reset_map_selection_state(&mut data.world);
+        self.initialize_map_selection_event_rid(&mut data.world);
     }
 
     fn on_resume(&mut self, data: StateData<'_, GameData<'a, 'b>>) {
@@ -107,16 +115,26 @@ where
         &mut self,
         data: StateData<'_, GameData<'a, 'b>>,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
-        let map_selection_status = data.world.read_resource::<MapSelectionStatus>();
-        if *map_selection_status == MapSelectionStatus::Confirmed {
-            let map_selection = data.world.read_resource::<MapSelection>();
+        let map_selection_ec = data
+            .world
+            .read_resource::<EventChannel<MapSelectionEvent>>();
+        map_selection_ec
+            .read(
+                self.map_selection_event_rid
+                    .as_mut()
+                    .expect("Expected `map_selection_event_rid` to be set."),
+            )
+            .filter_map(|ev| match ev {
+                MapSelectionEvent::Return => Some(Trans::Pop),
+                MapSelectionEvent::Confirm => {
+                    let map_selection = data.world.read_resource::<MapSelection>();
+                    info!("map_selection: `{:?}`", &*map_selection);
 
-            info!("Map selection: `{}`", *map_selection);
-
-            // TODO: `Trans:Push` when we have a proper map selection menu.
-            Trans::Switch((self.next_state_fn)())
-        } else {
-            Trans::None
-        }
+                    Some(Trans::Switch((self.next_state_fn)()))
+                }
+                _ => None,
+            })
+            .next()
+            .unwrap_or_else(|| Trans::None)
     }
 }

@@ -16,6 +16,8 @@ game_model = { path = "../game_model" }
 log = "0.4.6"
 map_model = { path = "../map_model" }
 map_selection_model = { path = "../map_selection_model" }
+shred = "0.7.0"
+shred-derive = "0.5.1"
 strum = "0.15.0"
 strum_macros = "0.15.0"
 tracker = { path = "../tracker" }

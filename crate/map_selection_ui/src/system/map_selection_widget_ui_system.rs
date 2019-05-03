@@ -143,7 +143,7 @@ impl MapSelectionWidgetUiSystem {
             let container_height = LABEL_HEIGHT_HELP * 5.;
             let container_entity = {
                 let ui_transform = UiTransform::new(
-                    String::from("character_selection_instructions"),
+                    String::from("map_selection_instructions"),
                     Anchor::BottomMiddle,
                     0.,
                     0.,
@@ -173,7 +173,7 @@ impl MapSelectionWidgetUiSystem {
             .enumerate()
             .for_each(|(index, string)| {
                 let ui_transform = UiTransform::new(
-                    format!("character_selection_instructions#{}", index),
+                    format!("map_selection_instructions#{}", index),
                     Anchor::TopLeft,
                     LABEL_WIDTH / 2.,
                     container_height - LABEL_HEIGHT_HELP * index as f32,
@@ -208,7 +208,12 @@ impl MapSelectionWidgetUiSystem {
         (map_selection_widgets, ui_texts)
             .join()
             .for_each(|(widget, ui_text)| {
-                ui_text.text = format!("{}", widget.selection);
+                ui_text.text = match widget.state {
+                    WidgetState::MapSelect => {
+                        format!("◀ {:^16} ▶", format!("{}", widget.selection))
+                    }
+                    WidgetState::Ready => format!("» {:^16} «", format!("{}", widget.selection)),
+                }
             });
     }
 }
@@ -267,7 +272,7 @@ mod test {
                 &[],
             )
             .with_assertion(|world| assert_widget_count(world, 1))
-            .with_assertion(|world| assert_widget_text(world, "Random"))
+            .with_assertion(|world| assert_widget_text(world, "◀      Random      ▶"))
             .run()
     }
 
@@ -311,7 +316,7 @@ mod test {
                 MapSelectionWidgetUiSystem::type_name(),
                 &[],
             )
-            .with_assertion(|world| assert_widget_text(world, "Random"))
+            .with_assertion(|world| assert_widget_text(world, "◀      Random      ▶"))
             .run()
     }
 
