@@ -6,7 +6,7 @@ use amethyst::{
 use application_ui::{FontVariant, Theme};
 use asset_model::loaded::SlugAndHandle;
 use derive_new::new;
-use game_input::{ControllerInput, InputControlled, SharedInputControlled};
+use game_input::{ControllerInput, InputControlled};
 use game_input_model::{ControllerId, InputConfig};
 use game_model::loaded::MapAssets;
 use log::debug;
@@ -30,7 +30,6 @@ pub(crate) struct MapSelectionWidgetUiSystem;
 
 type WidgetComponentStorages<'s> = (
     WriteStorage<'s, MapSelectionWidget>,
-    WriteStorage<'s, SharedInputControlled>,
     WriteStorage<'s, ControllerInput>,
 );
 
@@ -58,11 +57,7 @@ impl MapSelectionWidgetUiSystem {
         map_assets: &MapAssets,
         entities: &Entities<'_>,
         (input_config, input_controlleds): &mut InputControlledResources<'_>,
-        (
-            map_selection_widgets,
-            shared_input_controlleds,
-            controller_inputs
-        ): &mut WidgetComponentStorages<'_>,
+        (map_selection_widgets, controller_inputs): &mut WidgetComponentStorages<'_>,
         (theme, ui_transforms, ui_texts, parents, map_selection_entities): &mut WidgetUiResources<
             '_,
         >,
@@ -109,17 +104,6 @@ impl MapSelectionWidgetUiSystem {
                     map_selection_entities,
                 )
                 .with(map_selection_widget, map_selection_widgets)
-                .with(SharedInputControlled, shared_input_controlleds)
-                // Deliberately do not add `ControllerInput`:
-                //
-                // The first run of the `SharedControllerInputUpdateSystem` will automatically add
-                // this.
-                //
-                // If we add the component, and someone was holding Attack from the previous UI
-                // state, then the `LastTrackerSystem` will track that previously Attack wasn't
-                // pressed, and the UI logic assumes "it was just pressed" and selects the map.
-                // ---
-                // .with(ControllerInput::default(), controller_inputs)
                 .with(ui_transform, ui_transforms)
                 .with(ui_text, ui_texts)
                 .build();
