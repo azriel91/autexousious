@@ -1,15 +1,17 @@
 use amethyst::{
     ecs::{Entities, Join, Read, ReadStorage, Resources, System, SystemData, Write},
-    input::InputHandler,
-    shrev::EventChannel,
+    input::{InputEvent, InputHandler},
+    shrev::{EventChannel, ReaderId},
 };
 use approx::relative_ne;
+use derivative::Derivative;
 use derive_new::new;
 use game_input::{ControllerInput, InputControlled};
 use game_input_model::{
-    Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent, InputConfig,
+    Axis, AxisEventData, ControlActionEventData, ControlInputEvent, InputConfig,
     PlayerActionControl, PlayerAxisControl,
 };
+use shred_derive::SystemData;
 use strum::IntoEnumIterator;
 use typename_derive::TypeName;
 
@@ -18,25 +20,50 @@ use typename_derive::TypeName;
 pub struct InputToControlInputSystem {
     /// All controller input configuration.
     input_config: InputConfig,
+    /// Reader ID for the `InputEvent` channel.
+    #[new(default)]
+    input_event_rid: Option<ReaderId<InputEvent<PlayerActionControl>>>,
     /// Pre-allocated vector
     #[new(value = "Vec::with_capacity(64)")]
-    input_events: Vec<ControlInputEvent>,
+    control_input_events: Vec<ControlInputEvent>,
 }
 
-type InputToControlInputSystemData<'s> = (
-    Read<'s, InputHandler<PlayerAxisControl, PlayerActionControl>>,
-    Entities<'s>,
-    ReadStorage<'s, InputControlled>,
-    ReadStorage<'s, ControllerInput>,
-    Write<'s, EventChannel<ControlInputEvent>>,
-);
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub struct InputToControlInputSystemData<'s> {
+    /// `InputEvent<PlayerActionControl>` channel.
+    #[derivative(Debug = "ignore")]
+    pub input_ec: Read<'s, EventChannel<InputEvent<PlayerActionControl>>>,
+    /// `InputHandler` resource.
+    #[derivative(Debug = "ignore")]
+    pub input_handler: Read<'s, InputHandler<PlayerAxisControl, PlayerActionControl>>,
+    /// `Entities` resource.
+    #[derivative(Debug = "ignore")]
+    pub entities: Entities<'s>,
+    /// `InputControlled` components.
+    #[derivative(Debug = "ignore")]
+    pub input_controlleds: ReadStorage<'s, InputControlled>,
+    /// `ControllerInput` components.
+    #[derivative(Debug = "ignore")]
+    pub controller_inputs: ReadStorage<'s, ControllerInput>,
+    /// `ControlInputEvent` channel.
+    #[derivative(Debug = "ignore")]
+    pub control_input_ec: Write<'s, EventChannel<ControlInputEvent>>,
+}
 
 impl<'s> System<'s> for InputToControlInputSystem {
     type SystemData = InputToControlInputSystemData<'s>;
 
     fn run(
         &mut self,
-        (input_handler, entities, input_controlleds, controller_inputs, mut input_events_ec): Self::SystemData,
+        InputToControlInputSystemData {
+            input_ec,
+            input_handler,
+            entities,
+            input_controlleds,
+            controller_inputs,
+            mut control_input_ec,
+        }: Self::SystemData,
     ) {
         // This does not send events when there is no existing `ControllerInput` component attached
         // to the entity. This is to prevent events from being sent when we are restoring state,
@@ -56,7 +83,7 @@ impl<'s> System<'s> for InputToControlInputSystem {
                     };
 
                     if relative_ne!(previous_value, value) {
-                        self.input_events
+                        self.control_input_events
                             .push(ControlInputEvent::Axis(AxisEventData {
                                 entity,
                                 axis,
@@ -65,32 +92,60 @@ impl<'s> System<'s> for InputToControlInputSystem {
                     }
                 }
             });
-
-            ControlAction::iter().for_each(|control_action| {
-                if let Some(value) = input_handler
-                    .action_is_down(&PlayerActionControl::new(controller_id, control_action))
-                {
-                    let previous_value = match control_action {
-                        ControlAction::Defend => controller_input.defend,
-                        ControlAction::Jump => controller_input.jump,
-                        ControlAction::Attack => controller_input.attack,
-                        ControlAction::Special => controller_input.special,
-                    };
-
-                    if previous_value != value {
-                        self.input_events.push(ControlInputEvent::ControlAction(
-                            ControlActionEventData {
-                                entity,
-                                control_action,
-                                value,
-                            },
-                        ))
-                    }
-                }
-            });
         }
 
-        input_events_ec.drain_vec_write(&mut self.input_events);
+        let input_event_rid = self
+            .input_event_rid
+            .as_mut()
+            .expect("Expected `input_event_rid` field to be set.");
+
+        input_ec.read(input_event_rid).for_each(|ev| {
+            let control_input_event = match ev {
+                InputEvent::ActionPressed(PlayerActionControl { player, action }) => {
+                    // Find the entity has the `player` control id in its `InputControlled`
+                    // component.
+
+                    if let Some((entity, _)) = (&entities, &input_controlleds)
+                        .join()
+                        .filter(|(_entity, input_controlled)| {
+                            input_controlled.controller_id == *player
+                        })
+                        .next()
+                    {
+                        Some(ControlInputEvent::ControlAction(ControlActionEventData {
+                            entity,
+                            control_action: *action,
+                            value: true,
+                        }))
+                    } else {
+                        None
+                    }
+                }
+                InputEvent::ActionReleased(PlayerActionControl { player, action }) => {
+                    if let Some((entity, _)) = (&entities, &input_controlleds)
+                        .join()
+                        .filter(|(_entity, input_controlled)| {
+                            input_controlled.controller_id == *player
+                        })
+                        .next()
+                    {
+                        Some(ControlInputEvent::ControlAction(ControlActionEventData {
+                            entity,
+                            control_action: *action,
+                            value: false,
+                        }))
+                    } else {
+                        None
+                    }
+                }
+                _ => None,
+            };
+            if let Some(control_input_event) = control_input_event {
+                self.control_input_events.push(control_input_event);
+            }
+        });
+
+        control_input_ec.drain_vec_write(&mut self.control_input_events);
     }
 
     fn setup(&mut self, res: &mut Resources) {
@@ -99,6 +154,11 @@ impl<'s> System<'s> for InputToControlInputSystem {
         // TODO: figure out how to implement controller configuration updates, because we need to
         // update the resource and what this system stores.
         res.insert(self.input_config.clone());
+
+        self.input_event_rid = Some(
+            res.fetch_mut::<EventChannel<InputEvent<PlayerActionControl>>>()
+                .register_reader(),
+        );
     }
 }
 
@@ -127,14 +187,15 @@ mod test {
 
     use super::InputToControlInputSystem;
 
+    const ACTION_JUMP: VirtualKeyCode = VirtualKeyCode::Key1;
+    const AXIS_POSITIVE: VirtualKeyCode = VirtualKeyCode::D;
+    const AXIS_NEGATIVE: VirtualKeyCode = VirtualKeyCode::A;
+
     #[test]
     fn sends_control_input_events_for_key_presses() -> Result<(), Error> {
         run_test(
             ControllerInput::default(),
-            vec![
-                key_press(VirtualKeyCode::D),
-                key_press(VirtualKeyCode::Key1),
-            ],
+            vec![key_press(AXIS_POSITIVE), key_press(ACTION_JUMP)],
             |entity| {
                 vec![
                     ControlInputEvent::Axis(AxisEventData {
@@ -156,13 +217,13 @@ mod test {
     fn sends_control_input_events_for_key_releases() -> Result<(), Error> {
         let mut controller_input = ControllerInput::default();
         controller_input.x_axis_value = 1.;
-        controller_input.jump = true;
 
         run_test(
             controller_input,
             vec![
-                key_release(VirtualKeyCode::D),
-                key_release(VirtualKeyCode::Key1),
+                key_release(AXIS_POSITIVE),
+                key_press(ACTION_JUMP),
+                key_release(ACTION_JUMP),
             ],
             |entity| {
                 vec![
@@ -170,6 +231,11 @@ mod test {
                         entity,
                         axis: Axis::X,
                         value: 0.,
+                    }),
+                    ControlInputEvent::ControlAction(ControlActionEventData {
+                        entity,
+                        control_action: ControlAction::Jump,
+                        value: true,
                     }),
                     ControlInputEvent::ControlAction(ControlActionEventData {
                         entity,
@@ -185,14 +251,10 @@ mod test {
     fn does_not_send_control_input_events_for_non_state_change() -> Result<(), Error> {
         let mut controller_input = ControllerInput::default();
         controller_input.x_axis_value = 1.;
-        controller_input.jump = true;
 
         run_test(
             controller_input,
-            vec![
-                key_press(VirtualKeyCode::D),
-                key_press(VirtualKeyCode::Key1),
-            ],
+            vec![key_press(AXIS_POSITIVE)],
             |_entity| vec![],
         )
     }
@@ -269,8 +331,7 @@ mod test {
     }
 
     fn input_config() -> InputConfig {
-        let controller_config_0 =
-            controller_config([VirtualKeyCode::A, VirtualKeyCode::D, VirtualKeyCode::Key1]);
+        let controller_config_0 = controller_config([AXIS_NEGATIVE, AXIS_POSITIVE, ACTION_JUMP]);
         let controller_config_1 = controller_config([
             VirtualKeyCode::Left,
             VirtualKeyCode::Right,

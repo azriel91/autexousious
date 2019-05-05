@@ -260,12 +260,10 @@ impl<'s> System<'s> for CharacterSelectionWidgetInputSystem {
     fn setup(&mut self, res: &mut Resources) {
         Self::SystemData::setup(res);
 
-        let mut control_input_ec = res.fetch_mut::<EventChannel<ControlInputEvent>>();
-        if let Some(mut control_input_event_rid) = self.control_input_event_rid.take() {
-            // Drain all events from previous reader ID.
-            control_input_ec.read(&mut control_input_event_rid);
-        }
-        self.control_input_event_rid = Some(control_input_ec.register_reader());
+        self.control_input_event_rid = Some(
+            res.fetch_mut::<EventChannel<ControlInputEvent>>()
+                .register_reader(),
+        );
     }
 }
 
