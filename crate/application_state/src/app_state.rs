@@ -116,6 +116,8 @@ where
                 .for_each(|function| function(&mut data.world));
         }
 
+        // Hacky way to reinitialize event channel `ReaderId`s.
+        self.initialize_dispatcher(&mut data.world);
         self.delegate.on_resume(data);
     }
 

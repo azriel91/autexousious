@@ -19,8 +19,9 @@ impl CharacterSelectionUiBundle {
     /// This allows consumers to specify the systems as dependencies.
     pub fn system_names() -> Vec<String> {
         vec![
-            CharacterSelectionWidgetUiSystem::type_name(),
+            CharacterSelectionInputSystem::type_name(),
             CharacterSelectionWidgetInputSystem::type_name(),
+            CharacterSelectionWidgetUiSystem::type_name(),
         ]
     }
 }
@@ -42,7 +43,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionUiBundle {
         builder.add(
             CharacterSelectionWidgetUiSystem::new(),
             &CharacterSelectionWidgetUiSystem::type_name(),
-            &[&CharacterSelectionInputSystem::type_name()],
+            &[&CharacterSelectionWidgetInputSystem::type_name()],
         ); // kcov-ignore
 
         Ok(())
