@@ -13,6 +13,7 @@
 * Added `dash_attack` sequence. ([#117])
 * Added `--frame_rate` argument to control application frame rate. ([#117])
 * Players can now return to game mode selection from the character selection UI. ([#110])
+* Players can now return to character mode selection from the map selection UI. ([#120])
 
 ### Changed
 
@@ -24,11 +25,13 @@
 * ***Breaking:*** `stand_attack` is renamed to `stand_attack_0`. ([#117])
 * Default `hit_repeat` delay is increased from 3 ticks to to 9 ticks. ([#117])
 * Improved clarity of character selection UI. ([#110])
+* Improved clarity of map selection UI. ([#120])
 
 [#96]: https://gitlab.com/azriel91/autexousious/issues/96
 [#103]: https://gitlab.com/azriel91/autexousious/issues/103
 [#110]: https://gitlab.com/azriel91/autexousious/issues/110
 [#117]: https://gitlab.com/azriel91/autexousious/issues/117
+[#120]: https://gitlab.com/azriel91/autexousious/issues/120
 
 ## 0.10.0 (2019-03-29)
 

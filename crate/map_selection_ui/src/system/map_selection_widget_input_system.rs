@@ -1,11 +1,14 @@
 use amethyst::{ecs::prelude::*, shrev::EventChannel};
 use asset_model::loaded::SlugAndHandle;
+use derivative::Derivative;
 use derive_new::new;
-use game_input::ControllerInput;
+use game_input_model::{
+    Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent,
+};
 use game_model::loaded::MapAssets;
 use log::debug;
 use map_selection_model::{MapSelection, MapSelectionEvent};
-use tracker::Last;
+use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 use crate::{MapSelectionWidget, WidgetState};
@@ -15,40 +18,32 @@ use crate::{MapSelectionWidget, WidgetState};
 /// This is not private because consumers may use `MapSelectionWidgetInputSystem::type_name()` to
 /// specify this as a dependency of another system.
 #[derive(Debug, Default, TypeName, new)]
-pub(crate) struct MapSelectionWidgetInputSystem;
+pub(crate) struct MapSelectionWidgetInputSystem {
+    /// Reader ID for the `ControlInputEvent` channel.
+    #[new(default)]
+    control_input_event_rid: Option<ReaderId<ControlInputEvent>>,
+}
+
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub(crate) struct MapSelectionWidgetInputResources<'s> {
+    /// `MapSelectionWidget` components.
+    #[derivative(Debug = "ignore")]
+    pub map_selection_widgets: WriteStorage<'s, MapSelectionWidget>,
+    /// `Map` assets.
+    #[derivative(Debug = "ignore")]
+    pub map_assets: Read<'s, MapAssets>,
+    /// `MapSelectionEvent` channel.
+    #[derivative(Debug = "ignore")]
+    pub map_selection_ec: Write<'s, EventChannel<MapSelectionEvent>>,
+}
 
 type MapSelectionWidgetInputSystemData<'s> = (
-    Read<'s, MapAssets>,
-    WriteStorage<'s, MapSelectionWidget>,
-    ReadStorage<'s, Last<ControllerInput>>,
-    ReadStorage<'s, ControllerInput>,
-    Write<'s, EventChannel<MapSelectionEvent>>,
+    Read<'s, EventChannel<ControlInputEvent>>,
+    MapSelectionWidgetInputResources<'s>,
 );
 
 impl MapSelectionWidgetInputSystem {
-    fn handle_map_select(
-        map_assets: &MapAssets,
-        widget: &mut MapSelectionWidget,
-        last_input: &Last<ControllerInput>,
-        input: &ControllerInput,
-        event_channel: &mut EventChannel<MapSelectionEvent>,
-    ) {
-        if !last_input.attack && input.attack {
-            widget.state = WidgetState::Ready;
-
-            // Send map selection event
-            let map_selection_event = MapSelectionEvent::Select {
-                map_selection: widget.selection.clone(),
-            };
-            debug!("Sending map selection event: {:?}", &map_selection_event);
-            event_channel.single_write(map_selection_event);
-        } else if last_input.x_axis_value == 0. && input.x_axis_value < 0. {
-            Self::select_previous_map(map_assets, widget);
-        } else if last_input.x_axis_value == 0. && input.x_axis_value > 0. {
-            Self::select_next_map(map_assets, widget);
-        }
-    }
-
     fn select_previous_map(map_assets: &MapAssets, widget: &mut MapSelectionWidget) {
         let (first_map_slug, first_map_handle) = map_assets
             .iter()
@@ -113,6 +108,80 @@ impl MapSelectionWidgetInputSystem {
             MapSelection::Random(..) => MapSelection::Id((first_map_slug, first_map_handle).into()),
         };
     }
+
+    fn handle_event(
+        MapSelectionWidgetInputResources {
+            ref mut map_selection_widgets,
+            ref map_assets,
+            ref mut map_selection_ec,
+        }: &mut MapSelectionWidgetInputResources,
+        event: ControlInputEvent,
+    ) {
+        if let Some(map_selection_widget) = map_selection_widgets.join().next() {
+            match event {
+                ControlInputEvent::Axis(axis_event_data) => {
+                    Self::handle_axis_event(&map_assets, map_selection_widget, axis_event_data)
+                }
+                ControlInputEvent::ControlAction(control_action_event_data) => {
+                    Self::handle_control_action_event(
+                        map_selection_ec,
+                        map_selection_widget,
+                        control_action_event_data,
+                    )
+                }
+            }
+        }
+    }
+
+    fn handle_axis_event(
+        map_assets: &MapAssets,
+        map_selection_widget: &mut MapSelectionWidget,
+        axis_event_data: AxisEventData,
+    ) {
+        match (map_selection_widget.state, axis_event_data.axis) {
+            (WidgetState::MapSelect, Axis::X) if axis_event_data.value < 0. => {
+                Self::select_previous_map(map_assets, map_selection_widget);
+            }
+            (WidgetState::MapSelect, Axis::X) if axis_event_data.value > 0. => {
+                Self::select_next_map(map_assets, map_selection_widget);
+            }
+            _ => {}
+        }
+    }
+
+    fn handle_control_action_event(
+        map_selection_ec: &mut EventChannel<MapSelectionEvent>,
+        map_selection_widget: &mut MapSelectionWidget,
+        control_action_event_data: ControlActionEventData,
+    ) {
+        let map_selection_event = match (
+            map_selection_widget.state,
+            control_action_event_data.control_action,
+            control_action_event_data.value,
+        ) {
+            (WidgetState::MapSelect, ControlAction::Jump, true) => Some(MapSelectionEvent::Return),
+            (WidgetState::MapSelect, ControlAction::Attack, true) => {
+                map_selection_widget.state = WidgetState::Ready;
+                Some(MapSelectionEvent::Select {
+                    map_selection: map_selection_widget.selection.clone(),
+                })
+            }
+            (WidgetState::Ready, ControlAction::Jump, true) => {
+                map_selection_widget.state = WidgetState::MapSelect;
+                Some(MapSelectionEvent::Deselect)
+            }
+            (WidgetState::Ready, ControlAction::Attack, true) => Some(MapSelectionEvent::Confirm),
+            _ => None,
+        };
+
+        if let Some(map_selection_event) = map_selection_event {
+            debug!(
+                "Sending map selection event: {:?}",
+                &map_selection_event // kcov-ignore
+            );
+            map_selection_ec.single_write(map_selection_event);
+        }
+    }
 }
 
 impl<'s> System<'s> for MapSelectionWidgetInputSystem {
@@ -120,286 +189,313 @@ impl<'s> System<'s> for MapSelectionWidgetInputSystem {
 
     fn run(
         &mut self,
-        (
-            map_assets,
-            mut map_selection_widgets,
-            last_controller_inputs,
-            controller_inputs,
-            mut map_selection_events,
-        ): Self::SystemData,
+        (control_input_ec, mut map_selection_widget_input_resources): Self::SystemData,
     ) {
-        for (mut widget, last_input, input) in (
-            &mut map_selection_widgets,
-            &last_controller_inputs,
-            &controller_inputs,
-        )
-            .join()
-        {
-            if let WidgetState::MapSelect = widget.state {
-                Self::handle_map_select(
-                    &map_assets,
-                    &mut widget,
-                    &last_input,
-                    &input,
-                    &mut map_selection_events,
-                )
-            }
-        }
+        let control_input_event_rid = self
+            .control_input_event_rid
+            .as_mut()
+            .expect("Expected `control_input_event_rid` field to be set.");
+
+        control_input_ec
+            .read(control_input_event_rid)
+            .for_each(|ev| {
+                Self::handle_event(&mut map_selection_widget_input_resources, *ev);
+            });
     }
 
     fn setup(&mut self, res: &mut Resources) {
         Self::SystemData::setup(res);
+
+        self.control_input_event_rid = Some(
+            res.fetch_mut::<EventChannel<ControlInputEvent>>()
+                .register_reader(),
+        );
     }
 }
 
 #[cfg(test)]
 mod test {
     use amethyst::{
-        ecs::prelude::*,
+        ecs::{Builder, Entity, SystemData, World},
         shrev::{EventChannel, ReaderId},
+        Error,
     };
-    use amethyst_test::prelude::*;
     use application_test_support::AutexousiousApplication;
     use asset_model::loaded::SlugAndHandle;
-    use assets_test::ASSETS_MAP_EMPTY_SLUG;
-    use game_input::ControllerInput;
+    use assets_test::ASSETS_MAP_FADE_SLUG;
+    use game_input_model::{
+        Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent,
+    };
     use game_model::loaded::MapAssets;
     use map_model::loaded::Map;
     use map_selection_model::{MapSelection, MapSelectionEvent};
-    use tracker::Last;
     use typename::TypeName;
 
     use super::{MapSelectionWidgetInputSystem, MapSelectionWidgetInputSystemData};
     use crate::{MapSelectionWidget, WidgetState};
 
     #[test]
-    fn does_not_send_event_when_controller_input_empty() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::config_base(
-                "does_not_send_event_when_controller_input_empty",
-                false
-            )
-            .with_setup(setup_components)
-            .with_setup(setup_event_reader)
-            .with_setup(|world| {
-                let empty_snh = SlugAndHandle::from((&*world, ASSETS_MAP_EMPTY_SLUG.clone()));
-                setup_widget(
-                    world,
-                    WidgetState::MapSelect,
-                    MapSelection::Id(empty_snh),
-                    ControllerInput::default(),
-                )
-            })
-            .with_system_single(
-                MapSelectionWidgetInputSystem::new(),
-                MapSelectionWidgetInputSystem::type_name(),
-                &[]
-            ) // kcov-ignore
-            .with_assertion(|world| assert_events(world, vec![]))
-            .run()
-            .is_ok()
-        );
+    fn does_not_send_event_when_no_input() -> Result<(), Error> {
+        run_test(
+            "does_not_send_event_when_no_input",
+            SetupParams {
+                widget_state: WidgetState::MapSelect,
+                map_selection_fn: map_selection_random,
+                control_input_event_fn: None,
+            },
+            ExpectedParams {
+                widget_state: WidgetState::MapSelect,
+                map_selection_fn: map_selection_random,
+                map_selection_events_fn: empty_events,
+            },
+        )
     }
 
     #[test]
-    fn updates_widget_map_select_to_ready_and_sends_event_when_input_attack() {
-        let mut controller_input = ControllerInput::default();
-        controller_input.attack = true;
-
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::config_base(
-                "updates_widget_map_select_to_ready_and_sends_event_when_input_attack",
-                false
-            )
-            .with_setup(setup_components)
-            .with_setup(setup_event_reader)
-            .with_setup(move |world| {
-                let empty_snh = SlugAndHandle::from((&*world, ASSETS_MAP_EMPTY_SLUG.clone()));
-                setup_widget(
-                    world,
-                    WidgetState::MapSelect,
-                    MapSelection::Id(empty_snh),
-                    controller_input,
-                )
-            })
-            .with_system_single(
-                MapSelectionWidgetInputSystem::new(),
-                MapSelectionWidgetInputSystem::type_name(),
-                &[]
-            ) // kcov-ignore
-            .with_assertion(|world| {
-                let empty_snh = SlugAndHandle::from((&*world, ASSETS_MAP_EMPTY_SLUG.clone()));
-                assert_widget(
-                    world,
-                    MapSelectionWidget::new(WidgetState::Ready, MapSelection::Id(empty_snh)),
-                )
-            })
-            .with_assertion(|world| {
-                let empty_snh = SlugAndHandle::from((&*world, ASSETS_MAP_EMPTY_SLUG.clone()));
-                assert_events(
-                    world,
+    fn selects_last_map_when_input_left_and_selection_random() -> Result<(), Error> {
+        run_test(
+            "selects_last_map_when_input_left_and_selection_random",
+            SetupParams {
+                widget_state: WidgetState::MapSelect,
+                map_selection_fn: map_selection_random,
+                control_input_event_fn: Some(press_left),
+            },
+            ExpectedParams {
+                widget_state: WidgetState::MapSelect,
+                map_selection_fn: |world| {
+                    let last_map = last_map(world);
+                    MapSelection::Id(last_map)
+                },
+                map_selection_events_fn: |world| {
+                    let last_map = last_map(world);
                     vec![MapSelectionEvent::Select {
-                        map_selection: MapSelection::Id(empty_snh),
-                    }],
-                )
-            })
-            .run()
-            .is_ok()
-        );
+                        map_selection: MapSelection::Id(last_map),
+                    }]
+                },
+            },
+        )
     }
 
     #[test]
-    fn selects_last_map_when_input_left_and_selection_random() {
-        let mut controller_input = ControllerInput::default();
-        controller_input.x_axis_value = -1.;
-
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::config_base(
-                "selects_last_map_when_input_left_and_selection_random",
-                false
-            )
-            .with_setup(setup_components)
-            .with_setup(setup_event_reader)
-            .with_setup(move |world| {
-                let first_snh = first_map(world);
-                setup_widget(
-                    world,
-                    WidgetState::MapSelect,
-                    MapSelection::Random(first_snh),
-                    controller_input,
-                )
-            })
-            .with_system_single(
-                MapSelectionWidgetInputSystem::new(),
-                MapSelectionWidgetInputSystem::type_name(),
-                &[]
-            ) // kcov-ignore
-            .with_assertion(|world| {
-                let last_snh = last_map(world);
-                assert_widget(
-                    world,
-                    MapSelectionWidget::new(WidgetState::MapSelect, MapSelection::Id(last_snh)),
-                )
-            })
-            .with_assertion(|world| {
-                let last_snh = last_map(world);
-                assert_events(
-                    world,
+    fn selects_first_map_when_input_right_and_selection_random() -> Result<(), Error> {
+        run_test(
+            "selects_first_map_when_input_right_and_selection_random",
+            SetupParams {
+                widget_state: WidgetState::MapSelect,
+                map_selection_fn: map_selection_random,
+                control_input_event_fn: Some(press_right),
+            },
+            ExpectedParams {
+                widget_state: WidgetState::MapSelect,
+                map_selection_fn: |world| {
+                    let first_map = first_map(world);
+                    MapSelection::Id(first_map)
+                },
+                map_selection_events_fn: |world| {
+                    let first_map = first_map(world);
                     vec![MapSelectionEvent::Select {
-                        map_selection: MapSelection::Id(last_snh),
-                    }],
-                )
-            })
-            .run()
-            .is_ok()
-        );
+                        map_selection: MapSelection::Id(first_map),
+                    }]
+                },
+            },
+        )
     }
 
     #[test]
-    fn selects_first_map_when_input_right_and_selection_random() {
-        let mut controller_input = ControllerInput::default();
-        controller_input.x_axis_value = 1.;
-
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::config_base(
-                "selects_first_map_when_input_right_and_selection_random",
-                false
-            )
-            .with_setup(setup_components)
-            .with_setup(setup_event_reader)
-            .with_setup(move |world| {
-                let first_snh = first_map(world);
-                setup_widget(
-                    world,
-                    WidgetState::MapSelect,
-                    MapSelection::Random(first_snh),
-                    controller_input,
-                )
-            })
-            .with_system_single(
-                MapSelectionWidgetInputSystem::new(),
-                MapSelectionWidgetInputSystem::type_name(),
-                &[]
-            ) // kcov-ignore
-            .with_assertion(|world| {
-                let first_snh = first_map(world);
-                assert_widget(
-                    world,
-                    MapSelectionWidget::new(WidgetState::MapSelect, MapSelection::Id(first_snh)),
-                )
-            })
-            .with_assertion(|world| {
-                let first_snh = first_map(world);
-                assert_events(
-                    world,
+    fn selects_random_when_input_right_and_selection_last_map() -> Result<(), Error> {
+        run_test(
+            "selects_random_when_input_right_and_selection_last_map",
+            SetupParams {
+                widget_state: WidgetState::MapSelect,
+                map_selection_fn: |world| {
+                    let last_map = last_map(world);
+                    MapSelection::Id(last_map)
+                },
+                control_input_event_fn: Some(press_right),
+            },
+            ExpectedParams {
+                widget_state: WidgetState::MapSelect,
+                map_selection_fn: map_selection_random,
+                map_selection_events_fn: |world| {
+                    let first_map = first_map(world);
                     vec![MapSelectionEvent::Select {
-                        map_selection: MapSelection::Id(first_snh),
-                    }],
-                )
-            })
-            .run()
-            .is_ok()
-        );
+                        map_selection: MapSelection::Random(first_map),
+                    }]
+                },
+            },
+        )
     }
 
     #[test]
-    fn selects_random_when_input_right_and_selection_last_map() {
-        let mut controller_input = ControllerInput::default();
-        controller_input.x_axis_value = 1.;
+    fn updates_widget_map_select_to_ready_and_sends_event_when_input_attack() -> Result<(), Error> {
+        run_test(
+            "updates_widget_map_select_to_ready_and_sends_event_when_input_attack",
+            SetupParams {
+                widget_state: WidgetState::MapSelect,
+                map_selection_fn: map_selection_fade,
+                control_input_event_fn: Some(press_attack),
+            },
+            ExpectedParams {
+                widget_state: WidgetState::Ready,
+                map_selection_fn: map_selection_fade,
+                map_selection_events_fn: |world| {
+                    vec![MapSelectionEvent::Select {
+                        map_selection: map_selection_fade(world),
+                    }]
+                },
+            },
+        )
+    }
 
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::config_base(
-                "selects_random_when_input_right_and_selection_last_map",
-                false
-            )
-            .with_setup(setup_components)
-            .with_setup(setup_event_reader)
-            .with_setup(move |world| {
-                let last_snh = last_map(world);
-                setup_widget(
-                    world,
-                    WidgetState::MapSelect,
-                    MapSelection::Id(last_snh),
-                    controller_input,
-                )
-            })
-            .with_system_single(
+    #[test]
+    fn updates_widget_ready_to_map_select_and_sends_event_when_input_jump() -> Result<(), Error> {
+        run_test(
+            "updates_widget_ready_to_map_select_and_sends_event_when_input_jump",
+            SetupParams {
+                widget_state: WidgetState::Ready,
+                map_selection_fn: map_selection_fade,
+                control_input_event_fn: Some(press_jump),
+            },
+            ExpectedParams {
+                widget_state: WidgetState::MapSelect,
+                map_selection_fn: map_selection_fade,
+                map_selection_events_fn: |_world| vec![MapSelectionEvent::Deselect],
+            },
+        )
+    }
+
+    #[test]
+    fn sends_confirm_event_when_widget_ready_and_input_attack() -> Result<(), Error> {
+        run_test(
+            "updates_widget_map_select_to_ready_and_sends_event_when_input_attack",
+            SetupParams {
+                widget_state: WidgetState::Ready,
+                map_selection_fn: map_selection_fade,
+                control_input_event_fn: Some(press_attack),
+            },
+            ExpectedParams {
+                widget_state: WidgetState::Ready,
+                map_selection_fn: map_selection_fade,
+                map_selection_events_fn: |_world| vec![MapSelectionEvent::Confirm],
+            },
+        )
+    }
+
+    #[test]
+    fn send_return_event_when_controller_input_jump_and_widget_map_select() -> Result<(), Error> {
+        run_test(
+            "send_return_event_when_controller_input_jump_and_widget_inactive",
+            SetupParams {
+                widget_state: WidgetState::MapSelect,
+                map_selection_fn: map_selection_fade,
+                control_input_event_fn: Some(press_jump),
+            },
+            ExpectedParams {
+                widget_state: WidgetState::MapSelect,
+                map_selection_fn: map_selection_fade,
+                map_selection_events_fn: |_world| vec![MapSelectionEvent::Return],
+            },
+        )
+    }
+
+    fn run_test(
+        test_name: &str,
+        SetupParams {
+            widget_state: widget_entity_state,
+            map_selection_fn: setup_map_selection_fn,
+            control_input_event_fn,
+        }: SetupParams,
+        ExpectedParams {
+            widget_state: expected_widget_state,
+            map_selection_fn: expected_map_selection_fn,
+            map_selection_events_fn,
+        }: ExpectedParams,
+    ) -> Result<(), Error> {
+        AutexousiousApplication::config_base(test_name, false)
+            .with_system(
                 MapSelectionWidgetInputSystem::new(),
                 MapSelectionWidgetInputSystem::type_name(),
-                &[]
+                &[],
             ) // kcov-ignore
-            .with_assertion(|world| {
-                let first_snh = first_map(world);
+            .with_setup(move |world| {
+                MapSelectionWidgetInputSystemData::setup(&mut world.res);
+
+                // Setup event reader.
+                let event_channel_reader = world
+                    .write_resource::<EventChannel<MapSelectionEvent>>()
+                    .register_reader(); // kcov-ignore
+                world.add_resource(event_channel_reader);
+
+                let map_selection = setup_map_selection_fn(world);
+                let entity = widget_entity(world, widget_entity_state, map_selection);
+                world.add_resource(entity);
+            })
+            .with_effect(move |world| {
+                if let Some(control_input_event_fn) = control_input_event_fn {
+                    let entity = *world.read_resource::<Entity>();
+                    world
+                        .write_resource::<EventChannel<ControlInputEvent>>()
+                        .single_write(control_input_event_fn(entity));
+                }
+            })
+            .with_assertion(move |world| {
+                let expected_map_selection = expected_map_selection_fn(world);
                 assert_widget(
                     world,
-                    MapSelectionWidget::new(
-                        WidgetState::MapSelect,
-                        MapSelection::Random(first_snh),
-                    ),
+                    MapSelectionWidget::new(expected_widget_state, expected_map_selection),
                 )
             })
-            .with_assertion(|world| {
-                let empty_snh = SlugAndHandle::from((&*world, ASSETS_MAP_EMPTY_SLUG.clone()));
-                assert_events(
-                    world,
-                    vec![MapSelectionEvent::Select {
-                        map_selection: MapSelection::Id(empty_snh),
-                    }],
-                )
+            .with_assertion(move |world| {
+                let map_selection_events = map_selection_events_fn(world);
+                assert_events(world, map_selection_events);
             })
             .run()
-            .is_ok()
-        );
+    }
+
+    fn map_selection_fade(world: &mut World) -> MapSelection {
+        let fade_map = fade_map(world);
+        MapSelection::Id(fade_map)
+    }
+
+    fn map_selection_random(world: &mut World) -> MapSelection {
+        let first_map = first_map(world);
+        MapSelection::Random(first_map)
+    }
+
+    fn press_left(entity: Entity) -> ControlInputEvent {
+        ControlInputEvent::Axis(AxisEventData {
+            entity,
+            axis: Axis::X,
+            value: -1.,
+        })
+    }
+
+    fn press_right(entity: Entity) -> ControlInputEvent {
+        ControlInputEvent::Axis(AxisEventData {
+            entity,
+            axis: Axis::X,
+            value: 1.,
+        })
+    }
+
+    fn press_jump(entity: Entity) -> ControlInputEvent {
+        ControlInputEvent::ControlAction(ControlActionEventData {
+            entity,
+            control_action: ControlAction::Jump,
+            value: true,
+        })
+    }
+
+    fn press_attack(entity: Entity) -> ControlInputEvent {
+        ControlInputEvent::ControlAction(ControlActionEventData {
+            entity,
+            control_action: ControlAction::Attack,
+            value: true,
+        })
+    }
+
+    fn empty_events(_world: &mut World) -> Vec<MapSelectionEvent> {
+        vec![]
     }
 
     fn first_map(world: &mut World) -> SlugAndHandle<Map> {
@@ -420,36 +516,23 @@ mod test {
             .into()
     }
 
-    fn setup_components(world: &mut World) {
-        MapSelectionWidgetInputSystemData::setup(&mut world.res);
+    fn fade_map(world: &mut World) -> SlugAndHandle<Map> {
+        SlugAndHandle::from((&*world, ASSETS_MAP_FADE_SLUG.clone()))
     }
 
-    fn setup_event_reader(world: &mut World) {
-        let event_channel_reader = world
-            .write_resource::<EventChannel<MapSelectionEvent>>()
-            .register_reader(); // kcov-ignore
-
-        world.add_resource(EffectReturn(event_channel_reader));
-    }
-
-    fn setup_widget(
+    fn widget_entity(
         world: &mut World,
         widget_state: WidgetState,
         map_selection: MapSelection,
-        controller_input: ControllerInput,
-    ) {
-        let widget = world
+    ) -> Entity {
+        world
             .create_entity()
             .with(MapSelectionWidget::new(widget_state, map_selection))
-            .with(controller_input)
-            .with(Last(ControllerInput::default()))
-            .build();
-
-        world.add_resource(EffectReturn(widget));
+            .build()
     }
 
     fn assert_widget(world: &mut World, expected: MapSelectionWidget) {
-        let widget_entity = &world.read_resource::<EffectReturn<Entity>>().0;
+        let widget_entity = world.read_resource::<Entity>();
 
         let widgets = world.read_storage::<MapSelectionWidget>();
         let widget = widgets
@@ -460,9 +543,7 @@ mod test {
     }
 
     fn assert_events(world: &mut World, events: Vec<MapSelectionEvent>) {
-        let mut event_channel_reader = &mut world
-            .write_resource::<EffectReturn<ReaderId<MapSelectionEvent>>>()
-            .0;
+        let mut event_channel_reader = &mut world.write_resource::<ReaderId<MapSelectionEvent>>();
 
         let map_selection_event_channel = world.read_resource::<EventChannel<MapSelectionEvent>>();
         let map_selection_event_iter = map_selection_event_channel.read(&mut event_channel_reader);
@@ -471,5 +552,17 @@ mod test {
         expected_events_iter
             .zip(map_selection_event_iter)
             .for_each(|(expected_event, actual)| assert_eq!(expected_event, *actual));
+    }
+
+    struct SetupParams {
+        widget_state: WidgetState,
+        map_selection_fn: fn(&mut World) -> MapSelection,
+        control_input_event_fn: Option<fn(Entity) -> ControlInputEvent>,
+    }
+
+    struct ExpectedParams {
+        widget_state: WidgetState,
+        map_selection_fn: fn(&mut World) -> MapSelection,
+        map_selection_events_fn: fn(&mut World) -> Vec<MapSelectionEvent>,
     }
 }

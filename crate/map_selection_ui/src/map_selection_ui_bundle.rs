@@ -1,7 +1,5 @@
 use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
 use derive_new::new;
-use game_input::ControllerInput;
-use tracker::LastTrackerSystem;
 use typename::TypeName;
 
 use crate::{MapSelectionWidgetInputSystem, MapSelectionWidgetUiSystem};
@@ -37,17 +35,6 @@ impl<'a, 'b> SystemBundle<'a, 'b> for MapSelectionUiBundle {
             &[&MapSelectionWidgetInputSystem::type_name()],
         ); // kcov-ignore
 
-        let controller_input_tracker_system =
-            LastTrackerSystem::<ControllerInput>::new(stringify!(game_input::ControllerInput));
-        let controller_input_tracker_system_name = controller_input_tracker_system.system_name();
-
-        // This depends on `&ControllerInputUpdateSystem::type_name()`, but since it runs in a
-        // separate dispatcher, we have to omit it from here.
-        builder.add(
-            controller_input_tracker_system,
-            &controller_input_tracker_system_name,
-            &[&MapSelectionWidgetUiSystem::type_name()],
-        ); // kcov-ignore
         Ok(())
     }
 }
