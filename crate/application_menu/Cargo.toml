@@ -6,15 +6,25 @@ edition = "2018"
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git" }
+derivative = "1.0.2"
+derive-new = "0.5.6"
+game_input_model = { path = "../game_input_model" }
+log = "0.4.6"
+shred = "0.7.0"
+shred-derive = "0.5.1"
+specs-derive = "0.4.0"
+strum = "0.15.0"
+strum_macros = "0.15.0"
+typename = "0.1.1"
+typename_derive = "0.1.3"
 
 [dev-dependencies]
+amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
 application = { path = "../application" }
 application_robot = { path = "../application_robot" }
 application_ui = { path = "../application_ui" }
 assert_cmd = "0.11.1"
-derivative = "1.0.2"
 escargot = "0.5.0"
-log = "0.4.6"
 rayon = "1.0.3"
 structopt = "0.2.15"
 structopt-derive = "0.2.15"

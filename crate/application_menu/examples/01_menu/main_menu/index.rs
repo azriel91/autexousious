@@ -1,9 +1,10 @@
 use amethyst::prelude::*;
+use typename_derive::TypeName;
 
 use crate::other::OtherState;
 
 /// Indicies of main menu items.
-#[derive(Debug, Clone, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq, TypeName)]
 pub enum Index {
     /// Menu item for starting a game.
     StartGame,
