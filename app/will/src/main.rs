@@ -22,7 +22,6 @@ use application::{
 };
 use application_event::{AppEvent, AppEventReader};
 use application_robot::RobotState;
-use application_state::{HookFn, HookableFn};
 use character_loading::CharacterLoadingBundle;
 use character_selection_stdio::CharacterSelectionStdioBundle;
 use collision_loading::CollisionLoadingBundle;
@@ -33,7 +32,7 @@ use game_input_stdio::{ControlInputEventStdinMapper, GameInputStdioBundle};
 use game_input_ui::{GameInputUiBundle, InputToControlInputSystem};
 use game_mode_selection::{GameModeSelectionStateBuilder, GameModeSelectionStateDelegate};
 use game_mode_selection_stdio::GameModeSelectionStdioBundle;
-use game_mode_selection_ui::{GameModeSelectionUiBuildFn, GameModeSelectionUiBundle};
+use game_mode_selection_ui::GameModeSelectionUiBundle;
 use game_play_stdio::GamePlayStdioBundle;
 use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
@@ -72,14 +71,6 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     let game_mode_selection_state =
         GameModeSelectionStateBuilder::new(GameModeSelectionStateDelegate::new())
             .with_bundle(GameModeSelectionUiBundle::new())
-            .with_hook_fn(
-                HookableFn::OnStart,
-                HookFn(*GameModeSelectionUiBuildFn::new()),
-            )
-            .with_hook_fn(
-                HookableFn::OnResume,
-                HookFn(*GameModeSelectionUiBuildFn::new()),
-            )
             .build();
     let loading_state = LoadingState::<_>::new(game_mode_selection_state);
     let state = RobotState::new(Box::new(loading_state));
