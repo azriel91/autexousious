@@ -30,11 +30,7 @@ impl RunCounterUpdater {
             _ => return RunCounter::Unused,
         }
 
-        if grounding != Grounding::OnGround
-            || controller_input.defend
-            || controller_input.jump
-            || controller_input.attack
-        {
+        if grounding != Grounding::OnGround {
             return RunCounter::Unused;
         }
 
@@ -117,48 +113,6 @@ mod tests {
             )
         );
     }
-
-    #[test]
-    fn none_when_jump_is_pressed_and_unused() {
-        let mut input = ControllerInput::default();
-        input.jump = true;
-
-        assert_eq!(
-            RunCounter::Unused,
-            RunCounterUpdater::update(
-                RunCounter::Unused,
-                &input,
-                CharacterSequenceId::default(),
-                Mirrored::default(),
-                Grounding::Airborne
-            )
-        );
-    }
-
-    macro_rules! test_action_button {
-        ($test_name:ident, $action_button:ident) => {
-            #[test]
-            fn $test_name() {
-                let mut input = ControllerInput::default();
-                input.$action_button = true;
-
-                assert_eq!(
-                    RunCounter::Unused,
-                    RunCounterUpdater::update(
-                        RunCounter::Increase(10),
-                        &input,
-                        CharacterSequenceId::default(),
-                        Mirrored::default(),
-                        Grounding::Airborne
-                    )
-                );
-            }
-        };
-    }
-
-    test_action_button!(unused_when_defend_is_pressed, defend);
-    test_action_button!(unused_when_jump_is_pressed, jump);
-    test_action_button!(unused_when_attack_is_pressed, attack);
 
     #[test]
     fn none_when_unused_and_no_x_input() {
