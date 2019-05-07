@@ -26,12 +26,14 @@
 * Default `hit_repeat` delay is increased from 3 ticks to to 9 ticks. ([#117])
 * Improved clarity of character selection UI. ([#110])
 * Improved clarity of map selection UI. ([#120])
+* Use control input for game mode seleciton UI. ([#122])
 
 [#96]: https://gitlab.com/azriel91/autexousious/issues/96
 [#103]: https://gitlab.com/azriel91/autexousious/issues/103
 [#110]: https://gitlab.com/azriel91/autexousious/issues/110
 [#117]: https://gitlab.com/azriel91/autexousious/issues/117
 [#120]: https://gitlab.com/azriel91/autexousious/issues/120
+[#122]: https://gitlab.com/azriel91/autexousious/issues/122
 
 ## 0.10.0 (2019-03-29)
 
