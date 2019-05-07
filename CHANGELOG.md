@@ -28,9 +28,14 @@
 * Improved clarity of map selection UI. ([#120])
 * Use control input for game mode seleciton UI. ([#122])
 
+### Fixed
+
+* `Walk` sequence stays on first frame when an action button is held. ([#114])
+
 [#96]: https://gitlab.com/azriel91/autexousious/issues/96
 [#103]: https://gitlab.com/azriel91/autexousious/issues/103
 [#110]: https://gitlab.com/azriel91/autexousious/issues/110
+[#114]: https://gitlab.com/azriel91/autexousious/issues/114
 [#117]: https://gitlab.com/azriel91/autexousious/issues/117
 [#120]: https://gitlab.com/azriel91/autexousious/issues/120
 [#122]: https://gitlab.com/azriel91/autexousious/issues/122
