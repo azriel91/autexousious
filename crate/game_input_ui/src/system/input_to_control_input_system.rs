@@ -105,13 +105,9 @@ impl<'s> System<'s> for InputToControlInputSystem {
                     // Find the entity has the `player` control id in its `InputControlled`
                     // component.
 
-                    if let Some((entity, _)) = (&entities, &input_controlleds)
-                        .join()
-                        .filter(|(_entity, input_controlled)| {
-                            input_controlled.controller_id == *player
-                        })
-                        .next()
-                    {
+                    if let Some((entity, _)) = (&entities, &input_controlleds).join().find(
+                        |(_entity, input_controlled)| input_controlled.controller_id == *player,
+                    ) {
                         Some(ControlInputEvent::ControlAction(ControlActionEventData {
                             entity,
                             control_action: *action,
@@ -122,13 +118,9 @@ impl<'s> System<'s> for InputToControlInputSystem {
                     }
                 }
                 InputEvent::ActionReleased(PlayerActionControl { player, action }) => {
-                    if let Some((entity, _)) = (&entities, &input_controlleds)
-                        .join()
-                        .filter(|(_entity, input_controlled)| {
-                            input_controlled.controller_id == *player
-                        })
-                        .next()
-                    {
+                    if let Some((entity, _)) = (&entities, &input_controlleds).join().find(
+                        |(_entity, input_controlled)| input_controlled.controller_id == *player,
+                    ) {
                         Some(ControlInputEvent::ControlAction(ControlActionEventData {
                             entity,
                             control_action: *action,

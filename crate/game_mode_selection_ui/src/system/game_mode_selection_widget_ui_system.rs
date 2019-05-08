@@ -151,7 +151,7 @@ impl GameModeSelectionWidgetUiSystem {
                 //
                 // `Vec#get(n)` returns `None` when out of bounds, so the logic works for the last
                 // item.
-                &menu_items[..]
+                menu_items[..]
                     .iter()
                     .enumerate()
                     .skip(1)
