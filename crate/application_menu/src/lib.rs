@@ -2,7 +2,12 @@
 
 //! Provides types to support building an application menu.
 
-pub use self::{event::MenuEvent, menu_item::MenuItem};
+pub use self::{
+    component::{MenuItem, MenuItemWidgetState, Siblings},
+    event::MenuEvent,
+    system::MenuItemWidgetInputSystem,
+};
 
+mod component;
 mod event;
-mod menu_item;
+mod system;

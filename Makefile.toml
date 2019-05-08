@@ -16,7 +16,8 @@ if rustc --version | grep -qF 'nightly'; then
 fi
 
 # Security vulnerability
-cargo audit
+echo WARNING: cargo audit disabled
+# cargo audit
 
 # License compatibility
 ./build/conformance_license.sh

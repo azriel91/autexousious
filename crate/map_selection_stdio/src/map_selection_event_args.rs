@@ -8,11 +8,16 @@ use structopt_derive::StructOpt;
 #[derive(Clone, Debug, PartialEq, StructOpt)]
 #[structopt(rename_all = "snake_case")]
 pub enum MapSelectionEventArgs {
-    /// Select event.
-    #[structopt(name = "select")]
+    /// Return from map selection state.
+    Return,
+    /// Select a map.
     Select {
         /// Slug of the map or random, e.g. "default/eruption", "random".
         #[structopt(short, long)]
         selection: String,
     },
+    /// Deselect the map.
+    Deselect,
+    /// Confirm map selection.
+    Confirm,
 }

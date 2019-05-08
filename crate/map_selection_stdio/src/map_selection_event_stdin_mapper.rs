@@ -61,9 +61,12 @@ impl StdinMapper for MapSelectionEventStdinMapper {
 
     fn map(map_assets: &Read<MapAssets>, args: Self::Args) -> Result<Self::Event, Error> {
         match args {
+            MapSelectionEventArgs::Return => Ok(MapSelectionEvent::Return),
             MapSelectionEventArgs::Select { selection } => {
                 Self::map_select_event(map_assets, &selection)
             }
+            MapSelectionEventArgs::Deselect => Ok(MapSelectionEvent::Deselect),
+            MapSelectionEventArgs::Confirm => Ok(MapSelectionEvent::Confirm),
         } // kcov-ignore
     }
 }
@@ -114,56 +117,91 @@ mod tests {
     }
 
     #[test]
-    fn maps_select_id_event() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::config_base("maps_select_id_event", false)
-                .with_assertion(|world| {
-                    let args = MapSelectionEventArgs::Select {
-                        selection: ASSETS_MAP_FADE_SLUG.to_string(),
-                    };
-                    let map_assets = world.read_resource::<MapAssets>();
-                    let snh = SlugAndHandle::from((&*map_assets, ASSETS_MAP_FADE_SLUG.clone()));
+    fn maps_return_event() -> Result<(), Error> {
+        AutexousiousApplication::config_base("maps_return_event", false)
+            .with_assertion(|world| {
+                let args = MapSelectionEventArgs::Return;
+                let map_assets = world.read_resource::<MapAssets>();
 
-                    let result = MapSelectionEventStdinMapper::map(&Read::from(map_assets), args);
+                let result = MapSelectionEventStdinMapper::map(&Read::from(map_assets), args);
 
-                    assert!(result.is_ok());
-                    let map_selection = MapSelection::Id(snh);
-                    assert_eq!(MapSelectionEvent::Select { map_selection }, result.unwrap())
-                })
-                .run()
-                .is_ok()
-        );
+                assert!(result.is_ok());
+                assert_eq!(MapSelectionEvent::Return, result.unwrap())
+            })
+            .run()
     }
 
     #[test]
-    fn maps_select_random_event() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::config_base("maps_select_random_event", false)
-                .with_assertion(|world| {
-                    let args = MapSelectionEventArgs::Select {
-                        selection: "random".to_string(),
-                    };
-                    let map_assets = world.read_resource::<MapAssets>();
-                    let snh = SlugAndHandle::from(
-                        map_assets
-                            .iter()
-                            .next()
-                            .expect("Expected at least one map to be loaded."),
-                    );
+    fn maps_deselect_event() -> Result<(), Error> {
+        AutexousiousApplication::config_base("maps_deselect_event", false)
+            .with_assertion(|world| {
+                let args = MapSelectionEventArgs::Deselect;
+                let map_assets = world.read_resource::<MapAssets>();
 
-                    let result = MapSelectionEventStdinMapper::map(&Read::from(map_assets), args);
+                let result = MapSelectionEventStdinMapper::map(&Read::from(map_assets), args);
 
-                    assert!(result.is_ok());
-                    let map_selection = MapSelection::Random(snh);
-                    assert_eq!(MapSelectionEvent::Select { map_selection }, result.unwrap())
-                })
-                .run()
-                .is_ok()
-        );
+                assert!(result.is_ok());
+                assert_eq!(MapSelectionEvent::Deselect, result.unwrap())
+            })
+            .run()
+    }
+
+    #[test]
+    fn maps_confirm_event() -> Result<(), Error> {
+        AutexousiousApplication::config_base("maps_confirm_event", false)
+            .with_assertion(|world| {
+                let args = MapSelectionEventArgs::Confirm;
+                let map_assets = world.read_resource::<MapAssets>();
+
+                let result = MapSelectionEventStdinMapper::map(&Read::from(map_assets), args);
+
+                assert!(result.is_ok());
+                assert_eq!(MapSelectionEvent::Confirm, result.unwrap())
+            })
+            .run()
+    }
+
+    #[test]
+    fn maps_select_id_event() -> Result<(), Error> {
+        AutexousiousApplication::config_base("maps_select_id_event", false)
+            .with_assertion(|world| {
+                let args = MapSelectionEventArgs::Select {
+                    selection: ASSETS_MAP_FADE_SLUG.to_string(),
+                };
+                let map_assets = world.read_resource::<MapAssets>();
+                let snh = SlugAndHandle::from((&*map_assets, ASSETS_MAP_FADE_SLUG.clone()));
+
+                let result = MapSelectionEventStdinMapper::map(&Read::from(map_assets), args);
+
+                assert!(result.is_ok());
+                let map_selection = MapSelection::Id(snh);
+                assert_eq!(MapSelectionEvent::Select { map_selection }, result.unwrap())
+            })
+            .run()
+    }
+
+    #[test]
+    fn maps_select_random_event() -> Result<(), Error> {
+        AutexousiousApplication::config_base("maps_select_random_event", false)
+            .with_assertion(|world| {
+                let args = MapSelectionEventArgs::Select {
+                    selection: "random".to_string(),
+                };
+                let map_assets = world.read_resource::<MapAssets>();
+                let snh = SlugAndHandle::from(
+                    map_assets
+                        .iter()
+                        .next()
+                        .expect("Expected at least one map to be loaded."),
+                );
+
+                let result = MapSelectionEventStdinMapper::map(&Read::from(map_assets), args);
+
+                assert!(result.is_ok());
+                let map_selection = MapSelection::Random(snh);
+                assert_eq!(MapSelectionEvent::Select { map_selection }, result.unwrap())
+            })
+            .run()
     }
 
     fn expect_err_msg(result: Result<MapSelectionEvent, Error>, expected: &str) {
