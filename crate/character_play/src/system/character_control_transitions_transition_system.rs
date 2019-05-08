@@ -27,7 +27,7 @@ use shred_derive::SystemData;
 
 use crate::ControlTransitionRequirementSystemData;
 
-/// Updates `ControllerInput` based on input events.
+/// Updates `CharacterSequenceId` based on `ControlInputEvent`s and held buttons.
 #[derive(Debug, Default, NamedType, new)]
 pub struct CharacterControlTransitionsTransitionSystem {
     /// Reader ID for the `ControlInputEvent` channel.
