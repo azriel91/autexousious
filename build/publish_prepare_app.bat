@@ -27,6 +27,9 @@ set "app_crate_dir=%repository_dir%\app\%app_name%"
 call :readlink app_assets_dir "%app_crate_dir%\assets"
 call :readlink app_resources_dir "%app_crate_dir%\resources"
 
+:: Download default assets
+C:\Windows\System32\WindowsPowerShell\v1.0\PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& '%~dp0assets_default_download.ps1'"
+
 :: Fake array
 ::
 :: Useful reference: <https://stackoverflow.com/a/10167990/1576773>

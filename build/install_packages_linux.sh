@@ -11,6 +11,7 @@ pkgs_desired=(
 
   # publishing
   jq
+  unzip
 
   # cargo install-update
   libssl-dev

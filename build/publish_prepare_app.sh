@@ -23,6 +23,11 @@ app_publish_artifacts=(
   "${app_resources_dir}"
 )
 
+# Download default assets.
+wget https://gitlab.com/azriel91/will_assets_test/-/archive/master/will_assets_test-master.zip
+unzip -uoq will_assets_test-master.zip -d "${app_assets_dir}"
+mv "${app_assets_dir}/will_assets_test-master" "${app_assets_dir}/default"
+
 # Ensure the source files exist before transferring
 for f in "${app_publish_artifacts[@]}"; do
   if ! test -e "${f}"; then
