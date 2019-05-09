@@ -79,24 +79,21 @@ impl<'s> System<'s> for StdinSystem {
         let state_id = state_id.map(|state_id| *state_id);
         if let Some(state_id) = state_id {
             let state_id = state_id;
-            match (*stdin_command_barrier).state_id {
-                Some(state_id_barrier) => {
-                    if state_id == state_id_barrier {
-                        debug!("State `{:?}` running, removing `StateIdBarrier`.", state_id);
+            if let Some(state_id_barrier) = (*stdin_command_barrier).state_id {
+                if state_id == state_id_barrier {
+                    debug!("State `{:?}` running, removing `StateIdBarrier`.", state_id);
 
-                        // Reset to `None` because we have reached this barrier.
-                        (*stdin_command_barrier).state_id = None;
-                    } else {
-                        debug!(
-                            "Current state: `{:?}`, waiting for `{:?}`.",
-                            state_id, state_id_barrier
-                        );
+                    // Reset to `None` because we have reached this barrier.
+                    (*stdin_command_barrier).state_id = None;
+                } else {
+                    debug!(
+                        "Current state: `{:?}`, waiting for `{:?}`.",
+                        state_id, state_id_barrier
+                    );
 
-                        // Skip sending events.
-                        return;
-                    }
+                    // Skip sending events.
+                    return;
                 }
-                None => {}
             };
         } else {
             warn!("`StateId` resource is not set.");

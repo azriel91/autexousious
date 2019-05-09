@@ -46,12 +46,13 @@ impl CharacterSelectionInputSystem {
         ) {
             (ControlAction::Jump, true) => {
                 // If all widgets are inactive, return to previous `State`.
-                if character_selection_widgets
-                    .join()
-                    .all(|character_selection_widget| {
-                        character_selection_widget.state == WidgetState::Inactive
-                    })
-                {
+                let all_inactive =
+                    character_selection_widgets
+                        .join()
+                        .all(|character_selection_widget| {
+                            character_selection_widget.state == WidgetState::Inactive
+                        });
+                if all_inactive {
                     Some(CharacterSelectionEvent::Return)
                 } else {
                     None
@@ -68,20 +69,24 @@ impl CharacterSelectionInputSystem {
                 let character_selection_widget =
                     character_selection_widgets.get(control_action_event_data.entity);
                 if let Some(character_selection_widget) = character_selection_widget {
-                    if character_selection_widget.state == WidgetState::Ready
-                        && character_selection_widgets
-                            .join()
-                            .filter(|character_selection_widget| {
-                                character_selection_widget.state == WidgetState::Ready
-                            })
-                            .count()
-                            >= 2
-                        && character_selection_widgets
+                    let all_inactive =
+                        character_selection_widgets
                             .join()
                             .all(|character_selection_widget| {
-                                character_selection_widget.state == WidgetState::Ready
-                                    || character_selection_widget.state == WidgetState::Inactive
-                            })
+                                character_selection_widget.state == WidgetState::Inactive
+                            });
+
+                    let at_least_two_players = character_selection_widgets
+                        .join()
+                        .filter(|character_selection_widget| {
+                            character_selection_widget.state == WidgetState::Ready
+                        })
+                        .count()
+                        >= 2;
+
+                    if character_selection_widget.state == WidgetState::Ready
+                        && at_least_two_players
+                        && all_inactive
                     {
                         Some(CharacterSelectionEvent::Confirm)
                     } else {

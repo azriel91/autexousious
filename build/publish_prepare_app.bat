@@ -27,16 +27,20 @@ set "app_crate_dir=%repository_dir%\app\%app_name%"
 call :readlink app_assets_dir "%app_crate_dir%\assets"
 call :readlink app_resources_dir "%app_crate_dir%\resources"
 
+:: Download default assets
+C:\Windows\System32\WindowsPowerShell\v1.0\PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& '%~dp0assets_default_download.ps1'"
+
 :: Fake array
 ::
 :: Useful reference: <https://stackoverflow.com/a/10167990/1576773>
 set "app_publish_artifacts[0]=%target_profile_dir%\%app_name%.exe"
 set "app_publish_artifacts[1]=%app_assets_dir%"
 set "app_publish_artifacts[2]=%app_resources_dir%"
+set "app_publish_artifacts[3]=%app_crate_dir%\EULA.md"
 
 :: Ensure the source files exist before transferring
 set artifacts_first_index=0
-set artifacts_last_index=2
+set artifacts_last_index=3
 for /L %%i in (%artifacts_first_index%,1,%artifacts_last_index%) do (
   setlocal
   set "f=!app_publish_artifacts[%%i]!"

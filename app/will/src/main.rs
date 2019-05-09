@@ -140,7 +140,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     }
 
     let mut app = CoreApplication::<_, AppEvent, AppEventReader>::build(assets_dir, state)?
-        .with_frame_limit_config(frame_rate_limit_config(opt.frame_rate.clone()))
+        .with_frame_limit_config(frame_rate_limit_config(opt.frame_rate))
         .build(game_data)?;
 
     app.run();
