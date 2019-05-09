@@ -19,6 +19,7 @@ app_resources_dir="$(readlink -f "${app_crate_dir}/resources")"
 
 app_publish_artifacts=(
   "${target_profile_dir}/${app_name}"
+  "${app_crate_dir}/EULA.md"
   "${app_assets_dir}"
   "${app_resources_dir}"
 )

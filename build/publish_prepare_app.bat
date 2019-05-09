@@ -36,10 +36,11 @@ C:\Windows\System32\WindowsPowerShell\v1.0\PowerShell -NoProfile -ExecutionPolic
 set "app_publish_artifacts[0]=%target_profile_dir%\%app_name%.exe"
 set "app_publish_artifacts[1]=%app_assets_dir%"
 set "app_publish_artifacts[2]=%app_resources_dir%"
+set "app_publish_artifacts[3]=%app_crate_dir%\EULA.md"
 
 :: Ensure the source files exist before transferring
 set artifacts_first_index=0
-set artifacts_last_index=2
+set artifacts_last_index=3
 for /L %%i in (%artifacts_first_index%,1,%artifacts_last_index%) do (
   setlocal
   set "f=!app_publish_artifacts[%%i]!"
