@@ -83,7 +83,8 @@ impl MapSelectionWidgetUiSystem {
             let ui_transform = UiTransform::new(
                 "MapSelectionWidget".to_string(),
                 Anchor::Middle,
-                0.,
+                Anchor::MiddleLeft,
+                -LABEL_WIDTH / 2.,
                 LABEL_HEIGHT / 2.,
                 1.,
                 LABEL_WIDTH,
@@ -129,6 +130,7 @@ impl MapSelectionWidgetUiSystem {
                 let ui_transform = UiTransform::new(
                     String::from("map_selection_instructions"),
                     Anchor::BottomMiddle,
+                    Anchor::BottomMiddle,
                     0.,
                     0.,
                     1.,
@@ -159,8 +161,9 @@ impl MapSelectionWidgetUiSystem {
                 let ui_transform = UiTransform::new(
                     format!("map_selection_instructions#{}", index),
                     Anchor::TopLeft,
-                    LABEL_WIDTH / 2.,
-                    container_height - LABEL_HEIGHT_HELP * index as f32,
+                    Anchor::TopLeft,
+                    0.,
+                    -LABEL_HEIGHT_HELP * index as f32,
                     1.,
                     LABEL_WIDTH,
                     LABEL_HEIGHT_HELP,

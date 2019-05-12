@@ -65,12 +65,13 @@ impl MainMenuState {
             .for_each(|(order, index)| {
                 let text_w = 400.;
                 let text_h = 50.;
-                let text_x = text_w / 2. + 20.;
-                let text_y = text_h / 2. + 20. + order as f32 * text_h;
+                let text_x = 20.;
+                let text_y = -(order as f32 * text_h) - 20.;
                 debug!("({}, {}, {}, {})", text_x, text_y, text_w, text_h);
 
                 let text_transform = UiTransform::new(
                     index.title().to_string(),
+                    Anchor::TopLeft,
                     Anchor::TopLeft,
                     text_x,
                     text_y,

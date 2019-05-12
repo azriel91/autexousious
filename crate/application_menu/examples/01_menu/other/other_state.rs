@@ -31,8 +31,9 @@ impl OtherState {
         let text_transform = UiTransform::new(
             "info".to_string(),
             Anchor::TopLeft,
-            text_w / 2. + 20.,
-            text_h / 2. + 20.,
+            Anchor::TopLeft,
+            20.,
+            -text_h - 20.,
             1.,
             text_w,
             text_h,

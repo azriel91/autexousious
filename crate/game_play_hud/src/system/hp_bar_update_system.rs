@@ -1,5 +1,5 @@
 use amethyst::{
-    core::{Parent, Transform},
+    core::{Float, Parent, Transform},
     ecs::{Join, ReadStorage, System, WriteStorage},
     renderer::SpriteRender,
 };
@@ -47,7 +47,7 @@ impl<'s> System<'s> for HpBarUpdateSystem {
                 transform.set_translation_x(-half_hp_lost);
 
                 let scale = transform.scale_mut();
-                scale[0] = hp;
+                scale[0] = Float::from(hp);
 
                 sprite_render.sprite_number = (HP_BAR_SPRITE_COUNT - 1)
                     * ((**health_points) as usize)

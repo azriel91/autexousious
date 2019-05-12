@@ -1,13 +1,13 @@
 use amethyst::{
     core::{
-        math::{Orthographic3, Translation3},
-        transform::GlobalTransform,
-        SystemBundle,
+        math::{Orthographic3, Vector3},
+        Float, SystemBundle, Transform,
     },
-    ecs::prelude::*,
+    ecs::{Builder, DispatcherBuilder, Entity, World},
     input::is_key_down,
-    prelude::*,
     renderer::{Camera, Projection, ScreenDimensions, VirtualKeyCode},
+    shred::Dispatcher,
+    GameData, State, StateData, Trans,
 };
 use application_event::AppEvent;
 use derivative::Derivative;
@@ -96,8 +96,9 @@ impl GamePlayState {
         //
         // By using `::std::f32::MAX` here, we ensure that all entities will be in the camera's
         // view.
-        let translation = Translation3::new(0.0, 0.0, ::std::f32::MAX).to_homogeneous();
-        let global_transform = GlobalTransform(translation);
+        let translation =
+            Vector3::new(Float::from(0.), Float::from(0.), Float::from(std::f32::MAX));
+        let transform = Transform::from(translation);
 
         let camera = world
             .create_entity()
@@ -112,7 +113,7 @@ impl GamePlayState {
                 // all entities in front of it.
                 ::std::f32::MAX,
             ))))
-            .with(global_transform)
+            .with(transform)
             .build();
 
         self.camera = Some(camera);

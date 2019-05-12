@@ -91,7 +91,8 @@ impl CharacterSelectionWidgetUiSystem {
                 let ui_transform = UiTransform::new(
                     format!("character_selection_widget#{}", controller_id),
                     Anchor::Middle,
-                    0.,
+                    Anchor::MiddleLeft,
+                    -LABEL_WIDTH / 2.,
                     ((controller_count - index) as f32 * LABEL_HEIGHT)
                         - (controller_count as f32 * LABEL_HEIGHT / 2.),
                     1.,
@@ -128,6 +129,7 @@ impl CharacterSelectionWidgetUiSystem {
                 let ui_transform = UiTransform::new(
                     String::from("character_selection_instructions"),
                     Anchor::BottomMiddle,
+                    Anchor::BottomMiddle,
                     0.,
                     0.,
                     1.,
@@ -159,8 +161,9 @@ impl CharacterSelectionWidgetUiSystem {
                 let ui_transform = UiTransform::new(
                     format!("character_selection_instructions#{}", index),
                     Anchor::TopLeft,
-                    LABEL_WIDTH / 2.,
-                    container_height - LABEL_HEIGHT_HELP * index as f32,
+                    Anchor::TopLeft,
+                    0.,
+                    -LABEL_HEIGHT_HELP * index as f32,
                     1.,
                     LABEL_WIDTH,
                     LABEL_HEIGHT_HELP,

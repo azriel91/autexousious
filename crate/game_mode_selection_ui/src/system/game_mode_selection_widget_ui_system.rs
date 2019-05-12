@@ -106,7 +106,8 @@ impl GameModeSelectionWidgetUiSystem {
                     let ui_transform = UiTransform::new(
                         format!("menu_item_widget#{}", index_id),
                         Anchor::Middle,
-                        0.,
+                        Anchor::MiddleLeft,
+                        -LABEL_WIDTH / 2.,
                         ((item_count - order) as f32 * LABEL_HEIGHT)
                             - (item_count as f32 * LABEL_HEIGHT / 2.),
                         1.,
@@ -185,6 +186,7 @@ impl GameModeSelectionWidgetUiSystem {
                 let ui_transform = UiTransform::new(
                     String::from("game_mode_selection_instructions"),
                     Anchor::BottomMiddle,
+                    Anchor::BottomMiddle,
                     0.,
                     0.,
                     1.,
@@ -213,8 +215,9 @@ impl GameModeSelectionWidgetUiSystem {
                 let ui_transform = UiTransform::new(
                     format!("game_mode_selection_instructions#{}", index),
                     Anchor::TopLeft,
-                    LABEL_WIDTH / 2.,
-                    container_height - LABEL_HEIGHT_HELP * index as f32,
+                    Anchor::TopLeft,
+                    0.,
+                    -LABEL_HEIGHT_HELP * index as f32,
                     1.,
                     LABEL_WIDTH,
                     LABEL_HEIGHT_HELP,

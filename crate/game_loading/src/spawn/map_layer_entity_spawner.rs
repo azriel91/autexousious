@@ -1,10 +1,11 @@
 use amethyst::{
-    core::{math::Vector3, transform::Transform},
+    core::{math::Vector3, transform::Transform, Float},
     ecs::{Entity, SystemData, World},
     renderer::Transparent,
 };
 use logic_clock::LogicClock;
 use map_model::loaded::MapHandle;
+use num_traits::FromPrimitive;
 use sequence_model::{
     config::Repeat,
     loaded::ComponentSequence,
@@ -76,9 +77,10 @@ impl MapLayerEntitySpawner {
                     let position = layer.position;
                     let mut transform = Transform::default();
                     transform.set_translation(Vector3::new(
-                        position.x as f32,
-                        (position.y - position.z) as f32,
-                        position.z as f32,
+                        Float::from_i32(position.x).expect("Failed to convert i32 into `Float`."),
+                        Float::from_i32(position.y - position.z)
+                            .expect("Failed to convert i32 into `Float`."),
+                        Float::from_i32(position.z).expect("Failed to convert i32 into `Float`."),
                     ));
 
                     let component_sequences = component_sequences_assets

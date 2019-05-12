@@ -25,7 +25,7 @@
 // kcov-ignore-end
 
 use amethyst::{
-    core::{Parent, Transform},
+    core::{Float, Parent, Transform},
     ecs::{Entities, Entity, Join, ReadStorage},
     Error,
 };
@@ -71,8 +71,8 @@ fn sets_transform_x_and_scale() -> Result<(), Error> {
 
             // 100 - 20 = 80
             // -80 / 2  = -40
-            assert_eq!(-40., transform.translation()[0]);
-            assert_eq!(20., transform.scale()[0]);
+            assert_eq!(Float::from(-40.), transform.translation()[0]);
+            assert_eq!(Float::from(20.), transform.scale()[0]);
         })
         .run()
 }

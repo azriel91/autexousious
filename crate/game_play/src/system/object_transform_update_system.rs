@@ -1,4 +1,7 @@
-use amethyst::{core::transform::Transform, ecs::prelude::*};
+use amethyst::{
+    core::transform::Transform,
+    ecs::{Join, ReadStorage, System, WriteStorage},
+};
 use derive_new::new;
 use object_model::play::Position;
 use typename_derive::TypeName;
@@ -29,52 +32,55 @@ impl<'s> System<'s> for ObjectTransformUpdateSystem {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        core::{math::Vector3, transform::Transform},
-        ecs::prelude::*,
+        core::{math::Vector3, transform::Transform, Float},
+        ecs::{Builder, Entity, World},
+        Error,
     };
-    use amethyst_test::*;
+    use amethyst_test::AmethystApplication;
     use object_model::play::Position;
     use typename::TypeName;
 
     use super::ObjectTransformUpdateSystem;
 
     #[test]
-    fn updates_transform_with_x_and_yz() {
+    fn updates_transform_with_x_and_yz() -> Result<(), Error> {
         let setup = |world: &mut World| {
             // Create entity with position
             let position = Position::<f32>::new(-5., -3., -4.);
 
             let mut transform = Transform::default();
-            transform.set_translation(Vector3::new(10., 20., 0.));
+            transform.set_translation(Vector3::new(
+                Float::from(10.),
+                Float::from(20.),
+                Float::from(0.),
+            ));
 
             let entity = world.create_entity().with(position).with(transform).build();
 
-            world.add_resource(EffectReturn(entity));
+            world.add_resource(entity);
         };
 
         let assertion = |world: &mut World| {
-            let entity = world.read_resource::<EffectReturn<Entity>>().0;
-            let store = world.read_storage::<Transform>();
+            let entity = *world.read_resource::<Entity>();
+            let transforms = world.read_storage::<Transform>();
 
-            let mut transform = Transform::default();
-            transform.set_translation(Vector3::new(-5., 1., -4.));
+            let expected_translation =
+                Vector3::new(Float::from(-5.), Float::from(1.), Float::from(-4.));
 
-            assert_eq!(Some(&transform), store.get(entity));
+            let transform = transforms
+                .get(entity)
+                .expect("Expected entity to have `Transform` component.");
+            assert_eq!(&expected_translation, transform.translation());
         };
 
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AmethystApplication::ui_base::<String, String>()
-                .with_system(
-                    ObjectTransformUpdateSystem::new(),
-                    ObjectTransformUpdateSystem::type_name(),
-                    &[]
-                ) // kcov-ignore
-                .with_setup(setup)
-                .with_assertion(assertion)
-                .run()
-                .is_ok()
-        );
+        AmethystApplication::ui_base::<String, String>()
+            .with_system(
+                ObjectTransformUpdateSystem::new(),
+                ObjectTransformUpdateSystem::type_name(),
+                &[],
+            ) // kcov-ignore
+            .with_setup(setup)
+            .with_assertion(assertion)
+            .run()
     }
 }
