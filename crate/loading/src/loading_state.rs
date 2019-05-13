@@ -4,6 +4,7 @@ use amethyst::{GameData, State, StateData, Trans};
 use application_event::AppEvent;
 use application_state::AutexState;
 use application_ui::ThemeLoader;
+use collision_audio_model::CollisionAudioLoadingStatus;
 use derivative::Derivative;
 use log::{debug, error};
 use state_registry::StateId;
@@ -71,6 +72,8 @@ where
 
         if *data.world.read_resource::<ObjectLoadingStatus>() == ObjectLoadingStatus::Complete
             && *data.world.read_resource::<MapLoadingStatus>() == MapLoadingStatus::Complete
+            && *data.world.read_resource::<CollisionAudioLoadingStatus>()
+                == CollisionAudioLoadingStatus::Complete
         {
             Trans::Switch(Box::new(
                 self.next_state
@@ -85,6 +88,8 @@ where
                  * `SpriteLoadingBundle`\n\
                  * `CharacterLoadingBundle`\n\
                  * `MapLoadingBundle`\n\
+                 * `amethyst::audio::AudioBundle`\n\
+                 * `CollisionAudioLoadingBundle`\n\
                  \n\
                  These provide the necessary `System`s to process the loaded assets.\n"
             );

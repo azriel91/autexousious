@@ -1,13 +1,14 @@
 use std::env;
 
-use amethyst::{core::transform::TransformBundle, prelude::*};
-use amethyst_test::prelude::*;
+use amethyst::{audio::AudioBundle, core::transform::TransformBundle, GameData};
+use amethyst_test::{AmethystApplication, PopState};
 use application_event::{AppEvent, AppEventReader};
 use asset_model::loaded::SlugAndHandle;
 use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
 use character_loading::CharacterLoadingBundle;
 use character_selection::CharacterSelectionBundle;
 use character_selection_model::{CharacterSelections, CharacterSelectionsStatus};
+use collision_audio_loading::CollisionAudioLoadingBundle;
 use collision_loading::CollisionLoadingBundle;
 use game_input_model::{PlayerActionControl, PlayerAxisControl};
 use game_loading::GameLoadingState;
@@ -101,11 +102,13 @@ impl AutexousiousApplication {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
         AutexousiousApplication::render_and_ui(test_name, visibility)
+            .with_bundle(AudioBundle::default())
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
+            .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CharacterSelectionBundle::new())
             .with_state(|| LoadingState::new(PopState))
     }
@@ -146,7 +149,7 @@ impl AutexousiousApplication {
 
 #[cfg(test)]
 mod test {
-    use amethyst::{input::InputHandler, ui::Interactable};
+    use amethyst::{input::InputHandler, ui::Interactable, Error};
     use game_input_model::{PlayerActionControl, PlayerAxisControl};
     use game_model::{
         loaded::{CharacterAssets, MapAssets},
@@ -158,96 +161,76 @@ mod test {
     use super::AutexousiousApplication;
 
     #[test]
-    fn ui_base_uses_strong_types_for_input_and_ui_bundles() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::ui_base()
-                .with_assertion(|world| {
-                    // Panics if the type parameters used are not these ones.
-                    world.read_resource::<InputHandler<PlayerAxisControl, PlayerActionControl>>();
-                    world.read_storage::<Interactable>();
-                })
-                .run()
-                .is_ok()
-        );
-    }
-
-    #[test]
-    fn render_and_ui_uses_strong_types_for_input_and_ui_bundles() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::render_and_ui(
-                "render_and_ui_uses_strong_types_for_input_and_ui_bundles",
-                false
-            )
+    fn ui_base_uses_strong_types_for_input_and_ui_bundles() -> Result<(), Error> {
+        AutexousiousApplication::ui_base()
             .with_assertion(|world| {
                 // Panics if the type parameters used are not these ones.
                 world.read_resource::<InputHandler<PlayerAxisControl, PlayerActionControl>>();
                 world.read_storage::<Interactable>();
             })
             .run()
-            .is_ok()
-        );
     }
 
     #[test]
-    fn config_base_loads_assets_from_self_crate_directory() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::config_base(
-                "config_base_loads_assets_from_self_crate_directory",
-                false
-            )
+    fn render_and_ui_uses_strong_types_for_input_and_ui_bundles() -> Result<(), Error> {
+        AutexousiousApplication::render_and_ui(
+            "render_and_ui_uses_strong_types_for_input_and_ui_bundles",
+            false,
+        )
+        .with_assertion(|world| {
+            // Panics if the type parameters used are not these ones.
+            world.read_resource::<InputHandler<PlayerAxisControl, PlayerActionControl>>();
+            world.read_storage::<Interactable>();
+        })
+        .run()
+    }
+
+    #[test]
+    fn config_base_loads_assets_from_self_crate_directory() -> Result<(), Error> {
+        AutexousiousApplication::config_base(
+            "config_base_loads_assets_from_self_crate_directory",
+            false,
+        )
+        .with_assertion(|world| {
+            // Panics if the resources have not been populated
+            world.read_resource::<MapAssets>();
+            assert!(!world.read_resource::<CharacterAssets>().is_empty());
+        })
+        .run()
+    }
+
+    #[test]
+    fn game_base_loads_object_and_map_entities() -> Result<(), Error> {
+        AutexousiousApplication::game_base("game_base_loads_object_and_map_entities", false)
             .with_assertion(|world| {
-                // Panics if the resources have not been populated
-                world.read_resource::<MapAssets>();
-                assert!(!world.read_resource::<CharacterAssets>().is_empty());
-            })
-            .run()
-            .is_ok()
-        );
-    }
+                let game_entities = &*world.read_resource::<GameEntities>();
 
-    #[test]
-    fn game_base_loads_object_and_map_entities() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AutexousiousApplication::game_base("game_base_loads_object_and_map_entities", false)
-                .with_assertion(|world| {
-                    let game_entities = &*world.read_resource::<GameEntities>();
+                // Ensure there is at least one entity per object type.
+                ObjectType::iter().for_each(|object_type| {
+                    let objects = game_entities.objects.get(&object_type);
+                    let object_entities = objects.unwrap_or_else(|| {
+                        // kcov-ignore-start
+                        panic!("Expected entry for the `{}` object type.", object_type)
+                        // kcov-ignore-end
+                    });
 
-                    // Ensure there is at least one entity per object type.
-                    ObjectType::iter().for_each(|object_type| {
-                        let objects = game_entities.objects.get(&object_type);
-                        let object_entities = objects.unwrap_or_else(|| {
-                            // kcov-ignore-start
-                            panic!("Expected entry for the `{}` object type.", object_type)
-                            // kcov-ignore-end
-                        });
-
-                        assert!(
-                            !object_entities.is_empty(),
-                            // kcov-ignore-start
-                            format!(
+                    assert!(
+                        !object_entities.is_empty(),
+                        // kcov-ignore-start
+                        format!(
                                 // kcov-ignore-end
                                 "Expected at least one entity for the `{}` object type",
                                 object_type
                             )
-                        );
-                    });
-
-                    // Ensure there is at least one map layer (map is loaded).
-                    assert!(
-                        !game_entities.map_layers.is_empty(),
-                        "Expected map to be loaded."
                     );
-                })
-                .run()
-                .is_ok()
-        );
+                });
+
+                // Ensure there is at least one map layer (map is loaded).
+                assert!(
+                    !game_entities.map_layers.is_empty(),
+                    "Expected map to be loaded."
+                );
+            })
+            .run()
     }
 }

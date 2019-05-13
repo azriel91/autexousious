@@ -16,6 +16,7 @@ application_ui = { path = "../../crate/application_ui" }
 character_loading = { path = "../../crate/character_loading" }
 character_model = { path = "../../crate/character_model" }
 character_selection_stdio = { path = "../../crate/character_selection_stdio" }
+collision_audio_loading = { path = "../../crate/collision_audio_loading" }
 collision_loading = { path = "../../crate/collision_loading" }
 collision_model = { path = "../../crate/collision_model" }
 frame_rate = { path = "../../crate/frame_rate" }

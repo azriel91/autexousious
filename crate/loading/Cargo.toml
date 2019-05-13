@@ -15,6 +15,8 @@ asset_model = { path = "../asset_model" }
 assets_built_in = { path = "../assets_built_in" }
 character_loading = { path = "../character_loading" }
 character_model = { path = "../character_model" }
+collision_audio_loading = { path = "../collision_audio_loading" }
+collision_audio_model = { path = "../collision_audio_model" }
 derivative = "1.0.2"
 derive-new = "0.5.6"
 game_model = { path = "../game_model" }

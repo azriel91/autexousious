@@ -6,6 +6,7 @@ use std::process;
 
 use amethyst::{
     assets::HotReloadBundle,
+    audio::AudioBundle,
     core::transform::TransformBundle,
     input::InputBundle,
     renderer::{DisplayConfig, DrawFlat2D, Pipeline, RenderBundle, Stage},
@@ -24,6 +25,7 @@ use application_event::{AppEvent, AppEventReader};
 use application_robot::RobotState;
 use character_loading::CharacterLoadingBundle;
 use character_selection_stdio::CharacterSelectionStdioBundle;
+use collision_audio_loading::CollisionAudioLoadingBundle;
 use collision_loading::CollisionLoadingBundle;
 use frame_rate::strategy::frame_rate_limit_config;
 use game_input::GameInputBundle;
@@ -101,7 +103,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         // `InputBundle` provides `InputHandler<A, B>`, needed by the `UiBundle` for mouse events.
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
         game_data = game_data
-            // Handles transformations of textures
+            .with_bundle(AudioBundle::default())?
             .with_bundle(TransformBundle::new())?
             .with_bundle(
                 RenderBundle::new(pipe, Some(display_config))
@@ -136,7 +138,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(MapSelectionStdioBundle::new())?
             .with_bundle(CollisionLoadingBundle::new())?
             .with_bundle(MapLoadingBundle::new())?
-            .with_bundle(CharacterLoadingBundle::new())?;
+            .with_bundle(CharacterLoadingBundle::new())?
+            .with_bundle(CollisionAudioLoadingBundle::new(assets_dir.clone()))?;
     }
 
     let mut app = CoreApplication::<_, AppEvent, AppEventReader>::build(assets_dir, state)?
