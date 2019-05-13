@@ -63,7 +63,7 @@ impl<'s> System<'s> for CharacterSelectionSystem {
 mod tests {
     use std::env;
 
-    use amethyst::{ecs::World, shrev::EventChannel, Error};
+    use amethyst::{audio::AudioBundle, ecs::World, shrev::EventChannel, Error};
     use amethyst_test::prelude::*;
     use application_event::{AppEvent, AppEventReader};
     use asset_model::loaded::SlugAndHandle;
@@ -72,6 +72,7 @@ mod tests {
     use character_selection_model::{
         CharacterSelection, CharacterSelectionEvent, CharacterSelections,
     };
+    use collision_audio_loading::CollisionAudioLoadingBundle;
     use collision_loading::CollisionLoadingBundle;
     use loading::{LoadingBundle, LoadingState};
     use map_loading::MapLoadingBundle;
@@ -87,12 +88,14 @@ mod tests {
 
         AmethystApplication::render_base("inserts_character_selection_on_select_event", false)
             .with_custom_event_type::<AppEvent, AppEventReader>()
+            .with_bundle(AudioBundle::default())
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
+            .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_state(|| LoadingState::new(PopState))
             .with_system(
                 CharacterSelectionSystem::new(),
@@ -130,12 +133,14 @@ mod tests {
 
         AmethystApplication::render_base("removes_character_selection_on_deselect_event", false)
             .with_custom_event_type::<AppEvent, AppEventReader>()
+            .with_bundle(AudioBundle::default())
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
+            .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_state(|| LoadingState::new(PopState))
             .with_system(
                 CharacterSelectionSystem::new(),

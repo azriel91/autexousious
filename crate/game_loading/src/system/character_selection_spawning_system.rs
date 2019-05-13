@@ -71,6 +71,7 @@ mod tests {
     use std::{collections::HashMap, env};
 
     use amethyst::{
+        audio::AudioBundle,
         ecs::{Builder, Entity},
         Error,
     };
@@ -80,6 +81,7 @@ mod tests {
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
     use character_loading::CharacterLoadingBundle;
     use character_selection_model::CharacterSelections;
+    use collision_audio_loading::CollisionAudioLoadingBundle;
     use collision_loading::CollisionLoadingBundle;
     use game_model::play::GameEntities;
     use loading::{LoadingBundle, LoadingState};
@@ -96,12 +98,14 @@ mod tests {
     fn returns_if_augment_status_is_not_prefab() -> Result<(), Error> {
         AmethystApplication::render_base("returns_if_augment_status_is_not_prefab", false)
             .with_custom_event_type::<AppEvent, AppEventReader>()
+            .with_bundle(AudioBundle::default())
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
+            .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_state(|| LoadingState::new(PopState))
             .with_setup(|world| {
                 let mut game_loading_status = GameLoadingStatus::new();
@@ -143,12 +147,14 @@ mod tests {
 
         AmethystApplication::render_base("spawns_characters_when_they_havent_been_spawned", false)
             .with_custom_event_type::<AppEvent, AppEventReader>()
+            .with_bundle(AudioBundle::default())
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
+            .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_state(|| LoadingState::new(PopState))
             .with_setup(|world| {
                 let mut character_selections = CharacterSelections::default();
