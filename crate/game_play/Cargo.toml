@@ -11,6 +11,7 @@ application_event = { path = "../application_event" }
 character_model = { path = "../character_model" }
 character_play = { path = "../character_play" }
 character_selection = { path = "../character_selection" }
+collision_audio_play = { path = "../collision_audio_play" }
 collision_model = { path = "../collision_model" }
 collision_play = { path = "../collision_play" }
 derivative = "1.0.2"
