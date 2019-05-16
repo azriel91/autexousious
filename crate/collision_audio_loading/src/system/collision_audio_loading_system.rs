@@ -115,9 +115,39 @@ impl<'s> System<'s> for CollisionAudioLoadingSystem {
                     sfx_to_load
                         .into_iter()
                         .for_each(|(collision_sfx_id, path)| {
+                            let audio_format = match path.extension() {
+                                Some(ext) => {
+                                    let ext = ext
+                                        .to_str()
+                                        .expect("Failed to convert extension to unicode string.")
+                                        .to_lowercase();
+                                    match ext.as_ref() {
+                                        "mp3" => AudioFormat::Mp3,
+                                        "wav" => AudioFormat::Wav,
+                                        "ogg" => AudioFormat::Ogg,
+                                        "flac" => AudioFormat::Flac,
+                                        ext @ _ => {
+                                            error!(
+                                                "Unsupported extension: \"{}\", \
+                                                 falling back to `wav`.",
+                                                ext
+                                            );
+                                            AudioFormat::Wav
+                                        }
+                                    }
+                                }
+                                None => {
+                                    error!(
+                                        "No extension for audio file \"{}\", \
+                                         falling back to `wav`.",
+                                        path.display()
+                                    );
+                                    AudioFormat::Wav
+                                }
+                            };
                             let source_handle = loader.load(
                                 format!("{}", path.display()),
-                                AudioFormat::Mp3,
+                                audio_format,
                                 (),
                                 &mut self.progress_counter,
                                 &source_assets,
