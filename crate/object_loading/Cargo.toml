@@ -42,6 +42,7 @@ sequence_loading = { path = "../sequence_loading" }
 serde = "1.0.91"
 strum = "0.15.0"
 tempfile = "3.0.7"
+ui_audio_loading = { path = "../../crate/ui_audio_loading" }
 
 [features]
 nightly = ["amethyst/nightly"]

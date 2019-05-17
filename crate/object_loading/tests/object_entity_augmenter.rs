@@ -42,6 +42,10 @@ use collision_audio_loading::CollisionAudioLoadingBundle;
 use collision_loading::CollisionLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
+use object_loading::{
+    FrameComponentStorages, GameObjectPrefab, ObjectComponentStorages, ObjectEntityAugmenter,
+    ObjectPrefab,
+};
 use object_model::play::{Mirrored, Position, Velocity};
 use sequence_loading::SequenceLoadingBundle;
 use sequence_model::{
@@ -49,11 +53,7 @@ use sequence_model::{
     play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
 };
 use sprite_loading::SpriteLoadingBundle;
-
-use object_loading::{
-    FrameComponentStorages, GameObjectPrefab, ObjectComponentStorages, ObjectEntityAugmenter,
-    ObjectPrefab,
-};
+use ui_audio_loading::UiAudioLoadingBundle;
 
 #[test]
 fn augments_entity_with_object_components() -> Result<(), Error> {
@@ -134,6 +134,7 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
         .with_bundle(MapLoadingBundle::new())
         .with_bundle(CharacterLoadingBundle::new())
         .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
+        .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
         .with_setup(|world| {
             <FrameComponentStorages as SystemData>::setup(&mut world.res);
             <ObjectComponentStorages<CharacterSequenceId> as SystemData>::setup(&mut world.res);

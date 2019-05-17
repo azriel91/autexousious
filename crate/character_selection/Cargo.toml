@@ -32,6 +32,7 @@ loading = { path = "../loading" }
 map_loading = { path = "../map_loading" }
 sequence_loading = { path = "../sequence_loading" }
 sprite_loading = { path = "../sprite_loading" }
+ui_audio_loading = { path = "../../crate/ui_audio_loading" }
 
 [features]
 nightly = ["amethyst/nightly"]

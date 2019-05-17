@@ -90,6 +90,7 @@ mod tests {
     use sequence_loading::SequenceLoadingBundle;
     use sprite_loading::SpriteLoadingBundle;
     use typename::TypeName;
+    use ui_audio_loading::UiAudioLoadingBundle;
 
     use super::CharacterSelectionSpawningSystem;
     use crate::{CharacterAugmentStatus, GameLoadingStatus};
@@ -106,6 +107,7 @@ mod tests {
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
+            .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_state(|| LoadingState::new(PopState))
             .with_setup(|world| {
                 let mut game_loading_status = GameLoadingStatus::new();
@@ -155,6 +157,7 @@ mod tests {
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
+            .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_state(|| LoadingState::new(PopState))
             .with_setup(|world| {
                 let mut character_selections = CharacterSelections::default();

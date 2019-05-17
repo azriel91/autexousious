@@ -521,6 +521,7 @@ dependencies = [
  "sequence_model 0.10.0",
  "sprite_loading 0.10.0",
  "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ui_audio_loading 0.11.0",
 ]
 
 [[package]]
@@ -944,6 +945,7 @@ dependencies = [
  "state_registry 0.10.0",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ui_audio_loading 0.11.0",
 ]
 
 [[package]]
@@ -2100,6 +2102,7 @@ dependencies = [
  "state_registry 0.10.0",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ui_audio_loading 0.11.0",
 ]
 
 [[package]]
@@ -2862,11 +2865,11 @@ dependencies = [
  "assets_test 0.10.0",
  "character_loading 0.10.0",
  "character_model 0.10.0",
- "collision_audio_loading 0.11.0",
  "collision_audio_model 0.11.0",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_model 0.10.0",
+ "humantime 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_loading 0.10.0",
  "map_model 0.10.0",
@@ -2883,6 +2886,7 @@ dependencies = [
  "toml 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ui_audio_model 0.11.0",
 ]
 
 [[package]]
@@ -3540,6 +3544,7 @@ dependencies = [
  "tempfile 3.0.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ui_audio_loading 0.11.0",
 ]
 
 [[package]]
@@ -5169,6 +5174,39 @@ version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "ui_audio_loading"
+version = "0.11.0"
+dependencies = [
+ "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=bug/1595/segfault-with-multiple-audio-tests)",
+ "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=bug/1595/segfault-with-multiple-audio-tests)",
+ "asset_loading 0.10.0",
+ "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ui_audio_model 0.11.0",
+]
+
+[[package]]
+name = "ui_audio_model"
+version = "0.11.0"
+dependencies = [
+ "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=bug/1595/segfault-with-multiple-audio-tests)",
+ "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=bug/1595/segfault-with-multiple-audio-tests)",
+ "asset_loading 0.10.0",
+ "assets_test 0.10.0",
+ "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive_deref 1.0.2 (git+https://github.com/azriel91/derive_deref.git?branch=feature/allow-phantom-data-second-field)",
+ "serde 1.0.91 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "strum_macros 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "uname"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5429,6 +5467,7 @@ dependencies = [
  "structopt 0.2.15 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt-derive 0.2.15 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ui_audio_loading 0.11.0",
 ]
 
 [[package]]

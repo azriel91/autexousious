@@ -1,15 +1,20 @@
-use std::{fmt::Debug, marker::PhantomData};
+use std::{fmt::Debug, marker::PhantomData, time::Duration};
 
-use amethyst::{GameData, State, StateData, Trans};
+use amethyst::{core::Stopwatch, GameData, State, StateData, Trans};
 use application_event::AppEvent;
 use application_state::AutexState;
 use application_ui::ThemeLoader;
 use collision_audio_model::CollisionAudioLoadingStatus;
 use derivative::Derivative;
-use log::{debug, error};
+use humantime;
+use log::{error, warn};
 use state_registry::StateId;
+use ui_audio_model::UiAudioLoadingStatus;
 
 use crate::{MapLoadingStatus, ObjectLoadingStatus};
+
+/// Time limit before outputting a warning message and transitioning to the next state.
+const LOADING_TIME_LIMIT: Duration = Duration::from_secs(10);
 
 /// `State` where resource loading takes place.
 ///
@@ -29,6 +34,10 @@ where
     /// The `State` that follows this one.
     #[derivative(Debug(bound = "S: Debug"))]
     next_state: Option<S>,
+    /// Tracks how long the `LoadingState` has run.
+    ///
+    /// Used to output a warning if loading takes too long.
+    stopwatch: Stopwatch,
     /// Lifetime tracker.
     phantom_data: PhantomData<dyn AutexState<'a, 'b>>,
 }
@@ -41,6 +50,7 @@ where
     pub fn new(next_state: S) -> Self {
         LoadingState {
             next_state: Some(next_state),
+            stopwatch: Stopwatch::new(),
             phantom_data: PhantomData,
         }
     }
@@ -52,6 +62,7 @@ where
 {
     fn on_start(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
         data.world.add_resource(StateId::Loading);
+        self.stopwatch.start();
 
         if let Err(e) = ThemeLoader::load(&mut data.world) {
             let err_msg = format!("Failed to load theme: {}", e);
@@ -62,6 +73,7 @@ where
 
     fn on_resume(&mut self, data: StateData<'_, GameData<'a, 'b>>) {
         data.world.add_resource(StateId::Loading);
+        self.stopwatch.restart();
     }
 
     fn update(
@@ -74,6 +86,7 @@ where
             && *data.world.read_resource::<MapLoadingStatus>() == MapLoadingStatus::Complete
             && *data.world.read_resource::<CollisionAudioLoadingStatus>()
                 == CollisionAudioLoadingStatus::Complete
+            && *data.world.read_resource::<UiAudioLoadingStatus>() == UiAudioLoadingStatus::Complete
         {
             Trans::Switch(Box::new(
                 self.next_state
@@ -81,18 +94,29 @@ where
                     .expect("Expected `next_state` to be set"),
             ))
         } else {
-            debug!(
-                "If loading never completes, please ensure that you have registered the following \
-                 bundles with the application dispatcher:\n\
-                 \n\
-                 * `SpriteLoadingBundle`\n\
-                 * `CharacterLoadingBundle`\n\
-                 * `MapLoadingBundle`\n\
-                 * `amethyst::audio::AudioBundle`\n\
-                 * `CollisionAudioLoadingBundle`\n\
-                 \n\
-                 These provide the necessary `System`s to process the loaded assets.\n"
-            );
+            if let Stopwatch::Started(..) = &self.stopwatch {
+                let elapsed = self.stopwatch.elapsed();
+                if elapsed > LOADING_TIME_LIMIT {
+                    self.stopwatch.stop();
+
+                    let duration = humantime::Duration::from(elapsed);
+
+                    warn!(
+                        "Loading has not completed in {}, please ensure that you have registered \
+                         the following bundles with the application dispatcher:\n\
+                         \n\
+                         * `SpriteLoadingBundle`\n\
+                         * `CharacterLoadingBundle`\n\
+                         * `MapLoadingBundle`\n\
+                         * `amethyst::audio::AudioBundle`\n\
+                         * `CollisionAudioLoadingBundle`\n\
+                         * `UiAudioLoadingBundle`\n\
+                         \n\
+                         These provide the necessary `System`s to process the loaded assets.\n",
+                        duration
+                    );
+                }
+            }
 
             Trans::None
         }

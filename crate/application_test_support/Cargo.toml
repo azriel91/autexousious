@@ -31,6 +31,7 @@ object_model = { path = "../object_model" }
 sequence_loading = { path = "../sequence_loading" }
 sequence_model = { path = "../sequence_model" }
 sprite_loading = { path = "../sprite_loading" }
+ui_audio_loading = { path = "../../crate/ui_audio_loading" }
 
 [dev-dependencies]
 strum = "0.15.0"
