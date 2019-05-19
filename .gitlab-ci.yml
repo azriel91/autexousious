@@ -40,7 +40,7 @@ variables:
   # See <https://gitlab.com/gitlab-org/gitlab-ce/issues/43337>
   # ---
   # CARGO_HOME: $CI_PROJECT_DIR/cargo
-  RUST_BACKTRACE: 1
+  RUST_BACKTRACE: '1'
   AMETHYST_LOG_LEVEL_FILTER: WARN
 
 nightly:conformance:

@@ -69,11 +69,12 @@ impl CharacterSelectionInputSystem {
                 let character_selection_widget =
                     character_selection_widgets.get(control_action_event_data.entity);
                 if let Some(character_selection_widget) = character_selection_widget {
-                    let all_inactive =
+                    let all_ready_or_inactive =
                         character_selection_widgets
                             .join()
                             .all(|character_selection_widget| {
-                                character_selection_widget.state == WidgetState::Inactive
+                                character_selection_widget.state == WidgetState::Ready
+                                    || character_selection_widget.state == WidgetState::Inactive
                             });
 
                     let at_least_two_players = character_selection_widgets
@@ -86,7 +87,7 @@ impl CharacterSelectionInputSystem {
 
                     if character_selection_widget.state == WidgetState::Ready
                         && at_least_two_players
-                        && all_inactive
+                        && all_ready_or_inactive
                     {
                         Some(CharacterSelectionEvent::Confirm)
                     } else {
@@ -233,7 +234,7 @@ mod test {
                 control_input_event_fn: Some(press_attack),
             },
             ExpectedParams {
-                character_selection_events_fn: |_world| vec![CharacterSelectionEvent::Confirm],
+                character_selection_events_fn: |_world| vec![],
             },
         )
     }
@@ -337,19 +338,21 @@ mod test {
             .build()
     }
 
-    fn assert_events(world: &mut World, events: Vec<CharacterSelectionEvent>) {
+    fn assert_events(world: &mut World, expected_events: Vec<CharacterSelectionEvent>) {
         let mut event_channel_reader =
             &mut world.write_resource::<ReaderId<CharacterSelectionEvent>>();
 
         let character_selection_event_channel =
             world.read_resource::<EventChannel<CharacterSelectionEvent>>();
-        let character_selection_event_iter =
-            character_selection_event_channel.read(&mut event_channel_reader);
+        let actual_events = character_selection_event_channel
+            .read(&mut event_channel_reader)
+            .collect::<Vec<&CharacterSelectionEvent>>();
 
-        let expected_events_iter = events.into_iter();
-        expected_events_iter
-            .zip(character_selection_event_iter)
-            .for_each(|(expected_event, actual)| assert_eq!(expected_event, *actual));
+        let expected_events = expected_events
+            .iter()
+            .collect::<Vec<&CharacterSelectionEvent>>();
+
+        assert_eq!(expected_events, actual_events)
     }
 
     struct SetupParams {

@@ -44,12 +44,10 @@ pub struct GameModeSelectionStateDelegate {
 
 impl GameModeSelectionStateDelegate {
     fn initialize_menu_event_channel(&mut self, world: &mut World) {
-        let mut menu_event_channel = EventChannel::<GameModeSelectionEvent>::with_capacity(20);
-        let reader_id = menu_event_channel.register_reader();
-        self.menu_event_reader_id.get_or_insert(reader_id);
+        let mut menu_event_channel = world.write_resource::<EventChannel<GameModeSelectionEvent>>();
 
-        // Replaces the existing channel, if any.
-        world.add_resource(menu_event_channel);
+        let reader_id = menu_event_channel.register_reader();
+        self.menu_event_reader_id = Some(reader_id);
     }
 
     fn terminate_menu_event_channel(&mut self) {

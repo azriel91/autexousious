@@ -1,7 +1,11 @@
 use std::{collections::HashMap, fmt::Debug, marker::PhantomData};
 
-use amethyst::{core::SystemBundle, ecs::prelude::*, prelude::*};
-use amethyst_utils::removal::{self, Removal};
+use amethyst::{
+    core::SystemBundle,
+    ecs::{Dispatcher, DispatcherBuilder, System, World},
+    utils::removal::{self, Removal},
+    GameData, State, StateData, Trans,
+};
 use application_event::AppEvent;
 use derivative::Derivative;
 use derive_new::new;
@@ -238,8 +242,11 @@ where
 mod tests {
     use std::{cell::RefCell, rc::Rc, sync::Arc};
 
-    use amethyst::{ecs::prelude::*, prelude::*};
-    use amethyst_utils::removal::Removal;
+    use amethyst::{
+        ecs::{Builder, ReadExpect, Resources, System, SystemData, World, Write, WriteExpect},
+        utils::removal::Removal,
+        DataInit, GameData, GameDataBuilder, State, StateData, Trans,
+    };
     use application_event::AppEvent;
     use character_selection_model::CharacterSelectionEvent;
     use rayon::ThreadPoolBuilder;

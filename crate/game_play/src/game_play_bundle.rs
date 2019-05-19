@@ -4,6 +4,7 @@ use character_play::{
     CharacterControlTransitionsTransitionSystem, CharacterControlTransitionsUpdateSystem,
     CharacterCtsHandleUpdateSystem,
 };
+use collision_audio_play::HitSfxSystem;
 use collision_play::{
     HitDetectionSystem, HitRepeatTrackersAugmentSystem, HitRepeatTrackersTickerSystem,
 };
@@ -69,6 +70,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &HitRepeatTrackersAugmentSystem::type_name(),
             &[],
         ); // kcov-ignore
+
+        builder.add(HitSfxSystem::new(), &HitSfxSystem::type_name(), &[]);
 
         builder.add_barrier();
 

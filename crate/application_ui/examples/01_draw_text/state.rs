@@ -54,14 +54,10 @@ fn initialize_text(world: &mut World) {
         let fonts = &theme.fonts;
         let font_tuples = vec![
             // font, text to display, y_offset
-            (fonts.get(&FontVariant::Regular).unwrap(), "regular", 0.),
-            (fonts.get(&FontVariant::Bold).unwrap(), "bold", 50.),
-            (fonts.get(&FontVariant::Italic).unwrap(), "italic", 100.),
-            (
-                fonts.get(&FontVariant::BoldItalic).unwrap(),
-                "bold_italic",
-                150.,
-            ),
+            (fonts.get(&FontVariant::Regular).unwrap(), "regular"),
+            (fonts.get(&FontVariant::Bold).unwrap(), "bold"),
+            (fonts.get(&FontVariant::Italic).unwrap(), "italic"),
+            (fonts.get(&FontVariant::BoldItalic).unwrap(), "bold_italic"),
         ];
 
         let screen_w = world.read_resource::<ScreenDimensions>().width();
@@ -70,12 +66,14 @@ fn initialize_text(world: &mut World) {
 
         font_tuples
             .into_iter()
-            .map(|(font, text, y_offset)| {
+            .enumerate()
+            .map(|(n, (font, text))| {
                 let text_transform = UiTransform::new(
                     text.to_string(),
                     Anchor::TopLeft,
+                    Anchor::TopLeft,
                     text_w / 2. + 20.,
-                    text_h / 2. + y_offset + 20.,
+                    -(n as f32 * text_h) - 20.,
                     1.,
                     text_w,
                     text_h,

@@ -107,6 +107,7 @@ impl<'s> System<'s> for CharacterAugmentRectifySystem {
 mod tests {
     use amethyst::{
         assets::Prefab,
+        audio::AudioBundle,
         ecs::{Builder, Entity, Join, SystemData, World},
         Error,
     };
@@ -115,6 +116,7 @@ mod tests {
     use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
     use character_loading::{CharacterLoadingBundle, CharacterPrefab};
+    use collision_audio_loading::CollisionAudioLoadingBundle;
     use collision_loading::CollisionLoadingBundle;
     use game_input::InputControlled;
     use game_model::loaded::MapAssets;
@@ -233,12 +235,14 @@ mod tests {
     {
         AmethystApplication::render_base(test_name, false)
             .with_custom_event_type::<AppEvent, AppEventReader>()
+            .with_bundle(AudioBundle::default())
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
+            .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_setup(|world| CharacterAugmentRectifySystemData::setup(&mut world.res))
             .with_state(|| LoadingState::new(PopState))
             .with_setup(map_selection(ASSETS_MAP_FADE_SLUG.clone()))
