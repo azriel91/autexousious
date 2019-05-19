@@ -14,6 +14,7 @@
 * Added `--frame_rate` argument to control application frame rate. ([#117])
 * Players can now return to game mode selection from the character selection UI. ([#110])
 * Players can now return to character mode selection from the map selection UI. ([#120])
+* Play a sound when a character hits another. ([#124])
 
 ### Changed
 
@@ -39,6 +40,7 @@
 [#117]: https://gitlab.com/azriel91/autexousious/issues/117
 [#120]: https://gitlab.com/azriel91/autexousious/issues/120
 [#122]: https://gitlab.com/azriel91/autexousious/issues/122
+[#124]: https://gitlab.com/azriel91/autexousious/issues/124
 
 ## 0.10.0 (2019-03-29)
 
