@@ -1,6 +1,6 @@
 use std::{fmt::Debug, marker::PhantomData};
 
-use amethyst::{ecs::prelude::*, prelude::*, shrev::EventChannel};
+use amethyst::{ecs::World, GameData, State, StateData, Trans};
 use application_event::AppEvent;
 use application_state::{AppState, AppStateBuilder, AutexState};
 use character_selection_model::{
@@ -61,9 +61,6 @@ where
     /// The `State` that follows this one.
     #[derivative(Debug(bound = "F: Debug"))]
     next_state_fn: F,
-    /// Reader ID for the `CharacterSelectionEvent` event channel.
-    #[new(default)]
-    character_selection_event_rid: Option<ReaderId<CharacterSelectionEvent>>,
     /// `PhantomData`.
     marker: PhantomData<dyn AutexState<'a, 'b>>,
 }
@@ -77,12 +74,6 @@ where
         world.add_resource(CharacterSelectionsStatus::Waiting);
         world.add_resource(CharacterSelections::default());
     }
-
-    fn initialize_character_selection_event_rid(&mut self, world: &mut World) {
-        let mut character_selection_ec =
-            world.write_resource::<EventChannel<CharacterSelectionEvent>>();
-        self.character_selection_event_rid = Some(character_selection_ec.register_reader());
-    }
 }
 
 impl<'a, 'b, F, S> State<GameData<'a, 'b>, AppEvent>
@@ -95,7 +86,6 @@ where
         data.world.add_resource(StateId::CharacterSelection);
 
         self.initialize_character_selections(&mut data.world);
-        self.initialize_character_selection_event_rid(&mut data.world);
     }
 
     fn on_resume(&mut self, data: StateData<'_, GameData<'a, 'b>>) {
@@ -115,29 +105,8 @@ where
                 "Received character_selection_event: {:?}",
                 character_selection_event
             );
-            let mut channel = data
-                .world
-                .write_resource::<EventChannel<CharacterSelectionEvent>>();
-            channel.single_write(character_selection_event);
-        }
-        Trans::None
-    }
-
-    fn update(
-        &mut self,
-        data: StateData<'_, GameData<'a, 'b>>,
-    ) -> Trans<GameData<'a, 'b>, AppEvent> {
-        let character_selection_ec = data
-            .world
-            .read_resource::<EventChannel<CharacterSelectionEvent>>();
-        character_selection_ec
-            .read(
-                self.character_selection_event_rid
-                    .as_mut()
-                    .expect("Expected `character_selection_event_rid` to be set."),
-            )
-            .filter_map(|ev| match ev {
-                CharacterSelectionEvent::Return => Some(Trans::Pop),
+            match character_selection_event {
+                CharacterSelectionEvent::Return => Trans::Pop,
                 CharacterSelectionEvent::Confirm => {
                     let character_selections = data.world.read_resource::<CharacterSelections>();
                     info!(
@@ -145,11 +114,12 @@ where
                         &character_selections.selections
                     );
 
-                    Some(Trans::Push((self.next_state_fn)()))
+                    Trans::Push((self.next_state_fn)())
                 }
-                _ => None,
-            })
-            .next()
-            .unwrap_or_else(|| Trans::None)
+                _ => Trans::None,
+            }
+        } else {
+            Trans::None
+        }
     }
 }

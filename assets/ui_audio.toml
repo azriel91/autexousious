@@ -1,1 +1,5 @@
-ui_confirm = "default/sfx/menu_confirm.wav"
+cancel = "default/sfx/ui_cancel.wav"
+confirm = "default/sfx/ui_confirm.wav"
+deselect = "default/sfx/ui_deselect.wav"
+select = "default/sfx/ui_select.wav"
+switch = "default/sfx/ui_switch.wav"

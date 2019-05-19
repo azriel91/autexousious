@@ -8,8 +8,16 @@ use strum_macros::{Display, EnumIter, EnumString};
 #[serde(deny_unknown_fields, rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
 pub enum UiSfxId {
+    /// Sound used for a `Cancel` action.
+    Cancel,
     /// Sound used for a `Confirm` action.
-    UiConfirm,
+    Confirm,
+    /// Sound used for a `Deselect` action.
+    Deselect,
+    /// Sound used for a `Select` (soft confirm) action.
+    Select,
+    /// Sound used when switching between options.
+    Switch,
 }
 
 // Necessary to allow enums to be in key position in TOML.
