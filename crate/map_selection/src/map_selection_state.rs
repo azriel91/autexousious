@@ -1,6 +1,6 @@
 use std::{fmt::Debug, marker::PhantomData};
 
-use amethyst::{ecs::prelude::*, prelude::*, shrev::EventChannel};
+use amethyst::{ecs::World, GameData, State, StateData, Trans};
 use application_event::AppEvent;
 use application_state::{AppState, AppStateBuilder, AutexState};
 use derivative::Derivative;
@@ -56,9 +56,6 @@ where
     /// The `State` that follows this one.
     #[derivative(Debug(bound = "F: Debug"))]
     next_state_fn: F,
-    /// Reader ID for the `MapSelectionEvent` event channel.
-    #[new(default)]
-    map_selection_event_rid: Option<ReaderId<MapSelectionEvent>>,
     /// `PhantomData`.
     marker: PhantomData<dyn AutexState<'a, 'b>>,
 }
@@ -71,11 +68,6 @@ where
     fn reset_map_selection_state(&self, world: &mut World) {
         world.add_resource(MapSelectionStatus::Pending);
     }
-
-    fn initialize_map_selection_event_rid(&mut self, world: &mut World) {
-        let mut map_selection_ec = world.write_resource::<EventChannel<MapSelectionEvent>>();
-        self.map_selection_event_rid = Some(map_selection_ec.register_reader());
-    }
 }
 
 impl<'a, 'b, F, S> State<GameData<'a, 'b>, AppEvent> for MapSelectionStateDelegate<'a, 'b, F, S>
@@ -87,11 +79,10 @@ where
         data.world.add_resource(StateId::MapSelection);
 
         self.reset_map_selection_state(&mut data.world);
-        self.initialize_map_selection_event_rid(&mut data.world);
     }
 
     fn on_resume(&mut self, data: StateData<'_, GameData<'a, 'b>>) {
-        data.world.add_resource(StateId::GameModeSelection);
+        data.world.add_resource(StateId::MapSelection);
 
         self.reset_map_selection_state(data.world);
     }
@@ -103,38 +94,19 @@ where
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
         if let AppEvent::MapSelection(map_selection_event) = event {
             debug!("Received map_selection_event: {:?}", map_selection_event);
-            let mut channel = data
-                .world
-                .write_resource::<EventChannel<MapSelectionEvent>>();
-            channel.single_write(map_selection_event);
-        }
-        Trans::None
-    }
 
-    fn update(
-        &mut self,
-        data: StateData<'_, GameData<'a, 'b>>,
-    ) -> Trans<GameData<'a, 'b>, AppEvent> {
-        let map_selection_ec = data
-            .world
-            .read_resource::<EventChannel<MapSelectionEvent>>();
-        map_selection_ec
-            .read(
-                self.map_selection_event_rid
-                    .as_mut()
-                    .expect("Expected `map_selection_event_rid` to be set."),
-            )
-            .filter_map(|ev| match ev {
-                MapSelectionEvent::Return => Some(Trans::Pop),
+            match map_selection_event {
+                MapSelectionEvent::Return => Trans::Pop,
                 MapSelectionEvent::Confirm => {
                     let map_selection = data.world.read_resource::<MapSelection>();
                     info!("map_selection: `{:?}`", &*map_selection);
 
-                    Some(Trans::Switch((self.next_state_fn)()))
+                    Trans::Switch((self.next_state_fn)())
                 }
-                _ => None,
-            })
-            .next()
-            .unwrap_or_else(|| Trans::None)
+                _ => Trans::None,
+            }
+        } else {
+            Trans::None
+        }
     }
 }

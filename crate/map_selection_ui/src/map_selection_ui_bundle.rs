@@ -2,7 +2,7 @@ use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
 use derive_new::new;
 use typename::TypeName;
 
-use crate::{MapSelectionWidgetInputSystem, MapSelectionWidgetUiSystem};
+use crate::{MapSelectionSfxSystem, MapSelectionWidgetInputSystem, MapSelectionWidgetUiSystem};
 
 /// Adds the systems that set up and manage the `MapSelectionUi`.
 ///
@@ -32,6 +32,12 @@ impl<'a, 'b> SystemBundle<'a, 'b> for MapSelectionUiBundle {
         builder.add(
             MapSelectionWidgetUiSystem::new(),
             &MapSelectionWidgetUiSystem::type_name(),
+            &[&MapSelectionWidgetInputSystem::type_name()],
+        ); // kcov-ignore
+
+        builder.add(
+            MapSelectionSfxSystem::new(),
+            &MapSelectionSfxSystem::type_name(),
             &[&MapSelectionWidgetInputSystem::type_name()],
         ); // kcov-ignore
 

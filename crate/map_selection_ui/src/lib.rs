@@ -5,7 +5,7 @@
 pub use crate::map_selection_ui_bundle::MapSelectionUiBundle;
 pub(crate) use crate::{
     component::{MapSelectionWidget, WidgetState},
-    system::{MapSelectionWidgetInputSystem, MapSelectionWidgetUiSystem},
+    system::{MapSelectionSfxSystem, MapSelectionWidgetInputSystem, MapSelectionWidgetUiSystem},
 };
 
 mod component;
