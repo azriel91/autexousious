@@ -15,6 +15,9 @@
 * Players can now return to game mode selection from the character selection UI. ([#110])
 * Players can now return to character mode selection from the map selection UI. ([#120])
 * Play a sound when a character hits another. ([#124])
+* Play sounds in game mode selection UI. ([#127])
+* Play sounds in character selection UI. ([#127])
+* Play sounds in map selection UI. ([#127])
 
 ### Changed
 
@@ -41,6 +44,7 @@
 [#120]: https://gitlab.com/azriel91/autexousious/issues/120
 [#122]: https://gitlab.com/azriel91/autexousious/issues/122
 [#124]: https://gitlab.com/azriel91/autexousious/issues/124
+[#127]: https://gitlab.com/azriel91/autexousious/issues/127
 
 ## 0.10.0 (2019-03-29)
 
