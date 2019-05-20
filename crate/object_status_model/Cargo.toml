@@ -1,0 +1,17 @@
+[package]
+name = "object_status_model"
+version = "0.11.0"
+authors = ["Azriel Hoh <mail@azriel.im>"]
+edition = "2018"
+
+[dependencies]
+amethyst = { git = "https://github.com/amethyst/amethyst.git" }
+derivative = "1.0.2"
+derive_deref = "1.0.2"
+derive_more = "0.14.0"
+numeric_newtype_derive = { path = "../numeric_newtype_derive" }
+serde = "1.0.91"
+specs-derive = "0.4.0"
+
+[features]
+nightly = ["amethyst/nightly"]
