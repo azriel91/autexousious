@@ -15,7 +15,7 @@ use derive_new::new;
 use game_model::play::GameEntities;
 use game_play_hud::GamePlayHudBundle;
 use game_play_model::{GamePlayEvent, GamePlayStatus};
-use log::{debug, warn};
+use log::{debug, info};
 use state_registry::StateId;
 
 use crate::GamePlayBundle;
@@ -184,7 +184,7 @@ impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
                         Trans::None
                     }
                     GamePlayEvent::End => {
-                        warn!("Game play ended!");
+                        info!("Game play ended!");
                         data.world.add_resource(GamePlayStatus::Ended);
                         Trans::None
                     }

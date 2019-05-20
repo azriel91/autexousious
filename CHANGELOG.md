@@ -4,7 +4,7 @@
 
 ### Added
 
-* Objects have a 2 tick delay upon `Hit` interactions. ([#103])
+* Objects have a 3 tick delay upon `Hit` interactions. ([#103])
 * `hit_limit` determines the number of objects that the hitter can hit. ([#103])
 * `repeat_delay` specifies number of ticks that must pass before an object can be `hit` by the same hitter. ([#103])
 * Control input `transitions` can be specified per frame. ([#96])
@@ -27,10 +27,12 @@
 * ***Breaking:*** `physical` interaction kind is renamed to `hit`. ([#103])
 * ***Breaking:*** `Interaction` kind determines fields applicable to the interaction. ([#103])
 * ***Breaking:*** `stand_attack` is renamed to `stand_attack_0`. ([#117])
-* Default `hit_repeat` delay is increased from 3 ticks to to 9 ticks. ([#117])
+* Default `hit_repeat` delay is increased from 3 ticks to to 10 ticks. ([#117])
 * Improved clarity of character selection UI. ([#110])
 * Improved clarity of map selection UI. ([#120])
-* Use control input for game mode seleciton UI. ([#122])
+* Use control input for game mode selection UI. ([#122])
+* `Jump` and `Dash` sequence velocities and gravity have been approximately halved. ([#128])
+* Freeze character position when `FrameFreezeClock` is ongoing. ([#128])
 
 ### Fixed
 
@@ -45,6 +47,7 @@
 [#122]: https://gitlab.com/azriel91/autexousious/issues/122
 [#124]: https://gitlab.com/azriel91/autexousious/issues/124
 [#127]: https://gitlab.com/azriel91/autexousious/issues/127
+[#128]: https://gitlab.com/azriel91/autexousious/issues/128
 
 ## 0.10.0 (2019-03-29)
 

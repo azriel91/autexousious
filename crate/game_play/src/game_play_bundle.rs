@@ -83,7 +83,10 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &CharacterKinematicsSystem::type_name(),
             &[],
         ); // kcov-ignore
-           // pos += vel
+
+        // pos += vel
+        // This must be between the `FrameFreezeClockAugmentSystem` and `SequenceUpdateSystem`s
+        // since it needs to wait for the `FrameFreezeClock` to tick.
         builder.add(
             ObjectKinematicsUpdateSystem::new(),
             &ObjectKinematicsUpdateSystem::type_name(),

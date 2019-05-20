@@ -1,6 +1,10 @@
-use amethyst::ecs::prelude::*;
+use amethyst::{
+    ecs::{Join, ReadStorage, WriteStorage},
+    shred::System,
+};
 use derive_new::new;
 use object_model::play::{Position, Velocity};
+use sequence_model::play::FrameFreezeClock;
 use typename_derive::TypeName;
 
 /// Updates each entity's `Position` based on their `Velocity` in game.
@@ -10,65 +14,121 @@ use typename_derive::TypeName;
 pub(crate) struct ObjectKinematicsUpdateSystem;
 
 type ObjectKinematicsUpdateSystemData<'s> = (
+    ReadStorage<'s, FrameFreezeClock>,
     WriteStorage<'s, Position<f32>>,
-    WriteStorage<'s, Velocity<f32>>,
+    ReadStorage<'s, Velocity<f32>>,
 );
 
 impl<'s> System<'s> for ObjectKinematicsUpdateSystem {
     type SystemData = ObjectKinematicsUpdateSystemData<'s>;
 
-    fn run(&mut self, (mut positions, velocities): Self::SystemData) {
-        for (position, velocity) in (&mut positions, &velocities).join() {
-            position.0 += velocity.0;
-        }
+    fn run(&mut self, (frame_freeze_clocks, mut positions, velocities): Self::SystemData) {
+        (frame_freeze_clocks.maybe(), &mut positions, &velocities)
+            .join()
+            .for_each(|(frame_freeze_clock, position, velocity)| {
+                let frozen = frame_freeze_clock
+                    .map(|frame_freeze_clock| !frame_freeze_clock.is_complete())
+                    .unwrap_or(false);
+                if !frozen {
+                    position.0 += velocity.0;
+                }
+            })
     }
 }
 
 #[cfg(test)]
 mod test {
-    use amethyst::ecs::prelude::*;
-    use amethyst_test::*;
+    use amethyst::{
+        ecs::{Builder, Entity, SystemData},
+        Error,
+    };
+    use amethyst_test::AmethystApplication;
+    use logic_clock::LogicClock;
     use object_model::play::{Position, Velocity};
+    use sequence_model::play::FrameFreezeClock;
     use typename::TypeName;
 
-    use super::ObjectKinematicsUpdateSystem;
+    use super::{ObjectKinematicsUpdateSystem, ObjectKinematicsUpdateSystemData};
 
     #[test]
-    fn adds_velocity_to_position() {
-        let setup = |world: &mut World| {
-            // Create entity with kinematics
-            let position = Position::<f32>::new(-2., -2., -2.);
-            let velocity = Velocity::<f32>::new(-3., -3., -3.);
-            let entity = world.create_entity().with(position).with(velocity).build();
+    fn adds_velocity_to_position() -> Result<(), Error> {
+        let mut frame_freeze_clock = FrameFreezeClock::new(LogicClock::new(1));
+        frame_freeze_clock.tick();
 
-            world.add_resource(EffectReturn(entity));
-        };
+        run_test(
+            SetupParams {
+                position: Position::<f32>::new(-2., -2., -2.),
+                velocity: Velocity::<f32>::new(-3., -3., -3.),
+                frame_freeze_clock: None,
+            },
+            Position::<f32>::new(-5., -5., -5.),
+        )
+    }
 
-        let assertion = |world: &mut World| {
-            let entity = world.read_resource::<EffectReturn<Entity>>().0;
-            let positions = world.read_storage::<Position<f32>>();
-            let velocities = world.read_storage::<Velocity<f32>>();
+    #[test]
+    fn does_not_add_velocity_to_position_when_frame_freeze_clock_incomplete() -> Result<(), Error> {
+        run_test(
+            SetupParams {
+                position: Position::<f32>::new(-2., -2., -2.),
+                velocity: Velocity::<f32>::new(-3., -3., -3.),
+                frame_freeze_clock: Some(FrameFreezeClock::new(LogicClock::new(1))),
+            },
+            Position::<f32>::new(-2., -2., -2.),
+        )
+    }
 
-            let position = Position::new(-5., -5., -5.);
-            let velocity = Velocity::new(-3., -3., -3.);
+    #[test]
+    fn adds_velocity_to_position_when_frame_freeze_clock_complete() -> Result<(), Error> {
+        let mut frame_freeze_clock = FrameFreezeClock::new(LogicClock::new(1));
+        frame_freeze_clock.tick();
 
-            assert_eq!(Some(&position), positions.get(entity));
-            assert_eq!(Some(&velocity), velocities.get(entity));
-        };
+        run_test(
+            SetupParams {
+                position: Position::<f32>::new(-2., -2., -2.),
+                velocity: Velocity::<f32>::new(-3., -3., -3.),
+                frame_freeze_clock: Some(frame_freeze_clock),
+            },
+            Position::<f32>::new(-5., -5., -5.),
+        )
+    }
 
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AmethystApplication::ui_base::<String, String>()
-                .with_system(
-                    ObjectKinematicsUpdateSystem::new(),
-                    ObjectKinematicsUpdateSystem::type_name(),
-                    &[]
-                ) // kcov-ignore
-                .with_setup(setup)
-                .with_assertion(assertion)
-                .run()
-                .is_ok()
-        );
+    fn run_test(
+        SetupParams {
+            position,
+            velocity,
+            frame_freeze_clock,
+        }: SetupParams,
+        expected_position: Position<f32>,
+    ) -> Result<(), Error> {
+        AmethystApplication::ui_base::<String, String>()
+            .with_setup(move |world| {
+                ObjectKinematicsUpdateSystemData::setup(&mut world.res);
+
+                let mut entity_builder = world.create_entity().with(position).with(velocity);
+                if let Some(frame_freeze_clock) = frame_freeze_clock {
+                    entity_builder = entity_builder.with(frame_freeze_clock);
+                }
+                let entity = entity_builder.build();
+
+                world.add_resource(entity);
+            })
+            .with_system_single(
+                ObjectKinematicsUpdateSystem::new(),
+                ObjectKinematicsUpdateSystem::type_name(),
+                &[],
+            ) // kcov-ignore
+            .with_assertion(move |world| {
+                let entity = *world.read_resource::<Entity>();
+                let positions = world.read_storage::<Position<f32>>();
+
+                assert_eq!(Some(&expected_position), positions.get(entity));
+            })
+            .run()
+    }
+
+    struct SetupParams {
+        position: Position<f32>,
+        velocity: Velocity<f32>,
+        frame_freeze_clock: Option<FrameFreezeClock>,
     }
 }

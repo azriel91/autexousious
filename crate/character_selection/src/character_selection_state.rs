@@ -9,7 +9,7 @@ use character_selection_model::{
 };
 use derivative::Derivative;
 use derive_new::new;
-use log::{debug, info};
+use log::debug;
 use state_registry::StateId;
 
 /// `State` where character selection takes place.
@@ -109,7 +109,7 @@ where
                 CharacterSelectionEvent::Return => Trans::Pop,
                 CharacterSelectionEvent::Confirm => {
                     let character_selections = data.world.read_resource::<CharacterSelections>();
-                    info!(
+                    debug!(
                         "character_selections: `{:?}`",
                         &character_selections.selections
                     );

@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use specs_derive::Component;
 
 /// Default number of ticks to wait before another hit may occur.
-const HIT_REPEAT_DELAY_DEFAULT: u32 = 9;
+const HIT_REPEAT_DELAY_DEFAULT: u32 = 10;
 
 /// Number of ticks to wait before another hit may occur.
 #[numeric_newtype]
