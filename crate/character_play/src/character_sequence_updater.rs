@@ -43,9 +43,9 @@ impl CharacterSequenceUpdater {
             CharacterSequenceId::JumpDescend => &JumpDescend::update,
             CharacterSequenceId::JumpDescendLand => &JumpDescendLand::update,
             CharacterSequenceId::JumpAttack => &JumpAttack::update,
-            CharacterSequenceId::Flinch0 | CharacterSequenceId::Flinch1 => {
-                &StandOnSequenceEnd::update
-            }
+            CharacterSequenceId::Flinch0
+            | CharacterSequenceId::Flinch1
+            | CharacterSequenceId::Dazed => &StandOnSequenceEnd::update,
             CharacterSequenceId::FallForwardAscend => &FallForwardAscend::update,
             CharacterSequenceId::FallForwardDescend => &FallForwardDescend::update,
             CharacterSequenceId::FallForwardLand => &FallForwardLand::update,

@@ -90,6 +90,8 @@ pub enum CharacterSequenceId {
     /// Character is hit while on ground, alternate sequence.
     #[serde(rename = "flinch_1")]
     Flinch1,
+    /// Character is dazed / seeing stars.
+    Dazed,
     /// Knocked off balance, moving upwards.
     FallForwardAscend,
     /// Knocked off balance, moving downwards.

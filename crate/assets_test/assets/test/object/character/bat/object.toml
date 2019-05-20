@@ -461,12 +461,12 @@
 # Getting hit.
 [sequences.flinch_0]
   [[sequences.flinch_0.frames]]
-    wait = 0
+    wait = 1
     sprite = { sheet = 0, index = 4 }
     body = [{ box = { x = 145, y = 12, w = 14, h = 13 } }]
 
   [[sequences.flinch_0.frames]]
-    wait = 0
+    wait = 1
     sprite = { sheet = 0, index = 3 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
@@ -477,12 +477,12 @@
 
 [sequences.flinch_1]
   [[sequences.flinch_1.frames]]
-    wait = 0
+    wait = 1
     sprite = { sheet = 0, index = 4 }
     body = [{ box = { x = 145, y = 12, w = 14, h = 13 } }]
 
   [[sequences.flinch_1.frames]]
-    wait = 0
+    wait = 1
     sprite = { sheet = 0, index = 3 }
     body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
 
@@ -490,6 +490,28 @@
     wait = 3
     sprite = { sheet = 0, index = 5 }
     body = [{ box = { x = 169, y = 5, w = 12, h = 20 } }]
+
+# Hit until dizzy.
+[sequences.dazed]
+  [[sequences.dazed.frames]]
+    wait = 6
+    sprite = { sheet = 0, index = 3 }
+    body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
+
+  [[sequences.dazed.frames]]
+    wait = 6
+    sprite = { sheet = 0, index = 1 }
+    body = [{ box = { x = 48, y = 13, w = 15, h = 12 } }]
+
+  [[sequences.dazed.frames]]
+    wait = 6
+    sprite = { sheet = 0, index = 3 }
+    body = [{ box = { x = 113, y = 10, w = 14, h = 13 } }]
+
+  [[sequences.dazed.frames]]
+    wait = 6
+    sprite = { sheet = 0, index = 1 }
+    body = [{ box = { x = 48, y = 13, w = 15, h = 12 } }]
 
 # Fall when knocked down.
 [sequences.fall_forward_ascend]

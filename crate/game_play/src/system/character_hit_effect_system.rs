@@ -14,6 +14,8 @@ use sequence_model::play::SequenceStatus;
 use typename_derive::TypeName;
 
 const STUN_THRESHOLD_LOW: StunPoints = StunPoints(40);
+const STUN_THRESHOLD_MID: StunPoints = StunPoints(80);
+const STUN_THRESHOLD_HIGH: StunPoints = StunPoints(120);
 
 /// Determines collision effects for characters.
 #[derive(Debug, Default, TypeName, new)]
@@ -89,8 +91,12 @@ impl<'s> System<'s> for CharacterHitEffectSystem {
                         CharacterSequenceId::FallForwardAscend
                     } else if *stun_points < STUN_THRESHOLD_LOW {
                         CharacterSequenceId::Flinch0
-                    } else {
+                    } else if *stun_points < STUN_THRESHOLD_MID {
                         CharacterSequenceId::Flinch1
+                    } else if *stun_points < STUN_THRESHOLD_HIGH {
+                        CharacterSequenceId::Dazed
+                    } else {
+                        CharacterSequenceId::FallForwardAscend
                     };
 
                     // Set sequence id
