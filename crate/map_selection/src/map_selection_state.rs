@@ -5,7 +5,7 @@ use application_event::AppEvent;
 use application_state::{AppState, AppStateBuilder, AutexState};
 use derivative::Derivative;
 use derive_new::new;
-use log::{debug, info};
+use log::debug;
 use map_selection_model::{MapSelection, MapSelectionEntityId, MapSelectionEvent};
 use state_registry::StateId;
 
@@ -99,7 +99,7 @@ where
                 MapSelectionEvent::Return => Trans::Pop,
                 MapSelectionEvent::Confirm => {
                     let map_selection = data.world.read_resource::<MapSelection>();
-                    info!("map_selection: `{:?}`", &*map_selection);
+                    debug!("map_selection: `{:?}`", &*map_selection);
 
                     Trans::Switch((self.next_state_fn)())
                 }
