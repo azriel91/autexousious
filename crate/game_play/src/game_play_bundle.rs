@@ -11,6 +11,7 @@ use collision_play::{
 use derive_new::new;
 use game_input::ControllerInput;
 use named_type::NamedType;
+use object_status_play::StunPointsReductionSystem;
 use tracker::LastTrackerSystem;
 use typename::TypeName;
 
@@ -81,6 +82,13 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         builder.add(
             CharacterKinematicsSystem::new(),
             &CharacterKinematicsSystem::type_name(),
+            &[],
+        ); // kcov-ignore
+
+        // Reduces `StunPoints` each tick.
+        builder.add(
+            StunPointsReductionSystem::new(),
+            &StunPointsReductionSystem::type_name(),
             &[],
         ); // kcov-ignore
 

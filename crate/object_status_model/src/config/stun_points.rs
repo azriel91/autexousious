@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use specs_derive::Component;
 
 /// Default stun to inflict on hit.
-pub const STUN_POINTS_DEFAULT: u32 = 10;
+pub const STUN_POINTS_DEFAULT: u32 = 30;
 
 /// Stun points of an object.
 #[numeric_newtype]
