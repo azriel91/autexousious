@@ -45,7 +45,7 @@ impl<'s> System<'s> for FrameFreezeClockAugmentSystem {
                     ..
                 } = ev.interaction;
 
-                let frame_freeze_clock = FrameFreezeClock::new(LogicClock::new(2));
+                let frame_freeze_clock = FrameFreezeClock::new(LogicClock::new(3));
                 frame_freeze_clocks
                     .insert(ev.from, frame_freeze_clock)
                     .expect("Failed to insert `FrameFreezeClock`.");
@@ -95,7 +95,7 @@ mod tests {
                 let frame_freeze_clock = frame_freeze_clocks.get(entity_from);
 
                 assert_eq!(
-                    Some(&FrameFreezeClock::new(LogicClock::new(2))),
+                    Some(&FrameFreezeClock::new(LogicClock::new(3))),
                     frame_freeze_clock
                 );
             })
@@ -124,7 +124,7 @@ mod tests {
                 let frame_freeze_clock = frame_freeze_clocks.get(entity_from);
 
                 assert_eq!(
-                    Some(&FrameFreezeClock::new(LogicClock::new(2))),
+                    Some(&FrameFreezeClock::new(LogicClock::new(3))),
                     frame_freeze_clock
                 );
             })
