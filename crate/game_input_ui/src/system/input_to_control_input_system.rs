@@ -11,6 +11,7 @@ use game_input_model::{
     Axis, AxisEventData, ControlActionEventData, ControlInputEvent, InputConfig,
     PlayerActionControl, PlayerAxisControl,
 };
+use log::debug;
 use shred_derive::SystemData;
 use strum::IntoEnumIterator;
 use typename_derive::TypeName;
@@ -108,6 +109,10 @@ impl<'s> System<'s> for InputToControlInputSystem {
                     if let Some((entity, _)) = (&entities, &input_controlleds).join().find(
                         |(_entity, input_controlled)| input_controlled.controller_id == *player,
                     ) {
+                        debug!(
+                            "Sending control input event for action: {:?}, entity: {:?}",
+                            *action, entity
+                        );
                         Some(ControlInputEvent::ControlAction(ControlActionEventData {
                             entity,
                             control_action: *action,

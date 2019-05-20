@@ -4,7 +4,7 @@ use derive_new::new;
 use game_mode_selection_model::GameModeIndex;
 use typename::TypeName;
 
-use crate::GameModeSelectionWidgetUiSystem;
+use crate::{GameModeSelectionSfxSystem, GameModeSelectionWidgetUiSystem};
 
 /// Adds the systems that set up and manage the `GameModeSelectionUi`.
 ///
@@ -20,6 +20,7 @@ impl GameModeSelectionUiBundle {
         vec![
             MenuItemWidgetInputSystem::<GameModeIndex>::type_name(),
             GameModeSelectionWidgetUiSystem::type_name(),
+            GameModeSelectionSfxSystem::type_name(),
         ]
     }
 }
@@ -34,6 +35,12 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameModeSelectionUiBundle {
         builder.add(
             GameModeSelectionWidgetUiSystem::new(),
             &GameModeSelectionWidgetUiSystem::type_name(),
+            &[&MenuItemWidgetInputSystem::<GameModeIndex>::type_name()],
+        ); // kcov-ignore
+
+        builder.add(
+            GameModeSelectionSfxSystem::new(),
+            &GameModeSelectionSfxSystem::type_name(),
             &[&MenuItemWidgetInputSystem::<GameModeIndex>::type_name()],
         ); // kcov-ignore
 

@@ -44,7 +44,10 @@ type MapSelectionWidgetInputSystemData<'s> = (
 );
 
 impl MapSelectionWidgetInputSystem {
-    fn select_previous_map(map_assets: &MapAssets, widget: &mut MapSelectionWidget) {
+    fn select_previous_map(
+        map_assets: &MapAssets,
+        widget: &mut MapSelectionWidget,
+    ) -> MapSelection {
         let (first_map_slug, first_map_handle) = map_assets
             .iter()
             .next()
@@ -75,9 +78,10 @@ impl MapSelectionWidgetInputSystem {
             }
             MapSelection::Random(..) => MapSelection::Id((last_map_slug, last_map_handle).into()),
         };
+        widget.selection.clone()
     }
 
-    fn select_next_map(map_assets: &MapAssets, widget: &mut MapSelectionWidget) {
+    fn select_next_map(map_assets: &MapAssets, widget: &mut MapSelectionWidget) -> MapSelection {
         let (first_map_slug, first_map_handle) = map_assets
             .iter()
             .next()
@@ -107,6 +111,7 @@ impl MapSelectionWidgetInputSystem {
             }
             MapSelection::Random(..) => MapSelection::Id((first_map_slug, first_map_handle).into()),
         };
+        widget.selection.clone()
     }
 
     fn handle_event(
@@ -119,9 +124,12 @@ impl MapSelectionWidgetInputSystem {
     ) {
         if let Some(map_selection_widget) = map_selection_widgets.join().next() {
             match event {
-                ControlInputEvent::Axis(axis_event_data) => {
-                    Self::handle_axis_event(&map_assets, map_selection_widget, axis_event_data)
-                }
+                ControlInputEvent::Axis(axis_event_data) => Self::handle_axis_event(
+                    &map_assets,
+                    map_selection_ec,
+                    map_selection_widget,
+                    axis_event_data,
+                ),
                 ControlInputEvent::ControlAction(control_action_event_data) => {
                     Self::handle_control_action_event(
                         map_selection_ec,
@@ -135,17 +143,28 @@ impl MapSelectionWidgetInputSystem {
 
     fn handle_axis_event(
         map_assets: &MapAssets,
+        map_selection_ec: &mut EventChannel<MapSelectionEvent>,
         map_selection_widget: &mut MapSelectionWidget,
         axis_event_data: AxisEventData,
     ) {
-        match (map_selection_widget.state, axis_event_data.axis) {
+        let map_selection = match (map_selection_widget.state, axis_event_data.axis) {
             (WidgetState::MapSelect, Axis::X) if axis_event_data.value < 0. => {
-                Self::select_previous_map(map_assets, map_selection_widget);
+                Some(Self::select_previous_map(map_assets, map_selection_widget))
             }
             (WidgetState::MapSelect, Axis::X) if axis_event_data.value > 0. => {
-                Self::select_next_map(map_assets, map_selection_widget);
+                Some(Self::select_next_map(map_assets, map_selection_widget))
             }
-            _ => {}
+            _ => None,
+        };
+
+        if let Some(map_selection) = map_selection {
+            let map_selection_event = MapSelectionEvent::Switch { map_selection };
+
+            debug!(
+                "Sending map selection event: {:?}",
+                &map_selection_event // kcov-ignore
+            );
+            map_selection_ec.single_write(map_selection_event);
         }
     }
 
@@ -268,7 +287,7 @@ mod test {
                 },
                 map_selection_events_fn: |world| {
                     let last_map = last_map(world);
-                    vec![MapSelectionEvent::Select {
+                    vec![MapSelectionEvent::Switch {
                         map_selection: MapSelection::Id(last_map),
                     }]
                 },
@@ -293,7 +312,7 @@ mod test {
                 },
                 map_selection_events_fn: |world| {
                     let first_map = first_map(world);
-                    vec![MapSelectionEvent::Select {
+                    vec![MapSelectionEvent::Switch {
                         map_selection: MapSelection::Id(first_map),
                     }]
                 },
@@ -318,7 +337,7 @@ mod test {
                 map_selection_fn: map_selection_random,
                 map_selection_events_fn: |world| {
                     let first_map = first_map(world);
-                    vec![MapSelectionEvent::Select {
+                    vec![MapSelectionEvent::Switch {
                         map_selection: MapSelection::Random(first_map),
                     }]
                 },
@@ -546,12 +565,12 @@ mod test {
         let mut event_channel_reader = &mut world.write_resource::<ReaderId<MapSelectionEvent>>();
 
         let map_selection_event_channel = world.read_resource::<EventChannel<MapSelectionEvent>>();
-        let map_selection_event_iter = map_selection_event_channel.read(&mut event_channel_reader);
+        let actual_events = map_selection_event_channel
+            .read(&mut event_channel_reader)
+            .collect::<Vec<&MapSelectionEvent>>();
 
-        let expected_events_iter = events.into_iter();
-        expected_events_iter
-            .zip(map_selection_event_iter)
-            .for_each(|(expected_event, actual)| assert_eq!(expected_event, *actual));
+        let expected_events = events.iter().collect::<Vec<&MapSelectionEvent>>();
+        assert_eq!(expected_events, actual_events);
     }
 
     struct SetupParams {

@@ -1,9 +1,11 @@
 pub(crate) use self::{
     character_selection_input_system::CharacterSelectionInputSystem,
+    character_selection_sfx_system::CharacterSelectionSfxSystem,
     character_selection_widget_input_system::CharacterSelectionWidgetInputSystem,
     character_selection_widget_ui_system::CharacterSelectionWidgetUiSystem,
 };
 
 mod character_selection_input_system;
+mod character_selection_sfx_system;
 mod character_selection_widget_input_system;
 mod character_selection_widget_ui_system;

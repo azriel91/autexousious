@@ -4,7 +4,7 @@
 
 pub use crate::{
     game_mode_selection_ui_bundle::GameModeSelectionUiBundle,
-    system::GameModeSelectionWidgetUiSystem,
+    system::{GameModeSelectionSfxSystem, GameModeSelectionWidgetUiSystem},
 };
 
 mod game_mode_selection_ui_bundle;

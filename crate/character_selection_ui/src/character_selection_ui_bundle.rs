@@ -3,8 +3,8 @@ use derive_new::new;
 use typename::TypeName;
 
 use crate::{
-    CharacterSelectionInputSystem, CharacterSelectionWidgetInputSystem,
-    CharacterSelectionWidgetUiSystem,
+    CharacterSelectionInputSystem, CharacterSelectionSfxSystem,
+    CharacterSelectionWidgetInputSystem, CharacterSelectionWidgetUiSystem,
 };
 
 /// Adds the systems that set up and manage the `CharacterSelectionUi`.
@@ -22,6 +22,7 @@ impl CharacterSelectionUiBundle {
             CharacterSelectionInputSystem::type_name(),
             CharacterSelectionWidgetInputSystem::type_name(),
             CharacterSelectionWidgetUiSystem::type_name(),
+            CharacterSelectionSfxSystem::type_name(),
         ]
     }
 }
@@ -43,6 +44,12 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionUiBundle {
         builder.add(
             CharacterSelectionWidgetUiSystem::new(),
             &CharacterSelectionWidgetUiSystem::type_name(),
+            &[&CharacterSelectionWidgetInputSystem::type_name()],
+        ); // kcov-ignore
+
+        builder.add(
+            CharacterSelectionSfxSystem::new(),
+            &CharacterSelectionSfxSystem::type_name(),
             &[&CharacterSelectionWidgetInputSystem::type_name()],
         ); // kcov-ignore
 

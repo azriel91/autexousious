@@ -1,4 +1,8 @@
-use amethyst::{ecs::prelude::*, shrev::EventChannel};
+use amethyst::{
+    ecs::{Read, ReadStorage, SystemData, Write, WriteStorage},
+    shred::{Resources, System},
+    shrev::{EventChannel, ReaderId},
+};
 use asset_model::loaded::SlugAndHandle;
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
 use derivative::Derivative;
@@ -52,7 +56,7 @@ impl CharacterSelectionWidgetInputSystem {
     fn select_previous_character(
         character_assets: &CharacterAssets,
         widget: &mut CharacterSelectionWidget,
-    ) {
+    ) -> CharacterSelection {
         let (first_character_slug, first_character_handle) = character_assets
             .iter()
             .next()
@@ -90,12 +94,13 @@ impl CharacterSelectionWidgetInputSystem {
                 CharacterSelection::Id((last_character_slug, last_character_handle).into())
             }
         };
+        widget.selection.clone()
     }
 
     fn select_next_character(
         character_assets: &CharacterAssets,
         widget: &mut CharacterSelectionWidget,
-    ) {
+    ) -> CharacterSelection {
         let (first_character_slug, first_character_handle) = character_assets
             .iter()
             .next()
@@ -132,6 +137,7 @@ impl CharacterSelectionWidgetInputSystem {
                 CharacterSelection::Id((first_character_slug, first_character_handle).into())
             }
         };
+        widget.selection.clone()
     }
 
     fn handle_event(
@@ -145,12 +151,15 @@ impl CharacterSelectionWidgetInputSystem {
     ) {
         match event {
             ControlInputEvent::Axis(axis_event_data) => {
-                if let Some(character_selection_widget) =
-                    character_selection_widgets.get_mut(axis_event_data.entity)
-                {
+                if let (Some(character_selection_widget), Some(input_controlled)) = (
+                    character_selection_widgets.get_mut(axis_event_data.entity),
+                    input_controlleds.get(axis_event_data.entity),
+                ) {
                     Self::handle_axis_event(
                         &character_assets,
+                        character_selection_ec,
                         character_selection_widget,
+                        *input_controlled,
                         axis_event_data,
                     )
                 }
@@ -173,17 +182,32 @@ impl CharacterSelectionWidgetInputSystem {
 
     fn handle_axis_event(
         character_assets: &CharacterAssets,
+        character_selection_ec: &mut EventChannel<CharacterSelectionEvent>,
         character_selection_widget: &mut CharacterSelectionWidget,
+        input_controlled: InputControlled,
         axis_event_data: AxisEventData,
     ) {
-        match (character_selection_widget.state, axis_event_data.axis) {
-            (WidgetState::CharacterSelect, Axis::X) if axis_event_data.value < 0. => {
-                Self::select_previous_character(character_assets, character_selection_widget);
-            }
-            (WidgetState::CharacterSelect, Axis::X) if axis_event_data.value > 0. => {
-                Self::select_next_character(character_assets, character_selection_widget);
-            }
-            _ => {}
+        let character_selection = match (character_selection_widget.state, axis_event_data.axis) {
+            (WidgetState::CharacterSelect, Axis::X) if axis_event_data.value < 0. => Some(
+                Self::select_previous_character(character_assets, character_selection_widget),
+            ),
+            (WidgetState::CharacterSelect, Axis::X) if axis_event_data.value > 0. => Some(
+                Self::select_next_character(character_assets, character_selection_widget),
+            ),
+            _ => None,
+        };
+
+        if let Some(character_selection) = character_selection {
+            let character_selection_event = CharacterSelectionEvent::Switch {
+                controller_id: input_controlled.controller_id,
+                character_selection,
+            };
+
+            debug!(
+                "Sending character selection event: {:?}",
+                &character_selection_event // kcov-ignore
+            );
+            character_selection_ec.single_write(character_selection_event)
         }
     }
 
@@ -193,7 +217,7 @@ impl CharacterSelectionWidgetInputSystem {
         input_controlled: InputControlled,
         control_action_event_data: ControlActionEventData,
     ) {
-        match (
+        let character_selection_event = match (
             character_selection_widget.state,
             control_action_event_data.control_action,
             control_action_event_data.value,
@@ -201,39 +225,44 @@ impl CharacterSelectionWidgetInputSystem {
             (WidgetState::Inactive, ControlAction::Attack, true) => {
                 debug!("Controller {} active.", input_controlled.controller_id);
                 character_selection_widget.state = WidgetState::CharacterSelect;
+
+                Some(CharacterSelectionEvent::Join {
+                    controller_id: input_controlled.controller_id,
+                })
             }
             (WidgetState::CharacterSelect, ControlAction::Jump, true) => {
                 debug!("Controller {} inactive.", input_controlled.controller_id);
                 character_selection_widget.state = WidgetState::Inactive;
+
+                Some(CharacterSelectionEvent::Leave {
+                    controller_id: input_controlled.controller_id,
+                })
             }
             (WidgetState::CharacterSelect, ControlAction::Attack, true) => {
                 debug!("Controller {} ready.", input_controlled.controller_id);
                 character_selection_widget.state = WidgetState::Ready;
 
-                // Send character selection event
-                let character_selection_event = CharacterSelectionEvent::Select {
+                Some(CharacterSelectionEvent::Select {
                     controller_id: input_controlled.controller_id,
                     character_selection: character_selection_widget.selection.clone(),
-                };
-                debug!(
-                    "Sending character selection event: {:?}",
-                    &character_selection_event // kcov-ignore
-                );
-                character_selection_ec.single_write(character_selection_event);
+                })
             }
             (WidgetState::Ready, ControlAction::Jump, true) => {
                 character_selection_widget.state = WidgetState::CharacterSelect;
 
-                let character_selection_event = CharacterSelectionEvent::Deselect {
+                Some(CharacterSelectionEvent::Deselect {
                     controller_id: input_controlled.controller_id,
-                };
-                debug!(
-                    "Sending character selection event: {:?}",
-                    &character_selection_event // kcov-ignore
-                );
-                character_selection_ec.single_write(character_selection_event);
+                })
             }
-            _ => {}
+            _ => None,
+        };
+
+        if let Some(character_selection_event) = character_selection_event {
+            debug!(
+                "Sending character selection event: {:?}",
+                &character_selection_event // kcov-ignore
+            );
+            character_selection_ec.single_write(character_selection_event)
         }
     }
 }
@@ -319,7 +348,9 @@ mod test {
             ExpectedParams {
                 widget_state: WidgetState::CharacterSelect,
                 character_selection_fn: character_selection_random,
-                character_selection_events_fn: empty_events,
+                character_selection_events_fn: |_world| {
+                    vec![CharacterSelectionEvent::Join { controller_id: 123 }]
+                },
             },
         )
     }
@@ -369,7 +400,7 @@ mod test {
                 },
                 character_selection_events_fn: |world| {
                     let last_char = last_character(world);
-                    vec![CharacterSelectionEvent::Select {
+                    vec![CharacterSelectionEvent::Switch {
                         controller_id: 123,
                         character_selection: CharacterSelection::Id(last_char),
                     }]
@@ -395,7 +426,7 @@ mod test {
                 },
                 character_selection_events_fn: |world| {
                     let first_char = first_character(world);
-                    vec![CharacterSelectionEvent::Select {
+                    vec![CharacterSelectionEvent::Switch {
                         controller_id: 123,
                         character_selection: CharacterSelection::Id(first_char),
                     }]
@@ -420,9 +451,9 @@ mod test {
                 character_selection_fn: character_selection_random,
                 character_selection_events_fn: |world| {
                     let first_char = first_character(world);
-                    vec![CharacterSelectionEvent::Select {
+                    vec![CharacterSelectionEvent::Switch {
                         controller_id: 123,
-                        character_selection: CharacterSelection::Id(first_char),
+                        character_selection: CharacterSelection::Random(first_char),
                     }]
                 },
             },
@@ -469,7 +500,9 @@ mod test {
                 character_selection_fn: |world| {
                     character_selection_id(world, ASSETS_CHAR_BAT_SLUG.clone())
                 },
-                character_selection_events_fn: empty_events,
+                character_selection_events_fn: |_world| {
+                    vec![CharacterSelectionEvent::Leave { controller_id: 123 }]
+                },
             },
         )
     }
@@ -627,13 +660,12 @@ mod test {
 
         let character_selection_event_channel =
             world.read_resource::<EventChannel<CharacterSelectionEvent>>();
-        let character_selection_event_iter =
-            character_selection_event_channel.read(&mut event_channel_reader);
+        let actual_events = character_selection_event_channel
+            .read(&mut event_channel_reader)
+            .collect::<Vec<&CharacterSelectionEvent>>();
 
-        let expected_events_iter = events.into_iter();
-        expected_events_iter
-            .zip(character_selection_event_iter)
-            .for_each(|(expected_event, actual)| assert_eq!(expected_event, *actual));
+        let expected_events = events.iter().collect::<Vec<&CharacterSelectionEvent>>();
+        assert_eq!(expected_events, actual_events);
     }
 
     struct SetupParams {

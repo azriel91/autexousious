@@ -5,6 +5,11 @@ use crate::map_selection::MapSelection;
 pub enum MapSelectionEvent {
     /// Signal to return from `MapSelectionState`.
     Return,
+    /// Map selection is switched.
+    Switch {
+        /// ID of the selected map.
+        map_selection: MapSelection,
+    },
     /// Map has been selected.
     Select {
         /// ID of the selected map.

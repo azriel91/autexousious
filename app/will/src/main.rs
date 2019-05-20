@@ -46,6 +46,7 @@ use stdio_input::StdioInputBundle;
 use stdio_spi::MapperSystem;
 use structopt::StructOpt;
 use typename::TypeName;
+use ui_audio_loading::UiAudioLoadingBundle;
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "Will", rename_all = "snake_case")]
@@ -139,7 +140,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(CollisionLoadingBundle::new())?
             .with_bundle(MapLoadingBundle::new())?
             .with_bundle(CharacterLoadingBundle::new())?
-            .with_bundle(CollisionAudioLoadingBundle::new(assets_dir.clone()))?;
+            .with_bundle(CollisionAudioLoadingBundle::new(assets_dir.clone()))?
+            .with_bundle(UiAudioLoadingBundle::new(assets_dir.clone()))?;
     }
 
     let mut app = CoreApplication::<_, AppEvent, AppEventReader>::build(assets_dir, state)?

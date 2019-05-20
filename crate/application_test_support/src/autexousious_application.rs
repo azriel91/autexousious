@@ -16,6 +16,7 @@ use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
 use sequence_loading::SequenceLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
+use ui_audio_loading::UiAudioLoadingBundle;
 
 use crate::SetupFunction;
 
@@ -109,6 +110,7 @@ impl AutexousiousApplication {
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
+            .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CharacterSelectionBundle::new())
             .with_state(|| LoadingState::new(PopState))
     }
