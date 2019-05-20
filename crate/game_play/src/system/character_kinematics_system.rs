@@ -118,17 +118,17 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                             }
                             CharacterSequenceId::JumpOff => {
                                 velocity[0] = controller_input.x_axis_value as f32 * 5.;
-                                velocity[1] = 17.;
+                                velocity[1] = 10.5;
                                 velocity[2] = controller_input.z_axis_value as f32 * 2.;
                             }
                             CharacterSequenceId::DashForward => {
-                                velocity[0] = if mirrored.0 { -12. } else { 12. };
-                                velocity[1] = 13.;
+                                velocity[0] = if mirrored.0 { -8. } else { 8. };
+                                velocity[1] = 7.5;
                                 velocity[2] = controller_input.z_axis_value as f32 * 2.5;
                             }
                             CharacterSequenceId::DashBack => {
                                 velocity[0] = if mirrored.0 { 11. } else { -11. };
-                                velocity[1] = 13.;
+                                velocity[1] = 7.5;
                                 velocity[2] = controller_input.z_axis_value as f32 * 2.5;
                             }
                             _ => {}
@@ -311,14 +311,13 @@ mod tests {
                 mirrored: None,
                 event_fn: Some(|entity| SequenceUpdateEvent::SequenceBegin { entity }),
             },
-            Velocity::new(-5., 17., 2.),
+            Velocity::new(-5., 10.5, 2.),
         )
     }
 
     #[test]
     fn updates_dash_forward_xyz_velocity() -> Result<(), Error> {
         let mut controller_input = ControllerInput::default();
-        controller_input.x_axis_value = -1.;
         controller_input.z_axis_value = 1.;
 
         run_test(
@@ -331,14 +330,13 @@ mod tests {
                 mirrored: None,
                 event_fn: Some(|entity| SequenceUpdateEvent::SequenceBegin { entity }),
             },
-            Velocity::new(12., 13., 2.5),
+            Velocity::new(8., 7.5, 2.5),
         )
     }
 
     #[test]
     fn updates_dash_back_xyz_velocity() -> Result<(), Error> {
         let mut controller_input = ControllerInput::default();
-        controller_input.x_axis_value = -1.;
         controller_input.z_axis_value = 1.;
 
         run_test(
@@ -351,7 +349,7 @@ mod tests {
                 mirrored: None,
                 event_fn: Some(|entity| SequenceUpdateEvent::SequenceBegin { entity }),
             },
-            Velocity::new(-11., 13., 2.5),
+            Velocity::new(-11., 7.5, 2.5),
         )
     }
 
