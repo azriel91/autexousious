@@ -2,6 +2,7 @@ use amethyst::ecs::Entity;
 use character_model::play::RunCounter;
 use game_input::ControllerInput;
 use object_model::play::{Grounding, HealthPoints};
+use object_status_model::config::StunPoints;
 
 use crate::CharacterComponentStorages;
 
@@ -21,6 +22,7 @@ impl CharacterEntityAugmenter {
         CharacterComponentStorages {
             ref mut controller_inputs,
             ref mut health_pointses,
+            ref mut stun_pointses,
             ref mut run_counters,
             ref mut groundings,
         }: &mut CharacterComponentStorages<'s>,
@@ -33,6 +35,10 @@ impl CharacterEntityAugmenter {
         health_pointses
             .insert(entity, HealthPoints::default())
             .expect("Failed to insert health_points component.");
+        // Stun points.
+        stun_pointses
+            .insert(entity, StunPoints::default())
+            .expect("Failed to insert stun_points component.");
         // Run counter.
         run_counters
             .insert(entity, RunCounter::default())
@@ -54,6 +60,7 @@ mod test {
     use character_model::play::RunCounter;
     use game_input::ControllerInput;
     use object_model::play::{Grounding, HealthPoints};
+    use object_status_model::config::StunPoints;
 
     use super::CharacterEntityAugmenter;
     use crate::CharacterComponentStorages;
@@ -70,6 +77,7 @@ mod test {
 
             assert!(world.read_storage::<ControllerInput>().contains(entity));
             assert!(world.read_storage::<HealthPoints>().contains(entity));
+            assert!(world.read_storage::<StunPoints>().contains(entity));
             assert!(world.read_storage::<RunCounter>().contains(entity));
             assert!(world.read_storage::<Grounding>().contains(entity));
         };

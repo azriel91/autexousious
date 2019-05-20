@@ -14,6 +14,7 @@ game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
 object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
+object_status_model = { path = "../object_status_model" }
 sequence_model = { path = "../sequence_model" }
 serde = "1.0.91"
 shred = "0.7.0"
