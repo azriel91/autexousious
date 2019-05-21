@@ -81,7 +81,8 @@ mod tests {
 
     #[test]
     fn plays_sound_on_hit_event() -> Result<(), Error> {
-        AutexousiousApplication::config_base("plays_sound_on_hit_event", false)
+        AutexousiousApplication::config_base()
+            .with_app_name("plays_sound_on_hit_event")
             .with_system(HitSfxSystem::new(), "", &[])
             .with_effect(|world| {
                 let entity_from = world.create_entity().build();

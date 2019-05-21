@@ -4,7 +4,7 @@ use amethyst::{
         storage::{DenseVecStorage, VecStorage},
         Component,
     },
-    renderer::SpriteSheetHandle,
+    renderer::sprite::SpriteSheetHandle,
     Error,
 };
 use derive_new::new;

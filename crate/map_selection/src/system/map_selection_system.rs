@@ -76,7 +76,7 @@ impl<'s> System<'s> for MapSelectionSystem {
 #[cfg(test)]
 mod test {
     use amethyst::{assets::ProgressCounter, ecs::SystemData, prelude::*, shrev::EventChannel};
-    use amethyst_test::prelude::*;
+    use amethyst_test::{AmethystApplication, RenderBaseAppExt};
     use asset_loading::AssetDiscovery;
     use asset_model::loaded::SlugAndHandle;
     use assets_test::{ASSETS_MAP_EMPTY_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
@@ -94,7 +94,8 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::render_base("returns_when_map_selection_status_confirmed", false)
+            AmethystApplication::render_base()
+                .with_app_name("returns_when_map_selection_status_confirmed")
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_resource(MapSelectionStatus::Confirmed)
@@ -135,7 +136,8 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::render_base("returns_when_map_selection_status_confirmed", false)
+            AmethystApplication::render_base()
+                .with_app_name("returns_when_map_selection_status_confirmed")
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_setup(setup_components)

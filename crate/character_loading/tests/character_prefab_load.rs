@@ -9,7 +9,7 @@ use amethyst::{
     },
     Error,
 };
-use amethyst_test::AmethystApplication;
+use amethyst_test::{AmethystApplication, RenderBaseAppExt};
 use character_loading::{CharacterLoadingBundle, CharacterPrefab, CharacterPrefabHandle};
 use character_model::{
     config::{CharacterDefinition, CharacterSequenceId, ControlTransitionRequirement},
@@ -34,7 +34,8 @@ use sprite_model::config::SpriteRef;
 
 #[test]
 fn character_prefab_load() -> Result<(), Error> {
-    AmethystApplication::render_base("character_prefab_load", false)
+    AmethystApplication::render_base()
+        .with_app_name("character_prefab_load")
         .with_bundle(SequenceLoadingBundle::new())
         .with_bundle(CharacterLoadingBundle::new())
         .with_setup(|world| {

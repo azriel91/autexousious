@@ -147,7 +147,7 @@ mod test {
         renderer::{SpriteSheet, Texture},
         Error,
     };
-    use amethyst_test::AmethystApplication;
+    use amethyst_test::{AmethystApplication, RenderBaseAppExt};
     use assets_test::{
         ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SPRITE_BROWN_NAME, ASSETS_CHAR_BAT_SPRITE_GREY_NAME,
     };
@@ -158,7 +158,8 @@ mod test {
 
     #[test]
     fn map_multiple_sprite_sheet_definitions() -> Result<(), Error> {
-        AmethystApplication::render_base("map_multiple_sprite_sheet_definitions", false)
+        AmethystApplication::render_base()
+            .with_app_name("map_multiple_sprite_sheet_definitions")
             .with_assertion(|world| {
                 let sprite_sheet_definitions = [sprite_sheet_definition(true), simple_definition()];
                 let texture_handles = test_texture_handles(world, &sprite_sheet_definitions);
@@ -229,7 +230,8 @@ mod test {
 
     #[test]
     fn map_sprite_sheet_definition_without_border() -> Result<(), Error> {
-        AmethystApplication::render_base("map_sprite_sheet_definition_without_border", false)
+        AmethystApplication::render_base()
+            .with_app_name("map_sprite_sheet_definition_without_border")
             .with_assertion(|world| {
                 let sprite_sheet_definitions =
                     [sprite_sheet_definition(false), simple_definition()];
@@ -301,32 +303,31 @@ mod test {
 
     #[test]
     fn offsets_defaults_to_negated_half_sprite_dimensions_if_none() {
-        assert!(
-            AmethystApplication::render_base("map_multiple_sprite_sheet_definitions", false)
-                .with_assertion(|world| {
-                    let sprite_sheet_definitions = [no_offsets_definition()];
-                    let texture_handles = test_texture_handles(world, &sprite_sheet_definitions);
+        assert!(AmethystApplication::render_base()
+            .with_app_name("map_multiple_sprite_sheet_definitions")
+            .with_assertion(|world| {
+                let sprite_sheet_definitions = [no_offsets_definition()];
+                let texture_handles = test_texture_handles(world, &sprite_sheet_definitions);
 
-                    let sprite_sheet = SpriteSheet {
-                        texture: texture_handles[0].clone(),
-                        sprites: vec![(
-                            (19., 29.),
-                            [-9.5, -14.5],
-                            [0.5 / 20., 18.5 / 20., 1.5 / 30., 29.5 / 30.],
-                        )
-                            .into()],
-                    }; // kcov-ignore
+                let sprite_sheet = SpriteSheet {
+                    texture: texture_handles[0].clone(),
+                    sprites: vec![(
+                        (19., 29.),
+                        [-9.5, -14.5],
+                        [0.5 / 20., 18.5 / 20., 1.5 / 30., 29.5 / 30.],
+                    )
+                        .into()],
+                }; // kcov-ignore
 
-                    // kcov-ignore-start
-                    assert_eq!(
-                        // kcov-ignore-end
-                        vec![sprite_sheet],
-                        SpriteSheetMapper::map(&texture_handles, &sprite_sheet_definitions)
-                    );
-                })
-                .run()
-                .is_ok()
-        );
+                // kcov-ignore-start
+                assert_eq!(
+                    // kcov-ignore-end
+                    vec![sprite_sheet],
+                    SpriteSheetMapper::map(&texture_handles, &sprite_sheet_definitions)
+                );
+            })
+            .run()
+            .is_ok());
     }
 
     fn simple_definition() -> SpriteSheetDefinition {

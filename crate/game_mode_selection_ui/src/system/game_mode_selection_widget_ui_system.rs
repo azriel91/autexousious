@@ -292,24 +292,23 @@ mod test {
 
     #[test]
     fn initializes_ui_when_menu_item_widget_states_zero() -> Result<(), Error> {
-        AutexousiousApplication::config_base(
-            "initializes_ui_when_menu_item_widget_states_zero",
-            false,
-        )
-        .with_setup(|world| world.add_resource(input_config()))
-        .with_system_single(
-            GameModeSelectionWidgetUiSystem::new(),
-            GameModeSelectionWidgetUiSystem::type_name(),
-            &[],
-        )
-        .with_assertion(|world| assert_widget_count(world, GameModeIndex::iter().len()))
-        .with_assertion(|world| assert_siblings_correct(world))
-        .run()
+        AutexousiousApplication::config_base()
+            .with_app_name("initializes_ui_when_menu_item_widget_states_zero")
+            .with_setup(|world| world.add_resource(input_config()))
+            .with_system_single(
+                GameModeSelectionWidgetUiSystem::new(),
+                GameModeSelectionWidgetUiSystem::type_name(),
+                &[],
+            )
+            .with_assertion(|world| assert_widget_count(world, GameModeIndex::iter().len()))
+            .with_assertion(|world| assert_siblings_correct(world))
+            .run()
     }
 
     #[test]
     fn updates_idle_menu_item_colour() -> Result<(), Error> {
-        AutexousiousApplication::config_base("updates_idle_menu_item_colours", false)
+        AutexousiousApplication::config_base()
+            .with_app_name("updates_idle_menu_item_colours")
             .with_resource(input_config())
             // Set up UI
             .with_system_single(
@@ -340,7 +339,8 @@ mod test {
 
     #[test]
     fn updates_active_menu_item_colour() -> Result<(), Error> {
-        AutexousiousApplication::config_base("updates_active_menu_item_colours", false)
+        AutexousiousApplication::config_base()
+            .with_app_name("updates_active_menu_item_colours")
             .with_resource(input_config())
             // Set up UI
             .with_system_single(

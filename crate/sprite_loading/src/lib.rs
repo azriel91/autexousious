@@ -25,7 +25,7 @@ mod test {
         renderer::{SpriteSheet, Texture},
         Error,
     };
-    use amethyst_test::AmethystApplication;
+    use amethyst_test::{AmethystApplication, RenderBaseAppExt};
     use application::{load_in, resource::Format};
     use assets_test::ASSETS_CHAR_BAT_PATH;
     use sprite_model::config::SpritesDefinition;
@@ -34,7 +34,8 @@ mod test {
 
     #[test]
     fn loads_textures_and_sprite_sheets() -> Result<(), Error> {
-        AmethystApplication::render_base("loads_textures_and_sprite_sheets", false)
+        AmethystApplication::render_base()
+            .with_app_name("loads_textures_and_sprite_sheets")
             .with_assertion(|world| {
                 let sprites_definition = load_in::<SpritesDefinition, _>(
                     &*ASSETS_CHAR_BAT_PATH,

@@ -35,7 +35,8 @@ use object_model::{play::HealthPoints, ObjectType};
 
 #[test]
 fn sets_transform_x_and_scale() -> Result<(), Error> {
-    AutexousiousApplication::game_base("sets_transform_x_and_scale", false)
+    AutexousiousApplication::game_base()
+        .with_app_name("sets_transform_x_and_scale")
         .with_setup(|world| {
             let char_entity = ObjectQueries::game_object_entity(world, ObjectType::Character);
             let hp_bar_entity = {

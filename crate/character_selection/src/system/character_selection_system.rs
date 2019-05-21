@@ -64,7 +64,7 @@ mod tests {
     use std::env;
 
     use amethyst::{audio::AudioBundle, ecs::World, shrev::EventChannel, Error};
-    use amethyst_test::prelude::*;
+    use amethyst_test::{AmethystApplication, PopState, RenderBaseAppExt};
     use application_event::{AppEvent, AppEventReader};
     use asset_model::loaded::SlugAndHandle;
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
@@ -87,7 +87,8 @@ mod tests {
     fn inserts_character_selection_on_select_event() -> Result<(), Error> {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
-        AmethystApplication::render_base("inserts_character_selection_on_select_event", false)
+        AmethystApplication::render_base()
+            .with_app_name("inserts_character_selection_on_select_event")
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_bundle(AudioBundle::default())
             .with_bundle(SpriteLoadingBundle::new())
@@ -133,7 +134,8 @@ mod tests {
     fn removes_character_selection_on_deselect_event() -> Result<(), Error> {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
-        AmethystApplication::render_base("removes_character_selection_on_deselect_event", false)
+        AmethystApplication::render_base()
+            .with_app_name("removes_character_selection_on_deselect_event")
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_bundle(AudioBundle::default())
             .with_bundle(SpriteLoadingBundle::new())

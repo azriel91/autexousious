@@ -53,7 +53,7 @@ mod tests {
     use std::{collections::HashMap, env};
 
     use amethyst::{assets::ProgressCounter, ecs::prelude::*};
-    use amethyst_test::prelude::*;
+    use amethyst_test::{prelude::*, RenderBaseAppExt};
     use asset_loading::AssetDiscovery;
     use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
     use assets_test::{ASSETS_MAP_EMPTY_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
@@ -70,45 +70,44 @@ mod tests {
 
     #[test]
     fn returns_if_map_already_loaded() {
-        assert!(
-            AmethystApplication::render_base("returns_if_map_already_loaded", false)
-                .with_bundle(SequenceLoadingBundle::new())
-                .with_bundle(MapLoadingBundle::new())
-                .with_setup(setup_system_data)
-                .with_setup(load_maps)
-                .with_setup(map_selection(ASSETS_MAP_EMPTY_SLUG.clone()))
-                .with_setup(|world| {
-                    let mut game_loading_status = GameLoadingStatus::new();
-                    game_loading_status.map_loaded = true;
-                    world.add_resource(game_loading_status);
+        assert!(AmethystApplication::render_base()
+            .with_app_name("returns_if_map_already_loaded")
+            .with_bundle(SequenceLoadingBundle::new())
+            .with_bundle(MapLoadingBundle::new())
+            .with_setup(setup_system_data)
+            .with_setup(load_maps)
+            .with_setup(map_selection(ASSETS_MAP_EMPTY_SLUG.clone()))
+            .with_setup(|world| {
+                let mut game_loading_status = GameLoadingStatus::new();
+                game_loading_status.map_loaded = true;
+                world.add_resource(game_loading_status);
 
-                    let layer_entity = world.create_entity().build();
-                    world.add_resource(GameEntities::new(
-                        HashMap::new(),
-                        vec![layer_entity.clone()],
-                    ));
-                    world.add_resource(EffectReturn(layer_entity));
-                })
-                .with_system_single(
-                    MapSelectionSpawningSystem,
-                    MapSelectionSpawningSystem::type_name(),
-                    &[],
-                ) // kcov-ignore
-                .with_assertion(|world| {
-                    let layer_entity = &world.read_resource::<EffectReturn<Entity>>().0;
-                    assert_eq!(
-                        layer_entity,
-                        world
-                            .read_resource::<GameEntities>()
-                            .map_layers
-                            .iter()
-                            .next()
-                            .expect("Expected map layers to have an entity.")
-                    );
-                })
-                .run()
-                .is_ok()
-        );
+                let layer_entity = world.create_entity().build();
+                world.add_resource(GameEntities::new(
+                    HashMap::new(),
+                    vec![layer_entity.clone()],
+                ));
+                world.add_resource(EffectReturn(layer_entity));
+            })
+            .with_system_single(
+                MapSelectionSpawningSystem,
+                MapSelectionSpawningSystem::type_name(),
+                &[],
+            ) // kcov-ignore
+            .with_assertion(|world| {
+                let layer_entity = &world.read_resource::<EffectReturn<Entity>>().0;
+                assert_eq!(
+                    layer_entity,
+                    world
+                        .read_resource::<GameEntities>()
+                        .map_layers
+                        .iter()
+                        .next()
+                        .expect("Expected map layers to have an entity.")
+                );
+            })
+            .run()
+            .is_ok());
     }
 
     #[test]
@@ -118,26 +117,24 @@ mod tests {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::render_base(
-                "spawns_map_layers_when_they_havent_been_spawned",
-                false
-            )
-            .with_bundle(SequenceLoadingBundle::new())
-            .with_bundle(MapLoadingBundle::new())
-            .with_setup(setup_system_data)
-            .with_setup(load_maps)
-            .with_setup(map_selection(ASSETS_MAP_FADE_SLUG.clone()))
-            .with_system_single(
-                MapSelectionSpawningSystem,
-                MapSelectionSpawningSystem::type_name(),
-                &[],
-            ) // kcov-ignore
-            .with_assertion(|world| {
-                assert!(!world.read_resource::<GameEntities>().map_layers.is_empty());
-                assert!(world.read_resource::<GameLoadingStatus>().map_loaded);
-            })
-            .run()
-            .is_ok()
+            AmethystApplication::render_base()
+                .with_app_name("spawns_map_layers_when_they_havent_been_spawned")
+                .with_bundle(SequenceLoadingBundle::new())
+                .with_bundle(MapLoadingBundle::new())
+                .with_setup(setup_system_data)
+                .with_setup(load_maps)
+                .with_setup(map_selection(ASSETS_MAP_FADE_SLUG.clone()))
+                .with_system_single(
+                    MapSelectionSpawningSystem,
+                    MapSelectionSpawningSystem::type_name(),
+                    &[],
+                ) // kcov-ignore
+                .with_assertion(|world| {
+                    assert!(!world.read_resource::<GameEntities>().map_layers.is_empty());
+                    assert!(world.read_resource::<GameLoadingStatus>().map_loaded);
+                })
+                .run()
+                .is_ok()
         );
     }
 
@@ -148,26 +145,24 @@ mod tests {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::render_base(
-                "spawns_map_layers_when_they_havent_been_spawned",
-                false
-            )
-            .with_bundle(SequenceLoadingBundle::new())
-            .with_bundle(MapLoadingBundle::new())
-            .with_setup(setup_system_data)
-            .with_setup(load_maps)
-            .with_setup(map_selection(ASSETS_MAP_EMPTY_SLUG.clone()))
-            .with_system_single(
-                MapSelectionSpawningSystem,
-                MapSelectionSpawningSystem::type_name(),
-                &[],
-            ) // kcov-ignore
-            .with_assertion(|world| {
-                assert!(world.read_resource::<GameEntities>().map_layers.is_empty());
-                assert!(world.read_resource::<GameLoadingStatus>().map_loaded);
-            })
-            .run()
-            .is_ok()
+            AmethystApplication::render_base()
+                .with_app_name("spawns_map_layers_when_they_havent_been_spawned")
+                .with_bundle(SequenceLoadingBundle::new())
+                .with_bundle(MapLoadingBundle::new())
+                .with_setup(setup_system_data)
+                .with_setup(load_maps)
+                .with_setup(map_selection(ASSETS_MAP_EMPTY_SLUG.clone()))
+                .with_system_single(
+                    MapSelectionSpawningSystem,
+                    MapSelectionSpawningSystem::type_name(),
+                    &[],
+                ) // kcov-ignore
+                .with_assertion(|world| {
+                    assert!(world.read_resource::<GameEntities>().map_layers.is_empty());
+                    assert!(world.read_resource::<GameLoadingStatus>().map_loaded);
+                })
+                .run()
+                .is_ok()
         );
     }
 

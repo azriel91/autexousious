@@ -143,7 +143,7 @@ mod test {
         assets::{AssetStorage, Loader, Processor, ProgressCounter},
         renderer::{SpriteSheet, Texture},
     };
-    use amethyst_test::AmethystApplication;
+    use amethyst_test::{AmethystApplication, RenderBaseAppExt};
     use application::{load_in, Format};
     use asset_model::config::AssetRecord;
     use assets_test::{ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SLUG};
@@ -169,7 +169,8 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::render_base("loads_object_assets", false)
+            AmethystApplication::render_base()
+                .with_app_name("loads_object_assets")
                 .with_bundle(CollisionLoadingBundle::new())
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_system(

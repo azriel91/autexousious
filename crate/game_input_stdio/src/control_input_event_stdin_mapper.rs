@@ -82,7 +82,8 @@ mod tests {
 
     #[test]
     fn maps_axis_input() -> Result<(), Error> {
-        AutexousiousApplication::config_base("maps_axis_input", false)
+        AutexousiousApplication::config_base()
+            .with_app_name("maps_axis_input")
             .with_setup(|world| {
                 world.register::<InputControlled>();
 
@@ -119,7 +120,8 @@ mod tests {
 
     #[test]
     fn maps_action_input() -> Result<(), Error> {
-        AutexousiousApplication::config_base("maps_action_input", false)
+        AutexousiousApplication::config_base()
+            .with_app_name("maps_action_input")
             .with_setup(|world| {
                 world.register::<InputControlled>();
 
@@ -156,7 +158,8 @@ mod tests {
 
     #[test]
     fn returns_err_when_no_entity_for_controller_id() -> Result<(), Error> {
-        AutexousiousApplication::config_base("returns_err_when_no_entity_for_controller_id", false)
+        AutexousiousApplication::config_base()
+            .with_app_name("returns_err_when_no_entity_for_controller_id")
             .with_setup(|world| {
                 world.register::<InputControlled>();
 

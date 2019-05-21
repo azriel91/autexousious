@@ -133,7 +133,7 @@ mod tests {
         ecs::{Builder, Entity, Join, SystemData, World},
         Error,
     };
-    use amethyst_test::{AmethystApplication, PopState};
+    use amethyst_test::{AmethystApplication, PopState, RenderBaseAppExt};
     use application_event::{AppEvent, AppEventReader};
     use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
@@ -256,7 +256,8 @@ mod tests {
         FnS: Fn(&mut World) + Send + Sync + 'static,
         FnA: Fn(&mut World) + Send + Sync + 'static,
     {
-        AmethystApplication::render_base(test_name, false)
+        AmethystApplication::render_base()
+            .with_app_name(test_name)
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_bundle(AudioBundle::default())
             .with_bundle(SpriteLoadingBundle::new())

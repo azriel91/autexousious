@@ -2,7 +2,7 @@ use std::path::Path;
 
 use amethyst::{
     assets::{AssetStorage, Handle, Loader, ProgressCounter},
-    renderer::{PngFormat, Texture, TextureMetadata},
+    renderer::{formats::texture::ImageFormat, Texture},
     Error,
 };
 use log::error;
@@ -102,8 +102,7 @@ impl TextureLoader {
     {
         loader.load(
             path,
-            PngFormat,
-            TextureMetadata::srgb(), // TODO: perhaps this should be srgb_scale
+            ImageFormat::default(),
             progress_counter,
             &texture_assets,
         )

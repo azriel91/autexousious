@@ -56,7 +56,7 @@ mod tests {
         renderer::{SpriteRender, SpriteSheet, SpriteSheetHandle, Texture},
         Error,
     };
-    use amethyst_test::AmethystApplication;
+    use amethyst_test::{AmethystApplication, RenderBaseAppExt};
     use application::{load_in, resource::Format};
     use assets_test::ASSETS_CHAR_BAT_PATH;
     use collision_loading::CollisionLoadingBundle;
@@ -88,17 +88,15 @@ mod tests {
 
     #[test]
     fn frame_count_returns_sequence_length_for_sprite_render() -> Result<(), Error> {
-        AmethystApplication::render_base(
-            "frame_count_returns_sequence_length_for_sprite_render",
-            false,
-        )
-        .with_assertion(|world| {
-            let component_sequence = sprite_render_sequence(world);
+        AmethystApplication::render_base()
+            .with_app_name("frame_count_returns_sequence_length_for_sprite_render")
+            .with_assertion(|world| {
+                let component_sequence = sprite_render_sequence(world);
 
-            let component_sequences = ComponentSequences::new(vec![component_sequence]);
-            assert_eq!(2, component_sequences.frame_count());
-        })
-        .run()
+                let component_sequences = ComponentSequences::new(vec![component_sequence]);
+                assert_eq!(2, component_sequences.frame_count());
+            })
+            .run()
     }
 
     #[test]

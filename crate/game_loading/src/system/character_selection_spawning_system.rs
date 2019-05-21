@@ -75,7 +75,7 @@ mod tests {
         ecs::{Builder, Entity},
         Error,
     };
-    use amethyst_test::{AmethystApplication, EffectReturn, PopState};
+    use amethyst_test::{AmethystApplication, EffectReturn, PopState, RenderBaseAppExt};
     use application_event::{AppEvent, AppEventReader};
     use asset_model::loaded::SlugAndHandle;
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
@@ -97,7 +97,8 @@ mod tests {
 
     #[test]
     fn returns_if_augment_status_is_not_prefab() -> Result<(), Error> {
-        AmethystApplication::render_base("returns_if_augment_status_is_not_prefab", false)
+        AmethystApplication::render_base()
+            .with_app_name("returns_if_augment_status_is_not_prefab")
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_bundle(AudioBundle::default())
             .with_bundle(SpriteLoadingBundle::new())
@@ -147,7 +148,8 @@ mod tests {
     fn spawns_characters_when_they_havent_been_spawned() -> Result<(), Error> {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
-        AmethystApplication::render_base("spawns_characters_when_they_havent_been_spawned", false)
+        AmethystApplication::render_base()
+            .with_app_name("spawns_characters_when_they_havent_been_spawned")
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_bundle(AudioBundle::default())
             .with_bundle(SpriteLoadingBundle::new())

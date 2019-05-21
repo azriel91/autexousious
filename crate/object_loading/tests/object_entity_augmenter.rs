@@ -29,7 +29,7 @@ use amethyst::{
     renderer::{Flipped, SpriteRender, Transparent},
     Error,
 };
-use amethyst_test::{AmethystApplication, PopState};
+use amethyst_test::{AmethystApplication, PopState, RenderBaseAppExt};
 use application_event::{AppEvent, AppEventReader};
 use asset_model::loaded::SlugAndHandle;
 use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
@@ -124,7 +124,8 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
         assert!(world.read_storage::<FrameWaitClock>().contains(entity));
     };
 
-    AmethystApplication::render_base("augments_entity_with_object_components", false)
+    AmethystApplication::render_base()
+        .with_app_name("augments_entity_with_object_components")
         .with_custom_event_type::<AppEvent, AppEventReader>()
         .with_bundle(AudioBundle::default())
         .with_bundle(SpriteLoadingBundle::new())

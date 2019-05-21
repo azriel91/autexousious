@@ -251,7 +251,8 @@ mod test {
 
     #[test]
     fn initializes_ui_when_map_selections_waiting() -> Result<(), Error> {
-        AutexousiousApplication::config_base("initializes_ui_when_map_selections_waiting", false)
+        AutexousiousApplication::config_base()
+            .with_app_name("initializes_ui_when_map_selections_waiting")
             .with_resource(input_config())
             .with_system_single(
                 MapSelectionWidgetUiSystem::new(),
@@ -265,7 +266,8 @@ mod test {
 
     #[test]
     fn refreshes_ui_when_selections_select_random() -> Result<(), Error> {
-        AutexousiousApplication::config_base("refreshes_ui_when_selections_select_random", false)
+        AutexousiousApplication::config_base()
+            .with_app_name("refreshes_ui_when_selections_select_random")
             // Set up UI
             .with_resource(input_config())
             // Run this in its own dispatcher, otherwise the LoadingState hasn't had time to

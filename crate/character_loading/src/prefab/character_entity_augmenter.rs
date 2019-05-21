@@ -56,7 +56,7 @@ mod test {
         ecs::{Builder, SystemData, World},
         Error,
     };
-    use amethyst_test::AmethystApplication;
+    use amethyst_test::{AmethystApplication, RenderBaseAppExt};
     use character_model::play::RunCounter;
     use game_input::ControllerInput;
     use object_model::play::{Grounding, HealthPoints};
@@ -82,7 +82,8 @@ mod test {
             assert!(world.read_storage::<Grounding>().contains(entity));
         };
 
-        AmethystApplication::render_base("augments_entity_with_character_components", false)
+        AmethystApplication::render_base()
+            .with_app_name("augments_entity_with_character_components")
             .with_setup(|world| {
                 <CharacterComponentStorages as SystemData>::setup(&mut world.res);
             })

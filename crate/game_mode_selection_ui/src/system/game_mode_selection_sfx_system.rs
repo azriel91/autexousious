@@ -80,7 +80,8 @@ mod tests {
 
     #[test]
     fn plays_sound_on_select_event() -> Result<(), Error> {
-        AutexousiousApplication::config_base("plays_sound_on_select_event", false)
+        AutexousiousApplication::config_base()
+            .with_app_name("plays_sound_on_select_event")
             .with_system(GameModeSelectionSfxSystem::new(), "", &[])
             .with_effect(|world| {
                 let event = MenuEvent::Select(GameModeIndex::StartGame);
