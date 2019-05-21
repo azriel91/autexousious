@@ -7,7 +7,10 @@ use amethyst::{
     audio::AudioBundle,
     core::transform::TransformBundle,
     input::InputBundle,
-    renderer::{types::DefaultBackend, RenderingSystem, SpriteSheet},
+    renderer::{
+        sprite_visibility::SpriteVisibilitySortingSystem, types::DefaultBackend, RenderingSystem,
+        SpriteSheet,
+    },
     ui::UiBundle,
     window::{DisplayConfig, WindowBundle},
     CoreApplication, GameDataBuilder, LogLevelFilter, LoggerConfig,
@@ -107,6 +110,11 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 Processor::<SpriteSheet>::new(),
                 "sprite_sheet_processor",
                 &[],
+            )
+            .with(
+                SpriteVisibilitySortingSystem::new(),
+                "sprite_visibility_system",
+                &["transform_system"],
             )
             .with_thread_local(RenderingSystem::<DefaultBackend, _>::new(
                 RenderGraph::default(),
