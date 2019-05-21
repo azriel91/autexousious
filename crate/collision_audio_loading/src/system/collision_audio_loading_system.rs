@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use amethyst::{
     assets::{AssetStorage, Handle, Loader, ProgressCounter},
-    audio::{AudioFormat, Source},
+    audio::{FlacFormat, Mp3Format, OggFormat, Source, WavFormat},
     ecs::{Read, ReadExpect, System, Write},
 };
 use asset_loading::TomlFormat;
@@ -114,24 +114,34 @@ impl<'s> System<'s> for CollisionAudioLoadingSystem {
                     sfx_to_load
                         .into_iter()
                         .for_each(|(collision_sfx_id, path)| {
-                            let audio_format = match path.extension() {
+                            macro_rules! load {
+                                ($audio_format:expr) => {
+                                    loader.load(
+                                        format!("{}", path.display()),
+                                        $audio_format,
+                                        &mut self.progress_counter,
+                                        &source_assets,
+                                    )
+                                };
+                            }
+                            let source_handle = match path.extension() {
                                 Some(ext) => {
                                     let ext = ext
                                         .to_str()
                                         .expect("Failed to convert extension to unicode string.")
                                         .to_lowercase();
                                     match ext.as_ref() {
-                                        "mp3" => AudioFormat::Mp3,
-                                        "wav" => AudioFormat::Wav,
-                                        "ogg" => AudioFormat::Ogg,
-                                        "flac" => AudioFormat::Flac,
+                                        "mp3" => load!(Mp3Format),
+                                        "wav" => load!(WavFormat),
+                                        "ogg" => load!(OggFormat),
+                                        "flac" => load!(FlacFormat),
                                         ext @ _ => {
                                             error!(
                                                 "Unsupported extension: \"{}\", \
                                                  falling back to `wav`.",
                                                 ext
                                             );
-                                            AudioFormat::Wav
+                                            load!(WavFormat)
                                         }
                                     }
                                 }
@@ -141,15 +151,9 @@ impl<'s> System<'s> for CollisionAudioLoadingSystem {
                                          falling back to `wav`.",
                                         path.display()
                                     );
-                                    AudioFormat::Wav
+                                    load!(WavFormat)
                                 }
                             };
-                            let source_handle = loader.load(
-                                format!("{}", path.display()),
-                                audio_format,
-                                &mut self.progress_counter,
-                                &source_assets,
-                            );
                             collision_sfx_map.insert(*collision_sfx_id, source_handle);
                         });
 
