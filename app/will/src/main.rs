@@ -3,11 +3,11 @@
 use std::process;
 
 use amethyst::{
-    assets::HotReloadBundle,
+    assets::{HotReloadBundle, Processor},
     audio::AudioBundle,
     core::transform::TransformBundle,
     input::InputBundle,
-    renderer::{types::DefaultBackend, RenderingSystem},
+    renderer::{types::DefaultBackend, RenderingSystem, SpriteSheet},
     ui::UiBundle,
     window::{DisplayConfig, WindowBundle},
     CoreApplication, GameDataBuilder, LogLevelFilter, LoggerConfig,
@@ -103,6 +103,11 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(WindowBundle::from_config(display_config))?
             .with_bundle(AudioBundle::default())?
             .with_bundle(TransformBundle::new())?
+            .with(
+                Processor::<SpriteSheet>::new(),
+                "sprite_sheet_processor",
+                &[],
+            )
             .with_thread_local(RenderingSystem::<DefaultBackend, _>::new(
                 RenderGraph::default(),
             ))
