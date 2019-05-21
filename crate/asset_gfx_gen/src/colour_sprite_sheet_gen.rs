@@ -286,42 +286,19 @@ impl ColourSpriteSheetGen {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::{
-        assets::Processor,
-        core::TransformBundle,
-        ecs::Resources,
-        renderer::{
-            rendy::{factory::Factory, graph::GraphBuilder},
-            sprite::{SpriteRender, SpriteSheet},
-            types::DefaultBackend,
-            GraphCreator, RenderingSystem,
-        },
-        Error,
-    };
-    use amethyst_test::AmethystApplication;
+    use amethyst::{renderer::sprite::SpriteRender, Error};
+    use amethyst_test::{AmethystApplication, RenderBaseAppExt};
     use approx::relative_eq;
 
     use super::ColourSpriteSheetGen;
     use crate::{ColourSpriteSheetGenData, ColourSpriteSheetParams};
-    use inject::SystemLocalInjectionBundle;
 
     #[test]
     fn solid_returns_sprite_render() -> Result<(), Error> {
         const RED: [f32; 4] = [1., 0.2, 0.1, 1.];
 
-        AmethystApplication::blank()
+        AmethystApplication::render_base()
             .with_app_name("solid_returns_sprite_render")
-            .with_bundle(TransformBundle::new())
-            .with_system(
-                Processor::<SpriteSheet>::new(),
-                "sprite_sheet_processor",
-                &[],
-            )
-            .with_bundle_fn(|| {
-                SystemLocalInjectionBundle::new(RenderingSystem::<DefaultBackend, _>::new(
-                    RenderGraphEmpty::default(),
-                ))
-            })
             .with_setup(|world| {
                 let sprite_render = {
                     let colour_sprite_gen_data = world.system_data::<ColourSpriteSheetGenData>();
@@ -354,19 +331,8 @@ mod tests {
         const COLOUR_BEGIN: [f32; 4] = [1., 0., 0., 0.5];
         const COLOUR_END: [f32; 4] = [0., 1., 0., 1.];
 
-        AmethystApplication::blank()
+        AmethystApplication::render_base()
             .with_app_name("gradient_returns_sprite_render")
-            .with_bundle(TransformBundle::new())
-            .with_system(
-                Processor::<SpriteSheet>::new(),
-                "sprite_sheet_processor",
-                &[],
-            )
-            .with_bundle_fn(|| {
-                SystemLocalInjectionBundle::new(RenderingSystem::<DefaultBackend, _>::new(
-                    RenderGraphEmpty::default(),
-                ))
-            })
             .with_setup(|world| {
                 let sprite_render = {
                     let colour_sprite_gen_data = world.system_data::<ColourSpriteSheetGenData>();
@@ -829,53 +795,5 @@ mod tests {
             [-0.2, 0.2, 0., 0.1],
             ColourSpriteSheetGen::channel_steps(sprite_count, colour_begin, colour_end,)
         )
-    }
-
-    #[derive(Default)]
-    struct RenderGraphEmpty;
-
-    impl GraphCreator<DefaultBackend> for RenderGraphEmpty {
-        fn rebuild(&mut self, _res: &Resources) -> bool {
-            false
-        }
-
-        fn builder(
-            &mut self,
-            _factory: &mut Factory<DefaultBackend>,
-            _res: &Resources,
-        ) -> GraphBuilder<DefaultBackend, Resources> {
-            GraphBuilder::new()
-        }
-    }
-
-    mod inject {
-        use std::marker::PhantomData;
-
-        use amethyst::{core::bundle::SystemBundle, ecs::prelude::*, error::Error};
-        use derive_new::new;
-
-        /// Adds a specified thread local `System` to the dispatcher.
-        #[derive(Debug, new)]
-        pub struct SystemLocalInjectionBundle<Sys>
-        where
-            Sys: for<'s> RunNow<'s>,
-        {
-            /// `System` to add to the dispatcher.
-            system: Sys,
-            /// Marker for `'a` lifetime.
-            #[new(default)]
-            system_marker: PhantomData<Sys>,
-        }
-
-        impl<'a, 'b, Sys> SystemBundle<'a, 'b> for SystemLocalInjectionBundle<Sys>
-        where
-            Sys: for<'s> RunNow<'s> + 'b,
-        {
-            fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
-                builder.add_thread_local(self.system);
-                Ok(())
-            }
-        }
-
     }
 }
