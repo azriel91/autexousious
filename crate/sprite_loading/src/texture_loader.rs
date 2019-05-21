@@ -1,8 +1,8 @@
 use std::path::Path;
 
 use amethyst::{
-    assets::{AssetStorage, Loader, ProgressCounter},
-    renderer::{PngFormat, Texture, TextureHandle, TextureMetadata},
+    assets::{AssetStorage, Handle, Loader, ProgressCounter},
+    renderer::{PngFormat, Texture, TextureMetadata},
     Error,
 };
 use log::error;
@@ -27,7 +27,7 @@ impl TextureLoader {
         texture_assets: &AssetStorage<Texture>,
         object_directory: &Path,
         sprite_sheet_definitions: &[SpriteSheetDefinition],
-    ) -> Result<Vec<TextureHandle>, Error> {
+    ) -> Result<Vec<Handle<Texture>>, Error> {
         let texture_results = sprite_sheet_definitions
             .iter()
             .map(|sheet_definition| {
@@ -47,7 +47,7 @@ impl TextureLoader {
                     String::from(sprite_image_path),
                 ))
             })
-            .collect::<Vec<Result<TextureHandle, String>>>();
+            .collect::<Vec<Result<Handle<Texture>, String>>>();
 
         {
             let failed_to_load = texture_results
@@ -76,12 +76,12 @@ impl TextureLoader {
         let texture_handles = texture_results
             .into_iter()
             .map(Result::unwrap)
-            .collect::<Vec<TextureHandle>>();
+            .collect::<Vec<Handle<Texture>>>();
 
         Ok(texture_handles)
     }
 
-    /// Returns a `TextureHandle` to the image.
+    /// Returns a `Handle<Texture>` to the image.
     ///
     /// This function expects the image to be in PNG format.
     ///
@@ -96,7 +96,7 @@ impl TextureLoader {
         loader: &Loader,
         texture_assets: &AssetStorage<Texture>,
         path: N,
-    ) -> TextureHandle
+    ) -> Handle<Texture>
     where
         N: Into<String>,
     {

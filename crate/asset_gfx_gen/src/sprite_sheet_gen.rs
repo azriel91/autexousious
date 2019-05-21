@@ -1,4 +1,10 @@
-use amethyst::renderer::{Sprite, SpriteSheet, TextureCoordinates, TextureHandle};
+use amethyst::{
+    assets::Handle,
+    renderer::{
+        sprite::{Sprite, SpriteSheet, TextureCoordinates},
+        Texture,
+    },
+};
 
 use crate::{ColourSpriteSheetParams, SpriteGenParams};
 
@@ -18,7 +24,7 @@ impl SpriteSheetGen {
     /// Returns a `SpriteSheet` whose sprites' texture coordinates use a grid layout.
     pub fn generate(
         self,
-        texture_handle: TextureHandle,
+        texture_handle: Handle<Texture>,
         params: ColourSpriteSheetParams,
         sprite_count: usize,
         image_w: u32,

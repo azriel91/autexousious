@@ -32,7 +32,7 @@ impl ColourSpriteSheetGen {
         let sprite_sheet_handle = {
             let texture_handle =
                 loader.load_from_data(TextureData::from(colour), (), &texture_assets);
-            let sprite = Sprite::from_pixel_values(1, 1, 1, 1, 0, 0, [0.; 2]);
+            let sprite = Sprite::from_pixel_values(1, 1, 1, 1, 0, 0, [0.; 2], false, false);
             let sprites = vec![sprite];
 
             let sprite_sheet = SpriteSheet {

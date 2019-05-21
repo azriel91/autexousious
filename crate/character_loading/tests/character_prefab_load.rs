@@ -1,9 +1,12 @@
 use std::collections::HashMap;
 
 use amethyst::{
-    assets::{AssetStorage, Loader, Prefab, PrefabLoader},
+    assets::{AssetStorage, Handle, Loader, Prefab, PrefabLoader},
     ecs::{Builder, Entity, Read, ReadExpect, World},
-    renderer::{Sprite, SpriteSheet, SpriteSheetHandle, Texture, TextureHandle},
+    renderer::{
+        sprite::{Sprite, SpriteSheet, SpriteSheetHandle},
+        Texture,
+    },
     Error,
 };
 use amethyst_test::AmethystApplication;
@@ -159,7 +162,8 @@ fn character_definition() -> CharacterDefinition {
 fn sprite_sheet_handles(world: &World) -> Vec<SpriteSheetHandle> {
     let loader = world.read_resource::<Loader>();
     let texture_assets = world.read_resource::<AssetStorage<Texture>>();
-    let texture_handle: TextureHandle = loader.load_from_data([0.; 4].into(), (), &texture_assets);
+    let texture_handle: Handle<Texture> =
+        loader.load_from_data([0.; 4].into(), (), &texture_assets);
 
     let image_w = 1;
     let image_h = 1;

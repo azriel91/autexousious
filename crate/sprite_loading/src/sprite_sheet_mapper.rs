@@ -1,4 +1,7 @@
-use amethyst::renderer::{SpriteSheet, TextureHandle};
+use amethyst::{
+    assets::Handle,
+    renderer::{sprite::SpriteSheet, Texture},
+};
 use asset_gfx_gen::{SpriteGenParams, SpriteSheetGen};
 use log::trace;
 use sprite_model::config::SpriteSheetDefinition;
@@ -14,7 +17,7 @@ impl SpriteSheetMapper {
     /// * `texture_handles`: Handles of the sprite sheets' textures.
     /// * `sprite_sheet_definitions`: List of metadata for sprite sheets to map.
     pub(crate) fn map(
-        texture_handles: &[TextureHandle],
+        texture_handles: &[Handle<Texture>],
         sprite_sheet_definitions: &[SpriteSheetDefinition],
     ) -> Vec<SpriteSheet> {
         sprite_sheet_definitions
@@ -33,7 +36,7 @@ impl SpriteSheetMapper {
     /// * `texture_handle`: Handle of the sprite sheet's texture.
     /// * `definition`: Definition of the sprite layout on the sprite sheet.
     fn definition_to_sprite_sheet(
-        texture_handle: TextureHandle,
+        texture_handle: Handle<Texture>,
         definition: &SpriteSheetDefinition,
     ) -> SpriteSheet {
         let mut sprites =
@@ -139,9 +142,9 @@ impl SpriteSheetMapper {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        assets::{AssetStorage, Loader, ProgressCounter},
+        assets::{AssetStorage, Handle, Loader, ProgressCounter},
         ecs::World,
-        renderer::{SpriteSheet, Texture, TextureHandle},
+        renderer::{SpriteSheet, Texture},
         Error,
     };
     use amethyst_test::AmethystApplication;
@@ -381,7 +384,7 @@ mod test {
     fn test_texture_handles(
         world: &mut World,
         sprite_sheet_definitions: &[SpriteSheetDefinition],
-    ) -> Vec<TextureHandle> {
+    ) -> Vec<Handle<Texture>> {
         let loader = world.read_resource::<Loader>();
         let texture_assets = world.read_resource::<AssetStorage<Texture>>();
 
