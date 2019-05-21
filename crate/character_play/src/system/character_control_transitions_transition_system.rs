@@ -438,7 +438,8 @@ mod tests {
         control_action_event_fn: Option<fn(Entity) -> ControlActionEventData>,
         expected_sequence_id: CharacterSequenceId,
     ) -> Result<(), Error> {
-        AutexousiousApplication::game_base(test_name, false)
+        AutexousiousApplication::game_base()
+            .with_app_name(test_name)
             .with_system(CharacterControlTransitionsTransitionSystem::new(), "", &[])
             .with_setup(move |world| {
                 let entity = ObjectQueries::game_object_entity(world, ObjectType::Character);

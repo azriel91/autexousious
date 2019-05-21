@@ -171,7 +171,8 @@ mod tests {
     #[test]
     fn updates_all_frame_components_on_sequence_begin_event() -> Result<(), Error> {
         let test_name = "updates_all_frame_components_on_sequence_begin_event";
-        AutexousiousApplication::game_base(test_name, false)
+        AutexousiousApplication::game_base()
+            .with_app_name(test_name)
             .with_system(FrameComponentUpdateSystem::new(), "", &[])
             .with_setup(|world| {
                 let component_sequences_handle = SequenceQueries::component_sequences_handle(
@@ -202,7 +203,8 @@ mod tests {
     #[test]
     fn updates_all_frame_components_on_frame_begin_event() -> Result<(), Error> {
         let test_name = "updates_all_frame_components_on_frame_begin_event";
-        AutexousiousApplication::game_base(test_name, false)
+        AutexousiousApplication::game_base()
+            .with_app_name(test_name)
             .with_system(FrameComponentUpdateSystem::new(), "", &[])
             .with_setup(|world| {
                 let component_sequences_handle = SequenceQueries::component_sequences_handle(

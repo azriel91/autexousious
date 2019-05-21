@@ -117,7 +117,8 @@ mod tests {
     #[test]
     fn updates_transitions_on_sequence_begin_event() -> Result<(), Error> {
         let test_name = "updates_transitions_on_sequence_begin_event";
-        AutexousiousApplication::game_base(test_name, false)
+        AutexousiousApplication::game_base()
+            .with_app_name(test_name)
             .with_system(CharacterControlTransitionsUpdateSystem::new(), "", &[])
             .with_setup(|world| {
                 let character_cts_handle = SequenceQueries::character_cts_handle(
@@ -144,7 +145,8 @@ mod tests {
     #[test]
     fn updates_transitions_on_frame_begin_event() -> Result<(), Error> {
         let test_name = "updates_transitions_on_frame_begin_event";
-        AutexousiousApplication::game_base(test_name, false)
+        AutexousiousApplication::game_base()
+            .with_app_name(test_name)
             .with_system(CharacterControlTransitionsUpdateSystem::new(), "", &[])
             .with_setup(|world| {
                 let character_cts_handle = SequenceQueries::character_cts_handle(
