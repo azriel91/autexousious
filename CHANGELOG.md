@@ -8,10 +8,13 @@
 * `hit_limit` determines the number of objects that the hitter can hit. ([#103])
 * `repeat_delay` specifies number of ticks that must pass before an object can be `hit` by the same hitter. ([#103])
 * Control input `transitions` can be specified per frame. ([#96])
+* Added `--frame_rate` argument to control application frame rate. ([#117])
 * Added `stand_attack_1` sequence. ([#117])
 * Added `jump_attack` sequence. ([#117])
 * Added `dash_attack` sequence. ([#117])
-* Added `--frame_rate` argument to control application frame rate. ([#117])
+* Added `dazed` sequence. ([#118])
+* `StunPoints` status attribute on `Characters`. ([#118])
+* Characters switch to different sequences depending on their accumulated `StunPoints`. ([#118])
 * Players can now return to game mode selection from the character selection UI. ([#110])
 * Players can now return to character mode selection from the map selection UI. ([#120])
 * Play a sound when a character hits another. ([#124])
@@ -31,7 +34,7 @@
 * Improved clarity of character selection UI. ([#110])
 * Improved clarity of map selection UI. ([#120])
 * Use control input for game mode selection UI. ([#122])
-* `Jump` and `Dash` sequence velocities and gravity have been approximately halved. ([#128])
+* `jump` and `dash` sequence velocities and gravity have been approximately halved. ([#128])
 * Freeze character position when `FrameFreezeClock` is ongoing. ([#128])
 
 ### Fixed
@@ -43,6 +46,7 @@
 [#110]: https://gitlab.com/azriel91/autexousious/issues/110
 [#114]: https://gitlab.com/azriel91/autexousious/issues/114
 [#117]: https://gitlab.com/azriel91/autexousious/issues/117
+[#118]: https://gitlab.com/azriel91/autexousious/issues/118
 [#120]: https://gitlab.com/azriel91/autexousious/issues/120
 [#122]: https://gitlab.com/azriel91/autexousious/issues/122
 [#124]: https://gitlab.com/azriel91/autexousious/issues/124

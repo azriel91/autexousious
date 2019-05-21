@@ -859,6 +859,7 @@ dependencies = [
  "game_input_model 0.10.0",
  "object_loading 0.10.0",
  "object_model 0.10.0",
+ "object_status_model 0.11.0",
  "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "sequence_loading 0.1.0",
  "sequence_model 0.10.0",
@@ -1190,6 +1191,7 @@ dependencies = [
  "logic_clock 0.10.0",
  "minterpolate 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "numeric_newtype_derive 0.10.0",
+ "object_status_model 0.11.0",
  "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "sequence_model_spi 0.10.0",
  "serde 1.0.91 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1210,6 +1212,7 @@ dependencies = [
  "collision_model 0.10.0",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "logic_clock 0.10.0",
+ "object_status_model 0.11.0",
  "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "shape_model 0.10.0",
  "slotmap 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2230,6 +2233,8 @@ dependencies = [
  "named_type_derive 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "object_loading 0.10.0",
  "object_model 0.10.0",
+ "object_status_model 0.11.0",
+ "object_status_play 0.11.0",
  "sequence_model 0.10.0",
  "shape_model 0.10.0",
  "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -3568,6 +3573,7 @@ dependencies = [
  "logic_clock 0.10.0",
  "numeric_newtype_derive 0.10.0",
  "object_model_derive 0.10.0",
+ "object_status_model 0.11.0",
  "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "sequence_model 0.10.0",
  "sequence_model_spi 0.10.0",
@@ -3589,6 +3595,32 @@ dependencies = [
  "proc_macro_roids 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 0.6.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "syn 0.15.34 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "object_status_model"
+version = "0.11.0"
+dependencies = [
+ "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=bug/1595/segfault-with-multiple-audio-tests)",
+ "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive_deref 1.0.2 (git+https://github.com/azriel91/derive_deref.git?branch=feature/allow-phantom-data-second-field)",
+ "derive_more 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "numeric_newtype_derive 0.10.0",
+ "serde 1.0.91 (registry+https://github.com/rust-lang/crates.io-index)",
+ "specs-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "object_status_play"
+version = "0.11.0"
+dependencies = [
+ "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=bug/1595/segfault-with-multiple-audio-tests)",
+ "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=bug/1595/segfault-with-multiple-audio-tests)",
+ "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "object_status_model 0.11.0",
+ "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

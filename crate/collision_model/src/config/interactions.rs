@@ -33,6 +33,7 @@ impl From<Interactions> for Result<ProcessingState<Interactions>, Error> {
 
 #[cfg(test)]
 mod tests {
+    use object_status_model::config::StunPoints;
     use serde::Deserialize;
     use shape_model::Volume;
     use toml;
@@ -42,8 +43,8 @@ mod tests {
 
     const ITR_PHYSICAL_ALL_SPECIFIED: &str = "
         interactions = [
-          { hit = { repeat_delay = 5, hit_limit = \"unlimited\", hp_damage = 40, sp_damage = 50 }, \
-            bounds = [{ sphere = { x = 1, y = 1, r = 1 } }], multiple = true },
+          { hit = { repeat_delay = 5, hit_limit = \"unlimited\", hp_damage = 40, sp_damage = 50, \
+            stun = 33 }, bounds = [{ sphere = { x = 1, y = 1, r = 1 } }], multiple = true },
         ]
     ";
     const ITR_PHYSICAL_MINIMUM_SPECIFIED: &str = r#"
@@ -68,6 +69,7 @@ mod tests {
                 hit_limit: HitLimit::Unlimited,
                 hp_damage: 40,
                 sp_damage: 50,
+                stun: StunPoints::new(33),
             }),
             bounds: vec![Volume::Sphere {
                 x: 1,
@@ -115,6 +117,7 @@ mod tests {
                 hit_limit: HitLimit::Limit(2),
                 hp_damage: 0,
                 sp_damage: 0,
+                stun: StunPoints::default(),
             }),
             multiple: Default::default(),
         }]; // kcov-ignore

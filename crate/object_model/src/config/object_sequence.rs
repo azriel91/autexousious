@@ -39,6 +39,7 @@ mod tests {
         Body, Hit, HitLimit, HitRepeatDelay, Interaction, InteractionKind, Interactions,
     };
     use derivative::Derivative;
+    use object_status_model::config::StunPoints;
     use sequence_model::config::{SequenceId, Wait};
     use serde::{Deserialize, Serialize};
     use shape_model::Volume;
@@ -177,6 +178,7 @@ mod tests {
                 hit_limit: HitLimit::default(),
                 hp_damage: 0,
                 sp_damage: 0,
+                stun: StunPoints::default(),
             }),
             bounds: vec![Volume::Sphere {
                 x: 1,

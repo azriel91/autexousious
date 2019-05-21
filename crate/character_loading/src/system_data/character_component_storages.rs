@@ -3,6 +3,7 @@ use character_model::play::RunCounter;
 use derivative::Derivative;
 use game_input::ControllerInput;
 use object_model::play::{Grounding, HealthPoints};
+use object_status_model::config::StunPoints;
 use shred_derive::SystemData;
 
 /// Character specific `Component` storages.
@@ -18,6 +19,9 @@ pub struct CharacterComponentStorages<'s> {
     /// `HealthPoints` component storage.
     #[derivative(Debug = "ignore")]
     pub health_pointses: WriteStorage<'s, HealthPoints>,
+    /// `StunPoints` component storage.
+    #[derivative(Debug = "ignore")]
+    pub stun_pointses: WriteStorage<'s, StunPoints>,
     /// `RunCounter` component storage.
     #[derivative(Debug = "ignore")]
     pub run_counters: WriteStorage<'s, RunCounter>,

@@ -158,6 +158,7 @@ mod tests {
         Body, Hit, HitLimit, HitRepeatDelay, Interaction, InteractionKind, Interactions,
     };
     use object_loading::FrameComponentStorages;
+    use object_status_model::config::StunPoints;
     use sequence_model::{
         config::Wait,
         loaded::ComponentSequencesHandle,
@@ -326,6 +327,7 @@ mod tests {
                 hit_limit: HitLimit::default(),
                 hp_damage: 20,
                 sp_damage: 0,
+                stun: StunPoints::default(),
             }),
             bounds: vec![Volume::Box {
                 x: 16,
@@ -357,6 +359,7 @@ mod tests {
                 hit_limit: HitLimit::default(),
                 hp_damage: 20,
                 sp_damage: 0,
+                stun: StunPoints::default(),
             }),
             bounds: vec![Volume::Box {
                 x: 81,

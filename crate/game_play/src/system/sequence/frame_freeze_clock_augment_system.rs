@@ -67,7 +67,7 @@ mod tests {
     };
     use amethyst_test::AmethystApplication;
     use collision_model::{
-        config::{Hit, HitLimit, HitRepeatDelay, Interaction, InteractionKind},
+        config::{Hit, Interaction, InteractionKind},
         play::HitEvent,
     };
     use logic_clock::LogicClock;
@@ -137,11 +137,7 @@ mod tests {
     } // kcov-ignore
 
     fn interaction() -> Interaction {
-        Interaction::new(
-            InteractionKind::Hit(Hit::new(HitRepeatDelay::new(4), HitLimit::Unlimited, 0, 0)),
-            vec![],
-            true,
-        )
+        Interaction::new(InteractionKind::Hit(Hit::default()), vec![], true)
     }
 
     fn body() -> Volume {
