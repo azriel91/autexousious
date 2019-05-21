@@ -244,8 +244,8 @@ mod test {
     };
     use amethyst_test::AmethystApplication;
     use game_input_model::{
-        Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent,
-        PlayerActionControl, PlayerAxisControl,
+        Axis, AxisEventData, ControlAction, ControlActionEventData, ControlBindings,
+        ControlInputEvent,
     };
     use strum::IntoEnumIterator;
     use strum_macros::{Display, EnumIter, EnumString};
@@ -437,7 +437,7 @@ mod test {
             menu_events,
         }: ExpectedParams<TestIndex>,
     ) -> Result<(), Error> {
-        AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
+        AmethystApplication::ui_base::<ControlBindings>()
             .with_app_name(test_name)
             .with_system(
                 MenuItemWidgetInputSystem::<TestIndex>::new(),

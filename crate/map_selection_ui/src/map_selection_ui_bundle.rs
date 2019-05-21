@@ -52,7 +52,7 @@ mod test {
     use amethyst::Error;
     use amethyst_test::AmethystApplication;
     use game_input::GameInputBundle;
-    use game_input_model::{PlayerActionControl, PlayerAxisControl};
+    use game_input_model::ControlBindings;
 
     use super::MapSelectionUiBundle;
 
@@ -60,7 +60,7 @@ mod test {
     fn bundle_build_should_succeed() -> Result<(), Error> {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
-        AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
+        AmethystApplication::ui_base::<ControlBindings>()
             .with_bundle(GameInputBundle::new())
             .with_bundle(MapSelectionUiBundle::new())
             .run()

@@ -52,7 +52,7 @@ mod test {
     use amethyst::{input::InputBundle, renderer::ScreenDimensions, shrev::EventChannel, Error};
     use amethyst_test::{AmethystApplication, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
     use game_input::GameInputBundle;
-    use game_input_model::{PlayerActionControl, PlayerAxisControl};
+    use game_input_model::ControlBindings;
     use stdio_spi::VariantAndTokens;
 
     use super::GameInputStdioBundle;
@@ -63,7 +63,7 @@ mod test {
 
         AmethystApplication::blank()
             .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
-            .with_bundle(InputBundle::<PlayerAxisControl, PlayerActionControl>::new())
+            .with_bundle(InputBundle::<ControlBindings>::new())
             .with_bundle(GameInputBundle::new())
             .with_bundle(GameInputStdioBundle::new())
             // kcov-ignore-start

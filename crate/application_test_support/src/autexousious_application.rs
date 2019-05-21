@@ -10,7 +10,7 @@ use character_selection::CharacterSelectionBundle;
 use character_selection_model::{CharacterSelections, CharacterSelectionsStatus};
 use collision_audio_loading::CollisionAudioLoadingBundle;
 use collision_loading::CollisionLoadingBundle;
-use game_input_model::{PlayerActionControl, PlayerAxisControl};
+use game_input_model::ControlBindings;
 use game_loading::GameLoadingState;
 use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
@@ -33,7 +33,7 @@ impl AutexousiousApplication {
     /// This has the same effect as calling `AmethystApplication::base::<PlayerAxisControl,
     /// PlayerActionControl>()`.
     pub fn ui_base() -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader> {
-        AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
+        AmethystApplication::ui_base::<ControlBindings>()
             .with_custom_event_type::<AppEvent, AppEventReader>()
     }
 
@@ -81,7 +81,7 @@ impl AutexousiousApplication {
         N: Into<&'name str>,
     {
         AutexousiousApplication::render_base(test_name, visibility)
-            .with_ui_bundles::<PlayerAxisControl, PlayerActionControl>()
+            .with_ui_bundles::<ControlBindings>()
     }
 
     /// Returns an application with game assets loaded.
@@ -152,7 +152,7 @@ impl AutexousiousApplication {
 #[cfg(test)]
 mod test {
     use amethyst::{input::InputHandler, ui::Interactable, Error};
-    use game_input_model::{PlayerActionControl, PlayerAxisControl};
+    use game_input_model::ControlBindings;
     use game_model::{
         loaded::{CharacterAssets, MapAssets},
         play::GameEntities,
@@ -167,7 +167,7 @@ mod test {
         AutexousiousApplication::ui_base()
             .with_assertion(|world| {
                 // Panics if the type parameters used are not these ones.
-                world.read_resource::<InputHandler<PlayerAxisControl, PlayerActionControl>>();
+                world.read_resource::<InputHandler<ControlBindings>>();
                 world.read_storage::<Interactable>();
             })
             .run()
@@ -181,7 +181,7 @@ mod test {
         )
         .with_assertion(|world| {
             // Panics if the type parameters used are not these ones.
-            world.read_resource::<InputHandler<PlayerAxisControl, PlayerActionControl>>();
+            world.read_resource::<InputHandler<ControlBindings>>();
             world.read_storage::<Interactable>();
         })
         .run()

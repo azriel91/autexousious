@@ -93,8 +93,8 @@ mod test {
     };
     use amethyst_test::AmethystApplication;
     use game_input_model::{
-        Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent,
-        PlayerActionControl, PlayerAxisControl,
+        Axis, AxisEventData, ControlAction, ControlActionEventData, ControlBindings,
+        ControlInputEvent,
     };
     use typename::TypeName;
 
@@ -103,7 +103,7 @@ mod test {
 
     #[test]
     fn inserts_controller_input_if_non_existent() -> Result<(), Error> {
-        AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
+        AmethystApplication::ui_base::<ControlBindings>()
             .with_system(
                 ControllerInputUpdateSystem::new(),
                 ControllerInputUpdateSystem::type_name(),
@@ -155,7 +155,7 @@ mod test {
 
     #[test]
     fn updates_controller_input_from_control_input_events() -> Result<(), Error> {
-        AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
+        AmethystApplication::ui_base::<ControlBindings>()
             .with_system(
                 ControllerInputUpdateSystem::new(),
                 ControllerInputUpdateSystem::type_name(),

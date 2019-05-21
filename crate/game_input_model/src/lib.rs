@@ -20,6 +20,7 @@ extern crate hamcrest;
 pub use crate::{
     axis::Axis,
     control_action::ControlAction,
+    control_bindings::ControlBindings,
     controller_config::ControllerConfig,
     controller_id::ControllerId,
     event::{AxisEventData, ControlActionEventData, ControlInputEvent},
@@ -30,6 +31,7 @@ pub use crate::{
 
 mod axis;
 mod control_action;
+mod control_bindings;
 mod controller_config;
 mod controller_id;
 mod event;
