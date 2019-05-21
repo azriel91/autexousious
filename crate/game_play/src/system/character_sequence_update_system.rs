@@ -1,7 +1,4 @@
-use amethyst::{
-    ecs::{Entities, Join, ReadStorage, System, WriteStorage},
-    renderer::Flipped,
-};
+use amethyst::ecs::{Entities, Join, ReadStorage, System, WriteStorage};
 use character_model::{config::CharacterSequenceId, play::RunCounter};
 use character_play::{
     CharacterSequenceUpdateComponents, CharacterSequenceUpdater, MirroredUpdater, RunCounterUpdater,
@@ -31,7 +28,6 @@ pub struct CharacterSequenceUpdateSystemData<'s> {
     sequence_statuses: WriteStorage<'s, SequenceStatus>,
     mirroreds: WriteStorage<'s, Mirrored>,
     groundings: WriteStorage<'s, Grounding>,
-    flippeds: WriteStorage<'s, Flipped>,
 }
 
 impl<'s> System<'s> for CharacterSequenceUpdateSystem {
@@ -51,7 +47,6 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             mut sequence_statuses,
             mut mirroreds,
             mut groundings,
-            mut flippeds,
         }: Self::SystemData,
     ) {
         for (
@@ -65,7 +60,6 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             sequence_status,
             mirrored,
             grounding,
-            flipped,
         ) in (
             &entities,
             &controller_inputs,
@@ -77,7 +71,6 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             &mut sequence_statuses,
             &mut mirroreds,
             &mut groundings,
-            &mut flippeds,
         )
             .join()
         {
@@ -115,10 +108,12 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             *mirrored =
                 MirroredUpdater::update(controller_input, *character_sequence_id, *mirrored);
 
-            *flipped = if mirrored.0 {
-                Flipped::Horizontal
+            if mirrored.0 {
+                unimplemented!("Flip the sprite, possibly using a transform?")
+            // Flipped::Horizontal
             } else {
-                Flipped::None
+                unimplemented!("Don't flip the sprite")
+                // Flipped::None
             };
 
             if let Some(next_character_sequence_id) = next_character_sequence_id {
@@ -138,7 +133,6 @@ mod tests {
     use amethyst::{
         assets::AssetStorage,
         ecs::{Join, Read, ReadExpect, ReadStorage, WriteStorage},
-        renderer::Flipped,
         Error,
     };
     use application_test_support::AutexousiousApplication;
@@ -168,7 +162,6 @@ mod tests {
             ExpectedParams {
                 sequence_id: CharacterSequenceId::Walk,
                 mirrored: Mirrored(true),
-                flipped: Flipped::Horizontal,
             },
         )
     }
@@ -188,7 +181,6 @@ mod tests {
             ExpectedParams {
                 sequence_id: CharacterSequenceId::Walk,
                 mirrored: Mirrored(false),
-                flipped: Flipped::None,
             },
         )
     }
@@ -203,7 +195,6 @@ mod tests {
         ExpectedParams {
             sequence_id: expected_sequence_id,
             mirrored: expected_mirrored,
-            flipped: expected_flipped,
         }: ExpectedParams,
     ) -> Result<(), Error> {
         AutexousiousApplication::game_base(test_name, false)
@@ -259,24 +250,17 @@ mod tests {
             ) // kcov-ignore
             .with_assertion(move |world| {
                 world.exec(
-                    |(character_sequence_ids, sequence_statuses, mirroreds, flippeds): (
+                    |(character_sequence_ids, sequence_statuses, mirroreds): (
                         ReadStorage<'_, CharacterSequenceId>,
                         ReadStorage<'_, SequenceStatus>,
                         ReadStorage<'_, Mirrored>,
-                        ReadStorage<'_, Flipped>,
                     )| {
-                        for (character_sequence_id, sequence_status, mirrored, flipped) in (
-                            &character_sequence_ids,
-                            &sequence_statuses,
-                            &mirroreds,
-                            &flippeds,
-                        )
-                            .join()
+                        for (character_sequence_id, sequence_status, mirrored) in
+                            (&character_sequence_ids, &sequence_statuses, &mirroreds).join()
                         {
                             assert_eq!(expected_sequence_id, *character_sequence_id);
                             assert_eq!(SequenceStatus::Begin, *sequence_status);
                             assert_eq!(expected_mirrored, *mirrored);
-                            assert_eq!(expected_flipped, *flipped);
                         }
                     },
                 );
@@ -306,6 +290,5 @@ mod tests {
     struct ExpectedParams {
         sequence_id: CharacterSequenceId,
         mirrored: Mirrored,
-        flipped: Flipped,
     }
 }

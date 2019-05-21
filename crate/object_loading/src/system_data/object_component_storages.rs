@@ -1,8 +1,4 @@
-use amethyst::{
-    core::Transform,
-    ecs::WriteStorage,
-    renderer::{transparent::Transparent, Flipped},
-};
+use amethyst::{core::Transform, ecs::WriteStorage, renderer::transparent::Transparent};
 use derivative::Derivative;
 use object_model::play::{Mirrored, Position, Velocity};
 use sequence_model::{
@@ -25,9 +21,6 @@ pub struct ObjectComponentStorages<'s, SeqId>
 where
     SeqId: SequenceId + 'static,
 {
-    /// `Flipped` component storage.
-    #[derivative(Debug = "ignore")]
-    pub flippeds: WriteStorage<'s, Flipped>,
     /// `Transparent` component storage.
     #[derivative(Debug = "ignore")]
     pub transparents: WriteStorage<'s, Transparent>,

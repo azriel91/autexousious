@@ -2,7 +2,7 @@ use amethyst::{
     assets::{AssetStorage, Handle},
     core::{math::Vector3, transform::Transform, Float},
     ecs::{Entities, Join, Read, ReadStorage, System, Write},
-    renderer::{Flipped, SpriteRender, SpriteSheet},
+    renderer::{SpriteRender, SpriteSheet},
     shrev::EventChannel,
 };
 use collision_model::{
@@ -11,6 +11,7 @@ use collision_model::{
 };
 use derive_new::new;
 use log::debug;
+use object_model::play::Mirrored;
 use shape_model::Volume;
 use typename_derive::TypeName;
 
@@ -26,7 +27,7 @@ type ObjectCollisionDetectionSystemData<'s> = (
     ReadStorage<'s, Handle<Body>>,
     Read<'s, AssetStorage<Body>>,
     ReadStorage<'s, SpriteRender>,
-    ReadStorage<'s, Flipped>,
+    ReadStorage<'s, Mirrored>,
     Read<'s, AssetStorage<SpriteSheet>>,
     Write<'s, EventChannel<CollisionEvent>>,
 );
@@ -143,28 +144,28 @@ impl<'s> System<'s> for ObjectCollisionDetectionSystem {
             body_handles,
             body_assets,
             sprite_renders,
-            flippeds,
+            mirroreds,
             sprite_sheet_assets,
             mut collision_ec,
         ): Self::SystemData,
     ) {
         // Naive collision detection.
         // TODO: Use broad sweep + narrow sweep for optimization.
-        for (from, from_transform, interactions_handle, from_sprite_render, from_flipped) in (
+        for (from, from_transform, interactions_handle, from_sprite_render, from_mirrored) in (
             &entities,
             &transforms,
             &interactions_handles,
             &sprite_renders,
-            &flippeds,
+            &mirroreds,
         )
             .join()
         {
-            for (to, to_transform, body_handle, to_sprite_render, to_flipped) in (
+            for (to, to_transform, body_handle, to_sprite_render, to_mirrored) in (
                 &entities,
                 &transforms,
                 &body_handles,
                 &sprite_renders,
-                &flippeds,
+                &mirroreds,
             )
                 .join()
             {
@@ -219,12 +220,8 @@ impl<'s> System<'s> for ObjectCollisionDetectionSystem {
                             body.iter().filter_map(move |volume| {
                                 if Self::intersects(
                                     &relative_pos,
-                                    (
-                                        interaction,
-                                        interaction_offsets,
-                                        *from_flipped == Flipped::Horizontal,
-                                    ),
-                                    (volume, body_offsets, *to_flipped == Flipped::Horizontal),
+                                    (interaction, interaction_offsets, from_mirrored.0),
+                                    (volume, body_offsets, to_mirrored.0),
                                 ) {
                                     Some(CollisionEvent::new(
                                         from,

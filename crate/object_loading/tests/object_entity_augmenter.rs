@@ -26,7 +26,7 @@ use amethyst::{
     audio::AudioBundle,
     core::transform::Transform,
     ecs::{Builder, SystemData, World},
-    renderer::{transparent::Transparent, Flipped, SpriteRender},
+    renderer::{transparent::Transparent, SpriteRender},
     Error,
 };
 use amethyst_test::{AmethystApplication, PopState, RenderBaseAppExt};
@@ -112,7 +112,6 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
         assert!(world.read_storage::<SequenceStatus>().contains(entity));
         assert!(world.read_storage::<Mirrored>().contains(entity));
         assert!(world.read_storage::<SpriteRender>().contains(entity));
-        assert!(world.read_storage::<Flipped>().contains(entity));
         assert!(world.read_storage::<Transparent>().contains(entity));
         assert!(world.read_storage::<Position<f32>>().contains(entity));
         assert!(world.read_storage::<Velocity<f32>>().contains(entity));
