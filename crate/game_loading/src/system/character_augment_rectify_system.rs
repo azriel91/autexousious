@@ -4,6 +4,7 @@ use amethyst::{
     utils::removal::Removal,
 };
 use character_loading::CharacterPrefabHandle;
+use derivative::Derivative;
 use derive_new::new;
 use game_input::InputControlled;
 use game_play_hud::HpBarPrefab;
@@ -11,6 +12,7 @@ use game_play_model::{GamePlayEntity, GamePlayEntityId};
 use map_model::loaded::Map;
 use map_selection_model::MapSelection;
 use object_model::play::Position;
+use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 use crate::{CharacterAugmentStatus, GameLoadingStatus};
@@ -19,34 +21,54 @@ use crate::{CharacterAugmentStatus, GameLoadingStatus};
 #[derive(Debug, Default, TypeName, new)]
 pub(crate) struct CharacterAugmentRectifySystem;
 
-type CharacterAugmentRectifySystemData<'s> = (
-    Entities<'s>,
-    Write<'s, GameLoadingStatus>,
-    ReadExpect<'s, MapSelection>,
-    Read<'s, AssetStorage<Map>>,
-    ReadStorage<'s, CharacterPrefabHandle>,
-    ReadStorage<'s, InputControlled>,
-    WriteStorage<'s, Position<f32>>,
-    WriteStorage<'s, GamePlayEntity>,
-    <HpBarPrefab as PrefabData<'s>>::SystemData,
-);
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub struct CharacterAugmentRectifySystemData<'s> {
+    /// `Entities` resource.
+    #[derivative(Debug = "ignore")]
+    pub entities: Entities<'s>,
+    /// `GameLoadingStatus` resource.
+    #[derivative(Debug = "ignore")]
+    pub game_loading_status: Write<'s, GameLoadingStatus>,
+    /// `MapSelection` resource.
+    #[derivative(Debug = "ignore")]
+    pub map_selection: ReadExpect<'s, MapSelection>,
+    /// `Map` assets.
+    #[derivative(Debug = "ignore")]
+    pub map_assets: Read<'s, AssetStorage<Map>>,
+    /// `CharacterPrefabHandle` components.
+    #[derivative(Debug = "ignore")]
+    pub character_prefab_handles: ReadStorage<'s, CharacterPrefabHandle>,
+    /// `InputControlled` components.
+    #[derivative(Debug = "ignore")]
+    pub input_controlleds: ReadStorage<'s, InputControlled>,
+    /// `Position<f32>` components.
+    #[derivative(Debug = "ignore")]
+    pub positions: WriteStorage<'s, Position<f32>>,
+    /// `GamePlayEntity` components.
+    #[derivative(Debug = "ignore")]
+    pub game_play_entities: WriteStorage<'s, GamePlayEntity>,
+    /// `HpBarPrefabSystemData`.
+    #[derivative(Debug = "ignore")]
+    pub hp_bar_prefab_system_data: <HpBarPrefab as PrefabData<'s>>::SystemData,
+}
 
 impl<'s> System<'s> for CharacterAugmentRectifySystem {
     type SystemData = CharacterAugmentRectifySystemData<'s>;
 
     fn run(
         &mut self,
-        (
+        CharacterAugmentRectifySystemData {
             entities,
             mut game_loading_status,
             map_selection,
-            loaded_maps,
+            map_assets,
             character_prefab_handles,
             input_controlleds,
             mut positions,
             mut game_play_entities,
             mut hp_bar_prefab_system_data,
-        ): Self::SystemData,
+        }: Self::SystemData,
     ) {
         // TODO: Entities may not have health_points component -- see the second join()
 
@@ -59,7 +81,7 @@ impl<'s> System<'s> for CharacterAugmentRectifySystem {
 
         // Read map to determine bounds where the characters can be spawned.
         let (width, height, depth) = {
-            loaded_maps
+            map_assets
                 .get(map_selection.handle())
                 .map(|map| {
                     let bounds = &map.definition.header.bounds;
