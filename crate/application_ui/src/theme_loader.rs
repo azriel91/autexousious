@@ -49,7 +49,7 @@ impl ThemeLoader {
             .map(|(font_variant, font_path)| {
                 let loader = world.read_resource::<Loader>();
                 let font_storage = world.read_resource::<AssetStorage<FontAsset>>();
-                let font_handle = loader.load(font_path, TtfFormat, (), (), &font_storage);
+                let font_handle = loader.load(font_path, TtfFormat, (), &font_storage);
                 (font_variant, font_handle)
             })
             .collect::<HashMap<FontVariant, FontHandle>>();
@@ -62,7 +62,7 @@ impl ThemeLoader {
 
 #[cfg(test)]
 mod test {
-    use amethyst::{prelude::*, renderer::ScreenDimensions};
+    use amethyst::{input::StringBindings, prelude::*, window::ScreenDimensions};
     use amethyst_test::prelude::*;
     use application::FindContext;
     use ron;
@@ -85,7 +85,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::ui_base::<String, String>()
+            AmethystApplication::ui_base::<StringBindings>()
                 .with_assertion(assertion)
                 .with_resource(ScreenDimensions::new(640, 480, 1.))
                 .run()
@@ -110,7 +110,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::ui_base::<String, String>()
+            AmethystApplication::ui_base::<StringBindings>()
                 .with_assertion(assertion)
                 .with_resource(ScreenDimensions::new(640, 480, 1.))
                 .run()
@@ -135,7 +135,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::ui_base::<String, String>()
+            AmethystApplication::ui_base::<StringBindings>()
                 .with_assertion(assertion)
                 .with_resource(ScreenDimensions::new(640, 480, 1.))
                 .run()

@@ -40,6 +40,7 @@ impl<'s> System<'s> for ObjectKinematicsUpdateSystem {
 mod test {
     use amethyst::{
         ecs::{Builder, Entity, SystemData},
+        input::StringBindings,
         Error,
     };
     use amethyst_test::AmethystApplication;
@@ -100,7 +101,7 @@ mod test {
         }: SetupParams,
         expected_position: Position<f32>,
     ) -> Result<(), Error> {
-        AmethystApplication::ui_base::<String, String>()
+        AmethystApplication::ui_base::<StringBindings>()
             .with_setup(move |world| {
                 ObjectKinematicsUpdateSystemData::setup(&mut world.res);
 

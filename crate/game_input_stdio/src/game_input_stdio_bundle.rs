@@ -49,7 +49,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameInputStdioBundle {
 mod test {
     use std::env;
 
-    use amethyst::{input::InputBundle, renderer::ScreenDimensions, shrev::EventChannel, Error};
+    use amethyst::{input::InputBundle, shrev::EventChannel, window::ScreenDimensions, Error};
     use amethyst_test::{AmethystApplication, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
     use game_input::GameInputBundle;
     use game_input_model::ControlBindings;

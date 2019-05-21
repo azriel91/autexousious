@@ -17,7 +17,7 @@ use std::{cell::RefCell, process, rc::Rc, time::Duration};
 
 use amethyst::{
     core::transform::TransformBundle,
-    input::InputBundle,
+    input::{InputBundle, StringBindings},
     prelude::*,
     renderer::{DisplayConfig, Pipeline, RenderBundle, Stage},
     ui::{DrawUi, UiBundle},
@@ -79,8 +79,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
 
     let game_data = GameDataBuilder::default()
         .with_bundle(TransformBundle::new())?
-        .with_bundle(InputBundle::<String, String>::new())?
-        .with_bundle(UiBundle::<String, String>::new())?
+        .with_bundle(InputBundle::<StringBindings>::new())?
+        .with_bundle(UiBundle::<StringBindings>::new())?
         .with_bundle(RenderBundle::new(pipe, Some(display_config)))?;
     let mut app = Application::new("assets", state, game_data)?;
 
