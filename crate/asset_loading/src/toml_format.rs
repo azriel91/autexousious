@@ -1,5 +1,5 @@
 use amethyst::{
-    assets::{Asset, SimpleFormat},
+    assets::Format,
     error::{format_err, ResultExt},
     Error,
 };
@@ -9,16 +9,16 @@ use serde::{Deserialize, Serialize};
 #[derive(Default, Clone, Debug, Serialize, Deserialize)]
 pub struct TomlFormat;
 
-impl<A> SimpleFormat<A> for TomlFormat
+impl<D> Format<D> for TomlFormat
 where
-    A: Asset,
-    A::Data: for<'a> Deserialize<'a> + Send + Sync + 'static,
+    D: for<'a> Deserialize<'a> + Send + Sync + 'static,
 {
-    const NAME: &'static str = "Toml";
-    type Options = ();
+    fn name(&self) -> &'static str {
+        stringify!(TomlFormat)
+    }
 
-    fn import(&self, bytes: Vec<u8>, _: ()) -> Result<A::Data, Error> {
-        toml::from_slice::<A::Data>(&bytes)
+    fn import_simple(&self, bytes: Vec<u8>) -> Result<D, Error> {
+        toml::from_slice::<D>(&bytes)
             .with_context(|_| format_err!("Failed to deserialize TOML file")) // kcov-ignore
     }
 }
@@ -63,7 +63,6 @@ mod tests {
                     loader.load_from(
                         "file.toml",
                         TomlFormat,
-                        (), // Options
                         CODE_SOURCE_ID,
                         &mut progress_counter,
                         &world.read_resource::<AssetStorage<TomlThing>>(),
