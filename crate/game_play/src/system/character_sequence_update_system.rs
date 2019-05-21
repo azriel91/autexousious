@@ -1,4 +1,7 @@
-use amethyst::ecs::{Entities, Join, ReadStorage, System, WriteStorage};
+use amethyst::{
+    core::{math::RealField, transform::Transform},
+    ecs::{Entities, Join, ReadStorage, System, WriteStorage},
+};
 use character_model::{config::CharacterSequenceId, play::RunCounter};
 use character_play::{
     CharacterSequenceUpdateComponents, CharacterSequenceUpdater, MirroredUpdater, RunCounterUpdater,
@@ -28,6 +31,7 @@ pub struct CharacterSequenceUpdateSystemData<'s> {
     sequence_statuses: WriteStorage<'s, SequenceStatus>,
     mirroreds: WriteStorage<'s, Mirrored>,
     groundings: WriteStorage<'s, Grounding>,
+    transforms: WriteStorage<'s, Transform>,
 }
 
 impl<'s> System<'s> for CharacterSequenceUpdateSystem {
@@ -47,6 +51,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             mut sequence_statuses,
             mut mirroreds,
             mut groundings,
+            mut transforms,
         }: Self::SystemData,
     ) {
         for (
@@ -60,6 +65,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             sequence_status,
             mirrored,
             grounding,
+            transform,
         ) in (
             &entities,
             &controller_inputs,
@@ -71,6 +77,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             &mut sequence_statuses,
             &mut mirroreds,
             &mut groundings,
+            &mut transforms,
         )
             .join()
         {
@@ -109,11 +116,9 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                 MirroredUpdater::update(controller_input, *character_sequence_id, *mirrored);
 
             if mirrored.0 {
-                unimplemented!("Flip the sprite, possibly using a transform?")
-            // Flipped::Horizontal
+                transform.set_rotation_y_axis(f32::pi());
             } else {
-                unimplemented!("Don't flip the sprite")
-                // Flipped::None
+                transform.set_rotation_y_axis(0.);
             };
 
             if let Some(next_character_sequence_id) = next_character_sequence_id {
