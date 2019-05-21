@@ -235,8 +235,7 @@ mod test {
 
     use amethyst::{
         ecs::{Join, Read, ReadStorage, World, WriteStorage},
-        input::{Axis as InputAxis, Button},
-        renderer::VirtualKeyCode,
+        input::{Axis as InputAxis, Button, VirtualKeyCode},
         ui::UiText,
         Error,
     };

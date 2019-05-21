@@ -237,9 +237,8 @@ mod test {
 
     use amethyst::{
         ecs::{Join, Read, ReadStorage, World, WriteStorage},
-        input::{Axis as InputAxis, Button},
+        input::{Axis as InputAxis, Button, VirtualKeyCode},
         ui::UiText,
-        winit::VirtualKeyCode,
     };
     use application_test_support::AutexousiousApplication;
     use asset_model::loaded::SlugAndHandle;
