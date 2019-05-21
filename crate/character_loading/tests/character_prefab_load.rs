@@ -4,7 +4,10 @@ use amethyst::{
     assets::{AssetStorage, Handle, Loader, Prefab, PrefabLoader},
     ecs::{Builder, Entity, Read, ReadExpect, World},
     renderer::{
+        loaders::load_from_srgba,
+        palette::Srgba,
         sprite::{Sprite, SpriteSheet, SpriteSheetHandle},
+        types::TextureData,
         Texture,
     },
     Error,
@@ -163,8 +166,9 @@ fn character_definition() -> CharacterDefinition {
 fn sprite_sheet_handles(world: &World) -> Vec<SpriteSheetHandle> {
     let loader = world.read_resource::<Loader>();
     let texture_assets = world.read_resource::<AssetStorage<Texture>>();
+    let texture_builder = load_from_srgba(Srgba::new(0., 0., 0., 0.));
     let texture_handle: Handle<Texture> =
-        loader.load_from_data([0.; 4].into(), (), &texture_assets);
+        loader.load_from_data(TextureData::from(texture_builder), (), &texture_assets);
 
     let image_w = 1;
     let image_h = 1;
@@ -178,7 +182,7 @@ fn sprite_sheet_handles(world: &World) -> Vec<SpriteSheetHandle> {
     let sprite_sheet = SpriteSheet {
         texture: texture_handle,
         sprites: vec![Sprite::from_pixel_values(
-            image_w, image_h, sprite_w, sprite_h, pixel_left, pixel_top, offsets,
+            image_w, image_h, sprite_w, sprite_h, pixel_left, pixel_top, offsets, false, false,
         )],
     }; // kcov-ignore
 
