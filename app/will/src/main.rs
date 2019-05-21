@@ -1,7 +1,5 @@
 #![windows_subsystem = "windows"]
 
-//! Opens an empty window.
-
 use std::process;
 
 use amethyst::{
@@ -9,8 +7,9 @@ use amethyst::{
     audio::AudioBundle,
     core::transform::TransformBundle,
     input::InputBundle,
-    renderer::{types::DefaultBackend, DisplayConfig, DrawFlat2D, Pipeline, RenderBundle, Stage},
-    ui::{DrawUi, UiBundle},
+    renderer::{types::DefaultBackend, RenderingSystem},
+    ui::UiBundle,
+    window::{DisplayConfig, WindowBundle},
     CoreApplication, GameDataBuilder, LogLevelFilter, LoggerConfig,
 };
 use application::{
@@ -47,6 +46,10 @@ use stdio_spi::MapperSystem;
 use structopt::StructOpt;
 use typename::TypeName;
 use ui_audio_loading::UiAudioLoadingBundle;
+
+use crate::render_graph::RenderGraph;
+
+mod render_graph;
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "Will", rename_all = "snake_case")]
@@ -87,13 +90,6 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             Some(development_base_dirs!()),
         )?;
 
-        let pipe = Pipeline::build().with_stage(
-            Stage::with_backbuffer()
-                .clear_target([0., 0., 0., 1.], 0.)
-                .with_pass(DrawFlat2D::new())
-                .with_pass(DrawUi::new()),
-        );
-
         let input_config = load_in::<InputConfig, _>(
             dir::RESOURCES,
             "input_config.ron",
@@ -104,16 +100,14 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         // `InputBundle` provides `InputHandler<A, B>`, needed by the `UiBundle` for mouse events.
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
         game_data = game_data
+            .with_bundle(WindowBundle::from_config(display_config))?
             .with_bundle(AudioBundle::default())?
             .with_bundle(TransformBundle::new())?
+            .with_thread_local(RenderingSystem::<DefaultBackend, _>::new(
+                RenderGraph::default(),
+            ))
             .with_bundle(
-                RenderBundle::new(pipe, Some(display_config))
-                    .with_sprite_visibility_sorting(&["transform_system"])
-                    .with_sprite_sheet_processor(),
-            )?
-            .with_bundle(
-                InputBundle::<PlayerAxisControl, PlayerActionControl>::new()
-                    .with_bindings((&input_config).into()),
+                InputBundle::<ControlBindings>::new().with_bindings((&input_config).into()),
             )?
             .with_bundle(UiBundle::<DefaultBackend, ControlBindings>::new())?
             .with_bundle(HotReloadBundle::default())?
