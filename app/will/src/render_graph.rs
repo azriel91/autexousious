@@ -89,7 +89,7 @@ impl GraphCreator<DefaultBackend> for RenderGraph {
                 .with_depth_stencil(depth)
                 .into_pass(),
         );
-        let ui = graph_builder.add_node(
+        let _ui = graph_builder.add_node(
             SubpassBuilder::new()
                 .with_group(DrawUiDesc::new().builder())
                 .with_color(colour)
