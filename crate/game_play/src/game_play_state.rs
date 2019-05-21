@@ -4,9 +4,10 @@ use amethyst::{
         Float, SystemBundle, Transform,
     },
     ecs::{Builder, DispatcherBuilder, Entity, World},
-    input::is_key_down,
-    renderer::{Camera, Projection, ScreenDimensions, VirtualKeyCode},
+    input::{is_key_down, VirtualKeyCode},
+    renderer::camera::{Camera, Projection},
     shred::Dispatcher,
+    window::ScreenDimensions,
     GameData, State, StateData, Trans,
 };
 use application_event::AppEvent;
