@@ -118,7 +118,8 @@ mod tests {
     where
         F: Fn(&mut World) -> MapSelectionEvent + Send + Sync + 'static,
     {
-        AutexousiousApplication::config_base(test_name, false)
+        AutexousiousApplication::config_base()
+            .with_app_name(test_name)
             .with_system(MapSelectionSfxSystem::new(), "", &[])
             .with_effect(move |world| {
                 let event = event_fn(world);

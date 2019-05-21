@@ -520,7 +520,8 @@ mod test {
             character_selection_events_fn,
         }: ExpectedParams,
     ) -> Result<(), Error> {
-        AutexousiousApplication::config_base(test_name, false)
+        AutexousiousApplication::config_base()
+            .with_app_name(test_name)
             .with_system(
                 CharacterSelectionWidgetInputSystem::new(),
                 CharacterSelectionWidgetInputSystem::type_name(),
