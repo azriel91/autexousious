@@ -26,7 +26,7 @@ use amethyst::{
     audio::AudioBundle,
     core::transform::Transform,
     ecs::{Builder, SystemData, World},
-    renderer::{Flipped, SpriteRender, Transparent},
+    renderer::{transparent::Transparent, Flipped, SpriteRender},
     Error,
 };
 use amethyst_test::{AmethystApplication, PopState, RenderBaseAppExt};

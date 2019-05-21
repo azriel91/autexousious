@@ -2,7 +2,7 @@ use amethyst::{
     assets::PrefabData,
     core::{math::Vector3, Float, Parent, Transform},
     ecs::{Entity, WriteStorage},
-    renderer::{SpriteRender, Transparent},
+    renderer::{transparent::Transparent, SpriteRender},
     Error,
 };
 use asset_gfx_gen::{ColourSpriteSheetGen, ColourSpriteSheetGenData};

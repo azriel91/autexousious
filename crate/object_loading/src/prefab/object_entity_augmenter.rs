@@ -2,7 +2,7 @@ use amethyst::{
     assets::AssetStorage,
     core::transform::Transform,
     ecs::Entity,
-    renderer::{Flipped, Transparent},
+    renderer::{transparent::Transparent, Flipped},
 };
 use logic_clock::LogicClock;
 use object_model::{

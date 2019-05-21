@@ -1,7 +1,7 @@
 use amethyst::{
     core::{math::Vector3, transform::Transform, Float},
     ecs::{Entity, SystemData, World},
-    renderer::Transparent,
+    renderer::transparent::Transparent,
 };
 use logic_clock::LogicClock;
 use map_model::loaded::MapHandle;

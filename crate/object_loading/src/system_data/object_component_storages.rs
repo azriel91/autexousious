@@ -1,7 +1,7 @@
 use amethyst::{
     core::Transform,
     ecs::WriteStorage,
-    renderer::{Flipped, Transparent},
+    renderer::{transparent::Transparent, Flipped},
 };
 use derivative::Derivative;
 use object_model::play::{Mirrored, Position, Velocity};
