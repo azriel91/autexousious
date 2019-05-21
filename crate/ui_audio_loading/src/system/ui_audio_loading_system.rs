@@ -80,7 +80,6 @@ impl<'s> System<'s> for UiAudioLoadingSystem {
                 let handle = loader.load(
                     UI_AUDIO_TOML,
                     TomlFormat,
-                    (),
                     progress_counter,
                     &ui_sfx_paths_assets,
                 );

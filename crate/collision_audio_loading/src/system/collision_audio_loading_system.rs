@@ -80,7 +80,6 @@ impl<'s> System<'s> for CollisionAudioLoadingSystem {
                 let handle = loader.load(
                     COLLISION_AUDIO_TOML,
                     TomlFormat,
-                    (),
                     progress_counter,
                     &collision_sfx_paths_assets,
                 );
@@ -148,7 +147,6 @@ impl<'s> System<'s> for CollisionAudioLoadingSystem {
                             let source_handle = loader.load(
                                 format!("{}", path.display()),
                                 audio_format,
-                                (),
                                 &mut self.progress_counter,
                                 &source_assets,
                             );

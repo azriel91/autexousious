@@ -53,7 +53,7 @@ mod tests {
     use amethyst::{
         assets::{AssetStorage, Loader, ProgressCounter},
         ecs::World,
-        renderer::{SpriteRender, SpriteSheet, SpriteSheetHandle, Texture},
+        renderer::{sprite::SpriteSheetHandle, SpriteRender, SpriteSheet, Texture},
         Error,
     };
     use amethyst_test::{AmethystApplication, RenderBaseAppExt};
