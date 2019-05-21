@@ -1,6 +1,4 @@
-use amethyst::{
-    core::EventReader, derive::EventReader, ecs::*, renderer::Event, shrev::EventChannel,
-};
+use amethyst::{core::EventReader, derive::EventReader, ecs::*, shrev::EventChannel};
 use character_selection_model::CharacterSelectionEvent;
 use derivative::Derivative;
 use derive_more::From;
@@ -10,6 +8,7 @@ use game_play_model::GamePlayEvent;
 use map_selection_model::MapSelectionEvent;
 use stdio_command_model::StdioCommandEvent;
 use strum_macros::{Display, EnumDiscriminants, EnumIter, EnumString};
+use winit::Event;
 
 /// Type encompassing all state event types.
 //
