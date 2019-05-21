@@ -20,7 +20,7 @@ use amethyst::{
     core::transform::TransformBundle,
     input::{InputBundle, StringBindings},
     prelude::*,
-    renderer::{DisplayConfig, Pipeline, RenderBundle, Stage},
+    renderer::{types::DefaultBackend, DisplayConfig, Pipeline, RenderBundle, Stage},
     ui::{DrawUi, UiBundle},
 };
 use application::{
@@ -87,7 +87,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     let game_data = GameDataBuilder::default()
         .with_bundle(TransformBundle::new())?
         .with_bundle(InputBundle::<StringBindings>::new())?
-        .with_bundle(UiBundle::<StringBindings>::new())?
+        .with_bundle(UiBundle::<DefaultBackend, StringBindings>::new())?
         .with_bundle(RenderBundle::new(pipe, Some(display_config)))?;
     let mut app = Application::new("assets", state, game_data)?;
 

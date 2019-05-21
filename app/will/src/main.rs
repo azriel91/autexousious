@@ -9,7 +9,7 @@ use amethyst::{
     audio::AudioBundle,
     core::transform::TransformBundle,
     input::InputBundle,
-    renderer::{DisplayConfig, DrawFlat2D, Pipeline, RenderBundle, Stage},
+    renderer::{types::DefaultBackend, DisplayConfig, DrawFlat2D, Pipeline, RenderBundle, Stage},
     ui::{DrawUi, UiBundle},
     CoreApplication, GameDataBuilder, LogLevelFilter, LoggerConfig,
 };
@@ -29,7 +29,7 @@ use collision_audio_loading::CollisionAudioLoadingBundle;
 use collision_loading::CollisionLoadingBundle;
 use frame_rate::strategy::frame_rate_limit_config;
 use game_input::GameInputBundle;
-use game_input_model::{InputConfig, PlayerActionControl, PlayerAxisControl};
+use game_input_model::{ControlBindings, InputConfig};
 use game_input_stdio::{ControlInputEventStdinMapper, GameInputStdioBundle};
 use game_input_ui::{GameInputUiBundle, InputToControlInputSystem};
 use game_mode_selection::{GameModeSelectionStateBuilder, GameModeSelectionStateDelegate};
@@ -115,7 +115,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 InputBundle::<PlayerAxisControl, PlayerActionControl>::new()
                     .with_bindings((&input_config).into()),
             )?
-            .with_bundle(UiBundle::<PlayerAxisControl, PlayerActionControl>::new())?
+            .with_bundle(UiBundle::<DefaultBackend, ControlBindings>::new())?
             .with_bundle(HotReloadBundle::default())?
             .with_bundle(SpriteLoadingBundle::new())?
             .with_bundle(SequenceLoadingBundle::new())?
