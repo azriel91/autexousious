@@ -63,12 +63,7 @@ impl SpriteSheetMapper {
                 let half_sprite_h = definition.sprite_h as f32 / 2.;
 
                 let offsets = sprite_offsets.map_or_else(
-                    || {
-                        [
-                            definition.sprite_w as f32 / -2.,
-                            definition.sprite_h as f32 / -2.,
-                        ]
-                    },
+                    || [-half_sprite_w, -half_sprite_h],
                     |sprite_offsets| {
                         let sprite_index = (row * definition.column_count + col) as usize;
                         let sprite_offset = &sprite_offsets[sprite_index];
@@ -77,7 +72,20 @@ impl SpriteSheetMapper {
                             (sprite_offset.x - offset_x as i32) as f32 - half_sprite_w,
                             // Negate the Y value because we want to shift the sprite up, whereas
                             // the offset in Amethyst is to shift it down.
-                            (offset_y as i32 - sprite_offset.y) as f32 - half_sprite_h,
+
+                            // * The Y offset specified by the designer should be the bottom of the
+                            //   sprite in pixel coordinates for the whole image.
+                            // * `offset_y` is the top of the sprite in pixel coordinates.
+                            // * Amethyst renders from bottom up (Y axis increases upwards).
+                            //
+                            // The number of pixels to be below the character's XYZ position is
+                            // calculated by the pixel coordinate of the bottom of the sprite,
+                            // subtracting the offset specified by the designer (which is usually
+                            // within the bounds of the sprite).
+                            //
+                            // Finally, because Amethyst normally shifts the middle of the sprite to
+                            // the XYZ position of the entity, we unshift it.
+                            ((offset_h + offset_y) as i32 - sprite_offset.y) as f32 - half_sprite_h,
                         ]
                     },
                 );
@@ -156,38 +164,38 @@ mod test {
                     // Sprites top row
                     (
                         (9., 19.),
-                        [-4.5, -9.5],
+                        [-4.5, 10.5],
                         [0.5 / 30., 8.5 / 30., 21.5 / 40., 39.5 / 40.],
                     )
                         .into(),
                     (
                         (9., 19.),
-                        [-13.5, -10.5],
+                        [-13.5, 9.5],
                         [10.5 / 30., 18.5 / 30., 21.5 / 40., 39.5 / 40.],
                     )
                         .into(),
                     (
                         (9., 19.),
-                        [-22.5, -11.5],
+                        [-22.5, 8.5],
                         [20.5 / 30., 28.5 / 30., 21.5 / 40., 39.5 / 40.],
                     )
                         .into(),
                     // Sprites bottom row
                     (
                         (9., 19.),
-                        [-1.5, 7.5],
+                        [-1.5, 27.5],
                         [0.5 / 30., 8.5 / 30., 1.5 / 40., 19.5 / 40.],
                     )
                         .into(),
                     (
                         (9., 19.),
-                        [-10.5, 6.5],
+                        [-10.5, 26.5],
                         [10.5 / 30., 18.5 / 30., 1.5 / 40., 19.5 / 40.],
                     )
                         .into(),
                     (
                         (9., 19.),
-                        [-19.5, 5.5],
+                        [-19.5, 25.5],
                         [20.5 / 30., 28.5 / 30., 1.5 / 40., 19.5 / 40.],
                     )
                         .into(),
@@ -200,7 +208,7 @@ mod test {
                     texture: texture_handles[1].clone(),
                     sprites: vec![(
                         (19., 29.),
-                        [-9.5, -14.5],
+                        [-9.5, 15.5],
                         [0.5 / 20., 18.5 / 20., 1.5 / 30., 29.5 / 30.],
                     )
                         .into()],
@@ -228,38 +236,38 @@ mod test {
                     // Sprites top row
                     (
                         (10., 20.),
-                        [-5., -10.],
+                        [-5., 10.],
                         [0.5 / 30., 9.5 / 30., 20.5 / 40., 39.5 / 40.],
                     )
                         .into(),
                     (
                         (10., 20.),
-                        [-14., -11.],
+                        [-14., 9.],
                         [10.5 / 30., 19.5 / 30., 20.5 / 40., 39.5 / 40.],
                     )
                         .into(),
                     (
                         (10., 20.),
-                        [-23., -12.],
+                        [-23., 8.],
                         [20.5 / 30., 29.5 / 30., 20.5 / 40., 39.5 / 40.],
                     )
                         .into(),
                     // Sprites bottom row
                     (
                         (10., 20.),
-                        [-2., 7.],
+                        [-2., 27.],
                         [0.5 / 30., 9.5 / 30., 0.5 / 40., 19.5 / 40.],
                     )
                         .into(),
                     (
                         (10., 20.),
-                        [-11., 6.],
+                        [-11., 26.],
                         [10.5 / 30., 19.5 / 30., 0.5 / 40., 19.5 / 40.],
                     )
                         .into(),
                     (
                         (10., 20.),
-                        [-20., 5.],
+                        [-20., 25.],
                         [20.5 / 30., 29.5 / 30., 0.5 / 40., 19.5 / 40.],
                     )
                         .into(),
@@ -272,7 +280,7 @@ mod test {
                     texture: texture_handles[1].clone(),
                     sprites: vec![(
                         (19., 29.),
-                        [-9.5, -14.5],
+                        [-9.5, 15.5],
                         [0.5 / 20., 18.5 / 20., 1.5 / 30., 29.5 / 30.],
                     )
                         .into()],

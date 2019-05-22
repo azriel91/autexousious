@@ -1,9 +1,11 @@
 use amethyst::{
+    assets::AssetStorage,
     core::transform::Transform,
-    ecs::{Join, ReadStorage, System, WriteStorage},
+    ecs::{Join, Read, ReadStorage, System, WriteStorage},
+    renderer::{SpriteRender, SpriteSheet},
 };
 use derive_new::new;
-use object_model::play::Position;
+use object_model::play::{Mirrored, Position};
 use typename_derive::TypeName;
 
 /// Updates each entity's `Transform` based on their `Position` in game.
@@ -12,17 +14,46 @@ use typename_derive::TypeName;
 #[derive(Debug, Default, TypeName, new)]
 pub(crate) struct ObjectTransformUpdateSystem;
 
-type ObjectTransformUpdateSystemData<'s> =
-    (ReadStorage<'s, Position<f32>>, WriteStorage<'s, Transform>);
+type ObjectTransformUpdateSystemData<'s> = (
+    ReadStorage<'s, Position<f32>>,
+    ReadStorage<'s, Mirrored>,
+    ReadStorage<'s, SpriteRender>,
+    Read<'s, AssetStorage<SpriteSheet>>,
+    WriteStorage<'s, Transform>,
+);
 
 impl<'s> System<'s> for ObjectTransformUpdateSystem {
     type SystemData = ObjectTransformUpdateSystemData<'s>;
 
-    fn run(&mut self, (positions, mut transform_storage): Self::SystemData) {
-        for (position, transform) in (&positions, &mut transform_storage).join() {
+    fn run(
+        &mut self,
+        (positions, mirroreds, sprite_renders, sprite_sheet_assets, mut transform_storage): Self::SystemData,
+    ) {
+        for (position, mirrored, sprite_render, transform) in (
+            &positions,
+            mirroreds.maybe(),
+            sprite_renders.maybe(),
+            &mut transform_storage,
+        )
+            .join()
+        {
+            // Hack: Visual correction when sprites are mirrored.
+            if let (Some(mirrored), Some(sprite_render)) = (mirrored, sprite_render) {
+                if mirrored.0 {
+                    let sprite_sheet = sprite_sheet_assets
+                        .get(&sprite_render.sprite_sheet)
+                        .expect("Expected sprite sheet to be loaded.");
+                    let sprite = &sprite_sheet.sprites[sprite_render.sprite_number];
+                    transform.set_translation_x(position.x + sprite.offsets[0]);
+                } else {
+                    transform.set_translation_x(position.x);
+                }
+            } else {
+                transform.set_translation_x(position.x);
+            }
+
             // We subtract z from the y translation as the z axis increases "out of the screen".
             // Entities that have a larger Z value are transformed downwards.
-            transform.set_translation_x(position.x);
             transform.set_translation_y(position.y - position.z);
             transform.set_translation_z(position.z);
         }

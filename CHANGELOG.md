@@ -40,6 +40,7 @@
 ### Fixed
 
 * `Walk` sequence stays on first frame when an action button is held. ([#114])
+* Character sprites now correctly render at their entity position. ([#129])
 
 [#96]: https://gitlab.com/azriel91/autexousious/issues/96
 [#103]: https://gitlab.com/azriel91/autexousious/issues/103
@@ -52,6 +53,7 @@
 [#124]: https://gitlab.com/azriel91/autexousious/issues/124
 [#127]: https://gitlab.com/azriel91/autexousious/issues/127
 [#128]: https://gitlab.com/azriel91/autexousious/issues/128
+[#129]: https://gitlab.com/azriel91/autexousious/issues/129
 
 ## 0.10.0 (2019-03-29)
 

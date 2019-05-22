@@ -12,8 +12,8 @@ use shred_derive::SystemData;
 
 use crate::{HpBar, HP_BAR_HEIGHT, HP_BAR_LENGTH, HP_BAR_SPRITE_COUNT};
 
-const COLOUR_HP_LOW: [f32; 4] = [0.8, 0., 0., 1.];
-const COLOUR_HP_HIGH: [f32; 4] = [0.1, 0.9, 0.1, 1.];
+const COLOUR_HP_LOW: [f32; 4] = [0.8, 0., 0., 0.8];
+const COLOUR_HP_HIGH: [f32; 4] = [0.1, 0.9, 0.1, 0.8];
 
 /// Prefab to attach all components of a HP bar.
 ///
@@ -79,6 +79,7 @@ impl<'s> PrefabData<'s> for HpBarPrefab {
     ) -> Result<(), Error> {
         hp_bars.insert(entity, HpBar::default())?;
         let mut transform = Transform::default();
+        transform.set_translation_y(-10.); // Move it below the character.
         transform.set_translation_z(1.);
         transform.set_scale(Vector3::new(
             Float::from(HP_BAR_LENGTH),
