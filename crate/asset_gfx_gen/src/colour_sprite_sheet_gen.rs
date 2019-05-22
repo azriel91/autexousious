@@ -213,7 +213,7 @@ impl ColourSpriteSheetGen {
                             ptr::copy_nonoverlapping(
                                 sprite_colour.as_ptr(),
                                 pixel_row[pixel_index].as_mut_ptr(),
-                                1,
+                                4,
                             )
                         }
                     });
