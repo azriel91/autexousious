@@ -65,14 +65,15 @@ impl GraphCreator<DefaultBackend> for RenderGraph {
             window_kind,
             1,
             surface_format,
-            Some(ClearValue::Color([0., 0., 0., 1.0].into())),
+            Some(ClearValue::Color([0., 0., 0., 1.].into())),
         );
 
+        // Depth stencil must be 1. for the background to be drawn.
         let depth = graph_builder.create_image(
             window_kind,
             1,
             Format::D32Sfloat,
-            Some(ClearValue::DepthStencil(ClearDepthStencil(1.0, 0))),
+            Some(ClearValue::DepthStencil(ClearDepthStencil(1., 0))),
         );
 
         let sprite = graph_builder.add_node(
