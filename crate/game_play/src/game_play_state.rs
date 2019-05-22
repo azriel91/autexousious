@@ -104,15 +104,15 @@ impl GamePlayState {
         let camera = world
             .create_entity()
             .with(Camera::from(Projection::Orthographic(Orthographic3::new(
-                0.0,
+                0.,
                 width,
-                0.0,
                 height,
-                0.0,
+                0.,
+                0.,
                 // The distance that the camera can see. Since the camera is moved to the maximum Z
                 // position, we also need to give it maximum Z viewing distance to ensure it can see
                 // all entities in front of it.
-                ::std::f32::MAX,
+                std::f32::MAX,
             ))))
             .with(transform)
             .build();
