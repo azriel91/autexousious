@@ -5,7 +5,7 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
 [dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", branch = "rendy", features = ["vulkan"] }
+amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["vulkan"] }
 asset_model = { path = "../asset_model" }
 map_model = { path = "../map_model" }
 
