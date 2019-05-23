@@ -24,10 +24,14 @@ app_publish_artifacts=(
   "${app_resources_dir}"
 )
 
-# Download default assets.
-wget https://gitlab.com/azriel91/will_assets_test/-/archive/master/will_assets_test-master.zip
-unzip -uoq will_assets_test-master.zip -d "${app_assets_dir}"
-mv "${app_assets_dir}/will_assets_test-master" "${app_assets_dir}/default"
+# Download "default" assets.
+#
+# `CI_COMMIT_TAG` is a variable set in gitlab runner CI.
+# See <https://docs.gitlab.com/ee/ci/variables/predefined_variables.html>
+assets_ref=${CI_COMMIT_TAG:-master}
+wget "https://gitlab.com/azriel91/will_assets_test/-/archive/${assets_ref}/will_assets_test-${assets_ref}.zip"
+unzip -uoq "will_assets_test-${assets_ref}.zip" -d "${app_assets_dir}"
+mv "${app_assets_dir}/will_assets_test-${assets_ref}" "${app_assets_dir}/default"
 
 # Ensure the source files exist before transferring
 for f in "${app_publish_artifacts[@]}"; do
