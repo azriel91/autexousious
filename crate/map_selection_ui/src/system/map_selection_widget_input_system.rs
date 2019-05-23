@@ -256,7 +256,6 @@ mod test {
     #[test]
     fn does_not_send_event_when_no_input() -> Result<(), Error> {
         run_test(
-            "does_not_send_event_when_no_input",
             SetupParams {
                 widget_state: WidgetState::MapSelect,
                 map_selection_fn: map_selection_random,
@@ -273,7 +272,6 @@ mod test {
     #[test]
     fn selects_last_map_when_input_left_and_selection_random() -> Result<(), Error> {
         run_test(
-            "selects_last_map_when_input_left_and_selection_random",
             SetupParams {
                 widget_state: WidgetState::MapSelect,
                 map_selection_fn: map_selection_random,
@@ -298,7 +296,6 @@ mod test {
     #[test]
     fn selects_first_map_when_input_right_and_selection_random() -> Result<(), Error> {
         run_test(
-            "selects_first_map_when_input_right_and_selection_random",
             SetupParams {
                 widget_state: WidgetState::MapSelect,
                 map_selection_fn: map_selection_random,
@@ -323,7 +320,6 @@ mod test {
     #[test]
     fn selects_random_when_input_right_and_selection_last_map() -> Result<(), Error> {
         run_test(
-            "selects_random_when_input_right_and_selection_last_map",
             SetupParams {
                 widget_state: WidgetState::MapSelect,
                 map_selection_fn: |world| {
@@ -348,7 +344,6 @@ mod test {
     #[test]
     fn updates_widget_map_select_to_ready_and_sends_event_when_input_attack() -> Result<(), Error> {
         run_test(
-            "updates_widget_map_select_to_ready_and_sends_event_when_input_attack",
             SetupParams {
                 widget_state: WidgetState::MapSelect,
                 map_selection_fn: map_selection_fade,
@@ -369,7 +364,6 @@ mod test {
     #[test]
     fn updates_widget_ready_to_map_select_and_sends_event_when_input_jump() -> Result<(), Error> {
         run_test(
-            "updates_widget_ready_to_map_select_and_sends_event_when_input_jump",
             SetupParams {
                 widget_state: WidgetState::Ready,
                 map_selection_fn: map_selection_fade,
@@ -386,7 +380,6 @@ mod test {
     #[test]
     fn sends_confirm_event_when_widget_ready_and_input_attack() -> Result<(), Error> {
         run_test(
-            "updates_widget_map_select_to_ready_and_sends_event_when_input_attack",
             SetupParams {
                 widget_state: WidgetState::Ready,
                 map_selection_fn: map_selection_fade,
@@ -403,7 +396,6 @@ mod test {
     #[test]
     fn send_return_event_when_controller_input_jump_and_widget_map_select() -> Result<(), Error> {
         run_test(
-            "send_return_event_when_controller_input_jump_and_widget_inactive",
             SetupParams {
                 widget_state: WidgetState::MapSelect,
                 map_selection_fn: map_selection_fade,
@@ -418,7 +410,6 @@ mod test {
     }
 
     fn run_test(
-        test_name: &str,
         SetupParams {
             widget_state: widget_entity_state,
             map_selection_fn: setup_map_selection_fn,

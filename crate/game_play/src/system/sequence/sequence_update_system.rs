@@ -261,7 +261,6 @@ mod tests {
     /// * `SequenceUpdateEvent::SequenceBegin` events are sent.
     #[test]
     fn resets_frame_wait_clocks_and_sends_event_on_sequence_begin() -> Result<(), Error> {
-        let test_name = "resets_frame_wait_clocks_and_sends_event_on_sequence_begin";
         AutexousiousApplication::game_base()
             .with_setup(setup_system_data)
             .with_setup(|world| {
@@ -300,7 +299,6 @@ mod tests {
     #[test]
     fn ticks_frame_wait_clock_when_sequence_ongoing_and_no_frame_freeze_clock() -> Result<(), Error>
     {
-        let test_name = "ticks_frame_wait_clock_when_sequence_ongoing";
         AutexousiousApplication::game_base()
             .with_setup(setup_system_data)
             .with_setup(|world| {
@@ -337,7 +335,6 @@ mod tests {
     #[test]
     fn ticks_frame_freeze_clock_when_sequence_ongoing_and_frame_freeze_clock_not_complete(
     ) -> Result<(), Error> {
-        let test_name = "ticks_frame_wait_clock_when_sequence_ongoing";
         AutexousiousApplication::game_base()
             .with_setup(setup_system_data)
             .with_setup(|world| {
@@ -374,7 +371,6 @@ mod tests {
     #[test]
     fn ticks_frame_freeze_clock_when_sequence_ongoing_and_frame_freeze_clock_complete(
     ) -> Result<(), Error> {
-        let test_name = "ticks_frame_wait_clock_when_sequence_ongoing";
         AutexousiousApplication::game_base()
             .with_setup(setup_system_data)
             .with_setup(|world| {
@@ -410,8 +406,6 @@ mod tests {
     #[test]
     fn resets_frame_wait_clock_and_sends_event_when_frame_ends_and_sequence_ongoing(
     ) -> Result<(), Error> {
-        let test_name =
-            "resets_frame_wait_clock_and_sends_event_when_frame_ends_and_sequence_ongoing";
         AutexousiousApplication::game_base()
             .with_setup(setup_system_data)
             .with_setup(|world| {
@@ -450,7 +444,6 @@ mod tests {
     /// * Sets `SequenceStatus` to `SequenceStatus::End`.
     #[test]
     fn sends_end_event_when_frame_ends_and_sequence_ends() -> Result<(), Error> {
-        let test_name = "sends_end_event_when_frame_ends_and_sequence_ends";
         AutexousiousApplication::game_base()
             .with_setup(setup_system_data)
             .with_setup(|world| {
@@ -489,7 +482,6 @@ mod tests {
     /// * Sets `SequenceStatus` to `SequenceStatus::Ongoing`.
     #[test]
     fn sends_events_when_frame_ends_and_sequence_ends_and_repeat() -> Result<(), Error> {
-        let test_name = "sends_events_when_frame_ends_and_sequence_ends_and_repeat";
         AutexousiousApplication::game_base()
             .with_setup(setup_system_data)
             .with_setup(|world| {
@@ -521,7 +513,6 @@ mod tests {
 
     #[test]
     fn does_nothing_when_sequence_end() -> Result<(), Error> {
-        let test_name = "does_nothing_when_sequence_end";
         AutexousiousApplication::game_base()
             .with_setup(setup_system_data)
             .with_setup(|world| {

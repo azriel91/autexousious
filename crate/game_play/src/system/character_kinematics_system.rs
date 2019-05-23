@@ -169,7 +169,6 @@ mod tests {
     #[test]
     fn stand_x_and_z_velocity_are_zero() -> Result<(), Error> {
         run_test(
-            "stand_x_and_z_velocity_are_zero",
             ParamsSetup {
                 velocity: Velocity::new(3., 0., 3.),
                 grounding: Grounding::OnGround,
@@ -195,7 +194,6 @@ mod tests {
             controller_input.z_axis_value = -1.;
 
             run_test(
-                "updates_stand_attack_x_and_z_velocity",
                 ParamsSetup {
                     velocity: Velocity::new(0., 0., 0.),
                     grounding: Grounding::OnGround,
@@ -216,7 +214,6 @@ mod tests {
         controller_input.z_axis_value = -1.;
 
         run_test(
-            "updates_walk_x_and_z_velocity",
             ParamsSetup {
                 velocity: Velocity::new(0., 0., 0.),
                 grounding: Grounding::OnGround,
@@ -236,7 +233,6 @@ mod tests {
         controller_input.z_axis_value = -1.;
 
         run_test(
-            "updates_run_x_and_z_velocity",
             ParamsSetup {
                 velocity: Velocity::new(0., 0., 0.),
                 grounding: Grounding::OnGround,
@@ -257,7 +253,6 @@ mod tests {
                 controller_input.z_axis_value = 1.;
 
                 run_test(
-                    "updates_run_stop_x_and_z_velocity",
                     ParamsSetup {
                         velocity: Velocity::new(0., 0., 0.),
                         grounding: Grounding::OnGround,
@@ -280,7 +275,6 @@ mod tests {
                 controller_input.z_axis_value = 1.;
 
                 run_test(
-                    "updates_dodge_x_and_z_velocity",
                     ParamsSetup {
                         velocity: Velocity::new(0., 0., 0.),
                         grounding: Grounding::OnGround,
@@ -302,7 +296,6 @@ mod tests {
         controller_input.z_axis_value = 1.;
 
         run_test(
-            "updates_jump_off_xyz_velocity",
             ParamsSetup {
                 velocity: Velocity::new(0., 0., 0.),
                 grounding: Grounding::OnGround,
@@ -321,7 +314,6 @@ mod tests {
         controller_input.z_axis_value = 1.;
 
         run_test(
-            "updates_dash_forward_xyz_velocity",
             ParamsSetup {
                 velocity: Velocity::new(0., 0., 0.),
                 grounding: Grounding::OnGround,
@@ -340,7 +332,6 @@ mod tests {
         controller_input.z_axis_value = 1.;
 
         run_test(
-            "updates_dash_back_xyz_velocity",
             ParamsSetup {
                 velocity: Velocity::new(0., 0., 0.),
                 grounding: Grounding::OnGround,
@@ -356,7 +347,6 @@ mod tests {
     #[test]
     fn updates_jump_descend_land_xyz_velocity() -> Result<(), Error> {
         run_test(
-            "updates_jump_descend_land_xyz_velocity",
             ParamsSetup {
                 velocity: Velocity::new(-6., -10., -4.),
                 grounding: Grounding::OnGround,
@@ -372,7 +362,6 @@ mod tests {
     #[test]
     fn updates_fall_forward_land_xyz_velocity() -> Result<(), Error> {
         run_test(
-            "updates_fall_forward_land_xyz_velocity",
             ParamsSetup {
                 velocity: Velocity::new(-6., -10., -4.),
                 grounding: Grounding::OnGround,
@@ -388,7 +377,6 @@ mod tests {
     #[test]
     fn updates_lie_face_down_xyz_velocity() -> Result<(), Error> {
         run_test(
-            "updates_lie_face_down_xyz_velocity",
             ParamsSetup {
                 velocity: Velocity::new(-6., -10., -4.),
                 grounding: Grounding::OnGround,
@@ -402,7 +390,6 @@ mod tests {
     }
 
     fn run_test(
-        test_name: &str,
         ParamsSetup {
             velocity: velocity_setup,
             grounding: grounding_setup,

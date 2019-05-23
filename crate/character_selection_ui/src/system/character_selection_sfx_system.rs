@@ -82,21 +82,17 @@ mod tests {
 
     #[test]
     fn plays_sound_on_return_event() -> Result<(), Error> {
-        run_test("plays_sound_on_return_event", |_world| {
-            CharacterSelectionEvent::Return
-        })
+        run_test(|_world| CharacterSelectionEvent::Return)
     }
 
     #[test]
     fn plays_sound_on_join_event() -> Result<(), Error> {
-        run_test("plays_sound_on_join_event", |_world| {
-            CharacterSelectionEvent::Join { controller_id: 123 }
-        })
+        run_test(|_world| CharacterSelectionEvent::Join { controller_id: 123 })
     }
 
     #[test]
     fn plays_sound_on_switch_event() -> Result<(), Error> {
-        run_test("plays_sound_on_witch_event", |world| {
+        run_test(|world| {
             let snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
             let character_selection = CharacterSelection::Id(snh);
             CharacterSelectionEvent::Switch {
@@ -108,7 +104,7 @@ mod tests {
 
     #[test]
     fn plays_sound_on_select_event() -> Result<(), Error> {
-        run_test("plays_sound_on_select_event", |world| {
+        run_test(|world| {
             let snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
             let character_selection = CharacterSelection::Id(snh);
             CharacterSelectionEvent::Select {
@@ -120,26 +116,20 @@ mod tests {
 
     #[test]
     fn plays_sound_on_deselect_event() -> Result<(), Error> {
-        run_test("plays_sound_on_deselect_event", |_world| {
-            CharacterSelectionEvent::Deselect { controller_id: 123 }
-        })
+        run_test(|_world| CharacterSelectionEvent::Deselect { controller_id: 123 })
     }
 
     #[test]
     fn plays_sound_on_leave_event() -> Result<(), Error> {
-        run_test("plays_sound_on_leave_event", |_world| {
-            CharacterSelectionEvent::Leave { controller_id: 123 }
-        })
+        run_test(|_world| CharacterSelectionEvent::Leave { controller_id: 123 })
     }
 
     #[test]
     fn plays_sound_on_confirm_event() -> Result<(), Error> {
-        run_test("plays_sound_on_confirm_event", |_world| {
-            CharacterSelectionEvent::Confirm
-        })
+        run_test(|_world| CharacterSelectionEvent::Confirm)
     }
 
-    fn run_test<F>(test_name: &str, event_fn: F) -> Result<(), Error>
+    fn run_test<F>(event_fn: F) -> Result<(), Error>
     where
         F: Fn(&mut World) -> CharacterSelectionEvent + Send + Sync + 'static,
     {

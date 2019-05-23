@@ -150,7 +150,6 @@ mod tests {
 
     #[test]
     fn attaches_handle_for_sequence_id_insertions() -> Result<(), Error> {
-        let test_name = "attaches_handle_for_sequence_id_insertions";
         AutexousiousApplication::game_base()
             .with_system(ComponentSequencesUpdateSystem::<Character>::new(), "", &[])
             .with_setup(|world| insert_sequence(world, CharacterSequenceId::RunStop))
@@ -160,7 +159,6 @@ mod tests {
 
     #[test]
     fn attaches_handle_for_sequence_id_modifications() -> Result<(), Error> {
-        let test_name = "attaches_handle_for_sequence_id_modifications";
         AutexousiousApplication::game_base()
             .with_system(ComponentSequencesUpdateSystem::<Character>::new(), "", &[])
             .with_setup(|world| update_sequence(world, CharacterSequenceId::RunStop))

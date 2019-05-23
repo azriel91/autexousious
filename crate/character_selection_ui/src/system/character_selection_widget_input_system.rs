@@ -322,7 +322,6 @@ mod test {
     #[test]
     fn does_not_send_event_when_controller_input_empty() -> Result<(), Error> {
         run_test(
-            "does_not_send_event_when_controller_input_empty",
             SetupParams {
                 widget_state: WidgetState::Inactive,
                 character_selection_fn: character_selection_random,
@@ -339,7 +338,6 @@ mod test {
     #[test]
     fn updates_widget_inactive_to_character_select_when_input_attack() -> Result<(), Error> {
         run_test(
-            "updates_widget_inactive_to_character_select_when_input_attack",
             SetupParams {
                 widget_state: WidgetState::Inactive,
                 character_selection_fn: character_selection_random,
@@ -359,7 +357,6 @@ mod test {
     fn updates_widget_character_select_to_ready_and_sends_event_when_input_attack(
     ) -> Result<(), Error> {
         run_test(
-            "updates_widget_character_select_to_ready_and_sends_event_when_input_attack",
             SetupParams {
                 widget_state: WidgetState::CharacterSelect,
                 character_selection_fn: |world| {
@@ -386,7 +383,6 @@ mod test {
     #[test]
     fn selects_last_character_when_input_left_and_selection_random() -> Result<(), Error> {
         run_test(
-            "selects_last_character_when_input_left_and_selection_random",
             SetupParams {
                 widget_state: WidgetState::CharacterSelect,
                 character_selection_fn: character_selection_random,
@@ -412,7 +408,6 @@ mod test {
     #[test]
     fn selects_first_character_when_input_right_and_selection_random() -> Result<(), Error> {
         run_test(
-            "selects_random_when_input_right_and_selection_last_character",
             SetupParams {
                 widget_state: WidgetState::CharacterSelect,
                 character_selection_fn: character_selection_random,
@@ -438,7 +433,6 @@ mod test {
     #[test]
     fn selects_random_when_input_right_and_selection_last_character() -> Result<(), Error> {
         run_test(
-            "selects_random_when_input_right_and_selection_last_character",
             SetupParams {
                 widget_state: WidgetState::CharacterSelect,
                 character_selection_fn: |world| {
@@ -464,7 +458,6 @@ mod test {
     fn updates_widget_ready_to_character_select_and_sends_event_when_input_jump(
     ) -> Result<(), Error> {
         run_test(
-            "updates_widget_ready_to_character_select_and_sends_event_when_input_jump",
             SetupParams {
                 widget_state: WidgetState::Ready,
                 character_selection_fn: |world| {
@@ -487,7 +480,6 @@ mod test {
     #[test]
     fn updates_widget_character_select_to_inactive_when_input_jump() -> Result<(), Error> {
         run_test(
-            "updates_widget_character_select_to_inactive_when_input_jump",
             SetupParams {
                 widget_state: WidgetState::CharacterSelect,
                 character_selection_fn: |world| {
@@ -508,7 +500,6 @@ mod test {
     }
 
     fn run_test(
-        test_name: &str,
         SetupParams {
             widget_state: setup_widget_state,
             character_selection_fn: setup_character_selection_fn,

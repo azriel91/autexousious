@@ -158,7 +158,6 @@ mod tests {
         controller_input.z_axis_value = -1.;
 
         run_test(
-            "updates_walk_x_and_z_velocity",
             SetupParams {
                 sequence_id: CharacterSequenceId::Stand,
                 controller_input,
@@ -177,7 +176,6 @@ mod tests {
         controller_input.x_axis_value = 1.;
 
         run_test(
-            "updates_walk_x_and_z_velocity",
             SetupParams {
                 sequence_id: CharacterSequenceId::Stand,
                 controller_input,
@@ -191,7 +189,6 @@ mod tests {
     }
 
     fn run_test(
-        test_name: &str,
         SetupParams {
             sequence_id: setup_sequence_id,
             controller_input: setup_controller_input,

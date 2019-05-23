@@ -357,7 +357,6 @@ mod tests {
     #[test]
     fn inserts_transition_for_press_event() -> Result<(), Error> {
         run_test(
-            "inserts_transition_for_press_event",
             CharacterSequenceId::Stand,
             None,
             Some(|entity| ControlActionEventData {
@@ -372,7 +371,6 @@ mod tests {
     #[test]
     fn inserts_transition_for_release_event() -> Result<(), Error> {
         run_test(
-            "inserts_transition_for_release_event",
             CharacterSequenceId::Stand,
             None,
             Some(|entity| ControlActionEventData {
@@ -390,7 +388,6 @@ mod tests {
         controller_input.defend = true;
 
         run_test(
-            "inserts_transition_for_release_event",
             CharacterSequenceId::Stand,
             Some(controller_input),
             None,
@@ -404,7 +401,6 @@ mod tests {
         controller_input.jump = true;
 
         run_test(
-            "inserts_transition_for_release_event",
             CharacterSequenceId::Stand,
             Some(controller_input),
             None,
@@ -419,7 +415,6 @@ mod tests {
         controller_input.defend = true;
 
         run_test(
-            "inserts_transition_for_release_event",
             CharacterSequenceId::Stand,
             Some(controller_input),
             Some(|entity| ControlActionEventData {
@@ -432,7 +427,6 @@ mod tests {
     }
 
     fn run_test(
-        test_name: &str,
         setup_sequence_id: CharacterSequenceId,
         setup_controller_input: Option<ControllerInput>,
         control_action_event_fn: Option<fn(Entity) -> ControlActionEventData>,

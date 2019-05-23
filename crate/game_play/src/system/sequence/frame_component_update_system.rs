@@ -170,7 +170,6 @@ mod tests {
 
     #[test]
     fn updates_all_frame_components_on_sequence_begin_event() -> Result<(), Error> {
-        let test_name = "updates_all_frame_components_on_sequence_begin_event";
         AutexousiousApplication::game_base()
             .with_system(FrameComponentUpdateSystem::new(), "", &[])
             .with_setup(|world| {
@@ -201,7 +200,6 @@ mod tests {
 
     #[test]
     fn updates_all_frame_components_on_frame_begin_event() -> Result<(), Error> {
-        let test_name = "updates_all_frame_components_on_frame_begin_event";
         AutexousiousApplication::game_base()
             .with_system(FrameComponentUpdateSystem::new(), "", &[])
             .with_setup(|world| {

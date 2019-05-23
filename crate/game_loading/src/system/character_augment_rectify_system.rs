@@ -159,7 +159,6 @@ mod tests {
     #[test]
     fn returns_if_augment_status_is_not_rectify() -> Result<(), Error> {
         run_test(
-            "returns_if_augment_status_is_not_rectify",
             |world| {
                 let mut game_loading_status = GameLoadingStatus::new();
                 game_loading_status.character_augment_status = CharacterAugmentStatus::Prefab;
@@ -187,7 +186,6 @@ mod tests {
     #[test]
     fn updates_position_to_middle_of_map() -> Result<(), Error> {
         run_test(
-            "updates_position_to_middle_of_map",
             |world| {
                 let mut game_loading_status = GameLoadingStatus::new();
                 game_loading_status.character_augment_status = CharacterAugmentStatus::Rectify;
@@ -226,7 +224,6 @@ mod tests {
     #[test]
     fn creates_hp_bar_entity_per_character_selection() -> Result<(), Error> {
         run_test(
-            "creates_hp_bar_entity_per_character_selection",
             |world| {
                 let mut game_loading_status = GameLoadingStatus::new();
                 game_loading_status.character_augment_status = CharacterAugmentStatus::Rectify;
@@ -251,7 +248,7 @@ mod tests {
         )
     }
 
-    fn run_test<FnS, FnA>(test_name: &str, fn_setup: FnS, fn_assert: FnA) -> Result<(), Error>
+    fn run_test<FnS, FnA>(fn_setup: FnS, fn_assert: FnA) -> Result<(), Error>
     where
         FnS: Fn(&mut World) + Send + Sync + 'static,
         FnA: Fn(&mut World) + Send + Sync + 'static,
