@@ -18,7 +18,7 @@ Author(s) grant you a revocable, non-exclusive, non-transferable, limited licens
 
 You agree not to, and you will not permit others to:
 
-1. License, sell, rent, lease, assign, distribute, transmit, host, outsource, disclose or otherwise commercially exploit the Application or make the Application available to any third party. Please link back to the website instead.
+1. License, sell, rent, lease, assign, or otherwise commercially exploit the Application or make the Application available to any third party. Please link back to the website instead.
 
 
 ## Modifications to Application
