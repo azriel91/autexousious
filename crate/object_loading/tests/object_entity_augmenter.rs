@@ -124,7 +124,6 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
     };
 
     AmethystApplication::render_base()
-        .with_app_name("augments_entity_with_object_components")
         .with_custom_event_type::<AppEvent, AppEventReader>()
         .with_bundle(AudioBundle::default())
         .with_bundle(SpriteLoadingBundle::new())

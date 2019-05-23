@@ -257,7 +257,6 @@ mod test {
         assert!(
             // kcov-ignore-end
             AutexousiousApplication::config_base()
-                .with_app_name("initializes_ui_when_character_selections_waiting")
                 .with_setup(|world| world.add_resource(input_config()))
                 .with_system_single(
                     CharacterSelectionWidgetUiSystem::new(),
@@ -277,7 +276,6 @@ mod test {
         assert!(
             // kcov-ignore-end
             AutexousiousApplication::config_base()
-                .with_app_name("refreshes_ui_when_selections_select_random")
                 // Set up UI
                 .with_resource(input_config())
                 // Run this in its own dispatcher, otherwise the LoadingState hasn't had time to
@@ -326,7 +324,6 @@ mod test {
         assert!(
             // kcov-ignore-end
             AutexousiousApplication::config_base()
-                .with_app_name("refreshes_ui_when_selections_select_id")
                 // Set up UI
                 .with_resource(input_config())
                 .with_system_single(

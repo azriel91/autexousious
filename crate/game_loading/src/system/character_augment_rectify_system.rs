@@ -257,7 +257,6 @@ mod tests {
         FnA: Fn(&mut World) + Send + Sync + 'static,
     {
         AmethystApplication::render_base()
-            .with_app_name(test_name)
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_bundle(AudioBundle::default())
             .with_bundle(SpriteLoadingBundle::new())

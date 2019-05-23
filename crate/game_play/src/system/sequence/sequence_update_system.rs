@@ -263,7 +263,6 @@ mod tests {
     fn resets_frame_wait_clocks_and_sends_event_on_sequence_begin() -> Result<(), Error> {
         let test_name = "resets_frame_wait_clocks_and_sends_event_on_sequence_begin";
         AutexousiousApplication::game_base()
-            .with_app_name(test_name)
             .with_setup(setup_system_data)
             .with_setup(|world| {
                 initial_values(
@@ -303,7 +302,6 @@ mod tests {
     {
         let test_name = "ticks_frame_wait_clock_when_sequence_ongoing";
         AutexousiousApplication::game_base()
-            .with_app_name(test_name)
             .with_setup(setup_system_data)
             .with_setup(|world| {
                 initial_values(
@@ -341,7 +339,6 @@ mod tests {
     ) -> Result<(), Error> {
         let test_name = "ticks_frame_wait_clock_when_sequence_ongoing";
         AutexousiousApplication::game_base()
-            .with_app_name(test_name)
             .with_setup(setup_system_data)
             .with_setup(|world| {
                 initial_values(
@@ -379,7 +376,6 @@ mod tests {
     ) -> Result<(), Error> {
         let test_name = "ticks_frame_wait_clock_when_sequence_ongoing";
         AutexousiousApplication::game_base()
-            .with_app_name(test_name)
             .with_setup(setup_system_data)
             .with_setup(|world| {
                 initial_values(
@@ -417,7 +413,6 @@ mod tests {
         let test_name =
             "resets_frame_wait_clock_and_sends_event_when_frame_ends_and_sequence_ongoing";
         AutexousiousApplication::game_base()
-            .with_app_name(test_name)
             .with_setup(setup_system_data)
             .with_setup(|world| {
                 initial_values(
@@ -457,7 +452,6 @@ mod tests {
     fn sends_end_event_when_frame_ends_and_sequence_ends() -> Result<(), Error> {
         let test_name = "sends_end_event_when_frame_ends_and_sequence_ends";
         AutexousiousApplication::game_base()
-            .with_app_name(test_name)
             .with_setup(setup_system_data)
             .with_setup(|world| {
                 initial_values(
@@ -497,7 +491,6 @@ mod tests {
     fn sends_events_when_frame_ends_and_sequence_ends_and_repeat() -> Result<(), Error> {
         let test_name = "sends_events_when_frame_ends_and_sequence_ends_and_repeat";
         AutexousiousApplication::game_base()
-            .with_app_name(test_name)
             .with_setup(setup_system_data)
             .with_setup(|world| {
                 initial_values(
@@ -530,7 +523,6 @@ mod tests {
     fn does_nothing_when_sequence_end() -> Result<(), Error> {
         let test_name = "does_nothing_when_sequence_end";
         AutexousiousApplication::game_base()
-            .with_app_name(test_name)
             .with_setup(setup_system_data)
             .with_setup(|world| {
                 initial_values(

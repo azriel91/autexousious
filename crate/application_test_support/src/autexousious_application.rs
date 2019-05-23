@@ -133,7 +133,6 @@ mod test {
     #[test]
     fn render_and_ui_uses_strong_types_for_input_and_ui_bundles() -> Result<(), Error> {
         AutexousiousApplication::render_and_ui()
-            .with_app_name("render_and_ui_uses_strong_types_for_input_and_ui_bundles")
             .with_assertion(|world| {
                 // Panics if the type parameters used are not these ones.
                 world.read_resource::<InputHandler<ControlBindings>>();
@@ -145,7 +144,6 @@ mod test {
     #[test]
     fn config_base_loads_assets_from_self_crate_directory() -> Result<(), Error> {
         AutexousiousApplication::config_base()
-            .with_app_name("config_base_loads_assets_from_self_crate_directory")
             .with_assertion(|world| {
                 // Panics if the resources have not been populated
                 world.read_resource::<MapAssets>();
@@ -157,7 +155,6 @@ mod test {
     #[test]
     fn game_base_loads_object_and_map_entities() -> Result<(), Error> {
         AutexousiousApplication::game_base()
-            .with_app_name("game_base_loads_object_and_map_entities")
             .with_assertion(|world| {
                 let game_entities = &*world.read_resource::<GameEntities>();
 

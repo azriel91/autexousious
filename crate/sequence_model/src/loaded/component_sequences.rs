@@ -89,7 +89,6 @@ mod tests {
     #[test]
     fn frame_count_returns_sequence_length_for_sprite_render() -> Result<(), Error> {
         AmethystApplication::render_base()
-            .with_app_name("frame_count_returns_sequence_length_for_sprite_render")
             .with_assertion(|world| {
                 let component_sequence = sprite_render_sequence(world);
 

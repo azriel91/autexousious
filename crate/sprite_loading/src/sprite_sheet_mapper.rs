@@ -159,7 +159,6 @@ mod test {
     #[test]
     fn map_multiple_sprite_sheet_definitions() -> Result<(), Error> {
         AmethystApplication::render_base()
-            .with_app_name("map_multiple_sprite_sheet_definitions")
             .with_assertion(|world| {
                 let sprite_sheet_definitions = [sprite_sheet_definition(true), simple_definition()];
                 let texture_handles = test_texture_handles(world, &sprite_sheet_definitions);
@@ -231,7 +230,6 @@ mod test {
     #[test]
     fn map_sprite_sheet_definition_without_border() -> Result<(), Error> {
         AmethystApplication::render_base()
-            .with_app_name("map_sprite_sheet_definition_without_border")
             .with_assertion(|world| {
                 let sprite_sheet_definitions =
                     [sprite_sheet_definition(false), simple_definition()];
@@ -304,7 +302,6 @@ mod test {
     #[test]
     fn offsets_defaults_to_negated_half_sprite_dimensions_if_none() {
         assert!(AmethystApplication::render_base()
-            .with_app_name("map_multiple_sprite_sheet_definitions")
             .with_assertion(|world| {
                 let sprite_sheet_definitions = [no_offsets_definition()];
                 let texture_handles = test_texture_handles(world, &sprite_sheet_definitions);

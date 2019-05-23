@@ -98,7 +98,6 @@ mod tests {
     #[test]
     fn returns_if_augment_status_is_not_prefab() -> Result<(), Error> {
         AmethystApplication::render_base()
-            .with_app_name("returns_if_augment_status_is_not_prefab")
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_bundle(AudioBundle::default())
             .with_bundle(SpriteLoadingBundle::new())
@@ -149,7 +148,6 @@ mod tests {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
         AmethystApplication::render_base()
-            .with_app_name("spawns_characters_when_they_havent_been_spawned")
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_bundle(AudioBundle::default())
             .with_bundle(SpriteLoadingBundle::new())

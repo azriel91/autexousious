@@ -95,7 +95,6 @@ mod test {
         assert!(
             // kcov-ignore-end
             AmethystApplication::render_base()
-                .with_app_name("returns_when_map_selection_status_confirmed")
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_resource(MapSelectionStatus::Confirmed)
@@ -137,7 +136,6 @@ mod test {
         assert!(
             // kcov-ignore-end
             AmethystApplication::render_base()
-                .with_app_name("returns_when_map_selection_status_confirmed")
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_setup(setup_components)

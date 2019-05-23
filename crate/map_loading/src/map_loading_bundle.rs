@@ -42,7 +42,6 @@ mod test {
         assert!(
             // kcov-ignore-end
             AmethystApplication::render_base()
-                .with_app_name("bundle_build_adds_map_processor")
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_effect(|world| {

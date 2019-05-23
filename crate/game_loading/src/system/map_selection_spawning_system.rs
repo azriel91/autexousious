@@ -71,7 +71,6 @@ mod tests {
     #[test]
     fn returns_if_map_already_loaded() {
         assert!(AmethystApplication::render_base()
-            .with_app_name("returns_if_map_already_loaded")
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_setup(setup_system_data)
@@ -118,7 +117,6 @@ mod tests {
         assert!(
             // kcov-ignore-end
             AmethystApplication::render_base()
-                .with_app_name("spawns_map_layers_when_they_havent_been_spawned")
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_setup(setup_system_data)
@@ -146,7 +144,6 @@ mod tests {
         assert!(
             // kcov-ignore-end
             AmethystApplication::render_base()
-                .with_app_name("spawns_map_layers_when_they_havent_been_spawned")
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_setup(setup_system_data)

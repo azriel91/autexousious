@@ -521,7 +521,6 @@ mod test {
         }: ExpectedParams,
     ) -> Result<(), Error> {
         AutexousiousApplication::config_base()
-            .with_app_name(test_name)
             .with_system(
                 CharacterSelectionWidgetInputSystem::new(),
                 CharacterSelectionWidgetInputSystem::type_name(),

@@ -119,7 +119,6 @@ mod tests {
     #[test]
     fn maps_return_event() -> Result<(), Error> {
         AutexousiousApplication::config_base()
-            .with_app_name("maps_return_event")
             .with_assertion(|world| {
                 let args = MapSelectionEventArgs::Return;
                 let map_assets = world.read_resource::<MapAssets>();
@@ -135,7 +134,6 @@ mod tests {
     #[test]
     fn maps_deselect_event() -> Result<(), Error> {
         AutexousiousApplication::config_base()
-            .with_app_name("maps_deselect_event")
             .with_assertion(|world| {
                 let args = MapSelectionEventArgs::Deselect;
                 let map_assets = world.read_resource::<MapAssets>();
@@ -151,7 +149,6 @@ mod tests {
     #[test]
     fn maps_confirm_event() -> Result<(), Error> {
         AutexousiousApplication::config_base()
-            .with_app_name("maps_confirm_event")
             .with_assertion(|world| {
                 let args = MapSelectionEventArgs::Confirm;
                 let map_assets = world.read_resource::<MapAssets>();
@@ -167,7 +164,6 @@ mod tests {
     #[test]
     fn maps_select_id_event() -> Result<(), Error> {
         AutexousiousApplication::config_base()
-            .with_app_name("maps_select_id_event")
             .with_assertion(|world| {
                 let args = MapSelectionEventArgs::Select {
                     selection: ASSETS_MAP_FADE_SLUG.to_string(),
@@ -187,7 +183,6 @@ mod tests {
     #[test]
     fn maps_select_random_event() -> Result<(), Error> {
         AutexousiousApplication::config_base()
-            .with_app_name("maps_select_random_event")
             .with_assertion(|world| {
                 let args = MapSelectionEventArgs::Select {
                     selection: "random".to_string(),

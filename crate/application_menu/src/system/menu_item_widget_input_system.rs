@@ -438,7 +438,6 @@ mod test {
         }: ExpectedParams<TestIndex>,
     ) -> Result<(), Error> {
         AmethystApplication::ui_base::<ControlBindings>()
-            .with_app_name(test_name)
             .with_system(
                 MenuItemWidgetInputSystem::<TestIndex>::new(),
                 MenuItemWidgetInputSystem::<TestIndex>::type_name(),

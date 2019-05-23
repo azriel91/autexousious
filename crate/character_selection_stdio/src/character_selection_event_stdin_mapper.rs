@@ -147,7 +147,6 @@ mod tests {
         assert!(
             // kcov-ignore-end
             AutexousiousApplication::config_base()
-                .with_app_name("maps_select_id_event")
                 .with_assertion(|world| {
                     let controller_id = 1;
                     let args = CharacterSelectionEventArgs::Select {
@@ -184,7 +183,6 @@ mod tests {
         assert!(
             // kcov-ignore-end
             AutexousiousApplication::config_base()
-                .with_app_name("maps_select_random_event")
                 .with_assertion(|world| {
                     let controller_id = 1;
                     let args = CharacterSelectionEventArgs::Select {

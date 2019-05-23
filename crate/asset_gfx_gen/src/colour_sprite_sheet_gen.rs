@@ -298,7 +298,6 @@ mod tests {
         const RED: [f32; 4] = [1., 0.2, 0.1, 1.];
 
         AmethystApplication::render_base()
-            .with_app_name("solid_returns_sprite_render")
             .with_setup(|world| {
                 let sprite_render = {
                     let colour_sprite_gen_data = world.system_data::<ColourSpriteSheetGenData>();
@@ -332,7 +331,6 @@ mod tests {
         const COLOUR_END: [f32; 4] = [0., 1., 0., 1.];
 
         AmethystApplication::render_base()
-            .with_app_name("gradient_returns_sprite_render")
             .with_setup(|world| {
                 let sprite_render = {
                     let colour_sprite_gen_data = world.system_data::<ColourSpriteSheetGenData>();

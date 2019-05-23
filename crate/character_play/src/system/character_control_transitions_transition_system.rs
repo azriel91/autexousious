@@ -439,7 +439,6 @@ mod tests {
         expected_sequence_id: CharacterSequenceId,
     ) -> Result<(), Error> {
         AutexousiousApplication::game_base()
-            .with_app_name(test_name)
             .with_system(CharacterControlTransitionsTransitionSystem::new(), "", &[])
             .with_setup(move |world| {
                 let entity = ObjectQueries::game_object_entity(world, ObjectType::Character);

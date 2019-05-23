@@ -414,7 +414,6 @@ mod tests {
         velocity_expected: Velocity<f32>,
     ) -> Result<(), Error> {
         AutexousiousApplication::game_base()
-            .with_app_name(test_name)
             // kcov-ignore-start
             .with_system(
                 CharacterKinematicsSystem::new(),

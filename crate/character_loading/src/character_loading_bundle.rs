@@ -78,7 +78,6 @@ mod test {
     #[test]
     fn bundle_build() -> Result<(), Error> {
         AmethystApplication::render_base()
-            .with_app_name("bundle_build")
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_assertion(|world| {

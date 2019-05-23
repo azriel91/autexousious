@@ -1,8 +1,5 @@
 use amethyst::{
-    core::{
-        math::{Orthographic3, Vector3},
-        Float, SystemBundle, Transform,
-    },
+    core::{math::Vector3, Float, SystemBundle, Transform},
     ecs::{Builder, DispatcherBuilder, Entity, World},
     input::{is_key_down, VirtualKeyCode},
     renderer::camera::{Camera, Projection},
@@ -20,6 +17,9 @@ use log::{debug, info};
 use state_registry::StateId;
 
 use crate::GamePlayBundle;
+
+/// Depth the camera can see.
+const CAMERA_DEPTH: f32 = 10000.;
 
 /// `State` where game play takes place.
 #[derive(Derivative, Default, new)]
@@ -97,23 +97,26 @@ impl GamePlayState {
         //
         // By using `::std::f32::MAX` here, we ensure that all entities will be in the camera's
         // view.
-        let translation =
-            Vector3::new(Float::from(0.), Float::from(0.), Float::from(std::f32::MAX));
+        let translation = Vector3::new(
+            Float::from(0.),
+            Float::from(0.),
+            Float::from(CAMERA_DEPTH / 2.),
+        );
         let transform = Transform::from(translation);
 
         let camera = world
             .create_entity()
-            .with(Camera::from(Projection::Orthographic(Orthographic3::new(
+            .with(Camera::from(Projection::orthographic(
                 0.,
                 width,
-                height,
+                -height,
                 0.,
                 0.,
                 // The distance that the camera can see. Since the camera is moved to the maximum Z
                 // position, we also need to give it maximum Z viewing distance to ensure it can see
                 // all entities in front of it.
-                std::f32::MAX,
-            ))))
+                CAMERA_DEPTH,
+            )))
             .with(transform)
             .build();
 

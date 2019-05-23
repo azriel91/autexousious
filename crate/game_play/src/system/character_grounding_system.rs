@@ -150,7 +150,6 @@ mod tests {
         assertion_fn: fn((&Position<f32>, &Grounding)),
     ) -> Result<(), Error> {
         AutexousiousApplication::game_base()
-            .with_app_name(test_name)
             .with_setup(move |world| {
                 let (mut positions, mut groundings) = world
                     .system_data::<(WriteStorage<'_, Position<f32>>, WriteStorage<'_, Grounding>)>(

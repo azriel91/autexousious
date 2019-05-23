@@ -170,7 +170,6 @@ mod test {
         assert!(
             // kcov-ignore-end
             AmethystApplication::render_base()
-                .with_app_name("loads_object_assets")
                 .with_bundle(CollisionLoadingBundle::new())
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_system(

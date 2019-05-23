@@ -88,7 +88,6 @@ mod tests {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
         AmethystApplication::render_base()
-            .with_app_name("inserts_character_selection_on_select_event")
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_bundle(AudioBundle::default())
             .with_bundle(SpriteLoadingBundle::new())
@@ -135,7 +134,6 @@ mod tests {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
         AmethystApplication::render_base()
-            .with_app_name("removes_character_selection_on_deselect_event")
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_bundle(AudioBundle::default())
             .with_bundle(SpriteLoadingBundle::new())

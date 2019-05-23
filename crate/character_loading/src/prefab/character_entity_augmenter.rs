@@ -83,7 +83,6 @@ mod test {
         };
 
         AmethystApplication::render_base()
-            .with_app_name("augments_entity_with_character_components")
             .with_setup(|world| {
                 <CharacterComponentStorages as SystemData>::setup(&mut world.res);
             })

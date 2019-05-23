@@ -35,7 +35,6 @@ mod test {
     #[test]
     fn loads_textures_and_sprite_sheets() -> Result<(), Error> {
         AmethystApplication::render_base()
-            .with_app_name("loads_textures_and_sprite_sheets")
             .with_assertion(|world| {
                 let sprites_definition = load_in::<SpritesDefinition, _>(
                     &*ASSETS_CHAR_BAT_PATH,

@@ -144,7 +144,6 @@ mod tests {
         F: Fn(&mut World) -> CharacterSelectionEvent + Send + Sync + 'static,
     {
         AutexousiousApplication::config_base()
-            .with_app_name(test_name)
             .with_system(CharacterSelectionSfxSystem::new(), "", &[])
             .with_effect(move |world| {
                 let event = event_fn(world);

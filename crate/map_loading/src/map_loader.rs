@@ -147,7 +147,6 @@ mod tests {
         assert!(
             // kcov-ignore-end
             AmethystApplication::render_base()
-                .with_app_name("loads_map_without_sprites")
                 .with_bundle(MapLoadingBundle)
                 .with_effect(|world| {
                     let map_handle = MapLoader::load(world, &ASSETS_MAP_EMPTY_PATH)
