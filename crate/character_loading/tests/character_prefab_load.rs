@@ -2,17 +2,19 @@ use std::collections::HashMap;
 
 use amethyst::{
     assets::{AssetStorage, Handle, Loader, Prefab, PrefabLoader},
+    core::TransformBundle,
     ecs::{Builder, Entity, Read, ReadExpect, World},
     renderer::{
         loaders::load_from_srgba,
         palette::Srgba,
         sprite::{Sprite, SpriteSheet, SpriteSheetHandle},
         types::TextureData,
-        Texture,
+        RenderTestBundle, Texture,
     },
+    window::WindowBundle,
     Error,
 };
-use amethyst_test::{AmethystApplication, RenderBaseAppExt};
+use amethyst_test::AmethystApplication;
 use character_loading::{CharacterLoadingBundle, CharacterPrefab, CharacterPrefabHandle};
 use character_model::{
     config::{CharacterDefinition, CharacterSequenceId, ControlTransitionRequirement},
@@ -37,7 +39,10 @@ use sprite_model::config::SpriteRef;
 
 #[test]
 fn character_prefab_load() -> Result<(), Error> {
-    AmethystApplication::render_base()
+    AmethystApplication::blank()
+        .with_bundle(TransformBundle::new())
+        .with_bundle(WindowBundle::from_test_config())
+        .with_bundle(RenderTestBundle::new())
         .with_bundle(SequenceLoadingBundle::new())
         .with_bundle(CharacterLoadingBundle::new())
         .with_setup(|world| {

@@ -52,11 +52,15 @@ impl ComponentSequences {
 mod tests {
     use amethyst::{
         assets::{AssetStorage, Loader, ProgressCounter},
+        core::TransformBundle,
         ecs::World,
-        renderer::{sprite::SpriteSheetHandle, SpriteRender, SpriteSheet, Texture},
+        renderer::{
+            sprite::SpriteSheetHandle, RenderTestBundle, SpriteRender, SpriteSheet, Texture,
+        },
+        window::WindowBundle,
         Error,
     };
-    use amethyst_test::{AmethystApplication, RenderBaseAppExt};
+    use amethyst_test::AmethystApplication;
     use application::{load_in, resource::Format};
     use assets_test::ASSETS_CHAR_BAT_PATH;
     use collision_loading::CollisionLoadingBundle;
@@ -88,7 +92,10 @@ mod tests {
 
     #[test]
     fn frame_count_returns_sequence_length_for_sprite_render() -> Result<(), Error> {
-        AmethystApplication::render_base()
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_bundle(WindowBundle::from_test_config())
+            .with_bundle(RenderTestBundle::new())
             .with_assertion(|world| {
                 let component_sequence = sprite_render_sequence(world);
 

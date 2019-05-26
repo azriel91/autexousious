@@ -19,6 +19,7 @@ strum = "0.15.0"
 toml = "0.5.0"
 
 [dev-dependencies]
+amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["test-support", "vulkan"] }
 amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
 derive_deref = "1.0.2"
 hamcrest = "0.1.5"

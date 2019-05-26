@@ -73,10 +73,13 @@ mod tests {
     use amethyst::{
         assets::Processor,
         audio::Source,
+        core::TransformBundle,
         ecs::{Builder, Entity},
+        renderer::RenderTestBundle,
+        window::WindowBundle,
         Error,
     };
-    use amethyst_test::{AmethystApplication, EffectReturn, PopState, RenderBaseAppExt};
+    use amethyst_test::{AmethystApplication, EffectReturn, PopState};
     use application_event::{AppEvent, AppEventReader};
     use asset_model::loaded::SlugAndHandle;
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
@@ -99,7 +102,10 @@ mod tests {
 
     #[test]
     fn returns_if_augment_status_is_not_prefab() -> Result<(), Error> {
-        AmethystApplication::render_base()
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_bundle(WindowBundle::from_test_config())
+            .with_bundle(RenderTestBundle::new())
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_ui_bundles::<ControlBindings>()
             .with_system(Processor::<Source>::new(), "source_processor", &[])
@@ -150,7 +156,10 @@ mod tests {
     fn spawns_characters_when_they_havent_been_spawned() -> Result<(), Error> {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
-        AmethystApplication::render_base()
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_bundle(WindowBundle::from_test_config())
+            .with_bundle(RenderTestBundle::new())
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_ui_bundles::<ControlBindings>()
             .with_system(Processor::<Source>::new(), "source_processor", &[])

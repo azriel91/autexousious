@@ -286,8 +286,13 @@ impl ColourSpriteSheetGen {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::{renderer::sprite::SpriteRender, Error};
-    use amethyst_test::{AmethystApplication, RenderBaseAppExt};
+    use amethyst::{
+        core::TransformBundle,
+        renderer::{sprite::SpriteRender, RenderTestBundle},
+        window::WindowBundle,
+        Error,
+    };
+    use amethyst_test::AmethystApplication;
     use approx::relative_eq;
 
     use super::ColourSpriteSheetGen;
@@ -297,7 +302,10 @@ mod tests {
     fn solid_returns_sprite_render() -> Result<(), Error> {
         const RED: [f32; 4] = [1., 0.2, 0.1, 1.];
 
-        AmethystApplication::render_base()
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_bundle(WindowBundle::from_test_config())
+            .with_bundle(RenderTestBundle::new())
             .with_setup(|world| {
                 let sprite_render = {
                     let colour_sprite_gen_data = world.system_data::<ColourSpriteSheetGenData>();
@@ -330,7 +338,10 @@ mod tests {
         const COLOUR_BEGIN: [f32; 4] = [1., 0., 0., 0.5];
         const COLOUR_END: [f32; 4] = [0., 1., 0., 1.];
 
-        AmethystApplication::render_base()
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_bundle(WindowBundle::from_test_config())
+            .with_bundle(RenderTestBundle::new())
             .with_setup(|world| {
                 let sprite_render = {
                     let colour_sprite_gen_data = world.system_data::<ColourSpriteSheetGenData>();

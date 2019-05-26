@@ -141,9 +141,11 @@ impl ObjectLoader {
 mod test {
     use amethyst::{
         assets::{AssetStorage, Loader, Processor, ProgressCounter},
-        renderer::{SpriteSheet, Texture},
+        core::TransformBundle,
+        renderer::{RenderTestBundle, SpriteSheet, Texture},
+        window::WindowBundle,
     };
-    use amethyst_test::{AmethystApplication, RenderBaseAppExt};
+    use amethyst_test::AmethystApplication;
     use application::{load_in, Format};
     use asset_model::config::AssetRecord;
     use assets_test::{ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SLUG};
@@ -169,7 +171,10 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::render_base()
+            AmethystApplication::blank()
+                .with_bundle(TransformBundle::new())
+                .with_bundle(WindowBundle::from_test_config())
+                .with_bundle(RenderTestBundle::new())
                 .with_bundle(CollisionLoadingBundle::new())
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_system(

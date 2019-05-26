@@ -130,10 +130,13 @@ mod tests {
     use amethyst::{
         assets::{Prefab, Processor},
         audio::Source,
+        core::TransformBundle,
         ecs::{Builder, Entity, Join, SystemData, World},
+        renderer::RenderTestBundle,
+        window::WindowBundle,
         Error,
     };
-    use amethyst_test::{AmethystApplication, PopState, RenderBaseAppExt};
+    use amethyst_test::{AmethystApplication, PopState};
     use application_event::{AppEvent, AppEventReader};
     use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
@@ -254,7 +257,10 @@ mod tests {
         FnS: Fn(&mut World) + Send + Sync + 'static,
         FnA: Fn(&mut World) + Send + Sync + 'static,
     {
-        AmethystApplication::render_base()
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_bundle(WindowBundle::from_test_config())
+            .with_bundle(RenderTestBundle::new())
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_ui_bundles::<ControlBindings>()
             .with_system(Processor::<Source>::new(), "source_processor", &[])

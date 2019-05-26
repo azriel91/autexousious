@@ -53,10 +53,13 @@ impl CharacterEntityAugmenter {
 #[cfg(test)]
 mod test {
     use amethyst::{
+        core::TransformBundle,
         ecs::{Builder, SystemData, World},
+        renderer::RenderTestBundle,
+        window::WindowBundle,
         Error,
     };
-    use amethyst_test::{AmethystApplication, RenderBaseAppExt};
+    use amethyst_test::AmethystApplication;
     use character_model::play::RunCounter;
     use game_input::ControllerInput;
     use object_model::play::{Grounding, HealthPoints};
@@ -82,7 +85,10 @@ mod test {
             assert!(world.read_storage::<Grounding>().contains(entity));
         };
 
-        AmethystApplication::render_base()
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_bundle(WindowBundle::from_test_config())
+            .with_bundle(RenderTestBundle::new())
             .with_setup(|world| {
                 <CharacterComponentStorages as SystemData>::setup(&mut world.res);
             })

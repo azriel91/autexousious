@@ -143,11 +143,13 @@ impl SpriteSheetMapper {
 mod test {
     use amethyst::{
         assets::{AssetStorage, Handle, Loader, ProgressCounter},
+        core::TransformBundle,
         ecs::World,
-        renderer::{SpriteSheet, Texture},
+        renderer::{RenderTestBundle, SpriteSheet, Texture},
+        window::WindowBundle,
         Error,
     };
-    use amethyst_test::{AmethystApplication, RenderBaseAppExt};
+    use amethyst_test::AmethystApplication;
     use assets_test::{
         ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SPRITE_BROWN_NAME, ASSETS_CHAR_BAT_SPRITE_GREY_NAME,
     };
@@ -158,7 +160,10 @@ mod test {
 
     #[test]
     fn map_multiple_sprite_sheet_definitions() -> Result<(), Error> {
-        AmethystApplication::render_base()
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_bundle(WindowBundle::from_test_config())
+            .with_bundle(RenderTestBundle::new())
             .with_assertion(|world| {
                 let sprite_sheet_definitions = [sprite_sheet_definition(true), simple_definition()];
                 let texture_handles = test_texture_handles(world, &sprite_sheet_definitions);
@@ -229,7 +234,10 @@ mod test {
 
     #[test]
     fn map_sprite_sheet_definition_without_border() -> Result<(), Error> {
-        AmethystApplication::render_base()
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_bundle(WindowBundle::from_test_config())
+            .with_bundle(RenderTestBundle::new())
             .with_assertion(|world| {
                 let sprite_sheet_definitions =
                     [sprite_sheet_definition(false), simple_definition()];
@@ -301,7 +309,10 @@ mod test {
 
     #[test]
     fn offsets_defaults_to_negated_half_sprite_dimensions_if_none() -> Result<(), Error> {
-        AmethystApplication::render_base()
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_bundle(WindowBundle::from_test_config())
+            .with_bundle(RenderTestBundle::new())
             .with_assertion(|world| {
                 let sprite_sheet_definitions = [no_offsets_definition()];
                 let texture_handles = test_texture_handles(world, &sprite_sheet_definitions);

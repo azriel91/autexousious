@@ -22,10 +22,12 @@ mod texture_loader;
 mod test {
     use amethyst::{
         assets::{AssetStorage, Loader, ProgressCounter},
-        renderer::{SpriteSheet, Texture},
+        core::TransformBundle,
+        renderer::{RenderTestBundle, SpriteSheet, Texture},
+        window::WindowBundle,
         Error,
     };
-    use amethyst_test::{AmethystApplication, RenderBaseAppExt};
+    use amethyst_test::AmethystApplication;
     use application::{load_in, resource::Format};
     use assets_test::ASSETS_CHAR_BAT_PATH;
     use sprite_model::config::SpritesDefinition;
@@ -34,7 +36,10 @@ mod test {
 
     #[test]
     fn loads_textures_and_sprite_sheets() -> Result<(), Error> {
-        AmethystApplication::render_base()
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_bundle(WindowBundle::from_test_config())
+            .with_bundle(RenderTestBundle::new())
             .with_assertion(|world| {
                 let sprites_definition = load_in::<SpritesDefinition, _>(
                     &*ASSETS_CHAR_BAT_PATH,

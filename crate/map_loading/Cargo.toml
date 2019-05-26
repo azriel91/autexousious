@@ -15,6 +15,7 @@ sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }
 
 [dev-dependencies]
+amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["test-support", "vulkan"] }
 amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
 assets_test = { path = "../assets_test" }
 sequence_loading = { path = "../sequence_loading" }

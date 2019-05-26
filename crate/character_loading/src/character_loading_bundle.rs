@@ -65,8 +65,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterLoadingBundle {
 
 #[cfg(test)]
 mod test {
-    use amethyst::{assets::AssetStorage, Error};
-    use amethyst_test::{AmethystApplication, RenderBaseAppExt};
+    use amethyst::{
+        assets::AssetStorage, core::TransformBundle, renderer::RenderTestBundle,
+        window::WindowBundle, Error,
+    };
+    use amethyst_test::AmethystApplication;
     use character_model::{
         config::CharacterDefinition,
         loaded::{Character, CharacterControlTransitionsSequence, CharacterObjectWrapper},
@@ -77,7 +80,10 @@ mod test {
 
     #[test]
     fn bundle_build() -> Result<(), Error> {
-        AmethystApplication::render_base()
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_bundle(WindowBundle::from_test_config())
+            .with_bundle(RenderTestBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_assertion(|world| {

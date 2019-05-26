@@ -24,12 +24,13 @@ use std::env;
 use amethyst::{
     assets::{AssetStorage, Prefab, Processor},
     audio::Source,
-    core::transform::Transform,
+    core::{transform::Transform, TransformBundle},
     ecs::{Builder, SystemData, World},
-    renderer::{transparent::Transparent, SpriteRender},
+    renderer::{transparent::Transparent, RenderTestBundle, SpriteRender},
+    window::WindowBundle,
     Error,
 };
-use amethyst_test::{AmethystApplication, PopState, RenderBaseAppExt};
+use amethyst_test::{AmethystApplication, PopState};
 use application_event::{AppEvent, AppEventReader};
 use asset_model::loaded::SlugAndHandle;
 use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
@@ -124,7 +125,10 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
         assert!(world.read_storage::<FrameWaitClock>().contains(entity));
     };
 
-    AmethystApplication::render_base()
+    AmethystApplication::blank()
+        .with_bundle(TransformBundle::new())
+        .with_bundle(WindowBundle::from_test_config())
+        .with_bundle(RenderTestBundle::new())
         .with_custom_event_type::<AppEvent, AppEventReader>()
         .with_ui_bundles::<ControlBindings>()
         .with_system(Processor::<Source>::new(), "source_processor", &[])

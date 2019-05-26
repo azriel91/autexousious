@@ -8,6 +8,7 @@ codegen-units = 1
 
 [patch.crates-io]
 derive_deref = { git = "https://github.com/azriel91/derive_deref.git", branch = "feature/allow-phantom-data-second-field" }
+rendy = { git = "https://github.com/azriel91/rendy.git", branch = "dont-double-panic" }
 rodio = { git = "https://github.com/azriel91/rodio.git", branch = "use-nalgebra-for-spatial-source" }
 
 [patch."https://github.com/amethyst/amethyst.git"]

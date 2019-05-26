@@ -26,6 +26,7 @@ strum = "0.15.0"
 strum_macros = "0.15.0"
 
 [dev-dependencies]
+amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["test-support", "vulkan"] }
 amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
 application = { path = "../application" }
 assets_test = { path = "../assets_test" }
