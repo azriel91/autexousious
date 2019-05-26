@@ -22,8 +22,8 @@
 use std::env;
 
 use amethyst::{
-    assets::{AssetStorage, Prefab},
-    audio::AudioBundle,
+    assets::{AssetStorage, Prefab, Processor},
+    audio::Source,
     core::transform::Transform,
     ecs::{Builder, SystemData, World},
     renderer::{transparent::Transparent, SpriteRender},
@@ -40,6 +40,7 @@ use character_model::{
 };
 use collision_audio_loading::CollisionAudioLoadingBundle;
 use collision_loading::CollisionLoadingBundle;
+use game_input_model::ControlBindings;
 use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
 use object_loading::{
@@ -125,7 +126,8 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
 
     AmethystApplication::render_base()
         .with_custom_event_type::<AppEvent, AppEventReader>()
-        .with_bundle(AudioBundle::default())
+        .with_ui_bundles::<ControlBindings>()
+        .with_system(Processor::<Source>::new(), "source_processor", &[])
         .with_bundle(SpriteLoadingBundle::new())
         .with_bundle(SequenceLoadingBundle::new())
         .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))

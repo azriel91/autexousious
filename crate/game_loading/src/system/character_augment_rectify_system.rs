@@ -128,8 +128,8 @@ impl<'s> System<'s> for CharacterAugmentRectifySystem {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        assets::Prefab,
-        audio::AudioBundle,
+        assets::{Prefab, Processor},
+        audio::Source,
         ecs::{Builder, Entity, Join, SystemData, World},
         Error,
     };
@@ -141,6 +141,7 @@ mod tests {
     use collision_audio_loading::CollisionAudioLoadingBundle;
     use collision_loading::CollisionLoadingBundle;
     use game_input::InputControlled;
+    use game_input_model::ControlBindings;
     use game_model::loaded::MapAssets;
     use game_play_model::GamePlayEntity;
     use loading::{LoadingBundle, LoadingState};
@@ -255,7 +256,8 @@ mod tests {
     {
         AmethystApplication::render_base()
             .with_custom_event_type::<AppEvent, AppEventReader>()
-            .with_bundle(AudioBundle::default())
+            .with_ui_bundles::<ControlBindings>()
+            .with_system(Processor::<Source>::new(), "source_processor", &[])
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))

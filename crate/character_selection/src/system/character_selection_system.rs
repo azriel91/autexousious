@@ -63,7 +63,7 @@ impl<'s> System<'s> for CharacterSelectionSystem {
 mod tests {
     use std::env;
 
-    use amethyst::{audio::AudioBundle, ecs::World, shrev::EventChannel, Error};
+    use amethyst::{assets::Processor, audio::Source, ecs::World, shrev::EventChannel, Error};
     use amethyst_test::{AmethystApplication, PopState, RenderBaseAppExt};
     use application_event::{AppEvent, AppEventReader};
     use asset_model::loaded::SlugAndHandle;
@@ -74,6 +74,7 @@ mod tests {
     };
     use collision_audio_loading::CollisionAudioLoadingBundle;
     use collision_loading::CollisionLoadingBundle;
+    use game_input_model::ControlBindings;
     use loading::{LoadingBundle, LoadingState};
     use map_loading::MapLoadingBundle;
     use sequence_loading::SequenceLoadingBundle;
@@ -89,7 +90,8 @@ mod tests {
 
         AmethystApplication::render_base()
             .with_custom_event_type::<AppEvent, AppEventReader>()
-            .with_bundle(AudioBundle::default())
+            .with_ui_bundles::<ControlBindings>()
+            .with_system(Processor::<Source>::new(), "source_processor", &[])
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
@@ -135,7 +137,8 @@ mod tests {
 
         AmethystApplication::render_base()
             .with_custom_event_type::<AppEvent, AppEventReader>()
-            .with_bundle(AudioBundle::default())
+            .with_ui_bundles::<ControlBindings>()
+            .with_system(Processor::<Source>::new(), "source_processor", &[])
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))

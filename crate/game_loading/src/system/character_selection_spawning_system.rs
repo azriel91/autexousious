@@ -71,7 +71,8 @@ mod tests {
     use std::{collections::HashMap, env};
 
     use amethyst::{
-        audio::AudioBundle,
+        assets::Processor,
+        audio::Source,
         ecs::{Builder, Entity},
         Error,
     };
@@ -83,6 +84,7 @@ mod tests {
     use character_selection_model::CharacterSelections;
     use collision_audio_loading::CollisionAudioLoadingBundle;
     use collision_loading::CollisionLoadingBundle;
+    use game_input_model::ControlBindings;
     use game_model::play::GameEntities;
     use loading::{LoadingBundle, LoadingState};
     use map_loading::MapLoadingBundle;
@@ -99,7 +101,8 @@ mod tests {
     fn returns_if_augment_status_is_not_prefab() -> Result<(), Error> {
         AmethystApplication::render_base()
             .with_custom_event_type::<AppEvent, AppEventReader>()
-            .with_bundle(AudioBundle::default())
+            .with_ui_bundles::<ControlBindings>()
+            .with_system(Processor::<Source>::new(), "source_processor", &[])
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
@@ -149,7 +152,8 @@ mod tests {
 
         AmethystApplication::render_base()
             .with_custom_event_type::<AppEvent, AppEventReader>()
-            .with_bundle(AudioBundle::default())
+            .with_ui_bundles::<ControlBindings>()
+            .with_system(Processor::<Source>::new(), "source_processor", &[])
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
