@@ -110,7 +110,7 @@ mod tests {
                         .expect("Expected map layers to have an entity.")
                 );
             })
-            .run()
+            .run_isolated()
             .is_ok());
     }
 
@@ -138,7 +138,7 @@ mod tests {
                     assert!(!world.read_resource::<GameEntities>().map_layers.is_empty());
                     assert!(world.read_resource::<GameLoadingStatus>().map_loaded);
                 })
-                .run()
+                .run_isolated()
                 .is_ok()
         );
     }
@@ -167,7 +167,7 @@ mod tests {
                     assert!(world.read_resource::<GameEntities>().map_layers.is_empty());
                     assert!(world.read_resource::<GameLoadingStatus>().map_loaded);
                 })
-                .run()
+                .run_isolated()
                 .is_ok()
         );
     }

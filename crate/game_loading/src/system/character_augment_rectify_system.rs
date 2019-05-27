@@ -280,7 +280,7 @@ mod tests {
                 &[],
             ) // kcov-ignore
             .with_assertion(fn_assert)
-            .run()
+            .run_isolated()
     }
 
     /// Returns a function that adds a `MapSelection` and `MapSelectionStatus::Confirmed`.

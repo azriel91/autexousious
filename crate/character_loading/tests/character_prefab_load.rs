@@ -102,7 +102,7 @@ fn character_prefab_load() -> Result<(), Error> {
                 character_control_transitions
             );
         })
-        .run()
+        .run_isolated()
 }
 
 fn character_definition() -> CharacterDefinition {

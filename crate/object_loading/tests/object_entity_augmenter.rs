@@ -144,5 +144,5 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
         })
         .with_state(|| LoadingState::new(PopState))
         .with_assertion(assertion)
-        .run()
+        .run_isolated()
 }

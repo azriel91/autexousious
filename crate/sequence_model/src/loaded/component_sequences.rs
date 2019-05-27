@@ -100,7 +100,7 @@ mod tests {
                 let component_sequences = ComponentSequences::new(vec![component_sequence]);
                 assert_eq!(2, component_sequences.frame_count());
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
@@ -113,7 +113,7 @@ mod tests {
                 let component_sequences = ComponentSequences::new(vec![component_sequence]);
                 assert_eq!(2, component_sequences.frame_count());
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
@@ -126,7 +126,7 @@ mod tests {
                 let component_sequences = ComponentSequences::new(vec![component_sequence]);
                 assert_eq!(2, component_sequences.frame_count());
             })
-            .run()
+            .run_isolated()
     }
 
     fn wait_sequence() -> ComponentSequence {

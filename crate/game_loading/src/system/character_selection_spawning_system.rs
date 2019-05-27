@@ -147,7 +147,7 @@ mod tests {
                         .expect("Expected characters to have an entity.")
                 );
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
@@ -196,6 +196,6 @@ mod tests {
                         .character_augment_status
                 );
             })
-            .run()
+            .run_isolated()
     }
 }

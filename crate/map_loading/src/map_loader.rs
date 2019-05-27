@@ -166,7 +166,7 @@ mod tests {
                     // See empty/map.toml
                     assert!(map.component_sequences_handles.is_none());
                 })
-                .run()
+                .run_isolated()
                 .is_ok()
         );
     }

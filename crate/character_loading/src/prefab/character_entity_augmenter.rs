@@ -91,6 +91,6 @@ mod test {
                 <CharacterComponentStorages as SystemData>::setup(&mut world.res);
             })
             .with_assertion(assertion)
-            .run()
+            .run_isolated()
     }
 }

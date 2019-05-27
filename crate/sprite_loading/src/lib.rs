@@ -64,6 +64,6 @@ mod test {
                     panic!("Failed to load sprites: {:?}", e); // kcov-ignore
                 } // kcov-ignore
             })
-            .run()
+            .run_isolated()
     }
 }

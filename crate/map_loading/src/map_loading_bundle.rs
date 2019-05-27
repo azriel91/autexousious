@@ -71,7 +71,7 @@ mod test {
                             .len()
                     );
                 })
-                .run()
+                .run_isolated()
                 .is_ok()
         );
     }

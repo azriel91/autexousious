@@ -91,6 +91,6 @@ mod test {
                 world.read_resource::<AssetStorage<CharacterControlTransitionsSequence>>();
                 world.read_resource::<AssetStorage<Character>>();
             })
-            .run()
+            .run_isolated()
     }
 }

@@ -127,7 +127,7 @@ mod test {
                     let map_selection = world.read_resource::<MapSelection>();
                     assert_eq!(MapSelection::Id(fade_snh), *map_selection);
                 })
-                .run()
+                .run_isolated()
                 .is_ok()
         );
     }
@@ -172,7 +172,7 @@ mod test {
                     let map_selection_status = world.read_resource::<MapSelectionStatus>();
                     assert_eq!(MapSelectionStatus::Confirmed, *map_selection_status);
                 })
-                .run()
+                .run_isolated()
                 .is_ok()
         );
     }

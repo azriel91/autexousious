@@ -133,7 +133,7 @@ mod tests {
                     character_selections.selections.get(&123)
                 );
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
@@ -180,7 +180,7 @@ mod tests {
 
                 assert_eq!(None, character_selections.selections.get(&123));
             })
-            .run()
+            .run_isolated()
     }
 
     fn send_event(world: &mut World, event: CharacterSelectionEvent) {

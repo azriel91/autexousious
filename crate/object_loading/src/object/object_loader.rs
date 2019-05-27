@@ -266,7 +266,7 @@ mod test {
                     // Wait, SpriteRender, Body, and Interactions
                     assert_eq!(4, stand_attack_0_component_sequences.len());
                 })
-                .run()
+                .run_isolated()
                 .is_ok()
         );
     }
