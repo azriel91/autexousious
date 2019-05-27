@@ -90,7 +90,7 @@ linux:debug:
   script:
     - time cargo test -j 4 --no-run
     - source xvfb_start
-    - time cargo test
+    - time cargo test -- --test-threads 1
     - source xvfb_stop
   after_script:
     - source xvfb_start
@@ -105,7 +105,7 @@ linux:release:
   script:
     - time cargo test -j 4 --no-run --release
     - source xvfb_start
-    - time cargo test --release
+    - time cargo test --release -- --test-threads 1
     - source xvfb_stop
     - ./build/publish_prepare_app.sh
   artifacts:
@@ -132,13 +132,13 @@ windows:debug:
   <<: *windows_job_common
   script:
     - cargo test --no-run
-    - cargo test
+    - cargo test -- --test-threads 1
 
 windows:release:
   <<: *windows_job_common
   script:
     - cargo test --no-run --release
-    - cargo test --release
+    - cargo test --release -- --test-threads 1
     - .\build\publish_prepare_app.bat
   artifacts:
     name: windows-x86_64
