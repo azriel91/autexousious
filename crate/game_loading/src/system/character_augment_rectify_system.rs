@@ -132,7 +132,7 @@ mod tests {
         audio::Source,
         core::TransformBundle,
         ecs::{Builder, Entity, Join, SystemData, World},
-        renderer::RenderTestBundle,
+        renderer::RenderEmptyBundle,
         Error,
     };
     use amethyst_test::{AmethystApplication, PopState};
@@ -258,7 +258,7 @@ mod tests {
     {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderTestBundle::new())
+            .with_bundle(RenderEmptyBundle::new())
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_ui_bundles::<ControlBindings>()
             .with_system(Processor::<Source>::new(), "source_processor", &[])

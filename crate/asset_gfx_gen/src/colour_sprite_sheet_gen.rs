@@ -288,7 +288,7 @@ impl ColourSpriteSheetGen {
 mod tests {
     use amethyst::{
         core::TransformBundle,
-        renderer::{sprite::SpriteRender, RenderTestBundle},
+        renderer::{sprite::SpriteRender, RenderEmptyBundle},
         Error,
     };
     use amethyst_test::AmethystApplication;
@@ -303,7 +303,7 @@ mod tests {
 
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderTestBundle::new())
+            .with_bundle(RenderEmptyBundle::new())
             .with_setup(|world| {
                 let sprite_render = {
                     let colour_sprite_gen_data = world.system_data::<ColourSpriteSheetGenData>();
@@ -338,7 +338,7 @@ mod tests {
 
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderTestBundle::new())
+            .with_bundle(RenderEmptyBundle::new())
             .with_setup(|world| {
                 let sprite_render = {
                     let colour_sprite_gen_data = world.system_data::<ColourSpriteSheetGenData>();

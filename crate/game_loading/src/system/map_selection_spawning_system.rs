@@ -53,7 +53,8 @@ mod tests {
     use std::{collections::HashMap, env};
 
     use amethyst::{
-        assets::ProgressCounter, core::TransformBundle, ecs::prelude::*, renderer::RenderTestBundle,
+        assets::ProgressCounter, core::TransformBundle, ecs::prelude::*,
+        renderer::RenderEmptyBundle,
     };
     use amethyst_test::prelude::*;
     use asset_loading::AssetDiscovery;
@@ -74,7 +75,7 @@ mod tests {
     fn returns_if_map_already_loaded() {
         assert!(AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderTestBundle::new())
+            .with_bundle(RenderEmptyBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_setup(setup_system_data)
@@ -122,7 +123,7 @@ mod tests {
             // kcov-ignore-end
             AmethystApplication::blank()
                 .with_bundle(TransformBundle::new())
-                .with_bundle(RenderTestBundle::new())
+                .with_bundle(RenderEmptyBundle::new())
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_setup(setup_system_data)
@@ -151,7 +152,7 @@ mod tests {
             // kcov-ignore-end
             AmethystApplication::blank()
                 .with_bundle(TransformBundle::new())
-                .with_bundle(RenderTestBundle::new())
+                .with_bundle(RenderEmptyBundle::new())
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_setup(setup_system_data)

@@ -77,7 +77,7 @@ impl<'s> System<'s> for MapSelectionSystem {
 mod test {
     use amethyst::{
         assets::ProgressCounter, core::TransformBundle, ecs::SystemData, prelude::*,
-        renderer::RenderTestBundle, shrev::EventChannel,
+        renderer::RenderEmptyBundle, shrev::EventChannel,
     };
     use amethyst_test::AmethystApplication;
     use asset_loading::AssetDiscovery;
@@ -99,7 +99,7 @@ mod test {
             // kcov-ignore-end
             AmethystApplication::blank()
                 .with_bundle(TransformBundle::new())
-                .with_bundle(RenderTestBundle::new())
+                .with_bundle(RenderEmptyBundle::new())
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_resource(MapSelectionStatus::Confirmed)
@@ -142,7 +142,7 @@ mod test {
             // kcov-ignore-end
             AmethystApplication::blank()
                 .with_bundle(TransformBundle::new())
-                .with_bundle(RenderTestBundle::new())
+                .with_bundle(RenderEmptyBundle::new())
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_setup(setup_components)

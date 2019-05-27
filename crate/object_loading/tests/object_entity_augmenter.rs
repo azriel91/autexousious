@@ -26,7 +26,7 @@ use amethyst::{
     audio::Source,
     core::{transform::Transform, TransformBundle},
     ecs::{Builder, SystemData, World},
-    renderer::{transparent::Transparent, RenderTestBundle, SpriteRender},
+    renderer::{transparent::Transparent, RenderEmptyBundle, SpriteRender},
     Error,
 };
 use amethyst_test::{AmethystApplication, PopState};
@@ -126,7 +126,7 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
 
     AmethystApplication::blank()
         .with_bundle(TransformBundle::new())
-        .with_bundle(RenderTestBundle::new())
+        .with_bundle(RenderEmptyBundle::new())
         .with_custom_event_type::<AppEvent, AppEventReader>()
         .with_ui_bundles::<ControlBindings>()
         .with_system(Processor::<Source>::new(), "source_processor", &[])

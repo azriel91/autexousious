@@ -75,7 +75,7 @@ mod tests {
         audio::Source,
         core::TransformBundle,
         ecs::{Builder, Entity},
-        renderer::RenderTestBundle,
+        renderer::RenderEmptyBundle,
         Error,
     };
     use amethyst_test::{AmethystApplication, EffectReturn, PopState};
@@ -103,7 +103,7 @@ mod tests {
     fn returns_if_augment_status_is_not_prefab() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderTestBundle::new())
+            .with_bundle(RenderEmptyBundle::new())
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_ui_bundles::<ControlBindings>()
             .with_system(Processor::<Source>::new(), "source_processor", &[])
@@ -156,7 +156,7 @@ mod tests {
 
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderTestBundle::new())
+            .with_bundle(RenderEmptyBundle::new())
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_ui_bundles::<ControlBindings>()
             .with_system(Processor::<Source>::new(), "source_processor", &[])

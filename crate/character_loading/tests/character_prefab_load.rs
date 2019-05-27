@@ -9,7 +9,7 @@ use amethyst::{
         palette::Srgba,
         sprite::{Sprite, SpriteSheet, SpriteSheetHandle},
         types::TextureData,
-        RenderTestBundle, Texture,
+        RenderEmptyBundle, Texture,
     },
     Error,
 };
@@ -40,7 +40,7 @@ use sprite_model::config::SpriteRef;
 fn character_prefab_load() -> Result<(), Error> {
     AmethystApplication::blank()
         .with_bundle(TransformBundle::new())
-        .with_bundle(RenderTestBundle::new())
+        .with_bundle(RenderEmptyBundle::new())
         .with_bundle(SequenceLoadingBundle::new())
         .with_bundle(CharacterLoadingBundle::new())
         .with_setup(|world| {

@@ -66,7 +66,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterLoadingBundle {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        assets::AssetStorage, core::TransformBundle, renderer::RenderTestBundle, Error,
+        assets::AssetStorage, core::TransformBundle, renderer::RenderEmptyBundle, Error,
     };
     use amethyst_test::AmethystApplication;
     use character_model::{
@@ -81,7 +81,7 @@ mod test {
     fn bundle_build() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderTestBundle::new())
+            .with_bundle(RenderEmptyBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_assertion(|world| {
