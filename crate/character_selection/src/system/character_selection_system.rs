@@ -65,9 +65,9 @@ mod tests {
 
     use amethyst::{
         assets::Processor, audio::Source, core::TransformBundle, ecs::World,
-        renderer::RenderEmptyBundle, shrev::EventChannel, Error,
+        renderer::RenderEmptyBundle, shrev::EventChannel, window::ScreenDimensions, Error,
     };
-    use amethyst_test::{AmethystApplication, PopState};
+    use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
     use application_event::{AppEvent, AppEventReader};
     use asset_model::loaded::SlugAndHandle;
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
@@ -93,8 +93,10 @@ mod tests {
 
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
+            .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
             .with_bundle(RenderEmptyBundle::new())
             .with_custom_event_type::<AppEvent, AppEventReader>()
+            .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
             .with_ui_bundles::<ControlBindings>()
             .with_system(Processor::<Source>::new(), "source_processor", &[])
             .with_bundle(SpriteLoadingBundle::new())
@@ -144,6 +146,7 @@ mod tests {
             .with_bundle(TransformBundle::new())
             .with_bundle(RenderEmptyBundle::new())
             .with_custom_event_type::<AppEvent, AppEventReader>()
+            .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
             .with_ui_bundles::<ControlBindings>()
             .with_system(Processor::<Source>::new(), "source_processor", &[])
             .with_bundle(SpriteLoadingBundle::new())

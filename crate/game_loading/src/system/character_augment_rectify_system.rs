@@ -133,9 +133,10 @@ mod tests {
         core::TransformBundle,
         ecs::{Builder, Entity, Join, SystemData, World},
         renderer::RenderEmptyBundle,
+        window::ScreenDimensions,
         Error,
     };
-    use amethyst_test::{AmethystApplication, PopState};
+    use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
     use application_event::{AppEvent, AppEventReader};
     use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
@@ -260,6 +261,7 @@ mod tests {
             .with_bundle(TransformBundle::new())
             .with_bundle(RenderEmptyBundle::new())
             .with_custom_event_type::<AppEvent, AppEventReader>()
+            .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
             .with_ui_bundles::<ControlBindings>()
             .with_system(Processor::<Source>::new(), "source_processor", &[])
             .with_bundle(SpriteLoadingBundle::new())
