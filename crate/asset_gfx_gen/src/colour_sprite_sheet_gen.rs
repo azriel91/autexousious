@@ -289,7 +289,6 @@ mod tests {
     use amethyst::{
         core::TransformBundle,
         renderer::{sprite::SpriteRender, RenderTestBundle},
-        window::WindowBundle,
         Error,
     };
     use amethyst_test::AmethystApplication;
@@ -304,7 +303,6 @@ mod tests {
 
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(WindowBundle::from_test_config())
             .with_bundle(RenderTestBundle::new())
             .with_setup(|world| {
                 let sprite_render = {
@@ -340,7 +338,6 @@ mod tests {
 
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(WindowBundle::from_test_config())
             .with_bundle(RenderTestBundle::new())
             .with_setup(|world| {
                 let sprite_render = {

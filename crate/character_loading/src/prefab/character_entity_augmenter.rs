@@ -56,7 +56,6 @@ mod test {
         core::TransformBundle,
         ecs::{Builder, SystemData, World},
         renderer::RenderTestBundle,
-        window::WindowBundle,
         Error,
     };
     use amethyst_test::AmethystApplication;
@@ -87,7 +86,6 @@ mod test {
 
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(WindowBundle::from_test_config())
             .with_bundle(RenderTestBundle::new())
             .with_setup(|world| {
                 <CharacterComponentStorages as SystemData>::setup(&mut world.res);

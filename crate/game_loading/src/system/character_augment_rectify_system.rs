@@ -133,7 +133,6 @@ mod tests {
         core::TransformBundle,
         ecs::{Builder, Entity, Join, SystemData, World},
         renderer::RenderTestBundle,
-        window::WindowBundle,
         Error,
     };
     use amethyst_test::{AmethystApplication, PopState};
@@ -259,7 +258,6 @@ mod tests {
     {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(WindowBundle::from_test_config())
             .with_bundle(RenderTestBundle::new())
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_ui_bundles::<ControlBindings>()

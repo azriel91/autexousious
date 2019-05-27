@@ -1,8 +1,7 @@
 use std::env;
 
 use amethyst::{
-    assets::Processor, audio::Source, core::TransformBundle, renderer::RenderTestBundle,
-    window::WindowBundle, GameData,
+    assets::Processor, audio::Source, core::TransformBundle, renderer::RenderTestBundle, GameData,
 };
 use amethyst_test::{AmethystApplication, PopState};
 use application_event::{AppEvent, AppEventReader};
@@ -51,7 +50,6 @@ impl AutexousiousApplication {
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_bundle(TransformBundle::new())
             .with_ui_bundles::<ControlBindings>()
-            .with_bundle(WindowBundle::from_test_config())
             .with_bundle(RenderTestBundle::new())
             .with_bundle(CollisionLoadingBundle::new())
     }

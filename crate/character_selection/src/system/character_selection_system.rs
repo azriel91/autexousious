@@ -65,7 +65,7 @@ mod tests {
 
     use amethyst::{
         assets::Processor, audio::Source, core::TransformBundle, ecs::World,
-        renderer::RenderTestBundle, shrev::EventChannel, window::WindowBundle, Error,
+        renderer::RenderTestBundle, shrev::EventChannel, Error,
     };
     use amethyst_test::{AmethystApplication, PopState};
     use application_event::{AppEvent, AppEventReader};
@@ -93,7 +93,6 @@ mod tests {
 
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(WindowBundle::from_test_config())
             .with_bundle(RenderTestBundle::new())
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_ui_bundles::<ControlBindings>()
@@ -143,7 +142,6 @@ mod tests {
 
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(WindowBundle::from_test_config())
             .with_bundle(RenderTestBundle::new())
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_ui_bundles::<ControlBindings>()

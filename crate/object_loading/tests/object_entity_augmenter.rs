@@ -27,7 +27,6 @@ use amethyst::{
     core::{transform::Transform, TransformBundle},
     ecs::{Builder, SystemData, World},
     renderer::{transparent::Transparent, RenderTestBundle, SpriteRender},
-    window::WindowBundle,
     Error,
 };
 use amethyst_test::{AmethystApplication, PopState};
@@ -127,7 +126,6 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
 
     AmethystApplication::blank()
         .with_bundle(TransformBundle::new())
-        .with_bundle(WindowBundle::from_test_config())
         .with_bundle(RenderTestBundle::new())
         .with_custom_event_type::<AppEvent, AppEventReader>()
         .with_ui_bundles::<ControlBindings>()

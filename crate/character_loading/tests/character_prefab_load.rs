@@ -11,7 +11,6 @@ use amethyst::{
         types::TextureData,
         RenderTestBundle, Texture,
     },
-    window::WindowBundle,
     Error,
 };
 use amethyst_test::AmethystApplication;
@@ -41,7 +40,6 @@ use sprite_model::config::SpriteRef;
 fn character_prefab_load() -> Result<(), Error> {
     AmethystApplication::blank()
         .with_bundle(TransformBundle::new())
-        .with_bundle(WindowBundle::from_test_config())
         .with_bundle(RenderTestBundle::new())
         .with_bundle(SequenceLoadingBundle::new())
         .with_bundle(CharacterLoadingBundle::new())
