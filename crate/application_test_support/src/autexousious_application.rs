@@ -1,9 +1,10 @@
 use std::env;
 
 use amethyst::{
-    assets::Processor, audio::Source, core::TransformBundle, renderer::RenderEmptyBundle, GameData,
+    assets::Processor, audio::Source, core::TransformBundle, renderer::RenderEmptyBundle,
+    window::ScreenDimensions, GameData,
 };
-use amethyst_test::{AmethystApplication, PopState};
+use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
 use application_event::{AppEvent, AppEventReader};
 use asset_model::loaded::SlugAndHandle;
 use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
@@ -49,6 +50,7 @@ impl AutexousiousApplication {
         AmethystApplication::blank()
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_bundle(TransformBundle::new())
+            .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
             .with_ui_bundles::<ControlBindings>()
             .with_bundle(RenderEmptyBundle::new())
             .with_bundle(CollisionLoadingBundle::new())
@@ -127,7 +129,7 @@ mod test {
                 world.read_resource::<InputHandler<ControlBindings>>();
                 world.read_storage::<Interactable>();
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
