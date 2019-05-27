@@ -56,7 +56,7 @@ dependencies = [
 [[package]]
 name = "amethyst"
 version = "0.10.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#56e4cae061f79ee3bb9789218166a14e01641602"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#10b9482a21553a6bc17b452a5c5bd9d2a28b41bb"
 dependencies = [
  "amethyst_animation 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
  "amethyst_assets 0.6.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
@@ -90,7 +90,7 @@ dependencies = [
 [[package]]
 name = "amethyst_animation"
 version = "0.5.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#56e4cae061f79ee3bb9789218166a14e01641602"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#10b9482a21553a6bc17b452a5c5bd9d2a28b41bb"
 dependencies = [
  "amethyst_assets 0.6.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
  "amethyst_core 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
@@ -109,7 +109,7 @@ dependencies = [
 [[package]]
 name = "amethyst_assets"
 version = "0.6.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#56e4cae061f79ee3bb9789218166a14e01641602"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#10b9482a21553a6bc17b452a5c5bd9d2a28b41bb"
 dependencies = [
  "amethyst_core 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
  "amethyst_error 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
@@ -134,7 +134,7 @@ dependencies = [
 [[package]]
 name = "amethyst_audio"
 version = "0.5.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#56e4cae061f79ee3bb9789218166a14e01641602"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#10b9482a21553a6bc17b452a5c5bd9d2a28b41bb"
 dependencies = [
  "amethyst_assets 0.6.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
  "amethyst_core 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
@@ -149,7 +149,7 @@ dependencies = [
 [[package]]
 name = "amethyst_config"
 version = "0.9.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#56e4cae061f79ee3bb9789218166a14e01641602"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#10b9482a21553a6bc17b452a5c5bd9d2a28b41bb"
 dependencies = [
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "ron 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -159,7 +159,7 @@ dependencies = [
 [[package]]
 name = "amethyst_controls"
 version = "0.4.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#56e4cae061f79ee3bb9789218166a14e01641602"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#10b9482a21553a6bc17b452a5c5bd9d2a28b41bb"
 dependencies = [
  "amethyst_assets 0.6.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
  "amethyst_core 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
@@ -173,7 +173,7 @@ dependencies = [
 [[package]]
 name = "amethyst_core"
 version = "0.5.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#56e4cae061f79ee3bb9789218166a14e01641602"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#10b9482a21553a6bc17b452a5c5bd9d2a28b41bb"
 dependencies = [
  "alga 0.9.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "alga_derive 0.9.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -197,7 +197,7 @@ dependencies = [
 [[package]]
 name = "amethyst_derive"
 version = "0.3.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#56e4cae061f79ee3bb9789218166a14e01641602"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#10b9482a21553a6bc17b452a5c5bd9d2a28b41bb"
 dependencies = [
  "proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 0.6.12 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -207,7 +207,7 @@ dependencies = [
 [[package]]
 name = "amethyst_error"
 version = "0.1.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#56e4cae061f79ee3bb9789218166a14e01641602"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#10b9482a21553a6bc17b452a5c5bd9d2a28b41bb"
 dependencies = [
  "backtrace 0.3.26 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -215,7 +215,7 @@ dependencies = [
 [[package]]
 name = "amethyst_input"
 version = "0.6.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#56e4cae061f79ee3bb9789218166a14e01641602"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#10b9482a21553a6bc17b452a5c5bd9d2a28b41bb"
 dependencies = [
  "amethyst_config 0.9.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
  "amethyst_core 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
@@ -231,7 +231,7 @@ dependencies = [
 [[package]]
 name = "amethyst_locale"
 version = "0.4.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#56e4cae061f79ee3bb9789218166a14e01641602"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#10b9482a21553a6bc17b452a5c5bd9d2a28b41bb"
 dependencies = [
  "amethyst_assets 0.6.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
  "amethyst_core 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
@@ -243,7 +243,7 @@ dependencies = [
 [[package]]
 name = "amethyst_network"
 version = "0.3.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#56e4cae061f79ee3bb9789218166a14e01641602"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#10b9482a21553a6bc17b452a5c5bd9d2a28b41bb"
 dependencies = [
  "amethyst_core 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
  "amethyst_error 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
@@ -261,7 +261,7 @@ dependencies = [
 [[package]]
 name = "amethyst_rendy"
 version = "0.1.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#56e4cae061f79ee3bb9789218166a14e01641602"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#10b9482a21553a6bc17b452a5c5bd9d2a28b41bb"
 dependencies = [
  "amethyst_assets 0.6.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
  "amethyst_core 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
@@ -279,7 +279,7 @@ dependencies = [
  "lazy_static 1.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "palette 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "rendy 0.2.1 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
+ "rendy 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "ron 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.91 (registry+https://github.com/rust-lang/crates.io-index)",
  "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -290,7 +290,7 @@ dependencies = [
 [[package]]
 name = "amethyst_test"
 version = "0.1.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#56e4cae061f79ee3bb9789218166a14e01641602"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#10b9482a21553a6bc17b452a5c5bd9d2a28b41bb"
 dependencies = [
  "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
  "boxfnonce 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -301,7 +301,7 @@ dependencies = [
 [[package]]
 name = "amethyst_ui"
 version = "0.5.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#56e4cae061f79ee3bb9789218166a14e01641602"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#10b9482a21553a6bc17b452a5c5bd9d2a28b41bb"
 dependencies = [
  "amethyst_assets 0.6.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
  "amethyst_audio 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
@@ -337,7 +337,7 @@ dependencies = [
 [[package]]
 name = "amethyst_utils"
 version = "0.5.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#56e4cae061f79ee3bb9789218166a14e01641602"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#10b9482a21553a6bc17b452a5c5bd9d2a28b41bb"
 dependencies = [
  "amethyst_assets 0.6.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
  "amethyst_controls 0.4.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
@@ -357,7 +357,7 @@ dependencies = [
 [[package]]
 name = "amethyst_window"
 version = "0.1.0"
-source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#56e4cae061f79ee3bb9789218166a14e01641602"
+source = "git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy#10b9482a21553a6bc17b452a5c5bd9d2a28b41bb"
 dependencies = [
  "amethyst_config 0.9.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
  "amethyst_core 0.5.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
@@ -4231,47 +4231,47 @@ dependencies = [
 [[package]]
 name = "rendy"
 version = "0.2.1"
-source = "git+https://github.com/azriel91/rendy.git?branch=dont-double-panic#ff58388cf949c7095ff710b73e3d80a1eb219208"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "failure 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "gfx-hal 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "rendy-command 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-descriptor 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-factory 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-frame 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-graph 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-memory 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-mesh 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-resource 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-shader 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-texture 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-util 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-wsi 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
+ "rendy-command 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-descriptor 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-factory 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-frame 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-graph 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-memory 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-mesh 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-resource 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-shader 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-texture 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-util 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-wsi 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "thread_profiler 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "rendy-chain"
 version = "0.2.0"
-source = "git+https://github.com/azriel91/rendy.git?branch=dont-double-panic#ff58388cf949c7095ff710b73e3d80a1eb219208"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "fnv 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "gfx-hal 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "rendy-util 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
+ "rendy-util 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "thread_profiler 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "rendy-command"
 version = "0.2.0"
-source = "git+https://github.com/azriel91/rendy.git?branch=dont-double-panic#ff58388cf949c7095ff710b73e3d80a1eb219208"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "failure 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "gfx-hal 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "relevant 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "rendy-util 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
+ "rendy-util 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "smallvec 0.6.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "thread_profiler 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -4279,7 +4279,7 @@ dependencies = [
 [[package]]
 name = "rendy-descriptor"
 version = "0.2.0"
-source = "git+https://github.com/azriel91/rendy.git?branch=dont-double-panic#ff58388cf949c7095ff710b73e3d80a1eb219208"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "failure 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4292,7 +4292,7 @@ dependencies = [
 [[package]]
 name = "rendy-factory"
 version = "0.2.0"
-source = "git+https://github.com/azriel91/rendy.git?branch=dont-double-panic#ff58388cf949c7095ff710b73e3d80a1eb219208"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "either 1.5.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4301,12 +4301,12 @@ dependencies = [
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "parking_lot 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "relevant 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "rendy-command 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-descriptor 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-memory 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-resource 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-util 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-wsi 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
+ "rendy-command 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-descriptor 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-memory 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-resource 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-util 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-wsi 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.91 (registry+https://github.com/rust-lang/crates.io-index)",
  "smallvec 0.6.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "thread_profiler 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4315,7 +4315,7 @@ dependencies = [
 [[package]]
 name = "rendy-frame"
 version = "0.2.0"
-source = "git+https://github.com/azriel91/rendy.git?branch=dont-double-panic#ff58388cf949c7095ff710b73e3d80a1eb219208"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "either 1.5.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4323,11 +4323,11 @@ dependencies = [
  "gfx-hal 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "relevant 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "rendy-command 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-factory 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-memory 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-resource 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-util 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
+ "rendy-command 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-factory 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-memory 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-resource 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-util 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "smallvec 0.6.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "thread_profiler 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -4335,7 +4335,7 @@ dependencies = [
 [[package]]
 name = "rendy-graph"
 version = "0.2.0"
-source = "git+https://github.com/azriel91/rendy.git?branch=dont-double-panic#ff58388cf949c7095ff710b73e3d80a1eb219208"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bitflags 1.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4344,16 +4344,16 @@ dependencies = [
  "gfx-hal 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "relevant 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "rendy-chain 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-command 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-descriptor 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-factory 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-frame 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-memory 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-resource 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-shader 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-util 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-wsi 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
+ "rendy-chain 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-command 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-descriptor 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-factory 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-frame 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-memory 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-resource 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-shader 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-util 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-wsi 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "smallvec 0.6.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "thread_profiler 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -4361,7 +4361,7 @@ dependencies = [
 [[package]]
 name = "rendy-memory"
 version = "0.2.0"
-source = "git+https://github.com/azriel91/rendy.git?branch=dont-double-panic#ff58388cf949c7095ff710b73e3d80a1eb219208"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "colorful 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4378,16 +4378,16 @@ dependencies = [
 [[package]]
 name = "rendy-mesh"
 version = "0.2.0"
-source = "git+https://github.com/azriel91/rendy.git?branch=dont-double-panic#ff58388cf949c7095ff710b73e3d80a1eb219208"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "failure 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "gfx-hal 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "rendy-command 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-factory 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-memory 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-resource 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-util 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
+ "rendy-command 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-factory 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-memory 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-resource 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-util 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.91 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_bytes 0.11.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "smallvec 0.6.9 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4397,7 +4397,7 @@ dependencies = [
 [[package]]
 name = "rendy-resource"
 version = "0.2.0"
-source = "git+https://github.com/azriel91/rendy.git?branch=dont-double-panic#ff58388cf949c7095ff710b73e3d80a1eb219208"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "crossbeam-channel 0.3.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4405,23 +4405,23 @@ dependencies = [
  "gfx-hal 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "relevant 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "rendy-descriptor 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-memory 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-util 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
+ "rendy-descriptor 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-memory 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-util 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "smallvec 0.6.9 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "rendy-shader"
 version = "0.2.0"
-source = "git+https://github.com/azriel91/rendy.git?branch=dont-double-panic#ff58388cf949c7095ff710b73e3d80a1eb219208"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "failure 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "gfx-hal 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "rendy-factory 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-util 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
+ "rendy-factory 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-util 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.91 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_bytes 0.11.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "smallvec 0.6.9 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4430,7 +4430,7 @@ dependencies = [
 [[package]]
 name = "rendy-texture"
 version = "0.2.0"
-source = "git+https://github.com/azriel91/rendy.git?branch=dont-double-panic#ff58388cf949c7095ff710b73e3d80a1eb219208"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "failure 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4438,10 +4438,10 @@ dependencies = [
  "image 0.21.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "palette 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "rendy-factory 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-memory 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-resource 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-util 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
+ "rendy-factory 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-memory 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-resource 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-util 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.91 (registry+https://github.com/rust-lang/crates.io-index)",
  "thread_profiler 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -4449,7 +4449,7 @@ dependencies = [
 [[package]]
 name = "rendy-util"
 version = "0.2.0"
-source = "git+https://github.com/azriel91/rendy.git?branch=dont-double-panic#ff58388cf949c7095ff710b73e3d80a1eb219208"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "fnv 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4466,16 +4466,16 @@ dependencies = [
 [[package]]
 name = "rendy-wsi"
 version = "0.2.0"
-source = "git+https://github.com/azriel91/rendy.git?branch=dont-double-panic#ff58388cf949c7095ff710b73e3d80a1eb219208"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "failure 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "gfx-hal 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "relevant 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "rendy-memory 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-resource 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
- "rendy-util 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)",
+ "rendy-memory 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-resource 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rendy-util 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "smallvec 0.6.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "winit 0.19.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -6297,20 +6297,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum regex-syntax 0.6.6 (registry+https://github.com/rust-lang/crates.io-index)" = "dcfd8681eebe297b81d98498869d4aae052137651ad7b96822f09ceb690d0a96"
 "checksum relevant 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)" = "bbc232e13d37f4547f5b9b42a5efc380cabe5dbc1807f8b893580640b2ab0308"
 "checksum remove_dir_all 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)" = "3488ba1b9a2084d38645c4c08276a1752dcbf2c7130d74f1569681ad5d2799c5"
-"checksum rendy 0.2.1 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)" = "<none>"
-"checksum rendy-chain 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)" = "<none>"
-"checksum rendy-command 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)" = "<none>"
-"checksum rendy-descriptor 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)" = "<none>"
-"checksum rendy-factory 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)" = "<none>"
-"checksum rendy-frame 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)" = "<none>"
-"checksum rendy-graph 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)" = "<none>"
-"checksum rendy-memory 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)" = "<none>"
-"checksum rendy-mesh 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)" = "<none>"
-"checksum rendy-resource 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)" = "<none>"
-"checksum rendy-shader 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)" = "<none>"
-"checksum rendy-texture 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)" = "<none>"
-"checksum rendy-util 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)" = "<none>"
-"checksum rendy-wsi 0.2.0 (git+https://github.com/azriel91/rendy.git?branch=dont-double-panic)" = "<none>"
+"checksum rendy 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "e28a1f9f63aa359abf6a25d5a8f46780c35b8656486c754c1bc1e0c185c22b0e"
+"checksum rendy-chain 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "45bde3627bd30214e1b64f8f5fed7a6a68274236e9f9260e696d00dba12a06ee"
+"checksum rendy-command 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "d440943977b5c8c597bdb2f45b4258e7fd8f03cf3a64ec39f6a44af858566fc5"
+"checksum rendy-descriptor 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "d994004622af2fe3848fde527258dd6bee8cf089a51e2e83fe5f2b7aeb09f6c0"
+"checksum rendy-factory 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "59f0a92ec8b6aaed128b98c8c5a0226333831552fcf398ee3f0ea9035fc88f6a"
+"checksum rendy-frame 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "faee0cf6d1fdb019601eeceecea44c9c932230d9e0fdec169540637c9bd642d7"
+"checksum rendy-graph 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "40e551566583287d20e83b678511b51226a2e666aa215f03a7c074562944b66c"
+"checksum rendy-memory 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "fbdab806e4d349037b60ff6a25dad1260da58eb4b43ecac31350443278d5c002"
+"checksum rendy-mesh 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "da0860fae33fadbdcbb34811e340dac6ad87c09fbe0a9bd5309db4df2b8c84b0"
+"checksum rendy-resource 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "49a03f839cc0ce5038f224ad08117a526b8b3f0d8dc40303cdd71b17cd0e1982"
+"checksum rendy-shader 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "177274ea65ad61d6e38caed77eb64e0194d344d5bf6020ac5caaf262c9e99396"
+"checksum rendy-texture 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "3a107ede33996ca931976eff3d2d25f570129eadb6f6e3210a8f27e1b3464075"
+"checksum rendy-util 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "41ba1685cf187bc37359beabdc675a02592dffdddd2a04801225a35776604ec9"
+"checksum rendy-wsi 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "5ec514d4d20160c65438674783fe0bc7a8dccb4b20e535ca44e69fa99bc2c511"
 "checksum reqwest 0.9.17 (registry+https://github.com/rust-lang/crates.io-index)" = "e57803405f8ea0eb041c1567dac36127e0c8caa1251c843cb03d43fd767b3d50"
 "checksum rgb 0.8.13 (registry+https://github.com/rust-lang/crates.io-index)" = "4f089652ca87f5a82a62935ec6172a534066c7b97be003cc8f702ee9a7a59c92"
 "checksum rodio 0.8.1 (git+https://github.com/azriel91/rodio.git?branch=use-nalgebra-for-spatial-source)" = "<none>"
