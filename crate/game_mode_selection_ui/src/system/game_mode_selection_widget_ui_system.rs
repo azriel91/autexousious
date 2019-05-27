@@ -301,7 +301,7 @@ mod test {
             )
             .with_assertion(|world| assert_widget_count(world, GameModeIndex::iter().len()))
             .with_assertion(|world| assert_siblings_correct(world))
-            .run()
+            .run_isolated()
     }
 
     #[test]
@@ -332,7 +332,7 @@ mod test {
                 &[],
             )
             .with_assertion(|world| assert_text_colour(world, FONT_COLOUR_IDLE))
-            .run()
+            .run_isolated()
     }
 
     #[test]
@@ -363,7 +363,7 @@ mod test {
                 &[],
             )
             .with_assertion(|world| assert_text_colour(world, FONT_COLOUR_ACTIVE))
-            .run()
+            .run_isolated()
     }
 
     fn input_config() -> InputConfig {

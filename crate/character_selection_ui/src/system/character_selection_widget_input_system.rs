@@ -552,7 +552,7 @@ mod test {
                 let character_selection_events = character_selection_events_fn(world);
                 assert_events(world, character_selection_events);
             })
-            .run()
+            .run_isolated()
     }
 
     fn character_selection_id(world: &mut World, slug: AssetSlug) -> CharacterSelection {

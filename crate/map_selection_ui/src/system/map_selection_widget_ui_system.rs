@@ -259,7 +259,7 @@ mod test {
             )
             .with_assertion(|world| assert_widget_count(world, 1))
             .with_assertion(|world| assert_widget_text(world, "◀      Random      ▶"))
-            .run()
+            .run_isolated()
     }
 
     #[test]
@@ -303,7 +303,7 @@ mod test {
                 &[],
             )
             .with_assertion(|world| assert_widget_text(world, "◀      Random      ▶"))
-            .run()
+            .run_isolated()
     }
 
     fn input_config() -> InputConfig {

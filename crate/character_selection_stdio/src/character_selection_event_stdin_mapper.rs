@@ -172,7 +172,7 @@ mod tests {
                         result.unwrap()
                     )
                 })
-                .run()
+                .run_isolated()
                 .is_ok()
         );
     }
@@ -212,7 +212,7 @@ mod tests {
                         result.unwrap()
                     )
                 })
-                .run()
+                .run_isolated()
                 .is_ok()
         );
     }

@@ -128,7 +128,7 @@ mod tests {
                 assert!(result.is_ok());
                 assert_eq!(MapSelectionEvent::Return, result.unwrap())
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
@@ -143,7 +143,7 @@ mod tests {
                 assert!(result.is_ok());
                 assert_eq!(MapSelectionEvent::Deselect, result.unwrap())
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
@@ -158,7 +158,7 @@ mod tests {
                 assert!(result.is_ok());
                 assert_eq!(MapSelectionEvent::Confirm, result.unwrap())
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
@@ -177,7 +177,7 @@ mod tests {
                 let map_selection = MapSelection::Id(snh);
                 assert_eq!(MapSelectionEvent::Select { map_selection }, result.unwrap())
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
@@ -201,7 +201,7 @@ mod tests {
                 let map_selection = MapSelection::Random(snh);
                 assert_eq!(MapSelectionEvent::Select { map_selection }, result.unwrap())
             })
-            .run()
+            .run_isolated()
     }
 
     fn expect_err_msg(result: Result<MapSelectionEvent, Error>, expected: &str) {
