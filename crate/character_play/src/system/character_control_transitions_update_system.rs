@@ -137,7 +137,7 @@ mod tests {
                 send_events(world, events);
             })
             .with_assertion(|world| expect_transitions(world, transitions()))
-            .run()
+            .run_isolated()
     }
 
     #[test]
@@ -162,7 +162,7 @@ mod tests {
                 send_events(world, events);
             })
             .with_assertion(|world| expect_transitions(world, transitions()))
-            .run()
+            .run_isolated()
     }
 
     fn initial_values(

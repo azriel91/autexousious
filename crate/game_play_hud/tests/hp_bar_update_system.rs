@@ -74,5 +74,5 @@ fn sets_transform_x_and_scale() -> Result<(), Error> {
             assert_eq!(Float::from(-40.), transform.translation()[0]);
             assert_eq!(Float::from(20.), transform.scale()[0]);
         })
-        .run()
+        .run_isolated()
 }

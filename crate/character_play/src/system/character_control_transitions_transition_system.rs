@@ -484,7 +484,7 @@ mod tests {
 
                 assert_eq!(&expected_sequence_id, character_sequence_id);
             })
-            .run()
+            .run_isolated()
     }
 
     fn send_event(world: &mut World, control_action_event_data: ControlActionEventData) {

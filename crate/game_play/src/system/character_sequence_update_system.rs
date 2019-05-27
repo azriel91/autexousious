@@ -267,7 +267,7 @@ mod tests {
                     },
                 );
             })
-            .run()
+            .run_isolated()
     }
 
     type TestSystemData<'s> = (

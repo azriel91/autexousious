@@ -155,7 +155,7 @@ mod tests {
             .with_system(CharacterCtsHandleUpdateSystem::new(), "", &[])
             .with_setup(|world| insert_sequence(world, CharacterSequenceId::RunStop))
             .with_assertion(|world| expect_component_sequences(world, CharacterSequenceId::RunStop))
-            .run()
+            .run_isolated()
     }
 
     #[test]
@@ -164,7 +164,7 @@ mod tests {
             .with_system(CharacterCtsHandleUpdateSystem::new(), "", &[])
             .with_setup(|world| update_sequence(world, CharacterSequenceId::RunStop))
             .with_assertion(|world| expect_component_sequences(world, CharacterSequenceId::RunStop))
-            .run()
+            .run_isolated()
     }
 
     fn insert_sequence(world: &mut World, sequence_id: CharacterSequenceId) {

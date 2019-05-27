@@ -473,7 +473,7 @@ mod tests {
                     },
                 );
             })
-            .run()
+            .run_isolated()
     }
 
     #[derive(Debug)]

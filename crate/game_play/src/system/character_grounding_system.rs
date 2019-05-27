@@ -161,6 +161,6 @@ mod tests {
                     .system_data::<(ReadStorage<'_, Position<f32>>, ReadStorage<'_, Grounding>)>();
                 (&positions, &groundings).join().for_each(assertion_fn)
             })
-            .run()
+            .run_isolated()
     }
 }
