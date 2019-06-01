@@ -30,7 +30,7 @@ mod test {
     use std::env;
 
     use amethyst_test::prelude::*;
-    use game_input_model::{InputConfig, PlayerActionControl, PlayerAxisControl};
+    use game_input_model::{ControlBindings, InputConfig};
 
     use super::GameInputUiBundle;
 
@@ -41,7 +41,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
+            AmethystApplication::ui_base::<ControlBindings>()
                 .with_bundle(GameInputUiBundle::new(InputConfig::default()))
                 .run()
                 .is_ok()

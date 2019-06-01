@@ -315,7 +315,6 @@ impl MapAssetLoadingSystem {
                 .to_str()
                 .expect("Expected path to be valid unicode."),
             TomlFormat,
-            (),
             &mut *progress_counter,
             map_definition_assets,
         );
@@ -328,7 +327,6 @@ impl MapAssetLoadingSystem {
                         .to_str()
                         .expect("Expected path to be valid unicode."),
                     TomlFormat,
-                    (),
                     &mut *progress_counter,
                     sprites_definition_assets,
                 );

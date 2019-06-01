@@ -1,6 +1,9 @@
 use amethyst::{
-    assets::{AssetStorage, Loader, ProgressCounter},
-    renderer::{SpriteSheet, SpriteSheetHandle, TextureHandle},
+    assets::{AssetStorage, Handle, Loader, ProgressCounter},
+    renderer::{
+        sprite::{SpriteSheet, SpriteSheetHandle},
+        Texture,
+    },
 };
 use sprite_model::config::SpriteSheetDefinition;
 
@@ -23,7 +26,7 @@ impl SpriteSheetLoader {
         progress_counter: &mut ProgressCounter,
         loader: &Loader,
         sprite_sheet_assets: &AssetStorage<SpriteSheet>,
-        texture_handles: &[TextureHandle],
+        texture_handles: &[Handle<Texture>],
         sprite_sheet_definitions: &[SpriteSheetDefinition],
     ) -> Vec<SpriteSheetHandle> {
         let sprite_sheets = SpriteSheetMapper::map(texture_handles, &sprite_sheet_definitions);

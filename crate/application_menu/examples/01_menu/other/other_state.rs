@@ -1,9 +1,9 @@
 use amethyst::{
     ecs::prelude::*,
-    input::is_key_down,
+    input::{is_key_down, VirtualKeyCode},
     prelude::*,
-    renderer::{ScreenDimensions, VirtualKeyCode},
     ui::{Anchor, FontHandle, UiText, UiTransform},
+    window::ScreenDimensions,
 };
 use application_ui::{FontVariant, Theme};
 use log::info;

@@ -1,10 +1,10 @@
 use amethyst::{
     ecs::prelude::*,
-    input::{is_close_requested, is_key_down},
+    input::{is_close_requested, is_key_down, VirtualKeyCode},
     prelude::*,
-    renderer::{ScreenDimensions, VirtualKeyCode},
     shred::Fetch,
     ui::{Anchor, UiText, UiTransform},
+    window::ScreenDimensions,
 };
 use application_ui::{FontVariant, Theme, ThemeLoader};
 

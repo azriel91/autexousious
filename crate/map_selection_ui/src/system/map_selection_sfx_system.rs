@@ -77,14 +77,12 @@ mod tests {
 
     #[test]
     fn plays_sound_on_return_event() -> Result<(), Error> {
-        run_test("plays_sound_on_return_event", |_world| {
-            MapSelectionEvent::Return
-        })
+        run_test(|_world| MapSelectionEvent::Return)
     }
 
     #[test]
     fn plays_sound_on_switch_event() -> Result<(), Error> {
-        run_test("plays_sound_on_switch_event", |world| {
+        run_test(|world| {
             let snh = SlugAndHandle::from((&*world, ASSETS_MAP_FADE_SLUG.clone()));
             let map_selection = MapSelection::Id(snh);
             MapSelectionEvent::Switch { map_selection }
@@ -93,7 +91,7 @@ mod tests {
 
     #[test]
     fn plays_sound_on_select_event() -> Result<(), Error> {
-        run_test("plays_sound_on_select_event", |world| {
+        run_test(|world| {
             let snh = SlugAndHandle::from((&*world, ASSETS_MAP_FADE_SLUG.clone()));
             let map_selection = MapSelection::Id(snh);
             MapSelectionEvent::Select { map_selection }
@@ -102,30 +100,26 @@ mod tests {
 
     #[test]
     fn plays_sound_on_deselect_event() -> Result<(), Error> {
-        run_test("plays_sound_on_deselect_event", |_world| {
-            MapSelectionEvent::Deselect
-        })
+        run_test(|_world| MapSelectionEvent::Deselect)
     }
 
     #[test]
     fn plays_sound_on_confirm_event() -> Result<(), Error> {
-        run_test("plays_sound_on_confirm_event", |_world| {
-            MapSelectionEvent::Confirm
-        })
+        run_test(|_world| MapSelectionEvent::Confirm)
     }
 
-    fn run_test<F>(test_name: &str, event_fn: F) -> Result<(), Error>
+    fn run_test<F>(event_fn: F) -> Result<(), Error>
     where
         F: Fn(&mut World) -> MapSelectionEvent + Send + Sync + 'static,
     {
-        AutexousiousApplication::config_base(test_name, false)
+        AutexousiousApplication::config_base()
             .with_system(MapSelectionSfxSystem::new(), "", &[])
             .with_effect(move |world| {
                 let event = event_fn(world);
                 send_event(world, event);
             })
             .with_assertion(|_world| {})
-            .run()
+            .run_isolated()
     }
 
     fn send_event(world: &mut World, event: MapSelectionEvent) {

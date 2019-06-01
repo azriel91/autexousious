@@ -63,8 +63,17 @@ impl<'s> System<'s> for CharacterSelectionSystem {
 mod tests {
     use std::env;
 
-    use amethyst::{audio::AudioBundle, ecs::World, shrev::EventChannel, Error};
-    use amethyst_test::prelude::*;
+    use amethyst::{
+        assets::Processor,
+        audio::Source,
+        core::TransformBundle,
+        ecs::World,
+        renderer::{types::DefaultBackend, RenderEmptyBundle},
+        shrev::EventChannel,
+        window::ScreenDimensions,
+        Error,
+    };
+    use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
     use application_event::{AppEvent, AppEventReader};
     use asset_model::loaded::SlugAndHandle;
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
@@ -74,6 +83,7 @@ mod tests {
     };
     use collision_audio_loading::CollisionAudioLoadingBundle;
     use collision_loading::CollisionLoadingBundle;
+    use game_input_model::ControlBindings;
     use loading::{LoadingBundle, LoadingState};
     use map_loading::MapLoadingBundle;
     use sequence_loading::SequenceLoadingBundle;
@@ -87,9 +97,14 @@ mod tests {
     fn inserts_character_selection_on_select_event() -> Result<(), Error> {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
-        AmethystApplication::render_base("inserts_character_selection_on_select_event", false)
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
+            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_custom_event_type::<AppEvent, AppEventReader>()
-            .with_bundle(AudioBundle::default())
+            .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
+            .with_ui_bundles::<ControlBindings>()
+            .with_system(Processor::<Source>::new(), "source_processor", &[])
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
@@ -126,16 +141,20 @@ mod tests {
                     character_selections.selections.get(&123)
                 );
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
     fn removes_character_selection_on_deselect_event() -> Result<(), Error> {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
-        AmethystApplication::render_base("removes_character_selection_on_deselect_event", false)
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_custom_event_type::<AppEvent, AppEventReader>()
-            .with_bundle(AudioBundle::default())
+            .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
+            .with_ui_bundles::<ControlBindings>()
+            .with_system(Processor::<Source>::new(), "source_processor", &[])
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
@@ -170,7 +189,7 @@ mod tests {
 
                 assert_eq!(None, character_selections.selections.get(&123));
             })
-            .run()
+            .run_isolated()
     }
 
     fn send_event(world: &mut World, event: CharacterSelectionEvent) {

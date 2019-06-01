@@ -65,6 +65,7 @@ mod test {
     use amethyst::{
         core::{math::Vector3, transform::Transform, Float},
         ecs::{Builder, Entity, World},
+        input::StringBindings,
         Error,
     };
     use amethyst_test::AmethystApplication;
@@ -104,7 +105,7 @@ mod test {
             assert_eq!(&expected_translation, transform.translation());
         };
 
-        AmethystApplication::ui_base::<String, String>()
+        AmethystApplication::ui_base::<StringBindings>()
             .with_system(
                 ObjectTransformUpdateSystem::new(),
                 ObjectTransformUpdateSystem::type_name(),

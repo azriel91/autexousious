@@ -1,6 +1,6 @@
 use amethyst::{
     assets::{AssetStorage, Loader},
-    renderer::SpriteSheetHandle,
+    renderer::sprite::SpriteSheetHandle,
 };
 use collision_model::config::{Body, Interactions};
 use derivative::Derivative;

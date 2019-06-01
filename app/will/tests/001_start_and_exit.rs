@@ -8,6 +8,7 @@ use assert_cmd::{
 use escargot::CargoBuild;
 
 #[test]
+#[ignore] // Can't test on X through CI.
 fn start_and_exit() -> Result<(), OutputError> {
     CargoBuild::new()
         .bin("will")

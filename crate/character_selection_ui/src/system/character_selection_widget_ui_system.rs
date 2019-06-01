@@ -237,9 +237,8 @@ mod test {
 
     use amethyst::{
         ecs::{Join, Read, ReadStorage, World, WriteStorage},
-        input::{Axis as InputAxis, Button},
+        input::{Axis as InputAxis, Button, VirtualKeyCode},
         ui::UiText,
-        winit::VirtualKeyCode,
     };
     use application_test_support::AutexousiousApplication;
     use asset_model::loaded::SlugAndHandle;
@@ -257,20 +256,17 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AutexousiousApplication::config_base(
-                "initializes_ui_when_character_selections_waiting",
-                false
-            )
-            .with_setup(|world| world.add_resource(input_config()))
-            .with_system_single(
-                CharacterSelectionWidgetUiSystem::new(),
-                CharacterSelectionWidgetUiSystem::type_name(),
-                &[]
-            )
-            .with_assertion(|world| assert_widget_count(world, 2))
-            .with_assertion(|world| assert_widget_text(world, "Press Attack To Join"))
-            .run()
-            .is_ok()
+            AutexousiousApplication::config_base()
+                .with_setup(|world| world.add_resource(input_config()))
+                .with_system_single(
+                    CharacterSelectionWidgetUiSystem::new(),
+                    CharacterSelectionWidgetUiSystem::type_name(),
+                    &[]
+                )
+                .with_assertion(|world| assert_widget_count(world, 2))
+                .with_assertion(|world| assert_widget_text(world, "Press Attack To Join"))
+                .run_isolated()
+                .is_ok()
         );
     }
 
@@ -279,50 +275,46 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AutexousiousApplication::config_base(
-                "refreshes_ui_when_selections_select_random",
-                false
-            )
-            // Set up UI
-            .with_resource(input_config())
-            // Run this in its own dispatcher, otherwise the LoadingState hasn't had time to
-            // complete.
-            .with_system_single(
-                CharacterSelectionWidgetUiSystem::new(),
-                CharacterSelectionWidgetUiSystem::type_name(),
-                &[]
-            )
-            .with_assertion(|world| assert_widget_count(world, 2))
-            // Select character and send event
-            .with_effect(|world| {
-                world.exec(
-                    |(mut widgets, character_assets): (
-                        WriteStorage<'_, CharacterSelectionWidget>,
-                        Read<'_, CharacterAssets>,
-                    )| {
-                        let widget = (&mut widgets)
-                            .join()
-                            .next()
-                            .expect("Expected entity with `CharacterSelectionWidget` component.");
+            AutexousiousApplication::config_base()
+                // Set up UI
+                .with_resource(input_config())
+                // Run this in its own dispatcher, otherwise the LoadingState hasn't had time to
+                // complete.
+                .with_system_single(
+                    CharacterSelectionWidgetUiSystem::new(),
+                    CharacterSelectionWidgetUiSystem::type_name(),
+                    &[]
+                )
+                .with_assertion(|world| assert_widget_count(world, 2))
+                // Select character and send event
+                .with_effect(|world| {
+                    world.exec(
+                        |(mut widgets, character_assets): (
+                            WriteStorage<'_, CharacterSelectionWidget>,
+                            Read<'_, CharacterAssets>,
+                        )| {
+                            let widget = (&mut widgets).join().next().expect(
+                                "Expected entity with `CharacterSelectionWidget` component.",
+                            );
 
-                        let first_character = character_assets
-                            .iter()
-                            .next()
-                            .expect("Expected at least one character to be loaded.");
+                            let first_character = character_assets
+                                .iter()
+                                .next()
+                                .expect("Expected at least one character to be loaded.");
 
-                        widget.state = WidgetState::CharacterSelect;
-                        widget.selection = CharacterSelection::Random(first_character.into());
-                    },
-                );
-            })
-            .with_system_single(
-                CharacterSelectionWidgetUiSystem::new(),
-                CharacterSelectionWidgetUiSystem::type_name(),
-                &[]
-            )
-            .with_assertion(|world| assert_widget_text(world, "◀      Random      ▶"))
-            .run()
-            .is_ok()
+                            widget.state = WidgetState::CharacterSelect;
+                            widget.selection = CharacterSelection::Random(first_character.into());
+                        },
+                    );
+                })
+                .with_system_single(
+                    CharacterSelectionWidgetUiSystem::new(),
+                    CharacterSelectionWidgetUiSystem::type_name(),
+                    &[]
+                )
+                .with_assertion(|world| assert_widget_text(world, "◀      Random      ▶"))
+                .run_isolated()
+                .is_ok()
         );
     }
 
@@ -331,7 +323,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AutexousiousApplication::config_base("refreshes_ui_when_selections_select_id", false)
+            AutexousiousApplication::config_base()
                 // Set up UI
                 .with_resource(input_config())
                 .with_system_single(
@@ -365,7 +357,7 @@ mod test {
                     &[]
                 )
                 .with_assertion(|world| assert_widget_text(world, "◀     test/bat     ▶"))
-                .run() // kcov-ignore
+                .run_isolated() // kcov-ignore
                 .is_ok()
         );
     }

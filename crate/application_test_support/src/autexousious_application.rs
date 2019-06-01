@@ -1,7 +1,14 @@
 use std::env;
 
-use amethyst::{audio::AudioBundle, core::transform::TransformBundle, GameData};
-use amethyst_test::{AmethystApplication, PopState};
+use amethyst::{
+    assets::Processor,
+    audio::Source,
+    core::TransformBundle,
+    renderer::{types::DefaultBackend, RenderEmptyBundle},
+    window::ScreenDimensions,
+    GameData,
+};
+use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
 use application_event::{AppEvent, AppEventReader};
 use asset_model::loaded::SlugAndHandle;
 use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
@@ -10,7 +17,7 @@ use character_selection::CharacterSelectionBundle;
 use character_selection_model::{CharacterSelections, CharacterSelectionsStatus};
 use collision_audio_loading::CollisionAudioLoadingBundle;
 use collision_loading::CollisionLoadingBundle;
-use game_input_model::{PlayerActionControl, PlayerAxisControl};
+use game_input_model::ControlBindings;
 use game_loading::GameLoadingState;
 use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
@@ -33,34 +40,8 @@ impl AutexousiousApplication {
     /// This has the same effect as calling `AmethystApplication::base::<PlayerAxisControl,
     /// PlayerActionControl>()`.
     pub fn ui_base() -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader> {
-        AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
+        AmethystApplication::ui_base::<ControlBindings>()
             .with_custom_event_type::<AppEvent, AppEventReader>()
-    }
-
-    /// Returns an application with the Animation, Transform, and Render bundles.
-    ///
-    /// The difference between this and `AmethystApplication::render_base()` is the type parameters
-    /// to the Input and UI bundles are the `PlayerAxisControl` and `PlayerActionControl`, and there
-    /// are no animation bundles.
-    ///
-    /// # Parameters
-    ///
-    /// * `test_name`: Name of the test, used to populate the window title.
-    /// * `visibility`: Whether the window should be visible.
-    pub fn render_base<'name, N>(
-        test_name: N,
-        visibility: bool,
-    ) -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader>
-    where
-        N: Into<&'name str>,
-    {
-        // Unfortunately we cannot re-use `AmethystApplication::render_base` because we need to
-        // specify the `TransformBundle`'s dependencies.
-        AmethystApplication::blank()
-            .with_custom_event_type::<AppEvent, AppEventReader>()
-            .with_bundle(TransformBundle::new())
-            .with_bundle(CollisionLoadingBundle::new())
-            .with_render_bundle(test_name, visibility)
     }
 
     /// Returns an application with Render, Input, and UI bundles loaded.
@@ -68,42 +49,34 @@ impl AutexousiousApplication {
     /// This function does not load any game assets as it is meant to be used to test types
     /// that load game assets. If you want test objects and maps to be loaded, please use the
     /// `game_base` function.
-    ///
-    /// # Parameters
-    ///
-    /// * `test_name`: Name of the test, used to populate the window title.
-    /// * `visibility`: Whether the window should be visible.
-    pub fn render_and_ui<'name, N>(
-        test_name: N,
-        visibility: bool,
-    ) -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader>
-    where
-        N: Into<&'name str>,
-    {
-        AutexousiousApplication::render_base(test_name, visibility)
-            .with_ui_bundles::<PlayerAxisControl, PlayerActionControl>()
+    pub fn render_and_ui(
+    ) -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader> {
+        AmethystApplication::blank()
+            .with_custom_event_type::<AppEvent, AppEventReader>()
+            .with_bundle(TransformBundle::new())
+            .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
+            .with_ui_bundles::<ControlBindings>()
+            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
+            .with_bundle(CollisionLoadingBundle::new())
     }
 
     /// Returns an application with game assets loaded.
     ///
     /// This function does not instantiate any game entities. If you want test entities (objects and
     /// map) to be instantiated, please use the `game_base` function.
-    ///
-    /// # Parameters
-    ///
-    /// * `test_name`: Name of the test, used to populate the window title.
-    /// * `visibility`: Whether the window should be visible.
-    pub fn config_base<'name, N>(
-        test_name: N,
-        visibility: bool,
-    ) -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader>
-    where
-        N: Into<&'name str>,
+    pub fn config_base() -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader>
     {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
-        AutexousiousApplication::render_and_ui(test_name, visibility)
-            .with_bundle(AudioBundle::default())
+        AutexousiousApplication::render_and_ui()
+            // On Windows, using `AudioBundle` causes a segfault.
+            // On Linux, using `AudioSystem` (which needs a default `Output` device) causes a panic.
+            //
+            // Our workaround is to just include the `Source` processor as that is what's needed to
+            // load the audio files.
+            //
+            // .with_bundle(AudioBundle::default())
+            .with_system(Processor::<Source>::new(), "source_processor", &[])
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
@@ -118,19 +91,9 @@ impl AutexousiousApplication {
     /// Returns an application with game objects loaded.
     ///
     /// TODO: Take in IDs of characters and maps to select.
-    ///
-    /// # Parameters
-    ///
-    /// * `test_name`: Name of the test, used to populate the window title.
-    /// * `visibility`: Whether the window should be visible.
-    pub fn game_base<'name, N>(
-        test_name: N,
-        visibility: bool,
-    ) -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader>
-    where
-        N: Into<&'name str>,
+    pub fn game_base() -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader>
     {
-        AutexousiousApplication::config_base(test_name, visibility)
+        AutexousiousApplication::config_base()
             .with_setup(|world| {
                 let mut character_selections = CharacterSelections::default();
                 let controller_id = 0;
@@ -152,7 +115,7 @@ impl AutexousiousApplication {
 #[cfg(test)]
 mod test {
     use amethyst::{input::InputHandler, ui::Interactable, Error};
-    use game_input_model::{PlayerActionControl, PlayerAxisControl};
+    use game_input_model::ControlBindings;
     use game_model::{
         loaded::{CharacterAssets, MapAssets},
         play::GameEntities,
@@ -167,43 +130,37 @@ mod test {
         AutexousiousApplication::ui_base()
             .with_assertion(|world| {
                 // Panics if the type parameters used are not these ones.
-                world.read_resource::<InputHandler<PlayerAxisControl, PlayerActionControl>>();
+                world.read_resource::<InputHandler<ControlBindings>>();
                 world.read_storage::<Interactable>();
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
     fn render_and_ui_uses_strong_types_for_input_and_ui_bundles() -> Result<(), Error> {
-        AutexousiousApplication::render_and_ui(
-            "render_and_ui_uses_strong_types_for_input_and_ui_bundles",
-            false,
-        )
-        .with_assertion(|world| {
-            // Panics if the type parameters used are not these ones.
-            world.read_resource::<InputHandler<PlayerAxisControl, PlayerActionControl>>();
-            world.read_storage::<Interactable>();
-        })
-        .run()
+        AutexousiousApplication::render_and_ui()
+            .with_assertion(|world| {
+                // Panics if the type parameters used are not these ones.
+                world.read_resource::<InputHandler<ControlBindings>>();
+                world.read_storage::<Interactable>();
+            })
+            .run_isolated()
     }
 
     #[test]
     fn config_base_loads_assets_from_self_crate_directory() -> Result<(), Error> {
-        AutexousiousApplication::config_base(
-            "config_base_loads_assets_from_self_crate_directory",
-            false,
-        )
-        .with_assertion(|world| {
-            // Panics if the resources have not been populated
-            world.read_resource::<MapAssets>();
-            assert!(!world.read_resource::<CharacterAssets>().is_empty());
-        })
-        .run()
+        AutexousiousApplication::config_base()
+            .with_assertion(|world| {
+                // Panics if the resources have not been populated
+                world.read_resource::<MapAssets>();
+                assert!(!world.read_resource::<CharacterAssets>().is_empty());
+            })
+            .run_isolated()
     }
 
     #[test]
     fn game_base_loads_object_and_map_entities() -> Result<(), Error> {
-        AutexousiousApplication::game_base("game_base_loads_object_and_map_entities", false)
+        AutexousiousApplication::game_base()
             .with_assertion(|world| {
                 let game_entities = &*world.read_resource::<GameEntities>();
 
@@ -233,6 +190,6 @@ mod test {
                     "Expected map to be loaded."
                 );
             })
-            .run()
+            .run_isolated()
     }
 }

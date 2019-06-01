@@ -71,7 +71,7 @@ mod test {
         Error,
     };
     use amethyst_test::*;
-    use game_input_model::{ControllerId, PlayerActionControl, PlayerAxisControl};
+    use game_input_model::{ControlBindings, ControllerId};
     use typename::TypeName;
 
     use super::SharedControllerInputUpdateSystem;
@@ -80,7 +80,7 @@ mod test {
     #[test]
     fn merges_axes_controller_input_with_limit_correction() -> Result<(), Error> {
         let controller_count = 3;
-        AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
+        AmethystApplication::ui_base::<ControlBindings>()
             .with_system(
                 SharedControllerInputUpdateSystem::new(),
                 SharedControllerInputUpdateSystem::type_name(),
@@ -181,7 +181,7 @@ mod test {
 
     #[test]
     fn merges_action_controller_input() -> Result<(), Error> {
-        AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
+        AmethystApplication::ui_base::<ControlBindings>()
             .with_system(
                 SharedControllerInputUpdateSystem::new(),
                 SharedControllerInputUpdateSystem::type_name(),

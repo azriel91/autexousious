@@ -141,7 +141,8 @@ impl ObjectLoader {
 mod test {
     use amethyst::{
         assets::{AssetStorage, Loader, Processor, ProgressCounter},
-        renderer::{SpriteSheet, Texture},
+        core::TransformBundle,
+        renderer::{types::DefaultBackend, RenderEmptyBundle, SpriteSheet, Texture},
     };
     use amethyst_test::AmethystApplication;
     use application::{load_in, Format};
@@ -169,7 +170,9 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::render_base("loads_object_assets", false)
+            AmethystApplication::blank()
+                .with_bundle(TransformBundle::new())
+                .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
                 .with_bundle(CollisionLoadingBundle::new())
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_system(
@@ -263,7 +266,7 @@ mod test {
                     // Wait, SpriteRender, Body, and Interactions
                     assert_eq!(4, stand_attack_0_component_sequences.len());
                 })
-                .run()
+                .run_isolated()
                 .is_ok()
         );
     }

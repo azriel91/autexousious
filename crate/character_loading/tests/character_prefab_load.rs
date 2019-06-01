@@ -1,9 +1,16 @@
 use std::collections::HashMap;
 
 use amethyst::{
-    assets::{AssetStorage, Loader, Prefab, PrefabLoader},
+    assets::{AssetStorage, Handle, Loader, Prefab, PrefabLoader},
+    core::TransformBundle,
     ecs::{Builder, Entity, Read, ReadExpect, World},
-    renderer::{Sprite, SpriteSheet, SpriteSheetHandle, Texture, TextureHandle},
+    renderer::{
+        loaders::load_from_srgba,
+        palette::Srgba,
+        sprite::{Sprite, SpriteSheet, SpriteSheetHandle},
+        types::{DefaultBackend, TextureData},
+        RenderEmptyBundle, Texture,
+    },
     Error,
 };
 use amethyst_test::AmethystApplication;
@@ -31,7 +38,9 @@ use sprite_model::config::SpriteRef;
 
 #[test]
 fn character_prefab_load() -> Result<(), Error> {
-    AmethystApplication::render_base("character_prefab_load", false)
+    AmethystApplication::blank()
+        .with_bundle(TransformBundle::new())
+        .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
         .with_bundle(SequenceLoadingBundle::new())
         .with_bundle(CharacterLoadingBundle::new())
         .with_setup(|world| {
@@ -93,7 +102,7 @@ fn character_prefab_load() -> Result<(), Error> {
                 character_control_transitions
             );
         })
-        .run()
+        .run_isolated()
 }
 
 fn character_definition() -> CharacterDefinition {
@@ -159,7 +168,9 @@ fn character_definition() -> CharacterDefinition {
 fn sprite_sheet_handles(world: &World) -> Vec<SpriteSheetHandle> {
     let loader = world.read_resource::<Loader>();
     let texture_assets = world.read_resource::<AssetStorage<Texture>>();
-    let texture_handle: TextureHandle = loader.load_from_data([0.; 4].into(), (), &texture_assets);
+    let texture_builder = load_from_srgba(Srgba::new(0., 0., 0., 0.));
+    let texture_handle: Handle<Texture> =
+        loader.load_from_data(TextureData::from(texture_builder), (), &texture_assets);
 
     let image_w = 1;
     let image_h = 1;
@@ -173,7 +184,7 @@ fn sprite_sheet_handles(world: &World) -> Vec<SpriteSheetHandle> {
     let sprite_sheet = SpriteSheet {
         texture: texture_handle,
         sprites: vec![Sprite::from_pixel_values(
-            image_w, image_h, sprite_w, sprite_h, pixel_left, pixel_top, offsets,
+            image_w, image_h, sprite_w, sprite_h, pixel_left, pixel_top, offsets, false, false,
         )],
     }; // kcov-ignore
 

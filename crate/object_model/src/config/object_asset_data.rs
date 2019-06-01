@@ -1,4 +1,4 @@
-use amethyst::{assets::Handle, renderer::SpriteSheetHandle};
+use amethyst::{assets::Handle, renderer::sprite::SpriteSheetHandle};
 use derive_new::new;
 
 use crate::config::GameObjectDefinition;

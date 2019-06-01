@@ -290,7 +290,6 @@ where
                 .to_str()
                 .expect("Expected path to be valid unicode."),
             TomlFormat,
-            (),
             &mut *progress_counter,
             game_object_definition_assets,
         );
@@ -301,7 +300,6 @@ where
                 .to_str()
                 .expect("Expected path to be valid unicode."),
             TomlFormat,
-            (),
             &mut *progress_counter,
             sprites_definition_assets,
         );

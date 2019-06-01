@@ -2,7 +2,7 @@ use std::path::Path;
 
 use amethyst::{
     assets::{AssetStorage, Loader, ProgressCounter},
-    renderer::{SpriteSheet, SpriteSheetHandle, Texture},
+    renderer::{sprite::SpriteSheetHandle, SpriteSheet, Texture},
     Error,
 };
 use sprite_model::config::SpritesDefinition;

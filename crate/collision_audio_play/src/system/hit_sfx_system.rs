@@ -81,7 +81,7 @@ mod tests {
 
     #[test]
     fn plays_sound_on_hit_event() -> Result<(), Error> {
-        AutexousiousApplication::config_base("plays_sound_on_hit_event", false)
+        AutexousiousApplication::config_base()
             .with_system(HitSfxSystem::new(), "", &[])
             .with_effect(|world| {
                 let entity_from = world.create_entity().build();
@@ -91,7 +91,7 @@ mod tests {
                 send_event(world, event);
             })
             .with_assertion(|_world| {})
-            .run()
+            .run_isolated()
     }
 
     fn send_event(world: &mut World, event: HitEvent) {

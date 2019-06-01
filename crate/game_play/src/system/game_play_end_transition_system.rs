@@ -43,7 +43,7 @@ impl<'s> System<'s> for GamePlayEndTransitionSystem {
 
 #[cfg(test)]
 mod test {
-    use amethyst::{ecs::prelude::*, shrev::EventChannel};
+    use amethyst::{ecs::prelude::*, input::StringBindings, shrev::EventChannel};
     use amethyst_test::*;
     use game_input::ControllerInput;
     use game_play_model::{GamePlayEvent, GamePlayStatus};
@@ -57,7 +57,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::ui_base::<String, String>()
+            AmethystApplication::ui_base::<StringBindings>()
                 .with_resource(GamePlayStatus::Playing)
                 .with_setup(register_gpec_reader)
                 .with_setup(|world| setup_controller_input(world, false, false))
@@ -77,7 +77,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::ui_base::<String, String>()
+            AmethystApplication::ui_base::<StringBindings>()
                 .with_resource(GamePlayStatus::Ended)
                 .with_setup(register_gpec_reader)
                 .with_setup(|world| setup_controller_input(world, true, false))
@@ -97,7 +97,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::ui_base::<String, String>()
+            AmethystApplication::ui_base::<StringBindings>()
                 .with_resource(GamePlayStatus::Ended)
                 .with_setup(register_gpec_reader)
                 .with_setup(|world| setup_controller_input(world, true, true))
@@ -117,7 +117,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::ui_base::<String, String>()
+            AmethystApplication::ui_base::<StringBindings>()
                 .with_resource(GamePlayStatus::Ended)
                 .with_setup(register_gpec_reader)
                 .with_setup(|world| setup_controller_input(world, false, true))

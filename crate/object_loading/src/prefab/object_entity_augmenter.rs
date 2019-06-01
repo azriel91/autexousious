@@ -1,8 +1,6 @@
 use amethyst::{
-    assets::AssetStorage,
-    core::transform::Transform,
-    ecs::Entity,
-    renderer::{Flipped, Transparent},
+    assets::AssetStorage, core::transform::Transform, ecs::Entity,
+    renderer::transparent::Transparent,
 };
 use logic_clock::LogicClock;
 use object_model::{
@@ -34,7 +32,6 @@ impl ObjectEntityAugmenter {
         entity: Entity,
         component_sequences_assets: &AssetStorage<ComponentSequences>,
         ObjectComponentStorages {
-            ref mut flippeds,
             ref mut transparents,
             ref mut positions,
             ref mut velocities,
@@ -61,9 +58,6 @@ impl ObjectEntityAugmenter {
 
         let sequence_id = W::SequenceId::default();
 
-        flippeds
-            .insert(entity, Flipped::None)
-            .expect("Failed to insert flipped component.");
         transparents
             .insert(entity, Transparent)
             .expect("Failed to insert transparent component.");

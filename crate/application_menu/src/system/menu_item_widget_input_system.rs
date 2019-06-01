@@ -244,8 +244,8 @@ mod test {
     };
     use amethyst_test::AmethystApplication;
     use game_input_model::{
-        Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent,
-        PlayerActionControl, PlayerAxisControl,
+        Axis, AxisEventData, ControlAction, ControlActionEventData, ControlBindings,
+        ControlInputEvent,
     };
     use strum::IntoEnumIterator;
     use strum_macros::{Display, EnumIter, EnumString};
@@ -258,7 +258,6 @@ mod test {
     #[test]
     fn does_not_send_event_when_no_input() -> Result<(), Error> {
         run_test(
-            "does_not_send_event_when_no_input",
             SetupParams {
                 active_menu_item: TestIndex::First,
                 control_input_event_fn: None,
@@ -277,7 +276,6 @@ mod test {
     #[test]
     fn stays_on_first_item_when_input_up_and_first_item_selected() -> Result<(), Error> {
         run_test(
-            "stays_on_first_item_when_input_up_and_first_item_selected",
             SetupParams {
                 active_menu_item: TestIndex::First,
                 control_input_event_fn: Some(press_up),
@@ -296,7 +294,6 @@ mod test {
     #[test]
     fn selects_second_item_when_input_down_and_first_item_selected() -> Result<(), Error> {
         run_test(
-            "selects_second_item_when_input_down_and_first_item_selected",
             SetupParams {
                 active_menu_item: TestIndex::First,
                 control_input_event_fn: Some(press_down),
@@ -315,7 +312,6 @@ mod test {
     #[test]
     fn selects_first_item_when_input_up_and_second_item_selected() -> Result<(), Error> {
         run_test(
-            "selects_first_item_when_input_up_and_second_item_selected",
             SetupParams {
                 active_menu_item: TestIndex::Second,
                 control_input_event_fn: Some(press_up),
@@ -334,7 +330,6 @@ mod test {
     #[test]
     fn selects_third_item_when_input_down_and_second_item_selected() -> Result<(), Error> {
         run_test(
-            "selects_third_item_when_input_down_and_second_item_selected",
             SetupParams {
                 active_menu_item: TestIndex::Second,
                 control_input_event_fn: Some(press_down),
@@ -353,7 +348,6 @@ mod test {
     #[test]
     fn selects_second_item_when_input_up_and_third_item_selected() -> Result<(), Error> {
         run_test(
-            "selects_second_item_when_input_up_and_third_item_selected",
             SetupParams {
                 active_menu_item: TestIndex::Third,
                 control_input_event_fn: Some(press_up),
@@ -372,7 +366,6 @@ mod test {
     #[test]
     fn stays_on_third_item_when_input_down_and_third_item_selected() -> Result<(), Error> {
         run_test(
-            "stays_on_third_item_when_input_down_and_third_item_selected",
             SetupParams {
                 active_menu_item: TestIndex::Third,
                 control_input_event_fn: Some(press_down),
@@ -391,7 +384,6 @@ mod test {
     #[test]
     fn sends_select_event_when_input_attack() -> Result<(), Error> {
         run_test(
-            "sends_select_event_when_input_attack",
             SetupParams {
                 active_menu_item: TestIndex::Third,
                 control_input_event_fn: Some(press_attack),
@@ -410,7 +402,6 @@ mod test {
     #[test]
     fn sends_close_event_when_input_jump() -> Result<(), Error> {
         run_test(
-            "sends_close_event_when_input_jump",
             SetupParams {
                 active_menu_item: TestIndex::Second,
                 control_input_event_fn: Some(press_jump),
@@ -427,7 +418,6 @@ mod test {
     }
 
     fn run_test(
-        test_name: &str,
         SetupParams {
             active_menu_item: setup_active_menu_item,
             control_input_event_fn,
@@ -437,8 +427,7 @@ mod test {
             menu_events,
         }: ExpectedParams<TestIndex>,
     ) -> Result<(), Error> {
-        AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
-            .with_app_name(test_name)
+        AmethystApplication::ui_base::<ControlBindings>()
             .with_system(
                 MenuItemWidgetInputSystem::<TestIndex>::new(),
                 MenuItemWidgetInputSystem::<TestIndex>::type_name(),

@@ -235,8 +235,7 @@ mod test {
 
     use amethyst::{
         ecs::{Join, Read, ReadStorage, World, WriteStorage},
-        input::{Axis as InputAxis, Button},
-        renderer::VirtualKeyCode,
+        input::{Axis as InputAxis, Button, VirtualKeyCode},
         ui::UiText,
         Error,
     };
@@ -251,7 +250,7 @@ mod test {
 
     #[test]
     fn initializes_ui_when_map_selections_waiting() -> Result<(), Error> {
-        AutexousiousApplication::config_base("initializes_ui_when_map_selections_waiting", false)
+        AutexousiousApplication::config_base()
             .with_resource(input_config())
             .with_system_single(
                 MapSelectionWidgetUiSystem::new(),
@@ -260,12 +259,12 @@ mod test {
             )
             .with_assertion(|world| assert_widget_count(world, 1))
             .with_assertion(|world| assert_widget_text(world, "◀      Random      ▶"))
-            .run()
+            .run_isolated()
     }
 
     #[test]
     fn refreshes_ui_when_selections_select_random() -> Result<(), Error> {
-        AutexousiousApplication::config_base("refreshes_ui_when_selections_select_random", false)
+        AutexousiousApplication::config_base()
             // Set up UI
             .with_resource(input_config())
             // Run this in its own dispatcher, otherwise the LoadingState hasn't had time to
@@ -304,7 +303,7 @@ mod test {
                 &[],
             )
             .with_assertion(|world| assert_widget_text(world, "◀      Random      ▶"))
-            .run()
+            .run_isolated()
     }
 
     fn input_config() -> InputConfig {

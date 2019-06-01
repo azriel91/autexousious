@@ -171,7 +171,6 @@ mod test {
     #[test]
     fn does_not_send_event_when_controller_input_empty() -> Result<(), Error> {
         run_test(
-            "does_not_send_event_when_controller_input_empty",
             SetupParams {
                 widget_states: vec![WidgetState::Inactive, WidgetState::Inactive],
                 control_input_event_fn: None,
@@ -186,7 +185,6 @@ mod test {
     fn does_not_send_return_event_when_controller_input_jump_and_not_all_inactive(
     ) -> Result<(), Error> {
         run_test(
-            "send_return_event_when_controller_input_jump_and_not_all_inactive",
             SetupParams {
                 widget_states: vec![WidgetState::Ready, WidgetState::Inactive],
                 control_input_event_fn: Some(press_jump),
@@ -200,7 +198,6 @@ mod test {
     #[test]
     fn send_return_event_when_controller_input_jump_and_all_inactive() -> Result<(), Error> {
         run_test(
-            "send_return_event_when_controller_input_jump_and_all_inactive",
             SetupParams {
                 widget_states: vec![WidgetState::Inactive, WidgetState::Inactive],
                 control_input_event_fn: Some(press_jump),
@@ -214,7 +211,6 @@ mod test {
     #[test]
     fn sends_confirm_event_when_widget_ready_and_input_attack() -> Result<(), Error> {
         run_test(
-            "sends_confirm_event_when_widget_ready_and_input_attack",
             SetupParams {
                 widget_states: vec![WidgetState::Ready, WidgetState::Ready],
                 control_input_event_fn: Some(press_attack),
@@ -228,7 +224,6 @@ mod test {
     #[test]
     fn does_not_send_event_when_not_enough_players() -> Result<(), Error> {
         run_test(
-            "does_not_send_event_when_not_enough_players",
             SetupParams {
                 widget_states: vec![WidgetState::Ready, WidgetState::Inactive],
                 control_input_event_fn: Some(press_attack),
@@ -240,7 +235,6 @@ mod test {
     }
 
     fn run_test(
-        test_name: &str,
         SetupParams {
             widget_states: setup_widget_states,
             control_input_event_fn,
@@ -249,7 +243,7 @@ mod test {
             character_selection_events_fn,
         }: ExpectedParams,
     ) -> Result<(), Error> {
-        AutexousiousApplication::config_base(test_name, false)
+        AutexousiousApplication::config_base()
             .with_system(
                 CharacterSelectionInputSystem::new(),
                 CharacterSelectionInputSystem::type_name(),
@@ -292,7 +286,7 @@ mod test {
                 let character_selection_events = character_selection_events_fn(world);
                 assert_events(world, character_selection_events);
             })
-            .run()
+            .run_isolated()
     }
 
     fn press_jump(entity: Entity) -> ControlInputEvent {

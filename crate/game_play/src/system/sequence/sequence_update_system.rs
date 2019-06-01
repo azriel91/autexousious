@@ -261,8 +261,7 @@ mod tests {
     /// * `SequenceUpdateEvent::SequenceBegin` events are sent.
     #[test]
     fn resets_frame_wait_clocks_and_sends_event_on_sequence_begin() -> Result<(), Error> {
-        let test_name = "resets_frame_wait_clocks_and_sends_event_on_sequence_begin";
-        AutexousiousApplication::game_base(test_name, false)
+        AutexousiousApplication::game_base()
             .with_setup(setup_system_data)
             .with_setup(|world| {
                 initial_values(
@@ -288,7 +287,7 @@ mod tests {
                 let events = sequence_begin_events(world);
                 expect_events(world, events);
             })
-            .run()
+            .run_isolated()
     }
 
     /// Asserts the following when a frame is still in progress:
@@ -300,8 +299,7 @@ mod tests {
     #[test]
     fn ticks_frame_wait_clock_when_sequence_ongoing_and_no_frame_freeze_clock() -> Result<(), Error>
     {
-        let test_name = "ticks_frame_wait_clock_when_sequence_ongoing";
-        AutexousiousApplication::game_base(test_name, false)
+        AutexousiousApplication::game_base()
             .with_setup(setup_system_data)
             .with_setup(|world| {
                 initial_values(
@@ -324,7 +322,7 @@ mod tests {
                 )
             })
             .with_assertion(|world| expect_events(world, vec![]))
-            .run()
+            .run_isolated()
     }
 
     /// Asserts the following when a frame is still in progress but entity is frozen:
@@ -337,8 +335,7 @@ mod tests {
     #[test]
     fn ticks_frame_freeze_clock_when_sequence_ongoing_and_frame_freeze_clock_not_complete(
     ) -> Result<(), Error> {
-        let test_name = "ticks_frame_wait_clock_when_sequence_ongoing";
-        AutexousiousApplication::game_base(test_name, false)
+        AutexousiousApplication::game_base()
             .with_setup(setup_system_data)
             .with_setup(|world| {
                 initial_values(
@@ -361,7 +358,7 @@ mod tests {
                 )
             })
             .with_assertion(|world| expect_events(world, vec![]))
-            .run()
+            .run_isolated()
     }
 
     /// Asserts the following when a frame is still in progress but entity is frozen:
@@ -374,8 +371,7 @@ mod tests {
     #[test]
     fn ticks_frame_freeze_clock_when_sequence_ongoing_and_frame_freeze_clock_complete(
     ) -> Result<(), Error> {
-        let test_name = "ticks_frame_wait_clock_when_sequence_ongoing";
-        AutexousiousApplication::game_base(test_name, false)
+        AutexousiousApplication::game_base()
             .with_setup(setup_system_data)
             .with_setup(|world| {
                 initial_values(
@@ -398,7 +394,7 @@ mod tests {
                 )
             })
             .with_assertion(|world| expect_events(world, vec![]))
-            .run()
+            .run_isolated()
     }
 
     /// Asserts the following when a frame is still in progress:
@@ -410,9 +406,7 @@ mod tests {
     #[test]
     fn resets_frame_wait_clock_and_sends_event_when_frame_ends_and_sequence_ongoing(
     ) -> Result<(), Error> {
-        let test_name =
-            "resets_frame_wait_clock_and_sends_event_when_frame_ends_and_sequence_ongoing";
-        AutexousiousApplication::game_base(test_name, false)
+        AutexousiousApplication::game_base()
             .with_setup(setup_system_data)
             .with_setup(|world| {
                 initial_values(
@@ -438,7 +432,7 @@ mod tests {
                 let events = frame_begin_events(world, 1);
                 expect_events(world, events);
             })
-            .run()
+            .run_isolated()
     }
 
     /// Asserts the following when a frame is still in progress:
@@ -450,8 +444,7 @@ mod tests {
     /// * Sets `SequenceStatus` to `SequenceStatus::End`.
     #[test]
     fn sends_end_event_when_frame_ends_and_sequence_ends() -> Result<(), Error> {
-        let test_name = "sends_end_event_when_frame_ends_and_sequence_ends";
-        AutexousiousApplication::game_base(test_name, false)
+        AutexousiousApplication::game_base()
             .with_setup(setup_system_data)
             .with_setup(|world| {
                 initial_values(
@@ -477,7 +470,7 @@ mod tests {
                 let events = sequence_end_events(world, 4);
                 expect_events(world, events);
             })
-            .run()
+            .run_isolated()
     }
 
     /// Asserts the following when the entity has the `Repeat` component:
@@ -489,8 +482,7 @@ mod tests {
     /// * Sets `SequenceStatus` to `SequenceStatus::Ongoing`.
     #[test]
     fn sends_events_when_frame_ends_and_sequence_ends_and_repeat() -> Result<(), Error> {
-        let test_name = "sends_events_when_frame_ends_and_sequence_ends_and_repeat";
-        AutexousiousApplication::game_base(test_name, false)
+        AutexousiousApplication::game_base()
             .with_setup(setup_system_data)
             .with_setup(|world| {
                 initial_values(
@@ -516,13 +508,12 @@ mod tests {
                 let events = sequence_end_and_begin_events(world, 4);
                 expect_events(world, events);
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
     fn does_nothing_when_sequence_end() -> Result<(), Error> {
-        let test_name = "does_nothing_when_sequence_end";
-        AutexousiousApplication::game_base(test_name, false)
+        AutexousiousApplication::game_base()
             .with_setup(setup_system_data)
             .with_setup(|world| {
                 initial_values(
@@ -545,7 +536,7 @@ mod tests {
                 )
             })
             .with_assertion(|world| expect_events(world, vec![]))
-            .run()
+            .run_isolated()
     }
 
     fn setup_system_data(world: &mut World) {

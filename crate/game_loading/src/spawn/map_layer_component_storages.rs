@@ -1,7 +1,7 @@
 use amethyst::{
     core::Transform,
     ecs::WriteStorage,
-    renderer::{SpriteRender, Transparent},
+    renderer::{transparent::Transparent, SpriteRender},
 };
 use derivative::Derivative;
 use sequence_model::{

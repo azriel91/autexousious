@@ -8,7 +8,7 @@ use derivative::Derivative;
 use derive_new::new;
 use game_input::{ControllerInput, InputControlled};
 use game_input_model::{
-    Axis, AxisEventData, ControlActionEventData, ControlInputEvent, InputConfig,
+    Axis, AxisEventData, ControlActionEventData, ControlBindings, ControlInputEvent, InputConfig,
     PlayerActionControl, PlayerAxisControl,
 };
 use log::debug;
@@ -37,7 +37,7 @@ pub struct InputToControlInputSystemData<'s> {
     pub input_ec: Read<'s, EventChannel<InputEvent<PlayerActionControl>>>,
     /// `InputHandler` resource.
     #[derivative(Debug = "ignore")]
-    pub input_handler: Read<'s, InputHandler<PlayerAxisControl, PlayerActionControl>>,
+    pub input_handler: Read<'s, InputHandler<ControlBindings>>,
     /// `Entities` resource.
     #[derivative(Debug = "ignore")]
     pub entities: Entities<'s>,
@@ -172,8 +172,8 @@ mod test {
     use amethyst_test::{AmethystApplication, HIDPI};
     use game_input::{ControllerInput, InputControlled};
     use game_input_model::{
-        Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent,
-        ControllerConfig, InputConfig, PlayerActionControl, PlayerAxisControl,
+        Axis, AxisEventData, ControlAction, ControlActionEventData, ControlBindings,
+        ControlInputEvent, ControllerConfig, InputConfig, PlayerActionControl,
     };
     use hamcrest::prelude::*;
     use typename::TypeName;
@@ -265,9 +265,9 @@ mod test {
         F: Send + Sync + Fn(Entity) -> Vec<ControlInputEvent> + 'static,
     {
         let input_config = input_config();
-        let bindings = Bindings::<PlayerAxisControl, PlayerActionControl>::from(&input_config);
+        let bindings = Bindings::<ControlBindings>::from(&input_config);
 
-        AmethystApplication::ui_base::<PlayerAxisControl, PlayerActionControl>()
+        AmethystApplication::ui_base::<ControlBindings>()
             .with_system(
                 InputToControlInputSystem::new(input_config),
                 InputToControlInputSystem::type_name(),
@@ -278,7 +278,7 @@ mod test {
                 // system setup phase.
                 // TODO: Update `amethyst_test` to take in `InputBindings`.
                 world
-                    .write_resource::<InputHandler<PlayerAxisControl, PlayerActionControl>>()
+                    .write_resource::<InputHandler<ControlBindings>>()
                     .bindings = bindings.clone();
 
                 let reader_id = world
@@ -297,8 +297,7 @@ mod test {
                 // Use the same closure so that the system does not send events before we send the
                 // key events.
 
-                let mut input_handler =
-                    world.write_resource::<InputHandler<PlayerAxisControl, PlayerActionControl>>();
+                let mut input_handler = world.write_resource::<InputHandler<ControlBindings>>();
                 let mut input_events_ec =
                     world.write_resource::<EventChannel<InputEvent<PlayerActionControl>>>();
 

@@ -11,16 +11,19 @@
 //! * `assets/font/source-code-pro-2.030R-ro-1.050R-it/TTF/SourceCodePro-It.ttf`
 //! * `assets/font/source-code-pro-2.030R-ro-1.050R-it/TTF/SourceCodePro-Regular.ttf`
 
+mod render_graph;
 mod state;
 
 use std::{cell::RefCell, process, rc::Rc, time::Duration};
 
 use amethyst::{
     core::transform::TransformBundle,
-    input::InputBundle,
+    input::{InputBundle, StringBindings},
     prelude::*,
-    renderer::{DisplayConfig, Pipeline, RenderBundle, Stage},
-    ui::{DrawUi, UiBundle},
+    renderer::{types::DefaultBackend, RenderingSystem},
+    ui::UiBundle,
+    window::{DisplayConfig, WindowBundle},
+    GameData, StateEvent,
 };
 use application::{
     development_base_dirs,
@@ -32,7 +35,7 @@ use application_robot::{
 };
 use structopt::StructOpt;
 
-use crate::state::TextState;
+use crate::{render_graph::RenderGraph, state::TextState};
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "Example 01: Draw Text")]
@@ -60,12 +63,6 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         Some(development_base_dirs!()),
     )?;
 
-    let pipe = Pipeline::build().with_stage(
-        Stage::with_backbuffer()
-            .clear_target([0.1, 0.1, 0.1, 1.], 1.)
-            .with_pass(DrawUi::new()),
-    );
-
     let intercepts: Vec<Rc<RefCell<dyn Intercept<GameData<'_, '_>, StateEvent>>>> = {
         if let Some(timeout) = opt.timeout {
             vec![Rc::new(RefCell::new(FixedTimeoutIntercept::new(
@@ -78,10 +75,13 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     let state = RobotState::new_with_intercepts(Box::new(TextState), intercepts);
 
     let game_data = GameDataBuilder::default()
+        .with_bundle(WindowBundle::from_config(display_config))?
         .with_bundle(TransformBundle::new())?
-        .with_bundle(InputBundle::<String, String>::new())?
-        .with_bundle(UiBundle::<String, String>::new())?
-        .with_bundle(RenderBundle::new(pipe, Some(display_config)))?;
+        .with_bundle(InputBundle::<StringBindings>::new())?
+        .with_bundle(UiBundle::<DefaultBackend, StringBindings>::new())?
+        .with_thread_local(RenderingSystem::<DefaultBackend, _>::new(
+            RenderGraph::default(),
+        ));
     let mut app = Application::new("assets", state, game_data)?;
 
     if !opt.no_run {

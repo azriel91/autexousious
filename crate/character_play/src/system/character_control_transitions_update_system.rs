@@ -116,8 +116,7 @@ mod tests {
 
     #[test]
     fn updates_transitions_on_sequence_begin_event() -> Result<(), Error> {
-        let test_name = "updates_transitions_on_sequence_begin_event";
-        AutexousiousApplication::game_base(test_name, false)
+        AutexousiousApplication::game_base()
             .with_system(CharacterControlTransitionsUpdateSystem::new(), "", &[])
             .with_setup(|world| {
                 let character_cts_handle = SequenceQueries::character_cts_handle(
@@ -138,13 +137,12 @@ mod tests {
                 send_events(world, events);
             })
             .with_assertion(|world| expect_transitions(world, transitions()))
-            .run()
+            .run_isolated()
     }
 
     #[test]
     fn updates_transitions_on_frame_begin_event() -> Result<(), Error> {
-        let test_name = "updates_transitions_on_frame_begin_event";
-        AutexousiousApplication::game_base(test_name, false)
+        AutexousiousApplication::game_base()
             .with_system(CharacterControlTransitionsUpdateSystem::new(), "", &[])
             .with_setup(|world| {
                 let character_cts_handle = SequenceQueries::character_cts_handle(
@@ -164,7 +162,7 @@ mod tests {
                 send_events(world, events);
             })
             .with_assertion(|world| expect_transitions(world, transitions()))
-            .run()
+            .run_isolated()
     }
 
     fn initial_values(

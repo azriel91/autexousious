@@ -23,7 +23,7 @@ impl<'s> System<'s> for CollisionLoadingSystem {
 
 #[cfg(test)]
 mod test {
-    use amethyst::{assets::AssetStorage, ecs::System};
+    use amethyst::{assets::AssetStorage, ecs::System, input::StringBindings};
     use amethyst_test::AmethystApplication;
     use collision_model::config::{Body, Interactions};
 
@@ -34,7 +34,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::ui_base::<String, String>()
+            AmethystApplication::ui_base::<StringBindings>()
                 .with_setup(|world| CollisionLoadingSystem::new().setup(&mut world.res))
                 .with_assertion(|world| {
                     assert!(world.res.try_fetch::<AssetStorage<Body>>().is_some());

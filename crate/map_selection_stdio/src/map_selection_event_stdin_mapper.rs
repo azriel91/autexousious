@@ -118,7 +118,7 @@ mod tests {
 
     #[test]
     fn maps_return_event() -> Result<(), Error> {
-        AutexousiousApplication::config_base("maps_return_event", false)
+        AutexousiousApplication::config_base()
             .with_assertion(|world| {
                 let args = MapSelectionEventArgs::Return;
                 let map_assets = world.read_resource::<MapAssets>();
@@ -128,12 +128,12 @@ mod tests {
                 assert!(result.is_ok());
                 assert_eq!(MapSelectionEvent::Return, result.unwrap())
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
     fn maps_deselect_event() -> Result<(), Error> {
-        AutexousiousApplication::config_base("maps_deselect_event", false)
+        AutexousiousApplication::config_base()
             .with_assertion(|world| {
                 let args = MapSelectionEventArgs::Deselect;
                 let map_assets = world.read_resource::<MapAssets>();
@@ -143,12 +143,12 @@ mod tests {
                 assert!(result.is_ok());
                 assert_eq!(MapSelectionEvent::Deselect, result.unwrap())
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
     fn maps_confirm_event() -> Result<(), Error> {
-        AutexousiousApplication::config_base("maps_confirm_event", false)
+        AutexousiousApplication::config_base()
             .with_assertion(|world| {
                 let args = MapSelectionEventArgs::Confirm;
                 let map_assets = world.read_resource::<MapAssets>();
@@ -158,12 +158,12 @@ mod tests {
                 assert!(result.is_ok());
                 assert_eq!(MapSelectionEvent::Confirm, result.unwrap())
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
     fn maps_select_id_event() -> Result<(), Error> {
-        AutexousiousApplication::config_base("maps_select_id_event", false)
+        AutexousiousApplication::config_base()
             .with_assertion(|world| {
                 let args = MapSelectionEventArgs::Select {
                     selection: ASSETS_MAP_FADE_SLUG.to_string(),
@@ -177,12 +177,12 @@ mod tests {
                 let map_selection = MapSelection::Id(snh);
                 assert_eq!(MapSelectionEvent::Select { map_selection }, result.unwrap())
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
     fn maps_select_random_event() -> Result<(), Error> {
-        AutexousiousApplication::config_base("maps_select_random_event", false)
+        AutexousiousApplication::config_base()
             .with_assertion(|world| {
                 let args = MapSelectionEventArgs::Select {
                     selection: "random".to_string(),
@@ -201,7 +201,7 @@ mod tests {
                 let map_selection = MapSelection::Random(snh);
                 assert_eq!(MapSelectionEvent::Select { map_selection }, result.unwrap())
             })
-            .run()
+            .run_isolated()
     }
 
     fn expect_err_msg(result: Result<MapSelectionEvent, Error>, expected: &str) {

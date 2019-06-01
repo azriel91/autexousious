@@ -53,7 +53,9 @@ impl CharacterEntityAugmenter {
 #[cfg(test)]
 mod test {
     use amethyst::{
+        core::TransformBundle,
         ecs::{Builder, SystemData, World},
+        renderer::{types::DefaultBackend, RenderEmptyBundle},
         Error,
     };
     use amethyst_test::AmethystApplication;
@@ -82,11 +84,13 @@ mod test {
             assert!(world.read_storage::<Grounding>().contains(entity));
         };
 
-        AmethystApplication::render_base("augments_entity_with_character_components", false)
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_setup(|world| {
                 <CharacterComponentStorages as SystemData>::setup(&mut world.res);
             })
             .with_assertion(assertion)
-            .run()
+            .run_isolated()
     }
 }

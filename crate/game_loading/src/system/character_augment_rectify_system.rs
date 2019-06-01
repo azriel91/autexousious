@@ -128,12 +128,15 @@ impl<'s> System<'s> for CharacterAugmentRectifySystem {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        assets::Prefab,
-        audio::AudioBundle,
+        assets::{Prefab, Processor},
+        audio::Source,
+        core::TransformBundle,
         ecs::{Builder, Entity, Join, SystemData, World},
+        renderer::{types::DefaultBackend, RenderEmptyBundle},
+        window::ScreenDimensions,
         Error,
     };
-    use amethyst_test::{AmethystApplication, PopState};
+    use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
     use application_event::{AppEvent, AppEventReader};
     use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
@@ -141,6 +144,7 @@ mod tests {
     use collision_audio_loading::CollisionAudioLoadingBundle;
     use collision_loading::CollisionLoadingBundle;
     use game_input::InputControlled;
+    use game_input_model::ControlBindings;
     use game_model::loaded::MapAssets;
     use game_play_model::GamePlayEntity;
     use loading::{LoadingBundle, LoadingState};
@@ -159,7 +163,6 @@ mod tests {
     #[test]
     fn returns_if_augment_status_is_not_rectify() -> Result<(), Error> {
         run_test(
-            "returns_if_augment_status_is_not_rectify",
             |world| {
                 let mut game_loading_status = GameLoadingStatus::new();
                 game_loading_status.character_augment_status = CharacterAugmentStatus::Prefab;
@@ -187,7 +190,6 @@ mod tests {
     #[test]
     fn updates_position_to_middle_of_map() -> Result<(), Error> {
         run_test(
-            "updates_position_to_middle_of_map",
             |world| {
                 let mut game_loading_status = GameLoadingStatus::new();
                 game_loading_status.character_augment_status = CharacterAugmentStatus::Rectify;
@@ -226,7 +228,6 @@ mod tests {
     #[test]
     fn creates_hp_bar_entity_per_character_selection() -> Result<(), Error> {
         run_test(
-            "creates_hp_bar_entity_per_character_selection",
             |world| {
                 let mut game_loading_status = GameLoadingStatus::new();
                 game_loading_status.character_augment_status = CharacterAugmentStatus::Rectify;
@@ -251,14 +252,18 @@ mod tests {
         )
     }
 
-    fn run_test<FnS, FnA>(test_name: &str, fn_setup: FnS, fn_assert: FnA) -> Result<(), Error>
+    fn run_test<FnS, FnA>(fn_setup: FnS, fn_assert: FnA) -> Result<(), Error>
     where
         FnS: Fn(&mut World) + Send + Sync + 'static,
         FnA: Fn(&mut World) + Send + Sync + 'static,
     {
-        AmethystApplication::render_base(test_name, false)
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_custom_event_type::<AppEvent, AppEventReader>()
-            .with_bundle(AudioBundle::default())
+            .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
+            .with_ui_bundles::<ControlBindings>()
+            .with_system(Processor::<Source>::new(), "source_processor", &[])
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
@@ -277,7 +282,7 @@ mod tests {
                 &[],
             ) // kcov-ignore
             .with_assertion(fn_assert)
-            .run()
+            .run_isolated()
     }
 
     /// Returns a function that adds a `MapSelection` and `MapSelectionStatus::Confirmed`.

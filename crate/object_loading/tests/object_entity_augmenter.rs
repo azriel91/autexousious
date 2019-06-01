@@ -22,14 +22,15 @@
 use std::env;
 
 use amethyst::{
-    assets::{AssetStorage, Prefab},
-    audio::AudioBundle,
-    core::transform::Transform,
+    assets::{AssetStorage, Prefab, Processor},
+    audio::Source,
+    core::{transform::Transform, TransformBundle},
     ecs::{Builder, SystemData, World},
-    renderer::{Flipped, SpriteRender, Transparent},
+    renderer::{transparent::Transparent, types::DefaultBackend, RenderEmptyBundle, SpriteRender},
+    window::ScreenDimensions,
     Error,
 };
-use amethyst_test::{AmethystApplication, PopState};
+use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
 use application_event::{AppEvent, AppEventReader};
 use asset_model::loaded::SlugAndHandle;
 use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
@@ -40,6 +41,7 @@ use character_model::{
 };
 use collision_audio_loading::CollisionAudioLoadingBundle;
 use collision_loading::CollisionLoadingBundle;
+use game_input_model::ControlBindings;
 use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
 use object_loading::{
@@ -112,7 +114,6 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
         assert!(world.read_storage::<SequenceStatus>().contains(entity));
         assert!(world.read_storage::<Mirrored>().contains(entity));
         assert!(world.read_storage::<SpriteRender>().contains(entity));
-        assert!(world.read_storage::<Flipped>().contains(entity));
         assert!(world.read_storage::<Transparent>().contains(entity));
         assert!(world.read_storage::<Position<f32>>().contains(entity));
         assert!(world.read_storage::<Velocity<f32>>().contains(entity));
@@ -124,9 +125,13 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
         assert!(world.read_storage::<FrameWaitClock>().contains(entity));
     };
 
-    AmethystApplication::render_base("augments_entity_with_object_components", false)
+    AmethystApplication::blank()
+        .with_bundle(TransformBundle::new())
+        .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
         .with_custom_event_type::<AppEvent, AppEventReader>()
-        .with_bundle(AudioBundle::default())
+        .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
+        .with_ui_bundles::<ControlBindings>()
+        .with_system(Processor::<Source>::new(), "source_processor", &[])
         .with_bundle(SpriteLoadingBundle::new())
         .with_bundle(SequenceLoadingBundle::new())
         .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
@@ -141,5 +146,5 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
         })
         .with_state(|| LoadingState::new(PopState))
         .with_assertion(assertion)
-        .run()
+        .run_isolated()
 }

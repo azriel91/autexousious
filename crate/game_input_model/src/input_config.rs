@@ -9,7 +9,7 @@ use derive_new::new;
 use log::error;
 use serde::{Deserialize, Serialize};
 
-use crate::{ControllerConfig, PlayerActionControl, PlayerAxisControl};
+use crate::{ControlBindings, ControllerConfig, PlayerActionControl, PlayerAxisControl};
 
 /// Structure for holding the input configuration.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, new)]
@@ -18,10 +18,8 @@ pub struct InputConfig {
     pub controller_configs: Vec<ControllerConfig>,
 }
 
-impl<'config> From<&'config InputConfig> for Bindings<PlayerAxisControl, PlayerActionControl> {
-    fn from(
-        input_config: &'config InputConfig,
-    ) -> Bindings<PlayerAxisControl, PlayerActionControl> {
+impl<'config> From<&'config InputConfig> for Bindings<ControlBindings> {
+    fn from(input_config: &'config InputConfig) -> Bindings<ControlBindings> {
         let mut bindings = Bindings::new();
 
         // Axis controls
@@ -114,7 +112,10 @@ mod tests {
     use winit::VirtualKeyCode;
 
     use super::InputConfig;
-    use crate::{Axis, ControlAction, ControllerConfig, PlayerActionControl, PlayerAxisControl};
+    use crate::{
+        Axis, ControlAction, ControlBindings, ControllerConfig, PlayerActionControl,
+        PlayerAxisControl,
+    };
 
     #[test]
     fn bindings_from_input_config_converts_correctly() {
@@ -129,7 +130,7 @@ mod tests {
         let controller_configs = vec![controller_config_0, controller_config_1];
         let input_config = InputConfig::new(controller_configs);
 
-        let bindings = Bindings::<PlayerAxisControl, PlayerActionControl>::from(&input_config);
+        let bindings = Bindings::<ControlBindings>::from(&input_config);
 
         assert_that!(
             &bindings.axes().map(Clone::clone).collect::<Vec<_>>(),

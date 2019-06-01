@@ -170,8 +170,7 @@ mod tests {
 
     #[test]
     fn updates_all_frame_components_on_sequence_begin_event() -> Result<(), Error> {
-        let test_name = "updates_all_frame_components_on_sequence_begin_event";
-        AutexousiousApplication::game_base(test_name, false)
+        AutexousiousApplication::game_base()
             .with_system(FrameComponentUpdateSystem::new(), "", &[])
             .with_setup(|world| {
                 let component_sequences_handle = SequenceQueries::component_sequences_handle(
@@ -196,13 +195,12 @@ mod tests {
                 // See bat/object.toml for values.
                 expect_component_values(world, Wait::new(1), 0, body_0(), interactions_0())
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
     fn updates_all_frame_components_on_frame_begin_event() -> Result<(), Error> {
-        let test_name = "updates_all_frame_components_on_frame_begin_event";
-        AutexousiousApplication::game_base(test_name, false)
+        AutexousiousApplication::game_base()
             .with_system(FrameComponentUpdateSystem::new(), "", &[])
             .with_setup(|world| {
                 let component_sequences_handle = SequenceQueries::component_sequences_handle(
@@ -227,7 +225,7 @@ mod tests {
                 // See bat/object.toml for values.
                 expect_component_values(world, Wait::new(2), 2, body_2(), interactions_2())
             })
-            .run()
+            .run_isolated()
     }
 
     fn initial_values(

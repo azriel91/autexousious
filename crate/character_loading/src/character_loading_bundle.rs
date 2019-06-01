@@ -65,7 +65,12 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterLoadingBundle {
 
 #[cfg(test)]
 mod test {
-    use amethyst::{assets::AssetStorage, Error};
+    use amethyst::{
+        assets::AssetStorage,
+        core::TransformBundle,
+        renderer::{types::DefaultBackend, RenderEmptyBundle},
+        Error,
+    };
     use amethyst_test::AmethystApplication;
     use character_model::{
         config::CharacterDefinition,
@@ -77,7 +82,9 @@ mod test {
 
     #[test]
     fn bundle_build() -> Result<(), Error> {
-        AmethystApplication::render_base("bundle_build", false)
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_assertion(|world| {
@@ -87,6 +94,6 @@ mod test {
                 world.read_resource::<AssetStorage<CharacterControlTransitionsSequence>>();
                 world.read_resource::<AssetStorage<Character>>();
             })
-            .run()
+            .run_isolated()
     }
 }

@@ -1,4 +1,7 @@
-use amethyst::renderer::{SpriteSheet, TextureHandle};
+use amethyst::{
+    assets::Handle,
+    renderer::{sprite::SpriteSheet, Texture},
+};
 use asset_gfx_gen::{SpriteGenParams, SpriteSheetGen};
 use log::trace;
 use sprite_model::config::SpriteSheetDefinition;
@@ -14,7 +17,7 @@ impl SpriteSheetMapper {
     /// * `texture_handles`: Handles of the sprite sheets' textures.
     /// * `sprite_sheet_definitions`: List of metadata for sprite sheets to map.
     pub(crate) fn map(
-        texture_handles: &[TextureHandle],
+        texture_handles: &[Handle<Texture>],
         sprite_sheet_definitions: &[SpriteSheetDefinition],
     ) -> Vec<SpriteSheet> {
         sprite_sheet_definitions
@@ -33,7 +36,7 @@ impl SpriteSheetMapper {
     /// * `texture_handle`: Handle of the sprite sheet's texture.
     /// * `definition`: Definition of the sprite layout on the sprite sheet.
     fn definition_to_sprite_sheet(
-        texture_handle: TextureHandle,
+        texture_handle: Handle<Texture>,
         definition: &SpriteSheetDefinition,
     ) -> SpriteSheet {
         let mut sprites =
@@ -139,9 +142,10 @@ impl SpriteSheetMapper {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        assets::{AssetStorage, Loader, ProgressCounter},
+        assets::{AssetStorage, Handle, Loader, ProgressCounter},
+        core::TransformBundle,
         ecs::World,
-        renderer::{SpriteSheet, Texture, TextureHandle},
+        renderer::{types::DefaultBackend, RenderEmptyBundle, SpriteSheet, Texture},
         Error,
     };
     use amethyst_test::AmethystApplication;
@@ -155,7 +159,9 @@ mod test {
 
     #[test]
     fn map_multiple_sprite_sheet_definitions() -> Result<(), Error> {
-        AmethystApplication::render_base("map_multiple_sprite_sheet_definitions", false)
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_assertion(|world| {
                 let sprite_sheet_definitions = [sprite_sheet_definition(true), simple_definition()];
                 let texture_handles = test_texture_handles(world, &sprite_sheet_definitions);
@@ -165,38 +171,38 @@ mod test {
                     (
                         (9., 19.),
                         [-4.5, 10.5],
-                        [0.5 / 30., 8.5 / 30., 21.5 / 40., 39.5 / 40.],
+                        [0.5 / 30., 8.5 / 30., 18.5 / 40., 0.5 / 40.],
                     )
                         .into(),
                     (
                         (9., 19.),
                         [-13.5, 9.5],
-                        [10.5 / 30., 18.5 / 30., 21.5 / 40., 39.5 / 40.],
+                        [10.5 / 30., 18.5 / 30., 18.5 / 40., 0.5 / 40.],
                     )
                         .into(),
                     (
                         (9., 19.),
                         [-22.5, 8.5],
-                        [20.5 / 30., 28.5 / 30., 21.5 / 40., 39.5 / 40.],
+                        [20.5 / 30., 28.5 / 30., 18.5 / 40., 0.5 / 40.],
                     )
                         .into(),
                     // Sprites bottom row
                     (
                         (9., 19.),
                         [-1.5, 27.5],
-                        [0.5 / 30., 8.5 / 30., 1.5 / 40., 19.5 / 40.],
+                        [0.5 / 30., 8.5 / 30., 38.5 / 40., 20.5 / 40.],
                     )
                         .into(),
                     (
                         (9., 19.),
                         [-10.5, 26.5],
-                        [10.5 / 30., 18.5 / 30., 1.5 / 40., 19.5 / 40.],
+                        [10.5 / 30., 18.5 / 30., 38.5 / 40., 20.5 / 40.],
                     )
                         .into(),
                     (
                         (9., 19.),
                         [-19.5, 25.5],
-                        [20.5 / 30., 28.5 / 30., 1.5 / 40., 19.5 / 40.],
+                        [20.5 / 30., 28.5 / 30., 38.5 / 40., 20.5 / 40.],
                     )
                         .into(),
                 ];
@@ -209,7 +215,7 @@ mod test {
                     sprites: vec![(
                         (19., 29.),
                         [-9.5, 15.5],
-                        [0.5 / 20., 18.5 / 20., 1.5 / 30., 29.5 / 30.],
+                        [0.5 / 20., 18.5 / 20., 28.5 / 30., 0.5 / 30.],
                     )
                         .into()],
                 }; // kcov-ignore
@@ -221,12 +227,14 @@ mod test {
                     SpriteSheetMapper::map(&texture_handles, &sprite_sheet_definitions)
                 );
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
     fn map_sprite_sheet_definition_without_border() -> Result<(), Error> {
-        AmethystApplication::render_base("map_sprite_sheet_definition_without_border", false)
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_assertion(|world| {
                 let sprite_sheet_definitions =
                     [sprite_sheet_definition(false), simple_definition()];
@@ -237,38 +245,38 @@ mod test {
                     (
                         (10., 20.),
                         [-5., 10.],
-                        [0.5 / 30., 9.5 / 30., 20.5 / 40., 39.5 / 40.],
+                        [0.5 / 30., 9.5 / 30., 19.5 / 40., 0.5 / 40.],
                     )
                         .into(),
                     (
                         (10., 20.),
                         [-14., 9.],
-                        [10.5 / 30., 19.5 / 30., 20.5 / 40., 39.5 / 40.],
+                        [10.5 / 30., 19.5 / 30., 19.5 / 40., 0.5 / 40.],
                     )
                         .into(),
                     (
                         (10., 20.),
                         [-23., 8.],
-                        [20.5 / 30., 29.5 / 30., 20.5 / 40., 39.5 / 40.],
+                        [20.5 / 30., 29.5 / 30., 19.5 / 40., 0.5 / 40.],
                     )
                         .into(),
                     // Sprites bottom row
                     (
                         (10., 20.),
                         [-2., 27.],
-                        [0.5 / 30., 9.5 / 30., 0.5 / 40., 19.5 / 40.],
+                        [0.5 / 30., 9.5 / 30., 39.5 / 40., 20.5 / 40.],
                     )
                         .into(),
                     (
                         (10., 20.),
                         [-11., 26.],
-                        [10.5 / 30., 19.5 / 30., 0.5 / 40., 19.5 / 40.],
+                        [10.5 / 30., 19.5 / 30., 39.5 / 40., 20.5 / 40.],
                     )
                         .into(),
                     (
                         (10., 20.),
                         [-20., 25.],
-                        [20.5 / 30., 29.5 / 30., 0.5 / 40., 19.5 / 40.],
+                        [20.5 / 30., 29.5 / 30., 39.5 / 40., 20.5 / 40.],
                     )
                         .into(),
                 ];
@@ -281,7 +289,7 @@ mod test {
                     sprites: vec![(
                         (19., 29.),
                         [-9.5, 15.5],
-                        [0.5 / 20., 18.5 / 20., 1.5 / 30., 29.5 / 30.],
+                        [0.5 / 20., 18.5 / 20., 28.5 / 30., 0.5 / 30.],
                     )
                         .into()],
                 };
@@ -293,37 +301,36 @@ mod test {
                     SpriteSheetMapper::map(&texture_handles, &sprite_sheet_definitions)
                 );
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
-    fn offsets_defaults_to_negated_half_sprite_dimensions_if_none() {
-        assert!(
-            AmethystApplication::render_base("map_multiple_sprite_sheet_definitions", false)
-                .with_assertion(|world| {
-                    let sprite_sheet_definitions = [no_offsets_definition()];
-                    let texture_handles = test_texture_handles(world, &sprite_sheet_definitions);
+    fn offsets_defaults_to_negated_half_sprite_dimensions_if_none() -> Result<(), Error> {
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
+            .with_assertion(|world| {
+                let sprite_sheet_definitions = [no_offsets_definition()];
+                let texture_handles = test_texture_handles(world, &sprite_sheet_definitions);
 
-                    let sprite_sheet = SpriteSheet {
-                        texture: texture_handles[0].clone(),
-                        sprites: vec![(
-                            (19., 29.),
-                            [-9.5, -14.5],
-                            [0.5 / 20., 18.5 / 20., 1.5 / 30., 29.5 / 30.],
-                        )
-                            .into()],
-                    }; // kcov-ignore
+                let sprite_sheet = SpriteSheet {
+                    texture: texture_handles[0].clone(),
+                    sprites: vec![(
+                        (19., 29.),
+                        [-9.5, -14.5],
+                        [0.5 / 20., 18.5 / 20., 28.5 / 30., 0.5 / 30.],
+                    )
+                        .into()],
+                }; // kcov-ignore
 
-                    // kcov-ignore-start
-                    assert_eq!(
-                        // kcov-ignore-end
-                        vec![sprite_sheet],
-                        SpriteSheetMapper::map(&texture_handles, &sprite_sheet_definitions)
-                    );
-                })
-                .run()
-                .is_ok()
-        );
+                // kcov-ignore-start
+                assert_eq!(
+                    // kcov-ignore-end
+                    vec![sprite_sheet],
+                    SpriteSheetMapper::map(&texture_handles, &sprite_sheet_definitions)
+                );
+            })
+            .run_isolated()
     }
 
     fn simple_definition() -> SpriteSheetDefinition {
@@ -381,7 +388,7 @@ mod test {
     fn test_texture_handles(
         world: &mut World,
         sprite_sheet_definitions: &[SpriteSheetDefinition],
-    ) -> Vec<TextureHandle> {
+    ) -> Vec<Handle<Texture>> {
         let loader = world.read_resource::<Loader>();
         let texture_assets = world.read_resource::<AssetStorage<Texture>>();
 

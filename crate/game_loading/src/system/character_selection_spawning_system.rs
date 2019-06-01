@@ -71,11 +71,17 @@ mod tests {
     use std::{collections::HashMap, env};
 
     use amethyst::{
-        audio::AudioBundle,
+        assets::Processor,
+        audio::Source,
+        core::TransformBundle,
         ecs::{Builder, Entity},
+        renderer::{types::DefaultBackend, RenderEmptyBundle},
+        window::ScreenDimensions,
         Error,
     };
-    use amethyst_test::{AmethystApplication, EffectReturn, PopState};
+    use amethyst_test::{
+        AmethystApplication, EffectReturn, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH,
+    };
     use application_event::{AppEvent, AppEventReader};
     use asset_model::loaded::SlugAndHandle;
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
@@ -83,6 +89,7 @@ mod tests {
     use character_selection_model::CharacterSelections;
     use collision_audio_loading::CollisionAudioLoadingBundle;
     use collision_loading::CollisionLoadingBundle;
+    use game_input_model::ControlBindings;
     use game_model::play::GameEntities;
     use loading::{LoadingBundle, LoadingState};
     use map_loading::MapLoadingBundle;
@@ -97,9 +104,13 @@ mod tests {
 
     #[test]
     fn returns_if_augment_status_is_not_prefab() -> Result<(), Error> {
-        AmethystApplication::render_base("returns_if_augment_status_is_not_prefab", false)
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_custom_event_type::<AppEvent, AppEventReader>()
-            .with_bundle(AudioBundle::default())
+            .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
+            .with_ui_bundles::<ControlBindings>()
+            .with_system(Processor::<Source>::new(), "source_processor", &[])
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
@@ -140,16 +151,21 @@ mod tests {
                         .expect("Expected characters to have an entity.")
                 );
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
     fn spawns_characters_when_they_havent_been_spawned() -> Result<(), Error> {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
-        AmethystApplication::render_base("spawns_characters_when_they_havent_been_spawned", false)
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
+            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_custom_event_type::<AppEvent, AppEventReader>()
-            .with_bundle(AudioBundle::default())
+            .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
+            .with_ui_bundles::<ControlBindings>()
+            .with_system(Processor::<Source>::new(), "source_processor", &[])
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
@@ -186,6 +202,6 @@ mod tests {
                         .character_augment_status
                 );
             })
-            .run()
+            .run_isolated()
     }
 }

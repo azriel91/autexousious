@@ -79,7 +79,6 @@ mod tests {
     #[test]
     fn keeps_character_within_lower_map_bounds() -> Result<(), Error> {
         run_test(
-            "keeps_character_within_lower_map_bounds",
             |(position, _grounding)| {
                 position[0] = -10.;
                 position[1] = -10.;
@@ -99,7 +98,6 @@ mod tests {
     #[test]
     fn keeps_character_within_upper_map_bounds() -> Result<(), Error> {
         run_test(
-            "keeps_character_within_upper_map_bounds",
             |(position, _grounding)| {
                 position[0] = 2000.;
                 position[1] = 2000.;
@@ -119,7 +117,6 @@ mod tests {
     #[test]
     fn grounding_set_to_airborne_when_above_ground() -> Result<(), Error> {
         run_test(
-            "grounding_set_to_airborne_when_above_ground",
             |(position, grounding)| {
                 position[1] = 300.;
                 *grounding = Grounding::OnGround;
@@ -133,7 +130,6 @@ mod tests {
     #[test]
     fn grounding_set_to_on_ground_when_on_ground() -> Result<(), Error> {
         run_test(
-            "grounding_set_to_on_ground_when_on_ground",
             |(position, grounding)| {
                 position[1] = 200.;
                 *grounding = Grounding::Airborne;
@@ -145,11 +141,10 @@ mod tests {
     }
 
     fn run_test(
-        test_name: &str,
         setup_fn: fn((&mut Position<f32>, &mut Grounding)),
         assertion_fn: fn((&Position<f32>, &Grounding)),
     ) -> Result<(), Error> {
-        AutexousiousApplication::game_base(test_name, false)
+        AutexousiousApplication::game_base()
             .with_setup(move |world| {
                 let (mut positions, mut groundings) = world
                     .system_data::<(WriteStorage<'_, Position<f32>>, WriteStorage<'_, Grounding>)>(
@@ -166,6 +161,6 @@ mod tests {
                     .system_data::<(ReadStorage<'_, Position<f32>>, ReadStorage<'_, Grounding>)>();
                 (&positions, &groundings).join().for_each(assertion_fn)
             })
-            .run()
+            .run_isolated()
     }
 }

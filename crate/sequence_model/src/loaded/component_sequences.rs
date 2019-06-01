@@ -52,8 +52,12 @@ impl ComponentSequences {
 mod tests {
     use amethyst::{
         assets::{AssetStorage, Loader, ProgressCounter},
+        core::TransformBundle,
         ecs::World,
-        renderer::{SpriteRender, SpriteSheet, SpriteSheetHandle, Texture},
+        renderer::{
+            sprite::SpriteSheetHandle, types::DefaultBackend, RenderEmptyBundle, SpriteRender,
+            SpriteSheet, Texture,
+        },
         Error,
     };
     use amethyst_test::AmethystApplication;
@@ -88,17 +92,16 @@ mod tests {
 
     #[test]
     fn frame_count_returns_sequence_length_for_sprite_render() -> Result<(), Error> {
-        AmethystApplication::render_base(
-            "frame_count_returns_sequence_length_for_sprite_render",
-            false,
-        )
-        .with_assertion(|world| {
-            let component_sequence = sprite_render_sequence(world);
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
+            .with_assertion(|world| {
+                let component_sequence = sprite_render_sequence(world);
 
-            let component_sequences = ComponentSequences::new(vec![component_sequence]);
-            assert_eq!(2, component_sequences.frame_count());
-        })
-        .run()
+                let component_sequences = ComponentSequences::new(vec![component_sequence]);
+                assert_eq!(2, component_sequences.frame_count());
+            })
+            .run_isolated()
     }
 
     #[test]
@@ -111,7 +114,7 @@ mod tests {
                 let component_sequences = ComponentSequences::new(vec![component_sequence]);
                 assert_eq!(2, component_sequences.frame_count());
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
@@ -124,7 +127,7 @@ mod tests {
                 let component_sequences = ComponentSequences::new(vec![component_sequence]);
                 assert_eq!(2, component_sequences.frame_count());
             })
-            .run()
+            .run_isolated()
     }
 
     fn wait_sequence() -> ComponentSequence {

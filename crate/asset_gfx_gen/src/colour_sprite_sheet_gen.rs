@@ -1,14 +1,20 @@
 use std::ptr;
 
 use amethyst::renderer::{
-    Sprite, SpriteRender, SpriteSheet, SurfaceType, TextureData, TextureMetadata,
+    loaders::load_from_srgba,
+    palette::Srgba,
+    rendy::{
+        hal::image::{Filter, Kind, SamplerInfo, ViewKind, WrapMode},
+        texture::{pixel::Rgba8Srgb, TextureBuilder},
+    },
+    types::TextureData,
+    Sprite, SpriteRender, SpriteSheet,
 };
-use gfx::format::ChannelType;
 use integer_sqrt::IntegerSquareRoot;
 
 use crate::{ColourSpriteSheetGenData, ColourSpriteSheetParams, SpriteSheetGen};
 
-const COLOUR_TRANSPARENT: [f32; 4] = [0.; 4];
+const COLOUR_TRANSPARENT: [f32; 4] = [0f32; 4];
 
 /// Generates solid colour `Texture`s and `SpriteSheet`s.
 #[derive(Debug)]
@@ -30,9 +36,11 @@ impl ColourSpriteSheetGen {
         colour: [f32; 4],
     ) -> SpriteRender {
         let sprite_sheet_handle = {
+            let texture_builder =
+                load_from_srgba(Srgba::new(colour[0], colour[1], colour[2], colour[3]));
             let texture_handle =
-                loader.load_from_data(TextureData::from(colour), (), &texture_assets);
-            let sprite = Sprite::from_pixel_values(1, 1, 1, 1, 0, 0, [0.; 2]);
+                loader.load_from_data(TextureData::from(texture_builder), (), &texture_assets);
+            let sprite = Sprite::from_pixel_values(1, 1, 1, 1, 0, 0, [0.; 2], false, false);
             let sprites = vec![sprite];
 
             let sprite_sheet = SpriteSheet {
@@ -93,22 +101,32 @@ impl ColourSpriteSheetGen {
                 column_count,
             };
 
-            let (texture_metadata, colours) =
+            let (pixel_data, image_w, image_h) =
                 Self::gradient_colours(params, colour_begin, colour_end, sprite_count);
-            let (image_w, image_h) = texture_metadata
-                .size
-                .as_ref()
-                .cloned()
-                .expect("Expected `texture_metadata` image size to exist.");
 
-            let texture_data = TextureData::F32(colours, texture_metadata);
+            let pixel_data = pixel_data
+                .into_iter()
+                .map(|[red, green, blue, alpha]| {
+                    Rgba8Srgb::from(Srgba::new(red, green, blue, alpha))
+                })
+                .collect::<Vec<Rgba8Srgb>>();
+
+            let texture_builder = TextureBuilder::new()
+                .with_kind(Kind::D2(image_w, image_h, 1, 1))
+                .with_view_kind(ViewKind::D2)
+                .with_data_width(image_w)
+                .with_data_height(image_h)
+                .with_sampler_info(SamplerInfo::new(Filter::Linear, WrapMode::Clamp))
+                .with_data(pixel_data);
+            let texture_data = texture_builder.into();
+
             let texture_handle = loader.load_from_data(texture_data, (), &texture_assets);
             let sprite_sheet = SpriteSheetGen::HalfPixel.generate(
                 texture_handle,
                 params,
                 sprite_count,
-                u32::from(image_w),
-                u32::from(image_h),
+                image_w,
+                image_h,
             );
 
             loader.load_from_data(sprite_sheet, (), sprite_sheet_assets)
@@ -131,7 +149,7 @@ impl ColourSpriteSheetGen {
         colour_begin: [f32; 4],
         colour_end: [f32; 4],
         sprite_count: usize,
-    ) -> (TextureMetadata, Vec<f32>) {
+    ) -> (Vec<[f32; 4]>, u32, u32) {
         // Pixel count.
         let padding_pixels = if padded { 1 } else { 0 };
         let sprite_w_pad = sprite_w + padding_pixels;
@@ -141,16 +159,14 @@ impl ColourSpriteSheetGen {
         let pixel_count = image_width * image_height;
 
         // Element count.
-        let pixel_width = 4; // 4 channels per pixel
-        let capacity = pixel_count * pixel_width;
-        let mut pixel_data = vec![0f32; capacity];
+        let capacity = pixel_count;
+        let mut pixel_data = vec![[0f32; 4]; capacity];
 
         // Calculate colour values.
         //
         // Pixel coordinates are used, so Y increases downwards.
 
-        let channel_steps =
-            Self::channel_steps(sprite_count, colour_begin, colour_end, pixel_width);
+        let channel_steps = Self::channel_steps(sprite_count, colour_begin, colour_end);
 
         (0..row_count).for_each(|sprite_row| {
             // 1. Build up a row of pixels
@@ -158,9 +174,9 @@ impl ColourSpriteSheetGen {
             // 3. Add padding pixels if necessary
             // 4. Repeat
 
-            let capacity = sprite_w_pad as usize * column_count * pixel_width;
+            let capacity = sprite_w_pad as usize * column_count;
             let pixel_row =
-                (0..column_count).fold(vec![0f32; capacity], |mut pixel_row, sprite_col| {
+                (0..column_count).fold(vec![[0f32; 4]; capacity], |mut pixel_row, sprite_col| {
                     // For each sprite column, generate sprite_w colour pixels, and maybe
                     // 1 padding pixel.
 
@@ -168,11 +184,21 @@ impl ColourSpriteSheetGen {
 
                     // Calculate sprite colour
                     let sprite_colour = if sprite_n < sprite_count {
-                        (0..pixel_width).fold(COLOUR_TRANSPARENT, |mut colour, channel| {
-                            colour[channel] =
-                                colour_begin[channel] + sprite_n as f32 * channel_steps[channel];
-                            colour
-                        })
+                        let mut colour = COLOUR_TRANSPARENT;
+
+                        macro_rules! calculate_colour {
+                            ($channel:tt) => {
+                                colour[$channel] = colour_begin[$channel]
+                                    + sprite_n as f32 * channel_steps[$channel];
+                            };
+                        }
+
+                        calculate_colour!(0);
+                        calculate_colour!(1);
+                        calculate_colour!(2);
+                        calculate_colour!(3);
+
+                        colour
                     } else {
                         COLOUR_TRANSPARENT
                     };
@@ -181,14 +207,13 @@ impl ColourSpriteSheetGen {
                     (0..sprite_w).for_each(|pixel_n| {
                         // `pixel_n` is the pixel number, not the colour channel index in
                         // `pixel_row`.
-                        let pixel_index =
-                            (sprite_col * sprite_w_pad as usize + pixel_n as usize) * pixel_width;
+                        let pixel_index = sprite_col * sprite_w_pad as usize + pixel_n as usize;
 
                         unsafe {
                             ptr::copy_nonoverlapping(
                                 sprite_colour.as_ptr(),
-                                pixel_row.as_mut_ptr().add(pixel_index),
-                                pixel_width,
+                                pixel_row[pixel_index].as_mut_ptr(),
+                                4,
                             )
                         }
                     });
@@ -200,11 +225,8 @@ impl ColourSpriteSheetGen {
                 });
 
             // Copy pixel row `sprite_h` times.
-            let pixel_data_row_offset = sprite_row
-                * sprite_h_pad as usize
-                * sprite_w_pad as usize
-                * column_count
-                * pixel_width;
+            let pixel_data_row_offset =
+                sprite_row * sprite_h_pad as usize * sprite_w_pad as usize * column_count;
             let pixel_row_len = pixel_row.len();
             (0..sprite_h).for_each(|pixel_row_n| unsafe {
                 ptr::copy_nonoverlapping(
@@ -220,44 +242,55 @@ impl ColourSpriteSheetGen {
             // initialization with `capacity`.
         });
 
-        let metadata = TextureMetadata::unorm()
-            .with_size(image_width as u16, image_height as u16)
-            .with_format(SurfaceType::R32_G32_B32_A32)
-            .with_channel(ChannelType::Float);
+        let image_width = image_width as u32;
+        let image_height = image_height as u32;
 
-        (metadata, pixel_data)
+        (pixel_data, image_width, image_height)
     }
 
     fn channel_steps(
         sprite_count: usize,
         colour_begin: [f32; 4],
         colour_end: [f32; 4],
-        pixel_width: usize,
     ) -> [f32; 4] {
-        let mut channel_steps: [f32; 4] = [0.; 4];
-        for pixel_channel in 0..pixel_width {
-            // Example:
-            //
-            // `sprite_count`: 6
-            // `begin`: 3
-            // `end`: 8
-            //
-            // Expected: 3, 4, 5, 6, 7, 8
-            //
-            // Step is 1, which is:
-            // = 5 / 5
-            // = (8 - 3) / (6 - 1)
-            // = (end - start) / (sprite_count - 1)
-            let channel_diff = colour_end[pixel_channel] - colour_begin[pixel_channel];
-            channel_steps[pixel_channel] = channel_diff / (sprite_count - 1) as f32;
+        let mut channel_steps = [0f32; 4];
+
+        // Example:
+        //
+        // `sprite_count`: 6
+        // `begin`: 3
+        // `end`: 8
+        //
+        // Expected: 3, 4, 5, 6, 7, 8
+        //
+        // Step is 1, which is:
+        // = 5 / 5
+        // = (8 - 3) / (6 - 1)
+        // = (end - start) / (sprite_count - 1)
+
+        macro_rules! calculate_channel_step {
+            ($channel:tt) => {
+                let channel_diff = colour_end[$channel] - colour_begin[$channel];
+                channel_steps[$channel] = channel_diff / (sprite_count - 1) as f32;
+            };
         }
+
+        calculate_channel_step!(0);
+        calculate_channel_step!(1);
+        calculate_channel_step!(2);
+        calculate_channel_step!(3);
+
         channel_steps
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use amethyst::{renderer::SpriteRender, Error};
+    use amethyst::{
+        core::TransformBundle,
+        renderer::{sprite::SpriteRender, types::DefaultBackend, RenderEmptyBundle},
+        Error,
+    };
     use amethyst_test::AmethystApplication;
     use approx::relative_eq;
 
@@ -268,7 +301,9 @@ mod tests {
     fn solid_returns_sprite_render() -> Result<(), Error> {
         const RED: [f32; 4] = [1., 0.2, 0.1, 1.];
 
-        AmethystApplication::render_base("solid_returns_sprite_render", false)
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_setup(|world| {
                 let sprite_render = {
                     let colour_sprite_gen_data = world.system_data::<ColourSpriteSheetGenData>();
@@ -293,7 +328,7 @@ mod tests {
                 let sprite_sheet = sprite_sheet.expect("Expected `SpriteSheet` to exist.");
                 assert!(texture_assets.get(&sprite_sheet.texture).is_some());
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
@@ -301,7 +336,9 @@ mod tests {
         const COLOUR_BEGIN: [f32; 4] = [1., 0., 0., 0.5];
         const COLOUR_END: [f32; 4] = [0., 1., 0., 1.];
 
-        AmethystApplication::render_base("gradient_returns_sprite_render", false)
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_setup(|world| {
                 let sprite_render = {
                     let colour_sprite_gen_data = world.system_data::<ColourSpriteSheetGenData>();
@@ -331,7 +368,7 @@ mod tests {
                 let sprite_sheet = sprite_sheet.expect("Expected `SpriteSheet` to exist.");
                 assert!(texture_assets.get(&sprite_sheet.texture).is_some());
             })
-            .run()
+            .run_isolated()
     }
 
     #[test]
@@ -347,19 +384,19 @@ mod tests {
         let colour_end = [0.2, 1., 0., 1.];
         let sprite_count = 5;
 
-        let (_metadata, colours) = ColourSpriteSheetGen::gradient_colours(
+        let (colours, _, _) = ColourSpriteSheetGen::gradient_colours(
             colour_sprite_sheet_params,
             colour_begin,
             colour_end,
             sprite_count,
         );
 
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0..4]);
-        relative_eq!([0.; 4][..], colours[4..8]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[8..12]);
-        relative_eq!([0.; 4][..], colours[12..16]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[16..20]);
-        relative_eq!([0.; 4][..], colours[20..24]);
+        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0]);
+        relative_eq!([0.; 4][..], colours[1]);
+        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[2]);
+        relative_eq!([0.; 4][..], colours[3]);
+        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[4]);
+        relative_eq!([0.; 4][..], colours[5]);
 
         // Padding row.
         // row_length
@@ -367,16 +404,26 @@ mod tests {
         //     = 2 * 3 * 4
         //     = 24
         // 1 padding pixel * row_length
-        relative_eq!([0.; 24][..], colours[24..48]);
+        relative_eq!([0.; 4][..], colours[6]);
+        relative_eq!([0.; 4][..], colours[7]);
+        relative_eq!([0.; 4][..], colours[8]);
+        relative_eq!([0.; 4][..], colours[9]);
+        relative_eq!([0.; 4][..], colours[10]);
+        relative_eq!([0.; 4][..], colours[11]);
 
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[48..52]);
-        relative_eq!([0.; 4][..], colours[52..56]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[56..60]);
-        relative_eq!([0.; 4][..], colours[60..64]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[64..68]);
-        relative_eq!([0.; 4][..], colours[68..72]);
+        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[12]);
+        relative_eq!([0.; 4][..], colours[13]);
+        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[14]);
+        relative_eq!([0.; 4][..], colours[15]);
+        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[16]);
+        relative_eq!([0.; 4][..], colours[17]);
 
-        relative_eq!([0.; 24][..], colours[72..96]);
+        relative_eq!([0.; 4][..], colours[18]);
+        relative_eq!([0.; 4][..], colours[19]);
+        relative_eq!([0.; 4][..], colours[20]);
+        relative_eq!([0.; 4][..], colours[21]);
+        relative_eq!([0.; 4][..], colours[22]);
+        relative_eq!([0.; 4][..], colours[23]);
     }
 
     #[test]
@@ -392,22 +439,22 @@ mod tests {
         let colour_end = [0.2, 1., 0., 1.];
         let sprite_count = 5;
 
-        let (_metadata, colours) = ColourSpriteSheetGen::gradient_colours(
+        let (colours, _, _) = ColourSpriteSheetGen::gradient_colours(
             colour_sprite_sheet_params,
             colour_begin,
             colour_end,
             sprite_count,
         );
 
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0..4]);
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[4..8]);
-        relative_eq!([0.; 4][..], colours[8..12]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[12..16]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[16..20]);
-        relative_eq!([0.; 4][..], colours[20..24]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[24..28]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[28..32]);
-        relative_eq!([0.; 4][..], colours[32..36]);
+        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0]);
+        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[1]);
+        relative_eq!([0.; 4][..], colours[2]);
+        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[3]);
+        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[4]);
+        relative_eq!([0.; 4][..], colours[5]);
+        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[6]);
+        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[7]);
+        relative_eq!([0.; 4][..], colours[8]);
 
         // Padding row.
         // row_length
@@ -415,19 +462,35 @@ mod tests {
         //     = 3 * 3 * 4
         //     = 36
         // 1 padding pixel * row_length
-        relative_eq!([0.; 36][..], colours[36..72]);
+        relative_eq!([0.; 4][..], colours[9]);
+        relative_eq!([0.; 4][..], colours[10]);
+        relative_eq!([0.; 4][..], colours[11]);
+        relative_eq!([0.; 4][..], colours[12]);
+        relative_eq!([0.; 4][..], colours[13]);
+        relative_eq!([0.; 4][..], colours[14]);
+        relative_eq!([0.; 4][..], colours[15]);
+        relative_eq!([0.; 4][..], colours[16]);
+        relative_eq!([0.; 4][..], colours[17]);
 
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[72..76]);
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[76..80]);
-        relative_eq!([0.; 4][..], colours[80..84]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[84..88]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[88..92]);
-        relative_eq!([0.; 4][..], colours[92..96]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[96..100]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[100..104]);
-        relative_eq!([0.; 4][..], colours[104..108]);
+        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[18]);
+        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[19]);
+        relative_eq!([0.; 4][..], colours[20]);
+        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[21]);
+        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[22]);
+        relative_eq!([0.; 4][..], colours[23]);
+        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[24]);
+        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[25]);
+        relative_eq!([0.; 4][..], colours[26]);
 
-        relative_eq!([0.; 36][..], colours[108..144]);
+        relative_eq!([0.; 4][..], colours[27]);
+        relative_eq!([0.; 4][..], colours[28]);
+        relative_eq!([0.; 4][..], colours[29]);
+        relative_eq!([0.; 4][..], colours[30]);
+        relative_eq!([0.; 4][..], colours[31]);
+        relative_eq!([0.; 4][..], colours[32]);
+        relative_eq!([0.; 4][..], colours[33]);
+        relative_eq!([0.; 4][..], colours[34]);
+        relative_eq!([0.; 4][..], colours[35]);
     }
 
     #[test]
@@ -443,26 +506,26 @@ mod tests {
         let colour_end = [0.2, 1., 0., 1.];
         let sprite_count = 5;
 
-        let (_metadata, colours) = ColourSpriteSheetGen::gradient_colours(
+        let (colours, _, _) = ColourSpriteSheetGen::gradient_colours(
             colour_sprite_sheet_params,
             colour_begin,
             colour_end,
             sprite_count,
         );
 
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0..4]);
-        relative_eq!([0.; 4][..], colours[4..8]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[8..12]);
-        relative_eq!([0.; 4][..], colours[12..16]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[16..20]);
-        relative_eq!([0.; 4][..], colours[20..24]);
+        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0]);
+        relative_eq!([0.; 4][..], colours[1]);
+        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[2]);
+        relative_eq!([0.; 4][..], colours[3]);
+        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[4]);
+        relative_eq!([0.; 4][..], colours[5]);
 
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[24..28]);
-        relative_eq!([0.; 4][..], colours[28..32]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[32..36]);
-        relative_eq!([0.; 4][..], colours[36..40]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[40..40]);
-        relative_eq!([0.; 4][..], colours[40..44]);
+        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[6]);
+        relative_eq!([0.; 4][..], colours[7]);
+        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[8]);
+        relative_eq!([0.; 4][..], colours[9]);
+        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[9]);
+        relative_eq!([0.; 4][..], colours[10]);
 
         // Padding row.
         // row_length
@@ -470,16 +533,26 @@ mod tests {
         //     = 2 * 3 * 4
         //     = 24
         // 1 padding pixel * row_length
-        relative_eq!([0.; 24][..], colours[44..68]);
+        relative_eq!([0.; 4][..], colours[11]);
+        relative_eq!([0.; 4][..], colours[12]);
+        relative_eq!([0.; 4][..], colours[13]);
+        relative_eq!([0.; 4][..], colours[14]);
+        relative_eq!([0.; 4][..], colours[15]);
+        relative_eq!([0.; 4][..], colours[16]);
 
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[68..72]);
-        relative_eq!([0.; 4][..], colours[72..76]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[76..80]);
-        relative_eq!([0.; 4][..], colours[80..84]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[84..88]);
-        relative_eq!([0.; 4][..], colours[88..92]);
+        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[17]);
+        relative_eq!([0.; 4][..], colours[18]);
+        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[19]);
+        relative_eq!([0.; 4][..], colours[20]);
+        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[21]);
+        relative_eq!([0.; 4][..], colours[22]);
 
-        relative_eq!([0.; 24][..], colours[92..116]);
+        relative_eq!([0.; 4][..], colours[23]);
+        relative_eq!([0.; 4][..], colours[24]);
+        relative_eq!([0.; 4][..], colours[25]);
+        relative_eq!([0.; 4][..], colours[26]);
+        relative_eq!([0.; 4][..], colours[27]);
+        relative_eq!([0.; 4][..], colours[28]);
     }
 
     #[test]
@@ -495,32 +568,32 @@ mod tests {
         let colour_end = [0.2, 1., 0., 1.];
         let sprite_count = 5;
 
-        let (_metadata, colours) = ColourSpriteSheetGen::gradient_colours(
+        let (colours, _, _) = ColourSpriteSheetGen::gradient_colours(
             colour_sprite_sheet_params,
             colour_begin,
             colour_end,
             sprite_count,
         );
 
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0..4]);
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[4..8]);
-        relative_eq!([0.; 4][..], colours[8..12]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[12..16]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[16..20]);
-        relative_eq!([0.; 4][..], colours[20..24]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[24..28]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[28..32]);
-        relative_eq!([0.; 4][..], colours[32..36]);
+        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0]);
+        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[1]);
+        relative_eq!([0.; 4][..], colours[2]);
+        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[3]);
+        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[4]);
+        relative_eq!([0.; 4][..], colours[5]);
+        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[6]);
+        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[7]);
+        relative_eq!([0.; 4][..], colours[8]);
 
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[36..40]);
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[40..44]);
-        relative_eq!([0.; 4][..], colours[44..48]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[48..52]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[52..56]);
-        relative_eq!([0.; 4][..], colours[56..60]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[60..64]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[64..68]);
-        relative_eq!([0.; 4][..], colours[68..72]);
+        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[9]);
+        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[10]);
+        relative_eq!([0.; 4][..], colours[11]);
+        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[12]);
+        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[13]);
+        relative_eq!([0.; 4][..], colours[14]);
+        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[15]);
+        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[16]);
+        relative_eq!([0.; 4][..], colours[17]);
 
         // Padding row.
         // row_length
@@ -528,29 +601,45 @@ mod tests {
         //     = 3 * 3 * 4
         //     = 36
         // 1 padding pixel * row_length
-        relative_eq!([0.; 36][..], colours[72..108]);
+        relative_eq!([0.; 4][..], colours[18]);
+        relative_eq!([0.; 4][..], colours[19]);
+        relative_eq!([0.; 4][..], colours[20]);
+        relative_eq!([0.; 4][..], colours[21]);
+        relative_eq!([0.; 4][..], colours[22]);
+        relative_eq!([0.; 4][..], colours[23]);
+        relative_eq!([0.; 4][..], colours[24]);
+        relative_eq!([0.; 4][..], colours[25]);
+        relative_eq!([0.; 4][..], colours[26]);
 
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[108..112]);
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[112..116]);
-        relative_eq!([0.; 4][..], colours[116..120]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[120..124]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[124..128]);
-        relative_eq!([0.; 4][..], colours[128..132]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[132..136]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[136..140]);
-        relative_eq!([0.; 4][..], colours[140..144]);
+        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[27]);
+        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[28]);
+        relative_eq!([0.; 4][..], colours[29]);
+        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[30]);
+        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[31]);
+        relative_eq!([0.; 4][..], colours[32]);
+        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[33]);
+        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[34]);
+        relative_eq!([0.; 4][..], colours[35]);
 
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[144..148]);
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[148..152]);
-        relative_eq!([0.; 4][..], colours[152..156]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[156..160]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[160..164]);
-        relative_eq!([0.; 4][..], colours[164..168]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[168..172]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[172..176]);
-        relative_eq!([0.; 4][..], colours[176..180]);
+        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[36]);
+        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[37]);
+        relative_eq!([0.; 4][..], colours[38]);
+        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[39]);
+        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[40]);
+        relative_eq!([0.; 4][..], colours[41]);
+        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[42]);
+        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[43]);
+        relative_eq!([0.; 4][..], colours[44]);
 
-        relative_eq!([0.; 36][..], colours[180..216]);
+        relative_eq!([0.; 4][..], colours[45]);
+        relative_eq!([0.; 4][..], colours[46]);
+        relative_eq!([0.; 4][..], colours[47]);
+        relative_eq!([0.; 4][..], colours[48]);
+        relative_eq!([0.; 4][..], colours[49]);
+        relative_eq!([0.; 4][..], colours[50]);
+        relative_eq!([0.; 4][..], colours[51]);
+        relative_eq!([0.; 4][..], colours[52]);
+        relative_eq!([0.; 4][..], colours[53]);
     }
 
     #[test]
@@ -566,20 +655,20 @@ mod tests {
         let colour_end = [0.2, 1., 0., 1.];
         let sprite_count = 5;
 
-        let (_metadata, colours) = ColourSpriteSheetGen::gradient_colours(
+        let (colours, _, _) = ColourSpriteSheetGen::gradient_colours(
             colour_sprite_sheet_params,
             colour_begin,
             colour_end,
             sprite_count,
         );
 
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0..4]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[4..8]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[8..12]);
+        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0]);
+        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[1]);
+        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[2]);
 
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[12..16]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[16..20]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[20..24]);
+        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[3]);
+        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[4]);
+        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[5]);
     }
 
     #[test]
@@ -595,26 +684,26 @@ mod tests {
         let colour_end = [0.2, 1., 0., 1.];
         let sprite_count = 5;
 
-        let (_metadata, colours) = ColourSpriteSheetGen::gradient_colours(
+        let (colours, _, _) = ColourSpriteSheetGen::gradient_colours(
             colour_sprite_sheet_params,
             colour_begin,
             colour_end,
             sprite_count,
         );
 
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0..4]);
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[4..8]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[8..12]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[12..16]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[16..20]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[20..24]);
+        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0]);
+        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[1]);
+        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[2]);
+        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[3]);
+        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[4]);
+        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[5]);
 
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[24..28]);
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[28..32]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[32..36]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[36..40]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[40..44]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[44..48]);
+        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[6]);
+        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[7]);
+        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[8]);
+        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[9]);
+        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[10]);
+        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[11]);
     }
 
     #[test]
@@ -630,28 +719,28 @@ mod tests {
         let colour_end = [0.2, 1., 0., 1.];
         let sprite_count = 5;
 
-        let (_metadata, colours) = ColourSpriteSheetGen::gradient_colours(
+        let (colours, _, _) = ColourSpriteSheetGen::gradient_colours(
             colour_sprite_sheet_params,
             colour_begin,
             colour_end,
             sprite_count,
         );
 
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0..4]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[4..8]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[8..12]);
+        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0]);
+        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[1]);
+        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[2]);
 
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[12..16]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[16..20]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[20..24]);
+        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[3]);
+        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[4]);
+        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[5]);
 
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[24..28]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[28..32]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[32..36]);
+        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[6]);
+        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[7]);
+        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[8]);
 
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[36..40]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[40..44]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[44..48]);
+        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[9]);
+        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[10]);
+        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[11]);
     }
 
     #[test]
@@ -667,40 +756,40 @@ mod tests {
         let colour_end = [0.2, 1., 0., 1.];
         let sprite_count = 5;
 
-        let (_metadata, colours) = ColourSpriteSheetGen::gradient_colours(
+        let (colours, _, _) = ColourSpriteSheetGen::gradient_colours(
             colour_sprite_sheet_params,
             colour_begin,
             colour_end,
             sprite_count,
         );
 
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0..4]);
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[4..8]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[8..12]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[12..16]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[16..20]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[20..24]);
+        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0]);
+        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[1]);
+        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[2]);
+        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[3]);
+        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[4]);
+        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[5]);
 
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[24..28]);
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[28..32]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[32..36]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[36..40]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[40..44]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[44..48]);
+        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[6]);
+        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[7]);
+        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[8]);
+        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[9]);
+        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[10]);
+        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[11]);
 
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[48..52]);
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[52..56]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[56..60]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[60..64]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[64..68]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[68..72]);
+        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[12]);
+        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[13]);
+        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[14]);
+        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[15]);
+        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[16]);
+        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[17]);
 
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[72..76]);
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[76..80]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[80..84]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[84..88]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[88..92]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[92..96]);
+        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[18]);
+        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[19]);
+        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[20]);
+        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[21]);
+        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[22]);
+        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[23]);
     }
 
     #[test]
@@ -708,15 +797,9 @@ mod tests {
         let sprite_count = 6;
         let colour_begin = [1., 0., 0., 0.5];
         let colour_end = [0., 1., 0., 1.];
-        let pixel_width = 4;
         assert_eq!(
             [-0.2, 0.2, 0., 0.1],
-            ColourSpriteSheetGen::channel_steps(
-                sprite_count,
-                colour_begin,
-                colour_end,
-                pixel_width
-            )
+            ColourSpriteSheetGen::channel_steps(sprite_count, colour_begin, colour_end,)
         )
     }
 }

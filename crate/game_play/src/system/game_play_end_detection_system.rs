@@ -40,7 +40,7 @@ impl<'s> System<'s> for GamePlayEndDetectionSystem {
 
 #[cfg(test)]
 mod test {
-    use amethyst::{ecs::prelude::*, shrev::EventChannel};
+    use amethyst::{ecs::prelude::*, input::StringBindings, shrev::EventChannel};
     use amethyst_test::*;
     use game_play_model::{GamePlayEvent, GamePlayStatus};
     use object_model::play::HealthPoints;
@@ -60,7 +60,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::ui_base::<String, String>()
+            AmethystApplication::ui_base::<StringBindings>()
                 .with_resource(GamePlayStatus::Ended)
                 .with_setup(register_gpec_reader)
                 .with_setup(setup)
@@ -87,7 +87,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::ui_base::<String, String>()
+            AmethystApplication::ui_base::<StringBindings>()
                 .with_resource(GamePlayStatus::Playing)
                 .with_setup(register_gpec_reader)
                 .with_setup(setup)
@@ -114,7 +114,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::ui_base::<String, String>()
+            AmethystApplication::ui_base::<StringBindings>()
                 .with_resource(GamePlayStatus::Playing)
                 .with_setup(register_gpec_reader)
                 .with_setup(setup)
@@ -141,7 +141,7 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::ui_base::<String, String>()
+            AmethystApplication::ui_base::<StringBindings>()
                 .with_resource(GamePlayStatus::Playing)
                 .with_setup(register_gpec_reader)
                 .with_setup(setup)

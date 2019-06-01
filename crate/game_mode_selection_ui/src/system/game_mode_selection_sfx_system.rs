@@ -80,14 +80,14 @@ mod tests {
 
     #[test]
     fn plays_sound_on_select_event() -> Result<(), Error> {
-        AutexousiousApplication::config_base("plays_sound_on_select_event", false)
+        AutexousiousApplication::config_base()
             .with_system(GameModeSelectionSfxSystem::new(), "", &[])
             .with_effect(|world| {
                 let event = MenuEvent::Select(GameModeIndex::StartGame);
                 send_event(world, event);
             })
             .with_assertion(|_world| {})
-            .run()
+            .run_isolated()
     }
 
     fn send_event(world: &mut World, event: GameModeSelectionEvent) {

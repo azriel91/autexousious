@@ -1,7 +1,6 @@
 use amethyst::{
-    input::{is_close_requested, is_key_down},
-    prelude::*,
-    renderer::VirtualKeyCode,
+    input::{is_close_requested, is_key_down, VirtualKeyCode},
+    StateData, StateEvent, Trans,
 };
 
 use crate::state::Intercept;
@@ -31,14 +30,11 @@ impl<T> Intercept<T, StateEvent> for KeyboardEscapeIntercept {
 
 #[cfg(test)]
 mod test {
-    use amethyst::{
-        ecs::World,
-        renderer::{Event, WindowEvent},
-        StateData, StateEvent, Trans,
-    };
+    use amethyst::{ecs::World, StateData, StateEvent, Trans};
     use debug_util_amethyst::assert_eq_opt_trans;
     use winit::{
-        DeviceId, ElementState, KeyboardInput, ModifiersState, ScanCode, VirtualKeyCode, WindowId,
+        DeviceId, ElementState, Event, KeyboardInput, ModifiersState, ScanCode, VirtualKeyCode,
+        WindowEvent, WindowId,
     };
 
     use super::KeyboardEscapeIntercept;

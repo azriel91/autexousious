@@ -146,7 +146,7 @@ mod tests {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AutexousiousApplication::config_base("maps_select_id_event", false)
+            AutexousiousApplication::config_base()
                 .with_assertion(|world| {
                     let controller_id = 1;
                     let args = CharacterSelectionEventArgs::Select {
@@ -172,7 +172,7 @@ mod tests {
                         result.unwrap()
                     )
                 })
-                .run()
+                .run_isolated()
                 .is_ok()
         );
     }
@@ -182,7 +182,7 @@ mod tests {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AutexousiousApplication::config_base("maps_select_random_event", false)
+            AutexousiousApplication::config_base()
                 .with_assertion(|world| {
                     let controller_id = 1;
                     let args = CharacterSelectionEventArgs::Select {
@@ -212,7 +212,7 @@ mod tests {
                         result.unwrap()
                     )
                 })
-                .run()
+                .run_isolated()
                 .is_ok()
         );
     }

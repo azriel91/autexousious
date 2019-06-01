@@ -75,8 +75,15 @@ impl<'s> System<'s> for MapSelectionSystem {
 
 #[cfg(test)]
 mod test {
-    use amethyst::{assets::ProgressCounter, ecs::SystemData, prelude::*, shrev::EventChannel};
-    use amethyst_test::prelude::*;
+    use amethyst::{
+        assets::ProgressCounter,
+        core::TransformBundle,
+        ecs::SystemData,
+        prelude::*,
+        renderer::{types::DefaultBackend, RenderEmptyBundle},
+        shrev::EventChannel,
+    };
+    use amethyst_test::AmethystApplication;
     use asset_loading::AssetDiscovery;
     use asset_model::loaded::SlugAndHandle;
     use assets_test::{ASSETS_MAP_EMPTY_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
@@ -94,7 +101,9 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::render_base("returns_when_map_selection_status_confirmed", false)
+            AmethystApplication::blank()
+                .with_bundle(TransformBundle::new())
+                .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_resource(MapSelectionStatus::Confirmed)
@@ -122,7 +131,7 @@ mod test {
                     let map_selection = world.read_resource::<MapSelection>();
                     assert_eq!(MapSelection::Id(fade_snh), *map_selection);
                 })
-                .run()
+                .run_isolated()
                 .is_ok()
         );
     }
@@ -135,7 +144,9 @@ mod test {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::render_base("returns_when_map_selection_status_confirmed", false)
+            AmethystApplication::blank()
+                .with_bundle(TransformBundle::new())
+                .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_setup(setup_components)
@@ -165,7 +176,7 @@ mod test {
                     let map_selection_status = world.read_resource::<MapSelectionStatus>();
                     assert_eq!(MapSelectionStatus::Confirmed, *map_selection_status);
                 })
-                .run()
+                .run_isolated()
                 .is_ok()
         );
     }

@@ -131,8 +131,12 @@ impl MapLoader {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::assets::AssetStorage;
-    use amethyst_test::prelude::*;
+    use amethyst::{
+        assets::AssetStorage,
+        core::TransformBundle,
+        renderer::{types::DefaultBackend, RenderEmptyBundle},
+    };
+    use amethyst_test::{AmethystApplication, EffectReturn};
     use assets_test::ASSETS_MAP_EMPTY_PATH;
     use map_model::loaded::{Map, MapHandle};
 
@@ -146,7 +150,9 @@ mod tests {
         // kcov-ignore-start
         assert!(
             // kcov-ignore-end
-            AmethystApplication::render_base("loads_map_without_sprites", false)
+            AmethystApplication::blank()
+                .with_bundle(TransformBundle::new())
+                .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
                 .with_bundle(MapLoadingBundle)
                 .with_effect(|world| {
                     let map_handle = MapLoader::load(world, &ASSETS_MAP_EMPTY_PATH)
@@ -164,7 +170,7 @@ mod tests {
                     // See empty/map.toml
                     assert!(map.component_sequences_handles.is_none());
                 })
-                .run()
+                .run_isolated()
                 .is_ok()
         );
     }
