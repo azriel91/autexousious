@@ -29,11 +29,13 @@ Performs the following code maintenance tasks:
 
 * Format code: `cargo fmt --all`
 * Update dependencies: `cargo update`
+* Update dependencies: `cargo upgrade`
 * Check for outdated dependencies: `cargo outdated`
 '''
 dependencies = [
     "workspace-format",
     "workspace-dependencies-update",
+    "workspace-dependencies-upgrade",
     "workspace-outdated"
 ]
 
@@ -95,6 +97,42 @@ cargo update
 ]
 
 [tasks.workspace-dependencies-update-post]
+script = [
+'''
+set +x
+. ./build/log.sh
+
+if [ -n "$(git status --porcelain)" ]; then
+    git commit -am "Updated workspace dependencies"
+    notice "Updated workspace dependencies and committed changes."
+    info "Remember to run \`cargo test\` before pushing."
+fi
+'''
+]
+
+# === workspace-dependencies-upgrade === #
+
+[tasks.workspace-dependencies-upgrade]
+dependencies = [
+    "workspace-dependencies-upgrade-pre",
+    "workspace-dependencies-upgrade-do",
+    "workspace-dependencies-upgrade-post"
+]
+
+[tasks.workspace-dependencies-upgrade-pre]
+dependencies = ["ensure-repository-clean"]
+
+[tasks.workspace-dependencies-upgrade-do]
+script = [
+'''
+set +x
+. ./build/log.sh
+notice "Running \`cargo upgrade --all\`"
+cargo upgrade --all
+'''
+]
+
+[tasks.workspace-dependencies-upgrade-post]
 script = [
 '''
 set +x
