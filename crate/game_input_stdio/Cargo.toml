@@ -11,8 +11,8 @@ derive-new = "0.5.6"
 game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
 stdio_spi = { path = "../stdio_spi" }
-structopt = "0.2.15"
-structopt-derive = "0.2.15"
+structopt = "0.2.17"
+structopt-derive = "0.2.17"
 strum = "0.15.0"
 strum_macros = "0.15.0"
 typename = "0.1.1"

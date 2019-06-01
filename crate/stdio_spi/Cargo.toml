@@ -11,7 +11,7 @@ clap = "2.33.0"
 derive-new = "0.5.6"
 err-derive = "0.1.5"
 log = "0.4.6"
-structopt = "0.2.15"
+structopt = "0.2.17"
 typename = "0.1.1"
 typename_derive = "0.1.3"
 

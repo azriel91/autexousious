@@ -27,8 +27,8 @@ application_ui = { path = "../application_ui" }
 assert_cmd = "0.11.1"
 escargot = "0.5.0"
 rayon = "1.0.3"
-structopt = "0.2.15"
-structopt-derive = "0.2.15"
+structopt = "0.2.17"
+structopt-derive = "0.2.17"
 
 [features]
 nightly = ["amethyst/nightly"]

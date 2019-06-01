@@ -9,7 +9,7 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["vulk
 application = { path = "../application" }
 application_robot = { path = "../application_robot" }
 derive-new = "0.5.6"
-serde = "1.0.91"
+serde = "1.0.92"
 strum = "0.15.0"
 strum_macros = "0.15.0"
 
@@ -20,8 +20,8 @@ assert_cmd = "0.11.1"
 escargot = "0.5.0"
 log = "0.4.6"
 ron = "0.5.1"
-structopt = "0.2.15"
-structopt-derive = "0.2.15"
+structopt = "0.2.17"
+structopt-derive = "0.2.17"
 
 [features]
 nightly = ["amethyst/nightly"]

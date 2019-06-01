@@ -14,4 +14,4 @@ quote = "0.6.12"
 syn = { version = "0.15.34", features = ["extra-traits", "visit"] }
 
 [dev-dependencies]
-derive_more = "0.14.0"
+derive_more = "0.14.1"
