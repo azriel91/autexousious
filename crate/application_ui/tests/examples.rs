@@ -7,6 +7,7 @@ use assert_cmd::{
 use escargot::CargoBuild;
 
 #[test]
+#[ignore] // Not necessary in CI.
 fn example_01_draw_text() -> Result<(), OutputError> {
     CargoBuild::new()
         .example("01_draw_text")
