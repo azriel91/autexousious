@@ -55,7 +55,7 @@ mod test {
     use amethyst::{
         core::TransformBundle,
         ecs::{Builder, SystemData, World},
-        renderer::RenderEmptyBundle,
+        renderer::{types::DefaultBackend, RenderEmptyBundle},
         Error,
     };
     use amethyst_test::AmethystApplication;
@@ -86,7 +86,7 @@ mod test {
 
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderEmptyBundle::new())
+            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_setup(|world| {
                 <CharacterComponentStorages as SystemData>::setup(&mut world.res);
             })

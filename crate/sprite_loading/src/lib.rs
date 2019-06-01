@@ -23,7 +23,7 @@ mod test {
     use amethyst::{
         assets::{AssetStorage, Loader, ProgressCounter},
         core::TransformBundle,
-        renderer::{RenderEmptyBundle, SpriteSheet, Texture},
+        renderer::{types::DefaultBackend, RenderEmptyBundle, SpriteSheet, Texture},
         Error,
     };
     use amethyst_test::AmethystApplication;
@@ -37,7 +37,7 @@ mod test {
     fn loads_textures_and_sprite_sheets() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderEmptyBundle::new())
+            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_assertion(|world| {
                 let sprites_definition = load_in::<SpritesDefinition, _>(
                     &*ASSETS_CHAR_BAT_PATH,

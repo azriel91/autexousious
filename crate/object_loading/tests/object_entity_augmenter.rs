@@ -26,7 +26,7 @@ use amethyst::{
     audio::Source,
     core::{transform::Transform, TransformBundle},
     ecs::{Builder, SystemData, World},
-    renderer::{transparent::Transparent, RenderEmptyBundle, SpriteRender},
+    renderer::{transparent::Transparent, types::DefaultBackend, RenderEmptyBundle, SpriteRender},
     window::ScreenDimensions,
     Error,
 };
@@ -127,7 +127,7 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
 
     AmethystApplication::blank()
         .with_bundle(TransformBundle::new())
-        .with_bundle(RenderEmptyBundle::new())
+        .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
         .with_custom_event_type::<AppEvent, AppEventReader>()
         .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
         .with_ui_bundles::<ControlBindings>()

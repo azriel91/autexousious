@@ -64,8 +64,14 @@ mod tests {
     use std::env;
 
     use amethyst::{
-        assets::Processor, audio::Source, core::TransformBundle, ecs::World,
-        renderer::RenderEmptyBundle, shrev::EventChannel, window::ScreenDimensions, Error,
+        assets::Processor,
+        audio::Source,
+        core::TransformBundle,
+        ecs::World,
+        renderer::{types::DefaultBackend, RenderEmptyBundle},
+        shrev::EventChannel,
+        window::ScreenDimensions,
+        Error,
     };
     use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
     use application_event::{AppEvent, AppEventReader};
@@ -94,7 +100,7 @@ mod tests {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
             .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
-            .with_bundle(RenderEmptyBundle::new())
+            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
             .with_ui_bundles::<ControlBindings>()
@@ -144,7 +150,7 @@ mod tests {
 
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderEmptyBundle::new())
+            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
             .with_ui_bundles::<ControlBindings>()

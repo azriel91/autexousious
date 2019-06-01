@@ -55,7 +55,8 @@ mod tests {
         core::TransformBundle,
         ecs::World,
         renderer::{
-            sprite::SpriteSheetHandle, RenderEmptyBundle, SpriteRender, SpriteSheet, Texture,
+            sprite::SpriteSheetHandle, types::DefaultBackend, RenderEmptyBundle, SpriteRender,
+            SpriteSheet, Texture,
         },
         Error,
     };
@@ -93,7 +94,7 @@ mod tests {
     fn frame_count_returns_sequence_length_for_sprite_render() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderEmptyBundle::new())
+            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_assertion(|world| {
                 let component_sequence = sprite_render_sequence(world);
 

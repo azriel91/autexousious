@@ -142,7 +142,7 @@ mod test {
     use amethyst::{
         assets::{AssetStorage, Loader, Processor, ProgressCounter},
         core::TransformBundle,
-        renderer::{RenderEmptyBundle, SpriteSheet, Texture},
+        renderer::{types::DefaultBackend, RenderEmptyBundle, SpriteSheet, Texture},
     };
     use amethyst_test::AmethystApplication;
     use application::{load_in, Format};
@@ -172,7 +172,7 @@ mod test {
             // kcov-ignore-end
             AmethystApplication::blank()
                 .with_bundle(TransformBundle::new())
-                .with_bundle(RenderEmptyBundle::new())
+                .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
                 .with_bundle(CollisionLoadingBundle::new())
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_system(

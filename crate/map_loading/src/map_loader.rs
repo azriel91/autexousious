@@ -131,7 +131,11 @@ impl MapLoader {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::{assets::AssetStorage, core::TransformBundle, renderer::RenderEmptyBundle};
+    use amethyst::{
+        assets::AssetStorage,
+        core::TransformBundle,
+        renderer::{types::DefaultBackend, RenderEmptyBundle},
+    };
     use amethyst_test::{AmethystApplication, EffectReturn};
     use assets_test::ASSETS_MAP_EMPTY_PATH;
     use map_model::loaded::{Map, MapHandle};
@@ -148,7 +152,7 @@ mod tests {
             // kcov-ignore-end
             AmethystApplication::blank()
                 .with_bundle(TransformBundle::new())
-                .with_bundle(RenderEmptyBundle::new())
+                .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
                 .with_bundle(MapLoadingBundle)
                 .with_effect(|world| {
                     let map_handle = MapLoader::load(world, &ASSETS_MAP_EMPTY_PATH)

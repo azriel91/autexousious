@@ -145,7 +145,7 @@ mod test {
         assets::{AssetStorage, Handle, Loader, ProgressCounter},
         core::TransformBundle,
         ecs::World,
-        renderer::{RenderEmptyBundle, SpriteSheet, Texture},
+        renderer::{types::DefaultBackend, RenderEmptyBundle, SpriteSheet, Texture},
         Error,
     };
     use amethyst_test::AmethystApplication;
@@ -161,7 +161,7 @@ mod test {
     fn map_multiple_sprite_sheet_definitions() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderEmptyBundle::new())
+            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_assertion(|world| {
                 let sprite_sheet_definitions = [sprite_sheet_definition(true), simple_definition()];
                 let texture_handles = test_texture_handles(world, &sprite_sheet_definitions);
@@ -234,7 +234,7 @@ mod test {
     fn map_sprite_sheet_definition_without_border() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderEmptyBundle::new())
+            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_assertion(|world| {
                 let sprite_sheet_definitions =
                     [sprite_sheet_definition(false), simple_definition()];
@@ -308,7 +308,7 @@ mod test {
     fn offsets_defaults_to_negated_half_sprite_dimensions_if_none() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderEmptyBundle::new())
+            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_assertion(|world| {
                 let sprite_sheet_definitions = [no_offsets_definition()];
                 let texture_handles = test_texture_handles(world, &sprite_sheet_definitions);

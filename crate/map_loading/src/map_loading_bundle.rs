@@ -27,7 +27,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for MapLoadingBundle {
 
 #[cfg(test)]
 mod test {
-    use amethyst::{assets::AssetStorage, core::TransformBundle, renderer::RenderEmptyBundle};
+    use amethyst::{
+        assets::AssetStorage,
+        core::TransformBundle,
+        renderer::{types::DefaultBackend, RenderEmptyBundle},
+    };
     use amethyst_test::{AmethystApplication, EffectReturn};
     use assets_test::{ASSETS_MAP_FADE_PATH, ASSETS_MAP_FADE_SLUG};
     use map_model::loaded::{Map, MapHandle};
@@ -43,7 +47,7 @@ mod test {
             // kcov-ignore-end
             AmethystApplication::blank()
                 .with_bundle(TransformBundle::new())
-                .with_bundle(RenderEmptyBundle::new())
+                .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_effect(|world| {

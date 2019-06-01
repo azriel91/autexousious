@@ -132,7 +132,7 @@ mod tests {
         audio::Source,
         core::TransformBundle,
         ecs::{Builder, Entity, Join, SystemData, World},
-        renderer::RenderEmptyBundle,
+        renderer::{types::DefaultBackend, RenderEmptyBundle},
         window::ScreenDimensions,
         Error,
     };
@@ -259,7 +259,7 @@ mod tests {
     {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
-            .with_bundle(RenderEmptyBundle::new())
+            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
             .with_ui_bundles::<ControlBindings>()
