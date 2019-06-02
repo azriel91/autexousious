@@ -11,11 +11,6 @@ use strum_macros::{Display, EnumDiscriminants, EnumIter, EnumString};
 use winit::Event;
 
 /// Type encompassing all state event types.
-//
-// === Non-Rustdoc === //
-//
-// Development note: Remember to update the `FromAppEvent` trait implementations when adding
-// variants here.
 #[derive(Clone, Derivative, Display, EnumDiscriminants, EventReader, From)]
 #[derivative(Debug, PartialEq = "feature_allow_slow_enum")]
 #[strum_discriminants(
