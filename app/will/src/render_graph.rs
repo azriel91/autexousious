@@ -90,9 +90,10 @@ impl GraphCreator<DefaultBackend> for RenderGraph {
                 .with_group(DrawFlat2DTransparentDesc::new().builder())
                 .with_color(colour)
                 .with_depth_stencil(depth)
+                .with_dependency(sprite)
                 .into_pass(),
         );
-        let _ui = graph_builder.add_node(
+        let ui = graph_builder.add_node(
             SubpassBuilder::new()
                 .with_group(DrawUiDesc::new().builder())
                 .with_color(colour)
@@ -103,7 +104,8 @@ impl GraphCreator<DefaultBackend> for RenderGraph {
         let _present = graph_builder.add_node(
             PresentNode::builder(factory, surface, colour)
                 .with_dependency(sprite_trans)
-                .with_dependency(sprite),
+                .with_dependency(sprite)
+                .with_dependency(ui),
         );
 
         graph_builder
