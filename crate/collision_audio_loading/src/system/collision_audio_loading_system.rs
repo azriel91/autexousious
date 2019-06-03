@@ -135,7 +135,7 @@ impl<'s> System<'s> for CollisionAudioLoadingSystem {
                                         "wav" => load!(WavFormat),
                                         "ogg" => load!(OggFormat),
                                         "flac" => load!(FlacFormat),
-                                        ext @ _ => {
+                                        ext => {
                                             error!(
                                                 "Unsupported extension: \"{}\", \
                                                  falling back to `wav`.",

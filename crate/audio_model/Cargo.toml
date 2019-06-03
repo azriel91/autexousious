@@ -10,7 +10,7 @@ asset_loading = { path = "../asset_loading" }
 derivative = "1.0.2"
 derive-new = "0.5.6"
 derive_deref = "1.0.2"
-serde = "1.0.90"
+serde = "1.0.92"
 
 [dev-dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["test-support", "vulkan"] }

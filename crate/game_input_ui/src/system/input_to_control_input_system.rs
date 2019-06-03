@@ -161,7 +161,7 @@ impl<'s> System<'s> for InputToControlInputSystem {
 
 #[cfg(test)]
 mod test {
-    use std::collections::HashMap;
+    use std::{collections::HashMap, convert::TryFrom};
 
     use amethyst::{
         ecs::{Builder, Entity},
@@ -265,7 +265,7 @@ mod test {
         F: Send + Sync + Fn(Entity) -> Vec<ControlInputEvent> + 'static,
     {
         let input_config = input_config();
-        let bindings = Bindings::<ControlBindings>::from(&input_config);
+        let bindings = Bindings::<ControlBindings>::try_from(&input_config)?;
 
         AmethystApplication::ui_base::<ControlBindings>()
             .with_system(

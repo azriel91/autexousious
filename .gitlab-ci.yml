@@ -92,6 +92,7 @@ linux:debug:
     - time cargo test -j 4 --no-run
     - time cargo test
   after_script:
+    - 'export DISPLAY=:0'
     - build/workspace_coverage.sh
     - grep -F merged_files ./target/coverage/merged/index.js | grep -o '"covered":"[0-9]\+\.[0-9]\+"'
     - bash <(curl -s https://codecov.io/bash) -s ./target/coverage/merged

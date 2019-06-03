@@ -51,10 +51,13 @@ impl<'s> System<'s> for GameModeSelectionSfxSystem {
                 };
 
                 if let Some(ui_sfx_id) = ui_sfx_id {
-                    ui_sfx_map
+                    let ui_sfx = ui_sfx_map
                         .get(&ui_sfx_id)
-                        .and_then(|ui_sfx_handle| source_assets.get(ui_sfx_handle))
-                        .map(|ui_sfx| output.play_once(ui_sfx, VOLUME));
+                        .and_then(|ui_sfx_handle| source_assets.get(ui_sfx_handle));
+
+                    if let Some(ui_sfx) = ui_sfx {
+                        output.play_once(ui_sfx, VOLUME);
+                    }
                 }
             });
         }

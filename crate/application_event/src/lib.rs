@@ -22,10 +22,6 @@
 //! * The state *should* have transitioned, but did not.
 //! * There are multiple event senders that are not catering for each other.
 
-pub use crate::{
-    app_event::{AppEvent, AppEventReader, AppEventVariant},
-    from_app_event::FromAppEvent,
-};
+pub use crate::app_event::{AppEvent, AppEventReader, AppEventVariant};
 
 mod app_event;
-mod from_app_event;

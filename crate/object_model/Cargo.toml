@@ -11,13 +11,13 @@ collision_model = { path = "../collision_model" }
 derivative = "1.0.2"
 derive-new = "0.5.6"
 derive_deref = "1.0.2"
-derive_more = "0.14.0"
+derive_more = "0.14.1"
 logic_clock = { path = "../logic_clock" }
 numeric_newtype_derive = { path = "../numeric_newtype_derive" }
 object_model_derive = { path = "../object_model_derive" }
 sequence_model = { path = "../sequence_model" }
 sequence_model_spi = { path = "../sequence_model_spi" }
-serde = "1.0.91"
+serde = "1.0.92"
 shape_model = { path = "../shape_model" }
 specs-derive = "0.4.0"
 sprite_loading = { path = "../sprite_loading" }
@@ -32,7 +32,7 @@ application = { path = "../application" }
 assets_test = { path = "../assets_test" }
 object_status_model = { path = "../object_status_model" }
 pretty_assertions = "0.6.1"
-toml = "0.5.0"
+toml = "0.5.1"
 
 [features]
 nightly = ["amethyst/nightly"]
