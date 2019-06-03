@@ -1,12 +1,12 @@
 #![windows_subsystem = "windows"]
 
-use std::process;
+use std::{convert::TryFrom, process};
 
 use amethyst::{
     assets::{HotReloadBundle, Processor},
     audio::AudioBundle,
     core::transform::TransformBundle,
-    input::InputBundle,
+    input::{Bindings, InputBundle},
     renderer::{
         sprite_visibility::SpriteVisibilitySortingSystem, types::DefaultBackend, RenderingSystem,
         SpriteSheet,
@@ -120,7 +120,8 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                 RenderGraph::default(),
             ))
             .with_bundle(
-                InputBundle::<ControlBindings>::new().with_bindings((&input_config).into()),
+                InputBundle::<ControlBindings>::new()
+                    .with_bindings(Bindings::try_from(&input_config)?),
             )?
             .with_bundle(UiBundle::<DefaultBackend, ControlBindings>::new())?
             .with_bundle(HotReloadBundle::default())?

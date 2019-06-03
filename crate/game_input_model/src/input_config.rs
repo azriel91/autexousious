@@ -1,4 +1,4 @@
-use std::iter;
+use std::{convert::TryFrom, iter};
 
 use amethyst::{
     error::{format_err, ResultExt},
@@ -18,8 +18,10 @@ pub struct InputConfig {
     pub controller_configs: Vec<ControllerConfig>,
 }
 
-impl<'config> From<&'config InputConfig> for Bindings<ControlBindings> {
-    fn from(input_config: &'config InputConfig) -> Bindings<ControlBindings> {
+impl<'config> TryFrom<&'config InputConfig> for Bindings<ControlBindings> {
+    type Error = Error;
+
+    fn try_from(input_config: &'config InputConfig) -> Result<Bindings<ControlBindings>, Error> {
         let mut bindings = Bindings::new();
 
         // Axis controls
@@ -87,27 +89,22 @@ impl<'config> From<&'config InputConfig> for Bindings<ControlBindings> {
                 },
             );
 
-        // TODO: Bubble up result with `TryFrom`.
-        // TODO: Pending <https://github.com/rust-lang/rust/issues/33417>
+        // TODO: Extend `Error` type to support multiple causes.
         if let Err(e) = &axis_result {
             error!("{}", format_err!("{}", e)); // kcov-ignore
         }
         if let Err(e) = &action_result {
             error!("{}", format_err!("{}", e)); // kcov-ignore
         }
-        if axis_result.and(action_result).is_err() {
-            panic!("Failed to convert `InputConfig` into `Bindings`."); // kcov-ignore
-        }
-
-        bindings
+        axis_result.and(action_result).map(|_| bindings)
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
+    use std::{collections::HashMap, convert::TryFrom};
 
-    use amethyst::input::{Axis as InputAxis, Bindings, Button};
+    use amethyst::input::{Axis as InputAxis, BindingError, Bindings, Button};
     use hamcrest::prelude::*;
     use winit::VirtualKeyCode;
 
@@ -130,7 +127,8 @@ mod tests {
         let controller_configs = vec![controller_config_0, controller_config_1];
         let input_config = InputConfig::new(controller_configs);
 
-        let bindings = Bindings::<ControlBindings>::from(&input_config);
+        let bindings = Bindings::<ControlBindings>::try_from(&input_config)
+            .expect("Failed to map `InputConfig` into `Bindings`.");
 
         assert_that!(
             &bindings.axes().map(Clone::clone).collect::<Vec<_>>(),
@@ -148,6 +146,87 @@ mod tests {
                 PlayerActionControl::new(1, ControlAction::Jump)
             ])
         );
+    }
+
+    #[test]
+    fn try_from_returns_error_when_axis_key_bound_twice() {
+        // Duplicate key A
+        let controller_config_0 =
+            controller_config([VirtualKeyCode::A, VirtualKeyCode::D, VirtualKeyCode::Key1]);
+        let controller_config_1 =
+            controller_config([VirtualKeyCode::A, VirtualKeyCode::Right, VirtualKeyCode::O]);
+
+        let controller_configs = vec![controller_config_0, controller_config_1];
+        let input_config = InputConfig::new(controller_configs);
+
+        if let Err(error) = Bindings::<ControlBindings>::try_from(&input_config) {
+            if let Some(binding_error) = error
+                .source()
+                .expect("Expected `BindingError` source.")
+                .as_error()
+                .downcast_ref::<Box<BindingError<ControlBindings>>>()
+            {
+                assert_eq!(
+                    &Box::new(BindingError::AxisButtonAlreadyBoundToAxis(
+                        PlayerAxisControl::new(0, Axis::X),
+                        InputAxis::Emulated {
+                            neg: Button::Key(VirtualKeyCode::A),
+                            pos: Button::Key(VirtualKeyCode::D),
+                        }
+                    )),
+                    binding_error
+                );
+            } else {
+                // kcov-ignore-start
+                panic!("Expected error type to be `Box<BindingError<ControlBindings>>`.");
+                // kcov-ignore-end
+            }
+        } else {
+            // kcov-ignore-start
+            panic!("Expected to fail to map `InputConfig` into `Bindings`.");
+            // kcov-ignore-end
+        }
+    }
+
+    #[test]
+    fn try_from_returns_error_when_action_key_bound_twice() {
+        // Duplicate key A
+        let controller_config_0 =
+            controller_config([VirtualKeyCode::A, VirtualKeyCode::D, VirtualKeyCode::Key1]);
+        let controller_config_1 = controller_config([
+            VirtualKeyCode::Left,
+            VirtualKeyCode::Right,
+            VirtualKeyCode::Key1,
+        ]);
+
+        let controller_configs = vec![controller_config_0, controller_config_1];
+        let input_config = InputConfig::new(controller_configs);
+
+        if let Err(error) = Bindings::<ControlBindings>::try_from(&input_config) {
+            if let Some(binding_error) = error
+                .source()
+                .expect("Expected `BindingError` source.")
+                .as_error()
+                .downcast_ref::<Box<BindingError<ControlBindings>>>()
+            {
+                let player = 0;
+                let action = ControlAction::Jump;
+                assert_eq!(
+                    &Box::new(BindingError::ComboAlreadyBound(PlayerActionControl::new(
+                        player, action
+                    ))),
+                    binding_error
+                );
+            } else {
+                // kcov-ignore-start
+                panic!("Expected error type to be `Box<BindingError<ControlBindings>>`.");
+                // kcov-ignore-end
+            }
+        } else {
+            // kcov-ignore-start
+            panic!("Expected to fail to map `InputConfig` into `Bindings`.");
+            // kcov-ignore-end
+        }
     }
 
     fn controller_config(keys: [VirtualKeyCode; 3]) -> ControllerConfig {
