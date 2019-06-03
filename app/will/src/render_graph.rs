@@ -38,10 +38,12 @@ impl GraphCreator<DefaultBackend> for RenderGraph {
         use std::ops::Deref;
         if self.dimensions.as_ref() != new_dimensions.as_ref().map(|d| d.deref()) {
             self.dirty = true;
-            self.dimensions = new_dimensions.map(|d| d.clone());
-            return false;
+            self.dimensions = new_dimensions.as_ref().map(Deref::deref).cloned();
+
+            false
+        } else {
+            self.dirty
         }
-        return self.dirty;
     }
 
     fn builder(

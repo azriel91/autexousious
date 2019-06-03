@@ -49,10 +49,13 @@ impl<'s> System<'s> for HitSfxSystem {
                     ..
                 } = ev.interaction;
 
-                collision_sfx_map
+                let hit_sfx = collision_sfx_map
                     .get(&CollisionSfxId::HitNormal)
-                    .and_then(|hit_sfx_handle| source_assets.get(hit_sfx_handle))
-                    .map(|hit_sfx| output.play_once(hit_sfx, VOLUME));
+                    .and_then(|hit_sfx_handle| source_assets.get(hit_sfx_handle));
+
+                if let Some(hit_sfx) = hit_sfx {
+                    output.play_once(hit_sfx, VOLUME);
+                }
             });
         }
     }

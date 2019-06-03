@@ -129,7 +129,7 @@ impl<'s> System<'s> for UiAudioLoadingSystem {
                                     "wav" => load!(WavFormat),
                                     "ogg" => load!(OggFormat),
                                     "flac" => load!(FlacFormat),
-                                    ext @ _ => {
+                                    ext => {
                                         error!(
                                             "Unsupported extension: \"{}\", \
                                              falling back to `wav`.",
