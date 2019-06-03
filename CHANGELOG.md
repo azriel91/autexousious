@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.12.0 (unreleased)
+
+### Fixed
+
+* Game mode selection UI events no longer enter an event channel loop. ([#134])
+
+[#134]: https://gitlab.com/azriel91/autexousious/issues/134
+
 ## 0.11.0 (2019-05-24)
 
 ### Added
