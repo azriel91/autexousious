@@ -66,14 +66,13 @@ struct Opt {
 }
 
 fn run(opt: &Opt) -> Result<(), amethyst::Error> {
-    amethyst::start_logger(LoggerConfig {
-        level_filter: if cfg!(debug_assertions) {
-            LogLevelFilter::Debug
-        } else {
-            LogLevelFilter::Info
-        },
-        ..Default::default()
-    });
+    amethyst::Logger::from_config(LoggerConfig::default())
+        .level_for("gfx_backend_vulkan", LogLevelFilter::Warn)
+        .level_for("rendy_factory", LogLevelFilter::Warn)
+        .level_for("rendy_memory", LogLevelFilter::Warn)
+        .level_for("rendy_graph", LogLevelFilter::Warn)
+        .level_for("rendy_wsi", LogLevelFilter::Warn)
+        .start();
 
     let assets_dir = assets_dir(Some(development_base_dirs!()))?;
 
