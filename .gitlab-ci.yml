@@ -77,7 +77,6 @@ nightly:conformance:
   variables:
     CARGO_MAKE_RUN_CODECOV: 'true'
     RUSTUP_TOOLCHAIN: stable-x86_64-unknown-linux-gnu
-    DISPLAY: ':0'
   before_script:
     - *print_tool_versions_linux
     - build/install_packages_linux.sh
