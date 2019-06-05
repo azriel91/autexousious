@@ -142,20 +142,21 @@ impl SpriteSheetMapper {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        assets::{AssetStorage, Handle, Loader, ProgressCounter},
+        assets::{AssetStorage, Handle, Loader},
         core::TransformBundle,
         ecs::World,
-        renderer::{types::DefaultBackend, RenderEmptyBundle, SpriteSheet, Texture},
+        renderer::{
+            loaders::load_from_srgba,
+            palette::Srgba,
+            types::{DefaultBackend, TextureData},
+            RenderEmptyBundle, SpriteSheet, Texture,
+        },
         Error,
     };
     use amethyst_test::AmethystApplication;
-    use assets_test::{
-        ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SPRITE_BROWN_NAME, ASSETS_CHAR_BAT_SPRITE_GREY_NAME,
-    };
     use sprite_model::config::{SpriteOffset, SpriteSheetDefinition};
 
     use super::SpriteSheetMapper;
-    use crate::TextureLoader;
 
     #[test]
     fn map_multiple_sprite_sheet_definitions() -> Result<(), Error> {
@@ -164,7 +165,7 @@ mod test {
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_assertion(|world| {
                 let sprite_sheet_definitions = [sprite_sheet_definition(true), simple_definition()];
-                let texture_handles = test_texture_handles(world, &sprite_sheet_definitions);
+                let texture_handles = test_texture_handles(world);
 
                 let sprites_0 = vec![
                     // Sprites top row
@@ -238,7 +239,7 @@ mod test {
             .with_assertion(|world| {
                 let sprite_sheet_definitions =
                     [sprite_sheet_definition(false), simple_definition()];
-                let texture_handles = test_texture_handles(world, &sprite_sheet_definitions);
+                let texture_handles = test_texture_handles(world);
 
                 let sprites_0 = vec![
                     // Sprites top row
@@ -311,7 +312,7 @@ mod test {
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_assertion(|world| {
                 let sprite_sheet_definitions = [no_offsets_definition()];
-                let texture_handles = test_texture_handles(world, &sprite_sheet_definitions);
+                let texture_handles = test_texture_handles(world);
 
                 let sprite_sheet = SpriteSheet {
                     texture: texture_handles[0].clone(),
@@ -335,7 +336,7 @@ mod test {
 
     fn simple_definition() -> SpriteSheetDefinition {
         SpriteSheetDefinition::new(
-            ASSETS_CHAR_BAT_SPRITE_BROWN_NAME.to_string(),
+            String::from("bat_brown.png"),
             19,
             29,
             1,
@@ -347,18 +348,10 @@ mod test {
 
     fn sprite_sheet_definition(with_border: bool) -> SpriteSheetDefinition {
         if with_border {
-            SpriteSheetDefinition::new(
-                ASSETS_CHAR_BAT_SPRITE_GREY_NAME.to_string(),
-                9,
-                19,
-                2,
-                3,
-                true,
-                offsets(6),
-            )
+            SpriteSheetDefinition::new(String::from("bat_grey.png"), 9, 19, 2, 3, true, offsets(6))
         } else {
             SpriteSheetDefinition::new(
-                ASSETS_CHAR_BAT_SPRITE_GREY_NAME.to_string(),
+                String::from("bat_grey.png"),
                 10,
                 20,
                 2,
@@ -370,37 +363,23 @@ mod test {
     }
 
     fn no_offsets_definition() -> SpriteSheetDefinition {
-        SpriteSheetDefinition::new(
-            ASSETS_CHAR_BAT_SPRITE_BROWN_NAME.to_string(),
-            19,
-            29,
-            1,
-            1,
-            true,
-            None,
-        )
+        SpriteSheetDefinition::new(String::from("bat_brown.png"), 19, 29, 1, 1, true, None)
     }
 
     fn offsets(n: usize) -> Option<Vec<SpriteOffset>> {
         Some((0..n).map(|i| (i as i32, i as i32).into()).collect())
     }
 
-    fn test_texture_handles(
-        world: &mut World,
-        sprite_sheet_definitions: &[SpriteSheetDefinition],
-    ) -> Vec<Handle<Texture>> {
+    fn test_texture_handles(world: &mut World) -> Vec<Handle<Texture>> {
+        vec![test_texture_handle(world), test_texture_handle(world)]
+    }
+
+    fn test_texture_handle(world: &mut World) -> Handle<Texture> {
         let loader = world.read_resource::<Loader>();
         let texture_assets = world.read_resource::<AssetStorage<Texture>>();
 
-        let texture_handles = TextureLoader::load_textures(
-            &mut ProgressCounter::default(),
-            &loader,
-            &texture_assets,
-            &ASSETS_CHAR_BAT_PATH,
-            sprite_sheet_definitions,
-        )
-        .expect("Failed to load textures for test.");
-
-        texture_handles
+        let texture_builder = load_from_srgba(Srgba::new(0., 0., 0., 1.));
+        let texture_data = TextureData::from(texture_builder);
+        loader.load_from_data(texture_data, (), &texture_assets)
     }
 }
