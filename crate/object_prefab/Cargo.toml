@@ -1,35 +1,36 @@
 [package]
-name = "character_loading"
-version = "0.11.0"
+name = "object_prefab"
+version = "0.12.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["vulkan"] }
-character_model = { path = "../character_model" }
 collision_model = { path = "../collision_model" }
 derivative = "1.0.2"
-derive-new = "0.5.6"
-game_input = { path = "../game_input" }
-game_input_model = { path = "../game_input_model" }
-object_loading = { path = "../object_loading" }
+logic_clock = { path = "../logic_clock" }
 object_model = { path = "../object_model" }
-object_prefab = { path = "../object_prefab" }
-object_status_model = { path = "../object_status_model" }
 sequence_model = { path = "../sequence_model" }
 serde = "1.0.92"
 shred = "0.7.0"
 shred-derive = "0.5.1"
-sprite_model = { path = "../sprite_model" }
-typename = "0.1.1"
-typename_derive = "0.1.3"
 
 [dev-dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["test-support", "vulkan"] }
 amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
+application_event = { path = "../application_event" }
+asset_model = { path = "../asset_model" }
 assets_test = { path = "../assets_test" }
+character_loading = { path = "../character_loading" }
+character_model = { path = "../character_model" }
+collision_audio_loading = { path = "../collision_audio_loading" }
+collision_loading = { path = "../collision_loading" }
+game_input_model = { path = "../game_input_model" }
+loading = { path = "../loading" }
+map_loading = { path = "../map_loading" }
 sequence_loading = { path = "../sequence_loading" }
-pretty_assertions = "0.6.1"
+sprite_loading = { path = "../sprite_loading" }
+ui_audio_loading = { path = "../../crate/ui_audio_loading" }
 
 [features]
 nightly = ["amethyst/nightly"]

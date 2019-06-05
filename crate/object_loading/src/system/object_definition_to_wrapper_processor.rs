@@ -16,7 +16,7 @@ use shred_derive::SystemData;
 use typename::TypeName as TypeNameTrait;
 use typename_derive::TypeName;
 
-use crate::{object::ObjectLoaderParams, ObjectLoader};
+use crate::{ObjectLoader, ObjectLoaderParams};
 
 /// Loads `XObjectWrapper` from `XObjectDefinition`.
 #[derive(Debug, Default, TypeName, new)]

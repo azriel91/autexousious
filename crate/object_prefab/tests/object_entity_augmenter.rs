@@ -18,6 +18,8 @@
 // `crate::sub_module::AType` gives us a different *version* of `AType`.
 //
 // Paraphrased, `AType<BSub>` in the tests is different from `AType<BSub>` from `b_crate`.
+//
+// Specifically in this crate, this is `ObjectPrefab<Character>`.
 
 use std::env;
 
@@ -44,11 +46,11 @@ use collision_loading::CollisionLoadingBundle;
 use game_input_model::ControlBindings;
 use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
-use object_loading::{
+use object_model::play::{Mirrored, Position, Velocity};
+use object_prefab::{
     FrameComponentStorages, GameObjectPrefab, ObjectComponentStorages, ObjectEntityAugmenter,
     ObjectPrefab,
 };
-use object_model::play::{Mirrored, Position, Velocity};
 use sequence_loading::SequenceLoadingBundle;
 use sequence_model::{
     loaded::{ComponentSequences, ComponentSequencesHandle},

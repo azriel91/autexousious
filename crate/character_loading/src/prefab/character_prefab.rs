@@ -13,8 +13,8 @@ use character_model::{
     },
 };
 use derivative::Derivative;
-use object_loading::{GameObjectPrefab, ObjectPrefab};
 use object_model::config::ObjectAssetData;
+use object_prefab::{GameObjectPrefab, ObjectPrefab};
 use shred_derive::SystemData;
 use typename_derive::TypeName;
 

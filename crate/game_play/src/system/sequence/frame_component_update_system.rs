@@ -8,7 +8,7 @@ use derivative::Derivative;
 use derive_new::new;
 use named_type::NamedType;
 use named_type_derive::NamedType;
-use object_loading::FrameComponentStorages;
+use object_prefab::FrameComponentStorages;
 use sequence_model::{
     loaded::{ComponentSequence, ComponentSequences, ComponentSequencesHandle},
     play::{FrameWaitClock, SequenceUpdateEvent},
@@ -157,7 +157,7 @@ mod tests {
     use collision_model::config::{
         Body, Hit, HitLimit, HitRepeatDelay, Interaction, InteractionKind, Interactions,
     };
-    use object_loading::FrameComponentStorages;
+    use object_prefab::FrameComponentStorages;
     use object_status_model::config::StunPoints;
     use sequence_model::{
         config::Wait,

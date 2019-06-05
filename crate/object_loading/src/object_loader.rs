@@ -161,9 +161,7 @@ mod test {
     use typename::TypeName;
 
     use super::ObjectLoader;
-    use crate::{
-        object::object_loader_params::ObjectLoaderParams, ObjectDefinitionToWrapperProcessor,
-    };
+    use crate::{ObjectDefinitionToWrapperProcessor, ObjectLoaderParams};
 
     #[test]
     fn loads_object_assets() {
