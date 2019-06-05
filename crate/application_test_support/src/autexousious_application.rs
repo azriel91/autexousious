@@ -120,7 +120,7 @@ mod test {
         loaded::{CharacterAssets, MapAssets},
         play::GameEntities,
     };
-    use object_model::ObjectType;
+    use object_type::ObjectType;
     use strum::IntoEnumIterator;
 
     use super::AutexousiousApplication;

@@ -350,7 +350,7 @@ mod tests {
     use character_model::{config::CharacterSequenceId, loaded::CharacterControlTransitionsHandle};
     use game_input::ControllerInput;
     use game_input_model::{ControlAction, ControlActionEventData, ControlInputEvent};
-    use object_model::ObjectType;
+    use object_type::ObjectType;
 
     use super::CharacterControlTransitionsTransitionSystem;
 

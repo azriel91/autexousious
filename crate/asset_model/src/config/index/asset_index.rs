@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use object_model::ObjectType;
+use object_type::ObjectType;
 
 use crate::config::index::AssetRecord;
 

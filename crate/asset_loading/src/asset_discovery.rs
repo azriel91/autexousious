@@ -34,7 +34,7 @@ mod tests {
 
     use asset_model::config::{AssetRecord, AssetSlugBuilder};
     use hamcrest::prelude::*;
-    use object_model::ObjectType;
+    use object_type::ObjectType;
     use tempfile::tempdir;
 
     use super::AssetDiscovery;

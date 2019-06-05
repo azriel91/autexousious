@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use amethyst::ecs::prelude::*;
 use derive_new::new;
-use object_model::ObjectType;
+use object_type::ObjectType;
 
 /// All entities for a game.
 #[derive(Clone, Debug, Default, new)]

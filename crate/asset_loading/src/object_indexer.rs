@@ -2,7 +2,7 @@ use std::{collections::HashMap, path::Path};
 
 use asset_model::config::AssetRecord;
 use heck::SnakeCase;
-use object_model::ObjectType;
+use object_type::ObjectType;
 use strum::IntoEnumIterator;
 
 use crate::{AssetIndexingUtils, DirTraverse};
@@ -47,7 +47,7 @@ mod tests {
 
     use asset_model::config::{AssetRecord, AssetSlugBuilder};
     use hamcrest::prelude::*;
-    use object_model::ObjectType;
+    use object_type::ObjectType;
     use tempfile::tempdir;
 
     use super::ObjectIndexer;

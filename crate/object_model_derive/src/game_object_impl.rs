@@ -20,7 +20,7 @@ pub fn game_object_impl(
     quote! {
         impl #impl_generics object_model::loaded::GameObject for
             #ty_name #ty_generics #where_clause {
-            const OBJECT_TYPE: object_model::ObjectType = object_model::ObjectType::#object_type_variant;
+            const OBJECT_TYPE: object_type::ObjectType = object_type::ObjectType::#object_type_variant;
 
             type SequenceId = #sequence_id_type;
             type GameObjectSequence = #sequence_type;

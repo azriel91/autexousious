@@ -10,7 +10,7 @@ asset_model = { path = "../asset_model" }
 character_loading = { path = "../character_loading" }
 derive-new = "0.5.6"
 map_model = { path = "../map_model" }
-object_model = { path = "../object_model" }
+object_type = { path = "../object_type" }
 
 [features]
 nightly = ["amethyst/nightly"]

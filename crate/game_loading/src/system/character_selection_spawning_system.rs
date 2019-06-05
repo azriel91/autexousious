@@ -4,7 +4,7 @@ use character_selection_model::CharacterSelections;
 use derive_new::new;
 use game_input::InputControlled;
 use game_model::play::GameEntities;
-use object_model::ObjectType;
+use object_type::ObjectType;
 use typename_derive::TypeName;
 
 use crate::{CharacterAugmentStatus, GameLoadingStatus};
@@ -93,7 +93,7 @@ mod tests {
     use game_model::play::GameEntities;
     use loading::{LoadingBundle, LoadingState};
     use map_loading::MapLoadingBundle;
-    use object_model::ObjectType;
+    use object_type::ObjectType;
     use sequence_loading::SequenceLoadingBundle;
     use sprite_loading::SpriteLoadingBundle;
     use typename::TypeName;
