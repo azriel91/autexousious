@@ -4739,8 +4739,6 @@ version = "0.11.0"
 dependencies = [
  "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
  "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
- "application 0.11.0",
- "assets_test 0.11.0",
  "collision_loading 0.11.0",
  "collision_model 0.11.0",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4755,7 +4753,6 @@ dependencies = [
  "sequence_model_spi 0.11.0",
  "serde 1.0.92 (registry+https://github.com/rust-lang/crates.io-index)",
  "specs-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "sprite_loading 0.11.0",
  "sprite_model 0.11.0",
 ]
 
