@@ -655,11 +655,9 @@ name = "asset_model"
 version = "0.11.0"
 dependencies = [
  "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
- "character_model 0.11.0",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_builder 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "map_model 0.11.0",
  "object_type 0.12.0",
  "serde 1.0.92 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
