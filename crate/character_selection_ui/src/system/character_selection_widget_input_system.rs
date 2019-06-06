@@ -307,7 +307,7 @@ mod test {
     use application_test_support::AutexousiousApplication;
     use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
     use assets_test::ASSETS_CHAR_BAT_SLUG;
-    use character_loading::CharacterPrefab;
+    use character_prefab::CharacterPrefab;
     use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
     use game_input::InputControlled;
     use game_input_model::{

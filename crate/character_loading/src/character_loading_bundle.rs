@@ -1,9 +1,4 @@
-use amethyst::{
-    assets::{PrefabLoaderSystem, Processor},
-    core::bundle::SystemBundle,
-    ecs::DispatcherBuilder,
-    Error,
-};
+use amethyst::{assets::Processor, core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
 use character_model::{
     config::CharacterDefinition,
     loaded::{Character, CharacterControlTransitions, CharacterControlTransitionsSequence},
@@ -12,7 +7,8 @@ use derive_new::new;
 use object_loading::ObjectDefinitionToWrapperProcessor;
 use typename::TypeName;
 
-use crate::CharacterPrefab;
+/// Name of the `Processor<Character>` system.
+pub const CHARACTER_PROCESSOR: &str = "character_processor";
 
 /// Adds the following processor `System`s to the world:
 ///
@@ -20,12 +16,8 @@ use crate::CharacterPrefab;
 /// * `ObjectDefinitionToWrapperProcessor::<Character>`
 /// * `Processor::<CharacterControlTransitionsSequence>`
 /// * `Processor::<Character>`
-/// * `PrefabLoaderSystem::<CharacterPrefab>`
 #[derive(Debug, new)]
 pub struct CharacterLoadingBundle;
-
-/// Name of the `CharacterPrefab` `PrefabLoaderSystem`.
-pub const CHARACTER_PREFAB_LOADER_SYSTEM: &str = "character_prefab_loader_system";
 
 impl<'a, 'b> SystemBundle<'a, 'b> for CharacterLoadingBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
@@ -51,13 +43,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterLoadingBundle {
         ); // kcov-ignore
         builder.add(
             Processor::<Character>::new(),
-            "character_processor",
+            CHARACTER_PROCESSOR,
             &["character_control_transitions_sequence_processor"],
-        ); // kcov-ignore
-        builder.add(
-            PrefabLoaderSystem::<CharacterPrefab>::default(),
-            CHARACTER_PREFAB_LOADER_SYSTEM,
-            &["character_processor"],
         ); // kcov-ignore
         Ok(())
     }

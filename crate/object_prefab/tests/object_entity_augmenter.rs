@@ -36,11 +36,12 @@ use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_
 use application_event::{AppEvent, AppEventReader};
 use asset_model::loaded::SlugAndHandle;
 use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
-use character_loading::{CharacterLoadingBundle, CharacterPrefab};
+use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
 use character_model::{
     config::CharacterSequenceId,
     loaded::{Character, CharacterObjectWrapper},
 };
+use character_prefab::{CharacterPrefab, CharacterPrefabBundle};
 use collision_audio_loading::CollisionAudioLoadingBundle;
 use collision_loading::CollisionLoadingBundle;
 use game_input_model::ControlBindings;
@@ -140,6 +141,10 @@ fn augments_entity_with_object_components() -> Result<(), Error> {
         .with_bundle(CollisionLoadingBundle::new())
         .with_bundle(MapLoadingBundle::new())
         .with_bundle(CharacterLoadingBundle::new())
+        .with_bundle(
+            CharacterPrefabBundle::new()
+                .with_system_dependencies(&[String::from(CHARACTER_PROCESSOR)]),
+        )
         .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
         .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
         .with_setup(|world| {

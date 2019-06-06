@@ -142,10 +142,10 @@ mod tests {
     };
     use application_test_support::{AutexousiousApplication, ObjectQueries, SequenceQueries};
     use assets_test::ASSETS_CHAR_BAT_SLUG;
-    use character_loading::CharacterPrefab;
     use character_model::{
         config::CharacterSequenceId, loaded::CharacterControlTransitionsSequenceHandle,
     };
+    use character_prefab::CharacterPrefab;
 
     use super::CharacterCtsHandleUpdateSystem;
 

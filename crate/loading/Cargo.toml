@@ -13,8 +13,8 @@ application_ui = { path = "../application_ui" }
 asset_loading = { path = "../asset_loading" }
 asset_model = { path = "../asset_model" }
 assets_built_in = { path = "../assets_built_in" }
-character_loading = { path = "../character_loading" }
 character_model = { path = "../character_model" }
+character_prefab = { path = "../character_prefab" }
 collision_audio_model = { path = "../collision_audio_model" }
 derivative = "1.0.2"
 derive-new = "0.5.6"

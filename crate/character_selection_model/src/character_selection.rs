@@ -2,7 +2,7 @@ use std::fmt;
 
 use amethyst::assets::Prefab;
 use asset_model::loaded::SlugAndHandle;
-use character_loading::{CharacterPrefab, CharacterPrefabHandle};
+use character_prefab::{CharacterPrefab, CharacterPrefabHandle};
 
 /// Selected character ID or random for a particular controller.
 #[derive(Clone, Debug, PartialEq)]

@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use amethyst::assets::Prefab;
 use asset_model::loaded::SlugAndHandle;
-use character_loading::CharacterPrefab;
+use character_prefab::CharacterPrefab;
 use derive_new::new;
 use game_input_model::ControllerId;
 

@@ -159,7 +159,7 @@ mod test {
     };
     use application_test_support::AutexousiousApplication;
     use asset_model::loaded::SlugAndHandle;
-    use character_loading::CharacterPrefab;
+    use character_prefab::CharacterPrefab;
     use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
     use game_input_model::{ControlAction, ControlActionEventData, ControlInputEvent};
     use game_model::loaded::CharacterAssets;

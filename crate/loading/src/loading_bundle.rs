@@ -1,8 +1,8 @@
 use std::path::PathBuf;
 
 use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
-use character_loading::CharacterPrefab;
 use character_model::loaded::Character;
+use character_prefab::CharacterPrefab;
 use derive_new::new;
 use typename::TypeName;
 
@@ -38,7 +38,7 @@ mod test {
     use amethyst::Error;
     use amethyst_test::AmethystApplication;
     use assets_test::ASSETS_PATH;
-    use character_loading::CharacterPrefab;
+    use character_prefab::CharacterPrefab;
     use game_model::loaded::{GameObjectPrefabs, MapAssets};
 
     use super::LoadingBundle;

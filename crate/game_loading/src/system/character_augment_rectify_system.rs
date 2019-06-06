@@ -3,7 +3,7 @@ use amethyst::{
     ecs::{Entities, Join, Read, ReadExpect, ReadStorage, System, Write, WriteStorage},
     utils::removal::Removal,
 };
-use character_loading::CharacterPrefabHandle;
+use character_prefab::CharacterPrefabHandle;
 use derivative::Derivative;
 use derive_new::new;
 use game_input::InputControlled;
@@ -140,7 +140,8 @@ mod tests {
     use application_event::{AppEvent, AppEventReader};
     use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
-    use character_loading::{CharacterLoadingBundle, CharacterPrefab};
+    use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
+    use character_prefab::{CharacterPrefab, CharacterPrefabBundle};
     use collision_audio_loading::CollisionAudioLoadingBundle;
     use collision_loading::CollisionLoadingBundle;
     use game_input::InputControlled;
@@ -270,6 +271,10 @@ mod tests {
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
+            .with_bundle(
+                CharacterPrefabBundle::new()
+                    .with_system_dependencies(&[String::from(CHARACTER_PROCESSOR)]),
+            )
             .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_setup(|world| CharacterAugmentRectifySystemData::setup(&mut world.res))
