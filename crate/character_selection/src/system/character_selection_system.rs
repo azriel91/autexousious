@@ -34,14 +34,17 @@ impl<'s> System<'s> for CharacterSelectionSystem {
                     controller_id,
                     character_selection,
                 } => {
-                    let slug_and_handle = match character_selection {
-                        CharacterSelection::Random(slug_and_handle)
-                        | CharacterSelection::Id(slug_and_handle) => slug_and_handle,
+                    let asset_slug = match character_selection {
+                        CharacterSelection::Id(asset_slug) => asset_slug,
+                        CharacterSelection::Random => {
+                            // TODO: Implement Random
+                            unimplemented!("TODO: Implement Random")
+                        }
                     };
                     character_selections
                         .selections
                         .entry(*controller_id)
-                        .or_insert_with(|| slug_and_handle.clone());
+                        .or_insert_with(|| asset_slug.clone());
                 }
                 CharacterSelectionEvent::Deselect { controller_id } => {
                     character_selections.selections.remove(&controller_id);
@@ -75,7 +78,6 @@ mod tests {
     };
     use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
     use application_event::{AppEvent, AppEventReader};
-    use asset_model::loaded::SlugAndHandle;
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
     use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
     use character_prefab::CharacterPrefabBundle;
@@ -125,13 +127,11 @@ mod tests {
                 &[],
             ) // kcov-ignore
             .with_setup(|world| {
-                let slug_and_handle = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
-
                 send_event(
                     world,
                     CharacterSelectionEvent::Select {
                         controller_id: 123,
-                        character_selection: CharacterSelection::Id(slug_and_handle),
+                        character_selection: CharacterSelection::Id(ASSETS_CHAR_BAT_SLUG.clone()),
                     },
                 )
             })
@@ -139,10 +139,7 @@ mod tests {
                 let character_selections = world.read_resource::<CharacterSelections>();
 
                 assert_eq!(
-                    Some(&SlugAndHandle::from((
-                        &*world,
-                        ASSETS_CHAR_BAT_SLUG.clone()
-                    ))),
+                    Some(&*ASSETS_CHAR_BAT_SLUG),
                     character_selections.selections.get(&123)
                 );
             })
@@ -182,10 +179,7 @@ mod tests {
                 world
                     .write_resource::<CharacterSelections>()
                     .selections
-                    .insert(
-                        123,
-                        SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone())),
-                    );
+                    .insert(123, ASSETS_CHAR_BAT_SLUG.clone());
             })
             .with_setup(|world| {
                 send_event(

@@ -77,7 +77,6 @@ impl<'s> System<'s> for CharacterSelectionSfxSystem {
 mod tests {
     use amethyst::{ecs::World, shrev::EventChannel, Error};
     use application_test_support::AutexousiousApplication;
-    use asset_model::loaded::SlugAndHandle;
     use assets_test::ASSETS_CHAR_BAT_SLUG;
     use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
 
@@ -85,62 +84,54 @@ mod tests {
 
     #[test]
     fn plays_sound_on_return_event() -> Result<(), Error> {
-        run_test(|_world| CharacterSelectionEvent::Return)
+        run_test(CharacterSelectionEvent::Return)
     }
 
     #[test]
     fn plays_sound_on_join_event() -> Result<(), Error> {
-        run_test(|_world| CharacterSelectionEvent::Join { controller_id: 123 })
+        run_test(CharacterSelectionEvent::Join { controller_id: 123 })
     }
 
     #[test]
     fn plays_sound_on_switch_event() -> Result<(), Error> {
-        run_test(|world| {
-            let snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
-            let character_selection = CharacterSelection::Id(snh);
-            CharacterSelectionEvent::Switch {
-                controller_id: 123,
-                character_selection,
-            }
-        })
+        let character_selection = CharacterSelection::Id(ASSETS_CHAR_BAT_SLUG.clone());
+        let character_selection_event = CharacterSelectionEvent::Switch {
+            controller_id: 123,
+            character_selection,
+        };
+        run_test(character_selection_event)
     }
 
     #[test]
     fn plays_sound_on_select_event() -> Result<(), Error> {
-        run_test(|world| {
-            let snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
-            let character_selection = CharacterSelection::Id(snh);
-            CharacterSelectionEvent::Select {
-                controller_id: 123,
-                character_selection,
-            }
-        })
+        let character_selection = CharacterSelection::Id(ASSETS_CHAR_BAT_SLUG.clone());
+        let character_selection_event = CharacterSelectionEvent::Select {
+            controller_id: 123,
+            character_selection,
+        };
+        run_test(character_selection_event)
     }
 
     #[test]
     fn plays_sound_on_deselect_event() -> Result<(), Error> {
-        run_test(|_world| CharacterSelectionEvent::Deselect { controller_id: 123 })
+        run_test(CharacterSelectionEvent::Deselect { controller_id: 123 })
     }
 
     #[test]
     fn plays_sound_on_leave_event() -> Result<(), Error> {
-        run_test(|_world| CharacterSelectionEvent::Leave { controller_id: 123 })
+        run_test(CharacterSelectionEvent::Leave { controller_id: 123 })
     }
 
     #[test]
     fn plays_sound_on_confirm_event() -> Result<(), Error> {
-        run_test(|_world| CharacterSelectionEvent::Confirm)
+        run_test(CharacterSelectionEvent::Confirm)
     }
 
-    fn run_test<F>(event_fn: F) -> Result<(), Error>
-    where
-        F: Fn(&mut World) -> CharacterSelectionEvent + Send + Sync + 'static,
-    {
+    fn run_test(character_selection_event: CharacterSelectionEvent) -> Result<(), Error> {
         AutexousiousApplication::config_base()
             .with_system(CharacterSelectionSfxSystem::new(), "", &[])
             .with_effect(move |world| {
-                let event = event_fn(world);
-                send_event(world, event);
+                send_event(world, character_selection_event.clone());
             })
             .with_assertion(|_world| {})
             .run_isolated()

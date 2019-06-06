@@ -7,8 +7,6 @@ edition = "2018"
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["vulkan"] }
 asset_model = { path = "../asset_model" }
-character_model = { path = "../character_model" }
-character_prefab = { path = "../character_prefab" }
 derivative = "1.0.2"
 derive-new = "0.5.6"
 game_input_model = { path = "../game_input_model" }

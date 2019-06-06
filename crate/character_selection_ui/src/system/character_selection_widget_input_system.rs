@@ -3,7 +3,6 @@ use amethyst::{
     shred::{Resources, System},
     shrev::{EventChannel, ReaderId},
 };
-use asset_model::loaded::SlugAndHandle;
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
 use derivative::Derivative;
 use derive_new::new;
@@ -57,42 +56,33 @@ impl CharacterSelectionWidgetInputSystem {
         character_assets: &CharacterAssets,
         widget: &mut CharacterSelectionWidget,
     ) -> CharacterSelection {
-        let (first_character_slug, first_character_handle) = character_assets
-            .iter()
+        let first_character_slug = character_assets
+            .keys()
             .next()
             .expect("Expected at least one character to be loaded.");
-        let (last_character_slug, last_character_handle) = character_assets
-            .iter()
+        let last_character_slug = character_assets
+            .keys()
             .next_back()
             .expect("Expected at least one character to be loaded.");
         widget.selection = match widget.selection {
-            CharacterSelection::Id(SlugAndHandle {
-                slug: ref character_slug,
-                ..
-            }) => {
+            CharacterSelection::Id(ref character_slug) => {
                 if character_slug == first_character_slug {
-                    CharacterSelection::Random(
-                        (first_character_slug, first_character_handle).into(),
-                    )
+                    CharacterSelection::Random
                 } else {
                     let next_character = character_assets
-                        .iter()
+                        .keys()
                         .rev()
-                        .skip_while(|(slug, _handle)| slug != &character_slug)
+                        .skip_while(|slug| slug != &character_slug)
                         .nth(1); // skip current selection
 
                     if let Some(next_character) = next_character {
-                        CharacterSelection::Id(next_character.into())
+                        CharacterSelection::Id(next_character.clone())
                     } else {
-                        CharacterSelection::Random(
-                            (first_character_slug, first_character_handle).into(),
-                        )
+                        CharacterSelection::Random
                     }
                 }
             }
-            CharacterSelection::Random(..) => {
-                CharacterSelection::Id((last_character_slug, last_character_handle).into())
-            }
+            CharacterSelection::Random => CharacterSelection::Id(last_character_slug.clone()),
         };
         widget.selection.clone()
     }
@@ -101,8 +91,8 @@ impl CharacterSelectionWidgetInputSystem {
         character_assets: &CharacterAssets,
         widget: &mut CharacterSelectionWidget,
     ) -> CharacterSelection {
-        let (first_character_slug, first_character_handle) = character_assets
-            .iter()
+        let first_character_slug = character_assets
+            .keys()
             .next()
             .expect("Expected at least one character to be loaded.");
         let last_character_slug = character_assets
@@ -110,32 +100,23 @@ impl CharacterSelectionWidgetInputSystem {
             .next_back()
             .expect("Expected at least one character to be loaded.");
         widget.selection = match widget.selection {
-            CharacterSelection::Id(SlugAndHandle {
-                slug: ref character_slug,
-                ..
-            }) => {
+            CharacterSelection::Id(ref character_slug) => {
                 if character_slug == last_character_slug {
-                    CharacterSelection::Random(
-                        (first_character_slug, first_character_handle).into(),
-                    )
+                    CharacterSelection::Random
                 } else {
                     let next_character = character_assets
-                        .iter()
-                        .skip_while(|(slug, _handle)| slug != &character_slug)
+                        .keys()
+                        .skip_while(|slug| slug != &character_slug)
                         .nth(1); // skip current selection
 
                     if let Some(next_character) = next_character {
-                        CharacterSelection::Id(next_character.into())
+                        CharacterSelection::Id(next_character.clone())
                     } else {
-                        CharacterSelection::Random(
-                            (first_character_slug, first_character_handle).into(),
-                        )
+                        CharacterSelection::Random
                     }
                 }
             }
-            CharacterSelection::Random(..) => {
-                CharacterSelection::Id((first_character_slug, first_character_handle).into())
-            }
+            CharacterSelection::Random => CharacterSelection::Id(first_character_slug.clone()),
         };
         widget.selection.clone()
     }
@@ -299,15 +280,13 @@ impl<'s> System<'s> for CharacterSelectionWidgetInputSystem {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        assets::Prefab,
         ecs::{Builder, Entity, SystemData, World},
         shrev::{EventChannel, ReaderId},
         Error,
     };
     use application_test_support::AutexousiousApplication;
-    use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
+    use asset_model::config::AssetSlug;
     use assets_test::ASSETS_CHAR_BAT_SLUG;
-    use character_prefab::CharacterPrefab;
     use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
     use game_input::InputControlled;
     use game_input_model::{
@@ -324,12 +303,12 @@ mod test {
         run_test(
             SetupParams {
                 widget_state: WidgetState::Inactive,
-                character_selection_fn: character_selection_random,
+                character_selection_fn: char_random,
                 control_input_event_fn: None,
             },
             ExpectedParams {
                 widget_state: WidgetState::Inactive,
-                character_selection_fn: character_selection_random,
+                character_selection_fn: char_random,
                 character_selection_events_fn: empty_events,
             },
         )
@@ -340,12 +319,12 @@ mod test {
         run_test(
             SetupParams {
                 widget_state: WidgetState::Inactive,
-                character_selection_fn: character_selection_random,
+                character_selection_fn: char_random,
                 control_input_event_fn: Some(press_attack),
             },
             ExpectedParams {
                 widget_state: WidgetState::CharacterSelect,
-                character_selection_fn: character_selection_random,
+                character_selection_fn: char_random,
                 character_selection_events_fn: |_world| {
                     vec![CharacterSelectionEvent::Join { controller_id: 123 }]
                 },
@@ -359,21 +338,16 @@ mod test {
         run_test(
             SetupParams {
                 widget_state: WidgetState::CharacterSelect,
-                character_selection_fn: |world| {
-                    character_selection_id(world, ASSETS_CHAR_BAT_SLUG.clone())
-                },
+                character_selection_fn: char_bat,
                 control_input_event_fn: Some(press_attack),
             },
             ExpectedParams {
                 widget_state: WidgetState::Ready,
-                character_selection_fn: |world| {
-                    character_selection_id(world, ASSETS_CHAR_BAT_SLUG.clone())
-                },
-                character_selection_events_fn: |world| {
-                    let bat_snh = SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()));
+                character_selection_fn: char_bat,
+                character_selection_events_fn: |_world| {
                     vec![CharacterSelectionEvent::Select {
                         controller_id: 123,
-                        character_selection: CharacterSelection::Id(bat_snh),
+                        character_selection: CharacterSelection::Id(ASSETS_CHAR_BAT_SLUG.clone()),
                     }]
                 },
             },
@@ -385,7 +359,7 @@ mod test {
         run_test(
             SetupParams {
                 widget_state: WidgetState::CharacterSelect,
-                character_selection_fn: character_selection_random,
+                character_selection_fn: char_random,
                 control_input_event_fn: Some(press_left),
             },
             ExpectedParams {
@@ -410,7 +384,7 @@ mod test {
         run_test(
             SetupParams {
                 widget_state: WidgetState::CharacterSelect,
-                character_selection_fn: character_selection_random,
+                character_selection_fn: char_random,
                 control_input_event_fn: Some(press_right),
             },
             ExpectedParams {
@@ -435,19 +409,16 @@ mod test {
         run_test(
             SetupParams {
                 widget_state: WidgetState::CharacterSelect,
-                character_selection_fn: |world| {
-                    character_selection_id(world, ASSETS_CHAR_BAT_SLUG.clone())
-                },
+                character_selection_fn: char_bat,
                 control_input_event_fn: Some(press_right),
             },
             ExpectedParams {
                 widget_state: WidgetState::CharacterSelect,
-                character_selection_fn: character_selection_random,
-                character_selection_events_fn: |world| {
-                    let first_char = first_character(world);
+                character_selection_fn: char_random,
+                character_selection_events_fn: |_world| {
                     vec![CharacterSelectionEvent::Switch {
                         controller_id: 123,
-                        character_selection: CharacterSelection::Random(first_char),
+                        character_selection: CharacterSelection::Random,
                     }]
                 },
             },
@@ -460,16 +431,12 @@ mod test {
         run_test(
             SetupParams {
                 widget_state: WidgetState::Ready,
-                character_selection_fn: |world| {
-                    character_selection_id(world, ASSETS_CHAR_BAT_SLUG.clone())
-                },
+                character_selection_fn: char_bat,
                 control_input_event_fn: Some(press_jump),
             },
             ExpectedParams {
                 widget_state: WidgetState::CharacterSelect,
-                character_selection_fn: |world| {
-                    character_selection_id(world, ASSETS_CHAR_BAT_SLUG.clone())
-                },
+                character_selection_fn: char_bat,
                 character_selection_events_fn: |_world| {
                     vec![CharacterSelectionEvent::Deselect { controller_id: 123 }]
                 },
@@ -482,16 +449,12 @@ mod test {
         run_test(
             SetupParams {
                 widget_state: WidgetState::CharacterSelect,
-                character_selection_fn: |world| {
-                    character_selection_id(world, ASSETS_CHAR_BAT_SLUG.clone())
-                },
+                character_selection_fn: char_bat,
                 control_input_event_fn: Some(press_jump),
             },
             ExpectedParams {
                 widget_state: WidgetState::Inactive,
-                character_selection_fn: |world| {
-                    character_selection_id(world, ASSETS_CHAR_BAT_SLUG.clone())
-                },
+                character_selection_fn: char_bat,
                 character_selection_events_fn: |_world| {
                     vec![CharacterSelectionEvent::Leave { controller_id: 123 }]
                 },
@@ -555,16 +518,6 @@ mod test {
             .run_isolated()
     }
 
-    fn character_selection_id(world: &mut World, slug: AssetSlug) -> CharacterSelection {
-        let snh = SlugAndHandle::from((&*world, slug.clone()));
-        CharacterSelection::Id(snh)
-    }
-
-    fn character_selection_random(world: &mut World) -> CharacterSelection {
-        let first_char = first_character(world);
-        CharacterSelection::Random(first_char)
-    }
-
     fn press_left(entity: Entity) -> ControlInputEvent {
         ControlInputEvent::Axis(AxisEventData {
             entity,
@@ -601,22 +554,30 @@ mod test {
         vec![]
     }
 
-    fn first_character(world: &mut World) -> SlugAndHandle<Prefab<CharacterPrefab>> {
+    fn first_character(world: &mut World) -> AssetSlug {
         world
             .read_resource::<CharacterAssets>()
-            .iter()
+            .keys()
             .next()
             .expect("Expected at least one character to be loaded.")
-            .into()
+            .clone()
     }
 
-    fn last_character(world: &mut World) -> SlugAndHandle<Prefab<CharacterPrefab>> {
+    fn last_character(world: &mut World) -> AssetSlug {
         world
             .read_resource::<CharacterAssets>()
-            .iter()
+            .keys()
             .next_back()
             .expect("Expected at least one character to be loaded.")
-            .into()
+            .clone()
+    }
+
+    fn char_random(_world: &mut World) -> CharacterSelection {
+        CharacterSelection::Random
+    }
+
+    fn char_bat(_world: &mut World) -> CharacterSelection {
+        CharacterSelection::Id(ASSETS_CHAR_BAT_SLUG.clone())
     }
 
     fn widget_entity(

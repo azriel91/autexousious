@@ -152,17 +152,13 @@ impl<'s> System<'s> for CharacterSelectionInputSystem {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        assets::Prefab,
         ecs::{Builder, Entity, SystemData, World},
         shrev::{EventChannel, ReaderId},
         Error,
     };
     use application_test_support::AutexousiousApplication;
-    use asset_model::loaded::SlugAndHandle;
-    use character_prefab::CharacterPrefab;
     use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
     use game_input_model::{ControlAction, ControlActionEventData, ControlInputEvent};
-    use game_model::loaded::CharacterAssets;
     use typename::TypeName;
 
     use super::{CharacterSelectionInputSystem, CharacterSelectionInputSystemData};
@@ -255,10 +251,7 @@ mod test {
                 let entities = setup_widget_states
                     .iter()
                     .map(|setup_widget_state| {
-                        let character_selection = {
-                            let first_char = first_character(world);
-                            CharacterSelection::Random(first_char)
-                        };
+                        let character_selection = CharacterSelection::Random;
                         widget_entity(world, *setup_widget_state, character_selection)
                     })
                     .collect::<Vec<Entity>>();
@@ -307,15 +300,6 @@ mod test {
 
     fn empty_events(_world: &mut World) -> Vec<CharacterSelectionEvent> {
         vec![]
-    }
-
-    fn first_character(world: &mut World) -> SlugAndHandle<Prefab<CharacterPrefab>> {
-        world
-            .read_resource::<CharacterAssets>()
-            .iter()
-            .next()
-            .expect("Expected at least one character to be loaded.")
-            .into()
     }
 
     fn widget_entity(

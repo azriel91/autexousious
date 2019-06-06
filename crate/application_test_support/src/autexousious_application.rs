@@ -10,7 +10,6 @@ use amethyst::{
 };
 use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
 use application_event::{AppEvent, AppEventReader};
-use asset_model::loaded::SlugAndHandle;
 use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
 use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
 use character_prefab::CharacterPrefabBundle;
@@ -105,9 +104,7 @@ impl AutexousiousApplication {
                 character_selections
                     .selections
                     .entry(controller_id)
-                    .or_insert_with(|| {
-                        SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone()))
-                    });
+                    .or_insert_with(|| ASSETS_CHAR_BAT_SLUG.clone());
 
                 world.add_resource(character_selections);
                 world.add_resource(CharacterSelectionsStatus::Ready);
