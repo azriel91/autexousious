@@ -31,6 +31,7 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["test
 amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
 application = { path = "../application" }
 object_status_model = { path = "../object_status_model" }
+object_type = { path = "../object_type", features = ["test-support"] }
 pretty_assertions = "0.6.1"
 toml = "0.5.1"
 

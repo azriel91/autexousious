@@ -13,4 +13,7 @@ use strum_macros::{Display, EnumIter};
 pub enum ObjectType {
     /// Player or AI controllable objects.
     Character,
+    /// Used in tests.
+    #[cfg(feature = "test-support")]
+    TestObject,
 }

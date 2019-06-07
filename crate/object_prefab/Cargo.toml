@@ -19,19 +19,14 @@ shred-derive = "0.5.1"
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["test-support", "vulkan"] }
 amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
 application_event = { path = "../application_event" }
-asset_model = { path = "../asset_model" }
-assets_test = { path = "../assets_test" }
-character_loading = { path = "../character_loading" }
-character_model = { path = "../character_model" }
-character_prefab = { path = "../character_prefab" }
-collision_audio_loading = { path = "../collision_audio_loading" }
 collision_loading = { path = "../collision_loading" }
+fnv = "1.0.6"
 game_input_model = { path = "../game_input_model" }
-loading = { path = "../loading" }
-map_loading = { path = "../map_loading" }
 sequence_loading = { path = "../sequence_loading" }
+sequence_model_spi = { path = "../sequence_model_spi" }
+shape_model = { path = "../shape_model" }
 sprite_loading = { path = "../sprite_loading" }
-ui_audio_loading = { path = "../../crate/ui_audio_loading" }
+test_object_model = { path = "../test_object_model" }
 
 [features]
 nightly = ["amethyst/nightly"]

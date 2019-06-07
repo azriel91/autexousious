@@ -167,24 +167,26 @@ mod test {
                 let game_entities = &*world.read_resource::<GameEntities>();
 
                 // Ensure there is at least one entity per object type.
-                ObjectType::iter().for_each(|object_type| {
-                    let objects = game_entities.objects.get(&object_type);
-                    let object_entities = objects.unwrap_or_else(|| {
-                        // kcov-ignore-start
-                        panic!("Expected entry for the `{}` object type.", object_type)
-                        // kcov-ignore-end
-                    });
+                ObjectType::iter()
+                    .filter(|object_type| *object_type != ObjectType::TestObject)
+                    .for_each(|object_type| {
+                        let objects = game_entities.objects.get(&object_type);
+                        let object_entities = objects.unwrap_or_else(|| {
+                            // kcov-ignore-start
+                            panic!("Expected entry for the `{}` object type.", object_type)
+                            // kcov-ignore-end
+                        });
 
-                    assert!(
-                        !object_entities.is_empty(),
-                        // kcov-ignore-start
-                        format!(
+                        assert!(
+                            !object_entities.is_empty(),
+                            // kcov-ignore-start
+                            format!(
                                 // kcov-ignore-end
                                 "Expected at least one entity for the `{}` object type",
                                 object_type
                             )
-                    );
-                });
+                        );
+                    });
 
                 // Ensure there is at least one map layer (map is loaded).
                 assert!(
