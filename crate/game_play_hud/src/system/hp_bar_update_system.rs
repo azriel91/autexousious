@@ -56,4 +56,67 @@ impl<'s> System<'s> for HpBarUpdateSystem {
     }
 }
 
-// See tests/hp_bar_update_system.rs
+#[cfg(test)]
+mod tests {
+    use amethyst::{
+        assets::PrefabData,
+        core::{Float, Transform, TransformBundle},
+        ecs::{Builder, Entity, System, SystemData},
+        renderer::{types::DefaultBackend, RenderEmptyBundle},
+        Error,
+    };
+    use amethyst_test::AmethystApplication;
+    use object_model::play::HealthPoints;
+
+    use super::HpBarUpdateSystem;
+    use crate::HpBarPrefab;
+
+    #[test]
+    fn sets_transform_x_and_scale() -> Result<(), Error> {
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
+            .with_setup(|world| {
+                <HpBarUpdateSystem as System>::SystemData::setup(&mut world.res);
+
+                let char_entity = {
+                    world
+                        .create_entity()
+                        .with(Transform::default())
+                        .with(HealthPoints::new(20))
+                        .build()
+                };
+
+                let hp_bar_entity = {
+                    let hp_bar_entity = world.create_entity().build();
+
+                    let mut hp_bar_prefab_system_data =
+                        world.system_data::<<HpBarPrefab as PrefabData>::SystemData>();
+                    let hp_bar_prefab = HpBarPrefab::new(char_entity);
+
+                    hp_bar_prefab
+                        .add_to_entity(hp_bar_entity, &mut hp_bar_prefab_system_data, &[], &[])
+                        .expect("`HpBarPrefab` failed to augment entity.");
+
+                    hp_bar_entity
+                };
+
+                world.add_resource(hp_bar_entity);
+            })
+            .with_system_single(HpBarUpdateSystem::new(), "", &[])
+            .with_assertion(|world| {
+                let hp_bar_entity = *world.read_resource::<Entity>();
+
+                let transforms = world.read_storage::<Transform>();
+                let transform = transforms
+                    .get(hp_bar_entity)
+                    .expect("Expected hp bar to have `Transform` component.");
+
+                // 100 - 20 = 80
+                // -80 / 2  = -40
+                assert_eq!(Float::from(-40.), transform.translation()[0]);
+                assert_eq!(Float::from(20.), transform.scale()[0]);
+            })
+            .run_isolated()
+    }
+}

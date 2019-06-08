@@ -2288,12 +2288,10 @@ version = "0.11.0"
 dependencies = [
  "amethyst 0.10.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
  "amethyst_test 0.1.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/amethyst-test-rendy)",
- "application_test_support 0.11.0",
  "asset_gfx_gen 0.11.0",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "object_model 0.11.0",
- "object_type 0.12.0",
  "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "specs-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
