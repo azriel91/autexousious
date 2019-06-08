@@ -25,7 +25,8 @@ use application::{
 };
 use application_event::{AppEvent, AppEventReader};
 use application_robot::RobotState;
-use character_loading::CharacterLoadingBundle;
+use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
+use character_prefab::CharacterPrefabBundle;
 use character_selection_stdio::CharacterSelectionStdioBundle;
 use collision_audio_loading::CollisionAudioLoadingBundle;
 use collision_loading::CollisionLoadingBundle;
@@ -147,6 +148,10 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(CollisionLoadingBundle::new())?
             .with_bundle(MapLoadingBundle::new())?
             .with_bundle(CharacterLoadingBundle::new())?
+            .with_bundle(
+                CharacterPrefabBundle::new()
+                    .with_system_dependencies(&[String::from(CHARACTER_PROCESSOR)]),
+            )?
             .with_bundle(CollisionAudioLoadingBundle::new(assets_dir.clone()))?
             .with_bundle(UiAudioLoadingBundle::new(assets_dir.clone()))?;
     }

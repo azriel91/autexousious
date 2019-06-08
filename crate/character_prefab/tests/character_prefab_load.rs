@@ -14,7 +14,7 @@ use amethyst::{
     Error,
 };
 use amethyst_test::AmethystApplication;
-use character_loading::{CharacterLoadingBundle, CharacterPrefab, CharacterPrefabHandle};
+use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
 use character_model::{
     config::{CharacterDefinition, CharacterSequenceId, ControlTransitionRequirement},
     loaded::{
@@ -22,6 +22,7 @@ use character_model::{
         CharacterControlTransitionsSequence, CharacterHandle,
     },
 };
+use character_prefab::{CharacterPrefab, CharacterPrefabBundle, CharacterPrefabHandle};
 use collision_model::config::{Body, Interactions};
 use game_input_model::ControlAction;
 use object_model::{
@@ -43,6 +44,10 @@ fn character_prefab_load() -> Result<(), Error> {
         .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
         .with_bundle(SequenceLoadingBundle::new())
         .with_bundle(CharacterLoadingBundle::new())
+        .with_bundle(
+            CharacterPrefabBundle::new()
+                .with_system_dependencies(&[String::from(CHARACTER_PROCESSOR)]),
+        )
         .with_setup(|world| {
             let character_prefab_handle = {
                 let (loader, character_definition_assets, character_prefab_loader) =

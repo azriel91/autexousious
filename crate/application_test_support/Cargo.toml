@@ -13,6 +13,7 @@ asset_model = { path = "../asset_model" }
 assets_test = { path = "../assets_test" }
 character_loading = { path = "../character_loading" }
 character_model = { path = "../character_model" }
+character_prefab = { path = "../character_prefab" }
 character_selection = { path = "../character_selection" }
 character_selection_model = { path = "../character_selection_model" }
 collision_audio_loading = { path = "../collision_audio_loading" }
@@ -26,8 +27,9 @@ map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }
 map_selection = { path = "../map_selection" }
 map_selection_model = { path = "../map_selection_model" }
-object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
+object_prefab = { path = "../object_prefab" }
+object_type = { path = "../object_type", features = ["test-support"] }
 sequence_loading = { path = "../sequence_loading" }
 sequence_model = { path = "../sequence_model" }
 sprite_loading = { path = "../sprite_loading" }

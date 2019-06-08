@@ -107,6 +107,7 @@ where
                          \n\
                          * `SpriteLoadingBundle`\n\
                          * `CharacterLoadingBundle`\n\
+                         * `CharacterPrefabBundle`\n\
                          * `MapLoadingBundle`\n\
                          * `amethyst::audio::AudioBundle`\n\
                          * `CollisionAudioLoadingBundle`\n\

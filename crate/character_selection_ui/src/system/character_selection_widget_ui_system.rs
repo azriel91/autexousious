@@ -4,14 +4,12 @@ use amethyst::{
     ui::{Anchor, UiText, UiTransform},
 };
 use application_ui::{FontVariant, Theme};
-use asset_model::loaded::SlugAndHandle;
 use character_selection_model::{
     CharacterSelection, CharacterSelectionEntity, CharacterSelectionEntityId,
 };
 use derive_new::new;
 use game_input::{ControllerInput, InputControlled};
 use game_input_model::{ControllerId, InputConfig};
-use game_model::loaded::CharacterAssets;
 use log::debug;
 use typename_derive::TypeName;
 
@@ -45,7 +43,6 @@ type WidgetUiResources<'s> = (
 );
 
 type CharacterSelectionWidgetUiSystemData<'s> = (
-    Read<'s, CharacterAssets>,
     Read<'s, InputConfig>,
     Entities<'s>,
     WidgetComponentStorages<'s>,
@@ -55,7 +52,6 @@ type CharacterSelectionWidgetUiSystemData<'s> = (
 impl CharacterSelectionWidgetUiSystem {
     fn initialize_ui(
         &mut self,
-        character_assets: &CharacterAssets,
         input_config: &InputConfig,
         entities: &Entities<'_>,
         (
@@ -75,17 +71,12 @@ impl CharacterSelectionWidgetUiSystem {
                 .get(&FontVariant::Regular)
                 .expect("Failed to get regular font handle.");
 
-            let first_character = character_assets
-                .iter()
-                .next()
-                .expect("Expected at least one character to be loaded.");
-
             (0..controller_count).for_each(|index| {
                 let controller_id = index as ControllerId;
 
                 let character_selection_widget = CharacterSelectionWidget::new(
                     WidgetState::default(),
-                    CharacterSelection::Random(SlugAndHandle::from(first_character)),
+                    CharacterSelection::Random,
                 );
 
                 let ui_transform = UiTransform::new(
@@ -212,7 +203,6 @@ impl<'s> System<'s> for CharacterSelectionWidgetUiSystem {
     fn run(
         &mut self,
         (
-            character_assets,
             input_config,
             entities,
             mut widget_component_storages,
@@ -220,7 +210,6 @@ impl<'s> System<'s> for CharacterSelectionWidgetUiSystem {
         ): Self::SystemData,
     ) {
         self.initialize_ui(
-            &character_assets,
             &input_config,
             &entities,
             &mut widget_component_storages,
@@ -236,16 +225,14 @@ mod test {
     use std::collections::HashMap;
 
     use amethyst::{
-        ecs::{Join, Read, ReadStorage, World, WriteStorage},
+        ecs::{Join, ReadStorage, World, WriteStorage},
         input::{Axis as InputAxis, Button, VirtualKeyCode},
         ui::UiText,
     };
     use application_test_support::AutexousiousApplication;
-    use asset_model::loaded::SlugAndHandle;
     use assets_test::ASSETS_CHAR_BAT_SLUG;
     use character_selection_model::CharacterSelection;
     use game_input_model::{Axis, ControlAction, ControllerConfig, InputConfig};
-    use game_model::loaded::CharacterAssets;
     use typename::TypeName;
 
     use super::CharacterSelectionWidgetUiSystem;
@@ -288,24 +275,15 @@ mod test {
                 .with_assertion(|world| assert_widget_count(world, 2))
                 // Select character and send event
                 .with_effect(|world| {
-                    world.exec(
-                        |(mut widgets, character_assets): (
-                            WriteStorage<'_, CharacterSelectionWidget>,
-                            Read<'_, CharacterAssets>,
-                        )| {
-                            let widget = (&mut widgets).join().next().expect(
-                                "Expected entity with `CharacterSelectionWidget` component.",
-                            );
+                    let mut widgets =
+                        world.system_data::<WriteStorage<'_, CharacterSelectionWidget>>();
+                    let widget = (&mut widgets)
+                        .join()
+                        .next()
+                        .expect("Expected entity with `CharacterSelectionWidget` component.");
 
-                            let first_character = character_assets
-                                .iter()
-                                .next()
-                                .expect("Expected at least one character to be loaded.");
-
-                            widget.state = WidgetState::CharacterSelect;
-                            widget.selection = CharacterSelection::Random(first_character.into());
-                        },
-                    );
+                    widget.state = WidgetState::CharacterSelect;
+                    widget.selection = CharacterSelection::Random;
                 })
                 .with_system_single(
                     CharacterSelectionWidgetUiSystem::new(),
@@ -334,22 +312,15 @@ mod test {
                 .with_assertion(|world| assert_widget_count(world, 2))
                 // Select character and send event
                 .with_effect(|world| {
-                    world.exec(
-                        |(mut widgets, character_assets): (
-                            WriteStorage<'_, CharacterSelectionWidget>,
-                            Read<'_, CharacterAssets>,
-                        )| {
-                            let widget = (&mut widgets).join().next().expect(
-                                "Expected entity with `CharacterSelectionWidget` component.",
-                            );
+                    let mut widgets =
+                        world.system_data::<WriteStorage<'_, CharacterSelectionWidget>>();
+                    let widget = (&mut widgets)
+                        .join()
+                        .next()
+                        .expect("Expected entity with `CharacterSelectionWidget` component.");
 
-                            widget.state = WidgetState::CharacterSelect;
-                            widget.selection = CharacterSelection::Id(SlugAndHandle::from((
-                                &*character_assets,
-                                ASSETS_CHAR_BAT_SLUG.clone(),
-                            )));
-                        },
-                    );
+                    widget.state = WidgetState::CharacterSelect;
+                    widget.selection = CharacterSelection::Id(ASSETS_CHAR_BAT_SLUG.clone());
                 })
                 .with_system_single(
                     CharacterSelectionWidgetUiSystem::new(),

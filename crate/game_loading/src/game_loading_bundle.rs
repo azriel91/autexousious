@@ -22,7 +22,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameLoadingBundle {
             &CharacterAugmentRectifySystem::type_name(),
             &[
                 &CharacterSelectionSpawningSystem::type_name(),
-                // Ideally we would also specify `character_loading::CHARACTER_PREFAB_LOADER_SYSTEM`
+                // Ideally we would also specify `character_prefab::CHARACTER_PREFAB_LOADER_SYSTEM`
                 // However, it is in the main dispatcher, so we cannot depend on it.
             ],
         ); // kcov-ignore

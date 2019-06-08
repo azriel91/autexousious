@@ -3,11 +3,11 @@ use amethyst::{
     ecs::{Entity, World},
 };
 use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
-use character_loading::CharacterPrefab;
 use character_model::loaded::CharacterObjectWrapper;
+use character_prefab::CharacterPrefab;
 use game_model::play::GameEntities;
-use object_loading::{GameObjectPrefab, ObjectPrefab};
-use object_model::ObjectType;
+use object_prefab::{GameObjectPrefab, ObjectPrefab};
+use object_type::ObjectType;
 
 /// Functions to retrieve object data from a running world.
 #[derive(Debug)]

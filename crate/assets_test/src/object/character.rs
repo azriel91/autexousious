@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use asset_model::config::{AssetSlug, AssetSlugBuilder};
 use heck::SnakeCase;
 use lazy_static::lazy_static;
-use object_model::ObjectType;
+use object_type::ObjectType;
 
 use crate::{ASSETS_OBJECT_PATH, NAMESPACE_TEST};
 

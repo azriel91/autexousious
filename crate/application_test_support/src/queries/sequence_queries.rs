@@ -1,6 +1,5 @@
 use amethyst::{assets::AssetStorage, ecs::World};
 use asset_model::config::AssetSlug;
-use character_loading::CharacterPrefab;
 use character_model::{
     config::CharacterSequenceId,
     loaded::{
@@ -8,6 +7,7 @@ use character_model::{
         CharacterControlTransitionsSequenceHandle, CharacterObjectWrapper,
     },
 };
+use character_prefab::CharacterPrefab;
 use object_model::loaded::ObjectWrapper;
 use sequence_model::loaded::ComponentSequencesHandle;
 

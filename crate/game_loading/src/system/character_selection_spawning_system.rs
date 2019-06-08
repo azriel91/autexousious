@@ -1,10 +1,10 @@
 use amethyst::ecs::{Entities, Entity, Read, System, Write, WriteStorage};
-use character_loading::CharacterPrefabHandle;
+use character_prefab::CharacterPrefabHandle;
 use character_selection_model::CharacterSelections;
 use derive_new::new;
 use game_input::InputControlled;
-use game_model::play::GameEntities;
-use object_model::ObjectType;
+use game_model::{loaded::CharacterAssets, play::GameEntities};
+use object_type::ObjectType;
 use typename_derive::TypeName;
 
 use crate::{CharacterAugmentStatus, GameLoadingStatus};
@@ -15,8 +15,9 @@ pub(crate) struct CharacterSelectionSpawningSystem;
 
 type CharacterSelectionSpawningSystemData<'s> = (
     Entities<'s>,
-    Write<'s, GameLoadingStatus>,
     Read<'s, CharacterSelections>,
+    Read<'s, CharacterAssets>,
+    Write<'s, GameLoadingStatus>,
     WriteStorage<'s, CharacterPrefabHandle>,
     WriteStorage<'s, InputControlled>,
     Write<'s, GameEntities>,
@@ -29,8 +30,9 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
         &mut self,
         (
             entities,
-            mut game_loading_status,
             character_selections,
+            character_assets,
+            mut game_loading_status,
             mut character_prefab_handles,
             mut input_controlleds,
             mut game_entities,
@@ -43,15 +45,25 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
         let character_entities = character_selections
             .selections
             .iter()
-            .map(|(controller_id, slug_and_handle)| {
+            .map(|(controller_id, asset_slug)| {
                 let entity = entities.create();
+
+                let handle = character_assets
+                    .get(asset_slug)
+                    .unwrap_or_else(|| {
+                        panic!(
+                            "Expected prefab handle to exist for asset slug: `{}`",
+                            asset_slug
+                        )
+                    })
+                    .clone();
 
                 input_controlleds
                     .insert(entity, InputControlled::new(*controller_id))
                     .expect("Failed to insert input_controlled for character.");
 
                 character_prefab_handles
-                    .insert(entity, slug_and_handle.handle.clone())
+                    .insert(entity, handle)
                     .expect("Failed to insert character_prefab_handle for character.");
 
                 entity
@@ -83,9 +95,9 @@ mod tests {
         AmethystApplication, EffectReturn, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH,
     };
     use application_event::{AppEvent, AppEventReader};
-    use asset_model::loaded::SlugAndHandle;
     use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
-    use character_loading::CharacterLoadingBundle;
+    use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
+    use character_prefab::CharacterPrefabBundle;
     use character_selection_model::CharacterSelections;
     use collision_audio_loading::CollisionAudioLoadingBundle;
     use collision_loading::CollisionLoadingBundle;
@@ -93,7 +105,7 @@ mod tests {
     use game_model::play::GameEntities;
     use loading::{LoadingBundle, LoadingState};
     use map_loading::MapLoadingBundle;
-    use object_model::ObjectType;
+    use object_type::ObjectType;
     use sequence_loading::SequenceLoadingBundle;
     use sprite_loading::SpriteLoadingBundle;
     use typename::TypeName;
@@ -117,6 +129,10 @@ mod tests {
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
+            .with_bundle(
+                CharacterPrefabBundle::new()
+                    .with_system_dependencies(&[String::from(CHARACTER_PROCESSOR)]),
+            )
             .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_state(|| LoadingState::new(PopState))
@@ -172,15 +188,18 @@ mod tests {
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
+            .with_bundle(
+                CharacterPrefabBundle::new()
+                    .with_system_dependencies(&[String::from(CHARACTER_PROCESSOR)]),
+            )
             .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_state(|| LoadingState::new(PopState))
             .with_setup(|world| {
                 let mut character_selections = CharacterSelections::default();
-                character_selections.selections.insert(
-                    0,
-                    SlugAndHandle::from((&*world, ASSETS_CHAR_BAT_SLUG.clone())),
-                );
+                character_selections
+                    .selections
+                    .insert(0, ASSETS_CHAR_BAT_SLUG.clone());
                 world.add_resource(character_selections);
             })
             .with_system_single(

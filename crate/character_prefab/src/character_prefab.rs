@@ -5,6 +5,7 @@ use amethyst::{
     ecs::{Entity, Read, ReadExpect, WriteStorage},
     Error,
 };
+use character_loading::{CharacterLoader, CharacterLoaderParams};
 use character_model::{
     config::CharacterDefinition,
     loaded::{
@@ -13,14 +14,12 @@ use character_model::{
     },
 };
 use derivative::Derivative;
-use object_loading::{GameObjectPrefab, ObjectPrefab};
 use object_model::config::ObjectAssetData;
+use object_prefab::{GameObjectPrefab, ObjectPrefab};
 use shred_derive::SystemData;
 use typename_derive::TypeName;
 
-use crate::{
-    CharacterComponentStorages, CharacterEntityAugmenter, CharacterLoader, CharacterLoaderParams,
-};
+use crate::{CharacterComponentStorages, CharacterEntityAugmenter};
 
 /// Loads `CharacterDefinition`s and attaches components to character entities.
 #[derive(Clone, Debug, PartialEq, TypeName)]

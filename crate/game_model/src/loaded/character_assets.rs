@@ -1,4 +1,4 @@
-use character_loading::CharacterPrefab;
+use character_prefab::CharacterPrefab;
 
 use crate::loaded::GameObjectPrefabs;
 

@@ -51,25 +51,25 @@ impl ComponentSequences {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        assets::{AssetStorage, Loader, ProgressCounter},
+        assets::{AssetStorage, Loader},
         core::TransformBundle,
         ecs::World,
         renderer::{
-            sprite::SpriteSheetHandle, types::DefaultBackend, RenderEmptyBundle, SpriteRender,
-            SpriteSheet, Texture,
+            loaders::load_from_srgba,
+            palette::Srgba,
+            sprite::{Sprite, SpriteSheetHandle},
+            types::{DefaultBackend, TextureData},
+            RenderEmptyBundle, SpriteRender, SpriteSheet, Texture,
         },
         Error,
     };
     use amethyst_test::AmethystApplication;
-    use application::{load_in, resource::Format};
-    use assets_test::ASSETS_CHAR_BAT_PATH;
     use collision_loading::CollisionLoadingBundle;
     use collision_model::{
         config::{Body, Interactions},
         loaded::{BodySequence, InteractionsSequence},
     };
-    use sprite_loading::SpriteLoader;
-    use sprite_model::{config::SpritesDefinition, loaded::SpriteRenderSequence};
+    use sprite_model::loaded::SpriteRenderSequence;
 
     use super::ComponentSequences;
     use crate::{
@@ -151,33 +151,21 @@ mod tests {
     }
 
     fn sprite_sheet_handle(world: &mut World) -> SpriteSheetHandle {
-        let sprites_definition = load_in::<SpritesDefinition, _>(
-            &*ASSETS_CHAR_BAT_PATH,
-            "sprites.toml",
-            Format::Toml,
-            None,
-        )
-        .expect("Failed to load sprites_definition.");
-
         let loader = world.read_resource::<Loader>();
         let texture_assets = world.read_resource::<AssetStorage<Texture>>();
         let sprite_sheet_assets = world.read_resource::<AssetStorage<SpriteSheet>>();
 
-        let sprite_sheet_handles = SpriteLoader::load(
-            &mut ProgressCounter::default(),
-            &loader,
-            &texture_assets,
-            &sprite_sheet_assets,
-            &sprites_definition,
-            &ASSETS_CHAR_BAT_PATH,
-        )
-        .expect("Failed to load sprites for test.");
+        let texture_builder = load_from_srgba(Srgba::new(0., 0., 0., 1.));
+        let texture_data = TextureData::from(texture_builder);
+        let texture_handle = loader.load_from_data(texture_data, (), &texture_assets);
+        let sprite = Sprite::from_pixel_values(200, 100, 20, 10, 0, 0, [0.; 2], false, false);
+        let sprites = vec![sprite];
+        let sprite_sheet = SpriteSheet {
+            texture: texture_handle,
+            sprites,
+        };
 
-        sprite_sheet_handles
-            .iter()
-            .next()
-            .expect("Expected at least one sprite sheet to exist.")
-            .clone()
+        loader.load_from_data(sprite_sheet, (), &sprite_sheet_assets)
     }
 
     fn body_sequence(world: &mut World) -> ComponentSequence {

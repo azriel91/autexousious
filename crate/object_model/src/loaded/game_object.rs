@@ -1,10 +1,10 @@
 use amethyst::assets::{Asset, Handle};
+use object_type::ObjectType;
 use sequence_model::config::SequenceId;
 
 use crate::{
     config::{GameObjectDefinition, GameObjectSequence, ObjectAssetData},
     loaded::ObjectWrapper,
-    ObjectType,
 };
 
 /// Components common to object types, parameterized by sequence ID.

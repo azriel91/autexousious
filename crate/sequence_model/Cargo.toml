@@ -24,10 +24,7 @@ sprite_model = { path = "../sprite_model" }
 [dev-dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["test-support", "vulkan"] }
 amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
-application = { path = "../application"}
-assets_test = { path = "../assets_test" }
 collision_loading = { path = "../collision_loading" }
-sprite_loading = { path = "../sprite_loading"}
 
 [features]
 nightly = ["amethyst/nightly"]

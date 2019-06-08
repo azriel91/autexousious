@@ -5,8 +5,10 @@
 ### Fixed
 
 * Game mode selection UI events no longer enter an event channel loop. ([#134])
+* Removed dependency cycles in crates. ([#135])
 
 [#134]: https://gitlab.com/azriel91/autexousious/issues/134
+[#135]: https://gitlab.com/azriel91/autexousious/issues/135
 
 ## 0.11.0 (2019-05-24)
 
