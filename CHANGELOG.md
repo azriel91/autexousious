@@ -4,7 +4,7 @@
 
 ### Changed
 
-* Render using Vulkan. ([#131])
+* Render using Vulkan. ([#131], [#136])
 
 ### Fixed
 
@@ -14,6 +14,7 @@
 [#131]: https://gitlab.com/azriel91/autexousious/issues/131
 [#134]: https://gitlab.com/azriel91/autexousious/issues/134
 [#135]: https://gitlab.com/azriel91/autexousious/issues/135
+[#136]: https://gitlab.com/azriel91/autexousious/issues/136
 
 ## 0.11.0 (2019-05-24)
 
