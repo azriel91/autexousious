@@ -78,10 +78,16 @@ impl<'s> PrefabData<'s> for HpBarPrefab {
         _entities: &[Entity],
         _children: &[Entity],
     ) -> Result<(), Error> {
+        let parent_translation = transforms
+            .get(self.game_object_entity)
+            .map(Transform::translation)
+            .copied();
+
         hp_bars.insert(entity, HpBar::default())?;
         let mut transform = Transform::default();
-        transform.set_translation_y(-10.); // Move it below the character.
-        transform.set_translation_z(1.);
+        if let Some(translation) = parent_translation {
+            *transform.translation_mut() = translation;
+        }
         transform.set_scale(Vector3::new(
             Float::from(HP_BAR_LENGTH),
             Float::from(HP_BAR_HEIGHT),

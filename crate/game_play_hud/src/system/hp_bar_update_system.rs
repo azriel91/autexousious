@@ -11,6 +11,11 @@ use typename_derive::TypeName;
 
 use crate::{HpBar, HP_BAR_LENGTH, HP_BAR_SPRITE_COUNT};
 
+/// Move HpBar below character.
+const Y_OFFSET: f32 = -10.;
+/// Move HpBar in front of object.
+const Z_OFFSET: f32 = 1.;
+
 /// Updates `HpBar` length based on its parent entity's `HealthPoints`.
 #[derive(Debug, Default, TypeName, new)]
 pub struct HpBarUpdateSystem;
@@ -69,7 +74,10 @@ impl<'s> System<'s> for HpBarUpdateSystem {
                 // Since the `HpBar` is drawn centered, and we want it to be on the left in a fixed
                 // position, we calculate how far it should be.
                 let half_hp_lost = (HP_BAR_LENGTH - hp) / 2.;
-                transform.set_translation_x(-half_hp_lost);
+                let translation = transform.translation_mut();
+                translation.x += Float::from(-half_hp_lost);
+                translation.y += Float::from(Y_OFFSET);
+                translation.z += Float::from(Z_OFFSET);
 
                 let scale = transform.scale_mut();
                 scale[0] = Float::from(hp);
@@ -85,7 +93,7 @@ impl<'s> System<'s> for HpBarUpdateSystem {
 mod tests {
     use amethyst::{
         assets::PrefabData,
-        core::{Float, Transform, TransformBundle},
+        core::{math::Vector3, Float, Transform, TransformBundle},
         ecs::{Builder, Entity, System, SystemData},
         renderer::{types::DefaultBackend, RenderEmptyBundle},
         Error,
@@ -104,10 +112,14 @@ mod tests {
             .with_setup(|world| {
                 <HpBarUpdateSystem as System>::SystemData::setup(&mut world.res);
 
+                let mut transform = Transform::default();
+                transform.set_translation_x(123.);
+                transform.set_translation_y(456.);
+                transform.set_translation_z(789.);
                 let char_entity = {
                     world
                         .create_entity()
-                        .with(Transform::default())
+                        .with(transform)
                         .with(HealthPoints::new(20))
                         .build()
                 };
@@ -137,9 +149,13 @@ mod tests {
                     .get(hp_bar_entity)
                     .expect("Expected hp bar to have `Transform` component.");
 
-                // 100 - 20 = 80
-                // -80 / 2  = -40
-                assert_eq!(Float::from(-40.), transform.translation()[0]);
+                // 100 - 20 = 80 (80 HP)
+                // -80 / 2  = -40 (half sprite width shift)
+                // -40 + 123. = 83. (parent shift)
+                assert_eq!(
+                    &Vector3::new(Float::from(83.), Float::from(446.), Float::from(790.)),
+                    transform.translation()
+                );
                 assert_eq!(Float::from(20.), transform.scale()[0]);
             })
             .run_isolated()

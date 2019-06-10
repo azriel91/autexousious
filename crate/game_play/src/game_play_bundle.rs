@@ -10,6 +10,7 @@ use collision_play::{
 };
 use derive_new::new;
 use game_input::ControllerInput;
+use game_play_hud::HpBarUpdateSystem;
 use named_type::NamedType;
 use object_play::StickToParentObjectSystem;
 use object_status_play::StunPointsReductionSystem;
@@ -163,6 +164,15 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             CharacterHitEffectSystem::new(),
             &CharacterHitEffectSystem::type_name(),
             &[&CharacterControlTransitionsTransitionSystem::type_name()],
+        ); // kcov-ignore
+
+        // Perhaps this should be straight after the `StickToParentObjectSystem`, but we put it here
+        // so that the renderer will show the HP including the damage dealt this frame, instead of
+        // one frame later.
+        builder.add(
+            HpBarUpdateSystem::new(),
+            &HpBarUpdateSystem::type_name(),
+            &[&CharacterHitEffectSystem::type_name()],
         ); // kcov-ignore
 
         builder.add_barrier();
