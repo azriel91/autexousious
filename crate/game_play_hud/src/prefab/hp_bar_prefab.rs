@@ -1,6 +1,6 @@
 use amethyst::{
     assets::PrefabData,
-    core::{math::Vector3, Float, Parent, Transform},
+    core::{math::Vector3, Float, Transform},
     ecs::{Entity, WriteStorage},
     renderer::{transparent::Transparent, SpriteRender},
     Error,
@@ -8,6 +8,7 @@ use amethyst::{
 use asset_gfx_gen::{ColourSpriteSheetGen, ColourSpriteSheetGenData};
 use derivative::Derivative;
 use derive_new::new;
+use object_model::play::ParentObject;
 use shred_derive::SystemData;
 
 use crate::{HpBar, HP_BAR_HEIGHT, HP_BAR_LENGTH, HP_BAR_SPRITE_COUNT};
@@ -45,9 +46,9 @@ pub struct HpBarPrefabSystemData<'s> {
     /// `Transform` components.
     #[derivative(Debug = "ignore")]
     pub transforms: WriteStorage<'s, Transform>,
-    /// `Parent` components.
+    /// `ParentObject` components.
     #[derivative(Debug = "ignore")]
-    pub parents: WriteStorage<'s, Parent>,
+    pub parent_objects: WriteStorage<'s, ParentObject>,
     /// System data needed to load colour sprites.
     #[derivative(Debug = "ignore")]
     pub colour_sprite_sheet_gen_data: ColourSpriteSheetGenData<'s>,
@@ -69,7 +70,7 @@ impl<'s> PrefabData<'s> for HpBarPrefab {
         HpBarPrefabSystemData {
             hp_bars,
             transforms,
-            parents,
+            parent_objects,
             colour_sprite_sheet_gen_data,
             sprite_renders,
             transparents,
@@ -77,17 +78,23 @@ impl<'s> PrefabData<'s> for HpBarPrefab {
         _entities: &[Entity],
         _children: &[Entity],
     ) -> Result<(), Error> {
+        let parent_translation = transforms
+            .get(self.game_object_entity)
+            .map(Transform::translation)
+            .copied();
+
         hp_bars.insert(entity, HpBar::default())?;
         let mut transform = Transform::default();
-        transform.set_translation_y(-10.); // Move it below the character.
-        transform.set_translation_z(1.);
+        if let Some(translation) = parent_translation {
+            *transform.translation_mut() = translation;
+        }
         transform.set_scale(Vector3::new(
             Float::from(HP_BAR_LENGTH),
             Float::from(HP_BAR_HEIGHT),
             Float::from(1.),
         ));
         transforms.insert(entity, transform)?;
-        parents.insert(entity, Parent::new(self.game_object_entity))?;
+        parent_objects.insert(entity, ParentObject::new(self.game_object_entity))?;
 
         let sprite_render = ColourSpriteSheetGen::gradient(
             colour_sprite_sheet_gen_data,

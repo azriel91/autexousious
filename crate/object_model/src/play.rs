@@ -9,6 +9,7 @@ pub use self::{
     health_points::HealthPoints,
     kinematic::{Position, Velocity},
     mirrored::Mirrored,
+    parent_object::ParentObject,
     skill_points::SkillPoints,
 };
 
@@ -17,4 +18,5 @@ mod grounding;
 mod health_points;
 mod kinematic;
 mod mirrored;
+mod parent_object;
 mod skill_points;
