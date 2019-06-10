@@ -10,7 +10,7 @@ collision_loading = { path = "../collision_loading" }
 collision_model = { path = "../collision_model" }
 derivative = "1.0.2"
 derive-new = "0.5.6"
-derive_deref = "1.0.2"
+derive_deref = "1.1.0"
 derive_more = "0.14.1"
 logic_clock = { path = "../logic_clock" }
 numeric_newtype_derive = { path = "../numeric_newtype_derive" }

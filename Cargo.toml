@@ -7,9 +7,4 @@ members = ["app/*", "crate/*"]
 codegen-units = 1
 
 [patch.crates-io]
-derive_deref = { git = "https://github.com/azriel91/derive_deref.git", branch = "feature/allow-phantom-data-second-field" }
 rodio = { git = "https://github.com/azriel91/rodio.git", branch = "use-nalgebra-for-spatial-source" }
-
-[patch."https://github.com/amethyst/amethyst.git"]
-amethyst = { git = "https://github.com/azriel91/amethyst.git", branch = "feature/amethyst-test-rendy" }
-amethyst_test = { git = "https://github.com/azriel91/amethyst.git", branch = "feature/amethyst-test-rendy" }

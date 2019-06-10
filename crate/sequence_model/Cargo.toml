@@ -9,7 +9,7 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["vulk
 collision_model = { path = "../collision_model" }
 derivative = "1.0.2"
 derive-new = "0.5.6"
-derive_deref = "1.0.2"
+derive_deref = "1.1.0"
 derive_more = "0.14.1"
 fnv = "1.0.6"
 game_input_model = { path = "../game_input_model" }
