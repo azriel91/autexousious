@@ -964,6 +964,7 @@ dependencies = [
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input_model 0.11.0",
+ "game_model 0.11.0",
  "loading 0.11.0",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_loading 0.11.0",
