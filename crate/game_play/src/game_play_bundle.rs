@@ -11,6 +11,7 @@ use collision_play::{
 use derive_new::new;
 use game_input::ControllerInput;
 use named_type::NamedType;
+use object_play::StickToParentObjectSystem;
 use object_status_play::StunPointsReductionSystem;
 use tracker::LastTrackerSystem;
 use typename::TypeName;
@@ -114,6 +115,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
                 &ObjectKinematicsUpdateSystem::type_name(),
                 &CharacterGroundingSystem::type_name(),
             ],
+        ); // kcov-ignore
+        builder.add(
+            StickToParentObjectSystem::new(),
+            &StickToParentObjectSystem::type_name(),
+            &[&ObjectTransformUpdateSystem::type_name()],
         ); // kcov-ignore
         builder.add(
             HitRepeatTrackersTickerSystem::new(),

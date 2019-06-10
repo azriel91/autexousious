@@ -1,10 +1,12 @@
 use amethyst::{
-    core::{Float, Parent, Transform},
+    core::{Float, Transform},
     ecs::{Join, ReadStorage, System, WriteStorage},
     renderer::SpriteRender,
 };
+use derivative::Derivative;
 use derive_new::new;
-use object_model::play::HealthPoints;
+use object_model::play::{HealthPoints, ParentObject};
+use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 use crate::{HpBar, HP_BAR_LENGTH, HP_BAR_SPRITE_COUNT};
@@ -13,26 +15,49 @@ use crate::{HpBar, HP_BAR_LENGTH, HP_BAR_SPRITE_COUNT};
 #[derive(Debug, Default, TypeName, new)]
 pub struct HpBarUpdateSystem;
 
-type HpBarUpdateSystemData<'s> = (
-    ReadStorage<'s, HpBar>,
-    ReadStorage<'s, Parent>,
-    ReadStorage<'s, HealthPoints>,
-    WriteStorage<'s, Transform>,
-    WriteStorage<'s, SpriteRender>,
-);
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub struct HpBarUpdateSystemData<'s> {
+    /// `HpBar` components.
+    #[derivative(Debug = "ignore")]
+    pub hp_bars: ReadStorage<'s, HpBar>,
+    /// `ParentObject` components.
+    #[derivative(Debug = "ignore")]
+    pub parent_objects: ReadStorage<'s, ParentObject>,
+    /// `HealthPoints` components.
+    #[derivative(Debug = "ignore")]
+    pub health_pointses: ReadStorage<'s, HealthPoints>,
+    /// `Transform` components.
+    #[derivative(Debug = "ignore")]
+    pub transforms: WriteStorage<'s, Transform>,
+    /// `SpriteRender` components.
+    #[derivative(Debug = "ignore")]
+    pub sprite_renders: WriteStorage<'s, SpriteRender>,
+}
 
 impl<'s> System<'s> for HpBarUpdateSystem {
     type SystemData = HpBarUpdateSystemData<'s>;
 
     fn run(
         &mut self,
-        (hp_bars, parents, health_pointses, mut transforms, mut sprite_renders): Self::SystemData,
+        HpBarUpdateSystemData {
+            hp_bars,
+            parent_objects,
+            health_pointses,
+            mut transforms,
+            mut sprite_renders,
+        }: Self::SystemData,
     ) {
-        (&hp_bars, &parents, &mut transforms, &mut sprite_renders)
+        (
+            &hp_bars,
+            &parent_objects,
+            &mut transforms,
+            &mut sprite_renders,
+        )
             .join()
-            .filter_map(|(_, parent, transform, sprite_render)| {
+            .filter_map(|(_, parent_object, transform, sprite_render)| {
                 health_pointses
-                    .get(parent.entity)
+                    .get(parent_object.entity)
                     .map(|health_points| (transform, sprite_render, health_points))
             })
             .for_each(|(transform, sprite_render, health_points)| {
