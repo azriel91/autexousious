@@ -11,7 +11,7 @@ pub use self::{
     control_transitions::ControlTransitions,
     sequence_end_transition::SequenceEndTransition,
     sequence_end_transitions::SequenceEndTransitions,
-    wait_sequence::WaitSequence,
+    wait_sequence::{WaitSequence, WaitSequenceHandle},
 };
 
 mod component_sequence;

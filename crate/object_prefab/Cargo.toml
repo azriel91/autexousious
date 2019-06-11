@@ -22,6 +22,7 @@ application_event = { path = "../application_event" }
 collision_loading = { path = "../collision_loading" }
 fnv = "1.0.6"
 game_input_model = { path = "../game_input_model" }
+object_loading = { path = "../object_loading" }
 sequence_loading = { path = "../sequence_loading" }
 shape_model = { path = "../shape_model" }
 sprite_loading = { path = "../sprite_loading" }

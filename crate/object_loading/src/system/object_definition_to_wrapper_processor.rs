@@ -1,22 +1,20 @@
 use std::{marker::PhantomData, ops::Deref, sync::Arc};
 
 use amethyst::{
-    assets::{AssetStorage, HotReloadStrategy, Loader, ProcessingState},
+    assets::{AssetStorage, HotReloadStrategy, ProcessingState},
     core::Time,
     ecs::{Read, ReadExpect, System, Write},
 };
-use collision_model::config::{Body, Interactions};
 use derivative::Derivative;
 use derive_new::new;
 use object_model::{config::GameObjectDefinition, loaded::GameObject};
 use rayon::ThreadPool;
-use sequence_model::loaded::ComponentSequences;
 use serde::{Deserialize, Serialize};
 use shred_derive::SystemData;
 use typename::TypeName as TypeNameTrait;
 use typename_derive::TypeName;
 
-use crate::{ObjectLoader, ObjectLoaderParams};
+use crate::{ObjectLoader, ObjectLoaderParams, ObjectLoaderSystemData};
 
 /// Loads `XObjectWrapper` from `XObjectDefinition`.
 #[derive(Debug, Default, TypeName, new)]
@@ -35,9 +33,6 @@ where
     O: GameObject,
     <O as GameObject>::SequenceId: for<'de> Deserialize<'de> + Serialize,
 {
-    /// `Loader` to load assets.
-    #[derivative(Debug = "ignore")]
-    pub loader: ReadExpect<'s, Loader>,
     /// Pool of worker threads.
     #[derivative(Debug = "ignore")]
     pub thread_pool: ReadExpect<'s, Arc<ThreadPool>>,
@@ -50,18 +45,11 @@ where
     /// `AssetStorage` for the `GameObjectDefinition`s.
     #[derivative(Debug = "ignore")]
     pub game_object_definition_assets: Read<'s, AssetStorage<O::Definition>>,
-    /// `AssetStorage` for `ComponentSequences`.
-    #[derivative(Debug = "ignore")]
-    pub component_sequences_assets: Read<'s, AssetStorage<ComponentSequences>>,
     /// `AssetStorage` for `ObjectWrapper`s.
     #[derivative(Debug = "ignore")]
     pub object_wrapper_assets: Write<'s, AssetStorage<O::ObjectWrapper>>,
-    /// `AssetStorage` for `Body`s.
-    #[derivative(Debug = "ignore")]
-    pub body_assets: Read<'s, AssetStorage<Body>>,
-    /// `AssetStorage` for `Interactions`s.
-    #[derivative(Debug = "ignore")]
-    pub interactions_assets: Read<'s, AssetStorage<Interactions>>,
+    /// `ObjectLoaderSystemData`.
+    pub object_loader_system_data: ObjectLoaderSystemData<'s>,
     /// Marker.
     phantom_data: PhantomData<O>,
 }
@@ -76,15 +64,12 @@ where
     fn run(
         &mut self,
         ObjectDefinitionToWrapperProcessorData {
-            loader,
             thread_pool,
             time,
             hot_reload_strategy,
             game_object_definition_assets,
-            component_sequences_assets,
             mut object_wrapper_assets,
-            body_assets,
-            interactions_assets,
+            object_loader_system_data,
             ..
         }: Self::SystemData,
     ) {
@@ -101,13 +86,10 @@ where
                     let object_definition = game_object_definition.object_definition();
 
                     let wrapper = ObjectLoader::load::<O>(
-                        ObjectLoaderParams {
-                            loader: &loader,
-                            component_sequences_assets: &component_sequences_assets,
-                            sprite_sheet_handles,
-                            body_assets: &body_assets,
-                            interactions_assets: &interactions_assets,
-                        },
+                        ObjectLoaderParams::from((
+                            &object_loader_system_data,
+                            sprite_sheet_handles.as_ref(),
+                        )),
                         object_definition,
                     )?;
 

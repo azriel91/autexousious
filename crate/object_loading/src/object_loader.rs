@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use amethyst::{assets::Handle, renderer::SpriteRender, Error};
 use collision_model::{
     config::{Body, Interactions},
-    loaded::{BodySequence, InteractionsSequence},
+    loaded::{BodySequence, BodySequenceHandle, InteractionsSequence, InteractionsSequenceHandle},
 };
 use fnv::FnvHashMap;
 use object_model::{
@@ -14,11 +14,11 @@ use sequence_model::{
     config::Wait,
     loaded::{
         ComponentSequence, ComponentSequences, ComponentSequencesHandle, SequenceEndTransition,
-        WaitSequence,
+        WaitSequence, WaitSequenceHandle,
     },
 };
 use serde::{Deserialize, Serialize};
-use sprite_model::loaded::SpriteRenderSequence;
+use sprite_model::loaded::{SpriteRenderSequence, SpriteRenderSequenceHandle};
 
 use crate::ObjectLoaderParams;
 
@@ -37,6 +37,10 @@ impl ObjectLoader {
         ObjectLoaderParams {
             loader,
             component_sequences_assets,
+            wait_sequence_assets,
+            sprite_render_sequence_assets,
+            body_sequence_assets,
+            interactions_sequence_assets,
             sprite_sheet_handles,
             body_assets,
             interactions_assets,
@@ -59,10 +63,29 @@ impl ObjectLoader {
             .collect::<FnvHashMap<_, _>>();
 
         // Load component sequences
-        let component_sequences_handles = object_definition
-            .sequences
-            .iter()
-            .map(|(sequence_id, sequence)| {
+        let sequences_handles = (
+            HashMap::<O::SequenceId, ComponentSequencesHandle>::new(),
+            HashMap::<O::SequenceId, WaitSequenceHandle>::new(),
+            HashMap::<O::SequenceId, SpriteRenderSequenceHandle>::new(),
+            HashMap::<O::SequenceId, BodySequenceHandle>::new(),
+            HashMap::<O::SequenceId, InteractionsSequenceHandle>::new(),
+        );
+        let (
+            component_sequences_handles,
+            wait_sequence_handles,
+            sprite_render_sequence_handles,
+            body_sequence_handles,
+            interactions_sequence_handles,
+        ) = object_definition.sequences.iter().fold(
+            sequences_handles,
+            |(
+                mut component_sequences_handles,
+                mut wait_sequence_handles,
+                mut sprite_render_sequence_handles,
+                mut body_sequence_handles,
+                mut interactions_sequence_handles,
+            ),
+             (sequence_id, sequence)| {
                 let wait_sequence = WaitSequence::new(
                     sequence
                         .object_sequence()
@@ -117,20 +140,57 @@ impl ObjectLoader {
                 );
 
                 let mut component_sequences = Vec::new();
-                component_sequences.push(ComponentSequence::Wait(wait_sequence));
-                component_sequences.push(ComponentSequence::SpriteRender(sprite_render_sequence));
-                component_sequences.push(ComponentSequence::Body(body_sequence));
-                component_sequences.push(ComponentSequence::Interactions(interactions_sequence));
+                component_sequences.push(ComponentSequence::Wait(wait_sequence.clone()));
+                component_sequences.push(ComponentSequence::SpriteRender(
+                    sprite_render_sequence.clone(),
+                ));
+                component_sequences.push(ComponentSequence::Body(body_sequence.clone()));
+                component_sequences.push(ComponentSequence::Interactions(
+                    interactions_sequence.clone(),
+                ));
+
+                let wait_sequence_handle =
+                    loader.load_from_data(wait_sequence, (), wait_sequence_assets);
+                let sprite_render_sequence_handle = loader.load_from_data(
+                    sprite_render_sequence,
+                    (),
+                    sprite_render_sequence_assets,
+                );
+                let body_sequence_handle =
+                    loader.load_from_data(body_sequence, (), body_sequence_assets);
+                let interactions_sequence_handle =
+                    loader.load_from_data(interactions_sequence, (), interactions_sequence_assets);
 
                 let component_sequences = ComponentSequences::new(component_sequences);
                 let component_sequences_handle =
                     loader.load_from_data(component_sequences, (), component_sequences_assets);
 
-                (*sequence_id, component_sequences_handle)
-            })
-            .collect::<HashMap<O::SequenceId, ComponentSequencesHandle>>();
+                let sequence_id = *sequence_id;
 
-        let object = Object::new(component_sequences_handles, sequence_end_transitions.into());
+                component_sequences_handles.insert(sequence_id, component_sequences_handle);
+                wait_sequence_handles.insert(sequence_id, wait_sequence_handle);
+                sprite_render_sequence_handles.insert(sequence_id, sprite_render_sequence_handle);
+                body_sequence_handles.insert(sequence_id, body_sequence_handle);
+                interactions_sequence_handles.insert(sequence_id, interactions_sequence_handle);
+
+                (
+                    component_sequences_handles,
+                    wait_sequence_handles,
+                    sprite_render_sequence_handles,
+                    body_sequence_handles,
+                    interactions_sequence_handles,
+                )
+            },
+        );
+
+        let object = Object::new(
+            component_sequences_handles,
+            wait_sequence_handles,
+            sprite_render_sequence_handles,
+            body_sequence_handles,
+            interactions_sequence_handles,
+            sequence_end_transitions.into(),
+        );
         let wrapper = O::ObjectWrapper::new(object);
 
         Ok(wrapper)
@@ -140,8 +200,9 @@ impl ObjectLoader {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        assets::{AssetStorage, Loader, Processor, ProgressCounter},
+        assets::{AssetStorage, Processor, ProgressCounter},
         core::TransformBundle,
+        ecs::Read,
         renderer::{types::DefaultBackend, RenderEmptyBundle, SpriteSheet, Texture},
     };
     use amethyst_test::AmethystApplication;
@@ -153,7 +214,6 @@ mod test {
         loaded::{Character, CharacterObjectWrapper},
     };
     use collision_loading::CollisionLoadingBundle;
-    use collision_model::config::{Body, Interactions};
     use sequence_loading::SequenceLoadingBundle;
     use sequence_model::loaded::ComponentSequences;
     use sprite_loading::SpriteLoader;
@@ -161,7 +221,7 @@ mod test {
     use typename::TypeName;
 
     use super::ObjectLoader;
-    use crate::{ObjectDefinitionToWrapperProcessor, ObjectLoaderParams};
+    use crate::{ObjectDefinitionToWrapperProcessor, ObjectLoaderParams, ObjectLoaderSystemData};
 
     #[test]
     fn loads_object_assets() {
@@ -202,23 +262,27 @@ mod test {
                         )
                         .expect("Failed to load sprites_definition.");
 
-                        let loader = &world.read_resource::<Loader>();
-                        let component_sequences_assets =
-                            &world.read_resource::<AssetStorage<ComponentSequences>>();
-                        let texture_assets = &world.read_resource::<AssetStorage<Texture>>();
-                        let sprite_sheet_assets =
-                            &world.read_resource::<AssetStorage<SpriteSheet>>();
-
-                        let body_assets = &world.read_resource::<AssetStorage<Body>>();
-                        let interactions_assets =
-                            &world.read_resource::<AssetStorage<Interactions>>();
+                        let (
+                            ObjectLoaderSystemData {
+                                loader,
+                                component_sequences_assets,
+                                wait_sequence_assets,
+                                sprite_render_sequence_assets,
+                                body_sequence_assets,
+                                interactions_sequence_assets,
+                                body_assets,
+                                interactions_assets,
+                            },
+                            texture_assets,
+                            sprite_sheet_assets,
+                        ) = world.system_data::<TestSystemData>();
 
                         // TODO: <https://gitlab.com/azriel91/autexousious/issues/94>
                         let sprite_sheet_handles = SpriteLoader::load(
                             &mut ProgressCounter::default(),
-                            loader,
-                            texture_assets,
-                            sprite_sheet_assets,
+                            &loader,
+                            &texture_assets,
+                            &sprite_sheet_assets,
                             &sprites_definition,
                             &asset_record.path,
                         )
@@ -227,11 +291,15 @@ mod test {
 
                         ObjectLoader::load::<Character>(
                             ObjectLoaderParams {
-                                loader,
-                                component_sequences_assets,
+                                loader: &loader,
+                                component_sequences_assets: &component_sequences_assets,
+                                wait_sequence_assets: &wait_sequence_assets,
+                                sprite_render_sequence_assets: &sprite_render_sequence_assets,
+                                body_sequence_assets: &body_sequence_assets,
+                                interactions_sequence_assets: &interactions_sequence_assets,
                                 sprite_sheet_handles,
-                                body_assets,
-                                interactions_assets,
+                                body_assets: &body_assets,
+                                interactions_assets: &interactions_assets,
                             },
                             &character_definition.object_definition,
                         )
@@ -268,4 +336,10 @@ mod test {
                 .is_ok()
         );
     }
+
+    type TestSystemData<'s> = (
+        ObjectLoaderSystemData<'s>,
+        Read<'s, AssetStorage<Texture>>,
+        Read<'s, AssetStorage<SpriteSheet>>,
+    );
 }
