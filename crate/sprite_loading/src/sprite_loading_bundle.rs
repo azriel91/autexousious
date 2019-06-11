@@ -1,8 +1,11 @@
 use amethyst::{assets::Processor, core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
 use derive_new::new;
-use sprite_model::config::SpritesDefinition;
+use sprite_model::{config::SpritesDefinition, loaded::SpriteRenderSequence};
 
-/// Adds the `Processor::<SpritesDefinition>` system to the world.
+/// Adds the following systems to the dispatcher:
+///
+/// * `Processor::<SpritesDefinition>`
+/// * `Processor::<SpriteRenderSequence>`
 #[derive(Debug, new)]
 pub struct SpriteLoadingBundle;
 
@@ -13,6 +16,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for SpriteLoadingBundle {
             "sprites_definition_processor",
             &[],
         );
+        builder.add(
+            Processor::<SpriteRenderSequence>::new(),
+            "sprite_render_sequence_processor",
+            &["sprites_definition_processor"],
+        );
         Ok(())
     }
 }
@@ -21,7 +29,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for SpriteLoadingBundle {
 mod test {
     use amethyst::{assets::AssetStorage, Error};
     use amethyst_test::AmethystApplication;
-    use sprite_model::config::SpritesDefinition;
+    use sprite_model::{config::SpritesDefinition, loaded::SpriteRenderSequence};
 
     use super::SpriteLoadingBundle;
 
@@ -32,6 +40,7 @@ mod test {
             .with_assertion(|world| {
                 // Panics if the Processors are not added.
                 world.read_resource::<AssetStorage<SpritesDefinition>>();
+                world.read_resource::<AssetStorage<SpriteRenderSequence>>();
             })
             .run()
     }

@@ -1,14 +1,19 @@
 use amethyst::{assets::Processor, core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
-use collision_model::config::{Body, Interactions};
+use collision_model::{
+    config::{Body, Interactions},
+    loaded::{BodySequence, InteractionsSequence},
+};
 use derive_new::new;
 use typename::TypeName;
 
 use crate::CollisionLoadingSystem;
 
-/// Adds `Body` and `Interactions` processors to the `World`.
+/// Adds the following systems to the dispatcher.
 ///
 /// * `Processor::<Body>` is added with id `"body_processor"`.
+/// * `Processor::<BodySequence>` is added with id `"body_sequence_processor"`.
 /// * `Processor::<Interactions>` is added with id `"interactions_processor"`.
+/// * `Processor::<InteractionsSequence>` is added with id `"interactions_sequence_processor"`.
 #[derive(Debug, new)]
 pub struct CollisionLoadingBundle;
 
@@ -25,8 +30,18 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CollisionLoadingBundle {
             &[&CollisionLoadingSystem::type_name()],
         ); // kcov-ignore
         builder.add(
+            Processor::<BodySequence>::new(),
+            "body_sequence_processor",
+            &[&CollisionLoadingSystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
             Processor::<Interactions>::new(),
             "interactions_processor",
+            &[&CollisionLoadingSystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
+            Processor::<InteractionsSequence>::new(),
+            "interactions_sequence_processor",
             &[&CollisionLoadingSystem::type_name()],
         ); // kcov-ignore
         Ok(())
@@ -37,7 +52,10 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CollisionLoadingBundle {
 mod test {
     use amethyst::{assets::AssetStorage, Error};
     use amethyst_test::AmethystApplication;
-    use collision_model::config::{Body, Interactions};
+    use collision_model::{
+        config::{Body, Interactions},
+        loaded::{BodySequence, InteractionsSequence},
+    };
 
     use super::CollisionLoadingBundle;
 
@@ -48,7 +66,9 @@ mod test {
             .with_assertion(|world| {
                 // Next line will panic if the Processors aren't added
                 world.read_resource::<AssetStorage<Body>>();
+                world.read_resource::<AssetStorage<BodySequence>>();
                 world.read_resource::<AssetStorage<Interactions>>();
+                world.read_resource::<AssetStorage<InteractionsSequence>>();
             })
             .run()
     }
