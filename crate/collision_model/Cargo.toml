@@ -6,6 +6,7 @@ edition = "2018"
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["vulkan"] }
+asset_derive = { path = "../asset_derive" }
 derivative = "1.0.2"
 derive-new = "0.5.6"
 derive_deref = "1.1.0"
@@ -14,6 +15,7 @@ logic_clock = { path = "../logic_clock" }
 minterpolate = { version = "0.4.0", features = ["serde"] }
 numeric_newtype_derive = { path = "../numeric_newtype_derive" }
 object_status_model = { path = "../object_status_model" }
+sequence_model_derive = { path = "../sequence_model_derive" }
 sequence_model_spi = { path = "../sequence_model_spi" }
 serde = "1.0.92"
 shape_model = { path = "../shape_model" }

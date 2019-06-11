@@ -1,7 +1,10 @@
 use amethyst::assets::Handle;
-use sequence_model_spi::loaded::ComponentFrames;
+use asset_derive::Asset;
+use derive_deref::{Deref, DerefMut};
+use sequence_model_derive::component_sequence;
 
 use crate::config::Interactions;
 
 /// Sequence for interactions.
-pub type InteractionsSequence = ComponentFrames<Handle<Interactions>>;
+#[component_sequence(Handle<Interactions>)]
+pub struct InteractionsSequence;

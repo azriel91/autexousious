@@ -179,7 +179,10 @@ mod tests {
     use amethyst_test::{AmethystApplication, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
     use application_event::{AppEvent, AppEventReader};
     use collision_loading::CollisionLoadingBundle;
-    use collision_model::config::{Body, Hit, Interaction, InteractionKind, Interactions};
+    use collision_model::{
+        config::{Body, Hit, Interaction, InteractionKind, Interactions},
+        loaded::{BodySequence, InteractionsSequence},
+    };
     use fnv::FnvHashMap;
     use game_input_model::ControlBindings;
     use object_model::{
@@ -191,13 +194,13 @@ mod tests {
         config::Wait,
         loaded::{
             ComponentSequence, ComponentSequences, ComponentSequencesHandle, SequenceEndTransition,
-            SequenceEndTransitions,
+            SequenceEndTransitions, WaitSequence,
         },
         play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
     };
-    use sequence_model_spi::loaded::ComponentFrames;
     use shape_model::Volume;
     use sprite_loading::SpriteLoadingBundle;
+    use sprite_model::loaded::SpriteRenderSequence;
     use test_object_model::{config::TestObjectSequenceId, loaded::TestObjectObjectWrapper};
 
     use super::ObjectEntityAugmenter;
@@ -264,7 +267,7 @@ mod tests {
     fn setup_object_wrapper(world: &mut World) {
         let component_sequences_handles = {
             let loader = world.read_resource::<Loader>();
-            let wait_sequence = ComponentFrames::new(vec![Wait::new(2)]);
+            let wait_sequence = WaitSequence::new(vec![Wait::new(2)]);
 
             let texture_assets = world.read_resource::<AssetStorage<Texture>>();
             let texture_builder = load_from_srgba(Srgba::new(0., 0., 0., 1.));
@@ -284,16 +287,16 @@ mod tests {
                 sprite_sheet: sprite_sheet_handle,
                 sprite_number: 0,
             };
-            let sprite_render_sequence = ComponentFrames::new(vec![sprite_render]);
+            let sprite_render_sequence = SpriteRenderSequence::new(vec![sprite_render]);
 
             let body_assets = world.system_data::<Read<'_, AssetStorage<Body>>>();
             let body_handle = loader.load_from_data(body(), (), &body_assets);
-            let body_sequence = ComponentFrames::new(vec![body_handle]);
+            let body_sequence = BodySequence::new(vec![body_handle]);
 
             let interactions_assets = world.system_data::<Read<'_, AssetStorage<Interactions>>>();
             let interactions_handle =
                 loader.load_from_data(interactions(), (), &interactions_assets);
-            let interactions_sequence = ComponentFrames::new(vec![interactions_handle]);
+            let interactions_sequence = InteractionsSequence::new(vec![interactions_handle]);
 
             let wait_sequence = ComponentSequence::Wait(wait_sequence);
             let sprite_render_sequence = ComponentSequence::SpriteRender(sprite_render_sequence);
