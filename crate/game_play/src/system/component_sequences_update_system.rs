@@ -19,7 +19,7 @@ use object_prefab::ComponentSequenceHandleStorages;
 use sequence_model::{loaded::ComponentSequencesHandle, play::SequenceStatus};
 use shred_derive::SystemData;
 
-/// Updates the attached `ComponentSequencesHandle`s when the `SequenceId` is changed.
+/// Updates the attached `Handle<ComponentSequence>`s when `SequenceId` changes.
 #[derive(Debug, Default, NamedType, new)]
 pub struct ComponentSequencesUpdateSystem<O>
 where
