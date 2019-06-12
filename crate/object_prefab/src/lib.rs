@@ -7,7 +7,9 @@ pub use crate::{
     object_entity_augmenter::ObjectEntityAugmenter,
     object_prefab::ObjectPrefab,
     object_prefab_error::ObjectPrefabError,
-    system_data::{FrameComponentStorages, ObjectComponentStorages},
+    system_data::{
+        ComponentSequenceHandleStorages, FrameComponentStorages, ObjectComponentStorages,
+    },
 };
 
 mod game_object_prefab;

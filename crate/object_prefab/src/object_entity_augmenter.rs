@@ -1,18 +1,15 @@
-use amethyst::{
-    assets::AssetStorage, core::transform::Transform, ecs::Entity,
-    renderer::transparent::Transparent,
-};
+use amethyst::{core::transform::Transform, ecs::Entity, renderer::transparent::Transparent};
 use logic_clock::LogicClock;
 use object_model::{
     loaded::ObjectWrapper,
     play::{Mirrored, Position, Velocity},
 };
-use sequence_model::{
-    loaded::{ComponentSequence, ComponentSequences},
-    play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
-};
+use sequence_model::play::{FrameIndexClock, FrameWaitClock, SequenceStatus};
 
-use crate::{FrameComponentStorages, ObjectComponentStorages};
+use crate::ObjectComponentStorages;
+
+/// Placeholder constant for
+const UNINITIALIZED: usize = 99;
 
 /// Augments an entity with `Object` components.
 #[derive(Debug)]
@@ -30,26 +27,18 @@ impl ObjectEntityAugmenter {
     /// * `object_wrapper`: Slug and handle of the object to spawn.
     pub fn augment<'s, W>(
         entity: Entity,
-        component_sequences_assets: &AssetStorage<ComponentSequences>,
         ObjectComponentStorages {
             ref mut transparents,
             ref mut positions,
             ref mut velocities,
             ref mut transforms,
             ref mut mirroreds,
-            ref mut component_sequences_handles,
             ref mut sequence_end_transitionses,
             ref mut sequence_ids,
             ref mut sequence_statuses,
             ref mut frame_index_clocks,
             ref mut frame_wait_clocks,
         }: &mut ObjectComponentStorages<'s, W::SequenceId>,
-        FrameComponentStorages {
-            ref mut waits,
-            ref mut sprite_renders,
-            ref mut bodies,
-            ref mut interactionses,
-        }: &mut FrameComponentStorages<'s>,
         object_wrapper: &W,
     ) where
         W: ObjectWrapper,
@@ -82,77 +71,11 @@ impl ObjectEntityAugmenter {
         sequence_statuses
             .insert(entity, SequenceStatus::default())
             .expect("Failed to insert sequence_status component.");
-
-        let component_sequences_handle = object_wrapper
-            .inner()
-            .component_sequences_handles
-            .get(&sequence_id)
-            .unwrap_or_else(|| {
-                // kcov-ignore-start
-                panic!(
-                    "Failed to get `ComponentSequencesHandle` for sequence ID: \
-                     `{:?}`.",
-                    sequence_id
-                );
-                // kcov-ignore-end
-            });
-
-        let component_sequences = component_sequences_assets
-            .get(component_sequences_handle)
-            .unwrap_or_else(|| {
-                // kcov-ignore-start
-                panic!(
-                    "Expected component_sequences to be loaded for sequence_id: `{:?}`",
-                    sequence_id
-                )
-                // kcov-ignore-end
-            });
-
-        let frame_index_clock =
-            FrameIndexClock::new(LogicClock::new(component_sequences.frame_count()));
-        let starting_frame_index = (*frame_index_clock).value;
         frame_index_clocks
-            .insert(entity, frame_index_clock)
+            .insert(entity, FrameIndexClock::new(LogicClock::new(UNINITIALIZED)))
             .expect("Failed to insert frame_index_clock component.");
-        let mut frame_wait_clock = FrameWaitClock::new(LogicClock::new(1));
-
-        component_sequences
-            .iter()
-            .for_each(|component_sequence| match component_sequence {
-                ComponentSequence::Wait(wait_sequence) => {
-                    let wait = wait_sequence[starting_frame_index];
-                    waits
-                        .insert(entity, wait)
-                        .expect("Failed to insert `Wait` component for object.");
-
-                    (*frame_wait_clock).limit = *wait as usize;
-                }
-                ComponentSequence::SpriteRender(sprite_render_sequence) => {
-                    let sprite_render = sprite_render_sequence[starting_frame_index].clone();
-                    sprite_renders
-                        .insert(entity, sprite_render)
-                        .expect("Failed to insert `SpriteRender` component for object.");
-                }
-                ComponentSequence::Body(body_sequence) => {
-                    let body_handle = body_sequence[starting_frame_index].clone();
-                    bodies
-                        .insert(entity, body_handle)
-                        .expect("Failed to insert `Body` component for object.");
-                }
-                ComponentSequence::Interactions(interactions_sequence) => {
-                    let interactions_handle = interactions_sequence[starting_frame_index].clone();
-                    interactionses
-                        .insert(entity, interactions_handle)
-                        .expect("Failed to insert `Interactions` component for object.");
-                }
-            });
-
-        component_sequences_handles
-            .insert(entity, component_sequences_handle.clone())
-            .expect("Failed to insert component_sequences_handle component.");
-
         frame_wait_clocks
-            .insert(entity, frame_wait_clock)
+            .insert(entity, FrameWaitClock::new(LogicClock::new(UNINITIALIZED)))
             .expect("Failed to insert frame_wait_clock component.");
     }
 }
@@ -216,15 +139,10 @@ mod tests {
             {
                 let object_wrapper = world.read_resource::<TestObjectObjectWrapper>();
 
-                let component_sequences_assets =
-                    world.read_resource::<AssetStorage<ComponentSequences>>();
                 let mut object_component_storages = ObjectComponentStorages::fetch(&world.res);
-                let mut frame_component_storages = FrameComponentStorages::fetch(&world.res);
                 ObjectEntityAugmenter::augment(
                     entity,
-                    &component_sequences_assets,
                     &mut object_component_storages,
-                    &mut frame_component_storages,
                     &*object_wrapper,
                 );
             }
@@ -234,14 +152,10 @@ mod tests {
                 .contains(entity));
             assert!(world.read_storage::<SequenceStatus>().contains(entity));
             assert!(world.read_storage::<Mirrored>().contains(entity));
-            assert!(world.read_storage::<SpriteRender>().contains(entity));
             assert!(world.read_storage::<Transparent>().contains(entity));
             assert!(world.read_storage::<Position<f32>>().contains(entity));
             assert!(world.read_storage::<Velocity<f32>>().contains(entity));
             assert!(world.read_storage::<Transform>().contains(entity));
-            assert!(world
-                .read_storage::<ComponentSequencesHandle>()
-                .contains(entity));
             assert!(world.read_storage::<FrameIndexClock>().contains(entity));
             assert!(world.read_storage::<FrameWaitClock>().contains(entity));
         };

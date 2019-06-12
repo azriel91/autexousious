@@ -4,7 +4,8 @@ use amethyst::{
     assets::{AssetStorage, Handle},
     ecs::{
         storage::{ComponentEvent, Tracked},
-        BitSet, Component, Join, Read, ReadStorage, ReaderId, System, SystemData, WriteStorage,
+        BitSet, Component, Entities, Join, Read, ReadStorage, ReaderId, System, SystemData,
+        WriteStorage,
     },
     shred::Resources,
 };
@@ -14,6 +15,7 @@ use log::error;
 use named_type::NamedType;
 use named_type_derive::NamedType;
 use object_model::loaded::{GameObject, ObjectWrapper};
+use object_prefab::ComponentSequenceHandleStorages;
 use sequence_model::loaded::ComponentSequencesHandle;
 use shred_derive::SystemData;
 
@@ -39,18 +41,24 @@ pub struct ComponentSequencesUpdateSystemData<'s, O>
 where
     O: GameObject,
 {
-    /// `SequenceStatus` component storage.
+    /// `Entities` resource.
+    #[derivative(Debug = "ignore")]
+    pub entities: Entities<'s>,
+    /// `SequenceStatus` components.
     #[derivative(Debug = "ignore")]
     pub sequence_ids: ReadStorage<'s, O::SequenceId>,
-    /// `Handle<O::ObjectWrapper>` component storage.
+    /// `Handle<O::ObjectWrapper>` components.
     #[derivative(Debug = "ignore")]
     pub object_wrapper_handles: ReadStorage<'s, Handle<O::ObjectWrapper>>,
     /// `O::ObjectWrapper` assets.
     #[derivative(Debug = "ignore")]
     pub object_wrapper_assets: Read<'s, AssetStorage<O::ObjectWrapper>>,
-    /// `ComponentSequencesHandle` component storage.
+    /// `ComponentSequencesHandle` components.
     #[derivative(Debug = "ignore")]
     pub component_sequences_handles: WriteStorage<'s, ComponentSequencesHandle>,
+    /// Component sequence handle storages.
+    #[derivative(Debug = "ignore")]
+    pub component_sequence_handle_storages: ComponentSequenceHandleStorages<'s>,
 }
 
 impl<'s, O> System<'s> for ComponentSequencesUpdateSystem<O>
@@ -63,10 +71,18 @@ where
     fn run(
         &mut self,
         ComponentSequencesUpdateSystemData {
+            entities,
             sequence_ids,
             object_wrapper_handles,
             object_wrapper_assets,
             mut component_sequences_handles,
+            component_sequence_handle_storages:
+                ComponentSequenceHandleStorages {
+                    mut wait_sequence_handles,
+                    mut sprite_render_sequence_handles,
+                    mut body_sequence_handles,
+                    mut interactions_sequence_handles,
+                },
         }: Self::SystemData,
     ) {
         self.sequence_id_updates.clear();
@@ -86,47 +102,59 @@ where
             });
 
         (
+            &entities,
             &sequence_ids,
             &object_wrapper_handles,
-            &mut component_sequences_handles,
             &self.sequence_id_updates,
         )
             .join()
-            .for_each(
-                |(sequence_id, object_wrapper_handle, component_sequences_handle, _)| {
+            .for_each(|(entity, sequence_id, object_wrapper_handle, _)| {
+                let component_sequence_handleses = {
                     let object_wrapper = object_wrapper_assets
                         .get(&object_wrapper_handle)
                         .expect("Expected `ObjectWrapper` to be loaded.");
-                    let component_sequences_handles =
-                        &object_wrapper.inner().component_sequences_handles;
+                    let object = object_wrapper.inner();
 
-                    *component_sequences_handle = component_sequences_handles
-                        .get(&sequence_id)
-                        .unwrap_or_else(|| {
-                            let message = format!(
-                                "Expected component sequences to exist for sequence ID: `{:?}`.\
-                                 Falling back to default sequence component sequences.",
-                                sequence_id
-                            );
-                            error!("{}", message);
+                    (
+                        object.component_sequences_handles.get(&sequence_id),
+                        object.wait_sequence_handles.get(&sequence_id),
+                        object.sprite_render_sequence_handles.get(&sequence_id),
+                        object.body_sequence_handles.get(&sequence_id),
+                        object.interactions_sequence_handles.get(&sequence_id),
+                    )
+                };
 
-                            let default_sequence_id = O::SequenceId::default();
-
-                            component_sequences_handles
-                                .get(&default_sequence_id)
-                                .unwrap_or_else(|| {
-                                    let message = format!(
-                                        "Failed to get component sequences for \
-                                         sequence ID: `{:?}`.",
-                                        default_sequence_id
-                                    );
-                                    error!("{}", message);
-                                    panic!(message);
-                                })
-                        })
-                        .clone()
-                },
-            );
+                if let (
+                    Some(component_sequences_handle),
+                    Some(wait_sequence_handle),
+                    Some(sprite_render_sequence_handle),
+                    Some(body_sequence_handle),
+                    Some(interactions_sequence_handle),
+                ) = component_sequence_handleses
+                {
+                    component_sequences_handles
+                        .insert(entity, component_sequences_handle.clone())
+                        .expect("Failed to insert `ComponentSequencesHandle` component.");
+                    wait_sequence_handles
+                        .insert(entity, wait_sequence_handle.clone())
+                        .expect("Failed to insert `WaitSequenceHandle` component.");
+                    sprite_render_sequence_handles
+                        .insert(entity, sprite_render_sequence_handle.clone())
+                        .expect("Failed to insert `SpriteRenderSequenceHandle` component.");
+                    body_sequence_handles
+                        .insert(entity, body_sequence_handle.clone())
+                        .expect("Failed to insert `BodySequenceHandle` component.");
+                    interactions_sequence_handles
+                        .insert(entity, interactions_sequence_handle.clone())
+                        .expect("Failed to insert `InteractionsSequenceHandle` component.");
+                } else {
+                    error!(
+                        "Expected all component sequence handles to exist for sequence ID: `{:?}`, \
+                         but was {:?}.",
+                        sequence_id, &component_sequence_handleses
+                    );
+                }
+            });
     }
 
     fn setup(&mut self, res: &mut Resources) {
