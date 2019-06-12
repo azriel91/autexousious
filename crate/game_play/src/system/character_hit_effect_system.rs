@@ -10,7 +10,6 @@ use collision_model::{
 use derive_new::new;
 use object_model::play::HealthPoints;
 use object_status_model::config::StunPoints;
-use sequence_model::play::SequenceStatus;
 use typename_derive::TypeName;
 
 const STUN_THRESHOLD_LOW: StunPoints = StunPoints(40);
@@ -30,7 +29,6 @@ type CharacterHitEffectSystemData<'s> = (
     WriteStorage<'s, HealthPoints>,
     WriteStorage<'s, StunPoints>,
     WriteStorage<'s, CharacterSequenceId>,
-    WriteStorage<'s, SequenceStatus>,
 );
 
 impl<'s> System<'s> for CharacterHitEffectSystem {
@@ -43,7 +41,6 @@ impl<'s> System<'s> for CharacterHitEffectSystem {
             mut health_pointses,
             mut stun_pointses,
             mut character_sequence_ids,
-            mut sequence_statuses,
         ): Self::SystemData,
     ) {
         // Read from channel
@@ -58,19 +55,10 @@ impl<'s> System<'s> for CharacterHitEffectSystem {
                 let health_points = health_pointses.get_mut(ev.to);
                 let stun_points = stun_pointses.get_mut(ev.to);
                 let character_sequence_id = character_sequence_ids.get_mut(ev.to);
-                let sequence_status = sequence_statuses.get_mut(ev.to);
 
-                if let (
-                    Some(health_points),
-                    Some(stun_points),
-                    Some(character_sequence_id),
-                    Some(sequence_status),
-                ) = (
-                    health_points,
-                    stun_points,
-                    character_sequence_id,
-                    sequence_status,
-                ) {
+                if let (Some(health_points), Some(stun_points), Some(character_sequence_id)) =
+                    (health_points, stun_points, character_sequence_id)
+                {
                     // TODO: Split this system with health check system.
                     let Interaction {
                         kind:
@@ -101,7 +89,6 @@ impl<'s> System<'s> for CharacterHitEffectSystem {
 
                     // Set sequence id
                     *character_sequence_id = next_sequence_id;
-                    *sequence_status = SequenceStatus::Begin;
                 }
             });
     }

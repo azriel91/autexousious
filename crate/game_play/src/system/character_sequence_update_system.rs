@@ -25,10 +25,10 @@ pub struct CharacterSequenceUpdateSystemData<'s> {
     sequence_end_transitionses: ReadStorage<'s, SequenceEndTransitions<CharacterSequenceId>>,
     positions: ReadStorage<'s, Position<f32>>,
     velocities: ReadStorage<'s, Velocity<f32>>,
-    run_counters: WriteStorage<'s, RunCounter>,
     health_pointses: ReadStorage<'s, HealthPoints>,
+    sequence_statuses: ReadStorage<'s, SequenceStatus>,
+    run_counters: WriteStorage<'s, RunCounter>,
     character_sequence_ids: WriteStorage<'s, CharacterSequenceId>,
-    sequence_statuses: WriteStorage<'s, SequenceStatus>,
     mirroreds: WriteStorage<'s, Mirrored>,
     groundings: WriteStorage<'s, Grounding>,
     transforms: WriteStorage<'s, Transform>,
@@ -45,10 +45,10 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             sequence_end_transitionses,
             positions,
             velocities,
-            mut run_counters,
             health_pointses,
+            sequence_statuses,
+            mut run_counters,
             mut character_sequence_ids,
-            mut sequence_statuses,
             mut mirroreds,
             mut groundings,
             mut transforms,
@@ -60,9 +60,9 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             sequence_end_transitions,
             position,
             velocity,
-            run_counter,
             health_points,
             sequence_status,
+            run_counter,
             mirrored,
             grounding,
             transform,
@@ -72,9 +72,9 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             &sequence_end_transitionses,
             &positions,
             &velocities,
-            &mut run_counters,
             &health_pointses,
-            &mut sequence_statuses,
+            &sequence_statuses,
+            &mut run_counters,
             &mut mirroreds,
             &mut groundings,
             &mut transforms,
@@ -127,7 +127,6 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                     .expect("Expected `CharacterSequenceId` to exist.");
 
                 *character_sequence_id = next_character_sequence_id;
-                *sequence_status = SequenceStatus::Begin;
             }
         }
     }
@@ -252,16 +251,14 @@ mod tests {
             ) // kcov-ignore
             .with_assertion(move |world| {
                 world.exec(
-                    |(character_sequence_ids, sequence_statuses, mirroreds): (
+                    |(character_sequence_ids, mirroreds): (
                         ReadStorage<'_, CharacterSequenceId>,
-                        ReadStorage<'_, SequenceStatus>,
                         ReadStorage<'_, Mirrored>,
                     )| {
-                        for (character_sequence_id, sequence_status, mirrored) in
-                            (&character_sequence_ids, &sequence_statuses, &mirroreds).join()
+                        for (character_sequence_id, mirrored) in
+                            (&character_sequence_ids, &mirroreds).join()
                         {
                             assert_eq!(expected_sequence_id, *character_sequence_id);
-                            assert_eq!(SequenceStatus::Begin, *sequence_status);
                             assert_eq!(expected_mirrored, *mirrored);
                         }
                     },

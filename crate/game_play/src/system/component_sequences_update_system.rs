@@ -16,7 +16,7 @@ use named_type::NamedType;
 use named_type_derive::NamedType;
 use object_model::loaded::{GameObject, ObjectWrapper};
 use object_prefab::ComponentSequenceHandleStorages;
-use sequence_model::loaded::ComponentSequencesHandle;
+use sequence_model::{loaded::ComponentSequencesHandle, play::SequenceStatus};
 use shred_derive::SystemData;
 
 /// Updates the attached `ComponentSequencesHandle`s when the `SequenceId` is changed.
@@ -53,6 +53,9 @@ where
     /// `O::ObjectWrapper` assets.
     #[derivative(Debug = "ignore")]
     pub object_wrapper_assets: Read<'s, AssetStorage<O::ObjectWrapper>>,
+    /// `SequenceStatus` components.
+    #[derivative(Debug = "ignore")]
+    pub sequence_statuses: WriteStorage<'s, SequenceStatus>,
     /// `ComponentSequencesHandle` components.
     #[derivative(Debug = "ignore")]
     pub component_sequences_handles: WriteStorage<'s, ComponentSequencesHandle>,
@@ -75,6 +78,7 @@ where
             sequence_ids,
             object_wrapper_handles,
             object_wrapper_assets,
+            mut sequence_statuses,
             mut component_sequences_handles,
             component_sequence_handle_storages:
                 ComponentSequenceHandleStorages {
@@ -109,6 +113,10 @@ where
         )
             .join()
             .for_each(|(entity, sequence_id, object_wrapper_handle, _)| {
+                sequence_statuses
+                    .insert(entity, SequenceStatus::Begin)
+                    .expect("Failed to insert `SequenceStatus` component.");
+
                 let component_sequence_handleses = {
                     let object_wrapper = object_wrapper_assets
                         .get(&object_wrapper_handle)
