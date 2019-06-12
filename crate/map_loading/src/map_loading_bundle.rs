@@ -33,9 +33,10 @@ mod test {
         renderer::{types::DefaultBackend, RenderEmptyBundle},
     };
     use amethyst_test::{AmethystApplication, EffectReturn};
-    use assets_test::{ASSETS_MAP_FADE_PATH, ASSETS_MAP_FADE_SLUG};
+    use assets_test::ASSETS_MAP_FADE_PATH;
     use map_model::loaded::{Map, MapHandle};
     use sequence_loading::SequenceLoadingBundle;
+    use sprite_loading::SpriteLoadingBundle;
 
     use super::MapLoadingBundle;
     use crate::MapLoader;
@@ -48,6 +49,7 @@ mod test {
             AmethystApplication::blank()
                 .with_bundle(TransformBundle::new())
                 .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
+                .with_bundle(SpriteLoadingBundle::new())
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_effect(|world| {
@@ -64,16 +66,7 @@ mod test {
                         .expect("Expected map to be loaded");
 
                     // See fade/map.toml
-                    assert_eq!(
-                        2,
-                        map.component_sequences_handles
-                            .as_ref()
-                            .expect(&format!(
-                                "Expected '{}' map to contain component_sequences_handles.",
-                                *ASSETS_MAP_FADE_SLUG
-                            ))
-                            .len()
-                    );
+                    assert_eq!(2, map.component_sequences_handles.len());
                 })
                 .run_isolated()
                 .is_ok()

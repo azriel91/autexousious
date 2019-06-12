@@ -8,7 +8,8 @@ use amethyst::{
     Error,
 };
 use derive_new::new;
-use sequence_model::loaded::ComponentSequencesHandle;
+use sequence_model::loaded::{ComponentSequencesHandle, WaitSequenceHandle};
+use sprite_model::loaded::SpriteRenderSequenceHandle;
 
 use crate::{config::MapDefinition, loaded::Margins};
 
@@ -20,9 +21,13 @@ pub struct Map {
     /// Coordinates of the limits of the playable area.
     pub margins: Margins,
     /// Handle to the sprite sheets for layer entities.
-    pub sprite_sheet_handles: Option<Vec<SpriteSheetHandle>>,
+    pub sprite_sheet_handles: Vec<SpriteSheetHandle>,
     /// Handles to sequences of components that each layer has.
-    pub component_sequences_handles: Option<Vec<ComponentSequencesHandle>>,
+    pub component_sequences_handles: Vec<ComponentSequencesHandle>,
+    /// Handles to wait sequences that each layer has.
+    pub wait_sequence_handles: Vec<WaitSequenceHandle>,
+    /// Handles to wait sequences that each layer has.
+    pub sprite_render_sequence_handles: Vec<SpriteRenderSequenceHandle>,
 }
 
 impl Asset for Map {
