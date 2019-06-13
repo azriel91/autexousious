@@ -6,10 +6,11 @@ use amethyst::{
 use derivative::Derivative;
 use sequence_model::{
     config::{Repeat, Wait},
-    loaded::ComponentSequencesHandle,
+    loaded::{ComponentSequencesHandle, WaitSequenceHandle},
     play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
 };
 use shred_derive::SystemData;
+use sprite_model::loaded::SpriteRenderSequenceHandle;
 
 /// Map layer `Component` storages.
 #[derive(Derivative, SystemData)]
@@ -42,4 +43,10 @@ pub struct MapLayerComponentStorages<'s> {
     /// `ComponentSequencesHandle` components.
     #[derivative(Debug = "ignore")]
     pub component_sequences_handles: WriteStorage<'s, ComponentSequencesHandle>,
+    /// `WaitSequenceHandle` components.
+    #[derivative(Debug = "ignore")]
+    pub wait_sequence_handles: WriteStorage<'s, WaitSequenceHandle>,
+    /// `SpriteRenderSequenceHandle` components.
+    #[derivative(Debug = "ignore")]
+    pub sprite_render_sequence_handles: WriteStorage<'s, SpriteRenderSequenceHandle>,
 }
