@@ -2,6 +2,6 @@
 
 //! Provides logic to update sequences.
 
-pub use crate::system::SequenceUpdateSystem;
+pub use crate::system::{FrameComponentUpdateSystem, SequenceUpdateSystem};
 
 mod system;

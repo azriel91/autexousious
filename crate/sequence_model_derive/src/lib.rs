@@ -56,10 +56,18 @@ use proc_macro_roids::{DeriveInputDeriveExt, DeriveInputStructExt, FieldsUnnamed
 use quote::quote;
 use syn::{parse_macro_input, parse_quote, DeriveInput, FieldsUnnamed, Path};
 
+use crate::component_sequence_attribute_args::ComponentSequenceAttributeArgs;
+
+mod component_sequence_attribute_args;
+
 #[proc_macro_attribute]
 pub fn component_sequence(args: TokenStream, item: TokenStream) -> TokenStream {
     let mut ast = parse_macro_input!(item as DeriveInput);
-    let component_path = parse_macro_input!(args as Path);
+    let args = parse_macro_input!(args as ComponentSequenceAttributeArgs);
+    let component_path = args.component_path;
+    let component_owned_fn = args
+        .component_owned_fn
+        .unwrap_or_else(|| parse_quote!(std::clone::Clone::clone));
 
     ast.assert_fields_unit();
 
@@ -92,6 +100,14 @@ pub fn component_sequence(args: TokenStream, item: TokenStream) -> TokenStream {
                         Vec::default()
                     )
                 )
+            }
+        }
+
+        impl sequence_model_spi::loaded::ComponentSequenceExt for #type_name {
+            type Component = #component_path;
+
+            fn component_owned(component: &Self::Component) -> Self::Component {
+                #component_owned_fn(component)
             }
         }
 

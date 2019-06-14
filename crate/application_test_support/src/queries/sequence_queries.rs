@@ -9,7 +9,7 @@ use character_model::{
 };
 use character_prefab::CharacterPrefab;
 use object_model::loaded::ObjectWrapper;
-use sequence_model::loaded::ComponentSequencesHandle;
+use sequence_model::loaded::{ComponentSequencesHandle, WaitSequenceHandle};
 
 use crate::ObjectQueries;
 
@@ -116,6 +116,39 @@ impl SequenceQueries {
             .unwrap_or_else(|| {
                 panic!(
                     "Expected component_sequences_handles for sequence ID `{:?}` to exist.",
+                    sequence_id
+                )
+            })
+            .clone()
+    }
+
+    /// Returns the `WaitSequenceHandle` for the specified sequence ID.
+    ///
+    /// This function assumes the character for the specified slug is instantiated in the world.
+    ///
+    /// # Parameters
+    ///
+    /// * `world`: `World` of the running application.
+    /// * `asset_slug`: Object slug whose `Handle<O::ObjectWrapper>` to retrieve.
+    /// * `sequence_id`: Sequence ID whose `WaitSequenceHandle` to retrieve.
+    pub fn wait_sequence_handle(
+        world: &mut World,
+        asset_slug: &AssetSlug,
+        sequence_id: CharacterSequenceId,
+    ) -> WaitSequenceHandle {
+        let object_wrapper_handle = ObjectQueries::object_wrapper_handle(world, asset_slug);
+        let object_wrapper_assets = world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
+        let object_wrapper = object_wrapper_assets
+            .get(&object_wrapper_handle)
+            .unwrap_or_else(|| panic!("Expected `{}` object wrapper to be loaded.", asset_slug));
+
+        object_wrapper
+            .inner()
+            .wait_sequence_handles
+            .get(&sequence_id)
+            .unwrap_or_else(|| {
+                panic!(
+                    "Expected wait_sequence_handles for sequence ID `{:?}` to exist.",
                     sequence_id
                 )
             })
