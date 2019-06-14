@@ -81,10 +81,12 @@ impl SequenceUpdateSystem {
 
         // Update the frame_index_clock limit because we already hold a mutable
         // borrow of the component storage.
-        (*frame_index_clock).limit = wait_sequence_assets
+        let wait_sequence = wait_sequence_assets
             .get(wait_sequence_handle)
-            .expect("Expected `WaitSequence` to be loaded.")
-            .len();
+            .expect("Expected `WaitSequence` to be loaded.");
+        (*frame_index_clock).limit = wait_sequence.len();
+
+        Self::update_frame_wait_clock_limit(wait_sequence, frame_wait_clock, 0);
 
         sequence_update_ec.single_write(SequenceUpdateEvent::SequenceBegin { entity });
     }
@@ -157,12 +159,34 @@ impl SequenceUpdateSystem {
                 frame_wait_clock.reset();
 
                 let frame_index = (*frame_index_clock).value;
+
+                // Update limit for `FrameWaitClock`.
+                let wait_sequence = wait_sequence_assets
+                    .get(wait_sequence_handle)
+                    .expect("Expected `WaitSequence` to be loaded.");
+
+                Self::update_frame_wait_clock_limit(wait_sequence, frame_wait_clock, frame_index);
+
                 sequence_update_ec.single_write(SequenceUpdateEvent::FrameBegin {
                     entity,
                     frame_index,
                 });
             }
         }
+    }
+
+    fn update_frame_wait_clock_limit(
+        wait_sequence: &WaitSequence,
+        frame_wait_clock: &mut FrameWaitClock,
+        frame_index: usize,
+    ) {
+        let wait = wait_sequence.get(frame_index).unwrap_or_else(|| {
+            panic!(
+                "Expected wait sequence to have frame index: `{}`. `WaitSequence`: {:?}",
+                frame_index, wait_sequence
+            )
+        });
+        (*frame_wait_clock).limit = **wait as usize;
     }
 }
 
@@ -255,7 +279,8 @@ mod tests {
     ///
     /// * Resets `FrameIndexClock`.
     /// * Updates the `FrameIndexClock` limit to the new sequence's limit.
-    /// * Resets `LogicClock` (frame wait counter).
+    /// * Resets `FrameWaitClock`.
+    /// * Updates `FrameWaitClock` limit to the new frame's wait limit.
     /// * `SequenceUpdateEvent::SequenceBegin` events are sent.
     #[test]
     fn resets_frame_wait_clocks_and_sends_event_on_sequence_begin() -> Result<(), Error> {
@@ -276,7 +301,7 @@ mod tests {
                 expect_values(
                     world,
                     frame_index_clock(0, 5),
-                    frame_wait_clock(0, 10),
+                    frame_wait_clock(0, 2),
                     None,
                     SequenceStatus::Ongoing,
                 )
@@ -293,6 +318,7 @@ mod tests {
     /// * No change to `FrameIndexClock` value.
     /// * No change to `FrameIndexClock` limit.
     /// * Ticks `FrameWaitClock`.
+    /// * No change to `FrameWaitClock` limit.
     /// * No `SequenceUpdateEvent`s are sent.
     #[test]
     fn ticks_frame_wait_clock_when_sequence_ongoing_and_no_frame_freeze_clock() -> Result<(), Error>
@@ -328,7 +354,8 @@ mod tests {
     /// * No change to `FrameIndexClock` value.
     /// * No change to `FrameIndexClock` limit.
     /// * Ticks `FrameFreezeClock`.
-    /// * No change to `LogicClock`.
+    /// * No change to `FrameWaitClock` value.
+    /// * No change to `FrameWaitClock` limit.
     /// * No `SequenceUpdateEvent`s are sent.
     #[test]
     fn ticks_frame_freeze_clock_when_sequence_ongoing_and_frame_freeze_clock_not_complete(
@@ -365,6 +392,7 @@ mod tests {
     /// * No change to `FrameIndexClock` limit.
     /// * No change to `FrameFreezeClock`.
     /// * Ticks `FrameWaitClock`.
+    /// * No change to `FrameWaitClock` limit.
     /// * No `SequenceUpdateEvent`s are sent.
     #[test]
     fn ticks_frame_freeze_clock_when_sequence_ongoing_and_frame_freeze_clock_complete(
@@ -399,7 +427,8 @@ mod tests {
     ///
     /// * Ticks `FrameIndexClock` value.
     /// * No change to `FrameIndexClock` limit.
-    /// * Resets `LogicClock` (frame wait counter).
+    /// * Resets `FrameWaitClock`.
+    /// * Updates `FrameWaitClock` limit to the new frame's wait limit.
     /// * `SequenceUpdateEvent::FrameBegin` events are sent.
     #[test]
     fn resets_frame_wait_clock_and_sends_event_when_frame_ends_and_sequence_ongoing(
@@ -421,7 +450,7 @@ mod tests {
                 expect_values(
                     world,
                     frame_index_clock(1, 5),
-                    frame_wait_clock(0, 2),
+                    frame_wait_clock(0, 3),
                     None,
                     SequenceStatus::Ongoing,
                 )
@@ -438,6 +467,7 @@ mod tests {
     /// * Ticks `FrameIndexClock` value.
     /// * No change to `FrameIndexClock` limit.
     /// * Ticks `FrameWaitClock` value.
+    /// * No change to `FrameWaitClock` limit.
     /// * `SequenceUpdateEvent::SequenceEnd` event is sent.
     /// * Sets `SequenceStatus` to `SequenceStatus::End`.
     #[test]
@@ -448,7 +478,7 @@ mod tests {
                 initial_values(
                     world,
                     frame_index_clock(4, 5),
-                    frame_wait_clock(1, 2),
+                    frame_wait_clock(5, 6),
                     None,
                     SequenceStatus::Ongoing,
                     false,
@@ -459,7 +489,7 @@ mod tests {
                 expect_values(
                     world,
                     frame_index_clock(5, 5),
-                    frame_wait_clock(2, 2),
+                    frame_wait_clock(6, 6),
                     None,
                     SequenceStatus::End,
                 )
@@ -475,7 +505,7 @@ mod tests {
     ///
     /// * Resets `FrameIndexClock`.
     /// * Updates the `FrameIndexClock` limit to the new sequence's limit.
-    /// * Resets `LogicClock` (frame wait counter).
+    /// * Resets `FrameWaitClock`.
     /// * `SequenceEnd` and `SequenceBegin` events are both sent.
     /// * Sets `SequenceStatus` to `SequenceStatus::Ongoing`.
     #[test]
@@ -486,7 +516,7 @@ mod tests {
                 initial_values(
                     world,
                     frame_index_clock(4, 5),
-                    frame_wait_clock(1, 2),
+                    frame_wait_clock(5, 6),
                     None,
                     SequenceStatus::Ongoing,
                     true,
@@ -558,7 +588,13 @@ mod tests {
             let (loader, wait_sequence_assets) = world
                 .system_data::<(ReadExpect<'_, Loader>, Read<'_, AssetStorage<WaitSequence>>)>();
 
-            let wait_sequence = WaitSequence::new(vec![Wait::new(2); 5]);
+            let wait_sequence = WaitSequence::new(vec![
+                Wait::new(2),
+                Wait::new(3),
+                Wait::new(4),
+                Wait::new(5),
+                Wait::new(6),
+            ]);
             loader.load_from_data(wait_sequence, (), &wait_sequence_assets)
         };
 
