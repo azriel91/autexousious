@@ -96,19 +96,22 @@ where
                 let entity = ev.entity();
                 let frame_index = ev.frame_index();
 
-                let component_sequence_handle = component_sequence_handles
-                    .get(entity)
-                    .expect("Expected entity to have a `Handle<CS>` component.");
-                let component_sequence = component_sequence_assets
-                    .get(component_sequence_handle)
-                    .expect("Expected component_sequence to be loaded.");
+                let component_sequence_handle = component_sequence_handles.get(entity);
 
-                Self::update_frame_components(
-                    &mut components,
-                    component_sequence,
-                    entity,
-                    frame_index,
-                );
+                // Some entities will have sequence update events, but not this particular sequence
+                // component.
+                if let Some(component_sequence_handle) = component_sequence_handle {
+                    let component_sequence = component_sequence_assets
+                        .get(component_sequence_handle)
+                        .expect("Expected component_sequence to be loaded.");
+
+                    Self::update_frame_components(
+                        &mut components,
+                        component_sequence,
+                        entity,
+                        frame_index,
+                    );
+                }
             });
     }
 
@@ -124,13 +127,14 @@ where
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{Entities, Join, ReadStorage, World, WriteStorage},
+        ecs::{Builder, Entity, World},
         shrev::EventChannel,
         Error,
     };
     use application_test_support::{AutexousiousApplication, SequenceQueries};
     use assets_test::ASSETS_CHAR_BAT_SLUG;
     use character_model::config::CharacterSequenceId;
+    use logic_clock::LogicClock;
     use sequence_model::{
         config::Wait,
         loaded::{WaitSequence, WaitSequenceHandle},
@@ -140,7 +144,7 @@ mod tests {
     use super::FrameComponentUpdateSystem;
 
     #[test]
-    fn updates_all_frame_components_on_sequence_begin_event() -> Result<(), Error> {
+    fn updates_frame_component_on_sequence_begin_event() -> Result<(), Error> {
         AutexousiousApplication::game_base()
             .with_system(FrameComponentUpdateSystem::<WaitSequence>::new(), "", &[])
             .with_setup(|world| {
@@ -155,7 +159,7 @@ mod tests {
                     5,
                     0,
                     5,
-                    component_sequence_handle,
+                    Some(component_sequence_handle),
                 )
             })
             .with_setup(|world| {
@@ -170,7 +174,7 @@ mod tests {
     }
 
     #[test]
-    fn updates_all_frame_components_on_frame_begin_event() -> Result<(), Error> {
+    fn updates_frame_component_on_frame_begin_event() -> Result<(), Error> {
         AutexousiousApplication::game_base()
             .with_system(FrameComponentUpdateSystem::<WaitSequence>::new(), "", &[])
             .with_setup(|world| {
@@ -185,7 +189,28 @@ mod tests {
                     5,
                     0,
                     5,
-                    component_sequence_handle,
+                    Some(component_sequence_handle),
+                )
+            })
+            .with_setup(|world| {
+                let events = frame_begin_events(world);
+                send_events(world, events);
+            })
+            .with_assertion(|world| {
+                // See bat/object.toml for values.
+                expect_component_values(world, Wait::new(2))
+            })
+            .run_isolated()
+    }
+
+    #[test]
+    fn does_not_panic_when_entity_does_not_have_component_sequence_handle() -> Result<(), Error> {
+        AutexousiousApplication::game_base()
+            .with_system(FrameComponentUpdateSystem::<WaitSequence>::new(), "", &[])
+            .with_setup(|world| {
+                initial_values(
+                    world, 2, // third frame in the sequence
+                    5, 0, 5, None,
                 )
             })
             .with_setup(|world| {
@@ -205,45 +230,39 @@ mod tests {
         frame_index_clock_limit: usize,
         frame_wait_clock_value: usize,
         frame_wait_clock_limit: usize,
-        component_sequence_handle_initial: WaitSequenceHandle,
+        component_sequence_handle_initial: Option<WaitSequenceHandle>,
     ) {
-        let (
-            _entities,
-            mut frame_index_clocks,
-            mut frame_wait_clocks,
-            mut component_sequence_handles,
-            ..
-        ) = world.system_data::<TestSystemData>();
+        let mut frame_index_clock = FrameIndexClock::new(LogicClock::new(frame_index_clock_limit));
+        (*frame_index_clock).value = frame_index_clock_value;
+        let mut frame_wait_clock = FrameWaitClock::new(LogicClock::new(frame_wait_clock_limit));
+        (*frame_wait_clock).value = frame_wait_clock_value;
 
-        (
-            &mut frame_index_clocks,
-            &mut frame_wait_clocks,
-            &mut component_sequence_handles,
-        )
-            .join()
-            .for_each(
-                |(frame_index_clock, frame_wait_clock, component_sequence_handle)| {
-                    (*frame_index_clock).value = frame_index_clock_value;
-                    (*frame_index_clock).limit = frame_index_clock_limit;
+        let entity = {
+            let mut entity_builder = world
+                .create_entity()
+                .with(frame_index_clock)
+                .with(frame_wait_clock)
+                .with(Wait::new(2));
 
-                    (*frame_wait_clock).value = frame_wait_clock_value;
-                    (*frame_wait_clock).limit = frame_wait_clock_limit;
+            if let Some(component_sequence_handle_initial) = component_sequence_handle_initial {
+                entity_builder = entity_builder.with(component_sequence_handle_initial);
+            }
 
-                    *component_sequence_handle = component_sequence_handle_initial.clone();
-                },
-            );
+            entity_builder.build()
+        };
+
+        world.add_resource(entity);
     }
 
     fn expect_component_values(world: &mut World, expected_wait: Wait) {
-        let (waits, sequence_statuses) =
-            world.system_data::<(WriteStorage<'_, Wait>, ReadStorage<'_, CharacterSequenceId>)>();
+        let entity = *world.read_resource::<Entity>();
+        let waits = world.read_storage::<Wait>();
 
-        (&waits, &sequence_statuses)
-            .join()
-            .for_each(|(wait, _sequence_status)| {
-                assert_eq!(&expected_wait, wait);
-            });
-    } // kcov-ignore
+        let wait = waits
+            .get(entity)
+            .expect("Expected entity to have `Wait` component.");
+        assert_eq!(&expected_wait, wait);
+    }
 
     fn send_events(world: &mut World, events: Vec<SequenceUpdateEvent>) {
         let mut ec = world.write_resource::<EventChannel<SequenceUpdateEvent>>();
@@ -251,56 +270,23 @@ mod tests {
     }
 
     fn sequence_begin_events(world: &mut World) -> Vec<SequenceUpdateEvent> {
-        let (
-            entities,
-            frame_index_clocks,
-            frame_wait_clocks,
-            component_sequence_handles,
-            _components,
-        ) = world.system_data::<TestSystemData>();
-
-        (
-            &entities,
-            &frame_index_clocks,
-            &frame_wait_clocks,
-            &component_sequence_handles,
-        )
-            .join()
-            .map(|(entity, _, _, _)| SequenceUpdateEvent::SequenceBegin { entity })
-            .collect::<Vec<_>>()
+        let entity = *world.read_resource::<Entity>();
+        vec![SequenceUpdateEvent::SequenceBegin { entity }]
     }
 
     fn frame_begin_events(world: &mut World) -> Vec<SequenceUpdateEvent> {
-        let (
-            entities,
-            frame_index_clocks,
-            frame_wait_clocks,
-            component_sequence_handles,
-            _components,
-        ) = world.system_data::<TestSystemData>();
+        let entity = *world.read_resource::<Entity>();
+        let frame_index = {
+            let frame_index_clocks = world.read_storage::<FrameIndexClock>();
+            let frame_index_clock = frame_index_clocks
+                .get(entity)
+                .expect("Expected entity to have `FrameIndexClock` component.");
+            (*frame_index_clock).value
+        };
 
-        (
-            &entities,
-            &frame_index_clocks,
-            &frame_wait_clocks,
-            &component_sequence_handles,
-        )
-            .join()
-            .map(|(entity, frame_index_clock, _, _)| {
-                let frame_index = (*frame_index_clock).value;
-                SequenceUpdateEvent::FrameBegin {
-                    entity,
-                    frame_index,
-                }
-            })
-            .collect::<Vec<_>>()
+        vec![SequenceUpdateEvent::FrameBegin {
+            entity,
+            frame_index,
+        }]
     }
-
-    type TestSystemData<'s> = (
-        Entities<'s>,
-        WriteStorage<'s, FrameIndexClock>,
-        WriteStorage<'s, FrameWaitClock>,
-        WriteStorage<'s, WaitSequenceHandle>,
-        WriteStorage<'s, Wait>,
-    );
 }
