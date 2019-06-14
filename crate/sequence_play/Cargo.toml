@@ -8,8 +8,6 @@ edition = "2018"
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["vulkan"] }
 derivative = "1.0.2"
 derive-new = "0.5.6"
-named_type = "0.2.1"
-named_type_derive = "0.2.1"
 sequence_model = { path = "../sequence_model" }
 sequence_model_spi = { path = "../sequence_model_spi" }
 shred = "0.7.0"

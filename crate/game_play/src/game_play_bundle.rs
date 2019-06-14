@@ -5,6 +5,7 @@ use character_play::{
     CharacterCtsHandleUpdateSystem,
 };
 use collision_audio_play::HitSfxSystem;
+use collision_model::loaded::{BodySequence, InteractionsSequence};
 use collision_play::{
     HitDetectionSystem, HitRepeatTrackersAugmentSystem, HitRepeatTrackersTickerSystem,
 };
@@ -14,15 +15,17 @@ use game_play_hud::HpBarUpdateSystem;
 use named_type::NamedType;
 use object_play::StickToParentObjectSystem;
 use object_status_play::StunPointsReductionSystem;
+use sequence_model::loaded::WaitSequence;
+use sequence_play::{FrameComponentUpdateSystem, SequenceUpdateSystem};
+use sprite_model::loaded::SpriteRenderSequence;
 use tracker::LastTrackerSystem;
 use typename::TypeName;
 
 use crate::{
     CharacterGroundingSystem, CharacterHitEffectSystem, CharacterKinematicsSystem,
-    CharacterSequenceUpdateSystem, ComponentSequencesUpdateSystem, FrameComponentUpdateSystem,
-    FrameFreezeClockAugmentSystem, GamePlayEndDetectionSystem, GamePlayEndTransitionSystem,
-    ObjectCollisionDetectionSystem, ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
-    SequenceUpdateSystem,
+    CharacterSequenceUpdateSystem, ComponentSequencesUpdateSystem, FrameFreezeClockAugmentSystem,
+    GamePlayEndDetectionSystem, GamePlayEndTransitionSystem, ObjectCollisionDetectionSystem,
+    ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
 };
 
 /// Adds the object type update systems to the provided dispatcher.
@@ -32,6 +35,19 @@ pub struct GamePlayBundle;
 impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
         // === Component augmentation === //
+
+        macro_rules! add_frame_component_update_system {
+            ($component_sequence:ident) => {
+                builder.add(
+                    FrameComponentUpdateSystem::<$component_sequence>::new(),
+                    &FrameComponentUpdateSystem::<$component_sequence>::type_name(),
+                    &[
+                        &ComponentSequencesUpdateSystem::<Character>::type_name(),
+                        &SequenceUpdateSystem::type_name(),
+                    ],
+                ); // kcov-ignore
+            };
+        }
 
         builder.add(
             ComponentSequencesUpdateSystem::<Character>::new(),
@@ -45,14 +61,10 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &SequenceUpdateSystem::type_name(),
             &[&ComponentSequencesUpdateSystem::<Character>::type_name()],
         ); // kcov-ignore
-        builder.add(
-            FrameComponentUpdateSystem::new(),
-            &FrameComponentUpdateSystem::type_name(),
-            &[
-                &ComponentSequencesUpdateSystem::<Character>::type_name(),
-                &SequenceUpdateSystem::type_name(),
-            ],
-        ); // kcov-ignore
+        add_frame_component_update_system!(WaitSequence);
+        add_frame_component_update_system!(SpriteRenderSequence);
+        add_frame_component_update_system!(BodySequence);
+        add_frame_component_update_system!(InteractionsSequence);
         builder.add(
             CharacterCtsHandleUpdateSystem::new(),
             &CharacterCtsHandleUpdateSystem::type_name(),

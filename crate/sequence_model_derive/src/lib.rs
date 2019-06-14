@@ -17,6 +17,7 @@
 //! use asset_derive::Asset;
 //! use derive_deref::{Deref, DerefMut};
 //! use sequence_model_derive::component_sequence;
+//! use typename_derive::TypeName;
 //!
 //! #[component_sequence(Wait)]
 //! pub struct WaitSequence;
@@ -28,7 +29,7 @@
 //! use amethyst::assets::Handle;
 //! use sequence_model_spi::loaded::ComponentFrames;
 //!
-//! #[derive(Asset, Clone, Debug, Deref, DerefMut, PartialEq)]
+//! #[derive(Asset, Clone, Debug, Deref, DerefMut, PartialEq, TypeName)]
 //! pub struct WaitSequence(ComponentFrames<Wait>)
 //!
 //! impl WaitSequence {
@@ -119,7 +120,7 @@ pub fn component_sequence(args: TokenStream, item: TokenStream) -> TokenStream {
 }
 
 fn derive_append(ast: &mut DeriveInput) {
-    let derives = parse_quote!(Asset, Clone, Debug, Deref, DerefMut, PartialEq);
+    let derives = parse_quote!(Asset, Clone, Debug, Deref, DerefMut, PartialEq, TypeName);
 
     ast.append_derives(derives);
 }

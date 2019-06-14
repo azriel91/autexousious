@@ -32,9 +32,11 @@ object_prefab = { path = "../object_prefab" }
 object_status_model = { path = "../object_status_model" }
 object_status_play = { path = "../object_status_play" }
 sequence_model = { path = "../sequence_model" }
+sequence_play = { path = "../sequence_play" }
 shape_model = { path = "../shape_model" }
 shred = "0.7.0"
 shred-derive = "0.5.1"
+sprite_model = { path = "../sprite_model" }
 state_registry = { path = "../state_registry" }
 tracker = { path = "../tracker" }
 typename = "0.1.1"

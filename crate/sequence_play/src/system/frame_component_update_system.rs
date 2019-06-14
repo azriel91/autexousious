@@ -8,14 +8,13 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
-use named_type::NamedType;
-use named_type_derive::NamedType;
 use sequence_model::play::SequenceUpdateEvent;
 use sequence_model_spi::loaded::{ComponentFrames, ComponentSequenceExt};
 use shred_derive::SystemData;
+use typename_derive::TypeName;
 
 /// Updates the frame component value based on the current component sequence handle.
-#[derive(Debug, Default, NamedType, new)]
+#[derive(Debug, Default, TypeName, new)]
 pub struct FrameComponentUpdateSystem<CS>
 where
     CS: Asset
