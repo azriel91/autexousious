@@ -9,7 +9,7 @@ pub(crate) use self::{
     object_collision_detection_system::ObjectCollisionDetectionSystem,
     object_kinematics_update_system::ObjectKinematicsUpdateSystem,
     object_transform_update_system::ObjectTransformUpdateSystem,
-    sequence::{FrameComponentUpdateSystem, FrameFreezeClockAugmentSystem, SequenceUpdateSystem},
+    sequence::FrameFreezeClockAugmentSystem,
 };
 
 mod character_grounding_system;

@@ -12,10 +12,7 @@ use object_model::{
 };
 use sequence_model::{
     config::Wait,
-    loaded::{
-        ComponentSequence, ComponentSequences, ComponentSequencesHandle, SequenceEndTransition,
-        WaitSequence, WaitSequenceHandle,
-    },
+    loaded::{SequenceEndTransition, WaitSequence, WaitSequenceHandle},
 };
 use serde::{Deserialize, Serialize};
 use sprite_model::loaded::{SpriteRenderSequence, SpriteRenderSequenceHandle};
@@ -36,7 +33,6 @@ impl ObjectLoader {
     pub fn load<O>(
         ObjectLoaderParams {
             loader,
-            component_sequences_assets,
             wait_sequence_assets,
             sprite_render_sequence_assets,
             body_sequence_assets,
@@ -64,14 +60,12 @@ impl ObjectLoader {
 
         // Load component sequences
         let sequences_handles = (
-            HashMap::<O::SequenceId, ComponentSequencesHandle>::new(),
             HashMap::<O::SequenceId, WaitSequenceHandle>::new(),
             HashMap::<O::SequenceId, SpriteRenderSequenceHandle>::new(),
             HashMap::<O::SequenceId, BodySequenceHandle>::new(),
             HashMap::<O::SequenceId, InteractionsSequenceHandle>::new(),
         );
         let (
-            component_sequences_handles,
             wait_sequence_handles,
             sprite_render_sequence_handles,
             body_sequence_handles,
@@ -79,7 +73,6 @@ impl ObjectLoader {
         ) = object_definition.sequences.iter().fold(
             sequences_handles,
             |(
-                mut component_sequences_handles,
                 mut wait_sequence_handles,
                 mut sprite_render_sequence_handles,
                 mut body_sequence_handles,
@@ -139,16 +132,6 @@ impl ObjectLoader {
                         .collect::<Vec<Handle<Interactions>>>(),
                 );
 
-                let mut component_sequences = Vec::new();
-                component_sequences.push(ComponentSequence::Wait(wait_sequence.clone()));
-                component_sequences.push(ComponentSequence::SpriteRender(
-                    sprite_render_sequence.clone(),
-                ));
-                component_sequences.push(ComponentSequence::Body(body_sequence.clone()));
-                component_sequences.push(ComponentSequence::Interactions(
-                    interactions_sequence.clone(),
-                ));
-
                 let wait_sequence_handle =
                     loader.load_from_data(wait_sequence, (), wait_sequence_assets);
                 let sprite_render_sequence_handle = loader.load_from_data(
@@ -161,20 +144,14 @@ impl ObjectLoader {
                 let interactions_sequence_handle =
                     loader.load_from_data(interactions_sequence, (), interactions_sequence_assets);
 
-                let component_sequences = ComponentSequences::new(component_sequences);
-                let component_sequences_handle =
-                    loader.load_from_data(component_sequences, (), component_sequences_assets);
-
                 let sequence_id = *sequence_id;
 
-                component_sequences_handles.insert(sequence_id, component_sequences_handle);
                 wait_sequence_handles.insert(sequence_id, wait_sequence_handle);
                 sprite_render_sequence_handles.insert(sequence_id, sprite_render_sequence_handle);
                 body_sequence_handles.insert(sequence_id, body_sequence_handle);
                 interactions_sequence_handles.insert(sequence_id, interactions_sequence_handle);
 
                 (
-                    component_sequences_handles,
                     wait_sequence_handles,
                     sprite_render_sequence_handles,
                     body_sequence_handles,
@@ -184,7 +161,6 @@ impl ObjectLoader {
         );
 
         let object = Object::new(
-            component_sequences_handles,
             wait_sequence_handles,
             sprite_render_sequence_handles,
             body_sequence_handles,
@@ -210,12 +186,11 @@ mod test {
     use asset_model::config::AssetRecord;
     use assets_test::{ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SLUG};
     use character_model::{
-        config::{CharacterDefinition, CharacterSequenceId},
+        config::CharacterDefinition,
         loaded::{Character, CharacterObjectWrapper},
     };
     use collision_loading::CollisionLoadingBundle;
     use sequence_loading::SequenceLoadingBundle;
-    use sequence_model::loaded::ComponentSequences;
     use sprite_loading::SpriteLoader;
     use sprite_model::config::SpritesDefinition;
     use typename::TypeName;
@@ -265,7 +240,6 @@ mod test {
                         let (
                             ObjectLoaderSystemData {
                                 loader,
-                                component_sequences_assets,
                                 wait_sequence_assets,
                                 sprite_render_sequence_assets,
                                 body_sequence_assets,
@@ -292,7 +266,6 @@ mod test {
                         ObjectLoader::load::<Character>(
                             ObjectLoaderParams {
                                 loader: &loader,
-                                component_sequences_assets: &component_sequences_assets,
                                 wait_sequence_assets: &wait_sequence_assets,
                                 sprite_render_sequence_assets: &sprite_render_sequence_assets,
                                 body_sequence_assets: &body_sequence_assets,
@@ -311,26 +284,25 @@ mod test {
                 .with_assertion(|world| {
                     let object_wrapper = world.read_resource::<CharacterObjectWrapper>();
 
-                    assert_eq!(
-                        28,
-                        object_wrapper.component_sequences_handles.len(),
-                        "Expected 28 sequences to be loaded. \
-                         Check `bat/object.toml` for number of sequences."
-                    );
+                    macro_rules! assert_component_sequence_count {
+                        ($component_sequence_field:ident) => {
+                            assert_eq!(
+                                28,
+                                object_wrapper.$component_sequence_field.len(),
+                                concat!(
+                                    "Expected 28 ",
+                                    stringify!($component_sequence_field),
+                                    " to be loaded.",
+                                    "Check `bat/object.toml` for number of sequences."
+                                )
+                            );
+                        };
+                    }
 
-                    let component_sequences_assets =
-                        world.read_resource::<AssetStorage<ComponentSequences>>();
-
-                    let stand_attack_0_handle = object_wrapper
-                        .component_sequences_handles
-                        .get(&CharacterSequenceId::StandAttack0)
-                        .expect("Expected to read `StandAttack0` component_sequences.");
-                    let stand_attack_0_component_sequences = component_sequences_assets
-                        .get(stand_attack_0_handle)
-                        .expect("Expected `StandAttack0` component sequences to be loaded.");
-
-                    // Wait, SpriteRender, Body, and Interactions
-                    assert_eq!(4, stand_attack_0_component_sequences.len());
+                    assert_component_sequence_count!(wait_sequence_handles);
+                    assert_component_sequence_count!(sprite_render_sequence_handles);
+                    assert_component_sequence_count!(body_sequence_handles);
+                    assert_component_sequence_count!(interactions_sequence_handles);
                 })
                 .run_isolated()
                 .is_ok()

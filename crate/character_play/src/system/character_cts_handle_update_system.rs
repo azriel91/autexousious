@@ -154,7 +154,7 @@ mod tests {
         AutexousiousApplication::game_base()
             .with_system(CharacterCtsHandleUpdateSystem::new(), "", &[])
             .with_setup(|world| insert_sequence(world, CharacterSequenceId::RunStop))
-            .with_assertion(|world| expect_component_sequences(world, CharacterSequenceId::RunStop))
+            .with_assertion(|world| expect_cts_handle(world, CharacterSequenceId::RunStop))
             .run_isolated()
     }
 
@@ -163,7 +163,7 @@ mod tests {
         AutexousiousApplication::game_base()
             .with_system(CharacterCtsHandleUpdateSystem::new(), "", &[])
             .with_setup(|world| update_sequence(world, CharacterSequenceId::RunStop))
-            .with_assertion(|world| expect_component_sequences(world, CharacterSequenceId::RunStop))
+            .with_assertion(|world| expect_cts_handle(world, CharacterSequenceId::RunStop))
             .run_isolated()
     }
 
@@ -210,7 +210,7 @@ mod tests {
             .build()
     }
 
-    fn expect_component_sequences(world: &mut World, sequence_id: CharacterSequenceId) {
+    fn expect_cts_handle(world: &mut World, sequence_id: CharacterSequenceId) {
         let entity = *world.read_resource::<Entity>();
         let expected_handle = SequenceQueries::character_cts_handle(
             world,

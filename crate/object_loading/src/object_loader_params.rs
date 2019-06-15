@@ -7,7 +7,7 @@ use collision_model::{
     loaded::{BodySequence, InteractionsSequence},
 };
 use derivative::Derivative;
-use sequence_model::loaded::{ComponentSequences, WaitSequence};
+use sequence_model::loaded::WaitSequence;
 use sprite_model::loaded::SpriteRenderSequence;
 
 use crate::ObjectLoaderSystemData;
@@ -19,9 +19,6 @@ pub struct ObjectLoaderParams<'s> {
     /// `Loader` to load assets.
     #[derivative(Debug = "ignore")]
     pub loader: &'s Loader,
-    /// `AssetStorage` for `ComponentSequences`s.
-    #[derivative(Debug = "ignore")]
-    pub component_sequences_assets: &'s AssetStorage<ComponentSequences>,
     /// `WaitSequence`s assets.
     #[derivative(Debug = "ignore")]
     pub wait_sequence_assets: &'s AssetStorage<WaitSequence>,
@@ -55,7 +52,6 @@ impl<'s> From<(&'s ObjectLoaderSystemData<'s>, &'s [SpriteSheetHandle])>
     ) -> Self {
         let ObjectLoaderSystemData {
             ref loader,
-            ref component_sequences_assets,
             ref wait_sequence_assets,
             ref sprite_render_sequence_assets,
             ref body_sequence_assets,
@@ -66,7 +62,6 @@ impl<'s> From<(&'s ObjectLoaderSystemData<'s>, &'s [SpriteSheetHandle])>
 
         ObjectLoaderParams {
             loader,
-            component_sequences_assets,
             wait_sequence_assets,
             sprite_render_sequence_assets,
             body_sequence_assets,

@@ -16,7 +16,7 @@ use named_type::NamedType;
 use named_type_derive::NamedType;
 use object_model::loaded::{GameObject, ObjectWrapper};
 use object_prefab::ComponentSequenceHandleStorages;
-use sequence_model::{loaded::ComponentSequencesHandle, play::SequenceStatus};
+use sequence_model::play::SequenceStatus;
 use shred_derive::SystemData;
 
 /// Updates the attached `Handle<ComponentSequence>`s when `SequenceId` changes.
@@ -56,9 +56,6 @@ where
     /// `SequenceStatus` components.
     #[derivative(Debug = "ignore")]
     pub sequence_statuses: WriteStorage<'s, SequenceStatus>,
-    /// `ComponentSequencesHandle` components.
-    #[derivative(Debug = "ignore")]
-    pub component_sequences_handles: WriteStorage<'s, ComponentSequencesHandle>,
     /// Component sequence handle storages.
     #[derivative(Debug = "ignore")]
     pub component_sequence_handle_storages: ComponentSequenceHandleStorages<'s>,
@@ -79,7 +76,6 @@ where
             object_wrapper_handles,
             object_wrapper_assets,
             mut sequence_statuses,
-            mut component_sequences_handles,
             component_sequence_handle_storages:
                 ComponentSequenceHandleStorages {
                     mut wait_sequence_handles,
@@ -124,7 +120,6 @@ where
                     let object = object_wrapper.inner();
 
                     (
-                        object.component_sequences_handles.get(&sequence_id),
                         object.wait_sequence_handles.get(&sequence_id),
                         object.sprite_render_sequence_handles.get(&sequence_id),
                         object.body_sequence_handles.get(&sequence_id),
@@ -133,16 +128,12 @@ where
                 };
 
                 if let (
-                    Some(component_sequences_handle),
                     Some(wait_sequence_handle),
                     Some(sprite_render_sequence_handle),
                     Some(body_sequence_handle),
                     Some(interactions_sequence_handle),
                 ) = component_sequence_handleses
                 {
-                    component_sequences_handles
-                        .insert(entity, component_sequences_handle.clone())
-                        .expect("Failed to insert `ComponentSequencesHandle` component.");
                     wait_sequence_handles
                         .insert(entity, wait_sequence_handle.clone())
                         .expect("Failed to insert `WaitSequenceHandle` component.");
@@ -180,7 +171,9 @@ mod tests {
     use application_test_support::{AutexousiousApplication, ObjectQueries, SequenceQueries};
     use assets_test::ASSETS_CHAR_BAT_SLUG;
     use character_model::{config::CharacterSequenceId, loaded::Character};
-    use sequence_model::loaded::ComponentSequencesHandle;
+    use collision_model::loaded::{BodySequenceHandle, InteractionsSequenceHandle};
+    use sequence_model::loaded::WaitSequenceHandle;
+    use sprite_model::loaded::SpriteRenderSequenceHandle;
 
     use super::ComponentSequencesUpdateSystem;
 
@@ -189,7 +182,9 @@ mod tests {
         AutexousiousApplication::game_base()
             .with_system(ComponentSequencesUpdateSystem::<Character>::new(), "", &[])
             .with_setup(|world| insert_sequence(world, CharacterSequenceId::RunStop))
-            .with_assertion(|world| expect_component_sequences(world, CharacterSequenceId::RunStop))
+            .with_assertion(|world| {
+                expect_component_sequence_handles(world, CharacterSequenceId::RunStop)
+            })
             .run_isolated()
     }
 
@@ -198,7 +193,9 @@ mod tests {
         AutexousiousApplication::game_base()
             .with_system(ComponentSequencesUpdateSystem::<Character>::new(), "", &[])
             .with_setup(|world| update_sequence(world, CharacterSequenceId::RunStop))
-            .with_assertion(|world| expect_component_sequences(world, CharacterSequenceId::RunStop))
+            .with_assertion(|world| {
+                expect_component_sequence_handles(world, CharacterSequenceId::RunStop)
+            })
             .run_isolated()
     }
 
@@ -232,34 +229,42 @@ mod tests {
     fn create_entity(world: &mut World) -> Entity {
         let asset_slug = ASSETS_CHAR_BAT_SLUG.clone();
         let object_wrapper_handle = ObjectQueries::object_wrapper_handle(world, &asset_slug);
-        let component_sequences_handle = SequenceQueries::component_sequences_handle(
-            world,
-            &asset_slug,
-            CharacterSequenceId::Stand,
-        );
+        let wait_sequence_handle =
+            SequenceQueries::wait_sequence_handle(world, &asset_slug, CharacterSequenceId::Stand);
 
         world
             .create_entity()
             .with(object_wrapper_handle)
             .with(CharacterSequenceId::Stand)
-            .with(component_sequences_handle)
+            .with(wait_sequence_handle)
             .build()
     }
 
-    fn expect_component_sequences(world: &mut World, sequence_id: CharacterSequenceId) {
+    fn expect_component_sequence_handles(world: &mut World, sequence_id: CharacterSequenceId) {
         let entity = *world.read_resource::<Entity>();
-        let expected_handle = SequenceQueries::component_sequences_handle(
-            world,
-            &ASSETS_CHAR_BAT_SLUG.clone(),
-            sequence_id,
-        );
-        let component_sequences_handles = world.read_storage::<ComponentSequencesHandle>();
 
-        assert_eq!(
-            &expected_handle,
-            component_sequences_handles
-                .get(entity)
-                .expect("Expected entity to contain `ComponentSequencesHandle` component.")
-        );
+        macro_rules! assert_handle_attached {
+            ($handle_kind:ident, $handle_type:path) => {
+                let expected_handle = SequenceQueries::$handle_kind(
+                    world,
+                    &ASSETS_CHAR_BAT_SLUG.clone(),
+                    sequence_id,
+                );
+                let component_sequence_handles = world.read_storage::<$handle_type>();
+                assert_eq!(
+                    &expected_handle,
+                    component_sequence_handles.get(entity).expect(concat!(
+                        "Expected entity to contain `",
+                        stringify!($handle_type),
+                        "` component."
+                    ))
+                );
+            };
+        }
+
+        assert_handle_attached!(wait_sequence_handle, WaitSequenceHandle);
+        assert_handle_attached!(sprite_render_sequence_handle, SpriteRenderSequenceHandle);
+        assert_handle_attached!(body_sequence_handle, BodySequenceHandle);
+        assert_handle_attached!(interactions_sequence_handle, InteractionsSequenceHandle);
     }
 }

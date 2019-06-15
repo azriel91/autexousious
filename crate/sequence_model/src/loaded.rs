@@ -2,7 +2,6 @@
 
 pub use self::{
     component_sequence::ComponentSequence,
-    component_sequences::{ComponentSequences, ComponentSequencesHandle},
     control_transition::ControlTransition,
     control_transition_hold::ControlTransitionHold,
     control_transition_like::ControlTransitionLike,
@@ -15,7 +14,6 @@ pub use self::{
 };
 
 mod component_sequence;
-mod component_sequences;
 mod control_transition;
 mod control_transition_hold;
 mod control_transition_like;

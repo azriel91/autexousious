@@ -17,10 +17,7 @@ use map_model::{
 };
 use sequence_model::{
     config::Wait,
-    loaded::{
-        ComponentSequence, ComponentSequences, ComponentSequencesHandle, WaitSequence,
-        WaitSequenceHandle,
-    },
+    loaded::{WaitSequence, WaitSequenceHandle},
 };
 use shred_derive::SystemData;
 use sprite_loading::SpriteLoader;
@@ -67,9 +64,6 @@ pub struct MapAssetLoadingSystemData<'s> {
     /// `SpritesDefinition` assets.
     #[derivative(Debug = "ignore")]
     sprites_definition_assets: Read<'s, AssetStorage<SpritesDefinition>>,
-    /// `ComponentSequences` assets.
-    #[derivative(Debug = "ignore")]
-    component_sequences_assets: Read<'s, AssetStorage<ComponentSequences>>,
     /// `WaitSequence` assets.
     #[derivative(Debug = "ignore")]
     wait_sequence_assets: Read<'s, AssetStorage<WaitSequence>>,
@@ -102,7 +96,6 @@ impl<'s> System<'s> for MapAssetLoadingSystem {
             loader,
             map_definition_assets,
             sprites_definition_assets,
-            component_sequences_assets,
             wait_sequence_assets,
             sprite_render_sequence_assets,
             texture_assets,
@@ -180,7 +173,6 @@ impl<'s> System<'s> for MapAssetLoadingSystem {
                             Vec::new(),
                             Vec::new(),
                             Vec::new(),
-                            Vec::new(),
                         );
 
                         let map_handle =
@@ -200,83 +192,61 @@ impl<'s> System<'s> for MapAssetLoadingSystem {
                         )
                         .expect("Failed to load textures and sprite sheets.");
                         let sequence_handles = (
-                            Vec::<ComponentSequencesHandle>::with_capacity(
-                                map_definition.layers.len(),
-                            ),
                             Vec::<WaitSequenceHandle>::with_capacity(map_definition.layers.len()),
                             Vec::<SpriteRenderSequenceHandle>::with_capacity(
                                 map_definition.layers.len(),
                             ),
                         );
-                        let (
-                            component_sequences_handles,
-                            wait_sequence_handles,
-                            sprite_render_sequence_handles,
-                        ) = map_definition.layers.iter().fold(
-                            sequence_handles,
-                            |(
-                                mut component_sequences_handles,
-                                mut wait_sequence_handles,
-                                mut sprite_render_sequence_handles,
-                            ),
-                             layer| {
-                                let wait_sequence = WaitSequence::new(
-                                    layer
-                                        .frames
-                                        .iter()
-                                        .map(|frame| frame.wait)
-                                        .collect::<Vec<Wait>>(),
-                                );
-                                let sprite_render_sequence = SpriteRenderSequence::new(
-                                    layer
-                                        .frames
-                                        .iter()
-                                        .map(|frame| {
-                                            let sprite_ref = &frame.sprite;
-                                            let sprite_sheet =
-                                                sprite_sheet_handles[sprite_ref.sheet].clone();
-                                            let sprite_number = sprite_ref.index;
-                                            SpriteRender {
-                                                sprite_sheet,
-                                                sprite_number,
-                                            }
-                                        })
-                                        .collect::<Vec<SpriteRender>>(),
-                                );
+                        let (wait_sequence_handles, sprite_render_sequence_handles) =
+                            map_definition.layers.iter().fold(
+                                sequence_handles,
+                                |(
+                                    mut wait_sequence_handles,
+                                    mut sprite_render_sequence_handles,
+                                ),
+                                 layer| {
+                                    let wait_sequence = WaitSequence::new(
+                                        layer
+                                            .frames
+                                            .iter()
+                                            .map(|frame| frame.wait)
+                                            .collect::<Vec<Wait>>(),
+                                    );
+                                    let sprite_render_sequence = SpriteRenderSequence::new(
+                                        layer
+                                            .frames
+                                            .iter()
+                                            .map(|frame| {
+                                                let sprite_ref = &frame.sprite;
+                                                let sprite_sheet =
+                                                    sprite_sheet_handles[sprite_ref.sheet].clone();
+                                                let sprite_number = sprite_ref.index;
+                                                SpriteRender {
+                                                    sprite_sheet,
+                                                    sprite_number,
+                                                }
+                                            })
+                                            .collect::<Vec<SpriteRender>>(),
+                                    );
 
-                                let mut component_sequences = Vec::new();
-                                component_sequences
-                                    .push(ComponentSequence::Wait(wait_sequence.clone()));
-                                component_sequences.push(ComponentSequence::SpriteRender(
-                                    sprite_render_sequence.clone(),
-                                ));
-                                let component_sequences =
-                                    ComponentSequences::new(component_sequences);
-                                let component_sequences_handle = loader.load_from_data(
-                                    component_sequences,
-                                    (),
-                                    &component_sequences_assets,
-                                );
+                                    let wait_sequence_handle = loader.load_from_data(
+                                        wait_sequence,
+                                        (),
+                                        &wait_sequence_assets,
+                                    );
+                                    let sprite_render_sequence_handle = loader.load_from_data(
+                                        sprite_render_sequence,
+                                        (),
+                                        &sprite_render_sequence_assets,
+                                    );
 
-                                let wait_sequence_handle =
-                                    loader.load_from_data(wait_sequence, (), &wait_sequence_assets);
-                                let sprite_render_sequence_handle = loader.load_from_data(
-                                    sprite_render_sequence,
-                                    (),
-                                    &sprite_render_sequence_assets,
-                                );
+                                    wait_sequence_handles.push(wait_sequence_handle);
+                                    sprite_render_sequence_handles
+                                        .push(sprite_render_sequence_handle);
 
-                                component_sequences_handles.push(component_sequences_handle);
-                                wait_sequence_handles.push(wait_sequence_handle);
-                                sprite_render_sequence_handles.push(sprite_render_sequence_handle);
-
-                                (
-                                    component_sequences_handles,
-                                    wait_sequence_handles,
-                                    sprite_render_sequence_handles,
-                                )
-                            },
-                        );
+                                    (wait_sequence_handles, sprite_render_sequence_handles)
+                                },
+                            );
 
                         let margins = Margins::from(map_definition.header.bounds);
                         let map = Map::new(
@@ -284,7 +254,6 @@ impl<'s> System<'s> for MapAssetLoadingSystem {
                             map_definition.clone(),
                             margins,
                             sprite_sheet_handles,
-                            component_sequences_handles,
                             wait_sequence_handles,
                             sprite_render_sequence_handles,
                         );

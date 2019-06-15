@@ -5,7 +5,7 @@ use derivative::Derivative;
 use derive_new::new;
 use sequence_model::{
     config::SequenceId,
-    loaded::{ComponentSequencesHandle, SequenceEndTransitions, WaitSequenceHandle},
+    loaded::{SequenceEndTransitions, WaitSequenceHandle},
 };
 use sprite_model::loaded::SpriteRenderSequenceHandle;
 
@@ -16,8 +16,6 @@ pub struct Object<SeqId>
 where
     SeqId: SequenceId,
 {
-    /// Handle to sequences of components that this object uses, keyed by sequence ID.
-    pub component_sequences_handles: HashMap<SeqId, ComponentSequencesHandle>,
     /// Handle to `WaitSequence`s that this object uses, keyed by sequence ID.
     pub wait_sequence_handles: HashMap<SeqId, WaitSequenceHandle>,
     /// Handle to `SpriteRenderSequence`s that this object uses, keyed by sequence ID.

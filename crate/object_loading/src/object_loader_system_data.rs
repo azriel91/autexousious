@@ -7,9 +7,9 @@ use collision_model::{
     loaded::{BodySequence, InteractionsSequence},
 };
 use derivative::Derivative;
-use sequence_model::loaded::{ComponentSequences, WaitSequence};
-use sprite_model::loaded::SpriteRenderSequence;
+use sequence_model::loaded::WaitSequence;
 use shred_derive::SystemData;
+use sprite_model::loaded::SpriteRenderSequence;
 
 /// Resources needed to load an object.
 #[derive(Derivative, SystemData)]
@@ -18,9 +18,6 @@ pub struct ObjectLoaderSystemData<'s> {
     /// `Loader` to load assets.
     #[derivative(Debug = "ignore")]
     pub loader: ReadExpect<'s, Loader>,
-    /// `AssetStorage` for `ComponentSequences`s.
-    #[derivative(Debug = "ignore")]
-    pub component_sequences_assets: Read<'s, AssetStorage<ComponentSequences>>,
     /// `WaitSequence`s assets.
     #[derivative(Debug = "ignore")]
     pub wait_sequence_assets: Read<'s, AssetStorage<WaitSequence>>,

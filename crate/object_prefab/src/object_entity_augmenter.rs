@@ -21,9 +21,7 @@ impl ObjectEntityAugmenter {
     /// # Parameters
     ///
     /// * `entity`: The entity to augment.
-    /// * `component_sequences_assets`: Asset storage for `ComponentSequences`.
     /// * `object_component_storages`: Non-frame-dependent `Component` storages for objects.
-    /// * `frame_component_storages`: Frame component storages for objects.
     /// * `object_wrapper`: Slug and handle of the object to spawn.
     pub fn augment<'s, W>(
         entity: Entity,
@@ -118,10 +116,7 @@ mod tests {
     use sequence_loading::SequenceLoadingBundle;
     use sequence_model::{
         config::Wait,
-        loaded::{
-            ComponentSequence, ComponentSequences, ComponentSequencesHandle, SequenceEndTransition,
-            SequenceEndTransitions, WaitSequence, WaitSequenceHandle,
-        },
+        loaded::{SequenceEndTransition, SequenceEndTransitions, WaitSequence, WaitSequenceHandle},
         play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
     };
     use shape_model::Volume;
@@ -183,7 +178,6 @@ mod tests {
 
     fn setup_object_wrapper(world: &mut World) {
         let (
-            component_sequences_handles,
             wait_sequence_handles,
             sprite_render_sequence_handles,
             body_sequence_handles,
@@ -192,7 +186,6 @@ mod tests {
             let (
                 ObjectLoaderSystemData {
                     loader,
-                    component_sequences_assets,
                     wait_sequence_assets,
                     sprite_render_sequence_assets,
                     body_sequence_assets,
@@ -231,16 +224,6 @@ mod tests {
                 loader.load_from_data(interactions(), (), &interactions_assets);
             let interactions_sequence = InteractionsSequence::new(vec![interactions_handle]);
 
-            let component_sequences = vec![
-                ComponentSequence::Wait(wait_sequence.clone()),
-                ComponentSequence::SpriteRender(sprite_render_sequence.clone()),
-                ComponentSequence::Body(body_sequence.clone()),
-                ComponentSequence::Interactions(interactions_sequence.clone()),
-            ];
-            let component_sequences = ComponentSequences::new(component_sequences);
-
-            let component_sequences_handle =
-                loader.load_from_data(component_sequences, (), &component_sequences_assets);
             let wait_sequence_handle =
                 loader.load_from_data(wait_sequence, (), &wait_sequence_assets);
             let sprite_render_sequence_handle =
@@ -251,20 +234,16 @@ mod tests {
                 loader.load_from_data(interactions_sequence, (), &interactions_sequence_assets);
 
             let (
-                mut component_sequences_handles,
                 mut wait_sequence_handles,
                 mut sprite_render_sequence_handles,
                 mut body_sequence_handles,
                 mut interactions_sequence_handles,
             ) = (
-                HashMap::<TestObjectSequenceId, ComponentSequencesHandle>::new(),
                 HashMap::<TestObjectSequenceId, WaitSequenceHandle>::new(),
                 HashMap::<TestObjectSequenceId, SpriteRenderSequenceHandle>::new(),
                 HashMap::<TestObjectSequenceId, BodySequenceHandle>::new(),
                 HashMap::<TestObjectSequenceId, InteractionsSequenceHandle>::new(),
             );
-            component_sequences_handles
-                .insert(TestObjectSequenceId::Zero, component_sequences_handle);
             wait_sequence_handles.insert(TestObjectSequenceId::Zero, wait_sequence_handle);
             sprite_render_sequence_handles
                 .insert(TestObjectSequenceId::Zero, sprite_render_sequence_handle);
@@ -273,7 +252,6 @@ mod tests {
                 .insert(TestObjectSequenceId::Zero, interactions_sequence_handle);
 
             (
-                component_sequences_handles,
                 wait_sequence_handles,
                 sprite_render_sequence_handles,
                 body_sequence_handles,
@@ -287,7 +265,6 @@ mod tests {
             SequenceEndTransitions(sequence_end_transitions)
         };
         let object = Object::new(
-            component_sequences_handles,
             wait_sequence_handles,
             sprite_render_sequence_handles,
             body_sequence_handles,
