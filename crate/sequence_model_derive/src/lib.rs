@@ -27,15 +27,15 @@
 //!
 //! ```rust,ignore
 //! use amethyst::assets::Handle;
-//! use sequence_model_spi::loaded::ComponentFrames;
+//! use sequence_model_spi::loaded::ComponentSequence;
 //!
 //! #[derive(Asset, Clone, Debug, Deref, DerefMut, PartialEq, TypeName)]
-//! pub struct WaitSequence(ComponentFrames<Wait>)
+//! pub struct WaitSequence(ComponentSequence<Wait>)
 //!
 //! impl WaitSequence {
 //!     #[doc = #fn_new_doc]
 //!     pub fn new(sequence: Vec<Wait>) -> Self {
-//!         WaitSequence(ComponentFrames::<Wait>::new(sequence))
+//!         WaitSequence(ComponentSequence::<Wait>::new(sequence))
 //!     }
 //! }
 //!
@@ -43,7 +43,7 @@
 //! // imposes a `Default` bound on type parameters.
 //! impl Default for WaitSequence {
 //!     fn default() -> Self {
-//!         WaitSequence(ComponentFrames::<Wait>::new(Vec::default()))
+//!         WaitSequence(ComponentSequence::<Wait>::new(Vec::default()))
 //!     }
 //! }
 //! /// Handle to a `WaitSequence`.
@@ -87,7 +87,7 @@ pub fn component_sequence(args: TokenStream, item: TokenStream) -> TokenStream {
             #[doc = #fn_new_doc]
             pub fn new(sequence: Vec<#component_path>) -> Self {
                 #type_name(
-                    sequence_model_spi::loaded::ComponentFrames::<#component_path>::new(sequence)
+                    sequence_model_spi::loaded::ComponentSequence::<#component_path>::new(sequence)
                 )
             }
         }
@@ -97,7 +97,7 @@ pub fn component_sequence(args: TokenStream, item: TokenStream) -> TokenStream {
         impl Default for #type_name {
             fn default() -> Self {
                 #type_name(
-                    sequence_model_spi::loaded::ComponentFrames::<#component_path>::new(
+                    sequence_model_spi::loaded::ComponentSequence::<#component_path>::new(
                         Vec::default()
                     )
                 )
@@ -134,7 +134,7 @@ fn fields_append(ast: &mut DeriveInput, component_path: &Path) {
         .ident;
     let doc_string = format!("The chain of `{}` values.", component_name);
     let fields: FieldsUnnamed = parse_quote! {
-        (#[doc = #doc_string] pub sequence_model_spi::loaded::ComponentFrames<#component_path>)
+        (#[doc = #doc_string] pub sequence_model_spi::loaded::ComponentSequence<#component_path>)
     };
 
     ast.append_unnamed(fields);

@@ -9,7 +9,7 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use sequence_model::play::SequenceUpdateEvent;
-use sequence_model_spi::loaded::{ComponentFrames, ComponentSequenceExt};
+use sequence_model_spi::loaded::{ComponentSequence, ComponentSequenceExt};
 use shred_derive::SystemData;
 use typename_derive::TypeName;
 
@@ -19,7 +19,7 @@ pub struct FrameComponentUpdateSystem<CS>
 where
     CS: Asset
         + ComponentSequenceExt
-        + Deref<Target = ComponentFrames<<CS as ComponentSequenceExt>::Component>>,
+        + Deref<Target = ComponentSequence<<CS as ComponentSequenceExt>::Component>>,
 {
     /// Reader ID for the `SequenceUpdateEvent` event channel.
     #[new(default)]
@@ -34,7 +34,7 @@ pub struct FrameComponentUpdateSystemData<'s, CS>
 where
     CS: Asset
         + ComponentSequenceExt
-        + Deref<Target = ComponentFrames<<CS as ComponentSequenceExt>::Component>>,
+        + Deref<Target = ComponentSequence<<CS as ComponentSequenceExt>::Component>>,
 {
     /// Event channel for `SequenceUpdateEvent`s.
     #[derivative(Debug = "ignore")]
@@ -54,7 +54,7 @@ impl<CS> FrameComponentUpdateSystem<CS>
 where
     CS: Asset
         + ComponentSequenceExt
-        + Deref<Target = ComponentFrames<<CS as ComponentSequenceExt>::Component>>,
+        + Deref<Target = ComponentSequence<<CS as ComponentSequenceExt>::Component>>,
 {
     fn update_frame_components(
         components: &mut WriteStorage<<CS as ComponentSequenceExt>::Component>,
@@ -73,7 +73,7 @@ impl<'s, CS> System<'s> for FrameComponentUpdateSystem<CS>
 where
     CS: Asset
         + ComponentSequenceExt
-        + Deref<Target = ComponentFrames<<CS as ComponentSequenceExt>::Component>>,
+        + Deref<Target = ComponentSequence<<CS as ComponentSequenceExt>::Component>>,
 {
     type SystemData = FrameComponentUpdateSystemData<'s, CS>;
 
