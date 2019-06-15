@@ -23,9 +23,9 @@ use typename::TypeName;
 
 use crate::{
     CharacterGroundingSystem, CharacterHitEffectSystem, CharacterKinematicsSystem,
-    CharacterSequenceUpdateSystem, ComponentSequencesUpdateSystem, FrameFreezeClockAugmentSystem,
-    GamePlayEndDetectionSystem, GamePlayEndTransitionSystem, ObjectCollisionDetectionSystem,
-    ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
+    CharacterSequenceUpdateSystem, ComponentSequenceHandleUpdateSystem,
+    FrameFreezeClockAugmentSystem, GamePlayEndDetectionSystem, GamePlayEndTransitionSystem,
+    ObjectCollisionDetectionSystem, ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
 };
 
 /// Adds the object type update systems to the provided dispatcher.
@@ -42,7 +42,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
                     FrameComponentUpdateSystem::<$component_sequence>::new(),
                     &FrameComponentUpdateSystem::<$component_sequence>::type_name(),
                     &[
-                        &ComponentSequencesUpdateSystem::<Character>::type_name(),
+                        &ComponentSequenceHandleUpdateSystem::<Character>::type_name(),
                         &SequenceUpdateSystem::type_name(),
                     ],
                 ); // kcov-ignore
@@ -50,8 +50,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         }
 
         builder.add(
-            ComponentSequencesUpdateSystem::<Character>::new(),
-            &ComponentSequencesUpdateSystem::<Character>::type_name(),
+            ComponentSequenceHandleUpdateSystem::<Character>::new(),
+            &ComponentSequenceHandleUpdateSystem::<Character>::type_name(),
             &[],
         ); // kcov-ignore
 
@@ -59,7 +59,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         builder.add(
             SequenceUpdateSystem::new(),
             &SequenceUpdateSystem::type_name(),
-            &[&ComponentSequencesUpdateSystem::<Character>::type_name()],
+            &[&ComponentSequenceHandleUpdateSystem::<Character>::type_name()],
         ); // kcov-ignore
         add_frame_component_update_system!(WaitSequence);
         add_frame_component_update_system!(SpriteRenderSequence);
