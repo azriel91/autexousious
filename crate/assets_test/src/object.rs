@@ -14,6 +14,6 @@ mod character;
 
 lazy_static! {
     /// `PathBuf` to the "objects" asset directory.
-    pub static ref ASSETS_OBJECT_PATH: PathBuf =
+    pub static ref OBJECT_PATH: PathBuf =
         NAMESPACE_TEST_PATH.join(ConfigType::Object.to_string());
 }

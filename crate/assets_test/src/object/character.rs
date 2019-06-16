@@ -4,7 +4,7 @@ use asset_model::config::{AssetSlug, AssetSlugBuilder};
 use lazy_static::lazy_static;
 use object_type::ObjectType;
 
-use crate::{ASSETS_OBJECT_PATH, NAMESPACE_TEST};
+use crate::{NAMESPACE_TEST, OBJECT_PATH};
 
 /// Name of the "bat" character asset.
 pub const CHAR_BAT_NAME: &str = "bat";
@@ -16,7 +16,7 @@ pub const CHAR_BAT_SPRITE_BROWN_NAME: &str = "bat_brown.png";
 lazy_static! {
     /// `PathBuf` to the "objects" asset directory.
     static ref CHAR_PATH: PathBuf =
-        ASSETS_OBJECT_PATH.join(ObjectType::Character.to_string());
+        OBJECT_PATH.join(ObjectType::Character.to_string());
 
     /// Slug of the "bat" character asset.
     pub static ref CHAR_BAT_SLUG: AssetSlug = {
