@@ -169,7 +169,7 @@ mod tests {
         Error,
     };
     use application_test_support::{AutexousiousApplication, ObjectQueries, SequenceQueries};
-    use assets_test::ASSETS_CHAR_BAT_SLUG;
+    use assets_test::CHAR_BAT_SLUG;
     use character_model::{config::CharacterSequenceId, loaded::Character};
     use collision_model::loaded::{BodySequenceHandle, InteractionsSequenceHandle};
     use sequence_model::loaded::WaitSequenceHandle;
@@ -235,7 +235,7 @@ mod tests {
     }
 
     fn create_entity(world: &mut World) -> Entity {
-        let asset_slug = ASSETS_CHAR_BAT_SLUG.clone();
+        let asset_slug = CHAR_BAT_SLUG.clone();
         let object_wrapper_handle = ObjectQueries::object_wrapper_handle(world, &asset_slug);
         let wait_sequence_handle =
             SequenceQueries::wait_sequence_handle(world, &asset_slug, CharacterSequenceId::Stand);
@@ -253,11 +253,8 @@ mod tests {
 
         macro_rules! assert_handle_attached {
             ($handle_kind:ident, $handle_type:path) => {
-                let expected_handle = SequenceQueries::$handle_kind(
-                    world,
-                    &ASSETS_CHAR_BAT_SLUG.clone(),
-                    sequence_id,
-                );
+                let expected_handle =
+                    SequenceQueries::$handle_kind(world, &CHAR_BAT_SLUG.clone(), sequence_id);
                 let component_sequence_handles = world.read_storage::<$handle_type>();
                 assert_eq!(
                     &expected_handle,

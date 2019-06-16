@@ -230,7 +230,7 @@ mod test {
         ui::UiText,
     };
     use application_test_support::AutexousiousApplication;
-    use assets_test::ASSETS_CHAR_BAT_SLUG;
+    use assets_test::CHAR_BAT_SLUG;
     use character_selection_model::CharacterSelection;
     use game_input_model::{Axis, ControlAction, ControllerConfig, InputConfig};
     use typename::TypeName;
@@ -320,7 +320,7 @@ mod test {
                         .expect("Expected entity with `CharacterSelectionWidget` component.");
 
                     widget.state = WidgetState::CharacterSelect;
-                    widget.selection = CharacterSelection::Id(ASSETS_CHAR_BAT_SLUG.clone());
+                    widget.selection = CharacterSelection::Id(CHAR_BAT_SLUG.clone());
                 })
                 .with_system_single(
                     CharacterSelectionWidgetUiSystem::new(),

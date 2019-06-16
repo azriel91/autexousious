@@ -73,7 +73,7 @@ mod tests {
     use amethyst::{ecs::World, shrev::EventChannel, Error};
     use application_test_support::AutexousiousApplication;
     use asset_model::loaded::SlugAndHandle;
-    use assets_test::ASSETS_MAP_FADE_SLUG;
+    use assets_test::MAP_FADE_SLUG;
     use map_selection_model::{MapSelection, MapSelectionEvent};
 
     use super::MapSelectionSfxSystem;
@@ -86,7 +86,7 @@ mod tests {
     #[test]
     fn plays_sound_on_switch_event() -> Result<(), Error> {
         run_test(|world| {
-            let snh = SlugAndHandle::from((&*world, ASSETS_MAP_FADE_SLUG.clone()));
+            let snh = SlugAndHandle::from((&*world, MAP_FADE_SLUG.clone()));
             let map_selection = MapSelection::Id(snh);
             MapSelectionEvent::Switch { map_selection }
         })
@@ -95,7 +95,7 @@ mod tests {
     #[test]
     fn plays_sound_on_select_event() -> Result<(), Error> {
         run_test(|world| {
-            let snh = SlugAndHandle::from((&*world, ASSETS_MAP_FADE_SLUG.clone()));
+            let snh = SlugAndHandle::from((&*world, MAP_FADE_SLUG.clone()));
             let map_selection = MapSelection::Id(snh);
             MapSelectionEvent::Select { map_selection }
         })

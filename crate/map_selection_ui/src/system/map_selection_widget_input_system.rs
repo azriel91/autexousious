@@ -241,7 +241,7 @@ mod test {
     };
     use application_test_support::AutexousiousApplication;
     use asset_model::loaded::SlugAndHandle;
-    use assets_test::ASSETS_MAP_FADE_SLUG;
+    use assets_test::MAP_FADE_SLUG;
     use game_input_model::{
         Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent,
     };
@@ -527,7 +527,7 @@ mod test {
     }
 
     fn fade_map(world: &mut World) -> SlugAndHandle<Map> {
-        SlugAndHandle::from((&*world, ASSETS_MAP_FADE_SLUG.clone()))
+        SlugAndHandle::from((&*world, MAP_FADE_SLUG.clone()))
     }
 
     fn widget_entity(

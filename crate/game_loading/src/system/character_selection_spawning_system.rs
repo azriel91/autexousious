@@ -95,7 +95,7 @@ mod tests {
         AmethystApplication, EffectReturn, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH,
     };
     use application_event::{AppEvent, AppEventReader};
-    use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
+    use assets_test::{ASSETS_PATH, CHAR_BAT_SLUG};
     use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
     use character_prefab::CharacterPrefabBundle;
     use character_selection_model::CharacterSelections;
@@ -199,7 +199,7 @@ mod tests {
                 let mut character_selections = CharacterSelections::default();
                 character_selections
                     .selections
-                    .insert(0, ASSETS_CHAR_BAT_SLUG.clone());
+                    .insert(0, CHAR_BAT_SLUG.clone());
                 world.add_resource(character_selections);
             })
             .with_system_single(

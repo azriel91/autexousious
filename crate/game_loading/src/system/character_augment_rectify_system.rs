@@ -139,7 +139,7 @@ mod tests {
     use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
     use application_event::{AppEvent, AppEventReader};
     use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
-    use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
+    use assets_test::{ASSETS_PATH, CHAR_BAT_SLUG, MAP_FADE_SLUG};
     use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
     use character_prefab::{CharacterPrefab, CharacterPrefabBundle};
     use collision_audio_loading::CollisionAudioLoadingBundle;
@@ -171,7 +171,7 @@ mod tests {
 
                 let snh = SlugAndHandle::<Prefab<CharacterPrefab>>::from((
                     &*world,
-                    ASSETS_CHAR_BAT_SLUG.clone(),
+                    CHAR_BAT_SLUG.clone(),
                 ));
                 let char_entity = world.create_entity().with(snh.handle).build();
 
@@ -198,7 +198,7 @@ mod tests {
 
                 let snh = SlugAndHandle::<Prefab<CharacterPrefab>>::from((
                     &*world,
-                    ASSETS_CHAR_BAT_SLUG.clone(),
+                    CHAR_BAT_SLUG.clone(),
                 ));
                 let char_entity = world.create_entity().with(snh.handle).build();
 
@@ -236,7 +236,7 @@ mod tests {
 
                 let snh = SlugAndHandle::<Prefab<CharacterPrefab>>::from((
                     &*world,
-                    ASSETS_CHAR_BAT_SLUG.clone(),
+                    CHAR_BAT_SLUG.clone(),
                 ));
                 let char_entity = world
                     .create_entity()
@@ -279,7 +279,7 @@ mod tests {
             .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_setup(|world| CharacterAugmentRectifySystemData::setup(&mut world.res))
             .with_state(|| LoadingState::new(PopState))
-            .with_setup(map_selection(ASSETS_MAP_FADE_SLUG.clone()))
+            .with_setup(map_selection(MAP_FADE_SLUG.clone()))
             .with_setup(fn_setup)
             .with_system_single(
                 CharacterAugmentRectifySystem,

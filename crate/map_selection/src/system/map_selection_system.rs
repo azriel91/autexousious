@@ -86,7 +86,7 @@ mod test {
     use amethyst_test::AmethystApplication;
     use asset_loading::AssetDiscovery;
     use asset_model::loaded::SlugAndHandle;
-    use assets_test::{ASSETS_MAP_EMPTY_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
+    use assets_test::{ASSETS_PATH, MAP_EMPTY_SLUG, MAP_FADE_SLUG};
     use loading::AssetLoader;
     use map_loading::MapLoadingBundle;
     use map_selection_model::{MapSelection, MapSelectionEvent};
@@ -112,13 +112,13 @@ mod test {
                 .with_setup(setup_components)
                 .with_setup(load_maps)
                 .with_setup(|world| {
-                    let fade_snh = SlugAndHandle::from((&*world, ASSETS_MAP_FADE_SLUG.clone()));
+                    let fade_snh = SlugAndHandle::from((&*world, MAP_FADE_SLUG.clone()));
                     let map_selection = MapSelection::Id(fade_snh);
                     world.add_resource(map_selection);
 
                     // Send event, if the event is not responded to, then we know the system returns
                     // early.
-                    let empty_snh = SlugAndHandle::from((&*world, ASSETS_MAP_EMPTY_SLUG.clone()));
+                    let empty_snh = SlugAndHandle::from((&*world, MAP_EMPTY_SLUG.clone()));
                     let map_selection = MapSelection::Id(empty_snh);
                     send_event(world, MapSelectionEvent::Select { map_selection })
                 })
@@ -128,7 +128,7 @@ mod test {
                     &[],
                 )
                 .with_assertion(|world| {
-                    let fade_snh = SlugAndHandle::from((&*world, ASSETS_MAP_FADE_SLUG.clone()));
+                    let fade_snh = SlugAndHandle::from((&*world, MAP_FADE_SLUG.clone()));
 
                     let map_selection = world.read_resource::<MapSelection>();
                     assert_eq!(MapSelection::Id(fade_snh), *map_selection);
@@ -155,13 +155,13 @@ mod test {
                 .with_setup(setup_components)
                 .with_setup(load_maps)
                 .with_setup(|world| {
-                    let fade_snh = SlugAndHandle::from((&*world, ASSETS_MAP_FADE_SLUG.clone()));
+                    let fade_snh = SlugAndHandle::from((&*world, MAP_FADE_SLUG.clone()));
                     let map_selection = MapSelection::Id(fade_snh);
                     world.add_resource(map_selection);
 
                     // Send event, if the event is responded to, then we know the system has read
                     // it.
-                    let empty_snh = SlugAndHandle::from((&*world, ASSETS_MAP_EMPTY_SLUG.clone()));
+                    let empty_snh = SlugAndHandle::from((&*world, MAP_EMPTY_SLUG.clone()));
                     let map_selection = MapSelection::Id(empty_snh);
                     send_event(world, MapSelectionEvent::Select { map_selection })
                 })
@@ -171,7 +171,7 @@ mod test {
                     &[],
                 )
                 .with_assertion(|world| {
-                    let empty_snh = SlugAndHandle::from((&*world, ASSETS_MAP_EMPTY_SLUG.clone()));
+                    let empty_snh = SlugAndHandle::from((&*world, MAP_EMPTY_SLUG.clone()));
 
                     let map_selection = world.read_resource::<MapSelection>();
                     assert_eq!(MapSelection::Id(empty_snh), *map_selection);

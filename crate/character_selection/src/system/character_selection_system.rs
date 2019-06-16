@@ -87,7 +87,7 @@ mod tests {
     };
     use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
     use application_event::{AppEvent, AppEventReader};
-    use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
+    use assets_test::{ASSETS_PATH, CHAR_BAT_SLUG};
     use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
     use character_prefab::CharacterPrefabBundle;
     use character_selection_model::{
@@ -140,7 +140,7 @@ mod tests {
                     world,
                     CharacterSelectionEvent::Select {
                         controller_id: 123,
-                        character_selection: CharacterSelection::Id(ASSETS_CHAR_BAT_SLUG.clone()),
+                        character_selection: CharacterSelection::Id(CHAR_BAT_SLUG.clone()),
                     },
                 )
             })
@@ -148,7 +148,7 @@ mod tests {
                 let character_selections = world.read_resource::<CharacterSelections>();
 
                 assert_eq!(
-                    Some(&*ASSETS_CHAR_BAT_SLUG),
+                    Some(&*CHAR_BAT_SLUG),
                     character_selections.selections.get(&123)
                 );
             })
@@ -188,7 +188,7 @@ mod tests {
                 world
                     .write_resource::<CharacterSelections>()
                     .selections
-                    .insert(123, ASSETS_CHAR_BAT_SLUG.clone());
+                    .insert(123, CHAR_BAT_SLUG.clone());
             })
             .with_setup(|world| {
                 send_event(

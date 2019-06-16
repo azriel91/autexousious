@@ -332,7 +332,7 @@ mod tests {
         Error,
     };
     use application_test_support::{AutexousiousApplication, ObjectQueries, SequenceQueries};
-    use assets_test::ASSETS_CHAR_BAT_SLUG;
+    use assets_test::CHAR_BAT_SLUG;
     use character_model::{config::CharacterSequenceId, loaded::CharacterControlTransitionsHandle};
     use game_input::ControllerInput;
     use game_input_model::{ControlAction, ControlActionEventData, ControlInputEvent};
@@ -425,7 +425,7 @@ mod tests {
                 let character_control_transitions_handle =
                     SequenceQueries::character_control_transitions_handle(
                         world,
-                        &ASSETS_CHAR_BAT_SLUG.clone(),
+                        &CHAR_BAT_SLUG.clone(),
                         CharacterSequenceId::Stand,
                         0,
                     );

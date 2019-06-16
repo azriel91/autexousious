@@ -98,7 +98,7 @@ mod tests {
         Error,
     };
     use application_test_support::{AutexousiousApplication, SequenceQueries};
-    use assets_test::ASSETS_CHAR_BAT_SLUG;
+    use assets_test::CHAR_BAT_SLUG;
     use character_model::{
         config::CharacterSequenceId,
         loaded::{
@@ -121,7 +121,7 @@ mod tests {
             .with_setup(|world| {
                 let character_cts_handle = SequenceQueries::character_cts_handle(
                     world,
-                    &ASSETS_CHAR_BAT_SLUG.clone(),
+                    &CHAR_BAT_SLUG.clone(),
                     CharacterSequenceId::StandAttack0,
                 );
                 initial_values(
@@ -147,7 +147,7 @@ mod tests {
             .with_setup(|world| {
                 let character_cts_handle = SequenceQueries::character_cts_handle(
                     world,
-                    &ASSETS_CHAR_BAT_SLUG.clone(),
+                    &CHAR_BAT_SLUG.clone(),
                     CharacterSequenceId::StandAttack0,
                 );
                 initial_values(

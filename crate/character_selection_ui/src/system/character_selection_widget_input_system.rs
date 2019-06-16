@@ -286,7 +286,7 @@ mod test {
     };
     use application_test_support::AutexousiousApplication;
     use asset_model::config::AssetSlug;
-    use assets_test::ASSETS_CHAR_BAT_SLUG;
+    use assets_test::CHAR_BAT_SLUG;
     use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
     use game_input::InputControlled;
     use game_input_model::{
@@ -347,7 +347,7 @@ mod test {
                 character_selection_events_fn: |_world| {
                     vec![CharacterSelectionEvent::Select {
                         controller_id: 123,
-                        character_selection: CharacterSelection::Id(ASSETS_CHAR_BAT_SLUG.clone()),
+                        character_selection: CharacterSelection::Id(CHAR_BAT_SLUG.clone()),
                     }]
                 },
             },
@@ -577,7 +577,7 @@ mod test {
     }
 
     fn char_bat(_world: &mut World) -> CharacterSelection {
-        CharacterSelection::Id(ASSETS_CHAR_BAT_SLUG.clone())
+        CharacterSelection::Id(CHAR_BAT_SLUG.clone())
     }
 
     fn widget_entity(

@@ -79,7 +79,7 @@ mod tests {
     };
     use application_test_support::AutexousiousApplication;
     use asset_model::loaded::SlugAndHandle;
-    use assets_test::ASSETS_MAP_FADE_SLUG;
+    use assets_test::MAP_FADE_SLUG;
     use game_model::loaded::MapAssets;
     use map_selection_model::{MapSelection, MapSelectionEvent};
     use stdio_spi::{StdinMapper, StdioError};
@@ -166,10 +166,10 @@ mod tests {
         AutexousiousApplication::config_base()
             .with_assertion(|world| {
                 let args = MapSelectionEventArgs::Select {
-                    selection: ASSETS_MAP_FADE_SLUG.to_string(),
+                    selection: MAP_FADE_SLUG.to_string(),
                 };
                 let map_assets = world.read_resource::<MapAssets>();
-                let snh = SlugAndHandle::from((&*map_assets, ASSETS_MAP_FADE_SLUG.clone()));
+                let snh = SlugAndHandle::from((&*map_assets, MAP_FADE_SLUG.clone()));
 
                 let result = MapSelectionEventStdinMapper::map(&Read::from(map_assets), args);
 

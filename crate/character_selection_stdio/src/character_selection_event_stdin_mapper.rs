@@ -116,7 +116,7 @@ mod tests {
         Error,
     };
     use application_test_support::AutexousiousApplication;
-    use assets_test::ASSETS_CHAR_BAT_SLUG;
+    use assets_test::CHAR_BAT_SLUG;
     use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
     use game_model::loaded::CharacterAssets;
     use stdio_spi::{StdinMapper, StdioError};
@@ -265,8 +265,8 @@ mod tests {
     test_map_with_slug!(
         maps_select_id_event,
         Select,
-        ASSETS_CHAR_BAT_SLUG.to_string(),
-        CharacterSelection::Id(ASSETS_CHAR_BAT_SLUG.clone())
+        CHAR_BAT_SLUG.to_string(),
+        CharacterSelection::Id(CHAR_BAT_SLUG.clone())
     );
     test_map_with_slug!(
         maps_select_random_event,
@@ -277,8 +277,8 @@ mod tests {
     test_map_with_slug!(
         maps_switch_id_event,
         Switch,
-        ASSETS_CHAR_BAT_SLUG.to_string(),
-        CharacterSelection::Id(ASSETS_CHAR_BAT_SLUG.clone())
+        CHAR_BAT_SLUG.to_string(),
+        CharacterSelection::Id(CHAR_BAT_SLUG.clone())
     );
     test_map_with_slug!(
         maps_switch_random_event,

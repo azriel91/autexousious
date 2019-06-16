@@ -61,7 +61,7 @@ mod tests {
     use amethyst_test::prelude::*;
     use asset_loading::AssetDiscovery;
     use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
-    use assets_test::{ASSETS_MAP_EMPTY_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
+    use assets_test::{ASSETS_PATH, MAP_EMPTY_SLUG, MAP_FADE_SLUG};
     use game_model::{loaded::MapAssets, play::GameEntities};
     use loading::AssetLoader;
     use map_loading::MapLoadingBundle;
@@ -84,7 +84,7 @@ mod tests {
             .with_bundle(MapLoadingBundle::new())
             .with_setup(setup_system_data)
             .with_setup(load_maps)
-            .with_setup(map_selection(ASSETS_MAP_EMPTY_SLUG.clone()))
+            .with_setup(map_selection(MAP_EMPTY_SLUG.clone()))
             .with_setup(|world| {
                 let mut game_loading_status = GameLoadingStatus::new();
                 game_loading_status.map_loaded = true;
@@ -133,7 +133,7 @@ mod tests {
                 .with_bundle(MapLoadingBundle::new())
                 .with_setup(setup_system_data)
                 .with_setup(load_maps)
-                .with_setup(map_selection(ASSETS_MAP_FADE_SLUG.clone()))
+                .with_setup(map_selection(MAP_FADE_SLUG.clone()))
                 .with_system_single(
                     MapSelectionSpawningSystem,
                     MapSelectionSpawningSystem::type_name(),
@@ -163,7 +163,7 @@ mod tests {
                 .with_bundle(MapLoadingBundle::new())
                 .with_setup(setup_system_data)
                 .with_setup(load_maps)
-                .with_setup(map_selection(ASSETS_MAP_EMPTY_SLUG.clone()))
+                .with_setup(map_selection(MAP_EMPTY_SLUG.clone()))
                 .with_system_single(
                     MapSelectionSpawningSystem,
                     MapSelectionSpawningSystem::type_name(),

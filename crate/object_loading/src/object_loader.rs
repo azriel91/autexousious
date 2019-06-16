@@ -184,7 +184,7 @@ mod test {
     use amethyst_test::AmethystApplication;
     use application::{load_in, Format};
     use asset_model::config::AssetRecord;
-    use assets_test::{ASSETS_CHAR_BAT_PATH, ASSETS_CHAR_BAT_SLUG};
+    use assets_test::{CHAR_BAT_PATH, CHAR_BAT_SLUG};
     use character_model::{
         config::CharacterDefinition,
         loaded::{Character, CharacterObjectWrapper},
@@ -215,10 +215,8 @@ mod test {
                 )
                 .with_system(Processor::<Character>::new(), "character_processor", &[])
                 .with_effect(|world| {
-                    let asset_record = AssetRecord::new(
-                        ASSETS_CHAR_BAT_SLUG.clone(),
-                        ASSETS_CHAR_BAT_PATH.clone(),
-                    );
+                    let asset_record =
+                        AssetRecord::new(CHAR_BAT_SLUG.clone(), CHAR_BAT_PATH.clone());
 
                     let character_definition = load_in::<CharacterDefinition, _>(
                         &asset_record.path,
