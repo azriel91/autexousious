@@ -13,7 +13,7 @@ use crate::{
 /// Represents an in-game character that has been loaded.
 ///
 /// Each of these fields should be a component that is attached to the character entity.
-#[game_object(CharacterSequenceId)]
+#[game_object]
 #[derive(Asset, Clone, Debug, PartialEq, TypeName, new)]
 pub struct Character {
     /// Handles of `ControlTransitions`es sequences that this character uses, keyed by sequence ID.

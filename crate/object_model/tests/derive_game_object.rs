@@ -22,7 +22,7 @@ pub enum MagicSequenceId {
 impl SequenceId for MagicSequenceId {}
 
 #[game_object(
-    MagicSequenceId,
+    sequence_id = MagicSequenceId,
     sequence = config::MagicSequence,
     definition = config::MagicDefinition,
     object_type = TestObject,
@@ -32,10 +32,7 @@ struct Magic;
 
 // TODO: use a proc_macro to generate most of this boilerplate.
 mod config {
-    use amethyst::{
-        assets::{Asset, Handle},
-        ecs::storage::VecStorage,
-    };
+    use asset_derive::Asset;
     use derive_new::new;
     use object_model::config::{
         GameObjectDefinition, GameObjectSequence, ObjectDefinition, ObjectFrame, ObjectSequence,
@@ -45,17 +42,11 @@ mod config {
     use super::MagicSequenceId;
 
     /// Contains all of the sequences for an `Object`.
-    #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, new)]
+    #[derive(Asset, Clone, Debug, Default, Deserialize, PartialEq, Serialize, new)]
     pub struct MagicDefinition {
         /// Sequences of actions this object can perform.
         #[serde(flatten)]
         pub object_definition: ObjectDefinition<MagicSequence>,
-    }
-
-    impl Asset for MagicDefinition {
-        const NAME: &'static str = "object_model::tests::config::MagicDefinition";
-        type Data = Self;
-        type HandleStorage = VecStorage<Handle<Self>>;
     }
 
     impl GameObjectDefinition for MagicDefinition {
