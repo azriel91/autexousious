@@ -119,7 +119,7 @@ mod test {
     use amethyst::{input::InputHandler, ui::Interactable, Error};
     use game_input_model::ControlBindings;
     use game_model::{
-        loaded::{CharacterAssets, MapAssets},
+        loaded::{CharacterPrefabs, MapAssets},
         play::GameEntities,
     };
     use object_type::ObjectType;
@@ -155,7 +155,7 @@ mod test {
             .with_assertion(|world| {
                 // Panics if the resources have not been populated
                 world.read_resource::<MapAssets>();
-                assert!(!world.read_resource::<CharacterAssets>().is_empty());
+                assert!(!world.read_resource::<CharacterPrefabs>().is_empty());
             })
             .run_isolated()
     }
@@ -169,6 +169,7 @@ mod test {
                 // Ensure there is at least one entity per object type.
                 ObjectType::iter()
                     .filter(|object_type| *object_type != ObjectType::TestObject)
+                    .filter(|object_type| *object_type != ObjectType::Energy)
                     .for_each(|object_type| {
                         let objects = game_entities.objects.get(&object_type);
                         let object_entities = objects.unwrap_or_else(|| {

@@ -4,7 +4,7 @@ use amethyst::{
 };
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent, CharacterSelections};
 use derive_new::new;
-use game_model::loaded::CharacterAssets;
+use game_model::loaded::CharacterPrefabs;
 use typename_derive::TypeName;
 
 /// Populates the `CharacterSelections` based on user input.
@@ -17,7 +17,7 @@ pub struct CharacterSelectionSystem {
 
 type CharacterSelectionSystemData<'s> = (
     Read<'s, EventChannel<CharacterSelectionEvent>>,
-    Read<'s, CharacterAssets>,
+    Read<'s, CharacterPrefabs>,
     Write<'s, CharacterSelections>,
 );
 
@@ -26,7 +26,7 @@ impl<'s> System<'s> for CharacterSelectionSystem {
 
     fn run(
         &mut self,
-        (character_selection_ec, character_assets, mut character_selections): Self::SystemData,
+        (character_selection_ec, character_prefabs, mut character_selections): Self::SystemData,
     ) {
         character_selection_ec
             .read(
@@ -44,7 +44,7 @@ impl<'s> System<'s> for CharacterSelectionSystem {
                         CharacterSelection::Random => {
                             // TODO: Implement Random
                             // TODO: <https://gitlab.com/azriel91/autexousious/issues/137>
-                            character_assets
+                            character_prefabs
                                 .keys()
                                 .next()
                                 .expect("Expected at least one character to be loaded.")

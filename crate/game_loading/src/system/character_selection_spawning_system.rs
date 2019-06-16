@@ -3,7 +3,7 @@ use character_prefab::CharacterPrefabHandle;
 use character_selection_model::CharacterSelections;
 use derive_new::new;
 use game_input::InputControlled;
-use game_model::{loaded::CharacterAssets, play::GameEntities};
+use game_model::{loaded::CharacterPrefabs, play::GameEntities};
 use object_type::ObjectType;
 use typename_derive::TypeName;
 
@@ -16,7 +16,7 @@ pub(crate) struct CharacterSelectionSpawningSystem;
 type CharacterSelectionSpawningSystemData<'s> = (
     Entities<'s>,
     Read<'s, CharacterSelections>,
-    Read<'s, CharacterAssets>,
+    Read<'s, CharacterPrefabs>,
     Write<'s, GameLoadingStatus>,
     WriteStorage<'s, CharacterPrefabHandle>,
     WriteStorage<'s, InputControlled>,
@@ -31,7 +31,7 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
         (
             entities,
             character_selections,
-            character_assets,
+            character_prefabs,
             mut game_loading_status,
             mut character_prefab_handles,
             mut input_controlleds,
@@ -48,7 +48,7 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             .map(|(controller_id, asset_slug)| {
                 let entity = entities.create();
 
-                let handle = character_assets
+                let handle = character_prefabs
                     .get(asset_slug)
                     .unwrap_or_else(|| {
                         panic!(

@@ -10,7 +10,7 @@ use game_input::InputControlled;
 use game_input_model::{
     Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent,
 };
-use game_model::loaded::CharacterAssets;
+use game_model::loaded::CharacterPrefabs;
 use log::debug;
 use shred_derive::SystemData;
 
@@ -40,7 +40,7 @@ pub(crate) struct CharacterSelectionWidgetInputResources<'s> {
     pub input_controlleds: ReadStorage<'s, InputControlled>,
     /// `Character` assets.
     #[derivative(Debug = "ignore")]
-    pub character_assets: Read<'s, CharacterAssets>,
+    pub character_prefabs: Read<'s, CharacterPrefabs>,
     /// `CharacterSelectionEvent` channel.
     #[derivative(Debug = "ignore")]
     pub character_selection_ec: Write<'s, EventChannel<CharacterSelectionEvent>>,
@@ -53,14 +53,14 @@ type CharacterSelectionWidgetInputSystemData<'s> = (
 
 impl CharacterSelectionWidgetInputSystem {
     fn select_previous_character(
-        character_assets: &CharacterAssets,
+        character_prefabs: &CharacterPrefabs,
         widget: &mut CharacterSelectionWidget,
     ) -> CharacterSelection {
-        let first_character_slug = character_assets
+        let first_character_slug = character_prefabs
             .keys()
             .next()
             .expect("Expected at least one character to be loaded.");
-        let last_character_slug = character_assets
+        let last_character_slug = character_prefabs
             .keys()
             .next_back()
             .expect("Expected at least one character to be loaded.");
@@ -69,7 +69,7 @@ impl CharacterSelectionWidgetInputSystem {
                 if character_slug == first_character_slug {
                     CharacterSelection::Random
                 } else {
-                    let next_character = character_assets
+                    let next_character = character_prefabs
                         .keys()
                         .rev()
                         .skip_while(|slug| slug != &character_slug)
@@ -88,14 +88,14 @@ impl CharacterSelectionWidgetInputSystem {
     }
 
     fn select_next_character(
-        character_assets: &CharacterAssets,
+        character_prefabs: &CharacterPrefabs,
         widget: &mut CharacterSelectionWidget,
     ) -> CharacterSelection {
-        let first_character_slug = character_assets
+        let first_character_slug = character_prefabs
             .keys()
             .next()
             .expect("Expected at least one character to be loaded.");
-        let last_character_slug = character_assets
+        let last_character_slug = character_prefabs
             .keys()
             .next_back()
             .expect("Expected at least one character to be loaded.");
@@ -104,7 +104,7 @@ impl CharacterSelectionWidgetInputSystem {
                 if character_slug == last_character_slug {
                     CharacterSelection::Random
                 } else {
-                    let next_character = character_assets
+                    let next_character = character_prefabs
                         .keys()
                         .skip_while(|slug| slug != &character_slug)
                         .nth(1); // skip current selection
@@ -125,7 +125,7 @@ impl CharacterSelectionWidgetInputSystem {
         CharacterSelectionWidgetInputResources {
             ref mut character_selection_widgets,
             ref input_controlleds,
-            ref character_assets,
+            ref character_prefabs,
             ref mut character_selection_ec,
         }: &mut CharacterSelectionWidgetInputResources,
         event: ControlInputEvent,
@@ -137,7 +137,7 @@ impl CharacterSelectionWidgetInputSystem {
                     input_controlleds.get(axis_event_data.entity),
                 ) {
                     Self::handle_axis_event(
-                        &character_assets,
+                        &character_prefabs,
                         character_selection_ec,
                         character_selection_widget,
                         *input_controlled,
@@ -162,7 +162,7 @@ impl CharacterSelectionWidgetInputSystem {
     }
 
     fn handle_axis_event(
-        character_assets: &CharacterAssets,
+        character_prefabs: &CharacterPrefabs,
         character_selection_ec: &mut EventChannel<CharacterSelectionEvent>,
         character_selection_widget: &mut CharacterSelectionWidget,
         input_controlled: InputControlled,
@@ -170,10 +170,10 @@ impl CharacterSelectionWidgetInputSystem {
     ) {
         let character_selection = match (character_selection_widget.state, axis_event_data.axis) {
             (WidgetState::CharacterSelect, Axis::X) if axis_event_data.value < 0. => Some(
-                Self::select_previous_character(character_assets, character_selection_widget),
+                Self::select_previous_character(character_prefabs, character_selection_widget),
             ),
             (WidgetState::CharacterSelect, Axis::X) if axis_event_data.value > 0. => Some(
-                Self::select_next_character(character_assets, character_selection_widget),
+                Self::select_next_character(character_prefabs, character_selection_widget),
             ),
             _ => None,
         };
@@ -292,7 +292,7 @@ mod test {
     use game_input_model::{
         Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent,
     };
-    use game_model::loaded::CharacterAssets;
+    use game_model::loaded::CharacterPrefabs;
     use typename::TypeName;
 
     use super::{CharacterSelectionWidgetInputSystem, CharacterSelectionWidgetInputSystemData};
@@ -556,7 +556,7 @@ mod test {
 
     fn first_character(world: &mut World) -> AssetSlug {
         world
-            .read_resource::<CharacterAssets>()
+            .read_resource::<CharacterPrefabs>()
             .keys()
             .next()
             .expect("Expected at least one character to be loaded.")
@@ -565,7 +565,7 @@ mod test {
 
     fn last_character(world: &mut World) -> AssetSlug {
         world
-            .read_resource::<CharacterAssets>()
+            .read_resource::<CharacterPrefabs>()
             .keys()
             .next_back()
             .expect("Expected at least one character to be loaded.")
