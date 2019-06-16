@@ -2,7 +2,7 @@ use amethyst::{ecs::prelude::*, shrev::EventChannel};
 
 use asset_model::loaded::SlugAndHandle;
 use derive_new::new;
-use game_model::loaded::MapAssets;
+use game_model::loaded::MapPrefabs;
 use log::warn;
 use map_selection_model::{MapSelection, MapSelectionEvent};
 use typename_derive::TypeName;
@@ -59,7 +59,7 @@ impl<'s> System<'s> for MapSelectionSystem {
 
         if res.try_fetch::<MapSelection>().is_none() {
             let slug_and_handle = res
-                .fetch::<MapAssets>()
+                .fetch::<MapPrefabs>()
                 .iter()
                 .next()
                 .map(SlugAndHandle::from)

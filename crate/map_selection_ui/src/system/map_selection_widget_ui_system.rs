@@ -8,7 +8,7 @@ use asset_model::loaded::SlugAndHandle;
 use derive_new::new;
 use game_input::{ControllerInput, InputControlled};
 use game_input_model::{ControllerId, InputConfig};
-use game_model::loaded::MapAssets;
+use game_model::loaded::MapPrefabs;
 use log::debug;
 use map_selection_model::{MapSelection, MapSelectionEntity, MapSelectionEntityId};
 use typename_derive::TypeName;
@@ -44,7 +44,7 @@ type WidgetUiResources<'s> = (
 type InputControlledResources<'s> = (Read<'s, InputConfig>, WriteStorage<'s, InputControlled>);
 
 type MapSelectionWidgetUiSystemData<'s> = (
-    Read<'s, MapAssets>,
+    Read<'s, MapPrefabs>,
     Entities<'s>,
     InputControlledResources<'s>,
     WidgetComponentStorages<'s>,
@@ -54,7 +54,7 @@ type MapSelectionWidgetUiSystemData<'s> = (
 impl MapSelectionWidgetUiSystem {
     fn initialize_ui(
         &mut self,
-        map_assets: &MapAssets,
+        map_prefabs: &MapPrefabs,
         entities: &Entities<'_>,
         (input_config, input_controlleds): &mut InputControlledResources<'_>,
         (map_selection_widgets, controller_inputs): &mut WidgetComponentStorages<'_>,
@@ -70,7 +70,7 @@ impl MapSelectionWidgetUiSystem {
                 .get(&FontVariant::Regular)
                 .expect("Failed to get regular font handle.");
 
-            let first_map = map_assets
+            let first_map = map_prefabs
                 .iter()
                 .next()
                 .expect("Expected at least one map to be loaded.");
@@ -211,7 +211,7 @@ impl<'s> System<'s> for MapSelectionWidgetUiSystem {
     fn run(
         &mut self,
         (
-            map_assets,
+            map_prefabs,
             entities,
             mut input_controlled_resources,
             mut widget_component_storages,
@@ -219,7 +219,7 @@ impl<'s> System<'s> for MapSelectionWidgetUiSystem {
         ): Self::SystemData,
     ) {
         self.initialize_ui(
-            &map_assets,
+            &map_prefabs,
             &entities,
             &mut input_controlled_resources,
             &mut widget_component_storages,
@@ -241,7 +241,7 @@ mod test {
     };
     use application_test_support::AutexousiousApplication;
     use game_input_model::{Axis, ControlAction, ControllerConfig, InputConfig};
-    use game_model::loaded::MapAssets;
+    use game_model::loaded::MapPrefabs;
     use map_selection_model::MapSelection;
     use typename::TypeName;
 
@@ -278,16 +278,16 @@ mod test {
             // Select map and send event
             .with_effect(|world| {
                 world.exec(
-                    |(mut widgets, map_assets): (
+                    |(mut widgets, map_prefabs): (
                         WriteStorage<'_, MapSelectionWidget>,
-                        Read<'_, MapAssets>,
+                        Read<'_, MapPrefabs>,
                     )| {
                         let widget = (&mut widgets)
                             .join()
                             .next()
                             .expect("Expected entity with `MapSelectionWidget` component.");
 
-                        let first_map = map_assets
+                        let first_map = map_prefabs
                             .iter()
                             .next()
                             .expect("Expected at least one map to be loaded.");

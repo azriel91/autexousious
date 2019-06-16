@@ -9,7 +9,7 @@ use asset_loading::{AssetDiscovery, TomlFormat};
 use asset_model::config::{AssetIndex, AssetRecord};
 use derivative::Derivative;
 use derive_new::new;
-use game_model::loaded::MapAssets;
+use game_model::loaded::MapPrefabs;
 use log::debug;
 use map_model::{
     config::MapDefinition,
@@ -79,9 +79,9 @@ pub struct MapAssetLoadingSystemData<'s> {
     /// `Map` assets.
     #[derivative(Debug = "ignore")]
     map_assets: Read<'s, AssetStorage<Map>>,
-    /// `MapAssets` resource.
+    /// `MapPrefabs` resource.
     #[derivative(Debug = "ignore")]
-    loaded_maps: Write<'s, MapAssets>,
+    map_prefabs: Write<'s, MapPrefabs>,
     /// `MapLoadingStatus` resource.
     #[derivative(Debug = "ignore")]
     loading_status: Write<'s, MapLoadingStatus>,
@@ -101,7 +101,7 @@ impl<'s> System<'s> for MapAssetLoadingSystem {
             texture_assets,
             sprite_sheet_assets,
             map_assets,
-            mut loaded_maps,
+            mut map_prefabs,
             mut loading_status,
         }: Self::SystemData,
     ) {
@@ -121,7 +121,7 @@ impl<'s> System<'s> for MapAssetLoadingSystem {
             let new_asset_records = asset_records.into_iter().filter(|asset_record| {
                 !(assets_in_progress.contains_key(asset_record)
                     || maps_in_progress.contains_key(asset_record)
-                    || loaded_maps.contains_key(&asset_record.asset_slug))
+                    || map_prefabs.contains_key(&asset_record.asset_slug))
             });
 
             let new_map_asset_handles = new_asset_records
@@ -272,9 +272,9 @@ impl<'s> System<'s> for MapAssetLoadingSystem {
             });
 
         // Check if any of `maps_in_progress` have completed loading, and move them to
-        // `loaded_maps`
+        // `map_prefabs`
         //
-        // TODO: Split into separate System, since this borrows `MapAssets` mutably.
+        // TODO: Split into separate System, since this borrows `MapPrefabs` mutably.
         //
         // TODO: `HashMap` needs a `drain_filter` implementation. Check the following issue:
         // TODO: <https://github.com/rust-lang/rust/issues/43244>
@@ -284,7 +284,7 @@ impl<'s> System<'s> for MapAssetLoadingSystem {
             .drain()
             .for_each(|(asset_record, prefab_handle)| {
                 if map_assets.get(&prefab_handle).is_some() {
-                    loaded_maps.insert(asset_record.asset_slug, prefab_handle);
+                    map_prefabs.insert(asset_record.asset_slug, prefab_handle);
                 } else {
                     self.maps_in_progress.insert(asset_record, prefab_handle);
                 }

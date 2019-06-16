@@ -146,7 +146,7 @@ mod tests {
     use collision_loading::CollisionLoadingBundle;
     use game_input::InputControlled;
     use game_input_model::ControlBindings;
-    use game_model::loaded::MapAssets;
+    use game_model::loaded::MapPrefabs;
     use game_play_model::GamePlayEntity;
     use loading::{LoadingBundle, LoadingState};
     use map_loading::MapLoadingBundle;
@@ -301,7 +301,7 @@ mod tests {
         move |world| {
             let slug_and_handle = {
                 let map_handle = world
-                    .read_resource::<MapAssets>()
+                    .read_resource::<MapPrefabs>()
                     .get(&slug)
                     .unwrap_or_else(|| panic!("Expected `{}` to be loaded.", slug))
                     .clone();

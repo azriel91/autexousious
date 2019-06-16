@@ -62,7 +62,7 @@ mod tests {
     use asset_loading::AssetDiscovery;
     use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
     use assets_test::{ASSETS_PATH, MAP_EMPTY_SLUG, MAP_FADE_SLUG};
-    use game_model::{loaded::MapAssets, play::GameEntities};
+    use game_model::{loaded::MapPrefabs, play::GameEntities};
     use loading::AssetLoader;
     use map_loading::MapLoadingBundle;
     use map_selection::MapSelectionStatus;
@@ -200,7 +200,7 @@ mod tests {
         move |world| {
             let slug_and_handle = {
                 let map_handle = world
-                    .read_resource::<MapAssets>()
+                    .read_resource::<MapPrefabs>()
                     .get(&slug)
                     .unwrap_or_else(|| panic!("Expected `{}` to be loaded.", slug))
                     .clone();

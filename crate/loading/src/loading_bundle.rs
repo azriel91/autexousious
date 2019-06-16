@@ -39,7 +39,7 @@ mod test {
     use amethyst_test::AmethystApplication;
     use assets_test::ASSETS_PATH;
     use character_prefab::CharacterPrefab;
-    use game_model::loaded::{GameObjectPrefabs, MapAssets};
+    use game_model::loaded::{GameObjectPrefabs, MapPrefabs};
 
     use super::LoadingBundle;
 
@@ -51,7 +51,7 @@ mod test {
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_effect(|world| {
                 world.read_resource::<GameObjectPrefabs<CharacterPrefab>>();
-                world.read_resource::<MapAssets>();
+                world.read_resource::<MapPrefabs>();
             })
             .run()
     }

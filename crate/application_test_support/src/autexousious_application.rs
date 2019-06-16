@@ -119,7 +119,7 @@ mod test {
     use amethyst::{input::InputHandler, ui::Interactable, Error};
     use game_input_model::ControlBindings;
     use game_model::{
-        loaded::{CharacterPrefabs, MapAssets},
+        loaded::{CharacterPrefabs, MapPrefabs},
         play::GameEntities,
     };
     use object_type::ObjectType;
@@ -154,7 +154,7 @@ mod test {
         AutexousiousApplication::config_base()
             .with_assertion(|world| {
                 // Panics if the resources have not been populated
-                world.read_resource::<MapAssets>();
+                world.read_resource::<MapPrefabs>();
                 assert!(!world.read_resource::<CharacterPrefabs>().is_empty());
             })
             .run_isolated()
