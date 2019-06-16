@@ -5,19 +5,18 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
-use named_type::NamedType;
-use named_type_derive::NamedType;
 use sequence_model::{
     config::Repeat,
-    loaded::{ComponentSequences, ComponentSequencesHandle},
+    loaded::{WaitSequence, WaitSequenceHandle},
     play::{
         FrameFreezeClock, FrameIndexClock, FrameWaitClock, SequenceStatus, SequenceUpdateEvent,
     },
 };
 use shred_derive::SystemData;
+use typename_derive::TypeName;
 
 /// Updates the frame limit clock and logic clock for entities with sequences.
-#[derive(Debug, Default, NamedType, new)]
+#[derive(Debug, Default, TypeName, new)]
 pub struct SequenceUpdateSystem;
 
 #[derive(Derivative, SystemData)]
@@ -26,15 +25,15 @@ pub struct SequenceUpdateSystemData<'s> {
     /// `Entities`.
     #[derivative(Debug = "ignore")]
     pub entities: Entities<'s>,
-    /// `ComponentSequencesHandle` component storage.
+    /// `Repeat` component storage.
     #[derivative(Debug = "ignore")]
     pub repeats: ReadStorage<'s, Repeat>,
-    /// `ComponentSequencesHandle` component storage.
+    /// `WaitSequenceHandle` component storage.
     #[derivative(Debug = "ignore")]
-    pub component_sequences_handles: ReadStorage<'s, ComponentSequencesHandle>,
-    /// `ComponentSequences` assets.
+    pub wait_sequence_handles: ReadStorage<'s, WaitSequenceHandle>,
+    /// `WaitSequence` assets.
     #[derivative(Debug = "ignore")]
-    pub component_sequences_assets: Read<'s, AssetStorage<ComponentSequences>>,
+    pub wait_sequence_assets: Read<'s, AssetStorage<WaitSequence>>,
     /// `FrameIndexClock` component storage.
     #[derivative(Debug = "ignore")]
     pub frame_index_clocks: WriteStorage<'s, FrameIndexClock>,
@@ -55,7 +54,7 @@ pub struct SequenceUpdateSystemData<'s> {
 #[derive(Debug)]
 struct SequenceUpdateParams<'p> {
     entity: Entity,
-    component_sequences_handle: &'p ComponentSequencesHandle,
+    wait_sequence_handle: &'p WaitSequenceHandle,
     frame_index_clock: &'p mut FrameIndexClock,
     frame_wait_clock: &'p mut FrameWaitClock,
     sequence_status: &'p mut SequenceStatus,
@@ -63,11 +62,11 @@ struct SequenceUpdateParams<'p> {
 
 impl SequenceUpdateSystem {
     fn start_sequence(
-        component_sequences_assets: &AssetStorage<ComponentSequences>,
+        wait_sequence_assets: &AssetStorage<WaitSequence>,
         sequence_update_ec: &mut EventChannel<SequenceUpdateEvent>,
         SequenceUpdateParams {
             entity,
-            component_sequences_handle,
+            wait_sequence_handle,
             frame_index_clock,
             frame_wait_clock,
             sequence_status,
@@ -82,10 +81,12 @@ impl SequenceUpdateSystem {
 
         // Update the frame_index_clock limit because we already hold a mutable
         // borrow of the component storage.
-        (*frame_index_clock).limit = component_sequences_assets
-            .get(component_sequences_handle)
-            .expect("Expected component_sequences to be loaded.")
-            .frame_count();
+        let wait_sequence = wait_sequence_assets
+            .get(wait_sequence_handle)
+            .expect("Expected `WaitSequence` to be loaded.");
+        (*frame_index_clock).limit = wait_sequence.len();
+
+        Self::update_frame_wait_clock_limit(wait_sequence, frame_wait_clock, 0);
 
         sequence_update_ec.single_write(SequenceUpdateEvent::SequenceBegin { entity });
     }
@@ -109,14 +110,14 @@ impl SequenceUpdateSystem {
     }
 
     fn entity_frame_wait_tick(
-        component_sequences_assets: &AssetStorage<ComponentSequences>,
+        wait_sequence_assets: &AssetStorage<WaitSequence>,
         mut sequence_update_ec: &mut EventChannel<SequenceUpdateEvent>,
         repeats: &ReadStorage<'_, Repeat>,
         sequence_update_params: SequenceUpdateParams,
     ) {
         let SequenceUpdateParams {
             entity,
-            component_sequences_handle,
+            wait_sequence_handle,
             frame_index_clock,
             frame_wait_clock,
             sequence_status,
@@ -142,14 +143,14 @@ impl SequenceUpdateSystem {
                 if repeats.contains(entity) {
                     let sequence_update_params = SequenceUpdateParams {
                         entity,
-                        component_sequences_handle,
+                        wait_sequence_handle,
                         frame_index_clock,
                         frame_wait_clock,
                         sequence_status,
                     };
 
                     Self::start_sequence(
-                        &component_sequences_assets,
+                        &wait_sequence_assets,
                         &mut sequence_update_ec,
                         sequence_update_params,
                     );
@@ -158,12 +159,34 @@ impl SequenceUpdateSystem {
                 frame_wait_clock.reset();
 
                 let frame_index = (*frame_index_clock).value;
+
+                // Update limit for `FrameWaitClock`.
+                let wait_sequence = wait_sequence_assets
+                    .get(wait_sequence_handle)
+                    .expect("Expected `WaitSequence` to be loaded.");
+
+                Self::update_frame_wait_clock_limit(wait_sequence, frame_wait_clock, frame_index);
+
                 sequence_update_ec.single_write(SequenceUpdateEvent::FrameBegin {
                     entity,
                     frame_index,
                 });
             }
         }
+    }
+
+    fn update_frame_wait_clock_limit(
+        wait_sequence: &WaitSequence,
+        frame_wait_clock: &mut FrameWaitClock,
+        frame_index: usize,
+    ) {
+        let wait = wait_sequence.get(frame_index).unwrap_or_else(|| {
+            panic!(
+                "Expected wait sequence to have frame index: `{}`. `WaitSequence`: {:?}",
+                frame_index, wait_sequence
+            )
+        });
+        (*frame_wait_clock).limit = **wait as usize;
     }
 }
 
@@ -175,8 +198,8 @@ impl<'s> System<'s> for SequenceUpdateSystem {
         SequenceUpdateSystemData {
             entities,
             repeats,
-            component_sequences_handles,
-            component_sequences_assets,
+            wait_sequence_handles,
+            wait_sequence_assets,
             mut frame_index_clocks,
             mut frame_freeze_clocks,
             mut frame_wait_clocks,
@@ -186,7 +209,7 @@ impl<'s> System<'s> for SequenceUpdateSystem {
     ) {
         (
             &entities,
-            &component_sequences_handles,
+            &wait_sequence_handles,
             &mut frame_index_clocks,
             &mut frame_wait_clocks,
             &mut sequence_statuses,
@@ -195,14 +218,14 @@ impl<'s> System<'s> for SequenceUpdateSystem {
             .for_each(
                 |(
                     entity,
-                    component_sequences_handle,
+                    wait_sequence_handle,
                     mut frame_index_clock,
                     mut frame_wait_clock,
                     mut sequence_status,
                 )| {
                     let sequence_update_params = SequenceUpdateParams {
                         entity,
-                        component_sequences_handle: &component_sequences_handle,
+                        wait_sequence_handle: &wait_sequence_handle,
                         frame_index_clock: &mut frame_index_clock,
                         frame_wait_clock: &mut frame_wait_clock,
                         sequence_status: &mut sequence_status,
@@ -210,7 +233,7 @@ impl<'s> System<'s> for SequenceUpdateSystem {
                     match sequence_update_params.sequence_status {
                         SequenceStatus::Begin => {
                             Self::start_sequence(
-                                &component_sequences_assets,
+                                &wait_sequence_assets,
                                 &mut sequence_update_ec,
                                 sequence_update_params,
                             );
@@ -218,7 +241,7 @@ impl<'s> System<'s> for SequenceUpdateSystem {
                         SequenceStatus::Ongoing => {
                             if Self::entity_unfrozen_tick(&mut frame_freeze_clocks, entity) {
                                 Self::entity_frame_wait_tick(
-                                    &component_sequences_assets,
+                                    &wait_sequence_assets,
                                     &mut sequence_update_ec,
                                     &repeats,
                                     sequence_update_params,
@@ -235,17 +258,16 @@ impl<'s> System<'s> for SequenceUpdateSystem {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{Entities, Entity, SystemData, World, WriteStorage},
+        assets::{AssetStorage, Loader},
+        ecs::{Entities, Entity, Read, ReadExpect, SystemData, World, WriteStorage},
         shrev::{EventChannel, ReaderId},
         Error,
     };
-    use application_test_support::{AutexousiousApplication, SequenceQueries};
-    use assets_test::ASSETS_CHAR_BAT_SLUG;
-    use character_model::config::CharacterSequenceId;
+    use application_test_support::AutexousiousApplication;
     use logic_clock::LogicClock;
     use sequence_model::{
-        config::Repeat,
-        loaded::ComponentSequencesHandle,
+        config::{Repeat, Wait},
+        loaded::{WaitSequence, WaitSequenceHandle},
         play::{
             FrameFreezeClock, FrameIndexClock, FrameWaitClock, SequenceStatus, SequenceUpdateEvent,
         },
@@ -257,7 +279,8 @@ mod tests {
     ///
     /// * Resets `FrameIndexClock`.
     /// * Updates the `FrameIndexClock` limit to the new sequence's limit.
-    /// * Resets `LogicClock` (frame wait counter).
+    /// * Resets `FrameWaitClock`.
+    /// * Updates `FrameWaitClock` limit to the new frame's wait limit.
     /// * `SequenceUpdateEvent::SequenceBegin` events are sent.
     #[test]
     fn resets_frame_wait_clocks_and_sends_event_on_sequence_begin() -> Result<(), Error> {
@@ -278,7 +301,7 @@ mod tests {
                 expect_values(
                     world,
                     frame_index_clock(0, 5),
-                    frame_wait_clock(0, 10),
+                    frame_wait_clock(0, 2),
                     None,
                     SequenceStatus::Ongoing,
                 )
@@ -295,6 +318,7 @@ mod tests {
     /// * No change to `FrameIndexClock` value.
     /// * No change to `FrameIndexClock` limit.
     /// * Ticks `FrameWaitClock`.
+    /// * No change to `FrameWaitClock` limit.
     /// * No `SequenceUpdateEvent`s are sent.
     #[test]
     fn ticks_frame_wait_clock_when_sequence_ongoing_and_no_frame_freeze_clock() -> Result<(), Error>
@@ -330,7 +354,8 @@ mod tests {
     /// * No change to `FrameIndexClock` value.
     /// * No change to `FrameIndexClock` limit.
     /// * Ticks `FrameFreezeClock`.
-    /// * No change to `LogicClock`.
+    /// * No change to `FrameWaitClock` value.
+    /// * No change to `FrameWaitClock` limit.
     /// * No `SequenceUpdateEvent`s are sent.
     #[test]
     fn ticks_frame_freeze_clock_when_sequence_ongoing_and_frame_freeze_clock_not_complete(
@@ -367,6 +392,7 @@ mod tests {
     /// * No change to `FrameIndexClock` limit.
     /// * No change to `FrameFreezeClock`.
     /// * Ticks `FrameWaitClock`.
+    /// * No change to `FrameWaitClock` limit.
     /// * No `SequenceUpdateEvent`s are sent.
     #[test]
     fn ticks_frame_freeze_clock_when_sequence_ongoing_and_frame_freeze_clock_complete(
@@ -401,7 +427,8 @@ mod tests {
     ///
     /// * Ticks `FrameIndexClock` value.
     /// * No change to `FrameIndexClock` limit.
-    /// * Resets `LogicClock` (frame wait counter).
+    /// * Resets `FrameWaitClock`.
+    /// * Updates `FrameWaitClock` limit to the new frame's wait limit.
     /// * `SequenceUpdateEvent::FrameBegin` events are sent.
     #[test]
     fn resets_frame_wait_clock_and_sends_event_when_frame_ends_and_sequence_ongoing(
@@ -423,7 +450,7 @@ mod tests {
                 expect_values(
                     world,
                     frame_index_clock(1, 5),
-                    frame_wait_clock(0, 2),
+                    frame_wait_clock(0, 3),
                     None,
                     SequenceStatus::Ongoing,
                 )
@@ -440,6 +467,7 @@ mod tests {
     /// * Ticks `FrameIndexClock` value.
     /// * No change to `FrameIndexClock` limit.
     /// * Ticks `FrameWaitClock` value.
+    /// * No change to `FrameWaitClock` limit.
     /// * `SequenceUpdateEvent::SequenceEnd` event is sent.
     /// * Sets `SequenceStatus` to `SequenceStatus::End`.
     #[test]
@@ -450,7 +478,7 @@ mod tests {
                 initial_values(
                     world,
                     frame_index_clock(4, 5),
-                    frame_wait_clock(1, 2),
+                    frame_wait_clock(5, 6),
                     None,
                     SequenceStatus::Ongoing,
                     false,
@@ -461,7 +489,7 @@ mod tests {
                 expect_values(
                     world,
                     frame_index_clock(5, 5),
-                    frame_wait_clock(2, 2),
+                    frame_wait_clock(6, 6),
                     None,
                     SequenceStatus::End,
                 )
@@ -477,7 +505,7 @@ mod tests {
     ///
     /// * Resets `FrameIndexClock`.
     /// * Updates the `FrameIndexClock` limit to the new sequence's limit.
-    /// * Resets `LogicClock` (frame wait counter).
+    /// * Resets `FrameWaitClock`.
     /// * `SequenceEnd` and `SequenceBegin` events are both sent.
     /// * Sets `SequenceStatus` to `SequenceStatus::Ongoing`.
     #[test]
@@ -488,7 +516,7 @@ mod tests {
                 initial_values(
                     world,
                     frame_index_clock(4, 5),
-                    frame_wait_clock(1, 2),
+                    frame_wait_clock(5, 6),
                     None,
                     SequenceStatus::Ongoing,
                     true,
@@ -556,11 +584,19 @@ mod tests {
         sequence_status: SequenceStatus,
         repeat: bool,
     ) {
-        let run_stop_handle = SequenceQueries::component_sequences_handle(
-            world,
-            &ASSETS_CHAR_BAT_SLUG.clone(),
-            CharacterSequenceId::RunStop,
-        );
+        let wait_sequence_handle = {
+            let (loader, wait_sequence_assets) = world
+                .system_data::<(ReadExpect<'_, Loader>, Read<'_, AssetStorage<WaitSequence>>)>();
+
+            let wait_sequence = WaitSequence::new(vec![
+                Wait::new(2),
+                Wait::new(3),
+                Wait::new(4),
+                Wait::new(5),
+                Wait::new(6),
+            ]);
+            loader.load_from_data(wait_sequence, (), &wait_sequence_assets)
+        };
 
         let entity = {
             let (
@@ -568,7 +604,7 @@ mod tests {
                 mut frame_index_clocks,
                 mut frame_wait_clocks,
                 mut frame_freeze_clocks,
-                mut component_sequences_handles,
+                mut wait_sequence_handles,
                 mut sequence_statuses,
             ) = world.system_data::<TestSystemData>();
             let mut repeats = world.write_storage::<Repeat>();
@@ -586,9 +622,9 @@ mod tests {
                     .insert(entity, frame_freeze_clock)
                     .expect("Failed to insert frame_freeze_clock component.");
             }
-            component_sequences_handles
-                .insert(entity, run_stop_handle)
-                .expect("Failed to insert run_stop_handle component.");
+            wait_sequence_handles
+                .insert(entity, wait_sequence_handle)
+                .expect("Failed to insert wait_sequence_handle component.");
             sequence_statuses
                 .insert(entity, sequence_status)
                 .expect("Failed to insert sequence_status component.");
@@ -722,7 +758,7 @@ mod tests {
         WriteStorage<'s, FrameIndexClock>,
         WriteStorage<'s, FrameWaitClock>,
         WriteStorage<'s, FrameFreezeClock>,
-        WriteStorage<'s, ComponentSequencesHandle>,
+        WriteStorage<'s, WaitSequenceHandle>,
         WriteStorage<'s, SequenceStatus>,
     );
 }

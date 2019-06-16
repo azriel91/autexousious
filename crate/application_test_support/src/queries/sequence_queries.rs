@@ -8,8 +8,10 @@ use character_model::{
     },
 };
 use character_prefab::CharacterPrefab;
+use collision_model::loaded::{BodySequenceHandle, InteractionsSequenceHandle};
 use object_model::loaded::ObjectWrapper;
-use sequence_model::loaded::ComponentSequencesHandle;
+use sequence_model::loaded::WaitSequenceHandle;
+use sprite_model::loaded::SpriteRenderSequenceHandle;
 
 use crate::ObjectQueries;
 
@@ -28,7 +30,7 @@ impl SequenceQueries {
     /// * `asset_slug`: Object slug whose `Handle<O::ObjectWrapper>` to retrieve.
     /// * `sequence_id`: Sequence ID whose `CharacterControlTransitionsSequenceHandle` to retrieve.
     pub fn character_cts_handle(
-        world: &mut World,
+        world: &World,
         asset_slug: &AssetSlug,
         sequence_id: CharacterSequenceId,
     ) -> CharacterControlTransitionsSequenceHandle {
@@ -73,7 +75,7 @@ impl SequenceQueries {
     /// * `sequence_id`: Sequence ID whose `CharacterControlTransitionsSequenceHandle` to retrieve.
     /// * `frame_index`: Frame index within the sequence whose control transitions to retrieve.
     pub fn character_control_transitions_handle(
-        world: &mut World,
+        world: &World,
         asset_slug: &AssetSlug,
         sequence_id: CharacterSequenceId,
         frame_index: usize,
@@ -89,33 +91,132 @@ impl SequenceQueries {
         character_cts[frame_index].clone()
     }
 
-    /// Returns the `ComponentSequencesHandle` for the specified sequence ID.
+    /// Returns the `WaitSequenceHandle` for the specified sequence ID.
     ///
     /// This function assumes the character for the specified slug is instantiated in the world.
     ///
     /// # Parameters
     ///
     /// * `world`: `World` of the running application.
-    /// * `asset_slug`: Object slug whose `Handle<O::ObjectWrapper>` to retrieve.
-    /// * `sequence_id`: Sequence ID whose `ComponentSequencesHandle` to retrieve.
-    pub fn component_sequences_handle(
-        world: &mut World,
+    /// * `asset_slug`: Asset slug of the `Object`.
+    /// * `sequence_id`: Sequence ID of the `WaitSequenceHandle`.
+    pub fn wait_sequence_handle(
+        world: &World,
         asset_slug: &AssetSlug,
         sequence_id: CharacterSequenceId,
-    ) -> ComponentSequencesHandle {
+    ) -> WaitSequenceHandle {
         let object_wrapper_handle = ObjectQueries::object_wrapper_handle(world, asset_slug);
         let object_wrapper_assets = world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
         let object_wrapper = object_wrapper_assets
             .get(&object_wrapper_handle)
             .unwrap_or_else(|| panic!("Expected `{}` object wrapper to be loaded.", asset_slug));
 
-        object_wrapper
-            .inner()
-            .component_sequences_handles
+        let object = object_wrapper.inner();
+        object
+            .wait_sequence_handles
             .get(&sequence_id)
             .unwrap_or_else(|| {
                 panic!(
-                    "Expected component_sequences_handles for sequence ID `{:?}` to exist.",
+                    "Expected `WaitSequenceHandle` for sequence ID `{:?}` to exist.",
+                    sequence_id
+                )
+            })
+            .clone()
+    }
+
+    /// Returns the `SpriteRenderSequenceHandle` for the specified sequence ID.
+    ///
+    /// This function assumes the character for the specified slug is instantiated in the world.
+    ///
+    /// # Parameters
+    ///
+    /// * `world`: `World` of the running application.
+    /// * `asset_slug`: Asset slug of the `Object`.
+    /// * `sequence_id`: Sequence ID of the `SpriteRenderSequenceHandle`.
+    pub fn sprite_render_sequence_handle(
+        world: &World,
+        asset_slug: &AssetSlug,
+        sequence_id: CharacterSequenceId,
+    ) -> SpriteRenderSequenceHandle {
+        let object_wrapper_handle = ObjectQueries::object_wrapper_handle(world, asset_slug);
+        let object_wrapper_assets = world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
+        let object_wrapper = object_wrapper_assets
+            .get(&object_wrapper_handle)
+            .unwrap_or_else(|| panic!("Expected `{}` object wrapper to be loaded.", asset_slug));
+
+        let object = object_wrapper.inner();
+        object
+            .sprite_render_sequence_handles
+            .get(&sequence_id)
+            .unwrap_or_else(|| {
+                panic!(
+                    "Expected `SpriteRenderSequenceHandle` for sequence ID `{:?}` to exist.",
+                    sequence_id
+                )
+            })
+            .clone()
+    }
+
+    /// Returns the `BodySequenceHandle` for the specified sequence ID.
+    ///
+    /// This function assumes the character for the specified slug is instantiated in the world.
+    ///
+    /// # Parameters
+    ///
+    /// * `world`: `World` of the running application.
+    /// * `asset_slug`: Asset slug of the `Object`.
+    /// * `sequence_id`: Sequence ID of the `BodySequenceHandle`.
+    pub fn body_sequence_handle(
+        world: &World,
+        asset_slug: &AssetSlug,
+        sequence_id: CharacterSequenceId,
+    ) -> BodySequenceHandle {
+        let object_wrapper_handle = ObjectQueries::object_wrapper_handle(world, asset_slug);
+        let object_wrapper_assets = world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
+        let object_wrapper = object_wrapper_assets
+            .get(&object_wrapper_handle)
+            .unwrap_or_else(|| panic!("Expected `{}` object wrapper to be loaded.", asset_slug));
+
+        let object = object_wrapper.inner();
+        object
+            .body_sequence_handles
+            .get(&sequence_id)
+            .unwrap_or_else(|| {
+                panic!(
+                    "Expected `BodySequenceHandle` for sequence ID `{:?}` to exist.",
+                    sequence_id
+                )
+            })
+            .clone()
+    }
+
+    /// Returns the `InteractionsSequenceHandle` for the specified sequence ID.
+    ///
+    /// This function assumes the character for the specified slug is instantiated in the world.
+    ///
+    /// # Parameters
+    ///
+    /// * `world`: `World` of the running application.
+    /// * `asset_slug`: Asset slug of the `Object`.
+    /// * `sequence_id`: Sequence ID of the `InteractionsSequenceHandle`.
+    pub fn interactions_sequence_handle(
+        world: &World,
+        asset_slug: &AssetSlug,
+        sequence_id: CharacterSequenceId,
+    ) -> InteractionsSequenceHandle {
+        let object_wrapper_handle = ObjectQueries::object_wrapper_handle(world, asset_slug);
+        let object_wrapper_assets = world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
+        let object_wrapper = object_wrapper_assets
+            .get(&object_wrapper_handle)
+            .unwrap_or_else(|| panic!("Expected `{}` object wrapper to be loaded.", asset_slug));
+
+        let object = object_wrapper.inner();
+        object
+            .interactions_sequence_handles
+            .get(&sequence_id)
+            .unwrap_or_else(|| {
+                panic!(
+                    "Expected `InteractionsSequenceHandle` for sequence ID `{:?}` to exist.",
                     sequence_id
                 )
             })

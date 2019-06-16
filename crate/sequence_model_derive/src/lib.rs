@@ -2,7 +2,53 @@
 
 //! Provides the `#[component_sequence]` attribute to generate a newtype around `Vec<C>`.
 //!
-//! See the `component_sequence` crate for example usage.
+//! # Examples
+//!
+//! ```rust,edition2018
+//! # use amethyst::ecs::{storage::VecStorage, Component};
+//! #
+//! # #[derive(Clone, Copy, Debug, Default, PartialEq)]
+//! # pub struct Wait;
+//! #
+//! # impl Component for Wait {
+//! #     type Storage = VecStorage<Self>;
+//! # }
+//! #
+//! use asset_derive::Asset;
+//! use derive_deref::{Deref, DerefMut};
+//! use sequence_model_derive::component_sequence;
+//! use typename_derive::TypeName;
+//!
+//! #[component_sequence(Wait)]
+//! pub struct WaitSequence;
+//! ```
+//!
+//! Effectively generates the following:
+//!
+//! ```rust,ignore
+//! use amethyst::assets::Handle;
+//! use sequence_model_spi::loaded::ComponentSequence;
+//!
+//! #[derive(Asset, Clone, Debug, Deref, DerefMut, PartialEq, TypeName)]
+//! pub struct WaitSequence(ComponentSequence<Wait>)
+//!
+//! impl WaitSequence {
+//!     #[doc = #fn_new_doc]
+//!     pub fn new(sequence: Vec<Wait>) -> Self {
+//!         WaitSequence(ComponentSequence::<Wait>::new(sequence))
+//!     }
+//! }
+//!
+//! // Manually implement `Default` because the component type may not, and the `Default` derive
+//! // imposes a `Default` bound on type parameters.
+//! impl Default for WaitSequence {
+//!     fn default() -> Self {
+//!         WaitSequence(ComponentSequence::<Wait>::new(Vec::default()))
+//!     }
+//! }
+//! /// Handle to a `WaitSequence`.
+//! pub type WaitSequenceHandle = Handle<WaitSequence>;
+//! ```
 
 extern crate proc_macro;
 
@@ -11,10 +57,18 @@ use proc_macro_roids::{DeriveInputDeriveExt, DeriveInputStructExt, FieldsUnnamed
 use quote::quote;
 use syn::{parse_macro_input, parse_quote, DeriveInput, FieldsUnnamed, Path};
 
+use crate::component_sequence_attribute_args::ComponentSequenceAttributeArgs;
+
+mod component_sequence_attribute_args;
+
 #[proc_macro_attribute]
 pub fn component_sequence(args: TokenStream, item: TokenStream) -> TokenStream {
     let mut ast = parse_macro_input!(item as DeriveInput);
-    let component_path = parse_macro_input!(args as Path);
+    let args = parse_macro_input!(args as ComponentSequenceAttributeArgs);
+    let component_path = args.component_path;
+    let component_owned_fn = args
+        .component_owned_fn
+        .unwrap_or_else(|| parse_quote!(std::clone::Clone::clone));
 
     ast.assert_fields_unit();
 
@@ -22,54 +76,51 @@ pub fn component_sequence(args: TokenStream, item: TokenStream) -> TokenStream {
     fields_append(&mut ast, &component_path);
 
     let type_name = &ast.ident;
-    let (impl_generics, type_generics, where_clause) = ast.generics.split_for_impl();
+    let fn_new_doc = format!("Returns a new `{}`.", type_name);
     let handle_name = type_name.append("Handle");
-    let handle_doc = format!("Handle to a {}", type_name);
+    let handle_doc = format!("Handle to a `{}`.", type_name);
 
     let token_stream_2 = quote! {
         #ast
 
-        impl #impl_generics amethyst::assets::Asset for #type_name #type_generics #where_clause {
-            const NAME: &'static str = concat!(
-                module_path!(),
-                "::",
-                stringify!(#type_name),
-            );
-
-            type Data = Self;
-            type HandleStorage = amethyst::ecs::storage::VecStorage<amethyst::assets::Handle<Self>>;
-        }
-
-        impl #impl_generics std::convert::From<#type_name #type_generics>
-            for std::result::Result<
-                amethyst::assets::ProcessingState<#type_name #type_generics>,
-                amethyst::Error
-            >
-        #where_clause
-        {
-            fn from(
-                component_sequence: #type_name #type_generics,
-            ) -> std::result::Result<
-                amethyst::assets::ProcessingState<#type_name #type_generics>,
-                amethyst::Error
-            >
-            {
-                Ok(amethyst::assets::ProcessingState::Loaded(
-                    component_sequence,
-                ))
+        impl #type_name {
+            #[doc = #fn_new_doc]
+            pub fn new(sequence: Vec<#component_path>) -> Self {
+                #type_name(
+                    sequence_model_spi::loaded::ComponentSequence::<#component_path>::new(sequence)
+                )
             }
         }
 
+        // Manually implement `Default` because the component type may not, and the `Default` derive
+        // imposes a `Default` bound on type parameters.
+        impl Default for #type_name {
+            fn default() -> Self {
+                #type_name(
+                    sequence_model_spi::loaded::ComponentSequence::<#component_path>::new(
+                        Vec::default()
+                    )
+                )
+            }
+        }
+
+        impl sequence_model_spi::loaded::ComponentSequenceExt for #type_name {
+            type Component = #component_path;
+
+            fn component_owned(component: &Self::Component) -> Self::Component {
+                #component_owned_fn(component)
+            }
+        }
 
         #[doc = #handle_doc]
-        pub type #handle_name #impl_generics = amethyst::assets::Handle<#type_name #type_generics>;
+        pub type #handle_name = amethyst::assets::Handle<#type_name>;
     };
 
     TokenStream::from(token_stream_2)
 }
 
 fn derive_append(ast: &mut DeriveInput) {
-    let derives = parse_quote!(Clone, Debug, Default, Deref, DerefMut, From, PartialEq, new);
+    let derives = parse_quote!(Asset, Clone, Debug, Deref, DerefMut, PartialEq, TypeName);
 
     ast.append_derives(derives);
 }
@@ -82,7 +133,9 @@ fn fields_append(ast: &mut DeriveInput, component_path: &Path) {
         .value()
         .ident;
     let doc_string = format!("The chain of `{}` values.", component_name);
-    let fields: FieldsUnnamed = parse_quote! {(#[doc = #doc_string] pub Vec<#component_path>)};
+    let fields: FieldsUnnamed = parse_quote! {
+        (#[doc = #doc_string] pub sequence_model_spi::loaded::ComponentSequence<#component_path>)
+    };
 
     ast.append_unnamed(fields);
 }

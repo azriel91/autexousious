@@ -91,6 +91,7 @@ mod test {
     use map_loading::MapLoadingBundle;
     use map_selection_model::{MapSelection, MapSelectionEvent};
     use sequence_loading::SequenceLoadingBundle;
+    use sprite_loading::SpriteLoadingBundle;
     use typename::TypeName;
 
     use super::{MapSelectionSystem, MapSelectionSystemData};
@@ -104,6 +105,7 @@ mod test {
             AmethystApplication::blank()
                 .with_bundle(TransformBundle::new())
                 .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
+                .with_bundle(SpriteLoadingBundle::new())
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_resource(MapSelectionStatus::Confirmed)
@@ -147,6 +149,7 @@ mod test {
             AmethystApplication::blank()
                 .with_bundle(TransformBundle::new())
                 .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
+                .with_bundle(SpriteLoadingBundle::new())
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_setup(setup_components)

@@ -14,6 +14,7 @@ sequence_model = { path = "../sequence_model" }
 serde = "1.0.92"
 shred = "0.7.0"
 shred-derive = "0.5.1"
+sprite_model = { path = "../sprite_model" }
 
 [dev-dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["test-support", "vulkan"] }
@@ -22,8 +23,8 @@ application_event = { path = "../application_event" }
 collision_loading = { path = "../collision_loading" }
 fnv = "1.0.6"
 game_input_model = { path = "../game_input_model" }
+object_loading = { path = "../object_loading" }
 sequence_loading = { path = "../sequence_loading" }
-sequence_model_spi = { path = "../sequence_model_spi" }
 shape_model = { path = "../shape_model" }
 sprite_loading = { path = "../sprite_loading" }
 test_object_model = { path = "../test_object_model" }

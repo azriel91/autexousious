@@ -1,7 +1,11 @@
 use amethyst::assets::Handle;
-use sequence_model_spi::loaded::ComponentFrames;
+use asset_derive::Asset;
+use derive_deref::{Deref, DerefMut};
+use sequence_model_derive::component_sequence;
+use typename_derive::TypeName;
 
 use crate::config::Body;
 
 /// Sequence for volumes that can be hit.
-pub type BodySequence = ComponentFrames<Handle<Body>>;
+#[component_sequence(Handle<Body>)]
+pub struct BodySequence;

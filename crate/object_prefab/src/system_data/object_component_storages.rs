@@ -3,7 +3,7 @@ use derivative::Derivative;
 use object_model::play::{Mirrored, Position, Velocity};
 use sequence_model::{
     config::SequenceId,
-    loaded::{ComponentSequencesHandle, SequenceEndTransitions},
+    loaded::SequenceEndTransitions,
     play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
 };
 use shred_derive::SystemData;
@@ -21,37 +21,34 @@ pub struct ObjectComponentStorages<'s, SeqId>
 where
     SeqId: SequenceId + 'static,
 {
-    /// `Transparent` component storage.
+    /// `Transparent` components.
     #[derivative(Debug = "ignore")]
     pub transparents: WriteStorage<'s, Transparent>,
-    /// `Position` component storage.
+    /// `Position` components.
     #[derivative(Debug = "ignore")]
     pub positions: WriteStorage<'s, Position<f32>>,
-    /// `Velocity` component storage.
+    /// `Velocity` components.
     #[derivative(Debug = "ignore")]
     pub velocities: WriteStorage<'s, Velocity<f32>>,
-    /// `Transform` component storage.
+    /// `Transform` components.
     #[derivative(Debug = "ignore")]
     pub transforms: WriteStorage<'s, Transform>,
-    /// `Mirrored` component storage.
+    /// `Mirrored` components.
     #[derivative(Debug = "ignore")]
     pub mirroreds: WriteStorage<'s, Mirrored>,
-    /// `ComponentSequencesHandle` component storage.
-    #[derivative(Debug = "ignore")]
-    pub component_sequences_handles: WriteStorage<'s, ComponentSequencesHandle>,
-    /// `SequenceEndTransitions` component storage.
+    /// `SequenceEndTransitions` components.
     #[derivative(Debug = "ignore")]
     pub sequence_end_transitionses: WriteStorage<'s, SequenceEndTransitions<SeqId>>,
-    /// `SeqId` component storage.
+    /// `SeqId` components.
     #[derivative(Debug = "ignore")]
     pub sequence_ids: WriteStorage<'s, SeqId>,
-    /// `SequenceStatus` component storage.
+    /// `SequenceStatus` components.
     #[derivative(Debug = "ignore")]
     pub sequence_statuses: WriteStorage<'s, SequenceStatus>,
-    /// `FrameIndexClock` component storage.
+    /// `FrameIndexClock` components.
     #[derivative(Debug = "ignore")]
     pub frame_index_clocks: WriteStorage<'s, FrameIndexClock>,
-    /// `FrameWaitClock` component storage.
+    /// `FrameWaitClock` components.
     #[derivative(Debug = "ignore")]
     pub frame_wait_clocks: WriteStorage<'s, FrameWaitClock>,
 }

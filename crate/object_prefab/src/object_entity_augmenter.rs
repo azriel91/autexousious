@@ -1,18 +1,15 @@
-use amethyst::{
-    assets::AssetStorage, core::transform::Transform, ecs::Entity,
-    renderer::transparent::Transparent,
-};
+use amethyst::{core::transform::Transform, ecs::Entity, renderer::transparent::Transparent};
 use logic_clock::LogicClock;
 use object_model::{
     loaded::ObjectWrapper,
     play::{Mirrored, Position, Velocity},
 };
-use sequence_model::{
-    loaded::{ComponentSequence, ComponentSequences},
-    play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
-};
+use sequence_model::play::{FrameIndexClock, FrameWaitClock, SequenceStatus};
 
-use crate::{FrameComponentStorages, ObjectComponentStorages};
+use crate::ObjectComponentStorages;
+
+/// Placeholder constant for
+const UNINITIALIZED: usize = 99;
 
 /// Augments an entity with `Object` components.
 #[derive(Debug)]
@@ -24,32 +21,22 @@ impl ObjectEntityAugmenter {
     /// # Parameters
     ///
     /// * `entity`: The entity to augment.
-    /// * `component_sequences_assets`: Asset storage for `ComponentSequences`.
     /// * `object_component_storages`: Non-frame-dependent `Component` storages for objects.
-    /// * `frame_component_storages`: Frame component storages for objects.
     /// * `object_wrapper`: Slug and handle of the object to spawn.
     pub fn augment<'s, W>(
         entity: Entity,
-        component_sequences_assets: &AssetStorage<ComponentSequences>,
         ObjectComponentStorages {
             ref mut transparents,
             ref mut positions,
             ref mut velocities,
             ref mut transforms,
             ref mut mirroreds,
-            ref mut component_sequences_handles,
             ref mut sequence_end_transitionses,
             ref mut sequence_ids,
             ref mut sequence_statuses,
             ref mut frame_index_clocks,
             ref mut frame_wait_clocks,
         }: &mut ObjectComponentStorages<'s, W::SequenceId>,
-        FrameComponentStorages {
-            ref mut waits,
-            ref mut sprite_renders,
-            ref mut bodies,
-            ref mut interactionses,
-        }: &mut FrameComponentStorages<'s>,
         object_wrapper: &W,
     ) where
         W: ObjectWrapper,
@@ -82,77 +69,11 @@ impl ObjectEntityAugmenter {
         sequence_statuses
             .insert(entity, SequenceStatus::default())
             .expect("Failed to insert sequence_status component.");
-
-        let component_sequences_handle = object_wrapper
-            .inner()
-            .component_sequences_handles
-            .get(&sequence_id)
-            .unwrap_or_else(|| {
-                // kcov-ignore-start
-                panic!(
-                    "Failed to get `ComponentSequencesHandle` for sequence ID: \
-                     `{:?}`.",
-                    sequence_id
-                );
-                // kcov-ignore-end
-            });
-
-        let component_sequences = component_sequences_assets
-            .get(component_sequences_handle)
-            .unwrap_or_else(|| {
-                // kcov-ignore-start
-                panic!(
-                    "Expected component_sequences to be loaded for sequence_id: `{:?}`",
-                    sequence_id
-                )
-                // kcov-ignore-end
-            });
-
-        let frame_index_clock =
-            FrameIndexClock::new(LogicClock::new(component_sequences.frame_count()));
-        let starting_frame_index = (*frame_index_clock).value;
         frame_index_clocks
-            .insert(entity, frame_index_clock)
+            .insert(entity, FrameIndexClock::new(LogicClock::new(UNINITIALIZED)))
             .expect("Failed to insert frame_index_clock component.");
-        let mut frame_wait_clock = FrameWaitClock::new(LogicClock::new(1));
-
-        component_sequences
-            .iter()
-            .for_each(|component_sequence| match component_sequence {
-                ComponentSequence::Wait(wait_sequence) => {
-                    let wait = wait_sequence[starting_frame_index];
-                    waits
-                        .insert(entity, wait)
-                        .expect("Failed to insert `Wait` component for object.");
-
-                    (*frame_wait_clock).limit = *wait as usize;
-                }
-                ComponentSequence::SpriteRender(sprite_render_sequence) => {
-                    let sprite_render = sprite_render_sequence[starting_frame_index].clone();
-                    sprite_renders
-                        .insert(entity, sprite_render)
-                        .expect("Failed to insert `SpriteRender` component for object.");
-                }
-                ComponentSequence::Body(body_sequence) => {
-                    let body_handle = body_sequence[starting_frame_index].clone();
-                    bodies
-                        .insert(entity, body_handle)
-                        .expect("Failed to insert `Body` component for object.");
-                }
-                ComponentSequence::Interactions(interactions_sequence) => {
-                    let interactions_handle = interactions_sequence[starting_frame_index].clone();
-                    interactionses
-                        .insert(entity, interactions_handle)
-                        .expect("Failed to insert `Interactions` component for object.");
-                }
-            });
-
-        component_sequences_handles
-            .insert(entity, component_sequences_handle.clone())
-            .expect("Failed to insert component_sequences_handle component.");
-
         frame_wait_clocks
-            .insert(entity, frame_wait_clock)
+            .insert(entity, FrameWaitClock::new(LogicClock::new(UNINITIALIZED)))
             .expect("Failed to insert frame_wait_clock component.");
     }
 }
@@ -162,7 +83,7 @@ mod tests {
     use std::collections::HashMap;
 
     use amethyst::{
-        assets::{AssetStorage, Loader, Processor},
+        assets::{AssetStorage, Processor},
         audio::Source,
         core::{transform::Transform, TransformBundle},
         ecs::{Builder, Read, SystemData, World},
@@ -179,9 +100,15 @@ mod tests {
     use amethyst_test::{AmethystApplication, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
     use application_event::{AppEvent, AppEventReader};
     use collision_loading::CollisionLoadingBundle;
-    use collision_model::config::{Body, Hit, Interaction, InteractionKind, Interactions};
+    use collision_model::{
+        config::{Body, Hit, Interaction, InteractionKind, Interactions},
+        loaded::{
+            BodySequence, BodySequenceHandle, InteractionsSequence, InteractionsSequenceHandle,
+        },
+    };
     use fnv::FnvHashMap;
     use game_input_model::ControlBindings;
+    use object_loading::ObjectLoaderSystemData;
     use object_model::{
         loaded::Object,
         play::{Mirrored, Position, Velocity},
@@ -189,15 +116,12 @@ mod tests {
     use sequence_loading::SequenceLoadingBundle;
     use sequence_model::{
         config::Wait,
-        loaded::{
-            ComponentSequence, ComponentSequences, ComponentSequencesHandle, SequenceEndTransition,
-            SequenceEndTransitions,
-        },
+        loaded::{SequenceEndTransition, SequenceEndTransitions, WaitSequence, WaitSequenceHandle},
         play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
     };
-    use sequence_model_spi::loaded::ComponentFrames;
     use shape_model::Volume;
     use sprite_loading::SpriteLoadingBundle;
+    use sprite_model::loaded::{SpriteRenderSequence, SpriteRenderSequenceHandle};
     use test_object_model::{config::TestObjectSequenceId, loaded::TestObjectObjectWrapper};
 
     use super::ObjectEntityAugmenter;
@@ -210,15 +134,10 @@ mod tests {
             {
                 let object_wrapper = world.read_resource::<TestObjectObjectWrapper>();
 
-                let component_sequences_assets =
-                    world.read_resource::<AssetStorage<ComponentSequences>>();
                 let mut object_component_storages = ObjectComponentStorages::fetch(&world.res);
-                let mut frame_component_storages = FrameComponentStorages::fetch(&world.res);
                 ObjectEntityAugmenter::augment(
                     entity,
-                    &component_sequences_assets,
                     &mut object_component_storages,
-                    &mut frame_component_storages,
                     &*object_wrapper,
                 );
             }
@@ -228,14 +147,10 @@ mod tests {
                 .contains(entity));
             assert!(world.read_storage::<SequenceStatus>().contains(entity));
             assert!(world.read_storage::<Mirrored>().contains(entity));
-            assert!(world.read_storage::<SpriteRender>().contains(entity));
             assert!(world.read_storage::<Transparent>().contains(entity));
             assert!(world.read_storage::<Position<f32>>().contains(entity));
             assert!(world.read_storage::<Velocity<f32>>().contains(entity));
             assert!(world.read_storage::<Transform>().contains(entity));
-            assert!(world
-                .read_storage::<ComponentSequencesHandle>()
-                .contains(entity));
             assert!(world.read_storage::<FrameIndexClock>().contains(entity));
             assert!(world.read_storage::<FrameWaitClock>().contains(entity));
         };
@@ -262,11 +177,28 @@ mod tests {
     }
 
     fn setup_object_wrapper(world: &mut World) {
-        let component_sequences_handles = {
-            let loader = world.read_resource::<Loader>();
-            let wait_sequence = ComponentFrames::new(vec![Wait::new(2)]);
+        let (
+            wait_sequence_handles,
+            sprite_render_sequence_handles,
+            body_sequence_handles,
+            interactions_sequence_handles,
+        ) = {
+            let (
+                ObjectLoaderSystemData {
+                    loader,
+                    wait_sequence_assets,
+                    sprite_render_sequence_assets,
+                    body_sequence_assets,
+                    interactions_sequence_assets,
+                    body_assets,
+                    interactions_assets,
+                },
+                texture_assets,
+                sprite_sheet_assets,
+            ) = world.system_data::<TestSystemData>();
 
-            let texture_assets = world.read_resource::<AssetStorage<Texture>>();
+            let wait_sequence = WaitSequence::new(vec![Wait::new(2)]);
+
             let texture_builder = load_from_srgba(Srgba::new(0., 0., 0., 1.));
             let texture_data = TextureData::from(texture_builder);
             let texture_handle = loader.load_from_data(texture_data, (), &texture_assets);
@@ -278,44 +210,53 @@ mod tests {
                     [0.5 / 20., 18.5 / 20., 28.5 / 30., 0.5 / 30.],
                 ))],
             };
-            let sprite_sheet_assets = world.system_data::<Read<'_, AssetStorage<SpriteSheet>>>();
             let sprite_sheet_handle = loader.load_from_data(sprite_sheet, (), &sprite_sheet_assets);
             let sprite_render = SpriteRender {
                 sprite_sheet: sprite_sheet_handle,
                 sprite_number: 0,
             };
-            let sprite_render_sequence = ComponentFrames::new(vec![sprite_render]);
+            let sprite_render_sequence = SpriteRenderSequence::new(vec![sprite_render]);
 
-            let body_assets = world.system_data::<Read<'_, AssetStorage<Body>>>();
             let body_handle = loader.load_from_data(body(), (), &body_assets);
-            let body_sequence = ComponentFrames::new(vec![body_handle]);
+            let body_sequence = BodySequence::new(vec![body_handle]);
 
-            let interactions_assets = world.system_data::<Read<'_, AssetStorage<Interactions>>>();
             let interactions_handle =
                 loader.load_from_data(interactions(), (), &interactions_assets);
-            let interactions_sequence = ComponentFrames::new(vec![interactions_handle]);
+            let interactions_sequence = InteractionsSequence::new(vec![interactions_handle]);
 
-            let wait_sequence = ComponentSequence::Wait(wait_sequence);
-            let sprite_render_sequence = ComponentSequence::SpriteRender(sprite_render_sequence);
-            let body_sequence = ComponentSequence::Body(body_sequence);
-            let interactions_sequence = ComponentSequence::Interactions(interactions_sequence);
+            let wait_sequence_handle =
+                loader.load_from_data(wait_sequence, (), &wait_sequence_assets);
+            let sprite_render_sequence_handle =
+                loader.load_from_data(sprite_render_sequence, (), &sprite_render_sequence_assets);
+            let body_sequence_handle =
+                loader.load_from_data(body_sequence, (), &body_sequence_assets);
+            let interactions_sequence_handle =
+                loader.load_from_data(interactions_sequence, (), &interactions_sequence_assets);
 
-            let component_sequences = vec![
-                wait_sequence,
-                sprite_render_sequence,
-                body_sequence,
-                interactions_sequence,
-            ];
-            let component_sequences = ComponentSequences::new(component_sequences);
-            let component_sequences_assets =
-                world.read_resource::<AssetStorage<ComponentSequences>>();
-            let component_sequences_handle =
-                loader.load_from_data(component_sequences, (), &component_sequences_assets);
+            let (
+                mut wait_sequence_handles,
+                mut sprite_render_sequence_handles,
+                mut body_sequence_handles,
+                mut interactions_sequence_handles,
+            ) = (
+                HashMap::<TestObjectSequenceId, WaitSequenceHandle>::new(),
+                HashMap::<TestObjectSequenceId, SpriteRenderSequenceHandle>::new(),
+                HashMap::<TestObjectSequenceId, BodySequenceHandle>::new(),
+                HashMap::<TestObjectSequenceId, InteractionsSequenceHandle>::new(),
+            );
+            wait_sequence_handles.insert(TestObjectSequenceId::Zero, wait_sequence_handle);
+            sprite_render_sequence_handles
+                .insert(TestObjectSequenceId::Zero, sprite_render_sequence_handle);
+            body_sequence_handles.insert(TestObjectSequenceId::Zero, body_sequence_handle);
+            interactions_sequence_handles
+                .insert(TestObjectSequenceId::Zero, interactions_sequence_handle);
 
-            let mut component_sequences_handles = HashMap::new();
-            component_sequences_handles
-                .insert(TestObjectSequenceId::Zero, component_sequences_handle);
-            component_sequences_handles
+            (
+                wait_sequence_handles,
+                sprite_render_sequence_handles,
+                body_sequence_handles,
+                interactions_sequence_handles,
+            )
         };
         let sequence_end_transitions = {
             let mut sequence_end_transitions = FnvHashMap::default();
@@ -323,7 +264,13 @@ mod tests {
                 .insert(TestObjectSequenceId::Zero, SequenceEndTransition::new(None));
             SequenceEndTransitions(sequence_end_transitions)
         };
-        let object = Object::new(component_sequences_handles, sequence_end_transitions);
+        let object = Object::new(
+            wait_sequence_handles,
+            sprite_render_sequence_handles,
+            body_sequence_handles,
+            interactions_sequence_handles,
+            sequence_end_transitions,
+        );
         let object_wrapper = TestObjectObjectWrapper(object);
 
         world.add_resource(object_wrapper);
@@ -351,4 +298,10 @@ mod tests {
             d: 1,
         }
     }
+
+    type TestSystemData<'s> = (
+        ObjectLoaderSystemData<'s>,
+        Read<'s, AssetStorage<Texture>>,
+        Read<'s, AssetStorage<SpriteSheet>>,
+    );
 }

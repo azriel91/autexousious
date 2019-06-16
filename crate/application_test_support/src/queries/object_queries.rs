@@ -27,7 +27,7 @@ impl ObjectQueries {
     ///
     /// * Panics if the `GameEntities` resource does not exist.
     /// * Panics if there are no entities for the specified `ObjectType`.
-    pub fn game_object_entity(world: &mut World, object_type: ObjectType) -> Entity {
+    pub fn game_object_entity(world: &World, object_type: ObjectType) -> Entity {
         let game_entities = &*world.read_resource::<GameEntities>();
         let objects = game_entities.objects.get(&object_type);
         let object_entities = objects
@@ -49,7 +49,7 @@ impl ObjectQueries {
     /// * `world`: `World` of the running application.
     /// * `asset_slug`: Object slug whose `Handle<O>` to retrieve.
     pub fn game_object_handle<'s, Pf>(
-        world: &mut World,
+        world: &World,
         asset_slug: &AssetSlug,
     ) -> Option<Handle<Pf::GameObject>>
     where
@@ -95,7 +95,7 @@ impl ObjectQueries {
     /// * `world`: `World` of the running application.
     /// * `asset_slug`: Object slug whose `Handle<O::ObjectWrapper>` to retrieve.
     pub fn object_wrapper_handle(
-        world: &mut World,
+        world: &World,
         asset_slug: &AssetSlug,
     ) -> Handle<CharacterObjectWrapper> {
         let snh = SlugAndHandle::from((&*world, asset_slug.clone()));

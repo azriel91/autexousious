@@ -1,6 +1,14 @@
-use sequence_model_spi::loaded::ComponentFrames;
+use asset_derive::Asset;
+use derive_deref::{Deref, DerefMut};
+use typename_derive::TypeName;
 
-use crate::config::Wait;
+use crate::{component_sequence, config::Wait};
 
 /// Sequence of `Wait` values.
-pub type WaitSequence = ComponentFrames<Wait>;
+#[component_sequence(Wait, component_owned = copy)]
+pub struct WaitSequence;
+
+#[inline]
+fn copy(wait: &Wait) -> Wait {
+    *wait
+}

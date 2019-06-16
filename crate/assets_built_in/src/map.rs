@@ -34,6 +34,6 @@ lazy_static! {
         let definition = MapDefinition::new(header, layers);
         let margins = Margins::from(definition.header.bounds);
 
-        Map::new(definition, margins, None, None)
+        Map::new(definition, margins, Vec::new(), Vec::new(), Vec::new())
     };
 }

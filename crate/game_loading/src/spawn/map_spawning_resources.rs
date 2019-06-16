@@ -4,8 +4,9 @@ use amethyst::{
 };
 use derivative::Derivative;
 use map_model::loaded::Map;
-use sequence_model::loaded::ComponentSequences;
+use sequence_model::loaded::WaitSequence;
 use shred_derive::SystemData;
+use sprite_model::loaded::SpriteRenderSequence;
 
 /// Resources needed to spawn a map.
 #[derive(Derivative, SystemData)]
@@ -17,7 +18,10 @@ pub struct MapSpawningResources<'res> {
     /// `Map` assets.
     #[derivative(Debug = "ignore")]
     pub map_assets: Read<'res, AssetStorage<Map>>,
-    /// `ComponentSequences` assets.
+    /// `WaitSequence` assets.
     #[derivative(Debug = "ignore")]
-    pub component_sequences_assets: Read<'res, AssetStorage<ComponentSequences>>,
+    pub wait_sequence_assets: Read<'res, AssetStorage<WaitSequence>>,
+    /// `SpriteRenderSequence` assets.
+    #[derivative(Debug = "ignore")]
+    pub sprite_render_sequence_assets: Read<'res, AssetStorage<SpriteRenderSequence>>,
 }

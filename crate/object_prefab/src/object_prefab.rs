@@ -7,13 +7,11 @@ use amethyst::{
 };
 use derivative::Derivative;
 use object_model::{config::ObjectAssetData, loaded::GameObject};
-use sequence_model::loaded::ComponentSequences;
+
 use serde::{Deserialize, Serialize};
 use shred_derive::SystemData;
 
-use crate::{
-    FrameComponentStorages, ObjectComponentStorages, ObjectEntityAugmenter, ObjectPrefabError,
-};
+use crate::{ObjectComponentStorages, ObjectEntityAugmenter, ObjectPrefabError};
 
 /// Sequence for volumes that can be hit.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -43,9 +41,6 @@ where
     /// `Loader` to load assets.
     #[derivative(Debug = "ignore")]
     loader: ReadExpect<'s, Loader>,
-    /// `AssetStorage` for `ComponentSequences`.
-    #[derivative(Debug = "ignore")]
-    component_sequences_assets: Read<'s, AssetStorage<ComponentSequences>>,
     /// `AssetStorage` for `ObjectWrapper`s.
     #[derivative(Debug = "ignore")]
     object_wrapper_assets: Read<'s, AssetStorage<O::ObjectWrapper>>,
@@ -54,8 +49,6 @@ where
     object_wrapper_handles: WriteStorage<'s, Handle<O::ObjectWrapper>>,
     /// Common game object `Component` storages.
     object_component_storages: ObjectComponentStorages<'s, O::SequenceId>,
-    /// Common game object frame component storages.
-    frame_component_storages: FrameComponentStorages<'s>,
 }
 
 impl<'s, O> PrefabData<'s> for ObjectPrefab<O>
@@ -71,11 +64,9 @@ where
         entity: Entity,
         ObjectPrefabSystemData {
             loader,
-            component_sequences_assets,
             object_wrapper_assets,
             object_wrapper_handles,
             object_component_storages,
-            frame_component_storages,
         }: &mut Self::SystemData,
         _: &[Entity],
         _children: &[Entity],
@@ -99,13 +90,7 @@ where
             .insert(entity, object_wrapper_handle)
             .expect("Failed to insert `Handle<O::ObjectWrapper>` component.");
 
-        ObjectEntityAugmenter::augment(
-            entity,
-            component_sequences_assets,
-            object_component_storages,
-            frame_component_storages,
-            object_wrapper,
-        );
+        ObjectEntityAugmenter::augment(entity, object_component_storages, object_wrapper);
 
         Ok(())
     }

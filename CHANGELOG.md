@@ -5,12 +5,14 @@
 ### Changed
 
 * Render using Vulkan. ([#131], [#136])
+* Split `FrameComponentUpdateSystem` so individual updates can run in parallel. ([#111])
 
 ### Fixed
 
 * Game mode selection UI events no longer enter an event channel loop. ([#134])
 * Removed dependency cycles in crates. ([#135])
 
+[#111]: https://gitlab.com/azriel91/autexousious/issues/111
 [#131]: https://gitlab.com/azriel91/autexousious/issues/131
 [#134]: https://gitlab.com/azriel91/autexousious/issues/134
 [#135]: https://gitlab.com/azriel91/autexousious/issues/135

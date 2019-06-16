@@ -24,7 +24,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterLoadingBundle {
         builder.add(
             Processor::<CharacterDefinition>::new(),
             "character_definition_processor",
-            &["component_sequences_processor"],
+            &[],
         ); // kcov-ignore
         builder.add(
             ObjectDefinitionToWrapperProcessor::<Character>::new(),

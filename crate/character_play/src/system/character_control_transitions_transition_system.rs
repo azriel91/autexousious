@@ -16,12 +16,9 @@ use game_input::ControllerInput;
 use game_input_model::{ControlAction, ControlActionEventData, ControlInputEvent};
 use named_type::NamedType;
 use named_type_derive::NamedType;
-use sequence_model::{
-    loaded::{
-        ControlTransition, ControlTransitionHold, ControlTransitionLike, ControlTransitionPress,
-        ControlTransitionRelease,
-    },
-    play::SequenceStatus,
+use sequence_model::loaded::{
+    ControlTransition, ControlTransitionHold, ControlTransitionLike, ControlTransitionPress,
+    ControlTransitionRelease,
 };
 use shred_derive::SystemData;
 
@@ -62,9 +59,6 @@ pub struct CharacterControlTransitionsTransitionResources<'s> {
     /// `CharacterSequenceId` components.
     #[derivative(Debug = "ignore")]
     pub character_sequence_ids: WriteStorage<'s, CharacterSequenceId>,
-    /// `SequenceStatus` components.
-    #[derivative(Debug = "ignore")]
-    pub sequence_statuses: WriteStorage<'s, SequenceStatus>,
 }
 
 impl CharacterControlTransitionsTransitionSystem {
@@ -76,7 +70,6 @@ impl CharacterControlTransitionsTransitionSystem {
             ref character_control_transitions_handles,
             ref character_control_transitions_assets,
             ref mut character_sequence_ids,
-            ref mut sequence_statuses,
         }: &mut CharacterControlTransitionsTransitionResources,
         control_transition_requirement_system_data: &ControlTransitionRequirementSystemData,
         ControlActionEventData {
@@ -150,9 +143,6 @@ impl CharacterControlTransitionsTransitionSystem {
                 character_sequence_ids
                     .insert(entity, transition_sequence_id)
                     .expect("Failed to insert `CharacterSequenceId` component.");
-                sequence_statuses
-                    .insert(entity, SequenceStatus::Begin)
-                    .expect("Failed to insert `SequenceStatus` component.");
             }
         }
     }
@@ -168,7 +158,6 @@ impl CharacterControlTransitionsTransitionSystem {
             ref character_control_transitions_handles,
             ref character_control_transitions_assets,
             ref mut character_sequence_ids,
-            ref mut sequence_statuses,
         }: &mut CharacterControlTransitionsTransitionResources,
         control_transition_requirement_system_data: &ControlTransitionRequirementSystemData,
     ) {
@@ -225,9 +214,6 @@ impl CharacterControlTransitionsTransitionSystem {
                         character_sequence_ids
                             .insert(entity, transition_sequence_id)
                             .expect("Failed to insert `CharacterSequenceId` component.");
-                        sequence_statuses
-                            .insert(entity, SequenceStatus::Begin)
-                            .expect("Failed to insert `SequenceStatus` component.");
                     }
                 },
             );
