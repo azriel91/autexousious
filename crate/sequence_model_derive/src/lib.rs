@@ -46,14 +46,12 @@
 //!         WaitSequence(ComponentSequence::<Wait>::new(Vec::default()))
 //!     }
 //! }
-//! /// Handle to a `WaitSequence`.
-//! pub type WaitSequenceHandle = Handle<WaitSequence>;
 //! ```
 
 extern crate proc_macro;
 
 use proc_macro::TokenStream;
-use proc_macro_roids::{DeriveInputDeriveExt, DeriveInputStructExt, FieldsUnnamedAppend, IdentExt};
+use proc_macro_roids::{DeriveInputDeriveExt, DeriveInputStructExt, FieldsUnnamedAppend};
 use quote::quote;
 use syn::{parse_macro_input, parse_quote, DeriveInput, FieldsUnnamed, Path};
 
@@ -77,8 +75,6 @@ pub fn component_sequence(args: TokenStream, item: TokenStream) -> TokenStream {
 
     let type_name = &ast.ident;
     let fn_new_doc = format!("Returns a new `{}`.", type_name);
-    let handle_name = type_name.append("Handle");
-    let handle_doc = format!("Handle to a `{}`.", type_name);
 
     let token_stream_2 = quote! {
         #ast
@@ -111,9 +107,6 @@ pub fn component_sequence(args: TokenStream, item: TokenStream) -> TokenStream {
                 #component_owned_fn(component)
             }
         }
-
-        #[doc = #handle_doc]
-        pub type #handle_name = amethyst::assets::Handle<#type_name>;
     };
 
     TokenStream::from(token_stream_2)

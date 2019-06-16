@@ -1,4 +1,3 @@
-use amethyst::assets::Handle;
 use asset_derive::Asset;
 use derive_new::new;
 use object_model::game_object;
@@ -12,6 +11,3 @@ use crate::config::{EnergyDefinition, EnergySequence, EnergySequenceId};
 #[game_object(EnergySequenceId)]
 #[derive(Asset, Clone, Debug, PartialEq, TypeName, new)]
 pub struct Energy;
-
-/// Handle to an `Energy`.
-pub type EnergyHandle = Handle<Energy>;

@@ -1,8 +1,10 @@
 //! Contains the types that represent the configuration on disk.
 
 pub use self::{
-    energy_definition::EnergyDefinition, energy_frame::EnergyFrame,
-    energy_sequence::EnergySequence, energy_sequence_id::EnergySequenceId,
+    energy_definition::{EnergyDefinition, EnergyDefinitionHandle},
+    energy_frame::EnergyFrame,
+    energy_sequence::EnergySequence,
+    energy_sequence_id::EnergySequenceId,
 };
 
 mod energy_definition;
