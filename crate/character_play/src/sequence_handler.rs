@@ -68,7 +68,8 @@ pub(super) trait CharacterSequenceHandler {
 mod test {
     use character_model::{config::CharacterSequenceId, play::RunCounter};
     use game_input::ControllerInput;
-    use object_model::play::{Grounding, HealthPoints, Mirrored, Position, Velocity};
+    use kinematic_model::config::{Position, Velocity};
+    use object_model::play::{Grounding, HealthPoints, Mirrored};
     use sequence_model::play::SequenceStatus;
 
     use super::CharacterSequenceHandler;

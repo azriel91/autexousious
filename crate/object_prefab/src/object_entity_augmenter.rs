@@ -1,9 +1,7 @@
 use amethyst::{core::transform::Transform, ecs::Entity, renderer::transparent::Transparent};
+use kinematic_model::config::{Position, Velocity};
 use logic_clock::LogicClock;
-use object_model::{
-    loaded::ObjectWrapper,
-    play::{Mirrored, Position, Velocity},
-};
+use object_model::{loaded::ObjectWrapper, play::Mirrored};
 use sequence_model::play::{FrameIndexClock, FrameWaitClock, SequenceStatus};
 
 use crate::ObjectComponentStorages;
@@ -108,11 +106,9 @@ mod tests {
     };
     use fnv::FnvHashMap;
     use game_input_model::ControlBindings;
+    use kinematic_model::config::{Position, Velocity};
     use object_loading::ObjectLoaderSystemData;
-    use object_model::{
-        loaded::Object,
-        play::{Mirrored, Position, Velocity},
-    };
+    use object_model::{loaded::Object, play::Mirrored};
     use sequence_loading::SequenceLoadingBundle;
     use sequence_model::{
         config::Wait,

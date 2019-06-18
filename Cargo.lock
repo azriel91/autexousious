@@ -922,6 +922,7 @@ dependencies = [
  "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input 0.11.0",
  "game_input_model 0.11.0",
+ "kinematic_model 0.12.0",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "named_type 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "named_type_derive 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2213,6 +2214,7 @@ dependencies = [
  "game_model 0.11.0",
  "game_play_hud 0.11.0",
  "game_play_model 0.11.0",
+ "kinematic_model 0.12.0",
  "loading 0.11.0",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "logic_clock 0.11.0",
@@ -2222,7 +2224,6 @@ dependencies = [
  "map_selection_model 0.11.0",
  "num-traits 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "object_loading 0.11.0",
- "object_model 0.11.0",
  "object_type 0.12.0",
  "sequence_loading 0.1.0",
  "sequence_model 0.11.0",
@@ -2352,6 +2353,7 @@ dependencies = [
  "game_model 0.11.0",
  "game_play_hud 0.11.0",
  "game_play_model 0.11.0",
+ "kinematic_model 0.12.0",
  "loading 0.11.0",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "logic_clock 0.11.0",
@@ -2844,6 +2846,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "winapi 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "winapi-build 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "kinematic_model"
+version = "0.12.0"
+dependencies = [
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "specs-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -3727,6 +3737,7 @@ dependencies = [
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "fnv 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input_model 0.11.0",
+ "kinematic_model 0.12.0",
  "logic_clock 0.11.0",
  "object_loading 0.11.0",
  "object_model 0.11.0",

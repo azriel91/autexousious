@@ -9,9 +9,9 @@ use derive_new::new;
 use game_input::InputControlled;
 use game_play_hud::HpBarPrefab;
 use game_play_model::{GamePlayEntity, GamePlayEntityId};
+use kinematic_model::config::Position;
 use map_model::loaded::Map;
 use map_selection_model::MapSelection;
-use object_model::play::Position;
 use shred_derive::SystemData;
 use typename_derive::TypeName;
 
@@ -148,11 +148,11 @@ mod tests {
     use game_input_model::ControlBindings;
     use game_model::loaded::MapPrefabs;
     use game_play_model::GamePlayEntity;
+    use kinematic_model::config::Position;
     use loading::{LoadingBundle, LoadingState};
     use map_loading::MapLoadingBundle;
     use map_selection::MapSelectionStatus;
     use map_selection_model::MapSelection;
-    use object_model::play::Position;
     use sequence_loading::SequenceLoadingBundle;
     use sprite_loading::SpriteLoadingBundle;
     use typename::TypeName;

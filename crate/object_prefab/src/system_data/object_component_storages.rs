@@ -1,6 +1,7 @@
 use amethyst::{core::Transform, ecs::WriteStorage, renderer::transparent::Transparent};
 use derivative::Derivative;
-use object_model::play::{Mirrored, Position, Velocity};
+use kinematic_model::config::{Position, Velocity};
+use object_model::play::Mirrored;
 use sequence_model::{
     config::SequenceId,
     loaded::SequenceEndTransitions,

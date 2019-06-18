@@ -1,8 +1,9 @@
 use amethyst::{assets::AssetStorage, ecs::prelude::*};
 use derive_new::new;
+use kinematic_model::config::{Position, Velocity};
 use map_model::loaded::Map;
 use map_selection_model::MapSelection;
-use object_model::play::{Grounding, Position, Velocity};
+use object_model::play::Grounding;
 use typename_derive::TypeName;
 
 /// Updates `Character` kinematics based on sequence.
@@ -71,7 +72,8 @@ mod tests {
         Error,
     };
     use application_test_support::AutexousiousApplication;
-    use object_model::play::{Grounding, Position};
+    use kinematic_model::config::Position;
+    use object_model::play::Grounding;
     use typename::TypeName;
 
     use super::CharacterGroundingSystem;
