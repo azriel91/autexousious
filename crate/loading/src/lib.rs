@@ -9,7 +9,6 @@ pub use crate::{
     map_asset_handles::MapAssetHandles,
     map_loading_status::MapLoadingStatus,
     object_asset_handles::ObjectAssetHandles,
-    object_loading_status::ObjectLoadingStatus,
     system::{MapAssetLoadingSystem, ObjectAssetLoadingSystem},
 };
 
@@ -19,5 +18,4 @@ mod loading_state;
 mod map_asset_handles;
 mod map_loading_status;
 mod object_asset_handles;
-mod object_loading_status;
 mod system;

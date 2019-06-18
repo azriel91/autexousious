@@ -1,4 +1,11 @@
-use std::{collections::HashMap, fmt::Debug, mem, path::PathBuf};
+use std::{
+    collections::HashMap,
+    fmt::Debug,
+    marker::PhantomData,
+    mem,
+    ops::{Deref, DerefMut},
+    path::PathBuf,
+};
 
 use amethyst::{
     assets::{AssetStorage, Handle, Loader, Prefab, PrefabLoader, ProgressCounter},
@@ -11,6 +18,7 @@ use derivative::Derivative;
 use derive_new::new;
 use game_model::loaded::GameObjectPrefabs;
 use log::debug;
+use object_loading::ObjectLoadingStatus;
 use object_model::{config::ObjectAssetData, loaded::GameObject};
 use object_prefab::GameObjectPrefab;
 use serde::Deserialize;
@@ -20,12 +28,12 @@ use sprite_model::config::SpritesDefinition;
 use typename::TypeName as TypeNameTrait;
 use typename_derive::TypeName;
 
-use crate::{ObjectAssetHandles, ObjectLoadingStatus};
+use crate::ObjectAssetHandles;
 
 /// Loads game object assets.
 #[derive(Default, Derivative, TypeName, new)]
 #[derivative(Debug(bound = ""))]
-pub struct ObjectAssetLoadingSystem<O, Pf>
+pub struct ObjectAssetLoadingSystem<O, Pf, St>
 where
     O: GameObject + TypeNameTrait,
     O::Definition: Debug + for<'de> Deserialize<'de>,
@@ -35,6 +43,7 @@ where
         + Send
         + Sync
         + 'static,
+    St: Debug + Default + Deref<Target = ObjectLoadingStatus> + DerefMut + Send + Sync + 'static,
 {
     /// Path to the assets directory.
     assets_dir: PathBuf,
@@ -53,11 +62,14 @@ where
     /// Assets that been loaded, but the prefabs have not.
     #[new(default)]
     prefabs_in_progress: HashMap<AssetRecord, Handle<Prefab<Pf>>>,
+
+    // Marker.
+    phantom_data: PhantomData<St>,
 }
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct ObjectAssetLoadingSystemData<'s, O, Pf>
+pub struct ObjectAssetLoadingSystemData<'s, O, Pf, St>
 where
     O: GameObject,
     Pf: for<'p> GameObjectPrefab<'p, GameObject = O>
@@ -66,6 +78,7 @@ where
         + Send
         + Sync
         + 'static,
+    St: Debug + Default + Deref<Target = ObjectLoadingStatus> + DerefMut + Send + Sync + 'static,
 {
     /// `Loader` to load assets.
     #[derivative(Debug = "ignore")]
@@ -91,12 +104,12 @@ where
     /// `GameObjectPrefabs<Pf>` resource.
     #[derivative(Debug = "ignore")]
     game_object_prefabs: Write<'s, GameObjectPrefabs<Pf>>,
-    /// `ObjectLoadingStatus` resource.
+    /// `St` resource.
     #[derivative(Debug = "ignore")]
-    loading_status: Write<'s, ObjectLoadingStatus>,
+    object_loading_status: Write<'s, St>,
 }
 
-impl<'s, O, Pf> System<'s> for ObjectAssetLoadingSystem<O, Pf>
+impl<'s, O, Pf, St> System<'s> for ObjectAssetLoadingSystem<O, Pf, St>
 where
     O: GameObject + TypeNameTrait,
     O::Definition: Debug + for<'de> Deserialize<'de>,
@@ -106,8 +119,9 @@ where
         + Send
         + Sync
         + 'static,
+    St: Debug + Default + Deref<Target = ObjectLoadingStatus> + DerefMut + Send + Sync + 'static,
 {
-    type SystemData = ObjectAssetLoadingSystemData<'s, O, Pf>;
+    type SystemData = ObjectAssetLoadingSystemData<'s, O, Pf, St>;
 
     fn run(
         &mut self,
@@ -120,7 +134,7 @@ where
             game_object_prefab_loader,
             game_object_prefab_assets,
             mut game_object_prefabs,
-            mut loading_status,
+            mut object_loading_status,
         }: Self::SystemData,
     ) {
         // TODO: Do a diff between existing index and directory based on a file watch / notify.
@@ -236,7 +250,7 @@ where
         // <https://github.com/amethyst/amethyst/blob/v0.10.0/amethyst_assets/src/progress.rs#L89>
         //
         // As a compromise, we just check if there are no assets that are still loading.
-        *loading_status = if self.progress_counter.num_loading() == 0 {
+        **object_loading_status = if self.progress_counter.num_loading() == 0 {
             ObjectLoadingStatus::Complete
         } else {
             debug!(
@@ -250,7 +264,7 @@ where
     }
 }
 
-impl<O, Pf> ObjectAssetLoadingSystem<O, Pf>
+impl<O, Pf, St> ObjectAssetLoadingSystem<O, Pf, St>
 where
     O: GameObject + TypeNameTrait,
     O::Definition: Debug + for<'de> Deserialize<'de>,
@@ -260,6 +274,7 @@ where
         + Send
         + Sync
         + 'static,
+    St: Debug + Default + Deref<Target = ObjectLoadingStatus> + DerefMut + Send + Sync + 'static,
 {
     /// Initiates the asset loading for an object, and returns the handles.
     ///

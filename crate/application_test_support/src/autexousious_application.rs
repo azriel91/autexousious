@@ -17,6 +17,8 @@ use character_selection::CharacterSelectionBundle;
 use character_selection_model::{CharacterSelections, CharacterSelectionsStatus};
 use collision_audio_loading::CollisionAudioLoadingBundle;
 use collision_loading::CollisionLoadingBundle;
+use energy_loading::EnergyLoadingBundle;
+use energy_prefab::EnergyPrefabBundle;
 use game_input_model::ControlBindings;
 use game_loading::GameLoadingState;
 use loading::{LoadingBundle, LoadingState};
@@ -86,6 +88,11 @@ impl AutexousiousApplication {
                 CharacterPrefabBundle::new()
                     .with_system_dependencies(&[String::from(CHARACTER_PROCESSOR)]),
             )
+            .with_bundle(EnergyLoadingBundle::new())
+            .with_bundle(
+                EnergyPrefabBundle::new()
+                    .with_system_dependencies(&[String::from(CHARACTER_PROCESSOR)]),
+            )
             .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CharacterSelectionBundle::new())
@@ -119,7 +126,7 @@ mod test {
     use amethyst::{input::InputHandler, ui::Interactable, Error};
     use game_input_model::ControlBindings;
     use game_model::{
-        loaded::{CharacterPrefabs, MapPrefabs},
+        loaded::{CharacterPrefabs, EnergyPrefabs, MapPrefabs},
         play::GameEntities,
     };
     use object_type::ObjectType;
@@ -155,7 +162,14 @@ mod test {
             .with_assertion(|world| {
                 // Panics if the resources have not been populated
                 world.read_resource::<MapPrefabs>();
-                assert!(!world.read_resource::<CharacterPrefabs>().is_empty());
+                assert!(
+                    !world.read_resource::<CharacterPrefabs>().is_empty(),
+                    "Expected at least one `Character` to be loaded."
+                );
+                assert!(
+                    !world.read_resource::<EnergyPrefabs>().is_empty(),
+                    "Expected at least one `Energy` to be loaded."
+                );
             })
             .run_isolated()
     }
