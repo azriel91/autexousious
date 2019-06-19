@@ -4,9 +4,6 @@ use collision_model::{
     loaded::{BodySequence, InteractionsSequence},
 };
 use derive_new::new;
-use typename::TypeName;
-
-use crate::CollisionLoadingSystem;
 
 /// Adds the following systems to the dispatcher.
 ///
@@ -19,30 +16,21 @@ pub struct CollisionLoadingBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for CollisionLoadingBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
-        builder.add(
-            CollisionLoadingSystem::new(),
-            &CollisionLoadingSystem::type_name(),
-            &[],
-        ); // kcov-ignore
-        builder.add(
-            Processor::<Body>::new(),
-            "body_processor",
-            &[&CollisionLoadingSystem::type_name()],
-        ); // kcov-ignore
+        builder.add(Processor::<Body>::new(), "body_processor", &[]); // kcov-ignore
         builder.add(
             Processor::<BodySequence>::new(),
             "body_sequence_processor",
-            &[&CollisionLoadingSystem::type_name()],
+            &[],
         ); // kcov-ignore
         builder.add(
             Processor::<Interactions>::new(),
             "interactions_processor",
-            &[&CollisionLoadingSystem::type_name()],
+            &[],
         ); // kcov-ignore
         builder.add(
             Processor::<InteractionsSequence>::new(),
             "interactions_sequence_processor",
-            &[&CollisionLoadingSystem::type_name()],
+            &[],
         ); // kcov-ignore
         Ok(())
     }
