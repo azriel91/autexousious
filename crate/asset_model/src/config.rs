@@ -4,6 +4,7 @@ pub use self::{
     asset_slug::{AssetSlug, AssetSlugBuilder},
     asset_slug_build_error::AssetSlugBuildError,
     asset_slug_segment::AssetSlugSegment,
+    asset_slug_visitor::AssetSlugVisitor,
     config_type::ConfigType,
     index::{AssetIndex, AssetRecord},
 };
@@ -11,5 +12,6 @@ pub use self::{
 mod asset_slug;
 mod asset_slug_build_error;
 mod asset_slug_segment;
+mod asset_slug_visitor;
 mod config_type;
 mod index;

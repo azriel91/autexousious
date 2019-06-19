@@ -1,9 +1,9 @@
 use std::{char, fmt, str::FromStr};
 
 use derive_builder::Builder;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
-use crate::config::{AssetSlugBuildError, AssetSlugSegment};
+use crate::config::{AssetSlugBuildError, AssetSlugSegment, AssetSlugVisitor};
 
 /// Namespaced reference to identify assets.
 ///
@@ -43,6 +43,24 @@ pub struct AssetSlug {
     /// Name of the asset, e.g. "iris".
     pub name: String,
     // kcov-ignore-end
+}
+
+impl AssetSlug {
+    /// Serializes this `AssetSlug` as a single string, such as `default/fireball`.
+    pub fn serialize_str<S>(asset_slug: &AssetSlug, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(&asset_slug.to_string())
+    }
+
+    /// Deserializes this `AssetSlug` from a single string, such as `default/fireball`.
+    pub fn deserialize_str<'de, D>(deserializer: D) -> Result<AssetSlug, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        deserializer.deserialize_str(AssetSlugVisitor)
+    }
 }
 
 impl AssetSlugBuilder {

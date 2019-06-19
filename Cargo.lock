@@ -2853,6 +2853,7 @@ name = "kinematic_model"
 version = "0.12.0"
 dependencies = [
  "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "serde 1.0.92 (registry+https://github.com/rust-lang/crates.io-index)",
  "specs-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -5140,6 +5141,25 @@ dependencies = [
  "wayland-client 0.21.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "wayland-commons 0.21.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "wayland-protocols 0.21.12 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "spawn_model"
+version = "0.11.0"
+dependencies = [
+ "amethyst 0.10.0 (git+https://github.com/amethyst/amethyst.git)",
+ "asset_derive 0.12.0",
+ "asset_model 0.11.0",
+ "derive-new 0.5.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive_deref 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kinematic_model 0.12.0",
+ "sequence_model_derive 0.11.0",
+ "sequence_model_spi 0.11.0",
+ "serde 1.0.92 (registry+https://github.com/rust-lang/crates.io-index)",
+ "specs-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "toml 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

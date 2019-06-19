@@ -7,10 +7,11 @@ use amethyst::{
     core::math::Vector3,
     ecs::{storage::DenseVecStorage, Component},
 };
+use serde::{Deserialize, Serialize};
 use specs_derive::Component;
 
 /// Position of the entity in game.
-#[derive(Clone, Component, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Component, Copy, Debug, Deserialize, PartialEq, Eq, Serialize)]
 pub struct Position<S>(pub Vector3<S>)
 where
     S: Clone + Copy + Debug + PartialEq + Send + Sync + 'static;
