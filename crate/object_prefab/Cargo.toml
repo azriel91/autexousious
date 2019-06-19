@@ -19,17 +19,7 @@ sprite_model = { path = "../sprite_model" }
 
 [dev-dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["test-support", "vulkan"] }
-amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
-application_event = { path = "../application_event" }
-collision_loading = { path = "../collision_loading" }
-fnv = "1.0.6"
-game_input_model = { path = "../game_input_model" }
-object_loading = { path = "../object_loading" }
-sequence_loading = { path = "../sequence_loading" }
-shape_model = { path = "../shape_model" }
-spawn_loading = { path = "../spawn_loading" }
-spawn_model = { path = "../spawn_model" }
-sprite_loading = { path = "../sprite_loading" }
+object_test = { path = "../object_test" }
 test_object_model = { path = "../test_object_model" }
 
 [features]
