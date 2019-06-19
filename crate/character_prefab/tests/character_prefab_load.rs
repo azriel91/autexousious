@@ -23,7 +23,6 @@ use character_model::{
     },
 };
 use character_prefab::{CharacterPrefab, CharacterPrefabBundle, CharacterPrefabHandle};
-use collision_model::config::{Body, Interactions};
 use game_input_model::ControlAction;
 use object_model::{
     config::{ObjectAssetData, ObjectDefinition, ObjectFrame, ObjectSequence},
@@ -35,7 +34,6 @@ use sequence_model::loaded::{
     ControlTransition, ControlTransitionHold, ControlTransitionPress, ControlTransitionRelease,
     ControlTransitions,
 };
-use sprite_model::config::SpriteRef;
 
 #[test]
 fn character_prefab_load() -> Result<(), Error> {
@@ -117,12 +115,10 @@ fn character_definition() -> CharacterDefinition {
     };
 
     let frames = vec![CharacterFrame::new(
-        ObjectFrame::new(
-            Wait::new(5),
-            SpriteRef::new(0, 0),
-            Body::default(),
-            Interactions::default(),
-        ),
+        ObjectFrame {
+            wait: Wait::new(5),
+            ..Default::default()
+        },
         CharacterControlTransitions {
             press_attack: Some(ControlTransition::SequenceId(
                 CharacterSequenceId::StandAttack0,

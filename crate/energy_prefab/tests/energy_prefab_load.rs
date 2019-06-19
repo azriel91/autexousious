@@ -14,7 +14,6 @@ use amethyst::{
     Error,
 };
 use amethyst_test::AmethystApplication;
-use collision_model::config::{Body, Interactions};
 use energy_loading::{EnergyLoadingBundle, ENERGY_PROCESSOR};
 use energy_model::{
     config::{EnergyDefinition, EnergySequenceId},
@@ -23,7 +22,6 @@ use energy_model::{
 use energy_prefab::{EnergyPrefab, EnergyPrefabBundle, EnergyPrefabHandle};
 use object_model::config::{ObjectAssetData, ObjectDefinition, ObjectFrame, ObjectSequence};
 use sequence_loading::SequenceLoadingBundle;
-use sprite_model::config::SpriteRef;
 
 #[test]
 fn energy_prefab_load() -> Result<(), Error> {
@@ -75,12 +73,10 @@ fn energy_definition() -> EnergyDefinition {
     use energy_model::config::{EnergyFrame, EnergySequence};
     use sequence_model::config::Wait;
 
-    let frames = vec![EnergyFrame::new(ObjectFrame::new(
-        Wait::new(5),
-        SpriteRef::new(0, 0),
-        Body::default(),
-        Interactions::default(),
-    ))];
+    let frames = vec![EnergyFrame::new(ObjectFrame {
+        wait: Wait::new(5),
+        ..Default::default()
+    })];
     let sequence = EnergySequence::new(ObjectSequence::new(Some(EnergySequenceId::Hover), frames));
     let mut sequences = HashMap::new();
     sequences.insert(EnergySequenceId::Hover, sequence);

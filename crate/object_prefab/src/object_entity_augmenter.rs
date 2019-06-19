@@ -116,6 +116,10 @@ mod tests {
         play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
     };
     use shape_model::Volume;
+    use spawn_model::{
+        config::Spawns,
+        loaded::{SpawnsSequence, SpawnsSequenceHandle},
+    };
     use sprite_loading::SpriteLoadingBundle;
     use sprite_model::loaded::{SpriteRenderSequence, SpriteRenderSequenceHandle};
     use test_object_model::{config::TestObjectSequenceId, loaded::TestObjectObjectWrapper};
@@ -178,6 +182,7 @@ mod tests {
             sprite_render_sequence_handles,
             body_sequence_handles,
             interactions_sequence_handles,
+            spawns_sequence_handles,
         ) = {
             let (
                 ObjectLoaderSystemData {
@@ -186,8 +191,10 @@ mod tests {
                     sprite_render_sequence_assets,
                     body_sequence_assets,
                     interactions_sequence_assets,
+                    spawns_sequence_assets,
                     body_assets,
                     interactions_assets,
+                    spawns_assets,
                 },
                 texture_assets,
                 sprite_sheet_assets,
@@ -220,6 +227,9 @@ mod tests {
                 loader.load_from_data(interactions(), (), &interactions_assets);
             let interactions_sequence = InteractionsSequence::new(vec![interactions_handle]);
 
+            let spawns_handle = loader.load_from_data(Spawns::default(), (), &spawns_assets);
+            let spawns_sequence = SpawnsSequence::new(vec![spawns_handle]);
+
             let wait_sequence_handle =
                 loader.load_from_data(wait_sequence, (), &wait_sequence_assets);
             let sprite_render_sequence_handle =
@@ -228,17 +238,21 @@ mod tests {
                 loader.load_from_data(body_sequence, (), &body_sequence_assets);
             let interactions_sequence_handle =
                 loader.load_from_data(interactions_sequence, (), &interactions_sequence_assets);
+            let spawns_sequence_handle =
+                loader.load_from_data(spawns_sequence, (), &spawns_sequence_assets);
 
             let (
                 mut wait_sequence_handles,
                 mut sprite_render_sequence_handles,
                 mut body_sequence_handles,
                 mut interactions_sequence_handles,
+                mut spawns_sequence_handles,
             ) = (
                 HashMap::<TestObjectSequenceId, WaitSequenceHandle>::new(),
                 HashMap::<TestObjectSequenceId, SpriteRenderSequenceHandle>::new(),
                 HashMap::<TestObjectSequenceId, BodySequenceHandle>::new(),
                 HashMap::<TestObjectSequenceId, InteractionsSequenceHandle>::new(),
+                HashMap::<TestObjectSequenceId, SpawnsSequenceHandle>::new(),
             );
             wait_sequence_handles.insert(TestObjectSequenceId::Zero, wait_sequence_handle);
             sprite_render_sequence_handles
@@ -246,12 +260,14 @@ mod tests {
             body_sequence_handles.insert(TestObjectSequenceId::Zero, body_sequence_handle);
             interactions_sequence_handles
                 .insert(TestObjectSequenceId::Zero, interactions_sequence_handle);
+            spawns_sequence_handles.insert(TestObjectSequenceId::Zero, spawns_sequence_handle);
 
             (
                 wait_sequence_handles,
                 sprite_render_sequence_handles,
                 body_sequence_handles,
                 interactions_sequence_handles,
+                spawns_sequence_handles,
             )
         };
         let sequence_end_transitions = {
@@ -265,6 +281,7 @@ mod tests {
             sprite_render_sequence_handles,
             body_sequence_handles,
             interactions_sequence_handles,
+            spawns_sequence_handles,
             sequence_end_transitions,
         );
         let object_wrapper = TestObjectObjectWrapper(object);

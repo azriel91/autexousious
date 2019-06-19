@@ -15,6 +15,10 @@ use sequence_model::{
     loaded::{SequenceEndTransition, WaitSequence, WaitSequenceHandle},
 };
 use serde::{Deserialize, Serialize};
+use spawn_model::{
+    config::Spawns,
+    loaded::{SpawnsSequence, SpawnsSequenceHandle},
+};
 use sprite_model::loaded::{SpriteRenderSequence, SpriteRenderSequenceHandle};
 
 use crate::ObjectLoaderParams;
@@ -37,9 +41,11 @@ impl ObjectLoader {
             sprite_render_sequence_assets,
             body_sequence_assets,
             interactions_sequence_assets,
+            spawns_sequence_assets,
             sprite_sheet_handles,
             body_assets,
             interactions_assets,
+            spawns_assets,
         }: ObjectLoaderParams,
         object_definition: &ObjectDefinition<O::GameObjectSequence>,
     ) -> Result<O::ObjectWrapper, Error>
@@ -64,12 +70,14 @@ impl ObjectLoader {
             HashMap::<O::SequenceId, SpriteRenderSequenceHandle>::new(),
             HashMap::<O::SequenceId, BodySequenceHandle>::new(),
             HashMap::<O::SequenceId, InteractionsSequenceHandle>::new(),
+            HashMap::<O::SequenceId, SpawnsSequenceHandle>::new(),
         );
         let (
             wait_sequence_handles,
             sprite_render_sequence_handles,
             body_sequence_handles,
             interactions_sequence_handles,
+            spawns_sequence_handles,
         ) = object_definition.sequences.iter().fold(
             sequences_handles,
             |(
@@ -77,6 +85,7 @@ impl ObjectLoader {
                 mut sprite_render_sequence_handles,
                 mut body_sequence_handles,
                 mut interactions_sequence_handles,
+                mut spawns_sequence_handles,
             ),
              (sequence_id, sequence)| {
                 let wait_sequence = WaitSequence::new(
@@ -131,6 +140,20 @@ impl ObjectLoader {
                         })
                         .collect::<Vec<Handle<Interactions>>>(),
                 );
+                let spawns_sequence = SpawnsSequence::new(
+                    sequence
+                        .object_sequence()
+                        .frames
+                        .iter()
+                        .map(|frame| {
+                            loader.load_from_data(
+                                frame.object_frame().spawns.clone(),
+                                (),
+                                spawns_assets,
+                            )
+                        })
+                        .collect::<Vec<Handle<Spawns>>>(),
+                );
 
                 let wait_sequence_handle =
                     loader.load_from_data(wait_sequence, (), wait_sequence_assets);
@@ -143,6 +166,8 @@ impl ObjectLoader {
                     loader.load_from_data(body_sequence, (), body_sequence_assets);
                 let interactions_sequence_handle =
                     loader.load_from_data(interactions_sequence, (), interactions_sequence_assets);
+                let spawns_sequence_handle =
+                    loader.load_from_data(spawns_sequence, (), spawns_sequence_assets);
 
                 let sequence_id = *sequence_id;
 
@@ -150,12 +175,14 @@ impl ObjectLoader {
                 sprite_render_sequence_handles.insert(sequence_id, sprite_render_sequence_handle);
                 body_sequence_handles.insert(sequence_id, body_sequence_handle);
                 interactions_sequence_handles.insert(sequence_id, interactions_sequence_handle);
+                spawns_sequence_handles.insert(sequence_id, spawns_sequence_handle);
 
                 (
                     wait_sequence_handles,
                     sprite_render_sequence_handles,
                     body_sequence_handles,
                     interactions_sequence_handles,
+                    spawns_sequence_handles,
                 )
             },
         );
@@ -165,6 +192,7 @@ impl ObjectLoader {
             sprite_render_sequence_handles,
             body_sequence_handles,
             interactions_sequence_handles,
+            spawns_sequence_handles,
             sequence_end_transitions.into(),
         );
         let wrapper = O::ObjectWrapper::new(object);
@@ -242,8 +270,10 @@ mod test {
                                 sprite_render_sequence_assets,
                                 body_sequence_assets,
                                 interactions_sequence_assets,
+                                spawns_sequence_assets,
                                 body_assets,
                                 interactions_assets,
+                                spawns_assets,
                             },
                             texture_assets,
                             sprite_sheet_assets,
@@ -268,9 +298,11 @@ mod test {
                                 sprite_render_sequence_assets: &sprite_render_sequence_assets,
                                 body_sequence_assets: &body_sequence_assets,
                                 interactions_sequence_assets: &interactions_sequence_assets,
+                                spawns_sequence_assets: &spawns_sequence_assets,
                                 sprite_sheet_handles,
                                 body_assets: &body_assets,
                                 interactions_assets: &interactions_assets,
+                                spawns_assets: &spawns_assets,
                             },
                             &character_definition.object_definition,
                         )

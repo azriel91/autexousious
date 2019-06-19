@@ -16,7 +16,7 @@ mod energy_sequence_id;
 mod test {
     use std::collections::HashMap;
 
-    use collision_model::config::{Body, Interactions};
+    use collision_model::config::Body;
     use object_model::config::{ObjectDefinition, ObjectFrame, ObjectSequence};
     use sequence_model::config::Wait;
     use shape_model::Volume;
@@ -40,10 +40,10 @@ mod test {
         let char_definition = toml::from_str::<EnergyDefinition>(OBJECT_TOML)
             .expect("Failed to deserialize `EnergyDefinition`.");
 
-        let frames = vec![EnergyFrame::new(ObjectFrame::new(
-            Wait::new(5),
-            SpriteRef::new(1, 3),
-            Body::new(vec![Volume::Box {
+        let frames = vec![EnergyFrame::new(ObjectFrame {
+            wait: Wait::new(5),
+            sprite: SpriteRef::new(1, 3),
+            body: Body::new(vec![Volume::Box {
                 x: 25,
                 y: 11,
                 z: 0,
@@ -51,8 +51,8 @@ mod test {
                 h: 68,
                 d: 26,
             }]),
-            Interactions::default(),
-        ))];
+            ..Default::default()
+        })];
         let sequence =
             EnergySequence::new(ObjectSequence::new(Some(EnergySequenceId::Hover), frames));
         let mut sequences = HashMap::new();

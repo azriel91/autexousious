@@ -29,6 +29,7 @@ mod test {
         ControlTransition, ControlTransitionMultiple, ControlTransitionSingle, Wait,
     };
     use shape_model::Volume;
+    use spawn_model::config::Spawns;
     use sprite_model::config::SpriteRef;
     use toml;
 
@@ -76,6 +77,7 @@ mod test {
                     d: 26,
                 }]),
                 Interactions::default(),
+                Spawns::default(),
             ),
             CharacterControlTransitions {
                 press_attack: Some(ControlTransition::SequenceId(
