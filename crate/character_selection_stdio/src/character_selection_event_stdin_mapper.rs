@@ -62,7 +62,9 @@ impl CharacterSelectionEventStdinMapper {
         match selection {
             RANDOM_SELECTION => Ok(CharacterSelection::Random),
             slug_str => {
-                let slug = AssetSlug::from_str(slug_str).map_err(StdioError::Msg)?;
+                let slug = AssetSlug::from_str(slug_str)
+                    .map_err(String::from)
+                    .map_err(StdioError::Msg)?;
 
                 // TODO: Should we validate here, or in `CharacterSelectionSpawningSystem`?
                 let _ = character_prefabs
@@ -219,7 +221,7 @@ mod tests {
 
                 expect_err_msg(
                     result,
-                    "Expected exactly one `/` in slug string: \"invalid\".",
+                    "Expected exactly one `/` in asset slug string: `invalid`.",
                 );
             }
         };

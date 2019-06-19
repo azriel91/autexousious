@@ -36,7 +36,9 @@ impl MapSelectionEventStdinMapper {
                 MapSelection::Random(snh)
             }
             slug_str => {
-                let slug = AssetSlug::from_str(slug_str).map_err(StdioError::Msg)?;
+                let slug = AssetSlug::from_str(slug_str)
+                    .map_err(String::from)
+                    .map_err(StdioError::Msg)?;
                 let handle = map_prefabs
                     .get(&slug)
                     .ok_or_else(|| format!("No map found with asset slug `{}`.", slug))
@@ -99,7 +101,7 @@ mod tests {
 
         expect_err_msg(
             result,
-            "Expected exactly one `/` in slug string: \"invalid\".",
+            "Expected exactly one `/` in asset slug string: `invalid`.",
         );
     }
 
