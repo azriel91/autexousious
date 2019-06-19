@@ -116,6 +116,7 @@ mod tests {
         play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
     };
     use shape_model::Volume;
+    use spawn_loading::SpawnLoadingBundle;
     use spawn_model::{
         config::Spawns,
         loaded::{SpawnsSequence, SpawnsSequenceHandle},
@@ -165,6 +166,7 @@ mod tests {
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(CollisionLoadingBundle::new())
+            .with_bundle(SpawnLoadingBundle::new())
             .with_setup(|world| {
                 <FrameComponentStorages as SystemData>::setup(&mut world.res);
                 <ObjectComponentStorages<TestObjectSequenceId> as SystemData>::setup(

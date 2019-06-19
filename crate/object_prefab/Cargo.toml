@@ -27,6 +27,7 @@ game_input_model = { path = "../game_input_model" }
 object_loading = { path = "../object_loading" }
 sequence_loading = { path = "../sequence_loading" }
 shape_model = { path = "../shape_model" }
+spawn_loading = { path = "../spawn_loading" }
 spawn_model = { path = "../spawn_model" }
 sprite_loading = { path = "../sprite_loading" }
 test_object_model = { path = "../test_object_model" }

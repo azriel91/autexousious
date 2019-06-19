@@ -219,6 +219,7 @@ mod test {
     };
     use collision_loading::CollisionLoadingBundle;
     use sequence_loading::SequenceLoadingBundle;
+    use spawn_loading::SpawnLoadingBundle;
     use sprite_loading::SpriteLoader;
     use sprite_model::config::SpritesDefinition;
     use typename::TypeName;
@@ -235,6 +236,7 @@ mod test {
                 .with_bundle(TransformBundle::new())
                 .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
                 .with_bundle(CollisionLoadingBundle::new())
+                .with_bundle(SpawnLoadingBundle::new())
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_system(
                     ObjectDefinitionToWrapperProcessor::<Character>::new(),

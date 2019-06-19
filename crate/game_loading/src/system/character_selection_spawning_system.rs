@@ -107,6 +107,7 @@ mod tests {
     use map_loading::MapLoadingBundle;
     use object_type::ObjectType;
     use sequence_loading::SequenceLoadingBundle;
+    use spawn_loading::SpawnLoadingBundle;
     use sprite_loading::SpriteLoadingBundle;
     use typename::TypeName;
     use ui_audio_loading::UiAudioLoadingBundle;
@@ -127,6 +128,7 @@ mod tests {
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CollisionLoadingBundle::new())
+            .with_bundle(SpawnLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_bundle(
@@ -186,6 +188,7 @@ mod tests {
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CollisionLoadingBundle::new())
+            .with_bundle(SpawnLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_bundle(

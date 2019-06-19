@@ -31,6 +31,7 @@ character_model = { path = "../character_model" }
 collision_loading = { path = "../collision_loading" }
 pretty_assertions = "0.6.1"
 sequence_loading = { path = "../sequence_loading" }
+spawn_loading = { path = "../spawn_loading" }
 sprite_loading = { path = "../sprite_loading" }
 
 [features]

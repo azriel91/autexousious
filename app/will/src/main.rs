@@ -43,6 +43,7 @@ use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
 use map_selection_stdio::MapSelectionStdioBundle;
 use sequence_loading::SequenceLoadingBundle;
+use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
 use stdio_command_stdio::StdioCommandStdioBundle;
 use stdio_input::StdioInputBundle;
@@ -146,6 +147,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(GameModeSelectionStdioBundle::new())?
             .with_bundle(MapSelectionStdioBundle::new())?
             .with_bundle(CollisionLoadingBundle::new())?
+            .with_bundle(SpawnLoadingBundle::new())?
             .with_bundle(MapLoadingBundle::new())?
             .with_bundle(CharacterLoadingBundle::new())?
             .with_bundle(

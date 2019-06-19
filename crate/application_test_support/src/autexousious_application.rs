@@ -24,6 +24,7 @@ use game_loading::GameLoadingState;
 use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
 use sequence_loading::SequenceLoadingBundle;
+use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
 use ui_audio_loading::UiAudioLoadingBundle;
 
@@ -59,7 +60,6 @@ impl AutexousiousApplication {
             .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
             .with_ui_bundles::<ControlBindings>()
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
-            .with_bundle(CollisionLoadingBundle::new())
     }
 
     /// Returns an application with game assets loaded.
@@ -82,6 +82,8 @@ impl AutexousiousApplication {
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
+            .with_bundle(CollisionLoadingBundle::new())
+            .with_bundle(SpawnLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_bundle(

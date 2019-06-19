@@ -34,6 +34,7 @@ game_input_model = { path = "../game_input_model" }
 loading = { path = "../loading" }
 map_loading = { path = "../map_loading" }
 sequence_loading = { path = "../sequence_loading" }
+spawn_loading = { path = "../spawn_loading" }
 sprite_loading = { path = "../sprite_loading" }
 ui_audio_loading = { path = "../../crate/ui_audio_loading" }
 
