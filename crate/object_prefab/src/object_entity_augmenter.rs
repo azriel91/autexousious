@@ -43,36 +43,56 @@ impl ObjectEntityAugmenter {
 
         let sequence_id = W::SequenceId::default();
 
-        transparents
-            .insert(entity, Transparent)
-            .expect("Failed to insert transparent component.");
-        positions
-            .insert(entity, Position::default())
-            .expect("Failed to insert position component.");
-        velocities
-            .insert(entity, Velocity::default())
-            .expect("Failed to insert velocity component.");
-        transforms
-            .insert(entity, Transform::default())
-            .expect("Failed to insert transform component.");
-        mirroreds
-            .insert(entity, Mirrored::default())
-            .expect("Failed to insert mirrored component.");
-        sequence_end_transitionses
-            .insert(entity, sequence_end_transitions.clone())
-            .expect("Failed to insert sequence_end_transitions component.");
-        sequence_ids
-            .insert(entity, sequence_id)
-            .expect("Failed to insert sequence_id component.");
-        sequence_statuses
-            .insert(entity, SequenceStatus::default())
-            .expect("Failed to insert sequence_status component.");
-        frame_index_clocks
-            .insert(entity, FrameIndexClock::new(LogicClock::new(UNINITIALIZED)))
-            .expect("Failed to insert frame_index_clock component.");
-        frame_wait_clocks
-            .insert(entity, FrameWaitClock::new(LogicClock::new(UNINITIALIZED)))
-            .expect("Failed to insert frame_wait_clock component.");
+        if transparents.get(entity).is_none() {
+            transparents
+                .insert(entity, Transparent)
+                .expect("Failed to insert transparent component.");
+        }
+        if positions.get(entity).is_none() {
+            positions
+                .insert(entity, Position::default())
+                .expect("Failed to insert position component.");
+        }
+        if velocities.get(entity).is_none() {
+            velocities
+                .insert(entity, Velocity::default())
+                .expect("Failed to insert velocity component.");
+        }
+        if transforms.get(entity).is_none() {
+            transforms
+                .insert(entity, Transform::default())
+                .expect("Failed to insert transform component.");
+        }
+        if mirroreds.get(entity).is_none() {
+            mirroreds
+                .insert(entity, Mirrored::default())
+                .expect("Failed to insert mirrored component.");
+        }
+        if sequence_end_transitionses.get(entity).is_none() {
+            sequence_end_transitionses
+                .insert(entity, sequence_end_transitions.clone())
+                .expect("Failed to insert sequence_end_transitions component.");
+        }
+        if sequence_ids.get(entity).is_none() {
+            sequence_ids
+                .insert(entity, sequence_id)
+                .expect("Failed to insert sequence_id component.");
+        }
+        if sequence_statuses.get(entity).is_none() {
+            sequence_statuses
+                .insert(entity, SequenceStatus::default())
+                .expect("Failed to insert sequence_status component.");
+        }
+        if frame_index_clocks.get(entity).is_none() {
+            frame_index_clocks
+                .insert(entity, FrameIndexClock::new(LogicClock::new(UNINITIALIZED)))
+                .expect("Failed to insert frame_index_clock component.");
+        }
+        if frame_wait_clocks.get(entity).is_none() {
+            frame_wait_clocks
+                .insert(entity, FrameWaitClock::new(LogicClock::new(UNINITIALIZED)))
+                .expect("Failed to insert frame_wait_clock component.");
+        }
     }
 }
 
@@ -80,7 +100,7 @@ impl ObjectEntityAugmenter {
 mod tests {
     use amethyst::{
         core::transform::Transform,
-        ecs::{Builder, SystemData, World},
+        ecs::{Builder, ReadStorage, SystemData, World},
         renderer::transparent::Transparent,
         Error,
     };
@@ -133,6 +153,52 @@ mod tests {
             })
             .with_setup(setup_object_wrapper)
             .with_assertion(assert_components_augmented)
+            .run_isolated()
+    }
+
+    #[test]
+    fn does_not_overwrite_existing_component() -> Result<(), Error> {
+        ObjectTest::application()
+            .with_setup(|world| {
+                <FrameComponentStorages as SystemData>::setup(&mut world.res);
+                <ObjectComponentStorages<TestObjectSequenceId> as SystemData>::setup(
+                    &mut world.res,
+                );
+            })
+            .with_setup(setup_object_wrapper)
+            .with_assertion(|world| {
+                let position = Position::<f32>::new(1., 2., 3.);
+                let velocity = Velocity::<f32>::new(1., 2., 3.);
+
+                let entity = world.create_entity().with(position).with(velocity).build();
+                {
+                    let object_wrapper = world.read_resource::<TestObjectObjectWrapper>();
+
+                    let mut object_component_storages = ObjectComponentStorages::fetch(&world.res);
+                    ObjectEntityAugmenter::augment(
+                        entity,
+                        &mut object_component_storages,
+                        &*object_wrapper,
+                    );
+                }
+
+                let (positions, velocities) = world.system_data::<(
+                    ReadStorage<'_, Position<f32>>,
+                    ReadStorage<'_, Velocity<f32>>,
+                )>();
+                assert_eq!(
+                    &position,
+                    positions
+                        .get(entity)
+                        .expect("Expected entity to have `Position<f32>` component.")
+                );
+                assert_eq!(
+                    &velocity,
+                    velocities
+                        .get(entity)
+                        .expect("Expected entity to have `Velocity<f32>` component.")
+                );
+            })
             .run_isolated()
     }
 
