@@ -20,6 +20,8 @@ character_selection_stdio = { path = "../../crate/character_selection_stdio" }
 collision_audio_loading = { path = "../../crate/collision_audio_loading" }
 collision_loading = { path = "../../crate/collision_loading" }
 collision_model = { path = "../../crate/collision_model" }
+energy_loading = { path = "../../crate/energy_loading" }
+energy_prefab = { path = "../../crate/energy_prefab" }
 frame_rate = { path = "../../crate/frame_rate" }
 game_input = { path = "../../crate/game_input" }
 game_input_model = { path = "../../crate/game_input_model" }

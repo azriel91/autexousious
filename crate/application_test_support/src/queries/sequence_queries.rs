@@ -11,6 +11,7 @@ use character_prefab::CharacterPrefab;
 use collision_model::loaded::{BodySequenceHandle, InteractionsSequenceHandle};
 use object_model::loaded::ObjectWrapper;
 use sequence_model::loaded::WaitSequenceHandle;
+use spawn_model::loaded::SpawnsSequenceHandle;
 use sprite_model::loaded::SpriteRenderSequenceHandle;
 
 use crate::ObjectQueries;
@@ -217,6 +218,39 @@ impl SequenceQueries {
             .unwrap_or_else(|| {
                 panic!(
                     "Expected `InteractionsSequenceHandle` for sequence ID `{:?}` to exist.",
+                    sequence_id
+                )
+            })
+            .clone()
+    }
+
+    /// Returns the `SpawnsSequenceHandle` for the specified sequence ID.
+    ///
+    /// This function assumes the character for the specified slug is instantiated in the world.
+    ///
+    /// # Parameters
+    ///
+    /// * `world`: `World` of the running application.
+    /// * `asset_slug`: Asset slug of the `Object`.
+    /// * `sequence_id`: Sequence ID of the `SpawnsSequenceHandle`.
+    pub fn spawns_sequence_handle(
+        world: &World,
+        asset_slug: &AssetSlug,
+        sequence_id: CharacterSequenceId,
+    ) -> SpawnsSequenceHandle {
+        let object_wrapper_handle = ObjectQueries::object_wrapper_handle(world, asset_slug);
+        let object_wrapper_assets = world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
+        let object_wrapper = object_wrapper_assets
+            .get(&object_wrapper_handle)
+            .unwrap_or_else(|| panic!("Expected `{}` object wrapper to be loaded.", asset_slug));
+
+        let object = object_wrapper.inner();
+        object
+            .spawns_sequence_handles
+            .get(&sequence_id)
+            .unwrap_or_else(|| {
+                panic!(
+                    "Expected `SpawnsSequenceHandle` for sequence ID `{:?}` to exist.",
                     sequence_id
                 )
             })

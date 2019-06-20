@@ -82,6 +82,7 @@ where
                     mut sprite_render_sequence_handles,
                     mut body_sequence_handles,
                     mut interactions_sequence_handles,
+                    mut spawns_sequence_handles,
                 },
         }: Self::SystemData,
     ) {
@@ -124,6 +125,7 @@ where
                         object.sprite_render_sequence_handles.get(&sequence_id),
                         object.body_sequence_handles.get(&sequence_id),
                         object.interactions_sequence_handles.get(&sequence_id),
+                        object.spawns_sequence_handles.get(&sequence_id),
                     )
                 };
 
@@ -132,6 +134,7 @@ where
                     Some(sprite_render_sequence_handle),
                     Some(body_sequence_handle),
                     Some(interactions_sequence_handle),
+                    Some(spawns_sequence_handle),
                 ) = component_sequence_handleses
                 {
                     wait_sequence_handles
@@ -146,6 +149,9 @@ where
                     interactions_sequence_handles
                         .insert(entity, interactions_sequence_handle.clone())
                         .expect("Failed to insert `InteractionsSequenceHandle` component.");
+                    spawns_sequence_handles
+                        .insert(entity, spawns_sequence_handle.clone())
+                        .expect("Failed to insert `SpawnsSequenceHandle` component.");
                 } else {
                     error!(
                         "Expected all component sequence handles to exist for sequence ID: `{:?}`, \
@@ -173,6 +179,7 @@ mod tests {
     use character_model::{config::CharacterSequenceId, loaded::Character};
     use collision_model::loaded::{BodySequenceHandle, InteractionsSequenceHandle};
     use sequence_model::loaded::WaitSequenceHandle;
+    use spawn_model::loaded::SpawnsSequenceHandle;
     use sprite_model::loaded::SpriteRenderSequenceHandle;
 
     use super::ComponentSequenceHandleUpdateSystem;
@@ -271,5 +278,6 @@ mod tests {
         assert_handle_attached!(sprite_render_sequence_handle, SpriteRenderSequenceHandle);
         assert_handle_attached!(body_sequence_handle, BodySequenceHandle);
         assert_handle_attached!(interactions_sequence_handle, InteractionsSequenceHandle);
+        assert_handle_attached!(spawns_sequence_handle, SpawnsSequenceHandle);
     }
 }

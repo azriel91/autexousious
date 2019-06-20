@@ -35,6 +35,7 @@ object_type = { path = "../object_type", features = ["test-support"] }
 sequence_loading = { path = "../sequence_loading" }
 sequence_model = { path = "../sequence_model" }
 spawn_loading = { path = "../spawn_loading" }
+spawn_model = { path = "../spawn_model" }
 sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }
 ui_audio_loading = { path = "../../crate/ui_audio_loading" }

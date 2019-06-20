@@ -15,6 +15,7 @@ sequence_model = { path = "../sequence_model" }
 serde = "1.0.92"
 shred = "0.7.0"
 shred-derive = "0.5.1"
+spawn_model = { path = "../spawn_model" }
 sprite_model = { path = "../sprite_model" }
 
 [dev-dependencies]
