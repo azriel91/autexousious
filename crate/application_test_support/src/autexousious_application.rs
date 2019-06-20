@@ -6,7 +6,7 @@ use amethyst::{
     core::TransformBundle,
     renderer::{types::DefaultBackend, RenderEmptyBundle},
     window::ScreenDimensions,
-    GameData,
+    GameData, LogLevelFilter, LoggerConfig,
 };
 use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
 use application_event::{AppEvent, AppEventReader};
@@ -54,6 +54,14 @@ impl AutexousiousApplication {
     /// `game_base` function.
     pub fn render_and_ui(
     ) -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader> {
+        amethyst::Logger::from_config(LoggerConfig::default())
+            .level_for("gfx_backend_vulkan", LogLevelFilter::Warn)
+            .level_for("rendy_factory", LogLevelFilter::Warn)
+            .level_for("rendy_memory", LogLevelFilter::Warn)
+            .level_for("rendy_graph", LogLevelFilter::Warn)
+            .level_for("rendy_wsi", LogLevelFilter::Warn)
+            .start();
+
         AmethystApplication::blank()
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_bundle(TransformBundle::new())
