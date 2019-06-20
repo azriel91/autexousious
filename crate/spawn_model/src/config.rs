@@ -1,6 +1,9 @@
 //! User defined configuration types for spawns.
 
-pub use self::{spawn::Spawn, spawns::Spawns};
+pub use self::{
+    spawn::Spawn,
+    spawns::{Spawns, SpawnsHandle},
+};
 
 mod spawn;
 mod spawns;
