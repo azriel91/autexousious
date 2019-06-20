@@ -86,7 +86,7 @@ mod tests {
     };
     use kinematic_model::config::{Position, Velocity};
     use object_model::play::Mirrored;
-    use object_test::ObjectTest;
+    use object_test::{ObjectBuilder, ObjectTest};
     use sequence_model::play::{FrameIndexClock, FrameWaitClock, SequenceStatus};
     use test_object_model::{
         config::TestObjectSequenceId,
@@ -137,7 +137,7 @@ mod tests {
     }
 
     fn setup_object_wrapper(world: &mut World) {
-        let object_wrapper = ObjectTest::object_wrapper::<TestObject>(world);
+        let object_wrapper = ObjectBuilder::<TestObject>::new().build_wrapper(&*world);
         world.add_resource(object_wrapper);
     }
 }
