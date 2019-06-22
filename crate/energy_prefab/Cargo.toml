@@ -10,6 +10,7 @@ energy_loading = { path = "../energy_loading" }
 energy_model = { path = "../energy_model" }
 derivative = "1.0.2"
 derive-new = "0.5.6"
+log = "0.4.6"
 object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
 object_prefab = { path = "../object_prefab" }

@@ -6,8 +6,8 @@ use amethyst::{
     Error,
 };
 use derivative::Derivative;
+use log::debug;
 use object_model::{config::ObjectAssetData, loaded::GameObject};
-
 use serde::{Deserialize, Serialize};
 use shred_derive::SystemData;
 
@@ -71,6 +71,8 @@ where
         _: &[Entity],
         _children: &[Entity],
     ) -> Result<(), Error> {
+        debug!("Augmenting entity: {:?}", entity);
+
         let object_wrapper_handle = match self {
             ObjectPrefab::Data(object_asset_data) => {
                 loader.load_from_data(object_asset_data.clone(), (), &object_wrapper_assets)

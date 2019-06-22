@@ -11,6 +11,7 @@ use energy_model::{
     config::EnergyDefinition,
     loaded::{Energy, EnergyHandle},
 };
+use log::debug;
 use object_model::config::ObjectAssetData;
 use object_prefab::{GameObjectPrefab, ObjectPrefab};
 use shred_derive::SystemData;
@@ -97,6 +98,8 @@ impl<'s> PrefabData<'s> for EnergyPrefab {
                 object_prefab,
                 energy_handle,
             } => {
+                debug!("Augmenting entity: {:?}", entity);
+
                 object_prefab.add_to_entity(
                     entity,
                     object_prefab_system_data,

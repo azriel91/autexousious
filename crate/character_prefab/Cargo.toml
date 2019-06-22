@@ -11,6 +11,7 @@ character_model = { path = "../character_model" }
 derivative = "1.0.2"
 derive-new = "0.5.6"
 game_input = { path = "../game_input" }
+log = "0.4.6"
 object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
 object_prefab = { path = "../object_prefab" }
