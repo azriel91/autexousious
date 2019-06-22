@@ -12,15 +12,14 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use log::error;
-use named_type::NamedType;
-use named_type_derive::NamedType;
 use object_model::loaded::{GameObject, ObjectWrapper};
 use object_prefab::ComponentSequenceHandleStorages;
 use sequence_model::play::SequenceStatus;
 use shred_derive::SystemData;
+use typename_derive::TypeName;
 
 /// Updates the attached `Handle<ComponentSequence>`s when `SequenceId` changes.
-#[derive(Debug, Default, NamedType, new)]
+#[derive(Debug, Default, TypeName, new)]
 pub struct ComponentSequenceHandleUpdateSystem<O>
 where
     O: GameObject,

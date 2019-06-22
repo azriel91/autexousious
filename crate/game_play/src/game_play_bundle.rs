@@ -1,5 +1,5 @@
 use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
-use character_model::{config::CharacterSequenceId, loaded::Character};
+use character_model::loaded::Character;
 use character_play::{
     CharacterControlTransitionsTransitionSystem, CharacterControlTransitionsUpdateSystem,
     CharacterCtsHandleUpdateSystem,
@@ -10,6 +10,7 @@ use collision_play::{
     HitDetectionSystem, HitRepeatTrackersAugmentSystem, HitRepeatTrackersTickerSystem,
 };
 use derive_new::new;
+use energy_model::loaded::Energy;
 use game_input::ControllerInput;
 use game_play_hud::HpBarUpdateSystem;
 use named_type::NamedType;
@@ -45,6 +46,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
                     &FrameComponentUpdateSystem::<$component_sequence>::type_name(),
                     &[
                         &ComponentSequenceHandleUpdateSystem::<Character>::type_name(),
+                        &ComponentSequenceHandleUpdateSystem::<Energy>::type_name(),
                         &SequenceUpdateSystem::type_name(),
                     ],
                 ); // kcov-ignore
@@ -54,6 +56,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         builder.add(
             ComponentSequenceHandleUpdateSystem::<Character>::new(),
             &ComponentSequenceHandleUpdateSystem::<Character>::type_name(),
+            &[],
+        ); // kcov-ignore
+        builder.add(
+            ComponentSequenceHandleUpdateSystem::<Energy>::new(),
+            &ComponentSequenceHandleUpdateSystem::<Energy>::type_name(),
             &[],
         ); // kcov-ignore
 
@@ -226,15 +233,6 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             controller_input_tracker_system,
             &controller_input_tracker_system_name,
             &[&GamePlayEndTransitionSystem::type_name()],
-        ); // kcov-ignore
-        let character_sequence_id_tracker_system =
-            LastTrackerSystem::<CharacterSequenceId>::new(stringify!(CharacterSequenceId));
-        let character_sequence_id_tracker_system_name =
-            character_sequence_id_tracker_system.system_name();
-        builder.add(
-            character_sequence_id_tracker_system,
-            &character_sequence_id_tracker_system_name,
-            &[],
         ); // kcov-ignore
 
         Ok(())
