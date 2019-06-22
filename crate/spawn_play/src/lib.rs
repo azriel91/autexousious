@@ -2,6 +2,6 @@
 
 //! Provides spawn logic during game play.
 
-pub use crate::system::SpawnGameObjectSystem;
+pub use crate::system::{SpawnGameObjectRectifySystem, SpawnGameObjectSystem};
 
 mod system;

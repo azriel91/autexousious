@@ -10,6 +10,7 @@ derivative = "1.0.2"
 derive-new = "0.5.6"
 energy_prefab = { path = "../energy_prefab" }
 game_model = { path = "../game_model" }
+kinematic_model = { path = "../kinematic_model" }
 log = "0.4.6"
 object_model = { path = "../object_model" }
 shred = "0.7.0"
