@@ -18,7 +18,7 @@ use object_status_play::StunPointsReductionSystem;
 use sequence_model::loaded::WaitSequence;
 use sequence_play::{FrameComponentUpdateSystem, SequenceUpdateSystem};
 use spawn_model::loaded::SpawnsSequence;
-use spawn_play::SpawnGameObjectSystem;
+use spawn_play::{SpawnGameObjectRectifySystem, SpawnGameObjectSystem};
 use sprite_model::loaded::SpriteRenderSequence;
 use tracker::LastTrackerSystem;
 use typename::TypeName;
@@ -96,6 +96,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             SpawnGameObjectSystem::new(),
             &SpawnGameObjectSystem::type_name(),
             &[&FrameComponentUpdateSystem::<SpawnsSequence>::type_name()],
+        ); // kcov-ignore
+        builder.add(
+            SpawnGameObjectRectifySystem::new(),
+            &SpawnGameObjectRectifySystem::type_name(),
+            &[&SpawnGameObjectSystem::type_name()],
         ); // kcov-ignore
 
         builder.add_barrier();
