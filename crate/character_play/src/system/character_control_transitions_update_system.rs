@@ -4,12 +4,16 @@ use amethyst::{
     shred::Resources,
     shrev::{EventChannel, ReaderId},
 };
-use character_model::loaded::{
-    CharacterControlTransitionsHandle, CharacterControlTransitionsSequence,
-    CharacterControlTransitionsSequenceHandle,
+use character_model::{
+    config::CharacterSequenceId,
+    loaded::{
+        CharacterControlTransitionsHandle, CharacterControlTransitionsSequence,
+        CharacterControlTransitionsSequenceHandle,
+    },
 };
 use derivative::Derivative;
 use derive_new::new;
+use log::error;
 use named_type::NamedType;
 use named_type_derive::NamedType;
 use sequence_model::play::SequenceUpdateEvent;
@@ -38,6 +42,9 @@ pub struct CharacterControlTransitionsUpdateSystemData<'s> {
     /// `CharacterControlTransitionsHandle` component storage.
     #[derivative(Debug = "ignore")]
     pub character_control_transitions_handles: WriteStorage<'s, CharacterControlTransitionsHandle>,
+    /// `CharacterSequenceId` components.
+    #[derivative(Debug = "ignore")]
+    pub character_sequence_ids: ReadStorage<'s, CharacterSequenceId>,
 }
 
 impl<'s> System<'s> for CharacterControlTransitionsUpdateSystem {
@@ -50,6 +57,7 @@ impl<'s> System<'s> for CharacterControlTransitionsUpdateSystem {
             character_cts_handles,
             character_cts_assets,
             mut character_control_transitions_handles,
+            character_sequence_ids,
         }: Self::SystemData,
     ) {
         sequence_update_ec
@@ -59,6 +67,15 @@ impl<'s> System<'s> for CharacterControlTransitionsUpdateSystem {
                 ),
             )
             // kcov-ignore-start
+            .filter(|ev| {
+                if let SequenceUpdateEvent::SequenceBegin { .. }
+                | SequenceUpdateEvent::FrameBegin { .. } = ev
+                {
+                    true
+                } else {
+                    false
+                }
+            })
             .for_each(|ev| {
                 let entity = ev.entity();
                 let frame_index = ev.frame_index();
@@ -69,12 +86,24 @@ impl<'s> System<'s> for CharacterControlTransitionsUpdateSystem {
                         .get(character_cts_handle)
                         .expect("Expected `CharacterControlTransitionsSequence` to be loaded.");
 
-                    let character_control_transitions_handle =
-                        &character_control_transitions_sequence[frame_index];
+                    if frame_index < character_control_transitions_sequence.len() {
+                        let character_control_transitions_handle =
+                            &character_control_transitions_sequence[frame_index];
 
-                    character_control_transitions_handles
-                        .insert(entity, character_control_transitions_handle.clone())
-                        .expect("Failed to insert `CharacterControlTransitions` component.");
+                        character_control_transitions_handles
+                            .insert(entity, character_control_transitions_handle.clone())
+                            .expect("Failed to insert `CharacterControlTransitions` component.");
+                    } else {
+                        let character_sequence_id = character_sequence_ids.get(entity).expect(
+                            "Expected entity with `CharacterControlTransitionsSequenceHandle` \
+                             to have `CharacterSequenceId`.",
+                        );
+
+                        error!(
+                            "Attempted to access index `{}` for sequence ID: `{:?}`",
+                            frame_index, character_sequence_id
+                        );
+                    }
                 }
             });
         // kcov-ignore-end

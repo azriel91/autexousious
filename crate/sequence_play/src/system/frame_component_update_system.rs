@@ -1,4 +1,4 @@
-use std::{marker::PhantomData, ops::Deref};
+use std::{fmt::Debug, marker::PhantomData, ops::Deref};
 
 use amethyst::{
     assets::{Asset, AssetStorage, Handle},
@@ -8,6 +8,7 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
+use log::error;
 use sequence_model::play::SequenceUpdateEvent;
 use sequence_model_spi::loaded::{ComponentSequence, ComponentSequenceExt};
 use shred_derive::SystemData;
@@ -19,6 +20,7 @@ pub struct FrameComponentUpdateSystem<CS>
 where
     CS: Asset
         + ComponentSequenceExt
+        + Debug
         + Deref<Target = ComponentSequence<<CS as ComponentSequenceExt>::Component>>,
 {
     /// Reader ID for the `SequenceUpdateEvent` event channel.
@@ -34,6 +36,7 @@ pub struct FrameComponentUpdateSystemData<'s, CS>
 where
     CS: Asset
         + ComponentSequenceExt
+        + Debug
         + Deref<Target = ComponentSequence<<CS as ComponentSequenceExt>::Component>>,
 {
     /// Event channel for `SequenceUpdateEvent`s.
@@ -54,6 +57,7 @@ impl<CS> FrameComponentUpdateSystem<CS>
 where
     CS: Asset
         + ComponentSequenceExt
+        + Debug
         + Deref<Target = ComponentSequence<<CS as ComponentSequenceExt>::Component>>,
 {
     fn update_frame_components(
@@ -62,10 +66,17 @@ where
         entity: Entity,
         frame_index: usize,
     ) {
-        let component = CS::component_owned(&component_sequence[frame_index]);
-        components
-            .insert(entity, component)
-            .expect("Failed to insert component.");
+        if frame_index < component_sequence.len() {
+            let component = CS::component_owned(&component_sequence[frame_index]);
+            components
+                .insert(entity, component)
+                .expect("Failed to insert component.");
+        } else {
+            error!(
+                "Attempted to access index `{}` for component sequence: `{:?}`",
+                frame_index, component_sequence
+            );
+        }
     }
 }
 
@@ -73,6 +84,7 @@ impl<'s, CS> System<'s> for FrameComponentUpdateSystem<CS>
 where
     CS: Asset
         + ComponentSequenceExt
+        + Debug
         + Deref<Target = ComponentSequence<<CS as ComponentSequenceExt>::Component>>,
 {
     type SystemData = FrameComponentUpdateSystemData<'s, CS>;
@@ -92,6 +104,15 @@ where
                     .as_mut()
                     .expect("Expected reader ID to exist for FrameComponentUpdateSystem."),
             )
+            .filter(|ev| {
+                if let SequenceUpdateEvent::SequenceBegin { .. }
+                | SequenceUpdateEvent::FrameBegin { .. } = ev
+                {
+                    true
+                } else {
+                    false
+                }
+            })
             .for_each(|ev| {
                 let entity = ev.entity();
                 let frame_index = ev.frame_index();
