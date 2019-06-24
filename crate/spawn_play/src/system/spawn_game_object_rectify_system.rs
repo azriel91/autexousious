@@ -86,6 +86,7 @@ impl<'s> System<'s> for SpawnGameObjectRectifySystem {
             };
 
             let entity_spawned = ev.entity_spawned;
+
             parent_objects
                 .insert(entity_spawned, ParentObject::new(ev.entity_parent))
                 .expect("Failed to insert `ParentObject` component.");
@@ -96,7 +97,7 @@ impl<'s> System<'s> for SpawnGameObjectRectifySystem {
                 .insert(entity_spawned, velocity)
                 .expect("Failed to insert `Velocity` component.");
             mirroreds
-                .insert(entity_spawned, Mirrored(true))
+                .insert(entity_spawned, Mirrored(false))
                 .expect("Failed to insert `Mirrored` component.");
         });
     }

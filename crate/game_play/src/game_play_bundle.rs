@@ -4,6 +4,7 @@ use character_play::{
     CharacterControlTransitionsTransitionSystem, CharacterControlTransitionsUpdateSystem,
     CharacterCtsHandleUpdateSystem,
 };
+use chase_play::StickToTargetObjectSystem;
 use collision_audio_play::HitSfxSystem;
 use collision_model::loaded::{BodySequence, InteractionsSequence};
 use collision_play::{
@@ -14,7 +15,6 @@ use energy_model::loaded::Energy;
 use game_input::ControllerInput;
 use game_play_hud::HpBarUpdateSystem;
 use named_type::NamedType;
-use object_play::StickToParentObjectSystem;
 use object_status_play::StunPointsReductionSystem;
 use sequence_model::loaded::WaitSequence;
 use sequence_play::{FrameComponentUpdateSystem, SequenceUpdateSystem};
@@ -152,8 +152,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             ],
         ); // kcov-ignore
         builder.add(
-            StickToParentObjectSystem::new(),
-            &StickToParentObjectSystem::type_name(),
+            StickToTargetObjectSystem::new(),
+            &StickToTargetObjectSystem::type_name(),
             &[&ObjectTransformUpdateSystem::type_name()],
         ); // kcov-ignore
         builder.add(
@@ -200,7 +200,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[&CharacterControlTransitionsTransitionSystem::type_name()],
         ); // kcov-ignore
 
-        // Perhaps this should be straight after the `StickToParentObjectSystem`, but we put it here
+        // Perhaps this should be straight after the `StickToTargetObjectSystem`, but we put it here
         // so that the renderer will show the HP including the damage dealt this frame, instead of
         // one frame later.
         builder.add(
