@@ -138,8 +138,8 @@ mod tests {
         AutexousiousApplication::config_base()
             .with_system(
                 SpawnGameObjectRectifySystem::new(),
-                &SpawnGameObjectRectifySystem::type_name(),
-                &[&ObjectAssetLoadingSystem::<
+                SpawnGameObjectRectifySystem::type_name(),
+                &[ObjectAssetLoadingSystem::<
                     Energy,
                     EnergyPrefab,
                     EnergyLoadingStatus,
