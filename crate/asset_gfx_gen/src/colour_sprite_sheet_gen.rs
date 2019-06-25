@@ -292,7 +292,7 @@ mod tests {
         Error,
     };
     use amethyst_test::AmethystApplication;
-    use approx::relative_eq;
+    use approx::assert_relative_eq;
 
     use super::ColourSpriteSheetGen;
     use crate::{ColourSpriteSheetGenData, ColourSpriteSheetParams};
@@ -391,12 +391,12 @@ mod tests {
             sprite_count,
         );
 
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0]);
-        relative_eq!([0.; 4][..], colours[1]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[2]);
-        relative_eq!([0.; 4][..], colours[3]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[4]);
-        relative_eq!([0.; 4][..], colours[5]);
+        assert_relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0]);
+        assert_relative_eq!([0.; 4][..], colours[1]);
+        assert_relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[2]);
+        assert_relative_eq!([0.; 4][..], colours[3]);
+        assert_relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[4]);
+        assert_relative_eq!([0.; 4][..], colours[5]);
 
         // Padding row.
         // row_length
@@ -404,26 +404,26 @@ mod tests {
         //     = 2 * 3 * 4
         //     = 24
         // 1 padding pixel * row_length
-        relative_eq!([0.; 4][..], colours[6]);
-        relative_eq!([0.; 4][..], colours[7]);
-        relative_eq!([0.; 4][..], colours[8]);
-        relative_eq!([0.; 4][..], colours[9]);
-        relative_eq!([0.; 4][..], colours[10]);
-        relative_eq!([0.; 4][..], colours[11]);
+        assert_relative_eq!([0.; 4][..], colours[6]);
+        assert_relative_eq!([0.; 4][..], colours[7]);
+        assert_relative_eq!([0.; 4][..], colours[8]);
+        assert_relative_eq!([0.; 4][..], colours[9]);
+        assert_relative_eq!([0.; 4][..], colours[10]);
+        assert_relative_eq!([0.; 4][..], colours[11]);
 
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[12]);
-        relative_eq!([0.; 4][..], colours[13]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[14]);
-        relative_eq!([0.; 4][..], colours[15]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[16]);
-        relative_eq!([0.; 4][..], colours[17]);
+        assert_relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[12]);
+        assert_relative_eq!([0.; 4][..], colours[13]);
+        assert_relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[14]);
+        assert_relative_eq!([0.; 4][..], colours[15]);
+        assert_relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[16]);
+        assert_relative_eq!([0.; 4][..], colours[17]);
 
-        relative_eq!([0.; 4][..], colours[18]);
-        relative_eq!([0.; 4][..], colours[19]);
-        relative_eq!([0.; 4][..], colours[20]);
-        relative_eq!([0.; 4][..], colours[21]);
-        relative_eq!([0.; 4][..], colours[22]);
-        relative_eq!([0.; 4][..], colours[23]);
+        assert_relative_eq!([0.; 4][..], colours[18]);
+        assert_relative_eq!([0.; 4][..], colours[19]);
+        assert_relative_eq!([0.; 4][..], colours[20]);
+        assert_relative_eq!([0.; 4][..], colours[21]);
+        assert_relative_eq!([0.; 4][..], colours[22]);
+        assert_relative_eq!([0.; 4][..], colours[23]);
     }
 
     #[test]
@@ -446,15 +446,15 @@ mod tests {
             sprite_count,
         );
 
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0]);
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[1]);
-        relative_eq!([0.; 4][..], colours[2]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[3]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[4]);
-        relative_eq!([0.; 4][..], colours[5]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[6]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[7]);
-        relative_eq!([0.; 4][..], colours[8]);
+        assert_relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0]);
+        assert_relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[1]);
+        assert_relative_eq!([0.; 4][..], colours[2]);
+        assert_relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[3]);
+        assert_relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[4]);
+        assert_relative_eq!([0.; 4][..], colours[5]);
+        assert_relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[6]);
+        assert_relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[7]);
+        assert_relative_eq!([0.; 4][..], colours[8]);
 
         // Padding row.
         // row_length
@@ -462,35 +462,35 @@ mod tests {
         //     = 3 * 3 * 4
         //     = 36
         // 1 padding pixel * row_length
-        relative_eq!([0.; 4][..], colours[9]);
-        relative_eq!([0.; 4][..], colours[10]);
-        relative_eq!([0.; 4][..], colours[11]);
-        relative_eq!([0.; 4][..], colours[12]);
-        relative_eq!([0.; 4][..], colours[13]);
-        relative_eq!([0.; 4][..], colours[14]);
-        relative_eq!([0.; 4][..], colours[15]);
-        relative_eq!([0.; 4][..], colours[16]);
-        relative_eq!([0.; 4][..], colours[17]);
+        assert_relative_eq!([0.; 4][..], colours[9]);
+        assert_relative_eq!([0.; 4][..], colours[10]);
+        assert_relative_eq!([0.; 4][..], colours[11]);
+        assert_relative_eq!([0.; 4][..], colours[12]);
+        assert_relative_eq!([0.; 4][..], colours[13]);
+        assert_relative_eq!([0.; 4][..], colours[14]);
+        assert_relative_eq!([0.; 4][..], colours[15]);
+        assert_relative_eq!([0.; 4][..], colours[16]);
+        assert_relative_eq!([0.; 4][..], colours[17]);
 
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[18]);
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[19]);
-        relative_eq!([0.; 4][..], colours[20]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[21]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[22]);
-        relative_eq!([0.; 4][..], colours[23]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[24]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[25]);
-        relative_eq!([0.; 4][..], colours[26]);
+        assert_relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[18]);
+        assert_relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[19]);
+        assert_relative_eq!([0.; 4][..], colours[20]);
+        assert_relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[21]);
+        assert_relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[22]);
+        assert_relative_eq!([0.; 4][..], colours[23]);
+        assert_relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[24]);
+        assert_relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[25]);
+        assert_relative_eq!([0.; 4][..], colours[26]);
 
-        relative_eq!([0.; 4][..], colours[27]);
-        relative_eq!([0.; 4][..], colours[28]);
-        relative_eq!([0.; 4][..], colours[29]);
-        relative_eq!([0.; 4][..], colours[30]);
-        relative_eq!([0.; 4][..], colours[31]);
-        relative_eq!([0.; 4][..], colours[32]);
-        relative_eq!([0.; 4][..], colours[33]);
-        relative_eq!([0.; 4][..], colours[34]);
-        relative_eq!([0.; 4][..], colours[35]);
+        assert_relative_eq!([0.; 4][..], colours[27]);
+        assert_relative_eq!([0.; 4][..], colours[28]);
+        assert_relative_eq!([0.; 4][..], colours[29]);
+        assert_relative_eq!([0.; 4][..], colours[30]);
+        assert_relative_eq!([0.; 4][..], colours[31]);
+        assert_relative_eq!([0.; 4][..], colours[32]);
+        assert_relative_eq!([0.; 4][..], colours[33]);
+        assert_relative_eq!([0.; 4][..], colours[34]);
+        assert_relative_eq!([0.; 4][..], colours[35]);
     }
 
     #[test]
@@ -513,46 +513,53 @@ mod tests {
             sprite_count,
         );
 
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0]);
-        relative_eq!([0.; 4][..], colours[1]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[2]);
-        relative_eq!([0.; 4][..], colours[3]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[4]);
-        relative_eq!([0.; 4][..], colours[5]);
+        assert_relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0]);
+        assert_relative_eq!([0.; 4][..], colours[1]);
+        assert_relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[2]);
+        assert_relative_eq!([0.; 4][..], colours[3]);
+        assert_relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[4]);
+        assert_relative_eq!([0.; 4][..], colours[5]);
 
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[6]);
-        relative_eq!([0.; 4][..], colours[7]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[8]);
-        relative_eq!([0.; 4][..], colours[9]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[9]);
-        relative_eq!([0.; 4][..], colours[10]);
+        assert_relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[6]);
+        assert_relative_eq!([0.; 4][..], colours[7]);
+        assert_relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[8]);
+        assert_relative_eq!([0.; 4][..], colours[9]);
+        assert_relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[10]);
+        assert_relative_eq!([0.; 4][..], colours[11]);
 
         // Padding row.
         // row_length
-        //     = (1 sprite_pixel + 1 padding_pixel) * column_count * 4 channels
-        //     = 2 * 3 * 4
-        //     = 24
+        //     = (1 sprite_pixel + 1 padding_pixel) * column_count
+        //     = 2 * 3
+        //     = 6
         // 1 padding pixel * row_length
-        relative_eq!([0.; 4][..], colours[11]);
-        relative_eq!([0.; 4][..], colours[12]);
-        relative_eq!([0.; 4][..], colours[13]);
-        relative_eq!([0.; 4][..], colours[14]);
-        relative_eq!([0.; 4][..], colours[15]);
-        relative_eq!([0.; 4][..], colours[16]);
+        assert_relative_eq!([0.; 4][..], colours[12]);
+        assert_relative_eq!([0.; 4][..], colours[13]);
+        assert_relative_eq!([0.; 4][..], colours[14]);
+        assert_relative_eq!([0.; 4][..], colours[15]);
+        assert_relative_eq!([0.; 4][..], colours[16]);
+        assert_relative_eq!([0.; 4][..], colours[17]);
 
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[17]);
-        relative_eq!([0.; 4][..], colours[18]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[19]);
-        relative_eq!([0.; 4][..], colours[20]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[21]);
-        relative_eq!([0.; 4][..], colours[22]);
+        assert_relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[18]);
+        assert_relative_eq!([0.; 4][..], colours[19]);
+        assert_relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[20]);
+        assert_relative_eq!([0.; 4][..], colours[21]);
+        assert_relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[22]);
+        assert_relative_eq!([0.; 4][..], colours[23]);
 
-        relative_eq!([0.; 4][..], colours[23]);
-        relative_eq!([0.; 4][..], colours[24]);
-        relative_eq!([0.; 4][..], colours[25]);
-        relative_eq!([0.; 4][..], colours[26]);
-        relative_eq!([0.; 4][..], colours[27]);
-        relative_eq!([0.; 4][..], colours[28]);
+        assert_relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[24]);
+        assert_relative_eq!([0.; 4][..], colours[25]);
+        assert_relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[26]);
+        assert_relative_eq!([0.; 4][..], colours[27]);
+        assert_relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[28]);
+        assert_relative_eq!([0.; 4][..], colours[29]);
+
+        assert_relative_eq!([0.; 4][..], colours[30]);
+        assert_relative_eq!([0.; 4][..], colours[31]);
+        assert_relative_eq!([0.; 4][..], colours[32]);
+        assert_relative_eq!([0.; 4][..], colours[33]);
+        assert_relative_eq!([0.; 4][..], colours[34]);
+        assert_relative_eq!([0.; 4][..], colours[35]);
     }
 
     #[test]
@@ -575,25 +582,25 @@ mod tests {
             sprite_count,
         );
 
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0]);
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[1]);
-        relative_eq!([0.; 4][..], colours[2]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[3]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[4]);
-        relative_eq!([0.; 4][..], colours[5]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[6]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[7]);
-        relative_eq!([0.; 4][..], colours[8]);
+        assert_relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0]);
+        assert_relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[1]);
+        assert_relative_eq!([0.; 4][..], colours[2]);
+        assert_relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[3]);
+        assert_relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[4]);
+        assert_relative_eq!([0.; 4][..], colours[5]);
+        assert_relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[6]);
+        assert_relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[7]);
+        assert_relative_eq!([0.; 4][..], colours[8]);
 
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[9]);
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[10]);
-        relative_eq!([0.; 4][..], colours[11]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[12]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[13]);
-        relative_eq!([0.; 4][..], colours[14]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[15]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[16]);
-        relative_eq!([0.; 4][..], colours[17]);
+        assert_relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[9]);
+        assert_relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[10]);
+        assert_relative_eq!([0.; 4][..], colours[11]);
+        assert_relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[12]);
+        assert_relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[13]);
+        assert_relative_eq!([0.; 4][..], colours[14]);
+        assert_relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[15]);
+        assert_relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[16]);
+        assert_relative_eq!([0.; 4][..], colours[17]);
 
         // Padding row.
         // row_length
@@ -601,45 +608,45 @@ mod tests {
         //     = 3 * 3 * 4
         //     = 36
         // 1 padding pixel * row_length
-        relative_eq!([0.; 4][..], colours[18]);
-        relative_eq!([0.; 4][..], colours[19]);
-        relative_eq!([0.; 4][..], colours[20]);
-        relative_eq!([0.; 4][..], colours[21]);
-        relative_eq!([0.; 4][..], colours[22]);
-        relative_eq!([0.; 4][..], colours[23]);
-        relative_eq!([0.; 4][..], colours[24]);
-        relative_eq!([0.; 4][..], colours[25]);
-        relative_eq!([0.; 4][..], colours[26]);
+        assert_relative_eq!([0.; 4][..], colours[18]);
+        assert_relative_eq!([0.; 4][..], colours[19]);
+        assert_relative_eq!([0.; 4][..], colours[20]);
+        assert_relative_eq!([0.; 4][..], colours[21]);
+        assert_relative_eq!([0.; 4][..], colours[22]);
+        assert_relative_eq!([0.; 4][..], colours[23]);
+        assert_relative_eq!([0.; 4][..], colours[24]);
+        assert_relative_eq!([0.; 4][..], colours[25]);
+        assert_relative_eq!([0.; 4][..], colours[26]);
 
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[27]);
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[28]);
-        relative_eq!([0.; 4][..], colours[29]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[30]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[31]);
-        relative_eq!([0.; 4][..], colours[32]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[33]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[34]);
-        relative_eq!([0.; 4][..], colours[35]);
+        assert_relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[27]);
+        assert_relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[28]);
+        assert_relative_eq!([0.; 4][..], colours[29]);
+        assert_relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[30]);
+        assert_relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[31]);
+        assert_relative_eq!([0.; 4][..], colours[32]);
+        assert_relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[33]);
+        assert_relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[34]);
+        assert_relative_eq!([0.; 4][..], colours[35]);
 
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[36]);
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[37]);
-        relative_eq!([0.; 4][..], colours[38]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[39]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[40]);
-        relative_eq!([0.; 4][..], colours[41]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[42]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[43]);
-        relative_eq!([0.; 4][..], colours[44]);
+        assert_relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[36]);
+        assert_relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[37]);
+        assert_relative_eq!([0.; 4][..], colours[38]);
+        assert_relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[39]);
+        assert_relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[40]);
+        assert_relative_eq!([0.; 4][..], colours[41]);
+        assert_relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[42]);
+        assert_relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[43]);
+        assert_relative_eq!([0.; 4][..], colours[44]);
 
-        relative_eq!([0.; 4][..], colours[45]);
-        relative_eq!([0.; 4][..], colours[46]);
-        relative_eq!([0.; 4][..], colours[47]);
-        relative_eq!([0.; 4][..], colours[48]);
-        relative_eq!([0.; 4][..], colours[49]);
-        relative_eq!([0.; 4][..], colours[50]);
-        relative_eq!([0.; 4][..], colours[51]);
-        relative_eq!([0.; 4][..], colours[52]);
-        relative_eq!([0.; 4][..], colours[53]);
+        assert_relative_eq!([0.; 4][..], colours[45]);
+        assert_relative_eq!([0.; 4][..], colours[46]);
+        assert_relative_eq!([0.; 4][..], colours[47]);
+        assert_relative_eq!([0.; 4][..], colours[48]);
+        assert_relative_eq!([0.; 4][..], colours[49]);
+        assert_relative_eq!([0.; 4][..], colours[50]);
+        assert_relative_eq!([0.; 4][..], colours[51]);
+        assert_relative_eq!([0.; 4][..], colours[52]);
+        assert_relative_eq!([0.; 4][..], colours[53]);
     }
 
     #[test]
@@ -662,13 +669,13 @@ mod tests {
             sprite_count,
         );
 
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[1]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[2]);
+        assert_relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0]);
+        assert_relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[1]);
+        assert_relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[2]);
 
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[3]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[4]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[5]);
+        assert_relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[3]);
+        assert_relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[4]);
+        assert_relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[5]);
     }
 
     #[test]
@@ -691,19 +698,19 @@ mod tests {
             sprite_count,
         );
 
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0]);
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[1]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[2]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[3]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[4]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[5]);
+        assert_relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0]);
+        assert_relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[1]);
+        assert_relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[2]);
+        assert_relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[3]);
+        assert_relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[4]);
+        assert_relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[5]);
 
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[6]);
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[7]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[8]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[9]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[10]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[11]);
+        assert_relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[6]);
+        assert_relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[7]);
+        assert_relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[8]);
+        assert_relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[9]);
+        assert_relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[10]);
+        assert_relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[11]);
     }
 
     #[test]
@@ -726,21 +733,21 @@ mod tests {
             sprite_count,
         );
 
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[1]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[2]);
+        assert_relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0]);
+        assert_relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[1]);
+        assert_relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[2]);
 
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[3]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[4]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[5]);
+        assert_relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[3]);
+        assert_relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[4]);
+        assert_relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[5]);
 
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[6]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[7]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[8]);
+        assert_relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[6]);
+        assert_relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[7]);
+        assert_relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[8]);
 
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[9]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[10]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[11]);
+        assert_relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[9]);
+        assert_relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[10]);
+        assert_relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[11]);
     }
 
     #[test]
@@ -763,33 +770,33 @@ mod tests {
             sprite_count,
         );
 
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0]);
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[1]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[2]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[3]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[4]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[5]);
+        assert_relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[0]);
+        assert_relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[1]);
+        assert_relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[2]);
+        assert_relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[3]);
+        assert_relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[4]);
+        assert_relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[5]);
 
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[6]);
-        relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[7]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[8]);
-        relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[9]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[10]);
-        relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[11]);
+        assert_relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[6]);
+        assert_relative_eq!([1.0, 0.2, 0.0, 0.6][..], colours[7]);
+        assert_relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[8]);
+        assert_relative_eq!([0.8, 0.4, 0.0, 0.7][..], colours[9]);
+        assert_relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[10]);
+        assert_relative_eq!([0.6, 0.6, 0.0, 0.8][..], colours[11]);
 
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[12]);
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[13]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[14]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[15]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[16]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[17]);
+        assert_relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[12]);
+        assert_relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[13]);
+        assert_relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[14]);
+        assert_relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[15]);
+        assert_relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[16]);
+        assert_relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[17]);
 
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[18]);
-        relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[19]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[20]);
-        relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[21]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[22]);
-        relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[23]);
+        assert_relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[18]);
+        assert_relative_eq!([0.4, 0.8, 0.0, 0.9][..], colours[19]);
+        assert_relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[20]);
+        assert_relative_eq!([0.2, 1.0, 0.0, 1.0][..], colours[21]);
+        assert_relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[22]);
+        assert_relative_eq!([0.0, 0.0, 0.0, 0.0][..], colours[23]);
     }
 
     #[test]
