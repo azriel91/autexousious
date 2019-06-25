@@ -2,6 +2,7 @@ use collision_model::config::{Body, Interactions};
 use derive_new::new;
 use sequence_model::config::Wait;
 use serde::{Deserialize, Serialize};
+use spawn_model::config::Spawns;
 use sprite_model::config::SpriteRef;
 
 /// Common object behaviour specification that can change each tick.
@@ -13,7 +14,7 @@ use sprite_model::config::SpriteRef;
 /// * **Effects:** Sound(s) to play.
 /// * **Spawning:** Spawning additional object(s).
 /// * **Weapon:** Where an active weapon should be.
-#[derive(Clone, Debug, Default, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, new)]
 #[serde(default)]
 pub struct ObjectFrame {
     /// Number of ticks to wait before the sequence switches to the next frame.
@@ -24,4 +25,6 @@ pub struct ObjectFrame {
     pub body: Body,
     /// Interaction volumes of the object.
     pub interactions: Interactions,
+    /// Objects to spawn.
+    pub spawns: Spawns,
 }

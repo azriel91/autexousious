@@ -4,7 +4,7 @@ use amethyst::{ecs::Read, Error};
 use asset_model::config::AssetSlug;
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
 use game_input_model::ControllerId;
-use game_model::loaded::CharacterAssets;
+use game_model::loaded::CharacterPrefabs;
 use stdio_spi::{MapperSystemData, StdinMapper, StdioError};
 use typename_derive::TypeName;
 
@@ -17,7 +17,7 @@ const RANDOM_SELECTION: &str = "random";
 pub struct CharacterSelectionEventStdinMapperData;
 
 impl<'s> MapperSystemData<'s> for CharacterSelectionEventStdinMapperData {
-    type SystemData = Read<'s, CharacterAssets>;
+    type SystemData = Read<'s, CharacterPrefabs>;
 }
 
 /// Builds a `CharacterSelectionEvent` from stdin tokens.
@@ -26,11 +26,11 @@ pub struct CharacterSelectionEventStdinMapper;
 
 impl CharacterSelectionEventStdinMapper {
     fn map_switch_event(
-        character_assets: &CharacterAssets,
+        character_prefabs: &CharacterPrefabs,
         controller_id: ControllerId,
         selection: &str,
     ) -> Result<CharacterSelectionEvent, Error> {
-        let character_selection = Self::find_character(character_assets, selection)?;
+        let character_selection = Self::find_character(character_prefabs, selection)?;
 
         let character_selection_event = CharacterSelectionEvent::Switch {
             controller_id,
@@ -41,11 +41,11 @@ impl CharacterSelectionEventStdinMapper {
     }
 
     fn map_select_event(
-        character_assets: &CharacterAssets,
+        character_prefabs: &CharacterPrefabs,
         controller_id: ControllerId,
         selection: &str,
     ) -> Result<CharacterSelectionEvent, Error> {
-        let character_selection = Self::find_character(character_assets, selection)?;
+        let character_selection = Self::find_character(character_prefabs, selection)?;
 
         let character_selection_event = CharacterSelectionEvent::Select {
             controller_id,
@@ -56,16 +56,18 @@ impl CharacterSelectionEventStdinMapper {
     }
 
     fn find_character(
-        character_assets: &CharacterAssets,
+        character_prefabs: &CharacterPrefabs,
         selection: &str,
     ) -> Result<CharacterSelection, Error> {
         match selection {
             RANDOM_SELECTION => Ok(CharacterSelection::Random),
             slug_str => {
-                let slug = AssetSlug::from_str(slug_str).map_err(StdioError::Msg)?;
+                let slug = AssetSlug::from_str(slug_str)
+                    .map_err(String::from)
+                    .map_err(StdioError::Msg)?;
 
                 // TODO: Should we validate here, or in `CharacterSelectionSpawningSystem`?
-                let _ = character_assets
+                let _ = character_prefabs
                     .get(&slug)
                     .ok_or_else(|| format!("No character found with asset slug `{}`.", slug))
                     .map_err(StdioError::Msg)?;
@@ -82,7 +84,7 @@ impl StdinMapper for CharacterSelectionEventStdinMapper {
     type Args = CharacterSelectionEventArgs;
 
     fn map(
-        character_assets: &Read<CharacterAssets>,
+        character_prefabs: &Read<CharacterPrefabs>,
         args: Self::Args,
     ) -> Result<Self::Event, Error> {
         match args {
@@ -90,11 +92,11 @@ impl StdinMapper for CharacterSelectionEventStdinMapper {
             CharacterSelectionEventArgs::Switch {
                 controller_id,
                 selection,
-            } => Self::map_switch_event(character_assets, controller_id, &selection),
+            } => Self::map_switch_event(character_prefabs, controller_id, &selection),
             CharacterSelectionEventArgs::Select {
                 controller_id,
                 selection,
-            } => Self::map_select_event(character_assets, controller_id, &selection),
+            } => Self::map_select_event(character_prefabs, controller_id, &selection),
             CharacterSelectionEventArgs::Deselect { controller_id } => {
                 Ok(CharacterSelectionEvent::Deselect { controller_id })
             }
@@ -116,9 +118,9 @@ mod tests {
         Error,
     };
     use application_test_support::AutexousiousApplication;
-    use assets_test::ASSETS_CHAR_BAT_SLUG;
+    use assets_test::CHAR_BAT_SLUG;
     use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
-    use game_model::loaded::CharacterAssets;
+    use game_model::loaded::CharacterPrefabs;
     use stdio_spi::{StdinMapper, StdioError};
 
     use super::CharacterSelectionEventStdinMapper;
@@ -130,10 +132,10 @@ mod tests {
             fn $test_name() {
                 let args = CharacterSelectionEventArgs::$variant;
                 let mut resources = Resources::new();
-                resources.insert(CharacterAssets::new());
+                resources.insert(CharacterPrefabs::new());
 
                 let result = CharacterSelectionEventStdinMapper::map(
-                    &Read::from(resources.fetch::<CharacterAssets>()),
+                    &Read::from(resources.fetch::<CharacterPrefabs>()),
                     args,
                 );
 
@@ -150,10 +152,10 @@ mod tests {
                 let controller_id = 0;
                 let args = CharacterSelectionEventArgs::$variant { controller_id };
                 let mut resources = Resources::new();
-                resources.insert(CharacterAssets::new());
+                resources.insert(CharacterPrefabs::new());
 
                 let result = CharacterSelectionEventStdinMapper::map(
-                    &Read::from(resources.fetch::<CharacterAssets>()),
+                    &Read::from(resources.fetch::<CharacterPrefabs>()),
                     args,
                 );
 
@@ -177,10 +179,10 @@ mod tests {
                             controller_id,
                             selection: $slug,
                         };
-                        let character_assets = world.read_resource::<CharacterAssets>();
+                        let character_prefabs = world.read_resource::<CharacterPrefabs>();
 
                         let result = CharacterSelectionEventStdinMapper::map(
-                            &Read::from(character_assets),
+                            &Read::from(character_prefabs),
                             args,
                         );
 
@@ -210,16 +212,16 @@ mod tests {
                     selection,
                 };
                 let mut resources = Resources::new();
-                resources.insert(CharacterAssets::new());
+                resources.insert(CharacterPrefabs::new());
 
                 let result = CharacterSelectionEventStdinMapper::map(
-                    &Read::from(resources.fetch::<CharacterAssets>()),
+                    &Read::from(resources.fetch::<CharacterPrefabs>()),
                     args,
                 );
 
                 expect_err_msg(
                     result,
-                    "Expected exactly one `/` in slug string: \"invalid\".",
+                    "Expected exactly one `/` in asset slug string: `invalid`.",
                 );
             }
         };
@@ -236,10 +238,10 @@ mod tests {
                     selection,
                 };
                 let mut resources = Resources::new();
-                resources.insert(CharacterAssets::new());
+                resources.insert(CharacterPrefabs::new());
 
                 let result = CharacterSelectionEventStdinMapper::map(
-                    &Read::from(resources.fetch::<CharacterAssets>()),
+                    &Read::from(resources.fetch::<CharacterPrefabs>()),
                     args,
                 );
 
@@ -265,8 +267,8 @@ mod tests {
     test_map_with_slug!(
         maps_select_id_event,
         Select,
-        ASSETS_CHAR_BAT_SLUG.to_string(),
-        CharacterSelection::Id(ASSETS_CHAR_BAT_SLUG.clone())
+        CHAR_BAT_SLUG.to_string(),
+        CharacterSelection::Id(CHAR_BAT_SLUG.clone())
     );
     test_map_with_slug!(
         maps_select_random_event,
@@ -277,8 +279,8 @@ mod tests {
     test_map_with_slug!(
         maps_switch_id_event,
         Switch,
-        ASSETS_CHAR_BAT_SLUG.to_string(),
-        CharacterSelection::Id(ASSETS_CHAR_BAT_SLUG.clone())
+        CHAR_BAT_SLUG.to_string(),
+        CharacterSelection::Id(CHAR_BAT_SLUG.clone())
     );
     test_map_with_slug!(
         maps_switch_random_event,

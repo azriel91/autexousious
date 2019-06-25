@@ -14,6 +14,7 @@ use character_model::{
     },
 };
 use derivative::Derivative;
+use log::debug;
 use object_model::config::ObjectAssetData;
 use object_prefab::{GameObjectPrefab, ObjectPrefab};
 use shred_derive::SystemData;
@@ -107,6 +108,8 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
                 object_prefab,
                 character_handle,
             } => {
+                debug!("Augmenting entity: {:?}", entity);
+
                 object_prefab.add_to_entity(
                     entity,
                     object_prefab_system_data,

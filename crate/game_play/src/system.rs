@@ -1,5 +1,4 @@
 pub(crate) use self::{
-    character_grounding_system::CharacterGroundingSystem,
     character_hit_effect_system::CharacterHitEffectSystem,
     character_kinematics_system::CharacterKinematicsSystem,
     character_sequence_update_system::CharacterSequenceUpdateSystem,
@@ -12,7 +11,6 @@ pub(crate) use self::{
     sequence::FrameFreezeClockAugmentSystem,
 };
 
-mod character_grounding_system;
 mod character_hit_effect_system;
 mod character_kinematics_system;
 mod character_sequence_update_system;

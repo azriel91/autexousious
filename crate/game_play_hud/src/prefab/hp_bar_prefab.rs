@@ -6,6 +6,7 @@ use amethyst::{
     Error,
 };
 use asset_gfx_gen::{ColourSpriteSheetGen, ColourSpriteSheetGenData};
+use chase_model::play::{ChaseModeStick, TargetObject};
 use derivative::Derivative;
 use derive_new::new;
 use object_model::play::ParentObject;
@@ -49,6 +50,12 @@ pub struct HpBarPrefabSystemData<'s> {
     /// `ParentObject` components.
     #[derivative(Debug = "ignore")]
     pub parent_objects: WriteStorage<'s, ParentObject>,
+    /// `TargetObject` components.
+    #[derivative(Debug = "ignore")]
+    pub target_objects: WriteStorage<'s, TargetObject>,
+    /// `ChaseModeStick` components.
+    #[derivative(Debug = "ignore")]
+    pub chase_mode_sticks: WriteStorage<'s, ChaseModeStick>,
     /// System data needed to load colour sprites.
     #[derivative(Debug = "ignore")]
     pub colour_sprite_sheet_gen_data: ColourSpriteSheetGenData<'s>,
@@ -71,6 +78,8 @@ impl<'s> PrefabData<'s> for HpBarPrefab {
             hp_bars,
             transforms,
             parent_objects,
+            target_objects,
+            chase_mode_sticks,
             colour_sprite_sheet_gen_data,
             sprite_renders,
             transparents,
@@ -95,6 +104,8 @@ impl<'s> PrefabData<'s> for HpBarPrefab {
         ));
         transforms.insert(entity, transform)?;
         parent_objects.insert(entity, ParentObject::new(self.game_object_entity))?;
+        target_objects.insert(entity, TargetObject::new(self.game_object_entity))?;
+        chase_mode_sticks.insert(entity, Default::default())?;
 
         let sprite_render = ColourSpriteSheetGen::gradient(
             colour_sprite_sheet_gen_data,

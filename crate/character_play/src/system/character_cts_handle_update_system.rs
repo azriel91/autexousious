@@ -141,7 +141,7 @@ mod tests {
         Error,
     };
     use application_test_support::{AutexousiousApplication, ObjectQueries, SequenceQueries};
-    use assets_test::ASSETS_CHAR_BAT_SLUG;
+    use assets_test::CHAR_BAT_SLUG;
     use character_model::{
         config::CharacterSequenceId, loaded::CharacterControlTransitionsSequenceHandle,
     };
@@ -195,7 +195,7 @@ mod tests {
     }
 
     fn create_entity(world: &mut World) -> Entity {
-        let asset_slug = ASSETS_CHAR_BAT_SLUG.clone();
+        let asset_slug = CHAR_BAT_SLUG.clone();
         let character_handle =
             ObjectQueries::game_object_handle::<CharacterPrefab>(world, &asset_slug)
                 .expect("Expected `CharacterHandle` to exist.");
@@ -212,11 +212,8 @@ mod tests {
 
     fn expect_cts_handle(world: &mut World, sequence_id: CharacterSequenceId) {
         let entity = *world.read_resource::<Entity>();
-        let expected_handle = SequenceQueries::character_cts_handle(
-            world,
-            &ASSETS_CHAR_BAT_SLUG.clone(),
-            sequence_id,
-        );
+        let expected_handle =
+            SequenceQueries::character_cts_handle(world, &CHAR_BAT_SLUG.clone(), sequence_id);
         let character_cts_handles =
             world.read_storage::<CharacterControlTransitionsSequenceHandle>();
 

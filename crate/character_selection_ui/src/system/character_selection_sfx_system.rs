@@ -77,7 +77,7 @@ impl<'s> System<'s> for CharacterSelectionSfxSystem {
 mod tests {
     use amethyst::{ecs::World, shrev::EventChannel, Error};
     use application_test_support::AutexousiousApplication;
-    use assets_test::ASSETS_CHAR_BAT_SLUG;
+    use assets_test::CHAR_BAT_SLUG;
     use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
 
     use super::CharacterSelectionSfxSystem;
@@ -94,7 +94,7 @@ mod tests {
 
     #[test]
     fn plays_sound_on_switch_event() -> Result<(), Error> {
-        let character_selection = CharacterSelection::Id(ASSETS_CHAR_BAT_SLUG.clone());
+        let character_selection = CharacterSelection::Id(CHAR_BAT_SLUG.clone());
         let character_selection_event = CharacterSelectionEvent::Switch {
             controller_id: 123,
             character_selection,
@@ -104,7 +104,7 @@ mod tests {
 
     #[test]
     fn plays_sound_on_select_event() -> Result<(), Error> {
-        let character_selection = CharacterSelection::Id(ASSETS_CHAR_BAT_SLUG.clone());
+        let character_selection = CharacterSelection::Id(CHAR_BAT_SLUG.clone());
         let character_selection_event = CharacterSelectionEvent::Select {
             controller_id: 123,
             character_selection,

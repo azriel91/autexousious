@@ -58,6 +58,7 @@ extern crate proc_macro;
 
 use proc_macro::TokenStream;
 use proc_macro2::Span;
+use proc_macro_roids::IdentExt;
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput, Ident, Meta};
 
@@ -93,6 +94,15 @@ pub fn derive_asset(item: TokenStream) -> TokenStream {
         .unwrap_or_else(|| Ident::new("Self", Span::call_site()));
     let (impl_generics, ty_generics, where_clause) = ast.generics.split_for_impl();
 
+    let type_name_string = type_name.to_string();
+    let preposition = if begins_with_vowel(&type_name_string) {
+        "an"
+    } else {
+        "a"
+    };
+    let handle_type_name = type_name.append("Handle");
+    let handle_doc = format!("Handle to {} `{}`.", preposition, type_name_string);
+
     let mut token_stream_2 = quote! {
         impl #impl_generics amethyst::assets::Asset for #type_name #ty_generics #where_clause {
             const NAME: &'static str = concat!(
@@ -104,6 +114,9 @@ pub fn derive_asset(item: TokenStream) -> TokenStream {
             type Data = #asset_data;
             type HandleStorage = amethyst::ecs::storage::VecStorage<amethyst::assets::Handle<Self>>;
         }
+
+        #[doc = #handle_doc]
+        pub type #handle_type_name = amethyst::assets::Handle<#type_name>;
     };
 
     // Generate trivial processor impl for `Self` asset datas.
@@ -131,4 +144,12 @@ pub fn derive_asset(item: TokenStream) -> TokenStream {
     }
 
     TokenStream::from(token_stream_2)
+}
+
+fn begins_with_vowel(word: &str) -> bool {
+    if let Some('A') | Some('E') | Some('I') | Some('O') | Some('U') = word.chars().next() {
+        true
+    } else {
+        false
+    }
 }

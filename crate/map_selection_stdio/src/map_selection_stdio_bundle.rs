@@ -27,7 +27,7 @@ mod test {
 
     use amethyst::shrev::EventChannel;
     use amethyst_test::prelude::*;
-    use game_model::loaded::MapAssets;
+    use game_model::loaded::MapPrefabs;
     use stdio_spi::VariantAndTokens;
 
     use super::MapSelectionStdioBundle;
@@ -43,7 +43,7 @@ mod test {
                 // kcov-ignore-start
                 .with_effect(|world| {
                     world.read_resource::<EventChannel<VariantAndTokens>>();
-                    world.read_resource::<MapAssets>();
+                    world.read_resource::<MapPrefabs>();
                 })
                 // kcov-ignore-end
                 .run()

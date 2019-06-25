@@ -5,7 +5,8 @@ use amethyst::{
     renderer::{SpriteRender, SpriteSheet},
 };
 use derive_new::new;
-use object_model::play::{Mirrored, Position};
+use kinematic_model::config::Position;
+use object_model::play::Mirrored;
 use typename_derive::TypeName;
 
 /// Updates each entity's `Transform` based on their `Position` in game.
@@ -69,7 +70,7 @@ mod test {
         Error,
     };
     use amethyst_test::AmethystApplication;
-    use object_model::play::Position;
+    use kinematic_model::config::Position;
     use typename::TypeName;
 
     use super::ObjectTransformUpdateSystem;

@@ -5,7 +5,7 @@ use derive_new::new;
 use game_input_model::{
     Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent,
 };
-use game_model::loaded::MapAssets;
+use game_model::loaded::MapPrefabs;
 use log::debug;
 use map_selection_model::{MapSelection, MapSelectionEvent};
 use shred_derive::SystemData;
@@ -32,7 +32,7 @@ pub(crate) struct MapSelectionWidgetInputResources<'s> {
     pub map_selection_widgets: WriteStorage<'s, MapSelectionWidget>,
     /// `Map` assets.
     #[derivative(Debug = "ignore")]
-    pub map_assets: Read<'s, MapAssets>,
+    pub map_prefabs: Read<'s, MapPrefabs>,
     /// `MapSelectionEvent` channel.
     #[derivative(Debug = "ignore")]
     pub map_selection_ec: Write<'s, EventChannel<MapSelectionEvent>>,
@@ -45,14 +45,14 @@ type MapSelectionWidgetInputSystemData<'s> = (
 
 impl MapSelectionWidgetInputSystem {
     fn select_previous_map(
-        map_assets: &MapAssets,
+        map_prefabs: &MapPrefabs,
         widget: &mut MapSelectionWidget,
     ) -> MapSelection {
-        let (first_map_slug, first_map_handle) = map_assets
+        let (first_map_slug, first_map_handle) = map_prefabs
             .iter()
             .next()
             .expect("Expected at least one map to be loaded.");
-        let (last_map_slug, last_map_handle) = map_assets
+        let (last_map_slug, last_map_handle) = map_prefabs
             .iter()
             .next_back()
             .expect("Expected at least one map to be loaded.");
@@ -63,7 +63,7 @@ impl MapSelectionWidgetInputSystem {
                 if map_slug == first_map_slug {
                     MapSelection::Random((first_map_slug, first_map_handle).into())
                 } else {
-                    let next_map = map_assets
+                    let next_map = map_prefabs
                         .iter()
                         .rev()
                         .skip_while(|(slug, _handle)| slug != &map_slug)
@@ -81,12 +81,12 @@ impl MapSelectionWidgetInputSystem {
         widget.selection.clone()
     }
 
-    fn select_next_map(map_assets: &MapAssets, widget: &mut MapSelectionWidget) -> MapSelection {
-        let (first_map_slug, first_map_handle) = map_assets
+    fn select_next_map(map_prefabs: &MapPrefabs, widget: &mut MapSelectionWidget) -> MapSelection {
+        let (first_map_slug, first_map_handle) = map_prefabs
             .iter()
             .next()
             .expect("Expected at least one map to be loaded.");
-        let last_map_slug = map_assets
+        let last_map_slug = map_prefabs
             .keys()
             .next_back()
             .expect("Expected at least one map to be loaded.");
@@ -97,7 +97,7 @@ impl MapSelectionWidgetInputSystem {
                 if map_slug == last_map_slug {
                     MapSelection::Random((first_map_slug, first_map_handle).into())
                 } else {
-                    let next_map = map_assets
+                    let next_map = map_prefabs
                         .iter()
                         .skip_while(|(slug, _handle)| slug != &map_slug)
                         .nth(1); // skip current selection
@@ -117,7 +117,7 @@ impl MapSelectionWidgetInputSystem {
     fn handle_event(
         MapSelectionWidgetInputResources {
             ref mut map_selection_widgets,
-            ref map_assets,
+            ref map_prefabs,
             ref mut map_selection_ec,
         }: &mut MapSelectionWidgetInputResources,
         event: ControlInputEvent,
@@ -125,7 +125,7 @@ impl MapSelectionWidgetInputSystem {
         if let Some(map_selection_widget) = map_selection_widgets.join().next() {
             match event {
                 ControlInputEvent::Axis(axis_event_data) => Self::handle_axis_event(
-                    &map_assets,
+                    &map_prefabs,
                     map_selection_ec,
                     map_selection_widget,
                     axis_event_data,
@@ -142,17 +142,17 @@ impl MapSelectionWidgetInputSystem {
     }
 
     fn handle_axis_event(
-        map_assets: &MapAssets,
+        map_prefabs: &MapPrefabs,
         map_selection_ec: &mut EventChannel<MapSelectionEvent>,
         map_selection_widget: &mut MapSelectionWidget,
         axis_event_data: AxisEventData,
     ) {
         let map_selection = match (map_selection_widget.state, axis_event_data.axis) {
             (WidgetState::MapSelect, Axis::X) if axis_event_data.value < 0. => {
-                Some(Self::select_previous_map(map_assets, map_selection_widget))
+                Some(Self::select_previous_map(map_prefabs, map_selection_widget))
             }
             (WidgetState::MapSelect, Axis::X) if axis_event_data.value > 0. => {
-                Some(Self::select_next_map(map_assets, map_selection_widget))
+                Some(Self::select_next_map(map_prefabs, map_selection_widget))
             }
             _ => None,
         };
@@ -241,11 +241,11 @@ mod test {
     };
     use application_test_support::AutexousiousApplication;
     use asset_model::loaded::SlugAndHandle;
-    use assets_test::ASSETS_MAP_FADE_SLUG;
+    use assets_test::MAP_FADE_SLUG;
     use game_input_model::{
         Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent,
     };
-    use game_model::loaded::MapAssets;
+    use game_model::loaded::MapPrefabs;
     use map_model::loaded::Map;
     use map_selection_model::{MapSelection, MapSelectionEvent};
     use typename::TypeName;
@@ -510,7 +510,7 @@ mod test {
 
     fn first_map(world: &mut World) -> SlugAndHandle<Map> {
         world
-            .read_resource::<MapAssets>()
+            .read_resource::<MapPrefabs>()
             .iter()
             .next()
             .expect("Expected at least one map to be loaded.")
@@ -519,7 +519,7 @@ mod test {
 
     fn last_map(world: &mut World) -> SlugAndHandle<Map> {
         world
-            .read_resource::<MapAssets>()
+            .read_resource::<MapPrefabs>()
             .iter()
             .next_back()
             .expect("Expected at least one map to be loaded.")
@@ -527,7 +527,7 @@ mod test {
     }
 
     fn fade_map(world: &mut World) -> SlugAndHandle<Map> {
-        SlugAndHandle::from((&*world, ASSETS_MAP_FADE_SLUG.clone()))
+        SlugAndHandle::from((&*world, MAP_FADE_SLUG.clone()))
     }
 
     fn widget_entity(

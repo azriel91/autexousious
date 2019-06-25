@@ -12,15 +12,14 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use log::error;
-use named_type::NamedType;
-use named_type_derive::NamedType;
 use object_model::loaded::{GameObject, ObjectWrapper};
 use object_prefab::ComponentSequenceHandleStorages;
 use sequence_model::play::SequenceStatus;
 use shred_derive::SystemData;
+use typename_derive::TypeName;
 
 /// Updates the attached `Handle<ComponentSequence>`s when `SequenceId` changes.
-#[derive(Debug, Default, NamedType, new)]
+#[derive(Debug, Default, TypeName, new)]
 pub struct ComponentSequenceHandleUpdateSystem<O>
 where
     O: GameObject,
@@ -82,6 +81,7 @@ where
                     mut sprite_render_sequence_handles,
                     mut body_sequence_handles,
                     mut interactions_sequence_handles,
+                    mut spawns_sequence_handles,
                 },
         }: Self::SystemData,
     ) {
@@ -124,6 +124,7 @@ where
                         object.sprite_render_sequence_handles.get(&sequence_id),
                         object.body_sequence_handles.get(&sequence_id),
                         object.interactions_sequence_handles.get(&sequence_id),
+                        object.spawns_sequence_handles.get(&sequence_id),
                     )
                 };
 
@@ -132,6 +133,7 @@ where
                     Some(sprite_render_sequence_handle),
                     Some(body_sequence_handle),
                     Some(interactions_sequence_handle),
+                    Some(spawns_sequence_handle),
                 ) = component_sequence_handleses
                 {
                     wait_sequence_handles
@@ -146,6 +148,9 @@ where
                     interactions_sequence_handles
                         .insert(entity, interactions_sequence_handle.clone())
                         .expect("Failed to insert `InteractionsSequenceHandle` component.");
+                    spawns_sequence_handles
+                        .insert(entity, spawns_sequence_handle.clone())
+                        .expect("Failed to insert `SpawnsSequenceHandle` component.");
                 } else {
                     error!(
                         "Expected all component sequence handles to exist for sequence ID: `{:?}`, \
@@ -169,10 +174,11 @@ mod tests {
         Error,
     };
     use application_test_support::{AutexousiousApplication, ObjectQueries, SequenceQueries};
-    use assets_test::ASSETS_CHAR_BAT_SLUG;
+    use assets_test::CHAR_BAT_SLUG;
     use character_model::{config::CharacterSequenceId, loaded::Character};
     use collision_model::loaded::{BodySequenceHandle, InteractionsSequenceHandle};
     use sequence_model::loaded::WaitSequenceHandle;
+    use spawn_model::loaded::SpawnsSequenceHandle;
     use sprite_model::loaded::SpriteRenderSequenceHandle;
 
     use super::ComponentSequenceHandleUpdateSystem;
@@ -235,7 +241,7 @@ mod tests {
     }
 
     fn create_entity(world: &mut World) -> Entity {
-        let asset_slug = ASSETS_CHAR_BAT_SLUG.clone();
+        let asset_slug = CHAR_BAT_SLUG.clone();
         let object_wrapper_handle = ObjectQueries::object_wrapper_handle(world, &asset_slug);
         let wait_sequence_handle =
             SequenceQueries::wait_sequence_handle(world, &asset_slug, CharacterSequenceId::Stand);
@@ -253,11 +259,8 @@ mod tests {
 
         macro_rules! assert_handle_attached {
             ($handle_kind:ident, $handle_type:path) => {
-                let expected_handle = SequenceQueries::$handle_kind(
-                    world,
-                    &ASSETS_CHAR_BAT_SLUG.clone(),
-                    sequence_id,
-                );
+                let expected_handle =
+                    SequenceQueries::$handle_kind(world, &CHAR_BAT_SLUG.clone(), sequence_id);
                 let component_sequence_handles = world.read_storage::<$handle_type>();
                 assert_eq!(
                     &expected_handle,
@@ -274,5 +277,6 @@ mod tests {
         assert_handle_attached!(sprite_render_sequence_handle, SpriteRenderSequenceHandle);
         assert_handle_attached!(body_sequence_handle, BodySequenceHandle);
         assert_handle_attached!(interactions_sequence_handle, InteractionsSequenceHandle);
+        assert_handle_attached!(spawns_sequence_handle, SpawnsSequenceHandle);
     }
 }

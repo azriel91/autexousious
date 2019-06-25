@@ -1,31 +1,35 @@
 use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
-use character_model::{config::CharacterSequenceId, loaded::Character};
+use character_model::loaded::Character;
 use character_play::{
     CharacterControlTransitionsTransitionSystem, CharacterControlTransitionsUpdateSystem,
     CharacterCtsHandleUpdateSystem,
 };
+use chase_play::StickToTargetObjectSystem;
 use collision_audio_play::HitSfxSystem;
 use collision_model::loaded::{BodySequence, InteractionsSequence};
 use collision_play::{
     HitDetectionSystem, HitRepeatTrackersAugmentSystem, HitRepeatTrackersTickerSystem,
 };
 use derive_new::new;
+use energy_model::loaded::Energy;
 use game_input::ControllerInput;
 use game_play_hud::HpBarUpdateSystem;
 use named_type::NamedType;
-use object_play::StickToParentObjectSystem;
+use object_play::ObjectGravitySystem;
 use object_status_play::StunPointsReductionSystem;
 use sequence_model::loaded::WaitSequence;
 use sequence_play::{FrameComponentUpdateSystem, SequenceUpdateSystem};
+use spawn_model::loaded::SpawnsSequence;
+use spawn_play::{SpawnGameObjectRectifySystem, SpawnGameObjectSystem};
 use sprite_model::loaded::SpriteRenderSequence;
 use tracker::LastTrackerSystem;
 use typename::TypeName;
 
 use crate::{
-    CharacterGroundingSystem, CharacterHitEffectSystem, CharacterKinematicsSystem,
-    CharacterSequenceUpdateSystem, ComponentSequenceHandleUpdateSystem,
-    FrameFreezeClockAugmentSystem, GamePlayEndDetectionSystem, GamePlayEndTransitionSystem,
-    ObjectCollisionDetectionSystem, ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
+    CharacterHitEffectSystem, CharacterKinematicsSystem, CharacterSequenceUpdateSystem,
+    ComponentSequenceHandleUpdateSystem, FrameFreezeClockAugmentSystem, GamePlayEndDetectionSystem,
+    GamePlayEndTransitionSystem, ObjectCollisionDetectionSystem, ObjectKinematicsUpdateSystem,
+    ObjectTransformUpdateSystem,
 };
 
 /// Adds the object type update systems to the provided dispatcher.
@@ -43,6 +47,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
                     &FrameComponentUpdateSystem::<$component_sequence>::type_name(),
                     &[
                         &ComponentSequenceHandleUpdateSystem::<Character>::type_name(),
+                        &ComponentSequenceHandleUpdateSystem::<Energy>::type_name(),
                         &SequenceUpdateSystem::type_name(),
                     ],
                 ); // kcov-ignore
@@ -52,6 +57,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         builder.add(
             ComponentSequenceHandleUpdateSystem::<Character>::new(),
             &ComponentSequenceHandleUpdateSystem::<Character>::type_name(),
+            &[],
+        ); // kcov-ignore
+        builder.add(
+            ComponentSequenceHandleUpdateSystem::<Energy>::new(),
+            &ComponentSequenceHandleUpdateSystem::<Energy>::type_name(),
             &[],
         ); // kcov-ignore
 
@@ -65,6 +75,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         add_frame_component_update_system!(SpriteRenderSequence);
         add_frame_component_update_system!(BodySequence);
         add_frame_component_update_system!(InteractionsSequence);
+        add_frame_component_update_system!(SpawnsSequence);
         builder.add(
             CharacterCtsHandleUpdateSystem::new(),
             &CharacterCtsHandleUpdateSystem::type_name(),
@@ -87,6 +98,18 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         ); // kcov-ignore
 
         builder.add(HitSfxSystem::new(), &HitSfxSystem::type_name(), &[]);
+
+        // Spawn objects
+        builder.add(
+            SpawnGameObjectSystem::new(),
+            &SpawnGameObjectSystem::type_name(),
+            &[&FrameComponentUpdateSystem::<SpawnsSequence>::type_name()],
+        ); // kcov-ignore
+        builder.add(
+            SpawnGameObjectRectifySystem::new(),
+            &SpawnGameObjectRectifySystem::type_name(),
+            &[&SpawnGameObjectSystem::type_name()],
+        ); // kcov-ignore
 
         builder.add_barrier();
 
@@ -117,8 +140,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 
         // `Position` correction based on margins.
         builder.add(
-            CharacterGroundingSystem::new(),
-            &CharacterGroundingSystem::type_name(),
+            ObjectGravitySystem::new(),
+            &ObjectGravitySystem::type_name(),
             &[&ObjectKinematicsUpdateSystem::type_name()],
         ); // kcov-ignore
         builder.add(
@@ -126,12 +149,12 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &ObjectTransformUpdateSystem::type_name(),
             &[
                 &ObjectKinematicsUpdateSystem::type_name(),
-                &CharacterGroundingSystem::type_name(),
+                &ObjectGravitySystem::type_name(),
             ],
         ); // kcov-ignore
         builder.add(
-            StickToParentObjectSystem::new(),
-            &StickToParentObjectSystem::type_name(),
+            StickToTargetObjectSystem::new(),
+            &StickToTargetObjectSystem::type_name(),
             &[&ObjectTransformUpdateSystem::type_name()],
         ); // kcov-ignore
         builder.add(
@@ -178,7 +201,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[&CharacterControlTransitionsTransitionSystem::type_name()],
         ); // kcov-ignore
 
-        // Perhaps this should be straight after the `StickToParentObjectSystem`, but we put it here
+        // Perhaps this should be straight after the `StickToTargetObjectSystem`, but we put it here
         // so that the renderer will show the HP including the damage dealt this frame, instead of
         // one frame later.
         builder.add(
@@ -211,15 +234,6 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             controller_input_tracker_system,
             &controller_input_tracker_system_name,
             &[&GamePlayEndTransitionSystem::type_name()],
-        ); // kcov-ignore
-        let character_sequence_id_tracker_system =
-            LastTrackerSystem::<CharacterSequenceId>::new(stringify!(CharacterSequenceId));
-        let character_sequence_id_tracker_system_name =
-            character_sequence_id_tracker_system.system_name();
-        builder.add(
-            character_sequence_id_tracker_system,
-            &character_sequence_id_tracker_system_name,
-            &[],
         ); // kcov-ignore
 
         Ok(())

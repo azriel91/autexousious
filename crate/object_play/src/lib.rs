@@ -2,6 +2,6 @@
 
 //! Provides logic for game objects used during game play.
 
-pub use crate::system::StickToParentObjectSystem;
+pub use crate::system::ObjectGravitySystem;
 
 mod system;

@@ -27,29 +27,25 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionStdioBundle {
 mod test {
     use std::env;
 
-    use amethyst::shrev::EventChannel;
-    use amethyst_test::prelude::*;
-    use game_model::loaded::CharacterAssets;
+    use amethyst::{shrev::EventChannel, Error};
+    use amethyst_test::AmethystApplication;
+    use game_model::loaded::CharacterPrefabs;
     use stdio_spi::VariantAndTokens;
 
     use super::CharacterSelectionStdioBundle;
 
     #[test]
-    fn bundle_should_add_mapper_system_to_dispatcher() {
+    fn bundle_should_add_mapper_system_to_dispatcher() -> Result<(), Error> {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
-        // kcov-ignore-start
-        assert!(
+
+        AmethystApplication::blank()
+            .with_bundle(CharacterSelectionStdioBundle::new())
+            // kcov-ignore-start
+            .with_effect(|world| {
+                world.read_resource::<EventChannel<VariantAndTokens>>();
+                world.read_resource::<CharacterPrefabs>();
+            })
             // kcov-ignore-end
-            AmethystApplication::blank()
-                .with_bundle(CharacterSelectionStdioBundle::new())
-                // kcov-ignore-start
-                .with_effect(|world| {
-                    world.read_resource::<EventChannel<VariantAndTokens>>();
-                    world.read_resource::<CharacterAssets>();
-                })
-                // kcov-ignore-end
-                .run()
-                .is_ok()
-        );
+            .run()
     }
 }

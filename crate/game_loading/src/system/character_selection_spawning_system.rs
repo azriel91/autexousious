@@ -3,7 +3,7 @@ use character_prefab::CharacterPrefabHandle;
 use character_selection_model::CharacterSelections;
 use derive_new::new;
 use game_input::InputControlled;
-use game_model::{loaded::CharacterAssets, play::GameEntities};
+use game_model::{loaded::CharacterPrefabs, play::GameEntities};
 use object_type::ObjectType;
 use typename_derive::TypeName;
 
@@ -16,7 +16,7 @@ pub(crate) struct CharacterSelectionSpawningSystem;
 type CharacterSelectionSpawningSystemData<'s> = (
     Entities<'s>,
     Read<'s, CharacterSelections>,
-    Read<'s, CharacterAssets>,
+    Read<'s, CharacterPrefabs>,
     Write<'s, GameLoadingStatus>,
     WriteStorage<'s, CharacterPrefabHandle>,
     WriteStorage<'s, InputControlled>,
@@ -31,7 +31,7 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
         (
             entities,
             character_selections,
-            character_assets,
+            character_prefabs,
             mut game_loading_status,
             mut character_prefab_handles,
             mut input_controlleds,
@@ -48,7 +48,7 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             .map(|(controller_id, asset_slug)| {
                 let entity = entities.create();
 
-                let handle = character_assets
+                let handle = character_prefabs
                     .get(asset_slug)
                     .unwrap_or_else(|| {
                         panic!(
@@ -95,7 +95,7 @@ mod tests {
         AmethystApplication, EffectReturn, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH,
     };
     use application_event::{AppEvent, AppEventReader};
-    use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
+    use assets_test::{ASSETS_PATH, CHAR_BAT_SLUG};
     use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
     use character_prefab::CharacterPrefabBundle;
     use character_selection_model::CharacterSelections;
@@ -107,6 +107,7 @@ mod tests {
     use map_loading::MapLoadingBundle;
     use object_type::ObjectType;
     use sequence_loading::SequenceLoadingBundle;
+    use spawn_loading::SpawnLoadingBundle;
     use sprite_loading::SpriteLoadingBundle;
     use typename::TypeName;
     use ui_audio_loading::UiAudioLoadingBundle;
@@ -127,6 +128,7 @@ mod tests {
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CollisionLoadingBundle::new())
+            .with_bundle(SpawnLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_bundle(
@@ -186,6 +188,7 @@ mod tests {
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CollisionLoadingBundle::new())
+            .with_bundle(SpawnLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_bundle(
@@ -199,7 +202,7 @@ mod tests {
                 let mut character_selections = CharacterSelections::default();
                 character_selections
                     .selections
-                    .insert(0, ASSETS_CHAR_BAT_SLUG.clone());
+                    .insert(0, CHAR_BAT_SLUG.clone());
                 world.add_resource(character_selections);
             })
             .with_system_single(

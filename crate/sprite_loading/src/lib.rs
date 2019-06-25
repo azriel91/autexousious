@@ -28,7 +28,7 @@ mod test {
     };
     use amethyst_test::AmethystApplication;
     use application::{load_in, resource::Format};
-    use assets_test::ASSETS_CHAR_BAT_PATH;
+    use assets_test::CHAR_BAT_PATH;
     use sprite_model::config::SpritesDefinition;
 
     use super::SpriteLoader;
@@ -40,7 +40,7 @@ mod test {
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_assertion(|world| {
                 let sprites_definition = load_in::<SpritesDefinition, _>(
-                    &*ASSETS_CHAR_BAT_PATH,
+                    &*CHAR_BAT_PATH,
                     "sprites.toml",
                     Format::Toml,
                     None,
@@ -57,7 +57,7 @@ mod test {
                     &texture_assets,
                     &sprite_sheet_assets,
                     &sprites_definition,
-                    &ASSETS_CHAR_BAT_PATH,
+                    &CHAR_BAT_PATH,
                 );
 
                 if let Err(e) = result {

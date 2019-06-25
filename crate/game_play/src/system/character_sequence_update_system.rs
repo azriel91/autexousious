@@ -8,7 +8,8 @@ use character_play::{
 };
 use derive_new::new;
 use game_input::ControllerInput;
-use object_model::play::{Grounding, HealthPoints, Mirrored, Position, Velocity};
+use kinematic_model::config::{Position, Velocity};
+use object_model::play::{Grounding, HealthPoints, Mirrored};
 use sequence_model::{loaded::SequenceEndTransitions, play::SequenceStatus};
 use shred_derive::SystemData;
 use typename_derive::TypeName;
@@ -142,9 +143,10 @@ mod tests {
     use application_test_support::AutexousiousApplication;
     use character_model::config::CharacterSequenceId;
     use game_input::ControllerInput;
+    use kinematic_model::config::Position;
     use map_model::loaded::Map;
     use map_selection_model::MapSelection;
-    use object_model::play::{Grounding, Mirrored, Position};
+    use object_model::play::{Grounding, Mirrored};
     use sequence_model::play::SequenceStatus;
     use typename::TypeName;
 

@@ -1,9 +1,13 @@
 use std::path::PathBuf;
 
 use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
+use character_loading::CharacterLoadingStatus;
 use character_model::loaded::Character;
 use character_prefab::CharacterPrefab;
 use derive_new::new;
+use energy_loading::EnergyLoadingStatus;
+use energy_model::loaded::Energy;
+use energy_prefab::EnergyPrefab;
 use typename::TypeName;
 
 use crate::{MapAssetLoadingSystem, ObjectAssetLoadingSystem};
@@ -18,8 +22,15 @@ pub struct LoadingBundle {
 impl<'a, 'b> SystemBundle<'a, 'b> for LoadingBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
         builder.add(
-            ObjectAssetLoadingSystem::<Character, CharacterPrefab>::new(self.assets_dir.clone()),
-            &ObjectAssetLoadingSystem::<Character, CharacterPrefab>::type_name(),
+            ObjectAssetLoadingSystem::<Character, CharacterPrefab, CharacterLoadingStatus>::new(self.assets_dir.clone()),
+            &ObjectAssetLoadingSystem::<Character, CharacterPrefab, CharacterLoadingStatus>::type_name(),
+            &[],
+        ); // kcov-ignore
+        builder.add(
+            ObjectAssetLoadingSystem::<Energy, EnergyPrefab, EnergyLoadingStatus>::new(
+                self.assets_dir.clone(),
+            ),
+            &ObjectAssetLoadingSystem::<Energy, EnergyPrefab, EnergyLoadingStatus>::type_name(),
             &[],
         ); // kcov-ignore
         builder.add(
@@ -39,7 +50,8 @@ mod test {
     use amethyst_test::AmethystApplication;
     use assets_test::ASSETS_PATH;
     use character_prefab::CharacterPrefab;
-    use game_model::loaded::{GameObjectPrefabs, MapAssets};
+    use energy_prefab::EnergyPrefab;
+    use game_model::loaded::{GameObjectPrefabs, MapPrefabs};
 
     use super::LoadingBundle;
 
@@ -51,7 +63,8 @@ mod test {
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_effect(|world| {
                 world.read_resource::<GameObjectPrefabs<CharacterPrefab>>();
-                world.read_resource::<MapAssets>();
+                world.read_resource::<GameObjectPrefabs<EnergyPrefab>>();
+                world.read_resource::<MapPrefabs>();
             })
             .run()
     }

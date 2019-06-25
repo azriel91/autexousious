@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::config::CharacterControlTransitions;
 
 /// Sequence frame type for characters.
-#[derive(Clone, Debug, Default, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, new)]
 #[serde(default, deny_unknown_fields)]
 pub struct CharacterFrame {
     /// Common object behaviour specification that can change each tick.

@@ -24,7 +24,6 @@ impl GameObjectSequence for TestObjectSequence {
 
 #[cfg(test)]
 mod tests {
-    use collision_model::config::{Body, Interactions};
     use object_model::config::{ObjectFrame, ObjectSequence};
     use sequence_model::config::Wait;
     use sprite_model::config::SpriteRef;
@@ -54,12 +53,11 @@ mod tests {
         let sequence = toml::from_str::<TestObjectSequence>(SEQUENCE_WITH_CONTROL_TRANSITIONS)
             .expect("Failed to deserialize sequence.");
 
-        let frames = vec![TestObjectFrame::new(ObjectFrame::new(
-            Wait::new(2),
-            SpriteRef::new(0, 4),
-            Body::default(),
-            Interactions::default(),
-        ))];
+        let frames = vec![TestObjectFrame::new(ObjectFrame {
+            wait: Wait::new(2),
+            sprite: SpriteRef::new(0, 4),
+            ..Default::default()
+        })];
         let expected = TestObjectSequence::new(ObjectSequence::new(None, frames));
 
         assert_eq!(expected, sequence);

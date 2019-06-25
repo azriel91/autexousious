@@ -5,6 +5,7 @@ use syn::{
 
 /// https://docs.rs/syn/latest/syn/macro.custom_keyword.html
 mod kw {
+    syn::custom_keyword!(sequence_id);
     syn::custom_keyword!(sequence);
     syn::custom_keyword!(definition);
     syn::custom_keyword!(object_type);
@@ -28,7 +29,7 @@ mod kw {
 ///
 /// ```rust,ignore
 /// #[game_object(
-///     CharacterSequenceId,
+///     sequence_id = CharacterSequenceId,
 ///     sequence = CharacterSequence,
 ///     definition = CharacterDefinition,
 ///     object_type = ObjectType::Character,
@@ -37,7 +38,7 @@ mod kw {
 #[derive(Debug)]
 pub struct GameObjectAttributeArgs {
     /// The sequence ID for the `GameObject`.
-    pub sequence_id: Path,
+    pub sequence_id: Option<Path>,
     /// Type that `impl GameObjectSequence`, e.g. `CharacterSequence`.
     pub sequence_type: Option<Path>,
     /// Type that `impl GameObjectDefinition`, e.g. `CharacterDefinition`.
@@ -48,55 +49,42 @@ pub struct GameObjectAttributeArgs {
 
 impl Parse for GameObjectAttributeArgs {
     fn parse(input: ParseStream) -> Result<Self> {
-        let sequence_id = input.parse()?;
+        let mut sequence_id = None;
         let mut sequence_type = None;
         let mut object_definition = None;
         let mut object_type = None;
 
-        let mut comma: Option<Token![,]> = input.parse()?;
-        while comma.is_some() && !input.is_empty() {
-            if input.peek(kw::sequence) {
-                input
-                    .parse::<kw::sequence>()
-                    .map_err(|_| input.error("Impossible: peek sequence"))?;
-                input
-                    .parse::<Token![=]>()
-                    .map_err(|_| input.error("Expected `=` after `sequence` parameter name."))?;
-                sequence_type = Some(
-                    input
-                        .parse()
-                        .map_err(|_| input.error("Expected path to `GameObjectSequence` type."))?,
-                );
+        while !input.is_empty() {
+            macro_rules! parse_param {
+                ($var:ident, $keyword:ident, $param_type:path) => {
+                    if input.peek(kw::$keyword) {
+                        input
+                            .parse::<kw::$keyword>()
+                            .map_err(|_| input.error(concat!("Impossible: parse after peek `", stringify!($keyword), "`.")))?;
+                        input
+                            .parse::<Token![=]>()
+                            .map_err(|_| input.error(concat!("Expected `=` after `", stringify!($keyword),"` parameter name.")))?;
+                        $var = Some(
+                            input
+                                .parse()
+                                .map_err(|_| input.error(concat!("Expected path to `", stringify!($param_type) ,"`.")))?,
+                        );
 
-                comma = input.parse()?;
-            } else if input.peek(kw::definition) {
-                input
-                    .parse::<kw::definition>()
-                    .map_err(|_| input.error("Impossible: peek definition"))?;
-                input
-                    .parse::<Token![=]>()
-                    .map_err(|_| input.error("Expected `=` after `definition` parameter name."))?;
-                object_definition =
-                    Some(input.parse().map_err(|_| {
-                        input.error("Expected path to `GameObjectDefinition` type.")
-                    })?);
+                        let comma = input.parse::<Option<Token![,]>>()?;
+                        if comma.is_none() {
+                            break;
+                        }
 
-                comma = input.parse()?;
-            } else if input.peek(kw::object_type) {
-                input
-                    .parse::<kw::object_type>()
-                    .map_err(|_| input.error("Impossible: peek object_type"))?;
-                input
-                    .parse::<Token![=]>()
-                    .map_err(|_| input.error("Expected `=` after `object_type` parameter name."))?;
-                object_type = Some(
-                    input
-                        .parse()
-                        .map_err(|_| input.error("Expected path to `ObjectType` variant."))?,
-                );
-
-                comma = input.parse()?;
+                        continue;
+                    }
+                };
             }
+            parse_param!(sequence_id, sequence_id, SequenceId);
+            parse_param!(sequence_type, sequence, GameObjectSequence);
+            parse_param!(object_definition, definition, GameObjectDefinition);
+            parse_param!(object_type, object_type, ObjectType);
+
+            break;
         }
 
         Ok(GameObjectAttributeArgs {

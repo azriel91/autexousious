@@ -3,7 +3,7 @@ use amethyst::{
     shred::System,
 };
 use derive_new::new;
-use object_model::play::{Position, Velocity};
+use kinematic_model::config::{Position, Velocity};
 use sequence_model::play::FrameFreezeClock;
 use typename_derive::TypeName;
 
@@ -44,8 +44,8 @@ mod test {
         Error,
     };
     use amethyst_test::AmethystApplication;
+    use kinematic_model::config::{Position, Velocity};
     use logic_clock::LogicClock;
-    use object_model::play::{Position, Velocity};
     use sequence_model::play::FrameFreezeClock;
     use typename::TypeName;
 

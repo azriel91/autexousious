@@ -9,9 +9,9 @@ use derive_new::new;
 use game_input::InputControlled;
 use game_play_hud::HpBarPrefab;
 use game_play_model::{GamePlayEntity, GamePlayEntityId};
+use kinematic_model::config::Position;
 use map_model::loaded::Map;
 use map_selection_model::MapSelection;
-use object_model::play::Position;
 use shred_derive::SystemData;
 use typename_derive::TypeName;
 
@@ -139,21 +139,22 @@ mod tests {
     use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
     use application_event::{AppEvent, AppEventReader};
     use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
-    use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
+    use assets_test::{ASSETS_PATH, CHAR_BAT_SLUG, MAP_FADE_SLUG};
     use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
     use character_prefab::{CharacterPrefab, CharacterPrefabBundle};
     use collision_audio_loading::CollisionAudioLoadingBundle;
     use collision_loading::CollisionLoadingBundle;
     use game_input::InputControlled;
     use game_input_model::ControlBindings;
-    use game_model::loaded::MapAssets;
+    use game_model::loaded::MapPrefabs;
     use game_play_model::GamePlayEntity;
+    use kinematic_model::config::Position;
     use loading::{LoadingBundle, LoadingState};
     use map_loading::MapLoadingBundle;
     use map_selection::MapSelectionStatus;
     use map_selection_model::MapSelection;
-    use object_model::play::Position;
     use sequence_loading::SequenceLoadingBundle;
+    use spawn_loading::SpawnLoadingBundle;
     use sprite_loading::SpriteLoadingBundle;
     use typename::TypeName;
     use ui_audio_loading::UiAudioLoadingBundle;
@@ -171,7 +172,7 @@ mod tests {
 
                 let snh = SlugAndHandle::<Prefab<CharacterPrefab>>::from((
                     &*world,
-                    ASSETS_CHAR_BAT_SLUG.clone(),
+                    CHAR_BAT_SLUG.clone(),
                 ));
                 let char_entity = world.create_entity().with(snh.handle).build();
 
@@ -198,7 +199,7 @@ mod tests {
 
                 let snh = SlugAndHandle::<Prefab<CharacterPrefab>>::from((
                     &*world,
-                    ASSETS_CHAR_BAT_SLUG.clone(),
+                    CHAR_BAT_SLUG.clone(),
                 ));
                 let char_entity = world.create_entity().with(snh.handle).build();
 
@@ -236,7 +237,7 @@ mod tests {
 
                 let snh = SlugAndHandle::<Prefab<CharacterPrefab>>::from((
                     &*world,
-                    ASSETS_CHAR_BAT_SLUG.clone(),
+                    CHAR_BAT_SLUG.clone(),
                 ));
                 let char_entity = world
                     .create_entity()
@@ -269,6 +270,7 @@ mod tests {
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CollisionLoadingBundle::new())
+            .with_bundle(SpawnLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_bundle(
@@ -279,7 +281,7 @@ mod tests {
             .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_setup(|world| CharacterAugmentRectifySystemData::setup(&mut world.res))
             .with_state(|| LoadingState::new(PopState))
-            .with_setup(map_selection(ASSETS_MAP_FADE_SLUG.clone()))
+            .with_setup(map_selection(MAP_FADE_SLUG.clone()))
             .with_setup(fn_setup)
             .with_system_single(
                 CharacterAugmentRectifySystem,
@@ -301,7 +303,7 @@ mod tests {
         move |world| {
             let slug_and_handle = {
                 let map_handle = world
-                    .read_resource::<MapAssets>()
+                    .read_resource::<MapPrefabs>()
                     .get(&slug)
                     .unwrap_or_else(|| panic!("Expected `{}` to be loaded.", slug))
                     .clone();

@@ -7,6 +7,7 @@ use sequence_model::{
     config::SequenceId,
     loaded::{SequenceEndTransitions, WaitSequenceHandle},
 };
+use spawn_model::loaded::SpawnsSequenceHandle;
 use sprite_model::loaded::SpriteRenderSequenceHandle;
 
 /// Represents an in-game object that has been loaded.
@@ -24,6 +25,8 @@ where
     pub body_sequence_handles: HashMap<SeqId, BodySequenceHandle>,
     /// Handle to `InteractionsSequence`s that this object uses, keyed by sequence ID.
     pub interactions_sequence_handles: HashMap<SeqId, InteractionsSequenceHandle>,
+    /// Handle to `SpawnsSequence`s that this object uses, keyed by sequence ID.
+    pub spawns_sequence_handles: HashMap<SeqId, SpawnsSequenceHandle>,
     /// Component sequence transitions when a sequence ends.
     pub sequence_end_transitions: SequenceEndTransitions<SeqId>,
 }

@@ -11,6 +11,7 @@ derivative = "1.0.2"
 derive-new = "0.5.6"
 game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
+kinematic_model = { path = "../kinematic_model" }
 log = "0.4.6"
 named_type = "0.2.1"
 named_type_derive = "0.2.1"

@@ -2,8 +2,10 @@
 
 pub use self::{
     character_control_transitions::CharacterControlTransitions,
-    character_definition::CharacterDefinition, character_frame::CharacterFrame,
-    character_sequence::CharacterSequence, character_sequence_id::CharacterSequenceId,
+    character_definition::{CharacterDefinition, CharacterDefinitionHandle},
+    character_frame::CharacterFrame,
+    character_sequence::CharacterSequence,
+    character_sequence_id::CharacterSequenceId,
     control_transition_requirement::ControlTransitionRequirement,
 };
 
@@ -27,6 +29,7 @@ mod test {
         ControlTransition, ControlTransitionMultiple, ControlTransitionSingle, Wait,
     };
     use shape_model::Volume;
+    use spawn_model::config::Spawns;
     use sprite_model::config::SpriteRef;
     use toml;
 
@@ -74,6 +77,7 @@ mod test {
                     d: 26,
                 }]),
                 Interactions::default(),
+                Spawns::default(),
             ),
             CharacterControlTransitions {
                 press_attack: Some(ControlTransition::SequenceId(

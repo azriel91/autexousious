@@ -19,13 +19,13 @@ game_input = { path = "../game_input" }
 game_model = { path = "../game_model" }
 game_play_hud = { path = "../game_play_hud" }
 game_play_model = { path = "../game_play_model" }
+kinematic_model = { path = "../kinematic_model" }
 log = "0.4.6"
 logic_clock = { path = "../logic_clock" }
 map_model = { path = "../map_model" }
 map_selection_model = { path = "../map_selection_model" }
 num-traits = "0.2.8"
 object_loading = { path = "../object_loading" }
-object_model = { path = "../object_model" }
 object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }
 sequence_model_spi = { path = "../sequence_model_spi" }
@@ -50,6 +50,7 @@ loading = { path = "../loading" }
 map_loading = { path = "../map_loading" }
 map_selection = { path = "../map_selection" }
 sequence_loading = { path = "../sequence_loading" }
+spawn_loading = { path = "../spawn_loading" }
 sprite_loading = { path = "../sprite_loading" }
 ui_audio_loading = { path = "../../crate/ui_audio_loading" }
 

@@ -2,7 +2,10 @@ use amethyst::ecs::WriteStorage;
 use character_model::play::RunCounter;
 use derivative::Derivative;
 use game_input::ControllerInput;
-use object_model::play::{Grounding, HealthPoints};
+use object_model::{
+    config::Mass,
+    play::{Grounding, HealthPoints},
+};
 use object_status_model::config::StunPoints;
 use shred_derive::SystemData;
 
@@ -28,4 +31,7 @@ pub struct CharacterComponentStorages<'s> {
     /// `Grounding` component storage.
     #[derivative(Debug = "ignore")]
     pub groundings: WriteStorage<'s, Grounding>,
+    /// `Mass` component storage.
+    #[derivative(Debug = "ignore")]
+    pub masses: WriteStorage<'s, Mass>,
 }

@@ -11,15 +11,18 @@ application_event = { path = "../application_event" }
 character_model = { path = "../character_model" }
 character_play = { path = "../character_play" }
 character_selection = { path = "../character_selection" }
+chase_play = { path = "../chase_play" }
 collision_audio_play = { path = "../collision_audio_play" }
 collision_model = { path = "../collision_model" }
 collision_play = { path = "../collision_play" }
 derivative = "1.0.2"
 derive-new = "0.5.6"
+energy_model = { path = "../energy_model" }
 game_input = { path = "../game_input" }
 game_model = { path = "../game_model" }
 game_play_hud = { path = "../game_play_hud" }
 game_play_model = { path = "../game_play_model" }
+kinematic_model = { path = "../kinematic_model" }
 log = "0.4.6"
 logic_clock = { path = "../logic_clock" }
 map_model = { path = "../map_model" }
@@ -36,6 +39,8 @@ sequence_play = { path = "../sequence_play" }
 shape_model = { path = "../shape_model" }
 shred = "0.7.0"
 shred-derive = "0.5.1"
+spawn_model = { path = "../spawn_model" }
+spawn_play = { path = "../spawn_play" }
 sprite_model = { path = "../sprite_model" }
 state_registry = { path = "../state_registry" }
 tracker = { path = "../tracker" }

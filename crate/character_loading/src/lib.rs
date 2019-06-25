@@ -6,8 +6,10 @@ pub use crate::{
     character_loader::CharacterLoader,
     character_loader_params::CharacterLoaderParams,
     character_loading_bundle::{CharacterLoadingBundle, CHARACTER_PROCESSOR},
+    character_loading_status::CharacterLoadingStatus,
 };
 
 mod character_loader;
 mod character_loader_params;
 mod character_loading_bundle;
+mod character_loading_status;

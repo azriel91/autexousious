@@ -9,6 +9,7 @@ use collision_model::{
 use derivative::Derivative;
 use sequence_model::loaded::WaitSequence;
 use shred_derive::SystemData;
+use spawn_model::{config::Spawns, loaded::SpawnsSequence};
 use sprite_model::loaded::SpriteRenderSequence;
 
 /// Resources needed to load an object.
@@ -30,10 +31,16 @@ pub struct ObjectLoaderSystemData<'s> {
     /// `InteractionsSequence`s assets.
     #[derivative(Debug = "ignore")]
     pub interactions_sequence_assets: Read<'s, AssetStorage<InteractionsSequence>>,
-    /// `AssetStorage` for `Body`s.
+    /// `SpawnsSequence`s assets.
+    #[derivative(Debug = "ignore")]
+    pub spawns_sequence_assets: Read<'s, AssetStorage<SpawnsSequence>>,
+    /// `Body` assets.
     #[derivative(Debug = "ignore")]
     pub body_assets: Read<'s, AssetStorage<Body>>,
-    /// `AssetStorage` for `Interactions`s.
+    /// `Interactions` assets.
     #[derivative(Debug = "ignore")]
     pub interactions_assets: Read<'s, AssetStorage<Interactions>>,
+    /// `Spawns` assets.
+    #[derivative(Debug = "ignore")]
+    pub spawns_assets: Read<'s, AssetStorage<Spawns>>,
 }

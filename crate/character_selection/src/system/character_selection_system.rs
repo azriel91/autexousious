@@ -4,7 +4,7 @@ use amethyst::{
 };
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent, CharacterSelections};
 use derive_new::new;
-use game_model::loaded::CharacterAssets;
+use game_model::loaded::CharacterPrefabs;
 use typename_derive::TypeName;
 
 /// Populates the `CharacterSelections` based on user input.
@@ -17,7 +17,7 @@ pub struct CharacterSelectionSystem {
 
 type CharacterSelectionSystemData<'s> = (
     Read<'s, EventChannel<CharacterSelectionEvent>>,
-    Read<'s, CharacterAssets>,
+    Read<'s, CharacterPrefabs>,
     Write<'s, CharacterSelections>,
 );
 
@@ -26,7 +26,7 @@ impl<'s> System<'s> for CharacterSelectionSystem {
 
     fn run(
         &mut self,
-        (character_selection_ec, character_assets, mut character_selections): Self::SystemData,
+        (character_selection_ec, character_prefabs, mut character_selections): Self::SystemData,
     ) {
         character_selection_ec
             .read(
@@ -44,7 +44,7 @@ impl<'s> System<'s> for CharacterSelectionSystem {
                         CharacterSelection::Random => {
                             // TODO: Implement Random
                             // TODO: <https://gitlab.com/azriel91/autexousious/issues/137>
-                            character_assets
+                            character_prefabs
                                 .keys()
                                 .next()
                                 .expect("Expected at least one character to be loaded.")
@@ -87,7 +87,7 @@ mod tests {
     };
     use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
     use application_event::{AppEvent, AppEventReader};
-    use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_PATH};
+    use assets_test::{ASSETS_PATH, CHAR_BAT_SLUG};
     use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
     use character_prefab::CharacterPrefabBundle;
     use character_selection_model::{
@@ -99,6 +99,7 @@ mod tests {
     use loading::{LoadingBundle, LoadingState};
     use map_loading::MapLoadingBundle;
     use sequence_loading::SequenceLoadingBundle;
+    use spawn_loading::SpawnLoadingBundle;
     use sprite_loading::SpriteLoadingBundle;
     use typename::TypeName;
     use ui_audio_loading::UiAudioLoadingBundle;
@@ -121,6 +122,7 @@ mod tests {
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CollisionLoadingBundle::new())
+            .with_bundle(SpawnLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_bundle(
@@ -140,7 +142,7 @@ mod tests {
                     world,
                     CharacterSelectionEvent::Select {
                         controller_id: 123,
-                        character_selection: CharacterSelection::Id(ASSETS_CHAR_BAT_SLUG.clone()),
+                        character_selection: CharacterSelection::Id(CHAR_BAT_SLUG.clone()),
                     },
                 )
             })
@@ -148,7 +150,7 @@ mod tests {
                 let character_selections = world.read_resource::<CharacterSelections>();
 
                 assert_eq!(
-                    Some(&*ASSETS_CHAR_BAT_SLUG),
+                    Some(&*CHAR_BAT_SLUG),
                     character_selections.selections.get(&123)
                 );
             })
@@ -170,6 +172,7 @@ mod tests {
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CollisionLoadingBundle::new())
+            .with_bundle(SpawnLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_bundle(
@@ -188,7 +191,7 @@ mod tests {
                 world
                     .write_resource::<CharacterSelections>()
                     .selections
-                    .insert(123, ASSETS_CHAR_BAT_SLUG.clone());
+                    .insert(123, CHAR_BAT_SLUG.clone());
             })
             .with_setup(|world| {
                 send_event(

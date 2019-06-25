@@ -110,6 +110,7 @@ mod tests {
             .with_bundle(TransformBundle::new())
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_setup(|world| {
+                <HpBarPrefab as PrefabData>::SystemData::setup(&mut world.res);
                 <HpBarUpdateSystem as System>::SystemData::setup(&mut world.res);
 
                 let mut transform = Transform::default();

@@ -34,15 +34,20 @@ where
 
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
+
     use amethyst::ecs::{storage::DenseVecStorage, Component};
+    use asset_model::config::AssetSlug;
     use collision_model::config::{
         Body, Hit, HitLimit, HitRepeatDelay, Interaction, InteractionKind, Interactions,
     };
     use derivative::Derivative;
+    use kinematic_model::config::{Position, Velocity};
     use object_status_model::config::StunPoints;
     use sequence_model::config::{SequenceId, Wait};
     use serde::{Deserialize, Serialize};
     use shape_model::Volume;
+    use spawn_model::config::{Spawn, Spawns};
     use specs_derive::Component;
     use sprite_model::config::SpriteRef;
     use toml;
@@ -66,7 +71,6 @@ mod tests {
     "#;
     const SEQUENCE_WITH_BODY: &str = r#"
         [[frames]]
-        sprite = { sheet = 0, index = 0 }
         body = [
           { box = { x = -1, y = -2, z = -3, w = 11, h = 12, d = 13 } },
           { sphere = { x = -7, y = -8, z = -9, r = 17 } },
@@ -74,11 +78,14 @@ mod tests {
     "#;
     const SEQUENCE_WITH_ITR: &str = "
         [[frames]]
-        sprite = { sheet = 0, index = 0 }
         interactions = [
           { hit = { repeat_delay = 5 }, bounds = [{ sphere = { x = 1, y = 1, r = 1 } }] },
         ]
     ";
+    const SEQUENCE_WITH_SPAWNS: &str = r#"
+        [[frames]]
+        spawns = [{ object = "default/fireball" }]
+    "#;
 
     #[test]
     fn sequence_with_empty_frames_list_deserializes_successfully() {
@@ -100,36 +107,42 @@ mod tests {
                 SpriteRef::new(0, 4),
                 Body::default(),
                 Interactions::default(),
+                Spawns::default(),
             ),
             ObjectFrame::new(
                 Wait::new(2),
                 SpriteRef::new(0, 5),
                 Body::default(),
                 Interactions::default(),
+                Spawns::default(),
             ),
             ObjectFrame::new(
                 Wait::new(1),
                 SpriteRef::new(1, 6),
                 Body::default(),
                 Interactions::default(),
+                Spawns::default(),
             ),
             ObjectFrame::new(
                 Wait::new(1),
                 SpriteRef::new(1, 7),
                 Body::default(),
                 Interactions::default(),
+                Spawns::default(),
             ),
             ObjectFrame::new(
                 Wait::new(2),
                 SpriteRef::new(0, 6),
                 Body::default(),
                 Interactions::default(),
+                Spawns::default(),
             ),
             ObjectFrame::new(
                 Wait::new(2),
                 SpriteRef::new(0, 5),
                 Body::default(),
                 Interactions::default(),
+                Spawns::default(),
             ),
         ];
         let expected = ObjectSequence::new(Some(TestSeqId::Boo), frames);
@@ -159,9 +172,10 @@ mod tests {
         ];
         let frames = vec![ObjectFrame::new(
             Wait::new(0),
-            SpriteRef::new(0, 0),
+            SpriteRef::default(),
             Body::new(body_volumes),
-            Interactions::new(Vec::new()),
+            Interactions::default(),
+            Spawns::default(),
         )];
         let expected = ObjectSequence::new(None, frames);
         assert_eq!(expected, sequence);
@@ -190,9 +204,33 @@ mod tests {
         }];
         let frames = vec![ObjectFrame::new(
             Wait::new(0),
-            SpriteRef::new(0, 0),
-            Body::new(Vec::new()),
+            SpriteRef::default(),
+            Body::default(),
             Interactions::new(interactions),
+            Spawns::default(),
+        )];
+        let expected = ObjectSequence::new(None, frames);
+        assert_eq!(expected, sequence);
+    }
+
+    #[test]
+    fn sequence_with_spawns() {
+        let sequence = toml::from_str::<ObjectSequence<TestSeqId>>(SEQUENCE_WITH_SPAWNS)
+            .expect("Failed to deserialize sequence.");
+
+        let asset_slug = AssetSlug::from_str("default/fireball")
+            .expect("Expected `default/fireball` to be a valid asset slug.");
+        let spawns = vec![Spawn::new(
+            asset_slug,
+            Position::<i32>::from((0, 0, 0)),
+            Velocity::<i32>::from((0, 0, 0)),
+        )];
+        let frames = vec![ObjectFrame::new(
+            Wait::new(0),
+            SpriteRef::default(),
+            Body::default(),
+            Interactions::default(),
+            Spawns::new(spawns),
         )];
         let expected = ObjectSequence::new(None, frames);
         assert_eq!(expected, sequence);

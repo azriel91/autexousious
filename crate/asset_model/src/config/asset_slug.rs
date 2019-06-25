@@ -1,7 +1,9 @@
 use std::{char, fmt, str::FromStr};
 
 use derive_builder::Builder;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+use crate::config::{AssetSlugBuildError, AssetSlugSegment, AssetSlugVisitor};
 
 /// Namespaced reference to identify assets.
 ///
@@ -43,47 +45,64 @@ pub struct AssetSlug {
     // kcov-ignore-end
 }
 
-impl AssetSlugBuilder {
-    fn validate(&self) -> Result<(), String> {
-        Self::validate_segment("Asset namespace", &self.namespace)
-            .and_then(|_| Self::validate_segment("Asset name", &self.name))
+impl AssetSlug {
+    /// Serializes this `AssetSlug` as a single string, such as `default/fireball`.
+    pub fn serialize_str<S>(asset_slug: &AssetSlug, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(&asset_slug.to_string())
     }
 
-    fn validate_segment(segment_name: &str, segment: &Option<String>) -> Result<(), String> {
-        if let Some(ref value) = segment {
+    /// Deserializes this `AssetSlug` from a single string, such as `default/fireball`.
+    pub fn deserialize_str<'de, D>(deserializer: D) -> Result<AssetSlug, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        deserializer.deserialize_str(AssetSlugVisitor)
+    }
+}
+
+impl AssetSlugBuilder {
+    fn validate(&self) -> Result<(), AssetSlugBuildError> {
+        Self::validate_segment(AssetSlugSegment::Namespace, &self.namespace)
+            .and_then(|_| Self::validate_segment(AssetSlugSegment::Name, &self.name))
+    }
+
+    fn validate_segment(
+        segment: AssetSlugSegment,
+        value: &Option<String>,
+    ) -> Result<(), AssetSlugBuildError> {
+        if let Some(ref value) = value {
             if value.is_empty() {
-                Err(format!("{} must not be empty.", segment_name))
+                Err(AssetSlugBuildError::SegmentEmpty { segment })
             } else if value.contains(char::is_control) {
                 // Put this validation first, because we don't want to print control characters in
                 // any of the other validations.
-                Err(format!(
-                    "{} must not contain control character: `{}`.",
-                    segment_name,
-                    value
-                        .chars()
-                        .map(|c| c.escape_default().to_string())
-                        .collect::<String>()
-                ))
-            } else if value.starts_with(char::is_numeric) {
-                Err(format!(
-                    "{} must not start with numeric character: `{}`.",
-                    segment_name, value
-                ))
+                Err(AssetSlugBuildError::SegmentContainsControlChar {
+                    segment,
+                    value: value.to_string(),
+                })
             } else if value.contains(char::is_whitespace) {
-                Err(format!(
-                    "{} must not contain whitespace: `{}`.",
-                    segment_name, value
-                ))
+                Err(AssetSlugBuildError::SegmentContainsWhitespace {
+                    segment,
+                    value: value.to_string(),
+                })
             } else if value.contains('/') {
-                Err(format!(
-                    "{} must not contain the '/' character: `{}`.",
-                    segment_name, value
-                ))
+                Err(AssetSlugBuildError::SegmentContainsForwardSlash {
+                    segment,
+                    value: value.to_string(),
+                })
+            } else if value.starts_with(char::is_numeric) {
+                Err(AssetSlugBuildError::SegmentStartsWithNumericChar {
+                    segment,
+                    value: value.to_string(),
+                })
             } else {
                 Ok(())
             }
         } else {
-            Err(format!("{} is a required value.", segment_name))
+            Err(AssetSlugBuildError::NoValueProvided { segment })
         }
     }
 }
@@ -95,17 +114,33 @@ impl fmt::Display for AssetSlug {
 }
 
 impl FromStr for AssetSlug {
-    type Err = String;
+    type Err = AssetSlugBuildError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let segments: Vec<&str> = s.split('/').collect();
         if segments.len() == 2 {
-            AssetSlugBuilder::default()
-                .namespace(segments[0].to_string())
-                .name(segments[1].to_string())
-                .build()
+            let asset_slug_builder = AssetSlugBuilder {
+                namespace: Some(segments[0].to_string()),
+                name: Some(segments[1].to_string()),
+            };
+            asset_slug_builder.validate()?;
+
+            // Deconstruct the builder.
+            if let AssetSlugBuilder {
+                namespace: Some(namespace),
+                name: Some(name),
+            } = asset_slug_builder
+            {
+                let asset_slug = AssetSlug { namespace, name };
+
+                Ok(asset_slug)
+            } else {
+                unreachable!("`AssetSlugBuilder` fields have been previously set.");
+            }
         } else {
-            Err(format!("Expected exactly one `/` in slug string: {:?}.", s))
+            Err(AssetSlugBuildError::InvalidSegmentCount {
+                value: s.to_string(),
+            })
         }
     }
 }
@@ -115,11 +150,15 @@ mod tests {
     use std::str::FromStr;
 
     use super::{AssetSlug, AssetSlugBuilder};
+    use crate::config::{AssetSlugBuildError, AssetSlugSegment};
 
     #[test]
     fn namespace_must_be_specified() {
         assert_eq!(
-            Err("Asset namespace is a required value.".to_string()),
+            Err(AssetSlugBuildError::NoValueProvided {
+                segment: AssetSlugSegment::Namespace
+            }
+            .to_string()),
             AssetSlugBuilder::default().build()
         );
     }
@@ -127,7 +166,10 @@ mod tests {
     #[test]
     fn namespace_must_not_be_empty() {
         assert_eq!(
-            Err("Asset namespace must not be empty.".to_string()),
+            Err(AssetSlugBuildError::SegmentEmpty {
+                segment: AssetSlugSegment::Namespace
+            }
+            .to_string()),
             AssetSlugBuilder::default()
                 .namespace("".to_string())
                 .build()
@@ -137,7 +179,11 @@ mod tests {
     #[test]
     fn namespace_must_not_contain_control_character() {
         assert_eq!(
-            Err("Asset namespace must not contain control character: `a\\u{9c}b`.".to_string()),
+            Err(AssetSlugBuildError::SegmentContainsControlChar {
+                segment: AssetSlugSegment::Namespace,
+                value: String::from("ab")
+            }
+            .to_string()),
             AssetSlugBuilder::default()
                 .namespace("ab".to_string())
                 .build()
@@ -145,19 +191,13 @@ mod tests {
     }
 
     #[test]
-    fn namespace_must_not_start_with_numeric_character() {
-        assert_eq!(
-            Err("Asset namespace must not start with numeric character: `1ab`.".to_string()),
-            AssetSlugBuilder::default()
-                .namespace("1ab".to_string())
-                .build()
-        );
-    }
-
-    #[test]
     fn namespace_must_not_contain_whitespace() {
         assert_eq!(
-            Err("Asset namespace must not contain whitespace: `a b`.".to_string()),
+            Err(AssetSlugBuildError::SegmentContainsWhitespace {
+                segment: AssetSlugSegment::Namespace,
+                value: String::from("a b")
+            }
+            .to_string()),
             AssetSlugBuilder::default()
                 .namespace("a b".to_string())
                 .build()
@@ -167,7 +207,11 @@ mod tests {
     #[test]
     fn namespace_must_not_contain_forward_slash() {
         assert_eq!(
-            Err("Asset namespace must not contain the '/' character: `a/b`.".to_string()),
+            Err(AssetSlugBuildError::SegmentContainsForwardSlash {
+                segment: AssetSlugSegment::Namespace,
+                value: String::from("a/b")
+            }
+            .to_string()),
             AssetSlugBuilder::default()
                 .namespace("a/b".to_string())
                 .build()
@@ -175,9 +219,26 @@ mod tests {
     }
 
     #[test]
+    fn namespace_must_not_start_with_numeric_character() {
+        assert_eq!(
+            Err(AssetSlugBuildError::SegmentStartsWithNumericChar {
+                segment: AssetSlugSegment::Namespace,
+                value: String::from("1ab")
+            }
+            .to_string()),
+            AssetSlugBuilder::default()
+                .namespace("1ab".to_string())
+                .build()
+        );
+    }
+
+    #[test]
     fn name_must_be_specified() {
         assert_eq!(
-            Err("Asset name is a required value.".to_string()),
+            Err(AssetSlugBuildError::NoValueProvided {
+                segment: AssetSlugSegment::Name
+            }
+            .to_string()),
             AssetSlugBuilder::default()
                 .namespace("test".to_string())
                 .build()
@@ -187,7 +248,10 @@ mod tests {
     #[test]
     fn name_must_not_be_empty() {
         assert_eq!(
-            Err("Asset name must not be empty.".to_string()),
+            Err(AssetSlugBuildError::SegmentEmpty {
+                segment: AssetSlugSegment::Name
+            }
+            .to_string()),
             AssetSlugBuilder::default()
                 .namespace("test".to_string())
                 .name("".to_string())
@@ -198,7 +262,11 @@ mod tests {
     #[test]
     fn name_must_not_contain_control_character() {
         assert_eq!(
-            Err("Asset name must not contain control character: `a\\u{9c}b`.".to_string()),
+            Err(AssetSlugBuildError::SegmentContainsControlChar {
+                segment: AssetSlugSegment::Name,
+                value: String::from("ab")
+            }
+            .to_string()),
             AssetSlugBuilder::default()
                 .namespace("test".to_string())
                 .name("ab".to_string())
@@ -207,20 +275,13 @@ mod tests {
     }
 
     #[test]
-    fn name_must_not_start_with_numeric_character() {
-        assert_eq!(
-            Err("Asset name must not start with numeric character: `1ab`.".to_string()),
-            AssetSlugBuilder::default()
-                .namespace("test".to_string())
-                .name("1ab".to_string())
-                .build()
-        );
-    }
-
-    #[test]
     fn name_must_not_contain_whitespace() {
         assert_eq!(
-            Err("Asset name must not contain whitespace: `a b`.".to_string()),
+            Err(AssetSlugBuildError::SegmentContainsWhitespace {
+                segment: AssetSlugSegment::Name,
+                value: String::from("a b")
+            }
+            .to_string()),
             AssetSlugBuilder::default()
                 .namespace("test".to_string())
                 .name("a b".to_string())
@@ -231,10 +292,29 @@ mod tests {
     #[test]
     fn name_must_not_contain_forward_slash() {
         assert_eq!(
-            Err("Asset name must not contain the '/' character: `a/b`.".to_string()),
+            Err(AssetSlugBuildError::SegmentContainsForwardSlash {
+                segment: AssetSlugSegment::Name,
+                value: String::from("a/b")
+            }
+            .to_string()),
             AssetSlugBuilder::default()
                 .namespace("test".to_string())
                 .name("a/b".to_string())
+                .build()
+        );
+    }
+
+    #[test]
+    fn name_must_not_start_with_numeric_character() {
+        assert_eq!(
+            Err(AssetSlugBuildError::SegmentStartsWithNumericChar {
+                segment: AssetSlugSegment::Name,
+                value: String::from("1ab")
+            }
+            .to_string()),
+            AssetSlugBuilder::default()
+                .namespace("test".to_string())
+                .name("1ab".to_string())
                 .build()
         );
     }
@@ -272,7 +352,9 @@ mod tests {
         // kcov-ignore-start
         assert_eq!(
             // kcov-ignore-end
-            Err("Expected exactly one `/` in slug string: \"test\".".to_string()),
+            Err(AssetSlugBuildError::InvalidSegmentCount {
+                value: String::from("test")
+            }),
             AssetSlug::from_str("test")
         );
     }
@@ -282,17 +364,20 @@ mod tests {
         // kcov-ignore-start
         assert_eq!(
             // kcov-ignore-end
-            Err("Expected exactly one `/` in slug string: \"test/abc/def\".".to_string()),
+            Err(AssetSlugBuildError::InvalidSegmentCount {
+                value: String::from("test/abc/def")
+            }),
             AssetSlug::from_str("test/abc/def")
         );
     }
 
     #[test]
     fn from_str_returns_err_from_builder_when_invalid() {
-        // kcov-ignore-start
         assert_eq!(
-            // kcov-ignore-end
-            Err("Asset name must not contain whitespace: `a b`.".to_string()),
+            Err(AssetSlugBuildError::SegmentContainsWhitespace {
+                segment: AssetSlugSegment::Name,
+                value: String::from("a b")
+            }),
             AssetSlug::from_str("test/a b")
         );
     }

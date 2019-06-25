@@ -13,16 +13,21 @@ application_ui = { path = "../application_ui" }
 asset_loading = { path = "../asset_loading" }
 asset_model = { path = "../asset_model" }
 assets_built_in = { path = "../assets_built_in" }
+character_loading = { path = "../character_loading" }
 character_model = { path = "../character_model" }
 character_prefab = { path = "../character_prefab" }
 collision_audio_model = { path = "../collision_audio_model" }
 derivative = "1.0.2"
 derive-new = "0.5.6"
+energy_loading = { path = "../energy_loading" }
+energy_model = { path = "../energy_model" }
+energy_prefab = { path = "../energy_prefab" }
 game_model = { path = "../game_model" }
 humantime = "1.2.0"
 log = "0.4.6"
 map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }
+object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
 object_prefab = { path = "../object_prefab" }
 sequence_model = { path = "../sequence_model" }

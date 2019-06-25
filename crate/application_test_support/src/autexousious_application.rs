@@ -6,22 +6,25 @@ use amethyst::{
     core::TransformBundle,
     renderer::{types::DefaultBackend, RenderEmptyBundle},
     window::ScreenDimensions,
-    GameData,
+    GameData, LogLevelFilter, LoggerConfig,
 };
 use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
 use application_event::{AppEvent, AppEventReader};
-use assets_test::{ASSETS_CHAR_BAT_SLUG, ASSETS_MAP_FADE_SLUG, ASSETS_PATH};
+use assets_test::{ASSETS_PATH, CHAR_BAT_SLUG, MAP_FADE_SLUG};
 use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
 use character_prefab::CharacterPrefabBundle;
 use character_selection::CharacterSelectionBundle;
 use character_selection_model::{CharacterSelections, CharacterSelectionsStatus};
 use collision_audio_loading::CollisionAudioLoadingBundle;
 use collision_loading::CollisionLoadingBundle;
+use energy_loading::EnergyLoadingBundle;
+use energy_prefab::EnergyPrefabBundle;
 use game_input_model::ControlBindings;
 use game_loading::GameLoadingState;
 use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
 use sequence_loading::SequenceLoadingBundle;
+use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
 use ui_audio_loading::UiAudioLoadingBundle;
 
@@ -51,13 +54,20 @@ impl AutexousiousApplication {
     /// `game_base` function.
     pub fn render_and_ui(
     ) -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader> {
+        amethyst::Logger::from_config(LoggerConfig::default())
+            .level_for("gfx_backend_vulkan", LogLevelFilter::Warn)
+            .level_for("rendy_factory", LogLevelFilter::Warn)
+            .level_for("rendy_memory", LogLevelFilter::Warn)
+            .level_for("rendy_graph", LogLevelFilter::Warn)
+            .level_for("rendy_wsi", LogLevelFilter::Warn)
+            .start();
+
         AmethystApplication::blank()
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_bundle(TransformBundle::new())
             .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
             .with_ui_bundles::<ControlBindings>()
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
-            .with_bundle(CollisionLoadingBundle::new())
     }
 
     /// Returns an application with game assets loaded.
@@ -80,10 +90,17 @@ impl AutexousiousApplication {
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
+            .with_bundle(CollisionLoadingBundle::new())
+            .with_bundle(SpawnLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_bundle(
                 CharacterPrefabBundle::new()
+                    .with_system_dependencies(&[String::from(CHARACTER_PROCESSOR)]),
+            )
+            .with_bundle(EnergyLoadingBundle::new())
+            .with_bundle(
+                EnergyPrefabBundle::new()
                     .with_system_dependencies(&[String::from(CHARACTER_PROCESSOR)]),
             )
             .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
@@ -104,12 +121,12 @@ impl AutexousiousApplication {
                 character_selections
                     .selections
                     .entry(controller_id)
-                    .or_insert_with(|| ASSETS_CHAR_BAT_SLUG.clone());
+                    .or_insert_with(|| CHAR_BAT_SLUG.clone());
 
                 world.add_resource(character_selections);
                 world.add_resource(CharacterSelectionsStatus::Ready);
             })
-            .with_setup(SetupFunction::map_selection(ASSETS_MAP_FADE_SLUG.clone()))
+            .with_setup(SetupFunction::map_selection(MAP_FADE_SLUG.clone()))
             .with_state(|| GameLoadingState::new(|| Box::new(PopState)))
     }
 }
@@ -119,7 +136,7 @@ mod test {
     use amethyst::{input::InputHandler, ui::Interactable, Error};
     use game_input_model::ControlBindings;
     use game_model::{
-        loaded::{CharacterAssets, MapAssets},
+        loaded::{CharacterPrefabs, EnergyPrefabs, MapPrefabs},
         play::GameEntities,
     };
     use object_type::ObjectType;
@@ -154,8 +171,15 @@ mod test {
         AutexousiousApplication::config_base()
             .with_assertion(|world| {
                 // Panics if the resources have not been populated
-                world.read_resource::<MapAssets>();
-                assert!(!world.read_resource::<CharacterAssets>().is_empty());
+                world.read_resource::<MapPrefabs>();
+                assert!(
+                    !world.read_resource::<CharacterPrefabs>().is_empty(),
+                    "Expected at least one `Character` to be loaded."
+                );
+                assert!(
+                    !world.read_resource::<EnergyPrefabs>().is_empty(),
+                    "Expected at least one `Energy` to be loaded."
+                );
             })
             .run_isolated()
     }
@@ -169,6 +193,7 @@ mod test {
                 // Ensure there is at least one entity per object type.
                 ObjectType::iter()
                     .filter(|object_type| *object_type != ObjectType::TestObject)
+                    .filter(|object_type| *object_type != ObjectType::Energy)
                     .for_each(|object_type| {
                         let objects = game_entities.objects.get(&object_type);
                         let object_entities = objects.unwrap_or_else(|| {

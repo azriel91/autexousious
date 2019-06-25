@@ -24,7 +24,6 @@ impl GameObjectSequence for CharacterSequence {
 
 #[cfg(test)]
 mod tests {
-    use collision_model::config::{Body, Interactions};
     use object_model::config::{ObjectFrame, ObjectSequence};
     use sequence_model::config::{ControlTransition, ControlTransitionSingle, Wait};
     use sprite_model::config::SpriteRef;
@@ -62,12 +61,11 @@ mod tests {
             .expect("Failed to deserialize sequence.");
 
         let frames = vec![CharacterFrame::new(
-            ObjectFrame::new(
-                Wait::new(2),
-                SpriteRef::new(0, 4),
-                Body::default(),
-                Interactions::default(),
-            ),
+            ObjectFrame {
+                wait: Wait::new(2),
+                sprite: SpriteRef::new(0, 4),
+                ..Default::default()
+            },
             CharacterControlTransitions {
                 press_attack: Some(ControlTransition::SequenceId(
                     CharacterSequenceId::StandAttack0,

@@ -6,7 +6,8 @@ use amethyst::{
 use character_model::config::CharacterSequenceId;
 use derive_new::new;
 use game_input::ControllerInput;
-use object_model::play::{Mirrored, Velocity};
+use kinematic_model::config::Velocity;
+use object_model::play::Mirrored;
 use sequence_model::play::SequenceUpdateEvent;
 use typename_derive::TypeName;
 
@@ -158,9 +159,10 @@ mod tests {
     use application_test_support::AutexousiousApplication;
     use character_model::config::CharacterSequenceId;
     use game_input::ControllerInput;
+    use kinematic_model::config::{Position, Velocity};
     use map_model::loaded::Map;
     use map_selection_model::MapSelection;
-    use object_model::play::{Grounding, Mirrored, Position, Velocity};
+    use object_model::play::{Grounding, Mirrored};
     use sequence_model::play::SequenceUpdateEvent;
     use typename::TypeName;
 

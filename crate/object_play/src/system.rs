@@ -1,3 +1,3 @@
-pub use self::stick_to_parent_object_system::StickToParentObjectSystem;
+pub use self::object_gravity_system::ObjectGravitySystem;
 
-mod stick_to_parent_object_system;
+mod object_gravity_system;

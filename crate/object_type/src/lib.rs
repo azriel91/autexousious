@@ -13,6 +13,8 @@ use strum_macros::{Display, EnumIter};
 pub enum ObjectType {
     /// Player or AI controllable objects.
     Character,
+    /// Energy / aura / spark effects.
+    Energy,
     /// Used in tests.
     #[cfg(feature = "test-support")]
     TestObject,

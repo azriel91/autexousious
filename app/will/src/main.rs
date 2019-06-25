@@ -30,6 +30,8 @@ use character_prefab::CharacterPrefabBundle;
 use character_selection_stdio::CharacterSelectionStdioBundle;
 use collision_audio_loading::CollisionAudioLoadingBundle;
 use collision_loading::CollisionLoadingBundle;
+use energy_loading::{EnergyLoadingBundle, ENERGY_PROCESSOR};
+use energy_prefab::EnergyPrefabBundle;
 use frame_rate::strategy::frame_rate_limit_config;
 use game_input::GameInputBundle;
 use game_input_model::{ControlBindings, InputConfig};
@@ -43,6 +45,7 @@ use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
 use map_selection_stdio::MapSelectionStdioBundle;
 use sequence_loading::SequenceLoadingBundle;
+use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
 use stdio_command_stdio::StdioCommandStdioBundle;
 use stdio_input::StdioInputBundle;
@@ -146,11 +149,17 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(GameModeSelectionStdioBundle::new())?
             .with_bundle(MapSelectionStdioBundle::new())?
             .with_bundle(CollisionLoadingBundle::new())?
+            .with_bundle(SpawnLoadingBundle::new())?
             .with_bundle(MapLoadingBundle::new())?
             .with_bundle(CharacterLoadingBundle::new())?
             .with_bundle(
                 CharacterPrefabBundle::new()
                     .with_system_dependencies(&[String::from(CHARACTER_PROCESSOR)]),
+            )?
+            .with_bundle(EnergyLoadingBundle::new())?
+            .with_bundle(
+                EnergyPrefabBundle::new()
+                    .with_system_dependencies(&[String::from(ENERGY_PROCESSOR)]),
             )?
             .with_bundle(CollisionAudioLoadingBundle::new(assets_dir.clone()))?
             .with_bundle(UiAudioLoadingBundle::new(assets_dir.clone()))?;

@@ -4,14 +4,16 @@ use amethyst::{core::Stopwatch, GameData, State, StateData, Trans};
 use application_event::AppEvent;
 use application_state::AutexState;
 use application_ui::ThemeLoader;
+use character_loading::CharacterLoadingStatus;
 use collision_audio_model::CollisionAudioLoadingStatus;
 use derivative::Derivative;
 use humantime;
 use log::{error, warn};
+use object_loading::ObjectLoadingStatus;
 use state_registry::StateId;
 use ui_audio_model::UiAudioLoadingStatus;
 
-use crate::{MapLoadingStatus, ObjectLoadingStatus};
+use crate::MapLoadingStatus;
 
 /// Time limit before outputting a warning message and transitioning to the next state.
 const LOADING_TIME_LIMIT: Duration = Duration::from_secs(10);
@@ -82,7 +84,7 @@ where
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
         data.data.update(&data.world);
 
-        if *data.world.read_resource::<ObjectLoadingStatus>() == ObjectLoadingStatus::Complete
+        if **data.world.read_resource::<CharacterLoadingStatus>() == ObjectLoadingStatus::Complete
             && *data.world.read_resource::<MapLoadingStatus>() == MapLoadingStatus::Complete
             && *data.world.read_resource::<CollisionAudioLoadingStatus>()
                 == CollisionAudioLoadingStatus::Complete

@@ -8,6 +8,7 @@ use collision_model::{
 };
 use derivative::Derivative;
 use sequence_model::loaded::WaitSequence;
+use spawn_model::{config::Spawns, loaded::SpawnsSequence};
 use sprite_model::loaded::SpriteRenderSequence;
 
 use crate::ObjectLoaderSystemData;
@@ -31,12 +32,18 @@ pub struct ObjectLoaderParams<'s> {
     /// `InteractionsSequence`s assets.
     #[derivative(Debug = "ignore")]
     pub interactions_sequence_assets: &'s AssetStorage<InteractionsSequence>,
-    /// `AssetStorage` for `Body`s.
+    /// `SpawnsSequence`s assets.
+    #[derivative(Debug = "ignore")]
+    pub spawns_sequence_assets: &'s AssetStorage<SpawnsSequence>,
+    /// `Body` assets.
     #[derivative(Debug = "ignore")]
     pub body_assets: &'s AssetStorage<Body>,
-    /// `AssetStorage` for `Interactions`s.
+    /// `Interactions` assets.
     #[derivative(Debug = "ignore")]
     pub interactions_assets: &'s AssetStorage<Interactions>,
+    /// `Spawns` assets.
+    #[derivative(Debug = "ignore")]
+    pub spawns_assets: &'s AssetStorage<Spawns>,
     /// Handles to the sprite sheets for this `Object`.
     pub sprite_sheet_handles: &'s [SpriteSheetHandle],
 }
@@ -56,8 +63,10 @@ impl<'s> From<(&'s ObjectLoaderSystemData<'s>, &'s [SpriteSheetHandle])>
             ref sprite_render_sequence_assets,
             ref body_sequence_assets,
             ref interactions_sequence_assets,
+            ref spawns_sequence_assets,
             ref body_assets,
             ref interactions_assets,
+            ref spawns_assets,
         } = object_loader_system_data;
 
         ObjectLoaderParams {
@@ -66,8 +75,10 @@ impl<'s> From<(&'s ObjectLoaderSystemData<'s>, &'s [SpriteSheetHandle])>
             sprite_render_sequence_assets,
             body_sequence_assets,
             interactions_sequence_assets,
+            spawns_sequence_assets,
             body_assets,
             interactions_assets,
+            spawns_assets,
             sprite_sheet_handles,
         }
     }

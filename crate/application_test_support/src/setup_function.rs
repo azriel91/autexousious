@@ -1,6 +1,6 @@
 use amethyst::ecs::World;
 use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
-use game_model::loaded::MapAssets;
+use game_model::loaded::MapPrefabs;
 use map_selection::MapSelectionStatus;
 use map_selection_model::MapSelection;
 
@@ -18,7 +18,7 @@ impl SetupFunction {
         move |world| {
             let slug_and_handle = {
                 let map_handle = world
-                    .read_resource::<MapAssets>()
+                    .read_resource::<MapPrefabs>()
                     .get(&slug)
                     .unwrap_or_else(|| panic!("Expected `{}` to be loaded.", slug))
                     .clone();

@@ -8,25 +8,20 @@ edition = "2018"
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["vulkan"] }
 collision_model = { path = "../collision_model" }
 derivative = "1.0.2"
+kinematic_model = { path = "../kinematic_model" }
+log = "0.4.6"
 logic_clock = { path = "../logic_clock" }
 object_model = { path = "../object_model" }
 sequence_model = { path = "../sequence_model" }
 serde = "1.0.92"
 shred = "0.7.0"
 shred-derive = "0.5.1"
+spawn_model = { path = "../spawn_model" }
 sprite_model = { path = "../sprite_model" }
 
 [dev-dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["test-support", "vulkan"] }
-amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
-application_event = { path = "../application_event" }
-collision_loading = { path = "../collision_loading" }
-fnv = "1.0.6"
-game_input_model = { path = "../game_input_model" }
-object_loading = { path = "../object_loading" }
-sequence_loading = { path = "../sequence_loading" }
-shape_model = { path = "../shape_model" }
-sprite_loading = { path = "../sprite_loading" }
+object_test = { path = "../object_test" }
 test_object_model = { path = "../test_object_model" }
 
 [features]

@@ -153,7 +153,7 @@ mod tests {
         Error,
     };
     use amethyst_test::{AmethystApplication, EffectReturn};
-    use assets_test::ASSETS_MAP_EMPTY_PATH;
+    use assets_test::MAP_EMPTY_PATH;
     use map_model::loaded::{Map, MapHandle};
     use sequence_loading::SequenceLoadingBundle;
 
@@ -171,7 +171,7 @@ mod tests {
             .with_bundle(MapLoadingBundle::new())
             .with_effect(|world| {
                 let map_handle =
-                    MapLoader::load(world, &ASSETS_MAP_EMPTY_PATH).expect("Failed to load map.");
+                    MapLoader::load(world, &MAP_EMPTY_PATH).expect("Failed to load map.");
 
                 world.add_resource(EffectReturn(map_handle));
             })
