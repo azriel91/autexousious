@@ -43,7 +43,7 @@ where
     /// `Entities` resource.
     #[derivative(Debug = "ignore")]
     pub entities: Entities<'s>,
-    /// `SequenceStatus` components.
+    /// `O::SequenceId` components.
     #[derivative(Debug = "ignore")]
     pub sequence_ids: ReadStorage<'s, O::SequenceId>,
     /// `Handle<O::ObjectWrapper>` components.
