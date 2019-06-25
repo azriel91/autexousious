@@ -2,6 +2,11 @@
 
 ## 0.12.0 (unreleased)
 
+### Added
+
+* Load energy assets. ([#126])
+* Spawn energy assets. ([#126])
+
 ### Changed
 
 * Render using Vulkan. ([#131], [#136])
@@ -13,6 +18,7 @@
 * Removed dependency cycles in crates. ([#135])
 
 [#111]: https://gitlab.com/azriel91/autexousious/issues/111
+[#126]: https://gitlab.com/azriel91/autexousious/issues/126
 [#131]: https://gitlab.com/azriel91/autexousious/issues/131
 [#134]: https://gitlab.com/azriel91/autexousious/issues/134
 [#135]: https://gitlab.com/azriel91/autexousious/issues/135
