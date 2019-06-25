@@ -69,7 +69,10 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         builder.add(
             SequenceUpdateSystem::new(),
             &SequenceUpdateSystem::type_name(),
-            &[&ComponentSequenceHandleUpdateSystem::<Character>::type_name()],
+            &[
+                &ComponentSequenceHandleUpdateSystem::<Character>::type_name(),
+                &ComponentSequenceHandleUpdateSystem::<Energy>::type_name(),
+            ],
         ); // kcov-ignore
         add_frame_component_update_system!(WaitSequence);
         add_frame_component_update_system!(SpriteRenderSequence);
@@ -84,7 +87,10 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         builder.add(
             CharacterControlTransitionsUpdateSystem::new(),
             &CharacterControlTransitionsUpdateSystem::type_name(),
-            &[&CharacterCtsHandleUpdateSystem::type_name()],
+            &[
+                &CharacterCtsHandleUpdateSystem::type_name(),
+                &SequenceUpdateSystem::type_name(),
+            ],
         ); // kcov-ignore
         builder.add(
             FrameFreezeClockAugmentSystem::new(),

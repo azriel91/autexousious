@@ -15,7 +15,17 @@ use sequence_model::{
 use shred_derive::SystemData;
 use typename_derive::TypeName;
 
-/// Updates the frame limit clock and logic clock for entities with sequences.
+/// Ticks the logic clocks for sequences, and sends `SequenceUpdateEvent`s.
+///
+/// The logic clocks include:
+///
+/// * `FrameFreezeClock`
+/// * `FrameWaitClock`
+/// * `FrameIndexClock`
+///
+/// This system **must** be run before all systems that update the frame components that are
+/// attached to entities, as the `SequenceUpdateEvent`s include the new frame index, which is only
+/// guaranteed to be valid for the current dispatcher run.
 #[derive(Debug, Default, TypeName, new)]
 pub struct SequenceUpdateSystem;
 

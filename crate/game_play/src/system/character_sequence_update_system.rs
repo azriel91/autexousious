@@ -6,6 +6,7 @@ use character_model::{config::CharacterSequenceId, play::RunCounter};
 use character_play::{
     CharacterSequenceUpdateComponents, CharacterSequenceUpdater, MirroredUpdater, RunCounterUpdater,
 };
+use derivative::Derivative;
 use derive_new::new;
 use game_input::ControllerInput;
 use kinematic_model::config::{Position, Velocity};
@@ -18,21 +19,44 @@ use typename_derive::TypeName;
 #[derive(Debug, Default, TypeName, new)]
 pub(crate) struct CharacterSequenceUpdateSystem;
 
-#[allow(missing_debug_implementations)]
-#[derive(SystemData)]
+#[derive(Derivative, SystemData)]
 pub struct CharacterSequenceUpdateSystemData<'s> {
-    entities: Entities<'s>,
-    controller_inputs: ReadStorage<'s, ControllerInput>,
-    sequence_end_transitionses: ReadStorage<'s, SequenceEndTransitions<CharacterSequenceId>>,
-    positions: ReadStorage<'s, Position<f32>>,
-    velocities: ReadStorage<'s, Velocity<f32>>,
-    health_pointses: ReadStorage<'s, HealthPoints>,
-    sequence_statuses: ReadStorage<'s, SequenceStatus>,
-    run_counters: WriteStorage<'s, RunCounter>,
-    character_sequence_ids: WriteStorage<'s, CharacterSequenceId>,
-    mirroreds: WriteStorage<'s, Mirrored>,
-    groundings: WriteStorage<'s, Grounding>,
-    transforms: WriteStorage<'s, Transform>,
+    /// `Entities` resource.
+    #[derivative(Debug = "ignore")]
+    pub entities: Entities<'s>,
+    /// `ControllerInput` components.
+    #[derivative(Debug = "ignore")]
+    pub controller_inputs: ReadStorage<'s, ControllerInput>,
+    /// `SequenceEndTransitions<CharacterSequenceId>` components.
+    #[derivative(Debug = "ignore")]
+    pub sequence_end_transitionses: ReadStorage<'s, SequenceEndTransitions<CharacterSequenceId>>,
+    /// `Position<f32>` components.
+    #[derivative(Debug = "ignore")]
+    pub positions: ReadStorage<'s, Position<f32>>,
+    /// `Velocity<f32>` components.
+    #[derivative(Debug = "ignore")]
+    pub velocities: ReadStorage<'s, Velocity<f32>>,
+    /// `HealthPoints` components.
+    #[derivative(Debug = "ignore")]
+    pub health_pointses: ReadStorage<'s, HealthPoints>,
+    /// `SequenceStatus` components.
+    #[derivative(Debug = "ignore")]
+    pub sequence_statuses: ReadStorage<'s, SequenceStatus>,
+    /// `RunCounter` components.
+    #[derivative(Debug = "ignore")]
+    pub run_counters: WriteStorage<'s, RunCounter>,
+    /// `CharacterSequenceId` components.
+    #[derivative(Debug = "ignore")]
+    pub character_sequence_ids: WriteStorage<'s, CharacterSequenceId>,
+    /// `Mirrored` components.
+    #[derivative(Debug = "ignore")]
+    pub mirroreds: WriteStorage<'s, Mirrored>,
+    /// `Grounding` components.
+    #[derivative(Debug = "ignore")]
+    pub groundings: WriteStorage<'s, Grounding>,
+    /// `Transform` components.
+    #[derivative(Debug = "ignore")]
+    pub transforms: WriteStorage<'s, Transform>,
 }
 
 impl<'s> System<'s> for CharacterSequenceUpdateSystem {
