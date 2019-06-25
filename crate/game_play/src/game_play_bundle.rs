@@ -15,6 +15,7 @@ use energy_model::loaded::Energy;
 use game_input::ControllerInput;
 use game_play_hud::HpBarUpdateSystem;
 use named_type::NamedType;
+use object_play::ObjectGravitySystem;
 use object_status_play::StunPointsReductionSystem;
 use sequence_model::loaded::WaitSequence;
 use sequence_play::{FrameComponentUpdateSystem, SequenceUpdateSystem};
@@ -25,10 +26,10 @@ use tracker::LastTrackerSystem;
 use typename::TypeName;
 
 use crate::{
-    CharacterGroundingSystem, CharacterHitEffectSystem, CharacterKinematicsSystem,
-    CharacterSequenceUpdateSystem, ComponentSequenceHandleUpdateSystem,
-    FrameFreezeClockAugmentSystem, GamePlayEndDetectionSystem, GamePlayEndTransitionSystem,
-    ObjectCollisionDetectionSystem, ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
+    CharacterHitEffectSystem, CharacterKinematicsSystem, CharacterSequenceUpdateSystem,
+    ComponentSequenceHandleUpdateSystem, FrameFreezeClockAugmentSystem, GamePlayEndDetectionSystem,
+    GamePlayEndTransitionSystem, ObjectCollisionDetectionSystem, ObjectKinematicsUpdateSystem,
+    ObjectTransformUpdateSystem,
 };
 
 /// Adds the object type update systems to the provided dispatcher.
@@ -139,8 +140,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 
         // `Position` correction based on margins.
         builder.add(
-            CharacterGroundingSystem::new(),
-            &CharacterGroundingSystem::type_name(),
+            ObjectGravitySystem::new(),
+            &ObjectGravitySystem::type_name(),
             &[&ObjectKinematicsUpdateSystem::type_name()],
         ); // kcov-ignore
         builder.add(
@@ -148,7 +149,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &ObjectTransformUpdateSystem::type_name(),
             &[
                 &ObjectKinematicsUpdateSystem::type_name(),
-                &CharacterGroundingSystem::type_name(),
+                &ObjectGravitySystem::type_name(),
             ],
         ); // kcov-ignore
         builder.add(
