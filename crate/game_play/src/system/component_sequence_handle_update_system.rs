@@ -18,7 +18,11 @@ use sequence_model::play::SequenceStatus;
 use shred_derive::SystemData;
 use typename_derive::TypeName;
 
-/// Updates the attached `Handle<ComponentSequence>`s when `SequenceId` changes.
+/// Updates the attached `Handle<ComponentSequence>`s when `O::SequenceId` changes.
+///
+/// This also inserts `SequenceStatus::Begin` when `O::SequenceId` changes, and **must** run before
+/// `SequenceUpdateSystem`, as that relies on the `SequenceStatus` to determine if a `SequenceBegin`
+/// event should be sent.
 #[derive(Debug, Default, TypeName, new)]
 pub struct ComponentSequenceHandleUpdateSystem<O>
 where
