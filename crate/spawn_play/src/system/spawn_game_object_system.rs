@@ -1,13 +1,15 @@
 use amethyst::{
     assets::AssetStorage,
-    ecs::{Entities, Join, Read, ReadStorage, System, Write, WriteStorage},
-    shrev::EventChannel,
+    ecs::{Entities, Entity, Read, ReadStorage, System, SystemData, Write, WriteStorage},
+    shred::Resources,
+    shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
 use derive_new::new;
 use energy_prefab::EnergyPrefabHandle;
 use game_model::loaded::EnergyPrefabs;
 use log::error;
+use sequence_model::play::SequenceUpdateEvent;
 use shred_derive::SystemData;
 use spawn_model::{
     config::{Spawns, SpawnsHandle},
@@ -15,22 +17,20 @@ use spawn_model::{
 };
 use typename_derive::TypeName;
 
-/// Spawns `GameObject`s.
+/// Spawns `GameObject`s. Currently only supports `Energy` objects.
 #[derive(Debug, Default, TypeName, new)]
-pub struct SpawnGameObjectSystem;
+pub struct SpawnGameObjectSystem {
+    /// Reader ID for the `SequenceUpdateEvent` event channel.
+    #[new(default)]
+    reader_id: Option<ReaderId<SequenceUpdateEvent>>,
+}
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct SpawnGameObjectSystemData<'s> {
+pub struct SpawnGameObjectResources<'s> {
     /// `Entities` resource.
     #[derivative(Debug = "ignore")]
     pub entities: Entities<'s>,
-    /// `SpawnsHandle` components.
-    #[derivative(Debug = "ignore")]
-    pub spawns_handles: ReadStorage<'s, SpawnsHandle>,
-    /// `Spawns` assets.
-    #[derivative(Debug = "ignore")]
-    pub spawns_assets: Read<'s, AssetStorage<Spawns>>,
     /// `EnergyPrefabs` resource.
     #[derivative(Debug = "ignore")]
     pub energy_prefabs: Read<'s, EnergyPrefabs>,
@@ -42,44 +42,106 @@ pub struct SpawnGameObjectSystemData<'s> {
     pub spawn_ec: Write<'s, EventChannel<SpawnEvent>>,
 }
 
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub struct SpawnGameObjectSystemData<'s> {
+    /// `SpawnGameObjectResources`.
+    pub spawn_game_object_resources: SpawnGameObjectResources<'s>,
+    /// Event channel for `SequenceUpdateEvent`s.
+    #[derivative(Debug = "ignore")]
+    pub sequence_update_ec: Read<'s, EventChannel<SequenceUpdateEvent>>,
+    /// `SpawnsHandle` components.
+    #[derivative(Debug = "ignore")]
+    pub spawns_handles: ReadStorage<'s, SpawnsHandle>,
+    /// `Spawns` assets.
+    #[derivative(Debug = "ignore")]
+    pub spawns_assets: Read<'s, AssetStorage<Spawns>>,
+}
+
+impl SpawnGameObjectSystem {
+    /// Creates an entity for each `Spawn` and attaches its prefab handle.
+    fn spawn_game_objects(
+        SpawnGameObjectResources {
+            ref entities,
+            ref energy_prefabs,
+            ref mut energy_prefab_handles,
+            ref mut spawn_ec,
+        }: &mut SpawnGameObjectResources<'_>,
+        spawns: &Spawns,
+        entity_parent: Entity,
+    ) {
+        spawns.iter().for_each(|spawn| {
+            if let Some(energy_prefab_handle) = energy_prefabs.get(&spawn.object) {
+                let entity_spawned = entities.create();
+                energy_prefab_handles
+                    .insert(entity_spawned, energy_prefab_handle.clone())
+                    .expect("Failed to insert `EnergyPrefabHandle` component.");
+
+                let spawn_event = SpawnEvent::new(spawn.clone(), entity_parent, entity_spawned);
+                spawn_ec.single_write(spawn_event);
+            } else {
+                error!(
+                    "`{}` does not exist in loaded `Energy` objects.",
+                    &spawn.object
+                )
+            }
+        });
+    }
+}
+
 impl<'s> System<'s> for SpawnGameObjectSystem {
     type SystemData = SpawnGameObjectSystemData<'s>;
 
     fn run(
         &mut self,
         SpawnGameObjectSystemData {
-            entities,
+            mut spawn_game_object_resources,
+            sequence_update_ec,
             spawns_handles,
             spawns_assets,
-            energy_prefabs,
-            mut energy_prefab_handles,
-            mut spawn_ec,
         }: Self::SystemData,
     ) {
-        (&entities, &spawns_handles)
-            .join()
-            .for_each(|(entity_parent, spawns_handle)| {
-                let spawns = spawns_assets
-                    .get(spawns_handle)
-                    .expect("Expected `Spawns` to be loaded.");
-                spawns.iter().for_each(|spawn| {
-                    if let Some(energy_prefab_handle) = energy_prefabs.get(&spawn.object) {
-                        let entity_spawned = entities.create();
-                        energy_prefab_handles
-                            .insert(entity_spawned, energy_prefab_handle.clone())
-                            .expect("Failed to insert `EnergyPrefabHandle` component.");
+        sequence_update_ec
+            .read(
+                self.reader_id
+                    .as_mut()
+                    .expect("Expected reader ID to exist for FrameComponentUpdateSystem."),
+            )
+            .filter(|ev| {
+                if let SequenceUpdateEvent::SequenceBegin { .. }
+                | SequenceUpdateEvent::FrameBegin { .. } = ev
+                {
+                    true
+                } else {
+                    false
+                }
+            })
+            .for_each(|ev| {
+                let entity_parent = ev.entity();
+                let spawns_handle = spawns_handles.get(entity_parent);
 
-                        let spawn_event =
-                            SpawnEvent::new(spawn.clone(), entity_parent, entity_spawned);
-                        spawn_ec.single_write(spawn_event);
-                    } else {
-                        error!(
-                            "`{}` does not exist in loaded `Energy` objects.",
-                            &spawn.object
-                        )
-                    }
-                });
+                // Some entities will have sequence update events, but not a spawns handle
+                // component.
+                if let Some(spawns_handle) = spawns_handle {
+                    let spawns = spawns_assets
+                        .get(spawns_handle)
+                        .expect("Expected `Spawns` to be loaded.");
+
+                    Self::spawn_game_objects(
+                        &mut spawn_game_object_resources,
+                        spawns,
+                        entity_parent,
+                    );
+                }
             });
+    }
+
+    fn setup(&mut self, res: &mut Resources) {
+        Self::SystemData::setup(res);
+        self.reader_id = Some(
+            res.fetch_mut::<EventChannel<SequenceUpdateEvent>>()
+                .register_reader(),
+        );
     }
 }
 
@@ -100,6 +162,7 @@ mod tests {
     use energy_prefab::{EnergyPrefab, EnergyPrefabHandle};
     use kinematic_model::config::{Position, Velocity};
     use loading::ObjectAssetLoadingSystem;
+    use sequence_model::play::SequenceUpdateEvent;
     use spawn_model::{
         config::{Spawn, Spawns},
         play::SpawnEvent,
@@ -109,7 +172,44 @@ mod tests {
     use super::SpawnGameObjectSystem;
 
     #[test]
-    fn spawns_entity_for_each_spawn() -> Result<(), Error> {
+    fn spawns_entity_for_sequence_begin_events() -> Result<(), Error> {
+        run_test(
+            Some(|entity| SequenceUpdateEvent::SequenceBegin { entity }),
+            1,
+        )
+    }
+
+    #[test]
+    fn spawns_entity_for_frame_begin_events() -> Result<(), Error> {
+        run_test(
+            Some(|entity| SequenceUpdateEvent::FrameBegin {
+                entity,
+                frame_index: 0,
+            }),
+            1,
+        )
+    }
+
+    #[test]
+    fn does_not_spawn_entity_for_sequence_end_events() -> Result<(), Error> {
+        run_test(
+            Some(|entity| SequenceUpdateEvent::SequenceEnd {
+                entity,
+                frame_index: 0,
+            }),
+            0,
+        )
+    }
+
+    #[test]
+    fn does_not_spawn_entity_when_no_sequence_update_event() -> Result<(), Error> {
+        run_test(None, 0)
+    }
+
+    fn run_test(
+        sequence_update_event_fn: Option<fn(Entity) -> SequenceUpdateEvent>,
+        spawn_count_expected: usize,
+    ) -> Result<(), Error> {
         AutexousiousApplication::config_base()
             .with_system(
                 SpawnGameObjectSystem::new(),
@@ -131,10 +231,10 @@ mod tests {
                 assert_energy_count(world, 0);
                 assert_events(world, 0);
             })
-            .with_setup(create_entity_with_spawns)
-            .with_assertion(|world| {
-                assert_energy_count(world, 1);
-                assert_events(world, 1);
+            .with_effect(move |world| create_entity_with_spawns(world, sequence_update_event_fn))
+            .with_assertion(move |world| {
+                assert_energy_count(world, spawn_count_expected);
+                assert_events(world, spawn_count_expected);
             })
             .run()
     }
@@ -147,7 +247,10 @@ mod tests {
         world.add_resource(spawn_event_rid);
     }
 
-    fn create_entity_with_spawns(world: &mut World) {
+    fn create_entity_with_spawns(
+        world: &mut World,
+        sequence_update_event_fn: Option<fn(Entity) -> SequenceUpdateEvent>,
+    ) {
         let spawns_handle = {
             let (loader, spawns_assets) =
                 world.system_data::<(ReadExpect<'_, Loader>, Read<'_, AssetStorage<Spawns>>)>();
@@ -156,6 +259,13 @@ mod tests {
 
         let entity = world.create_entity().with(spawns_handle).build();
         world.add_resource(entity);
+
+        if let Some(sequence_update_event_fn) = sequence_update_event_fn {
+            let mut sequence_update_ec =
+                world.write_resource::<EventChannel<SequenceUpdateEvent>>();
+            let sequence_update_event = sequence_update_event_fn(entity);
+            sequence_update_ec.single_write(sequence_update_event);
+        }
     }
 
     fn spawn() -> Spawn {

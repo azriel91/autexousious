@@ -13,6 +13,7 @@ game_model = { path = "../game_model" }
 kinematic_model = { path = "../kinematic_model" }
 log = "0.4.6"
 object_model = { path = "../object_model" }
+sequence_model = { path = "../sequence_model" }
 shred = "0.7.0"
 shred-derive = "0.5.1"
 spawn_model = { path = "../spawn_model" }
@@ -25,7 +26,6 @@ application_test_support = { path = "../application_test_support" }
 asset_model = { path = "../asset_model" }
 energy_loading = { path = "../energy_loading" }
 energy_model = { path = "../energy_model" }
-kinematic_model = { path = "../kinematic_model" }
 loading = { path = "../loading" }
 pretty_assertions = "0.6.1"
 
