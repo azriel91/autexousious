@@ -1,7 +1,4 @@
-use amethyst::{
-    core::{math::RealField, transform::Transform},
-    ecs::{Entities, Join, ReadStorage, System, WriteStorage},
-};
+use amethyst::ecs::{Entities, Join, ReadStorage, System, WriteStorage};
 use character_model::{config::CharacterSequenceId, play::RunCounter};
 use character_play::{
     CharacterSequenceUpdateComponents, CharacterSequenceUpdater, MirroredUpdater, RunCounterUpdater,
@@ -54,9 +51,6 @@ pub struct CharacterSequenceUpdateSystemData<'s> {
     /// `Grounding` components.
     #[derivative(Debug = "ignore")]
     pub groundings: WriteStorage<'s, Grounding>,
-    /// `Transform` components.
-    #[derivative(Debug = "ignore")]
-    pub transforms: WriteStorage<'s, Transform>,
 }
 
 impl<'s> System<'s> for CharacterSequenceUpdateSystem {
@@ -76,7 +70,6 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             mut character_sequence_ids,
             mut mirroreds,
             mut groundings,
-            mut transforms,
         }: Self::SystemData,
     ) {
         for (
@@ -90,7 +83,6 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             run_counter,
             mirrored,
             grounding,
-            transform,
         ) in (
             &entities,
             &controller_inputs,
@@ -102,7 +94,6 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             &mut run_counters,
             &mut mirroreds,
             &mut groundings,
-            &mut transforms,
         )
             .join()
         {
@@ -139,12 +130,6 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             );
             *mirrored =
                 MirroredUpdater::update(controller_input, *character_sequence_id, *mirrored);
-
-            if mirrored.0 {
-                transform.set_rotation_y_axis(f32::pi());
-            } else {
-                transform.set_rotation_y_axis(0.);
-            };
 
             if let Some(next_character_sequence_id) = next_character_sequence_id {
                 let character_sequence_id = character_sequence_ids
