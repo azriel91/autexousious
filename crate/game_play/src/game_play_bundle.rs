@@ -8,8 +8,8 @@ use chase_play::StickToTargetObjectSystem;
 use collision_audio_play::HitSfxSystem;
 use collision_model::loaded::{BodySequence, InteractionsSequence};
 use collision_play::{
-    CollisionDetectionSystem, HitDetectionSystem, HitRepeatTrackersAugmentSystem,
-    HitRepeatTrackersTickerSystem,
+    CollisionDetectionSystem, ContactDetectionSystem, HitDetectionSystem,
+    HitRepeatTrackersAugmentSystem, HitRepeatTrackersTickerSystem,
 };
 use derive_new::new;
 use energy_model::loaded::Energy;
@@ -184,9 +184,14 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[],
         ); // kcov-ignore
         builder.add(
+            ContactDetectionSystem::new(),
+            &ContactDetectionSystem::type_name(),
+            &[&CollisionDetectionSystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
             HitDetectionSystem::new(),
             &HitDetectionSystem::type_name(),
-            &[&CollisionDetectionSystem::type_name()],
+            &[&ContactDetectionSystem::type_name()],
         ); // kcov-ignore
 
         builder.add_barrier();
