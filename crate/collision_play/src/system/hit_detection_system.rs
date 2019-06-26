@@ -82,7 +82,7 @@ impl<'s> System<'s> for HitDetectionSystem {
 
                 // If we collide with multiple objects in *this* frame, when previously
                 // there was 1 collision, and the hit limit is 2, then we should only hit 1
-                // more at most. Currently this would hit all new objects.
+                // more at most.
                 //
                 // Also need to consider, if we have multiple `Interaction`s with different
                 // `HitLimit`s (rare case?), interactions with a higher `HitLimit` should be
