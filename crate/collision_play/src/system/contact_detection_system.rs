@@ -3,8 +3,11 @@ use amethyst::{
     shrev::{EventChannel, ReaderId},
 };
 use collision_model::play::{CollisionEvent, ContactEvent};
+use derivative::Derivative;
 use derive_new::new;
+use shred_derive::SystemData;
 use spawn_model::play::SpawnParent;
+use team_model::play::Team;
 use typename_derive::TypeName;
 
 /// Detects whether a `ContactEvent` occurs when a `CollisionEvent` happens.
@@ -18,46 +21,74 @@ pub struct ContactDetectionSystem {
     collision_event_rid: Option<ReaderId<CollisionEvent>>,
 }
 
-type ContactDetectionSystemData<'s> = (
-    Read<'s, EventChannel<CollisionEvent>>,
-    ReadStorage<'s, SpawnParent>,
-    Write<'s, EventChannel<ContactEvent>>,
-);
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub struct ContactDetectionSystemData<'s> {
+    /// `CollisionEvent` channel.
+    #[derivative(Debug = "ignore")]
+    pub collision_ec: Read<'s, EventChannel<CollisionEvent>>,
+    /// `SpawnParent` components.
+    #[derivative(Debug = "ignore")]
+    pub spawn_parents: ReadStorage<'s, SpawnParent>,
+    /// `Team` components.
+    #[derivative(Debug = "ignore")]
+    pub teams: ReadStorage<'s, Team>,
+    /// `ContactEvent` channel.
+    #[derivative(Debug = "ignore")]
+    pub contact_ec: Write<'s, EventChannel<ContactEvent>>,
+}
 
 impl<'s> System<'s> for ContactDetectionSystem {
     type SystemData = ContactDetectionSystemData<'s>;
 
-    fn run(&mut self, (collision_ec, spawn_parents, mut contact_ec): Self::SystemData) {
-        let contact_events =
-            collision_ec
-                .read(self.collision_event_rid.as_mut().expect(
+    fn run(
+        &mut self,
+        ContactDetectionSystemData {
+            collision_ec,
+            spawn_parents,
+            teams,
+            mut contact_ec,
+        }: Self::SystemData,
+    ) {
+        let contact_events = collision_ec
+            .read(
+                self.collision_event_rid.as_mut().expect(
                     "Expected `collision_event_rid` to exist for `ContactDetectionSystem`.",
-                ))
-                .filter(|ev| {
-                    // This assumes `ev.from` is the hitting object entity. If we have a separate
-                    // entity for each `Interaction`, then this assumption breaks, and we need to
-                    // traverse the entity hierarchy to find the object entity.
-                    let entity_hitter = ev.from;
+                ),
+            )
+            .filter(|ev| {
+                // This assumes `ev.from` is the hitting object entity. If we have a separate
+                // entity for each `Interaction`, then this assumption breaks, and we need to
+                // traverse the entity hierarchy to find the object entity.
+                let entity_hitter = ev.from;
 
-                    // This assumes `ev.to` is the hit object entity. If we have a separate
-                    // entity for each `Body`, then this assumption breaks, and we need to
-                    // traverse the entity hierarchy to find the object entity.
-                    let entity_hit = ev.to;
+                // This assumes `ev.to` is the hit object entity. If we have a separate
+                // entity for each `Body`, then this assumption breaks, and we need to
+                // traverse the entity hierarchy to find the object entity.
+                let entity_hit = ev.to;
 
-                    let dont_hit_spawn_parent = spawn_parents
-                        .get(entity_hitter)
-                        .map(|spawn_parent| spawn_parent.entity != entity_hit)
-                        .unwrap_or(true);
+                let team_from = teams.get(entity_hitter);
+                let team_to = teams.get(entity_hit);
+                let dont_hit_team = if let (Some(team_from), Some(team_to)) = (team_from, team_to) {
+                    team_from != team_to
+                } else {
+                    true
+                };
 
-                    let dont_hit_spawned_object = spawn_parents
-                        .get(entity_hit)
-                        .map(|spawn_parent| spawn_parent.entity != entity_hitter)
-                        .unwrap_or(true);
+                let dont_hit_spawn_parent = spawn_parents
+                    .get(entity_hitter)
+                    .map(|spawn_parent| spawn_parent.entity != entity_hit)
+                    .unwrap_or(true);
 
-                    dont_hit_spawn_parent && dont_hit_spawned_object
-                })
-                .map(|ev| ContactEvent::new(ev.from, ev.to, ev.interaction.clone(), ev.body))
-                .collect::<Vec<ContactEvent>>();
+                let dont_hit_spawned_object = spawn_parents
+                    .get(entity_hit)
+                    .map(|spawn_parent| spawn_parent.entity != entity_hitter)
+                    .unwrap_or(true);
+
+                dont_hit_team && dont_hit_spawn_parent && dont_hit_spawned_object
+            })
+            .map(|ev| ContactEvent::new(ev.from, ev.to, ev.interaction.clone(), ev.body))
+            .collect::<Vec<ContactEvent>>();
 
         contact_ec.iter_write(contact_events);
     }
@@ -87,6 +118,7 @@ mod tests {
     use pretty_assertions::assert_eq;
     use shape_model::Volume;
     use spawn_model::play::SpawnParent;
+    use team_model::play::{IndependentCounter, Team};
 
     use super::ContactDetectionSystem;
 
@@ -96,22 +128,50 @@ mod tests {
     fn inserts_contact_event_when_neither_entity_is_spawn_parent() -> Result<(), Error> {
         run_test(
             SpawnParentVariant::NoSpawnParent,
+            TeamsVariant::NoTeam,
             |entity_from, entity_to| vec![contact_event(entity_from, entity_to)],
         )
     }
 
     #[test]
     fn does_not_insert_contact_event_when_hitter_entity_is_spawn_parent() -> Result<(), Error> {
-        run_test(SpawnParentVariant::HitterEntityIsSpawnParent, |_, _| vec![])
+        run_test(
+            SpawnParentVariant::HitterEntityIsSpawnParent,
+            TeamsVariant::NoTeam,
+            |_, _| vec![],
+        )
     }
 
     #[test]
     fn does_not_insert_contact_event_when_hit_entity_is_spawn_parent() -> Result<(), Error> {
-        run_test(SpawnParentVariant::HitEntityIsSpawnParent, |_, _| vec![])
+        run_test(
+            SpawnParentVariant::HitEntityIsSpawnParent,
+            TeamsVariant::NoTeam,
+            |_, _| vec![],
+        )
+    }
+
+    #[test]
+    fn inserts_contact_event_when_entities_on_different_teams() -> Result<(), Error> {
+        run_test(
+            SpawnParentVariant::NoSpawnParent,
+            TeamsVariant::DifferentTeam,
+            |entity_from, entity_to| vec![contact_event(entity_from, entity_to)],
+        )
+    }
+
+    #[test]
+    fn does_not_insert_contact_event_when_entities_on_same_team() -> Result<(), Error> {
+        run_test(
+            SpawnParentVariant::NoSpawnParent,
+            TeamsVariant::SameTeam,
+            |_, _| vec![],
+        )
     }
 
     fn run_test(
         spawn_parent_variant: SpawnParentVariant,
+        teams_variant: TeamsVariant,
         events_expected_fn: fn(Entity, Entity) -> Vec<ContactEvent>,
     ) -> Result<(), Error> {
         AmethystApplication::blank()
@@ -135,6 +195,28 @@ mod tests {
                             .expect("Failed to insert `SpawnParent` component.");
                     }
                     SpawnParentVariant::NoSpawnParent => {}
+                }
+
+                match teams_variant {
+                    TeamsVariant::SameTeam => {
+                        let mut teams = world.write_storage::<Team>();
+                        teams
+                            .insert(entity_from, Team::Independent(IndependentCounter::new(0)))
+                            .expect("Failed to insert `Team` component.");
+                        teams
+                            .insert(entity_to, Team::Independent(IndependentCounter::new(0)))
+                            .expect("Failed to insert `Team` component.");
+                    }
+                    TeamsVariant::DifferentTeam => {
+                        let mut teams = world.write_storage::<Team>();
+                        teams
+                            .insert(entity_from, Team::Independent(IndependentCounter::new(0)))
+                            .expect("Failed to insert `Team` component.");
+                        teams
+                            .insert(entity_to, Team::Independent(IndependentCounter::new(1)))
+                            .expect("Failed to insert `Team` component.");
+                    }
+                    TeamsVariant::NoTeam => {}
                 }
 
                 send_event(world, collision_event(entity_from, entity_to));
@@ -223,5 +305,12 @@ mod tests {
         HitterEntityIsSpawnParent,
         HitEntityIsSpawnParent,
         NoSpawnParent,
+    }
+
+    #[derive(Clone, Copy, Debug, PartialEq)]
+    enum TeamsVariant {
+        SameTeam,
+        DifferentTeam,
+        NoTeam,
     }
 }
