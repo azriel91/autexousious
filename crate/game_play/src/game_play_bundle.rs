@@ -15,7 +15,7 @@ use energy_model::loaded::Energy;
 use game_input::ControllerInput;
 use game_play_hud::HpBarUpdateSystem;
 use named_type::NamedType;
-use object_play::ObjectGravitySystem;
+use object_play::{ObjectGravitySystem, ObjectMirroringSystem};
 use object_status_play::StunPointsReductionSystem;
 use sequence_model::loaded::WaitSequence;
 use sequence_play::{FrameComponentUpdateSystem, SequenceUpdateSystem};
@@ -157,6 +157,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
                 &ObjectKinematicsUpdateSystem::type_name(),
                 &ObjectGravitySystem::type_name(),
             ],
+        ); // kcov-ignore
+        builder.add(
+            ObjectMirroringSystem::new(),
+            &ObjectMirroringSystem::type_name(),
+            &[&ObjectTransformUpdateSystem::type_name()],
         ); // kcov-ignore
         builder.add(
             StickToTargetObjectSystem::new(),
