@@ -5,6 +5,9 @@ use specs_derive::Component;
 /// Links a child entity to the parent object entity.
 ///
 /// This component should be attached to the child entity.
+///
+/// **Note:** This is **not** the component attached to entities when they are spawned. For that you
+/// are looking for the `spawn_model::play::SpawnParent` component.
 #[derive(Clone, Component, Copy, Debug, PartialEq, new)]
 pub struct ParentObject {
     /// The parent entity.
