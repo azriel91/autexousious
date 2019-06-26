@@ -3,7 +3,8 @@
 //! Provides logic used during game play.
 
 pub use crate::system::{
-    HitDetectionSystem, HitRepeatTrackersAugmentSystem, HitRepeatTrackersTickerSystem,
+    CollisionDetectionSystem, HitDetectionSystem, HitRepeatTrackersAugmentSystem,
+    HitRepeatTrackersTickerSystem,
 };
 
 mod system;

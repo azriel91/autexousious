@@ -9,30 +9,54 @@ use collision_model::{
     config::{Body, Interaction, Interactions},
     play::CollisionEvent,
 };
+use derivative::Derivative;
 use derive_new::new;
 use log::debug;
 use object_model::play::Mirrored;
 use shape_model::Volume;
+use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 /// Detects collisions for all objects.
 #[derive(Debug, Default, TypeName, new)]
-pub(crate) struct ObjectCollisionDetectionSystem;
+pub struct CollisionDetectionSystem;
 
-type ObjectCollisionDetectionSystemData<'s> = (
-    Entities<'s>,
-    ReadStorage<'s, Transform>,
-    ReadStorage<'s, Handle<Interactions>>,
-    Read<'s, AssetStorage<Interactions>>,
-    ReadStorage<'s, Handle<Body>>,
-    Read<'s, AssetStorage<Body>>,
-    ReadStorage<'s, SpriteRender>,
-    ReadStorage<'s, Mirrored>,
-    Read<'s, AssetStorage<SpriteSheet>>,
-    Write<'s, EventChannel<CollisionEvent>>,
-);
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub struct CollisionDetectionSystemData<'s> {
+    /// `Entities` resource.
+    #[derivative(Debug = "ignore")]
+    pub entities: Entities<'s>,
+    /// `Transform` components.
+    #[derivative(Debug = "ignore")]
+    pub transforms: ReadStorage<'s, Transform>,
+    /// `Handle<Interactions>` components.
+    #[derivative(Debug = "ignore")]
+    pub interactions_handles: ReadStorage<'s, Handle<Interactions>>,
+    /// `Interactions` assets.
+    #[derivative(Debug = "ignore")]
+    pub interactions_assets: Read<'s, AssetStorage<Interactions>>,
+    /// `Handle<Body>` components.
+    #[derivative(Debug = "ignore")]
+    pub body_handles: ReadStorage<'s, Handle<Body>>,
+    /// `Body` assets.
+    #[derivative(Debug = "ignore")]
+    pub body_assets: Read<'s, AssetStorage<Body>>,
+    /// `SpriteRender` components.
+    #[derivative(Debug = "ignore")]
+    pub sprite_renders: ReadStorage<'s, SpriteRender>,
+    /// `Mirrored` components.
+    #[derivative(Debug = "ignore")]
+    pub mirroreds: ReadStorage<'s, Mirrored>,
+    /// `SpriteSheet` assets.
+    #[derivative(Debug = "ignore")]
+    pub sprite_sheet_assets: Read<'s, AssetStorage<SpriteSheet>>,
+    /// `CollisionEvent` channel.
+    #[derivative(Debug = "ignore")]
+    pub collision_ec: Write<'s, EventChannel<CollisionEvent>>,
+}
 
-impl ObjectCollisionDetectionSystem {
+impl CollisionDetectionSystem {
     fn intersects(
         relative_pos: &Vector3<Float>,
         (interaction, interaction_offsets, interaction_mirrored): (&Interaction, [f32; 2], bool),
@@ -131,12 +155,12 @@ impl ObjectCollisionDetectionSystem {
     }
 }
 
-impl<'s> System<'s> for ObjectCollisionDetectionSystem {
-    type SystemData = ObjectCollisionDetectionSystemData<'s>;
+impl<'s> System<'s> for CollisionDetectionSystem {
+    type SystemData = CollisionDetectionSystemData<'s>;
 
     fn run(
         &mut self,
-        (
+        CollisionDetectionSystemData {
             entities,
             transforms,
             interactions_handles,
@@ -147,7 +171,7 @@ impl<'s> System<'s> for ObjectCollisionDetectionSystem {
             mirroreds,
             sprite_sheet_assets,
             mut collision_ec,
-        ): Self::SystemData,
+        }: Self::SystemData,
     ) {
         // Naive collision detection.
         // TODO: Use broad sweep + narrow sweep for optimization.

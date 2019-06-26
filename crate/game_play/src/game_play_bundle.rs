@@ -8,7 +8,8 @@ use chase_play::StickToTargetObjectSystem;
 use collision_audio_play::HitSfxSystem;
 use collision_model::loaded::{BodySequence, InteractionsSequence};
 use collision_play::{
-    HitDetectionSystem, HitRepeatTrackersAugmentSystem, HitRepeatTrackersTickerSystem,
+    CollisionDetectionSystem, HitDetectionSystem, HitRepeatTrackersAugmentSystem,
+    HitRepeatTrackersTickerSystem,
 };
 use derive_new::new;
 use energy_model::loaded::Energy;
@@ -28,8 +29,7 @@ use typename::TypeName;
 use crate::{
     CharacterHitEffectSystem, CharacterKinematicsSystem, CharacterSequenceUpdateSystem,
     ComponentSequenceHandleUpdateSystem, FrameFreezeClockAugmentSystem, GamePlayEndDetectionSystem,
-    GamePlayEndTransitionSystem, ObjectCollisionDetectionSystem, ObjectKinematicsUpdateSystem,
-    ObjectTransformUpdateSystem,
+    GamePlayEndTransitionSystem, ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
 };
 
 /// Adds the object type update systems to the provided dispatcher.
@@ -179,14 +179,14 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         // === Effect Detection === //
 
         builder.add(
-            ObjectCollisionDetectionSystem::new(),
-            &ObjectCollisionDetectionSystem::type_name(),
+            CollisionDetectionSystem::new(),
+            &CollisionDetectionSystem::type_name(),
             &[],
         ); // kcov-ignore
         builder.add(
             HitDetectionSystem::new(),
             &HitDetectionSystem::type_name(),
-            &[&ObjectCollisionDetectionSystem::type_name()],
+            &[&CollisionDetectionSystem::type_name()],
         ); // kcov-ignore
 
         builder.add_barrier();
