@@ -2,6 +2,6 @@
 
 //! Provides logic for game objects used during game play.
 
-pub use crate::system::EnergyHitEffectSystem;
+pub use crate::system::{EnergyHitEffectSystem, EnergyHittingEffectSystem};
 
 mod system;
