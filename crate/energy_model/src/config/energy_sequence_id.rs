@@ -14,6 +14,10 @@ pub enum EnergySequenceId {
     /// Default sequence for energies.
     #[derivative(Default)]
     Hover,
+    /// Sequence to switch to when hitting another object.
+    Hitting,
+    /// Sequence to switch to when hit by another object.
+    Hit,
 }
 
 impl Component for EnergySequenceId {
