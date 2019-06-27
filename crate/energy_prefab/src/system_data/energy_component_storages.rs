@@ -1,6 +1,6 @@
 use amethyst::ecs::WriteStorage;
 use derivative::Derivative;
-use object_model::play::{Grounding, HealthPoints};
+use object_model::play::Grounding;
 use shred_derive::SystemData;
 
 /// Energy specific `Component` storages.
@@ -10,9 +10,6 @@ use shred_derive::SystemData;
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct EnergyComponentStorages<'s> {
-    /// `HealthPoints` component storage.
-    #[derivative(Debug = "ignore")]
-    pub health_pointses: WriteStorage<'s, HealthPoints>,
     /// `Grounding` component storage.
     #[derivative(Debug = "ignore")]
     pub groundings: WriteStorage<'s, Grounding>,
