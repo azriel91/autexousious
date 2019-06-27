@@ -53,7 +53,7 @@ impl<'s> System<'s> for HitDetectionSystem {
             .read(
                 self.contact_event_rid
                     .as_mut()
-                    .expect("Expected reader ID to exist for HitDetectionSystem."),
+                    .expect("Expected `contact_event_rid` to exist for `HitDetectionSystem`."),
             )
             .filter(|ev| {
                 // This assumes `ev.from` is the hitting object entity. If we have a separate entity
