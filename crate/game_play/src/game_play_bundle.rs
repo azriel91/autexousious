@@ -13,6 +13,7 @@ use collision_play::{
 };
 use derive_new::new;
 use energy_model::loaded::Energy;
+use energy_play::{EnergyHitEffectSystem, EnergyHittingEffectSystem};
 use game_input::ControllerInput;
 use game_play_hud::HpBarUpdateSystem;
 use named_type::NamedType;
@@ -215,6 +216,22 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             CharacterHitEffectSystem::new(),
             &CharacterHitEffectSystem::type_name(),
             &[&CharacterControlTransitionsTransitionSystem::type_name()],
+        ); // kcov-ignore
+
+        // `Energy` hit / hitting effects.
+        // There are only two currently, but if there is a timer system, perhaps that should go
+        // last.
+        // The `EnergyHitEffectSystem` depends on the `EnergyHittingEffectSystem` to ensure the
+        // `Hit` sequence is deterministic and overwrites the `Hitting` sequence.
+        builder.add(
+            EnergyHittingEffectSystem::new(),
+            &EnergyHittingEffectSystem::type_name(),
+            &[],
+        ); // kcov-ignore
+        builder.add(
+            EnergyHitEffectSystem::new(),
+            &EnergyHitEffectSystem::type_name(),
+            &[&EnergyHittingEffectSystem::type_name()],
         ); // kcov-ignore
 
         // Perhaps this should be straight after the `StickToTargetObjectSystem`, but we put it here
