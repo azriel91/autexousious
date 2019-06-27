@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 /// `Independent` team, then it must be incremented after. The `#get_and_increment` method is
 /// provided to make it easier to uphold this contract.
 #[numeric_newtype]
-#[derive(Debug, Default, Deserialize, Serialize)]
+#[derive(Debug, Default, Deserialize, Hash, Serialize)]
 pub struct IndependentCounter(pub u32);
 
 impl IndependentCounter {

@@ -4,5 +4,5 @@ use serde::{Deserialize, Serialize};
 
 /// Newtype for counting numbered teams.
 #[numeric_newtype]
-#[derive(Debug, Default, Deserialize, Serialize)]
+#[derive(Debug, Default, Deserialize, Hash, Serialize)]
 pub struct TeamCounter(pub u32);

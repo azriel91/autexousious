@@ -4,7 +4,7 @@ use specs_derive::Component;
 use crate::play::{IndependentCounter, TeamCounter};
 
 /// Represents the in-game grouping of player teams.
-#[derive(Clone, Component, Copy, Debug, PartialEq, PartialOrd)]
+#[derive(Clone, Component, Copy, Debug, Hash, PartialEq, Eq, PartialOrd)]
 #[storage(VecStorage)]
 pub enum Team {
     /// Independent team.
