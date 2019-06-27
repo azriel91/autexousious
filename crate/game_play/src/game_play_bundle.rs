@@ -95,7 +95,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         builder.add(
             FrameFreezeClockAugmentSystem::new(),
             &FrameFreezeClockAugmentSystem::type_name(),
-            &[],
+            &[&SequenceUpdateSystem::type_name()],
         ); // kcov-ignore
         builder.add(
             HitRepeatTrackersAugmentSystem::new(),
