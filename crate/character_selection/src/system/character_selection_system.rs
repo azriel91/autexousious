@@ -111,10 +111,10 @@ mod tests {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
         AmethystApplication::blank()
+            .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_bundle(TransformBundle::new())
             .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
-            .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
             .with_ui_bundles::<ControlBindings>()
             .with_system(Processor::<Source>::new(), "source_processor", &[])
@@ -162,9 +162,9 @@ mod tests {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
         AmethystApplication::blank()
+            .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_bundle(TransformBundle::new())
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
-            .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
             .with_ui_bundles::<ControlBindings>()
             .with_system(Processor::<Source>::new(), "source_processor", &[])
