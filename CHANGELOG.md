@@ -6,11 +6,13 @@
 
 * Load energy assets. ([#126])
 * Spawn energy assets. ([#126])
+* Independent `Team`s. ([#140])
 
 ### Changed
 
 * Render using Vulkan. ([#131], [#136])
 * Split `FrameComponentUpdateSystem` so individual updates can run in parallel. ([#111])
+* `FrameFreezeClock`s now tick when a sequence is ended. ([#140])
 
 ### Fixed
 
@@ -25,6 +27,7 @@
 [#135]: https://gitlab.com/azriel91/autexousious/issues/135
 [#136]: https://gitlab.com/azriel91/autexousious/issues/136
 [#139]: https://gitlab.com/azriel91/autexousious/issues/139
+[#140]: https://gitlab.com/azriel91/autexousious/issues/140
 
 ## 0.11.0 (2019-05-24)
 
