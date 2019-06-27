@@ -258,7 +258,9 @@ impl<'s> System<'s> for SequenceUpdateSystem {
                                 );
                             }
                         }
-                        SequenceStatus::End => {} // do nothing
+                        SequenceStatus::End => {
+                            Self::entity_unfrozen_tick(&mut frame_freeze_clocks, entity);
+                        }
                     }
                 },
             );
@@ -550,7 +552,7 @@ mod tests {
     }
 
     #[test]
-    fn does_nothing_when_sequence_end() -> Result<(), Error> {
+    fn does_not_tick_frame_clocks_when_sequence_end() -> Result<(), Error> {
         AutexousiousApplication::game_base()
             .with_setup(setup_system_data)
             .with_setup(|world| {
@@ -570,6 +572,34 @@ mod tests {
                     frame_index_clock(5, 5),
                     frame_wait_clock(2, 2),
                     None,
+                    SequenceStatus::End,
+                )
+            })
+            .with_assertion(|world| expect_events(world, vec![]))
+            .run_isolated()
+    }
+
+    #[test]
+    fn ticks_frame_freeze_clock_when_sequence_end() -> Result<(), Error> {
+        AutexousiousApplication::game_base()
+            .with_setup(setup_system_data)
+            .with_setup(|world| {
+                initial_values(
+                    world,
+                    frame_index_clock(5, 5),
+                    frame_wait_clock(2, 2),
+                    Some(frame_freeze_clock(0, 2)),
+                    SequenceStatus::End,
+                    false,
+                )
+            })
+            .with_system_single(SequenceUpdateSystem::new(), "", &[])
+            .with_assertion(|world| {
+                expect_values(
+                    world,
+                    frame_index_clock(5, 5),
+                    frame_wait_clock(2, 2),
+                    Some(frame_freeze_clock(1, 2)),
                     SequenceStatus::End,
                 )
             })
