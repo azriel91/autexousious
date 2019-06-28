@@ -9,7 +9,7 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["vulk
 derivative = "1.0.2"
 derive-new = "0.5.6"
 log = "0.4.6"
-serde = { version = "1.0.92", features = ["derive"] }
+serde = { version = "1.0.94", features = ["derive"] }
 strum = "0.15.0"
 strum_macros = "0.15.0"
 
