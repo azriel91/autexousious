@@ -11,6 +11,7 @@ use sequence_model::config::SequenceId;
 use serde::{Deserialize, Serialize};
 use specs_derive::Component;
 use strum_macros::{Display, EnumString, IntoStaticStr};
+use typename_derive::TypeName;
 // kcov-ignore-end
 
 #[derive(
@@ -27,6 +28,7 @@ use strum_macros::{Display, EnumString, IntoStaticStr};
     Eq,
     Hash,
     Serialize,
+    TypeName,
 )]
 #[derivative(Default)]
 #[storage(VecStorage)]

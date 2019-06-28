@@ -9,12 +9,22 @@ use serde::{
 };
 use specs_derive::Component;
 use strum_macros::{Display, EnumString, IntoStaticStr};
+use typename_derive::TypeName;
 
 use crate::config::SequenceId;
 
 /// Specifies the behaviour to transition when the sequence ends.
 #[derive(
-    Clone, Component, Copy, Debug, Derivative, Display, EnumString, IntoStaticStr, PartialEq,
+    Clone,
+    Component,
+    Copy,
+    Debug,
+    Derivative,
+    Display,
+    EnumString,
+    IntoStaticStr,
+    PartialEq,
+    TypeName,
 )]
 #[derivative(Default)]
 #[storage(VecStorage)]

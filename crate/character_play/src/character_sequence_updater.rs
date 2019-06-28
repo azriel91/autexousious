@@ -1,7 +1,4 @@
 use character_model::config::CharacterSequenceId;
-use sequence_model::{
-    config::SequenceEndTransition, loaded::SequenceEndTransitions, play::SequenceStatus,
-};
 
 use crate::{
     sequence_handler::{
@@ -25,7 +22,6 @@ impl CharacterSequenceUpdater {
     ///
     /// * `components`: Components used to compute character sequence updates.
     pub fn update<'c>(
-        sequence_end_transitions: &SequenceEndTransitions<CharacterSequenceId>,
         components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<CharacterSequenceId> {
         let sequence_handler: &dyn Fn(
@@ -62,29 +58,7 @@ impl CharacterSequenceUpdater {
             CharacterSequenceId::DashAttack => &DashAttack::update,
         };
 
-        let mut sequence_id = sequence_handler(components);
-
-        // Check if it's at the end of the sequence before switching to next.
-        if components.sequence_status == SequenceStatus::End {
-            let current_sequence_id = &components.character_sequence_id;
-            let sequence_end_transition =
-                sequence_end_transitions.get(current_sequence_id).copied();
-
-            // `next` from configuration overrides the state handler transition.
-            if let Some(sequence_end_transition) = sequence_end_transition {
-                match sequence_end_transition {
-                    SequenceEndTransition::None | SequenceEndTransition::Delete => {}
-                    SequenceEndTransition::Repeat => {
-                        sequence_id = Some(components.character_sequence_id);
-                    }
-                    SequenceEndTransition::SequenceId(next_sequence_id) => {
-                        sequence_id = Some(next_sequence_id);
-                    }
-                }
-            }
-        }
-
-        sequence_id
+        sequence_handler(components)
 
         // TODO: overrides based on sequence configuration
     }

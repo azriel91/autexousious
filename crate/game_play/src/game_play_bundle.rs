@@ -1,5 +1,5 @@
 use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
-use character_model::loaded::Character;
+use character_model::{config::CharacterSequenceId, loaded::Character};
 use character_play::{
     CharacterControlTransitionsTransitionSystem, CharacterControlTransitionsUpdateSystem,
     CharacterCtsHandleUpdateSystem,
@@ -12,7 +12,7 @@ use collision_play::{
     HitRepeatTrackersAugmentSystem, HitRepeatTrackersTickerSystem,
 };
 use derive_new::new;
-use energy_model::loaded::Energy;
+use energy_model::{config::EnergySequenceId, loaded::Energy};
 use energy_play::{EnergyHitEffectSystem, EnergyHittingEffectSystem};
 use game_input::ControllerInput;
 use game_play_hud::HpBarUpdateSystem;
@@ -20,7 +20,9 @@ use named_type::NamedType;
 use object_play::{ObjectGravitySystem, ObjectMirroringSystem};
 use object_status_play::StunPointsReductionSystem;
 use sequence_model::loaded::WaitSequence;
-use sequence_play::{FrameComponentUpdateSystem, SequenceUpdateSystem};
+use sequence_play::{
+    FrameComponentUpdateSystem, SequenceEndTransitionSystem, SequenceUpdateSystem,
+};
 use spawn_model::loaded::SpawnsSequence;
 use spawn_play::{SpawnGameObjectRectifySystem, SpawnGameObjectSystem};
 use sprite_model::loaded::SpriteRenderSequence;
@@ -199,13 +201,28 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 
         // === Sequence ID Updates === //
 
+        builder.add(
+            SequenceEndTransitionSystem::<CharacterSequenceId>::new(),
+            &SequenceEndTransitionSystem::<CharacterSequenceId>::type_name(),
+            &[],
+        ); // kcov-ignore
+        builder.add(
+            SequenceEndTransitionSystem::<EnergySequenceId>::new(),
+            &SequenceEndTransitionSystem::<EnergySequenceId>::type_name(),
+            &[],
+        ); // kcov-ignore
+
         // Note: The `CharacterSequenceUpdateSystem` depends on
         // `game_input::ControllerInputUpdateSystem`. We rely on the main dispatcher to be run
         // before the `GamePlayState` dispatcher.
+        //
+        // It also depends on `&SequenceEndTransitionSystem::<CharacterSequenceId>` as the
+        // `CharacterSequenceUpdater` transitions should overwrite the `SequenceEndTransition`
+        // update.
         builder.add(
             CharacterSequenceUpdateSystem::new(),
             &CharacterSequenceUpdateSystem::type_name(),
-            &[],
+            &[&SequenceEndTransitionSystem::<CharacterSequenceId>::type_name()],
         ); // kcov-ignore
         builder.add(
             CharacterControlTransitionsTransitionSystem::new(),

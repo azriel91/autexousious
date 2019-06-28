@@ -78,31 +78,32 @@ where
             .for_each(|ev| {
                 let entity = ev.entity();
 
-                let sequence_end_transition = sequence_end_transitions
-                    .get(entity)
-                    .copied()
-                    .expect("Expected entity to have `SequenceEndTransition` component.");
-                match sequence_end_transition {
-                    SequenceEndTransition::None => {}
-                    SequenceEndTransition::Repeat => {
-                        let sequence_id = sequence_ids
-                            .get(entity)
-                            .copied()
-                            .expect("Expected entity to have `SeqId` component.");
-                        // Re-insertion causes sequence to restart.
-                        sequence_ids
-                            .insert(entity, sequence_id)
-                            .expect("Failed to insert `SeqId` component.");
-                    }
-                    SequenceEndTransition::Delete => {
-                        entities
-                            .delete(entity)
-                            .expect("Failed to delete entity on `SequenceEndTransition`.");
-                    }
-                    SequenceEndTransition::SequenceId(sequence_id) => {
-                        sequence_ids
-                            .insert(entity, sequence_id)
-                            .expect("Failed to insert `SeqId` component.");
+                let sequence_end_transition = sequence_end_transitions.get(entity).copied();
+
+                // Map layers don't have `SequenceEndTransition` components.
+                if let Some(sequence_end_transition) = sequence_end_transition {
+                    match sequence_end_transition {
+                        SequenceEndTransition::None => {}
+                        SequenceEndTransition::Repeat => {
+                            let sequence_id = sequence_ids
+                                .get(entity)
+                                .copied()
+                                .expect("Expected entity to have `SeqId` component.");
+                            // Re-insertion causes sequence to restart.
+                            sequence_ids
+                                .insert(entity, sequence_id)
+                                .expect("Failed to insert `SeqId` component.");
+                        }
+                        SequenceEndTransition::Delete => {
+                            entities
+                                .delete(entity)
+                                .expect("Failed to delete entity on `SequenceEndTransition`.");
+                        }
+                        SequenceEndTransition::SequenceId(sequence_id) => {
+                            sequence_ids
+                                .insert(entity, sequence_id)
+                                .expect("Failed to insert `SeqId` component.");
+                        }
                     }
                 }
             });

@@ -8,7 +8,7 @@ use derive_new::new;
 use game_input::ControllerInput;
 use kinematic_model::config::{Position, Velocity};
 use object_model::play::{Grounding, HealthPoints, Mirrored};
-use sequence_model::{loaded::SequenceEndTransitions, play::SequenceStatus};
+use sequence_model::play::SequenceStatus;
 use shred_derive::SystemData;
 use typename_derive::TypeName;
 
@@ -24,9 +24,6 @@ pub struct CharacterSequenceUpdateSystemData<'s> {
     /// `ControllerInput` components.
     #[derivative(Debug = "ignore")]
     pub controller_inputs: ReadStorage<'s, ControllerInput>,
-    /// `SequenceEndTransitions<CharacterSequenceId>` components.
-    #[derivative(Debug = "ignore")]
-    pub sequence_end_transitionses: ReadStorage<'s, SequenceEndTransitions<CharacterSequenceId>>,
     /// `Position<f32>` components.
     #[derivative(Debug = "ignore")]
     pub positions: ReadStorage<'s, Position<f32>>,
@@ -61,7 +58,6 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
         CharacterSequenceUpdateSystemData {
             entities,
             controller_inputs,
-            sequence_end_transitionses,
             positions,
             velocities,
             health_pointses,
@@ -75,7 +71,6 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
         for (
             entity,
             controller_input,
-            sequence_end_transitions,
             position,
             velocity,
             health_points,
@@ -86,7 +81,6 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
         ) in (
             &entities,
             &controller_inputs,
-            &sequence_end_transitionses,
             &positions,
             &velocities,
             &health_pointses,
@@ -106,9 +100,8 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             let character_sequence_id =
                 character_sequence_id.expect("Expected `CharacterSequenceId` to exist.");
 
-            let next_character_sequence_id = CharacterSequenceUpdater::update(
-                sequence_end_transitions,
-                CharacterSequenceUpdateComponents::new(
+            let next_character_sequence_id =
+                CharacterSequenceUpdater::update(CharacterSequenceUpdateComponents::new(
                     &controller_input,
                     *health_points,
                     *character_sequence_id,
@@ -118,8 +111,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                     *mirrored,
                     *grounding,
                     *run_counter,
-                ),
-            );
+                ));
 
             *run_counter = RunCounterUpdater::update(
                 *run_counter,
