@@ -12,9 +12,13 @@ pub use self::{
     character_control_transitions_sequence::{
         CharacterControlTransitionsSequence, CharacterControlTransitionsSequenceHandle,
     },
+    character_tick_transition_sequence::{
+        CharacterTickTransitionSequence, CharacterTickTransitionSequenceHandle,
+    },
 };
 
 mod character;
 mod character_control_transition;
 mod character_control_transitions;
 mod character_control_transitions_sequence;
+mod character_tick_transition_sequence;
