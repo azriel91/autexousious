@@ -10,9 +10,8 @@ pub(crate) use crate::{
     game_play_bundle::GamePlayBundle,
     system::{
         CharacterHitEffectSystem, CharacterKinematicsSystem, CharacterSequenceUpdateSystem,
-        ComponentSequenceHandleUpdateSystem, FrameFreezeClockAugmentSystem,
-        GamePlayEndDetectionSystem, GamePlayEndTransitionSystem, ObjectKinematicsUpdateSystem,
-        ObjectTransformUpdateSystem,
+        FrameFreezeClockAugmentSystem, GamePlayEndDetectionSystem, GamePlayEndTransitionSystem,
+        ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem, SequenceComponentUpdateSystem,
     },
 };
 

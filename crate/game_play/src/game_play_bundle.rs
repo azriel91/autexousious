@@ -29,8 +29,8 @@ use typename::TypeName;
 
 use crate::{
     CharacterHitEffectSystem, CharacterKinematicsSystem, CharacterSequenceUpdateSystem,
-    ComponentSequenceHandleUpdateSystem, FrameFreezeClockAugmentSystem, GamePlayEndDetectionSystem,
-    GamePlayEndTransitionSystem, ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
+    FrameFreezeClockAugmentSystem, GamePlayEndDetectionSystem, GamePlayEndTransitionSystem,
+    ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem, SequenceComponentUpdateSystem,
 };
 
 /// Adds the object type update systems to the provided dispatcher.
@@ -47,8 +47,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
                     FrameComponentUpdateSystem::<$component_sequence>::new(),
                     &FrameComponentUpdateSystem::<$component_sequence>::type_name(),
                     &[
-                        &ComponentSequenceHandleUpdateSystem::<Character>::type_name(),
-                        &ComponentSequenceHandleUpdateSystem::<Energy>::type_name(),
+                        &SequenceComponentUpdateSystem::<Character>::type_name(),
+                        &SequenceComponentUpdateSystem::<Energy>::type_name(),
                         &SequenceUpdateSystem::type_name(),
                     ],
                 ); // kcov-ignore
@@ -56,13 +56,13 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         }
 
         builder.add(
-            ComponentSequenceHandleUpdateSystem::<Character>::new(),
-            &ComponentSequenceHandleUpdateSystem::<Character>::type_name(),
+            SequenceComponentUpdateSystem::<Character>::new(),
+            &SequenceComponentUpdateSystem::<Character>::type_name(),
             &[],
         ); // kcov-ignore
         builder.add(
-            ComponentSequenceHandleUpdateSystem::<Energy>::new(),
-            &ComponentSequenceHandleUpdateSystem::<Energy>::type_name(),
+            SequenceComponentUpdateSystem::<Energy>::new(),
+            &SequenceComponentUpdateSystem::<Energy>::type_name(),
             &[],
         ); // kcov-ignore
 
@@ -71,8 +71,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             SequenceUpdateSystem::new(),
             &SequenceUpdateSystem::type_name(),
             &[
-                &ComponentSequenceHandleUpdateSystem::<Character>::type_name(),
-                &ComponentSequenceHandleUpdateSystem::<Energy>::type_name(),
+                &SequenceComponentUpdateSystem::<Character>::type_name(),
+                &SequenceComponentUpdateSystem::<Energy>::type_name(),
             ],
         ); // kcov-ignore
         add_frame_component_update_system!(WaitSequence);

@@ -24,7 +24,7 @@ use typename_derive::TypeName;
 /// `SequenceUpdateSystem`, as that relies on the `SequenceStatus` to determine if a `SequenceBegin`
 /// event should be sent.
 #[derive(Debug, Default, TypeName, new)]
-pub struct ComponentSequenceHandleUpdateSystem<O>
+pub struct SequenceComponentUpdateSystem<O>
 where
     O: GameObject,
 {
@@ -40,7 +40,7 @@ where
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct ComponentSequenceHandleUpdateSystemData<'s, O>
+pub struct SequenceComponentUpdateSystemData<'s, O>
 where
     O: GameObject,
 {
@@ -67,16 +67,16 @@ where
     pub component_sequence_handle_storages: ComponentSequenceHandleStorages<'s>,
 }
 
-impl<'s, O> System<'s> for ComponentSequenceHandleUpdateSystem<O>
+impl<'s, O> System<'s> for SequenceComponentUpdateSystem<O>
 where
     O: GameObject,
     <O::SequenceId as Component>::Storage: Tracked,
 {
-    type SystemData = ComponentSequenceHandleUpdateSystemData<'s, O>;
+    type SystemData = SequenceComponentUpdateSystemData<'s, O>;
 
     fn run(
         &mut self,
-        ComponentSequenceHandleUpdateSystemData {
+        SequenceComponentUpdateSystemData {
             entities,
             sequence_ids,
             object_wrapper_handles,
@@ -194,16 +194,12 @@ mod tests {
     use spawn_model::loaded::SpawnsSequenceHandle;
     use sprite_model::loaded::SpriteRenderSequenceHandle;
 
-    use super::ComponentSequenceHandleUpdateSystem;
+    use super::SequenceComponentUpdateSystem;
 
     #[test]
     fn attaches_handle_for_sequence_id_insertions() -> Result<(), Error> {
         AutexousiousApplication::game_base()
-            .with_system(
-                ComponentSequenceHandleUpdateSystem::<Character>::new(),
-                "",
-                &[],
-            )
+            .with_system(SequenceComponentUpdateSystem::<Character>::new(), "", &[])
             .with_setup(|world| insert_sequence(world, CharacterSequenceId::RunStop))
             .with_assertion(|world| expect_components(world, CharacterSequenceId::RunStop))
             .run_isolated()
@@ -212,11 +208,7 @@ mod tests {
     #[test]
     fn attaches_handle_for_sequence_id_modifications() -> Result<(), Error> {
         AutexousiousApplication::game_base()
-            .with_system(
-                ComponentSequenceHandleUpdateSystem::<Character>::new(),
-                "",
-                &[],
-            )
+            .with_system(SequenceComponentUpdateSystem::<Character>::new(), "", &[])
             .with_setup(|world| update_sequence(world, CharacterSequenceId::RunStop))
             .with_assertion(|world| expect_components(world, CharacterSequenceId::RunStop))
             .run_isolated()
