@@ -32,7 +32,8 @@ use typename::TypeName;
 use crate::{
     CharacterHitEffectSystem, CharacterKinematicsSystem, CharacterSequenceUpdateSystem,
     FrameFreezeClockAugmentSystem, GamePlayEndDetectionSystem, GamePlayEndTransitionSystem,
-    ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem, SequenceComponentUpdateSystem,
+    GamePlayRemovalAugmentSystem, ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
+    SequenceComponentUpdateSystem,
 };
 
 /// Adds the object type update systems to the provided dispatcher.
@@ -117,6 +118,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         builder.add(
             SpawnGameObjectRectifySystem::new(),
             &SpawnGameObjectRectifySystem::type_name(),
+            &[&SpawnGameObjectSystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
+            GamePlayRemovalAugmentSystem::new(),
+            &GamePlayRemovalAugmentSystem::type_name(),
             &[&SpawnGameObjectSystem::type_name()],
         ); // kcov-ignore
 
