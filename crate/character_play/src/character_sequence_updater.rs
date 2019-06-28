@@ -1,5 +1,7 @@
 use character_model::config::CharacterSequenceId;
-use sequence_model::{loaded::SequenceEndTransitions, play::SequenceStatus};
+use sequence_model::{
+    config::TickTransition, loaded::SequenceEndTransitions, play::SequenceStatus,
+};
 
 use crate::{
     sequence_handler::{
@@ -67,11 +69,19 @@ impl CharacterSequenceUpdater {
             let current_sequence_id = &components.character_sequence_id;
             let next = sequence_end_transitions
                 .get(current_sequence_id)
-                .and_then(|sequence_end_transition| sequence_end_transition.next);
+                .map(|sequence_end_transition| sequence_end_transition.next);
 
             // `next` from configuration overrides the state handler transition.
-            if next.is_some() {
-                sequence_id = next;
+            if let Some(tick_transition) = next {
+                match tick_transition {
+                    TickTransition::None | TickTransition::Delete => {}
+                    TickTransition::Repeat => {
+                        sequence_id = Some(components.character_sequence_id);
+                    }
+                    TickTransition::SequenceId(next_sequence_id) => {
+                        sequence_id = Some(next_sequence_id);
+                    }
+                }
             }
         }
 

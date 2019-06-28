@@ -25,7 +25,7 @@ impl GameObjectSequence for EnergySequence {
 #[cfg(test)]
 mod tests {
     use object_model::config::{ObjectFrame, ObjectSequence};
-    use sequence_model::config::Wait;
+    use sequence_model::config::{TickTransition, Wait};
     use sprite_model::config::SpriteRef;
     use toml;
 
@@ -44,7 +44,7 @@ mod tests {
         let sequence = toml::from_str::<EnergySequence>(SEQUENCE_WITH_FRAMES_EMPTY)
             .expect("Failed to deserialize sequence.");
 
-        let expected = EnergySequence::new(ObjectSequence::new(None, vec![]));
+        let expected = EnergySequence::new(ObjectSequence::new(TickTransition::None, vec![]));
         assert_eq!(expected, sequence);
     }
 
@@ -58,7 +58,7 @@ mod tests {
             sprite: SpriteRef::new(0, 4),
             ..Default::default()
         })];
-        let expected = EnergySequence::new(ObjectSequence::new(None, frames));
+        let expected = EnergySequence::new(ObjectSequence::new(TickTransition::None, frames));
 
         assert_eq!(expected, sequence);
     }

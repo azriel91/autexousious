@@ -5,11 +5,26 @@ use amethyst::ecs::{
 use derivative::Derivative;
 use sequence_model::config::SequenceId;
 use serde::{Deserialize, Serialize};
+use strum_macros::{Display, EnumString, IntoStaticStr};
 
-/// Object Sequence IDs.
-#[derive(Clone, Copy, Debug, Derivative, Deserialize, Eq, Hash, PartialEq, Serialize)]
+/// `Character` Sequence IDs.
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Derivative,
+    Deserialize,
+    Display,
+    EnumString,
+    IntoStaticStr,
+    PartialEq,
+    Eq,
+    Hash,
+    Serialize,
+)]
 #[derivative(Default)]
 #[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
 pub enum CharacterSequenceId {
     /// Default sequence for characters.
     #[derivative(Default)]

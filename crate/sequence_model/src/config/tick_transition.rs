@@ -1,0 +1,109 @@
+use std::{fmt, marker::PhantomData, str::FromStr};
+
+use amethyst::ecs::{storage::VecStorage, Component};
+use derivative::Derivative;
+use derive_new::new;
+use serde::{
+    de::{Error, Unexpected, Visitor},
+    Deserialize, Deserializer, Serialize, Serializer,
+};
+use specs_derive::Component;
+use strum_macros::{Display, EnumString, IntoStaticStr};
+
+use crate::config::SequenceId;
+
+/// Specifies the behaviour to transition when the sequence ends.
+#[derive(
+    Clone, Component, Copy, Debug, Derivative, Display, EnumString, IntoStaticStr, PartialEq,
+)]
+#[derivative(Default)]
+#[storage(VecStorage)]
+#[strum(serialize_all = "snake_case")]
+pub enum TickTransition<SeqId>
+where
+    SeqId: SequenceId,
+{
+    /// Don't transition, stay on the last frame.
+    #[derivative(Default)]
+    None,
+    /// Repeat the current sequence.
+    Repeat,
+    /// Delete the object after the sequence has ended.
+    Delete,
+    /// Transition to the specified sequence.
+    //
+    // TODO: Ideally we could use `#[serde(flatten)]` for enum variants, but it isn't supported yet.
+    // TODO: See: <https://github.com/serde-rs/serde/issues/1402>
+    SequenceId(SeqId),
+}
+
+impl<SeqId> Serialize for TickTransition<SeqId>
+where
+    SeqId: SequenceId,
+{
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let enum_name = stringify!(TickTransition);
+        match self {
+            TickTransition::None => {
+                let variant_index = 0;
+                let variant_name = Into::<&'static str>::into(TickTransition::<SeqId>::None);
+                serializer.serialize_unit_variant(enum_name, variant_index, &variant_name)
+            }
+            TickTransition::Repeat => {
+                let variant_index = 1;
+                let variant_name = Into::<&'static str>::into(TickTransition::<SeqId>::Repeat);
+                serializer.serialize_unit_variant(enum_name, variant_index, &variant_name)
+            }
+            TickTransition::Delete => {
+                let variant_index = 2;
+                let variant_name = Into::<&'static str>::into(TickTransition::<SeqId>::Delete);
+                serializer.serialize_unit_variant(enum_name, variant_index, &variant_name)
+            }
+            TickTransition::SequenceId(sequence_id) => {
+                let variant_index = 3;
+                let variant_name = Into::<&'static str>::into(*sequence_id);
+                serializer.serialize_unit_variant(enum_name, variant_index, &variant_name)
+            }
+        }
+    }
+}
+
+impl<'de, SeqId> Deserialize<'de> for TickTransition<SeqId>
+where
+    SeqId: SequenceId,
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        deserializer.deserialize_any(TickTransitionVisitor::new())
+    }
+}
+
+#[derive(new)]
+struct TickTransitionVisitor<SeqId>(PhantomData<SeqId>)
+where
+    SeqId: SequenceId;
+
+impl<'de, SeqId> Visitor<'de> for TickTransitionVisitor<SeqId>
+where
+    SeqId: SequenceId,
+{
+    type Value = TickTransition<SeqId>;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("one of `none`, `repeat`, `delete`, or a sequence ID")
+    }
+
+    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+    where
+        E: Error,
+    {
+        TickTransition::from_str(value)
+            .or_else(|_| SeqId::from_str(value).map(TickTransition::SequenceId))
+            .map_err(|_| E::invalid_value(Unexpected::Str(value), &self))
+    }
+}

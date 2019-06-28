@@ -10,11 +10,28 @@ use object_model::{config::ObjectAssetData, game_object, loaded::GameObject};
 use sequence_model::config::SequenceId;
 use serde::{Deserialize, Serialize};
 use specs_derive::Component;
+use strum_macros::{Display, EnumString, IntoStaticStr};
 // kcov-ignore-end
 
-#[derive(Clone, Component, Copy, Debug, Derivative, Deserialize, PartialEq, Eq, Hash, Serialize)]
+#[derive(
+    Clone,
+    Component,
+    Copy,
+    Debug,
+    Derivative,
+    Deserialize,
+    Display,
+    EnumString,
+    IntoStaticStr,
+    PartialEq,
+    Eq,
+    Hash,
+    Serialize,
+)]
 #[derivative(Default)]
 #[storage(VecStorage)]
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
 pub enum MagicSequenceId {
     #[derivative(Default)]
     Boo,

@@ -175,6 +175,10 @@ mod tests {
     fn spawns_characters_when_they_havent_been_spawned() -> Result<(), Error> {
         run_test(
             |world| {
+                let mut game_loading_status = GameLoadingStatus::new();
+                game_loading_status.character_augment_status = CharacterAugmentStatus::Prefab;
+                world.add_resource(game_loading_status);
+
                 let mut character_selections = CharacterSelections::default();
                 character_selections
                     .selections
@@ -202,7 +206,8 @@ mod tests {
                         })
                         .is_some(),
                     "Expected entity with `InputControlled`, `CharacterPrefabHandle`, and \
-                     `Team` components to exist."
+                     `Team` components to exist. Components: {:?}",
+                    components
                 );
                 assert!(
                     components
@@ -213,7 +218,8 @@ mod tests {
                         })
                         .is_some(),
                     "Expected entity with `InputControlled`, `CharacterPrefabHandle`, and \
-                     `Team` components to exist."
+                     `Team` components to exist. Components: {:?}",
+                    components
                 );
 
                 assert_eq!(
