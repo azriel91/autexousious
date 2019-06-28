@@ -3,12 +3,6 @@
 //! This differs from the plain configuration types as they would have been processed into the form
 //! that will be used in game.
 
-pub use self::{
-    energy::{Energy, EnergyHandle, EnergyObjectWrapper},
-    energy_tick_transition_sequence::{
-        EnergyTickTransitionSequence, EnergyTickTransitionSequenceHandle,
-    },
-};
+pub use self::energy::{Energy, EnergyHandle, EnergyObjectWrapper};
 
 mod energy;
-mod energy_tick_transition_sequence;

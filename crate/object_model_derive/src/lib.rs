@@ -25,16 +25,23 @@ mod object_wrapper_gen;
 /// pub struct Magic;
 /// ```
 ///
-/// the following is generated:
+/// the following is effectively generated, without the `use` statements polluting scope:
 ///
 /// ```rust,ignore
+/// use asset_derive::Asset;
+/// use derive_deref::{Deref, DerefMut};
+/// use sequence_model::{component_sequence, config::TickTransition};
+/// use typename_derive::TypeName;
+///
+/// use crate::config::MagicSequenceId;
+///
 /// pub struct Magic {
 ///     /// Handle to loaded object data.
 ///     pub object_handle: Handle<MagicObjectWrapper>,
 /// }
 ///
 /// impl GameObject for Magic {
-///     const OBJECT_TYPE: ObjectType = ObjectType::Character;
+///     const OBJECT_TYPE: ObjectType = ObjectType::TestObject;
 ///     type SequenceId = MagicSequenceId;
 ///     type GameObjectSequence = MagicSequence;
 ///     type Definition = MagicObjectDefinition;
@@ -42,10 +49,6 @@ mod object_wrapper_gen;
 ///
 ///     fn object_handle(&self) -> &Handle<MagicObjectWrapper> {
 ///         &self.object_handle
-///     }
-///
-///     fn sequence_end_transitions(&self) -> &SequenceEndTransitions<MagicSequenceId> {
-///         &self.sequence_end_transitions
 ///     }
 /// }
 ///
