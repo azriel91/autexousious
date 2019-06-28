@@ -148,7 +148,7 @@ impl<'s> System<'s> for SpawnGameObjectRectifySystem {
             if let Some(team) = team_parent {
                 teams
                     .insert(entity_spawned, team)
-                    .expect("Failed to insert `Mirrored` component.");
+                    .expect("Failed to insert `Team` component.");
             }
         });
     }
