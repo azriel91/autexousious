@@ -25,7 +25,7 @@ impl GameObjectSequence for TestObjectSequence {
 #[cfg(test)]
 mod tests {
     use object_model::config::{ObjectFrame, ObjectSequence};
-    use sequence_model::config::{TickTransition, Wait};
+    use sequence_model::config::{SequenceEndTransition, Wait};
     use sprite_model::config::SpriteRef;
     use toml;
 
@@ -44,7 +44,8 @@ mod tests {
         let sequence = toml::from_str::<TestObjectSequence>(SEQUENCE_WITH_FRAMES_EMPTY)
             .expect("Failed to deserialize sequence.");
 
-        let expected = TestObjectSequence::new(ObjectSequence::new(TickTransition::None, vec![]));
+        let expected =
+            TestObjectSequence::new(ObjectSequence::new(SequenceEndTransition::None, vec![]));
         assert_eq!(expected, sequence);
     }
 
@@ -58,7 +59,8 @@ mod tests {
             sprite: SpriteRef::new(0, 4),
             ..Default::default()
         })];
-        let expected = TestObjectSequence::new(ObjectSequence::new(TickTransition::None, frames));
+        let expected =
+            TestObjectSequence::new(ObjectSequence::new(SequenceEndTransition::None, frames));
 
         assert_eq!(expected, sequence);
     }

@@ -31,7 +31,7 @@ use object_model::{
 use pretty_assertions::assert_eq;
 use sequence_loading::SequenceLoadingBundle;
 use sequence_model::{
-    config::TickTransition,
+    config::SequenceEndTransition,
     loaded::{
         ControlTransition, ControlTransitionHold, ControlTransitionPress, ControlTransitionRelease,
         ControlTransitions,
@@ -159,7 +159,7 @@ fn character_definition() -> CharacterDefinition {
         }, // kcov-ignore
     )];
     let sequence = CharacterSequence::new(ObjectSequence::new(
-        TickTransition::SequenceId(CharacterSequenceId::Stand),
+        SequenceEndTransition::SequenceId(CharacterSequenceId::Stand),
         frames,
     ));
     let mut sequences = HashMap::new();

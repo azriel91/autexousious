@@ -1,6 +1,6 @@
 use character_model::config::CharacterSequenceId;
 use sequence_model::{
-    config::TickTransition, loaded::SequenceEndTransitions, play::SequenceStatus,
+    config::SequenceEndTransition, loaded::SequenceEndTransitions, play::SequenceStatus,
 };
 
 use crate::{
@@ -67,18 +67,17 @@ impl CharacterSequenceUpdater {
         // Check if it's at the end of the sequence before switching to next.
         if components.sequence_status == SequenceStatus::End {
             let current_sequence_id = &components.character_sequence_id;
-            let next = sequence_end_transitions
-                .get(current_sequence_id)
-                .map(|sequence_end_transition| sequence_end_transition.next);
+            let sequence_end_transition =
+                sequence_end_transitions.get(current_sequence_id).copied();
 
             // `next` from configuration overrides the state handler transition.
-            if let Some(tick_transition) = next {
-                match tick_transition {
-                    TickTransition::None | TickTransition::Delete => {}
-                    TickTransition::Repeat => {
+            if let Some(sequence_end_transition) = sequence_end_transition {
+                match sequence_end_transition {
+                    SequenceEndTransition::None | SequenceEndTransition::Delete => {}
+                    SequenceEndTransition::Repeat => {
                         sequence_id = Some(components.character_sequence_id);
                     }
-                    TickTransition::SequenceId(next_sequence_id) => {
+                    SequenceEndTransition::SequenceId(next_sequence_id) => {
                         sequence_id = Some(next_sequence_id);
                     }
                 }

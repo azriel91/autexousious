@@ -30,7 +30,7 @@ mod object_wrapper_gen;
 /// ```rust,ignore
 /// use asset_derive::Asset;
 /// use derive_deref::{Deref, DerefMut};
-/// use sequence_model::{component_sequence, config::TickTransition};
+/// use sequence_model::{component_sequence, config::SequenceEndTransition};
 /// use typename_derive::TypeName;
 ///
 /// use crate::config::MagicSequenceId;

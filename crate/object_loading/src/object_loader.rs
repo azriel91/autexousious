@@ -12,7 +12,7 @@ use object_model::{
 };
 use sequence_model::{
     config::Wait,
-    loaded::{SequenceEndTransition, WaitSequence, WaitSequenceHandle},
+    loaded::{WaitSequence, WaitSequenceHandle},
 };
 use serde::{Deserialize, Serialize};
 use spawn_model::{
@@ -56,12 +56,7 @@ impl ObjectLoader {
         let sequence_end_transitions = object_definition
             .sequences
             .iter()
-            .map(|(sequence_id, sequence)| {
-                (
-                    *sequence_id,
-                    SequenceEndTransition::new(sequence.object_sequence().next),
-                )
-            })
+            .map(|(sequence_id, sequence)| (*sequence_id, sequence.object_sequence().next))
             .collect::<FnvHashMap<_, _>>();
 
         // Load component sequences

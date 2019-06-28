@@ -18,7 +18,7 @@ mod test {
 
     use collision_model::config::Body;
     use object_model::config::{ObjectDefinition, ObjectFrame, ObjectSequence};
-    use sequence_model::config::{TickTransition, Wait};
+    use sequence_model::config::{SequenceEndTransition, Wait};
     use shape_model::Volume;
     use sprite_model::config::SpriteRef;
     use toml;
@@ -54,7 +54,7 @@ mod test {
             ..Default::default()
         })];
         let sequence = EnergySequence::new(ObjectSequence::new(
-            TickTransition::SequenceId(EnergySequenceId::Hover),
+            SequenceEndTransition::SequenceId(EnergySequenceId::Hover),
             frames,
         ));
         let mut sequences = HashMap::new();

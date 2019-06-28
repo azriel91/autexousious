@@ -8,7 +8,7 @@
 //! define this at compile time rather than needing to process this at run time.
 
 use derive_new::new;
-use sequence_model::config::{SequenceId, TickTransition};
+use sequence_model::config::{SequenceEndTransition, SequenceId};
 use serde::{Deserialize, Serialize};
 
 use crate::config::{GameObjectFrame, ObjectFrame};
@@ -29,7 +29,7 @@ where
     /// Note: This may not be immediately after the last frame of the sequence. For example, a
     /// character that is in mid-air should remain in the last frame until it lands on the ground.
     #[serde(default)]
-    pub next: TickTransition<SeqId>,
+    pub next: SequenceEndTransition<SeqId>,
     /// Key frames in the animation sequence.
     pub frames: Vec<Frame>,
 }
@@ -46,7 +46,7 @@ mod tests {
     use derivative::Derivative;
     use kinematic_model::config::{Position, Velocity};
     use object_status_model::config::StunPoints;
-    use sequence_model::config::{SequenceId, TickTransition, Wait};
+    use sequence_model::config::{SequenceEndTransition, SequenceId, Wait};
     use serde::{Deserialize, Serialize};
     use shape_model::Volume;
     use spawn_model::config::{Spawn, Spawns};
@@ -95,7 +95,7 @@ mod tests {
         let sequence = toml::from_str::<ObjectSequence<TestSeqId>>(SEQUENCE_WITH_FRAMES_EMPTY)
             .expect("Failed to deserialize sequence.");
 
-        let expected = ObjectSequence::new(TickTransition::None, vec![]);
+        let expected = ObjectSequence::new(SequenceEndTransition::None, vec![]);
         assert_eq!(expected, sequence);
     }
 
@@ -148,7 +148,8 @@ mod tests {
                 Spawns::default(),
             ),
         ];
-        let expected = ObjectSequence::new(TickTransition::SequenceId(TestSeqId::Boo), frames);
+        let expected =
+            ObjectSequence::new(SequenceEndTransition::SequenceId(TestSeqId::Boo), frames);
         assert_eq!(expected, sequence);
     }
 
@@ -180,7 +181,7 @@ mod tests {
             Interactions::default(),
             Spawns::default(),
         )];
-        let expected = ObjectSequence::new(TickTransition::None, frames);
+        let expected = ObjectSequence::new(SequenceEndTransition::None, frames);
         assert_eq!(expected, sequence);
     }
 
@@ -212,7 +213,7 @@ mod tests {
             Interactions::new(interactions),
             Spawns::default(),
         )];
-        let expected = ObjectSequence::new(TickTransition::None, frames);
+        let expected = ObjectSequence::new(SequenceEndTransition::None, frames);
         assert_eq!(expected, sequence);
     }
 
@@ -235,7 +236,7 @@ mod tests {
             Interactions::default(),
             Spawns::new(spawns),
         )];
-        let expected = ObjectSequence::new(TickTransition::None, frames);
+        let expected = ObjectSequence::new(SequenceEndTransition::None, frames);
         assert_eq!(expected, sequence);
     }
 

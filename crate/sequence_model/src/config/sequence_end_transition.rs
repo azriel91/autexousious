@@ -19,7 +19,7 @@ use crate::config::SequenceId;
 #[derivative(Default)]
 #[storage(VecStorage)]
 #[strum(serialize_all = "snake_case")]
-pub enum TickTransition<SeqId>
+pub enum SequenceEndTransition<SeqId>
 where
     SeqId: SequenceId,
 {
@@ -37,7 +37,7 @@ where
     SequenceId(SeqId),
 }
 
-impl<SeqId> Serialize for TickTransition<SeqId>
+impl<SeqId> Serialize for SequenceEndTransition<SeqId>
 where
     SeqId: SequenceId,
 {
@@ -45,24 +45,26 @@ where
     where
         S: Serializer,
     {
-        let enum_name = stringify!(TickTransition);
+        let enum_name = stringify!(SequenceEndTransition);
         match self {
-            TickTransition::None => {
+            SequenceEndTransition::None => {
                 let variant_index = 0;
-                let variant_name = Into::<&'static str>::into(TickTransition::<SeqId>::None);
+                let variant_name = Into::<&'static str>::into(SequenceEndTransition::<SeqId>::None);
                 serializer.serialize_unit_variant(enum_name, variant_index, &variant_name)
             }
-            TickTransition::Repeat => {
+            SequenceEndTransition::Repeat => {
                 let variant_index = 1;
-                let variant_name = Into::<&'static str>::into(TickTransition::<SeqId>::Repeat);
+                let variant_name =
+                    Into::<&'static str>::into(SequenceEndTransition::<SeqId>::Repeat);
                 serializer.serialize_unit_variant(enum_name, variant_index, &variant_name)
             }
-            TickTransition::Delete => {
+            SequenceEndTransition::Delete => {
                 let variant_index = 2;
-                let variant_name = Into::<&'static str>::into(TickTransition::<SeqId>::Delete);
+                let variant_name =
+                    Into::<&'static str>::into(SequenceEndTransition::<SeqId>::Delete);
                 serializer.serialize_unit_variant(enum_name, variant_index, &variant_name)
             }
-            TickTransition::SequenceId(sequence_id) => {
+            SequenceEndTransition::SequenceId(sequence_id) => {
                 let variant_index = 3;
                 let variant_name = Into::<&'static str>::into(*sequence_id);
                 serializer.serialize_unit_variant(enum_name, variant_index, &variant_name)
@@ -71,7 +73,7 @@ where
     }
 }
 
-impl<'de, SeqId> Deserialize<'de> for TickTransition<SeqId>
+impl<'de, SeqId> Deserialize<'de> for SequenceEndTransition<SeqId>
 where
     SeqId: SequenceId,
 {
@@ -79,20 +81,20 @@ where
     where
         D: Deserializer<'de>,
     {
-        deserializer.deserialize_any(TickTransitionVisitor::new())
+        deserializer.deserialize_any(SequenceEndTransitionVisitor::new())
     }
 }
 
 #[derive(new)]
-struct TickTransitionVisitor<SeqId>(PhantomData<SeqId>)
+struct SequenceEndTransitionVisitor<SeqId>(PhantomData<SeqId>)
 where
     SeqId: SequenceId;
 
-impl<'de, SeqId> Visitor<'de> for TickTransitionVisitor<SeqId>
+impl<'de, SeqId> Visitor<'de> for SequenceEndTransitionVisitor<SeqId>
 where
     SeqId: SequenceId,
 {
-    type Value = TickTransition<SeqId>;
+    type Value = SequenceEndTransition<SeqId>;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         formatter.write_str("one of `none`, `repeat`, `delete`, or a sequence ID")
@@ -102,8 +104,8 @@ where
     where
         E: Error,
     {
-        TickTransition::from_str(value)
-            .or_else(|_| SeqId::from_str(value).map(TickTransition::SequenceId))
+        SequenceEndTransition::from_str(value)
+            .or_else(|_| SeqId::from_str(value).map(SequenceEndTransition::SequenceId))
             .map_err(|_| E::invalid_value(Unexpected::Str(value), &self))
     }
 }

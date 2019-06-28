@@ -10,7 +10,7 @@ use character_model::{
 use character_prefab::CharacterPrefab;
 use collision_model::loaded::{BodySequenceHandle, InteractionsSequenceHandle};
 use object_model::loaded::ObjectWrapper;
-use sequence_model::loaded::WaitSequenceHandle;
+use sequence_model::{config::SequenceEndTransition, loaded::WaitSequenceHandle};
 use spawn_model::loaded::SpawnsSequenceHandle;
 use sprite_model::loaded::SpriteRenderSequenceHandle;
 
@@ -90,6 +90,39 @@ impl SequenceQueries {
             .expect("Expected `CharacterControlTransitionsSequence` to be loaded.");
 
         character_cts[frame_index].clone()
+    }
+
+    /// Returns the `SequenceEndTransition` for the specified sequence ID.
+    ///
+    /// This function assumes the character for the specified slug is instantiated in the world.
+    ///
+    /// # Parameters
+    ///
+    /// * `world`: `World` of the running application.
+    /// * `asset_slug`: Asset slug of the `Object`.
+    /// * `sequence_id`: Sequence ID of the `SequenceEndTransition`.
+    pub fn sequence_end_transition(
+        world: &World,
+        asset_slug: &AssetSlug,
+        sequence_id: CharacterSequenceId,
+    ) -> SequenceEndTransition<CharacterSequenceId> {
+        let object_wrapper_handle = ObjectQueries::object_wrapper_handle(world, asset_slug);
+        let object_wrapper_assets = world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
+        let object_wrapper = object_wrapper_assets
+            .get(&object_wrapper_handle)
+            .unwrap_or_else(|| panic!("Expected `{}` object wrapper to be loaded.", asset_slug));
+
+        let object = object_wrapper.inner();
+        object
+            .sequence_end_transitions
+            .get(&sequence_id)
+            .unwrap_or_else(|| {
+                panic!(
+                    "Expected `SequenceEndTransition` for sequence ID `{:?}` to exist.",
+                    sequence_id
+                )
+            })
+            .clone()
     }
 
     /// Returns the `WaitSequenceHandle` for the specified sequence ID.

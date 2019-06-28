@@ -22,7 +22,7 @@ use energy_model::{
 use energy_prefab::{EnergyPrefab, EnergyPrefabBundle, EnergyPrefabHandle};
 use object_model::config::{ObjectAssetData, ObjectDefinition, ObjectFrame, ObjectSequence};
 use sequence_loading::SequenceLoadingBundle;
-use sequence_model::config::TickTransition;
+use sequence_model::config::SequenceEndTransition;
 
 #[test]
 fn energy_prefab_load() -> Result<(), Error> {
@@ -79,7 +79,7 @@ fn energy_definition() -> EnergyDefinition {
         ..Default::default()
     })];
     let sequence = EnergySequence::new(ObjectSequence::new(
-        TickTransition::SequenceId(EnergySequenceId::Hover),
+        SequenceEndTransition::SequenceId(EnergySequenceId::Hover),
         frames,
     ));
     let mut sequences = HashMap::new();

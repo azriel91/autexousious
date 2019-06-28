@@ -26,7 +26,7 @@ impl GameObjectSequence for CharacterSequence {
 mod tests {
     use object_model::config::{ObjectFrame, ObjectSequence};
     use sequence_model::config::{
-        ControlTransition, ControlTransitionSingle, TickTransition, Wait,
+        ControlTransition, ControlTransitionSingle, SequenceEndTransition, Wait,
     };
     use sprite_model::config::SpriteRef;
     use toml;
@@ -53,7 +53,8 @@ mod tests {
         let sequence = toml::from_str::<CharacterSequence>(SEQUENCE_WITH_FRAMES_EMPTY)
             .expect("Failed to deserialize sequence.");
 
-        let expected = CharacterSequence::new(ObjectSequence::new(TickTransition::None, vec![]));
+        let expected =
+            CharacterSequence::new(ObjectSequence::new(SequenceEndTransition::None, vec![]));
         assert_eq!(expected, sequence);
     }
 
@@ -79,7 +80,8 @@ mod tests {
                 ..Default::default()
             }, // kcov-ignore
         )];
-        let expected = CharacterSequence::new(ObjectSequence::new(TickTransition::None, frames));
+        let expected =
+            CharacterSequence::new(ObjectSequence::new(SequenceEndTransition::None, frames));
 
         assert_eq!(expected, sequence);
     }
