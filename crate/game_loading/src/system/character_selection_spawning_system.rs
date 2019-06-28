@@ -200,9 +200,8 @@ mod tests {
                 assert!(
                     components
                         .iter()
-                        .find(|(&input_controlled, _character_prefab_handle, &team)| {
+                        .find(|(&input_controlled, _character_prefab_handle, &_team)| {
                             input_controlled == InputControlled::new(0)
-                                && team == Team::Independent(IndependentCounter::new(0))
                         })
                         .is_some(),
                     "Expected entity with `InputControlled`, `CharacterPrefabHandle`, and \
@@ -212,9 +211,30 @@ mod tests {
                 assert!(
                     components
                         .iter()
-                        .find(|(&input_controlled, _character_prefab_handle, &team)| {
+                        .find(|(&_input_controlled, _character_prefab_handle, &team)| {
+                            team == Team::Independent(IndependentCounter::new(0))
+                        })
+                        .is_some(),
+                    "Expected entity with `InputControlled`, `CharacterPrefabHandle`, and \
+                     `Team` components to exist. Components: {:?}",
+                    components
+                );
+                assert!(
+                    components
+                        .iter()
+                        .find(|(&input_controlled, _character_prefab_handle, &_team)| {
                             input_controlled == InputControlled::new(123)
-                                && team == Team::Independent(IndependentCounter::new(1))
+                        })
+                        .is_some(),
+                    "Expected entity with `InputControlled`, `CharacterPrefabHandle`, and \
+                     `Team` components to exist. Components: {:?}",
+                    components
+                );
+                assert!(
+                    components
+                        .iter()
+                        .find(|(&_input_controlled, _character_prefab_handle, &team)| {
+                            team == Team::Independent(IndependentCounter::new(1))
                         })
                         .is_some(),
                     "Expected entity with `InputControlled`, `CharacterPrefabHandle`, and \
