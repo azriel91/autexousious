@@ -26,6 +26,7 @@ collision_model = { path = "../collision_model" }
 logic_clock = { path = "../logic_clock" }
 pretty_assertions = "0.6.1"
 shape_model = { path = "../shape_model" }
+test_object_model = { path = "../test_object_model" }
 
 [features]
 nightly = ["amethyst/nightly"]
