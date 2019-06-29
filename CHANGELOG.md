@@ -5,8 +5,9 @@
 ### Added
 
 * Load energy assets. ([#126])
-* Spawn energy assets. ([#126])
+* Spawn energy assets when a frame begins. ([#126])
 * Independent `Team`s. ([#140])
+* Sequence `next` value can be one of `"none"`, `"repeat"`, `"delete"`, or a sequence ID. ([#140])
 
 ### Changed
 
