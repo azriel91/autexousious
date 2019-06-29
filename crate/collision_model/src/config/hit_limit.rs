@@ -17,7 +17,7 @@ use strum_macros::{Display, EnumString, IntoStaticStr};
 /// hit_limit = "unlimited"  # HitLimit::Unlimited
 /// ```
 #[derive(
-    Clone, Copy, Debug, Display, Derivative, EnumString, IntoStaticStr, Hash, PartialEq, Eq,
+    Clone, Copy, Debug, Derivative, Display, EnumString, IntoStaticStr, Hash, PartialEq, Eq,
 )]
 #[derivative(Default)]
 #[strum(serialize_all = "snake_case")]
@@ -39,7 +39,7 @@ impl Serialize for HitLimit {
             HitLimit::Unlimited => {
                 let enum_name = stringify!(HitLimit);
                 let variant_index = 1;
-                let variant_name: &str = HitLimit::Unlimited.into();
+                let variant_name = Into::<&'static str>::into(HitLimit::Unlimited);
                 serializer.serialize_unit_variant(enum_name, variant_index, &variant_name)
             }
         }

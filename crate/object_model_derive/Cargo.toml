@@ -11,4 +11,4 @@ proc-macro = true
 proc-macro2 = "0.4.30"
 proc_macro_roids = "0.2.1"
 quote = "0.6.12"
-syn = { version = "0.15.34", features = ["extra-traits", "visit"] }
+syn = { version = "0.15.39", features = ["extra-traits", "visit"] }

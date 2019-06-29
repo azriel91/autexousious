@@ -1,5 +1,5 @@
 use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
-use character_model::loaded::Character;
+use character_model::{config::CharacterSequenceId, loaded::Character};
 use character_play::{
     CharacterControlTransitionsTransitionSystem, CharacterControlTransitionsUpdateSystem,
     CharacterCtsHandleUpdateSystem,
@@ -8,17 +8,21 @@ use chase_play::StickToTargetObjectSystem;
 use collision_audio_play::HitSfxSystem;
 use collision_model::loaded::{BodySequence, InteractionsSequence};
 use collision_play::{
-    HitDetectionSystem, HitRepeatTrackersAugmentSystem, HitRepeatTrackersTickerSystem,
+    CollisionDetectionSystem, ContactDetectionSystem, HitDetectionSystem,
+    HitRepeatTrackersAugmentSystem, HitRepeatTrackersTickerSystem,
 };
 use derive_new::new;
-use energy_model::loaded::Energy;
+use energy_model::{config::EnergySequenceId, loaded::Energy};
+use energy_play::{EnergyHitEffectSystem, EnergyHittingEffectSystem};
 use game_input::ControllerInput;
 use game_play_hud::HpBarUpdateSystem;
 use named_type::NamedType;
-use object_play::ObjectGravitySystem;
+use object_play::{ObjectGravitySystem, ObjectMirroringSystem};
 use object_status_play::StunPointsReductionSystem;
 use sequence_model::loaded::WaitSequence;
-use sequence_play::{FrameComponentUpdateSystem, SequenceUpdateSystem};
+use sequence_play::{
+    FrameComponentUpdateSystem, SequenceEndTransitionSystem, SequenceUpdateSystem,
+};
 use spawn_model::loaded::SpawnsSequence;
 use spawn_play::{SpawnGameObjectRectifySystem, SpawnGameObjectSystem};
 use sprite_model::loaded::SpriteRenderSequence;
@@ -27,9 +31,9 @@ use typename::TypeName;
 
 use crate::{
     CharacterHitEffectSystem, CharacterKinematicsSystem, CharacterSequenceUpdateSystem,
-    ComponentSequenceHandleUpdateSystem, FrameFreezeClockAugmentSystem, GamePlayEndDetectionSystem,
-    GamePlayEndTransitionSystem, ObjectCollisionDetectionSystem, ObjectKinematicsUpdateSystem,
-    ObjectTransformUpdateSystem,
+    FrameFreezeClockAugmentSystem, GamePlayEndDetectionSystem, GamePlayEndTransitionSystem,
+    GamePlayRemovalAugmentSystem, ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
+    SequenceComponentUpdateSystem,
 };
 
 /// Adds the object type update systems to the provided dispatcher.
@@ -46,8 +50,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
                     FrameComponentUpdateSystem::<$component_sequence>::new(),
                     &FrameComponentUpdateSystem::<$component_sequence>::type_name(),
                     &[
-                        &ComponentSequenceHandleUpdateSystem::<Character>::type_name(),
-                        &ComponentSequenceHandleUpdateSystem::<Energy>::type_name(),
+                        &SequenceComponentUpdateSystem::<Character>::type_name(),
+                        &SequenceComponentUpdateSystem::<Energy>::type_name(),
                         &SequenceUpdateSystem::type_name(),
                     ],
                 ); // kcov-ignore
@@ -55,13 +59,13 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         }
 
         builder.add(
-            ComponentSequenceHandleUpdateSystem::<Character>::new(),
-            &ComponentSequenceHandleUpdateSystem::<Character>::type_name(),
+            SequenceComponentUpdateSystem::<Character>::new(),
+            &SequenceComponentUpdateSystem::<Character>::type_name(),
             &[],
         ); // kcov-ignore
         builder.add(
-            ComponentSequenceHandleUpdateSystem::<Energy>::new(),
-            &ComponentSequenceHandleUpdateSystem::<Energy>::type_name(),
+            SequenceComponentUpdateSystem::<Energy>::new(),
+            &SequenceComponentUpdateSystem::<Energy>::type_name(),
             &[],
         ); // kcov-ignore
 
@@ -70,8 +74,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             SequenceUpdateSystem::new(),
             &SequenceUpdateSystem::type_name(),
             &[
-                &ComponentSequenceHandleUpdateSystem::<Character>::type_name(),
-                &ComponentSequenceHandleUpdateSystem::<Energy>::type_name(),
+                &SequenceComponentUpdateSystem::<Character>::type_name(),
+                &SequenceComponentUpdateSystem::<Energy>::type_name(),
             ],
         ); // kcov-ignore
         add_frame_component_update_system!(WaitSequence);
@@ -95,7 +99,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         builder.add(
             FrameFreezeClockAugmentSystem::new(),
             &FrameFreezeClockAugmentSystem::type_name(),
-            &[],
+            &[&SequenceUpdateSystem::type_name()],
         ); // kcov-ignore
         builder.add(
             HitRepeatTrackersAugmentSystem::new(),
@@ -114,6 +118,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         builder.add(
             SpawnGameObjectRectifySystem::new(),
             &SpawnGameObjectRectifySystem::type_name(),
+            &[&SpawnGameObjectSystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
+            GamePlayRemovalAugmentSystem::new(),
+            &GamePlayRemovalAugmentSystem::type_name(),
             &[&SpawnGameObjectSystem::type_name()],
         ); // kcov-ignore
 
@@ -159,6 +168,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             ],
         ); // kcov-ignore
         builder.add(
+            ObjectMirroringSystem::new(),
+            &ObjectMirroringSystem::type_name(),
+            &[&ObjectTransformUpdateSystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
             StickToTargetObjectSystem::new(),
             &StickToTargetObjectSystem::type_name(),
             &[&ObjectTransformUpdateSystem::type_name()],
@@ -174,27 +188,47 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         // === Effect Detection === //
 
         builder.add(
-            ObjectCollisionDetectionSystem::new(),
-            &ObjectCollisionDetectionSystem::type_name(),
+            CollisionDetectionSystem::new(),
+            &CollisionDetectionSystem::type_name(),
             &[],
+        ); // kcov-ignore
+        builder.add(
+            ContactDetectionSystem::new(),
+            &ContactDetectionSystem::type_name(),
+            &[&CollisionDetectionSystem::type_name()],
         ); // kcov-ignore
         builder.add(
             HitDetectionSystem::new(),
             &HitDetectionSystem::type_name(),
-            &[&ObjectCollisionDetectionSystem::type_name()],
+            &[&ContactDetectionSystem::type_name()],
         ); // kcov-ignore
 
         builder.add_barrier();
 
         // === Sequence ID Updates === //
 
+        builder.add(
+            SequenceEndTransitionSystem::<CharacterSequenceId>::new(),
+            &SequenceEndTransitionSystem::<CharacterSequenceId>::type_name(),
+            &[],
+        ); // kcov-ignore
+        builder.add(
+            SequenceEndTransitionSystem::<EnergySequenceId>::new(),
+            &SequenceEndTransitionSystem::<EnergySequenceId>::type_name(),
+            &[],
+        ); // kcov-ignore
+
         // Note: The `CharacterSequenceUpdateSystem` depends on
         // `game_input::ControllerInputUpdateSystem`. We rely on the main dispatcher to be run
         // before the `GamePlayState` dispatcher.
+        //
+        // It also depends on `&SequenceEndTransitionSystem::<CharacterSequenceId>` as the
+        // `CharacterSequenceUpdater` transitions should overwrite the `SequenceEndTransition`
+        // update.
         builder.add(
             CharacterSequenceUpdateSystem::new(),
             &CharacterSequenceUpdateSystem::type_name(),
-            &[],
+            &[&SequenceEndTransitionSystem::<CharacterSequenceId>::type_name()],
         ); // kcov-ignore
         builder.add(
             CharacterControlTransitionsTransitionSystem::new(),
@@ -205,6 +239,22 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             CharacterHitEffectSystem::new(),
             &CharacterHitEffectSystem::type_name(),
             &[&CharacterControlTransitionsTransitionSystem::type_name()],
+        ); // kcov-ignore
+
+        // `Energy` hit / hitting effects.
+        // There are only two currently, but if there is a timer system, perhaps that should go
+        // last.
+        // The `EnergyHitEffectSystem` depends on the `EnergyHittingEffectSystem` to ensure the
+        // `Hit` sequence is deterministic and overwrites the `Hitting` sequence.
+        builder.add(
+            EnergyHittingEffectSystem::new(),
+            &EnergyHittingEffectSystem::type_name(),
+            &[],
+        ); // kcov-ignore
+        builder.add(
+            EnergyHitEffectSystem::new(),
+            &EnergyHitEffectSystem::type_name(),
+            &[&EnergyHittingEffectSystem::type_name()],
         ); // kcov-ignore
 
         // Perhaps this should be straight after the `StickToTargetObjectSystem`, but we put it here

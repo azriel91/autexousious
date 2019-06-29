@@ -1,5 +1,4 @@
 use character_model::config::CharacterSequenceId;
-use sequence_model::{loaded::SequenceEndTransitions, play::SequenceStatus};
 
 use crate::{
     sequence_handler::{
@@ -23,7 +22,6 @@ impl CharacterSequenceUpdater {
     ///
     /// * `components`: Components used to compute character sequence updates.
     pub fn update<'c>(
-        sequence_end_transitions: &SequenceEndTransitions<CharacterSequenceId>,
         components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<CharacterSequenceId> {
         let sequence_handler: &dyn Fn(
@@ -60,22 +58,7 @@ impl CharacterSequenceUpdater {
             CharacterSequenceId::DashAttack => &DashAttack::update,
         };
 
-        let mut sequence_id = sequence_handler(components);
-
-        // Check if it's at the end of the sequence before switching to next.
-        if components.sequence_status == SequenceStatus::End {
-            let current_sequence_id = &components.character_sequence_id;
-            let next = sequence_end_transitions
-                .get(current_sequence_id)
-                .and_then(|sequence_end_transition| sequence_end_transition.next);
-
-            // `next` from configuration overrides the state handler transition.
-            if next.is_some() {
-                sequence_id = next;
-            }
-        }
-
-        sequence_id
+        sequence_handler(components)
 
         // TODO: overrides based on sequence configuration
     }

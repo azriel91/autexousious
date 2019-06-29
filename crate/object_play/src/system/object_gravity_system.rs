@@ -11,7 +11,7 @@ use object_model::{config::Mass, play::Grounding};
 use shred_derive::SystemData;
 use typename_derive::TypeName;
 
-/// Updates `Character` kinematics based on sequence.
+/// Increases velocity of `Object`s that have `Mass` and are `Airborne`.
 #[derive(Debug, Default, TypeName, new)]
 pub struct ObjectGravitySystem;
 

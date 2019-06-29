@@ -1,8 +1,5 @@
 use amethyst::renderer::SpriteRender;
-use asset_derive::Asset;
-use derive_deref::{Deref, DerefMut};
 use sequence_model_derive::component_sequence;
-use typename_derive::TypeName;
 
 /// Sequence for sprites to draw.
 ///

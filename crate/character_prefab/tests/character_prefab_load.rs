@@ -30,9 +30,12 @@ use object_model::{
 };
 use pretty_assertions::assert_eq;
 use sequence_loading::SequenceLoadingBundle;
-use sequence_model::loaded::{
-    ControlTransition, ControlTransitionHold, ControlTransitionPress, ControlTransitionRelease,
-    ControlTransitions,
+use sequence_model::{
+    config::SequenceEndTransition,
+    loaded::{
+        ControlTransition, ControlTransitionHold, ControlTransitionPress, ControlTransitionRelease,
+        ControlTransitions,
+    },
 };
 
 #[test]
@@ -156,7 +159,7 @@ fn character_definition() -> CharacterDefinition {
         }, // kcov-ignore
     )];
     let sequence = CharacterSequence::new(ObjectSequence::new(
-        Some(CharacterSequenceId::Stand),
+        SequenceEndTransition::SequenceId(CharacterSequenceId::Stand),
         frames,
     ));
     let mut sequences = HashMap::new();

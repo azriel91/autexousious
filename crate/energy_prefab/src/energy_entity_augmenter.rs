@@ -1,5 +1,5 @@
 use amethyst::ecs::Entity;
-use object_model::play::{Grounding, HealthPoints};
+use object_model::play::Grounding;
 
 use crate::EnergyComponentStorages;
 
@@ -16,15 +16,8 @@ impl EnergyEntityAugmenter {
     /// * `energy_component_storages`: Energy specific `Component` storages.
     pub fn augment<'s>(
         entity: Entity,
-        EnergyComponentStorages {
-            ref mut health_pointses,
-            ref mut groundings,
-        }: &mut EnergyComponentStorages<'s>,
+        EnergyComponentStorages { ref mut groundings }: &mut EnergyComponentStorages<'s>,
     ) {
-        // Health points.
-        health_pointses
-            .insert(entity, HealthPoints::default())
-            .expect("Failed to insert health_points component.");
         // Grounding.
         groundings
             .insert(entity, Grounding::default())
@@ -41,7 +34,7 @@ mod test {
         Error,
     };
     use amethyst_test::AmethystApplication;
-    use object_model::play::{Grounding, HealthPoints};
+    use object_model::play::Grounding;
 
     use super::EnergyEntityAugmenter;
     use crate::EnergyComponentStorages;
@@ -55,7 +48,6 @@ mod test {
                 EnergyEntityAugmenter::augment(entity, &mut energy_component_storages);
             }
 
-            assert!(world.read_storage::<HealthPoints>().contains(entity));
             assert!(world.read_storage::<Grounding>().contains(entity));
         };
 

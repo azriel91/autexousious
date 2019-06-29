@@ -77,6 +77,12 @@ pub fn component_sequence(args: TokenStream, item: TokenStream) -> TokenStream {
     let fn_new_doc = format!("Returns a new `{}`.", type_name);
 
     let token_stream_2 = quote! {
+        #[derive(
+            asset_derive::Asset,
+            derive_deref::Deref,
+            derive_deref::DerefMut,
+            typename_derive::TypeName,
+        )]
         #ast
 
         impl #type_name {
@@ -113,7 +119,7 @@ pub fn component_sequence(args: TokenStream, item: TokenStream) -> TokenStream {
 }
 
 fn derive_append(ast: &mut DeriveInput) {
-    let derives = parse_quote!(Asset, Clone, Debug, Deref, DerefMut, PartialEq, TypeName);
+    let derives = parse_quote!(Clone, Debug, PartialEq);
 
     ast.append_derives(derives);
 }

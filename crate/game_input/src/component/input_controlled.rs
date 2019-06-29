@@ -1,6 +1,7 @@
-use amethyst::ecs::{prelude::*, storage::HashMapStorage};
+use amethyst::ecs::{storage::HashMapStorage, Component};
 use derive_new::new;
 use game_input_model::ControllerId;
+use specs_derive::Component;
 
 /// Marks a game input controlled entity.
 ///
@@ -8,12 +9,9 @@ use game_input_model::ControllerId;
 ///
 /// We use a `HashMapStorage` because there wouldn't be that many entities that are controlled by
 /// `Controller`s. We will use a different `Component` for AI controllers.
-#[derive(Clone, Copy, Debug, new)]
+#[derive(Clone, Component, Copy, Debug, PartialEq, new)]
+#[storage(HashMapStorage)]
 pub struct InputControlled {
     /// ID of the controller that controls the entity.
     pub controller_id: ControllerId,
-}
-
-impl Component for InputControlled {
-    type Storage = HashMapStorage<Self>;
 }

@@ -14,7 +14,7 @@ itertools = "0.8.0"
 log = "0.4.6"
 map_model = { path = "../map_model" }
 object_type = { path = "../object_type" }
-serde = "1.0.92"
+serde = "1.0.94"
 strum = "0.15.0"
 toml = "0.5.1"
 

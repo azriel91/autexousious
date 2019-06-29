@@ -26,7 +26,8 @@ mod test {
         play::{ChargePoints, HealthPoints, SkillPoints},
     };
     use sequence_model::config::{
-        ControlTransition, ControlTransitionMultiple, ControlTransitionSingle, Wait,
+        ControlTransition, ControlTransitionMultiple, ControlTransitionSingle,
+        SequenceEndTransition, Wait,
     };
     use shape_model::Volume;
     use spawn_model::config::Spawns;
@@ -115,8 +116,10 @@ mod test {
                 ..Default::default()
             }, // kcov-ignore
         )];
-        let sequence =
-            CharacterSequence::new(ObjectSequence::new(Some(CharacterSequenceId::Walk), frames));
+        let sequence = CharacterSequence::new(ObjectSequence::new(
+            SequenceEndTransition::SequenceId(CharacterSequenceId::Walk),
+            frames,
+        ));
         let mut sequences = HashMap::new();
         sequences.insert(CharacterSequenceId::Stand, sequence);
         let object_definition = ObjectDefinition::new(sequences);

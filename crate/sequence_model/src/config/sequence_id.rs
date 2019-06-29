@@ -1,4 +1,8 @@
-use std::{fmt::Debug, hash::Hash};
+use std::{
+    fmt::{Debug, Display},
+    hash::Hash,
+    str::FromStr,
+};
 
 use amethyst::ecs::Component;
 
@@ -8,4 +12,17 @@ use amethyst::ecs::Component;
 ///
 /// * <https://github.com/rust-lang/rfcs/blob/master/text/1733-trait-alias.md>
 /// * <https://github.com/rust-lang/rust/issues/41517>
-pub trait SequenceId: Component + Copy + Debug + Default + Eq + Hash + Send + Sync {}
+pub trait SequenceId:
+    Component
+    + Copy
+    + Debug
+    + Default
+    + Display
+    + Eq
+    + FromStr
+    + Into<&'static str>
+    + Hash
+    + Send
+    + Sync
+{
+}

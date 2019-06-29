@@ -6,9 +6,13 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use kinematic_model::config::{Position, Velocity};
-use object_model::play::{Mirrored, ParentObject};
+use object_model::play::Mirrored;
 use shred_derive::SystemData;
-use spawn_model::{config::Spawn, play::SpawnEvent};
+use spawn_model::{
+    config::Spawn,
+    play::{SpawnEvent, SpawnParent},
+};
+use team_model::play::Team;
 use typename_derive::TypeName;
 
 /// Spawns `GameObject`s.
@@ -25,9 +29,9 @@ pub struct SpawnGameObjectRectifySystemData<'s> {
     /// `SpawnEvent` channel.
     #[derivative(Debug = "ignore")]
     pub spawn_ec: Write<'s, EventChannel<SpawnEvent>>,
-    /// `ParentObject` components.
+    /// `SpawnParent` components.
     #[derivative(Debug = "ignore")]
-    pub parent_objects: WriteStorage<'s, ParentObject>,
+    pub parent_objects: WriteStorage<'s, SpawnParent>,
     /// `Position<f32>` components.
     #[derivative(Debug = "ignore")]
     pub positions: WriteStorage<'s, Position<f32>>,
@@ -37,6 +41,9 @@ pub struct SpawnGameObjectRectifySystemData<'s> {
     /// `Mirrored` components.
     #[derivative(Debug = "ignore")]
     pub mirroreds: WriteStorage<'s, Mirrored>,
+    /// `Team` components.
+    #[derivative(Debug = "ignore")]
+    pub teams: WriteStorage<'s, Team>,
 }
 
 impl SpawnGameObjectRectifySystem {
@@ -105,6 +112,7 @@ impl<'s> System<'s> for SpawnGameObjectRectifySystem {
             mut positions,
             mut velocities,
             mut mirroreds,
+            mut teams,
         }: Self::SystemData,
     ) {
         let spawn_event_rid = self
@@ -117,6 +125,7 @@ impl<'s> System<'s> for SpawnGameObjectRectifySystem {
             let entity_parent = ev.entity_parent;
             let entity_spawned = ev.entity_spawned;
             let mirrored_parent = mirroreds.get(entity_parent).copied();
+            let team_parent = teams.get(entity_parent).copied();
 
             let position =
                 Self::position_rectify(&positions, spawn, entity_parent, mirrored_parent);
@@ -125,8 +134,8 @@ impl<'s> System<'s> for SpawnGameObjectRectifySystem {
             let mirrored = Self::mirrored_rectify(mirrored_parent);
 
             parent_objects
-                .insert(entity_spawned, ParentObject::new(ev.entity_parent))
-                .expect("Failed to insert `ParentObject` component.");
+                .insert(entity_spawned, SpawnParent::new(ev.entity_parent))
+                .expect("Failed to insert `SpawnParent` component.");
             positions
                 .insert(entity_spawned, position)
                 .expect("Failed to insert `Position` component.");
@@ -136,6 +145,11 @@ impl<'s> System<'s> for SpawnGameObjectRectifySystem {
             mirroreds
                 .insert(entity_spawned, mirrored)
                 .expect("Failed to insert `Mirrored` component.");
+            if let Some(team) = team_parent {
+                teams
+                    .insert(entity_spawned, team)
+                    .expect("Failed to insert `Team` component.");
+            }
         });
     }
 
@@ -166,7 +180,11 @@ mod tests {
     use kinematic_model::config::{Position, Velocity};
     use loading::ObjectAssetLoadingSystem;
     use object_model::play::Mirrored;
-    use spawn_model::{config::Spawn, play::SpawnEvent};
+    use spawn_model::{
+        config::Spawn,
+        play::{SpawnEvent, SpawnParent},
+    };
+    use team_model::play::{IndependentCounter, Team};
     use typename::TypeName;
 
     use super::SpawnGameObjectRectifySystem;
@@ -183,13 +201,14 @@ mod tests {
                     EnergyLoadingStatus,
                 >::type_name()],
             )
-            .with_setup(|world| spawn_entity(world, false))
+            .with_setup(|world| spawn_entity(world, false, None))
             .with_assertion(|world| {
                 assert_spawn_values(
                     world,
                     Position::<f32>::new(11., 22., 33.),
                     Velocity::<f32>::new(44., 55., 66.),
                     Mirrored(false),
+                    None,
                 )
             })
             .run()
@@ -207,27 +226,64 @@ mod tests {
                     EnergyLoadingStatus,
                 >::type_name()],
             )
-            .with_setup(|world| spawn_entity(world, true))
+            .with_setup(|world| spawn_entity(world, true, None))
             .with_assertion(|world| {
                 assert_spawn_values(
                     world,
                     Position::<f32>::new(-9., 22., 33.),
                     Velocity::<f32>::new(-36., 55., 66.),
                     Mirrored(true),
+                    None,
                 )
             })
             .run()
     }
 
-    fn spawn_entity(world: &mut World, mirrored: bool) {
+    #[test]
+    fn copies_team_from_parent() -> Result<(), Error> {
+        AutexousiousApplication::config_base()
+            .with_system(
+                SpawnGameObjectRectifySystem::new(),
+                SpawnGameObjectRectifySystem::type_name(),
+                &[ObjectAssetLoadingSystem::<
+                    Energy,
+                    EnergyPrefab,
+                    EnergyLoadingStatus,
+                >::type_name()],
+            )
+            .with_setup(|world| {
+                spawn_entity(
+                    world,
+                    false,
+                    Some(Team::Independent(<IndependentCounter>::new(123))),
+                )
+            })
+            .with_assertion(|world| {
+                assert_spawn_values(
+                    world,
+                    Position::<f32>::new(11., 22., 33.),
+                    Velocity::<f32>::new(44., 55., 66.),
+                    Mirrored(false),
+                    Some(Team::Independent(IndependentCounter::new(123))),
+                )
+            })
+            .run()
+    }
+
+    fn spawn_entity(world: &mut World, mirrored: bool, team: Option<Team>) {
         let position_parent = Position::<f32>::new(1., 2., 3.);
         let velocity_parent = Velocity::<f32>::new(4., 5., 6.);
-        let entity_parent = world
-            .create_entity()
-            .with(position_parent)
-            .with(velocity_parent)
-            .with(Mirrored(mirrored))
-            .build();
+        let entity_parent = {
+            let mut entity_builder = world
+                .create_entity()
+                .with(position_parent)
+                .with(velocity_parent)
+                .with(Mirrored(mirrored));
+            if let Some(team) = team {
+                entity_builder = entity_builder.with(team);
+            }
+            entity_builder.build()
+        };
 
         let entity_spawned = world.create_entity().build();
         world.add_resource(entity_spawned);
@@ -252,11 +308,14 @@ mod tests {
         position: Position<f32>,
         velocity: Velocity<f32>,
         mirrored: Mirrored,
+        team: Option<Team>,
     ) {
         let entity_spawned = *world.read_resource::<Entity>();
         let positions = world.read_storage::<Position<f32>>();
         let velocities = world.read_storage::<Velocity<f32>>();
         let mirroreds = world.read_storage::<Mirrored>();
+        let teams = world.read_storage::<Team>();
+        let spawn_parents = world.read_storage::<SpawnParent>();
 
         let position_actual = positions
             .get(entity_spawned)
@@ -267,8 +326,16 @@ mod tests {
         let mirrored_actual = mirroreds
             .get(entity_spawned)
             .expect("Expected entity to have `Mirrored` component.");
+        let team_actual = teams.get(entity_spawned);
+        let spawn_parent_actual = spawn_parents.get(entity_spawned);
+
         assert_eq!(&position, position_actual);
         assert_eq!(&velocity, velocity_actual);
         assert_eq!(&mirrored, mirrored_actual);
+        assert_eq!(team.as_ref(), team_actual);
+        assert!(
+            spawn_parent_actual.is_some(),
+            "Expected entity to have `SpawnParent` component."
+        );
     }
 }

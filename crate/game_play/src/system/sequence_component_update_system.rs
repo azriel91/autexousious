@@ -14,7 +14,7 @@ use derive_new::new;
 use log::error;
 use object_model::loaded::{GameObject, ObjectWrapper};
 use object_prefab::ComponentSequenceHandleStorages;
-use sequence_model::play::SequenceStatus;
+use sequence_model::{config::SequenceEndTransition, play::SequenceStatus};
 use shred_derive::SystemData;
 use typename_derive::TypeName;
 
@@ -24,7 +24,7 @@ use typename_derive::TypeName;
 /// `SequenceUpdateSystem`, as that relies on the `SequenceStatus` to determine if a `SequenceBegin`
 /// event should be sent.
 #[derive(Debug, Default, TypeName, new)]
-pub struct ComponentSequenceHandleUpdateSystem<O>
+pub struct SequenceComponentUpdateSystem<O>
 where
     O: GameObject,
 {
@@ -40,7 +40,7 @@ where
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct ComponentSequenceHandleUpdateSystemData<'s, O>
+pub struct SequenceComponentUpdateSystemData<'s, O>
 where
     O: GameObject,
 {
@@ -59,26 +59,30 @@ where
     /// `SequenceStatus` components.
     #[derivative(Debug = "ignore")]
     pub sequence_statuses: WriteStorage<'s, SequenceStatus>,
+    /// `SequenceEndTransition<O::SequenceId>` components.
+    #[derivative(Debug = "ignore")]
+    pub sequence_end_transitions: WriteStorage<'s, SequenceEndTransition<O::SequenceId>>,
     /// Component sequence handle storages.
     #[derivative(Debug = "ignore")]
     pub component_sequence_handle_storages: ComponentSequenceHandleStorages<'s>,
 }
 
-impl<'s, O> System<'s> for ComponentSequenceHandleUpdateSystem<O>
+impl<'s, O> System<'s> for SequenceComponentUpdateSystem<O>
 where
     O: GameObject,
     <O::SequenceId as Component>::Storage: Tracked,
 {
-    type SystemData = ComponentSequenceHandleUpdateSystemData<'s, O>;
+    type SystemData = SequenceComponentUpdateSystemData<'s, O>;
 
     fn run(
         &mut self,
-        ComponentSequenceHandleUpdateSystemData {
+        SequenceComponentUpdateSystemData {
             entities,
             sequence_ids,
             object_wrapper_handles,
             object_wrapper_assets,
             mut sequence_statuses,
+            mut sequence_end_transitions,
             component_sequence_handle_storages:
                 ComponentSequenceHandleStorages {
                     mut wait_sequence_handles,
@@ -117,13 +121,14 @@ where
                     .insert(entity, SequenceStatus::Begin)
                     .expect("Failed to insert `SequenceStatus` component.");
 
-                let component_sequence_handleses = {
+                let components = {
                     let object_wrapper = object_wrapper_assets
                         .get(&object_wrapper_handle)
                         .expect("Expected `ObjectWrapper` to be loaded.");
                     let object = object_wrapper.inner();
 
                     (
+                        object.sequence_end_transitions.get(&sequence_id).copied(),
                         object.wait_sequence_handles.get(&sequence_id),
                         object.sprite_render_sequence_handles.get(&sequence_id),
                         object.body_sequence_handles.get(&sequence_id),
@@ -133,13 +138,17 @@ where
                 };
 
                 if let (
+                    Some(sequence_end_transition),
                     Some(wait_sequence_handle),
                     Some(sprite_render_sequence_handle),
                     Some(body_sequence_handle),
                     Some(interactions_sequence_handle),
                     Some(spawns_sequence_handle),
-                ) = component_sequence_handleses
+                ) = components
                 {
+                    sequence_end_transitions
+                        .insert(entity, sequence_end_transition)
+                        .expect("Failed to insert `SequenceEndTransition` component.");
                     wait_sequence_handles
                         .insert(entity, wait_sequence_handle.clone())
                         .expect("Failed to insert `WaitSequenceHandle` component.");
@@ -159,7 +168,7 @@ where
                     error!(
                         "Expected all component sequence handles to exist for sequence ID: `{:?}`, \
                          but was {:?}.",
-                        sequence_id, &component_sequence_handleses
+                        sequence_id, &components
                     );
                 }
             });
@@ -181,39 +190,27 @@ mod tests {
     use assets_test::CHAR_BAT_SLUG;
     use character_model::{config::CharacterSequenceId, loaded::Character};
     use collision_model::loaded::{BodySequenceHandle, InteractionsSequenceHandle};
-    use sequence_model::loaded::WaitSequenceHandle;
+    use sequence_model::{config::SequenceEndTransition, loaded::WaitSequenceHandle};
     use spawn_model::loaded::SpawnsSequenceHandle;
     use sprite_model::loaded::SpriteRenderSequenceHandle;
 
-    use super::ComponentSequenceHandleUpdateSystem;
+    use super::SequenceComponentUpdateSystem;
 
     #[test]
     fn attaches_handle_for_sequence_id_insertions() -> Result<(), Error> {
         AutexousiousApplication::game_base()
-            .with_system(
-                ComponentSequenceHandleUpdateSystem::<Character>::new(),
-                "",
-                &[],
-            )
+            .with_system(SequenceComponentUpdateSystem::<Character>::new(), "", &[])
             .with_setup(|world| insert_sequence(world, CharacterSequenceId::RunStop))
-            .with_assertion(|world| {
-                expect_component_sequence_handles(world, CharacterSequenceId::RunStop)
-            })
+            .with_assertion(|world| expect_components(world, CharacterSequenceId::RunStop))
             .run_isolated()
     }
 
     #[test]
     fn attaches_handle_for_sequence_id_modifications() -> Result<(), Error> {
         AutexousiousApplication::game_base()
-            .with_system(
-                ComponentSequenceHandleUpdateSystem::<Character>::new(),
-                "",
-                &[],
-            )
+            .with_system(SequenceComponentUpdateSystem::<Character>::new(), "", &[])
             .with_setup(|world| update_sequence(world, CharacterSequenceId::RunStop))
-            .with_assertion(|world| {
-                expect_component_sequence_handles(world, CharacterSequenceId::RunStop)
-            })
+            .with_assertion(|world| expect_components(world, CharacterSequenceId::RunStop))
             .run_isolated()
     }
 
@@ -258,29 +255,33 @@ mod tests {
             .build()
     }
 
-    fn expect_component_sequence_handles(world: &mut World, sequence_id: CharacterSequenceId) {
+    fn expect_components(world: &mut World, sequence_id: CharacterSequenceId) {
         let entity = *world.read_resource::<Entity>();
 
-        macro_rules! assert_handle_attached {
-            ($handle_kind:ident, $handle_type:path) => {
+        macro_rules! assert_component_attached {
+            ($component_kind:ident, $component_type:path) => {
                 let expected_handle =
-                    SequenceQueries::$handle_kind(world, &CHAR_BAT_SLUG.clone(), sequence_id);
-                let component_sequence_handles = world.read_storage::<$handle_type>();
+                    SequenceQueries::$component_kind(world, &CHAR_BAT_SLUG.clone(), sequence_id);
+                let components = world.read_storage::<$component_type>();
                 assert_eq!(
                     &expected_handle,
-                    component_sequence_handles.get(entity).expect(concat!(
+                    components.get(entity).expect(concat!(
                         "Expected entity to contain `",
-                        stringify!($handle_type),
+                        stringify!($component_type),
                         "` component."
                     ))
                 );
             };
         }
 
-        assert_handle_attached!(wait_sequence_handle, WaitSequenceHandle);
-        assert_handle_attached!(sprite_render_sequence_handle, SpriteRenderSequenceHandle);
-        assert_handle_attached!(body_sequence_handle, BodySequenceHandle);
-        assert_handle_attached!(interactions_sequence_handle, InteractionsSequenceHandle);
-        assert_handle_attached!(spawns_sequence_handle, SpawnsSequenceHandle);
+        assert_component_attached!(
+            sequence_end_transition,
+            SequenceEndTransition<CharacterSequenceId>
+        );
+        assert_component_attached!(wait_sequence_handle, WaitSequenceHandle);
+        assert_component_attached!(sprite_render_sequence_handle, SpriteRenderSequenceHandle);
+        assert_component_attached!(body_sequence_handle, BodySequenceHandle);
+        assert_component_attached!(interactions_sequence_handle, InteractionsSequenceHandle);
+        assert_component_attached!(spawns_sequence_handle, SpawnsSequenceHandle);
     }
 }

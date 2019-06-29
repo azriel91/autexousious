@@ -33,7 +33,7 @@ pub fn game_object_gen(args: GameObjectAttributeArgs, mut ast: DeriveInput) -> T
     fields_append(&mut ast, &object_wrapper_name, &object_handle_field);
 
     // Generate `<Type>ObjectWrapper` newtype.
-    let mut object_wrapper_impl = object_wrapper_gen(
+    let mut object_wrapper_gen = object_wrapper_gen(
         sequence_id,
         &object_definition_type,
         &object_wrapper_name,
@@ -50,14 +50,14 @@ pub fn game_object_gen(args: GameObjectAttributeArgs, mut ast: DeriveInput) -> T
         &object_wrapper_name,
         &object_handle_field,
     );
-    object_wrapper_impl.extend(ast.into_token_stream());
-    object_wrapper_impl.extend(game_object_trait_impl);
-    TokenStream::from(object_wrapper_impl)
+    object_wrapper_gen.extend(ast.into_token_stream());
+    object_wrapper_gen.extend(game_object_trait_impl);
+    TokenStream::from(object_wrapper_gen)
 }
 
 fn fields_append(ast: &mut DeriveInput, object_wrapper_name: &Ident, object_handle_field: &Ident) {
     let fields = parse_quote!({
-        /// Handle to loaded object data.
+        /// Handle to the object data.
         pub #object_handle_field: amethyst::assets::Handle<#object_wrapper_name>,
     });
 

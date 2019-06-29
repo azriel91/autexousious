@@ -22,6 +22,7 @@ use energy_model::{
 use energy_prefab::{EnergyPrefab, EnergyPrefabBundle, EnergyPrefabHandle};
 use object_model::config::{ObjectAssetData, ObjectDefinition, ObjectFrame, ObjectSequence};
 use sequence_loading::SequenceLoadingBundle;
+use sequence_model::config::SequenceEndTransition;
 
 #[test]
 fn energy_prefab_load() -> Result<(), Error> {
@@ -77,7 +78,10 @@ fn energy_definition() -> EnergyDefinition {
         wait: Wait::new(5),
         ..Default::default()
     })];
-    let sequence = EnergySequence::new(ObjectSequence::new(Some(EnergySequenceId::Hover), frames));
+    let sequence = EnergySequence::new(ObjectSequence::new(
+        SequenceEndTransition::SequenceId(EnergySequenceId::Hover),
+        frames,
+    ));
     let mut sequences = HashMap::new();
     sequences.insert(EnergySequenceId::Hover, sequence);
     let object_definition = ObjectDefinition::new(sequences);

@@ -17,8 +17,8 @@ use fnv::FnvHashMap;
 use object_loading::ObjectLoaderSystemData;
 use object_model::loaded::{GameObject, Object, ObjectWrapper};
 use sequence_model::{
-    config::Wait,
-    loaded::{SequenceEndTransition, SequenceEndTransitions, WaitSequence, WaitSequenceHandle},
+    config::{SequenceEndTransition, Wait},
+    loaded::{SequenceEndTransitions, WaitSequence, WaitSequenceHandle},
 };
 use spawn_model::{
     config::Spawns,
@@ -180,8 +180,7 @@ where
         };
         let sequence_end_transitions = {
             let mut sequence_end_transitions = FnvHashMap::default();
-            sequence_end_transitions
-                .insert(O::SequenceId::default(), SequenceEndTransition::new(None));
+            sequence_end_transitions.insert(O::SequenceId::default(), SequenceEndTransition::None);
             SequenceEndTransitions(sequence_end_transitions)
         };
         Object::new(

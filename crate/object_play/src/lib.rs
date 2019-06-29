@@ -2,6 +2,6 @@
 
 //! Provides logic for game objects used during game play.
 
-pub use crate::system::ObjectGravitySystem;
+pub use crate::system::{ObjectGravitySystem, ObjectMirroringSystem};
 
 mod system;

@@ -11,7 +11,7 @@ pub fn game_object_impl(
     sequence_type: &Path,
     object_definition_type: &Path,
     object_wrapper_name: &Ident,
-    object_handle_field_name: &Ident,
+    object_handle_field: &Ident,
 ) -> proc_macro2::TokenStream {
     let ty_name = &ast.ident;
     let (impl_generics, ty_generics, where_clause) = ast.generics.split_for_impl();
@@ -20,7 +20,8 @@ pub fn game_object_impl(
     quote! {
         impl #impl_generics object_model::loaded::GameObject for
             #ty_name #ty_generics #where_clause {
-            const OBJECT_TYPE: object_type::ObjectType = object_type::ObjectType::#object_type_variant;
+            const OBJECT_TYPE: object_type::ObjectType =
+                object_type::ObjectType::#object_type_variant;
 
             type SequenceId = #sequence_id_type;
             type GameObjectSequence = #sequence_type;
@@ -28,7 +29,7 @@ pub fn game_object_impl(
             type ObjectWrapper = #object_wrapper_name;
 
             fn object_handle(&self) -> &amethyst::assets::Handle<#object_wrapper_name> {
-                &self.#object_handle_field_name
+                &self.#object_handle_field
             }
         }
     }

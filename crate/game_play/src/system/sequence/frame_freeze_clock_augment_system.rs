@@ -30,9 +30,8 @@ type FrameFreezeClockAugmentSystemData<'s> = (
 impl<'s> System<'s> for FrameFreezeClockAugmentSystem {
     type SystemData = FrameFreezeClockAugmentSystemData<'s>;
 
-    fn run(&mut self, (collision_ec, mut frame_freeze_clocks): Self::SystemData) {
-        // Read from channel
-        collision_ec
+    fn run(&mut self, (hit_ec, mut frame_freeze_clocks): Self::SystemData) {
+        hit_ec
             .read(
                 self.hit_event_rid
                     .as_mut()

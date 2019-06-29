@@ -1,37 +1,70 @@
-use amethyst::{ecs::prelude::*, shrev::EventChannel};
+use std::collections::HashMap;
+
+use amethyst::{
+    ecs::{Join, ReadExpect, ReadStorage, System, Write},
+    shrev::EventChannel,
+};
+use derivative::Derivative;
 use derive_new::new;
 use game_play_model::{GamePlayEvent, GamePlayStatus};
 use object_model::play::HealthPoints;
+use shred_derive::SystemData;
+use team_model::play::Team;
 use typename_derive::TypeName;
 
 /// Detects the end of a game play round, and fires a `GamePlayEvent::End`.
 ///
 /// In the future this will be type parameterized to specify the detection function.
 #[derive(Debug, Default, TypeName, new)]
-pub(crate) struct GamePlayEndDetectionSystem;
+pub struct GamePlayEndDetectionSystem {
+    /// Pre-allocated `HashMap` to track number of alive players.
+    #[new(default)]
+    team_alive_counter: HashMap<Team, u32>,
+}
 
-type GamePlayEndDetectionSystemData<'s> = (
-    ReadExpect<'s, GamePlayStatus>,
-    Write<'s, EventChannel<GamePlayEvent>>,
-    ReadStorage<'s, HealthPoints>,
-);
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub struct GamePlayEndDetectionSystemData<'s> {
+    /// `GamePlayStatus` resource.
+    #[derivative(Debug = "ignore")]
+    pub game_play_status: ReadExpect<'s, GamePlayStatus>,
+    /// `GamePlayEvent` channel.
+    #[derivative(Debug = "ignore")]
+    pub game_play_ec: Write<'s, EventChannel<GamePlayEvent>>,
+    /// `Team` components.
+    #[derivative(Debug = "ignore")]
+    pub teams: ReadStorage<'s, Team>,
+    /// `HealthPoints` components.
+    #[derivative(Debug = "ignore")]
+    pub health_pointses: ReadStorage<'s, HealthPoints>,
+}
 
 impl<'s> System<'s> for GamePlayEndDetectionSystem {
     type SystemData = GamePlayEndDetectionSystemData<'s>;
 
-    fn run(&mut self, (game_play_status, mut game_play_ec, health_pointses): Self::SystemData) {
+    fn run(
+        &mut self,
+        GamePlayEndDetectionSystemData {
+            game_play_status,
+            mut game_play_ec,
+            teams,
+            health_pointses,
+        }: Self::SystemData,
+    ) {
         if *game_play_status == GamePlayStatus::Playing {
-            // Game ends when there is one or less people standing
-            let alive_count = health_pointses
+            self.team_alive_counter.clear();
+
+            // Game ends when there is one or less teams remaining
+            (&teams, &health_pointses)
                 .join()
-                .fold(0, |mut alive_count, health_points| {
+                .for_each(|(team, health_points)| {
                     if *health_points > 0 {
-                        alive_count += 1
+                        let alive_count = self.team_alive_counter.entry(*team).or_insert(0);
+                        *alive_count += 1;
                     };
-                    alive_count
                 });
 
-            if alive_count <= 1 {
+            if self.team_alive_counter.len() <= 1 {
                 game_play_ec.single_write(GamePlayEvent::End);
             }
         }
@@ -40,120 +73,175 @@ impl<'s> System<'s> for GamePlayEndDetectionSystem {
 
 #[cfg(test)]
 mod test {
-    use amethyst::{ecs::prelude::*, input::StringBindings, shrev::EventChannel};
-    use amethyst_test::*;
+    use amethyst::{
+        ecs::{Builder, SystemData, World},
+        input::StringBindings,
+        shrev::{EventChannel, ReaderId},
+        Error,
+    };
+    use amethyst_test::AmethystApplication;
     use game_play_model::{GamePlayEvent, GamePlayStatus};
     use object_model::play::HealthPoints;
+    use team_model::play::{IndependentCounter, Team};
     use typename::TypeName;
 
     use super::{GamePlayEndDetectionSystem, GamePlayEndDetectionSystemData};
 
     #[test]
-    fn does_not_send_game_play_end_event_when_game_play_is_not_playing() {
+    fn does_not_send_game_play_end_event_when_game_play_is_not_playing() -> Result<(), Error> {
         let setup = |world: &mut World| {
-            world.create_entity().with(HealthPoints(100)).build();
+            world
+                .create_entity()
+                .with(Team::Independent(IndependentCounter::new(0)))
+                .with(HealthPoints(100))
+                .build();
 
             // Non-live character.
-            world.create_entity().with(HealthPoints(0)).build();
+            world
+                .create_entity()
+                .with(Team::Independent(IndependentCounter::new(1)))
+                .with(HealthPoints(0))
+                .build();
         };
 
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AmethystApplication::ui_base::<StringBindings>()
-                .with_resource(GamePlayStatus::Ended)
-                .with_setup(register_gpec_reader)
-                .with_setup(setup)
-                .with_system_single(
-                    GamePlayEndDetectionSystem::new(),
-                    GamePlayEndDetectionSystem::type_name(),
-                    &[]
-                ) // kcov-ignore
-                .with_assertion(|world| verify_game_play_events(world, &[]))
-                .run()
-                .is_ok()
-        );
+        AmethystApplication::ui_base::<StringBindings>()
+            .with_resource(GamePlayStatus::Ended)
+            .with_setup(register_gpec_reader)
+            .with_setup(setup)
+            .with_system_single(
+                GamePlayEndDetectionSystem::new(),
+                GamePlayEndDetectionSystem::type_name(),
+                &[],
+            ) // kcov-ignore
+            .with_assertion(|world| verify_game_play_events(world, &[]))
+            .run()
     }
 
     #[test]
-    fn sends_game_play_end_event_when_one_alive_character_remaining() {
+    fn sends_game_play_end_event_when_one_alive_team_remaining() -> Result<(), Error> {
         let setup = |world: &mut World| {
-            world.create_entity().with(HealthPoints(100)).build();
+            world
+                .create_entity()
+                .with(Team::Independent(IndependentCounter::new(0)))
+                .with(HealthPoints(100))
+                .build();
 
             // Non-live character.
-            world.create_entity().with(HealthPoints(0)).build();
+            world
+                .create_entity()
+                .with(Team::Independent(IndependentCounter::new(1)))
+                .with(HealthPoints(0))
+                .build();
         };
 
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AmethystApplication::ui_base::<StringBindings>()
-                .with_resource(GamePlayStatus::Playing)
-                .with_setup(register_gpec_reader)
-                .with_setup(setup)
-                .with_system_single(
-                    GamePlayEndDetectionSystem::new(),
-                    GamePlayEndDetectionSystem::type_name(),
-                    &[]
-                ) // kcov-ignore
-                .with_assertion(|world| verify_game_play_events(world, &[&GamePlayEvent::End]))
-                .run()
-                .is_ok()
-        );
+        AmethystApplication::ui_base::<StringBindings>()
+            .with_resource(GamePlayStatus::Playing)
+            .with_setup(register_gpec_reader)
+            .with_setup(setup)
+            .with_system_single(
+                GamePlayEndDetectionSystem::new(),
+                GamePlayEndDetectionSystem::type_name(),
+                &[],
+            ) // kcov-ignore
+            .with_assertion(|world| verify_game_play_events(world, &[&GamePlayEvent::End]))
+            .run()
     }
 
     #[test]
-    fn sends_game_play_end_event_when_no_alive_characters_remaining() {
+    fn sends_game_play_end_event_when_one_alive_team_multiple_entities_remaining(
+    ) -> Result<(), Error> {
         let setup = |world: &mut World| {
-            world.create_entity().with(HealthPoints(0)).build();
+            world
+                .create_entity()
+                .with(Team::Independent(IndependentCounter::new(0)))
+                .with(HealthPoints(100))
+                .build();
+            world
+                .create_entity()
+                .with(Team::Independent(IndependentCounter::new(0)))
+                .with(HealthPoints(100))
+                .build();
 
             // Non-live character.
-            world.create_entity().with(HealthPoints(0)).build();
+            world
+                .create_entity()
+                .with(Team::Independent(IndependentCounter::new(1)))
+                .with(HealthPoints(0))
+                .build();
         };
 
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AmethystApplication::ui_base::<StringBindings>()
-                .with_resource(GamePlayStatus::Playing)
-                .with_setup(register_gpec_reader)
-                .with_setup(setup)
-                .with_system_single(
-                    GamePlayEndDetectionSystem::new(),
-                    GamePlayEndDetectionSystem::type_name(),
-                    &[]
-                ) // kcov-ignore
-                .with_assertion(|world| verify_game_play_events(world, &[&GamePlayEvent::End]))
-                .run()
-                .is_ok()
-        );
+        AmethystApplication::ui_base::<StringBindings>()
+            .with_resource(GamePlayStatus::Playing)
+            .with_setup(register_gpec_reader)
+            .with_setup(setup)
+            .with_system_single(
+                GamePlayEndDetectionSystem::new(),
+                GamePlayEndDetectionSystem::type_name(),
+                &[],
+            ) // kcov-ignore
+            .with_assertion(|world| verify_game_play_events(world, &[&GamePlayEvent::End]))
+            .run()
     }
 
     #[test]
-    fn does_not_send_game_play_end_event_when_two_alive_characters_remaining() {
+    fn sends_game_play_end_event_when_no_alive_characters_remaining() -> Result<(), Error> {
         let setup = |world: &mut World| {
-            world.create_entity().with(HealthPoints(100)).build();
+            world
+                .create_entity()
+                .with(Team::Independent(IndependentCounter::new(0)))
+                .with(HealthPoints(0))
+                .build();
 
             // Non-live character.
-            world.create_entity().with(HealthPoints(100)).build();
+            world
+                .create_entity()
+                .with(Team::Independent(IndependentCounter::new(1)))
+                .with(HealthPoints(0))
+                .build();
         };
 
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AmethystApplication::ui_base::<StringBindings>()
-                .with_resource(GamePlayStatus::Playing)
-                .with_setup(register_gpec_reader)
-                .with_setup(setup)
-                .with_system_single(
-                    GamePlayEndDetectionSystem::new(),
-                    GamePlayEndDetectionSystem::type_name(),
-                    &[]
-                ) // kcov-ignore
-                .with_assertion(|world| verify_game_play_events(world, &[]))
-                .run()
-                .is_ok()
-        );
+        AmethystApplication::ui_base::<StringBindings>()
+            .with_resource(GamePlayStatus::Playing)
+            .with_setup(register_gpec_reader)
+            .with_setup(setup)
+            .with_system_single(
+                GamePlayEndDetectionSystem::new(),
+                GamePlayEndDetectionSystem::type_name(),
+                &[],
+            ) // kcov-ignore
+            .with_assertion(|world| verify_game_play_events(world, &[&GamePlayEvent::End]))
+            .run()
+    }
+
+    #[test]
+    fn does_not_send_game_play_end_event_when_two_alive_characters_remaining() -> Result<(), Error>
+    {
+        let setup = |world: &mut World| {
+            world
+                .create_entity()
+                .with(Team::Independent(IndependentCounter::new(0)))
+                .with(HealthPoints(100))
+                .build();
+
+            // Non-live character.
+            world
+                .create_entity()
+                .with(Team::Independent(IndependentCounter::new(1)))
+                .with(HealthPoints(100))
+                .build();
+        };
+
+        AmethystApplication::ui_base::<StringBindings>()
+            .with_resource(GamePlayStatus::Playing)
+            .with_setup(register_gpec_reader)
+            .with_setup(setup)
+            .with_system_single(
+                GamePlayEndDetectionSystem::new(),
+                GamePlayEndDetectionSystem::type_name(),
+                &[],
+            ) // kcov-ignore
+            .with_assertion(|world| verify_game_play_events(world, &[]))
+            .run()
     }
 
     fn register_gpec_reader(world: &mut World) {
