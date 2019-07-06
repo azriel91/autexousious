@@ -191,18 +191,9 @@ mod tests {
 
     #[test]
     fn sets_position_and_velocity_relative_to_parent() -> Result<(), Error> {
-        AutexousiousApplication::config_base()
-            .with_system(
-                SpawnGameObjectRectifySystem::new(),
-                SpawnGameObjectRectifySystem::type_name(),
-                &[ObjectAssetLoadingSystem::<
-                    Energy,
-                    EnergyPrefab,
-                    EnergyLoadingStatus,
-                >::type_name()],
-            )
-            .with_setup(|world| spawn_entity(world, false, None))
-            .with_assertion(|world| {
+        run_test(
+            |world| spawn_entity(world, false, None),
+            |world| {
                 assert_spawn_values(
                     world,
                     Position::<f32>::new(11., 22., 33.),
@@ -210,24 +201,15 @@ mod tests {
                     Mirrored(false),
                     None,
                 )
-            })
-            .run()
+            },
+        )
     }
 
     #[test]
     fn sets_mirrored_position_and_velocity_when_parent_mirrored() -> Result<(), Error> {
-        AutexousiousApplication::config_base()
-            .with_system(
-                SpawnGameObjectRectifySystem::new(),
-                SpawnGameObjectRectifySystem::type_name(),
-                &[ObjectAssetLoadingSystem::<
-                    Energy,
-                    EnergyPrefab,
-                    EnergyLoadingStatus,
-                >::type_name()],
-            )
-            .with_setup(|world| spawn_entity(world, true, None))
-            .with_assertion(|world| {
+        run_test(
+            |world| spawn_entity(world, true, None),
+            |world| {
                 assert_spawn_values(
                     world,
                     Position::<f32>::new(-9., 22., 33.),
@@ -235,12 +217,33 @@ mod tests {
                     Mirrored(true),
                     None,
                 )
-            })
-            .run()
+            },
+        )
     }
 
     #[test]
     fn copies_team_from_parent() -> Result<(), Error> {
+        run_test(
+            |world| {
+                spawn_entity(
+                    world,
+                    false,
+                    Some(Team::Independent(<IndependentCounter>::new(123))),
+                )
+            },
+            |world| {
+                assert_spawn_values(
+                    world,
+                    Position::<f32>::new(11., 22., 33.),
+                    Velocity::<f32>::new(44., 55., 66.),
+                    Mirrored(false),
+                    Some(Team::Independent(IndependentCounter::new(123))),
+                )
+            },
+        )
+    }
+
+    fn run_test(setup_fn: fn(&mut World), assertion_fn: fn(&mut World)) -> Result<(), Error> {
         AutexousiousApplication::config_base()
             .with_system(
                 SpawnGameObjectRectifySystem::new(),
@@ -251,22 +254,8 @@ mod tests {
                     EnergyLoadingStatus,
                 >::type_name()],
             )
-            .with_setup(|world| {
-                spawn_entity(
-                    world,
-                    false,
-                    Some(Team::Independent(<IndependentCounter>::new(123))),
-                )
-            })
-            .with_assertion(|world| {
-                assert_spawn_values(
-                    world,
-                    Position::<f32>::new(11., 22., 33.),
-                    Velocity::<f32>::new(44., 55., 66.),
-                    Mirrored(false),
-                    Some(Team::Independent(IndependentCounter::new(123))),
-                )
-            })
+            .with_setup(setup_fn)
+            .with_assertion(assertion_fn)
             .run()
     }
 
