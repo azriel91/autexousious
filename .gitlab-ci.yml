@@ -90,7 +90,7 @@ linux:debug:
   <<: *linux_job_common
   script:
     - time cargo test -j 4 --no-run
-    - time cargo test
+    - time cargo test -- --nocapture
   after_script:
     - 'export DISPLAY=:0'
     - build/workspace_coverage.sh
@@ -102,7 +102,7 @@ linux:release:
   <<: *linux_job_common
   script:
     - time cargo test -j 4 --no-run --release
-    - time cargo test --release
+    - time cargo test --release -- --nocapture
     - ./build/publish_prepare_app.sh
   artifacts:
     name: linux-x86_64
@@ -128,13 +128,13 @@ windows:debug:
   <<: *windows_job_common
   script:
     - cargo test --no-run
-    - cargo test
+    - cargo test -- --nocapture
 
 windows:release:
   <<: *windows_job_common
   script:
     - cargo test --no-run --release
-    - cargo test --release
+    - cargo test --release -- --nocapture
     - .\build\publish_prepare_app.bat
   artifacts:
     name: windows-x86_64
