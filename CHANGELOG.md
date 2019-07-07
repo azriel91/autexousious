@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.13.0 (unreleased)
+
+### Fixed
+
+* `spawn_play` flakey test segmentation fault. ([#145])
+
+[#145]: https://gitlab.com/azriel91/autexousious/issues/145
+
 ## 0.12.0 (2019-07-05)
 
 ### Added
