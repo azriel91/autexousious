@@ -236,7 +236,7 @@ mod tests {
                 assert_energy_count(world, spawn_count_expected);
                 assert_events(world, spawn_count_expected);
             })
-            .run()
+            .run_isolated()
     }
 
     fn setup_spawn_ec_reader(world: &mut World) {
