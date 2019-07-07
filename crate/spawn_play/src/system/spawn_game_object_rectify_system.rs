@@ -256,7 +256,7 @@ mod tests {
             )
             .with_setup(setup_fn)
             .with_assertion(assertion_fn)
-            .run()
+            .run_isolated()
     }
 
     fn spawn_entity(world: &mut World, mirrored: bool, team: Option<Team>) {
