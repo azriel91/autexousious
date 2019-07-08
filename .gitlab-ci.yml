@@ -56,8 +56,8 @@ nightly:conformance:
     # CLIPPY_ENABLED: 'false'
   before_script:
     - *print_tool_versions_linux
-    - build/install_packages_linux.sh
-    - build/install_cargo_update.sh
+    - scripts/install_packages_linux.sh
+    - scripts/install_cargo_update.sh
     - *install_update_cargo_subcommands
 
     # Security audit and license checks
@@ -80,8 +80,8 @@ nightly:conformance:
     DISPLAY: ':0'
   before_script:
     - *print_tool_versions_linux
-    - build/install_packages_linux.sh
-    - build/install_cargo_update.sh
+    - scripts/install_packages_linux.sh
+    - scripts/install_cargo_update.sh
     - *install_update_cargo_subcommands
     - cargo install-update -i cargo-make hull
     - rm -rf ./target
@@ -93,7 +93,7 @@ linux:debug:
     - time cargo test -- --nocapture
   after_script:
     - 'export DISPLAY=:0'
-    - build/workspace_coverage.sh
+    - scripts/workspace_coverage.sh
     - grep -F merged_files ./target/coverage/merged/index.js | grep -o '"covered":"[0-9]\+\.[0-9]\+"'
     - bash <(curl -s https://codecov.io/bash) -s ./target/coverage/merged
   coverage: '/"covered":"\d+\.\d+"/'
@@ -103,7 +103,7 @@ linux:release:
   script:
     - time cargo test -j 4 --no-run --release
     - time cargo test --release -- --nocapture
-    - ./build/publish_prepare_app.sh
+    - ./scripts/publish_prepare_app.sh
   artifacts:
     name: linux-x86_64
     when: on_success
@@ -135,7 +135,7 @@ windows:release:
   script:
     - cargo test --no-run --release
     - cargo test --release -- --nocapture
-    - .\build\publish_prepare_app.bat
+    - .\scripts\publish_prepare_app.bat
   artifacts:
     name: windows-x86_64
     when: on_success
@@ -185,7 +185,7 @@ windows:publish:
     CHANNEL: windows-x86_64
   script:
     # Publish `will`
-    - .\build\publish_butler_push.bat
+    - .\scripts\publish_butler_push.bat
   artifacts:
     name: windows-x86_64
     when: on_success

@@ -10,7 +10,7 @@ setlocal
 :: script ends:
 ::
 :: ```
-:: C:\\Windows\\System32\\cmd.exe /C build\\install_cargo_update.bat
+:: C:\\Windows\\System32\\cmd.exe /C scripts\\install_cargo_update.bat
 :: ```
 
 :: For the `cargo --list` command, we need to loop over its output before piping to `find.exe`

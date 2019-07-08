@@ -19,7 +19,7 @@ fi
 cargo audit
 
 # License compatibility
-./build/conformance_license.sh
+./scripts/conformance_license.sh
 '''
 ]
 
@@ -55,7 +55,7 @@ dependencies = ["ensure-repository-clean"]
 script = [
 '''
 set +x
-. ./build/log.sh
+. ./scripts/log.sh
 notice "Running \`cargo fmt --all\`"
 cargo fmt --all
 '''
@@ -65,7 +65,7 @@ cargo fmt --all
 script = [
 '''
 set +x
-. ./build/log.sh
+. ./scripts/log.sh
 
 if [ -n "$(git status --porcelain)" ]; then
     git commit -am "Format repository with Rustfmt."
@@ -90,7 +90,7 @@ dependencies = ["ensure-repository-clean"]
 script = [
 '''
 set +x
-. ./build/log.sh
+. ./scripts/log.sh
 notice "Running \`cargo update\`"
 cargo update
 '''
@@ -100,7 +100,7 @@ cargo update
 script = [
 '''
 set +x
-. ./build/log.sh
+. ./scripts/log.sh
 
 if [ -n "$(git status --porcelain)" ]; then
     git commit -am "Updated workspace dependencies"
@@ -126,7 +126,7 @@ dependencies = ["ensure-repository-clean"]
 script = [
 '''
 set +x
-. ./build/log.sh
+. ./scripts/log.sh
 notice "Running \`cargo upgrade --all\`"
 cargo upgrade --all
 '''
@@ -136,7 +136,7 @@ cargo upgrade --all
 script = [
 '''
 set +x
-. ./build/log.sh
+. ./scripts/log.sh
 
 if [ -n "$(git status --porcelain)" ]; then
     git commit -am "Upgraded workspace dependencies"
@@ -163,7 +163,7 @@ condition = { env = { "CARGO_MAKE_CRATE_HAS_DEPENDENCIES" = "TRUE" } }
 script = [
 '''
 set +x
-. ./build/log.sh
+. ./scripts/log.sh
 notice "Running \`cargo outdated -w --root-deps-only --exit-code 1\`"
 if ! cargo outdated -w --root-deps-only --exit-code 1; then
     warn "There are outdated dependencies. Please upgrade them as soon as possible."
@@ -179,7 +179,7 @@ fi
 script = [
 '''
 set +x
-. ./build/log.sh
+. ./scripts/log.sh
 [ -z "$(git status --porcelain)" ] || error "Ensure the workspace is clean before running this task"
 '''
 ]
