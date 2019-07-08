@@ -1,5 +1,5 @@
 use amethyst::{
-    core::{math::Vector3, transform::Transform, Float},
+    core::{math::Vector3, transform::Transform},
     ecs::{Entity, SystemData, World},
     renderer::transparent::Transparent,
 };
@@ -82,10 +82,10 @@ impl MapLayerEntitySpawner {
                     let position = layer.position;
                     let mut transform = Transform::default();
                     transform.set_translation(Vector3::new(
-                        Float::from_i32(position.x).expect("Failed to convert i32 into `Float`."),
-                        Float::from_i32(position.y - position.z)
-                            .expect("Failed to convert i32 into `Float`."),
-                        Float::from_i32(position.z).expect("Failed to convert i32 into `Float`."),
+                        f32::from_i32(position.x).expect("Failed to convert i32 into `f32`."),
+                        f32::from_i32(position.y - position.z)
+                            .expect("Failed to convert i32 into `f32`."),
+                        f32::from_i32(position.z).expect("Failed to convert i32 into `f32`."),
                     ));
 
                     let starting_frame_index = 0;

@@ -12,7 +12,7 @@ pub enum ControlArgs {
         /// Axis to control, "x" or "z".
         axis: Axis,
         /// Value to use for the axis input.
-        value: f64,
+        value: f32,
     },
     /// Axis input.
     Action {

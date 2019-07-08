@@ -1,5 +1,5 @@
 use amethyst::{
-    core::{Float, Transform},
+    core::Transform,
     ecs::{Join, ReadStorage, System, WriteStorage},
     renderer::SpriteRender,
 };
@@ -75,12 +75,12 @@ impl<'s> System<'s> for HpBarUpdateSystem {
                 // position, we calculate how far it should be.
                 let half_hp_lost = (HP_BAR_LENGTH - hp) / 2.;
                 let translation = transform.translation_mut();
-                translation.x += Float::from(-half_hp_lost);
-                translation.y += Float::from(Y_OFFSET);
-                translation.z += Float::from(Z_OFFSET);
+                translation.x += -half_hp_lost;
+                translation.y += Y_OFFSET;
+                translation.z += Z_OFFSET;
 
                 let scale = transform.scale_mut();
-                scale[0] = Float::from(hp);
+                scale[0] = hp;
 
                 sprite_render.sprite_number = (HP_BAR_SPRITE_COUNT - 1)
                     * ((**health_points) as usize)
@@ -93,7 +93,7 @@ impl<'s> System<'s> for HpBarUpdateSystem {
 mod tests {
     use amethyst::{
         assets::PrefabData,
-        core::{math::Vector3, Float, Transform, TransformBundle},
+        core::{math::Vector3, Transform, TransformBundle},
         ecs::{Builder, Entity, System, SystemData},
         renderer::{types::DefaultBackend, RenderEmptyBundle},
         Error,
@@ -153,11 +153,8 @@ mod tests {
                 // 100 - 20 = 80 (80 HP)
                 // -80 / 2  = -40 (half sprite width shift)
                 // -40 + 123. = 83. (parent shift)
-                assert_eq!(
-                    &Vector3::new(Float::from(83.), Float::from(446.), Float::from(790.)),
-                    transform.translation()
-                );
-                assert_eq!(Float::from(20.), transform.scale()[0]);
+                assert_eq!(&Vector3::new(83., 446., 790.), transform.translation());
+                assert_eq!(20., transform.scale()[0]);
             })
             .run_isolated()
     }

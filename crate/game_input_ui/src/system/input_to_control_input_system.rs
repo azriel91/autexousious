@@ -301,9 +301,9 @@ mod test {
                 let mut input_events_ec =
                     world.write_resource::<EventChannel<InputEvent<PlayerActionControl>>>();
 
-                key_events
-                    .iter()
-                    .for_each(|ev| input_handler.send_event(ev, &mut input_events_ec, HIDPI));
+                key_events.iter().for_each(|ev| {
+                    input_handler.send_event(ev, &mut input_events_ec, HIDPI as f32)
+                });
             })
             .with_assertion(move |world| {
                 let input_events = {

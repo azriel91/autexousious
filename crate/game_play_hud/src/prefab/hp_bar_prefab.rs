@@ -1,6 +1,6 @@
 use amethyst::{
     assets::PrefabData,
-    core::{math::Vector3, Float, Transform},
+    core::{math::Vector3, Transform},
     ecs::{Entity, WriteStorage},
     renderer::{transparent::Transparent, SpriteRender},
     Error,
@@ -97,11 +97,7 @@ impl<'s> PrefabData<'s> for HpBarPrefab {
         if let Some(translation) = parent_translation {
             *transform.translation_mut() = translation;
         }
-        transform.set_scale(Vector3::new(
-            Float::from(HP_BAR_LENGTH),
-            Float::from(HP_BAR_HEIGHT),
-            Float::from(1.),
-        ));
+        transform.set_scale(Vector3::new(HP_BAR_LENGTH, HP_BAR_HEIGHT, 1.));
         transforms.insert(entity, transform)?;
         parent_objects.insert(entity, ParentObject::new(self.game_object_entity))?;
         target_objects.insert(entity, TargetObject::new(self.game_object_entity))?;

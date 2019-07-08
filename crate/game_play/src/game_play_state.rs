@@ -1,5 +1,5 @@
 use amethyst::{
-    core::{math::Vector3, Float, SystemBundle, Transform},
+    core::{math::Vector3, SystemBundle, Transform},
     ecs::{Builder, DispatcherBuilder, Entity, World},
     input::{is_key_down, VirtualKeyCode},
     renderer::camera::{Camera, Projection},
@@ -93,11 +93,7 @@ impl GamePlayState {
         //
         // By using `::std::f32::MAX` here, we ensure that all entities will be in the camera's
         // view.
-        let translation = Vector3::new(
-            Float::from(0.),
-            Float::from(0.),
-            Float::from(CAMERA_DEPTH / 2.),
-        );
+        let translation = Vector3::new(0., 0., CAMERA_DEPTH / 2.);
         let transform = Transform::from(translation);
 
         let camera = world
