@@ -11,7 +11,7 @@
 #
 # ```
 # LOG_LEVEL=4 # Optionally change the log level
-# source ./build/log.sh
+# source ./scripts/log.sh
 # ```
 LOG_LEVEL_REAL=${LOG_LEVEL:-3}
 ERRORS_EXIST=""

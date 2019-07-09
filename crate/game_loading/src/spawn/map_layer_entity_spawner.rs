@@ -1,5 +1,5 @@
 use amethyst::{
-    core::{math::Vector3, transform::Transform, Float},
+    core::{math::Vector3, transform::Transform},
     ecs::{Entity, SystemData, World},
     renderer::transparent::Transparent,
 };
@@ -82,17 +82,19 @@ impl MapLayerEntitySpawner {
                     let position = layer.position;
                     let mut transform = Transform::default();
                     transform.set_translation(Vector3::new(
-                        Float::from_i32(position.x).expect("Failed to convert i32 into `Float`."),
-                        Float::from_i32(position.y - position.z)
-                            .expect("Failed to convert i32 into `Float`."),
-                        Float::from_i32(position.z).expect("Failed to convert i32 into `Float`."),
+                        f32::from_i32(position.x).expect("Failed to convert i32 into `f32`."),
+                        f32::from_i32(position.y - position.z)
+                            .expect("Failed to convert i32 into `f32`."),
+                        f32::from_i32(position.z).expect("Failed to convert i32 into `f32`."),
                     ));
 
                     let starting_frame_index = 0;
                     let wait_sequence = wait_sequence_assets
                         .get(wait_sequence_handle)
                         .expect("Expected `WaitSequence` to be loaded.");
-                    let wait = WaitSequence::component_owned(&wait_sequence[starting_frame_index]);
+                    let wait = <WaitSequence as ComponentSequenceExt>::to_owned(
+                        &wait_sequence[starting_frame_index],
+                    );
                     waits
                         .insert(entity, wait)
                         .expect("Failed to insert `Wait` component.");
@@ -100,7 +102,7 @@ impl MapLayerEntitySpawner {
                     let sprite_render_sequence = sprite_render_sequence_assets
                         .get(sprite_render_sequence_handle)
                         .expect("Expected `SpriteRenderSequence` to be loaded.");
-                    let sprite_render = SpriteRenderSequence::component_owned(
+                    let sprite_render = <SpriteRenderSequence as ComponentSequenceExt>::to_owned(
                         &sprite_render_sequence[starting_frame_index],
                     );
                     sprite_renders

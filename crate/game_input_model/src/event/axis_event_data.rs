@@ -10,5 +10,5 @@ pub struct AxisEventData {
     /// `Axis` whose value changed.
     pub axis: Axis,
     /// New value for the axis input.
-    pub value: f64,
+    pub value: f32,
 }

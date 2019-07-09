@@ -63,9 +63,7 @@ mod tests {
     fn rotates_mirrored_objects_around_y_axis() -> Result<(), Error> {
         run_test(
             |(mirrored, _transform)| **mirrored = true,
-            |(_mirrored, transform)| {
-                assert_relative_eq!(f32::pi(), transform.rotation().angle().as_f32())
-            },
+            |(_mirrored, transform)| assert_relative_eq!(f32::pi(), transform.rotation().angle()),
         )
     }
 
@@ -76,7 +74,7 @@ mod tests {
                 **mirrored = false;
                 transform.set_rotation_y_axis(f32::pi());
             },
-            |(_mirrored, transform)| assert_relative_eq!(0., transform.rotation().angle().as_f32()),
+            |(_mirrored, transform)| assert_relative_eq!(0., transform.rotation().angle()),
         )
     }
 

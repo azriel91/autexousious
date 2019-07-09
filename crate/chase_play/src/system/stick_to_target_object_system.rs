@@ -77,7 +77,7 @@ impl<'s> System<'s> for StickToTargetObjectSystem {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        core::{math::Vector3, transform::Transform, Float},
+        core::{math::Vector3, transform::Transform},
         ecs::{Builder, Entity, World},
         Error,
     };
@@ -144,12 +144,7 @@ mod tests {
         world.add_resource((target, child));
     }
 
-    fn set_target_translation(
-        world: &mut World,
-        x: impl Into<Float>,
-        y: impl Into<Float>,
-        z: impl Into<Float>,
-    ) {
+    fn set_target_translation(world: &mut World, x: f32, y: f32, z: f32) {
         let (target, _child) = *world.read_resource::<(Entity, Entity)>();
         let mut transforms = world.write_storage::<Transform>();
         let target_transform = transforms
@@ -167,12 +162,7 @@ mod tests {
             .expect("Failed to insert `Position<f32>` component.");
     }
 
-    fn assert_child_entity_translation(
-        world: &mut World,
-        x: impl Into<Float>,
-        y: impl Into<Float>,
-        z: impl Into<Float>,
-    ) {
+    fn assert_child_entity_translation(world: &mut World, x: f32, y: f32, z: f32) {
         let (_target, child) = *world.read_resource::<(Entity, Entity)>();
         let transforms = world.read_storage::<Transform>();
         let child_transform = transforms

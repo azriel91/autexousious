@@ -64,7 +64,7 @@ impl<'s> System<'s> for ObjectTransformUpdateSystem {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        core::{math::Vector3, transform::Transform, Float},
+        core::{math::Vector3, transform::Transform},
         ecs::{Builder, Entity, World},
         input::StringBindings,
         Error,
@@ -82,11 +82,7 @@ mod test {
             let position = Position::<f32>::new(-5., -3., -4.);
 
             let mut transform = Transform::default();
-            transform.set_translation(Vector3::new(
-                Float::from(10.),
-                Float::from(20.),
-                Float::from(0.),
-            ));
+            transform.set_translation(Vector3::new(10., 20., 0.));
 
             let entity = world.create_entity().with(position).with(transform).build();
 
@@ -97,8 +93,7 @@ mod test {
             let entity = *world.read_resource::<Entity>();
             let transforms = world.read_storage::<Transform>();
 
-            let expected_translation =
-                Vector3::new(Float::from(-5.), Float::from(1.), Float::from(-4.));
+            let expected_translation = Vector3::new(-5., 1., -4.);
 
             let transform = transforms
                 .get(entity)

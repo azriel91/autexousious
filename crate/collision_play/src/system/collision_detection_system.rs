@@ -1,6 +1,6 @@
 use amethyst::{
     assets::{AssetStorage, Handle},
-    core::{math::Vector3, transform::Transform, Float},
+    core::{math::Vector3, transform::Transform},
     ecs::{Entities, Join, Read, ReadStorage, System, Write},
     renderer::{SpriteRender, SpriteSheet},
     shrev::EventChannel,
@@ -58,7 +58,7 @@ pub struct CollisionDetectionSystemData<'s> {
 
 impl CollisionDetectionSystem {
     fn intersects(
-        relative_pos: &Vector3<Float>,
+        relative_pos: &Vector3<f32>,
         (interaction, interaction_offsets, interaction_mirrored): (&Interaction, [f32; 2], bool),
         (body, body_offsets, body_mirrored): (&Volume, [f32; 2], bool),
     ) -> bool {
@@ -96,7 +96,7 @@ impl CollisionDetectionSystem {
                     b_w,
                     body_offsets[0],
                     body_mirrored,
-                    Some(relative_pos[0].as_f32()),
+                    Some(relative_pos[0]),
                 );
                 let x_intersects = (interaction_x >= body_x && interaction_x < body_x_w)
                     || (interaction_x_w >= body_x && interaction_x_w < body_x_w);
@@ -108,7 +108,7 @@ impl CollisionDetectionSystem {
                     b_h,
                     body_offsets[1],
                     false,
-                    Some(relative_pos[1].as_f32()),
+                    Some(relative_pos[1]),
                 );
                 let y_intersects = (interaction_y >= body_y && interaction_y < body_y_h)
                     || (interaction_y_h >= body_y && interaction_y_h < body_y_h);
@@ -116,7 +116,7 @@ impl CollisionDetectionSystem {
                 let (interaction_z, interaction_z_d) =
                     Self::bound_coordinates(i_z, i_d, 0., false, None);
                 let (body_z, body_z_d) =
-                    Self::bound_coordinates(b_z, b_d, 0., false, Some(relative_pos[2].as_f32()));
+                    Self::bound_coordinates(b_z, b_d, 0., false, Some(relative_pos[2]));
                 let z_intersects = (interaction_z >= body_z && interaction_z < body_z_d)
                     || (interaction_z_d >= body_z && interaction_z_d < body_z_d);
 

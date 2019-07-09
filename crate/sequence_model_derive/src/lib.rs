@@ -19,7 +19,7 @@
 //! use sequence_model_derive::component_sequence;
 //! use typename_derive::TypeName;
 //!
-//! #[component_sequence(Wait)]
+//! #[component_sequence(Wait, copy)]
 //! pub struct WaitSequence;
 //! ```
 //!
@@ -27,7 +27,7 @@
 //!
 //! ```rust,ignore
 //! use amethyst::assets::Handle;
-//! use sequence_model_spi::loaded::ComponentSequence;
+//! use sequence_model_spi::loaded::{ComponentSequence, ComponentSequenceExt};
 //!
 //! #[derive(Asset, Clone, Debug, Deref, DerefMut, PartialEq, TypeName)]
 //! pub struct WaitSequence(ComponentSequence<Wait>)
@@ -44,6 +44,13 @@
 //! impl Default for WaitSequence {
 //!     fn default() -> Self {
 //!         WaitSequence(ComponentSequence::<Wait>::new(Vec::default()))
+//!     }
+//! }
+//! impl ComponentSequenceExt for #type_name {
+//!     type Component = #component_path;
+//!
+//!     fn to_owned(component: &Self::Component) -> Self::Component {
+//!         *component
 //!     }
 //! }
 //! ```
@@ -64,9 +71,25 @@ pub fn component_sequence(args: TokenStream, item: TokenStream) -> TokenStream {
     let mut ast = parse_macro_input!(item as DeriveInput);
     let args = parse_macro_input!(args as ComponentSequenceAttributeArgs);
     let component_path = args.component_path;
-    let component_owned_fn = args
-        .component_owned_fn
-        .unwrap_or_else(|| parse_quote!(std::clone::Clone::clone));
+    let to_owned_fn_impl = {
+        if args.component_copy {
+            quote! {
+                fn to_owned(component: &Self::Component) -> Self::Component {
+                    *component
+                }
+            }
+        } else {
+            let to_owned_fn = args
+                .to_owned_fn
+                .unwrap_or_else(|| parse_quote!(std::clone::Clone::clone));
+
+            quote! {
+                fn to_owned(component: &Self::Component) -> Self::Component {
+                    #to_owned_fn(component)
+                }
+            }
+        }
+    };
 
     ast.assert_fields_unit();
 
@@ -109,9 +132,7 @@ pub fn component_sequence(args: TokenStream, item: TokenStream) -> TokenStream {
         impl sequence_model_spi::loaded::ComponentSequenceExt for #type_name {
             type Component = #component_path;
 
-            fn component_owned(component: &Self::Component) -> Self::Component {
-                #component_owned_fn(component)
-            }
+            #to_owned_fn_impl
         }
     };
 
