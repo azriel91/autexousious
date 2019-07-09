@@ -1,5 +1,3 @@
-#![cfg(not(windows))] // TODO: <https://gitlab.com/azriel91/autexousious/issues/100>
-
 use assert_cmd::assert::OutputAssertExt;
 use escargot::{error::CargoError, CargoBuild};
 
