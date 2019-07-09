@@ -67,7 +67,7 @@ where
         frame_index: usize,
     ) {
         if frame_index < component_sequence.len() {
-            let component = CS::component_owned(&component_sequence[frame_index]);
+            let component = CS::to_owned(&component_sequence[frame_index]);
             components
                 .insert(entity, component)
                 .expect("Failed to insert component.");

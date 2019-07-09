@@ -5,5 +5,5 @@ pub trait ComponentSequenceExt {
     /// The ECS component type of this sequence.
     type Component: Component;
     /// Returns an owned version of the component.
-    fn component_owned(component: &Self::Component) -> Self::Component;
+    fn to_owned(component: &Self::Component) -> Self::Component;
 }
