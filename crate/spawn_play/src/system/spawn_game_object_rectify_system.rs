@@ -66,7 +66,7 @@ impl SpawnGameObjectRectifySystem {
             spawn_position.z as f32,
         );
         if let Some(position_parent) = positions.get(entity_parent) {
-            *position = *position + **position_parent;
+            *position += **position_parent;
         }
         position
     }
@@ -90,7 +90,7 @@ impl SpawnGameObjectRectifySystem {
             spawn_velocity.z as f32,
         );
         if let Some(velocity_parent) = velocities.get(entity_parent) {
-            *velocity = *velocity + **velocity_parent;
+            *velocity += **velocity_parent;
         }
         velocity
     }
