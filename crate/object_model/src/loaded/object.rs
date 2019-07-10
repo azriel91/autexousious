@@ -27,6 +27,6 @@ where
     pub interactions_sequence_handles: HashMap<SeqId, InteractionsSequenceHandle>,
     /// Handle to `SpawnsSequence`s that this object uses, keyed by sequence ID.
     pub spawns_sequence_handles: HashMap<SeqId, SpawnsSequenceHandle>,
-    /// Component sequence transitions when a sequence ends.
+    /// Sequence transition when a sequence ends, keyed by sequence ID.
     pub sequence_end_transitions: SequenceEndTransitions<SeqId>,
 }

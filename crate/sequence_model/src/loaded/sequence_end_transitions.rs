@@ -7,7 +7,7 @@ use specs_derive::Component;
 
 use crate::config::{SequenceEndTransition, SequenceId};
 
-/// Component sequence transitions when a sequence ends.
+/// Sequence transition when a sequence ends, keyed by sequence ID.
 #[derive(Clone, Component, Debug, Default, Deref, DerefMut, From, PartialEq, new)]
 pub struct SequenceEndTransitions<SeqId>(pub FnvHashMap<SeqId, SequenceEndTransition<SeqId>>)
 where

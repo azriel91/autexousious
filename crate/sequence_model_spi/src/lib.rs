@@ -2,9 +2,9 @@
 
 //! Service provider interface library for crates that extend the `sequence_model`.
 //!
-//! For example, the [`ComponentSequence<C>`] type from this crate is used to parameterize frame
+//! For example, the [`FrameComponentData<C>`] type from this crate is used to parameterize frame
 //! components such as `Body`.
 //!
-//! [`ComponentSequence<C>`]: loaded/struct.ComponentSequence.html
+//! [`FrameComponentData<C>`]: loaded/struct.FrameComponentData.html
 
 pub mod loaded;

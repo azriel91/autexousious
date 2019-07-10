@@ -13,12 +13,12 @@ use derivative::Derivative;
 use derive_new::new;
 use log::error;
 use object_model::loaded::{GameObject, ObjectWrapper};
-use object_prefab::ComponentSequenceHandleStorages;
+use object_prefab::FrameComponentDataHandleStorages;
 use sequence_model::config::SequenceEndTransition;
 use shred_derive::SystemData;
 use typename_derive::TypeName;
 
-/// Updates the attached `Handle<ComponentSequence>`s when `O::SequenceId` changes.
+/// Updates the attached `Handle<FrameComponentData>`s when `O::SequenceId` changes.
 #[derive(Debug, Default, TypeName, new)]
 pub struct SequenceComponentUpdateSystem<O>
 where
@@ -55,9 +55,9 @@ where
     /// `SequenceEndTransition<O::SequenceId>` components.
     #[derivative(Debug = "ignore")]
     pub sequence_end_transitions: WriteStorage<'s, SequenceEndTransition<O::SequenceId>>,
-    /// Component sequence handle storages.
+    /// Frame component data handle storages.
     #[derivative(Debug = "ignore")]
-    pub component_sequence_handle_storages: ComponentSequenceHandleStorages<'s>,
+    pub frame_component_data_handle_storages: FrameComponentDataHandleStorages<'s>,
 }
 
 impl<'s, O> System<'s> for SequenceComponentUpdateSystem<O>
@@ -75,8 +75,8 @@ where
             object_wrapper_handles,
             object_wrapper_assets,
             mut sequence_end_transitions,
-            component_sequence_handle_storages:
-                ComponentSequenceHandleStorages {
+            frame_component_data_handle_storages:
+                FrameComponentDataHandleStorages {
                     mut wait_sequence_handles,
                     mut sprite_render_sequence_handles,
                     mut body_sequence_handles,
@@ -154,8 +154,8 @@ where
                         .expect("Failed to insert `SpawnsSequenceHandle` component.");
                 } else {
                     error!(
-                        "Expected all component sequence handles to exist for sequence ID: `{:?}`, \
-                         but was {:?}.",
+                        "Expected all frame component data handles to exist for sequence ID: \
+                         `{:?}`, but was {:?}.",
                         sequence_id, &components
                     );
                 }

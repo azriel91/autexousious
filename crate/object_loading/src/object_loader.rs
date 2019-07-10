@@ -59,7 +59,7 @@ impl ObjectLoader {
             .map(|(sequence_id, sequence)| (*sequence_id, sequence.object_sequence().next))
             .collect::<FnvHashMap<_, _>>();
 
-        // Load component sequences
+        // Load frame component datas
         let sequences_handles = (
             HashMap::<O::SequenceId, WaitSequenceHandle>::new(),
             HashMap::<O::SequenceId, SpriteRenderSequenceHandle>::new(),
@@ -311,14 +311,14 @@ mod test {
                 .with_assertion(|world| {
                     let object_wrapper = world.read_resource::<CharacterObjectWrapper>();
 
-                    macro_rules! assert_component_sequence_count {
-                        ($component_sequence_field:ident) => {
+                    macro_rules! assert_frame_component_data_count {
+                        ($frame_component_data_field:ident) => {
                             assert_eq!(
                                 28,
-                                object_wrapper.$component_sequence_field.len(),
+                                object_wrapper.$frame_component_data_field.len(),
                                 concat!(
                                     "Expected 28 ",
-                                    stringify!($component_sequence_field),
+                                    stringify!($frame_component_data_field),
                                     " to be loaded.",
                                     "Check `bat/object.toml` for number of sequences."
                                 )
@@ -326,10 +326,10 @@ mod test {
                         };
                     }
 
-                    assert_component_sequence_count!(wait_sequence_handles);
-                    assert_component_sequence_count!(sprite_render_sequence_handles);
-                    assert_component_sequence_count!(body_sequence_handles);
-                    assert_component_sequence_count!(interactions_sequence_handles);
+                    assert_frame_component_data_count!(wait_sequence_handles);
+                    assert_frame_component_data_count!(sprite_render_sequence_handles);
+                    assert_frame_component_data_count!(body_sequence_handles);
+                    assert_frame_component_data_count!(interactions_sequence_handles);
                 })
                 .run_isolated()
                 .is_ok()

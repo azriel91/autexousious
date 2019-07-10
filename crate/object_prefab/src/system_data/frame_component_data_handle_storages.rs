@@ -6,10 +6,10 @@ use shred_derive::SystemData;
 use spawn_model::loaded::SpawnsSequenceHandle;
 use sprite_model::loaded::SpriteRenderSequenceHandle;
 
-/// Common game object component sequence handle storages.
+/// Frame component data handle storages.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct ComponentSequenceHandleStorages<'s> {
+pub struct FrameComponentDataHandleStorages<'s> {
     /// `WaitSequenceHandle` components.
     #[derivative(Debug = "ignore")]
     pub wait_sequence_handles: WriteStorage<'s, WaitSequenceHandle>,

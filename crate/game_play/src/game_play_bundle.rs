@@ -47,10 +47,10 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         // === Component augmentation === //
 
         macro_rules! add_frame_component_update_system {
-            ($component_sequence:ident) => {
+            ($frame_component_data:ident) => {
                 builder.add(
-                    FrameComponentUpdateSystem::<$component_sequence>::new(),
-                    &FrameComponentUpdateSystem::<$component_sequence>::type_name(),
+                    FrameComponentUpdateSystem::<$frame_component_data>::new(),
+                    &FrameComponentUpdateSystem::<$frame_component_data>::type_name(),
                     &[
                         &SequenceComponentUpdateSystem::<Character>::type_name(),
                         &SequenceComponentUpdateSystem::<Energy>::type_name(),

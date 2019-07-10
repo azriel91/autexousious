@@ -1,6 +1,6 @@
 #![recursion_limit = "128"]
 
-//! Provides the `#[component_sequence]` attribute to generate a newtype around `Vec<C>`.
+//! Provides the `#[frame_component_data]` attribute to generate a newtype around `Vec<C>`.
 //!
 //! # Examples
 //!
@@ -14,9 +14,9 @@
 //! #     type Storage = VecStorage<Self>;
 //! # }
 //! #
-//! use sequence_model_derive::component_sequence;
+//! use sequence_model_derive::frame_component_data;
 //!
-//! #[component_sequence(Wait, copy)]
+//! #[frame_component_data(Wait, copy)]
 //! pub struct WaitSequence;
 //! ```
 //!
@@ -26,16 +26,16 @@
 //! use amethyst::assets::Handle;
 //! use asset_derive::Asset;
 //! use derive_deref::{Deref, DerefMut};
-//! use sequence_model_spi::loaded::{ComponentSequence, ComponentDataExt};
+//! use sequence_model_spi::loaded::{FrameComponentData, ComponentDataExt};
 //! use typename_derive::TypeName;
 //!
 //! #[derive(Asset, Clone, Debug, Deref, DerefMut, PartialEq, TypeName)]
-//! pub struct WaitSequence(ComponentSequence<Wait>)
+//! pub struct WaitSequence(FrameComponentData<Wait>)
 //!
 //! impl WaitSequence {
 //!     #[doc = #fn_new_doc]
 //!     pub fn new(sequence: Vec<Wait>) -> Self {
-//!         WaitSequence(ComponentSequence::<Wait>::new(sequence))
+//!         WaitSequence(FrameComponentData::<Wait>::new(sequence))
 //!     }
 //! }
 //!
@@ -43,7 +43,7 @@
 //! // imposes a `Default` bound on type parameters.
 //! impl Default for WaitSequence {
 //!     fn default() -> Self {
-//!         WaitSequence(ComponentSequence::<Wait>::new(Vec::default()))
+//!         WaitSequence(FrameComponentData::<Wait>::new(Vec::default()))
 //!     }
 //! }
 //! impl ComponentDataExt for #type_name {
@@ -61,17 +61,17 @@ use proc_macro::TokenStream;
 use syn::{parse_macro_input, DeriveInput};
 
 use crate::{
-    component_sequence_attribute_args::ComponentSequenceAttributeArgs,
-    component_sequence_impl::component_sequence_impl,
+    frame_component_data_attribute_args::FrameComponentDataAttributeArgs,
+    frame_component_data_impl::frame_component_data_impl,
 };
 
-mod component_sequence_attribute_args;
-mod component_sequence_impl;
+mod frame_component_data_attribute_args;
+mod frame_component_data_impl;
 
 #[proc_macro_attribute]
-pub fn component_sequence(args: TokenStream, item: TokenStream) -> TokenStream {
+pub fn frame_component_data(args: TokenStream, item: TokenStream) -> TokenStream {
     let ast = parse_macro_input!(item as DeriveInput);
-    let args = parse_macro_input!(args as ComponentSequenceAttributeArgs);
+    let args = parse_macro_input!(args as FrameComponentDataAttributeArgs);
 
-    component_sequence_impl(ast, args)
+    frame_component_data_impl(ast, args)
 }

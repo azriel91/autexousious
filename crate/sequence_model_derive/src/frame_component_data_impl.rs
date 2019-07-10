@@ -3,12 +3,12 @@ use proc_macro_roids::{DeriveInputDeriveExt, DeriveInputStructExt, FieldsUnnamed
 use quote::quote;
 use syn::{parse_quote, DeriveInput, FieldsUnnamed, Path};
 
-use crate::component_sequence_attribute_args::ComponentSequenceAttributeArgs;
+use crate::frame_component_data_attribute_args::FrameComponentDataAttributeArgs;
 
-/// Generates the `ComponentSequence` implementation.
-pub fn component_sequence_impl(
+/// Generates the `FrameComponentData` implementation.
+pub fn frame_component_data_impl(
     mut ast: DeriveInput,
-    args: ComponentSequenceAttributeArgs,
+    args: FrameComponentDataAttributeArgs,
 ) -> TokenStream {
     let component_path = args.component_path;
     let to_owned_fn_impl = {
@@ -52,7 +52,7 @@ pub fn component_sequence_impl(
             #[doc = #fn_new_doc]
             pub fn new(sequence: Vec<#component_path>) -> Self {
                 #type_name(
-                    sequence_model_spi::loaded::ComponentSequence::<#component_path>::new(sequence)
+                    sequence_model_spi::loaded::FrameComponentData::<#component_path>::new(sequence)
                 )
             }
         }
@@ -62,7 +62,7 @@ pub fn component_sequence_impl(
         impl Default for #type_name {
             fn default() -> Self {
                 #type_name(
-                    sequence_model_spi::loaded::ComponentSequence::<#component_path>::new(
+                    sequence_model_spi::loaded::FrameComponentData::<#component_path>::new(
                         Vec::default()
                     )
                 )
@@ -94,7 +94,7 @@ fn fields_append(ast: &mut DeriveInput, component_path: &Path) {
         .ident;
     let doc_string = format!("The chain of `{}` values.", component_name);
     let fields: FieldsUnnamed = parse_quote! {
-        (#[doc = #doc_string] pub sequence_model_spi::loaded::ComponentSequence<#component_path>)
+        (#[doc = #doc_string] pub sequence_model_spi::loaded::FrameComponentData<#component_path>)
     };
 
     ast.append_unnamed(fields);
