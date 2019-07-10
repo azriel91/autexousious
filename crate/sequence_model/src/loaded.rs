@@ -1,7 +1,6 @@
 //! Contains the types that represent processed configuration.
 
 pub use self::{
-    component_sequence::ComponentSequence,
     control_transition::ControlTransition,
     control_transition_hold::ControlTransitionHold,
     control_transition_like::ControlTransitionLike,
@@ -12,7 +11,6 @@ pub use self::{
     wait_sequence::{WaitSequence, WaitSequenceHandle},
 };
 
-mod component_sequence;
 mod control_transition;
 mod control_transition_hold;
 mod control_transition_like;
