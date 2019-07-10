@@ -11,7 +11,7 @@ use sequence_model::{
     loaded::WaitSequence,
     play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
 };
-use sequence_model_spi::loaded::ComponentSequenceExt;
+use sequence_model_spi::loaded::ComponentDataExt;
 use sprite_model::loaded::SpriteRenderSequence;
 
 use crate::{MapLayerComponentStorages, MapSpawningResources};
@@ -93,7 +93,7 @@ impl MapLayerEntitySpawner {
                     let wait_sequence = wait_sequence_assets
                         .get(wait_sequence_handle)
                         .expect("Expected `WaitSequence` to be loaded.");
-                    let wait = <WaitSequence as ComponentSequenceExt>::to_owned(
+                    let wait = <WaitSequence as ComponentDataExt>::to_owned(
                         &wait_sequence[starting_frame_index],
                     );
                     waits
@@ -103,7 +103,7 @@ impl MapLayerEntitySpawner {
                     let sprite_render_sequence = sprite_render_sequence_assets
                         .get(sprite_render_sequence_handle)
                         .expect("Expected `SpriteRenderSequence` to be loaded.");
-                    let sprite_render = <SpriteRenderSequence as ComponentSequenceExt>::to_owned(
+                    let sprite_render = <SpriteRenderSequence as ComponentDataExt>::to_owned(
                         &sprite_render_sequence[starting_frame_index],
                     );
                     sprite_renders

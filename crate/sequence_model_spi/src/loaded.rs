@@ -1,10 +1,10 @@
 //! Contains the types that represent processed configuration.
 
 pub use self::{
-    component_sequence::ComponentSequence, component_sequence_ext::ComponentSequenceExt,
+    component_data_ext::ComponentDataExt, component_sequence::ComponentSequence,
     sequence_component_data::SequenceComponentData,
 };
 
+mod component_data_ext;
 mod component_sequence;
-mod component_sequence_ext;
 mod sequence_component_data;

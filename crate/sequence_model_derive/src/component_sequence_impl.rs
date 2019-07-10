@@ -69,7 +69,7 @@ pub fn component_sequence_impl(
             }
         }
 
-        impl sequence_model_spi::loaded::ComponentSequenceExt for #type_name {
+        impl sequence_model_spi::loaded::ComponentDataExt for #type_name {
             type Component = #component_path;
 
             #to_owned_fn_impl

@@ -10,7 +10,7 @@ use derivative::Derivative;
 use derive_new::new;
 use log::error;
 use sequence_model::play::SequenceUpdateEvent;
-use sequence_model_spi::loaded::{ComponentSequence, ComponentSequenceExt};
+use sequence_model_spi::loaded::{ComponentDataExt, ComponentSequence};
 use shred_derive::SystemData;
 use typename_derive::TypeName;
 
@@ -19,9 +19,9 @@ use typename_derive::TypeName;
 pub struct FrameComponentUpdateSystem<CS>
 where
     CS: Asset
-        + ComponentSequenceExt
+        + ComponentDataExt
         + Debug
-        + Deref<Target = ComponentSequence<<CS as ComponentSequenceExt>::Component>>,
+        + Deref<Target = ComponentSequence<<CS as ComponentDataExt>::Component>>,
 {
     /// Reader ID for the `SequenceUpdateEvent` event channel.
     #[new(default)]
@@ -35,9 +35,9 @@ where
 pub struct FrameComponentUpdateSystemData<'s, CS>
 where
     CS: Asset
-        + ComponentSequenceExt
+        + ComponentDataExt
         + Debug
-        + Deref<Target = ComponentSequence<<CS as ComponentSequenceExt>::Component>>,
+        + Deref<Target = ComponentSequence<<CS as ComponentDataExt>::Component>>,
 {
     /// Event channel for `SequenceUpdateEvent`s.
     #[derivative(Debug = "ignore")]
@@ -50,18 +50,18 @@ where
     pub component_sequence_assets: Read<'s, AssetStorage<CS>>,
     /// Frame `Component` storages.
     #[derivative(Debug = "ignore")]
-    pub components: WriteStorage<'s, <CS as ComponentSequenceExt>::Component>,
+    pub components: WriteStorage<'s, <CS as ComponentDataExt>::Component>,
 }
 
 impl<CS> FrameComponentUpdateSystem<CS>
 where
     CS: Asset
-        + ComponentSequenceExt
+        + ComponentDataExt
         + Debug
-        + Deref<Target = ComponentSequence<<CS as ComponentSequenceExt>::Component>>,
+        + Deref<Target = ComponentSequence<<CS as ComponentDataExt>::Component>>,
 {
     fn update_frame_components(
-        components: &mut WriteStorage<<CS as ComponentSequenceExt>::Component>,
+        components: &mut WriteStorage<<CS as ComponentDataExt>::Component>,
         component_sequence: &CS,
         entity: Entity,
         frame_index: usize,
@@ -83,9 +83,9 @@ where
 impl<'s, CS> System<'s> for FrameComponentUpdateSystem<CS>
 where
     CS: Asset
-        + ComponentSequenceExt
+        + ComponentDataExt
         + Debug
-        + Deref<Target = ComponentSequence<<CS as ComponentSequenceExt>::Component>>,
+        + Deref<Target = ComponentSequence<<CS as ComponentDataExt>::Component>>,
 {
     type SystemData = FrameComponentUpdateSystemData<'s, CS>;
 

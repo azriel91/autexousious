@@ -26,7 +26,7 @@
 //! use amethyst::assets::Handle;
 //! use asset_derive::Asset;
 //! use derive_deref::{Deref, DerefMut};
-//! use sequence_model_spi::loaded::{ComponentSequence, ComponentSequenceExt};
+//! use sequence_model_spi::loaded::{ComponentSequence, ComponentDataExt};
 //! use typename_derive::TypeName;
 //!
 //! #[derive(Asset, Clone, Debug, Deref, DerefMut, PartialEq, TypeName)]
@@ -46,7 +46,7 @@
 //!         WaitSequence(ComponentSequence::<Wait>::new(Vec::default()))
 //!     }
 //! }
-//! impl ComponentSequenceExt for #type_name {
+//! impl ComponentDataExt for #type_name {
 //!     type Component = #component_path;
 //!
 //!     fn to_owned(component: &Self::Component) -> Self::Component {
