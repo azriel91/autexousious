@@ -9,18 +9,18 @@ mod kw {
     syn::custom_keyword!(to_owned);
 }
 
-/// Parses the `Path` for the component type in the frame component data.
+/// Parses the `SequenceId` and `Path` for the component type in the sequence component data.
 ///
 /// This is how the compiler passes in arguments to our attribute -- it is
 /// everything inside the delimiters after the attribute name.
 ///
 /// ```rust,ignore
-/// #[frame_component_data(Wait)]
-///                        ^^^^
+/// #[sequence_component_data(MagicSequenceId, Wait)]
+///                           ^^^^^^^^^^^^^^^^^^^^^
 ///
 /// // or one of:
-/// #[frame_component_data(Copyable, copy)]
-/// #[frame_component_data(CustomToOwned, to_owned = std::ops::Deref::deref)]
+/// #[sequence_component_data(MagicSequenceId, Copyable, copy)]
+/// #[sequence_component_data(MagicSequenceId, CustomToOwned, to_owned = std::ops::Deref::deref)]
 /// ```
 ///
 /// The following parameters are optional:
@@ -29,11 +29,13 @@ mod kw {
 /// * `to_owned`: Path to the function to map a borrowed component to an owned component.
 ///
 /// ```rust,ignore
-/// #[frame_component_data(Wait, to_owned = std::ops::Deref::deref)]
+/// #[sequence_component_data(Wait, to_owned = std::ops::Deref::deref)]
 /// ```
 #[derive(Debug)]
-pub struct FrameComponentDataAttributeArgs {
-    /// The component type of the `FrameComponentData`.
+pub struct SequenceComponentDataAttributeArgs {
+    /// The sequence ID type of the `SequenceComponentData`.
+    pub sequence_id_path: Path,
+    /// The component type of the `SequenceComponentData`.
     pub component_path: Path,
     /// Whether the type is copy.
     pub component_copy: bool,
@@ -41,8 +43,10 @@ pub struct FrameComponentDataAttributeArgs {
     pub to_owned_fn: Option<Path>,
 }
 
-impl Parse for FrameComponentDataAttributeArgs {
+impl Parse for SequenceComponentDataAttributeArgs {
     fn parse(input: ParseStream) -> Result<Self> {
+        let sequence_id_path = input.parse()?;
+        let _comma: Option<Token![,]> = input.parse()?;
         let component_path = input.parse()?;
         let mut component_copy = false;
         let mut to_owned_fn = None;
@@ -73,7 +77,8 @@ impl Parse for FrameComponentDataAttributeArgs {
             }
         }
 
-        Ok(FrameComponentDataAttributeArgs {
+        Ok(SequenceComponentDataAttributeArgs {
+            sequence_id_path,
             component_path,
             component_copy,
             to_owned_fn,
