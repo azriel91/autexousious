@@ -3,7 +3,8 @@
 //! Provides logic to update sequences.
 
 pub use crate::system::{
-    FrameComponentUpdateSystem, SequenceEndTransitionSystem, SequenceUpdateSystem,
+    FrameComponentUpdateSystem, SequenceEndTransitionSystem, SequenceStatusUpdateSystem,
+    SequenceUpdateSystem,
 };
 
 mod system;
