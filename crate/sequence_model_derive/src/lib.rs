@@ -4,7 +4,7 @@
 //!
 //! # Examples
 //!
-//! ```rust,edition2018
+//! ```rust,ignore
 //! # use amethyst::ecs::{storage::VecStorage, Component};
 //! #
 //! # #[derive(Clone, Copy, Debug, Default, PartialEq)]
@@ -14,10 +14,7 @@
 //! #     type Storage = VecStorage<Self>;
 //! # }
 //! #
-//! use asset_derive::Asset;
-//! use derive_deref::{Deref, DerefMut};
 //! use sequence_model_derive::component_sequence;
-//! use typename_derive::TypeName;
 //!
 //! #[component_sequence(Wait, copy)]
 //! pub struct WaitSequence;
@@ -27,7 +24,10 @@
 //!
 //! ```rust,ignore
 //! use amethyst::assets::Handle;
+//! use asset_derive::Asset;
+//! use derive_deref::{Deref, DerefMut};
 //! use sequence_model_spi::loaded::{ComponentSequence, ComponentSequenceExt};
+//! use typename_derive::TypeName;
 //!
 //! #[derive(Asset, Clone, Debug, Deref, DerefMut, PartialEq, TypeName)]
 //! pub struct WaitSequence(ComponentSequence<Wait>)
