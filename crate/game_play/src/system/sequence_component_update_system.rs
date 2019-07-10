@@ -14,15 +14,11 @@ use derive_new::new;
 use log::error;
 use object_model::loaded::{GameObject, ObjectWrapper};
 use object_prefab::ComponentSequenceHandleStorages;
-use sequence_model::{config::SequenceEndTransition, play::SequenceStatus};
+use sequence_model::config::SequenceEndTransition;
 use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 /// Updates the attached `Handle<ComponentSequence>`s when `O::SequenceId` changes.
-///
-/// This also inserts `SequenceStatus::Begin` when `O::SequenceId` changes, and **must** run before
-/// `SequenceUpdateSystem`, as that relies on the `SequenceStatus` to determine if a `SequenceBegin`
-/// event should be sent.
 #[derive(Debug, Default, TypeName, new)]
 pub struct SequenceComponentUpdateSystem<O>
 where
@@ -56,9 +52,6 @@ where
     /// `O::ObjectWrapper` assets.
     #[derivative(Debug = "ignore")]
     pub object_wrapper_assets: Read<'s, AssetStorage<O::ObjectWrapper>>,
-    /// `SequenceStatus` components.
-    #[derivative(Debug = "ignore")]
-    pub sequence_statuses: WriteStorage<'s, SequenceStatus>,
     /// `SequenceEndTransition<O::SequenceId>` components.
     #[derivative(Debug = "ignore")]
     pub sequence_end_transitions: WriteStorage<'s, SequenceEndTransition<O::SequenceId>>,
@@ -81,7 +74,6 @@ where
             sequence_ids,
             object_wrapper_handles,
             object_wrapper_assets,
-            mut sequence_statuses,
             mut sequence_end_transitions,
             component_sequence_handle_storages:
                 ComponentSequenceHandleStorages {
@@ -117,10 +109,6 @@ where
         )
             .join()
             .for_each(|(entity, sequence_id, object_wrapper_handle, _)| {
-                sequence_statuses
-                    .insert(entity, SequenceStatus::Begin)
-                    .expect("Failed to insert `SequenceStatus` component.");
-
                 let components = {
                     let object_wrapper = object_wrapper_assets
                         .get(&object_wrapper_handle)

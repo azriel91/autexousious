@@ -22,7 +22,8 @@ use object_play::{ObjectGravitySystem, ObjectMirroringSystem};
 use object_status_play::StunPointsReductionSystem;
 use sequence_model::loaded::WaitSequence;
 use sequence_play::{
-    FrameComponentUpdateSystem, SequenceEndTransitionSystem, SequenceUpdateSystem,
+    FrameComponentUpdateSystem, SequenceEndTransitionSystem, SequenceStatusUpdateSystem,
+    SequenceUpdateSystem,
 };
 use spawn_model::loaded::SpawnsSequence;
 use spawn_play::{SpawnGameObjectRectifySystem, SpawnGameObjectSystem};
@@ -70,13 +71,27 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[],
         ); // kcov-ignore
 
+        macro_rules! sequence_status_update_system {
+            ($sequence_id_type:ty) => {
+                builder.add(
+                    SequenceStatusUpdateSystem::<$sequence_id_type>::new(),
+                    &SequenceStatusUpdateSystem::<$sequence_id_type>::type_name(),
+                    &[],
+                ); // kcov-ignore
+            };
+        }
+        sequence_status_update_system!(MapLayerSequenceId);
+        sequence_status_update_system!(CharacterSequenceId);
+        sequence_status_update_system!(EnergySequenceId);
+
         // Updates frame limit and ticks the sequence logic clocks.
         builder.add(
             SequenceUpdateSystem::new(),
             &SequenceUpdateSystem::type_name(),
             &[
-                &SequenceComponentUpdateSystem::<Character>::type_name(),
-                &SequenceComponentUpdateSystem::<Energy>::type_name(),
+                &SequenceStatusUpdateSystem::<MapLayerSequenceId>::type_name(),
+                &SequenceStatusUpdateSystem::<CharacterSequenceId>::type_name(),
+                &SequenceStatusUpdateSystem::<EnergySequenceId>::type_name(),
             ],
         ); // kcov-ignore
         add_frame_component_update_system!(WaitSequence);
