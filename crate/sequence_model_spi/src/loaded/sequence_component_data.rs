@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use amethyst::ecs::Component;
 use derive_deref::{Deref, DerefMut};
 use derive_new::new;
-use sequence_model::config::SequenceId;
+use sequence_model_core::config::SequenceId;
 
 /// Newtype for a component that changes when an entity's sequence changes.
 ///

@@ -4,7 +4,7 @@
 //!
 //! # Examples
 //!
-//! ```rust,ignore
+//! ```rust,edition2018
 //! # use amethyst::ecs::{storage::VecStorage, Component};
 //! #
 //! # #[derive(Clone, Copy, Debug, Default, PartialEq)]

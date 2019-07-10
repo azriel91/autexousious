@@ -1,4 +1,4 @@
-use sequence_model::component_sequence;
+use sequence_model_derive::component_sequence;
 
 use crate::loaded::CharacterControlTransitionsHandle;
 

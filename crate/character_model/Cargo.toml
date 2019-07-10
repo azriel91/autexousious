@@ -14,6 +14,7 @@ derivative = "1.0.2"
 object_model = { path = "../object_model" }
 object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }
+sequence_model_derive = { path = "../sequence_model_derive" }
 sequence_model_spi = { path = "../sequence_model_spi" }
 serde = "1.0.94"
 specs-derive = "0.4.0"
