@@ -4,10 +4,10 @@ use amethyst::{
     renderer::transparent::Transparent,
 };
 use logic_clock::LogicClock;
-use map_model::loaded::MapHandle;
+use map_model::{config::MapLayerSequenceId, loaded::MapHandle};
 use num_traits::FromPrimitive;
 use sequence_model::{
-    config::Repeat,
+    config::SequenceEndTransition,
     loaded::WaitSequence,
     play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
 };
@@ -55,7 +55,8 @@ impl MapLayerEntitySpawner {
             ref mut transparents,
             ref mut transforms,
             ref mut waits,
-            ref mut repeats,
+            ref mut map_layer_sequence_ids,
+            ref mut sequence_end_transitions,
             ref mut sequence_statuses,
             ref mut frame_index_clocks,
             ref mut frame_wait_clocks,
@@ -127,9 +128,12 @@ impl MapLayerEntitySpawner {
                     transforms
                         .insert(entity, transform)
                         .expect("Failed to insert transform component.");
-                    repeats
-                        .insert(entity, Repeat)
-                        .expect("Failed to insert repeat component.");
+                    map_layer_sequence_ids
+                        .insert(entity, MapLayerSequenceId::default())
+                        .expect("Failed to insert sequence_end_transition component.");
+                    sequence_end_transitions
+                        .insert(entity, SequenceEndTransition::Repeat)
+                        .expect("Failed to insert sequence_end_transition component.");
                     sequence_statuses
                         .insert(entity, SequenceStatus::default())
                         .expect("Failed to insert sequence_status component.");

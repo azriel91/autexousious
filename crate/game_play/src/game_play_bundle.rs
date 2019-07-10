@@ -16,6 +16,7 @@ use energy_model::{config::EnergySequenceId, loaded::Energy};
 use energy_play::{EnergyHitEffectSystem, EnergyHittingEffectSystem};
 use game_input::ControllerInput;
 use game_play_hud::HpBarUpdateSystem;
+use map_model::config::MapLayerSequenceId;
 use named_type::NamedType;
 use object_play::{ObjectGravitySystem, ObjectMirroringSystem};
 use object_status_play::StunPointsReductionSystem;
@@ -207,6 +208,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 
         // === Sequence ID Updates === //
 
+        builder.add(
+            SequenceEndTransitionSystem::<MapLayerSequenceId>::new(),
+            &SequenceEndTransitionSystem::<MapLayerSequenceId>::type_name(),
+            &[],
+        ); // kcov-ignore
         builder.add(
             SequenceEndTransitionSystem::<CharacterSequenceId>::new(),
             &SequenceEndTransitionSystem::<CharacterSequenceId>::type_name(),
