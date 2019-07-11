@@ -1,14 +1,9 @@
-use amethyst::ecs::{storage::DenseVecStorage, Component};
-use derive_deref::{Deref, DerefMut};
-use derive_more::From;
-use derive_new::new;
-use fnv::FnvHashMap;
-use specs_derive::Component;
+use sequence_model_derive::sequence_component_data;
 
 use crate::config::{SequenceEndTransition, SequenceId};
 
-/// Sequence transition when a sequence ends, keyed by sequence ID.
-#[derive(Clone, Component, Debug, Default, Deref, DerefMut, From, PartialEq, new)]
-pub struct SequenceEndTransitions<SeqId>(pub FnvHashMap<SeqId, SequenceEndTransition<SeqId>>)
+/// Sequence of sequence transitions upon sequence end.
+#[sequence_component_data(SeqId, SequenceEndTransition<SeqId>)]
+pub struct SequenceEndTransitions<SeqId>
 where
     SeqId: SequenceId;

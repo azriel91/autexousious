@@ -156,17 +156,16 @@ use syn::{parse_macro_input, DeriveInput};
 
 use crate::{
     component_data_attribute_args::ComponentDataAttributeArgs,
-    component_data_ext_impl::component_data_ext_impl,
     frame_component_data_impl::frame_component_data_impl,
     sequence_component_data_attribute_args::SequenceComponentDataAttributeArgs,
-    sequence_component_data_impl::sequence_component_data_impl,
+    sequence_component_data_impl::sequence_component_data_impl, to_owned_fn_impl::to_owned_fn_impl,
 };
 
 mod component_data_attribute_args;
-mod component_data_ext_impl;
 mod frame_component_data_impl;
 mod sequence_component_data_attribute_args;
 mod sequence_component_data_impl;
+mod to_owned_fn_impl;
 
 #[proc_macro_attribute]
 pub fn frame_component_data(args: TokenStream, item: TokenStream) -> TokenStream {

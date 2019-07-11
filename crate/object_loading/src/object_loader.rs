@@ -5,14 +5,13 @@ use collision_model::{
     config::{Body, Interactions},
     loaded::{BodySequence, BodySequenceHandle, InteractionsSequence, InteractionsSequenceHandle},
 };
-use fnv::FnvHashMap;
 use object_model::{
     config::{GameObjectFrame, GameObjectSequence, ObjectDefinition},
     loaded::{GameObject, Object, ObjectWrapper},
 };
 use sequence_model::{
     config::Wait,
-    loaded::{WaitSequence, WaitSequenceHandle},
+    loaded::{SequenceEndTransitions, WaitSequence, WaitSequenceHandle},
 };
 use serde::{Deserialize, Serialize};
 use spawn_model::{
@@ -57,7 +56,7 @@ impl ObjectLoader {
             .sequences
             .iter()
             .map(|(sequence_id, sequence)| (*sequence_id, sequence.object_sequence().next))
-            .collect::<FnvHashMap<_, _>>();
+            .collect::<HashMap<_, _>>();
 
         // Load frame component datas
         let sequences_handles = (
@@ -188,7 +187,7 @@ impl ObjectLoader {
             body_sequence_handles,
             interactions_sequence_handles,
             spawns_sequence_handles,
-            sequence_end_transitions.into(),
+            SequenceEndTransitions::new(sequence_end_transitions),
         );
         let wrapper = O::ObjectWrapper::new(object);
 

@@ -13,7 +13,6 @@ use collision_model::{
     loaded::{BodySequence, BodySequenceHandle, InteractionsSequence, InteractionsSequenceHandle},
 };
 use derive_new::new;
-use fnv::FnvHashMap;
 use object_loading::ObjectLoaderSystemData;
 use object_model::loaded::{GameObject, Object, ObjectWrapper};
 use sequence_model::{
@@ -179,9 +178,9 @@ where
             )
         };
         let sequence_end_transitions = {
-            let mut sequence_end_transitions = FnvHashMap::default();
+            let mut sequence_end_transitions = HashMap::default();
             sequence_end_transitions.insert(O::SequenceId::default(), SequenceEndTransition::None);
-            SequenceEndTransitions(sequence_end_transitions)
+            SequenceEndTransitions::new(sequence_end_transitions)
         };
         Object::new(
             wait_sequence_handles,

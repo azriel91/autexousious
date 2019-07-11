@@ -3,9 +3,7 @@ use proc_macro_roids::{DeriveInputDeriveExt, DeriveInputStructExt, FieldsUnnamed
 use quote::quote;
 use syn::{parse_quote, DeriveInput, FieldsUnnamed, Path};
 
-use crate::{
-    component_data_ext_impl, ComponentDataAttributeArgs, SequenceComponentDataAttributeArgs,
-};
+use crate::{to_owned_fn_impl, ComponentDataAttributeArgs, SequenceComponentDataAttributeArgs};
 
 /// Generates the `SequenceComponentData` implementation.
 pub fn sequence_component_data_impl(
@@ -24,8 +22,8 @@ pub fn sequence_component_data_impl(
     fields_append(&mut ast, &sequence_id_path, &component_path);
 
     let type_name = &ast.ident;
-    let component_data_ext_impl =
-        component_data_ext_impl(type_name, &component_path, component_copy, to_owned_fn);
+    let (impl_generics, ty_generics, where_clause) = ast.generics.split_for_impl();
+    let to_owned_fn_impl = to_owned_fn_impl(component_copy, to_owned_fn);
 
     let fn_new_doc = format!("Returns a new `{}`.", type_name);
 
@@ -37,7 +35,7 @@ pub fn sequence_component_data_impl(
         )]
         #ast
 
-        impl #type_name {
+        impl #impl_generics #type_name #ty_generics #where_clause {
             #[doc = #fn_new_doc]
             pub fn new(sequence: std::collections::HashMap<#sequence_id_path, #component_path>) -> Self {
                 #type_name(
@@ -51,7 +49,7 @@ pub fn sequence_component_data_impl(
 
         // Manually implement `Default` because the component type may not, and the `Default` derive
         // imposes a `Default` bound on type parameters.
-        impl Default for #type_name {
+        impl #impl_generics Default for #type_name #ty_generics #where_clause {
             fn default() -> Self {
                 #type_name(
                     sequence_model_spi::loaded::SequenceComponentData::<
@@ -62,7 +60,13 @@ pub fn sequence_component_data_impl(
             }
         }
 
-        #component_data_ext_impl
+        impl #impl_generics sequence_model_spi::loaded::ComponentDataExt for
+            #type_name #ty_generics #where_clause
+        {
+            type Component = #component_path;
+
+            #to_owned_fn_impl
+        }
     };
 
     TokenStream::from(token_stream_2)

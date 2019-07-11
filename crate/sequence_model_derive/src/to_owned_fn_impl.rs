@@ -1,15 +1,10 @@
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{parse_quote, Ident, Path};
+use syn::{parse_quote, Path};
 
 /// Returns an function implementation for the `ComponentData::to_owned` trait method.
-pub fn component_data_ext_impl(
-    type_name: &Ident,
-    component_path: &Path,
-    component_copy: bool,
-    to_owned_fn: Option<Path>,
-) -> TokenStream {
-    let to_owned_fn_impl = if component_copy {
+pub fn to_owned_fn_impl(component_copy: bool, to_owned_fn: Option<Path>) -> TokenStream {
+    if component_copy {
         quote! {
             fn to_owned(component: &Self::Component) -> Self::Component {
                 *component
@@ -22,14 +17,6 @@ pub fn component_data_ext_impl(
             fn to_owned(component: &Self::Component) -> Self::Component {
                 #to_owned_fn(component)
             }
-        }
-    };
-
-    quote! {
-        impl sequence_model_spi::loaded::ComponentDataExt for #type_name {
-            type Component = #component_path;
-
-            #to_owned_fn_impl
         }
     }
 }
