@@ -3,7 +3,9 @@ use std::collections::HashMap;
 use amethyst::{assets::Handle, renderer::SpriteRender, Error};
 use collision_model::{
     config::{Body, Interactions},
-    loaded::{BodySequence, BodySequenceHandle, InteractionsSequence, InteractionsSequenceHandle},
+    loaded::{
+        BodySequence, BodySequenceHandles, InteractionsSequence, InteractionsSequenceHandles,
+    },
 };
 use object_model::{
     config::{GameObjectFrame, GameObjectSequence, ObjectDefinition},
@@ -11,14 +13,14 @@ use object_model::{
 };
 use sequence_model::{
     config::Wait,
-    loaded::{SequenceEndTransitions, WaitSequence, WaitSequenceHandle},
+    loaded::{SequenceEndTransitions, WaitSequence, WaitSequenceHandles},
 };
 use serde::{Deserialize, Serialize};
 use spawn_model::{
     config::Spawns,
-    loaded::{SpawnsSequence, SpawnsSequenceHandle},
+    loaded::{SpawnsSequence, SpawnsSequenceHandles},
 };
-use sprite_model::loaded::{SpriteRenderSequence, SpriteRenderSequenceHandle};
+use sprite_model::loaded::{SpriteRenderSequence, SpriteRenderSequenceHandles};
 
 use crate::ObjectLoaderParams;
 
@@ -60,11 +62,11 @@ impl ObjectLoader {
 
         // Load frame component datas
         let sequences_handles = (
-            HashMap::<O::SequenceId, WaitSequenceHandle>::new(),
-            HashMap::<O::SequenceId, SpriteRenderSequenceHandle>::new(),
-            HashMap::<O::SequenceId, BodySequenceHandle>::new(),
-            HashMap::<O::SequenceId, InteractionsSequenceHandle>::new(),
-            HashMap::<O::SequenceId, SpawnsSequenceHandle>::new(),
+            WaitSequenceHandles::default(),
+            SpriteRenderSequenceHandles::default(),
+            BodySequenceHandles::default(),
+            InteractionsSequenceHandles::default(),
+            SpawnsSequenceHandles::default(),
         );
         let (
             wait_sequence_handles,
