@@ -3,6 +3,8 @@ use syn::{
     Path, Result, Token,
 };
 
+use crate::ComponentDataAttributeArgs;
+
 /// https://docs.rs/syn/latest/syn/macro.custom_keyword.html
 mod kw {
     syn::custom_keyword!(copy);
@@ -36,52 +38,18 @@ pub struct SequenceComponentDataAttributeArgs {
     /// The sequence ID type of the `SequenceComponentData`.
     pub sequence_id_path: Path,
     /// The component type of the `SequenceComponentData`.
-    pub component_path: Path,
-    /// Whether the type is copy.
-    pub component_copy: bool,
-    /// Function to map a borrowed component to an owned component. i.e. `fn(&C) -> C`.
-    pub to_owned_fn: Option<Path>,
+    pub component_data_attribute_args: ComponentDataAttributeArgs,
 }
 
 impl Parse for SequenceComponentDataAttributeArgs {
     fn parse(input: ParseStream) -> Result<Self> {
         let sequence_id_path = input.parse()?;
         let _comma: Option<Token![,]> = input.parse()?;
-        let component_path = input.parse()?;
-        let mut component_copy = false;
-        let mut to_owned_fn = None;
-
-        let mut comma: Option<Token![,]> = input.parse()?;
-        while comma.is_some() && !input.is_empty() {
-            if input.peek(kw::to_owned) {
-                input
-                    .parse::<kw::to_owned>()
-                    .map_err(|_| input.error("Impossible: peek to_owned"))?;
-                input
-                    .parse::<Token![=]>()
-                    .map_err(|_| input.error("Expected `=` after `to_owned` parameter name."))?;
-                to_owned_fn = Some(
-                    input
-                        .parse()
-                        .map_err(|_| input.error("Expected path to a `to_owned` function."))?,
-                );
-
-                comma = input.parse()?;
-            } else if input.peek(kw::copy) {
-                input
-                    .parse::<kw::copy>()
-                    .map_err(|_| input.error("Impossible: peek copy"))?;
-
-                component_copy = true;
-                comma = input.parse()?;
-            }
-        }
+        let component_data_attribute_args = input.parse()?;
 
         Ok(SequenceComponentDataAttributeArgs {
             sequence_id_path,
-            component_path,
-            component_copy,
-            to_owned_fn,
+            component_data_attribute_args,
         })
     }
 }

@@ -155,13 +155,15 @@ use proc_macro::TokenStream;
 use syn::{parse_macro_input, DeriveInput};
 
 use crate::{
-    frame_component_data_attribute_args::FrameComponentDataAttributeArgs,
+    component_data_attribute_args::ComponentDataAttributeArgs,
+    component_data_ext_impl::component_data_ext_impl,
     frame_component_data_impl::frame_component_data_impl,
     sequence_component_data_attribute_args::SequenceComponentDataAttributeArgs,
     sequence_component_data_impl::sequence_component_data_impl,
 };
 
-mod frame_component_data_attribute_args;
+mod component_data_attribute_args;
+mod component_data_ext_impl;
 mod frame_component_data_impl;
 mod sequence_component_data_attribute_args;
 mod sequence_component_data_impl;
@@ -169,7 +171,7 @@ mod sequence_component_data_impl;
 #[proc_macro_attribute]
 pub fn frame_component_data(args: TokenStream, item: TokenStream) -> TokenStream {
     let ast = parse_macro_input!(item as DeriveInput);
-    let args = parse_macro_input!(args as FrameComponentDataAttributeArgs);
+    let args = parse_macro_input!(args as ComponentDataAttributeArgs);
 
     frame_component_data_impl(ast, args)
 }

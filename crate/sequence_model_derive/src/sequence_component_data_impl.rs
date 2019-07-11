@@ -3,7 +3,9 @@ use proc_macro_roids::{DeriveInputDeriveExt, DeriveInputStructExt, FieldsUnnamed
 use quote::quote;
 use syn::{parse_quote, DeriveInput, FieldsUnnamed, Path};
 
-use crate::sequence_component_data_attribute_args::SequenceComponentDataAttributeArgs;
+use crate::{
+    component_data_ext_impl, ComponentDataAttributeArgs, SequenceComponentDataAttributeArgs,
+};
 
 /// Generates the `SequenceComponentData` implementation.
 pub fn sequence_component_data_impl(
@@ -11,33 +13,20 @@ pub fn sequence_component_data_impl(
     args: SequenceComponentDataAttributeArgs,
 ) -> TokenStream {
     let sequence_id_path = args.sequence_id_path;
-    let component_path = args.component_path;
-    let to_owned_fn_impl = {
-        if args.component_copy {
-            quote! {
-                fn to_owned(component: &Self::Component) -> Self::Component {
-                    *component
-                }
-            }
-        } else {
-            let to_owned_fn = args
-                .to_owned_fn
-                .unwrap_or_else(|| parse_quote!(std::clone::Clone::clone));
-
-            quote! {
-                fn to_owned(component: &Self::Component) -> Self::Component {
-                    #to_owned_fn(component)
-                }
-            }
-        }
-    };
+    let ComponentDataAttributeArgs {
+        component_path,
+        component_copy,
+        to_owned_fn,
+    } = args.component_data_attribute_args;
 
     ast.assert_fields_unit();
-
     derive_append(&mut ast);
     fields_append(&mut ast, &sequence_id_path, &component_path);
 
     let type_name = &ast.ident;
+    let component_data_ext_impl =
+        component_data_ext_impl(type_name, &component_path, component_copy, to_owned_fn);
+
     let fn_new_doc = format!("Returns a new `{}`.", type_name);
 
     let token_stream_2 = quote! {
@@ -73,11 +62,7 @@ pub fn sequence_component_data_impl(
             }
         }
 
-        impl sequence_model_spi::loaded::ComponentDataExt for #type_name {
-            type Component = #component_path;
-
-            #to_owned_fn_impl
-        }
+        #component_data_ext_impl
     };
 
     TokenStream::from(token_stream_2)

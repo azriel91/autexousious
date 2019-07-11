@@ -9,7 +9,7 @@ mod kw {
     syn::custom_keyword!(to_owned);
 }
 
-/// Parses the `Path` for the component type in the frame component data.
+/// Parses the `Path` for the component type in component data.
 ///
 /// This is how the compiler passes in arguments to our attribute -- it is
 /// everything inside the delimiters after the attribute name.
@@ -32,7 +32,7 @@ mod kw {
 /// #[frame_component_data(Wait, to_owned = std::ops::Deref::deref)]
 /// ```
 #[derive(Debug)]
-pub struct FrameComponentDataAttributeArgs {
+pub struct ComponentDataAttributeArgs {
     /// The component type of the `FrameComponentData`.
     pub component_path: Path,
     /// Whether the type is copy.
@@ -41,7 +41,7 @@ pub struct FrameComponentDataAttributeArgs {
     pub to_owned_fn: Option<Path>,
 }
 
-impl Parse for FrameComponentDataAttributeArgs {
+impl Parse for ComponentDataAttributeArgs {
     fn parse(input: ParseStream) -> Result<Self> {
         let component_path = input.parse()?;
         let mut component_copy = false;
@@ -73,7 +73,7 @@ impl Parse for FrameComponentDataAttributeArgs {
             }
         }
 
-        Ok(FrameComponentDataAttributeArgs {
+        Ok(ComponentDataAttributeArgs {
             component_path,
             component_copy,
             to_owned_fn,
