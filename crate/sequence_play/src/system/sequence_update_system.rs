@@ -6,7 +6,6 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use sequence_model::{
-    config::Repeat,
     loaded::{WaitSequence, WaitSequenceHandle},
     play::{
         FrameFreezeClock, FrameIndexClock, FrameWaitClock, SequenceStatus, SequenceUpdateEvent,
@@ -35,9 +34,6 @@ pub struct SequenceUpdateSystemData<'s> {
     /// `Entities`.
     #[derivative(Debug = "ignore")]
     pub entities: Entities<'s>,
-    /// `Repeat` component storage.
-    #[derivative(Debug = "ignore")]
-    pub repeats: ReadStorage<'s, Repeat>,
     /// `WaitSequenceHandle` component storage.
     #[derivative(Debug = "ignore")]
     pub wait_sequence_handles: ReadStorage<'s, WaitSequenceHandle>,
@@ -121,8 +117,7 @@ impl SequenceUpdateSystem {
 
     fn entity_frame_wait_tick(
         wait_sequence_assets: &AssetStorage<WaitSequence>,
-        mut sequence_update_ec: &mut EventChannel<SequenceUpdateEvent>,
-        repeats: &ReadStorage<'_, Repeat>,
+        sequence_update_ec: &mut EventChannel<SequenceUpdateEvent>,
         sequence_update_params: SequenceUpdateParams,
     ) {
         let SequenceUpdateParams {
@@ -149,22 +144,6 @@ impl SequenceUpdateSystem {
                     entity,
                     frame_index,
                 });
-
-                if repeats.contains(entity) {
-                    let sequence_update_params = SequenceUpdateParams {
-                        entity,
-                        wait_sequence_handle,
-                        frame_index_clock,
-                        frame_wait_clock,
-                        sequence_status,
-                    };
-
-                    Self::start_sequence(
-                        &wait_sequence_assets,
-                        &mut sequence_update_ec,
-                        sequence_update_params,
-                    );
-                }
             } else {
                 frame_wait_clock.reset();
 
@@ -207,7 +186,6 @@ impl<'s> System<'s> for SequenceUpdateSystem {
         &mut self,
         SequenceUpdateSystemData {
             entities,
-            repeats,
             wait_sequence_handles,
             wait_sequence_assets,
             mut frame_index_clocks,
@@ -253,7 +231,6 @@ impl<'s> System<'s> for SequenceUpdateSystem {
                                 Self::entity_frame_wait_tick(
                                     &wait_sequence_assets,
                                     &mut sequence_update_ec,
-                                    &repeats,
                                     sequence_update_params,
                                 );
                             }
@@ -278,7 +255,7 @@ mod tests {
     use application_test_support::AutexousiousApplication;
     use logic_clock::LogicClock;
     use sequence_model::{
-        config::{Repeat, Wait},
+        config::Wait,
         loaded::{WaitSequence, WaitSequenceHandle},
         play::{
             FrameFreezeClock, FrameIndexClock, FrameWaitClock, SequenceStatus, SequenceUpdateEvent,
@@ -305,7 +282,6 @@ mod tests {
                     frame_wait_clock(10, 10),
                     None,
                     SequenceStatus::Begin,
-                    false,
                 )
             })
             .with_system_single(SequenceUpdateSystem::new(), "", &[])
@@ -344,7 +320,6 @@ mod tests {
                     frame_wait_clock(0, 2),
                     None,
                     SequenceStatus::Ongoing,
-                    false,
                 )
             })
             .with_system_single(SequenceUpdateSystem::new(), "", &[])
@@ -381,7 +356,6 @@ mod tests {
                     frame_wait_clock(1, 2),
                     Some(frame_freeze_clock(1, 2)),
                     SequenceStatus::Ongoing,
-                    false,
                 )
             })
             .with_system_single(SequenceUpdateSystem::new(), "", &[])
@@ -418,7 +392,6 @@ mod tests {
                     frame_wait_clock(0, 2),
                     Some(frame_freeze_clock(2, 2)),
                     SequenceStatus::Ongoing,
-                    false,
                 )
             })
             .with_system_single(SequenceUpdateSystem::new(), "", &[])
@@ -454,7 +427,6 @@ mod tests {
                     frame_wait_clock(1, 2),
                     None,
                     SequenceStatus::Ongoing,
-                    false,
                 )
             })
             .with_system_single(SequenceUpdateSystem::new(), "", &[])
@@ -493,7 +465,6 @@ mod tests {
                     frame_wait_clock(5, 6),
                     None,
                     SequenceStatus::Ongoing,
-                    false,
                 )
             })
             .with_system_single(SequenceUpdateSystem::new(), "", &[])
@@ -513,44 +484,6 @@ mod tests {
             .run_isolated()
     }
 
-    /// Asserts the following when the entity has the `Repeat` component:
-    ///
-    /// * Resets `FrameIndexClock`.
-    /// * Updates the `FrameIndexClock` limit to the new sequence's limit.
-    /// * Resets `FrameWaitClock`.
-    /// * `SequenceEnd` and `SequenceBegin` events are both sent.
-    /// * Sets `SequenceStatus` to `SequenceStatus::Ongoing`.
-    #[test]
-    fn sends_events_when_frame_ends_and_sequence_ends_and_repeat() -> Result<(), Error> {
-        AutexousiousApplication::game_base()
-            .with_setup(setup_system_data)
-            .with_setup(|world| {
-                initial_values(
-                    world,
-                    frame_index_clock(4, 5),
-                    frame_wait_clock(5, 6),
-                    None,
-                    SequenceStatus::Ongoing,
-                    true,
-                )
-            })
-            .with_system_single(SequenceUpdateSystem::new(), "", &[])
-            .with_assertion(|world| {
-                expect_values(
-                    world,
-                    frame_index_clock(0, 5),
-                    frame_wait_clock(0, 2),
-                    None,
-                    SequenceStatus::Ongoing,
-                )
-            })
-            .with_assertion(|world| {
-                let events = sequence_end_and_begin_events(world, 4);
-                expect_events(world, events);
-            })
-            .run_isolated()
-    }
-
     #[test]
     fn does_not_tick_frame_clocks_when_sequence_end() -> Result<(), Error> {
         AutexousiousApplication::game_base()
@@ -562,7 +495,6 @@ mod tests {
                     frame_wait_clock(2, 2),
                     None,
                     SequenceStatus::End,
-                    false,
                 )
             })
             .with_system_single(SequenceUpdateSystem::new(), "", &[])
@@ -590,7 +522,6 @@ mod tests {
                     frame_wait_clock(2, 2),
                     Some(frame_freeze_clock(0, 2)),
                     SequenceStatus::End,
-                    false,
                 )
             })
             .with_system_single(SequenceUpdateSystem::new(), "", &[])
@@ -622,7 +553,6 @@ mod tests {
         frame_wait_clock: FrameWaitClock,
         frame_freeze_clock: Option<FrameFreezeClock>,
         sequence_status: SequenceStatus,
-        repeat: bool,
     ) {
         let wait_sequence_handle = {
             let (loader, wait_sequence_assets) = world
@@ -647,7 +577,6 @@ mod tests {
                 mut wait_sequence_handles,
                 mut sequence_statuses,
             ) = world.system_data::<TestSystemData>();
-            let mut repeats = world.write_storage::<Repeat>();
 
             let entity = entities.create();
 
@@ -668,11 +597,6 @@ mod tests {
             sequence_statuses
                 .insert(entity, sequence_status)
                 .expect("Failed to insert sequence_status component.");
-            if repeat {
-                repeats
-                    .insert(entity, Repeat)
-                    .expect("Failed to insert `Repeat` component.");
-            }
 
             entity
         };
@@ -776,21 +700,6 @@ mod tests {
             entity,
             frame_index,
         }]
-    }
-
-    fn sequence_end_and_begin_events(
-        world: &mut World,
-        frame_index: usize,
-    ) -> Vec<SequenceUpdateEvent> {
-        let entity = *world.read_resource::<Entity>();
-
-        vec![
-            SequenceUpdateEvent::SequenceEnd {
-                entity,
-                frame_index,
-            },
-            SequenceUpdateEvent::SequenceBegin { entity },
-        ]
     }
 
     type TestSystemData<'s> = (

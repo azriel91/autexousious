@@ -4,14 +4,14 @@ use amethyst::{
     renderer::transparent::Transparent,
 };
 use logic_clock::LogicClock;
-use map_model::loaded::MapHandle;
+use map_model::{config::MapLayerSequenceId, loaded::MapHandle};
 use num_traits::FromPrimitive;
 use sequence_model::{
-    config::Repeat,
+    config::SequenceEndTransition,
     loaded::WaitSequence,
     play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
 };
-use sequence_model_spi::loaded::ComponentSequenceExt;
+use sequence_model_spi::loaded::ComponentDataExt;
 use sprite_model::loaded::SpriteRenderSequence;
 
 use crate::{MapLayerComponentStorages, MapSpawningResources};
@@ -55,7 +55,8 @@ impl MapLayerEntitySpawner {
             ref mut transparents,
             ref mut transforms,
             ref mut waits,
-            ref mut repeats,
+            ref mut map_layer_sequence_ids,
+            ref mut sequence_end_transitions,
             ref mut sequence_statuses,
             ref mut frame_index_clocks,
             ref mut frame_wait_clocks,
@@ -92,7 +93,7 @@ impl MapLayerEntitySpawner {
                     let wait_sequence = wait_sequence_assets
                         .get(wait_sequence_handle)
                         .expect("Expected `WaitSequence` to be loaded.");
-                    let wait = <WaitSequence as ComponentSequenceExt>::to_owned(
+                    let wait = <WaitSequence as ComponentDataExt>::to_owned(
                         &wait_sequence[starting_frame_index],
                     );
                     waits
@@ -102,7 +103,7 @@ impl MapLayerEntitySpawner {
                     let sprite_render_sequence = sprite_render_sequence_assets
                         .get(sprite_render_sequence_handle)
                         .expect("Expected `SpriteRenderSequence` to be loaded.");
-                    let sprite_render = <SpriteRenderSequence as ComponentSequenceExt>::to_owned(
+                    let sprite_render = <SpriteRenderSequence as ComponentDataExt>::to_owned(
                         &sprite_render_sequence[starting_frame_index],
                     );
                     sprite_renders
@@ -127,9 +128,12 @@ impl MapLayerEntitySpawner {
                     transforms
                         .insert(entity, transform)
                         .expect("Failed to insert transform component.");
-                    repeats
-                        .insert(entity, Repeat)
-                        .expect("Failed to insert repeat component.");
+                    map_layer_sequence_ids
+                        .insert(entity, MapLayerSequenceId::default())
+                        .expect("Failed to insert sequence_end_transition component.");
+                    sequence_end_transitions
+                        .insert(entity, SequenceEndTransition::Repeat)
+                        .expect("Failed to insert sequence_end_transition component.");
                     sequence_statuses
                         .insert(entity, SequenceStatus::default())
                         .expect("Failed to insert sequence_status component.");

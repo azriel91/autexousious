@@ -1,25 +1,22 @@
 #![recursion_limit = "128"]
 
-//! Provides the `#[component_sequence]` attribute to generate a newtype around `Vec<C>`.
+//! Provides the `#[frame_component_data]` attribute to generate a newtype around `Vec<C>`.
 //!
 //! # Examples
 //!
+//! ## Frame Component Data
+//!
 //! ```rust,edition2018
 //! # use amethyst::ecs::{storage::VecStorage, Component};
+//! # use specs_derive::Component;
 //! #
-//! # #[derive(Clone, Copy, Debug, Default, PartialEq)]
+//! # #[derive(Clone, Component, Copy, Debug, Default, PartialEq)]
+//! # #[storage(VecStorage)]
 //! # pub struct Wait;
 //! #
-//! # impl Component for Wait {
-//! #     type Storage = VecStorage<Self>;
-//! # }
-//! #
-//! use asset_derive::Asset;
-//! use derive_deref::{Deref, DerefMut};
-//! use sequence_model_derive::component_sequence;
-//! use typename_derive::TypeName;
+//! use sequence_model_derive::frame_component_data;
 //!
-//! #[component_sequence(Wait, copy)]
+//! #[frame_component_data(Wait, copy)]
 //! pub struct WaitSequence;
 //! ```
 //!
@@ -27,15 +24,18 @@
 //!
 //! ```rust,ignore
 //! use amethyst::assets::Handle;
-//! use sequence_model_spi::loaded::{ComponentSequence, ComponentSequenceExt};
+//! use asset_derive::Asset;
+//! use derive_deref::{Deref, DerefMut};
+//! use sequence_model_spi::loaded::{FrameComponentData, ComponentDataExt};
+//! use typename_derive::TypeName;
 //!
 //! #[derive(Asset, Clone, Debug, Deref, DerefMut, PartialEq, TypeName)]
-//! pub struct WaitSequence(ComponentSequence<Wait>)
+//! pub struct WaitSequence(pub FrameComponentData<Wait>);
 //!
 //! impl WaitSequence {
 //!     #[doc = #fn_new_doc]
 //!     pub fn new(sequence: Vec<Wait>) -> Self {
-//!         WaitSequence(ComponentSequence::<Wait>::new(sequence))
+//!         WaitSequence(FrameComponentData::<Wait>::new(sequence))
 //!     }
 //! }
 //!
@@ -43,10 +43,104 @@
 //! // imposes a `Default` bound on type parameters.
 //! impl Default for WaitSequence {
 //!     fn default() -> Self {
-//!         WaitSequence(ComponentSequence::<Wait>::new(Vec::default()))
+//!         WaitSequence(FrameComponentData::<Wait>::new(Vec::default()))
 //!     }
 //! }
-//! impl ComponentSequenceExt for #type_name {
+//!
+//! impl ComponentDataExt for #type_name {
+//!     type Component = #component_path;
+//!
+//!     fn to_owned(component: &Self::Component) -> Self::Component {
+//!         *component
+//!     }
+//! }
+//! ```
+//!
+//! ## Sequence Component Data
+//!
+//! ```rust,edition2018
+//! # use amethyst::ecs::{storage::VecStorage, Component};
+//! # use derivative::Derivative;
+//! # use sequence_model_core::config::SequenceId;
+//! # use serde::{Deserialize, Serialize};
+//! # use specs_derive::Component;
+//! # use strum_macros::{Display, EnumString, IntoStaticStr};
+//! # use typename_derive::TypeName;
+//! #
+//! # #[derive(Clone, Component, Copy, Debug, Default, PartialEq)]
+//! # #[storage(VecStorage)]
+//! # pub struct SequenceEndTransition;
+//! #
+//! # #[derive(
+//! #     Clone,
+//! #     Component,
+//! #     Copy,
+//! #     Debug,
+//! #     Derivative,
+//! #     Deserialize,
+//! #     Display,
+//! #     EnumString,
+//! #     IntoStaticStr,
+//! #     PartialEq,
+//! #     Eq,
+//! #     Hash,
+//! #     Serialize,
+//! #     TypeName,
+//! # )]
+//! # #[derivative(Default)]
+//! # #[storage(VecStorage)]
+//! # #[serde(rename_all = "snake_case")]
+//! # #[strum(serialize_all = "snake_case")]
+//! # pub enum MagicSequenceId {
+//! #     #[derivative(Default)]
+//! #     Boo,
+//! # }
+//! # impl SequenceId for MagicSequenceId {}
+//! #
+//! use sequence_model_derive::sequence_component_data;
+//!
+//! #[sequence_component_data(MagicSequenceId, SequenceEndTransition, copy)]
+//! pub struct SequenceEndTransitions;
+//! ```
+//!
+//! Effectively generates the following:
+//!
+//! ```rust,ignore
+//! use std::collections::HashMap;
+//!
+//! use amethyst::assets::Handle;
+//! use asset_derive::Asset;
+//! use derive_deref::{Deref, DerefMut};
+//! use sequence_model_spi::loaded::{SequenceComponentData, ComponentDataExt};
+//! use typename_derive::TypeName;
+//!
+//! #[derive(Asset, Clone, Debug, Deref, DerefMut, PartialEq, TypeName)]
+//! pub struct SequenceEndTransitions(
+//!     pub SequenceComponentData<MagicSequenceId, SequenceEndTransition>
+//! );
+//!
+//! impl SequenceEndTransitions {
+//!     #[doc = #fn_new_doc]
+//!     pub fn new(sequence: HashMap<MagicSequenceId, SequenceEndTransition>) -> Self {
+//!         SequenceEndTransitions(
+//!             SequenceComponentData::<MagicSequenceId, SequenceEndTransition>::new(sequence)
+//!         )
+//!     }
+//! }
+//!
+//! // Manually implement `Default` because the component type may not, and the `Default` derive
+//! // imposes a `Default` bound on type parameters.
+//! impl Default for SequenceEndTransitions {
+//!     fn default() -> Self {
+//!         SequenceEndTransitions(
+//!             SequenceComponentData::<MagicSequenceId, SequenceEndTransition>::new(
+//!                 HashMap::default()
+//!             )
+//!         )
+//!     }
+//! }
+//!
+//! impl ComponentDataExt for #type_name {
 //!     type Component = #component_path;
 //!
 //!     fn to_owned(component: &Self::Component) -> Self::Component {
@@ -58,104 +152,33 @@
 extern crate proc_macro;
 
 use proc_macro::TokenStream;
-use proc_macro_roids::{DeriveInputDeriveExt, DeriveInputStructExt, FieldsUnnamedAppend};
-use quote::quote;
-use syn::{parse_macro_input, parse_quote, DeriveInput, FieldsUnnamed, Path};
+use syn::{parse_macro_input, DeriveInput};
 
-use crate::component_sequence_attribute_args::ComponentSequenceAttributeArgs;
+use crate::{
+    component_data_attribute_args::ComponentDataAttributeArgs,
+    frame_component_data_impl::frame_component_data_impl,
+    sequence_component_data_attribute_args::SequenceComponentDataAttributeArgs,
+    sequence_component_data_impl::sequence_component_data_impl, to_owned_fn_impl::to_owned_fn_impl,
+};
 
-mod component_sequence_attribute_args;
+mod component_data_attribute_args;
+mod frame_component_data_impl;
+mod sequence_component_data_attribute_args;
+mod sequence_component_data_impl;
+mod to_owned_fn_impl;
 
 #[proc_macro_attribute]
-pub fn component_sequence(args: TokenStream, item: TokenStream) -> TokenStream {
-    let mut ast = parse_macro_input!(item as DeriveInput);
-    let args = parse_macro_input!(args as ComponentSequenceAttributeArgs);
-    let component_path = args.component_path;
-    let to_owned_fn_impl = {
-        if args.component_copy {
-            quote! {
-                fn to_owned(component: &Self::Component) -> Self::Component {
-                    *component
-                }
-            }
-        } else {
-            let to_owned_fn = args
-                .to_owned_fn
-                .unwrap_or_else(|| parse_quote!(std::clone::Clone::clone));
+pub fn frame_component_data(args: TokenStream, item: TokenStream) -> TokenStream {
+    let ast = parse_macro_input!(item as DeriveInput);
+    let args = parse_macro_input!(args as ComponentDataAttributeArgs);
 
-            quote! {
-                fn to_owned(component: &Self::Component) -> Self::Component {
-                    #to_owned_fn(component)
-                }
-            }
-        }
-    };
-
-    ast.assert_fields_unit();
-
-    derive_append(&mut ast);
-    fields_append(&mut ast, &component_path);
-
-    let type_name = &ast.ident;
-    let fn_new_doc = format!("Returns a new `{}`.", type_name);
-
-    let token_stream_2 = quote! {
-        #[derive(
-            asset_derive::Asset,
-            derive_deref::Deref,
-            derive_deref::DerefMut,
-            typename_derive::TypeName,
-        )]
-        #ast
-
-        impl #type_name {
-            #[doc = #fn_new_doc]
-            pub fn new(sequence: Vec<#component_path>) -> Self {
-                #type_name(
-                    sequence_model_spi::loaded::ComponentSequence::<#component_path>::new(sequence)
-                )
-            }
-        }
-
-        // Manually implement `Default` because the component type may not, and the `Default` derive
-        // imposes a `Default` bound on type parameters.
-        impl Default for #type_name {
-            fn default() -> Self {
-                #type_name(
-                    sequence_model_spi::loaded::ComponentSequence::<#component_path>::new(
-                        Vec::default()
-                    )
-                )
-            }
-        }
-
-        impl sequence_model_spi::loaded::ComponentSequenceExt for #type_name {
-            type Component = #component_path;
-
-            #to_owned_fn_impl
-        }
-    };
-
-    TokenStream::from(token_stream_2)
+    frame_component_data_impl(ast, args)
 }
 
-fn derive_append(ast: &mut DeriveInput) {
-    let derives = parse_quote!(Clone, Debug, PartialEq);
+#[proc_macro_attribute]
+pub fn sequence_component_data(args: TokenStream, item: TokenStream) -> TokenStream {
+    let ast = parse_macro_input!(item as DeriveInput);
+    let args = parse_macro_input!(args as SequenceComponentDataAttributeArgs);
 
-    ast.append_derives(derives);
-}
-
-fn fields_append(ast: &mut DeriveInput, component_path: &Path) {
-    let component_name = &component_path
-        .segments
-        .last()
-        .expect("Expected `Path` last segment to exist.")
-        .value()
-        .ident;
-    let doc_string = format!("The chain of `{}` values.", component_name);
-    let fields: FieldsUnnamed = parse_quote! {
-        (#[doc = #doc_string] pub sequence_model_spi::loaded::ComponentSequence<#component_path>)
-    };
-
-    ast.append_unnamed(fields);
+    sequence_component_data_impl(ast, args)
 }

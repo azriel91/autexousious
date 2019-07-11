@@ -10,21 +10,22 @@ use amethyst::{
 };
 use collision_model::{
     config::{Body, Interactions},
-    loaded::{BodySequence, BodySequenceHandle, InteractionsSequence, InteractionsSequenceHandle},
+    loaded::{
+        BodySequence, BodySequenceHandles, InteractionsSequence, InteractionsSequenceHandles,
+    },
 };
 use derive_new::new;
-use fnv::FnvHashMap;
 use object_loading::ObjectLoaderSystemData;
 use object_model::loaded::{GameObject, Object, ObjectWrapper};
 use sequence_model::{
     config::{SequenceEndTransition, Wait},
-    loaded::{SequenceEndTransitions, WaitSequence, WaitSequenceHandle},
+    loaded::{SequenceEndTransitions, WaitSequence, WaitSequenceHandles},
 };
 use spawn_model::{
     config::Spawns,
-    loaded::{SpawnsSequence, SpawnsSequenceHandle},
+    loaded::{SpawnsSequence, SpawnsSequenceHandles},
 };
-use sprite_model::loaded::{SpriteRenderSequence, SpriteRenderSequenceHandle};
+use sprite_model::loaded::{SpriteRenderSequence, SpriteRenderSequenceHandles};
 
 /// Builds an `Object` in-memory.
 ///
@@ -156,11 +157,11 @@ where
                 mut interactions_sequence_handles,
                 mut spawns_sequence_handles,
             ) = (
-                HashMap::<O::SequenceId, WaitSequenceHandle>::new(),
-                HashMap::<O::SequenceId, SpriteRenderSequenceHandle>::new(),
-                HashMap::<O::SequenceId, BodySequenceHandle>::new(),
-                HashMap::<O::SequenceId, InteractionsSequenceHandle>::new(),
-                HashMap::<O::SequenceId, SpawnsSequenceHandle>::new(),
+                WaitSequenceHandles::default(),
+                SpriteRenderSequenceHandles::default(),
+                BodySequenceHandles::default(),
+                InteractionsSequenceHandles::default(),
+                SpawnsSequenceHandles::default(),
             );
             wait_sequence_handles.insert(O::SequenceId::default(), wait_sequence_handle);
             sprite_render_sequence_handles
@@ -179,9 +180,9 @@ where
             )
         };
         let sequence_end_transitions = {
-            let mut sequence_end_transitions = FnvHashMap::default();
+            let mut sequence_end_transitions = HashMap::default();
             sequence_end_transitions.insert(O::SequenceId::default(), SequenceEndTransition::None);
-            SequenceEndTransitions(sequence_end_transitions)
+            SequenceEndTransitions::new(sequence_end_transitions)
         };
         Object::new(
             wait_sequence_handles,

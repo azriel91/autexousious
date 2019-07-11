@@ -8,7 +8,7 @@ use derive_new::new;
 /// collect all of the same component type into a single vector, so that each component data type is
 /// stored separately from the others.
 #[derive(Clone, Debug, Default, Deref, DerefMut, PartialEq, new)]
-pub struct ComponentSequence<C>(
+pub struct FrameComponentData<C>(
     /// The chain of component values.
     pub Vec<C>,
 )

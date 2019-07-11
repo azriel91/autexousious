@@ -1,8 +1,8 @@
 use amethyst::assets::Handle;
-use sequence_model_derive::component_sequence;
+use sequence_model_derive::frame_component_data;
 
 use crate::config::Interactions;
 
 /// Sequence for interactions.
-#[component_sequence(Handle<Interactions>)]
+#[frame_component_data(Handle<Interactions>)]
 pub struct InteractionsSequence;
