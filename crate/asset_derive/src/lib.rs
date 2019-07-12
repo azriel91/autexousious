@@ -116,7 +116,7 @@ pub fn derive_asset(item: TokenStream) -> TokenStream {
         }
 
         #[doc = #handle_doc]
-        pub type #handle_type_name = amethyst::assets::Handle<#type_name>;
+        pub type #handle_type_name #ty_generics = amethyst::assets::Handle<#type_name #ty_generics>;
     };
 
     // Generate trivial processor impl for `Self` asset datas.
