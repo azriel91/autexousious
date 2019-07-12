@@ -70,7 +70,7 @@ where
             let component = CS::to_owned(&frame_component_data[frame_index]);
             components
                 .insert(entity, component)
-                .expect("Failed to insert component.");
+                .expect("Failed to insert frame component.");
         } else {
             error!(
                 "Attempted to access index `{}` for frame component data: `{:?}`",
