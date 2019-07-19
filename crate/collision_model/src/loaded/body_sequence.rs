@@ -1,8 +1,8 @@
 use amethyst::assets::Handle;
-use sequence_model_derive::component_sequence;
+use sequence_model_derive::frame_component_data;
 
 use crate::config::Body;
 
 /// Sequence for volumes that can be hit.
-#[component_sequence(Handle<Body>)]
+#[frame_component_data(Handle<Body>)]
 pub struct BodySequence;

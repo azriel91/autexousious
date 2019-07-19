@@ -10,18 +10,18 @@ use derivative::Derivative;
 use derive_new::new;
 use log::error;
 use sequence_model::play::SequenceUpdateEvent;
-use sequence_model_spi::loaded::{ComponentSequence, ComponentSequenceExt};
+use sequence_model_spi::loaded::{ComponentDataExt, FrameComponentData};
 use shred_derive::SystemData;
 use typename_derive::TypeName;
 
-/// Updates the frame component value based on the current component sequence handle.
+/// Updates the frame component value based on the current frame component data handle.
 #[derive(Debug, Default, TypeName, new)]
 pub struct FrameComponentUpdateSystem<CS>
 where
     CS: Asset
-        + ComponentSequenceExt
+        + ComponentDataExt
         + Debug
-        + Deref<Target = ComponentSequence<<CS as ComponentSequenceExt>::Component>>,
+        + Deref<Target = FrameComponentData<<CS as ComponentDataExt>::Component>>,
 {
     /// Reader ID for the `SequenceUpdateEvent` event channel.
     #[new(default)]
@@ -35,46 +35,46 @@ where
 pub struct FrameComponentUpdateSystemData<'s, CS>
 where
     CS: Asset
-        + ComponentSequenceExt
+        + ComponentDataExt
         + Debug
-        + Deref<Target = ComponentSequence<<CS as ComponentSequenceExt>::Component>>,
+        + Deref<Target = FrameComponentData<<CS as ComponentDataExt>::Component>>,
 {
     /// Event channel for `SequenceUpdateEvent`s.
     #[derivative(Debug = "ignore")]
     pub sequence_update_ec: Read<'s, EventChannel<SequenceUpdateEvent>>,
     /// `Handle<CS>` component storage.
     #[derivative(Debug = "ignore")]
-    pub component_sequence_handles: ReadStorage<'s, Handle<CS>>,
+    pub frame_component_data_handles: ReadStorage<'s, Handle<CS>>,
     /// `CS` assets.
     #[derivative(Debug = "ignore")]
-    pub component_sequence_assets: Read<'s, AssetStorage<CS>>,
+    pub frame_component_data_assets: Read<'s, AssetStorage<CS>>,
     /// Frame `Component` storages.
     #[derivative(Debug = "ignore")]
-    pub components: WriteStorage<'s, <CS as ComponentSequenceExt>::Component>,
+    pub components: WriteStorage<'s, <CS as ComponentDataExt>::Component>,
 }
 
 impl<CS> FrameComponentUpdateSystem<CS>
 where
     CS: Asset
-        + ComponentSequenceExt
+        + ComponentDataExt
         + Debug
-        + Deref<Target = ComponentSequence<<CS as ComponentSequenceExt>::Component>>,
+        + Deref<Target = FrameComponentData<<CS as ComponentDataExt>::Component>>,
 {
     fn update_frame_components(
-        components: &mut WriteStorage<<CS as ComponentSequenceExt>::Component>,
-        component_sequence: &CS,
+        components: &mut WriteStorage<<CS as ComponentDataExt>::Component>,
+        frame_component_data: &CS,
         entity: Entity,
         frame_index: usize,
     ) {
-        if frame_index < component_sequence.len() {
-            let component = CS::to_owned(&component_sequence[frame_index]);
+        if frame_index < frame_component_data.len() {
+            let component = CS::to_owned(&frame_component_data[frame_index]);
             components
                 .insert(entity, component)
-                .expect("Failed to insert component.");
+                .expect("Failed to insert frame component.");
         } else {
             error!(
-                "Attempted to access index `{}` for component sequence: `{:?}`",
-                frame_index, component_sequence
+                "Attempted to access index `{}` for frame component data: `{:?}`",
+                frame_index, frame_component_data
             );
         }
     }
@@ -83,9 +83,9 @@ where
 impl<'s, CS> System<'s> for FrameComponentUpdateSystem<CS>
 where
     CS: Asset
-        + ComponentSequenceExt
+        + ComponentDataExt
         + Debug
-        + Deref<Target = ComponentSequence<<CS as ComponentSequenceExt>::Component>>,
+        + Deref<Target = FrameComponentData<<CS as ComponentDataExt>::Component>>,
 {
     type SystemData = FrameComponentUpdateSystemData<'s, CS>;
 
@@ -93,8 +93,8 @@ where
         &mut self,
         FrameComponentUpdateSystemData {
             sequence_update_ec,
-            component_sequence_handles,
-            component_sequence_assets,
+            frame_component_data_handles,
+            frame_component_data_assets,
             mut components,
         }: Self::SystemData,
     ) {
@@ -117,18 +117,18 @@ where
                 let entity = ev.entity();
                 let frame_index = ev.frame_index();
 
-                let component_sequence_handle = component_sequence_handles.get(entity);
+                let frame_component_data_handle = frame_component_data_handles.get(entity);
 
                 // Some entities will have sequence update events, but not this particular sequence
                 // component.
-                if let Some(component_sequence_handle) = component_sequence_handle {
-                    let component_sequence = component_sequence_assets
-                        .get(component_sequence_handle)
-                        .expect("Expected component_sequence to be loaded.");
+                if let Some(frame_component_data_handle) = frame_component_data_handle {
+                    let frame_component_data = frame_component_data_assets
+                        .get(frame_component_data_handle)
+                        .expect("Expected frame_component_data to be loaded.");
 
                     Self::update_frame_components(
                         &mut components,
-                        component_sequence,
+                        frame_component_data,
                         entity,
                         frame_index,
                     );
@@ -169,7 +169,7 @@ mod tests {
         AutexousiousApplication::game_base()
             .with_system(FrameComponentUpdateSystem::<WaitSequence>::new(), "", &[])
             .with_setup(|world| {
-                let component_sequence_handle = SequenceQueries::wait_sequence_handle(
+                let frame_component_data_handle = SequenceQueries::wait_sequence_handle(
                     world,
                     &CHAR_BAT_SLUG.clone(),
                     CharacterSequenceId::StandAttack0,
@@ -180,7 +180,7 @@ mod tests {
                     5,
                     0,
                     5,
-                    Some(component_sequence_handle),
+                    Some(frame_component_data_handle),
                 )
             })
             .with_setup(|world| {
@@ -199,7 +199,7 @@ mod tests {
         AutexousiousApplication::game_base()
             .with_system(FrameComponentUpdateSystem::<WaitSequence>::new(), "", &[])
             .with_setup(|world| {
-                let component_sequence_handle = SequenceQueries::wait_sequence_handle(
+                let frame_component_data_handle = SequenceQueries::wait_sequence_handle(
                     world,
                     &CHAR_BAT_SLUG.clone(),
                     CharacterSequenceId::StandAttack0,
@@ -210,7 +210,7 @@ mod tests {
                     5,
                     0,
                     5,
-                    Some(component_sequence_handle),
+                    Some(frame_component_data_handle),
                 )
             })
             .with_setup(|world| {
@@ -225,7 +225,7 @@ mod tests {
     }
 
     #[test]
-    fn does_not_panic_when_entity_does_not_have_component_sequence_handle() -> Result<(), Error> {
+    fn does_not_panic_when_entity_does_not_have_frame_component_data_handle() -> Result<(), Error> {
         AutexousiousApplication::game_base()
             .with_system(FrameComponentUpdateSystem::<WaitSequence>::new(), "", &[])
             .with_setup(|world| {
@@ -251,7 +251,7 @@ mod tests {
         frame_index_clock_limit: usize,
         frame_wait_clock_value: usize,
         frame_wait_clock_limit: usize,
-        component_sequence_handle_initial: Option<WaitSequenceHandle>,
+        frame_component_data_handle_initial: Option<WaitSequenceHandle>,
     ) {
         let mut frame_index_clock = FrameIndexClock::new(LogicClock::new(frame_index_clock_limit));
         (*frame_index_clock).value = frame_index_clock_value;
@@ -265,8 +265,8 @@ mod tests {
                 .with(frame_wait_clock)
                 .with(Wait::new(2));
 
-            if let Some(component_sequence_handle_initial) = component_sequence_handle_initial {
-                entity_builder = entity_builder.with(component_sequence_handle_initial);
+            if let Some(frame_component_data_handle_initial) = frame_component_data_handle_initial {
+                entity_builder = entity_builder.with(frame_component_data_handle_initial);
             }
 
             entity_builder.build()

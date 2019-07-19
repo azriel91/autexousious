@@ -6,7 +6,7 @@
 //! the `object_model` crate, and the sequence type in that crate are specific to game object
 //! definitions.
 
-pub use sequence_model_derive::component_sequence;
+pub use sequence_model_derive::frame_component_data;
 
 pub mod config;
 pub mod loaded;

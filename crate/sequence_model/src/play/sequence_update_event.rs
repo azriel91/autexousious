@@ -1,9 +1,12 @@
 use amethyst::ecs::Entity;
 
-/// Event signalling a change in equence or frame.
+/// Event signalling a change in sequence or frame.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum SequenceUpdateEvent {
     /// A new sequence is beginning.
+    ///
+    /// This variant does not hold the sequence ID as that is specific to different object types.
+    /// If your system needs to access the sequence ID, read it from the `ReadStorage<'_, SeqId>`.
     SequenceBegin {
         /// Entity whose sequence changed.
         entity: Entity,

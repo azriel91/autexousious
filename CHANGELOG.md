@@ -2,11 +2,16 @@
 
 ## 0.13.0 (unreleased)
 
+### Changed
+
+* Sequence component updates are done in parallel. ([#147])
+
 ### Fixed
 
 * `spawn_play` flakey test segmentation fault. ([#145])
 
 [#145]: https://gitlab.com/azriel91/autexousious/issues/145
+[#147]: https://gitlab.com/azriel91/autexousious/issues/147
 
 ## 0.12.0 (2019-07-05)
 

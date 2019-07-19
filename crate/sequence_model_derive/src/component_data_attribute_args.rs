@@ -9,18 +9,18 @@ mod kw {
     syn::custom_keyword!(to_owned);
 }
 
-/// Parses the `Path` for the component type in the component sequence.
+/// Parses the `Path` for the component type in component data.
 ///
 /// This is how the compiler passes in arguments to our attribute -- it is
 /// everything inside the delimiters after the attribute name.
 ///
 /// ```rust,ignore
-/// #[component_sequence(Wait)]
-///                      ^^^^
+/// #[frame_component_data(Wait)]
+///                        ^^^^
 ///
 /// // or one of:
-/// #[component_sequence(Copyable, copy)]
-/// #[component_sequence(CustomToOwned, to_owned = std::ops::Deref::deref)]
+/// #[frame_component_data(Copyable, copy)]
+/// #[frame_component_data(CustomToOwned, to_owned = std::ops::Deref::deref)]
 /// ```
 ///
 /// The following parameters are optional:
@@ -29,11 +29,11 @@ mod kw {
 /// * `to_owned`: Path to the function to map a borrowed component to an owned component.
 ///
 /// ```rust,ignore
-/// #[component_sequence(Wait, to_owned = std::ops::Deref::deref)]
+/// #[frame_component_data(Wait, to_owned = std::ops::Deref::deref)]
 /// ```
 #[derive(Debug)]
-pub struct ComponentSequenceAttributeArgs {
-    /// The component type of the `ComponentSequence`.
+pub struct ComponentDataAttributeArgs {
+    /// The component type of the `FrameComponentData`.
     pub component_path: Path,
     /// Whether the type is copy.
     pub component_copy: bool,
@@ -41,7 +41,7 @@ pub struct ComponentSequenceAttributeArgs {
     pub to_owned_fn: Option<Path>,
 }
 
-impl Parse for ComponentSequenceAttributeArgs {
+impl Parse for ComponentDataAttributeArgs {
     fn parse(input: ParseStream) -> Result<Self> {
         let component_path = input.parse()?;
         let mut component_copy = false;
@@ -59,7 +59,7 @@ impl Parse for ComponentSequenceAttributeArgs {
                 to_owned_fn = Some(
                     input
                         .parse()
-                        .map_err(|_| input.error("Expected path to `GameObjectSequence` type."))?,
+                        .map_err(|_| input.error("Expected path to a `to_owned` function."))?,
                 );
 
                 comma = input.parse()?;
@@ -73,7 +73,7 @@ impl Parse for ComponentSequenceAttributeArgs {
             }
         }
 
-        Ok(ComponentSequenceAttributeArgs {
+        Ok(ComponentDataAttributeArgs {
             component_path,
             component_copy,
             to_owned_fn,

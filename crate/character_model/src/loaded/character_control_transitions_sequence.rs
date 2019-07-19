@@ -1,7 +1,7 @@
-use sequence_model::component_sequence;
+use sequence_model_derive::frame_component_data;
 
 use crate::loaded::CharacterControlTransitionsHandle;
 
 /// Sequence of sequence transitions upon control input.
-#[component_sequence(CharacterControlTransitionsHandle)]
+#[frame_component_data(CharacterControlTransitionsHandle)]
 pub struct CharacterControlTransitionsSequence;

@@ -80,7 +80,6 @@ where
 
                 let sequence_end_transition = sequence_end_transitions.get(entity).copied();
 
-                // Map layers don't have `SequenceEndTransition` components.
                 if let Some(sequence_end_transition) = sequence_end_transition {
                     match sequence_end_transition {
                         SequenceEndTransition::None => {}

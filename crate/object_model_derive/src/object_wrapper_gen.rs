@@ -30,7 +30,7 @@ pub fn object_wrapper_gen(
 
     quote! {
         #[doc = #doc_string]
-        #[derive(Clone, Debug, PartialEq)]
+        #[derive(Clone, Debug, PartialEq, typename_derive::TypeName)]
         #vis struct #object_wrapper_name(#vis object_model::loaded::Object<#sequence_id_type>);
 
         impl #object_wrapper_name {
@@ -78,6 +78,62 @@ pub fn object_wrapper_gen(
 
             type Data = object_model::config::ObjectAssetData<#object_definition_type>;
             type HandleStorage = amethyst::ecs::storage::VecStorage<amethyst::assets::Handle<Self>>;
+        }
+
+        impl std::convert::AsRef<sequence_model::loaded::WaitSequenceHandles<#sequence_id_type>>
+        for #object_wrapper_name
+        {
+            fn as_ref(&self) -> &sequence_model::loaded::WaitSequenceHandles<#sequence_id_type> {
+                &self.0.wait_sequence_handles
+            }
+        }
+
+        impl std::convert::AsRef<
+            sprite_model::loaded::SpriteRenderSequenceHandles<#sequence_id_type>
+        > for #object_wrapper_name
+        {
+            fn as_ref(&self) -> &sprite_model::loaded::SpriteRenderSequenceHandles<
+                #sequence_id_type
+            >
+            {
+                &self.0.sprite_render_sequence_handles
+            }
+        }
+
+        impl std::convert::AsRef<collision_model::loaded::BodySequenceHandles<#sequence_id_type>>
+        for #object_wrapper_name
+        {
+            fn as_ref(&self) -> &collision_model::loaded::BodySequenceHandles<#sequence_id_type> {
+                &self.0.body_sequence_handles
+            }
+        }
+
+        impl std::convert::AsRef<
+            collision_model::loaded::InteractionsSequenceHandles<#sequence_id_type>
+        > for #object_wrapper_name
+        {
+            fn as_ref(&self) -> &collision_model::loaded::InteractionsSequenceHandles<
+                #sequence_id_type
+            >
+            {
+                &self.0.interactions_sequence_handles
+            }
+        }
+
+        impl std::convert::AsRef<spawn_model::loaded::SpawnsSequenceHandles<#sequence_id_type>>
+        for #object_wrapper_name
+        {
+            fn as_ref(&self) -> &spawn_model::loaded::SpawnsSequenceHandles<#sequence_id_type> {
+                &self.0.spawns_sequence_handles
+            }
+        }
+
+        impl std::convert::AsRef<sequence_model::loaded::SequenceEndTransitions<#sequence_id_type>>
+        for #object_wrapper_name
+        {
+            fn as_ref(&self) -> &sequence_model::loaded::SequenceEndTransitions<#sequence_id_type> {
+                &self.0.sequence_end_transitions
+            }
         }
     }
 }

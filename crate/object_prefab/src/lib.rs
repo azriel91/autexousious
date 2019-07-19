@@ -8,7 +8,7 @@ pub use crate::{
     object_prefab::ObjectPrefab,
     object_prefab_error::ObjectPrefabError,
     system_data::{
-        ComponentSequenceHandleStorages, FrameComponentStorages, ObjectComponentStorages,
+        FrameComponentDataHandleStorages, FrameComponentStorages, ObjectComponentStorages,
     },
 };
 

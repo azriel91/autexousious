@@ -8,7 +8,6 @@ pub(crate) use self::{
     object_kinematics_update_system::ObjectKinematicsUpdateSystem,
     object_transform_update_system::ObjectTransformUpdateSystem,
     sequence::FrameFreezeClockAugmentSystem,
-    sequence_component_update_system::SequenceComponentUpdateSystem,
 };
 
 mod character_hit_effect_system;
@@ -20,4 +19,3 @@ mod game_play_removal_augment_system;
 mod object_kinematics_update_system;
 mod object_transform_update_system;
 mod sequence;
-mod sequence_component_update_system;

@@ -1,5 +1,5 @@
-use crate::{component_sequence, config::Wait};
+use crate::{config::Wait, frame_component_data};
 
 /// Sequence of `Wait` values.
-#[component_sequence(Wait, copy)]
+#[frame_component_data(Wait, copy)]
 pub struct WaitSequence;

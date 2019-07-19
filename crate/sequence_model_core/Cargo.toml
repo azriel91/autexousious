@@ -1,14 +1,11 @@
 [package]
-name = "sequence_model_spi"
-version = "0.12.0"
+name = "sequence_model_core"
+version = "0.13.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
-derive_deref = "1.1.0"
-derive-new = "0.5.6"
-sequence_model_core = { path = "../sequence_model_core" }
 
 [features]
 nightly = ["amethyst/nightly"]

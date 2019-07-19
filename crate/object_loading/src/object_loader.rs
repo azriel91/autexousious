@@ -3,23 +3,24 @@ use std::collections::HashMap;
 use amethyst::{assets::Handle, renderer::SpriteRender, Error};
 use collision_model::{
     config::{Body, Interactions},
-    loaded::{BodySequence, BodySequenceHandle, InteractionsSequence, InteractionsSequenceHandle},
+    loaded::{
+        BodySequence, BodySequenceHandles, InteractionsSequence, InteractionsSequenceHandles,
+    },
 };
-use fnv::FnvHashMap;
 use object_model::{
     config::{GameObjectFrame, GameObjectSequence, ObjectDefinition},
     loaded::{GameObject, Object, ObjectWrapper},
 };
 use sequence_model::{
     config::Wait,
-    loaded::{WaitSequence, WaitSequenceHandle},
+    loaded::{SequenceEndTransitions, WaitSequence, WaitSequenceHandles},
 };
 use serde::{Deserialize, Serialize};
 use spawn_model::{
     config::Spawns,
-    loaded::{SpawnsSequence, SpawnsSequenceHandle},
+    loaded::{SpawnsSequence, SpawnsSequenceHandles},
 };
-use sprite_model::loaded::{SpriteRenderSequence, SpriteRenderSequenceHandle};
+use sprite_model::loaded::{SpriteRenderSequence, SpriteRenderSequenceHandles};
 
 use crate::ObjectLoaderParams;
 
@@ -57,15 +58,15 @@ impl ObjectLoader {
             .sequences
             .iter()
             .map(|(sequence_id, sequence)| (*sequence_id, sequence.object_sequence().next))
-            .collect::<FnvHashMap<_, _>>();
+            .collect::<HashMap<_, _>>();
 
-        // Load component sequences
+        // Load frame component datas
         let sequences_handles = (
-            HashMap::<O::SequenceId, WaitSequenceHandle>::new(),
-            HashMap::<O::SequenceId, SpriteRenderSequenceHandle>::new(),
-            HashMap::<O::SequenceId, BodySequenceHandle>::new(),
-            HashMap::<O::SequenceId, InteractionsSequenceHandle>::new(),
-            HashMap::<O::SequenceId, SpawnsSequenceHandle>::new(),
+            WaitSequenceHandles::default(),
+            SpriteRenderSequenceHandles::default(),
+            BodySequenceHandles::default(),
+            InteractionsSequenceHandles::default(),
+            SpawnsSequenceHandles::default(),
         );
         let (
             wait_sequence_handles,
@@ -188,7 +189,7 @@ impl ObjectLoader {
             body_sequence_handles,
             interactions_sequence_handles,
             spawns_sequence_handles,
-            sequence_end_transitions.into(),
+            SequenceEndTransitions::new(sequence_end_transitions),
         );
         let wrapper = O::ObjectWrapper::new(object);
 
@@ -311,14 +312,14 @@ mod test {
                 .with_assertion(|world| {
                     let object_wrapper = world.read_resource::<CharacterObjectWrapper>();
 
-                    macro_rules! assert_component_sequence_count {
-                        ($component_sequence_field:ident) => {
+                    macro_rules! assert_frame_component_data_count {
+                        ($frame_component_data_field:ident) => {
                             assert_eq!(
                                 28,
-                                object_wrapper.$component_sequence_field.len(),
+                                object_wrapper.$frame_component_data_field.len(),
                                 concat!(
                                     "Expected 28 ",
-                                    stringify!($component_sequence_field),
+                                    stringify!($frame_component_data_field),
                                     " to be loaded.",
                                     "Check `bat/object.toml` for number of sequences."
                                 )
@@ -326,10 +327,10 @@ mod test {
                         };
                     }
 
-                    assert_component_sequence_count!(wait_sequence_handles);
-                    assert_component_sequence_count!(sprite_render_sequence_handles);
-                    assert_component_sequence_count!(body_sequence_handles);
-                    assert_component_sequence_count!(interactions_sequence_handles);
+                    assert_frame_component_data_count!(wait_sequence_handles);
+                    assert_frame_component_data_count!(sprite_render_sequence_handles);
+                    assert_frame_component_data_count!(body_sequence_handles);
+                    assert_frame_component_data_count!(interactions_sequence_handles);
                 })
                 .run_isolated()
                 .is_ok()
