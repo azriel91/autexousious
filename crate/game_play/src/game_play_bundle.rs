@@ -60,17 +60,6 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         sequence_status_update_system!(CharacterSequenceId);
         sequence_status_update_system!(EnergySequenceId);
 
-        // Updates frame limit and ticks the sequence logic clocks.
-        builder.add(
-            SequenceUpdateSystem::new(),
-            &SequenceUpdateSystem::type_name(),
-            &[
-                &SequenceStatusUpdateSystem::<MapLayerSequenceId>::type_name(),
-                &SequenceStatusUpdateSystem::<CharacterSequenceId>::type_name(),
-                &SequenceStatusUpdateSystem::<EnergySequenceId>::type_name(),
-            ],
-        ); // kcov-ignore
-
         macro_rules! sequence_component_update_system {
             ($component_asset_type:path, $component_data_type:path, $sequence_id_type:path) => {
                 builder.add(
@@ -84,7 +73,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
                         $component_data_type,
                         $sequence_id_type,
                     >::type_name(),
-                    &[&SequenceUpdateSystem::type_name()],
+                    &[
+                        &SequenceStatusUpdateSystem::<MapLayerSequenceId>::type_name(),
+                        &SequenceStatusUpdateSystem::<CharacterSequenceId>::type_name(),
+                        &SequenceStatusUpdateSystem::<EnergySequenceId>::type_name(),
+                    ],
                 ); // kcov-ignore
             };
         }
@@ -127,10 +120,9 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         object_sequence_component_update_systems!(CharacterObjectWrapper, CharacterSequenceId);
         object_sequence_component_update_systems!(EnergyObjectWrapper, EnergySequenceId);
 
-        // TODO: The `FrameComponentUpdateSystem`s depend on the following systems:
+        // TODO: The `SequenceUpdateSystem`s depend on the following systems:
         //
         // * `SequenceComponentUpdateSystem::<_, _, _>`
-        // * `SequenceUpdateSystem
         //
         // Because there are so many, and we haven't implemented a good way to specify the
         // dependencies without heaps of duplicated code, we use a barrier.
@@ -139,15 +131,21 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         // dependencies.
         builder.add_barrier();
 
+        // Updates frame limit and ticks the sequence logic clocks.
+        builder.add(
+            SequenceUpdateSystem::new(),
+            &SequenceUpdateSystem::type_name(),
+            &[
+                // &SequenceComponentUpdateSystem::<_, _, _>::type_name(),
+            ],
+        ); // kcov-ignore
+
         macro_rules! frame_component_update_system {
             ($frame_component_data:ident) => {
                 builder.add(
                     FrameComponentUpdateSystem::<$frame_component_data>::new(),
                     &FrameComponentUpdateSystem::<$frame_component_data>::type_name(),
-                    &[
-                                        // &SequenceComponentUpdateSystem::<_, _, _>::type_name(),
-                                        // &SequenceUpdateSystem::type_name(),
-                                    ],
+                    &[&SequenceUpdateSystem::type_name()],
                 ); // kcov-ignore
             };
         }

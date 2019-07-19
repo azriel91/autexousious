@@ -69,9 +69,8 @@ struct SequenceUpdateParams<'p> {
 impl SequenceUpdateSystem {
     fn start_sequence(
         wait_sequence_assets: &AssetStorage<WaitSequence>,
-        sequence_update_ec: &mut EventChannel<SequenceUpdateEvent>,
         SequenceUpdateParams {
-            entity,
+            entity: _entity,
             wait_sequence_handle,
             frame_index_clock,
             frame_wait_clock,
@@ -93,8 +92,6 @@ impl SequenceUpdateSystem {
         (*frame_index_clock).limit = wait_sequence.len();
 
         Self::update_frame_wait_clock_limit(wait_sequence, frame_wait_clock, 0);
-
-        sequence_update_ec.single_write(SequenceUpdateEvent::SequenceBegin { entity });
     }
 
     /// Returns true if the entity is **not frozen**, ticks the clock otherwise.
@@ -220,11 +217,7 @@ impl<'s> System<'s> for SequenceUpdateSystem {
                     };
                     match sequence_update_params.sequence_status {
                         SequenceStatus::Begin => {
-                            Self::start_sequence(
-                                &wait_sequence_assets,
-                                &mut sequence_update_ec,
-                                sequence_update_params,
-                            );
+                            Self::start_sequence(&wait_sequence_assets, sequence_update_params);
                         }
                         SequenceStatus::Ongoing => {
                             if Self::entity_unfrozen_tick(&mut frame_freeze_clocks, entity) {
@@ -270,9 +263,9 @@ mod tests {
     /// * Updates the `FrameIndexClock` limit to the new sequence's limit.
     /// * Resets `FrameWaitClock`.
     /// * Updates `FrameWaitClock` limit to the new frame's wait limit.
-    /// * `SequenceUpdateEvent::SequenceBegin` events are sent.
+    /// * No `SequenceUpdateEvent`s are sent.
     #[test]
-    fn resets_frame_wait_clocks_and_sends_event_on_sequence_begin() -> Result<(), Error> {
+    fn resets_frame_wait_clocks_on_sequence_begin() -> Result<(), Error> {
         AutexousiousApplication::game_base()
             .with_setup(setup_system_data)
             .with_setup(|world| {
@@ -294,10 +287,7 @@ mod tests {
                     SequenceStatus::Ongoing,
                 )
             })
-            .with_assertion(|world| {
-                let events = sequence_begin_events(world);
-                expect_events(world, events);
-            })
+            .with_assertion(|world| expect_events(world, vec![]))
             .run_isolated()
     }
 
@@ -679,11 +669,6 @@ mod tests {
             .collect::<Vec<_>>();
 
         assert_eq!(expect_events, actual_events)
-    }
-
-    fn sequence_begin_events(world: &mut World) -> Vec<SequenceUpdateEvent> {
-        let entity = *world.read_resource::<Entity>();
-        vec![SequenceUpdateEvent::SequenceBegin { entity }]
     }
 
     fn frame_begin_events(world: &mut World, frame_index: usize) -> Vec<SequenceUpdateEvent> {

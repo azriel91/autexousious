@@ -3,17 +3,22 @@ use std::marker::PhantomData;
 use amethyst::{
     ecs::{
         storage::{ComponentEvent, Tracked},
-        BitSet, Component, Entities, Join, ReadStorage, ReaderId, System, SystemData, WriteStorage,
+        BitSet, Component, Entities, Join, ReadStorage, ReaderId, System, SystemData, Write,
+        WriteStorage,
     },
     shred::Resources,
+    shrev::EventChannel,
 };
 use derivative::Derivative;
 use derive_new::new;
-use sequence_model::{config::SequenceId, play::SequenceStatus};
+use sequence_model::{
+    config::SequenceId,
+    play::{SequenceStatus, SequenceUpdateEvent},
+};
 use shred_derive::SystemData;
 use typename_derive::TypeName;
 
-/// Updates `SequenceStatus`s when `SequenceId` changes.
+/// Updates `SequenceStatus` to `Begin` when `SequenceId` changes, and sends `SequenceBegin` events.
 ///
 /// This **must** run before `SequenceUpdateSystem`, as that relies on the `SequenceStatus` to
 /// determine if a `SequenceBegin` event should be sent.
@@ -47,6 +52,9 @@ where
     /// `SequenceStatus` components.
     #[derivative(Debug = "ignore")]
     pub sequence_statuses: WriteStorage<'s, SequenceStatus>,
+    /// Event channel for `SequenceUpdateEvent`s.
+    #[derivative(Debug = "ignore")]
+    pub sequence_update_ec: Write<'s, EventChannel<SequenceUpdateEvent>>,
 }
 
 impl<'s, SeqId> System<'s> for SequenceStatusUpdateSystem<SeqId>
@@ -62,6 +70,7 @@ where
             entities,
             sequence_ids,
             mut sequence_statuses,
+            mut sequence_update_ec,
         }: Self::SystemData,
     ) {
         self.sequence_id_updates.clear();
@@ -86,6 +95,8 @@ where
                 sequence_statuses
                     .insert(entity, SequenceStatus::Begin)
                     .expect("Failed to insert `SequenceStatus` component.");
+
+                sequence_update_ec.single_write(SequenceUpdateEvent::SequenceBegin { entity });
             });
     }
 
@@ -99,29 +110,32 @@ where
 mod tests {
     use amethyst::{
         ecs::{Builder, Entity, World},
+        shrev::{EventChannel, ReaderId},
         Error,
     };
     use application_test_support::AutexousiousApplication;
-    use sequence_model::play::SequenceStatus;
+    use sequence_model::play::{SequenceStatus, SequenceUpdateEvent};
     use test_object_model::config::TestObjectSequenceId;
 
     use super::SequenceStatusUpdateSystem;
 
     #[test]
-    fn attaches_handle_for_sequence_id_insertions() -> Result<(), Error> {
+    fn attaches_handle_and_sends_event_for_sequence_id_insertions() -> Result<(), Error> {
         run_test(
             |world| create_entity(world, None),
             |world| insert_sequence(world, TestObjectSequenceId::Zero),
             Some(SequenceStatus::Begin),
+            sequence_begin_events,
         )
     }
 
     #[test]
-    fn attaches_handle_for_sequence_id_modifications() -> Result<(), Error> {
+    fn attaches_handle_and_sends_event_for_sequence_id_modifications() -> Result<(), Error> {
         run_test(
             |world| create_entity(world, Some(TestObjectSequenceId::Zero)),
             |world| update_sequence(world, TestObjectSequenceId::One),
             Some(SequenceStatus::Begin),
+            sequence_begin_events,
         )
     }
 
@@ -129,6 +143,7 @@ mod tests {
         entity_create_fn: fn(&mut World),
         sequence_id_alter_fn: fn(&mut World),
         sequence_status_expected: Option<SequenceStatus>,
+        sequence_update_events_expected_fn: fn(&mut World) -> Vec<SequenceUpdateEvent>,
     ) -> Result<(), Error> {
         AutexousiousApplication::game_base()
             .with_system(
@@ -137,9 +152,22 @@ mod tests {
                 &[],
             )
             .with_setup(entity_create_fn)
+            .with_setup(register_reader)
             .with_effect(sequence_id_alter_fn)
             .with_assertion(move |world| expect_sequence_status(world, sequence_status_expected))
+            .with_assertion(move |world| {
+                let events_expected = sequence_update_events_expected_fn(world);
+                expect_events(world, events_expected);
+            })
             .run_isolated()
+    }
+
+    fn register_reader(world: &mut World) {
+        let reader_id = {
+            let mut ec = world.write_resource::<EventChannel<SequenceUpdateEvent>>();
+            ec.register_reader()
+        }; // kcov-ignore
+        world.add_resource(reader_id);
     }
 
     fn insert_sequence(world: &mut World, sequence_id: TestObjectSequenceId) {
@@ -169,6 +197,32 @@ mod tests {
         let entity = entity_builder.build();
 
         world.add_resource(entity);
+    }
+
+    fn sequence_begin_events(world: &mut World) -> Vec<SequenceUpdateEvent> {
+        let entity = *world.read_resource::<Entity>();
+        vec![SequenceUpdateEvent::SequenceBegin { entity }]
+    }
+
+    fn expect_events(world: &mut World, events_expected: Vec<SequenceUpdateEvent>) {
+        let target_entity = *world.read_resource::<Entity>();
+        let mut reader_id = world.write_resource::<ReaderId<SequenceUpdateEvent>>();
+        let ec = world.read_resource::<EventChannel<SequenceUpdateEvent>>();
+
+        // Map owned values into references.
+        let events_expected = events_expected.iter().collect::<Vec<_>>();
+
+        // Filter events for the entity we care about.
+        let events_actual = ec
+            .read(&mut reader_id)
+            .filter(|ev| match ev {
+                SequenceUpdateEvent::SequenceBegin { entity }
+                | SequenceUpdateEvent::FrameBegin { entity, .. }
+                | SequenceUpdateEvent::SequenceEnd { entity, .. } => target_entity == *entity,
+            })
+            .collect::<Vec<_>>();
+
+        assert_eq!(events_expected, events_actual)
     }
 
     fn expect_sequence_status(world: &mut World, sequence_status: Option<SequenceStatus>) {
