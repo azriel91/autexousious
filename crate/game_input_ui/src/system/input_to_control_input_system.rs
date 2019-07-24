@@ -1,19 +1,16 @@
 use amethyst::{
     ecs::{Entities, Join, Read, ReadStorage, Resources, System, SystemData, Write},
-    input::{InputEvent, InputHandler},
+    input::InputEvent,
     shrev::{EventChannel, ReaderId},
 };
-use approx::relative_ne;
 use derivative::Derivative;
 use derive_new::new;
-use game_input::{ControllerInput, InputControlled};
+use game_input::InputControlled;
 use game_input_model::{
-    Axis, AxisEventData, ControlActionEventData, ControlBindings, ControlInputEvent, InputConfig,
+    AxisEventData, ControlActionEventData, ControlBindings, ControlInputEvent, InputConfig,
     PlayerActionControl, PlayerAxisControl,
 };
-use log::debug;
 use shred_derive::SystemData;
-use strum::IntoEnumIterator;
 use typename_derive::TypeName;
 
 /// Sends `ControlInputEvent`s based on the `InputHandler` state.
@@ -35,18 +32,12 @@ pub struct InputToControlInputSystemData<'s> {
     /// `InputEvent<ControlBindings>` channel.
     #[derivative(Debug = "ignore")]
     pub input_ec: Read<'s, EventChannel<InputEvent<ControlBindings>>>,
-    /// `InputHandler` resource.
-    #[derivative(Debug = "ignore")]
-    pub input_handler: Read<'s, InputHandler<ControlBindings>>,
     /// `Entities` resource.
     #[derivative(Debug = "ignore")]
     pub entities: Entities<'s>,
     /// `InputControlled` components.
     #[derivative(Debug = "ignore")]
     pub input_controlleds: ReadStorage<'s, InputControlled>,
-    /// `ControllerInput` components.
-    #[derivative(Debug = "ignore")]
-    pub controller_inputs: ReadStorage<'s, ControllerInput>,
     /// `ControlInputEvent` channel.
     #[derivative(Debug = "ignore")]
     pub control_input_ec: Write<'s, EventChannel<ControlInputEvent>>,
@@ -59,42 +50,11 @@ impl<'s> System<'s> for InputToControlInputSystem {
         &mut self,
         InputToControlInputSystemData {
             input_ec,
-            input_handler,
             entities,
             input_controlleds,
-            controller_inputs,
             mut control_input_ec,
         }: Self::SystemData,
     ) {
-        // This does not send events when there is no existing `ControllerInput` component attached
-        // to the entity. This is to prevent events from being sent when we are restoring state,
-        // e.g. in a saveload scenario.
-        for (entity, input_controlled, controller_input) in
-            (&*entities, &input_controlleds, &controller_inputs).join()
-        {
-            let controller_id = input_controlled.controller_id;
-
-            Axis::iter().for_each(|axis| {
-                if let Some(value) =
-                    input_handler.axis_value(&PlayerAxisControl::new(controller_id, axis))
-                {
-                    let previous_value = match axis {
-                        Axis::X => controller_input.x_axis_value,
-                        Axis::Z => controller_input.z_axis_value,
-                    };
-
-                    if relative_ne!(previous_value, value) {
-                        self.control_input_events
-                            .push(ControlInputEvent::Axis(AxisEventData {
-                                entity,
-                                axis,
-                                value,
-                            }))
-                    }
-                }
-            });
-        }
-
         let input_event_rid = self
             .input_event_rid
             .as_mut()
@@ -109,10 +69,6 @@ impl<'s> System<'s> for InputToControlInputSystem {
                     if let Some((entity, _)) = (&entities, &input_controlleds).join().find(
                         |(_entity, input_controlled)| input_controlled.controller_id == *player,
                     ) {
-                        debug!(
-                            "Sending control input event for action: {:?}, entity: {:?}",
-                            *action, entity
-                        );
                         Some(ControlInputEvent::ControlAction(ControlActionEventData {
                             entity,
                             control_action: *action,
@@ -130,6 +86,22 @@ impl<'s> System<'s> for InputToControlInputSystem {
                             entity,
                             control_action: *action,
                             value: false,
+                        }))
+                    } else {
+                        None
+                    }
+                }
+                InputEvent::AxisMoved {
+                    axis: PlayerAxisControl { player, axis },
+                    value,
+                } => {
+                    if let Some((entity, _)) = (&entities, &input_controlleds).join().find(
+                        |(_entity, input_controlled)| input_controlled.controller_id == *player,
+                    ) {
+                        Some(ControlInputEvent::Axis(AxisEventData {
+                            entity,
+                            axis: *axis,
+                            value: *value,
                         }))
                     } else {
                         None
@@ -170,7 +142,7 @@ mod test {
         Error,
     };
     use amethyst_test::{AmethystApplication, HIDPI};
-    use game_input::{ControllerInput, InputControlled};
+    use game_input::InputControlled;
     use game_input_model::{
         Axis, AxisEventData, ControlAction, ControlActionEventData, ControlBindings,
         ControlInputEvent, ControllerConfig, InputConfig,
@@ -191,7 +163,6 @@ mod test {
     #[test]
     fn sends_control_input_events_for_key_presses() -> Result<(), Error> {
         run_test(
-            ControllerInput::default(),
             vec![key_press(AXIS_POSITIVE), key_press(ACTION_JUMP)],
             |entity| {
                 vec![
@@ -212,18 +183,20 @@ mod test {
 
     #[test]
     fn sends_control_input_events_for_key_releases() -> Result<(), Error> {
-        let mut controller_input = ControllerInput::default();
-        controller_input.x_axis_value = 1.;
-
         run_test(
-            controller_input,
             vec![
+                key_press(AXIS_POSITIVE),
                 key_release(AXIS_POSITIVE),
                 key_press(ACTION_JUMP),
                 key_release(ACTION_JUMP),
             ],
             |entity| {
                 vec![
+                    ControlInputEvent::Axis(AxisEventData {
+                        entity,
+                        axis: Axis::X,
+                        value: 1.,
+                    }),
                     ControlInputEvent::Axis(AxisEventData {
                         entity,
                         axis: Axis::X,
@@ -244,23 +217,7 @@ mod test {
         )
     }
 
-    #[test]
-    fn does_not_send_control_input_events_for_non_state_change() -> Result<(), Error> {
-        let mut controller_input = ControllerInput::default();
-        controller_input.x_axis_value = 1.;
-
-        run_test(
-            controller_input,
-            vec![key_press(AXIS_POSITIVE)],
-            |_entity| vec![],
-        )
-    }
-
-    fn run_test<F>(
-        controller_input: ControllerInput,
-        key_events: Vec<Event>,
-        expected_control_input_events: F,
-    ) -> Result<(), Error>
+    fn run_test<F>(key_events: Vec<Event>, expected_control_input_events: F) -> Result<(), Error>
     where
         F: Send + Sync + Fn(Entity) -> Vec<ControlInputEvent> + 'static,
     {
@@ -290,7 +247,6 @@ mod test {
                 let entity = world
                     .create_entity()
                     .with(InputControlled::new(controller_id))
-                    .with(controller_input)
                     .build();
                 world.add_resource(entity);
 
