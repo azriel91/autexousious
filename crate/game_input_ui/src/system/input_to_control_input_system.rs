@@ -23,7 +23,7 @@ pub struct InputToControlInputSystem {
     input_config: InputConfig,
     /// Reader ID for the `InputEvent` channel.
     #[new(default)]
-    input_event_rid: Option<ReaderId<InputEvent<PlayerActionControl>>>,
+    input_event_rid: Option<ReaderId<InputEvent<ControlBindings>>>,
     /// Pre-allocated vector
     #[new(value = "Vec::with_capacity(64)")]
     control_input_events: Vec<ControlInputEvent>,
@@ -32,9 +32,9 @@ pub struct InputToControlInputSystem {
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct InputToControlInputSystemData<'s> {
-    /// `InputEvent<PlayerActionControl>` channel.
+    /// `InputEvent<ControlBindings>` channel.
     #[derivative(Debug = "ignore")]
-    pub input_ec: Read<'s, EventChannel<InputEvent<PlayerActionControl>>>,
+    pub input_ec: Read<'s, EventChannel<InputEvent<ControlBindings>>>,
     /// `InputHandler` resource.
     #[derivative(Debug = "ignore")]
     pub input_handler: Read<'s, InputHandler<ControlBindings>>,
@@ -153,7 +153,7 @@ impl<'s> System<'s> for InputToControlInputSystem {
         res.insert(self.input_config.clone());
 
         self.input_event_rid = Some(
-            res.fetch_mut::<EventChannel<InputEvent<PlayerActionControl>>>()
+            res.fetch_mut::<EventChannel<InputEvent<ControlBindings>>>()
                 .register_reader(),
         );
     }
@@ -173,7 +173,7 @@ mod test {
     use game_input::{ControllerInput, InputControlled};
     use game_input_model::{
         Axis, AxisEventData, ControlAction, ControlActionEventData, ControlBindings,
-        ControlInputEvent, ControllerConfig, InputConfig, PlayerActionControl,
+        ControlInputEvent, ControllerConfig, InputConfig,
     };
     use hamcrest::prelude::*;
     use typename::TypeName;
@@ -299,7 +299,7 @@ mod test {
 
                 let mut input_handler = world.write_resource::<InputHandler<ControlBindings>>();
                 let mut input_events_ec =
-                    world.write_resource::<EventChannel<InputEvent<PlayerActionControl>>>();
+                    world.write_resource::<EventChannel<InputEvent<ControlBindings>>>();
 
                 key_events.iter().for_each(|ev| {
                     input_handler.send_event(ev, &mut input_events_ec, HIDPI as f32)

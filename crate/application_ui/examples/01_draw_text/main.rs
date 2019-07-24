@@ -78,7 +78,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         .with_bundle(WindowBundle::from_config(display_config))?
         .with_bundle(TransformBundle::new())?
         .with_bundle(InputBundle::<StringBindings>::new())?
-        .with_bundle(UiBundle::<DefaultBackend, StringBindings>::new())?
+        .with_bundle(UiBundle::<StringBindings>::new())?
         .with_thread_local(RenderingSystem::<DefaultBackend, _>::new(
             RenderGraph::default(),
         ));
