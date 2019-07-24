@@ -145,7 +145,7 @@ impl CharacterSelectionWidgetInputSystem {
                     )
                 }
             }
-            ControlInputEvent::ControlAction(control_action_event_data) => {
+            ControlInputEvent::ControlActionPressed(control_action_event_data) => {
                 if let (Some(character_selection_widget), Some(input_controlled)) = (
                     character_selection_widgets.get_mut(control_action_event_data.entity),
                     input_controlleds.get(control_action_event_data.entity),
@@ -158,6 +158,7 @@ impl CharacterSelectionWidgetInputSystem {
                     )
                 }
             }
+            ControlInputEvent::ControlActionReleased(..) => {}
         }
     }
 
@@ -201,9 +202,8 @@ impl CharacterSelectionWidgetInputSystem {
         let character_selection_event = match (
             character_selection_widget.state,
             control_action_event_data.control_action,
-            control_action_event_data.value,
         ) {
-            (WidgetState::Inactive, ControlAction::Attack, true) => {
+            (WidgetState::Inactive, ControlAction::Attack) => {
                 debug!("Controller {} active.", input_controlled.controller_id);
                 character_selection_widget.state = WidgetState::CharacterSelect;
 
@@ -211,7 +211,7 @@ impl CharacterSelectionWidgetInputSystem {
                     controller_id: input_controlled.controller_id,
                 })
             }
-            (WidgetState::CharacterSelect, ControlAction::Jump, true) => {
+            (WidgetState::CharacterSelect, ControlAction::Jump) => {
                 debug!("Controller {} inactive.", input_controlled.controller_id);
                 character_selection_widget.state = WidgetState::Inactive;
 
@@ -219,7 +219,7 @@ impl CharacterSelectionWidgetInputSystem {
                     controller_id: input_controlled.controller_id,
                 })
             }
-            (WidgetState::CharacterSelect, ControlAction::Attack, true) => {
+            (WidgetState::CharacterSelect, ControlAction::Attack) => {
                 debug!("Controller {} ready.", input_controlled.controller_id);
                 character_selection_widget.state = WidgetState::Ready;
 
@@ -228,7 +228,7 @@ impl CharacterSelectionWidgetInputSystem {
                     character_selection: character_selection_widget.selection.clone(),
                 })
             }
-            (WidgetState::Ready, ControlAction::Jump, true) => {
+            (WidgetState::Ready, ControlAction::Jump) => {
                 character_selection_widget.state = WidgetState::CharacterSelect;
 
                 Some(CharacterSelectionEvent::Deselect {
@@ -535,18 +535,16 @@ mod test {
     }
 
     fn press_jump(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::ControlAction(ControlActionEventData {
+        ControlInputEvent::ControlActionPressed(ControlActionEventData {
             entity,
             control_action: ControlAction::Jump,
-            value: true,
         })
     }
 
     fn press_attack(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::ControlAction(ControlActionEventData {
+        ControlInputEvent::ControlActionPressed(ControlActionEventData {
             entity,
             control_action: ControlAction::Attack,
-            value: true,
         })
     }
 

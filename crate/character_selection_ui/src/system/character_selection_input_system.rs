@@ -40,11 +40,8 @@ impl CharacterSelectionInputSystem {
         character_selection_ec: &mut EventChannel<CharacterSelectionEvent>,
         control_action_event_data: ControlActionEventData,
     ) {
-        let character_selection_event = match (
-            control_action_event_data.control_action,
-            control_action_event_data.value,
-        ) {
-            (ControlAction::Jump, true) => {
+        let character_selection_event = match control_action_event_data.control_action {
+            ControlAction::Jump => {
                 // If all widgets are inactive, return to previous `State`.
                 let all_inactive =
                     character_selection_widgets
@@ -58,7 +55,7 @@ impl CharacterSelectionInputSystem {
                     None
                 }
             }
-            (ControlAction::Attack, true) => {
+            ControlAction::Attack => {
                 // If:
                 //
                 // * All widgets are `Ready` or `Inactive`.
@@ -129,7 +126,7 @@ impl<'s> System<'s> for CharacterSelectionInputSystem {
         control_input_ec
             .read(control_input_event_rid)
             .for_each(|ev| {
-                if let ControlInputEvent::ControlAction(control_action_event_data) = ev {
+                if let ControlInputEvent::ControlActionPressed(control_action_event_data) = ev {
                     Self::handle_control_action_event(
                         &character_selection_widgets,
                         &mut character_selection_ec,
@@ -283,18 +280,16 @@ mod test {
     }
 
     fn press_jump(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::ControlAction(ControlActionEventData {
+        ControlInputEvent::ControlActionPressed(ControlActionEventData {
             entity,
             control_action: ControlAction::Jump,
-            value: true,
         })
     }
 
     fn press_attack(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::ControlAction(ControlActionEventData {
+        ControlInputEvent::ControlActionPressed(ControlActionEventData {
             entity,
             control_action: ControlAction::Attack,
-            value: true,
         })
     }
 

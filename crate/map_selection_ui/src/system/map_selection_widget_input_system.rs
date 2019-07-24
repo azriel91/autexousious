@@ -130,13 +130,14 @@ impl MapSelectionWidgetInputSystem {
                     map_selection_widget,
                     axis_event_data,
                 ),
-                ControlInputEvent::ControlAction(control_action_event_data) => {
+                ControlInputEvent::ControlActionPressed(control_action_event_data) => {
                     Self::handle_control_action_event(
                         map_selection_ec,
                         map_selection_widget,
                         control_action_event_data,
                     )
                 }
+                ControlInputEvent::ControlActionReleased(..) => {}
             }
         }
     }
@@ -176,20 +177,19 @@ impl MapSelectionWidgetInputSystem {
         let map_selection_event = match (
             map_selection_widget.state,
             control_action_event_data.control_action,
-            control_action_event_data.value,
         ) {
-            (WidgetState::MapSelect, ControlAction::Jump, true) => Some(MapSelectionEvent::Return),
-            (WidgetState::MapSelect, ControlAction::Attack, true) => {
+            (WidgetState::MapSelect, ControlAction::Jump) => Some(MapSelectionEvent::Return),
+            (WidgetState::MapSelect, ControlAction::Attack) => {
                 map_selection_widget.state = WidgetState::Ready;
                 Some(MapSelectionEvent::Select {
                     map_selection: map_selection_widget.selection.clone(),
                 })
             }
-            (WidgetState::Ready, ControlAction::Jump, true) => {
+            (WidgetState::Ready, ControlAction::Jump) => {
                 map_selection_widget.state = WidgetState::MapSelect;
                 Some(MapSelectionEvent::Deselect)
             }
-            (WidgetState::Ready, ControlAction::Attack, true) => Some(MapSelectionEvent::Confirm),
+            (WidgetState::Ready, ControlAction::Attack) => Some(MapSelectionEvent::Confirm),
             _ => None,
         };
 
@@ -489,18 +489,16 @@ mod test {
     }
 
     fn press_jump(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::ControlAction(ControlActionEventData {
+        ControlInputEvent::ControlActionPressed(ControlActionEventData {
             entity,
             control_action: ControlAction::Jump,
-            value: true,
         })
     }
 
     fn press_attack(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::ControlAction(ControlActionEventData {
+        ControlInputEvent::ControlActionPressed(ControlActionEventData {
             entity,
             control_action: ControlAction::Attack,
-            value: true,
         })
     }
 

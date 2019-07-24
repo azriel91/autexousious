@@ -75,8 +75,8 @@ impl CharacterControlTransitionsTransitionSystem {
         ControlActionEventData {
             entity,
             control_action,
-            value,
         }: ControlActionEventData,
+        value: bool,
     ) {
         self.processed_entities.add(entity.id());
 
@@ -299,11 +299,21 @@ impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
         control_input_ec
             .read(control_input_event_rid)
             .for_each(|ev| {
-                if let ControlInputEvent::ControlAction(control_action_event_data) = ev {
+                if let ControlInputEvent::ControlActionPressed(control_action_event_data) = ev {
                     self.handle_event(
                         &mut character_control_transitions_transition_resources,
                         &control_transition_requirement_system_data,
                         *control_action_event_data,
+                        true,
+                    );
+                } else if let ControlInputEvent::ControlActionReleased(control_action_event_data) =
+                    ev
+                {
+                    self.handle_event(
+                        &mut character_control_transitions_transition_resources,
+                        &control_transition_requirement_system_data,
+                        *control_action_event_data,
+                        false,
                     );
                 }
             });
@@ -345,10 +355,12 @@ mod tests {
         run_test(
             CharacterSequenceId::Stand,
             None,
-            Some(|entity| ControlActionEventData {
-                entity,
-                control_action: ControlAction::Attack,
-                value: true,
+            Some(|entity| {
+                let control_action_event_data = ControlActionEventData {
+                    entity,
+                    control_action: ControlAction::Attack,
+                };
+                ControlInputEvent::ControlActionPressed(control_action_event_data)
             }),
             CharacterSequenceId::StandAttack0,
         )
@@ -359,10 +371,12 @@ mod tests {
         run_test(
             CharacterSequenceId::Stand,
             None,
-            Some(|entity| ControlActionEventData {
-                entity,
-                control_action: ControlAction::Special,
-                value: false,
+            Some(|entity| {
+                let control_action_event_data = ControlActionEventData {
+                    entity,
+                    control_action: ControlAction::Special,
+                };
+                ControlInputEvent::ControlActionReleased(control_action_event_data)
             }),
             CharacterSequenceId::DashBack,
         )
@@ -403,10 +417,12 @@ mod tests {
         run_test(
             CharacterSequenceId::Stand,
             Some(controller_input),
-            Some(|entity| ControlActionEventData {
-                entity,
-                control_action: ControlAction::Special,
-                value: false,
+            Some(|entity| {
+                let control_action_event_data = ControlActionEventData {
+                    entity,
+                    control_action: ControlAction::Special,
+                };
+                ControlInputEvent::ControlActionReleased(control_action_event_data)
             }),
             CharacterSequenceId::DashBack,
         )
@@ -415,7 +431,7 @@ mod tests {
     fn run_test(
         setup_sequence_id: CharacterSequenceId,
         setup_controller_input: Option<ControllerInput>,
-        control_action_event_fn: Option<fn(Entity) -> ControlActionEventData>,
+        control_input_event_fn: Option<fn(Entity) -> ControlInputEvent>,
         expected_sequence_id: CharacterSequenceId,
     ) -> Result<(), Error> {
         AutexousiousApplication::game_base()
@@ -454,8 +470,8 @@ mod tests {
                     }
                 }
 
-                if let Some(control_action_event_fn) = control_action_event_fn {
-                    send_event(world, control_action_event_fn(entity));
+                if let Some(control_input_event_fn) = control_input_event_fn {
+                    send_event(world, control_input_event_fn(entity));
                 }
 
                 world.add_resource(entity);
@@ -473,9 +489,7 @@ mod tests {
             .run_isolated()
     }
 
-    fn send_event(world: &mut World, control_action_event_data: ControlActionEventData) {
-        let event = ControlInputEvent::ControlAction(control_action_event_data);
-
+    fn send_event(world: &mut World, event: ControlInputEvent) {
         let mut ec = world.write_resource::<EventChannel<ControlInputEvent>>();
         ec.single_write(event);
     } // kcov-ignore

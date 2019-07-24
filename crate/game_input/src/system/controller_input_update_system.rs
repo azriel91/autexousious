@@ -58,17 +58,28 @@ impl<'s> System<'s> for ControllerInputUpdateSystem {
                     Axis::Z => controller_input.z_axis_value = *value,
                 };
             }
-            ControlInputEvent::ControlAction(ControlActionEventData {
+            ControlInputEvent::ControlActionPressed(ControlActionEventData {
                 entity,
                 control_action,
-                value,
             }) => {
                 let controller_input = Self::get_or_insert_mut(&mut controller_inputs, *entity);
                 match control_action {
-                    ControlAction::Defend => controller_input.defend = *value,
-                    ControlAction::Jump => controller_input.jump = *value,
-                    ControlAction::Attack => controller_input.attack = *value,
-                    ControlAction::Special => controller_input.special = *value,
+                    ControlAction::Defend => controller_input.defend = true,
+                    ControlAction::Jump => controller_input.jump = true,
+                    ControlAction::Attack => controller_input.attack = true,
+                    ControlAction::Special => controller_input.special = true,
+                };
+            }
+            ControlInputEvent::ControlActionReleased(ControlActionEventData {
+                entity,
+                control_action,
+            }) => {
+                let controller_input = Self::get_or_insert_mut(&mut controller_inputs, *entity);
+                match control_action {
+                    ControlAction::Defend => controller_input.defend = false,
+                    ControlAction::Jump => controller_input.jump = false,
+                    ControlAction::Attack => controller_input.attack = false,
+                    ControlAction::Special => controller_input.special = false,
                 };
             }
         });
@@ -127,10 +138,9 @@ mod test {
                             axis: Axis::Z,
                             value: 1.,
                         }),
-                        ControlInputEvent::ControlAction(ControlActionEventData {
+                        ControlInputEvent::ControlActionPressed(ControlActionEventData {
                             entity: e1.clone(),
                             control_action: ControlAction::Defend,
-                            value: true,
                         }),
                     ]); // kcov-ignore
 
@@ -187,25 +197,21 @@ mod test {
                             value: 1.,
                         }),
                         // e1
-                        ControlInputEvent::ControlAction(ControlActionEventData {
+                        ControlInputEvent::ControlActionReleased(ControlActionEventData {
                             entity: e1.clone(),
                             control_action: ControlAction::Defend,
-                            value: false,
                         }),
-                        ControlInputEvent::ControlAction(ControlActionEventData {
+                        ControlInputEvent::ControlActionReleased(ControlActionEventData {
                             entity: e1.clone(),
                             control_action: ControlAction::Jump,
-                            value: false,
                         }),
-                        ControlInputEvent::ControlAction(ControlActionEventData {
+                        ControlInputEvent::ControlActionPressed(ControlActionEventData {
                             entity: e1.clone(),
                             control_action: ControlAction::Attack,
-                            value: true,
                         }),
-                        ControlInputEvent::ControlAction(ControlActionEventData {
+                        ControlInputEvent::ControlActionPressed(ControlActionEventData {
                             entity: e1.clone(),
                             control_action: ControlAction::Special,
-                            value: true,
                         }),
                     ]); // kcov-ignore
 

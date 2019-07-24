@@ -14,12 +14,14 @@ pub enum ControlArgs {
         /// Value to use for the axis input.
         value: f32,
     },
-    /// Axis input.
-    Action {
+    /// Action pressed.
+    ActionPressed {
         /// Action to control, "defend", "jump", "attack", "special".
         action: ControlAction,
-        /// Value to use for the action input.
-        #[structopt(parse(try_from_str))] // Treat as a value, not a flag.
-        value: bool,
+    },
+    /// Action released.
+    ActionReleased {
+        /// Action to control, "defend", "jump", "attack", "special".
+        action: ControlAction,
     },
 }

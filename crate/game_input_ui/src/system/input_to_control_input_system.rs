@@ -69,11 +69,12 @@ impl<'s> System<'s> for InputToControlInputSystem {
                     if let Some((entity, _)) = (&entities, &input_controlleds).join().find(
                         |(_entity, input_controlled)| input_controlled.controller_id == *player,
                     ) {
-                        Some(ControlInputEvent::ControlAction(ControlActionEventData {
-                            entity,
-                            control_action: *action,
-                            value: true,
-                        }))
+                        Some(ControlInputEvent::ControlActionPressed(
+                            ControlActionEventData {
+                                entity,
+                                control_action: *action,
+                            },
+                        ))
                     } else {
                         None
                     }
@@ -82,11 +83,12 @@ impl<'s> System<'s> for InputToControlInputSystem {
                     if let Some((entity, _)) = (&entities, &input_controlleds).join().find(
                         |(_entity, input_controlled)| input_controlled.controller_id == *player,
                     ) {
-                        Some(ControlInputEvent::ControlAction(ControlActionEventData {
-                            entity,
-                            control_action: *action,
-                            value: false,
-                        }))
+                        Some(ControlInputEvent::ControlActionReleased(
+                            ControlActionEventData {
+                                entity,
+                                control_action: *action,
+                            },
+                        ))
                     } else {
                         None
                     }
@@ -171,10 +173,9 @@ mod test {
                         axis: Axis::X,
                         value: 1.,
                     }),
-                    ControlInputEvent::ControlAction(ControlActionEventData {
+                    ControlInputEvent::ControlActionPressed(ControlActionEventData {
                         entity,
                         control_action: ControlAction::Jump,
-                        value: true,
                     }),
                 ]
             },
@@ -202,15 +203,13 @@ mod test {
                         axis: Axis::X,
                         value: 0.,
                     }),
-                    ControlInputEvent::ControlAction(ControlActionEventData {
+                    ControlInputEvent::ControlActionPressed(ControlActionEventData {
                         entity,
                         control_action: ControlAction::Jump,
-                        value: true,
                     }),
-                    ControlInputEvent::ControlAction(ControlActionEventData {
+                    ControlInputEvent::ControlActionReleased(ControlActionEventData {
                         entity,
                         control_action: ControlAction::Jump,
-                        value: false,
                     }),
                 ]
             },
