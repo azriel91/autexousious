@@ -268,21 +268,12 @@ impl CharacterControlTransitionsTransitionSystem {
             skill_pointses.get(entity).copied(),
             charge_pointses.get(entity).copied(),
         );
-        if let (Some(health_points), Some(skill_points), Some(charge_points)) =
-            (health_points, skill_points, charge_points)
-        {
-            control_transition_requirements
-                .iter()
-                .all(|control_transition_requirement| {
-                    control_transition_requirement.is_met(
-                        health_points,
-                        skill_points,
-                        charge_points,
-                    )
-                })
-        } else {
-            false
-        }
+
+        control_transition_requirements
+            .iter()
+            .all(|control_transition_requirement| {
+                control_transition_requirement.is_met(health_points, skill_points, charge_points)
+            })
     }
 }
 

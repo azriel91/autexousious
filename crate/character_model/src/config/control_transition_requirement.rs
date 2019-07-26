@@ -17,15 +17,22 @@ impl ControlTransitionRequirement {
     /// Returns whether this requirement is met.
     pub fn is_met(
         self,
-        health_points: HealthPoints,
-        skill_points: SkillPoints,
-        charge_points: ChargePoints,
+        health_points: Option<HealthPoints>,
+        skill_points: Option<SkillPoints>,
+        charge_points: Option<ChargePoints>,
     ) -> bool {
         match self {
-            ControlTransitionRequirement::Hp(required) => health_points >= required,
-            ControlTransitionRequirement::Sp(required) => skill_points >= required,
-            ControlTransitionRequirement::Charge(required) => charge_points >= required,
+            ControlTransitionRequirement::Hp(required) => {
+                health_points.map(|points| points >= required)
+            }
+            ControlTransitionRequirement::Sp(required) => {
+                skill_points.map(|points| points >= required)
+            }
+            ControlTransitionRequirement::Charge(required) => {
+                charge_points.map(|points| points >= required)
+            }
         }
+        .unwrap_or(false)
     }
 }
 
@@ -38,22 +45,22 @@ mod tests {
     #[test]
     fn health_points_meets_requirement_when_greater_equal() {
         let requirement = ControlTransitionRequirement::Hp(HealthPoints::new(10));
-        let health_points = HealthPoints::new(10);
-        let skill_points = SkillPoints::new(0);
-        let charge_points = ChargePoints::new(0);
+        let health_points = Some(HealthPoints::new(10));
+        let skill_points = None;
+        let charge_points = None;
 
         assert!(requirement.is_met(health_points, skill_points, charge_points));
 
-        let health_points = HealthPoints::new(11);
+        let health_points = Some(HealthPoints::new(11));
         assert!(requirement.is_met(health_points, skill_points, charge_points));
     }
 
     #[test]
     fn health_points_does_not_meet_requirement_when_less_than() {
         let requirement = ControlTransitionRequirement::Hp(HealthPoints::new(10));
-        let health_points = HealthPoints::new(9);
-        let skill_points = SkillPoints::new(0);
-        let charge_points = ChargePoints::new(0);
+        let health_points = Some(HealthPoints::new(9));
+        let skill_points = None;
+        let charge_points = None;
 
         assert!(!requirement.is_met(health_points, skill_points, charge_points));
     }
@@ -61,22 +68,22 @@ mod tests {
     #[test]
     fn skill_points_meets_requirement_when_greater_equal() {
         let requirement = ControlTransitionRequirement::Sp(SkillPoints::new(10));
-        let health_points = HealthPoints::new(0);
-        let skill_points = SkillPoints::new(10);
-        let charge_points = ChargePoints::new(0);
+        let health_points = None;
+        let skill_points = Some(SkillPoints::new(10));
+        let charge_points = None;
 
         assert!(requirement.is_met(health_points, skill_points, charge_points));
 
-        let skill_points = SkillPoints::new(11);
+        let skill_points = Some(SkillPoints::new(11));
         assert!(requirement.is_met(health_points, skill_points, charge_points));
     }
 
     #[test]
     fn skill_points_does_not_meet_requirement_when_less_than() {
         let requirement = ControlTransitionRequirement::Sp(SkillPoints::new(10));
-        let health_points = HealthPoints::new(0);
-        let skill_points = SkillPoints::new(9);
-        let charge_points = ChargePoints::new(0);
+        let health_points = None;
+        let skill_points = Some(SkillPoints::new(9));
+        let charge_points = None;
 
         assert!(!requirement.is_met(health_points, skill_points, charge_points));
     }
@@ -84,22 +91,22 @@ mod tests {
     #[test]
     fn charge_points_meets_requirement_when_greater_equal() {
         let requirement = ControlTransitionRequirement::Charge(ChargePoints::new(10));
-        let health_points = HealthPoints::new(0);
-        let skill_points = SkillPoints::new(0);
-        let charge_points = ChargePoints::new(10);
+        let health_points = None;
+        let skill_points = None;
+        let charge_points = Some(ChargePoints::new(10));
 
         assert!(requirement.is_met(health_points, skill_points, charge_points));
 
-        let charge_points = ChargePoints::new(11);
+        let charge_points = Some(ChargePoints::new(11));
         assert!(requirement.is_met(health_points, skill_points, charge_points));
     }
 
     #[test]
     fn charge_points_does_not_meet_requirement_when_less_than() {
         let requirement = ControlTransitionRequirement::Charge(ChargePoints::new(10));
-        let health_points = HealthPoints::new(0);
-        let skill_points = SkillPoints::new(0);
-        let charge_points = ChargePoints::new(9);
+        let health_points = None;
+        let skill_points = None;
+        let charge_points = Some(ChargePoints::new(9));
 
         assert!(!requirement.is_met(health_points, skill_points, charge_points));
     }
