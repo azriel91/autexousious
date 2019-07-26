@@ -92,8 +92,8 @@ impl CharacterControlTransitionsTransitionSystem {
                 .iter()
                 .filter_map(|character_control_transition| {
                     let control_transition = *character_control_transition.control_transition();
-                    let control_transition_requirement =
-                        character_control_transition.control_transition_requirement;
+                    let control_transition_requirements =
+                        &character_control_transition.control_transition_requirements;
 
                     match control_transition {
                         ControlTransition::Press(ControlTransitionPress {
@@ -101,7 +101,7 @@ impl CharacterControlTransitionsTransitionSystem {
                             sequence_id,
                         }) => {
                             if value && control_action == action {
-                                Some((sequence_id, control_transition_requirement))
+                                Some((sequence_id, control_transition_requirements))
                             } else {
                                 None
                             }
@@ -111,30 +111,26 @@ impl CharacterControlTransitionsTransitionSystem {
                             sequence_id,
                         }) => {
                             if !value && control_action == action {
-                                Some((sequence_id, control_transition_requirement))
+                                Some((sequence_id, control_transition_requirements))
                             } else {
                                 None
                             }
                         }
                         ControlTransition::Hold(control_transition_hold) => {
                             Self::hold_transition(control_transition_hold, *controller_input)
-                                .map(|transition| (transition, control_transition_requirement))
+                                .map(|transition| (transition, control_transition_requirements))
                         }
                     }
                 })
-                .filter_map(|(sequence_id, control_transition_requirement)| {
-                    if let Some(control_transition_requirement) = control_transition_requirement {
-                        if Self::transition_requirement_met(
-                            control_transition_requirement_system_data,
-                            control_transition_requirement,
-                            entity,
-                        ) {
-                            Some(sequence_id)
-                        } else {
-                            None
-                        }
-                    } else {
+                .filter_map(|(sequence_id, control_transition_requirements)| {
+                    if Self::transition_requirements_met(
+                        control_transition_requirement_system_data,
+                        &control_transition_requirements,
+                        entity,
+                    ) {
                         Some(sequence_id)
+                    } else {
+                        None
                     }
                 })
                 .next();
@@ -179,33 +175,27 @@ impl CharacterControlTransitionsTransitionSystem {
                         .filter_map(|character_control_transition| {
                             let control_transition =
                                 character_control_transition.control_transition();
-                            let control_transition_requirement =
-                                character_control_transition.control_transition_requirement;
+                            let control_transition_requirements =
+                                &character_control_transition.control_transition_requirements;
 
                             if let ControlTransition::Hold(control_transition_hold) =
                                 control_transition
                             {
                                 Self::hold_transition(*control_transition_hold, *controller_input)
-                                    .map(|transition| (transition, control_transition_requirement))
+                                    .map(|transition| (transition, control_transition_requirements))
                             } else {
                                 None
                             }
                         })
-                        .filter_map(|(sequence_id, control_transition_requirement)| {
-                            if let Some(control_transition_requirement) =
-                                control_transition_requirement
-                            {
-                                if Self::transition_requirement_met(
-                                    control_transition_requirement_system_data,
-                                    control_transition_requirement,
-                                    entity,
-                                ) {
-                                    Some(sequence_id)
-                                } else {
-                                    None
-                                }
-                            } else {
+                        .filter_map(|(sequence_id, control_transition_requirements)| {
+                            if Self::transition_requirements_met(
+                                control_transition_requirement_system_data,
+                                &control_transition_requirements,
+                                entity,
+                            ) {
                                 Some(sequence_id)
+                            } else {
+                                None
                             }
                         })
                         .next();
@@ -264,17 +254,35 @@ impl CharacterControlTransitionsTransitionSystem {
         }
     } // kcov-ignore
 
-    fn transition_requirement_met(
+    fn transition_requirements_met(
         ControlTransitionRequirementSystemData {
-            health_pointses: _health_pointses,
-            skill_pointses: _skill_pointses,
-            charge_pointses: _charge_pointses,
+            health_pointses,
+            skill_pointses,
+            charge_pointses,
         }: &ControlTransitionRequirementSystemData,
-        _control_transition_requirement: ControlTransitionRequirement,
-        _entity: Entity,
+        control_transition_requirements: &[ControlTransitionRequirement],
+        entity: Entity,
     ) -> bool {
-        // TODO: Check if character meets requirement.
-        true
+        let (health_points, skill_points, charge_points) = (
+            health_pointses.get(entity).copied(),
+            skill_pointses.get(entity).copied(),
+            charge_pointses.get(entity).copied(),
+        );
+        if let (Some(health_points), Some(skill_points), Some(charge_points)) =
+            (health_points, skill_points, charge_points)
+        {
+            control_transition_requirements
+                .iter()
+                .all(|control_transition_requirement| {
+                    control_transition_requirement.is_met(
+                        health_points,
+                        skill_points,
+                        charge_points,
+                    )
+                })
+        } else {
+            false
+        }
     }
 }
 
@@ -346,6 +354,7 @@ mod tests {
     use character_model::{config::CharacterSequenceId, loaded::CharacterControlTransitionsHandle};
     use game_input::ControllerInput;
     use game_input_model::{ControlAction, ControlActionEventData, ControlInputEvent};
+    use object_model::play::{ChargePoints, HealthPoints, SkillPoints};
     use object_type::ObjectType;
 
     use super::CharacterControlTransitionsTransitionSystem;
@@ -450,10 +459,16 @@ mod tests {
                         mut character_sequence_ids,
                         mut character_control_transitions_handles,
                         mut controller_inputs,
+                        mut health_pointses,
+                        mut skill_pointses,
+                        mut charge_pointses,
                     ) = world.system_data::<(
                         WriteStorage<'_, CharacterSequenceId>,
                         WriteStorage<'_, CharacterControlTransitionsHandle>,
                         WriteStorage<'_, ControllerInput>,
+                        WriteStorage<'_, HealthPoints>,
+                        WriteStorage<'_, SkillPoints>,
+                        WriteStorage<'_, ChargePoints>,
                     )>();
 
                     character_sequence_ids
@@ -462,6 +477,15 @@ mod tests {
                     character_control_transitions_handles
                         .insert(entity, character_control_transitions_handle)
                         .expect("Failed to insert `CharacterControlTransitionsHandle` component.");
+                    health_pointses
+                        .insert(entity, HealthPoints::new(100))
+                        .expect("Failed to insert `HealthPoints` component.");
+                    skill_pointses
+                        .insert(entity, SkillPoints::new(100))
+                        .expect("Failed to insert `SkillPoints` component.");
+                    charge_pointses
+                        .insert(entity, ChargePoints::new(100))
+                        .expect("Failed to insert `ChargePoints` component.");
 
                     if let Some(setup_controller_input) = setup_controller_input {
                         controller_inputs

@@ -32,10 +32,7 @@ mod tests {
     use toml;
 
     use super::CharacterSequence;
-    use crate::config::{
-        CharacterControlTransitions, CharacterFrame, CharacterSequenceId,
-        ControlTransitionRequirement,
-    };
+    use crate::config::{CharacterControlTransitions, CharacterFrame, CharacterSequenceId};
 
     const SEQUENCE_WITH_FRAMES_EMPTY: &str = "frames = []";
     const SEQUENCE_WITH_CONTROL_TRANSITIONS: &str = r#"
@@ -75,7 +72,7 @@ mod tests {
                 )),
                 hold_jump: Some(ControlTransition::Single(ControlTransitionSingle {
                     next: CharacterSequenceId::Jump,
-                    extra: ControlTransitionRequirement::default(),
+                    requirements: vec![],
                 })),
                 ..Default::default()
             }, // kcov-ignore

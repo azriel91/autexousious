@@ -130,30 +130,23 @@ fn character_definition() -> CharacterDefinition {
                 vec![
                     ControlTransitionSingle {
                         next: CharacterSequenceId::Walk,
-                        extra: ControlTransitionRequirement {
-                            charge: ChargePoints::new(90),
-                            ..Default::default()
-                        },
+                        requirements: vec![ControlTransitionRequirement::Charge(
+                            ChargePoints::new(90),
+                        )],
                     },
                     ControlTransitionSingle {
                         next: CharacterSequenceId::Run,
-                        extra: ControlTransitionRequirement {
-                            sp: SkillPoints::new(50),
-                            ..Default::default()
-                        },
+                        requirements: vec![ControlTransitionRequirement::Sp(SkillPoints::new(50))],
                     },
                     ControlTransitionSingle {
                         next: CharacterSequenceId::RunStop,
-                        extra: ControlTransitionRequirement {
-                            hp: HealthPoints::new(30),
-                            ..Default::default()
-                        },
+                        requirements: vec![ControlTransitionRequirement::Hp(HealthPoints::new(30))],
                     },
                 ],
             ))),
             hold_jump: Some(ControlTransition::Single(ControlTransitionSingle {
                 next: CharacterSequenceId::Jump,
-                extra: ControlTransitionRequirement::default(),
+                requirements: vec![],
             })),
             ..Default::default()
         }, // kcov-ignore
@@ -208,44 +201,41 @@ fn expected_control_transitions() -> CharacterControlTransitions {
                 action: ControlAction::Attack,
                 sequence_id: CharacterSequenceId::StandAttack0,
             }),
-            control_transition_requirement: None,
+            control_transition_requirements: vec![],
         },
         CharacterControlTransition {
             control_transition: ControlTransition::Release(ControlTransitionRelease {
                 action: ControlAction::Attack,
                 sequence_id: CharacterSequenceId::Walk,
             }),
-            control_transition_requirement: Some(ControlTransitionRequirement {
-                charge: ChargePoints::new(90),
-                ..Default::default()
-            }),
+            control_transition_requirements: vec![ControlTransitionRequirement::Charge(
+                ChargePoints::new(90),
+            )],
         },
         CharacterControlTransition {
             control_transition: ControlTransition::Release(ControlTransitionRelease {
                 action: ControlAction::Attack,
                 sequence_id: CharacterSequenceId::Run,
             }),
-            control_transition_requirement: Some(ControlTransitionRequirement {
-                sp: SkillPoints::new(50),
-                ..Default::default()
-            }),
+            control_transition_requirements: vec![ControlTransitionRequirement::Sp(
+                SkillPoints::new(50),
+            )],
         },
         CharacterControlTransition {
             control_transition: ControlTransition::Release(ControlTransitionRelease {
                 action: ControlAction::Attack,
                 sequence_id: CharacterSequenceId::RunStop,
             }),
-            control_transition_requirement: Some(ControlTransitionRequirement {
-                hp: HealthPoints::new(30),
-                ..Default::default()
-            }),
+            control_transition_requirements: vec![ControlTransitionRequirement::Hp(
+                HealthPoints::new(30),
+            )],
         },
         CharacterControlTransition {
             control_transition: ControlTransition::Hold(ControlTransitionHold {
                 action: ControlAction::Jump,
                 sequence_id: CharacterSequenceId::Jump,
             }),
-            control_transition_requirement: None,
+            control_transition_requirements: vec![],
         },
     ]))
 }

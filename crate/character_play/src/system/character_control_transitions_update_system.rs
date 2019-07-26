@@ -257,14 +257,14 @@ mod tests {
                     ControlAction::Attack,
                     CharacterSequenceId::StandAttack0,
                 )),
-                None,
+                vec![],
             ),
             CharacterControlTransition::new(
                 ControlTransition::Press(ControlTransitionPress::new(
                     ControlAction::Jump,
                     CharacterSequenceId::Jump,
                 )),
-                None,
+                vec![],
             ),
         ]))
     }

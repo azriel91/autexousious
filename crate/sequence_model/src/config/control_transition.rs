@@ -9,9 +9,10 @@ use crate::config::{ControlTransitionMultiple, ControlTransitionSingle, Sequence
 /// configuration.
 #[derive(Clone, Debug, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
 #[serde(deny_unknown_fields, rename_all = "snake_case", untagged)]
-pub enum ControlTransition<SeqId, Extra>
+pub enum ControlTransition<SeqId, Req>
 where
     SeqId: SequenceId,
+    Req: Default,
 {
     /// Transition that only has a sequence ID.
     ///
@@ -24,7 +25,7 @@ where
     /// ```toml
     /// press_attack = { next = "seq_id", extra_0 = 0, extra_1 = "0" }
     /// ```
-    Single(ControlTransitionSingle<SeqId, Extra>),
+    Single(ControlTransitionSingle<SeqId, Req>),
     /// Multiple transitions with sequence ID and extra fields.
     ///
     /// ```toml
@@ -33,5 +34,5 @@ where
     ///   { next = "seq_id_1", extra_0 = 1, extra_1 = "1" },
     /// ]
     /// ```
-    Multiple(ControlTransitionMultiple<SeqId, Extra>),
+    Multiple(ControlTransitionMultiple<SeqId, Req>),
 }

@@ -5,7 +5,7 @@ use amethyst::{
     Error,
 };
 use character_model::{
-    config::{self, CharacterDefinition, CharacterSequence, ControlTransitionRequirement},
+    config::{self, CharacterDefinition, CharacterSequence},
     loaded::{
         self, Character, CharacterControlTransition, CharacterControlTransitionsSequence,
         CharacterControlTransitionsSequenceHandle, CharacterObjectWrapper,
@@ -109,30 +109,30 @@ impl CharacterLoader {
                                     action: ControlAction::$action,
                                     sequence_id: *sequence_id,
                                 }),
-                                None,
+                                vec![],
                             ));
                         }
                         Single(ControlTransitionSingle {
                             next: sequence_id,
-                            extra: control_transition_requirement,
+                            requirements: control_transition_requirements,
                         }) => loaded_transitions.push(CharacterControlTransition::new(
                             ControlTransition::$mode($mode_data {
                                 action: ControlAction::$action,
                                 sequence_id: *sequence_id,
                             }),
-                            Self::requirement_opt(*control_transition_requirement),
+                            control_transition_requirements.clone(),
                         )),
                         Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
                             |ControlTransitionSingle {
                                  next: sequence_id,
-                                 extra: control_transition_requirement,
+                                 requirements: control_transition_requirements,
                              }| {
                                 CharacterControlTransition::new(
                                     ControlTransition::$mode($mode_data {
                                         action: ControlAction::$action,
                                         sequence_id: *sequence_id,
                                     }),
-                                    Self::requirement_opt(*control_transition_requirement),
+                                    control_transition_requirements.clone(),
                                 )
                             },
                         )),
@@ -164,16 +164,5 @@ impl CharacterLoader {
             (),
             character_control_transitions_assets,
         )
-    }
-
-    #[inline]
-    fn requirement_opt(
-        requirement: ControlTransitionRequirement,
-    ) -> Option<ControlTransitionRequirement> {
-        if requirement.is_blank() {
-            None
-        } else {
-            Some(requirement)
-        }
     }
 }
