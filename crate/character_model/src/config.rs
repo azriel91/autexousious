@@ -43,6 +43,9 @@ mod test {
         [sequences.stand]
           next = "walk"
 
+          [sequences.stand.transitions]
+          press_defend = "stand_attack_1"
+
           [[sequences.stand.frames]]
             wait = 5
             sprite = { sheet = 1, index = 3 }
@@ -113,10 +116,20 @@ mod test {
                 ..Default::default()
             }, // kcov-ignore
         )];
-        let sequence = CharacterSequence::new(ObjectSequence::new(
-            SequenceEndTransition::SequenceId(CharacterSequenceId::Walk),
-            frames,
-        ));
+
+        let character_control_transitions = CharacterControlTransitions {
+            press_defend: Some(ControlTransition::SequenceId(
+                CharacterSequenceId::StandAttack1,
+            )),
+            ..Default::default()
+        };
+        let sequence = CharacterSequence::new(
+            ObjectSequence::new(
+                SequenceEndTransition::SequenceId(CharacterSequenceId::Walk),
+                frames,
+            ),
+            character_control_transitions,
+        );
         let mut sequences = HashMap::new();
         sequences.insert(CharacterSequenceId::Stand, sequence);
         let object_definition = ObjectDefinition::new(sequences);

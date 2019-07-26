@@ -2,7 +2,7 @@ use derive_new::new;
 use object_model::config::{GameObjectSequence, ObjectSequence};
 use serde::{Deserialize, Serialize};
 
-use crate::config::{CharacterFrame, CharacterSequenceId};
+use crate::config::{CharacterControlTransitions, CharacterFrame, CharacterSequenceId};
 
 /// Represents an independent action sequence of a character.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
@@ -11,6 +11,11 @@ pub struct CharacterSequence {
     /// Object sequence for common object fields.
     #[serde(flatten)]
     pub object_sequence: ObjectSequence<CharacterSequenceId, CharacterFrame>,
+    /// Sequence ID to transition to when a `ControlAction` is pressed, held, or released.
+    ///
+    /// This is shared by all frames in the sequence, unless overridden.
+    #[serde(default)]
+    pub transitions: CharacterControlTransitions,
 }
 
 impl GameObjectSequence for CharacterSequence {
@@ -36,6 +41,9 @@ mod tests {
 
     const SEQUENCE_WITH_FRAMES_EMPTY: &str = "frames = []";
     const SEQUENCE_WITH_CONTROL_TRANSITIONS: &str = r#"
+        [transitions]
+        press_defend = "stand_attack_1"
+
         [[frames]]
         wait = 2
         sprite = { sheet = 0, index = 4 }
@@ -50,8 +58,10 @@ mod tests {
         let sequence = toml::from_str::<CharacterSequence>(SEQUENCE_WITH_FRAMES_EMPTY)
             .expect("Failed to deserialize sequence.");
 
-        let expected =
-            CharacterSequence::new(ObjectSequence::new(SequenceEndTransition::None, vec![]));
+        let expected = CharacterSequence::new(
+            ObjectSequence::new(SequenceEndTransition::None, vec![]),
+            CharacterControlTransitions::default(),
+        );
         assert_eq!(expected, sequence);
     }
 
@@ -77,8 +87,16 @@ mod tests {
                 ..Default::default()
             }, // kcov-ignore
         )];
-        let expected =
-            CharacterSequence::new(ObjectSequence::new(SequenceEndTransition::None, frames));
+        let character_control_transitions = CharacterControlTransitions {
+            press_defend: Some(ControlTransition::SequenceId(
+                CharacterSequenceId::StandAttack1,
+            )),
+            ..Default::default()
+        };
+        let expected = CharacterSequence::new(
+            ObjectSequence::new(SequenceEndTransition::None, frames),
+            character_control_transitions,
+        );
 
         assert_eq!(expected, sequence);
     }
