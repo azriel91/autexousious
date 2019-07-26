@@ -151,10 +151,13 @@ fn character_definition() -> CharacterDefinition {
             ..Default::default()
         }, // kcov-ignore
     )];
-    let sequence = CharacterSequence::new(ObjectSequence::new(
-        SequenceEndTransition::SequenceId(CharacterSequenceId::Stand),
-        frames,
-    ));
+    let sequence = CharacterSequence::new(
+        ObjectSequence::new(
+            SequenceEndTransition::SequenceId(CharacterSequenceId::Stand),
+            frames,
+        ),
+        CharacterControlTransitions::default(),
+    );
     let mut sequences = HashMap::new();
     sequences.insert(CharacterSequenceId::Stand, sequence);
     let object_definition = ObjectDefinition::new(sequences);
