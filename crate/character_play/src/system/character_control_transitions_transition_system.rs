@@ -259,20 +259,30 @@ impl CharacterControlTransitionsTransitionSystem {
             health_pointses,
             skill_pointses,
             charge_pointses,
+            mirroreds,
+            controller_inputs,
         }: &ControlTransitionRequirementSystemData,
         control_transition_requirements: &[ControlTransitionRequirement],
         entity: Entity,
     ) -> bool {
-        let (health_points, skill_points, charge_points) = (
+        let (health_points, skill_points, charge_points, mirrored, controller_input) = (
             health_pointses.get(entity).copied(),
             skill_pointses.get(entity).copied(),
             charge_pointses.get(entity).copied(),
+            mirroreds.get(entity).copied(),
+            controller_inputs.get(entity).copied(),
         );
 
         control_transition_requirements
             .iter()
             .all(|control_transition_requirement| {
-                control_transition_requirement.is_met(health_points, skill_points, charge_points)
+                control_transition_requirement.is_met(
+                    health_points,
+                    skill_points,
+                    charge_points,
+                    mirrored,
+                    controller_input,
+                )
             })
     }
 }
@@ -343,10 +353,12 @@ mod tests {
     use application_test_support::{AutexousiousApplication, ObjectQueries, SequenceQueries};
     use assets_test::CHAR_BAT_SLUG;
     use character_model::{config::CharacterSequenceId, loaded::CharacterControlTransitionsHandle};
+    use derivative::Derivative;
     use game_input::ControllerInput;
     use game_input_model::{ControlAction, ControlActionEventData, ControlInputEvent};
-    use object_model::play::{ChargePoints, HealthPoints, SkillPoints};
+    use object_model::play::{ChargePoints, HealthPoints, Mirrored, SkillPoints};
     use object_type::ObjectType;
+    use shred_derive::SystemData;
 
     use super::CharacterControlTransitionsTransitionSystem;
 
@@ -386,6 +398,7 @@ mod tests {
     fn inserts_transition_for_hold() -> Result<(), Error> {
         let mut controller_input = ControllerInput::default();
         controller_input.defend = true;
+        controller_input.x_axis_value = 1.;
 
         run_test(
             CharacterSequenceId::Stand,
@@ -446,21 +459,15 @@ mod tests {
                         0,
                     );
                 {
-                    let (
+                    let TestSystemData {
                         mut character_sequence_ids,
                         mut character_control_transitions_handles,
-                        mut controller_inputs,
                         mut health_pointses,
                         mut skill_pointses,
                         mut charge_pointses,
-                    ) = world.system_data::<(
-                        WriteStorage<'_, CharacterSequenceId>,
-                        WriteStorage<'_, CharacterControlTransitionsHandle>,
-                        WriteStorage<'_, ControllerInput>,
-                        WriteStorage<'_, HealthPoints>,
-                        WriteStorage<'_, SkillPoints>,
-                        WriteStorage<'_, ChargePoints>,
-                    )>();
+                        mut mirroreds,
+                        mut controller_inputs,
+                    } = world.system_data::<TestSystemData>();
 
                     character_sequence_ids
                         .insert(entity, setup_sequence_id)
@@ -477,6 +484,9 @@ mod tests {
                     charge_pointses
                         .insert(entity, ChargePoints::new(100))
                         .expect("Failed to insert `ChargePoints` component.");
+                    mirroreds
+                        .insert(entity, Mirrored::new(false))
+                        .expect("Failed to insert `Mirrored` component.");
 
                     if let Some(setup_controller_input) = setup_controller_input {
                         controller_inputs
@@ -508,4 +518,23 @@ mod tests {
         let mut ec = world.write_resource::<EventChannel<ControlInputEvent>>();
         ec.single_write(event);
     } // kcov-ignore
+
+    #[derive(Derivative, SystemData)]
+    #[derivative(Debug)]
+    struct TestSystemData<'s> {
+        #[derivative(Debug = "ignore")]
+        character_sequence_ids: WriteStorage<'s, CharacterSequenceId>,
+        #[derivative(Debug = "ignore")]
+        character_control_transitions_handles: WriteStorage<'s, CharacterControlTransitionsHandle>,
+        #[derivative(Debug = "ignore")]
+        health_pointses: WriteStorage<'s, HealthPoints>,
+        #[derivative(Debug = "ignore")]
+        skill_pointses: WriteStorage<'s, SkillPoints>,
+        #[derivative(Debug = "ignore")]
+        charge_pointses: WriteStorage<'s, ChargePoints>,
+        #[derivative(Debug = "ignore")]
+        mirroreds: WriteStorage<'s, Mirrored>,
+        #[derivative(Debug = "ignore")]
+        controller_inputs: WriteStorage<'s, ControllerInput>,
+    }
 }

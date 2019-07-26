@@ -12,7 +12,7 @@
       press_attack = "stand_attack_0"
       press_jump = "jump"
       hold_jump = { next = "dash_forward", requirements = [{ sp = 10 }] }
-      hold_defend = "flinch_0"
+      hold_defend = { next = "flinch_0", requirements = [{ input_direction = true }] }
       release_special = [{ next = "dash_back", requirements = [{ charge = 10 }] }]
 
 [sequences.stand_attack_0]
