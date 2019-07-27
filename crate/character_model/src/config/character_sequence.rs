@@ -15,7 +15,7 @@ pub struct CharacterSequence {
     ///
     /// This is shared by all frames in the sequence, unless overridden.
     #[serde(default)]
-    pub transitions: CharacterControlTransitions,
+    pub transitions: Option<CharacterControlTransitions>,
 }
 
 impl GameObjectSequence for CharacterSequence {
@@ -60,7 +60,7 @@ mod tests {
 
         let expected = CharacterSequence::new(
             ObjectSequence::new(SequenceEndTransition::None, vec![]),
-            CharacterControlTransitions::default(),
+            None,
         );
         assert_eq!(expected, sequence);
     }
@@ -95,7 +95,7 @@ mod tests {
         };
         let expected = CharacterSequence::new(
             ObjectSequence::new(SequenceEndTransition::None, frames),
-            character_control_transitions,
+            Some(character_control_transitions),
         );
 
         assert_eq!(expected, sequence);

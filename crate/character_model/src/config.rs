@@ -128,7 +128,7 @@ mod test {
                 SequenceEndTransition::SequenceId(CharacterSequenceId::Walk),
                 frames,
             ),
-            character_control_transitions,
+            Some(character_control_transitions),
         );
         let mut sequences = HashMap::new();
         sequences.insert(CharacterSequenceId::Stand, sequence);

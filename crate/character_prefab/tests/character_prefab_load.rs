@@ -156,7 +156,7 @@ fn character_definition() -> CharacterDefinition {
             SequenceEndTransition::SequenceId(CharacterSequenceId::Stand),
             frames,
         ),
-        CharacterControlTransitions::default(),
+        None,
     );
     let mut sequences = HashMap::new();
     sequences.insert(CharacterSequenceId::Stand, sequence);
@@ -199,6 +199,13 @@ type TestSystemData<'s> = (
 
 fn expected_control_transitions() -> CharacterControlTransitions {
     CharacterControlTransitions::new(ControlTransitions::new(vec![
+        CharacterControlTransition {
+            control_transition: ControlTransition::Press(ControlTransitionPress {
+                action: ControlAction::Jump,
+                sequence_id: CharacterSequenceId::Jump,
+            }),
+            control_transition_requirements: vec![],
+        },
         CharacterControlTransition {
             control_transition: ControlTransition::Press(ControlTransitionPress {
                 action: ControlAction::Attack,

@@ -1,0 +1,22 @@
+# Used in `CharacterLoader` test.
+[transitions]
+  # need to copy from character_transitions_default, as TOML doesn't support overriding to `None`.
+  press_attack = "stand_attack_0"
+  hold_jump = "jump"
+  hold_special = "dash_forward"
+
+[[frames]]
+  [frames.transitions]
+    # override sequence
+    press_attack = "stand_attack_1"
+    # override sequence
+    hold_jump = { next = "jump_off", requirements = [{ charge = 90 }, { sp = 50 }] }
+
+    release_attack = [
+      { next = "walk", requirements = [{ charge = 90 }] },
+      { next = "run", requirements = [{ sp = 50 }] },
+      { next = "run_stop", requirements = [{ hp = 30 }] },
+    ]
+
+[[frames]]
+  # hold_jump = "jump" # from sequence

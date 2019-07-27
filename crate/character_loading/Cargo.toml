@@ -11,9 +11,11 @@ derivative = "1.0.2"
 derive-new = "0.5.6"
 derive_deref = "1.1.0"
 game_input_model = { path = "../game_input_model" }
+lazy_static = "1.3.0"
 object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
 sequence_model = { path = "../sequence_model" }
+toml = "0.5.1"
 typename = "0.1.1"
 typename_derive = "0.1.3"
 

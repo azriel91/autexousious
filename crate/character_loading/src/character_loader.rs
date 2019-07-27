@@ -12,6 +12,7 @@ use character_model::{
     },
 };
 use game_input_model::ControlAction;
+use lazy_static::lazy_static;
 use object_model::config::GameObjectSequence;
 use sequence_model::{
     config::ControlTransitionSingle,
@@ -22,6 +23,14 @@ use sequence_model::{
 };
 
 use crate::CharacterLoaderParams;
+
+lazy_static! {
+    static ref CHARACTER_TRANSITIONS_DEFAULT: CharacterDefinition = {
+        let definition_toml = include_str!("character_transitions_default.toml");
+        toml::from_str::<CharacterDefinition>(definition_toml)
+            .expect("Failed to deserialize `character_transitions_default.toml`.")
+    };
+}
 
 /// Loads assets specified by character configuration into the loaded character model.
 #[derive(Debug)]
@@ -45,10 +54,16 @@ impl CharacterLoader {
             .sequences
             .iter()
             .map(|(sequence_id, sequence)| {
-                (
-                    *sequence_id,
-                    Self::control_transitions_sequence_handle(&character_loader_params, sequence),
-                )
+                let sequence_default = CHARACTER_TRANSITIONS_DEFAULT
+                    .object_definition
+                    .sequences
+                    .get(sequence_id);
+                let control_transitions_sequence_handle = Self::control_transitions_sequence_handle(
+                    &character_loader_params,
+                    sequence_default,
+                    sequence,
+                );
+                (*sequence_id, control_transitions_sequence_handle)
             })
             .collect::<HashMap<_, _>>();
 
@@ -65,6 +80,7 @@ impl CharacterLoader {
             character_control_transitions_assets,
             character_control_transitions_sequence_assets,
         }: &CharacterLoaderParams,
+        sequence_default: Option<&CharacterSequence>,
         sequence: &CharacterSequence,
     ) -> CharacterControlTransitionsSequenceHandle {
         let control_transitions_sequence = sequence
@@ -72,10 +88,13 @@ impl CharacterLoader {
             .frames
             .iter()
             .map(|frame| {
+                let config_transitions_default =
+                    sequence_default.and_then(|sequence| sequence.transitions.as_ref());
                 Self::config_to_loaded_transitions_handle(
                     loader,
                     character_control_transitions_assets,
-                    &sequence.transitions,
+                    config_transitions_default,
+                    sequence.transitions.as_ref(),
                     &frame.transitions,
                 )
             })
@@ -95,17 +114,24 @@ impl CharacterLoader {
     fn config_to_loaded_transitions_handle(
         loader: &Loader,
         character_control_transitions_assets: &AssetStorage<loaded::CharacterControlTransitions>,
-        config_transitions_sequence: &config::CharacterControlTransitions,
+        config_transitions_default: Option<&config::CharacterControlTransitions>,
+        config_transitions_sequence: Option<&config::CharacterControlTransitions>,
         config_transitions_frame: &config::CharacterControlTransitions,
     ) -> loaded::CharacterControlTransitionsHandle {
         let mut loaded_transitions = Vec::new();
 
         macro_rules! push_transitions {
             ($mode_action:ident, $mode:ident, $mode_data:ident, $action:ident) => {
-                let mode_action = config_transitions_frame
-                    .$mode_action
-                    .as_ref()
-                    .or(config_transitions_sequence.$mode_action.as_ref());
+                let mode_action = config_transitions_frame.$mode_action.as_ref().or_else(|| {
+                    // We want to make sure that, if `config_transitions_sequence.is_some()`, but
+                    // the transition inside is `None`, we still fallback to `None`. This allows
+                    // a sequence transition `None` value to override the default transition.
+                    config_transitions_sequence
+                        .or(config_transitions_default)
+                        .and_then(|config_transitions_fallback| {
+                            config_transitions_fallback.$mode_action.as_ref()
+                        })
+                });
                 if let Some(config_control_transition) = &mode_action {
                     use sequence_model::config::ControlTransition::*;
                     match config_control_transition {
@@ -191,31 +217,69 @@ mod tests {
         },
     };
     use game_input_model::ControlAction;
-    use object_model::{
-        config::{ObjectFrame, ObjectSequence},
-        play::{ChargePoints, HealthPoints, SkillPoints},
-    };
+    use object_model::play::{ChargePoints, HealthPoints, SkillPoints};
     use pretty_assertions::assert_eq;
     use sequence_loading::SequenceLoadingBundle;
-    use sequence_model::{
-        config::SequenceEndTransition,
-        loaded::{
-            ControlTransition, ControlTransitionHold, ControlTransitionPress,
-            ControlTransitionRelease, ControlTransitions,
-        },
+    use sequence_model::loaded::{
+        ControlTransition, ControlTransitionHold, ControlTransitionPress, ControlTransitionRelease,
+        ControlTransitions,
     };
 
-    use super::CharacterLoader;
+    use super::{CharacterLoader, CHARACTER_TRANSITIONS_DEFAULT};
     use crate::{CharacterLoaderParams, CharacterLoadingBundle};
 
     #[test]
     fn loads_control_transitions_sequences() -> Result<(), Error> {
+        let sequence_default = CHARACTER_TRANSITIONS_DEFAULT
+            .object_definition
+            .sequences
+            .get(&CharacterSequenceId::Stand);
+
+        run_test(
+            test_character_sequence(),
+            sequence_default,
+            |character_control_transitions_sequence, character_control_transitions_assets| {
+                let expected_character_control_transitions = expected_control_transitions_0();
+                let character_control_transitions_handle = character_control_transitions_sequence
+                    .get(0)
+                    .expect("Expected `CharacterControlTransitionsHandle` to exist.");
+                let character_control_transitions = character_control_transitions_assets
+                    .get(character_control_transitions_handle)
+                    .expect("Expected `CharacterControlTransitions` to be loaded.");
+                assert_eq!(
+                    &expected_character_control_transitions,
+                    character_control_transitions
+                );
+
+                let expected_character_control_transitions = expected_control_transitions_1();
+                let character_control_transitions_handle = character_control_transitions_sequence
+                    .get(1)
+                    .expect("Expected `CharacterControlTransitionsHandle` to exist.");
+                let character_control_transitions = character_control_transitions_assets
+                    .get(character_control_transitions_handle)
+                    .expect("Expected `CharacterControlTransitions` to be loaded.");
+                assert_eq!(
+                    &expected_character_control_transitions,
+                    character_control_transitions
+                );
+            },
+        )
+    }
+
+    fn run_test(
+        sequence: CharacterSequence,
+        sequence_default: Option<&'static CharacterSequence>,
+        assertion_fn: fn(
+            &CharacterControlTransitionsSequence,
+            &AssetStorage<CharacterControlTransitions>,
+        ),
+    ) -> Result<(), Error> {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
-            .with_setup(|world| {
+            .with_setup(move |world| {
                 let character_cts_handle = {
                     let (
                         loader,
@@ -228,23 +292,23 @@ mod tests {
                         character_control_transitions_sequence_assets:
                             &character_control_transitions_sequence_assets,
                     };
-                    let character_sequence = character_sequence();
 
                     CharacterLoader::control_transitions_sequence_handle(
                         &character_loader_params,
-                        &character_sequence,
+                        sequence_default,
+                        &sequence,
                     )
                 };
                 world.add_resource(character_cts_handle);
             })
             .with_setup(|_world| {}) // Allow texture to load.
-            .with_assertion(|world| {
+            .with_assertion(move |world| {
                 let character_cts_handle = world
                     .read_resource::<CharacterControlTransitionsSequenceHandle>()
                     .clone();
                 let character_control_transitions_sequence_assets =
                     world.read_resource::<AssetStorage<CharacterControlTransitionsSequence>>();
-                let character_control_transitions_sequences =
+                let character_control_transitions_sequence =
                     character_control_transitions_sequence_assets
                         .get(&character_cts_handle)
                         .expect("Expected `CharacterControlTransitionsSequence` to be loaded.");
@@ -253,99 +317,18 @@ mod tests {
                 let character_control_transitions_assets =
                     world.read_resource::<AssetStorage<CharacterControlTransitions>>();
 
-                let expected_character_control_transitions = expected_control_transitions_0();
-                let character_control_transitions_handle = character_control_transitions_sequences
-                    .get(0)
-                    .expect("Expected `CharacterControlTransitionsHandle` to exist.");
-                let character_control_transitions = character_control_transitions_assets
-                    .get(character_control_transitions_handle)
-                    .expect("Expected `CharacterControlTransitions` to be loaded.");
-                assert_eq!(
-                    &expected_character_control_transitions,
-                    character_control_transitions
-                );
-
-                let expected_character_control_transitions = expected_control_transitions_1();
-                let character_control_transitions_handle = character_control_transitions_sequences
-                    .get(1)
-                    .expect("Expected `CharacterControlTransitionsHandle` to exist.");
-                let character_control_transitions = character_control_transitions_assets
-                    .get(character_control_transitions_handle)
-                    .expect("Expected `CharacterControlTransitions` to be loaded.");
-                assert_eq!(
-                    &expected_character_control_transitions,
-                    character_control_transitions
+                assertion_fn(
+                    character_control_transitions_sequence,
+                    &character_control_transitions_assets,
                 );
             })
             .run_isolated()
     }
 
-    fn character_sequence() -> CharacterSequence {
-        use character_model::config::{CharacterControlTransitions, CharacterFrame};
-        use sequence_model::config::{
-            ControlTransition, ControlTransitionMultiple, ControlTransitionSingle, Wait,
-        };
-
-        let frames = vec![
-            CharacterFrame::new(
-                ObjectFrame {
-                    wait: Wait::new(5),
-                    ..Default::default()
-                },
-                CharacterControlTransitions {
-                    press_attack: Some(ControlTransition::SequenceId(
-                        CharacterSequenceId::StandAttack0,
-                    )),
-                    release_attack: Some(ControlTransition::Multiple(
-                        ControlTransitionMultiple::new(vec![
-                            ControlTransitionSingle {
-                                next: CharacterSequenceId::Walk,
-                                requirements: vec![ControlTransitionRequirement::Charge(
-                                    ChargePoints::new(90),
-                                )],
-                            },
-                            ControlTransitionSingle {
-                                next: CharacterSequenceId::Run,
-                                requirements: vec![ControlTransitionRequirement::Sp(
-                                    SkillPoints::new(50),
-                                )],
-                            },
-                            ControlTransitionSingle {
-                                next: CharacterSequenceId::RunStop,
-                                requirements: vec![ControlTransitionRequirement::Hp(
-                                    HealthPoints::new(30),
-                                )],
-                            },
-                        ]),
-                    )),
-                    hold_jump: Some(ControlTransition::Single(ControlTransitionSingle {
-                        next: CharacterSequenceId::Jump,
-                        requirements: vec![],
-                    })),
-                    ..Default::default()
-                }, // kcov-ignore
-            ),
-            CharacterFrame::new(
-                ObjectFrame::default(),
-                CharacterControlTransitions::default(),
-            ),
-        ];
-
-        CharacterSequence::new(
-            ObjectSequence::new(
-                SequenceEndTransition::SequenceId(CharacterSequenceId::Stand),
-                frames,
-            ),
-            CharacterControlTransitions {
-                press_attack: Some(ControlTransition::SequenceId(
-                    CharacterSequenceId::StandAttack1,
-                )),
-                hold_special: Some(ControlTransition::SequenceId(
-                    CharacterSequenceId::DashForward,
-                )),
-                ..Default::default()
-            }, // kcov-ignore
-        )
+    fn test_character_sequence() -> CharacterSequence {
+        let character_sequence_toml = include_str!("test_character_sequence.toml");
+        toml::from_str::<CharacterSequence>(character_sequence_toml)
+            .expect("Failed to load `test_character_sequence.toml`.")
     }
 
     // Should overwrite and inherit sequence transitions.
@@ -354,7 +337,7 @@ mod tests {
             CharacterControlTransition {
                 control_transition: ControlTransition::Press(ControlTransitionPress {
                     action: ControlAction::Attack,
-                    sequence_id: CharacterSequenceId::StandAttack0,
+                    sequence_id: CharacterSequenceId::StandAttack1,
                 }),
                 control_transition_requirements: vec![],
             },
@@ -388,9 +371,12 @@ mod tests {
             CharacterControlTransition {
                 control_transition: ControlTransition::Hold(ControlTransitionHold {
                     action: ControlAction::Jump,
-                    sequence_id: CharacterSequenceId::Jump,
+                    sequence_id: CharacterSequenceId::JumpOff,
                 }),
-                control_transition_requirements: vec![],
+                control_transition_requirements: vec![
+                    ControlTransitionRequirement::Charge(ChargePoints::new(90)),
+                    ControlTransitionRequirement::Sp(SkillPoints::new(50)),
+                ],
             },
             CharacterControlTransition {
                 control_transition: ControlTransition::Hold(ControlTransitionHold {
@@ -408,7 +394,14 @@ mod tests {
             CharacterControlTransition {
                 control_transition: ControlTransition::Press(ControlTransitionPress {
                     action: ControlAction::Attack,
-                    sequence_id: CharacterSequenceId::StandAttack1,
+                    sequence_id: CharacterSequenceId::StandAttack0,
+                }),
+                control_transition_requirements: vec![],
+            },
+            CharacterControlTransition {
+                control_transition: ControlTransition::Hold(ControlTransitionHold {
+                    action: ControlAction::Jump,
+                    sequence_id: CharacterSequenceId::Jump,
                 }),
                 control_transition_requirements: vec![],
             },
