@@ -6,7 +6,7 @@ use specs_derive::Component;
 use crate::config::{CharacterSequenceId, ControlTransitionRequirement};
 
 /// Sequence to transition to on control input with requirements.
-#[derive(Clone, Component, Debug, PartialEq, Eq, new)]
+#[derive(Clone, Component, Debug, PartialEq, new)]
 #[storage(VecStorage)]
 pub struct CharacterControlTransition {
     /// Underlying `ControlTransition`.

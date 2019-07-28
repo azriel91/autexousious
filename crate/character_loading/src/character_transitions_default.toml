@@ -44,7 +44,7 @@
   [sequences.jump_descend_land.transitions]
     press_defend = "dodge"
     press_jump = [
-      { next = "dash_forward", requirements = [{ input_direction = true }] },
+      { next = "dash_forward", requirements = [{ input = "same" }] },
       { next = "dash_back" },
     ]
   [[sequences.jump_descend_land.frames]]

@@ -259,18 +259,18 @@ impl CharacterControlTransitionsTransitionSystem {
             health_pointses,
             skill_pointses,
             charge_pointses,
-            mirroreds,
             controller_inputs,
+            mirroreds,
         }: &ControlTransitionRequirementSystemData,
         control_transition_requirements: &[ControlTransitionRequirement],
         entity: Entity,
     ) -> bool {
-        let (health_points, skill_points, charge_points, mirrored, controller_input) = (
+        let (health_points, skill_points, charge_points, controller_input, mirrored) = (
             health_pointses.get(entity).copied(),
             skill_pointses.get(entity).copied(),
             charge_pointses.get(entity).copied(),
-            mirroreds.get(entity).copied(),
             controller_inputs.get(entity).copied(),
+            mirroreds.get(entity).copied(),
         );
 
         control_transition_requirements
@@ -280,8 +280,8 @@ impl CharacterControlTransitionsTransitionSystem {
                     health_points,
                     skill_points,
                     charge_points,
-                    mirrored,
                     controller_input,
+                    mirrored,
                 )
             })
     }

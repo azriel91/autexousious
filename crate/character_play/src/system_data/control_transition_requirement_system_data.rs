@@ -17,10 +17,10 @@ pub struct ControlTransitionRequirementSystemData<'s> {
     /// `ChargePoints` components.
     #[derivative(Debug = "ignore")]
     pub charge_pointses: ReadStorage<'s, ChargePoints>,
-    /// `Mirrored` components.
-    #[derivative(Debug = "ignore")]
-    pub mirroreds: ReadStorage<'s, Mirrored>,
     /// `ControllerInput` components.
     #[derivative(Debug = "ignore")]
     pub controller_inputs: ReadStorage<'s, ControllerInput>,
+    /// `Mirrored` components.
+    #[derivative(Debug = "ignore")]
+    pub mirroreds: ReadStorage<'s, Mirrored>,
 }
