@@ -1,8 +1,8 @@
 [sequences.stand]
+  [[sequences.stand.frames]]
   [sequences.stand.transitions]
     press_attack = "stand_attack_0"
     press_jump = "jump"
-  [[sequences.stand.frames]]
 
 [sequences.stand_attack_0]
   [[sequences.stand_attack_0.frames]]
@@ -10,16 +10,16 @@
   [[sequences.stand_attack_1.frames]]
 
 [sequences.walk]
+  [[sequences.walk.frames]]
   [sequences.walk.transitions]
     press_attack = "stand_attack_0"
     press_jump = "jump"
-  [[sequences.walk.frames]]
 
 [sequences.run]
+  [[sequences.run.frames]]
   [sequences.run.transitions]
     press_jump = "dash_forward"
     press_defend = "dodge"
-  [[sequences.run.frames]]
 
 [sequences.run_stop]
   [[sequences.run_stop.frames]]
@@ -31,40 +31,38 @@
   [[sequences.jump_off.frames]]
 
 [sequences.jump_ascend]
+  [[sequences.jump_ascend.frames]]
   [sequences.jump_ascend.transitions]
     hold_attack = "jump_attack"
-  [[sequences.jump_ascend.frames]]
 
 [sequences.jump_descend]
+  [[sequences.jump_descend.frames]]
   [sequences.jump_descend.transitions]
     hold_attack = "jump_attack"
-  [[sequences.jump_descend.frames]]
 
 [sequences.jump_descend_land]
+  [[sequences.jump_descend_land.frames]]
   [sequences.jump_descend_land.transitions]
     press_defend = "dodge"
     press_jump = [
       { next = "dash_forward", requirements = [{ input = "same" }] },
       { next = "dash_back" },
     ]
-  [[sequences.jump_descend_land.frames]]
 
 [sequences.dash_forward]
   [[sequences.dash_forward.frames]]
-    wait = 1
-    sprite = { sheet = 0, index = 16 }
-    body = [{ box = { x = 27, y = 10, w = 31, h = 60 } }]
-    transitions = { press_attack = "dash_attack" }
+  [sequences.dash_forward.transitions]
+    press_attack = "dash_attack"
 
 [sequences.dash_forward_ascend]
+  [[sequences.dash_forward_ascend.frames]]
   [sequences.dash_forward_ascend.transitions]
     press_attack = "dash_attack"
-  [[sequences.dash_forward_ascend.frames]]
 
 [sequences.dash_forward_descend]
+  [[sequences.dash_forward_descend.frames]]
   [sequences.dash_forward_descend.transitions]
     press_attack = "dash_attack"
-  [[sequences.dash_forward_descend.frames]]
 
 [sequences.dash_back]
   [[sequences.dash_back.frames]]
