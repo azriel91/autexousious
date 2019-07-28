@@ -17,8 +17,8 @@ use object_model::config::GameObjectSequence;
 use sequence_model::{
     config::ControlTransitionSingle,
     loaded::{
-        ControlTransition, ControlTransitionHold, ControlTransitionPress, ControlTransitionRelease,
-        ControlTransitions,
+        ControlTransition, ControlTransitionDefault, ControlTransitionHold, ControlTransitionPress,
+        ControlTransitionRelease, ControlTransitions,
     },
 };
 
@@ -171,6 +171,54 @@ impl CharacterLoader {
                     }
                 }
             };
+
+            ($mode_action:ident, $mode:ident, $mode_data:ident) => {
+                let mode_action = config_transitions_frame.$mode_action.as_ref().or_else(|| {
+                    // We want to make sure that, if `config_transitions_sequence.is_some()`, but
+                    // the transition inside is `None`, we still fallback to `None`. This allows
+                    // a sequence transition `None` value to override the default transition.
+                    config_transitions_sequence
+                        .or(config_transitions_default)
+                        .and_then(|config_transitions_fallback| {
+                            config_transitions_fallback.$mode_action.as_ref()
+                        })
+                });
+                if let Some(config_control_transition) = &mode_action {
+                    use sequence_model::config::ControlTransition::*;
+                    match config_control_transition {
+                        SequenceId(sequence_id) => {
+                            loaded_transitions.push(CharacterControlTransition::new(
+                                ControlTransition::$mode($mode_data {
+                                    sequence_id: *sequence_id,
+                                }),
+                                vec![],
+                            ));
+                        }
+                        Single(ControlTransitionSingle {
+                            next: sequence_id,
+                            requirements: control_transition_requirements,
+                        }) => loaded_transitions.push(CharacterControlTransition::new(
+                            ControlTransition::$mode($mode_data {
+                                sequence_id: *sequence_id,
+                            }),
+                            control_transition_requirements.clone(),
+                        )),
+                        Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
+                            |ControlTransitionSingle {
+                                 next: sequence_id,
+                                 requirements: control_transition_requirements,
+                             }| {
+                                CharacterControlTransition::new(
+                                    ControlTransition::$mode($mode_data {
+                                        sequence_id: *sequence_id,
+                                    }),
+                                    control_transition_requirements.clone(),
+                                )
+                            },
+                        )),
+                    }
+                }
+            };
         }
 
         push_transitions!(press_defend, Press, ControlTransitionPress, Defend);
@@ -187,6 +235,9 @@ impl CharacterLoader {
         push_transitions!(hold_jump, Hold, ControlTransitionHold, Jump);
         push_transitions!(hold_attack, Hold, ControlTransitionHold, Attack);
         push_transitions!(hold_special, Hold, ControlTransitionHold, Special);
+
+        // Fallback transition.
+        push_transitions!(default, Default, ControlTransitionDefault);
 
         let character_control_transitions =
             loaded::CharacterControlTransitions::new(ControlTransitions::new(loaded_transitions));
@@ -223,13 +274,13 @@ mod tests {
             CharacterControlTransitionsSequence, CharacterControlTransitionsSequenceHandle,
         },
     };
-    use game_input_model::ControlAction;
+    use game_input_model::{config::InputDirection, ControlAction};
     use object_model::play::{ChargePoints, HealthPoints, SkillPoints};
     use pretty_assertions::assert_eq;
     use sequence_loading::SequenceLoadingBundle;
     use sequence_model::loaded::{
-        ControlTransition, ControlTransitionHold, ControlTransitionPress, ControlTransitionRelease,
-        ControlTransitions,
+        ControlTransition, ControlTransitionDefault, ControlTransitionHold, ControlTransitionPress,
+        ControlTransitionRelease, ControlTransitions,
     };
 
     use super::{CharacterLoader, CHARACTER_TRANSITIONS_DEFAULT};
@@ -415,6 +466,14 @@ mod tests {
                 }),
                 control_transition_requirements: vec![],
             },
+            CharacterControlTransition {
+                control_transition: ControlTransition::Default(ControlTransitionDefault {
+                    sequence_id: CharacterSequenceId::RunStop,
+                }),
+                control_transition_requirements: vec![ControlTransitionRequirement::Input(
+                    InputDirection::NotSame,
+                )],
+            },
         ]))
     }
 
@@ -441,6 +500,14 @@ mod tests {
                     sequence_id: CharacterSequenceId::DashForward,
                 }),
                 control_transition_requirements: vec![],
+            },
+            CharacterControlTransition {
+                control_transition: ControlTransition::Default(ControlTransitionDefault {
+                    sequence_id: CharacterSequenceId::RunStop,
+                }),
+                control_transition_requirements: vec![ControlTransitionRequirement::Input(
+                    InputDirection::NotSame,
+                )],
             },
         ]))
     }

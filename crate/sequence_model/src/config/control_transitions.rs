@@ -61,4 +61,8 @@ where
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub release_special: Option<ControlTransition<SeqId, Req>>,
+    /// Fallback sequence ID to transition to.
+    #[new(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub default: Option<ControlTransition<SeqId, Req>>,
 }

@@ -11,6 +11,6 @@ where
 {
     /// Control button that this transition applies to.
     pub action: ControlAction,
-    /// ID of the sequence to switch to after this one has completed.
+    /// ID of the sequence to switch to.
     pub sequence_id: SeqId,
 }

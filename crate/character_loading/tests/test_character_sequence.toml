@@ -4,6 +4,7 @@
   press_attack = "stand_attack_0"
   hold_jump = "jump"
   hold_special = "dash_forward"
+  default = { next = "run_stop", requirements = [{ input = "not_same" }] }
 
 [[frames]]
   [frames.transitions]

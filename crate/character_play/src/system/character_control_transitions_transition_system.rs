@@ -17,8 +17,8 @@ use game_input_model::{ControlAction, ControlActionEventData, ControlInputEvent}
 use named_type::NamedType;
 use named_type_derive::NamedType;
 use sequence_model::loaded::{
-    ControlTransition, ControlTransitionHold, ControlTransitionLike, ControlTransitionPress,
-    ControlTransitionRelease,
+    ControlTransition, ControlTransitionDefault, ControlTransitionHold, ControlTransitionLike,
+    ControlTransitionPress, ControlTransitionRelease,
 };
 use shred_derive::SystemData;
 
@@ -119,6 +119,9 @@ impl CharacterControlTransitionsTransitionSystem {
                         ControlTransition::Hold(control_transition_hold) => {
                             Self::hold_transition(control_transition_hold, *controller_input)
                                 .map(|transition| (transition, control_transition_requirements))
+                        }
+                        ControlTransition::Default(ControlTransitionDefault { sequence_id }) => {
+                            Some((sequence_id, control_transition_requirements))
                         }
                     }
                 })
