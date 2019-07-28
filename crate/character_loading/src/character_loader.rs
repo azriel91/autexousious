@@ -201,6 +201,13 @@ impl CharacterLoader {
 
 #[cfg(test)]
 mod tests {
+    use std::{
+        fs::File,
+        io::{BufReader, Read as _},
+        iter::FromIterator,
+        path::PathBuf,
+    };
+
     use amethyst::{
         assets::{AssetStorage, Loader},
         core::TransformBundle,
@@ -326,8 +333,31 @@ mod tests {
     }
 
     fn test_character_sequence() -> CharacterSequence {
-        let character_sequence_toml = include_str!("test_character_sequence.toml");
-        toml::from_str::<CharacterSequence>(character_sequence_toml)
+        let test_character_sequence_toml = "test_character_sequence.toml";
+        let test_character_sequence_path = PathBuf::from_iter(&[
+            env!("CARGO_MANIFEST_DIR"),
+            "tests",
+            test_character_sequence_toml,
+        ]);
+        let character_sequence_toml =
+            File::open(test_character_sequence_path).unwrap_or_else(|e| {
+                panic!(
+                    "Failed to open `{}`. Error: {}",
+                    test_character_sequence_toml, e
+                )
+            });
+        let mut buf_reader = BufReader::new(character_sequence_toml);
+        let mut contents = String::new();
+        buf_reader
+            .read_to_string(&mut contents)
+            .unwrap_or_else(|e| {
+                panic!(
+                    "Failed to read `{}`. Error: {}",
+                    test_character_sequence_toml, e
+                )
+            });
+
+        toml::from_str::<CharacterSequence>(&contents)
             .expect("Failed to load `test_character_sequence.toml`.")
     }
 
