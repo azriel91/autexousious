@@ -124,7 +124,7 @@ impl MapSelectionWidgetInputSystem {
     ) {
         if let Some(map_selection_widget) = map_selection_widgets.join().next() {
             match event {
-                ControlInputEvent::Axis(axis_event_data) => Self::handle_axis_event(
+                ControlInputEvent::AxisMoved(axis_event_data) => Self::handle_axis_event(
                     &map_prefabs,
                     map_selection_ec,
                     map_selection_widget,
@@ -473,7 +473,7 @@ mod test {
     }
 
     fn press_left(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::Axis(AxisEventData {
+        ControlInputEvent::AxisMoved(AxisEventData {
             entity,
             axis: Axis::X,
             value: -1.,
@@ -481,7 +481,7 @@ mod test {
     }
 
     fn press_right(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::Axis(AxisEventData {
+        ControlInputEvent::AxisMoved(AxisEventData {
             entity,
             axis: Axis::X,
             value: 1.,

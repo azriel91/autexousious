@@ -47,7 +47,7 @@ impl<'s> System<'s> for ControllerInputUpdateSystem {
             .expect("Expected `input_events_id` field to be set.");
 
         input_events.read(input_events_id).for_each(|ev| match ev {
-            ControlInputEvent::Axis(AxisEventData {
+            ControlInputEvent::AxisMoved(AxisEventData {
                 entity,
                 axis,
                 value,
@@ -128,12 +128,12 @@ mod test {
                 world
                     .write_resource::<EventChannel<ControlInputEvent>>()
                     .drain_vec_write(&mut vec![
-                        ControlInputEvent::Axis(AxisEventData {
+                        ControlInputEvent::AxisMoved(AxisEventData {
                             entity: e0.clone(),
                             axis: Axis::X,
                             value: 1.,
                         }),
-                        ControlInputEvent::Axis(AxisEventData {
+                        ControlInputEvent::AxisMoved(AxisEventData {
                             entity: e0.clone(),
                             axis: Axis::Z,
                             value: 1.,
@@ -186,12 +186,12 @@ mod test {
                 world
                     .write_resource::<EventChannel<ControlInputEvent>>()
                     .drain_vec_write(&mut vec![
-                        ControlInputEvent::Axis(AxisEventData {
+                        ControlInputEvent::AxisMoved(AxisEventData {
                             entity: e0.clone(),
                             axis: Axis::X,
                             value: 0.,
                         }),
-                        ControlInputEvent::Axis(AxisEventData {
+                        ControlInputEvent::AxisMoved(AxisEventData {
                             entity: e0.clone(),
                             axis: Axis::Z,
                             value: 1.,

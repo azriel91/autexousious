@@ -100,7 +100,7 @@ impl<'s> System<'s> for InputToControlInputSystem {
                     if let Some((entity, _)) = (&entities, &input_controlleds).join().find(
                         |(_entity, input_controlled)| input_controlled.controller_id == *player,
                     ) {
-                        Some(ControlInputEvent::Axis(AxisEventData {
+                        Some(ControlInputEvent::AxisMoved(AxisEventData {
                             entity,
                             axis: *axis,
                             value: *value,
@@ -168,7 +168,7 @@ mod test {
             vec![key_press(AXIS_POSITIVE), key_press(ACTION_JUMP)],
             |entity| {
                 vec![
-                    ControlInputEvent::Axis(AxisEventData {
+                    ControlInputEvent::AxisMoved(AxisEventData {
                         entity,
                         axis: Axis::X,
                         value: 1.,
@@ -193,12 +193,12 @@ mod test {
             ],
             |entity| {
                 vec![
-                    ControlInputEvent::Axis(AxisEventData {
+                    ControlInputEvent::AxisMoved(AxisEventData {
                         entity,
                         axis: Axis::X,
                         value: 1.,
                     }),
-                    ControlInputEvent::Axis(AxisEventData {
+                    ControlInputEvent::AxisMoved(AxisEventData {
                         entity,
                         axis: Axis::X,
                         value: 0.,

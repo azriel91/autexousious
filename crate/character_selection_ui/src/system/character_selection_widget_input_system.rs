@@ -131,7 +131,7 @@ impl CharacterSelectionWidgetInputSystem {
         event: ControlInputEvent,
     ) {
         match event {
-            ControlInputEvent::Axis(axis_event_data) => {
+            ControlInputEvent::AxisMoved(axis_event_data) => {
                 if let (Some(character_selection_widget), Some(input_controlled)) = (
                     character_selection_widgets.get_mut(axis_event_data.entity),
                     input_controlleds.get(axis_event_data.entity),
@@ -519,7 +519,7 @@ mod test {
     }
 
     fn press_left(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::Axis(AxisEventData {
+        ControlInputEvent::AxisMoved(AxisEventData {
             entity,
             axis: Axis::X,
             value: -1.,
@@ -527,7 +527,7 @@ mod test {
     }
 
     fn press_right(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::Axis(AxisEventData {
+        ControlInputEvent::AxisMoved(AxisEventData {
             entity,
             axis: Axis::X,
             value: 1.,

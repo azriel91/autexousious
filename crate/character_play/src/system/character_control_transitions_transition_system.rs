@@ -424,24 +424,24 @@ impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
 
         control_input_ec
             .read(control_input_event_rid)
-            .for_each(|ev| {
-                if let ControlInputEvent::ControlActionPressed(control_action_event_data) = ev {
+            .for_each(|ev| match ev {
+                ControlInputEvent::ControlActionPressed(control_action_event_data) => {
                     self.handle_action_event(
                         &mut character_control_transitions_transition_resources,
                         &control_transition_requirement_system_data,
                         *control_action_event_data,
                         true,
                     );
-                } else if let ControlInputEvent::ControlActionReleased(control_action_event_data) =
-                    ev
-                {
+                }
+                ControlInputEvent::ControlActionReleased(control_action_event_data) => {
                     self.handle_action_event(
                         &mut character_control_transitions_transition_resources,
                         &control_transition_requirement_system_data,
                         *control_action_event_data,
                         false,
                     );
-                } else if let ControlInputEvent::Axis(axis_event_data) = ev {
+                }
+                ControlInputEvent::AxisMoved(axis_event_data) => {
                     self.handle_axis_event(
                         &mut character_control_transitions_transition_resources,
                         &control_transition_requirement_system_data,
@@ -594,7 +594,7 @@ mod tests {
                     axis: Axis::Z,
                     value: -1.,
                 };
-                ControlInputEvent::Axis(axis_event_data)
+                ControlInputEvent::AxisMoved(axis_event_data)
             }),
             CharacterSequenceId::FallForwardAscend,
         )
@@ -611,7 +611,7 @@ mod tests {
                     axis: Axis::Z,
                     value: 0.,
                 };
-                ControlInputEvent::Axis(axis_event_data)
+                ControlInputEvent::AxisMoved(axis_event_data)
             }),
             CharacterSequenceId::LieFaceDown,
         )
@@ -644,7 +644,7 @@ mod tests {
                     axis: Axis::Z,
                     value: 1.,
                 };
-                ControlInputEvent::Axis(axis_event_data)
+                ControlInputEvent::AxisMoved(axis_event_data)
             }),
             CharacterSequenceId::FallForwardAscend,
         )
@@ -665,7 +665,7 @@ mod tests {
                     axis: Axis::X,
                     value: 0.,
                 };
-                ControlInputEvent::Axis(axis_event_data)
+                ControlInputEvent::AxisMoved(axis_event_data)
             }),
             CharacterSequenceId::Dazed,
         )

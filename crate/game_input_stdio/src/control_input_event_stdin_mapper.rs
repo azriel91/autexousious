@@ -38,7 +38,7 @@ impl StdinMapper for ControlInputEventStdinMapper {
             .join()
             .find(|(_e, input_controlled)| input_controlled.controller_id == *controller)
             .map(|(entity, _input_controlled)| match control {
-                ControlArgs::Axis { axis, value } => ControlInputEvent::Axis(AxisEventData {
+                ControlArgs::Axis { axis, value } => ControlInputEvent::AxisMoved(AxisEventData {
                     entity,
                     axis: *axis,
                     value: *value,
@@ -111,7 +111,7 @@ mod tests {
                 assert!(result.is_ok());
                 let entity = world.read_resource::<Entity>().clone();
                 assert_eq!(
-                    ControlInputEvent::Axis(AxisEventData {
+                    ControlInputEvent::AxisMoved(AxisEventData {
                         entity,
                         axis: Axis::X,
                         value: -1.,

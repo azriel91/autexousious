@@ -131,7 +131,7 @@ where
             .next()
         {
             match event {
-                ControlInputEvent::Axis(axis_event_data) => Self::handle_axis_event(
+                ControlInputEvent::AxisMoved(axis_event_data) => Self::handle_axis_event(
                     menu_item_widget_states,
                     menu_item_entity,
                     siblings,
@@ -486,7 +486,7 @@ mod test {
     }
 
     fn press_up(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::Axis(AxisEventData {
+        ControlInputEvent::AxisMoved(AxisEventData {
             entity,
             axis: Axis::Z,
             value: -1.,
@@ -494,7 +494,7 @@ mod test {
     }
 
     fn press_down(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::Axis(AxisEventData {
+        ControlInputEvent::AxisMoved(AxisEventData {
             entity,
             axis: Axis::Z,
             value: 1.,
