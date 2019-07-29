@@ -230,7 +230,7 @@ impl CharacterControlTransitionsTransitionSystem {
     /// Processes `CharacterControlTransitions` for entities without any `ControlInputEvent`.
     ///
     /// Checks the `ControllerInput` state for any `Hold` transitions.
-    fn process_action_holds(
+    fn process_hold_transitions(
         &self,
         CharacterControlTransitionsTransitionResources {
             ref entities,
@@ -264,6 +264,11 @@ impl CharacterControlTransitionsTransitionSystem {
 
                             if let ControlTransition::ActionHold(action_hold) = control_transition {
                                 Self::hold_transition_action(*action_hold, *controller_input)
+                                    .map(|transition| (transition, control_transition_requirements))
+                            } else if let ControlTransition::AxisHold(axis_hold) =
+                                control_transition
+                            {
+                                Self::hold_transition_axis(*axis_hold, *controller_input)
                                     .map(|transition| (transition, control_transition_requirements))
                             } else {
                                 None
@@ -443,7 +448,7 @@ impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
                 }
             });
 
-        self.process_action_holds(
+        self.process_hold_transitions(
             &mut character_control_transitions_transition_resources,
             &control_transition_requirement_system_data,
         );
@@ -461,28 +466,41 @@ impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
 
 #[cfg(test)]
 mod tests {
+    use std::{iter::FromIterator, path::PathBuf};
+
     use amethyst::{
-        ecs::{Entity, World, WriteStorage},
+        assets::{AssetStorage, Loader},
+        ecs::{Builder, Entity, Read, ReadExpect, World, WriteStorage},
         shrev::EventChannel,
         Error,
     };
-    use application_test_support::{AutexousiousApplication, ObjectQueries, SequenceQueries};
-    use assets_test::CHAR_BAT_SLUG;
-    use character_model::{config::CharacterSequenceId, loaded::CharacterControlTransitionsHandle};
+    use application::resource::IoUtils;
+    use application_test_support::AutexousiousApplication;
+    use character_loading::{
+        ControlTransitionsSequenceLoader, ControlTransitionsSequenceLoaderParams,
+    };
+    use character_model::{
+        config::{CharacterSequence, CharacterSequenceId},
+        loaded::{
+            CharacterControlTransitions, CharacterControlTransitionsHandle,
+            CharacterControlTransitionsSequence, CharacterControlTransitionsSequenceHandle,
+        },
+    };
     use derivative::Derivative;
     use game_input::ControllerInput;
-    use game_input_model::{ControlAction, ControlActionEventData, ControlInputEvent};
+    use game_input_model::{
+        Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent,
+    };
     use object_model::play::{ChargePoints, HealthPoints, Mirrored, SkillPoints};
-    use object_type::ObjectType;
     use shred_derive::SystemData;
 
     use super::CharacterControlTransitionsTransitionSystem;
 
     #[test]
-    fn inserts_transition_for_press_event() -> Result<(), Error> {
+    fn inserts_transition_for_action_press_event() -> Result<(), Error> {
         run_test(
             CharacterSequenceId::Stand,
-            None,
+            ControllerInput::default(),
             Some(|entity| {
                 let control_action_event_data = ControlActionEventData {
                     entity,
@@ -495,10 +513,10 @@ mod tests {
     }
 
     #[test]
-    fn inserts_transition_for_release_event() -> Result<(), Error> {
+    fn inserts_transition_for_action_release_event() -> Result<(), Error> {
         run_test(
             CharacterSequenceId::Stand,
-            None,
+            ControllerInput::default(),
             Some(|entity| {
                 let control_action_event_data = ControlActionEventData {
                     entity,
@@ -511,14 +529,14 @@ mod tests {
     }
 
     #[test]
-    fn inserts_transition_for_hold() -> Result<(), Error> {
+    fn inserts_transition_for_action_hold() -> Result<(), Error> {
         let mut controller_input = ControllerInput::default();
         controller_input.defend = true;
         controller_input.x_axis_value = 1.;
 
         run_test(
             CharacterSequenceId::Stand,
-            Some(controller_input),
+            controller_input,
             None,
             CharacterSequenceId::Flinch0,
         )
@@ -531,9 +549,15 @@ mod tests {
 
         run_test(
             CharacterSequenceId::Stand,
-            Some(controller_input),
-            None,
-            CharacterSequenceId::DashForward,
+            controller_input,
+            Some(|entity| {
+                let control_action_event_data = ControlActionEventData {
+                    entity,
+                    control_action: ControlAction::Jump,
+                };
+                ControlInputEvent::ControlActionPressed(control_action_event_data)
+            }),
+            CharacterSequenceId::Jump,
         )
     }
 
@@ -545,7 +569,7 @@ mod tests {
 
         run_test(
             CharacterSequenceId::Stand,
-            Some(controller_input),
+            controller_input,
             Some(|entity| {
                 let control_action_event_data = ControlActionEventData {
                     entity,
@@ -557,23 +581,161 @@ mod tests {
         )
     }
 
+    #[test]
+    fn inserts_transition_for_axis_press_event() -> Result<(), Error> {
+        run_test(
+            CharacterSequenceId::Stand,
+            ControllerInput::default(),
+            Some(|entity| {
+                let axis_event_data = AxisEventData {
+                    entity,
+                    axis: Axis::Z,
+                    value: -1.,
+                };
+                ControlInputEvent::Axis(axis_event_data)
+            }),
+            CharacterSequenceId::FallForwardAscend,
+        )
+    }
+
+    #[test]
+    fn inserts_transition_for_axis_release_event() -> Result<(), Error> {
+        run_test(
+            CharacterSequenceId::Stand,
+            ControllerInput::default(),
+            Some(|entity| {
+                let axis_event_data = AxisEventData {
+                    entity,
+                    axis: Axis::Z,
+                    value: 0.,
+                };
+                ControlInputEvent::Axis(axis_event_data)
+            }),
+            CharacterSequenceId::LieFaceDown,
+        )
+    }
+
+    #[test]
+    fn inserts_transition_for_axis_hold() -> Result<(), Error> {
+        let mut controller_input = ControllerInput::default();
+        controller_input.z_axis_value = 1.;
+
+        run_test(
+            CharacterSequenceId::Stand,
+            controller_input,
+            None,
+            CharacterSequenceId::FallForwardDescend,
+        )
+    }
+
+    #[test]
+    fn prioritizes_axis_press_over_hold_transition() -> Result<(), Error> {
+        let mut controller_input = ControllerInput::default();
+        controller_input.z_axis_value = 1.;
+
+        run_test(
+            CharacterSequenceId::Stand,
+            controller_input,
+            Some(|entity| {
+                let axis_event_data = AxisEventData {
+                    entity,
+                    axis: Axis::Z,
+                    value: 1.,
+                };
+                ControlInputEvent::Axis(axis_event_data)
+            }),
+            CharacterSequenceId::FallForwardAscend,
+        )
+    }
+
+    #[test]
+    fn prioritizes_axis_release_over_hold_transition() -> Result<(), Error> {
+        // hold `X` but release `Z`
+        let mut controller_input = ControllerInput::default();
+        controller_input.x_axis_value = 1.;
+
+        run_test(
+            CharacterSequenceId::Stand,
+            controller_input,
+            Some(|entity| {
+                let axis_event_data = AxisEventData {
+                    entity,
+                    axis: Axis::Z,
+                    value: 0.,
+                };
+                ControlInputEvent::Axis(axis_event_data)
+            }),
+            CharacterSequenceId::LieFaceDown,
+        )
+    }
+
     fn run_test(
         setup_sequence_id: CharacterSequenceId,
-        setup_controller_input: Option<ControllerInput>,
+        setup_controller_input: ControllerInput,
         control_input_event_fn: Option<fn(Entity) -> ControlInputEvent>,
         expected_sequence_id: CharacterSequenceId,
     ) -> Result<(), Error> {
-        AutexousiousApplication::game_base()
+        AutexousiousApplication::config_base()
             .with_system(CharacterControlTransitionsTransitionSystem::new(), "", &[])
             .with_setup(move |world| {
-                let entity = ObjectQueries::game_object_entity(world, ObjectType::Character);
-                let character_control_transitions_handle =
-                    SequenceQueries::character_control_transitions_handle(
-                        world,
-                        &CHAR_BAT_SLUG.clone(),
-                        CharacterSequenceId::Stand,
-                        0,
+                let character_control_transitions_sequence_handle = {
+                    let (
+                        loader,
+                        character_control_transitions_assets,
+                        character_control_transitions_sequence_assets,
+                    ) = world.system_data::<(
+                        ReadExpect<'_, Loader>,
+                        Read<'_, AssetStorage<CharacterControlTransitions>>,
+                        Read<'_, AssetStorage<CharacterControlTransitionsSequence>>,
+                    )>();
+
+                    let control_transitions_sequence_loader_params =
+                        ControlTransitionsSequenceLoaderParams {
+                            loader: &loader,
+                            character_control_transitions_assets:
+                                &character_control_transitions_assets,
+                            character_control_transitions_sequence_assets:
+                                &character_control_transitions_sequence_assets,
+                        };
+                    let test_character_sequence = test_character_sequence();
+
+                    ControlTransitionsSequenceLoader::load(
+                        &control_transitions_sequence_loader_params,
+                        None,
+                        &test_character_sequence,
+                    )
+                };
+
+                world.add_resource(character_control_transitions_sequence_handle);
+            })
+            // Allow `AssetStorage`s to process loaded data.
+            .with_setup(move |world| {
+                let character_control_transitions_handle = {
+                    let character_control_transitions_sequence_assets = world.system_data::<Read<
+                        '_,
+                        AssetStorage<CharacterControlTransitionsSequence>,
+                    >>(
                     );
+
+                    let character_control_transitions_sequence_handle = world
+                        .read_resource::<CharacterControlTransitionsSequenceHandle>()
+                        .clone();
+                    let character_control_transitions_sequence =
+                        character_control_transitions_sequence_assets
+                            .get(&character_control_transitions_sequence_handle)
+                            .expect(
+                                "Expected `character_control_transitions_sequence` to be loaded.",
+                            );
+                    character_control_transitions_sequence
+                        .first()
+                        .expect(
+                            "Expected `character_control_transitions_sequence` to contain one \
+                             `character_control_transitions_handle`.",
+                        )
+                        .clone()
+                };
+
+                let entity = world.create_entity().build();
                 {
                     let TestSystemData {
                         mut character_sequence_ids,
@@ -604,11 +766,9 @@ mod tests {
                         .insert(entity, Mirrored::new(false))
                         .expect("Failed to insert `Mirrored` component.");
 
-                    if let Some(setup_controller_input) = setup_controller_input {
-                        controller_inputs
-                            .insert(entity, setup_controller_input)
-                            .expect("Failed to insert `ControllerInput` component.");
-                    }
+                    controller_inputs
+                        .insert(entity, setup_controller_input)
+                        .expect("Failed to insert `ControllerInput` component.");
                 }
 
                 if let Some(control_input_event_fn) = control_input_event_fn {
@@ -628,6 +788,24 @@ mod tests {
                 assert_eq!(&expected_sequence_id, character_sequence_id);
             })
             .run_isolated()
+    }
+
+    fn test_character_sequence() -> CharacterSequence {
+        let test_character_sequence_toml = "test_character_sequence.toml";
+        let test_character_sequence_path = PathBuf::from_iter(&[
+            env!("CARGO_MANIFEST_DIR"),
+            "tests",
+            test_character_sequence_toml,
+        ]);
+        let contents = IoUtils::read_file(&test_character_sequence_path).unwrap_or_else(|e| {
+            panic!(
+                "Failed to read `{}`. Error: {}",
+                test_character_sequence_toml, e
+            )
+        });
+
+        toml::from_slice::<CharacterSequence>(&contents)
+            .expect("Failed to load `test_character_sequence.toml`.")
     }
 
     fn send_event(world: &mut World, event: ControlInputEvent) {

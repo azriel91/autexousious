@@ -243,11 +243,11 @@ impl ControlTransitionsSequenceLoader {
 
         // Axes transitions.
         push_axis_transition!(press_x, AxisPress, X);
-        push_axis_transition!(hold_x, AxisHold, X);
-        push_axis_transition!(release_x, AxisRelease, X);
         push_axis_transition!(press_z, AxisPress, Z);
-        push_axis_transition!(hold_z, AxisHold, Z);
+        push_axis_transition!(release_x, AxisRelease, X);
         push_axis_transition!(release_z, AxisRelease, Z);
+        push_axis_transition!(hold_x, AxisHold, X);
+        push_axis_transition!(hold_z, AxisHold, Z);
 
         // Fallback transition.
         push_fallback_transition!(fallback, Fallback);
@@ -475,9 +475,9 @@ mod tests {
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
-                control_transition: ControlTransition::AxisHold(AxisTransition {
-                    axis: Axis::X,
-                    sequence_id: CharacterSequenceId::Flinch1,
+                control_transition: ControlTransition::AxisPress(AxisTransition {
+                    axis: Axis::Z,
+                    sequence_id: CharacterSequenceId::FallForwardAscend,
                 }),
                 control_transition_requirements: vec![],
             },
@@ -489,9 +489,16 @@ mod tests {
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
-                control_transition: ControlTransition::AxisPress(AxisTransition {
+                control_transition: ControlTransition::AxisRelease(AxisTransition {
                     axis: Axis::Z,
-                    sequence_id: CharacterSequenceId::FallForwardAscend,
+                    sequence_id: CharacterSequenceId::LieFaceDown,
+                }),
+                control_transition_requirements: vec![],
+            },
+            CharacterControlTransition {
+                control_transition: ControlTransition::AxisHold(AxisTransition {
+                    axis: Axis::X,
+                    sequence_id: CharacterSequenceId::Flinch1,
                 }),
                 control_transition_requirements: vec![],
             },
@@ -499,13 +506,6 @@ mod tests {
                 control_transition: ControlTransition::AxisHold(AxisTransition {
                     axis: Axis::Z,
                     sequence_id: CharacterSequenceId::FallForwardDescend,
-                }),
-                control_transition_requirements: vec![],
-            },
-            CharacterControlTransition {
-                control_transition: ControlTransition::AxisRelease(AxisTransition {
-                    axis: Axis::Z,
-                    sequence_id: CharacterSequenceId::LieFaceDown,
                 }),
                 control_transition_requirements: vec![],
             },
@@ -552,9 +552,9 @@ mod tests {
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
-                control_transition: ControlTransition::AxisHold(AxisTransition {
-                    axis: Axis::X,
-                    sequence_id: CharacterSequenceId::Flinch1,
+                control_transition: ControlTransition::AxisPress(AxisTransition {
+                    axis: Axis::Z,
+                    sequence_id: CharacterSequenceId::FallForwardAscend,
                 }),
                 control_transition_requirements: vec![],
             },
@@ -566,9 +566,16 @@ mod tests {
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
-                control_transition: ControlTransition::AxisPress(AxisTransition {
+                control_transition: ControlTransition::AxisRelease(AxisTransition {
                     axis: Axis::Z,
-                    sequence_id: CharacterSequenceId::FallForwardAscend,
+                    sequence_id: CharacterSequenceId::LieFaceDown,
+                }),
+                control_transition_requirements: vec![],
+            },
+            CharacterControlTransition {
+                control_transition: ControlTransition::AxisHold(AxisTransition {
+                    axis: Axis::X,
+                    sequence_id: CharacterSequenceId::Flinch1,
                 }),
                 control_transition_requirements: vec![],
             },
@@ -576,13 +583,6 @@ mod tests {
                 control_transition: ControlTransition::AxisHold(AxisTransition {
                     axis: Axis::Z,
                     sequence_id: CharacterSequenceId::FallForwardDescend,
-                }),
-                control_transition_requirements: vec![],
-            },
-            CharacterControlTransition {
-                control_transition: ControlTransition::AxisRelease(AxisTransition {
-                    axis: Axis::Z,
-                    sequence_id: CharacterSequenceId::LieFaceDown,
                 }),
                 control_transition_requirements: vec![],
             },
