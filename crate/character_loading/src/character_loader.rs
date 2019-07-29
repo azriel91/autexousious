@@ -470,7 +470,7 @@ mod tests {
                 control_transition: ControlTransition::Default(ControlTransitionDefault {
                     sequence_id: CharacterSequenceId::RunStop,
                 }),
-                control_transition_requirements: vec![ControlTransitionRequirement::Input(
+                control_transition_requirements: vec![ControlTransitionRequirement::InputDirX(
                     InputDirection::NotSame,
                 )],
             },
@@ -505,7 +505,7 @@ mod tests {
                 control_transition: ControlTransition::Default(ControlTransitionDefault {
                     sequence_id: CharacterSequenceId::RunStop,
                 }),
-                control_transition_requirements: vec![ControlTransitionRequirement::Input(
+                control_transition_requirements: vec![ControlTransitionRequirement::InputDirX(
                     InputDirection::NotSame,
                 )],
             },

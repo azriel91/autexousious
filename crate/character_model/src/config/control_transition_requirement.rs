@@ -15,7 +15,7 @@ pub enum ControlTransitionRequirement {
     /// `SkillPoints` the object must spend to transition.
     Sp(SkillPoints),
     /// Whether there is axis input, and if it matches the direction the object is facing.
-    Input(InputDirection),
+    InputDirX(InputDirection),
 }
 
 impl ControlTransitionRequirement {
@@ -38,7 +38,7 @@ impl ControlTransitionRequirement {
             ControlTransitionRequirement::Charge(required) => {
                 charge_points.map(|points| points >= required)
             }
-            ControlTransitionRequirement::Input(input_direction) => {
+            ControlTransitionRequirement::InputDirX(input_direction) => {
                 let requirement_met =
                     Self::input_requirement_met(controller_input, mirrored, input_direction);
                 Some(requirement_met)
@@ -190,7 +190,7 @@ mod tests {
         ($test_name:ident, $variant:ident, $controller_input:expr, $mirrored:expr, true $(,)?) => {
             #[test]
             fn $test_name() {
-                let requirement = ControlTransitionRequirement::Input(InputDirection::$variant);
+                let requirement = ControlTransitionRequirement::InputDirX(InputDirection::$variant);
 
                 let controller_input = $controller_input;
                 let mirrored = $mirrored;
@@ -202,7 +202,7 @@ mod tests {
         ($test_name:ident, $variant:ident, $controller_input:expr, $mirrored:expr, false $(,)?) => {
             #[test]
             fn $test_name() {
-                let requirement = ControlTransitionRequirement::Input(InputDirection::$variant);
+                let requirement = ControlTransitionRequirement::InputDirX(InputDirection::$variant);
 
                 let controller_input = $controller_input;
                 let mirrored = $mirrored;
