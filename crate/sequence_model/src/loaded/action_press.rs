@@ -3,9 +3,9 @@ use game_input_model::ControlAction;
 
 use crate::config::SequenceId;
 
-/// Transition to a specified sequence on control input release event.
+/// Transition to a specified sequence on control input press event.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, new)]
-pub struct ControlTransitionRelease<SeqId>
+pub struct ActionPress<SeqId>
 where
     SeqId: SequenceId,
 {

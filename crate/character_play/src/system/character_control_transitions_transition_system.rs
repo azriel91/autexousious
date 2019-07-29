@@ -17,8 +17,8 @@ use game_input_model::{ControlAction, ControlActionEventData, ControlInputEvent}
 use named_type::NamedType;
 use named_type_derive::NamedType;
 use sequence_model::loaded::{
-    ControlTransition, ControlTransitionDefault, ControlTransitionHold, ControlTransitionLike,
-    ControlTransitionPress, ControlTransitionRelease,
+    ActionHold, ActionPress, ActionRelease, ControlTransition, ControlTransitionDefault,
+    ControlTransitionLike,
 };
 use shred_derive::SystemData;
 
@@ -96,7 +96,7 @@ impl CharacterControlTransitionsTransitionSystem {
                         &character_control_transition.control_transition_requirements;
 
                     match control_transition {
-                        ControlTransition::Press(ControlTransitionPress {
+                        ControlTransition::ActionPress(ActionPress {
                             action,
                             sequence_id,
                         }) => {
@@ -106,7 +106,7 @@ impl CharacterControlTransitionsTransitionSystem {
                                 None
                             }
                         }
-                        ControlTransition::Release(ControlTransitionRelease {
+                        ControlTransition::ActionRelease(ActionRelease {
                             action,
                             sequence_id,
                         }) => {
@@ -116,8 +116,8 @@ impl CharacterControlTransitionsTransitionSystem {
                                 None
                             }
                         }
-                        ControlTransition::Hold(control_transition_hold) => {
-                            Self::hold_transition(control_transition_hold, *controller_input)
+                        ControlTransition::ActionHold(action_hold) => {
+                            Self::hold_transition(action_hold, *controller_input)
                                 .map(|transition| (transition, control_transition_requirements))
                         }
                         ControlTransition::Default(ControlTransitionDefault { sequence_id }) => {
@@ -149,7 +149,7 @@ impl CharacterControlTransitionsTransitionSystem {
     /// Processes `CharacterControlTransitions` for entities without any `ControlInputEvent`.
     ///
     /// Checks the `ControllerInput` state for any `Hold` transitions.
-    fn process_control_transition_holds(
+    fn process_action_holds(
         &self,
         CharacterControlTransitionsTransitionResources {
             ref entities,
@@ -181,10 +181,8 @@ impl CharacterControlTransitionsTransitionSystem {
                             let control_transition_requirements =
                                 &character_control_transition.control_transition_requirements;
 
-                            if let ControlTransition::Hold(control_transition_hold) =
-                                control_transition
-                            {
-                                Self::hold_transition(*control_transition_hold, *controller_input)
+                            if let ControlTransition::ActionHold(action_hold) = control_transition {
+                                Self::hold_transition(*action_hold, *controller_input)
                                     .map(|transition| (transition, control_transition_requirements))
                             } else {
                                 None
@@ -216,13 +214,13 @@ impl CharacterControlTransitionsTransitionSystem {
     ///
     /// # Parameters
     ///
-    /// * `control_transition_hold`: `ControlAction` and sequence ID the hold transition applies to.
+    /// * `action_hold`: `ControlAction` and sequence ID the hold transition applies to.
     /// * `controller_input`: Controller input status.
     fn hold_transition(
-        ControlTransitionHold {
+        ActionHold {
             action,
             sequence_id,
-        }: ControlTransitionHold<CharacterSequenceId>,
+        }: ActionHold<CharacterSequenceId>,
         controller_input: ControllerInput,
     ) -> Option<CharacterSequenceId> {
         match action {
@@ -330,7 +328,7 @@ impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
                 }
             });
 
-        self.process_control_transition_holds(
+        self.process_action_holds(
             &mut character_control_transitions_transition_resources,
             &control_transition_requirement_system_data,
         );

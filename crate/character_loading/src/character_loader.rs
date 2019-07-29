@@ -17,8 +17,8 @@ use object_model::config::GameObjectSequence;
 use sequence_model::{
     config::ControlTransitionSingle,
     loaded::{
-        ControlTransition, ControlTransitionDefault, ControlTransitionHold, ControlTransitionPress,
-        ControlTransitionRelease, ControlTransitions,
+        ActionHold, ActionPress, ActionRelease, ControlTransition, ControlTransitionDefault,
+        ControlTransitions,
     },
 };
 
@@ -221,20 +221,20 @@ impl CharacterLoader {
             };
         }
 
-        push_transitions!(press_defend, Press, ControlTransitionPress, Defend);
-        push_transitions!(press_jump, Press, ControlTransitionPress, Jump);
-        push_transitions!(press_attack, Press, ControlTransitionPress, Attack);
-        push_transitions!(press_special, Press, ControlTransitionPress, Special);
-        push_transitions!(release_defend, Release, ControlTransitionRelease, Defend);
-        push_transitions!(release_jump, Release, ControlTransitionRelease, Jump);
-        push_transitions!(release_attack, Release, ControlTransitionRelease, Attack);
-        push_transitions!(release_special, Release, ControlTransitionRelease, Special);
+        push_transitions!(press_defend, ActionPress, ActionPress, Defend);
+        push_transitions!(press_jump, ActionPress, ActionPress, Jump);
+        push_transitions!(press_attack, ActionPress, ActionPress, Attack);
+        push_transitions!(press_special, ActionPress, ActionPress, Special);
+        push_transitions!(release_defend, ActionRelease, ActionRelease, Defend);
+        push_transitions!(release_jump, ActionRelease, ActionRelease, Jump);
+        push_transitions!(release_attack, ActionRelease, ActionRelease, Attack);
+        push_transitions!(release_special, ActionRelease, ActionRelease, Special);
         // It is a requirement that we push the `Hold` transitions last, to ensure the `Press` and
         // `Release` transitions get higher priority.
-        push_transitions!(hold_defend, Hold, ControlTransitionHold, Defend);
-        push_transitions!(hold_jump, Hold, ControlTransitionHold, Jump);
-        push_transitions!(hold_attack, Hold, ControlTransitionHold, Attack);
-        push_transitions!(hold_special, Hold, ControlTransitionHold, Special);
+        push_transitions!(hold_defend, ActionHold, ActionHold, Defend);
+        push_transitions!(hold_jump, ActionHold, ActionHold, Jump);
+        push_transitions!(hold_attack, ActionHold, ActionHold, Attack);
+        push_transitions!(hold_special, ActionHold, ActionHold, Special);
 
         // Fallback transition.
         push_transitions!(default, Default, ControlTransitionDefault);
@@ -279,8 +279,8 @@ mod tests {
     use pretty_assertions::assert_eq;
     use sequence_loading::SequenceLoadingBundle;
     use sequence_model::loaded::{
-        ControlTransition, ControlTransitionDefault, ControlTransitionHold, ControlTransitionPress,
-        ControlTransitionRelease, ControlTransitions,
+        ActionHold, ActionPress, ActionRelease, ControlTransition, ControlTransitionDefault,
+        ControlTransitions,
     };
 
     use super::{CharacterLoader, CHARACTER_TRANSITIONS_DEFAULT};
@@ -416,14 +416,14 @@ mod tests {
     fn expected_control_transitions_0() -> CharacterControlTransitions {
         CharacterControlTransitions::new(ControlTransitions::new(vec![
             CharacterControlTransition {
-                control_transition: ControlTransition::Press(ControlTransitionPress {
+                control_transition: ControlTransition::ActionPress(ActionPress {
                     action: ControlAction::Attack,
                     sequence_id: CharacterSequenceId::StandAttack1,
                 }),
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
-                control_transition: ControlTransition::Release(ControlTransitionRelease {
+                control_transition: ControlTransition::ActionRelease(ActionRelease {
                     action: ControlAction::Attack,
                     sequence_id: CharacterSequenceId::Walk,
                 }),
@@ -432,7 +432,7 @@ mod tests {
                 )],
             },
             CharacterControlTransition {
-                control_transition: ControlTransition::Release(ControlTransitionRelease {
+                control_transition: ControlTransition::ActionRelease(ActionRelease {
                     action: ControlAction::Attack,
                     sequence_id: CharacterSequenceId::Run,
                 }),
@@ -441,7 +441,7 @@ mod tests {
                 )],
             },
             CharacterControlTransition {
-                control_transition: ControlTransition::Release(ControlTransitionRelease {
+                control_transition: ControlTransition::ActionRelease(ActionRelease {
                     action: ControlAction::Attack,
                     sequence_id: CharacterSequenceId::RunStop,
                 }),
@@ -450,7 +450,7 @@ mod tests {
                 )],
             },
             CharacterControlTransition {
-                control_transition: ControlTransition::Hold(ControlTransitionHold {
+                control_transition: ControlTransition::ActionHold(ActionHold {
                     action: ControlAction::Jump,
                     sequence_id: CharacterSequenceId::JumpOff,
                 }),
@@ -460,7 +460,7 @@ mod tests {
                 ],
             },
             CharacterControlTransition {
-                control_transition: ControlTransition::Hold(ControlTransitionHold {
+                control_transition: ControlTransition::ActionHold(ActionHold {
                     action: ControlAction::Special,
                     sequence_id: CharacterSequenceId::DashForward,
                 }),
@@ -481,21 +481,21 @@ mod tests {
     fn expected_control_transitions_1() -> CharacterControlTransitions {
         CharacterControlTransitions::new(ControlTransitions::new(vec![
             CharacterControlTransition {
-                control_transition: ControlTransition::Press(ControlTransitionPress {
+                control_transition: ControlTransition::ActionPress(ActionPress {
                     action: ControlAction::Attack,
                     sequence_id: CharacterSequenceId::StandAttack0,
                 }),
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
-                control_transition: ControlTransition::Hold(ControlTransitionHold {
+                control_transition: ControlTransition::ActionHold(ActionHold {
                     action: ControlAction::Jump,
                     sequence_id: CharacterSequenceId::Jump,
                 }),
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
-                control_transition: ControlTransition::Hold(ControlTransitionHold {
+                control_transition: ControlTransition::ActionHold(ActionHold {
                     action: ControlAction::Special,
                     sequence_id: CharacterSequenceId::DashForward,
                 }),

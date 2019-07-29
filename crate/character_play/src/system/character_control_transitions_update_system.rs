@@ -137,7 +137,7 @@ mod tests {
     };
     use game_input_model::ControlAction;
     use sequence_model::{
-        loaded::{ControlTransition, ControlTransitionPress, ControlTransitions},
+        loaded::{ActionPress, ControlTransition, ControlTransitions},
         play::{FrameIndexClock, SequenceUpdateEvent},
     };
 
@@ -253,14 +253,14 @@ mod tests {
     fn transitions() -> CharacterControlTransitions {
         CharacterControlTransitions::new(ControlTransitions::new(vec![
             CharacterControlTransition::new(
-                ControlTransition::Press(ControlTransitionPress::new(
+                ControlTransition::ActionPress(ActionPress::new(
                     ControlAction::Attack,
                     CharacterSequenceId::StandAttack0,
                 )),
                 vec![],
             ),
             CharacterControlTransition::new(
-                ControlTransition::Press(ControlTransitionPress::new(
+                ControlTransition::ActionPress(ActionPress::new(
                     ControlAction::Jump,
                     CharacterSequenceId::Jump,
                 )),
