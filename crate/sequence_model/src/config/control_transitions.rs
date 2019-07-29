@@ -61,8 +61,32 @@ where
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub release_special: Option<ControlTransition<SeqId, Req>>,
+    /// Sequence ID to transition to when X axis input is pressed.
+    #[new(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub press_x: Option<ControlTransition<SeqId, Req>>,
+    /// Sequence ID to transition to when X axis input is held.
+    #[new(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub hold_x: Option<ControlTransition<SeqId, Req>>,
+    /// Sequence ID to transition to when X axis input is released.
+    #[new(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub release_x: Option<ControlTransition<SeqId, Req>>,
+    /// Sequence ID to transition to when Z axis input is pressed.
+    #[new(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub press_z: Option<ControlTransition<SeqId, Req>>,
+    /// Sequence ID to transition to when Z axis input is held.
+    #[new(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub hold_z: Option<ControlTransition<SeqId, Req>>,
+    /// Sequence ID to transition to when Z axis input is released.
+    #[new(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub release_z: Option<ControlTransition<SeqId, Req>>,
     /// Fallback sequence ID to transition to.
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub default: Option<ControlTransition<SeqId, Req>>,
+    pub fallback: Option<ControlTransition<SeqId, Req>>,
 }

@@ -6,6 +6,7 @@ use amethyst::{
     },
     shrev::{EventChannel, ReaderId},
 };
+use approx::{relative_eq, relative_ne};
 use character_model::{
     config::{CharacterSequenceId, ControlTransitionRequirement},
     loaded::{CharacterControlTransitions, CharacterControlTransitionsHandle},
@@ -13,12 +14,14 @@ use character_model::{
 use derivative::Derivative;
 use derive_new::new;
 use game_input::ControllerInput;
-use game_input_model::{ControlAction, ControlActionEventData, ControlInputEvent};
+use game_input_model::{
+    Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent,
+};
 use named_type::NamedType;
 use named_type_derive::NamedType;
 use sequence_model::loaded::{
-    ActionHold, ActionPress, ActionRelease, ControlTransition, ControlTransitionDefault,
-    ControlTransitionLike,
+    ActionHold, ActionPress, ActionRelease, AxisTransition, ControlTransition,
+    ControlTransitionLike, FallbackTransition,
 };
 use shred_derive::SystemData;
 
@@ -62,7 +65,7 @@ pub struct CharacterControlTransitionsTransitionResources<'s> {
 }
 
 impl CharacterControlTransitionsTransitionSystem {
-    fn handle_event(
+    fn handle_action_event(
         &mut self,
         CharacterControlTransitionsTransitionResources {
             entities: ref _entities,
@@ -117,12 +120,90 @@ impl CharacterControlTransitionsTransitionSystem {
                             }
                         }
                         ControlTransition::ActionHold(action_hold) => {
-                            Self::hold_transition(action_hold, *controller_input)
+                            Self::hold_transition_action(action_hold, *controller_input)
                                 .map(|transition| (transition, control_transition_requirements))
                         }
-                        ControlTransition::Default(ControlTransitionDefault { sequence_id }) => {
+                        _ => None,
+                    }
+                })
+                .filter_map(|(sequence_id, control_transition_requirements)| {
+                    if Self::transition_requirements_met(
+                        control_transition_requirement_system_data,
+                        &control_transition_requirements,
+                        entity,
+                    ) {
+                        Some(sequence_id)
+                    } else {
+                        None
+                    }
+                })
+                .next();
+
+            if let Some(transition_sequence_id) = transition_sequence_id {
+                character_sequence_ids
+                    .insert(entity, transition_sequence_id)
+                    .expect("Failed to insert `CharacterSequenceId` component.");
+            }
+        }
+    }
+
+    fn handle_axis_event(
+        &mut self,
+        CharacterControlTransitionsTransitionResources {
+            entities: ref _entities,
+            ref controller_inputs,
+            ref character_control_transitions_handles,
+            ref character_control_transitions_assets,
+            ref mut character_sequence_ids,
+        }: &mut CharacterControlTransitionsTransitionResources,
+        control_transition_requirement_system_data: &ControlTransitionRequirementSystemData,
+        AxisEventData {
+            entity,
+            axis: control_axis,
+            value,
+        }: AxisEventData,
+    ) {
+        self.processed_entities.add(entity.id());
+
+        if let (Some(character_control_transitions_handle), Some(controller_input)) = (
+            character_control_transitions_handles.get(entity),
+            controller_inputs.get(entity),
+        ) {
+            let character_control_transitions = character_control_transitions_assets
+                .get(character_control_transitions_handle)
+                .expect("Expected `CharacterControlTransitions` to be loaded.");
+
+            let transition_sequence_id = character_control_transitions
+                .iter()
+                .filter_map(|character_control_transition| {
+                    let control_transition = *character_control_transition.control_transition();
+                    let control_transition_requirements =
+                        &character_control_transition.control_transition_requirements;
+
+                    match control_transition {
+                        ControlTransition::AxisPress(AxisTransition { axis, sequence_id }) => {
+                            if relative_ne!(0., value) && control_axis == axis {
+                                Some((sequence_id, control_transition_requirements))
+                            } else {
+                                None
+                            }
+                        }
+                        ControlTransition::AxisRelease(AxisTransition { axis, sequence_id }) => {
+                            if relative_eq!(0., value) && control_axis == axis {
+                                Some((sequence_id, control_transition_requirements))
+                            } else {
+                                None
+                            }
+                        }
+                        ControlTransition::AxisHold(axis_hold) => {
+                            Self::hold_transition_axis(axis_hold, *controller_input)
+                                .map(|transition| (transition, control_transition_requirements))
+                        }
+                        // TODO: process this even if no event comes through
+                        ControlTransition::Fallback(FallbackTransition { sequence_id }) => {
                             Some((sequence_id, control_transition_requirements))
                         }
+                        _ => None,
                     }
                 })
                 .filter_map(|(sequence_id, control_transition_requirements)| {
@@ -182,7 +263,7 @@ impl CharacterControlTransitionsTransitionSystem {
                                 &character_control_transition.control_transition_requirements;
 
                             if let ControlTransition::ActionHold(action_hold) = control_transition {
-                                Self::hold_transition(*action_hold, *controller_input)
+                                Self::hold_transition_action(*action_hold, *controller_input)
                                     .map(|transition| (transition, control_transition_requirements))
                             } else {
                                 None
@@ -210,13 +291,13 @@ impl CharacterControlTransitionsTransitionSystem {
             );
     }
 
-    /// Returns the transition sequence ID if the button for that hold transition is held.
+    /// Returns the transition sequence ID if the action button for that hold transition is held.
     ///
     /// # Parameters
     ///
     /// * `action_hold`: `ControlAction` and sequence ID the hold transition applies to.
     /// * `controller_input`: Controller input status.
-    fn hold_transition(
+    fn hold_transition_action(
         ActionHold {
             action,
             sequence_id,
@@ -247,6 +328,34 @@ impl CharacterControlTransitionsTransitionSystem {
             }
             ControlAction::Special => {
                 if controller_input.special {
+                    Some(sequence_id)
+                } else {
+                    None
+                }
+            }
+        }
+    } // kcov-ignore
+
+    /// Returns the transition sequence ID if the axis input for that hold transition is valued.
+    ///
+    /// # Parameters
+    ///
+    /// * `axis_transition`: `Axis` and sequence ID the hold transition applies to.
+    /// * `controller_input`: Controller input status.
+    fn hold_transition_axis(
+        AxisTransition { axis, sequence_id }: AxisTransition<CharacterSequenceId>,
+        controller_input: ControllerInput,
+    ) -> Option<CharacterSequenceId> {
+        match axis {
+            Axis::X => {
+                if relative_ne!(0., controller_input.x_axis_value) {
+                    Some(sequence_id)
+                } else {
+                    None
+                }
+            }
+            Axis::Z => {
+                if relative_ne!(0., controller_input.z_axis_value) {
                     Some(sequence_id)
                 } else {
                     None
@@ -310,7 +419,7 @@ impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
             .read(control_input_event_rid)
             .for_each(|ev| {
                 if let ControlInputEvent::ControlActionPressed(control_action_event_data) = ev {
-                    self.handle_event(
+                    self.handle_action_event(
                         &mut character_control_transitions_transition_resources,
                         &control_transition_requirement_system_data,
                         *control_action_event_data,
@@ -319,11 +428,17 @@ impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
                 } else if let ControlInputEvent::ControlActionReleased(control_action_event_data) =
                     ev
                 {
-                    self.handle_event(
+                    self.handle_action_event(
                         &mut character_control_transitions_transition_resources,
                         &control_transition_requirement_system_data,
                         *control_action_event_data,
                         false,
+                    );
+                } else if let ControlInputEvent::Axis(axis_event_data) = ev {
+                    self.handle_axis_event(
+                        &mut character_control_transitions_transition_resources,
+                        &control_transition_requirement_system_data,
+                        *axis_event_data,
                     );
                 }
             });

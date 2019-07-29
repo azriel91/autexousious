@@ -4,7 +4,17 @@
   press_attack = "stand_attack_0"
   hold_jump = "jump"
   hold_special = "dash_forward"
-  default = { next = "run_stop", requirements = [{ input_dir_x = "not_same" }] }
+
+  # Different sequence IDs so tests can assert we're mapping to the correct fields.
+  press_x = "flinch_0"
+  hold_x = "flinch_1"
+  release_x = "dazed"
+
+  press_z = "fall_forward_ascend"
+  hold_z = "fall_forward_descend"
+  release_z = "lie_face_down"
+
+  fallback = { next = "run_stop", requirements = [{ input_dir_x = "not_same" }] }
 
 [[frames]]
   [frames.transitions]

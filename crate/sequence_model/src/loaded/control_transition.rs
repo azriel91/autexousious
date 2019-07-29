@@ -4,7 +4,7 @@ use specs_derive::Component;
 
 use crate::{
     config::SequenceId,
-    loaded::{ActionHold, ActionPress, ActionRelease, ControlTransitionDefault},
+    loaded::{ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition},
 };
 
 /// Sequence to transition to on control input.
@@ -20,6 +20,12 @@ where
     ActionHold(ActionHold<SeqId>),
     /// Transition to a specified sequence on control input release event.
     ActionRelease(ActionRelease<SeqId>),
+    /// Transition to a specified sequence on axis input press event.
+    AxisPress(AxisTransition<SeqId>),
+    /// Transition to a specified sequence on axis input state.
+    AxisHold(AxisTransition<SeqId>),
+    /// Transition to a specified sequence on axis input press event.
+    AxisRelease(AxisTransition<SeqId>),
     /// Transition to a specified fallback sequence.
-    Default(ControlTransitionDefault<SeqId>),
+    Fallback(FallbackTransition<SeqId>),
 }

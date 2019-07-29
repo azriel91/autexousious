@@ -11,14 +11,14 @@ use character_model::{
         CharacterControlTransitionsSequenceHandle, CharacterObjectWrapper,
     },
 };
-use game_input_model::ControlAction;
+use game_input_model::{Axis, ControlAction};
 use lazy_static::lazy_static;
 use object_model::config::GameObjectSequence;
 use sequence_model::{
     config::ControlTransitionSingle,
     loaded::{
-        ActionHold, ActionPress, ActionRelease, ControlTransition, ControlTransitionDefault,
-        ControlTransitions,
+        ActionHold, ActionPress, ActionRelease, AxisTransition, ControlTransition,
+        ControlTransitions, FallbackTransition,
     },
 };
 
@@ -171,8 +171,10 @@ impl CharacterLoader {
                     }
                 }
             };
+        }
 
-            ($mode_action:ident, $mode:ident, $mode_data:ident) => {
+        macro_rules! push_axis_transition {
+            ($mode_action:ident, $mode:ident, $axis:ident) => {
                 let mode_action = config_transitions_frame.$mode_action.as_ref().or_else(|| {
                     // We want to make sure that, if `config_transitions_sequence.is_some()`, but
                     // the transition inside is `None`, we still fallback to `None`. This allows
@@ -188,7 +190,8 @@ impl CharacterLoader {
                     match config_control_transition {
                         SequenceId(sequence_id) => {
                             loaded_transitions.push(CharacterControlTransition::new(
-                                ControlTransition::$mode($mode_data {
+                                ControlTransition::$mode(AxisTransition {
+                                    axis: Axis::$axis,
                                     sequence_id: *sequence_id,
                                 }),
                                 vec![],
@@ -198,7 +201,8 @@ impl CharacterLoader {
                             next: sequence_id,
                             requirements: control_transition_requirements,
                         }) => loaded_transitions.push(CharacterControlTransition::new(
-                            ControlTransition::$mode($mode_data {
+                            ControlTransition::$mode(AxisTransition {
+                                axis: Axis::$axis,
                                 sequence_id: *sequence_id,
                             }),
                             control_transition_requirements.clone(),
@@ -209,7 +213,58 @@ impl CharacterLoader {
                                  requirements: control_transition_requirements,
                              }| {
                                 CharacterControlTransition::new(
-                                    ControlTransition::$mode($mode_data {
+                                    ControlTransition::$mode(AxisTransition {
+                                        axis: Axis::$axis,
+                                        sequence_id: *sequence_id,
+                                    }),
+                                    control_transition_requirements.clone(),
+                                )
+                            },
+                        )),
+                    }
+                }
+            };
+        }
+
+        macro_rules! push_fallback_transition {
+            ($mode_action:ident, $mode:ident) => {
+                let mode_action = config_transitions_frame.$mode_action.as_ref().or_else(|| {
+                    // We want to make sure that, if `config_transitions_sequence.is_some()`, but
+                    // the transition inside is `None`, we still fallback to `None`. This allows
+                    // a sequence transition `None` value to override the default transition.
+                    config_transitions_sequence
+                        .or(config_transitions_default)
+                        .and_then(|config_transitions_fallback| {
+                            config_transitions_fallback.$mode_action.as_ref()
+                        })
+                });
+                if let Some(config_control_transition) = &mode_action {
+                    use sequence_model::config::ControlTransition::*;
+                    match config_control_transition {
+                        SequenceId(sequence_id) => {
+                            loaded_transitions.push(CharacterControlTransition::new(
+                                ControlTransition::$mode(FallbackTransition {
+                                    sequence_id: *sequence_id,
+                                }),
+                                vec![],
+                            ));
+                        }
+                        Single(ControlTransitionSingle {
+                            next: sequence_id,
+                            requirements: control_transition_requirements,
+                        }) => loaded_transitions.push(CharacterControlTransition::new(
+                            ControlTransition::$mode(FallbackTransition {
+                                sequence_id: *sequence_id,
+                            }),
+                            control_transition_requirements.clone(),
+                        )),
+                        Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
+                            |ControlTransitionSingle {
+                                 next: sequence_id,
+                                 requirements: control_transition_requirements,
+                             }| {
+                                CharacterControlTransition::new(
+                                    ControlTransition::$mode(FallbackTransition {
                                         sequence_id: *sequence_id,
                                     }),
                                     control_transition_requirements.clone(),
@@ -236,8 +291,16 @@ impl CharacterLoader {
         push_transitions!(hold_attack, ActionHold, ActionHold, Attack);
         push_transitions!(hold_special, ActionHold, ActionHold, Special);
 
+        // Axes transitions.
+        push_axis_transition!(press_x, AxisPress, X);
+        push_axis_transition!(hold_x, AxisHold, X);
+        push_axis_transition!(release_x, AxisRelease, X);
+        push_axis_transition!(press_z, AxisPress, Z);
+        push_axis_transition!(hold_z, AxisHold, Z);
+        push_axis_transition!(release_z, AxisRelease, Z);
+
         // Fallback transition.
-        push_transitions!(default, Default, ControlTransitionDefault);
+        push_fallback_transition!(fallback, Fallback);
 
         let character_control_transitions =
             loaded::CharacterControlTransitions::new(ControlTransitions::new(loaded_transitions));
@@ -252,12 +315,7 @@ impl CharacterLoader {
 
 #[cfg(test)]
 mod tests {
-    use std::{
-        fs::File,
-        io::{BufReader, Read as _},
-        iter::FromIterator,
-        path::PathBuf,
-    };
+    use std::{iter::FromIterator, path::PathBuf};
 
     use amethyst::{
         assets::{AssetStorage, Loader},
@@ -267,6 +325,7 @@ mod tests {
         Error,
     };
     use amethyst_test::AmethystApplication;
+    use application::resource::IoUtils;
     use character_model::{
         config::{CharacterSequence, CharacterSequenceId, ControlTransitionRequirement},
         loaded::{
@@ -274,13 +333,13 @@ mod tests {
             CharacterControlTransitionsSequence, CharacterControlTransitionsSequenceHandle,
         },
     };
-    use game_input_model::{config::InputDirection, ControlAction};
+    use game_input_model::{config::InputDirection, Axis, ControlAction};
     use object_model::play::{ChargePoints, HealthPoints, SkillPoints};
     use pretty_assertions::assert_eq;
     use sequence_loading::SequenceLoadingBundle;
     use sequence_model::loaded::{
-        ActionHold, ActionPress, ActionRelease, ControlTransition, ControlTransitionDefault,
-        ControlTransitions,
+        ActionHold, ActionPress, ActionRelease, AxisTransition, ControlTransition,
+        ControlTransitions, FallbackTransition,
     };
 
     use super::{CharacterLoader, CHARACTER_TRANSITIONS_DEFAULT};
@@ -390,25 +449,14 @@ mod tests {
             "tests",
             test_character_sequence_toml,
         ]);
-        let character_sequence_toml =
-            File::open(test_character_sequence_path).unwrap_or_else(|e| {
-                panic!(
-                    "Failed to open `{}`. Error: {}",
-                    test_character_sequence_toml, e
-                )
-            });
-        let mut buf_reader = BufReader::new(character_sequence_toml);
-        let mut contents = String::new();
-        buf_reader
-            .read_to_string(&mut contents)
-            .unwrap_or_else(|e| {
-                panic!(
-                    "Failed to read `{}`. Error: {}",
-                    test_character_sequence_toml, e
-                )
-            });
+        let contents = IoUtils::read_file(&test_character_sequence_path).unwrap_or_else(|e| {
+            panic!(
+                "Failed to read `{}`. Error: {}",
+                test_character_sequence_toml, e
+            )
+        });
 
-        toml::from_str::<CharacterSequence>(&contents)
+        toml::from_slice::<CharacterSequence>(&contents)
             .expect("Failed to load `test_character_sequence.toml`.")
     }
 
@@ -467,7 +515,49 @@ mod tests {
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
-                control_transition: ControlTransition::Default(ControlTransitionDefault {
+                control_transition: ControlTransition::AxisPress(AxisTransition {
+                    axis: Axis::X,
+                    sequence_id: CharacterSequenceId::Flinch0,
+                }),
+                control_transition_requirements: vec![],
+            },
+            CharacterControlTransition {
+                control_transition: ControlTransition::AxisHold(AxisTransition {
+                    axis: Axis::X,
+                    sequence_id: CharacterSequenceId::Flinch1,
+                }),
+                control_transition_requirements: vec![],
+            },
+            CharacterControlTransition {
+                control_transition: ControlTransition::AxisRelease(AxisTransition {
+                    axis: Axis::X,
+                    sequence_id: CharacterSequenceId::Dazed,
+                }),
+                control_transition_requirements: vec![],
+            },
+            CharacterControlTransition {
+                control_transition: ControlTransition::AxisPress(AxisTransition {
+                    axis: Axis::Z,
+                    sequence_id: CharacterSequenceId::FallForwardAscend,
+                }),
+                control_transition_requirements: vec![],
+            },
+            CharacterControlTransition {
+                control_transition: ControlTransition::AxisHold(AxisTransition {
+                    axis: Axis::Z,
+                    sequence_id: CharacterSequenceId::FallForwardDescend,
+                }),
+                control_transition_requirements: vec![],
+            },
+            CharacterControlTransition {
+                control_transition: ControlTransition::AxisRelease(AxisTransition {
+                    axis: Axis::Z,
+                    sequence_id: CharacterSequenceId::LieFaceDown,
+                }),
+                control_transition_requirements: vec![],
+            },
+            CharacterControlTransition {
+                control_transition: ControlTransition::Fallback(FallbackTransition {
                     sequence_id: CharacterSequenceId::RunStop,
                 }),
                 control_transition_requirements: vec![ControlTransitionRequirement::InputDirX(
@@ -502,7 +592,49 @@ mod tests {
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
-                control_transition: ControlTransition::Default(ControlTransitionDefault {
+                control_transition: ControlTransition::AxisPress(AxisTransition {
+                    axis: Axis::X,
+                    sequence_id: CharacterSequenceId::Flinch0,
+                }),
+                control_transition_requirements: vec![],
+            },
+            CharacterControlTransition {
+                control_transition: ControlTransition::AxisHold(AxisTransition {
+                    axis: Axis::X,
+                    sequence_id: CharacterSequenceId::Flinch1,
+                }),
+                control_transition_requirements: vec![],
+            },
+            CharacterControlTransition {
+                control_transition: ControlTransition::AxisRelease(AxisTransition {
+                    axis: Axis::X,
+                    sequence_id: CharacterSequenceId::Dazed,
+                }),
+                control_transition_requirements: vec![],
+            },
+            CharacterControlTransition {
+                control_transition: ControlTransition::AxisPress(AxisTransition {
+                    axis: Axis::Z,
+                    sequence_id: CharacterSequenceId::FallForwardAscend,
+                }),
+                control_transition_requirements: vec![],
+            },
+            CharacterControlTransition {
+                control_transition: ControlTransition::AxisHold(AxisTransition {
+                    axis: Axis::Z,
+                    sequence_id: CharacterSequenceId::FallForwardDescend,
+                }),
+                control_transition_requirements: vec![],
+            },
+            CharacterControlTransition {
+                control_transition: ControlTransition::AxisRelease(AxisTransition {
+                    axis: Axis::Z,
+                    sequence_id: CharacterSequenceId::LieFaceDown,
+                }),
+                control_transition_requirements: vec![],
+            },
+            CharacterControlTransition {
+                control_transition: ControlTransition::Fallback(FallbackTransition {
                     sequence_id: CharacterSequenceId::RunStop,
                 }),
                 control_transition_requirements: vec![ControlTransitionRequirement::InputDirX(

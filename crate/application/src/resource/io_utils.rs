@@ -1,6 +1,6 @@
 use std::{
     fs::File,
-    io::{self, Read},
+    io::{self, BufReader, Read},
     path::{Component, Path},
 };
 
@@ -21,7 +21,7 @@ impl IoUtils {
     /// * `file_path`: `Path` to the file to read.
     pub fn read_file(file_path: &Path) -> io::Result<Vec<u8>> {
         debug!("Reading file: {}", file_path.display());
-        let mut file = File::open(file_path)?;
+        let mut file = BufReader::new(File::open(file_path)?);
         let mut buffer = Vec::new();
         file.read_to_end(&mut buffer)?;
         Ok(buffer)
