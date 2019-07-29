@@ -199,10 +199,6 @@ impl CharacterControlTransitionsTransitionSystem {
                             Self::hold_transition_axis(axis_hold, *controller_input)
                                 .map(|transition| (transition, control_transition_requirements))
                         }
-                        // TODO: process this even if no event comes through
-                        ControlTransition::Fallback(FallbackTransition { sequence_id }) => {
-                            Some((sequence_id, control_transition_requirements))
-                        }
                         _ => None,
                     }
                 })
@@ -229,8 +225,8 @@ impl CharacterControlTransitionsTransitionSystem {
 
     /// Processes `CharacterControlTransitions` for entities without any `ControlInputEvent`.
     ///
-    /// Checks the `ControllerInput` state for any `Hold` transitions.
-    fn process_hold_transitions(
+    /// Checks the `ControllerInput` state for any `Hold` and `Fallback` transitions.
+    fn process_hold_and_fallback_transitions(
         &self,
         CharacterControlTransitionsTransitionResources {
             ref entities,
@@ -262,16 +258,22 @@ impl CharacterControlTransitionsTransitionSystem {
                             let control_transition_requirements =
                                 &character_control_transition.control_transition_requirements;
 
-                            if let ControlTransition::ActionHold(action_hold) = control_transition {
-                                Self::hold_transition_action(*action_hold, *controller_input)
-                                    .map(|transition| (transition, control_transition_requirements))
-                            } else if let ControlTransition::AxisHold(axis_hold) =
-                                control_transition
-                            {
-                                Self::hold_transition_axis(*axis_hold, *controller_input)
-                                    .map(|transition| (transition, control_transition_requirements))
-                            } else {
-                                None
+                            match control_transition {
+                                ControlTransition::ActionHold(action_hold) => {
+                                    Self::hold_transition_action(*action_hold, *controller_input)
+                                        .map(|transition| {
+                                            (transition, control_transition_requirements)
+                                        })
+                                }
+                                ControlTransition::AxisHold(axis_hold) => {
+                                    Self::hold_transition_axis(*axis_hold, *controller_input).map(
+                                        |transition| (transition, control_transition_requirements),
+                                    )
+                                }
+                                ControlTransition::Fallback(FallbackTransition { sequence_id }) => {
+                                    Some((*sequence_id, control_transition_requirements))
+                                }
+                                _ => None,
                             }
                         })
                         .filter_map(|(sequence_id, control_transition_requirements)| {
@@ -448,7 +450,7 @@ impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
                 }
             });
 
-        self.process_hold_transitions(
+        self.process_hold_and_fallback_transitions(
             &mut character_control_transitions_transition_resources,
             &control_transition_requirement_system_data,
         );
@@ -650,9 +652,9 @@ mod tests {
 
     #[test]
     fn prioritizes_axis_release_over_hold_transition() -> Result<(), Error> {
-        // hold `X` but release `Z`
+        // hold `Z` but release `X`
         let mut controller_input = ControllerInput::default();
-        controller_input.x_axis_value = 1.;
+        controller_input.z_axis_value = 1.;
 
         run_test(
             CharacterSequenceId::Stand,
@@ -660,12 +662,35 @@ mod tests {
             Some(|entity| {
                 let axis_event_data = AxisEventData {
                     entity,
-                    axis: Axis::Z,
+                    axis: Axis::X,
                     value: 0.,
                 };
                 ControlInputEvent::Axis(axis_event_data)
             }),
-            CharacterSequenceId::LieFaceDown,
+            CharacterSequenceId::Dazed,
+        )
+    }
+
+    #[test]
+    fn inserts_transition_for_fallback() -> Result<(), Error> {
+        run_test(
+            CharacterSequenceId::Stand,
+            ControllerInput::default(),
+            None,
+            CharacterSequenceId::RunStop,
+        )
+    }
+
+    #[test]
+    fn does_not_insert_transition_for_fallback_when_requirement_not_met() -> Result<(), Error> {
+        let mut controller_input = ControllerInput::default();
+        controller_input.x_axis_value = 1.;
+
+        run_test(
+            CharacterSequenceId::Stand,
+            controller_input,
+            None,
+            CharacterSequenceId::Stand,
         )
     }
 

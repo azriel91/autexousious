@@ -10,7 +10,6 @@
     hold_defend = { next = "flinch_0", requirements = [{ input_dir_x = "same" }] }
 
     press_x = "flinch_0"
-    hold_x = "flinch_1"
     release_x = "dazed"
 
     press_z = "fall_forward_ascend"
