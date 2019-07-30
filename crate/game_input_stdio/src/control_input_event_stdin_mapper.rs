@@ -3,7 +3,7 @@ use amethyst::{
     Error,
 };
 use game_input::InputControlled;
-use game_input_model::{AxisEventData, ControlActionEventData, ControlInputEvent};
+use game_input_model::{AxisMoveEventData, ControlActionEventData, ControlInputEvent};
 use stdio_spi::{MapperSystemData, StdinMapper};
 use typename_derive::TypeName;
 
@@ -38,19 +38,21 @@ impl StdinMapper for ControlInputEventStdinMapper {
             .join()
             .find(|(_e, input_controlled)| input_controlled.controller_id == *controller)
             .map(|(entity, _input_controlled)| match control {
-                ControlArgs::Axis { axis, value } => ControlInputEvent::AxisMoved(AxisEventData {
-                    entity,
-                    axis: *axis,
-                    value: *value,
-                }),
+                ControlArgs::Axis { axis, value } => {
+                    ControlInputEvent::AxisMoved(AxisMoveEventData {
+                        entity,
+                        axis: *axis,
+                        value: *value,
+                    })
+                }
                 ControlArgs::ActionPressed { action } => {
-                    ControlInputEvent::ControlActionPressed(ControlActionEventData {
+                    ControlInputEvent::ControlActionPress(ControlActionEventData {
                         entity,
                         control_action: *action,
                     })
                 }
                 ControlArgs::ActionReleased { action } => {
-                    ControlInputEvent::ControlActionReleased(ControlActionEventData {
+                    ControlInputEvent::ControlActionRelease(ControlActionEventData {
                         entity,
                         control_action: *action,
                     })
@@ -78,7 +80,7 @@ mod tests {
     use application_test_support::AutexousiousApplication;
     use game_input::InputControlled;
     use game_input_model::{
-        Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent,
+        Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
     };
     use stdio_spi::StdinMapper;
 
@@ -111,7 +113,7 @@ mod tests {
                 assert!(result.is_ok());
                 let entity = world.read_resource::<Entity>().clone();
                 assert_eq!(
-                    ControlInputEvent::AxisMoved(AxisEventData {
+                    ControlInputEvent::AxisMoved(AxisMoveEventData {
                         entity,
                         axis: Axis::X,
                         value: -1.,
@@ -147,7 +149,7 @@ mod tests {
                 assert!(result.is_ok());
                 let entity = world.read_resource::<Entity>().clone();
                 assert_eq!(
-                    ControlInputEvent::ControlActionPressed(ControlActionEventData {
+                    ControlInputEvent::ControlActionPress(ControlActionEventData {
                         entity,
                         control_action: ControlAction::Jump,
                     }),
@@ -182,7 +184,7 @@ mod tests {
                 assert!(result.is_ok());
                 let entity = world.read_resource::<Entity>().clone();
                 assert_eq!(
-                    ControlInputEvent::ControlActionReleased(ControlActionEventData {
+                    ControlInputEvent::ControlActionRelease(ControlActionEventData {
                         entity,
                         control_action: ControlAction::Jump,
                     }),

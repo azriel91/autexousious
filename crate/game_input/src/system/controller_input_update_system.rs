@@ -4,7 +4,7 @@ use amethyst::{
 };
 use derive_new::new;
 use game_input_model::{
-    Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent,
+    Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
 };
 use typename_derive::TypeName;
 
@@ -47,7 +47,7 @@ impl<'s> System<'s> for ControllerInputUpdateSystem {
             .expect("Expected `input_events_id` field to be set.");
 
         input_events.read(input_events_id).for_each(|ev| match ev {
-            ControlInputEvent::AxisMoved(AxisEventData {
+            ControlInputEvent::AxisMoved(AxisMoveEventData {
                 entity,
                 axis,
                 value,
@@ -58,7 +58,7 @@ impl<'s> System<'s> for ControllerInputUpdateSystem {
                     Axis::Z => controller_input.z_axis_value = *value,
                 };
             }
-            ControlInputEvent::ControlActionPressed(ControlActionEventData {
+            ControlInputEvent::ControlActionPress(ControlActionEventData {
                 entity,
                 control_action,
             }) => {
@@ -70,7 +70,7 @@ impl<'s> System<'s> for ControllerInputUpdateSystem {
                     ControlAction::Special => controller_input.special = true,
                 };
             }
-            ControlInputEvent::ControlActionReleased(ControlActionEventData {
+            ControlInputEvent::ControlActionRelease(ControlActionEventData {
                 entity,
                 control_action,
             }) => {
@@ -104,7 +104,7 @@ mod test {
     };
     use amethyst_test::AmethystApplication;
     use game_input_model::{
-        Axis, AxisEventData, ControlAction, ControlActionEventData, ControlBindings,
+        Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlBindings,
         ControlInputEvent,
     };
     use typename::TypeName;
@@ -128,17 +128,17 @@ mod test {
                 world
                     .write_resource::<EventChannel<ControlInputEvent>>()
                     .drain_vec_write(&mut vec![
-                        ControlInputEvent::AxisMoved(AxisEventData {
+                        ControlInputEvent::AxisMoved(AxisMoveEventData {
                             entity: e0.clone(),
                             axis: Axis::X,
                             value: 1.,
                         }),
-                        ControlInputEvent::AxisMoved(AxisEventData {
+                        ControlInputEvent::AxisMoved(AxisMoveEventData {
                             entity: e0.clone(),
                             axis: Axis::Z,
                             value: 1.,
                         }),
-                        ControlInputEvent::ControlActionPressed(ControlActionEventData {
+                        ControlInputEvent::ControlActionPress(ControlActionEventData {
                             entity: e1.clone(),
                             control_action: ControlAction::Defend,
                         }),
@@ -186,30 +186,30 @@ mod test {
                 world
                     .write_resource::<EventChannel<ControlInputEvent>>()
                     .drain_vec_write(&mut vec![
-                        ControlInputEvent::AxisMoved(AxisEventData {
+                        ControlInputEvent::AxisMoved(AxisMoveEventData {
                             entity: e0.clone(),
                             axis: Axis::X,
                             value: 0.,
                         }),
-                        ControlInputEvent::AxisMoved(AxisEventData {
+                        ControlInputEvent::AxisMoved(AxisMoveEventData {
                             entity: e0.clone(),
                             axis: Axis::Z,
                             value: 1.,
                         }),
                         // e1
-                        ControlInputEvent::ControlActionReleased(ControlActionEventData {
+                        ControlInputEvent::ControlActionRelease(ControlActionEventData {
                             entity: e1.clone(),
                             control_action: ControlAction::Defend,
                         }),
-                        ControlInputEvent::ControlActionReleased(ControlActionEventData {
+                        ControlInputEvent::ControlActionRelease(ControlActionEventData {
                             entity: e1.clone(),
                             control_action: ControlAction::Jump,
                         }),
-                        ControlInputEvent::ControlActionPressed(ControlActionEventData {
+                        ControlInputEvent::ControlActionPress(ControlActionEventData {
                             entity: e1.clone(),
                             control_action: ControlAction::Attack,
                         }),
-                        ControlInputEvent::ControlActionPressed(ControlActionEventData {
+                        ControlInputEvent::ControlActionPress(ControlActionEventData {
                             entity: e1.clone(),
                             control_action: ControlAction::Special,
                         }),

@@ -7,7 +7,7 @@ use derivative::Derivative;
 use derive_new::new;
 use game_input::InputControlled;
 use game_input_model::{
-    AxisEventData, ControlActionEventData, ControlBindings, ControlInputEvent, InputConfig,
+    AxisMoveEventData, ControlActionEventData, ControlBindings, ControlInputEvent, InputConfig,
     PlayerActionControl, PlayerAxisControl,
 };
 use shred_derive::SystemData;
@@ -69,7 +69,7 @@ impl<'s> System<'s> for InputToControlInputSystem {
                     if let Some((entity, _)) = (&entities, &input_controlleds).join().find(
                         |(_entity, input_controlled)| input_controlled.controller_id == *player,
                     ) {
-                        Some(ControlInputEvent::ControlActionPressed(
+                        Some(ControlInputEvent::ControlActionPress(
                             ControlActionEventData {
                                 entity,
                                 control_action: *action,
@@ -83,7 +83,7 @@ impl<'s> System<'s> for InputToControlInputSystem {
                     if let Some((entity, _)) = (&entities, &input_controlleds).join().find(
                         |(_entity, input_controlled)| input_controlled.controller_id == *player,
                     ) {
-                        Some(ControlInputEvent::ControlActionReleased(
+                        Some(ControlInputEvent::ControlActionRelease(
                             ControlActionEventData {
                                 entity,
                                 control_action: *action,
@@ -100,7 +100,7 @@ impl<'s> System<'s> for InputToControlInputSystem {
                     if let Some((entity, _)) = (&entities, &input_controlleds).join().find(
                         |(_entity, input_controlled)| input_controlled.controller_id == *player,
                     ) {
-                        Some(ControlInputEvent::AxisMoved(AxisEventData {
+                        Some(ControlInputEvent::AxisMoved(AxisMoveEventData {
                             entity,
                             axis: *axis,
                             value: *value,
@@ -146,7 +146,7 @@ mod test {
     use amethyst_test::{AmethystApplication, HIDPI};
     use game_input::InputControlled;
     use game_input_model::{
-        Axis, AxisEventData, ControlAction, ControlActionEventData, ControlBindings,
+        Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlBindings,
         ControlInputEvent, ControllerConfig, InputConfig,
     };
     use hamcrest::prelude::*;
@@ -168,12 +168,12 @@ mod test {
             vec![key_press(AXIS_POSITIVE), key_press(ACTION_JUMP)],
             |entity| {
                 vec![
-                    ControlInputEvent::AxisMoved(AxisEventData {
+                    ControlInputEvent::AxisMoved(AxisMoveEventData {
                         entity,
                         axis: Axis::X,
                         value: 1.,
                     }),
-                    ControlInputEvent::ControlActionPressed(ControlActionEventData {
+                    ControlInputEvent::ControlActionPress(ControlActionEventData {
                         entity,
                         control_action: ControlAction::Jump,
                     }),
@@ -193,21 +193,21 @@ mod test {
             ],
             |entity| {
                 vec![
-                    ControlInputEvent::AxisMoved(AxisEventData {
+                    ControlInputEvent::AxisMoved(AxisMoveEventData {
                         entity,
                         axis: Axis::X,
                         value: 1.,
                     }),
-                    ControlInputEvent::AxisMoved(AxisEventData {
+                    ControlInputEvent::AxisMoved(AxisMoveEventData {
                         entity,
                         axis: Axis::X,
                         value: 0.,
                     }),
-                    ControlInputEvent::ControlActionPressed(ControlActionEventData {
+                    ControlInputEvent::ControlActionPress(ControlActionEventData {
                         entity,
                         control_action: ControlAction::Jump,
                     }),
-                    ControlInputEvent::ControlActionReleased(ControlActionEventData {
+                    ControlInputEvent::ControlActionRelease(ControlActionEventData {
                         entity,
                         control_action: ControlAction::Jump,
                     }),

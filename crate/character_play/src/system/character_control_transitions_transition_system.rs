@@ -15,7 +15,7 @@ use derivative::Derivative;
 use derive_new::new;
 use game_input::ControllerInput;
 use game_input_model::{
-    Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent,
+    Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
 };
 use named_type::NamedType;
 use named_type_derive::NamedType;
@@ -157,11 +157,11 @@ impl CharacterControlTransitionsTransitionSystem {
             ref mut character_sequence_ids,
         }: &mut CharacterControlTransitionsTransitionResources,
         control_transition_requirement_system_data: &ControlTransitionRequirementSystemData,
-        AxisEventData {
+        AxisMoveEventData {
             entity,
             axis: control_axis,
             value,
-        }: AxisEventData,
+        }: AxisMoveEventData,
     ) {
         self.processed_entities.add(entity.id());
 
@@ -425,7 +425,7 @@ impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
         control_input_ec
             .read(control_input_event_rid)
             .for_each(|ev| match ev {
-                ControlInputEvent::ControlActionPressed(control_action_event_data) => {
+                ControlInputEvent::ControlActionPress(control_action_event_data) => {
                     self.handle_action_event(
                         &mut character_control_transitions_transition_resources,
                         &control_transition_requirement_system_data,
@@ -433,7 +433,7 @@ impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
                         true,
                     );
                 }
-                ControlInputEvent::ControlActionReleased(control_action_event_data) => {
+                ControlInputEvent::ControlActionRelease(control_action_event_data) => {
                     self.handle_action_event(
                         &mut character_control_transitions_transition_resources,
                         &control_transition_requirement_system_data,
@@ -441,11 +441,11 @@ impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
                         false,
                     );
                 }
-                ControlInputEvent::AxisMoved(axis_event_data) => {
+                ControlInputEvent::AxisMoved(axis_move_event_data) => {
                     self.handle_axis_event(
                         &mut character_control_transitions_transition_resources,
                         &control_transition_requirement_system_data,
-                        *axis_event_data,
+                        *axis_move_event_data,
                     );
                 }
             });
@@ -491,7 +491,7 @@ mod tests {
     use derivative::Derivative;
     use game_input::ControllerInput;
     use game_input_model::{
-        Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent,
+        Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
     };
     use object_model::play::{ChargePoints, HealthPoints, Mirrored, SkillPoints};
     use shred_derive::SystemData;
@@ -508,7 +508,7 @@ mod tests {
                     entity,
                     control_action: ControlAction::Attack,
                 };
-                ControlInputEvent::ControlActionPressed(control_action_event_data)
+                ControlInputEvent::ControlActionPress(control_action_event_data)
             }),
             CharacterSequenceId::StandAttack0,
         )
@@ -524,7 +524,7 @@ mod tests {
                     entity,
                     control_action: ControlAction::Special,
                 };
-                ControlInputEvent::ControlActionReleased(control_action_event_data)
+                ControlInputEvent::ControlActionRelease(control_action_event_data)
             }),
             CharacterSequenceId::DashBack,
         )
@@ -557,7 +557,7 @@ mod tests {
                     entity,
                     control_action: ControlAction::Jump,
                 };
-                ControlInputEvent::ControlActionPressed(control_action_event_data)
+                ControlInputEvent::ControlActionPress(control_action_event_data)
             }),
             CharacterSequenceId::Jump,
         )
@@ -577,7 +577,7 @@ mod tests {
                     entity,
                     control_action: ControlAction::Special,
                 };
-                ControlInputEvent::ControlActionReleased(control_action_event_data)
+                ControlInputEvent::ControlActionRelease(control_action_event_data)
             }),
             CharacterSequenceId::DashBack,
         )
@@ -589,12 +589,12 @@ mod tests {
             CharacterSequenceId::Stand,
             ControllerInput::default(),
             Some(|entity| {
-                let axis_event_data = AxisEventData {
+                let axis_move_event_data = AxisMoveEventData {
                     entity,
                     axis: Axis::Z,
                     value: -1.,
                 };
-                ControlInputEvent::AxisMoved(axis_event_data)
+                ControlInputEvent::AxisMoved(axis_move_event_data)
             }),
             CharacterSequenceId::FallForwardAscend,
         )
@@ -606,12 +606,12 @@ mod tests {
             CharacterSequenceId::Stand,
             ControllerInput::default(),
             Some(|entity| {
-                let axis_event_data = AxisEventData {
+                let axis_move_event_data = AxisMoveEventData {
                     entity,
                     axis: Axis::Z,
                     value: 0.,
                 };
-                ControlInputEvent::AxisMoved(axis_event_data)
+                ControlInputEvent::AxisMoved(axis_move_event_data)
             }),
             CharacterSequenceId::LieFaceDown,
         )
@@ -639,12 +639,12 @@ mod tests {
             CharacterSequenceId::Stand,
             controller_input,
             Some(|entity| {
-                let axis_event_data = AxisEventData {
+                let axis_move_event_data = AxisMoveEventData {
                     entity,
                     axis: Axis::Z,
                     value: 1.,
                 };
-                ControlInputEvent::AxisMoved(axis_event_data)
+                ControlInputEvent::AxisMoved(axis_move_event_data)
             }),
             CharacterSequenceId::FallForwardAscend,
         )
@@ -660,12 +660,12 @@ mod tests {
             CharacterSequenceId::Stand,
             controller_input,
             Some(|entity| {
-                let axis_event_data = AxisEventData {
+                let axis_move_event_data = AxisMoveEventData {
                     entity,
                     axis: Axis::X,
                     value: 0.,
                 };
-                ControlInputEvent::AxisMoved(axis_event_data)
+                ControlInputEvent::AxisMoved(axis_move_event_data)
             }),
             CharacterSequenceId::Dazed,
         )
