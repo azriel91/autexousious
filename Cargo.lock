@@ -2219,6 +2219,7 @@ dependencies = [
  "serde 1.0.97 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum_macros 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "variant_struct 0.13.0",
  "winit 0.19.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 

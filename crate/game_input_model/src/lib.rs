@@ -19,7 +19,7 @@ extern crate hamcrest;
 
 pub use crate::{
     axis::Axis,
-    control_action::ControlAction,
+    control_action::{Attack, ControlAction, Defend, Jump, Special},
     control_bindings::ControlBindings,
     controller_config::ControllerConfig,
     controller_id::ControllerId,
