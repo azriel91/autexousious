@@ -488,12 +488,13 @@ mod tests {
             CharacterControlTransitionsSequence, CharacterControlTransitionsSequenceHandle,
         },
     };
+    use charge_model::config::ChargePoints;
     use derivative::Derivative;
     use game_input::ControllerInput;
     use game_input_model::{
         Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
     };
-    use object_model::play::{ChargePoints, HealthPoints, Mirrored, SkillPoints};
+    use object_model::play::{HealthPoints, Mirrored, SkillPoints};
     use shred_derive::SystemData;
 
     use super::CharacterControlTransitionsTransitionSystem;

@@ -20,10 +20,11 @@ mod control_transition_requirement;
 mod test {
     use std::collections::HashMap;
 
+    use charge_model::config::ChargePoints;
     use collision_model::config::{Body, Interactions};
     use object_model::{
         config::{ObjectDefinition, ObjectFrame, ObjectSequence},
-        play::{ChargePoints, HealthPoints, SkillPoints},
+        play::{HealthPoints, SkillPoints},
     };
     use sequence_model::config::{
         ControlTransition, ControlTransitionMultiple, ControlTransitionSingle,

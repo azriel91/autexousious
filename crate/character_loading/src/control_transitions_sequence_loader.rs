@@ -283,8 +283,9 @@ mod tests {
             CharacterControlTransitionsSequence, CharacterControlTransitionsSequenceHandle,
         },
     };
+    use charge_model::config::ChargePoints;
     use game_input_model::{config::InputDirection, Axis, ControlAction};
-    use object_model::play::{ChargePoints, HealthPoints, SkillPoints};
+    use object_model::play::{HealthPoints, SkillPoints};
     use pretty_assertions::assert_eq;
     use sequence_loading::SequenceLoadingBundle;
     use sequence_model::loaded::{

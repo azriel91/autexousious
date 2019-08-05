@@ -4,11 +4,10 @@
 //! entity.
 
 pub use self::{
-    charge_points::ChargePoints, grounding::Grounding, health_points::HealthPoints,
-    mirrored::Mirrored, parent_object::ParentObject, skill_points::SkillPoints,
+    grounding::Grounding, health_points::HealthPoints, mirrored::Mirrored,
+    parent_object::ParentObject, skill_points::SkillPoints,
 };
 
-mod charge_points;
 mod grounding;
 mod health_points;
 mod mirrored;

@@ -23,10 +23,11 @@ use character_model::{
     },
 };
 use character_prefab::{CharacterPrefab, CharacterPrefabBundle, CharacterPrefabHandle};
+use charge_model::config::ChargePoints;
 use game_input_model::ControlAction;
 use object_model::{
     config::{ObjectAssetData, ObjectDefinition, ObjectFrame, ObjectSequence},
-    play::{ChargePoints, HealthPoints, SkillPoints},
+    play::{HealthPoints, SkillPoints},
 };
 use pretty_assertions::assert_eq;
 use sequence_loading::SequenceLoadingBundle;

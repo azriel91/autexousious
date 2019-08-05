@@ -1,7 +1,8 @@
 use amethyst::ecs::ReadStorage;
+use charge_model::config::ChargePoints;
 use derivative::Derivative;
 use game_input::ControllerInput;
-use object_model::play::{ChargePoints, HealthPoints, Mirrored, SkillPoints};
+use object_model::play::{HealthPoints, Mirrored, SkillPoints};
 use shred_derive::SystemData;
 
 /// `SystemData` used to determine if a transition's requirement is met.

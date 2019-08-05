@@ -1,7 +1,8 @@
 use approx::{relative_eq, relative_ne};
+use charge_model::config::ChargePoints;
 use game_input::ControllerInput;
 use game_input_model::config::{InputDirection, InputDirectionZ};
-use object_model::play::{ChargePoints, HealthPoints, Mirrored, SkillPoints};
+use object_model::play::{HealthPoints, Mirrored, SkillPoints};
 use serde::{Deserialize, Serialize};
 
 /// Conditions for a control transition to happen.
@@ -154,9 +155,10 @@ impl ControlTransitionRequirement {
 
 #[cfg(test)]
 mod tests {
+    use charge_model::config::ChargePoints;
     use game_input::ControllerInput;
     use game_input_model::config::{InputDirection, InputDirectionZ};
-    use object_model::play::{ChargePoints, HealthPoints, Mirrored, SkillPoints};
+    use object_model::play::{HealthPoints, Mirrored, SkillPoints};
 
     use super::ControlTransitionRequirement;
 
