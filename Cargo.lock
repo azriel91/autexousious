@@ -6150,6 +6150,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "variant_struct"
+version = "0.13.0"
+dependencies = [
+ "variant_struct_derive 0.13.0",
+]
+
+[[package]]
+name = "variant_struct_derive"
+version = "0.13.0"
+dependencies = [
+ "proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quote 0.6.13 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 0.15.42 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "vcpkg"
 version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
