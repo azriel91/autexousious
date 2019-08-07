@@ -3,7 +3,6 @@ use amethyst::{
     ecs::{Entity, SystemData, World},
     renderer::transparent::Transparent,
 };
-use logic_clock::LogicClock;
 use map_model::{config::MapLayerSequenceId, loaded::MapHandle};
 use num_traits::FromPrimitive;
 use sequence_model::{
@@ -110,13 +109,12 @@ impl MapLayerEntitySpawner {
                         .insert(entity, sprite_render)
                         .expect("Failed to insert `SpriteRender` component.");
 
-                    let frame_index_clock =
-                        FrameIndexClock::new(LogicClock::new(wait_sequence.len()));
+                    let frame_index_clock = FrameIndexClock::new(wait_sequence.len());
                     frame_index_clocks
                         .insert(entity, frame_index_clock)
                         .expect("Failed to insert frame_index_clock component.");
 
-                    let frame_wait_clock = FrameWaitClock::new(LogicClock::new(*wait as usize));
+                    let frame_wait_clock = FrameWaitClock::new(*wait as usize);
                     frame_wait_clocks
                         .insert(entity, frame_wait_clock)
                         .expect("Failed to insert frame_wait_clock component.");

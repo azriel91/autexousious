@@ -13,7 +13,7 @@ extern crate proc_macro;
 
 use proc_macro::TokenStream;
 use proc_macro_roids::{DeriveInputDeriveExt, FieldsUnnamedAppend};
-use quote::ToTokens;
+use quote::quote;
 use syn::{parse_macro_input, parse_quote, DeriveInput, FieldsUnnamed};
 
 #[proc_macro_attribute]
@@ -23,10 +23,27 @@ pub fn logic_clock(_args: TokenStream, item: TokenStream) -> TokenStream {
     derive_append(&mut ast);
     fields_append(&mut ast);
 
-    let mut token_stream_2 = proc_macro2::TokenStream::new();
-    ast.to_tokens(&mut token_stream_2);
+    let struct_name = &ast.ident;
+    let constructor_doc = format!("Returns a new `{}`.", struct_name);
 
-    TokenStream::from(token_stream_2)
+    let token_stream2 = quote! {
+        #ast
+
+        impl #struct_name {
+            #[doc = #constructor_doc]
+            pub fn new(limit: usize) -> Self {
+                Self(logic_clock::LogicClock::new(limit))
+            }
+        }
+
+        impl AsRef<logic_clock::LogicClock> for #struct_name {
+            fn as_ref(&self) -> &logic_clock::LogicClock {
+                &self.0
+            }
+        }
+    };
+
+    TokenStream::from(token_stream2)
 }
 
 fn derive_append(ast: &mut DeriveInput) {
@@ -44,7 +61,6 @@ fn derive_append(ast: &mut DeriveInput) {
         PartialEq,
         Eq,
         Serialize,
-        new
     );
 
     ast.append_derives(derives);

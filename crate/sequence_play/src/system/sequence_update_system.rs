@@ -246,7 +246,6 @@ mod tests {
         Error,
     };
     use application_test_support::AutexousiousApplication;
-    use logic_clock::LogicClock;
     use sequence_model::{
         config::Wait,
         loaded::{WaitSequence, WaitSequenceHandle},
@@ -595,21 +594,21 @@ mod tests {
     }
 
     fn frame_index_clock(value: usize, limit: usize) -> FrameIndexClock {
-        let mut frame_index_clock = FrameIndexClock::new(LogicClock::default());
+        let mut frame_index_clock = FrameIndexClock::default();
         (*frame_index_clock).value = value;
         (*frame_index_clock).limit = limit;
         frame_index_clock
     }
 
     fn frame_wait_clock(value: usize, limit: usize) -> FrameWaitClock {
-        let mut frame_wait_clock = FrameWaitClock::new(LogicClock::default());
+        let mut frame_wait_clock = FrameWaitClock::default();
         (*frame_wait_clock).value = value;
         (*frame_wait_clock).limit = limit;
         frame_wait_clock
     }
 
     fn frame_freeze_clock(value: usize, limit: usize) -> FrameFreezeClock {
-        let mut frame_freeze_clock = FrameFreezeClock::new(LogicClock::default());
+        let mut frame_freeze_clock = FrameFreezeClock::default();
         (*frame_freeze_clock).value = value;
         (*frame_freeze_clock).limit = limit;
         frame_freeze_clock

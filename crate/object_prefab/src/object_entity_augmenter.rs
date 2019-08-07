@@ -1,6 +1,5 @@
 use amethyst::{core::transform::Transform, ecs::Entity, renderer::transparent::Transparent};
 use kinematic_model::config::{Position, Velocity};
-use logic_clock::LogicClock;
 use object_model::{loaded::ObjectWrapper, play::Mirrored};
 use sequence_model::play::{FrameIndexClock, FrameWaitClock, SequenceStatus};
 
@@ -85,12 +84,12 @@ impl ObjectEntityAugmenter {
         }
         if frame_index_clocks.get(entity).is_none() {
             frame_index_clocks
-                .insert(entity, FrameIndexClock::new(LogicClock::new(UNINITIALIZED)))
+                .insert(entity, FrameIndexClock::new(UNINITIALIZED))
                 .expect("Failed to insert frame_index_clock component.");
         }
         if frame_wait_clocks.get(entity).is_none() {
             frame_wait_clocks
-                .insert(entity, FrameWaitClock::new(LogicClock::new(UNINITIALIZED)))
+                .insert(entity, FrameWaitClock::new(UNINITIALIZED))
                 .expect("Failed to insert frame_wait_clock component.");
         }
     }

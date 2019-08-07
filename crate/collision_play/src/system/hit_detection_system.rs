@@ -145,7 +145,6 @@ mod tests {
             HitRepeatTrackers,
         },
     };
-    use logic_clock::LogicClock;
     use object_status_model::config::StunPoints;
     use pretty_assertions::assert_eq;
     use shape_model::Volume;
@@ -333,10 +332,7 @@ mod tests {
 
     fn hit_repeat_trackers(entity_to: Entity) -> HitRepeatTrackers {
         let mut slot_map = SlotMap::new();
-        slot_map.insert(HitRepeatTracker::new(
-            entity_to,
-            HitRepeatClock::new(LogicClock::new(4)),
-        ));
+        slot_map.insert(HitRepeatTracker::new(entity_to, HitRepeatClock::new(4)));
         HitRepeatTrackers::new(slot_map)
     }
 

@@ -155,7 +155,6 @@ mod tests {
     use application_test_support::{AutexousiousApplication, SequenceQueries};
     use assets_test::CHAR_BAT_SLUG;
     use character_model::config::CharacterSequenceId;
-    use logic_clock::LogicClock;
     use sequence_model::{
         config::Wait,
         loaded::{WaitSequence, WaitSequenceHandle},
@@ -253,9 +252,9 @@ mod tests {
         frame_wait_clock_limit: usize,
         frame_component_data_handle_initial: Option<WaitSequenceHandle>,
     ) {
-        let mut frame_index_clock = FrameIndexClock::new(LogicClock::new(frame_index_clock_limit));
+        let mut frame_index_clock = FrameIndexClock::new(frame_index_clock_limit);
         (*frame_index_clock).value = frame_index_clock_value;
-        let mut frame_wait_clock = FrameWaitClock::new(LogicClock::new(frame_wait_clock_limit));
+        let mut frame_wait_clock = FrameWaitClock::new(frame_wait_clock_limit);
         (*frame_wait_clock).value = frame_wait_clock_value;
 
         let entity = {
