@@ -5,9 +5,9 @@ use numeric_newtype_derive::numeric_newtype;
 use serde::{Deserialize, Serialize};
 use specs_derive::Component;
 
-/// Limit for charge points of an object.
+/// Number of ticks to wait between charges.
 #[numeric_newtype]
 #[derive(Component, Debug, Derivative, Deserialize, Hash, Serialize)]
 #[derivative(Default)]
 #[storage(VecStorage)]
-pub struct ChargeLimit(#[derivative(Default(value = "10"))] pub u32);
+pub struct ChargeDelay(#[derivative(Default(value = "30"))] pub usize);

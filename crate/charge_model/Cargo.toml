@@ -6,6 +6,7 @@ edition = "2018"
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
+derivative = "1.0.2"
 derive-new = "0.5.6"
 derive_deref = "1.1.0"
 derive_more = "0.15.0"

@@ -1084,6 +1084,7 @@ name = "charge_model"
 version = "0.13.0"
 dependencies = [
  "amethyst 0.11.1 (git+https://github.com/amethyst/amethyst.git)",
+ "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_more 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
