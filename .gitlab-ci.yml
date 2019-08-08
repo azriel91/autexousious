@@ -124,7 +124,7 @@ linux:release:
     - rustc --version -v
     - cargo install-update -i hull
 
-windows:debug:
+.windows:debug:
   <<: *windows_job_common
   script:
     - cargo test --no-run
