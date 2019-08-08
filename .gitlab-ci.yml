@@ -84,7 +84,6 @@ nightly:conformance:
     - scripts/install_cargo_update.sh
     - *install_update_cargo_subcommands
     - cargo install-update -i cargo-make hull
-    - rm -rf ./target
 
 linux:debug:
   <<: *linux_job_common
