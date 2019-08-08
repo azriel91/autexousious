@@ -1087,6 +1087,7 @@ dependencies = [
  "derive-new 0.5.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_more 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "logic_clock 0.12.0",
  "numeric_newtype_derive 0.12.0",
  "serde 1.0.97 (registry+https://github.com/rust-lang/crates.io-index)",
  "specs-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
