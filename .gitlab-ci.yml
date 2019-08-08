@@ -77,7 +77,7 @@ nightly:conformance:
   variables:
     CARGO_MAKE_RUN_CODECOV: 'true'
     RUSTUP_TOOLCHAIN: stable-x86_64-unknown-linux-gnu
-    DISPLAY: ':1'
+    DISPLAY: ':0'
   before_script:
     - *print_tool_versions_linux
     - scripts/install_packages_linux.sh
@@ -92,7 +92,7 @@ linux:debug:
     - time cargo test -j 4 --no-run
     - time cargo test -- --nocapture
   after_script:
-    - 'export DISPLAY=:1'
+    - 'export DISPLAY=:0'
     - scripts/workspace_coverage.sh
     - grep -F merged_files ./target/coverage/merged/index.js | grep -o '"covered":"[0-9]\+\.[0-9]\+"'
     - bash <(curl -s https://codecov.io/bash) -s ./target/coverage/merged
