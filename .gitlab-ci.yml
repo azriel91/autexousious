@@ -89,7 +89,7 @@ nightly:conformance:
 linux:debug:
   <<: *linux_job_common
   script:
-    - time cargo test --no-run
+    - time cargo test -j 4 --no-run
     - time cargo test -- --nocapture
   after_script:
     - 'export DISPLAY=:1'
@@ -101,7 +101,7 @@ linux:debug:
 linux:release:
   <<: *linux_job_common
   script:
-    - time cargo test --no-run --release
+    - time cargo test -j 4 --no-run --release
     - time cargo test --release -- --nocapture
     - ./scripts/publish_prepare_app.sh
   artifacts:
