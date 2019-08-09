@@ -2,18 +2,31 @@
 # `object_loader.rs`.
 
 [sequences.stand]
+
+  # Used in the following tests:
+  #
+  # * `CharacterControlTransitionsTransitionSystem`
+  [sequences.stand.transitions]
+    press_attack = "stand_attack_0"
+
   [[sequences.stand.frames]]
     wait = 1
     sprite = { sheet = 0, index = 5 }
     body = [{ box = { x = 169, y = 5, w = 12, h = 20 } }]
 
-    # Used in `CharacterControlTransitionsTransitionSystem` tests.
     [sequences.stand.frames.transitions]
-      press_attack = "stand_attack_0"
       press_jump = "jump"
-      hold_jump = { next = "dash_forward", sp = 10 }
-      hold_defend = "flinch_0"
-      release_special = [{ next = "dash_back", charge = 10 }]
+      hold_jump = { next = "dash_forward", requirements = [{ sp = 10 }] }
+      hold_defend = { next = "flinch_0", requirements = [{ input_dir_x = "same" }] }
+      release_special = [{ next = "dash_back", requirements = [{ charge = 10 }] }]
+
+  [[sequences.stand.frames]]
+    wait = 1
+    sprite = { sheet = 0, index = 5 }
+    body = [{ box = { x = 169, y = 5, w = 12, h = 20 } }]
+
+    [sequences.stand.frames.transitions]
+      press_attack = "stand_attack_1"
 
 [sequences.stand_attack_0]
   [[sequences.stand_attack_0.frames]]

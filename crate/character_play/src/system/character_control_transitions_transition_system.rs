@@ -17,8 +17,8 @@ use game_input_model::{ControlAction, ControlActionEventData, ControlInputEvent}
 use named_type::NamedType;
 use named_type_derive::NamedType;
 use sequence_model::loaded::{
-    ControlTransition, ControlTransitionHold, ControlTransitionLike, ControlTransitionPress,
-    ControlTransitionRelease,
+    ControlTransition, ControlTransitionDefault, ControlTransitionHold, ControlTransitionLike,
+    ControlTransitionPress, ControlTransitionRelease,
 };
 use shred_derive::SystemData;
 
@@ -92,8 +92,8 @@ impl CharacterControlTransitionsTransitionSystem {
                 .iter()
                 .filter_map(|character_control_transition| {
                     let control_transition = *character_control_transition.control_transition();
-                    let control_transition_requirement =
-                        character_control_transition.control_transition_requirement;
+                    let control_transition_requirements =
+                        &character_control_transition.control_transition_requirements;
 
                     match control_transition {
                         ControlTransition::Press(ControlTransitionPress {
@@ -101,7 +101,7 @@ impl CharacterControlTransitionsTransitionSystem {
                             sequence_id,
                         }) => {
                             if value && control_action == action {
-                                Some((sequence_id, control_transition_requirement))
+                                Some((sequence_id, control_transition_requirements))
                             } else {
                                 None
                             }
@@ -111,30 +111,29 @@ impl CharacterControlTransitionsTransitionSystem {
                             sequence_id,
                         }) => {
                             if !value && control_action == action {
-                                Some((sequence_id, control_transition_requirement))
+                                Some((sequence_id, control_transition_requirements))
                             } else {
                                 None
                             }
                         }
                         ControlTransition::Hold(control_transition_hold) => {
                             Self::hold_transition(control_transition_hold, *controller_input)
-                                .map(|transition| (transition, control_transition_requirement))
+                                .map(|transition| (transition, control_transition_requirements))
+                        }
+                        ControlTransition::Default(ControlTransitionDefault { sequence_id }) => {
+                            Some((sequence_id, control_transition_requirements))
                         }
                     }
                 })
-                .filter_map(|(sequence_id, control_transition_requirement)| {
-                    if let Some(control_transition_requirement) = control_transition_requirement {
-                        if Self::transition_requirement_met(
-                            control_transition_requirement_system_data,
-                            control_transition_requirement,
-                            entity,
-                        ) {
-                            Some(sequence_id)
-                        } else {
-                            None
-                        }
-                    } else {
+                .filter_map(|(sequence_id, control_transition_requirements)| {
+                    if Self::transition_requirements_met(
+                        control_transition_requirement_system_data,
+                        &control_transition_requirements,
+                        entity,
+                    ) {
                         Some(sequence_id)
+                    } else {
+                        None
                     }
                 })
                 .next();
@@ -179,33 +178,27 @@ impl CharacterControlTransitionsTransitionSystem {
                         .filter_map(|character_control_transition| {
                             let control_transition =
                                 character_control_transition.control_transition();
-                            let control_transition_requirement =
-                                character_control_transition.control_transition_requirement;
+                            let control_transition_requirements =
+                                &character_control_transition.control_transition_requirements;
 
                             if let ControlTransition::Hold(control_transition_hold) =
                                 control_transition
                             {
                                 Self::hold_transition(*control_transition_hold, *controller_input)
-                                    .map(|transition| (transition, control_transition_requirement))
+                                    .map(|transition| (transition, control_transition_requirements))
                             } else {
                                 None
                             }
                         })
-                        .filter_map(|(sequence_id, control_transition_requirement)| {
-                            if let Some(control_transition_requirement) =
-                                control_transition_requirement
-                            {
-                                if Self::transition_requirement_met(
-                                    control_transition_requirement_system_data,
-                                    control_transition_requirement,
-                                    entity,
-                                ) {
-                                    Some(sequence_id)
-                                } else {
-                                    None
-                                }
-                            } else {
+                        .filter_map(|(sequence_id, control_transition_requirements)| {
+                            if Self::transition_requirements_met(
+                                control_transition_requirement_system_data,
+                                &control_transition_requirements,
+                                entity,
+                            ) {
                                 Some(sequence_id)
+                            } else {
+                                None
                             }
                         })
                         .next();
@@ -264,17 +257,36 @@ impl CharacterControlTransitionsTransitionSystem {
         }
     } // kcov-ignore
 
-    fn transition_requirement_met(
+    fn transition_requirements_met(
         ControlTransitionRequirementSystemData {
-            health_pointses: _health_pointses,
-            skill_pointses: _skill_pointses,
-            charge_pointses: _charge_pointses,
+            health_pointses,
+            skill_pointses,
+            charge_pointses,
+            controller_inputs,
+            mirroreds,
         }: &ControlTransitionRequirementSystemData,
-        _control_transition_requirement: ControlTransitionRequirement,
-        _entity: Entity,
+        control_transition_requirements: &[ControlTransitionRequirement],
+        entity: Entity,
     ) -> bool {
-        // TODO: Check if character meets requirement.
-        true
+        let (health_points, skill_points, charge_points, controller_input, mirrored) = (
+            health_pointses.get(entity).copied(),
+            skill_pointses.get(entity).copied(),
+            charge_pointses.get(entity).copied(),
+            controller_inputs.get(entity).copied(),
+            mirroreds.get(entity).copied(),
+        );
+
+        control_transition_requirements
+            .iter()
+            .all(|control_transition_requirement| {
+                control_transition_requirement.is_met(
+                    health_points,
+                    skill_points,
+                    charge_points,
+                    controller_input,
+                    mirrored,
+                )
+            })
     }
 }
 
@@ -344,9 +356,12 @@ mod tests {
     use application_test_support::{AutexousiousApplication, ObjectQueries, SequenceQueries};
     use assets_test::CHAR_BAT_SLUG;
     use character_model::{config::CharacterSequenceId, loaded::CharacterControlTransitionsHandle};
+    use derivative::Derivative;
     use game_input::ControllerInput;
     use game_input_model::{ControlAction, ControlActionEventData, ControlInputEvent};
+    use object_model::play::{ChargePoints, HealthPoints, Mirrored, SkillPoints};
     use object_type::ObjectType;
+    use shred_derive::SystemData;
 
     use super::CharacterControlTransitionsTransitionSystem;
 
@@ -386,6 +401,7 @@ mod tests {
     fn inserts_transition_for_hold() -> Result<(), Error> {
         let mut controller_input = ControllerInput::default();
         controller_input.defend = true;
+        controller_input.x_axis_value = 1.;
 
         run_test(
             CharacterSequenceId::Stand,
@@ -446,15 +462,15 @@ mod tests {
                         0,
                     );
                 {
-                    let (
+                    let TestSystemData {
                         mut character_sequence_ids,
                         mut character_control_transitions_handles,
+                        mut health_pointses,
+                        mut skill_pointses,
+                        mut charge_pointses,
+                        mut mirroreds,
                         mut controller_inputs,
-                    ) = world.system_data::<(
-                        WriteStorage<'_, CharacterSequenceId>,
-                        WriteStorage<'_, CharacterControlTransitionsHandle>,
-                        WriteStorage<'_, ControllerInput>,
-                    )>();
+                    } = world.system_data::<TestSystemData>();
 
                     character_sequence_ids
                         .insert(entity, setup_sequence_id)
@@ -462,6 +478,18 @@ mod tests {
                     character_control_transitions_handles
                         .insert(entity, character_control_transitions_handle)
                         .expect("Failed to insert `CharacterControlTransitionsHandle` component.");
+                    health_pointses
+                        .insert(entity, HealthPoints::new(100))
+                        .expect("Failed to insert `HealthPoints` component.");
+                    skill_pointses
+                        .insert(entity, SkillPoints::new(100))
+                        .expect("Failed to insert `SkillPoints` component.");
+                    charge_pointses
+                        .insert(entity, ChargePoints::new(100))
+                        .expect("Failed to insert `ChargePoints` component.");
+                    mirroreds
+                        .insert(entity, Mirrored::new(false))
+                        .expect("Failed to insert `Mirrored` component.");
 
                     if let Some(setup_controller_input) = setup_controller_input {
                         controller_inputs
@@ -493,4 +521,23 @@ mod tests {
         let mut ec = world.write_resource::<EventChannel<ControlInputEvent>>();
         ec.single_write(event);
     } // kcov-ignore
+
+    #[derive(Derivative, SystemData)]
+    #[derivative(Debug)]
+    struct TestSystemData<'s> {
+        #[derivative(Debug = "ignore")]
+        character_sequence_ids: WriteStorage<'s, CharacterSequenceId>,
+        #[derivative(Debug = "ignore")]
+        character_control_transitions_handles: WriteStorage<'s, CharacterControlTransitionsHandle>,
+        #[derivative(Debug = "ignore")]
+        health_pointses: WriteStorage<'s, HealthPoints>,
+        #[derivative(Debug = "ignore")]
+        skill_pointses: WriteStorage<'s, SkillPoints>,
+        #[derivative(Debug = "ignore")]
+        charge_pointses: WriteStorage<'s, ChargePoints>,
+        #[derivative(Debug = "ignore")]
+        mirroreds: WriteStorage<'s, Mirrored>,
+        #[derivative(Debug = "ignore")]
+        controller_inputs: WriteStorage<'s, ControllerInput>,
+    }
 }

@@ -2,6 +2,7 @@
 
 pub use self::{
     control_transition::ControlTransition,
+    control_transition_default::ControlTransitionDefault,
     control_transition_hold::ControlTransitionHold,
     control_transition_like::ControlTransitionLike,
     control_transition_press::ControlTransitionPress,
@@ -13,6 +14,7 @@ pub use self::{
 };
 
 mod control_transition;
+mod control_transition_default;
 mod control_transition_hold;
 mod control_transition_like;
 mod control_transition_press;

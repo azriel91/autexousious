@@ -43,6 +43,9 @@ mod test {
         [sequences.stand]
           next = "walk"
 
+          [sequences.stand.transitions]
+          press_defend = "stand_attack_1"
+
           [[sequences.stand.frames]]
             wait = 5
             sprite = { sheet = 1, index = 3 }
@@ -52,9 +55,9 @@ mod test {
               press_attack = "stand_attack_0"
 
               release_attack = [
-                { next = "walk", charge = 90 },
-                { next = "run", sp = 50 },
-                { next = "run_stop", hp = 30 },
+                { next = "walk", requirements = [{ charge = 90 }] },
+                { next = "run", requirements = [{ sp = 50 }] },
+                { next = "run_stop", requirements = [{ hp = 30 }] },
               ]
 
               hold_jump = { next = "jump" }
@@ -88,38 +91,45 @@ mod test {
                     vec![
                         ControlTransitionSingle {
                             next: CharacterSequenceId::Walk,
-                            extra: ControlTransitionRequirement {
-                                charge: ChargePoints::new(90),
-                                ..Default::default()
-                            },
+                            requirements: vec![ControlTransitionRequirement::Charge(
+                                ChargePoints::new(90),
+                            )],
                         },
                         ControlTransitionSingle {
                             next: CharacterSequenceId::Run,
-                            extra: ControlTransitionRequirement {
-                                sp: SkillPoints::new(50),
-                                ..Default::default()
-                            },
+                            requirements: vec![ControlTransitionRequirement::Sp(SkillPoints::new(
+                                50,
+                            ))],
                         },
                         ControlTransitionSingle {
                             next: CharacterSequenceId::RunStop,
-                            extra: ControlTransitionRequirement {
-                                hp: HealthPoints::new(30),
-                                ..Default::default()
-                            },
+                            requirements: vec![ControlTransitionRequirement::Hp(
+                                HealthPoints::new(30),
+                            )],
                         },
                     ],
                 ))),
                 hold_jump: Some(ControlTransition::Single(ControlTransitionSingle {
                     next: CharacterSequenceId::Jump,
-                    extra: ControlTransitionRequirement::default(),
+                    requirements: vec![],
                 })),
                 ..Default::default()
             }, // kcov-ignore
         )];
-        let sequence = CharacterSequence::new(ObjectSequence::new(
-            SequenceEndTransition::SequenceId(CharacterSequenceId::Walk),
-            frames,
-        ));
+
+        let character_control_transitions = CharacterControlTransitions {
+            press_defend: Some(ControlTransition::SequenceId(
+                CharacterSequenceId::StandAttack1,
+            )),
+            ..Default::default()
+        };
+        let sequence = CharacterSequence::new(
+            ObjectSequence::new(
+                SequenceEndTransition::SequenceId(CharacterSequenceId::Walk),
+                frames,
+            ),
+            Some(character_control_transitions),
+        );
         let mut sequences = HashMap::new();
         sequences.insert(CharacterSequenceId::Stand, sequence);
         let object_definition = ObjectDefinition::new(sequences);

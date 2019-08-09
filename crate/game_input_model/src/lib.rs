@@ -29,6 +29,8 @@ pub use crate::{
     player_axis_control::PlayerAxisControl,
 };
 
+pub mod config;
+
 mod axis;
 mod control_action;
 mod control_bindings;

@@ -12,7 +12,7 @@ use sequence_model::loaded::ControlTransitions;
 use crate::{config::CharacterSequenceId, loaded::CharacterControlTransition};
 
 /// Sequence ID to transition to when a `ControlAction` is pressed, held, or released.
-#[derive(Clone, Debug, Derivative, Deref, DerefMut, From, PartialEq, Eq, new)]
+#[derive(Clone, Debug, Derivative, Deref, DerefMut, From, PartialEq, new)]
 #[derivative(Default(bound = ""))]
 pub struct CharacterControlTransitions(
     pub ControlTransitions<CharacterSequenceId, CharacterControlTransition>,

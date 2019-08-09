@@ -7,6 +7,7 @@ use crate::config::{ControlTransitionSingle, SequenceId};
 /// Configuration type for transition sequence ID.
 #[derive(Clone, Debug, Deref, DerefMut, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
 #[serde(deny_unknown_fields)]
-pub struct ControlTransitionMultiple<SeqId, Extra>(pub Vec<ControlTransitionSingle<SeqId, Extra>>)
+pub struct ControlTransitionMultiple<SeqId, Req>(pub Vec<ControlTransitionSingle<SeqId, Req>>)
 where
-    SeqId: SequenceId;
+    SeqId: SequenceId,
+    Req: Default;

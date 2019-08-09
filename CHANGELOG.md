@@ -2,6 +2,11 @@
 
 ## 0.13.0 (unreleased)
 
+### Added
+
+* Default control input transitions for each sequence. ([#115])
+* Default control input transitions for characters. ([#115])
+
 ### Changed
 
 * Sequence component updates are done in parallel. ([#147])
@@ -12,6 +17,7 @@
 * `spawn_play` flakey test segmentation fault. ([#145])
 
 [#113]: https://gitlab.com/azriel91/autexousious/issues/113
+[#115]: https://gitlab.com/azriel91/autexousious/issues/115
 [#145]: https://gitlab.com/azriel91/autexousious/issues/145
 [#147]: https://gitlab.com/azriel91/autexousious/issues/147
 
