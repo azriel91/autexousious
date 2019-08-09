@@ -85,18 +85,18 @@ nightly:conformance:
     - *install_update_cargo_subcommands
     - cargo install-update -i cargo-make hull
 
-linux:debug:
+# Disabled until CI becomes stable, perhaps without using Vulkan.
+.linux:debug:
   <<: *linux_job_common
   script:
     - time cargo test -j 4 --no-run
     - time cargo test -- --nocapture
-  # Disabled until CI becomes stable, perhaps without using Vulkan.
-  # after_script:
-  #   - 'export DISPLAY=:0'
-  #   - scripts/workspace_coverage.sh
-  #   - grep -F merged_files ./target/coverage/merged/index.js | grep -o '"covered":"[0-9]\+\.[0-9]\+"'
-  #   - bash <(curl -s https://codecov.io/bash) -s ./target/coverage/merged
-  # coverage: '/"covered":"\d+\.\d+"/'
+  after_script:
+    - 'export DISPLAY=:0'
+    - scripts/workspace_coverage.sh
+    - grep -F merged_files ./target/coverage/merged/index.js | grep -o '"covered":"[0-9]\+\.[0-9]\+"'
+    - bash <(curl -s https://codecov.io/bash) -s ./target/coverage/merged
+  coverage: '/"covered":"\d+\.\d+"/'
 
 linux:release:
   <<: *linux_job_common
