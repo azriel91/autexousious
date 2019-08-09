@@ -23,7 +23,7 @@ pub use crate::{
     control_bindings::ControlBindings,
     controller_config::ControllerConfig,
     controller_id::ControllerId,
-    event::{AxisEventData, ControlActionEventData, ControlInputEvent},
+    event::{AxisMoveEventData, ControlActionEventData, ControlInputEvent},
     input_config::InputConfig,
     player_action_control::PlayerActionControl,
     player_axis_control::PlayerAxisControl,

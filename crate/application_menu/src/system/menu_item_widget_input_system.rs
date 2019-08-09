@@ -10,7 +10,7 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use game_input_model::{
-    Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent,
+    Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
 };
 use log::debug;
 use shred_derive::SystemData;
@@ -131,13 +131,13 @@ where
             .next()
         {
             match event {
-                ControlInputEvent::Axis(axis_event_data) => Self::handle_axis_event(
+                ControlInputEvent::AxisMoved(axis_move_event_data) => Self::handle_axis_event(
                     menu_item_widget_states,
                     menu_item_entity,
                     siblings,
-                    axis_event_data,
+                    axis_move_event_data,
                 ),
-                ControlInputEvent::ControlActionPressed(control_action_event_data) => {
+                ControlInputEvent::ControlActionPress(control_action_event_data) => {
                     Self::handle_control_action_event(
                         menu_items,
                         menu_ec,
@@ -145,7 +145,7 @@ where
                         control_action_event_data,
                     )
                 }
-                ControlInputEvent::ControlActionReleased(..) => {}
+                ControlInputEvent::ControlActionRelease(..) => {}
             }
         }
     }
@@ -154,20 +154,20 @@ where
         menu_item_widget_states: &mut WriteStorage<'_, MenuItemWidgetState>,
         menu_item_entity: Entity,
         siblings: &Siblings,
-        axis_event_data: AxisEventData,
+        axis_move_event_data: AxisMoveEventData,
     ) {
         let menu_item_widget_state = *menu_item_widget_states
             .get(menu_item_entity)
             .expect("Expected `MenuItemWidgetState` component to exist.");
-        match (menu_item_widget_state, axis_event_data.axis) {
-            (MenuItemWidgetState::Active, Axis::Z) if axis_event_data.value < 0. => {
+        match (menu_item_widget_state, axis_move_event_data.axis) {
+            (MenuItemWidgetState::Active, Axis::Z) if axis_move_event_data.value < 0. => {
                 Self::select_previous_menu_item(
                     menu_item_widget_states,
                     menu_item_entity,
                     siblings,
                 );
             }
-            (MenuItemWidgetState::Active, Axis::Z) if axis_event_data.value > 0. => {
+            (MenuItemWidgetState::Active, Axis::Z) if axis_move_event_data.value > 0. => {
                 Self::select_next_menu_item(menu_item_widget_states, menu_item_entity, siblings);
             }
             _ => {}
@@ -242,7 +242,7 @@ mod test {
     };
     use amethyst_test::AmethystApplication;
     use game_input_model::{
-        Axis, AxisEventData, ControlAction, ControlActionEventData, ControlBindings,
+        Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlBindings,
         ControlInputEvent,
     };
     use strum::IntoEnumIterator;
@@ -486,7 +486,7 @@ mod test {
     }
 
     fn press_up(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::Axis(AxisEventData {
+        ControlInputEvent::AxisMoved(AxisMoveEventData {
             entity,
             axis: Axis::Z,
             value: -1.,
@@ -494,7 +494,7 @@ mod test {
     }
 
     fn press_down(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::Axis(AxisEventData {
+        ControlInputEvent::AxisMoved(AxisMoveEventData {
             entity,
             axis: Axis::Z,
             value: 1.,
@@ -502,14 +502,14 @@ mod test {
     }
 
     fn press_jump(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::ControlActionPressed(ControlActionEventData {
+        ControlInputEvent::ControlActionPress(ControlActionEventData {
             entity,
             control_action: ControlAction::Jump,
         })
     }
 
     fn press_attack(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::ControlActionPressed(ControlActionEventData {
+        ControlInputEvent::ControlActionPress(ControlActionEventData {
             entity,
             control_action: ControlAction::Attack,
         })

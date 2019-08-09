@@ -3,7 +3,7 @@ use asset_model::loaded::SlugAndHandle;
 use derivative::Derivative;
 use derive_new::new;
 use game_input_model::{
-    Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent,
+    Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
 };
 use game_model::loaded::MapPrefabs;
 use log::debug;
@@ -124,20 +124,20 @@ impl MapSelectionWidgetInputSystem {
     ) {
         if let Some(map_selection_widget) = map_selection_widgets.join().next() {
             match event {
-                ControlInputEvent::Axis(axis_event_data) => Self::handle_axis_event(
+                ControlInputEvent::AxisMoved(axis_move_event_data) => Self::handle_axis_event(
                     &map_prefabs,
                     map_selection_ec,
                     map_selection_widget,
-                    axis_event_data,
+                    axis_move_event_data,
                 ),
-                ControlInputEvent::ControlActionPressed(control_action_event_data) => {
+                ControlInputEvent::ControlActionPress(control_action_event_data) => {
                     Self::handle_control_action_event(
                         map_selection_ec,
                         map_selection_widget,
                         control_action_event_data,
                     )
                 }
-                ControlInputEvent::ControlActionReleased(..) => {}
+                ControlInputEvent::ControlActionRelease(..) => {}
             }
         }
     }
@@ -146,13 +146,13 @@ impl MapSelectionWidgetInputSystem {
         map_prefabs: &MapPrefabs,
         map_selection_ec: &mut EventChannel<MapSelectionEvent>,
         map_selection_widget: &mut MapSelectionWidget,
-        axis_event_data: AxisEventData,
+        axis_move_event_data: AxisMoveEventData,
     ) {
-        let map_selection = match (map_selection_widget.state, axis_event_data.axis) {
-            (WidgetState::MapSelect, Axis::X) if axis_event_data.value < 0. => {
+        let map_selection = match (map_selection_widget.state, axis_move_event_data.axis) {
+            (WidgetState::MapSelect, Axis::X) if axis_move_event_data.value < 0. => {
                 Some(Self::select_previous_map(map_prefabs, map_selection_widget))
             }
-            (WidgetState::MapSelect, Axis::X) if axis_event_data.value > 0. => {
+            (WidgetState::MapSelect, Axis::X) if axis_move_event_data.value > 0. => {
                 Some(Self::select_next_map(map_prefabs, map_selection_widget))
             }
             _ => None,
@@ -243,7 +243,7 @@ mod test {
     use asset_model::loaded::SlugAndHandle;
     use assets_test::MAP_FADE_SLUG;
     use game_input_model::{
-        Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent,
+        Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
     };
     use game_model::loaded::MapPrefabs;
     use map_model::loaded::Map;
@@ -473,7 +473,7 @@ mod test {
     }
 
     fn press_left(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::Axis(AxisEventData {
+        ControlInputEvent::AxisMoved(AxisMoveEventData {
             entity,
             axis: Axis::X,
             value: -1.,
@@ -481,7 +481,7 @@ mod test {
     }
 
     fn press_right(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::Axis(AxisEventData {
+        ControlInputEvent::AxisMoved(AxisMoveEventData {
             entity,
             axis: Axis::X,
             value: 1.,
@@ -489,14 +489,14 @@ mod test {
     }
 
     fn press_jump(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::ControlActionPressed(ControlActionEventData {
+        ControlInputEvent::ControlActionPress(ControlActionEventData {
             entity,
             control_action: ControlAction::Jump,
         })
     }
 
     fn press_attack(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::ControlActionPressed(ControlActionEventData {
+        ControlInputEvent::ControlActionPress(ControlActionEventData {
             entity,
             control_action: ControlAction::Attack,
         })

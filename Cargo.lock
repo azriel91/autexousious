@@ -874,6 +874,7 @@ version = "0.12.0"
 dependencies = [
  "amethyst 0.11.1 (git+https://github.com/amethyst/amethyst.git)",
  "amethyst_test 0.2.0 (git+https://github.com/amethyst/amethyst.git)",
+ "application 0.12.0",
  "character_model 0.12.0",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.7 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -928,8 +929,11 @@ version = "0.12.0"
 dependencies = [
  "amethyst 0.11.1 (git+https://github.com/amethyst/amethyst.git)",
  "amethyst_test 0.2.0 (git+https://github.com/amethyst/amethyst.git)",
+ "application 0.12.0",
  "application_test_support 0.12.0",
+ "approx 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "assets_test 0.12.0",
+ "character_loading 0.12.0",
  "character_model 0.12.0",
  "character_prefab 0.12.0",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -946,6 +950,7 @@ dependencies = [
  "sequence_model 0.12.0",
  "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "toml 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

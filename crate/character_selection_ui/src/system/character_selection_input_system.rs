@@ -126,7 +126,7 @@ impl<'s> System<'s> for CharacterSelectionInputSystem {
         control_input_ec
             .read(control_input_event_rid)
             .for_each(|ev| {
-                if let ControlInputEvent::ControlActionPressed(control_action_event_data) = ev {
+                if let ControlInputEvent::ControlActionPress(control_action_event_data) = ev {
                     Self::handle_control_action_event(
                         &character_selection_widgets,
                         &mut character_selection_ec,
@@ -280,14 +280,14 @@ mod test {
     }
 
     fn press_jump(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::ControlActionPressed(ControlActionEventData {
+        ControlInputEvent::ControlActionPress(ControlActionEventData {
             entity,
             control_action: ControlAction::Jump,
         })
     }
 
     fn press_attack(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::ControlActionPressed(ControlActionEventData {
+        ControlInputEvent::ControlActionPress(ControlActionEventData {
             entity,
             control_action: ControlAction::Attack,
         })

@@ -5,7 +5,7 @@ use crate::config::SequenceId;
 
 /// Transition to a specified sequence on control input release event.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, new)]
-pub struct ControlTransitionRelease<SeqId>
+pub struct ActionRelease<SeqId>
 where
     SeqId: SequenceId,
 {

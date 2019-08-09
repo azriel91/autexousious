@@ -6,6 +6,9 @@
 
 * Default control input transitions for each sequence. ([#115])
 * Default control input transitions for characters. ([#115])
+* `fallback` control transitions. ([#149])
+* `input_dir_x` control transition requirement. ([#149])
+* `input_dir_z` control transition requirement. ([#149])
 
 ### Changed
 
@@ -20,6 +23,7 @@
 [#115]: https://gitlab.com/azriel91/autexousious/issues/115
 [#145]: https://gitlab.com/azriel91/autexousious/issues/145
 [#147]: https://gitlab.com/azriel91/autexousious/issues/147
+[#149]: https://gitlab.com/azriel91/autexousious/issues/149
 
 ## 0.12.0 (2019-07-05)
 

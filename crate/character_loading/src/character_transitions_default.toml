@@ -14,12 +14,14 @@
   [sequences.walk.transitions]
     press_attack = "stand_attack_0"
     press_jump = "jump"
+    fallback = { next = "stand", requirements = [{ input_dir_x = "none" }, { input_dir_z = "none" }] }
 
 [sequences.run]
   [[sequences.run.frames]]
   [sequences.run.transitions]
     press_jump = "dash_forward"
     press_defend = "dodge"
+    fallback = { next = "run_stop", requirements = [{ input_dir_x = "not_same" }] }
 
 [sequences.run_stop]
   [[sequences.run_stop.frames]]

@@ -2,10 +2,10 @@ use amethyst::assets::{AssetStorage, Loader};
 use character_model::loaded::{CharacterControlTransitions, CharacterControlTransitionsSequence};
 use derivative::Derivative;
 
-/// Resources needed to load a character.
+/// Resources needed to load a control transitions sequence.
 #[derive(Derivative)]
 #[derivative(Debug)]
-pub struct CharacterLoaderParams<'s> {
+pub struct ControlTransitionsSequenceLoaderParams<'s> {
     /// `Loader` to load assets.
     #[derivative(Debug = "ignore")]
     pub loader: &'s Loader,

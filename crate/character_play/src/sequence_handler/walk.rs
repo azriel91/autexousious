@@ -4,7 +4,7 @@ use crate::{
     sequence_handler::{
         common::{
             grounding::AirborneCheck,
-            input::{WalkNoMovementCheck, WalkXMovementCheck, WalkZMovementCheck},
+            input::{WalkXMovementCheck, WalkZMovementCheck},
             status::AliveCheck,
         },
         CharacterSequenceHandler,
@@ -20,7 +20,6 @@ impl CharacterSequenceHandler for Walk {
         [
             AliveCheck::update,
             AirborneCheck::update,
-            WalkNoMovementCheck::update,
             WalkXMovementCheck::update,
             WalkZMovementCheck::update,
         ]
@@ -41,46 +40,6 @@ mod test {
 
     use super::Walk;
     use crate::{sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents};
-
-    #[test]
-    fn reverts_to_stand_when_no_input() {
-        let input = ControllerInput::new(0., 0., false, false, false, false);
-
-        assert_eq!(
-            Some(CharacterSequenceId::Stand),
-            Walk::update(CharacterSequenceUpdateComponents::new(
-                &input,
-                HealthPoints::default(),
-                CharacterSequenceId::Walk,
-                SequenceStatus::default(),
-                &Position::default(),
-                &Velocity::default(),
-                Mirrored::default(),
-                Grounding::default(),
-                RunCounter::Increase(10)
-            ))
-        );
-    }
-
-    #[test]
-    fn reverts_to_stand_with_run_counter_unused_when_no_input_and_run_counter_exceeded() {
-        let input = ControllerInput::new(0., 0., false, false, false, false);
-
-        assert_eq!(
-            Some(CharacterSequenceId::Stand),
-            Walk::update(CharacterSequenceUpdateComponents::new(
-                &input,
-                HealthPoints::default(),
-                CharacterSequenceId::Walk,
-                SequenceStatus::default(),
-                &Position::default(),
-                &Velocity::default(),
-                Mirrored::default(),
-                Grounding::default(),
-                RunCounter::Exceeded
-            ))
-        );
-    }
 
     #[test]
     fn walk_when_x_axis_positive_mirror() {

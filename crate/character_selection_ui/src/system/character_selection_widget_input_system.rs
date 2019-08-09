@@ -8,7 +8,7 @@ use derivative::Derivative;
 use derive_new::new;
 use game_input::InputControlled;
 use game_input_model::{
-    Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent,
+    Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
 };
 use game_model::loaded::CharacterPrefabs;
 use log::debug;
@@ -131,21 +131,21 @@ impl CharacterSelectionWidgetInputSystem {
         event: ControlInputEvent,
     ) {
         match event {
-            ControlInputEvent::Axis(axis_event_data) => {
+            ControlInputEvent::AxisMoved(axis_move_event_data) => {
                 if let (Some(character_selection_widget), Some(input_controlled)) = (
-                    character_selection_widgets.get_mut(axis_event_data.entity),
-                    input_controlleds.get(axis_event_data.entity),
+                    character_selection_widgets.get_mut(axis_move_event_data.entity),
+                    input_controlleds.get(axis_move_event_data.entity),
                 ) {
                     Self::handle_axis_event(
                         &character_prefabs,
                         character_selection_ec,
                         character_selection_widget,
                         *input_controlled,
-                        axis_event_data,
+                        axis_move_event_data,
                     )
                 }
             }
-            ControlInputEvent::ControlActionPressed(control_action_event_data) => {
+            ControlInputEvent::ControlActionPress(control_action_event_data) => {
                 if let (Some(character_selection_widget), Some(input_controlled)) = (
                     character_selection_widgets.get_mut(control_action_event_data.entity),
                     input_controlleds.get(control_action_event_data.entity),
@@ -158,7 +158,7 @@ impl CharacterSelectionWidgetInputSystem {
                     )
                 }
             }
-            ControlInputEvent::ControlActionReleased(..) => {}
+            ControlInputEvent::ControlActionRelease(..) => {}
         }
     }
 
@@ -167,17 +167,18 @@ impl CharacterSelectionWidgetInputSystem {
         character_selection_ec: &mut EventChannel<CharacterSelectionEvent>,
         character_selection_widget: &mut CharacterSelectionWidget,
         input_controlled: InputControlled,
-        axis_event_data: AxisEventData,
+        axis_move_event_data: AxisMoveEventData,
     ) {
-        let character_selection = match (character_selection_widget.state, axis_event_data.axis) {
-            (WidgetState::CharacterSelect, Axis::X) if axis_event_data.value < 0. => Some(
-                Self::select_previous_character(character_prefabs, character_selection_widget),
-            ),
-            (WidgetState::CharacterSelect, Axis::X) if axis_event_data.value > 0. => Some(
-                Self::select_next_character(character_prefabs, character_selection_widget),
-            ),
-            _ => None,
-        };
+        let character_selection =
+            match (character_selection_widget.state, axis_move_event_data.axis) {
+                (WidgetState::CharacterSelect, Axis::X) if axis_move_event_data.value < 0. => Some(
+                    Self::select_previous_character(character_prefabs, character_selection_widget),
+                ),
+                (WidgetState::CharacterSelect, Axis::X) if axis_move_event_data.value > 0. => Some(
+                    Self::select_next_character(character_prefabs, character_selection_widget),
+                ),
+                _ => None,
+            };
 
         if let Some(character_selection) = character_selection {
             let character_selection_event = CharacterSelectionEvent::Switch {
@@ -290,7 +291,7 @@ mod test {
     use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
     use game_input::InputControlled;
     use game_input_model::{
-        Axis, AxisEventData, ControlAction, ControlActionEventData, ControlInputEvent,
+        Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
     };
     use game_model::loaded::CharacterPrefabs;
     use typename::TypeName;
@@ -519,7 +520,7 @@ mod test {
     }
 
     fn press_left(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::Axis(AxisEventData {
+        ControlInputEvent::AxisMoved(AxisMoveEventData {
             entity,
             axis: Axis::X,
             value: -1.,
@@ -527,7 +528,7 @@ mod test {
     }
 
     fn press_right(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::Axis(AxisEventData {
+        ControlInputEvent::AxisMoved(AxisMoveEventData {
             entity,
             axis: Axis::X,
             value: 1.,
@@ -535,14 +536,14 @@ mod test {
     }
 
     fn press_jump(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::ControlActionPressed(ControlActionEventData {
+        ControlInputEvent::ControlActionPress(ControlActionEventData {
             entity,
             control_action: ControlAction::Jump,
         })
     }
 
     fn press_attack(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::ControlActionPressed(ControlActionEventData {
+        ControlInputEvent::ControlActionPress(ControlActionEventData {
             entity,
             control_action: ControlAction::Attack,
         })

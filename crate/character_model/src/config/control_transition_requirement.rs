@@ -1,6 +1,6 @@
 use approx::{relative_eq, relative_ne};
 use game_input::ControllerInput;
-use game_input_model::config::InputDirection;
+use game_input_model::config::{InputDirection, InputDirectionZ};
 use object_model::play::{ChargePoints, HealthPoints, Mirrored, SkillPoints};
 use serde::{Deserialize, Serialize};
 
@@ -14,8 +14,10 @@ pub enum ControlTransitionRequirement {
     Hp(HealthPoints),
     /// `SkillPoints` the object must spend to transition.
     Sp(SkillPoints),
-    /// Whether there is axis input, and if it matches the direction the object is facing.
+    /// Whether or not there is x axis input, and if it matches the direction the object is facing.
     InputDirX(InputDirection),
+    /// Whether or not there is z axis input, and the direction it is in.
+    InputDirZ(InputDirectionZ),
 }
 
 impl ControlTransitionRequirement {
@@ -40,14 +42,19 @@ impl ControlTransitionRequirement {
             }
             ControlTransitionRequirement::InputDirX(input_direction) => {
                 let requirement_met =
-                    Self::input_requirement_met(controller_input, mirrored, input_direction);
+                    Self::input_requirement_met_x(controller_input, mirrored, input_direction);
+                Some(requirement_met)
+            }
+            ControlTransitionRequirement::InputDirZ(input_direction_z) => {
+                let requirement_met =
+                    Self::input_requirement_met_z(controller_input, input_direction_z);
                 Some(requirement_met)
             }
         }
         .unwrap_or(false)
     }
 
-    fn input_requirement_met(
+    fn input_requirement_met_x(
         controller_input: Option<ControllerInput>,
         mirrored: Option<Mirrored>,
         input_direction: InputDirection,
@@ -119,12 +126,36 @@ impl ControlTransitionRequirement {
             }
         }
     }
+
+    fn input_requirement_met_z(
+        controller_input: Option<ControllerInput>,
+        input_direction_z: InputDirectionZ,
+    ) -> bool {
+        if controller_input.is_none() {
+            return false;
+        }
+        let controller_input = controller_input.expect("Unreachable: Already returned if none.");
+        match input_direction_z {
+            InputDirectionZ::None => relative_eq!(0., controller_input.z_axis_value),
+            InputDirectionZ::Up => controller_input.z_axis_value < 0.,
+            InputDirectionZ::Down => controller_input.z_axis_value > 0.,
+            InputDirectionZ::Some => relative_ne!(0., controller_input.z_axis_value),
+            InputDirectionZ::NotUp => {
+                relative_eq!(0., controller_input.z_axis_value)
+                    || controller_input.z_axis_value > 0.
+            }
+            InputDirectionZ::NotDown => {
+                relative_eq!(0., controller_input.z_axis_value)
+                    || controller_input.z_axis_value < 0.
+            }
+        }
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use game_input::ControllerInput;
-    use game_input_model::config::InputDirection;
+    use game_input_model::config::{InputDirection, InputDirectionZ};
     use object_model::play::{ChargePoints, HealthPoints, Mirrored, SkillPoints};
 
     use super::ControlTransitionRequirement;
@@ -186,7 +217,7 @@ mod tests {
         assert!(!requirement.is_met(None, None, charge_points, None, None));
     }
 
-    macro_rules! input_test {
+    macro_rules! input_x_test {
         ($test_name:ident, $variant:ident, $controller_input:expr, $mirrored:expr, true $(,)?) => {
             #[test]
             fn $test_name() {
@@ -213,8 +244,8 @@ mod tests {
     }
 
     // None variant
-    input_test!(
-        input_requirement_met_when_requirement_none_and_input_zero,
+    input_x_test!(
+        input_x_requirement_met_when_requirement_none_and_input_zero,
         None,
         Some(ControllerInput {
             x_axis_value: 0.,
@@ -223,8 +254,8 @@ mod tests {
         None,
         true,
     );
-    input_test!(
-        input_requirement_not_met_when_requirement_none_and_input_positive,
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_none_and_input_positive,
         None,
         Some(ControllerInput {
             x_axis_value: 1.,
@@ -233,8 +264,8 @@ mod tests {
         None,
         false,
     );
-    input_test!(
-        input_requirement_not_met_when_requirement_none_and_input_negative,
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_none_and_input_negative,
         None,
         Some(ControllerInput {
             x_axis_value: -1.,
@@ -243,8 +274,8 @@ mod tests {
         None,
         false,
     );
-    input_test!(
-        input_requirement_not_met_when_requirement_none_and_no_controller_input,
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_none_and_no_controller_input,
         None,
         None,
         None,
@@ -252,8 +283,8 @@ mod tests {
     );
 
     // Same variant
-    input_test!(
-        input_requirement_met_when_requirement_same_and_input_matches_direction,
+    input_x_test!(
+        input_x_requirement_met_when_requirement_same_and_input_matches_direction,
         Same,
         Some(ControllerInput {
             x_axis_value: 1.,
@@ -262,8 +293,8 @@ mod tests {
         Some(Mirrored::new(false)),
         true,
     );
-    input_test!(
-        input_requirement_met_when_requirement_same_and_input_matches_direction_mirrored,
+    input_x_test!(
+        input_x_requirement_met_when_requirement_same_and_input_matches_direction_mirrored,
         Same,
         Some(ControllerInput {
             x_axis_value: -1.,
@@ -272,8 +303,8 @@ mod tests {
         Some(Mirrored::new(true)),
         true,
     );
-    input_test!(
-        input_requirement_not_met_when_requirement_same_and_input_opposes_direction,
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_same_and_input_opposes_direction,
         Same,
         Some(ControllerInput {
             x_axis_value: -1.,
@@ -282,8 +313,8 @@ mod tests {
         Some(Mirrored::new(false)),
         false,
     );
-    input_test!(
-        input_requirement_not_met_when_requirement_same_and_input_opposes_direction_mirrored,
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_same_and_input_opposes_direction_mirrored,
         Same,
         Some(ControllerInput {
             x_axis_value: 1.,
@@ -292,8 +323,8 @@ mod tests {
         Some(Mirrored::new(true)),
         false,
     );
-    input_test!(
-        input_requirement_not_met_when_requirement_same_and_input_zero,
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_same_and_input_zero,
         Same,
         Some(ControllerInput {
             x_axis_value: 0.,
@@ -302,8 +333,8 @@ mod tests {
         Some(Mirrored::new(false)),
         false,
     );
-    input_test!(
-        input_requirement_not_met_when_requirement_same_and_input_zero_mirrored,
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_same_and_input_zero_mirrored,
         Same,
         Some(ControllerInput {
             x_axis_value: 0.,
@@ -312,15 +343,15 @@ mod tests {
         Some(Mirrored::new(true)),
         false,
     );
-    input_test!(
-        input_requirement_not_met_when_requirement_same_and_no_controller_input,
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_same_and_no_controller_input,
         Same,
         None,
         Some(Mirrored::new(true)),
         false,
     );
-    input_test!(
-        input_requirement_not_met_when_requirement_same_and_no_mirrored_component,
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_same_and_no_mirrored_component,
         Same,
         Some(ControllerInput {
             x_axis_value: 1.,
@@ -331,8 +362,8 @@ mod tests {
     );
 
     // Mirrored variant
-    input_test!(
-        input_requirement_not_met_when_requirement_mirrored_and_input_matches_direction,
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_mirrored_and_input_matches_direction,
         Mirrored,
         Some(ControllerInput {
             x_axis_value: 1.,
@@ -341,8 +372,8 @@ mod tests {
         Some(Mirrored::new(false)),
         false,
     );
-    input_test!(
-        input_requirement_not_met_when_requirement_mirrored_and_input_matches_direction_mirrored,
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_mirrored_and_input_matches_direction_mirrored,
         Mirrored,
         Some(ControllerInput {
             x_axis_value: -1.,
@@ -351,8 +382,8 @@ mod tests {
         Some(Mirrored::new(true)),
         false,
     );
-    input_test!(
-        input_requirement_met_when_requirement_mirrored_and_input_opposes_direction,
+    input_x_test!(
+        input_x_requirement_met_when_requirement_mirrored_and_input_opposes_direction,
         Mirrored,
         Some(ControllerInput {
             x_axis_value: -1.,
@@ -361,8 +392,8 @@ mod tests {
         Some(Mirrored::new(false)),
         true,
     );
-    input_test!(
-        input_requirement_met_when_requirement_mirrored_and_input_opposes_direction_mirrored,
+    input_x_test!(
+        input_x_requirement_met_when_requirement_mirrored_and_input_opposes_direction_mirrored,
         Mirrored,
         Some(ControllerInput {
             x_axis_value: 1.,
@@ -371,8 +402,8 @@ mod tests {
         Some(Mirrored::new(true)),
         true,
     );
-    input_test!(
-        input_requirement_not_met_when_requirement_mirrored_and_input_zero,
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_mirrored_and_input_zero,
         Mirrored,
         Some(ControllerInput {
             x_axis_value: 0.,
@@ -381,8 +412,8 @@ mod tests {
         Some(Mirrored::new(false)),
         false,
     );
-    input_test!(
-        input_requirement_not_met_when_requirement_mirrored_and_input_zero_mirrored,
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_mirrored_and_input_zero_mirrored,
         Mirrored,
         Some(ControllerInput {
             x_axis_value: 0.,
@@ -391,15 +422,15 @@ mod tests {
         Some(Mirrored::new(true)),
         false,
     );
-    input_test!(
-        input_requirement_not_met_when_requirement_mirrored_and_no_controller_input,
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_mirrored_and_no_controller_input,
         Mirrored,
         None,
         Some(Mirrored::new(true)),
         false,
     );
-    input_test!(
-        input_requirement_not_met_when_requirement_mirrored_and_no_mirrored_component,
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_mirrored_and_no_mirrored_component,
         Mirrored,
         Some(ControllerInput {
             x_axis_value: 1.,
@@ -410,8 +441,8 @@ mod tests {
     );
 
     // Some variant
-    input_test!(
-        input_requirement_not_met_when_requirement_some_and_input_zero,
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_some_and_input_zero,
         Some,
         Some(ControllerInput {
             x_axis_value: 0.,
@@ -420,8 +451,8 @@ mod tests {
         None,
         false,
     );
-    input_test!(
-        input_requirement_met_when_requirement_some_and_input_positive,
+    input_x_test!(
+        input_x_requirement_met_when_requirement_some_and_input_positive,
         Some,
         Some(ControllerInput {
             x_axis_value: 1.,
@@ -430,8 +461,8 @@ mod tests {
         None,
         true,
     );
-    input_test!(
-        input_requirement_met_when_requirement_some_and_input_negative,
+    input_x_test!(
+        input_x_requirement_met_when_requirement_some_and_input_negative,
         Some,
         Some(ControllerInput {
             x_axis_value: -1.,
@@ -440,8 +471,8 @@ mod tests {
         None,
         true,
     );
-    input_test!(
-        input_requirement_not_met_when_requirement_some_and_no_controller_input,
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_some_and_no_controller_input,
         Some,
         None,
         None,
@@ -449,8 +480,8 @@ mod tests {
     );
 
     // NotSame variant
-    input_test!(
-        input_requirement_not_met_when_requirement_not_same_and_input_matches_direction,
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_not_same_and_input_matches_direction,
         NotSame,
         Some(ControllerInput {
             x_axis_value: 1.,
@@ -459,8 +490,8 @@ mod tests {
         Some(Mirrored::new(false)),
         false,
     );
-    input_test!(
-        input_requirement_not_met_when_requirement_not_same_and_input_matches_direction_mirrored,
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_not_same_and_input_matches_direction_mirrored,
         NotSame,
         Some(ControllerInput {
             x_axis_value: -1.,
@@ -469,8 +500,8 @@ mod tests {
         Some(Mirrored::new(true)),
         false,
     );
-    input_test!(
-        input_requirement_met_when_requirement_not_same_and_input_opposes_direction,
+    input_x_test!(
+        input_x_requirement_met_when_requirement_not_same_and_input_opposes_direction,
         NotSame,
         Some(ControllerInput {
             x_axis_value: -1.,
@@ -479,8 +510,8 @@ mod tests {
         Some(Mirrored::new(false)),
         true,
     );
-    input_test!(
-        input_requirement_met_when_requirement_not_same_and_input_opposes_direction_mirrored,
+    input_x_test!(
+        input_x_requirement_met_when_requirement_not_same_and_input_opposes_direction_mirrored,
         NotSame,
         Some(ControllerInput {
             x_axis_value: 1.,
@@ -489,8 +520,8 @@ mod tests {
         Some(Mirrored::new(true)),
         true,
     );
-    input_test!(
-        input_requirement_met_when_requirement_not_same_and_input_zero,
+    input_x_test!(
+        input_x_requirement_met_when_requirement_not_same_and_input_zero,
         NotSame,
         Some(ControllerInput {
             x_axis_value: 0.,
@@ -499,8 +530,8 @@ mod tests {
         Some(Mirrored::new(false)),
         true,
     );
-    input_test!(
-        input_requirement_met_when_requirement_not_same_and_input_zero_mirrored,
+    input_x_test!(
+        input_x_requirement_met_when_requirement_not_same_and_input_zero_mirrored,
         NotSame,
         Some(ControllerInput {
             x_axis_value: 0.,
@@ -509,15 +540,15 @@ mod tests {
         Some(Mirrored::new(true)),
         true,
     );
-    input_test!(
-        input_requirement_not_met_when_requirement_not_same_and_no_controller_input,
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_not_same_and_no_controller_input,
         NotSame,
         None,
         Some(Mirrored::new(true)),
         false,
     );
-    input_test!(
-        input_requirement_not_met_when_requirement_not_same_and_no_mirrored_component,
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_not_same_and_no_mirrored_component,
         NotSame,
         Some(ControllerInput {
             x_axis_value: 1.,
@@ -528,8 +559,8 @@ mod tests {
     );
 
     // NotMirrored variant
-    input_test!(
-        input_requirement_met_when_requirement_not_mirrored_and_input_matches_direction,
+    input_x_test!(
+        input_x_requirement_met_when_requirement_not_mirrored_and_input_matches_direction,
         NotMirrored,
         Some(ControllerInput {
             x_axis_value: 1.,
@@ -538,8 +569,8 @@ mod tests {
         Some(Mirrored::new(false)),
         true,
     );
-    input_test!(
-        input_requirement_met_when_requirement_not_mirrored_and_input_matches_direction_mirrored,
+    input_x_test!(
+        input_x_requirement_met_when_requirement_not_mirrored_and_input_matches_direction_mirrored,
         NotMirrored,
         Some(ControllerInput {
             x_axis_value: -1.,
@@ -548,8 +579,8 @@ mod tests {
         Some(Mirrored::new(true)),
         true,
     );
-    input_test!(
-        input_requirement_not_met_when_requirement_not_mirrored_and_input_opposes_direction,
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_not_mirrored_and_input_opposes_direction,
         NotMirrored,
         Some(ControllerInput {
             x_axis_value: -1.,
@@ -558,8 +589,8 @@ mod tests {
         Some(Mirrored::new(false)),
         false,
     );
-    input_test!(
-        input_requirement_not_met_when_requirement_not_mirrored_and_input_opposes_direction_mirrored,
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_not_mirrored_and_input_opposes_direction_mirrored,
         NotMirrored,
         Some(ControllerInput {
             x_axis_value: 1.,
@@ -568,8 +599,8 @@ mod tests {
         Some(Mirrored::new(true)),
         false,
     );
-    input_test!(
-        input_requirement_met_when_requirement_not_mirrored_and_input_zero,
+    input_x_test!(
+        input_x_requirement_met_when_requirement_not_mirrored_and_input_zero,
         NotMirrored,
         Some(ControllerInput {
             x_axis_value: 0.,
@@ -578,8 +609,8 @@ mod tests {
         Some(Mirrored::new(false)),
         true,
     );
-    input_test!(
-        input_requirement_met_when_requirement_not_mirrored_and_input_zero_mirrored,
+    input_x_test!(
+        input_x_requirement_met_when_requirement_not_mirrored_and_input_zero_mirrored,
         NotMirrored,
         Some(ControllerInput {
             x_axis_value: 0.,
@@ -588,15 +619,15 @@ mod tests {
         Some(Mirrored::new(true)),
         true,
     );
-    input_test!(
-        input_requirement_not_met_when_requirement_not_mirrored_and_no_controller_input,
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_not_mirrored_and_no_controller_input,
         NotMirrored,
         None,
         Some(Mirrored::new(true)),
         false,
     );
-    input_test!(
-        input_requirement_not_met_when_requirement_not_mirrored_and_no_mirrored_component,
+    input_x_test!(
+        input_x_requirement_not_met_when_requirement_not_mirrored_and_no_mirrored_component,
         NotMirrored,
         Some(ControllerInput {
             x_axis_value: 1.,
@@ -604,5 +635,213 @@ mod tests {
         }),
         None,
         false,
+    );
+
+    macro_rules! input_z_test {
+        ($test_name:ident, $variant:ident, $controller_input:expr, true $(,)?) => {
+            #[test]
+            fn $test_name() {
+                let requirement =
+                    ControlTransitionRequirement::InputDirZ(InputDirectionZ::$variant);
+
+                let controller_input = $controller_input;
+
+                assert!(requirement.is_met(None, None, None, controller_input, None));
+            }
+        };
+
+        ($test_name:ident, $variant:ident, $controller_input:expr, false $(,)?) => {
+            #[test]
+            fn $test_name() {
+                let requirement =
+                    ControlTransitionRequirement::InputDirZ(InputDirectionZ::$variant);
+
+                let controller_input = $controller_input;
+
+                assert!(!requirement.is_met(None, None, None, controller_input, None));
+            }
+        };
+    }
+
+    // All variants
+    input_z_test!(
+        input_z_requirement_not_met_when_no_controller_input,
+        NotDown,
+        None,
+        false,
+    );
+
+    // None variant
+    input_z_test!(
+        input_z_requirement_met_when_requirement_none_and_input_zero,
+        None,
+        Some(ControllerInput {
+            z_axis_value: 0.,
+            ..Default::default()
+        }),
+        true,
+    );
+    input_z_test!(
+        input_z_requirement_not_met_when_requirement_none_and_input_down,
+        None,
+        Some(ControllerInput {
+            z_axis_value: 1.,
+            ..Default::default()
+        }),
+        false,
+    );
+    input_z_test!(
+        input_z_requirement_not_met_when_requirement_none_and_input_up,
+        None,
+        Some(ControllerInput {
+            z_axis_value: -1.,
+            ..Default::default()
+        }),
+        false,
+    );
+
+    // Up variant
+    input_z_test!(
+        input_z_requirement_not_met_when_requirement_up_and_input_down,
+        Up,
+        Some(ControllerInput {
+            z_axis_value: 1.,
+            ..Default::default()
+        }),
+        false,
+    );
+    input_z_test!(
+        input_z_requirement_met_when_requirement_up_and_input_up,
+        Up,
+        Some(ControllerInput {
+            z_axis_value: -1.,
+            ..Default::default()
+        }),
+        true,
+    );
+    input_z_test!(
+        input_z_requirement_not_met_when_requirement_up_and_input_zero,
+        Up,
+        Some(ControllerInput {
+            z_axis_value: 0.,
+            ..Default::default()
+        }),
+        false,
+    );
+
+    // Down variant
+    input_z_test!(
+        input_z_requirement_met_when_requirement_down_and_input_down,
+        Down,
+        Some(ControllerInput {
+            z_axis_value: 1.,
+            ..Default::default()
+        }),
+        true,
+    );
+    input_z_test!(
+        input_z_requirement_not_met_when_requirement_down_and_input_up,
+        Down,
+        Some(ControllerInput {
+            z_axis_value: -1.,
+            ..Default::default()
+        }),
+        false,
+    );
+    input_z_test!(
+        input_z_requirement_not_met_when_requirement_down_and_input_zero,
+        Down,
+        Some(ControllerInput {
+            z_axis_value: 0.,
+            ..Default::default()
+        }),
+        false,
+    );
+
+    // Some variant
+    input_z_test!(
+        input_z_requirement_not_met_when_requirement_some_and_input_zero,
+        Some,
+        Some(ControllerInput {
+            z_axis_value: 0.,
+            ..Default::default()
+        }),
+        false,
+    );
+    input_z_test!(
+        input_z_requirement_met_when_requirement_some_and_input_down,
+        Some,
+        Some(ControllerInput {
+            z_axis_value: 1.,
+            ..Default::default()
+        }),
+        true,
+    );
+    input_z_test!(
+        input_z_requirement_met_when_requirement_some_and_input_up,
+        Some,
+        Some(ControllerInput {
+            z_axis_value: -1.,
+            ..Default::default()
+        }),
+        true,
+    );
+
+    // NotUp variant
+    input_z_test!(
+        input_z_requirement_met_when_requirement_not_up_and_input_down,
+        NotUp,
+        Some(ControllerInput {
+            z_axis_value: 1.,
+            ..Default::default()
+        }),
+        true,
+    );
+    input_z_test!(
+        input_z_requirement_not_met_when_requirement_not_up_and_input_up,
+        NotUp,
+        Some(ControllerInput {
+            z_axis_value: -1.,
+            ..Default::default()
+        }),
+        false,
+    );
+    input_z_test!(
+        input_z_requirement_met_when_requirement_not_up_and_input_zero,
+        NotUp,
+        Some(ControllerInput {
+            z_axis_value: 0.,
+            ..Default::default()
+        }),
+        true,
+    );
+
+    // NotDown variant
+    input_z_test!(
+        input_z_requirement_not_met_when_requirement_not_down_and_input_down,
+        NotDown,
+        Some(ControllerInput {
+            z_axis_value: 1.,
+            ..Default::default()
+        }),
+        false,
+    );
+    input_z_test!(
+        input_z_requirement_met_when_requirement_not_down_and_input_up,
+        NotDown,
+        Some(ControllerInput {
+            z_axis_value: -1.,
+            ..Default::default()
+        }),
+        true,
+    );
+    input_z_test!(
+        input_z_requirement_met_when_requirement_not_down_and_input_zero,
+        NotDown,
+        Some(ControllerInput {
+            z_axis_value: 0.,
+            ..Default::default()
+        }),
+        true,
     );
 }

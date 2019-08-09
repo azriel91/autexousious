@@ -4,7 +4,7 @@ use crate::config::SequenceId;
 
 /// Transition to a specified fallback sequence.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, new)]
-pub struct ControlTransitionDefault<SeqId>
+pub struct FallbackTransition<SeqId>
 where
     SeqId: SequenceId,
 {

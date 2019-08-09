@@ -1,12 +1,12 @@
-use crate::{AxisEventData, ControlActionEventData};
+use crate::{AxisMoveEventData, ControlActionEventData};
 
 /// Event indicating a change in `ControlInput`.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum ControlInputEvent {
     /// `Axis` value has changed.
-    Axis(AxisEventData),
+    AxisMoved(AxisMoveEventData),
     /// `ControlAction` has been pressed.
-    ControlActionPressed(ControlActionEventData),
+    ControlActionPress(ControlActionEventData),
     /// `ControlAction` has been released.
-    ControlActionReleased(ControlActionEventData),
+    ControlActionRelease(ControlActionEventData),
 }

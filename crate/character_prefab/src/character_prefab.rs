@@ -5,7 +5,7 @@ use amethyst::{
     ecs::{Entity, Read, ReadExpect, WriteStorage},
     Error,
 };
-use character_loading::{CharacterLoader, CharacterLoaderParams};
+use character_loading::{CharacterLoader, ControlTransitionsSequenceLoaderParams};
 use character_model::{
     config::CharacterDefinition,
     loaded::{
@@ -154,17 +154,19 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
                 if let ObjectPrefab::Handle(object_wrapper_handle) = &object_prefab {
                     let object_wrapper_handle = object_wrapper_handle.clone();
 
-                    let character_loader_params = CharacterLoaderParams {
-                        loader: &loader,
-                        character_control_transitions_assets: &character_control_transitions_assets,
-                        character_control_transitions_sequence_assets:
-                            &character_control_transitions_sequence_assets,
-                    };
+                    let control_transitions_sequence_loader_params =
+                        ControlTransitionsSequenceLoaderParams {
+                            loader: &loader,
+                            character_control_transitions_assets:
+                                &character_control_transitions_assets,
+                            character_control_transitions_sequence_assets:
+                                &character_control_transitions_sequence_assets,
+                        };
                     let character_definition = character_definition_assets
                         .get(&character_definition_handle)
                         .expect("Expected `CharacterDefinition` to be loaded.");
                     let character = CharacterLoader::load(
-                        character_loader_params,
+                        control_transitions_sequence_loader_params,
                         character_definition,
                         object_wrapper_handle,
                     )?;

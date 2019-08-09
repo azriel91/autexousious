@@ -2,9 +2,9 @@ use amethyst::ecs::Entity;
 
 use crate::Axis;
 
-/// `Axis` controller event data.
+/// `AxisMove` controller event data.
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct AxisEventData {
+pub struct AxisMoveEventData {
     /// `Entity` this control event applies to.
     pub entity: Entity,
     /// `Axis` whose value changed.

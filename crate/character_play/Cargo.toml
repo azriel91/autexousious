@@ -6,6 +6,7 @@ edition = "2018"
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
+approx = "0.3.2"
 character_model = { path = "../character_model" }
 derivative = "1.0.2"
 derive-new = "0.5.6"
@@ -23,11 +24,14 @@ shred-derive = "0.5.1"
 [dev-dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "test-support", "vulkan"] }
 amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
+application = { path = "../application" }
 application_test_support = { path = "../application_test_support" }
 assets_test = { path = "../assets_test" }
+character_loading = { path = "../character_loading" }
 character_prefab = { path = "../character_prefab" }
 object_type = { path = "../object_type" }
 pretty_assertions = "0.6.1"
+toml = "0.5.1"
 
 [features]
 nightly = ["amethyst/nightly"]

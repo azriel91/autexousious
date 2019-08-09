@@ -32,10 +32,7 @@ use pretty_assertions::assert_eq;
 use sequence_loading::SequenceLoadingBundle;
 use sequence_model::{
     config::SequenceEndTransition,
-    loaded::{
-        ControlTransition, ControlTransitionHold, ControlTransitionPress, ControlTransitionRelease,
-        ControlTransitions,
-    },
+    loaded::{ActionHold, ActionPress, ActionRelease, ControlTransition, ControlTransitions},
 };
 
 #[test]
@@ -200,21 +197,21 @@ type TestSystemData<'s> = (
 fn expected_control_transitions() -> CharacterControlTransitions {
     CharacterControlTransitions::new(ControlTransitions::new(vec![
         CharacterControlTransition {
-            control_transition: ControlTransition::Press(ControlTransitionPress {
+            control_transition: ControlTransition::ActionPress(ActionPress {
                 action: ControlAction::Jump,
                 sequence_id: CharacterSequenceId::Jump,
             }),
             control_transition_requirements: vec![],
         },
         CharacterControlTransition {
-            control_transition: ControlTransition::Press(ControlTransitionPress {
+            control_transition: ControlTransition::ActionPress(ActionPress {
                 action: ControlAction::Attack,
                 sequence_id: CharacterSequenceId::StandAttack0,
             }),
             control_transition_requirements: vec![],
         },
         CharacterControlTransition {
-            control_transition: ControlTransition::Release(ControlTransitionRelease {
+            control_transition: ControlTransition::ActionRelease(ActionRelease {
                 action: ControlAction::Attack,
                 sequence_id: CharacterSequenceId::Walk,
             }),
@@ -223,7 +220,7 @@ fn expected_control_transitions() -> CharacterControlTransitions {
             )],
         },
         CharacterControlTransition {
-            control_transition: ControlTransition::Release(ControlTransitionRelease {
+            control_transition: ControlTransition::ActionRelease(ActionRelease {
                 action: ControlAction::Attack,
                 sequence_id: CharacterSequenceId::Run,
             }),
@@ -232,7 +229,7 @@ fn expected_control_transitions() -> CharacterControlTransitions {
             )],
         },
         CharacterControlTransition {
-            control_transition: ControlTransition::Release(ControlTransitionRelease {
+            control_transition: ControlTransition::ActionRelease(ActionRelease {
                 action: ControlAction::Attack,
                 sequence_id: CharacterSequenceId::RunStop,
             }),
@@ -241,7 +238,7 @@ fn expected_control_transitions() -> CharacterControlTransitions {
             )],
         },
         CharacterControlTransition {
-            control_transition: ControlTransition::Hold(ControlTransitionHold {
+            control_transition: ControlTransition::ActionHold(ActionHold {
                 action: ControlAction::Jump,
                 sequence_id: CharacterSequenceId::Jump,
             }),
