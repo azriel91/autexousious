@@ -7,7 +7,7 @@ use character_prefab::CharacterPrefabHandle;
 use derivative::Derivative;
 use derive_new::new;
 use game_input::InputControlled;
-use game_play_hud::HpBarPrefab;
+use game_play_hud::{CpBarPrefab, HpBarPrefab};
 use game_play_model::{GamePlayEntity, GamePlayEntityId};
 use kinematic_model::config::Position;
 use map_model::loaded::Map;
@@ -51,6 +51,9 @@ pub struct CharacterAugmentRectifySystemData<'s> {
     /// `HpBarPrefabSystemData`.
     #[derivative(Debug = "ignore")]
     pub hp_bar_prefab_system_data: <HpBarPrefab as PrefabData<'s>>::SystemData,
+    /// `CpBarPrefabSystemData`.
+    #[derivative(Debug = "ignore")]
+    pub cp_bar_prefab_system_data: <CpBarPrefab as PrefabData<'s>>::SystemData,
 }
 
 impl<'s> System<'s> for CharacterAugmentRectifySystem {
@@ -68,6 +71,7 @@ impl<'s> System<'s> for CharacterAugmentRectifySystem {
             mut positions,
             mut game_play_entities,
             mut hp_bar_prefab_system_data,
+            mut cp_bar_prefab_system_data,
         }: Self::SystemData,
     ) {
         // TODO: Entities may not have health_points component -- see the second join()
@@ -110,14 +114,21 @@ impl<'s> System<'s> for CharacterAugmentRectifySystem {
             .join()
             .for_each(|(game_object_entity, _, _)| {
                 let hp_bar_entity = entities.create();
-
                 let hp_bar_prefab = HpBarPrefab::new(game_object_entity);
                 hp_bar_prefab
                     .add_to_entity(hp_bar_entity, &mut hp_bar_prefab_system_data, &[], &[])
                     .expect("`HpBarPrefab` failed to augment entity.");
-
                 game_play_entities
                     .insert(hp_bar_entity, Removal::new(GamePlayEntityId))
+                    .expect("Failed to insert `GamePlayEntity` component.");
+
+                let cp_bar_entity = entities.create();
+                let cp_bar_prefab = CpBarPrefab::new(game_object_entity);
+                cp_bar_prefab
+                    .add_to_entity(cp_bar_entity, &mut cp_bar_prefab_system_data, &[], &[])
+                    .expect("`CpBarPrefab` failed to augment entity.");
+                game_play_entities
+                    .insert(cp_bar_entity, Removal::new(GamePlayEntityId))
                     .expect("Failed to insert `GamePlayEntity` component.");
             });
 
@@ -131,7 +142,7 @@ mod tests {
         assets::{Prefab, Processor},
         audio::Source,
         core::TransformBundle,
-        ecs::{Builder, Entity, Join, SystemData, World},
+        ecs::{Builder, Entity, Join, ReadStorage, SystemData, World},
         renderer::{types::DefaultBackend, RenderEmptyBundle},
         window::ScreenDimensions,
         Error,
@@ -147,7 +158,7 @@ mod tests {
     use game_input::InputControlled;
     use game_input_model::ControlBindings;
     use game_model::loaded::MapPrefabs;
-    use game_play_model::GamePlayEntity;
+    use game_play_hud::{CpBar, HpBar};
     use kinematic_model::config::Position;
     use loading::{LoadingBundle, LoadingState};
     use map_loading::MapLoadingBundle;
@@ -228,7 +239,7 @@ mod tests {
     }
 
     #[test]
-    fn creates_hp_bar_entity_per_character_selection() -> Result<(), Error> {
+    fn creates_hp_and_cp_bar_entities_per_character_selection() -> Result<(), Error> {
         run_test(
             |world| {
                 let mut game_loading_status = GameLoadingStatus::new();
@@ -248,8 +259,10 @@ mod tests {
                 world.add_resource(char_entity);
             },
             |world| {
-                let game_play_entities = world.read_storage::<GamePlayEntity>();
-                assert_eq!(1, (&game_play_entities).join().count());
+                let (hp_bars, cp_bars) =
+                    world.system_data::<(ReadStorage<'_, HpBar>, ReadStorage<'_, CpBar>)>();
+                assert_eq!(1, (&hp_bars).join().count());
+                assert_eq!(1, (&cp_bars).join().count());
             },
         )
     }
