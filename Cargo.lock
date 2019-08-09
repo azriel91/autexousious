@@ -2443,6 +2443,7 @@ dependencies = [
  "character_model 0.12.0",
  "character_play 0.12.0",
  "character_selection 0.12.0",
+ "charge_play 0.13.0",
  "chase_play 0.12.0",
  "collision_audio_play 0.12.0",
  "collision_model 0.12.0",

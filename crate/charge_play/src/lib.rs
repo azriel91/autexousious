@@ -2,6 +2,9 @@
 
 //! Provides logic for game objects used during game play.
 
-pub use crate::system::{ChargeInitializeDelaySystem, ChargeInitializeDetectionSystem};
+pub use crate::system::{
+    ChargeIncrementSystem, ChargeInitializeDelaySystem, ChargeInitializeDetectionSystem,
+    ChargeUsageSystem,
+};
 
 mod system;
