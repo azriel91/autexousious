@@ -2491,6 +2491,7 @@ dependencies = [
  "amethyst 0.11.1 (git+https://github.com/amethyst/amethyst.git)",
  "amethyst_test 0.2.0 (git+https://github.com/amethyst/amethyst.git)",
  "asset_gfx_gen 0.12.0",
+ "charge_model 0.13.0",
  "chase_model 0.12.0",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.7 (registry+https://github.com/rust-lang/crates.io-index)",
