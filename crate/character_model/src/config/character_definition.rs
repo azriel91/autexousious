@@ -1,5 +1,5 @@
 use asset_derive::Asset;
-use charge_model::config::{ChargeDelay, ChargeLimit};
+use charge_model::config::{ChargeDelay, ChargeLimit, ChargeUseMode};
 use derive_new::new;
 use object_model::config::{GameObjectDefinition, ObjectDefinition};
 use serde::{Deserialize, Serialize};
@@ -19,6 +19,9 @@ pub struct CharacterDefinition {
     /// Number of ticks to wait between charge increments.
     #[serde(default)]
     pub charge_delay: ChargeDelay,
+    /// Charge usage subtraction variants.
+    #[serde(default)]
+    pub charge_use_mode: ChargeUseMode,
 }
 
 impl GameObjectDefinition for CharacterDefinition {

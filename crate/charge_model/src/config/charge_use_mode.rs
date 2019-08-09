@@ -1,10 +1,12 @@
 use amethyst::ecs::{storage::VecStorage, Component};
 use derivative::Derivative;
+use serde::{Deserialize, Serialize};
 use specs_derive::Component;
 
 /// Charge usage subtraction variants.
-#[derive(Clone, Component, Copy, Debug, Derivative, PartialEq, Eq)]
+#[derive(Clone, Component, Copy, Debug, Derivative, Deserialize, PartialEq, Eq, Serialize)]
 #[derivative(Default)]
+#[serde(rename_all = "snake_case")]
 #[storage(VecStorage)]
 pub enum ChargeUseMode {
     /// The exact number of charge points are spent.

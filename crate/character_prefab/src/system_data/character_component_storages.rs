@@ -1,6 +1,6 @@
 use amethyst::ecs::WriteStorage;
 use character_model::play::RunCounter;
-use charge_model::config::{ChargeDelay, ChargeLimit};
+use charge_model::config::{ChargeDelay, ChargeLimit, ChargeUseMode};
 use derivative::Derivative;
 use game_input::ControllerInput;
 use object_model::{
@@ -41,4 +41,7 @@ pub struct CharacterComponentStorages<'s> {
     /// `ChargeDelay` components.
     #[derivative(Debug = "ignore")]
     pub charge_delays: WriteStorage<'s, ChargeDelay>,
+    /// `ChargeUseMode` components.
+    #[derivative(Debug = "ignore")]
+    pub charge_use_modes: WriteStorage<'s, ChargeUseMode>,
 }
