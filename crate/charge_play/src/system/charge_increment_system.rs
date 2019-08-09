@@ -80,9 +80,7 @@ mod tests {
                 charge_tracker_clock,
             },
             |charge_delay_clock, charge_tracker_clock| {
-                let mut charge_delay_clock_expected = ChargeDelayClock::new(10);
-                (*charge_delay_clock_expected).value = 1;
-
+                let charge_delay_clock_expected = ChargeDelayClock::new_with_value(10, 1);
                 let charge_tracker_clock_expected = ChargeTrackerClock::new(10);
 
                 assert_eq!(Some(charge_delay_clock_expected), charge_delay_clock);
@@ -93,8 +91,7 @@ mod tests {
 
     #[test]
     fn ticks_tracker_clock_when_delay_clock_is_complete() -> Result<(), Error> {
-        let mut charge_delay_clock = ChargeDelayClock::new(10);
-        (*charge_delay_clock).value = 9;
+        let charge_delay_clock = ChargeDelayClock::new_with_value(10, 9);
         let charge_tracker_clock = ChargeTrackerClock::new(10);
         let charge_status = ChargeStatus::Charging;
 
@@ -106,9 +103,7 @@ mod tests {
             },
             |charge_delay_clock, charge_tracker_clock| {
                 let charge_delay_clock_expected = ChargeDelayClock::new(10);
-
-                let mut charge_tracker_clock_expected = ChargeTrackerClock::new(10);
-                (*charge_tracker_clock_expected).value = 1;
+                let charge_tracker_clock_expected = ChargeTrackerClock::new_with_value(10, 1);
 
                 assert_eq!(Some(charge_delay_clock_expected), charge_delay_clock);
                 assert_eq!(Some(charge_tracker_clock_expected), charge_tracker_clock);
@@ -118,8 +113,7 @@ mod tests {
 
     #[test]
     fn does_not_tick_clocks_when_not_charging() -> Result<(), Error> {
-        let mut charge_delay_clock = ChargeDelayClock::new(10);
-        (*charge_delay_clock).value = 9;
+        let charge_delay_clock = ChargeDelayClock::new_with_value(10, 9);
         let charge_tracker_clock = ChargeTrackerClock::new(10);
         let charge_status = ChargeStatus::BeginDelay;
 
@@ -130,9 +124,7 @@ mod tests {
                 charge_tracker_clock,
             },
             |charge_delay_clock, charge_tracker_clock| {
-                let mut charge_delay_clock_expected = ChargeDelayClock::new(10);
-                (*charge_delay_clock_expected).value = 9;
-
+                let charge_delay_clock_expected = ChargeDelayClock::new_with_value(10, 9);
                 let charge_tracker_clock_expected = ChargeTrackerClock::new(10);
 
                 assert_eq!(Some(charge_delay_clock_expected), charge_delay_clock);

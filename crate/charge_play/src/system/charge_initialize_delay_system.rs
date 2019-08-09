@@ -126,8 +126,9 @@ mod tests {
                 charge_delay: None,
             },
             |charge_begin_delay_clock, charge_tracker_clock, charge_delay_clock| {
-                let mut charge_begin_delay_clock_expected = ChargeBeginDelayClock::new(10);
-                (*charge_begin_delay_clock_expected).value = 1;
+                let charge_begin_delay_clock_expected =
+                    ChargeBeginDelayClock::new_with_value(10, 1);
+
                 assert_eq!(
                     Some(charge_begin_delay_clock_expected),
                     charge_begin_delay_clock
@@ -140,8 +141,7 @@ mod tests {
 
     #[test]
     fn does_not_tick_clock_when_not_charging() -> Result<(), Error> {
-        let mut charge_begin_delay_clock = ChargeBeginDelayClock::new(10);
-        (*charge_begin_delay_clock).value = 9;
+        let charge_begin_delay_clock = ChargeBeginDelayClock::new_with_value(10, 9);
         let charge_status = ChargeStatus::NotCharging;
 
         run_test(
@@ -153,8 +153,9 @@ mod tests {
                 charge_delay: None,
             },
             |charge_begin_delay_clock, charge_tracker_clock, charge_delay_clock| {
-                let mut charge_begin_delay_clock_expected = ChargeBeginDelayClock::new(10);
-                (*charge_begin_delay_clock_expected).value = 9;
+                let charge_begin_delay_clock_expected =
+                    ChargeBeginDelayClock::new_with_value(10, 9);
+
                 assert_eq!(
                     Some(charge_begin_delay_clock_expected),
                     charge_begin_delay_clock
@@ -167,8 +168,7 @@ mod tests {
 
     #[test]
     fn attaches_charge_clocks_when_begin_delay_clock_is_complete() -> Result<(), Error> {
-        let mut charge_begin_delay_clock = ChargeBeginDelayClock::new(10);
-        (*charge_begin_delay_clock).value = 9;
+        let charge_begin_delay_clock = ChargeBeginDelayClock::new_with_value(10, 9);
         let charge_status = ChargeStatus::BeginDelay;
 
         run_test(
@@ -180,8 +180,8 @@ mod tests {
                 charge_delay: None,
             },
             |charge_begin_delay_clock, charge_tracker_clock, charge_delay_clock| {
-                let mut charge_begin_delay_clock_expected = ChargeBeginDelayClock::new(10);
-                (*charge_begin_delay_clock_expected).value = 10;
+                let charge_begin_delay_clock_expected =
+                    ChargeBeginDelayClock::new_with_value(10, 10);
 
                 let charge_delay = ChargeDelay::default();
                 let mut charge_delay_clock_expected = ChargeDelayClock::new(*charge_delay);
@@ -202,8 +202,7 @@ mod tests {
 
     #[test]
     fn attaches_charge_tracker_clock_with_custom_limit() -> Result<(), Error> {
-        let mut charge_begin_delay_clock = ChargeBeginDelayClock::new(10);
-        (*charge_begin_delay_clock).value = 9;
+        let charge_begin_delay_clock = ChargeBeginDelayClock::new_with_value(10, 9);
         let charge_status = ChargeStatus::BeginDelay;
 
         run_test(
@@ -215,8 +214,9 @@ mod tests {
                 charge_delay: None,
             },
             |charge_begin_delay_clock, charge_tracker_clock, _| {
-                let mut charge_begin_delay_clock_expected = ChargeBeginDelayClock::new(10);
-                (*charge_begin_delay_clock_expected).value = 10;
+                let charge_begin_delay_clock_expected =
+                    ChargeBeginDelayClock::new_with_value(10, 10);
+
                 assert_eq!(
                     Some(charge_begin_delay_clock_expected),
                     charge_begin_delay_clock
@@ -228,8 +228,7 @@ mod tests {
 
     #[test]
     fn attaches_charge_delay_clock_with_custom_delay() -> Result<(), Error> {
-        let mut charge_begin_delay_clock = ChargeBeginDelayClock::new(10);
-        (*charge_begin_delay_clock).value = 9;
+        let charge_begin_delay_clock = ChargeBeginDelayClock::new_with_value(10, 9);
         let charge_status = ChargeStatus::BeginDelay;
 
         run_test(
@@ -241,11 +240,9 @@ mod tests {
                 charge_delay: Some(ChargeDelay::new(7)),
             },
             |charge_begin_delay_clock, charge_tracker_clock, charge_delay_clock| {
-                let mut charge_begin_delay_clock_expected = ChargeBeginDelayClock::new(10);
-                (*charge_begin_delay_clock_expected).value = 10;
-
-                let mut charge_delay_clock_expected = ChargeDelayClock::new(7);
-                (*charge_delay_clock_expected).value = 7;
+                let charge_begin_delay_clock_expected =
+                    ChargeBeginDelayClock::new_with_value(10, 10);
+                let charge_delay_clock_expected = ChargeDelayClock::new_with_value(7, 7);
 
                 assert_eq!(
                     Some(charge_begin_delay_clock_expected),
@@ -262,11 +259,9 @@ mod tests {
 
     #[test]
     fn does_not_reset_existing_charge_tracker_clock() -> Result<(), Error> {
-        let mut charge_begin_delay_clock = ChargeBeginDelayClock::new(10);
-        (*charge_begin_delay_clock).value = 9;
+        let charge_begin_delay_clock = ChargeBeginDelayClock::new_with_value(10, 9);
         let charge_status = ChargeStatus::BeginDelay;
-        let mut charge_tracker_clock = ChargeTrackerClock::new(7);
-        (*charge_tracker_clock).value = 4;
+        let charge_tracker_clock = ChargeTrackerClock::new_with_value(7, 4);
 
         run_test(
             SetupParams {
@@ -277,11 +272,9 @@ mod tests {
                 charge_delay: None,
             },
             |charge_begin_delay_clock, charge_tracker_clock, _| {
-                let mut charge_begin_delay_clock_expected = ChargeBeginDelayClock::new(10);
-                (*charge_begin_delay_clock_expected).value = 10;
-
-                let mut charge_tracker_clock_expected = ChargeTrackerClock::new(7);
-                (*charge_tracker_clock_expected).value = 4;
+                let charge_begin_delay_clock_expected =
+                    ChargeBeginDelayClock::new_with_value(10, 10);
+                let charge_tracker_clock_expected = ChargeTrackerClock::new_with_value(7, 4);
 
                 assert_eq!(
                     Some(charge_begin_delay_clock_expected),

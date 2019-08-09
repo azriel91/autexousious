@@ -133,8 +133,7 @@ mod tests {
 
     #[test]
     fn charge_use_mode_defaults_to_exact() -> Result<(), Error> {
-        let mut charge_tracker_clock = ChargeTrackerClock::new(10);
-        (*charge_tracker_clock).value = 10;
+        let charge_tracker_clock = ChargeTrackerClock::new_with_value(10, 10);
         let charge_use_event_fn = |entity| ChargeUseEvent::new(entity, ChargePoints::new(3));
 
         run_test(
@@ -149,8 +148,7 @@ mod tests {
 
     #[test]
     fn subtracts_charge_points_exact() -> Result<(), Error> {
-        let mut charge_tracker_clock = ChargeTrackerClock::new(10);
-        (*charge_tracker_clock).value = 10;
+        let charge_tracker_clock = ChargeTrackerClock::new_with_value(10, 10);
         let charge_use_event_fn = |entity| ChargeUseEvent::new(entity, ChargePoints::new(3));
 
         run_test(
@@ -165,8 +163,7 @@ mod tests {
 
     #[test]
     fn subtracts_charge_points_nearest_partial_with_remainder() -> Result<(), Error> {
-        let mut charge_tracker_clock = ChargeTrackerClock::new(50);
-        (*charge_tracker_clock).value = 28;
+        let charge_tracker_clock = ChargeTrackerClock::new_with_value(50, 28);
         let charge_use_event_fn = |entity| ChargeUseEvent::new(entity, ChargePoints::new(25));
 
         run_test(
@@ -181,8 +178,7 @@ mod tests {
 
     #[test]
     fn subtracts_charge_points_nearest_partial_without_remainder() -> Result<(), Error> {
-        let mut charge_tracker_clock = ChargeTrackerClock::new(100);
-        (*charge_tracker_clock).value = 50;
+        let charge_tracker_clock = ChargeTrackerClock::new_with_value(100, 50);
         let charge_use_event_fn = |entity| ChargeUseEvent::new(entity, ChargePoints::new(25));
 
         run_test(
@@ -197,8 +193,7 @@ mod tests {
 
     #[test]
     fn subtracts_charge_points_nearest_whole_with_remainder() -> Result<(), Error> {
-        let mut charge_tracker_clock = ChargeTrackerClock::new(100);
-        (*charge_tracker_clock).value = 58;
+        let charge_tracker_clock = ChargeTrackerClock::new_with_value(100, 58);
         let charge_use_event_fn = |entity| ChargeUseEvent::new(entity, ChargePoints::new(25));
 
         run_test(
@@ -213,8 +208,7 @@ mod tests {
 
     #[test]
     fn subtracts_charge_points_nearest_whole_without_remainder() -> Result<(), Error> {
-        let mut charge_tracker_clock = ChargeTrackerClock::new(100);
-        (*charge_tracker_clock).value = 50;
+        let charge_tracker_clock = ChargeTrackerClock::new_with_value(100, 50);
         let charge_use_event_fn = |entity| ChargeUseEvent::new(entity, ChargePoints::new(25));
 
         run_test(
@@ -229,8 +223,7 @@ mod tests {
 
     #[test]
     fn subtracts_charge_points_all() -> Result<(), Error> {
-        let mut charge_tracker_clock = ChargeTrackerClock::new(100);
-        (*charge_tracker_clock).value = 58;
+        let charge_tracker_clock = ChargeTrackerClock::new_with_value(100, 58);
         let charge_use_event_fn = |entity| ChargeUseEvent::new(entity, ChargePoints::new(25));
 
         run_test(
@@ -247,8 +240,7 @@ mod tests {
         ($test_name:ident, $variant:ident) => {
             #[test]
             fn $test_name() -> Result<(), Error> {
-                let mut charge_tracker_clock = ChargeTrackerClock::new(100);
-                (*charge_tracker_clock).value = 58;
+                let charge_tracker_clock = ChargeTrackerClock::new_with_value(100, 58);
                 let charge_use_event_fn =
                     |entity| ChargeUseEvent::new(entity, ChargePoints::new(100));
 

@@ -144,8 +144,8 @@ mod tests {
 
     #[test]
     fn resets_charge_begin_delay_clock_on_attack_release() -> Result<(), Error> {
-        let mut charge_begin_delay_clock = ChargeBeginDelayClock::new(CHARGE_DELAY_DEFAULT);
-        (*charge_begin_delay_clock).value = 3;
+        let charge_begin_delay_clock =
+            ChargeBeginDelayClock::new_with_value(CHARGE_DELAY_DEFAULT, 3);
 
         run_test(
             Some(charge_begin_delay_clock),

@@ -121,9 +121,7 @@ mod tests {
                 transform.set_translation_y(456.);
                 transform.set_translation_z(789.);
 
-                let mut charge_tracker_clock = ChargeTrackerClock::new(20);
-                (*charge_tracker_clock).value = 18;
-
+                let charge_tracker_clock = ChargeTrackerClock::new_with_value(20, 18);
                 let char_entity = {
                     world
                         .create_entity()

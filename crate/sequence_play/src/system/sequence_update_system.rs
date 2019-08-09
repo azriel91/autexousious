@@ -270,8 +270,8 @@ mod tests {
             .with_setup(|world| {
                 initial_values(
                     world,
-                    frame_index_clock(10, 10),
-                    frame_wait_clock(10, 10),
+                    FrameIndexClock::new_with_value(10, 10),
+                    FrameWaitClock::new_with_value(10, 10),
                     None,
                     SequenceStatus::Begin,
                 )
@@ -280,8 +280,8 @@ mod tests {
             .with_assertion(|world| {
                 expect_values(
                     world,
-                    frame_index_clock(0, 5),
-                    frame_wait_clock(0, 2),
+                    FrameIndexClock::new_with_value(5, 0),
+                    FrameWaitClock::new_with_value(2, 0),
                     None,
                     SequenceStatus::Ongoing,
                 )
@@ -305,8 +305,8 @@ mod tests {
             .with_setup(|world| {
                 initial_values(
                     world,
-                    frame_index_clock(0, 5),
-                    frame_wait_clock(0, 2),
+                    FrameIndexClock::new_with_value(5, 0),
+                    FrameWaitClock::new_with_value(2, 0),
                     None,
                     SequenceStatus::Ongoing,
                 )
@@ -315,8 +315,8 @@ mod tests {
             .with_assertion(|world| {
                 expect_values(
                     world,
-                    frame_index_clock(0, 5),
-                    frame_wait_clock(1, 2),
+                    FrameIndexClock::new_with_value(5, 0),
+                    FrameWaitClock::new_with_value(2, 1),
                     None,
                     SequenceStatus::Ongoing,
                 )
@@ -341,9 +341,9 @@ mod tests {
             .with_setup(|world| {
                 initial_values(
                     world,
-                    frame_index_clock(0, 5),
-                    frame_wait_clock(1, 2),
-                    Some(frame_freeze_clock(1, 2)),
+                    FrameIndexClock::new_with_value(5, 0),
+                    FrameWaitClock::new_with_value(2, 1),
+                    Some(FrameFreezeClock::new_with_value(2, 1)),
                     SequenceStatus::Ongoing,
                 )
             })
@@ -351,9 +351,9 @@ mod tests {
             .with_assertion(|world| {
                 expect_values(
                     world,
-                    frame_index_clock(0, 5),
-                    frame_wait_clock(1, 2),
-                    Some(frame_freeze_clock(2, 2)),
+                    FrameIndexClock::new_with_value(5, 0),
+                    FrameWaitClock::new_with_value(2, 1),
+                    Some(FrameFreezeClock::new_with_value(2, 2)),
                     SequenceStatus::Ongoing,
                 )
             })
@@ -377,9 +377,9 @@ mod tests {
             .with_setup(|world| {
                 initial_values(
                     world,
-                    frame_index_clock(0, 5),
-                    frame_wait_clock(0, 2),
-                    Some(frame_freeze_clock(2, 2)),
+                    FrameIndexClock::new_with_value(5, 0),
+                    FrameWaitClock::new_with_value(2, 0),
+                    Some(FrameFreezeClock::new_with_value(2, 2)),
                     SequenceStatus::Ongoing,
                 )
             })
@@ -387,9 +387,9 @@ mod tests {
             .with_assertion(|world| {
                 expect_values(
                     world,
-                    frame_index_clock(0, 5),
-                    frame_wait_clock(1, 2),
-                    Some(frame_freeze_clock(2, 2)),
+                    FrameIndexClock::new_with_value(5, 0),
+                    FrameWaitClock::new_with_value(2, 1),
+                    Some(FrameFreezeClock::new_with_value(2, 2)),
                     SequenceStatus::Ongoing,
                 )
             })
@@ -412,8 +412,8 @@ mod tests {
             .with_setup(|world| {
                 initial_values(
                     world,
-                    frame_index_clock(0, 5),
-                    frame_wait_clock(1, 2),
+                    FrameIndexClock::new_with_value(5, 0),
+                    FrameWaitClock::new_with_value(2, 1),
                     None,
                     SequenceStatus::Ongoing,
                 )
@@ -422,8 +422,8 @@ mod tests {
             .with_assertion(|world| {
                 expect_values(
                     world,
-                    frame_index_clock(1, 5),
-                    frame_wait_clock(0, 3),
+                    FrameIndexClock::new_with_value(5, 1),
+                    FrameWaitClock::new_with_value(3, 0),
                     None,
                     SequenceStatus::Ongoing,
                 )
@@ -450,8 +450,8 @@ mod tests {
             .with_setup(|world| {
                 initial_values(
                     world,
-                    frame_index_clock(4, 5),
-                    frame_wait_clock(5, 6),
+                    FrameIndexClock::new_with_value(5, 4),
+                    FrameWaitClock::new_with_value(6, 5),
                     None,
                     SequenceStatus::Ongoing,
                 )
@@ -460,8 +460,8 @@ mod tests {
             .with_assertion(|world| {
                 expect_values(
                     world,
-                    frame_index_clock(5, 5),
-                    frame_wait_clock(6, 6),
+                    FrameIndexClock::new_with_value(5, 5),
+                    FrameWaitClock::new_with_value(6, 6),
                     None,
                     SequenceStatus::End,
                 )
@@ -480,8 +480,8 @@ mod tests {
             .with_setup(|world| {
                 initial_values(
                     world,
-                    frame_index_clock(5, 5),
-                    frame_wait_clock(2, 2),
+                    FrameIndexClock::new_with_value(5, 5),
+                    FrameWaitClock::new_with_value(2, 2),
                     None,
                     SequenceStatus::End,
                 )
@@ -490,8 +490,8 @@ mod tests {
             .with_assertion(|world| {
                 expect_values(
                     world,
-                    frame_index_clock(5, 5),
-                    frame_wait_clock(2, 2),
+                    FrameIndexClock::new_with_value(5, 5),
+                    FrameWaitClock::new_with_value(2, 2),
                     None,
                     SequenceStatus::End,
                 )
@@ -507,9 +507,9 @@ mod tests {
             .with_setup(|world| {
                 initial_values(
                     world,
-                    frame_index_clock(5, 5),
-                    frame_wait_clock(2, 2),
-                    Some(frame_freeze_clock(0, 2)),
+                    FrameIndexClock::new_with_value(5, 5),
+                    FrameWaitClock::new_with_value(2, 2),
+                    Some(FrameFreezeClock::new_with_value(2, 0)),
                     SequenceStatus::End,
                 )
             })
@@ -517,9 +517,9 @@ mod tests {
             .with_assertion(|world| {
                 expect_values(
                     world,
-                    frame_index_clock(5, 5),
-                    frame_wait_clock(2, 2),
-                    Some(frame_freeze_clock(1, 2)),
+                    FrameIndexClock::new_with_value(5, 5),
+                    FrameWaitClock::new_with_value(2, 2),
+                    Some(FrameFreezeClock::new_with_value(2, 1)),
                     SequenceStatus::End,
                 )
             })
@@ -591,27 +591,6 @@ mod tests {
         };
 
         world.add_resource(entity);
-    }
-
-    fn frame_index_clock(value: usize, limit: usize) -> FrameIndexClock {
-        let mut frame_index_clock = FrameIndexClock::default();
-        (*frame_index_clock).value = value;
-        (*frame_index_clock).limit = limit;
-        frame_index_clock
-    }
-
-    fn frame_wait_clock(value: usize, limit: usize) -> FrameWaitClock {
-        let mut frame_wait_clock = FrameWaitClock::default();
-        (*frame_wait_clock).value = value;
-        (*frame_wait_clock).limit = limit;
-        frame_wait_clock
-    }
-
-    fn frame_freeze_clock(value: usize, limit: usize) -> FrameFreezeClock {
-        let mut frame_freeze_clock = FrameFreezeClock::default();
-        (*frame_freeze_clock).value = value;
-        (*frame_freeze_clock).limit = limit;
-        frame_freeze_clock
     }
 
     fn expect_values(
