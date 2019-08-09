@@ -16,6 +16,11 @@ pub struct LogicClock {
 }
 
 impl LogicClock {
+    /// Returns a new `LogicClock` with an initial value.
+    pub fn new_with_value(limit: usize, value: usize) -> Self {
+        Self { value, limit }
+    }
+
     /// Returns whether this clock has reached its limit.
     pub fn is_beginning(self) -> bool {
         self.value == 0

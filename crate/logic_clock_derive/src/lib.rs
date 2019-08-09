@@ -25,6 +25,7 @@ pub fn logic_clock(_args: TokenStream, item: TokenStream) -> TokenStream {
 
     let struct_name = &ast.ident;
     let constructor_doc = format!("Returns a new `{}`.", struct_name);
+    let constructor2_doc = format!("Returns a new `{}` with an initial value.", struct_name);
 
     let token_stream2 = quote! {
         #ast
@@ -33,6 +34,11 @@ pub fn logic_clock(_args: TokenStream, item: TokenStream) -> TokenStream {
             #[doc = #constructor_doc]
             pub fn new(limit: usize) -> Self {
                 Self(logic_clock::LogicClock::new(limit))
+            }
+
+            #[doc = #constructor2_doc]
+            pub fn new_with_value(limit: usize, value: usize) -> Self {
+                Self(logic_clock::LogicClock::new_with_value(limit, value))
             }
         }
 
