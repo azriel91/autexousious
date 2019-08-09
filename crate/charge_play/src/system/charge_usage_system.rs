@@ -1,12 +1,10 @@
-use std::convert::TryInto;
-
 use amethyst::{
     ecs::{ReadStorage, System, SystemData, Write, WriteStorage},
     shred::Resources,
     shrev::{EventChannel, ReaderId},
 };
 use charge_model::{
-    config::{ChargePoints, ChargeUseMode},
+    config::ChargeUseMode,
     play::{ChargeTrackerClock, ChargeUseEvent},
 };
 use derivative::Derivative;
@@ -35,9 +33,6 @@ pub struct ChargeUsageSystemData<'s> {
     /// `ChargeTrackerClock` components.
     #[derivative(Debug = "ignore")]
     pub charge_tracker_clocks: WriteStorage<'s, ChargeTrackerClock>,
-    /// `ChargePoints` components.
-    #[derivative(Debug = "ignore")]
-    pub charge_pointses: WriteStorage<'s, ChargePoints>,
 }
 
 impl<'s> System<'s> for ChargeUsageSystem {
@@ -49,7 +44,6 @@ impl<'s> System<'s> for ChargeUsageSystem {
             charge_ec,
             charge_use_modes,
             mut charge_tracker_clocks,
-            mut charge_pointses,
         }: Self::SystemData,
     ) {
         let charge_event_rid = self
@@ -64,9 +58,6 @@ impl<'s> System<'s> for ChargeUsageSystem {
             let charge_tracker_clock = charge_tracker_clocks
                 .get_mut(entity)
                 .expect("Expected `ChargeTrackerClock` component to exist.");
-            let charge_points = charge_pointses
-                .get_mut(entity)
-                .expect("Expected `ChargePoints` component to exist.");
 
             let charge_use_mode = charge_use_modes
                 .get(entity)
@@ -93,7 +84,6 @@ impl<'s> System<'s> for ChargeUsageSystem {
                 }
 
                 charge_tracker_clock.reset();
-                **charge_points = 0;
                 return;
             }
 
@@ -113,11 +103,6 @@ impl<'s> System<'s> for ChargeUsageSystem {
                 }
                 ChargeUseMode::All => charge_tracker_clock.reset(),
             }
-
-            **charge_points = (*charge_tracker_clock)
-                .value
-                .try_into()
-                .expect("Failed to convert charge points `usize` into `u32`.");
         });
     }
 
@@ -133,8 +118,6 @@ impl<'s> System<'s> for ChargeUsageSystem {
 
 #[cfg(test)]
 mod tests {
-    use std::convert::TryInto;
-
     use amethyst::{
         ecs::{Builder, Entity, ReadStorage, World},
         shrev::EventChannel,
@@ -304,15 +287,7 @@ mod tests {
             .with_system(ChargeUsageSystem::new(), "", &[])
             .with_setup(move |world| {
                 let entity = {
-                    let charge_points = (*charge_tracker_clock_setup)
-                        .value
-                        .try_into()
-                        .expect("Failed to convert charge points `usize` into `u32`.");
-                    let charge_points = ChargePoints::new(charge_points);
-                    let mut entity_builder = world
-                        .create_entity()
-                        .with(charge_tracker_clock_setup)
-                        .with(charge_points);
+                    let mut entity_builder = world.create_entity().with(charge_tracker_clock_setup);
 
                     if let Some(charge_use_mode_setup) = charge_use_mode_setup {
                         entity_builder = entity_builder.with(charge_use_mode_setup);
@@ -328,25 +303,18 @@ mod tests {
             })
             .with_assertion(move |world| {
                 let entity = *world.read_resource::<Entity>();
-                let (charge_tracker_clocks, charge_pointses) = world.system_data::<(
-                    ReadStorage<'_, ChargeTrackerClock>,
-                    ReadStorage<'_, ChargePoints>,
-                )>();
+                let charge_tracker_clocks =
+                    world.system_data::<ReadStorage<'_, ChargeTrackerClock>>();
 
                 let charge_tracker_clock = charge_tracker_clocks
                     .get(entity)
                     .copied()
                     .expect("Expected `ChargeTrackerClock` component to exist.");
-                let charge_points = charge_pointses
-                    .get(entity)
-                    .copied()
-                    .expect("Expected `ChargePoints` component to exist.");
 
                 assert_eq!(
                     (*charge_points_expected) as usize,
                     (*charge_tracker_clock).value
                 );
-                assert_eq!(charge_points_expected, charge_points);
             })
             .run()
     }

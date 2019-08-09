@@ -1,10 +1,5 @@
-use std::convert::TryInto;
-
-use amethyst::ecs::{Entities, Join, ReadStorage, System, WriteStorage};
-use charge_model::{
-    config::ChargePoints,
-    play::{ChargeDelayClock, ChargeStatus, ChargeTrackerClock},
-};
+use amethyst::ecs::{Join, ReadStorage, System, WriteStorage};
+use charge_model::play::{ChargeDelayClock, ChargeStatus, ChargeTrackerClock};
 use derivative::Derivative;
 use derive_new::new;
 use shred_derive::SystemData;
@@ -17,9 +12,6 @@ pub struct ChargeIncrementSystem;
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct ChargeIncrementSystemData<'s> {
-    /// `Entities` resource.
-    #[derivative(Debug = "ignore")]
-    pub entities: Entities<'s>,
     /// `ChargeStatus` components.
     #[derivative(Debug = "ignore")]
     pub charge_statuses: ReadStorage<'s, ChargeStatus>,
@@ -29,9 +21,6 @@ pub struct ChargeIncrementSystemData<'s> {
     /// `ChargeTrackerClock` components.
     #[derivative(Debug = "ignore")]
     pub charge_tracker_clocks: WriteStorage<'s, ChargeTrackerClock>,
-    /// `ChargePoints` components.
-    #[derivative(Debug = "ignore")]
-    pub charge_pointses: WriteStorage<'s, ChargePoints>,
 }
 
 impl<'s> System<'s> for ChargeIncrementSystem {
@@ -40,22 +29,19 @@ impl<'s> System<'s> for ChargeIncrementSystem {
     fn run(
         &mut self,
         ChargeIncrementSystemData {
-            entities,
             charge_statuses,
             mut charge_delay_clocks,
             mut charge_tracker_clocks,
-            mut charge_pointses,
         }: Self::SystemData,
     ) {
         (
-            &entities,
             &charge_statuses,
             &mut charge_delay_clocks,
             &mut charge_tracker_clocks,
         )
             .join()
             .for_each(
-                |(entity, charge_status, charge_delay_clock, charge_tracker_clock)| {
+                |(charge_status, charge_delay_clock, charge_tracker_clock)| {
                     if *charge_status == ChargeStatus::Charging {
                         charge_delay_clock.tick();
 
@@ -63,16 +49,6 @@ impl<'s> System<'s> for ChargeIncrementSystem {
                             charge_delay_clock.reset();
 
                             charge_tracker_clock.tick();
-
-                            let charge_points = ChargePoints::new(
-                                (*charge_tracker_clock)
-                                    .value
-                                    .try_into()
-                                    .expect("Failed to convert charge points `usize` to `u32`."),
-                            );
-                            charge_pointses
-                                .insert(entity, charge_points)
-                                .expect("Failed to insert `ChargePoints` component.");
                         }
                     }
                 },
@@ -87,10 +63,7 @@ mod tests {
         Error,
     };
     use amethyst_test::AmethystApplication;
-    use charge_model::{
-        config::ChargePoints,
-        play::{ChargeDelayClock, ChargeStatus, ChargeTrackerClock},
-    };
+    use charge_model::play::{ChargeDelayClock, ChargeStatus, ChargeTrackerClock};
 
     use super::ChargeIncrementSystem;
 
@@ -106,16 +79,14 @@ mod tests {
                 charge_delay_clock,
                 charge_tracker_clock,
             },
-            |charge_delay_clock, charge_tracker_clock, charge_points| {
+            |charge_delay_clock, charge_tracker_clock| {
                 let mut charge_delay_clock_expected = ChargeDelayClock::new(10);
                 (*charge_delay_clock_expected).value = 1;
 
                 let charge_tracker_clock_expected = ChargeTrackerClock::new(10);
-                let charge_points_expected = ChargePoints::new(0);
 
                 assert_eq!(Some(charge_delay_clock_expected), charge_delay_clock);
                 assert_eq!(Some(charge_tracker_clock_expected), charge_tracker_clock);
-                assert_eq!(Some(charge_points_expected), charge_points);
             },
         )
     }
@@ -133,16 +104,14 @@ mod tests {
                 charge_delay_clock,
                 charge_tracker_clock,
             },
-            |charge_delay_clock, charge_tracker_clock, charge_points| {
+            |charge_delay_clock, charge_tracker_clock| {
                 let charge_delay_clock_expected = ChargeDelayClock::new(10);
 
                 let mut charge_tracker_clock_expected = ChargeTrackerClock::new(10);
                 (*charge_tracker_clock_expected).value = 1;
-                let charge_points_expected = ChargePoints::new(1);
 
                 assert_eq!(Some(charge_delay_clock_expected), charge_delay_clock);
                 assert_eq!(Some(charge_tracker_clock_expected), charge_tracker_clock);
-                assert_eq!(Some(charge_points_expected), charge_points);
             },
         )
     }
@@ -160,16 +129,14 @@ mod tests {
                 charge_delay_clock,
                 charge_tracker_clock,
             },
-            |charge_delay_clock, charge_tracker_clock, charge_points| {
+            |charge_delay_clock, charge_tracker_clock| {
                 let mut charge_delay_clock_expected = ChargeDelayClock::new(10);
                 (*charge_delay_clock_expected).value = 9;
 
                 let charge_tracker_clock_expected = ChargeTrackerClock::new(10);
-                let charge_points_expected = ChargePoints::new(0);
 
                 assert_eq!(Some(charge_delay_clock_expected), charge_delay_clock);
                 assert_eq!(Some(charge_tracker_clock_expected), charge_tracker_clock);
-                assert_eq!(Some(charge_points_expected), charge_points);
             },
         )
     }
@@ -180,11 +147,7 @@ mod tests {
             charge_delay_clock,
             charge_tracker_clock,
         }: SetupParams,
-        assertion_fn: fn(
-            Option<ChargeDelayClock>,
-            Option<ChargeTrackerClock>,
-            Option<ChargePoints>,
-        ),
+        assertion_fn: fn(Option<ChargeDelayClock>, Option<ChargeTrackerClock>),
     ) -> Result<(), Error> {
         AmethystApplication::blank()
             .with_system(ChargeIncrementSystem::new(), "", &[])
@@ -194,25 +157,21 @@ mod tests {
                     .with(charge_status)
                     .with(charge_delay_clock)
                     .with(charge_tracker_clock)
-                    .with(ChargePoints::new(0))
                     .build();
 
                 world.add_resource(entity);
             })
             .with_assertion(move |world| {
                 let entity = *world.read_resource::<Entity>();
-                let (charge_delay_clocks, charge_tracker_clocks, charge_pointses) = world
-                    .system_data::<(
-                        ReadStorage<'_, ChargeDelayClock>,
-                        ReadStorage<'_, ChargeTrackerClock>,
-                        ReadStorage<'_, ChargePoints>,
-                    )>();
+                let (charge_delay_clocks, charge_tracker_clocks) = world.system_data::<(
+                    ReadStorage<'_, ChargeDelayClock>,
+                    ReadStorage<'_, ChargeTrackerClock>,
+                )>();
 
                 let charge_delay_clock = charge_delay_clocks.get(entity).copied();
                 let charge_tracker_clock = charge_tracker_clocks.get(entity).copied();
-                let charge_points = charge_pointses.get(entity).copied();
 
-                assertion_fn(charge_delay_clock, charge_tracker_clock, charge_points);
+                assertion_fn(charge_delay_clock, charge_tracker_clock);
             })
             .run()
     }

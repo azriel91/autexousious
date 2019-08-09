@@ -1,5 +1,5 @@
 use amethyst::ecs::ReadStorage;
-use charge_model::config::ChargePoints;
+use charge_model::play::ChargeTrackerClock;
 use derivative::Derivative;
 use game_input::ControllerInput;
 use object_model::play::{HealthPoints, Mirrored, SkillPoints};
@@ -15,9 +15,9 @@ pub struct ControlTransitionRequirementSystemData<'s> {
     /// `SkillPoints` components.
     #[derivative(Debug = "ignore")]
     pub skill_pointses: ReadStorage<'s, SkillPoints>,
-    /// `ChargePoints` components.
+    /// `ChargeTrackerClock` components.
     #[derivative(Debug = "ignore")]
-    pub charge_pointses: ReadStorage<'s, ChargePoints>,
+    pub charge_tracker_clocks: ReadStorage<'s, ChargeTrackerClock>,
     /// `ControllerInput` components.
     #[derivative(Debug = "ignore")]
     pub controller_inputs: ReadStorage<'s, ControllerInput>,

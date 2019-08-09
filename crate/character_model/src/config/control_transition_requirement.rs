@@ -1,5 +1,5 @@
 use approx::{relative_eq, relative_ne};
-use charge_model::config::ChargePoints;
+use charge_model::{config::ChargePoints, play::ChargeTrackerClock};
 use game_input::ControllerInput;
 use game_input_model::config::{InputDirection, InputDirectionZ};
 use object_model::play::{HealthPoints, Mirrored, SkillPoints};
@@ -27,7 +27,7 @@ impl ControlTransitionRequirement {
         self,
         health_points: Option<HealthPoints>,
         skill_points: Option<SkillPoints>,
-        charge_points: Option<ChargePoints>,
+        charge_tracker_clock: Option<ChargeTrackerClock>,
         controller_input: Option<ControllerInput>,
         mirrored: Option<Mirrored>,
     ) -> bool {
@@ -38,9 +38,8 @@ impl ControlTransitionRequirement {
             ControlTransitionRequirement::Sp(required) => {
                 skill_points.map(|points| points >= required)
             }
-            ControlTransitionRequirement::Charge(required) => {
-                charge_points.map(|points| points >= required)
-            }
+            ControlTransitionRequirement::Charge(required) => charge_tracker_clock
+                .map(|charge_tracker_clock| (*charge_tracker_clock).value >= (*required) as usize),
             ControlTransitionRequirement::InputDirX(input_direction) => {
                 let requirement_met =
                     Self::input_requirement_met_x(controller_input, mirrored, input_direction);
@@ -155,7 +154,7 @@ impl ControlTransitionRequirement {
 
 #[cfg(test)]
 mod tests {
-    use charge_model::config::ChargePoints;
+    use charge_model::{config::ChargePoints, play::ChargeTrackerClock};
     use game_input::ControllerInput;
     use game_input_model::config::{InputDirection, InputDirectionZ};
     use object_model::play::{HealthPoints, Mirrored, SkillPoints};
@@ -203,20 +202,20 @@ mod tests {
     #[test]
     fn charge_points_requirement_met_when_greater_equal() {
         let requirement = ControlTransitionRequirement::Charge(ChargePoints::new(10));
-        let charge_points = Some(ChargePoints::new(10));
+        let charge_tracker_clock = Some(ChargeTrackerClock::new_with_value(20, 10));
 
-        assert!(requirement.is_met(None, None, charge_points, None, None));
+        assert!(requirement.is_met(None, None, charge_tracker_clock, None, None));
 
-        let charge_points = Some(ChargePoints::new(11));
-        assert!(requirement.is_met(None, None, charge_points, None, None));
+        let charge_tracker_clock = Some(ChargeTrackerClock::new_with_value(20, 11));
+        assert!(requirement.is_met(None, None, charge_tracker_clock, None, None));
     }
 
     #[test]
     fn charge_points_requirement_not_met_when_less_than() {
         let requirement = ControlTransitionRequirement::Charge(ChargePoints::new(10));
-        let charge_points = Some(ChargePoints::new(9));
+        let charge_tracker_clock = Some(ChargeTrackerClock::new_with_value(20, 9));
 
-        assert!(!requirement.is_met(None, None, charge_points, None, None));
+        assert!(!requirement.is_met(None, None, charge_tracker_clock, None, None));
     }
 
     macro_rules! input_x_test {

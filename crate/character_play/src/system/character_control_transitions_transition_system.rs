@@ -416,17 +416,17 @@ impl CharacterControlTransitionsTransitionSystem {
         ControlTransitionRequirementSystemData {
             health_pointses,
             skill_pointses,
-            charge_pointses,
+            charge_tracker_clocks,
             controller_inputs,
             mirroreds,
         }: &ControlTransitionRequirementSystemData,
         control_transition_requirements: &[ControlTransitionRequirement],
         entity: Entity,
     ) -> bool {
-        let (health_points, skill_points, charge_points, controller_input, mirrored) = (
+        let (health_points, skill_points, charge_tracker_clock, controller_input, mirrored) = (
             health_pointses.get(entity).copied(),
             skill_pointses.get(entity).copied(),
-            charge_pointses.get(entity).copied(),
+            charge_tracker_clocks.get(entity).copied(),
             controller_inputs.get(entity).copied(),
             mirroreds.get(entity).copied(),
         );
@@ -437,7 +437,7 @@ impl CharacterControlTransitionsTransitionSystem {
                 control_transition_requirement.is_met(
                     health_points,
                     skill_points,
-                    charge_points,
+                    charge_tracker_clock,
                     controller_input,
                     mirrored,
                 )
@@ -529,7 +529,10 @@ mod tests {
             CharacterControlTransitionsSequence, CharacterControlTransitionsSequenceHandle,
         },
     };
-    use charge_model::{config::ChargePoints, play::ChargeUseEvent};
+    use charge_model::{
+        config::ChargePoints,
+        play::{ChargeTrackerClock, ChargeUseEvent},
+    };
     use derivative::Derivative;
     use game_input::ControllerInput;
     use game_input_model::{
@@ -553,7 +556,7 @@ mod tests {
                     };
                     ControlInputEvent::ControlActionPress(control_action_event_data)
                 }),
-                charge_points: ChargePoints::new(100),
+                charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
                 sequence_id: CharacterSequenceId::StandAttack0,
@@ -575,7 +578,7 @@ mod tests {
                     };
                     ControlInputEvent::ControlActionRelease(control_action_event_data)
                 }),
-                charge_points: ChargePoints::new(100),
+                charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
                 sequence_id: CharacterSequenceId::DashBack,
@@ -595,7 +598,7 @@ mod tests {
                 sequence_id: CharacterSequenceId::Stand,
                 controller_input: controller_input,
                 control_input_event_fn: None,
-                charge_points: ChargePoints::new(100),
+                charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
                 sequence_id: CharacterSequenceId::Flinch0,
@@ -620,7 +623,7 @@ mod tests {
                     };
                     ControlInputEvent::ControlActionPress(control_action_event_data)
                 }),
-                charge_points: ChargePoints::new(100),
+                charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
                 sequence_id: CharacterSequenceId::Jump,
@@ -646,7 +649,7 @@ mod tests {
                     };
                     ControlInputEvent::ControlActionRelease(control_action_event_data)
                 }),
-                charge_points: ChargePoints::new(100),
+                charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
                 sequence_id: CharacterSequenceId::DashBack,
@@ -669,7 +672,7 @@ mod tests {
                     };
                     ControlInputEvent::AxisMoved(axis_move_event_data)
                 }),
-                charge_points: ChargePoints::new(100),
+                charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
                 sequence_id: CharacterSequenceId::FallForwardAscend,
@@ -692,7 +695,7 @@ mod tests {
                     };
                     ControlInputEvent::AxisMoved(axis_move_event_data)
                 }),
-                charge_points: ChargePoints::new(100),
+                charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
                 sequence_id: CharacterSequenceId::LieFaceDown,
@@ -711,7 +714,7 @@ mod tests {
                 sequence_id: CharacterSequenceId::Stand,
                 controller_input: controller_input,
                 control_input_event_fn: None,
-                charge_points: ChargePoints::new(100),
+                charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
                 sequence_id: CharacterSequenceId::FallForwardDescend,
@@ -737,7 +740,7 @@ mod tests {
                     };
                     ControlInputEvent::AxisMoved(axis_move_event_data)
                 }),
-                charge_points: ChargePoints::new(100),
+                charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
                 sequence_id: CharacterSequenceId::FallForwardAscend,
@@ -764,7 +767,7 @@ mod tests {
                     };
                     ControlInputEvent::AxisMoved(axis_move_event_data)
                 }),
-                charge_points: ChargePoints::new(100),
+                charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
                 sequence_id: CharacterSequenceId::Dazed,
@@ -780,7 +783,7 @@ mod tests {
                 sequence_id: CharacterSequenceId::Stand,
                 controller_input: ControllerInput::default(),
                 control_input_event_fn: None,
-                charge_points: ChargePoints::new(100),
+                charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
                 sequence_id: CharacterSequenceId::RunStop,
@@ -799,7 +802,7 @@ mod tests {
                 sequence_id: CharacterSequenceId::Stand,
                 controller_input: controller_input,
                 control_input_event_fn: None,
-                charge_points: ChargePoints::new(100),
+                charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
                 sequence_id: CharacterSequenceId::Stand,
@@ -821,7 +824,7 @@ mod tests {
                     };
                     ControlInputEvent::ControlActionRelease(control_action_event_data)
                 }),
-                charge_points: ChargePoints::new(100),
+                charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
                 sequence_id: CharacterSequenceId::DashBack,
@@ -849,7 +852,7 @@ mod tests {
                     };
                     ControlInputEvent::ControlActionRelease(control_action_event_data)
                 }),
-                charge_points: ChargePoints::new(5),
+                charge_tracker_clock: ChargeTrackerClock::new_with_value(5, 5),
             },
             ExpectedParams {
                 sequence_id: CharacterSequenceId::Stand,
@@ -863,7 +866,7 @@ mod tests {
             sequence_id: sequence_id_setup,
             controller_input: controller_input_setup,
             control_input_event_fn,
-            charge_points: charge_points_setup,
+            charge_tracker_clock: charge_tracker_clock_setup,
         }: SetupParams,
         ExpectedParams {
             sequence_id: sequence_id_expected,
@@ -938,7 +941,7 @@ mod tests {
                         mut character_control_transitions_handles,
                         mut health_pointses,
                         mut skill_pointses,
-                        mut charge_pointses,
+                        mut charge_tracker_clocks,
                         mut mirroreds,
                         mut controller_inputs,
                     } = world.system_data::<TestSystemData>();
@@ -955,9 +958,9 @@ mod tests {
                     skill_pointses
                         .insert(entity, SkillPoints::new(100))
                         .expect("Failed to insert `SkillPoints` component.");
-                    charge_pointses
-                        .insert(entity, charge_points_setup)
-                        .expect("Failed to insert `ChargePoints` component.");
+                    charge_tracker_clocks
+                        .insert(entity, charge_tracker_clock_setup)
+                        .expect("Failed to insert `ChargeTrackerClock` component.");
                     mirroreds
                         .insert(entity, Mirrored::new(false))
                         .expect("Failed to insert `Mirrored` component.");
@@ -1056,7 +1059,7 @@ mod tests {
         #[derivative(Debug = "ignore")]
         skill_pointses: WriteStorage<'s, SkillPoints>,
         #[derivative(Debug = "ignore")]
-        charge_pointses: WriteStorage<'s, ChargePoints>,
+        charge_tracker_clocks: WriteStorage<'s, ChargeTrackerClock>,
         #[derivative(Debug = "ignore")]
         mirroreds: WriteStorage<'s, Mirrored>,
         #[derivative(Debug = "ignore")]
@@ -1067,7 +1070,7 @@ mod tests {
         sequence_id: CharacterSequenceId,
         controller_input: ControllerInput,
         control_input_event_fn: Option<fn(Entity) -> ControlInputEvent>,
-        charge_points: ChargePoints,
+        charge_tracker_clock: ChargeTrackerClock,
     }
 
     struct ExpectedParams {
