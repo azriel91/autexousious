@@ -1,7 +1,7 @@
 use amethyst::{
     assets::AssetStorage,
     ecs::{
-        BitSet, Entities, Entity, Join, Read, ReadStorage, Resources, System, SystemData,
+        BitSet, Entities, Entity, Join, Read, ReadStorage, Resources, System, SystemData, Write,
         WriteStorage,
     },
     shrev::{EventChannel, ReaderId},
@@ -11,6 +11,7 @@ use character_model::{
     config::{CharacterSequenceId, ControlTransitionRequirement},
     loaded::{CharacterControlTransitions, CharacterControlTransitionsHandle},
 };
+use charge_model::play::ChargeUseEvent;
 use derivative::Derivative;
 use derive_new::new;
 use game_input::ControllerInput;
@@ -38,11 +39,18 @@ pub struct CharacterControlTransitionsTransitionSystem {
     processed_entities: BitSet,
 }
 
-type CharacterControlTransitionsTransitionSystemData<'s> = (
-    Read<'s, EventChannel<ControlInputEvent>>,
-    CharacterControlTransitionsTransitionResources<'s>,
-    ControlTransitionRequirementSystemData<'s>,
-);
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub struct CharacterControlTransitionsTransitionSystemData<'s> {
+    /// `ControlInputEvent` channel.
+    #[derivative(Debug = "ignore")]
+    pub control_input_ec: Read<'s, EventChannel<ControlInputEvent>>,
+    /// `CharacterControlTransitionsTransitionResources`.
+    pub character_control_transitions_transition_resources:
+        CharacterControlTransitionsTransitionResources<'s>,
+    /// `ControlTransitionRequirementSystemData`.
+    pub control_transition_requirement_system_data: ControlTransitionRequirementSystemData<'s>,
+}
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
@@ -62,6 +70,9 @@ pub struct CharacterControlTransitionsTransitionResources<'s> {
     /// `CharacterSequenceId` components.
     #[derivative(Debug = "ignore")]
     pub character_sequence_ids: WriteStorage<'s, CharacterSequenceId>,
+    /// `ChargeUseEvent` channel.
+    #[derivative(Debug = "ignore")]
+    pub charge_use_ec: Write<'s, EventChannel<ChargeUseEvent>>,
 }
 
 impl CharacterControlTransitionsTransitionSystem {
@@ -73,6 +84,7 @@ impl CharacterControlTransitionsTransitionSystem {
             ref character_control_transitions_handles,
             ref character_control_transitions_assets,
             ref mut character_sequence_ids,
+            ref mut charge_use_ec,
         }: &mut CharacterControlTransitionsTransitionResources,
         control_transition_requirement_system_data: &ControlTransitionRequirementSystemData,
         ControlActionEventData {
@@ -127,15 +139,13 @@ impl CharacterControlTransitionsTransitionSystem {
                     }
                 })
                 .filter_map(|(sequence_id, control_transition_requirements)| {
-                    if Self::transition_requirements_met(
+                    Self::process_transition(
+                        charge_use_ec,
                         control_transition_requirement_system_data,
-                        &control_transition_requirements,
                         entity,
-                    ) {
-                        Some(sequence_id)
-                    } else {
-                        None
-                    }
+                        sequence_id,
+                        &control_transition_requirements,
+                    )
                 })
                 .next();
 
@@ -155,6 +165,7 @@ impl CharacterControlTransitionsTransitionSystem {
             ref character_control_transitions_handles,
             ref character_control_transitions_assets,
             ref mut character_sequence_ids,
+            ref mut charge_use_ec,
         }: &mut CharacterControlTransitionsTransitionResources,
         control_transition_requirement_system_data: &ControlTransitionRequirementSystemData,
         AxisMoveEventData {
@@ -203,15 +214,13 @@ impl CharacterControlTransitionsTransitionSystem {
                     }
                 })
                 .filter_map(|(sequence_id, control_transition_requirements)| {
-                    if Self::transition_requirements_met(
+                    Self::process_transition(
+                        charge_use_ec,
                         control_transition_requirement_system_data,
-                        &control_transition_requirements,
                         entity,
-                    ) {
-                        Some(sequence_id)
-                    } else {
-                        None
-                    }
+                        sequence_id,
+                        &control_transition_requirements,
+                    )
                 })
                 .next();
 
@@ -234,6 +243,7 @@ impl CharacterControlTransitionsTransitionSystem {
             ref character_control_transitions_handles,
             ref character_control_transitions_assets,
             ref mut character_sequence_ids,
+            ref mut charge_use_ec,
         }: &mut CharacterControlTransitionsTransitionResources,
         control_transition_requirement_system_data: &ControlTransitionRequirementSystemData,
     ) {
@@ -277,15 +287,13 @@ impl CharacterControlTransitionsTransitionSystem {
                             }
                         })
                         .filter_map(|(sequence_id, control_transition_requirements)| {
-                            if Self::transition_requirements_met(
+                            Self::process_transition(
+                                charge_use_ec,
                                 control_transition_requirement_system_data,
-                                &control_transition_requirements,
                                 entity,
-                            ) {
-                                Some(sequence_id)
-                            } else {
-                                None
-                            }
+                                sequence_id,
+                                &control_transition_requirements,
+                            )
                         })
                         .next();
 
@@ -371,6 +379,39 @@ impl CharacterControlTransitionsTransitionSystem {
         }
     } // kcov-ignore
 
+    fn process_transition(
+        charge_use_ec: &mut EventChannel<ChargeUseEvent>,
+        control_transition_requirement_system_data: &ControlTransitionRequirementSystemData,
+        entity: Entity,
+        sequence_id: CharacterSequenceId,
+        control_transition_requirements: &[ControlTransitionRequirement],
+    ) -> Option<CharacterSequenceId> {
+        if Self::transition_requirements_met(
+            control_transition_requirement_system_data,
+            &control_transition_requirements,
+            entity,
+        ) {
+            control_transition_requirements
+                .iter()
+                .filter_map(|control_transition_requirement| {
+                    if let ControlTransitionRequirement::Charge(charge_points) =
+                        control_transition_requirement
+                    {
+                        Some(ChargeUseEvent {
+                            entity,
+                            charge_points: *charge_points,
+                        })
+                    } else {
+                        None
+                    }
+                })
+                .for_each(|charge_use_event| charge_use_ec.single_write(charge_use_event));
+            Some(sequence_id)
+        } else {
+            None
+        }
+    }
+
     fn transition_requirements_met(
         ControlTransitionRequirementSystemData {
             health_pointses,
@@ -409,11 +450,11 @@ impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
 
     fn run(
         &mut self,
-        (
+        CharacterControlTransitionsTransitionSystemData {
             control_input_ec,
             mut character_control_transitions_transition_resources,
             control_transition_requirement_system_data,
-        ): Self::SystemData,
+        }: Self::SystemData,
     ) {
         self.processed_entities.clear();
 
@@ -473,7 +514,7 @@ mod tests {
     use amethyst::{
         assets::{AssetStorage, Loader},
         ecs::{Builder, Entity, Read, ReadExpect, World, WriteStorage},
-        shrev::EventChannel,
+        shrev::{EventChannel, ReaderId},
         Error,
     };
     use application::resource::IoUtils;
@@ -488,7 +529,7 @@ mod tests {
             CharacterControlTransitionsSequence, CharacterControlTransitionsSequenceHandle,
         },
     };
-    use charge_model::config::ChargePoints;
+    use charge_model::{config::ChargePoints, play::ChargeUseEvent};
     use derivative::Derivative;
     use game_input::ControllerInput;
     use game_input_model::{
@@ -502,32 +543,44 @@ mod tests {
     #[test]
     fn inserts_transition_for_action_press_event() -> Result<(), Error> {
         run_test(
-            CharacterSequenceId::Stand,
-            ControllerInput::default(),
-            Some(|entity| {
-                let control_action_event_data = ControlActionEventData {
-                    entity,
-                    control_action: ControlAction::Attack,
-                };
-                ControlInputEvent::ControlActionPress(control_action_event_data)
-            }),
-            CharacterSequenceId::StandAttack0,
+            SetupParams {
+                sequence_id: CharacterSequenceId::Stand,
+                controller_input: ControllerInput::default(),
+                control_input_event_fn: Some(|entity| {
+                    let control_action_event_data = ControlActionEventData {
+                        entity,
+                        control_action: ControlAction::Attack,
+                    };
+                    ControlInputEvent::ControlActionPress(control_action_event_data)
+                }),
+                charge_points: ChargePoints::new(100),
+            },
+            ExpectedParams {
+                sequence_id: CharacterSequenceId::StandAttack0,
+                charge_use_events_fn: None,
+            },
         )
     }
 
     #[test]
     fn inserts_transition_for_action_release_event() -> Result<(), Error> {
         run_test(
-            CharacterSequenceId::Stand,
-            ControllerInput::default(),
-            Some(|entity| {
-                let control_action_event_data = ControlActionEventData {
-                    entity,
-                    control_action: ControlAction::Special,
-                };
-                ControlInputEvent::ControlActionRelease(control_action_event_data)
-            }),
-            CharacterSequenceId::DashBack,
+            SetupParams {
+                sequence_id: CharacterSequenceId::Stand,
+                controller_input: ControllerInput::default(),
+                control_input_event_fn: Some(|entity| {
+                    let control_action_event_data = ControlActionEventData {
+                        entity,
+                        control_action: ControlAction::Special,
+                    };
+                    ControlInputEvent::ControlActionRelease(control_action_event_data)
+                }),
+                charge_points: ChargePoints::new(100),
+            },
+            ExpectedParams {
+                sequence_id: CharacterSequenceId::DashBack,
+                charge_use_events_fn: None,
+            },
         )
     }
 
@@ -538,10 +591,16 @@ mod tests {
         controller_input.x_axis_value = 1.;
 
         run_test(
-            CharacterSequenceId::Stand,
-            controller_input,
-            None,
-            CharacterSequenceId::Flinch0,
+            SetupParams {
+                sequence_id: CharacterSequenceId::Stand,
+                controller_input: controller_input,
+                control_input_event_fn: None,
+                charge_points: ChargePoints::new(100),
+            },
+            ExpectedParams {
+                sequence_id: CharacterSequenceId::Flinch0,
+                charge_use_events_fn: None,
+            },
         )
     }
 
@@ -551,16 +610,22 @@ mod tests {
         controller_input.jump = true;
 
         run_test(
-            CharacterSequenceId::Stand,
-            controller_input,
-            Some(|entity| {
-                let control_action_event_data = ControlActionEventData {
-                    entity,
-                    control_action: ControlAction::Jump,
-                };
-                ControlInputEvent::ControlActionPress(control_action_event_data)
-            }),
-            CharacterSequenceId::Jump,
+            SetupParams {
+                sequence_id: CharacterSequenceId::Stand,
+                controller_input: controller_input,
+                control_input_event_fn: Some(|entity| {
+                    let control_action_event_data = ControlActionEventData {
+                        entity,
+                        control_action: ControlAction::Jump,
+                    };
+                    ControlInputEvent::ControlActionPress(control_action_event_data)
+                }),
+                charge_points: ChargePoints::new(100),
+            },
+            ExpectedParams {
+                sequence_id: CharacterSequenceId::Jump,
+                charge_use_events_fn: None,
+            },
         )
     }
 
@@ -571,50 +636,68 @@ mod tests {
         controller_input.defend = true;
 
         run_test(
-            CharacterSequenceId::Stand,
-            controller_input,
-            Some(|entity| {
-                let control_action_event_data = ControlActionEventData {
-                    entity,
-                    control_action: ControlAction::Special,
-                };
-                ControlInputEvent::ControlActionRelease(control_action_event_data)
-            }),
-            CharacterSequenceId::DashBack,
+            SetupParams {
+                sequence_id: CharacterSequenceId::Stand,
+                controller_input: controller_input,
+                control_input_event_fn: Some(|entity| {
+                    let control_action_event_data = ControlActionEventData {
+                        entity,
+                        control_action: ControlAction::Special,
+                    };
+                    ControlInputEvent::ControlActionRelease(control_action_event_data)
+                }),
+                charge_points: ChargePoints::new(100),
+            },
+            ExpectedParams {
+                sequence_id: CharacterSequenceId::DashBack,
+                charge_use_events_fn: None,
+            },
         )
     }
 
     #[test]
     fn inserts_transition_for_axis_press_event() -> Result<(), Error> {
         run_test(
-            CharacterSequenceId::Stand,
-            ControllerInput::default(),
-            Some(|entity| {
-                let axis_move_event_data = AxisMoveEventData {
-                    entity,
-                    axis: Axis::Z,
-                    value: -1.,
-                };
-                ControlInputEvent::AxisMoved(axis_move_event_data)
-            }),
-            CharacterSequenceId::FallForwardAscend,
+            SetupParams {
+                sequence_id: CharacterSequenceId::Stand,
+                controller_input: ControllerInput::default(),
+                control_input_event_fn: Some(|entity| {
+                    let axis_move_event_data = AxisMoveEventData {
+                        entity,
+                        axis: Axis::Z,
+                        value: -1.,
+                    };
+                    ControlInputEvent::AxisMoved(axis_move_event_data)
+                }),
+                charge_points: ChargePoints::new(100),
+            },
+            ExpectedParams {
+                sequence_id: CharacterSequenceId::FallForwardAscend,
+                charge_use_events_fn: None,
+            },
         )
     }
 
     #[test]
     fn inserts_transition_for_axis_release_event() -> Result<(), Error> {
         run_test(
-            CharacterSequenceId::Stand,
-            ControllerInput::default(),
-            Some(|entity| {
-                let axis_move_event_data = AxisMoveEventData {
-                    entity,
-                    axis: Axis::Z,
-                    value: 0.,
-                };
-                ControlInputEvent::AxisMoved(axis_move_event_data)
-            }),
-            CharacterSequenceId::LieFaceDown,
+            SetupParams {
+                sequence_id: CharacterSequenceId::Stand,
+                controller_input: ControllerInput::default(),
+                control_input_event_fn: Some(|entity| {
+                    let axis_move_event_data = AxisMoveEventData {
+                        entity,
+                        axis: Axis::Z,
+                        value: 0.,
+                    };
+                    ControlInputEvent::AxisMoved(axis_move_event_data)
+                }),
+                charge_points: ChargePoints::new(100),
+            },
+            ExpectedParams {
+                sequence_id: CharacterSequenceId::LieFaceDown,
+                charge_use_events_fn: None,
+            },
         )
     }
 
@@ -624,10 +707,16 @@ mod tests {
         controller_input.z_axis_value = 1.;
 
         run_test(
-            CharacterSequenceId::Stand,
-            controller_input,
-            None,
-            CharacterSequenceId::FallForwardDescend,
+            SetupParams {
+                sequence_id: CharacterSequenceId::Stand,
+                controller_input: controller_input,
+                control_input_event_fn: None,
+                charge_points: ChargePoints::new(100),
+            },
+            ExpectedParams {
+                sequence_id: CharacterSequenceId::FallForwardDescend,
+                charge_use_events_fn: None,
+            },
         )
     }
 
@@ -637,17 +726,23 @@ mod tests {
         controller_input.z_axis_value = 1.;
 
         run_test(
-            CharacterSequenceId::Stand,
-            controller_input,
-            Some(|entity| {
-                let axis_move_event_data = AxisMoveEventData {
-                    entity,
-                    axis: Axis::Z,
-                    value: 1.,
-                };
-                ControlInputEvent::AxisMoved(axis_move_event_data)
-            }),
-            CharacterSequenceId::FallForwardAscend,
+            SetupParams {
+                sequence_id: CharacterSequenceId::Stand,
+                controller_input: controller_input,
+                control_input_event_fn: Some(|entity| {
+                    let axis_move_event_data = AxisMoveEventData {
+                        entity,
+                        axis: Axis::Z,
+                        value: 1.,
+                    };
+                    ControlInputEvent::AxisMoved(axis_move_event_data)
+                }),
+                charge_points: ChargePoints::new(100),
+            },
+            ExpectedParams {
+                sequence_id: CharacterSequenceId::FallForwardAscend,
+                charge_use_events_fn: None,
+            },
         )
     }
 
@@ -658,27 +753,39 @@ mod tests {
         controller_input.z_axis_value = 1.;
 
         run_test(
-            CharacterSequenceId::Stand,
-            controller_input,
-            Some(|entity| {
-                let axis_move_event_data = AxisMoveEventData {
-                    entity,
-                    axis: Axis::X,
-                    value: 0.,
-                };
-                ControlInputEvent::AxisMoved(axis_move_event_data)
-            }),
-            CharacterSequenceId::Dazed,
+            SetupParams {
+                sequence_id: CharacterSequenceId::Stand,
+                controller_input: controller_input,
+                control_input_event_fn: Some(|entity| {
+                    let axis_move_event_data = AxisMoveEventData {
+                        entity,
+                        axis: Axis::X,
+                        value: 0.,
+                    };
+                    ControlInputEvent::AxisMoved(axis_move_event_data)
+                }),
+                charge_points: ChargePoints::new(100),
+            },
+            ExpectedParams {
+                sequence_id: CharacterSequenceId::Dazed,
+                charge_use_events_fn: None,
+            },
         )
     }
 
     #[test]
     fn inserts_transition_for_fallback() -> Result<(), Error> {
         run_test(
-            CharacterSequenceId::Stand,
-            ControllerInput::default(),
-            None,
-            CharacterSequenceId::RunStop,
+            SetupParams {
+                sequence_id: CharacterSequenceId::Stand,
+                controller_input: ControllerInput::default(),
+                control_input_event_fn: None,
+                charge_points: ChargePoints::new(100),
+            },
+            ExpectedParams {
+                sequence_id: CharacterSequenceId::RunStop,
+                charge_use_events_fn: None,
+            },
         )
     }
 
@@ -688,21 +795,84 @@ mod tests {
         controller_input.x_axis_value = 1.;
 
         run_test(
-            CharacterSequenceId::Stand,
-            controller_input,
-            None,
-            CharacterSequenceId::Stand,
+            SetupParams {
+                sequence_id: CharacterSequenceId::Stand,
+                controller_input: controller_input,
+                control_input_event_fn: None,
+                charge_points: ChargePoints::new(100),
+            },
+            ExpectedParams {
+                sequence_id: CharacterSequenceId::Stand,
+                charge_use_events_fn: None,
+            },
+        )
+    }
+
+    #[test]
+    fn sends_charge_use_event_when_requirement_met() -> Result<(), Error> {
+        run_test(
+            SetupParams {
+                sequence_id: CharacterSequenceId::Stand,
+                controller_input: ControllerInput::default(),
+                control_input_event_fn: Some(|entity| {
+                    let control_action_event_data = ControlActionEventData {
+                        entity,
+                        control_action: ControlAction::Special,
+                    };
+                    ControlInputEvent::ControlActionRelease(control_action_event_data)
+                }),
+                charge_points: ChargePoints::new(100),
+            },
+            ExpectedParams {
+                sequence_id: CharacterSequenceId::DashBack,
+                charge_use_events_fn: Some(|entity| {
+                    let charge_use_event = ChargeUseEvent {
+                        entity,
+                        charge_points: ChargePoints::new(10),
+                    };
+                    vec![charge_use_event]
+                }),
+            },
+        )
+    }
+
+    #[test]
+    fn does_not_send_charge_use_event_when_requirement_not_met() -> Result<(), Error> {
+        run_test(
+            SetupParams {
+                sequence_id: CharacterSequenceId::Stand,
+                controller_input: ControllerInput::default(),
+                control_input_event_fn: Some(|entity| {
+                    let control_action_event_data = ControlActionEventData {
+                        entity,
+                        control_action: ControlAction::Special,
+                    };
+                    ControlInputEvent::ControlActionRelease(control_action_event_data)
+                }),
+                charge_points: ChargePoints::new(5),
+            },
+            ExpectedParams {
+                sequence_id: CharacterSequenceId::Stand,
+                charge_use_events_fn: Some(|_| vec![]),
+            },
         )
     }
 
     fn run_test(
-        setup_sequence_id: CharacterSequenceId,
-        setup_controller_input: ControllerInput,
-        control_input_event_fn: Option<fn(Entity) -> ControlInputEvent>,
-        expected_sequence_id: CharacterSequenceId,
+        SetupParams {
+            sequence_id: sequence_id_setup,
+            controller_input: controller_input_setup,
+            control_input_event_fn,
+            charge_points: charge_points_setup,
+        }: SetupParams,
+        ExpectedParams {
+            sequence_id: sequence_id_expected,
+            charge_use_events_fn,
+        }: ExpectedParams,
     ) -> Result<(), Error> {
         AutexousiousApplication::config_base()
             .with_system(CharacterControlTransitionsTransitionSystem::new(), "", &[])
+            .with_setup(register_reader)
             .with_setup(move |world| {
                 let character_control_transitions_sequence_handle = {
                     let (
@@ -774,7 +944,7 @@ mod tests {
                     } = world.system_data::<TestSystemData>();
 
                     character_sequence_ids
-                        .insert(entity, setup_sequence_id)
+                        .insert(entity, sequence_id_setup)
                         .expect("Failed to insert `CharacterSequenceId` component.");
                     character_control_transitions_handles
                         .insert(entity, character_control_transitions_handle)
@@ -786,14 +956,14 @@ mod tests {
                         .insert(entity, SkillPoints::new(100))
                         .expect("Failed to insert `SkillPoints` component.");
                     charge_pointses
-                        .insert(entity, ChargePoints::new(100))
+                        .insert(entity, charge_points_setup)
                         .expect("Failed to insert `ChargePoints` component.");
                     mirroreds
                         .insert(entity, Mirrored::new(false))
                         .expect("Failed to insert `Mirrored` component.");
 
                     controller_inputs
-                        .insert(entity, setup_controller_input)
+                        .insert(entity, controller_input_setup)
                         .expect("Failed to insert `ControllerInput` component.");
                 }
 
@@ -806,12 +976,22 @@ mod tests {
             .with_assertion(move |world| {
                 let entity = *world.read_resource::<Entity>();
 
-                let character_sequence_ids = world.read_storage::<CharacterSequenceId>();
-                let character_sequence_id = character_sequence_ids
-                    .get(entity)
-                    .expect("Expected `CharacterSequenceId` component to exist.");
+                let character_sequence_id = {
+                    let character_sequence_ids = world.read_storage::<CharacterSequenceId>();
 
-                assert_eq!(&expected_sequence_id, character_sequence_id);
+                    character_sequence_ids
+                        .get(entity)
+                        .copied()
+                        .expect("Expected `CharacterSequenceId` component to exist.")
+                };
+
+                assert_eq!(sequence_id_expected, character_sequence_id);
+
+                if let Some(charge_use_events_fn) = charge_use_events_fn {
+                    let charge_use_events = charge_use_events_fn(entity);
+
+                    expect_events(world, charge_use_events);
+                }
             })
             .run_isolated()
     }
@@ -834,10 +1014,35 @@ mod tests {
             .expect("Failed to load `test_character_sequence.toml`.")
     }
 
+    fn register_reader(world: &mut World) {
+        let reader_id = {
+            let mut ec = world.write_resource::<EventChannel<ChargeUseEvent>>();
+            ec.register_reader()
+        }; // kcov-ignore
+        world.add_resource(reader_id);
+    }
+
     fn send_event(world: &mut World, event: ControlInputEvent) {
         let mut ec = world.write_resource::<EventChannel<ControlInputEvent>>();
         ec.single_write(event);
     } // kcov-ignore
+
+    fn expect_events(world: &mut World, events_expected: Vec<ChargeUseEvent>) {
+        let target_entity = *world.read_resource::<Entity>();
+        let mut reader_id = world.write_resource::<ReaderId<ChargeUseEvent>>();
+        let ec = world.read_resource::<EventChannel<ChargeUseEvent>>();
+
+        // Map owned values into references.
+        let events_expected = events_expected.iter().collect::<Vec<_>>();
+
+        // Filter events for the entity we care about.
+        let events_actual = ec
+            .read(&mut reader_id)
+            .filter(|ev| target_entity == ev.entity)
+            .collect::<Vec<_>>();
+
+        assert_eq!(events_expected, events_actual)
+    }
 
     #[derive(Derivative, SystemData)]
     #[derivative(Debug)]
@@ -856,5 +1061,17 @@ mod tests {
         mirroreds: WriteStorage<'s, Mirrored>,
         #[derivative(Debug = "ignore")]
         controller_inputs: WriteStorage<'s, ControllerInput>,
+    }
+
+    struct SetupParams {
+        sequence_id: CharacterSequenceId,
+        controller_input: ControllerInput,
+        control_input_event_fn: Option<fn(Entity) -> ControlInputEvent>,
+        charge_points: ChargePoints,
+    }
+
+    struct ExpectedParams {
+        sequence_id: CharacterSequenceId,
+        charge_use_events_fn: Option<fn(Entity) -> Vec<ChargeUseEvent>>,
     }
 }
