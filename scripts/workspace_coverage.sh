@@ -16,11 +16,17 @@ test -d "${coverage_dir}" || mkdir -p "${coverage_dir}"
 kcov_exclude_line="kcov-ignore"
 kcov_exclude_region="kcov-ignore-start:kcov-ignore-end"
 
-# 
+# Builds all crates including tests, but don't run them yet.
+# We will run the tests wrapped in `kcov`.
 test_bins_by_crate="$(
     cargo test --no-run --message-format=json |
     jq -r "select(.profile.test == true) | (.package_id | split(\" \"))[0] + \";\" + .filenames[]"
   )"
+
+# Set `LD_LIBRARY_PATH` so that tests can link against it
+target_arch=$(rustup target list | grep -F default | cut -d ' ' -f 1)
+export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:$(rustc --print sysroot)/lib/rustlib/${target_arch}/lib/"
+
 crate_coverage_dirs=()
 for test_bin_by_crate in $test_bins_by_crate; do
   crate_name=${test_bin_by_crate%%;*}
@@ -34,6 +40,8 @@ for test_bin_by_crate in $test_bins_by_crate; do
   crate_coverage_dirs+=("${crate_coverage_dir}")
 
   (
+    echo "Running '${test_bin_path}'"
+
     export CARGO_MANIFEST_DIR="$crate_dir"
     kcov --include-pattern="${crate_dir}/src/,${crate_dir}/tests/" \
       "--exclude-line=${kcov_exclude_line}" \

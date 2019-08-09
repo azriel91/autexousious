@@ -43,11 +43,16 @@ impl StdinMapper for ControlInputEventStdinMapper {
                     axis: *axis,
                     value: *value,
                 }),
-                ControlArgs::Action { action, value } => {
-                    ControlInputEvent::ControlAction(ControlActionEventData {
+                ControlArgs::ActionPressed { action } => {
+                    ControlInputEvent::ControlActionPressed(ControlActionEventData {
                         entity,
                         control_action: *action,
-                        value: *value,
+                    })
+                }
+                ControlArgs::ActionReleased { action } => {
+                    ControlInputEvent::ControlActionReleased(ControlActionEventData {
+                        entity,
+                        control_action: *action,
                     })
                 }
             })
@@ -118,7 +123,7 @@ mod tests {
     }
 
     #[test]
-    fn maps_action_input() -> Result<(), Error> {
+    fn maps_action_pressed() -> Result<(), Error> {
         AutexousiousApplication::config_base()
             .with_setup(|world| {
                 world.register::<InputControlled>();
@@ -130,9 +135,8 @@ mod tests {
             .with_assertion(|world| {
                 let args = ControlInputEventArgs {
                     controller: 1,
-                    control: ControlArgs::Action {
+                    control: ControlArgs::ActionPressed {
                         action: ControlAction::Jump,
-                        value: true,
                     },
                 };
                 let result = ControlInputEventStdinMapper::map(
@@ -143,10 +147,44 @@ mod tests {
                 assert!(result.is_ok());
                 let entity = world.read_resource::<Entity>().clone();
                 assert_eq!(
-                    ControlInputEvent::ControlAction(ControlActionEventData {
+                    ControlInputEvent::ControlActionPressed(ControlActionEventData {
                         entity,
                         control_action: ControlAction::Jump,
-                        value: true,
+                    }),
+                    result.unwrap()
+                )
+            })
+            .run_isolated()
+    }
+
+    #[test]
+    fn maps_action_released() -> Result<(), Error> {
+        AutexousiousApplication::config_base()
+            .with_setup(|world| {
+                world.register::<InputControlled>();
+
+                let entity = world.create_entity().with(InputControlled::new(1)).build();
+
+                world.add_resource(entity);
+            })
+            .with_assertion(|world| {
+                let args = ControlInputEventArgs {
+                    controller: 1,
+                    control: ControlArgs::ActionReleased {
+                        action: ControlAction::Jump,
+                    },
+                };
+                let result = ControlInputEventStdinMapper::map(
+                    &world.system_data::<(Entities, ReadStorage<InputControlled>)>(),
+                    args,
+                );
+
+                assert!(result.is_ok());
+                let entity = world.read_resource::<Entity>().clone();
+                assert_eq!(
+                    ControlInputEvent::ControlActionReleased(ControlActionEventData {
+                        entity,
+                        control_action: ControlAction::Jump,
                     }),
                     result.unwrap()
                 )
@@ -165,9 +203,8 @@ mod tests {
             .with_assertion(|world| {
                 let args = ControlInputEventArgs {
                     controller: 2,
-                    control: ControlArgs::Action {
+                    control: ControlArgs::ActionPressed {
                         action: ControlAction::Jump,
-                        value: true,
                     },
                 };
                 let result = ControlInputEventStdinMapper::map(

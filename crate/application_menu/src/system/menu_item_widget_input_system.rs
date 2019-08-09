@@ -137,7 +137,7 @@ where
                     siblings,
                     axis_event_data,
                 ),
-                ControlInputEvent::ControlAction(control_action_event_data) => {
+                ControlInputEvent::ControlActionPressed(control_action_event_data) => {
                     Self::handle_control_action_event(
                         menu_items,
                         menu_ec,
@@ -145,6 +145,7 @@ where
                         control_action_event_data,
                     )
                 }
+                ControlInputEvent::ControlActionReleased(..) => {}
             }
         }
     }
@@ -179,12 +180,9 @@ where
         menu_item_entity: Entity,
         control_action_event_data: ControlActionEventData,
     ) {
-        let game_mode_selection_event = match (
-            control_action_event_data.control_action,
-            control_action_event_data.value,
-        ) {
-            (ControlAction::Jump, true) => Some(MenuEvent::Close),
-            (ControlAction::Attack, true) => {
+        let game_mode_selection_event = match control_action_event_data.control_action {
+            ControlAction::Jump => Some(MenuEvent::Close),
+            ControlAction::Attack => {
                 let menu_item = menu_items
                     .get(menu_item_entity)
                     .expect("Expected `MenuItem` component to exist.");
@@ -504,18 +502,16 @@ mod test {
     }
 
     fn press_jump(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::ControlAction(ControlActionEventData {
+        ControlInputEvent::ControlActionPressed(ControlActionEventData {
             entity,
             control_action: ControlAction::Jump,
-            value: true,
         })
     }
 
     fn press_attack(entity: Entity) -> ControlInputEvent {
-        ControlInputEvent::ControlAction(ControlActionEventData {
+        ControlInputEvent::ControlActionPressed(ControlActionEventData {
             entity,
             control_action: ControlAction::Attack,
-            value: true,
         })
     }
 

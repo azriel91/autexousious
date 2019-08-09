@@ -5,11 +5,13 @@
 ### Changed
 
 * Sequence component updates are done in parallel. ([#147])
+* Control input axis events are done on input events instead of state delta detection. ([#113])
 
 ### Fixed
 
 * `spawn_play` flakey test segmentation fault. ([#145])
 
+[#113]: https://gitlab.com/azriel91/autexousious/issues/113
 [#145]: https://gitlab.com/azriel91/autexousious/issues/145
 [#147]: https://gitlab.com/azriel91/autexousious/issues/147
 

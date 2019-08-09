@@ -3,16 +3,17 @@
 use std::{convert::TryFrom, process};
 
 use amethyst::{
-    assets::{HotReloadBundle, Processor},
+    assets::HotReloadBundle,
     audio::AudioBundle,
     core::transform::TransformBundle,
     input::{Bindings, InputBundle},
     renderer::{
-        sprite_visibility::SpriteVisibilitySortingSystem, types::DefaultBackend, RenderingSystem,
-        SpriteSheet,
+        plugins::{RenderFlat2D, RenderToWindow},
+        types::DefaultBackend,
+        RenderingBundle,
     },
-    ui::UiBundle,
-    window::{DisplayConfig, WindowBundle},
+    ui::{RenderUi, UiBundle},
+    window::DisplayConfig,
     CoreApplication, GameDataBuilder, LogLevelFilter, LoggerConfig,
 };
 use application::{
@@ -53,10 +54,6 @@ use stdio_spi::MapperSystem;
 use structopt::StructOpt;
 use typename::TypeName;
 use ui_audio_loading::UiAudioLoadingBundle;
-
-use crate::render_graph::RenderGraph;
-
-mod render_graph;
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "Will", rename_all = "snake_case")]
@@ -106,27 +103,21 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         // `InputBundle` provides `InputHandler<A, B>`, needed by the `UiBundle` for mouse events.
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
         game_data = game_data
-            .with_bundle(WindowBundle::from_config(display_config))?
+            .with_bundle(
+                RenderingBundle::<DefaultBackend>::new()
+                    .with_plugin(
+                        RenderToWindow::from_config(display_config).with_clear([0., 0., 0., 1.0]),
+                    )
+                    .with_plugin(RenderFlat2D::default())
+                    .with_plugin(RenderUi::default()),
+            )?
             .with_bundle(AudioBundle::default())?
             .with_bundle(TransformBundle::new())?
-            .with(
-                Processor::<SpriteSheet>::new(),
-                "sprite_sheet_processor",
-                &[],
-            )
-            .with(
-                SpriteVisibilitySortingSystem::new(),
-                "sprite_visibility_system",
-                &["transform_system"],
-            )
-            .with_thread_local(RenderingSystem::<DefaultBackend, _>::new(
-                RenderGraph::default(),
-            ))
             .with_bundle(
                 InputBundle::<ControlBindings>::new()
                     .with_bindings(Bindings::try_from(&input_config)?),
             )?
-            .with_bundle(UiBundle::<DefaultBackend, ControlBindings>::new())?
+            .with_bundle(UiBundle::<ControlBindings>::new())?
             .with_bundle(HotReloadBundle::default())?
             .with_bundle(SpriteLoadingBundle::new())?
             .with_bundle(SequenceLoadingBundle::new())?

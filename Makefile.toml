@@ -16,7 +16,8 @@ if rustc --version | grep -qF 'nightly'; then
 fi
 
 # Security vulnerability
-cargo audit
+# TODO: re-enable after `specs` is upgraded in Amethyst
+# cargo audit
 
 # License compatibility
 ./scripts/conformance_license.sh
