@@ -134,7 +134,10 @@ mod test {
         let mut sequences = HashMap::new();
         sequences.insert(CharacterSequenceId::Stand, sequence);
         let object_definition = ObjectDefinition::new(sequences);
-        let expected = CharacterDefinition::new(object_definition);
+        let expected = CharacterDefinition {
+            object_definition,
+            ..Default::default()
+        };
         assert_eq!(expected, char_definition);
     }
 }

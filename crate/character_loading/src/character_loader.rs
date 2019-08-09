@@ -7,7 +7,7 @@ use character_model::{
 };
 use lazy_static::lazy_static;
 
-use crate::{ControlTransitionsSequenceLoader, ControlTransitionsSequenceLoaderParams};
+use crate::{CharacterLoaderParams, ControlTransitionsSequenceLoader};
 
 lazy_static! {
     /// Default `CharacterDefinition` with control transitions.
@@ -27,11 +27,11 @@ impl CharacterLoader {
     ///
     /// # Parameters
     ///
-    /// * `control_transitions_sequence_loader_params`: Parameters needed to load the `Character`.
+    /// * `character_loader_params`: Parameters needed to load the `Character`.
     /// * `character_definition`: Character definition asset.
     /// * `object_wrapper_handle`: Handle to the loaded `Object` for this character.
     pub fn load(
-        control_transitions_sequence_loader_params: ControlTransitionsSequenceLoaderParams,
+        character_loader_params: CharacterLoaderParams,
         character_definition: &CharacterDefinition,
         object_wrapper_handle: Handle<CharacterObjectWrapper>,
     ) -> Result<Character, Error> {
@@ -45,7 +45,7 @@ impl CharacterLoader {
                     .sequences
                     .get(sequence_id);
                 let control_transitions_sequence_handle = ControlTransitionsSequenceLoader::load(
-                    &control_transitions_sequence_loader_params,
+                    &character_loader_params.control_transitions_sequence_loader_params,
                     sequence_default,
                     sequence,
                 );

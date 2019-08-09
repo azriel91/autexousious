@@ -1,5 +1,5 @@
 use amethyst::ecs::Entity;
-use character_model::play::RunCounter;
+use character_model::{config::CharacterDefinition, play::RunCounter};
 use game_input::ControllerInput;
 use object_model::{
     config::Mass,
@@ -32,27 +32,36 @@ impl CharacterEntityAugmenter {
             ref mut run_counters,
             ref mut groundings,
             ref mut masses,
+            ref mut charge_limits,
+            ref mut charge_delays,
         }: &mut CharacterComponentStorages<'s>,
+        character_definition: &CharacterDefinition,
     ) {
         // Controller of this entity
         controller_inputs
             .insert(entity, ControllerInput::default())
-            .expect("Failed to insert controller_input component.");
+            .expect("Failed to insert `ControllerInput` component.");
         health_pointses
             .insert(entity, HealthPoints::default())
-            .expect("Failed to insert health_points component.");
+            .expect("Failed to insert `HealthPoints` component.");
         stun_pointses
             .insert(entity, StunPoints::default())
-            .expect("Failed to insert stun_points component.");
+            .expect("Failed to insert `StunPoints` component.");
         run_counters
             .insert(entity, RunCounter::default())
-            .expect("Failed to insert run_counter component.");
+            .expect("Failed to insert `RunCounter` component.");
         groundings
             .insert(entity, Grounding::default())
-            .expect("Failed to insert grounding component.");
+            .expect("Failed to insert `Grounding` component.");
         masses
             .insert(entity, CHARACTER_MASS_DEFAULT)
-            .expect("Failed to insert grounding component.");
+            .expect("Failed to insert `Mass` component.");
+        charge_limits
+            .insert(entity, character_definition.charge_limit)
+            .expect("Failed to insert `ChargeLimit` component.");
+        charge_delays
+            .insert(entity, character_definition.charge_delay)
+            .expect("Failed to insert `ChargeDelay` component.");
     }
 }
 
@@ -65,7 +74,8 @@ mod test {
         Error,
     };
     use amethyst_test::AmethystApplication;
-    use character_model::play::RunCounter;
+    use character_model::{config::CharacterDefinition, play::RunCounter};
+    use charge_model::config::{ChargeDelay, ChargeLimit};
     use game_input::ControllerInput;
     use object_model::{
         config::Mass,
@@ -83,7 +93,11 @@ mod test {
             {
                 let mut character_component_storages =
                     CharacterComponentStorages::fetch(&world.res);
-                CharacterEntityAugmenter::augment(entity, &mut character_component_storages);
+                CharacterEntityAugmenter::augment(
+                    entity,
+                    &mut character_component_storages,
+                    &CharacterDefinition::default(),
+                );
             }
 
             assert!(world.read_storage::<ControllerInput>().contains(entity));
@@ -92,6 +106,8 @@ mod test {
             assert!(world.read_storage::<RunCounter>().contains(entity));
             assert!(world.read_storage::<Grounding>().contains(entity));
             assert!(world.read_storage::<Mass>().contains(entity));
+            assert!(world.read_storage::<ChargeLimit>().contains(entity));
+            assert!(world.read_storage::<ChargeDelay>().contains(entity));
         };
 
         AmethystApplication::blank()

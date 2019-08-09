@@ -23,7 +23,7 @@ use character_model::{
     },
 };
 use character_prefab::{CharacterPrefab, CharacterPrefabBundle, CharacterPrefabHandle};
-use charge_model::config::ChargePoints;
+use charge_model::config::{ChargeDelay, ChargeLimit, ChargePoints};
 use game_input_model::ControlAction;
 use object_model::{
     config::{ObjectAssetData, ObjectDefinition, ObjectFrame, ObjectSequence},
@@ -160,7 +160,11 @@ fn character_definition() -> CharacterDefinition {
     sequences.insert(CharacterSequenceId::Stand, sequence);
     let object_definition = ObjectDefinition::new(sequences);
 
-    CharacterDefinition::new(object_definition)
+    CharacterDefinition {
+        object_definition,
+        charge_limit: ChargeLimit::new(50),
+        charge_delay: ChargeDelay::new(20),
+    }
 }
 
 fn sprite_sheet_handles(world: &World) -> Vec<SpriteSheetHandle> {
