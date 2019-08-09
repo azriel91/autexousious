@@ -90,12 +90,13 @@ linux:debug:
   script:
     - time cargo test -j 4 --no-run
     - time cargo test -- --nocapture
-  after_script:
-    - 'export DISPLAY=:0'
-    - scripts/workspace_coverage.sh
-    - grep -F merged_files ./target/coverage/merged/index.js | grep -o '"covered":"[0-9]\+\.[0-9]\+"'
-    - bash <(curl -s https://codecov.io/bash) -s ./target/coverage/merged
-  coverage: '/"covered":"\d+\.\d+"/'
+  # Disabled until CI becomes stable, perhaps without using Vulkan.
+  # after_script:
+  #   - 'export DISPLAY=:0'
+  #   - scripts/workspace_coverage.sh
+  #   - grep -F merged_files ./target/coverage/merged/index.js | grep -o '"covered":"[0-9]\+\.[0-9]\+"'
+  #   - bash <(curl -s https://codecov.io/bash) -s ./target/coverage/merged
+  # coverage: '/"covered":"\d+\.\d+"/'
 
 linux:release:
   <<: *linux_job_common
