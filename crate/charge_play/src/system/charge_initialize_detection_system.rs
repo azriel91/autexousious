@@ -46,7 +46,7 @@ impl ChargeInitializeDetectionSystem {
     ) {
         charge_statuses
             .insert(entity, charge_status)
-            .expect("Failed to insert `ChargeBeginDelayClock` component.");
+            .expect("Failed to insert `ChargeStatus` component.");
         charge_begin_delay_clocks
             .insert(entity, ChargeBeginDelayClock::new(CHARGE_DELAY_DEFAULT))
             .expect("Failed to insert `ChargeBeginDelayClock` component.");

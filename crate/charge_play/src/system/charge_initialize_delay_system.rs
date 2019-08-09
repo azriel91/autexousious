@@ -1,6 +1,6 @@
 use amethyst::ecs::{Entities, Join, ReadStorage, System, WriteStorage};
 use charge_model::{
-    config::{ChargeDelay, ChargeLimit},
+    config::{ChargeDelay, ChargeLimit, ChargePoints},
     play::{ChargeBeginDelayClock, ChargeDelayClock, ChargeStatus, ChargeTrackerClock},
 };
 use derivative::Derivative;
@@ -36,6 +36,9 @@ pub struct ChargeInitializeDelaySystemData<'s> {
     /// `ChargeTrackerClock` components.
     #[derivative(Debug = "ignore")]
     pub charge_tracker_clocks: WriteStorage<'s, ChargeTrackerClock>,
+    /// `ChargePoints` components.
+    #[derivative(Debug = "ignore")]
+    pub charge_pointses: WriteStorage<'s, ChargePoints>,
     /// `ChargeDelayClock` components.
     #[derivative(Debug = "ignore")]
     pub charge_delay_clocks: WriteStorage<'s, ChargeDelayClock>,
@@ -53,6 +56,7 @@ impl<'s> System<'s> for ChargeInitializeDelaySystem {
             mut charge_statuses,
             mut charge_begin_delay_clocks,
             mut charge_tracker_clocks,
+            mut charge_pointses,
             mut charge_delay_clocks,
         }: Self::SystemData,
     ) {
@@ -81,6 +85,9 @@ impl<'s> System<'s> for ChargeInitializeDelaySystem {
                                 charge_tracker_clocks
                                     .insert(entity, charge_tracker_clock)
                                     .expect("Failed to insert `ChargeTrackerClock` component.");
+                                charge_pointses
+                                    .insert(entity, ChargePoints::new(0))
+                                    .expect("Failed to insert `ChargePoints` component.");
                             }
 
                             let charge_delay = charge_delay
@@ -106,7 +113,7 @@ mod tests {
     };
     use amethyst_test::AmethystApplication;
     use charge_model::{
-        config::{ChargeDelay, ChargeLimit},
+        config::{ChargeDelay, ChargeLimit, ChargePoints},
         play::{ChargeBeginDelayClock, ChargeDelayClock, ChargeStatus, ChargeTrackerClock},
     };
 
@@ -125,7 +132,7 @@ mod tests {
                 charge_limit: None,
                 charge_delay: None,
             },
-            |charge_begin_delay_clock, charge_tracker_clock, charge_delay_clock| {
+            |charge_begin_delay_clock, charge_tracker_clock, charge_delay_clock, charge_points| {
                 let mut charge_begin_delay_clock_expected = ChargeBeginDelayClock::new(10);
                 (*charge_begin_delay_clock_expected).value = 1;
                 assert_eq!(
@@ -134,6 +141,7 @@ mod tests {
                 );
                 assert_eq!(None, charge_tracker_clock);
                 assert_eq!(None, charge_delay_clock);
+                assert_eq!(None, charge_points);
             },
         )
     }
@@ -152,7 +160,7 @@ mod tests {
                 charge_limit: None,
                 charge_delay: None,
             },
-            |charge_begin_delay_clock, charge_tracker_clock, charge_delay_clock| {
+            |charge_begin_delay_clock, charge_tracker_clock, charge_delay_clock, charge_points| {
                 let mut charge_begin_delay_clock_expected = ChargeBeginDelayClock::new(10);
                 (*charge_begin_delay_clock_expected).value = 9;
                 assert_eq!(
@@ -161,6 +169,7 @@ mod tests {
                 );
                 assert_eq!(None, charge_tracker_clock);
                 assert_eq!(None, charge_delay_clock);
+                assert_eq!(None, charge_points);
             },
         )
     }
@@ -179,7 +188,7 @@ mod tests {
                 charge_limit: None,
                 charge_delay: None,
             },
-            |charge_begin_delay_clock, charge_tracker_clock, charge_delay_clock| {
+            |charge_begin_delay_clock, charge_tracker_clock, charge_delay_clock, charge_points| {
                 let mut charge_begin_delay_clock_expected = ChargeBeginDelayClock::new(10);
                 (*charge_begin_delay_clock_expected).value = 10;
 
@@ -196,6 +205,7 @@ mod tests {
                     charge_tracker_clock
                 );
                 assert_eq!(Some(charge_delay_clock_expected), charge_delay_clock);
+                assert_eq!(Some(ChargePoints::new(0)), charge_points);
             },
         )
     }
@@ -214,7 +224,7 @@ mod tests {
                 charge_limit: Some(ChargeLimit::new(7)),
                 charge_delay: None,
             },
-            |charge_begin_delay_clock, charge_tracker_clock, _| {
+            |charge_begin_delay_clock, charge_tracker_clock, _, _| {
                 let mut charge_begin_delay_clock_expected = ChargeBeginDelayClock::new(10);
                 (*charge_begin_delay_clock_expected).value = 10;
                 assert_eq!(
@@ -240,7 +250,7 @@ mod tests {
                 charge_limit: None,
                 charge_delay: Some(ChargeDelay::new(7)),
             },
-            |charge_begin_delay_clock, charge_tracker_clock, charge_delay_clock| {
+            |charge_begin_delay_clock, charge_tracker_clock, charge_delay_clock, charge_points| {
                 let mut charge_begin_delay_clock_expected = ChargeBeginDelayClock::new(10);
                 (*charge_begin_delay_clock_expected).value = 10;
 
@@ -256,6 +266,7 @@ mod tests {
                     charge_tracker_clock
                 );
                 assert_eq!(Some(charge_delay_clock_expected), charge_delay_clock);
+                assert_eq!(Some(ChargePoints::new(0)), charge_points);
             },
         )
     }
@@ -276,7 +287,7 @@ mod tests {
                 charge_limit: Some(ChargeLimit::new(7)),
                 charge_delay: None,
             },
-            |charge_begin_delay_clock, charge_tracker_clock, _| {
+            |charge_begin_delay_clock, charge_tracker_clock, _, _| {
                 let mut charge_begin_delay_clock_expected = ChargeBeginDelayClock::new(10);
                 (*charge_begin_delay_clock_expected).value = 10;
 
@@ -304,6 +315,7 @@ mod tests {
             Option<ChargeBeginDelayClock>,
             Option<ChargeTrackerClock>,
             Option<ChargeDelayClock>,
+            Option<ChargePoints>,
         ),
     ) -> Result<(), Error> {
         AmethystApplication::blank()
@@ -332,21 +344,28 @@ mod tests {
             })
             .with_assertion(move |world| {
                 let entity = *world.read_resource::<Entity>();
-                let (charge_begin_delay_clocks, charge_tracker_clocks, charge_delay_clocks) = world
-                    .system_data::<(
-                        ReadStorage<'_, ChargeBeginDelayClock>,
-                        ReadStorage<'_, ChargeTrackerClock>,
-                        ReadStorage<'_, ChargeDelayClock>,
-                    )>();
+                let (
+                    charge_begin_delay_clocks,
+                    charge_tracker_clocks,
+                    charge_delay_clocks,
+                    charge_pointses,
+                ) = world.system_data::<(
+                    ReadStorage<'_, ChargeBeginDelayClock>,
+                    ReadStorage<'_, ChargeTrackerClock>,
+                    ReadStorage<'_, ChargeDelayClock>,
+                    ReadStorage<'_, ChargePoints>,
+                )>();
 
                 let charge_begin_delay_clock = charge_begin_delay_clocks.get(entity).copied();
                 let charge_tracker_clock = charge_tracker_clocks.get(entity).copied();
                 let charge_delay_clock = charge_delay_clocks.get(entity).copied();
+                let charge_points = charge_pointses.get(entity).copied();
 
                 assertion_fn(
                     charge_begin_delay_clock,
                     charge_tracker_clock,
                     charge_delay_clock,
+                    charge_points,
                 );
             })
             .run()
