@@ -5,6 +5,6 @@ use logic_clock::logic_clock;
 use serde::{Deserialize, Serialize};
 use specs_derive::Component;
 
-/// Logic clock that stores `ChargePoints`.
+/// Number of ticks before charge is reduced.
 #[logic_clock]
-pub struct ChargeTrackerClock;
+pub struct ChargeRetentionClock;

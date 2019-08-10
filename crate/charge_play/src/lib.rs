@@ -4,7 +4,7 @@
 
 pub use crate::system::{
     ChargeIncrementSystem, ChargeInitializeDelaySystem, ChargeInitializeDetectionSystem,
-    ChargeUsageSystem,
+    ChargeRetentionSystem, ChargeUsageSystem,
 };
 
 mod system;
