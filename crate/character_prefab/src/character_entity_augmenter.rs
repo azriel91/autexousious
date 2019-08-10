@@ -1,6 +1,8 @@
+use std::convert::TryInto;
+
 use amethyst::ecs::Entity;
 use character_model::{config::CharacterDefinition, play::RunCounter};
-use charge_model::play::ChargeRetention;
+use charge_model::play::{ChargeRetention, ChargeTrackerClock};
 use game_input::ControllerInput;
 use object_model::{
     config::Mass,
@@ -33,6 +35,7 @@ impl CharacterEntityAugmenter {
             ref mut run_counters,
             ref mut groundings,
             ref mut masses,
+            ref mut charge_tracker_clocks,
             ref mut charge_limits,
             ref mut charge_delays,
             ref mut charge_use_modes,
@@ -59,6 +62,16 @@ impl CharacterEntityAugmenter {
         masses
             .insert(entity, CHARACTER_MASS_DEFAULT)
             .expect("Failed to insert `Mass` component.");
+        charge_tracker_clocks
+            .insert(
+                entity,
+                ChargeTrackerClock::new(
+                    (*character_definition.charge_limit)
+                        .try_into()
+                        .expect("Failed to convert `ChargeLimit` `u32` into `usize`."),
+                ),
+            )
+            .expect("Failed to insert `ChargeTrackerClock` component.");
         charge_limits
             .insert(entity, character_definition.charge_limit)
             .expect("Failed to insert `ChargeLimit` component.");
@@ -89,7 +102,7 @@ mod test {
     use character_model::{config::CharacterDefinition, play::RunCounter};
     use charge_model::{
         config::{ChargeDelay, ChargeLimit, ChargeUseMode},
-        play::ChargeRetention,
+        play::{ChargeRetention, ChargeTrackerClock},
     };
     use game_input::ControllerInput;
     use object_model::{
@@ -121,6 +134,7 @@ mod test {
             assert!(world.read_storage::<RunCounter>().contains(entity));
             assert!(world.read_storage::<Grounding>().contains(entity));
             assert!(world.read_storage::<Mass>().contains(entity));
+            assert!(world.read_storage::<ChargeTrackerClock>().contains(entity));
             assert!(world.read_storage::<ChargeLimit>().contains(entity));
             assert!(world.read_storage::<ChargeDelay>().contains(entity));
             assert!(world.read_storage::<ChargeUseMode>().contains(entity));
