@@ -203,7 +203,6 @@ mod tests {
             mut frame_index_clocks,
             _character_control_transitions_handles,
             mut character_cts_handles,
-            ..,
         ) = world.system_data::<TestSystemData>();
 
         (&mut frame_index_clocks, &mut character_cts_handles)
