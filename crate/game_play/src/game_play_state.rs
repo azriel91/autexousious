@@ -4,6 +4,7 @@ use amethyst::{
     input::{is_key_down, VirtualKeyCode},
     renderer::camera::{Camera, Projection},
     shred::Dispatcher,
+    utils::removal::{self, Removal},
     window::ScreenDimensions,
     GameData, State, StateData, Trans,
 };
@@ -11,7 +12,7 @@ use application_event::AppEvent;
 use derivative::Derivative;
 use derive_new::new;
 use game_model::play::GameEntities;
-use game_play_model::{GamePlayEvent, GamePlayStatus};
+use game_play_model::{GamePlayEntityId, GamePlayEvent, GamePlayStatus};
 use log::{debug, info};
 use state_registry::StateId;
 
@@ -76,6 +77,12 @@ impl GamePlayState {
                 .delete_entity(entity)
                 .expect("Failed to delete game entity.");
         });
+
+        removal::exec_removal(
+            &*world.entities(),
+            &world.read_storage::<Removal<GamePlayEntityId>>(),
+            GamePlayEntityId::default(),
+        );
     }
 
     /// Initializes a camera to view the game.
