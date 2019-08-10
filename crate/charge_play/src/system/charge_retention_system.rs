@@ -52,7 +52,7 @@ impl<'s> System<'s> for ChargeRetentionSystem {
                                 charge_tracker_clock.reverse_tick();
                             }
                         }
-                        ChargeRetention::All(charge_retention_clock) => {
+                        ChargeRetention::Reset(charge_retention_clock) => {
                             charge_retention_clock.tick();
                             if charge_retention_clock.is_complete() {
                                 charge_retention_clock.reset();
@@ -169,8 +169,8 @@ mod tests {
     }
 
     #[test]
-    fn ticks_all_retention_clock_when_not_charging() -> Result<(), Error> {
-        let charge_retention = ChargeRetention::All(ChargeRetentionClock::new(10));
+    fn ticks_reset_retention_clock_when_not_charging() -> Result<(), Error> {
+        let charge_retention = ChargeRetention::Reset(ChargeRetentionClock::new(10));
         let charge_tracker_clock = ChargeTrackerClock::new_with_value(10, 10);
         let charge_status = ChargeStatus::NotCharging;
 
@@ -182,7 +182,7 @@ mod tests {
             },
             |charge_retention, charge_tracker_clock| {
                 let charge_retention_expected =
-                    ChargeRetention::All(ChargeRetentionClock::new_with_value(10, 1));
+                    ChargeRetention::Reset(ChargeRetentionClock::new_with_value(10, 1));
                 let charge_tracker_clock_expected = ChargeTrackerClock::new_with_value(10, 10);
 
                 assert_eq!(Some(charge_retention_expected), charge_retention);
@@ -192,8 +192,8 @@ mod tests {
     }
 
     #[test]
-    fn resets_tracker_clock_when_all_retention_clock_is_complete() -> Result<(), Error> {
-        let charge_retention = ChargeRetention::All(ChargeRetentionClock::new_with_value(10, 9));
+    fn resets_tracker_clock_when_reset_retention_clock_is_complete() -> Result<(), Error> {
+        let charge_retention = ChargeRetention::Reset(ChargeRetentionClock::new_with_value(10, 9));
         let charge_tracker_clock = ChargeTrackerClock::new_with_value(10, 10);
         let charge_status = ChargeStatus::NotCharging;
 
@@ -205,7 +205,7 @@ mod tests {
             },
             |charge_retention, charge_tracker_clock| {
                 let charge_retention_expected =
-                    ChargeRetention::All(ChargeRetentionClock::new_with_value(10, 0));
+                    ChargeRetention::Reset(ChargeRetentionClock::new_with_value(10, 0));
                 let charge_tracker_clock_expected = ChargeTrackerClock::new_with_value(10, 0);
 
                 assert_eq!(Some(charge_retention_expected), charge_retention);

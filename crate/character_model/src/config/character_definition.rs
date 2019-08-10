@@ -1,5 +1,5 @@
 use asset_derive::Asset;
-use charge_model::config::{ChargeDelay, ChargeLimit, ChargeUseMode};
+use charge_model::config::{ChargeDelay, ChargeLimit, ChargeRetentionMode, ChargeUseMode};
 use derive_new::new;
 use object_model::config::{GameObjectDefinition, ObjectDefinition};
 use serde::{Deserialize, Serialize};
@@ -22,6 +22,9 @@ pub struct CharacterDefinition {
     /// Charge usage subtraction variants.
     #[serde(default)]
     pub charge_use_mode: ChargeUseMode,
+    /// How charge is retained when no longer charging.
+    #[serde(default)]
+    pub charge_retention_mode: ChargeRetentionMode,
 }
 
 impl GameObjectDefinition for CharacterDefinition {

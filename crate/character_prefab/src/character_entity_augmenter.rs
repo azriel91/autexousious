@@ -1,5 +1,6 @@
 use amethyst::ecs::Entity;
 use character_model::{config::CharacterDefinition, play::RunCounter};
+use charge_model::play::ChargeRetention;
 use game_input::ControllerInput;
 use object_model::{
     config::Mass,
@@ -35,6 +36,7 @@ impl CharacterEntityAugmenter {
             ref mut charge_limits,
             ref mut charge_delays,
             ref mut charge_use_modes,
+            ref mut charge_retentions,
         }: &mut CharacterComponentStorages<'s>,
         character_definition: &CharacterDefinition,
     ) {
@@ -66,6 +68,12 @@ impl CharacterEntityAugmenter {
         charge_use_modes
             .insert(entity, character_definition.charge_use_mode)
             .expect("Failed to insert `ChargeUseMode` component.");
+        charge_retentions
+            .insert(
+                entity,
+                ChargeRetention::from(character_definition.charge_retention_mode),
+            )
+            .expect("Failed to insert `ChargeUseMode` component.");
     }
 }
 
@@ -79,7 +87,10 @@ mod test {
     };
     use amethyst_test::AmethystApplication;
     use character_model::{config::CharacterDefinition, play::RunCounter};
-    use charge_model::config::{ChargeDelay, ChargeLimit, ChargeUseMode};
+    use charge_model::{
+        config::{ChargeDelay, ChargeLimit, ChargeUseMode},
+        play::ChargeRetention,
+    };
     use game_input::ControllerInput;
     use object_model::{
         config::Mass,
@@ -113,6 +124,7 @@ mod test {
             assert!(world.read_storage::<ChargeLimit>().contains(entity));
             assert!(world.read_storage::<ChargeDelay>().contains(entity));
             assert!(world.read_storage::<ChargeUseMode>().contains(entity));
+            assert!(world.read_storage::<ChargeRetention>().contains(entity));
         };
 
         AmethystApplication::blank()

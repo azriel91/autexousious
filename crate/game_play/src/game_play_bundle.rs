@@ -6,7 +6,7 @@ use character_play::{
 };
 use charge_play::{
     ChargeIncrementSystem, ChargeInitializeDelaySystem, ChargeInitializeDetectionSystem,
-    ChargeUsageSystem,
+    ChargeRetentionSystem, ChargeUsageSystem,
 };
 use chase_play::StickToTargetObjectSystem;
 use collision_audio_play::HitSfxSystem;
@@ -210,6 +210,13 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         builder.add(
             CharacterKinematicsSystem::new(),
             &CharacterKinematicsSystem::type_name(),
+            &[],
+        ); // kcov-ignore
+
+        // Reduces charge when not charging.
+        builder.add(
+            ChargeRetentionSystem::new(),
+            &ChargeRetentionSystem::type_name(),
             &[],
         ); // kcov-ignore
 

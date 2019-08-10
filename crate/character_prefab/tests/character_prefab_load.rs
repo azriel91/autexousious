@@ -23,7 +23,9 @@ use character_model::{
     },
 };
 use character_prefab::{CharacterPrefab, CharacterPrefabBundle, CharacterPrefabHandle};
-use charge_model::config::{ChargeDelay, ChargeLimit, ChargePoints, ChargeUseMode};
+use charge_model::config::{
+    ChargeDelay, ChargeLimit, ChargePoints, ChargeRetentionMode, ChargeUseMode,
+};
 use game_input_model::ControlAction;
 use object_model::{
     config::{ObjectAssetData, ObjectDefinition, ObjectFrame, ObjectSequence},
@@ -165,6 +167,7 @@ fn character_definition() -> CharacterDefinition {
         charge_limit: ChargeLimit::new(50),
         charge_delay: ChargeDelay::new(20),
         charge_use_mode: ChargeUseMode::Exact,
+        charge_retention_mode: ChargeRetentionMode::Lossy { delay: 5 },
     }
 }
 
