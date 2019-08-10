@@ -60,6 +60,14 @@ impl<'s> System<'s> for ChargeRetentionSystem {
                             }
                         }
                     }
+                } else {
+                    match charge_retention {
+                        ChargeRetention::Lossy(charge_retention_clock)
+                        | ChargeRetention::Reset(charge_retention_clock) => {
+                            charge_retention_clock.reset()
+                        }
+                        _ => {}
+                    }
                 }
             });
     }
@@ -215,7 +223,7 @@ mod tests {
     }
 
     #[test]
-    fn does_not_tick_clocks_when_charging() -> Result<(), Error> {
+    fn resets_lossy_retention_clock_when_charging() -> Result<(), Error> {
         let charge_retention = ChargeRetention::Lossy(ChargeRetentionClock::new_with_value(10, 9));
         let charge_tracker_clock = ChargeTrackerClock::new_with_value(10, 10);
         let charge_status = ChargeStatus::Charging;
@@ -228,7 +236,30 @@ mod tests {
             },
             |charge_retention, charge_tracker_clock| {
                 let charge_retention_expected =
-                    ChargeRetention::Lossy(ChargeRetentionClock::new_with_value(10, 9));
+                    ChargeRetention::Lossy(ChargeRetentionClock::new_with_value(10, 0));
+                let charge_tracker_clock_expected = ChargeTrackerClock::new_with_value(10, 10);
+
+                assert_eq!(Some(charge_retention_expected), charge_retention);
+                assert_eq!(Some(charge_tracker_clock_expected), charge_tracker_clock);
+            },
+        )
+    }
+
+    #[test]
+    fn resets_reset_retention_clock_when_charging() -> Result<(), Error> {
+        let charge_retention = ChargeRetention::Reset(ChargeRetentionClock::new_with_value(10, 9));
+        let charge_tracker_clock = ChargeTrackerClock::new_with_value(10, 10);
+        let charge_status = ChargeStatus::Charging;
+
+        run_test(
+            SetupParams {
+                charge_status,
+                charge_retention,
+                charge_tracker_clock,
+            },
+            |charge_retention, charge_tracker_clock| {
+                let charge_retention_expected =
+                    ChargeRetention::Reset(ChargeRetentionClock::new_with_value(10, 0));
                 let charge_tracker_clock_expected = ChargeTrackerClock::new_with_value(10, 10);
 
                 assert_eq!(Some(charge_retention_expected), charge_retention);
