@@ -7,6 +7,7 @@ pub use self::{
     character_sequence::CharacterSequence,
     character_sequence_id::CharacterSequenceId,
     control_transition_requirement::ControlTransitionRequirement,
+    control_transition_requirement_params::ControlTransitionRequirementParams,
 };
 
 mod character_control_transitions;
@@ -15,6 +16,7 @@ mod character_frame;
 mod character_sequence;
 mod character_sequence_id;
 mod control_transition_requirement;
+mod control_transition_requirement_params;
 
 #[cfg(test)]
 mod test {

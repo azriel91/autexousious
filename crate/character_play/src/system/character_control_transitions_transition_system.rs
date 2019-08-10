@@ -8,7 +8,9 @@ use amethyst::{
 };
 use approx::{relative_eq, relative_ne};
 use character_model::{
-    config::{CharacterSequenceId, ControlTransitionRequirement},
+    config::{
+        CharacterSequenceId, ControlTransitionRequirement, ControlTransitionRequirementParams,
+    },
     loaded::{CharacterControlTransitions, CharacterControlTransitionsHandle},
 };
 use charge_model::play::ChargeUseEvent;
@@ -417,30 +419,42 @@ impl CharacterControlTransitionsTransitionSystem {
             health_pointses,
             skill_pointses,
             charge_tracker_clocks,
+            charge_use_modes,
             controller_inputs,
             mirroreds,
         }: &ControlTransitionRequirementSystemData,
         control_transition_requirements: &[ControlTransitionRequirement],
         entity: Entity,
     ) -> bool {
-        let (health_points, skill_points, charge_tracker_clock, controller_input, mirrored) = (
+        let (
+            health_points,
+            skill_points,
+            charge_tracker_clock,
+            charge_use_mode,
+            controller_input,
+            mirrored,
+        ) = (
             health_pointses.get(entity).copied(),
             skill_pointses.get(entity).copied(),
             charge_tracker_clocks.get(entity).copied(),
+            charge_use_modes.get(entity).copied(),
             controller_inputs.get(entity).copied(),
             mirroreds.get(entity).copied(),
         );
 
+        let control_transition_requirement_params = ControlTransitionRequirementParams {
+            health_points,
+            skill_points,
+            charge_tracker_clock,
+            charge_use_mode,
+            controller_input,
+            mirrored,
+        };
+
         control_transition_requirements
             .iter()
             .all(|control_transition_requirement| {
-                control_transition_requirement.is_met(
-                    health_points,
-                    skill_points,
-                    charge_tracker_clock,
-                    controller_input,
-                    mirrored,
-                )
+                control_transition_requirement.is_met(control_transition_requirement_params)
             })
     }
 }

@@ -1,9 +1,11 @@
 use approx::{relative_eq, relative_ne};
-use charge_model::{config::ChargePoints, play::ChargeTrackerClock};
+use charge_model::config::{ChargePoints, ChargeUseMode};
 use game_input::ControllerInput;
 use game_input_model::config::{InputDirection, InputDirectionZ};
 use object_model::play::{HealthPoints, Mirrored, SkillPoints};
 use serde::{Deserialize, Serialize};
+
+use crate::config::ControlTransitionRequirementParams;
 
 /// Conditions for a control transition to happen.
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
@@ -25,11 +27,14 @@ impl ControlTransitionRequirement {
     /// Returns whether this requirement is met.
     pub fn is_met(
         self,
-        health_points: Option<HealthPoints>,
-        skill_points: Option<SkillPoints>,
-        charge_tracker_clock: Option<ChargeTrackerClock>,
-        controller_input: Option<ControllerInput>,
-        mirrored: Option<Mirrored>,
+        ControlTransitionRequirementParams {
+            health_points,
+            skill_points,
+            charge_tracker_clock,
+            charge_use_mode,
+            controller_input,
+            mirrored,
+        }: ControlTransitionRequirementParams,
     ) -> bool {
         match self {
             ControlTransitionRequirement::Hp(required) => {
@@ -38,8 +43,15 @@ impl ControlTransitionRequirement {
             ControlTransitionRequirement::Sp(required) => {
                 skill_points.map(|points| points >= required)
             }
-            ControlTransitionRequirement::Charge(required) => charge_tracker_clock
-                .map(|charge_tracker_clock| (*charge_tracker_clock).value >= (*required) as usize),
+            ControlTransitionRequirement::Charge(required) => {
+                charge_tracker_clock.map(|charge_tracker_clock| {
+                    if let Some(ChargeUseMode::NearestPartial) = charge_use_mode {
+                        (*charge_tracker_clock).value > 0
+                    } else {
+                        (*charge_tracker_clock).value >= (*required) as usize
+                    }
+                })
+            }
             ControlTransitionRequirement::InputDirX(input_direction) => {
                 let requirement_met =
                     Self::input_requirement_met_x(controller_input, mirrored, input_direction);
@@ -154,68 +166,102 @@ impl ControlTransitionRequirement {
 
 #[cfg(test)]
 mod tests {
-    use charge_model::{config::ChargePoints, play::ChargeTrackerClock};
+    use charge_model::{
+        config::{ChargePoints, ChargeUseMode},
+        play::ChargeTrackerClock,
+    };
     use game_input::ControllerInput;
     use game_input_model::config::{InputDirection, InputDirectionZ};
     use object_model::play::{HealthPoints, Mirrored, SkillPoints};
 
     use super::ControlTransitionRequirement;
+    use crate::config::ControlTransitionRequirementParams;
 
     #[test]
     fn health_points_requirement_met_when_greater_equal() {
         let requirement = ControlTransitionRequirement::Hp(HealthPoints::new(10));
-        let health_points = Some(HealthPoints::new(10));
+        let params = ControlTransitionRequirementParams {
+            health_points: Some(HealthPoints::new(10)),
+            ..Default::default()
+        };
 
-        assert!(requirement.is_met(health_points, None, None, None, None));
+        assert!(requirement.is_met(params));
 
-        let health_points = Some(HealthPoints::new(11));
-        assert!(requirement.is_met(health_points, None, None, None, None));
+        let params = ControlTransitionRequirementParams {
+            health_points: Some(HealthPoints::new(11)),
+            ..Default::default()
+        };
+        assert!(requirement.is_met(params));
     }
 
     #[test]
     fn health_points_requirement_not_met_when_less_than() {
         let requirement = ControlTransitionRequirement::Hp(HealthPoints::new(10));
-        let health_points = Some(HealthPoints::new(9));
+        let params = ControlTransitionRequirementParams {
+            health_points: Some(HealthPoints::new(9)),
+            ..Default::default()
+        };
 
-        assert!(!requirement.is_met(health_points, None, None, None, None));
+        assert!(!requirement.is_met(params));
     }
 
     #[test]
     fn skill_points_requirement_met_when_greater_equal() {
         let requirement = ControlTransitionRequirement::Sp(SkillPoints::new(10));
-        let skill_points = Some(SkillPoints::new(10));
+        let params = ControlTransitionRequirementParams {
+            skill_points: Some(SkillPoints::new(10)),
+            ..Default::default()
+        };
 
-        assert!(requirement.is_met(None, skill_points, None, None, None));
+        assert!(requirement.is_met(params));
 
-        let skill_points = Some(SkillPoints::new(11));
-        assert!(requirement.is_met(None, skill_points, None, None, None));
+        let params = ControlTransitionRequirementParams {
+            skill_points: Some(SkillPoints::new(11)),
+            ..Default::default()
+        };
+        assert!(requirement.is_met(params));
     }
 
     #[test]
     fn skill_points_requirement_not_met_when_less_than() {
         let requirement = ControlTransitionRequirement::Sp(SkillPoints::new(10));
-        let skill_points = Some(SkillPoints::new(9));
+        let params = ControlTransitionRequirementParams {
+            skill_points: Some(SkillPoints::new(9)),
+            ..Default::default()
+        };
 
-        assert!(!requirement.is_met(None, skill_points, None, None, None));
+        assert!(!requirement.is_met(params));
     }
 
     #[test]
     fn charge_points_requirement_met_when_greater_equal() {
         let requirement = ControlTransitionRequirement::Charge(ChargePoints::new(10));
-        let charge_tracker_clock = Some(ChargeTrackerClock::new_with_value(20, 10));
+        let params = ControlTransitionRequirementParams {
+            charge_tracker_clock: Some(ChargeTrackerClock::new_with_value(20, 10)),
+            charge_use_mode: Some(ChargeUseMode::NearestWhole),
+            ..Default::default()
+        };
 
-        assert!(requirement.is_met(None, None, charge_tracker_clock, None, None));
+        assert!(requirement.is_met(params));
 
-        let charge_tracker_clock = Some(ChargeTrackerClock::new_with_value(20, 11));
-        assert!(requirement.is_met(None, None, charge_tracker_clock, None, None));
+        let params = ControlTransitionRequirementParams {
+            charge_tracker_clock: Some(ChargeTrackerClock::new_with_value(20, 11)),
+            charge_use_mode: Some(ChargeUseMode::NearestWhole),
+            ..Default::default()
+        };
+        assert!(requirement.is_met(params));
     }
 
     #[test]
     fn charge_points_requirement_not_met_when_less_than() {
         let requirement = ControlTransitionRequirement::Charge(ChargePoints::new(10));
-        let charge_tracker_clock = Some(ChargeTrackerClock::new_with_value(20, 9));
+        let params = ControlTransitionRequirementParams {
+            charge_tracker_clock: Some(ChargeTrackerClock::new_with_value(20, 9)),
+            charge_use_mode: Some(ChargeUseMode::NearestWhole),
+            ..Default::default()
+        };
 
-        assert!(!requirement.is_met(None, None, charge_tracker_clock, None, None));
+        assert!(!requirement.is_met(params));
     }
 
     macro_rules! input_x_test {
@@ -224,10 +270,13 @@ mod tests {
             fn $test_name() {
                 let requirement = ControlTransitionRequirement::InputDirX(InputDirection::$variant);
 
-                let controller_input = $controller_input;
-                let mirrored = $mirrored;
+                let params = ControlTransitionRequirementParams {
+                    controller_input: $controller_input,
+                    mirrored: $mirrored,
+                    ..Default::default()
+                };
 
-                assert!(requirement.is_met(None, None, None, controller_input, mirrored));
+                assert!(requirement.is_met(params));
             }
         };
 
@@ -236,10 +285,13 @@ mod tests {
             fn $test_name() {
                 let requirement = ControlTransitionRequirement::InputDirX(InputDirection::$variant);
 
-                let controller_input = $controller_input;
-                let mirrored = $mirrored;
+                let params = ControlTransitionRequirementParams {
+                    controller_input: $controller_input,
+                    mirrored: $mirrored,
+                    ..Default::default()
+                };
 
-                assert!(!requirement.is_met(None, None, None, controller_input, mirrored));
+                assert!(!requirement.is_met(params));
             }
         };
     }
@@ -645,9 +697,12 @@ mod tests {
                 let requirement =
                     ControlTransitionRequirement::InputDirZ(InputDirectionZ::$variant);
 
-                let controller_input = $controller_input;
+                let params = ControlTransitionRequirementParams {
+                    controller_input: $controller_input,
+                    ..Default::default()
+                };
 
-                assert!(requirement.is_met(None, None, None, controller_input, None));
+                assert!(requirement.is_met(params));
             }
         };
 
@@ -657,9 +712,12 @@ mod tests {
                 let requirement =
                     ControlTransitionRequirement::InputDirZ(InputDirectionZ::$variant);
 
-                let controller_input = $controller_input;
+                let params = ControlTransitionRequirementParams {
+                    controller_input: $controller_input,
+                    ..Default::default()
+                };
 
-                assert!(!requirement.is_met(None, None, None, controller_input, None));
+                assert!(!requirement.is_met(params));
             }
         };
     }
