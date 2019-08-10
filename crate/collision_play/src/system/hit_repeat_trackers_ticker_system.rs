@@ -35,7 +35,6 @@ mod tests {
     };
     use amethyst_test::AmethystApplication;
     use collision_model::play::{HitRepeatClock, HitRepeatTracker, HitRepeatTrackers};
-    use logic_clock::LogicClock;
     use slotmap::SlotMap;
 
     use super::HitRepeatTrackersTickerSystem;
@@ -154,7 +153,7 @@ mod tests {
     }
 
     fn hit_repeat_tracker(entity_to: Entity) -> HitRepeatTracker {
-        let hit_repeat_clock = HitRepeatClock::new(LogicClock::new(CLOCK_LIMIT));
+        let hit_repeat_clock = HitRepeatClock::new(CLOCK_LIMIT);
         HitRepeatTracker::new(entity_to, hit_repeat_clock)
     }
 }

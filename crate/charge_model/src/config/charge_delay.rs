@@ -1,11 +1,13 @@
 use amethyst::ecs::{storage::VecStorage, Component};
+use derivative::Derivative;
 use derive_more::{Add, AddAssign, Display, From, Sub, SubAssign};
 use numeric_newtype_derive::numeric_newtype;
 use serde::{Deserialize, Serialize};
 use specs_derive::Component;
 
-/// Charge points of an object.
+/// Number of ticks to wait between charges.
 #[numeric_newtype]
-#[derive(Component, Debug, Default, Deserialize, Hash, Serialize)]
+#[derive(Component, Debug, Derivative, Deserialize, Hash, Serialize)]
+#[derivative(Default)]
 #[storage(VecStorage)]
-pub struct ChargePoints(pub u32);
+pub struct ChargeDelay(#[derivative(Default(value = "30"))] pub usize);

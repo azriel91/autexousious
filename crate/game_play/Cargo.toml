@@ -11,6 +11,7 @@ application_event = { path = "../application_event" }
 character_model = { path = "../character_model" }
 character_play = { path = "../character_play" }
 character_selection = { path = "../character_selection" }
+charge_play = { path = "../charge_play" }
 chase_play = { path = "../chase_play" }
 collision_audio_play = { path = "../collision_audio_play" }
 collision_model = { path = "../collision_model" }

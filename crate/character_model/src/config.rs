@@ -7,6 +7,7 @@ pub use self::{
     character_sequence::CharacterSequence,
     character_sequence_id::CharacterSequenceId,
     control_transition_requirement::ControlTransitionRequirement,
+    control_transition_requirement_params::ControlTransitionRequirementParams,
 };
 
 mod character_control_transitions;
@@ -15,15 +16,17 @@ mod character_frame;
 mod character_sequence;
 mod character_sequence_id;
 mod control_transition_requirement;
+mod control_transition_requirement_params;
 
 #[cfg(test)]
 mod test {
     use std::collections::HashMap;
 
+    use charge_model::config::ChargePoints;
     use collision_model::config::{Body, Interactions};
     use object_model::{
         config::{ObjectDefinition, ObjectFrame, ObjectSequence},
-        play::{ChargePoints, HealthPoints, SkillPoints},
+        play::{HealthPoints, SkillPoints},
     };
     use sequence_model::config::{
         ControlTransition, ControlTransitionMultiple, ControlTransitionSingle,
@@ -133,7 +136,10 @@ mod test {
         let mut sequences = HashMap::new();
         sequences.insert(CharacterSequenceId::Stand, sequence);
         let object_definition = ObjectDefinition::new(sequences);
-        let expected = CharacterDefinition::new(object_definition);
+        let expected = CharacterDefinition {
+            object_definition,
+            ..Default::default()
+        };
         assert_eq!(expected, char_definition);
     }
 }

@@ -5,7 +5,9 @@ use amethyst::{
     ecs::{Entity, Read, ReadExpect, WriteStorage},
     Error,
 };
-use character_loading::{CharacterLoader, ControlTransitionsSequenceLoaderParams};
+use character_loading::{
+    CharacterLoader, CharacterLoaderParams, ControlTransitionsSequenceLoaderParams,
+};
 use character_model::{
     config::CharacterDefinition,
     loaded::{
@@ -38,6 +40,8 @@ pub enum CharacterPrefab {
         object_prefab: ObjectPrefab<Character>,
         /// The loaded `Character`.
         character_handle: CharacterHandle,
+        /// Handle to the `CharacterDefinition`.
+        character_definition_handle: Handle<CharacterDefinition>,
     },
     /// Temporary value used during loading.
     Invalid,
@@ -96,6 +100,7 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
         entity: Entity,
         CharacterPrefabSystemData {
             object_prefab_system_data,
+            ref character_definition_assets,
             ref mut character_handles,
             ref mut character_component_storages,
             ..
@@ -107,6 +112,7 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
             CharacterPrefab::Loaded {
                 object_prefab,
                 character_handle,
+                character_definition_handle,
             } => {
                 debug!("Augmenting entity: {:?}", entity);
 
@@ -121,7 +127,15 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
                     .insert(entity, character_handle.clone())
                     .expect("Failed to insert `CharacterHandle` component.");
 
-                CharacterEntityAugmenter::augment(entity, character_component_storages);
+                let character_definition = character_definition_assets
+                    .get(character_definition_handle)
+                    .expect("Expected `CharacterDefinition` to be loaded.");
+
+                CharacterEntityAugmenter::augment(
+                    entity,
+                    character_component_storages,
+                    character_definition,
+                );
 
                 Ok(())
             }
@@ -162,11 +176,14 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
                             character_control_transitions_sequence_assets:
                                 &character_control_transitions_sequence_assets,
                         };
+                    let character_loader_params = CharacterLoaderParams {
+                        control_transitions_sequence_loader_params,
+                    };
                     let character_definition = character_definition_assets
                         .get(&character_definition_handle)
                         .expect("Expected `CharacterDefinition` to be loaded.");
                     let character = CharacterLoader::load(
-                        control_transitions_sequence_loader_params,
+                        character_loader_params,
                         character_definition,
                         object_wrapper_handle,
                     )?;
@@ -177,6 +194,7 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
                         CharacterPrefab::Loaded {
                             object_prefab,
                             character_handle,
+                            character_definition_handle,
                         },
                         Ok(true),
                     )

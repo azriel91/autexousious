@@ -9,6 +9,10 @@
 * `fallback` control transitions. ([#149])
 * `input_dir_x` control transition requirement. ([#149])
 * `input_dir_z` control transition requirement. ([#149])
+* `charge_limit` specifies the max charge points a character may store. ([#148])
+* `charge_delay` specifies the delay between charge increments while holding `Attack`. ([#148])
+* `charge_use_mode` specifies the method to subtract charge points. ([#148])
+* `charge_retention_mode` specifies how charge points are retained or reset. ([#148])
 
 ### Changed
 
@@ -23,6 +27,7 @@
 [#115]: https://gitlab.com/azriel91/autexousious/issues/115
 [#145]: https://gitlab.com/azriel91/autexousious/issues/145
 [#147]: https://gitlab.com/azriel91/autexousious/issues/147
+[#148]: https://gitlab.com/azriel91/autexousious/issues/148
 [#149]: https://gitlab.com/azriel91/autexousious/issues/149
 
 ## 0.12.0 (2019-07-05)

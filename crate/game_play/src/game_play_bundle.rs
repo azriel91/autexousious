@@ -4,6 +4,10 @@ use character_play::{
     CharacterControlTransitionsTransitionSystem, CharacterControlTransitionsUpdateSystem,
     CharacterCtsHandleUpdateSystem,
 };
+use charge_play::{
+    ChargeIncrementSystem, ChargeInitializeDelaySystem, ChargeInitializeDetectionSystem,
+    ChargeRetentionSystem, ChargeUsageSystem,
+};
 use chase_play::StickToTargetObjectSystem;
 use collision_audio_play::HitSfxSystem;
 use collision_model::loaded::{
@@ -17,7 +21,7 @@ use derive_new::new;
 use energy_model::{config::EnergySequenceId, loaded::EnergyObjectWrapper};
 use energy_play::{EnergyHitEffectSystem, EnergyHittingEffectSystem};
 use game_input::ControllerInput;
-use game_play_hud::HpBarUpdateSystem;
+use game_play_hud::{CpBarUpdateSystem, HpBarUpdateSystem};
 use map_model::config::MapLayerSequenceId;
 use named_type::NamedType;
 use object_play::{ObjectGravitySystem, ObjectMirroringSystem};
@@ -209,6 +213,13 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[],
         ); // kcov-ignore
 
+        // Reduces charge when not charging.
+        builder.add(
+            ChargeRetentionSystem::new(),
+            &ChargeRetentionSystem::type_name(),
+            &[],
+        ); // kcov-ignore
+
         // Reduces `StunPoints` each tick.
         builder.add(
             StunPointsReductionSystem::new(),
@@ -318,6 +329,28 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[&CharacterControlTransitionsTransitionSystem::type_name()],
         ); // kcov-ignore
 
+        // Charging
+        builder.add(
+            ChargeInitializeDetectionSystem::new(),
+            &ChargeInitializeDetectionSystem::type_name(),
+            &[&CharacterControlTransitionsTransitionSystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
+            ChargeInitializeDelaySystem::new(),
+            &ChargeInitializeDelaySystem::type_name(),
+            &[&ChargeInitializeDetectionSystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
+            ChargeIncrementSystem::new(),
+            &ChargeIncrementSystem::type_name(),
+            &[&ChargeInitializeDelaySystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
+            ChargeUsageSystem::new(),
+            &ChargeUsageSystem::type_name(),
+            &[&ChargeIncrementSystem::type_name()],
+        ); // kcov-ignore
+
         // `Energy` hit / hitting effects.
         // There are only two currently, but if there is a timer system, perhaps that should go
         // last.
@@ -340,6 +373,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         builder.add(
             HpBarUpdateSystem::new(),
             &HpBarUpdateSystem::type_name(),
+            &[&CharacterHitEffectSystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
+            CpBarUpdateSystem::new(),
+            &CpBarUpdateSystem::type_name(),
             &[&CharacterHitEffectSystem::type_name()],
         ); // kcov-ignore
 

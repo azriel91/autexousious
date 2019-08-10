@@ -1,7 +1,8 @@
 use amethyst::ecs::ReadStorage;
+use charge_model::{config::ChargeUseMode, play::ChargeTrackerClock};
 use derivative::Derivative;
 use game_input::ControllerInput;
-use object_model::play::{ChargePoints, HealthPoints, Mirrored, SkillPoints};
+use object_model::play::{HealthPoints, Mirrored, SkillPoints};
 use shred_derive::SystemData;
 
 /// `SystemData` used to determine if a transition's requirement is met.
@@ -14,9 +15,12 @@ pub struct ControlTransitionRequirementSystemData<'s> {
     /// `SkillPoints` components.
     #[derivative(Debug = "ignore")]
     pub skill_pointses: ReadStorage<'s, SkillPoints>,
-    /// `ChargePoints` components.
+    /// `ChargeTrackerClock` components.
     #[derivative(Debug = "ignore")]
-    pub charge_pointses: ReadStorage<'s, ChargePoints>,
+    pub charge_tracker_clocks: ReadStorage<'s, ChargeTrackerClock>,
+    /// `ChargeUseMode` components.
+    #[derivative(Debug = "ignore")]
+    pub charge_use_modes: ReadStorage<'s, ChargeUseMode>,
     /// `ControllerInput` components.
     #[derivative(Debug = "ignore")]
     pub controller_inputs: ReadStorage<'s, ControllerInput>,

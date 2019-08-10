@@ -155,9 +155,8 @@ mod tests {
                 );
                 initial_values(
                     world,
-                    // first frame in the sequence
-                    0,
-                    5,
+                    // First frame in the sequence.
+                    FrameIndexClock::new_with_value(5, 0),
                     character_cts_handle,
                 )
             })
@@ -181,8 +180,8 @@ mod tests {
                 );
                 initial_values(
                     world,
-                    2, // third frame in the sequence
-                    5,
+                    // Third frame in the sequence.
+                    FrameIndexClock::new_with_value(5, 2),
                     character_cts_handle,
                 )
             })
@@ -196,8 +195,7 @@ mod tests {
 
     fn initial_values(
         world: &mut World,
-        frame_index_clock_value: usize,
-        frame_index_clock_limit: usize,
+        frame_index_clock_setup: FrameIndexClock,
         character_cts_handle_initial: CharacterControlTransitionsSequenceHandle,
     ) {
         let (
@@ -205,15 +203,13 @@ mod tests {
             mut frame_index_clocks,
             _character_control_transitions_handles,
             mut character_cts_handles,
-            ..
         ) = world.system_data::<TestSystemData>();
 
         (&mut frame_index_clocks, &mut character_cts_handles)
             .join()
             // kcov-ignore-start
             .for_each(|(frame_index_clock, character_cts_handle)| {
-                (*frame_index_clock).value = frame_index_clock_value;
-                (*frame_index_clock).limit = frame_index_clock_limit;
+                *frame_index_clock = frame_index_clock_setup;
 
                 *character_cts_handle = character_cts_handle_initial.clone();
             });

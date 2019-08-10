@@ -155,7 +155,6 @@ mod tests {
     use application_test_support::{AutexousiousApplication, SequenceQueries};
     use assets_test::CHAR_BAT_SLUG;
     use character_model::config::CharacterSequenceId;
-    use logic_clock::LogicClock;
     use sequence_model::{
         config::Wait,
         loaded::{WaitSequence, WaitSequenceHandle},
@@ -176,10 +175,9 @@ mod tests {
                 );
                 initial_values(
                     world,
-                    0, // first frame in sequence
-                    5,
-                    0,
-                    5,
+                    // First frame in sequence.
+                    FrameIndexClock::new_with_value(5, 0),
+                    FrameWaitClock::new_with_value(5, 0),
                     Some(frame_component_data_handle),
                 )
             })
@@ -206,10 +204,9 @@ mod tests {
                 );
                 initial_values(
                     world,
-                    2, // third frame in the sequence
-                    5,
-                    0,
-                    5,
+                    // Third frame in the sequence.
+                    FrameIndexClock::new_with_value(5, 2),
+                    FrameWaitClock::new_with_value(5, 0),
                     Some(frame_component_data_handle),
                 )
             })
@@ -230,8 +227,11 @@ mod tests {
             .with_system(FrameComponentUpdateSystem::<WaitSequence>::new(), "", &[])
             .with_setup(|world| {
                 initial_values(
-                    world, 2, // third frame in the sequence
-                    5, 0, 5, None,
+                    world,
+                    // Third frame in the sequence.
+                    FrameIndexClock::new_with_value(5, 2),
+                    FrameWaitClock::new_with_value(5, 0),
+                    None,
                 )
             })
             .with_setup(|world| {
@@ -247,17 +247,10 @@ mod tests {
 
     fn initial_values(
         world: &mut World,
-        frame_index_clock_value: usize,
-        frame_index_clock_limit: usize,
-        frame_wait_clock_value: usize,
-        frame_wait_clock_limit: usize,
+        frame_index_clock: FrameIndexClock,
+        frame_wait_clock: FrameWaitClock,
         frame_component_data_handle_initial: Option<WaitSequenceHandle>,
     ) {
-        let mut frame_index_clock = FrameIndexClock::new(LogicClock::new(frame_index_clock_limit));
-        (*frame_index_clock).value = frame_index_clock_value;
-        let mut frame_wait_clock = FrameWaitClock::new(LogicClock::new(frame_wait_clock_limit));
-        (*frame_wait_clock).value = frame_wait_clock_value;
-
         let entity = {
             let mut entity_builder = world
                 .create_entity()

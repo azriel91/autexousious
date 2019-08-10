@@ -7,7 +7,6 @@ use collision_model::{
     play::HitEvent,
 };
 use derive_new::new;
-use logic_clock::LogicClock;
 use sequence_model::play::FrameFreezeClock;
 
 use typename_derive::TypeName;
@@ -44,7 +43,7 @@ impl<'s> System<'s> for FrameFreezeClockAugmentSystem {
                     ..
                 } = ev.interaction;
 
-                let frame_freeze_clock = FrameFreezeClock::new(LogicClock::new(3));
+                let frame_freeze_clock = FrameFreezeClock::new(3);
                 frame_freeze_clocks
                     .insert(ev.from, frame_freeze_clock)
                     .expect("Failed to insert `FrameFreezeClock`.");
@@ -69,7 +68,6 @@ mod tests {
         config::{Hit, Interaction, InteractionKind},
         play::HitEvent,
     };
-    use logic_clock::LogicClock;
     use sequence_model::play::FrameFreezeClock;
     use shape_model::Volume;
 
@@ -93,10 +91,7 @@ mod tests {
                 let frame_freeze_clocks = world.read_storage::<FrameFreezeClock>();
                 let frame_freeze_clock = frame_freeze_clocks.get(entity_from);
 
-                assert_eq!(
-                    Some(&FrameFreezeClock::new(LogicClock::new(3))),
-                    frame_freeze_clock
-                );
+                assert_eq!(Some(&FrameFreezeClock::new(3)), frame_freeze_clock);
             })
             .run()
     }
@@ -122,10 +117,7 @@ mod tests {
                 let frame_freeze_clocks = world.read_storage::<FrameFreezeClock>();
                 let frame_freeze_clock = frame_freeze_clocks.get(entity_from);
 
-                assert_eq!(
-                    Some(&FrameFreezeClock::new(LogicClock::new(3))),
-                    frame_freeze_clock
-                );
+                assert_eq!(Some(&FrameFreezeClock::new(3)), frame_freeze_clock);
             })
             .run()
     }

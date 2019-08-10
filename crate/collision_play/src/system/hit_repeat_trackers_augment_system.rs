@@ -7,7 +7,6 @@ use collision_model::{
     play::{HitEvent, HitRepeatClock, HitRepeatTracker, HitRepeatTrackers},
 };
 use derive_new::new;
-use logic_clock::LogicClock;
 use slotmap::SlotMap;
 use typename_derive::TypeName;
 
@@ -28,7 +27,7 @@ type HitRepeatTrackersAugmentSystemData<'s> = (
 
 impl HitRepeatTrackersAugmentSystem {
     fn hit_repeat_tracker(entity_to: Entity, repeat_delay: HitRepeatDelay) -> HitRepeatTracker {
-        let hit_repeat_clock = HitRepeatClock::new(LogicClock::new(*repeat_delay as usize));
+        let hit_repeat_clock = HitRepeatClock::new(*repeat_delay as usize);
         HitRepeatTracker::new(entity_to, hit_repeat_clock)
     }
 }
@@ -98,7 +97,6 @@ mod tests {
         config::{Hit, HitLimit, HitRepeatDelay, Interaction, InteractionKind},
         play::{HitEvent, HitRepeatClock, HitRepeatTracker, HitRepeatTrackers},
     };
-    use logic_clock::LogicClock;
     use object_status_model::config::StunPoints;
     use shape_model::Volume;
     use slotmap::SlotMap;
@@ -124,10 +122,7 @@ mod tests {
                 let hit_repeat_trackers = hit_repeat_trackerses.get(entity_from);
 
                 let mut slot_map = SlotMap::new();
-                slot_map.insert(HitRepeatTracker::new(
-                    entity_to,
-                    HitRepeatClock::new(LogicClock::new(4)),
-                ));
+                slot_map.insert(HitRepeatTracker::new(entity_to, HitRepeatClock::new(4)));
                 assert_eq!(Some(&HitRepeatTrackers::new(slot_map)), hit_repeat_trackers);
             })
             .run()
@@ -154,10 +149,7 @@ mod tests {
                 let hit_repeat_trackers = hit_repeat_trackerses.get(entity_from);
 
                 let mut slot_map = SlotMap::new();
-                slot_map.insert(HitRepeatTracker::new(
-                    entity_to_0,
-                    HitRepeatClock::new(LogicClock::new(4)),
-                ));
+                slot_map.insert(HitRepeatTracker::new(entity_to_0, HitRepeatClock::new(4)));
                 assert_eq!(Some(&HitRepeatTrackers::new(slot_map)), hit_repeat_trackers);
             })
             .with_effect(|world| {
@@ -174,14 +166,8 @@ mod tests {
                 let hit_repeat_trackers = hit_repeat_trackerses.get(entity_from);
 
                 let mut slot_map = SlotMap::new();
-                slot_map.insert(HitRepeatTracker::new(
-                    entity_to_0,
-                    HitRepeatClock::new(LogicClock::new(4)),
-                ));
-                slot_map.insert(HitRepeatTracker::new(
-                    entity_to_1,
-                    HitRepeatClock::new(LogicClock::new(4)),
-                ));
+                slot_map.insert(HitRepeatTracker::new(entity_to_0, HitRepeatClock::new(4)));
+                slot_map.insert(HitRepeatTracker::new(entity_to_1, HitRepeatClock::new(4)));
                 assert_eq!(Some(&HitRepeatTrackers::new(slot_map)), hit_repeat_trackers);
             })
             .run()

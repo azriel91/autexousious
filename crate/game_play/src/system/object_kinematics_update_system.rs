@@ -45,7 +45,6 @@ mod test {
     };
     use amethyst_test::AmethystApplication;
     use kinematic_model::config::{Position, Velocity};
-    use logic_clock::LogicClock;
     use sequence_model::play::FrameFreezeClock;
     use typename::TypeName;
 
@@ -53,7 +52,7 @@ mod test {
 
     #[test]
     fn adds_velocity_to_position() -> Result<(), Error> {
-        let mut frame_freeze_clock = FrameFreezeClock::new(LogicClock::new(1));
+        let mut frame_freeze_clock = FrameFreezeClock::new(1);
         frame_freeze_clock.tick();
 
         run_test(
@@ -72,7 +71,7 @@ mod test {
             SetupParams {
                 position: Position::<f32>::new(-2., -2., -2.),
                 velocity: Velocity::<f32>::new(-3., -3., -3.),
-                frame_freeze_clock: Some(FrameFreezeClock::new(LogicClock::new(1))),
+                frame_freeze_clock: Some(FrameFreezeClock::new(1)),
             },
             Position::<f32>::new(-2., -2., -2.),
         )
@@ -80,7 +79,7 @@ mod test {
 
     #[test]
     fn adds_velocity_to_position_when_frame_freeze_clock_complete() -> Result<(), Error> {
-        let mut frame_freeze_clock = FrameFreezeClock::new(LogicClock::new(1));
+        let mut frame_freeze_clock = FrameFreezeClock::new(1);
         frame_freeze_clock.tick();
 
         run_test(

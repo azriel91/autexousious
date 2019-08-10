@@ -4,6 +4,7 @@
 
 pub use crate::{
     character_loader::{CharacterLoader, CHARACTER_TRANSITIONS_DEFAULT},
+    character_loader_params::CharacterLoaderParams,
     character_loading_bundle::{CharacterLoadingBundle, CHARACTER_PROCESSOR},
     character_loading_status::CharacterLoadingStatus,
     control_transitions_sequence_loader::ControlTransitionsSequenceLoader,
@@ -11,6 +12,7 @@ pub use crate::{
 };
 
 mod character_loader;
+mod character_loader_params;
 mod character_loading_bundle;
 mod character_loading_status;
 mod control_transitions_sequence_loader;

@@ -8,6 +8,7 @@ edition = "2018"
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 character_loading = { path = "../character_loading" }
 character_model = { path = "../character_model" }
+charge_model = { path = "../charge_model" }
 derivative = "1.0.2"
 derive-new = "0.5.6"
 game_input = { path = "../game_input" }
