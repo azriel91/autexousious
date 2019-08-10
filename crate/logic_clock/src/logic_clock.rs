@@ -48,18 +48,33 @@ impl LogicClock {
     /// **Note:**
     ///
     /// This will not increment the value past the limit, nor will it reset or wrap the value. You
-    /// should use the [`reset()`] method to do this.
-    ///
-    /// [`reset()`]: #method.reset
+    /// should use the [LogicClock::reset] method to do this.
     pub fn tick(&mut self) {
         if self.value < self.limit {
             self.value += 1;
         }
     }
 
+    /// Decrements this clock's value.
+    ///
+    /// **Note:**
+    ///
+    /// This will not decrement the value past 0, nor will it wrap the value. You can use the
+    /// [LogicClock::complete] method to do this.
+    pub fn reverse_tick(&mut self) {
+        if self.value > 0 {
+            self.value -= 1;
+        }
+    }
+
     /// Resets this clock's value back to 0.
     pub fn reset(&mut self) {
         self.value = 0;
+    }
+
+    /// Sets this clocks value to its limit.
+    pub fn complete(&mut self) {
+        self.value = self.limit;
     }
 }
 
@@ -117,8 +132,7 @@ mod tests {
 
     #[test]
     fn tick_does_not_go_past_limit_or_wrap_value() {
-        let mut logic_clock = LogicClock::new(3);
-        logic_clock.value = 3;
+        let mut logic_clock = LogicClock::new_with_value(3, 3);
 
         logic_clock.tick();
         assert_eq!(3, logic_clock.value);
@@ -136,5 +150,41 @@ mod tests {
 
         logic_clock.reset();
         assert_eq!(0, logic_clock.value);
+    }
+
+    #[test]
+    fn reverse_tick_decrements_value_by_one() {
+        let mut logic_clock = LogicClock::new_with_value(3, 3);
+        assert_eq!(3, logic_clock.value);
+
+        logic_clock.reverse_tick();
+        assert_eq!(2, logic_clock.value);
+        logic_clock.reverse_tick();
+        assert_eq!(1, logic_clock.value);
+
+        logic_clock.reverse_tick();
+        assert_eq!(0, logic_clock.value);
+    }
+
+    #[test]
+    fn reverse_tick_does_not_go_past_zero_or_wrap_value() {
+        let mut logic_clock = LogicClock::new(3);
+
+        logic_clock.reverse_tick();
+        assert_eq!(0, logic_clock.value);
+        logic_clock.reverse_tick();
+        assert_eq!(0, logic_clock.value);
+    }
+
+    #[test]
+    fn complete_sets_value_to_limit() {
+        let mut logic_clock = LogicClock::new(3);
+        assert_eq!(0, logic_clock.value);
+
+        logic_clock.tick();
+        assert_eq!(1, logic_clock.value);
+
+        logic_clock.complete();
+        assert_eq!(3, logic_clock.value);
     }
 }
