@@ -13,7 +13,7 @@ use typename_derive::TypeName;
 use crate::{CpBar, CP_BAR_LENGTH, CP_BAR_SPRITE_COUNT};
 
 /// Move CpBar below character.
-const Y_OFFSET: f32 = -13.;
+const Y_OFFSET: f32 = -14.;
 /// Move CpBar in front of object.
 const Z_OFFSET: f32 = 1.;
 
@@ -159,7 +159,7 @@ mod tests {
                 //   2. /  20. =  10. (10%)
                 // -10  /   2. =  -5. (half sprite width shift)
                 //  -5. + 123. = 118. (parent shift)
-                assert_eq!(&Vector3::new(118., 443., 790.), transform.translation());
+                assert_eq!(&Vector3::new(118., 442., 790.), transform.translation());
                 assert_eq!(90., transform.scale()[0]);
             })
             .run_isolated()
