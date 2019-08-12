@@ -14,8 +14,8 @@ use shred_derive::SystemData;
 
 use crate::{CpBar, CP_BAR_HEIGHT, CP_BAR_LENGTH, CP_BAR_SPRITE_COUNT};
 
-const COLOUR_CP_LOW: [f32; 4] = [0.1, 0.2, 1., 0.8];
-const COLOUR_CP_HIGH: [f32; 4] = [0.3, 0.7, 0.1, 0.8];
+const COLOUR_CP_LOW: [f32; 4] = [0.2, 0.4, 1., 0.8];
+const COLOUR_CP_HIGH: [f32; 4] = [0.3, 0.6, 1., 0.8];
 
 /// Prefab to attach all components of a CP bar.
 ///
