@@ -309,7 +309,7 @@ mod tests {
                     let colour_sprite_gen_data = world.system_data::<ColourSpriteSheetGenData>();
                     ColourSpriteSheetGen::solid(&colour_sprite_gen_data, RED)
                 };
-                world.add_resource(sprite_render);
+                world.insert(sprite_render);
             })
             .with_assertion(|world| {
                 let sprite_render = &*world.read_resource::<SpriteRender>();
@@ -349,7 +349,7 @@ mod tests {
                         5,
                     )
                 };
-                world.add_resource(sprite_render);
+                world.insert(sprite_render);
             })
             .with_assertion(|world| {
                 let sprite_render = &*world.read_resource::<SpriteRender>();

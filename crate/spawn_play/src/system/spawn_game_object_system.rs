@@ -243,7 +243,7 @@ mod tests {
             .write_resource::<EventChannel<SpawnEvent>>()
             .register_reader(); // kcov-ignore
 
-        world.add_resource(spawn_event_rid);
+        world.insert(spawn_event_rid);
     }
 
     fn create_entity_with_spawns(
@@ -257,7 +257,7 @@ mod tests {
         };
 
         let entity = world.create_entity().with(spawns_handle).build();
-        world.add_resource(entity);
+        world.insert(entity);
 
         if let Some(sequence_update_event_fn) = sequence_update_event_fn {
             let mut sequence_update_ec =

@@ -55,6 +55,6 @@ impl AssetLoader {
 
         debug!("Loaded map assets: `{:?}`", map_prefabs);
 
-        world.add_resource(map_prefabs);
+        world.insert(map_prefabs);
     }
 }

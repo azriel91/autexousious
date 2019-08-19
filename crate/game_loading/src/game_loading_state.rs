@@ -73,7 +73,7 @@ where
     S: AutexState<'a, 'b> + 'static,
 {
     fn on_start(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
-        data.world.add_resource(StateId::GameLoading);
+        data.world.insert(StateId::GameLoading);
 
         self.initialize_dispatcher(&mut data.world);
         self.reset_game_loading_status(&mut data.world);
@@ -84,7 +84,7 @@ where
     }
 
     fn on_resume(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
-        data.world.add_resource(StateId::GameLoading);
+        data.world.insert(StateId::GameLoading);
 
         self.reset_game_loading_status(&mut data.world);
     }

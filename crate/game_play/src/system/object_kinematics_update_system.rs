@@ -110,7 +110,7 @@ mod test {
                 }
                 let entity = entity_builder.build();
 
-                world.add_resource(entity);
+                world.insert(entity);
             })
             .with_system_single(
                 ObjectKinematicsUpdateSystem::new(),

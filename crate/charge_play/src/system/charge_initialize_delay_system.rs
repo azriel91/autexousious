@@ -323,7 +323,7 @@ mod tests {
                     entity_builder.build()
                 };
 
-                world.add_resource(entity);
+                world.insert(entity);
             })
             .with_assertion(move |world| {
                 let entity = *world.read_resource::<Entity>();

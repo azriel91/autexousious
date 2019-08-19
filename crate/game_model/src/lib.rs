@@ -19,7 +19,7 @@
 //!     // Create entities and store them in the map and vec
 //!
 //!     let game_entities = GameEntities::new(objects, map_layers);
-//!     data.world.add_resource(game_entities);
+//!     data.world.insert(game_entities);
 //!     Trans::Switch(Box::new())
 //! }
 //!

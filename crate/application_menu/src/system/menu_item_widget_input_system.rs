@@ -438,7 +438,7 @@ mod test {
                 let event_channel_reader = world
                     .write_resource::<EventChannel<MenuEvent<TestIndex>>>()
                     .register_reader(); // kcov-ignore
-                world.add_resource(event_channel_reader);
+                world.insert(event_channel_reader);
 
                 let entities = TestIndex::iter()
                     .map(|index| {
@@ -466,7 +466,7 @@ mod test {
                         .expect("Failed to insert `Siblings` component.");
                 }
 
-                world.add_resource(entities);
+                world.insert(entities);
             })
             .with_effect(move |world| {
                 if let Some(control_input_event_fn) = control_input_event_fn {

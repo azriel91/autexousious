@@ -139,7 +139,7 @@ mod tests {
                     hp_bar_entity
                 };
 
-                world.add_resource(hp_bar_entity);
+                world.insert(hp_bar_entity);
             })
             .with_system_single(HpBarUpdateSystem::new(), "", &[])
             .with_assertion(|world| {

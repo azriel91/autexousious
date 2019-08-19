@@ -155,13 +155,13 @@ mod tests {
             |world| {
                 let mut game_loading_status = GameLoadingStatus::new();
                 game_loading_status.character_augment_status = CharacterAugmentStatus::Rectify;
-                world.add_resource(game_loading_status);
+                world.insert(game_loading_status);
 
                 let mut character_selections = CharacterSelections::default();
                 character_selections
                     .selections
                     .insert(0, CHAR_BAT_SLUG.clone());
-                world.add_resource(character_selections);
+                world.insert(character_selections);
             },
             |world| {
                 let (input_controlleds, character_prefab_handles, teams) =
@@ -179,7 +179,7 @@ mod tests {
             |world| {
                 let mut game_loading_status = GameLoadingStatus::new();
                 game_loading_status.character_augment_status = CharacterAugmentStatus::Prefab;
-                world.add_resource(game_loading_status);
+                world.insert(game_loading_status);
 
                 let mut character_selections = CharacterSelections::default();
                 character_selections
@@ -188,7 +188,7 @@ mod tests {
                 character_selections
                     .selections
                     .insert(123, CHAR_BAT_SLUG.clone());
-                world.add_resource(character_selections);
+                world.insert(character_selections);
             },
             |world| {
                 let (input_controlleds, character_prefab_handles, teams) =

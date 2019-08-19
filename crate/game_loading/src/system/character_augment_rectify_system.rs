@@ -208,7 +208,7 @@ mod tests {
             |world| {
                 let mut game_loading_status = GameLoadingStatus::new();
                 game_loading_status.character_augment_status = CharacterAugmentStatus::Prefab;
-                world.add_resource(game_loading_status);
+                world.insert(game_loading_status);
 
                 let snh = SlugAndHandle::<Prefab<CharacterPrefab>>::from((
                     &*world,
@@ -216,7 +216,7 @@ mod tests {
                 ));
                 let char_entity = world.create_entity().with(snh.handle).build();
 
-                world.add_resource(char_entity);
+                world.insert(char_entity);
             },
             |world| {
                 let char_entity = *world.read_resource::<Entity>();
@@ -235,7 +235,7 @@ mod tests {
             |world| {
                 let mut game_loading_status = GameLoadingStatus::new();
                 game_loading_status.character_augment_status = CharacterAugmentStatus::Rectify;
-                world.add_resource(game_loading_status);
+                world.insert(game_loading_status);
 
                 let snh = SlugAndHandle::<Prefab<CharacterPrefab>>::from((
                     &*world,
@@ -243,7 +243,7 @@ mod tests {
                 ));
                 let char_entity = world.create_entity().with(snh.handle).build();
 
-                world.add_resource(char_entity);
+                world.insert(char_entity);
             },
             |world| {
                 let char_entity = *world.read_resource::<Entity>();
@@ -273,7 +273,7 @@ mod tests {
             |world| {
                 let mut game_loading_status = GameLoadingStatus::new();
                 game_loading_status.character_augment_status = CharacterAugmentStatus::Rectify;
-                world.add_resource(game_loading_status);
+                world.insert(game_loading_status);
 
                 let snh = SlugAndHandle::<Prefab<CharacterPrefab>>::from((
                     &*world,
@@ -285,7 +285,7 @@ mod tests {
                     .with(InputControlled::new(0))
                     .build();
 
-                world.add_resource(char_entity);
+                world.insert(char_entity);
             },
             |world| {
                 let (hp_bars, cp_bars) =
@@ -353,8 +353,8 @@ mod tests {
                 SlugAndHandle::from((slug.clone(), map_handle))
             };
 
-            world.add_resource(MapSelection::Id(slug_and_handle));
-            world.add_resource(MapSelectionStatus::Confirmed);
+            world.insert(MapSelection::Id(slug_and_handle));
+            world.insert(MapSelectionStatus::Confirmed);
         }
     }
 }

@@ -119,7 +119,7 @@ mod tests {
     fn spawn_entity(world: &mut World) {
         let entity_parent = world.create_entity().build();
         let entity_spawned = world.create_entity().build();
-        world.add_resource(entity_spawned);
+        world.insert(entity_spawned);
 
         let spawn = Spawn::new(
             AssetSlug::from_str("default/fireball")

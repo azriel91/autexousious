@@ -919,7 +919,7 @@ mod tests {
                     )
                 };
 
-                world.add_resource(character_control_transitions_sequence_handle);
+                world.insert(character_control_transitions_sequence_handle);
             })
             // Allow `AssetStorage`s to process loaded data.
             .with_setup(move |world| {
@@ -988,7 +988,7 @@ mod tests {
                     send_event(world, control_input_event_fn(entity));
                 }
 
-                world.add_resource(entity);
+                world.insert(entity);
             })
             .with_assertion(move |world| {
                 let entity = *world.read_resource::<Entity>();
@@ -1036,7 +1036,7 @@ mod tests {
             let mut ec = world.write_resource::<EventChannel<ChargeUseEvent>>();
             ec.register_reader()
         }; // kcov-ignore
-        world.add_resource(reader_id);
+        world.insert(reader_id);
     }
 
     fn send_event(world: &mut World, event: ControlInputEvent) {

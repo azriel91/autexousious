@@ -437,11 +437,11 @@ mod test {
                 let event_channel_reader = world
                     .write_resource::<EventChannel<MapSelectionEvent>>()
                     .register_reader(); // kcov-ignore
-                world.add_resource(event_channel_reader);
+                world.insert(event_channel_reader);
 
                 let map_selection = setup_map_selection_fn(world);
                 let entity = widget_entity(world, widget_entity_state, map_selection);
-                world.add_resource(entity);
+                world.insert(entity);
             })
             .with_effect(move |world| {
                 if let Some(control_input_event_fn) = control_input_event_fn {

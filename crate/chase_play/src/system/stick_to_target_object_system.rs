@@ -141,7 +141,7 @@ mod tests {
 
             entity_builder.build()
         };
-        world.add_resource((target, child));
+        world.insert((target, child));
     }
 
     fn set_target_translation(world: &mut World, x: f32, y: f32, z: f32) {

@@ -144,7 +144,7 @@ mod tests {
                     cp_bar_entity
                 };
 
-                world.add_resource(cp_bar_entity);
+                world.insert(cp_bar_entity);
             })
             .with_system_single(CpBarUpdateSystem::new(), "", &[])
             .with_assertion(|world| {

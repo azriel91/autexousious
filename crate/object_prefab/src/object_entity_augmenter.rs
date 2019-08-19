@@ -203,6 +203,6 @@ mod tests {
 
     fn setup_object_wrapper(world: &mut World) {
         let object_wrapper = ObjectBuilder::<TestObject>::new().build_wrapper(&*world);
-        world.add_resource(object_wrapper);
+        world.insert(object_wrapper);
     }
 }

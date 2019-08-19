@@ -139,7 +139,7 @@ mod test {
             let mut game_play_ec = world.write_resource::<EventChannel<GamePlayEvent>>();
             game_play_ec.register_reader()
         }; // kcov-ignore
-        world.add_resource(reader_id);
+        world.insert(reader_id);
     }
 
     fn setup_controller_input(world: &mut World, last_attack_pressed: bool, attack_pressed: bool) {

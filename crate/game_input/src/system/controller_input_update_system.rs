@@ -144,7 +144,7 @@ mod test {
                         }),
                     ]); // kcov-ignore
 
-                world.add_resource((e0, e1));
+                world.insert((e0, e1));
             })
             .with_assertion(|world| {
                 let entities = world.read_resource::<(Entity, Entity)>();
@@ -215,7 +215,7 @@ mod test {
                         }),
                     ]); // kcov-ignore
 
-                world.add_resource((e0, e1));
+                world.insert((e0, e1));
             })
             .with_assertion(|world| {
                 let entities = world.read_resource::<(Entity, Entity)>();

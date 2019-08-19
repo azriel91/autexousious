@@ -252,13 +252,13 @@ mod test {
                         widget_entity(world, *setup_widget_state, character_selection)
                     })
                     .collect::<Vec<Entity>>();
-                world.add_resource(entities);
+                world.insert(entities);
 
                 let event_channel_reader = world
                     .write_resource::<EventChannel<CharacterSelectionEvent>>()
                     .register_reader(); // kcov-ignore
 
-                world.add_resource(event_channel_reader);
+                world.insert(event_channel_reader);
             })
             .with_effect(move |world| {
                 if let Some(control_input_event_fn) = control_input_event_fn {

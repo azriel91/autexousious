@@ -166,7 +166,7 @@ mod tests {
             let mut ec = world.write_resource::<EventChannel<SequenceUpdateEvent>>();
             ec.register_reader()
         }; // kcov-ignore
-        world.add_resource(reader_id);
+        world.insert(reader_id);
     }
 
     fn insert_sequence(world: &mut World, sequence_id: TestObjectSequenceId) {
@@ -195,7 +195,7 @@ mod tests {
         }
         let entity = entity_builder.build();
 
-        world.add_resource(entity);
+        world.insert(entity);
     }
 
     fn sequence_begin_events(world: &mut World) -> Vec<SequenceUpdateEvent> {

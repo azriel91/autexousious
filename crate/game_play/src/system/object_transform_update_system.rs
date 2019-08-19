@@ -86,7 +86,7 @@ mod test {
 
             let entity = world.create_entity().with(position).with(transform).build();
 
-            world.add_resource(entity);
+            world.insert(entity);
         };
 
         let assertion = |world: &mut World| {

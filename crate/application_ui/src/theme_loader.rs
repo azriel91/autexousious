@@ -54,7 +54,7 @@ impl ThemeLoader {
             })
             .collect::<HashMap<FontVariant, FontHandle>>();
 
-        world.add_resource(Theme::new(fonts));
+        world.insert(Theme::new(fonts));
 
         Ok(())
     }

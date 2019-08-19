@@ -60,13 +60,13 @@ fn character_prefab_load() -> Result<(), Error> {
                 let character_prefab = CharacterPrefab::new(object_asset_data);
                 character_prefab_loader.load_from_data(Prefab::new_main(character_prefab), ())
             };
-            world.add_resource(character_prefab_handle);
+            world.insert(character_prefab_handle);
         })
         .with_setup(|_world| {}) // Allow texture to load.
         .with_setup(|world| {
             let character_prefab_handle = world.read_resource::<CharacterPrefabHandle>().clone();
             let character_entity = world.create_entity().with(character_prefab_handle).build();
-            world.add_resource(character_entity);
+            world.insert(character_entity);
         })
         .with_effect(|_world| {})
         .with_assertion(|world| {

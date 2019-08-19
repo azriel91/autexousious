@@ -221,7 +221,7 @@ mod tests {
 
                 send_event(world, collision_event(entity_from, entity_to));
 
-                world.add_resource((entity_from, entity_to));
+                world.insert((entity_from, entity_to));
             })
             .with_assertion(move |world| {
                 let (entity_from, entity_to) = *world.read_resource::<(Entity, Entity)>();
@@ -236,7 +236,7 @@ mod tests {
             .write_resource::<EventChannel<ContactEvent>>()
             .register_reader(); // kcov-ignore
 
-        world.add_resource(contact_event_rid);
+        world.insert(contact_event_rid);
     }
 
     fn send_event(world: &mut World, event: CollisionEvent) {

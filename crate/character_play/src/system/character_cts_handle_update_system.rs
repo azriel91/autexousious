@@ -176,7 +176,7 @@ mod tests {
                 .expect("Failed to insert `CharacterSequenceId`.");
         } // kcov-ignore
 
-        world.add_resource(entity);
+        world.insert(entity);
     }
 
     fn update_sequence(world: &mut World, sequence_id: CharacterSequenceId) {
@@ -190,7 +190,7 @@ mod tests {
             *sid = sequence_id;
         }
 
-        world.add_resource(entity);
+        world.insert(entity);
     }
 
     fn create_entity(world: &mut World) -> Entity {

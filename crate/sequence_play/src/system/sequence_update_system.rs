@@ -533,7 +533,7 @@ mod tests {
             let mut ec = world.write_resource::<EventChannel<SequenceUpdateEvent>>();
             ec.register_reader()
         }; // kcov-ignore
-        world.add_resource(reader_id);
+        world.insert(reader_id);
     }
 
     fn initial_values(
@@ -590,7 +590,7 @@ mod tests {
             entity
         };
 
-        world.add_resource(entity);
+        world.insert(entity);
     }
 
     fn expect_values(

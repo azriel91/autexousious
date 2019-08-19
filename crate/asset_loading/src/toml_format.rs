@@ -69,8 +69,8 @@ mod tests {
                     )
                 };
 
-                world.add_resource(thing_handle);
-                world.add_resource(progress_counter);
+                world.insert(thing_handle);
+                world.insert(progress_counter);
             })
             .with_state(|| WaitForLoad)
             .with_assertion(|world| {

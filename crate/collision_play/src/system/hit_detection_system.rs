@@ -165,7 +165,7 @@ mod tests {
 
                 send_event(world, contact_event(entity_from, entity_to));
 
-                world.add_resource((entity_from, entity_to));
+                world.insert((entity_from, entity_to));
             })
             .with_assertion(|world| {
                 let (entity_from, entity_to) = *world.read_resource::<(Entity, Entity)>();
@@ -193,7 +193,7 @@ mod tests {
                 }
                 send_event(world, contact_event(entity_from, entity_to));
 
-                world.add_resource((entity_from, entity_to));
+                world.insert((entity_from, entity_to));
             })
             .with_assertion(|world| {
                 let (entity_from, entity_to) = *world.read_resource::<(Entity, Entity)>();
@@ -220,7 +220,7 @@ mod tests {
                 }
                 send_event(world, contact_event(entity_from, entity_to));
 
-                world.add_resource((entity_from, entity_to));
+                world.insert((entity_from, entity_to));
             })
             .with_assertion(|world| {
                 assert_events(world, vec![]);
@@ -252,7 +252,7 @@ mod tests {
                     .collect::<Vec<ContactEvent>>();
                 send_events(world, contact_events);
 
-                world.add_resource((entity_from, entity_tos));
+                world.insert((entity_from, entity_tos));
             })
             .with_assertion(|world| {
                 let (entity_from, entity_tos) = {
@@ -293,7 +293,7 @@ mod tests {
                     })
                     .collect::<Vec<Entity>>();
 
-                world.add_resource((entity_from, entity_tos));
+                world.insert((entity_from, entity_tos));
             })
             .with_assertion(|world| {
                 let (entity_from, entity_tos) = {
@@ -317,7 +317,7 @@ mod tests {
             .write_resource::<EventChannel<HitEvent>>()
             .register_reader(); // kcov-ignore
 
-        world.add_resource(hit_event_rid);
+        world.insert(hit_event_rid);
     }
 
     fn send_event(world: &mut World, event: ContactEvent) {

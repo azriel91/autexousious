@@ -63,7 +63,7 @@ where
     S: AutexState<'a, 'b> + 'static,
 {
     fn on_start(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
-        data.world.add_resource(StateId::Loading);
+        data.world.insert(StateId::Loading);
         self.stopwatch.start();
 
         if let Err(e) = ThemeLoader::load(&mut data.world) {
@@ -74,7 +74,7 @@ where
     }
 
     fn on_resume(&mut self, data: StateData<'_, GameData<'a, 'b>>) {
-        data.world.add_resource(StateId::Loading);
+        data.world.insert(StateId::Loading);
         self.stopwatch.restart();
     }
 

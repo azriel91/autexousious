@@ -45,7 +45,7 @@ impl MainMenuState {
         let reader_id = menu_event_channel.register_reader();
         self.menu_event_reader.get_or_insert(reader_id);
 
-        world.add_resource(menu_event_channel);
+        world.insert(menu_event_channel);
     }
 
     fn terminate_menu_event_channel(&mut self, _world: &mut World) {

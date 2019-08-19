@@ -82,7 +82,7 @@ mod test {
 
     fn setup() -> (ApplicationEventIntercept, World) {
         let mut world = World::new();
-        world.add_resource(EventChannel::<ApplicationEvent>::with_capacity(10));
+        world.insert(EventChannel::<ApplicationEvent>::with_capacity(10));
 
         (ApplicationEventIntercept::new(), world)
     }

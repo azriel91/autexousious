@@ -114,7 +114,7 @@ mod test {
                 .with_setup(|world| {
                     let fade_snh = SlugAndHandle::from((&*world, MAP_FADE_SLUG.clone()));
                     let map_selection = MapSelection::Id(fade_snh);
-                    world.add_resource(map_selection);
+                    world.insert(map_selection);
 
                     // Send event, if the event is not responded to, then we know the system returns
                     // early.
@@ -157,7 +157,7 @@ mod test {
                 .with_setup(|world| {
                     let fade_snh = SlugAndHandle::from((&*world, MAP_FADE_SLUG.clone()));
                     let map_selection = MapSelection::Id(fade_snh);
-                    world.add_resource(map_selection);
+                    world.insert(map_selection);
 
                     // Send event, if the event is responded to, then we know the system has read
                     // it.

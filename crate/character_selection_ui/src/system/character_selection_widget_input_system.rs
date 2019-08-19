@@ -485,13 +485,13 @@ mod test {
 
                 let setup_character_selection = setup_character_selection_fn(world);
                 let entity = widget_entity(world, setup_widget_state, setup_character_selection);
-                world.add_resource(entity);
+                world.insert(entity);
 
                 let event_channel_reader = world
                     .write_resource::<EventChannel<CharacterSelectionEvent>>()
                     .register_reader(); // kcov-ignore
 
-                world.add_resource(event_channel_reader);
+                world.insert(event_channel_reader);
             })
             .with_effect(move |world| {
                 if let Some(control_input_event_fn) = control_input_event_fn {

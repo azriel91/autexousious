@@ -452,7 +452,7 @@ mod tests {
             world.register::<Removal<()>>();
         }
 
-        world.add_resource(Arc::new(
+        world.insert(Arc::new(
             ThreadPoolBuilder::default()
                 .build()
                 .unwrap_or_else(|e| panic!("Failed to build ThreadPool. {}", e)), // kcov-ignore
@@ -472,19 +472,19 @@ mod tests {
                 builder = builder
                     .with_hook_fn(
                         HookableFn::OnStart,
-                        HookFn(|world| world.add_resource(HookFnValue(1))),
+                        HookFn(|world| world.insert(HookFnValue(1))),
                     )
                     .with_hook_fn(
                         HookableFn::OnStop,
-                        HookFn(|world| world.add_resource(HookFnValue(2))),
+                        HookFn(|world| world.insert(HookFnValue(2))),
                     )
                     .with_hook_fn(
                         HookableFn::OnPause,
-                        HookFn(|world| world.add_resource(HookFnValue(4))),
+                        HookFn(|world| world.insert(HookFnValue(4))),
                     )
                     .with_hook_fn(
                         HookableFn::OnResume,
-                        HookFn(|world| world.add_resource(HookFnValue(8))),
+                        HookFn(|world| world.insert(HookFnValue(8))),
                     );
             }
 

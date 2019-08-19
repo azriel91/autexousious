@@ -87,7 +87,7 @@ mod test {
                 .with_setup(setup_components)
                 .with_setup(|world| {
                     let entity = world.create_entity().with(TestComponent(123)).build();
-                    world.add_resource(EffectReturn(entity));
+                    world.insert(EffectReturn(entity));
                 })
                 .with_system_single(system.clone(), system_name.clone(), &[])
                 .with_assertion(|world| assert_last_value(world, 123))

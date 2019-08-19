@@ -138,7 +138,7 @@ mod tests {
                     }
                     SetupVariant::WithoutSequenceId => {}
                 }
-                world.add_resource(entity_from);
+                world.insert(entity_from);
 
                 if send_event {
                     let event = HitEvent::new(entity_from, entity_to, interaction(), body());

@@ -274,7 +274,7 @@ mod tests {
         };
 
         let entity_spawned = world.create_entity().build();
-        world.add_resource(entity_spawned);
+        world.insert(entity_spawned);
 
         let spawn = Spawn::new(
             AssetSlug::from_str("default/fireball")

@@ -111,7 +111,7 @@ mod tests {
                 .expect("Failed to insert `HitRepeatTrackers` component.");
         }
 
-        world.add_resource((entity_from_0, entity_from_1));
+        world.insert((entity_from_0, entity_from_1));
     }
 
     fn assert_clock_values(world: &mut World, expected_value: usize) {

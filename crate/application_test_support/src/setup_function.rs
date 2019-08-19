@@ -26,8 +26,8 @@ impl SetupFunction {
                 SlugAndHandle::from((slug.clone(), map_handle))
             };
 
-            world.add_resource(MapSelection::Id(slug_and_handle));
-            world.add_resource(MapSelectionStatus::Confirmed);
+            world.insert(MapSelection::Id(slug_and_handle));
+            world.insert(MapSelectionStatus::Confirmed);
         }
     }
 }

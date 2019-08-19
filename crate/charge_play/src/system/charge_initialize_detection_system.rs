@@ -196,7 +196,7 @@ mod tests {
                     .write_resource::<EventChannel<ControlInputEvent>>()
                     .single_write(control_input_event);
 
-                world.add_resource(entity);
+                world.insert(entity);
             })
             .with_assertion(move |world| {
                 let entity = *world.read_resource::<Entity>();

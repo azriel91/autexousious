@@ -84,7 +84,7 @@ mod tests {
                 let event = HitEvent::new(entity_from, entity_to, interaction(), body());
                 send_event(world, event);
 
-                world.add_resource(entity_from);
+                world.insert(entity_from);
             })
             .with_assertion(|world| {
                 let entity_from = *world.read_resource::<Entity>();
@@ -110,7 +110,7 @@ mod tests {
                 let event = HitEvent::new(entity_from, entity_to_1, interaction(), body());
                 send_event(world, event);
 
-                world.add_resource(entity_from);
+                world.insert(entity_from);
             })
             .with_assertion(|world| {
                 let entity_from = *world.read_resource::<Entity>();

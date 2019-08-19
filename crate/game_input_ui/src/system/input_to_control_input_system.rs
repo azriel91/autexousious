@@ -240,14 +240,14 @@ mod test {
                 let reader_id = world
                     .write_resource::<EventChannel<ControlInputEvent>>()
                     .register_reader(); // kcov-ignore
-                world.add_resource(reader_id);
+                world.insert(reader_id);
 
                 let controller_id = 0;
                 let entity = world
                     .create_entity()
                     .with(InputControlled::new(controller_id))
                     .build();
-                world.add_resource(entity);
+                world.insert(entity);
 
                 // Use the same closure so that the system does not send events before we send the
                 // key events.

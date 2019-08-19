@@ -290,7 +290,7 @@ mod tests {
 
                 send_event(world, charge_use_event);
 
-                world.add_resource(entity);
+                world.insert(entity);
             })
             .with_assertion(move |world| {
                 let entity = *world.read_resource::<Entity>();

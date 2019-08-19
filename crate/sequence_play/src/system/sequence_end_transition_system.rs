@@ -272,7 +272,7 @@ mod tests {
                     .with(sequence_id_setup)
                     .with(sequence_end_transition)
                     .build();
-                world.add_resource(entity);
+                world.insert(entity);
             })
             .with_setup(register_sequence_id_reader)
             .with_effect(move |world| {
@@ -342,7 +342,7 @@ mod tests {
             let mut test_object_sequence_ids = world.write_storage::<TestObjectSequenceId>();
             test_object_sequence_ids.register_reader()
         };
-        world.add_resource(component_event_rid);
+        world.insert(component_event_rid);
     }
 
     struct ParamsSetup {

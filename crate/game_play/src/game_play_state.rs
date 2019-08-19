@@ -136,12 +136,12 @@ impl GamePlayState {
 
 impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
     fn on_start(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
-        data.world.add_resource(StateId::GamePlay);
+        data.world.insert(StateId::GamePlay);
 
         self.initialize_dispatcher(&mut data.world);
         self.initialize_camera(&mut data.world);
 
-        data.world.add_resource(GamePlayStatus::Playing);
+        data.world.insert(GamePlayStatus::Playing);
     }
 
     fn on_stop(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
@@ -151,7 +151,7 @@ impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
     }
 
     fn on_resume(&mut self, data: StateData<'_, GameData<'a, 'b>>) {
-        data.world.add_resource(StateId::GamePlay);
+        data.world.insert(StateId::GamePlay);
     }
 
     fn handle_event(
@@ -179,16 +179,16 @@ impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
                         Trans::None
                     }
                     GamePlayEvent::Pause => {
-                        data.world.add_resource(GamePlayStatus::Paused);
+                        data.world.insert(GamePlayStatus::Paused);
                         Trans::None
                     }
                     GamePlayEvent::Resume => {
-                        data.world.add_resource(GamePlayStatus::Playing);
+                        data.world.insert(GamePlayStatus::Playing);
                         Trans::None
                     }
                     GamePlayEvent::End => {
                         info!("Game play ended!");
-                        data.world.add_resource(GamePlayStatus::Ended);
+                        data.world.insert(GamePlayStatus::Ended);
                         Trans::None
                     }
                     GamePlayEvent::EndStats => {

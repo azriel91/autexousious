@@ -95,7 +95,7 @@ mod tests {
 
                 let entity = world.create_entity().with(InputControlled::new(1)).build();
 
-                world.add_resource(entity);
+                world.insert(entity);
             })
             .with_assertion(|world| {
                 let args = ControlInputEventArgs {
@@ -132,7 +132,7 @@ mod tests {
 
                 let entity = world.create_entity().with(InputControlled::new(1)).build();
 
-                world.add_resource(entity);
+                world.insert(entity);
             })
             .with_assertion(|world| {
                 let args = ControlInputEventArgs {
@@ -167,7 +167,7 @@ mod tests {
 
                 let entity = world.create_entity().with(InputControlled::new(1)).build();
 
-                world.add_resource(entity);
+                world.insert(entity);
             })
             .with_assertion(|world| {
                 let args = ControlInputEventArgs {

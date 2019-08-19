@@ -248,7 +248,7 @@ mod tests {
             entity_builder.build()
         };
 
-        world.add_resource(entity);
+        world.insert(entity);
     }
 
     fn expect_component_values(
