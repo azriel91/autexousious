@@ -103,7 +103,8 @@ mod test {
             {
                 assert_eq!("non_existent.ron", find_context.file_name);
             } else {
-                panic!("Expected resource `Find` error containing `non_existent.ron`"); // kcov-ignore
+                panic!("Expected resource `Find` error containing `non_existent.ron`");
+                // kcov-ignore
             }
         };
 
