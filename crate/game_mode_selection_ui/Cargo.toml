@@ -9,14 +9,14 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-s
 application_menu = { path = "../application_menu" }
 application_ui = { path = "../application_ui" }
 derivative = "1.0.2"
-derive-new = "0.5.6"
+derive-new = "0.5.8"
 game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
 game_mode_selection_model = { path = "../game_mode_selection_model" }
 heck = "0.3.1"
-log = "0.4.6"
-shred = "0.7.0"
-shred-derive = "0.5.1"
+log = "0.4.8"
+shred = "0.9.2"
+shred-derive = "0.6.1"
 specs-derive = "0.4.0"
 strum = "0.15.0"
 strum_macros = "0.15.0"

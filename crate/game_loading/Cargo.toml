@@ -14,13 +14,13 @@ character_prefab = { path = "../character_prefab" }
 character_selection_model = { path = "../character_selection_model" }
 collision_model = { path = "../collision_model" }
 derivative = "1.0.2"
-derive-new = "0.5.6"
+derive-new = "0.5.8"
 game_input = { path = "../game_input" }
 game_model = { path = "../game_model" }
 game_play_hud = { path = "../game_play_hud" }
 game_play_model = { path = "../game_play_model" }
 kinematic_model = { path = "../kinematic_model" }
-log = "0.4.6"
+log = "0.4.8"
 logic_clock = { path = "../logic_clock" }
 map_model = { path = "../map_model" }
 map_selection_model = { path = "../map_selection_model" }
@@ -29,8 +29,8 @@ object_loading = { path = "../object_loading" }
 object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }
 sequence_model_spi = { path = "../sequence_model_spi" }
-shred = "0.7.0"
-shred-derive = "0.5.1"
+shred = "0.9.2"
+shred-derive = "0.6.1"
 sprite_model = { path = "../sprite_model" }
 state_registry = { path = "../state_registry" }
 team_model = { path = "../team_model" }

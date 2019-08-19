@@ -7,12 +7,12 @@ edition = "2018"
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 derivative = "1.0.2"
-derive-new = "0.5.6"
-log = "0.4.6"
+derive-new = "0.5.8"
+log = "0.4.8"
 sequence_model = { path = "../sequence_model" }
 sequence_model_spi = { path = "../sequence_model_spi" }
-shred = "0.7.0"
-shred-derive = "0.5.1"
+shred = "0.9.2"
+shred-derive = "0.6.1"
 typename = "0.1.1"
 typename_derive = "0.1.3"
 

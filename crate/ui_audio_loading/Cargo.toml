@@ -9,10 +9,10 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-s
 asset_loading = { path = "../asset_loading" }
 ui_audio_model = { path = "../ui_audio_model" }
 derivative = "1.0.2"
-derive-new = "0.5.6"
-log = "0.4.6"
-shred = "0.7.0"
-shred-derive = "0.5.1"
+derive-new = "0.5.8"
+log = "0.4.8"
+shred = "0.9.2"
+shred-derive = "0.6.1"
 typename = "0.1.1"
 typename_derive = "0.1.3"
 

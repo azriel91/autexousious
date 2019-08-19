@@ -10,7 +10,7 @@ derivative = "1.0.2"
 derive_deref = "1.1.0"
 derive_more = "0.15.0"
 numeric_newtype_derive = { path = "../numeric_newtype_derive" }
-serde = "1.0.94"
+serde = "1.0.99"
 specs-derive = "0.4.0"
 
 [features]

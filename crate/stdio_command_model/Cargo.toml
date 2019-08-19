@@ -6,6 +6,6 @@ edition = "2018"
 
 [dependencies]
 derivative = "1.0.2"
-derive-new = "0.5.6"
+derive-new = "0.5.8"
 state_registry = { path = "../state_registry" }
 structopt = "0.2.18"

@@ -7,11 +7,11 @@ edition = "2018"
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 derivative = "1.0.2"
-derive-new = "0.5.6"
-log = "0.4.6"
+derive-new = "0.5.8"
+log = "0.4.8"
 ron = "0.5.1"
-serde = "1.0.94"
-toml = "0.5.1"
+serde = "1.0.99"
+toml = "0.5.3"
 
 [dev-dependencies]
 pretty_assertions = "0.6.1"

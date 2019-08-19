@@ -7,11 +7,11 @@ edition = "2018"
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 derivative = "1.0.2"
-derive-new = "0.5.6"
+derive-new = "0.5.8"
 game_input_model = { path = "../game_input_model" }
-log = "0.4.6"
-shred = "0.7.0"
-shred-derive = "0.5.1"
+log = "0.4.8"
+shred = "0.9.2"
+shred-derive = "0.6.1"
 specs-derive = "0.4.0"
 strum = "0.15.0"
 strum_macros = "0.15.0"
