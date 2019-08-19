@@ -29,8 +29,6 @@ object_loading = { path = "../object_loading" }
 object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }
 sequence_model_spi = { path = "../sequence_model_spi" }
-shred = "0.9.2"
-shred-derive = "0.6.1"
 sprite_model = { path = "../sprite_model" }
 state_registry = { path = "../state_registry" }
 team_model = { path = "../team_model" }

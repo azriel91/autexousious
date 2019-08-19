@@ -39,8 +39,6 @@ object_status_play = { path = "../object_status_play" }
 sequence_model = { path = "../sequence_model" }
 sequence_play = { path = "../sequence_play" }
 shape_model = { path = "../shape_model" }
-shred = "0.9.2"
-shred-derive = "0.6.1"
 spawn_model = { path = "../spawn_model" }
 spawn_play = { path = "../spawn_play" }
 sprite_model = { path = "../sprite_model" }

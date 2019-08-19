@@ -13,8 +13,6 @@ log = "0.4.8"
 logic_clock = { path = "../logic_clock" }
 object_model = { path = "../object_model" }
 shape_model = { path = "../shape_model" }
-shred = "0.9.2"
-shred-derive = "0.6.1"
 slotmap = "0.3.0"
 spawn_model = { path = "../spawn_model" }
 team_model = { path = "../team_model" }

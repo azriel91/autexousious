@@ -14,8 +14,6 @@ kinematic_model = { path = "../kinematic_model" }
 log = "0.4.8"
 object_model = { path = "../object_model" }
 sequence_model = { path = "../sequence_model" }
-shred = "0.9.2"
-shred-derive = "0.6.1"
 spawn_model = { path = "../spawn_model" }
 team_model = { path = "../team_model" }
 typename = "0.1.1"
