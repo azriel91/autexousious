@@ -54,8 +54,8 @@ impl<'s> System<'s> for MapSelectionSystem {
         }
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
 
         if res.try_fetch::<MapSelection>().is_none() {
             let slug_and_handle = res
@@ -65,10 +65,10 @@ impl<'s> System<'s> for MapSelectionSystem {
                 .map(SlugAndHandle::from)
                 .expect("Expected at least one map to be loaded.");
 
-            res.insert(MapSelection::Random(slug_and_handle));
+            world.insert(MapSelection::Random(slug_and_handle));
         }
 
-        let mut selection_event_channel = res.fetch_mut::<EventChannel<MapSelectionEvent>>();
+        let mut selection_event_channel = world.fetch_mut::<EventChannel<MapSelectionEvent>>();
         self.reader_id = Some(selection_event_channel.register_reader());
     }
 }

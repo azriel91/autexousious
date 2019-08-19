@@ -99,7 +99,7 @@ impl ObjectEntityAugmenter {
 mod tests {
     use amethyst::{
         core::transform::Transform,
-        ecs::{Builder, ReadStorage, SystemData, World},
+        ecs::{Builder, ReadStorage, World},
         renderer::transparent::Transparent,
         Error,
     };

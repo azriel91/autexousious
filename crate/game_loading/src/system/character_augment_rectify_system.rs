@@ -4,7 +4,7 @@ use amethyst::{
         Entities, Entity, Join, LazyUpdate, Read, ReadExpect, ReadStorage, System, SystemData,
         World, Write, WriteStorage,
     },
-    shred::{ResourceId, Resources, SystemData},
+    shred::{ResourceId, SystemData, World},
     utils::removal::Removal,
 };
 use character_prefab::CharacterPrefabHandle;
@@ -156,8 +156,8 @@ impl<'s> System<'s> for CharacterAugmentRectifySystem {
         game_loading_status.character_augment_status = CharacterAugmentStatus::Complete;
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
 
         <HpBarPrefab as PrefabData<'_>>::SystemData::setup(res);
         <CpBarPrefab as PrefabData<'_>>::SystemData::setup(res);
@@ -171,7 +171,7 @@ mod tests {
         assets::{Prefab, Processor},
         audio::Source,
         core::TransformBundle,
-        ecs::{Builder, Entity, Join, ReadStorage, SystemData, World},
+        ecs::{Builder, Entity, Join, ReadStorage, World},
         renderer::{types::DefaultBackend, RenderEmptyBundle},
         window::ScreenDimensions,
         Error,

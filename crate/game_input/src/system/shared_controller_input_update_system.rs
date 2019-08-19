@@ -67,7 +67,7 @@ impl<'s> System<'s> for SharedControllerInputUpdateSystem {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        ecs::{Builder, Entity, Join, ReadStorage, WriteStorage},
+        ecs::{Builder, Entity, Join, ReadStorage, WorldExt, WriteStorage},
         Error,
     };
     use amethyst_test::*;
@@ -83,7 +83,7 @@ mod test {
         AmethystApplication::ui_base::<ControlBindings>()
             .with_system(
                 SharedControllerInputUpdateSystem::new(),
-                SharedControllerInputUpdateSystem::type_name(),
+                &SharedControllerInputUpdateSystem::type_name(),
                 &[],
             )
             .with_setup(move |world| {
@@ -184,7 +184,7 @@ mod test {
         AmethystApplication::ui_base::<ControlBindings>()
             .with_system(
                 SharedControllerInputUpdateSystem::new(),
-                SharedControllerInputUpdateSystem::type_name(),
+                &SharedControllerInputUpdateSystem::type_name(),
                 &[],
             )
             .with_setup(|world| {

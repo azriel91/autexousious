@@ -120,7 +120,7 @@ mod tests {
         assets::Processor,
         audio::Source,
         core::TransformBundle,
-        ecs::{Join, ReadStorage, System, SystemData, World},
+        ecs::{Join, ReadStorage, System, World},
         renderer::{types::DefaultBackend, RenderEmptyBundle},
         window::ScreenDimensions,
         Error,

@@ -1,6 +1,6 @@
 use amethyst::{
-    ecs::{ReadStorage, System, SystemData, World, Write, WriteStorage},
-    shred::{ResourceId, Resources, SystemData},
+    ecs::{ReadStorage, System, World, Write, WriteStorage},
+    shred::{ResourceId, SystemData, World},
     shrev::{EventChannel, ReaderId},
 };
 use charge_model::{
@@ -105,11 +105,12 @@ impl<'s> System<'s> for ChargeUsageSystem {
         });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
 
         self.charge_event_rid = Some(
-            res.fetch_mut::<EventChannel<ChargeUseEvent>>()
+            world
+                .fetch_mut::<EventChannel<ChargeUseEvent>>()
                 .register_reader(),
         );
     }

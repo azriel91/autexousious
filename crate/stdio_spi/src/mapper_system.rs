@@ -1,7 +1,7 @@
 use std::marker::PhantomData;
 
 use amethyst::{
-    ecs::{Read, Resources, System, SystemData, Write},
+    ecs::{Read, System, SystemData, World, Write},
     shrev::{EventChannel, ReaderId},
     Error,
 };
@@ -70,10 +70,11 @@ where
         app_event_channel.drain_vec_write(&mut events);
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
         self.reader_id = Some(
-            res.fetch_mut::<EventChannel<VariantAndTokens>>()
+            world
+                .fetch_mut::<EventChannel<VariantAndTokens>>()
                 .register_reader(),
         );
     }

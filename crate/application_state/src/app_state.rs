@@ -243,7 +243,7 @@ mod tests {
     use std::{cell::RefCell, rc::Rc, sync::Arc};
 
     use amethyst::{
-        ecs::{Builder, ReadExpect, Resources, System, SystemData, World, Write, WriteExpect},
+        ecs::{Builder, ReadExpect, System, World, Write, WriteExpect},
         utils::removal::Removal,
         DataInit, GameData, GameDataBuilder, State, StateData, Trans,
     };
@@ -566,9 +566,9 @@ mod tests {
             *counter = Counter((*counter).0 + 10);
         }
 
-        fn setup(&mut self, res: &mut Resources) {
-            Self::SystemData::setup(res);
-            res.insert(Counter(0));
+        fn setup(&mut self, world: &mut World) {
+            Self::SystemData::setup(world);
+            world.insert(Counter(0));
         }
     }
 

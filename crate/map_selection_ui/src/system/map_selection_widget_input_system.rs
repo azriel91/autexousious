@@ -225,11 +225,12 @@ impl<'s> System<'s> for MapSelectionWidgetInputSystem {
             });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
 
         self.control_input_event_rid = Some(
-            res.fetch_mut::<EventChannel<ControlInputEvent>>()
+            world
+                .fetch_mut::<EventChannel<ControlInputEvent>>()
                 .register_reader(),
         );
     }
@@ -238,7 +239,7 @@ impl<'s> System<'s> for MapSelectionWidgetInputSystem {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        ecs::{Builder, Entity, SystemData, World},
+        ecs::{Builder, Entity, World},
         shrev::{EventChannel, ReaderId},
         Error,
     };
@@ -427,7 +428,7 @@ mod test {
         AutexousiousApplication::config_base()
             .with_system(
                 MapSelectionWidgetInputSystem::new(),
-                MapSelectionWidgetInputSystem::type_name(),
+                &MapSelectionWidgetInputSystem::type_name(),
                 &[],
             ) // kcov-ignore
             .with_setup(move |world| {

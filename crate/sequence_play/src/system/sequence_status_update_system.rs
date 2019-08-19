@@ -3,10 +3,10 @@ use std::marker::PhantomData;
 use amethyst::{
     ecs::{
         storage::{ComponentEvent, Tracked},
-        BitSet, Component, Entities, Join, ReadStorage, ReaderId, System, SystemData, World, Write,
+        BitSet, Component, Entities, Join, ReadStorage, ReaderId, System, World, Write,
         WriteStorage,
     },
-    shred::{ResourceId, Resources, SystemData},
+    shred::{ResourceId, SystemData, World},
     shrev::EventChannel,
 };
 use derivative::Derivative;
@@ -99,8 +99,8 @@ where
             });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
         self.sequence_id_rid = Some(WriteStorage::<SeqId>::fetch(&res).register_reader());
     }
 }

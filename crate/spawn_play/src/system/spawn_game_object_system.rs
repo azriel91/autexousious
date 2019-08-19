@@ -1,7 +1,7 @@
 use amethyst::{
     assets::AssetStorage,
-    ecs::{Entities, Entity, Read, ReadStorage, System, SystemData, World, Write, WriteStorage},
-    shred::{ResourceId, Resources, SystemData},
+    ecs::{Entities, Entity, Read, ReadStorage, System, World, Write, WriteStorage},
+    shred::{ResourceId, SystemData, World},
     shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
@@ -135,10 +135,11 @@ impl<'s> System<'s> for SpawnGameObjectSystem {
             });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
         self.reader_id = Some(
-            res.fetch_mut::<EventChannel<SequenceUpdateEvent>>()
+            world
+                .fetch_mut::<EventChannel<SequenceUpdateEvent>>()
                 .register_reader(),
         );
     }
@@ -212,7 +213,7 @@ mod tests {
         AutexousiousApplication::config_base()
             .with_system(
                 SpawnGameObjectSystem::new(),
-                SpawnGameObjectSystem::type_name(),
+                &SpawnGameObjectSystem::type_name(),
                 &[ObjectAssetLoadingSystem::<
                     Energy,
                     EnergyPrefab,

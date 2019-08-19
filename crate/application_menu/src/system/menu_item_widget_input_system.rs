@@ -1,10 +1,7 @@
 use std::{fmt::Debug, marker::PhantomData};
 
 use amethyst::{
-    ecs::{
-        Entities, Entity, Join, Read, ReadStorage, Resources, System, SystemData, World, Write,
-        WriteStorage,
-    },
+    ecs::{Entities, Entity, Join, Read, ReadStorage, System, World, Write, WriteStorage},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
@@ -221,11 +218,12 @@ where
             });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
 
         self.control_input_event_rid = Some(
-            res.fetch_mut::<EventChannel<ControlInputEvent>>()
+            world
+                .fetch_mut::<EventChannel<ControlInputEvent>>()
                 .register_reader(),
         );
     }
@@ -236,7 +234,7 @@ mod test {
     use std::fmt::Debug;
 
     use amethyst::{
-        ecs::{Builder, Entity, SystemData, World},
+        ecs::{Builder, Entity, World},
         shrev::{EventChannel, ReaderId},
         Error,
     };

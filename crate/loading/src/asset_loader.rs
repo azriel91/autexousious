@@ -1,6 +1,6 @@
 use amethyst::{
     assets::{Loader, ProgressCounter},
-    ecs::World,
+    ecs::{World, WorldExt},
 };
 use asset_model::config::AssetRecord;
 use assets_built_in::{MAP_BLANK, MAP_BLANK_SLUG};

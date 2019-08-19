@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Read, Resources, System, SystemData, Write},
+    ecs::{Read, System, SystemData, World, Write},
     shrev::{EventChannel, ReaderId},
 };
 use derive_new::new;
@@ -47,11 +47,12 @@ impl<'s> System<'s> for StdioCommandProcessingSystem {
             });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
 
         self.stdio_command_events_id = Some(
-            res.fetch_mut::<EventChannel<StdioCommandEvent>>()
+            world
+                .fetch_mut::<EventChannel<StdioCommandEvent>>()
                 .register_reader(),
         );
     }
@@ -72,7 +73,7 @@ mod test {
         AmethystApplication::blank()
             .with_system(
                 StdioCommandProcessingSystem::new(),
-                StdioCommandProcessingSystem::type_name(),
+                &StdioCommandProcessingSystem::type_name(),
                 &[],
             ) // kcov-ignore
             .with_setup(|world| {

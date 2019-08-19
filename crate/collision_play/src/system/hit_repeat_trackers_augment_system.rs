@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Entity, Read, Resources, System, SystemData, WriteStorage},
+    ecs::{Entity, Read, System, SystemData, World, WriteStorage},
     shrev::{EventChannel, ReaderId},
 };
 use collision_model::{
@@ -79,9 +79,13 @@ impl<'s> System<'s> for HitRepeatTrackersAugmentSystem {
             });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
-        self.hit_event_rid = Some(res.fetch_mut::<EventChannel<HitEvent>>().register_reader());
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
+        self.hit_event_rid = Some(
+            world
+                .fetch_mut::<EventChannel<HitEvent>>()
+                .register_reader(),
+        );
     }
 }
 

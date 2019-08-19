@@ -2,9 +2,9 @@ use amethyst::{
     assets::AssetStorage,
     ecs::{
         storage::ComponentEvent, BitSet, Entities, Join, Read, ReadStorage, ReaderId, System,
-        SystemData, World, WriteStorage,
+        World, WriteStorage,
     },
-    shred::{ResourceId, Resources, SystemData},
+    shred::{ResourceId, SystemData, World},
 };
 use character_model::{
     config::CharacterSequenceId,
@@ -126,8 +126,8 @@ impl<'s> System<'s> for CharacterCtsHandleUpdateSystem {
             });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
         self.sequence_id_rid =
             Some(WriteStorage::<CharacterSequenceId>::fetch(&res).register_reader());
     }

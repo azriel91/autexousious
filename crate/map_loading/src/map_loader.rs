@@ -2,7 +2,7 @@ use std::path::Path;
 
 use amethyst::{
     assets::{AssetStorage, Loader, ProgressCounter},
-    ecs::World,
+    ecs::{World, WorldExt},
     renderer::{SpriteRender, SpriteSheet, Texture},
     Error,
 };

@@ -1,6 +1,6 @@
 use amethyst::{
-    ecs::{Read, ReadStorage, SystemData, World, Write, WriteStorage},
-    shred::{ResourceId, Resources, System, SystemData},
+    ecs::{Read, ReadStorage, World, Write, WriteStorage},
+    shred::{ResourceId, System, SystemData, World},
     shrev::{EventChannel, ReaderId},
 };
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
@@ -267,11 +267,12 @@ impl<'s> System<'s> for CharacterSelectionWidgetInputSystem {
             });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
 
         self.control_input_event_rid = Some(
-            res.fetch_mut::<EventChannel<ControlInputEvent>>()
+            world
+                .fetch_mut::<EventChannel<ControlInputEvent>>()
                 .register_reader(),
         );
     }
@@ -280,7 +281,7 @@ impl<'s> System<'s> for CharacterSelectionWidgetInputSystem {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        ecs::{Builder, Entity, SystemData, World},
+        ecs::{Builder, Entity, World},
         shrev::{EventChannel, ReaderId},
         Error,
     };
@@ -477,7 +478,7 @@ mod test {
         AutexousiousApplication::config_base()
             .with_system(
                 CharacterSelectionWidgetInputSystem::new(),
-                CharacterSelectionWidgetInputSystem::type_name(),
+                &CharacterSelectionWidgetInputSystem::type_name(),
                 &[],
             ) // kcov-ignore
             .with_setup(move |world| {

@@ -1,6 +1,6 @@
 use amethyst::{
     core::{math::Vector3, transform::Transform},
-    ecs::{Entity, SystemData, World},
+    ecs::{Entity, World},
     renderer::transparent::Transparent,
 };
 use map_model::{config::MapLayerSequenceId, loaded::MapHandle};

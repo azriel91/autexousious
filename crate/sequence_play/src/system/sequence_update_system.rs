@@ -241,7 +241,7 @@ impl<'s> System<'s> for SequenceUpdateSystem {
 mod tests {
     use amethyst::{
         assets::{AssetStorage, Loader},
-        ecs::{Entities, Entity, Read, ReadExpect, SystemData, World, WriteStorage},
+        ecs::{Entities, Entity, Read, ReadExpect, World, WriteStorage},
         shrev::{EventChannel, ReaderId},
         Error,
     };

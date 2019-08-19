@@ -1,6 +1,6 @@
 use amethyst::{
-    ecs::{Entity, Read, System, SystemData, World, WriteStorage},
-    shred::{ResourceId, Resources, SystemData},
+    ecs::{Entity, Read, System, World, WriteStorage},
+    shred::{ResourceId, SystemData, World},
     shrev::{EventChannel, ReaderId},
 };
 use charge_model::play::{ChargeBeginDelayClock, ChargeStatus};
@@ -101,11 +101,12 @@ impl<'s> System<'s> for ChargeInitializeDetectionSystem {
             });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
 
         self.control_input_event_rid = Some(
-            res.fetch_mut::<EventChannel<ControlInputEvent>>()
+            world
+                .fetch_mut::<EventChannel<ControlInputEvent>>()
                 .register_reader(),
         );
     }

@@ -157,7 +157,7 @@ mod test {
 
     use amethyst::{
         ecs::prelude::RunNow,
-        shred::{Resources, SystemData},
+        shred::{SystemData, World},
         shrev::{EventChannel, ReaderId},
     };
     use application_event::AppEventVariant;
@@ -171,7 +171,7 @@ mod test {
     fn setup() -> (
         StdinSystem,
         Sender<String>,
-        Resources,
+        World,
         ReaderId<ApplicationEvent>,
         ReaderId<VariantAndTokens>,
     ) {
@@ -183,12 +183,12 @@ mod test {
     ) -> (
         StdinSystem,
         Sender<String>,
-        Resources,
+        World,
         ReaderId<ApplicationEvent>,
         ReaderId<VariantAndTokens>,
     ) {
         let mut res = Resources::new();
-        res.insert(StateId::CharacterSelection);
+        world.insert(StateId::CharacterSelection);
         let barrier_state_id = with_barrier.map(|barrier_matches| {
             if barrier_matches {
                 StateId::CharacterSelection
@@ -197,9 +197,9 @@ mod test {
             }
         });
         let stdin_command_barrier = StdinCommandBarrier::new(barrier_state_id);
-        res.insert(stdin_command_barrier);
-        res.insert(EventChannel::<ApplicationEvent>::with_capacity(10));
-        res.insert(EventChannel::<VariantAndTokens>::with_capacity(10));
+        world.insert(stdin_command_barrier);
+        world.insert(EventChannel::<ApplicationEvent>::with_capacity(10));
+        world.insert(EventChannel::<VariantAndTokens>::with_capacity(10));
 
         let (tx, rx) = mpsc::channel();
         let stdin_system = StdinSystem::internal_new(rx, || {});

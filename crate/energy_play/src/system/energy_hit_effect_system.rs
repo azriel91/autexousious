@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Read, Resources, System, SystemData, World, WriteStorage},
+    ecs::{Read, System, World, WriteStorage},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
@@ -55,9 +55,13 @@ impl<'s> System<'s> for EnergyHitEffectSystem {
             });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
-        self.hit_event_rid = Some(res.fetch_mut::<EventChannel<HitEvent>>().register_reader());
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
+        self.hit_event_rid = Some(
+            world
+                .fetch_mut::<EventChannel<HitEvent>>()
+                .register_reader(),
+        );
     }
 }
 

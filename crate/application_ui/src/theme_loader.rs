@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use amethyst::{
     assets::{AssetStorage, Loader},
-    ecs::World,
+    ecs::{World, WorldExt},
     ui::{FontAsset, FontHandle, TtfFormat},
     Error,
 };

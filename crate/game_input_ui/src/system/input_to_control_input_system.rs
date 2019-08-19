@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Entities, Join, Read, ReadStorage, Resources, System, SystemData, World, Write},
+    ecs::{Entities, Join, Read, ReadStorage, System, World, Write},
     input::InputEvent,
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
@@ -119,15 +119,16 @@ impl<'s> System<'s> for InputToControlInputSystem {
         control_input_ec.drain_vec_write(&mut self.control_input_events);
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
 
         // TODO: figure out how to implement controller configuration updates, because we need to
         // update the resource and what this system stores.
-        res.insert(self.input_config.clone());
+        world.insert(self.input_config.clone());
 
         self.input_event_rid = Some(
-            res.fetch_mut::<EventChannel<InputEvent<ControlBindings>>>()
+            world
+                .fetch_mut::<EventChannel<InputEvent<ControlBindings>>>()
                 .register_reader(),
         );
     }

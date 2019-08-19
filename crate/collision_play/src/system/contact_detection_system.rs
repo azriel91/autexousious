@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Read, ReadStorage, Resources, System, SystemData, World, Write},
+    ecs::{Read, ReadStorage, System, World, Write},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
@@ -93,10 +93,11 @@ impl<'s> System<'s> for ContactDetectionSystem {
         contact_ec.iter_write(contact_events);
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
         self.collision_event_rid = Some(
-            res.fetch_mut::<EventChannel<CollisionEvent>>()
+            world
+                .fetch_mut::<EventChannel<CollisionEvent>>()
                 .register_reader(),
         );
     }

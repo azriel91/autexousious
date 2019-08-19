@@ -94,7 +94,7 @@ impl CharacterEntityAugmenter {
 mod test {
     use amethyst::{
         core::TransformBundle,
-        ecs::{Builder, SystemData, World},
+        ecs::{Builder, World},
         renderer::{types::DefaultBackend, RenderEmptyBundle},
         Error,
     };

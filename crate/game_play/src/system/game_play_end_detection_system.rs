@@ -74,7 +74,7 @@ impl<'s> System<'s> for GamePlayEndDetectionSystem {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        ecs::{Builder, SystemData, World},
+        ecs::{Builder, World},
         input::StringBindings,
         shrev::{EventChannel, ReaderId},
         Error,

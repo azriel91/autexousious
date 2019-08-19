@@ -1,7 +1,7 @@
 use amethyst::{
     assets::AssetStorage,
     audio::{output::Output, Source},
-    ecs::{Read, Resources, System, SystemData},
+    ecs::{Read, System, SystemData, World},
     shrev::{EventChannel, ReaderId},
 };
 use derive_new::new;
@@ -59,10 +59,11 @@ impl<'s> System<'s> for MapSelectionSfxSystem {
         }
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
         self.map_selection_event_rid = Some(
-            res.fetch_mut::<EventChannel<MapSelectionEvent>>()
+            world
+                .fetch_mut::<EventChannel<MapSelectionEvent>>()
                 .register_reader(),
         );
     }

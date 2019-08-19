@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use amethyst::{
-    ecs::{ReadExpect, Resources, SystemData},
+    ecs::{ReadExpect, SystemData, World},
     renderer::{
         rendy::{
             factory::Factory,
@@ -46,7 +46,7 @@ impl GraphCreator<DefaultBackend> for RenderGraph {
     fn builder(
         &mut self,
         factory: &mut Factory<DefaultBackend>,
-        res: &Resources,
+        res: &World,
     ) -> GraphBuilder<DefaultBackend, Resources> {
         self.dirty = false;
 

@@ -1,8 +1,8 @@
 use std::marker::PhantomData;
 
 use amethyst::{
-    ecs::{Entities, Read, ReadStorage, System, SystemData, World, WriteStorage},
-    shred::{ResourceId, Resources, SystemData},
+    ecs::{Entities, Read, ReadStorage, System, World, WriteStorage},
+    shred::{ResourceId, SystemData, World},
     shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
@@ -107,10 +107,11 @@ where
             });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
         self.reader_id = Some(
-            res.fetch_mut::<EventChannel<SequenceUpdateEvent>>()
+            world
+                .fetch_mut::<EventChannel<SequenceUpdateEvent>>()
                 .register_reader(),
         );
     }

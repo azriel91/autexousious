@@ -1,7 +1,7 @@
 use amethyst::{
     assets::AssetStorage,
-    ecs::{Read, ReadStorage, System, SystemData, World, WriteStorage},
-    shred::{ResourceId, Resources, SystemData},
+    ecs::{Read, ReadStorage, System, World, WriteStorage},
+    shred::{ResourceId, SystemData, World},
     shrev::{EventChannel, ReaderId},
 };
 use character_model::{
@@ -108,10 +108,11 @@ impl<'s> System<'s> for CharacterControlTransitionsUpdateSystem {
         // kcov-ignore-end
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
         self.reader_id = Some(
-            res.fetch_mut::<EventChannel<SequenceUpdateEvent>>()
+            world
+                .fetch_mut::<EventChannel<SequenceUpdateEvent>>()
                 .register_reader(),
         );
     }

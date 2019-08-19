@@ -1,9 +1,6 @@
 use amethyst::{
     assets::AssetStorage,
-    ecs::{
-        BitSet, Entities, Entity, Join, Read, ReadStorage, Resources, System, SystemData, World,
-        Write, WriteStorage,
-    },
+    ecs::{BitSet, Entities, Entity, Join, Read, ReadStorage, System, World, Write, WriteStorage},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
@@ -511,11 +508,12 @@ impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
         );
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
 
         self.control_input_event_rid = Some(
-            res.fetch_mut::<EventChannel<ControlInputEvent>>()
+            world
+                .fetch_mut::<EventChannel<ControlInputEvent>>()
                 .register_reader(),
         );
     }

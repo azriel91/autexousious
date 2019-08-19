@@ -104,7 +104,7 @@ mod test {
         AmethystApplication::ui_base::<StringBindings>()
             .with_system(
                 ObjectTransformUpdateSystem::new(),
-                ObjectTransformUpdateSystem::type_name(),
+                &ObjectTransformUpdateSystem::type_name(),
                 &[],
             ) // kcov-ignore
             .with_setup(setup)
