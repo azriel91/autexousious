@@ -460,8 +460,8 @@ dependencies = [
  "game_input_model 0.13.0",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "rayon 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "specs-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt 0.2.18 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt-derive 0.2.18 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -607,10 +607,10 @@ name = "asset_derive"
 version = "0.13.0"
 dependencies = [
  "amethyst 0.12.0 (git+https://github.com/amethyst/amethyst.git)",
- "proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)",
- "proc_macro_roids 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "quote 0.6.13 (registry+https://github.com/rust-lang/crates.io-index)",
- "syn 0.15.44 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc-macro2 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc_macro_roids 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -624,8 +624,8 @@ dependencies = [
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "integer-sqrt 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -936,8 +936,8 @@ dependencies = [
  "object_type 0.13.0",
  "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "sequence_model 0.13.0",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "toml 0.5.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -962,8 +962,8 @@ dependencies = [
  "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "sequence_loading 0.13.0",
  "sequence_model 0.13.0",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -1055,8 +1055,8 @@ dependencies = [
  "game_input_model 0.13.0",
  "game_model 0.13.0",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum_macros 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1092,8 +1092,8 @@ dependencies = [
  "game_input_model 0.13.0",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -1119,8 +1119,8 @@ dependencies = [
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "kinematic_model 0.13.0",
  "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -1238,8 +1238,8 @@ dependencies = [
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -1335,8 +1335,8 @@ dependencies = [
  "object_status_model 0.13.0",
  "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "shape_model 0.13.0",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "slotmap 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "spawn_model 0.13.0",
  "team_model 0.13.0",
@@ -1824,8 +1824,8 @@ dependencies = [
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "energy_model 0.13.0",
  "shape_model 0.13.0",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -1847,8 +1847,8 @@ dependencies = [
  "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "sequence_loading 0.13.0",
  "sequence_model 0.13.0",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -2204,8 +2204,8 @@ dependencies = [
  "game_input_model 0.13.0",
  "hamcrest 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum_macros 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2253,8 +2253,8 @@ dependencies = [
  "sequence_loading 0.13.0",
  "sequence_model 0.13.0",
  "sequence_model_spi 0.13.0",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "spawn_loading 0.13.0",
  "sprite_loading 0.13.0",
  "sprite_model 0.13.0",
@@ -2333,8 +2333,8 @@ dependencies = [
  "game_mode_selection_model 0.13.0",
  "heck 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "specs-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum_macros 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2401,8 +2401,8 @@ dependencies = [
  "sequence_model 0.13.0",
  "sequence_play 0.13.0",
  "shape_model 0.13.0",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "spawn_model 0.13.0",
  "spawn_play 0.13.0",
  "sprite_model 0.13.0",
@@ -2425,8 +2425,8 @@ dependencies = [
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "object_model 0.13.0",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "specs-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -3034,8 +3034,8 @@ dependencies = [
  "object_prefab 0.13.0",
  "sequence_model 0.13.0",
  "serde 1.0.99 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "sprite_loading 0.13.0",
  "sprite_model 0.13.0",
  "state_registry 0.13.0",
@@ -3105,10 +3105,10 @@ dependencies = [
 name = "logic_clock_derive"
 version = "0.13.0"
 dependencies = [
- "proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)",
- "proc_macro_roids 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "quote 0.6.13 (registry+https://github.com/rust-lang/crates.io-index)",
- "syn 0.15.44 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc-macro2 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc_macro_roids 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -3269,8 +3269,8 @@ dependencies = [
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_model 0.13.0",
  "map_selection_model 0.13.0",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum_macros 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -3665,10 +3665,10 @@ name = "numeric_newtype_derive"
 version = "0.13.0"
 dependencies = [
  "derive_more 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)",
- "proc_macro_roids 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "quote 0.6.13 (registry+https://github.com/rust-lang/crates.io-index)",
- "syn 0.15.44 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc-macro2 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc_macro_roids 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -3717,8 +3717,8 @@ dependencies = [
  "sequence_loading 0.13.0",
  "sequence_model 0.13.0",
  "serde 1.0.99 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "spawn_loading 0.13.0",
  "spawn_model 0.13.0",
  "sprite_loading 0.13.0",
@@ -3768,10 +3768,10 @@ dependencies = [
 name = "object_model_derive"
 version = "0.13.0"
 dependencies = [
- "proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)",
- "proc_macro_roids 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "quote 0.6.13 (registry+https://github.com/rust-lang/crates.io-index)",
- "syn 0.15.44 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc-macro2 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc_macro_roids 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -3789,8 +3789,8 @@ dependencies = [
  "map_selection_model 0.13.0",
  "object_model 0.13.0",
  "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -3809,8 +3809,8 @@ dependencies = [
  "object_test 0.13.0",
  "sequence_model 0.13.0",
  "serde 1.0.99 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "spawn_model 0.13.0",
  "sprite_model 0.13.0",
  "test_object_model 0.13.0",
@@ -4212,7 +4212,7 @@ dependencies = [
 
 [[package]]
 name = "proc_macro_roids"
-version = "0.2.1"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4222,12 +4222,12 @@ dependencies = [
 
 [[package]]
 name = "proc_macro_roids"
-version = "0.3.0"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)",
- "quote 0.6.13 (registry+https://github.com/rust-lang/crates.io-index)",
- "syn 0.15.44 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc-macro2 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -5097,16 +5097,16 @@ dependencies = [
  "asset_derive 0.13.0",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)",
- "proc_macro_roids 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "quote 0.6.13 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc-macro2 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc_macro_roids 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "sequence_model_core 0.13.0",
  "sequence_model_spi 0.13.0",
  "serde 1.0.99 (registry+https://github.com/rust-lang/crates.io-index)",
  "specs-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum_macros 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "syn 0.15.44 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -5139,8 +5139,8 @@ dependencies = [
  "sequence_model 0.13.0",
  "sequence_model_spi 0.13.0",
  "shape_model 0.13.0",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "test_object_model 0.13.0",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -5271,16 +5271,6 @@ dependencies = [
 
 [[package]]
 name = "shred-derive"
-version = "0.5.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)",
- "quote 0.6.13 (registry+https://github.com/rust-lang/crates.io-index)",
- "syn 0.15.44 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "shred-derive"
 version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
@@ -5406,8 +5396,8 @@ dependencies = [
  "object_model 0.13.0",
  "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "sequence_model 0.13.0",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "spawn_model 0.13.0",
  "team_model 0.13.0",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -6032,8 +6022,8 @@ dependencies = [
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shred-derive 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "typename_derive 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "ui_audio_model 0.13.0",
@@ -6199,9 +6189,9 @@ dependencies = [
 name = "variant_struct_derive"
 version = "0.13.0"
 dependencies = [
- "proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)",
- "quote 0.6.13 (registry+https://github.com/rust-lang/crates.io-index)",
- "syn 0.15.44 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc-macro2 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -6823,8 +6813,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum proc-macro2 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)" = "cd07deb3c6d1d9ff827999c7f9b04cdfd66b1b17ae508e14fe47b620f2282ae0"
 "checksum proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)" = "cf3d2011ab5c909338f7887f4fc896d35932e29146c12c8d01da6b22a80ba759"
 "checksum proc-macro2 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "4c5c2380ae88876faae57698be9e9775e3544decad214599c3a6266cca6ac802"
-"checksum proc_macro_roids 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "88be68966aa12822e5bdcd0450272ec13b421255959f951023bced62a0af3900"
 "checksum proc_macro_roids 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "1a0e24efff8fb072dd1b0ce90a5c2168869c442eb4b7306c8706ed0427e19192"
+"checksum proc_macro_roids 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)" = "7714056c0845ee544c263fc761c86d17988199b7dc8fc356fc736fdc5c322748"
 "checksum publicsuffix 1.5.2 (registry+https://github.com/rust-lang/crates.io-index)" = "5afecba86dcf1e4fd610246f89899d1924fe12e1e89f555eb7c7f710f3c5ad1d"
 "checksum quick-error 1.2.2 (registry+https://github.com/rust-lang/crates.io-index)" = "9274b940887ce9addde99c4eee6b5c44cc494b182b97e73dc8ffdcb3397fd3f0"
 "checksum quickcheck 0.8.5 (registry+https://github.com/rust-lang/crates.io-index)" = "9c35d9c36a562f37eca96e79f66d5fd56eefbc22560dacc4a864cabd2d277456"
@@ -6911,7 +6901,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum shell-words 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "39acde55a154c4cd3ae048ac78cc21c25f3a0145e44111b523279113dce0d94a"
 "checksum shred 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)" = "6ea122e6133568144fcfb5888737d4ac776ebc959f989dd65b907136ac22bfed"
 "checksum shred 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)" = "034e46a7afee5639940a76f42f578d64f7d814a7e4bebe258b1ab23fed04474e"
-"checksum shred-derive 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)" = "9fcf34e5e5302d3024aba7afc291f6d1ca7573ed035d3c0796976ba3f10691a1"
 "checksum shred-derive 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)" = "8c245c03fd923292ae18e01eadf65606fdc995c175433104ef3eee956db7c2d7"
 "checksum shrev 1.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "b5752e017e03af9d735b4b069f53b7a7fd90fefafa04d8bd0c25581b0bff437f"
 "checksum siphasher 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)" = "0b8de496cf83d4ed58b6be86c3a275b8602f6ffe98d3024a869e124147a9a3ac"

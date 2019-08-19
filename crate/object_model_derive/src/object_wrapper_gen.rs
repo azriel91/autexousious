@@ -1,5 +1,5 @@
 use quote::{quote, ToTokens};
-use syn::{punctuated::Pair, Ident, Path, Visibility};
+use syn::{Ident, Path, Visibility};
 
 /// Generates the newtype implementation for the `ObjectWrapper`.
 ///
@@ -12,18 +12,15 @@ pub fn object_wrapper_gen(
 ) -> proc_macro2::TokenStream {
     // TODO: Trait delegation pending <https://github.com/rust-lang/rfcs/pull/2393>
     let doc_string = {
-        let last_segment = sequence_id_type
+        let path_segment = sequence_id_type
             .segments
             .last()
             .expect("Failed to get last path segment for Sequence ID type.");
-        if let Pair::End(path_segment) = last_segment {
-            format!(
-                "Newtype for `Object<{}>`.",
-                path_segment.clone().into_token_stream()
-            )
-        } else {
-            String::from("Newtype for `Object<?>`.")
-        }
+
+        format!(
+            "Newtype for `Object<{}>`.",
+            path_segment.clone().into_token_stream()
+        )
     };
 
     let doc_fn_new = format!("Returns a new {}", object_wrapper_name);
