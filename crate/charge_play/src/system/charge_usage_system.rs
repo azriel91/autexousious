@@ -1,6 +1,6 @@
 use amethyst::{
-    ecs::{ReadStorage, System, SystemData, Write, WriteStorage},
-    shred::Resources,
+    ecs::{ReadStorage, System, SystemData, World, Write, WriteStorage},
+    shred::{ResourceId, Resources, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use charge_model::{
@@ -10,7 +10,6 @@ use charge_model::{
 use derivative::Derivative;
 use derive_new::new;
 use log::warn;
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 /// Subtracts `ChargeTrackerClock` when used.

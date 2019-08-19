@@ -2,9 +2,10 @@ use std::{fmt::Debug, marker::PhantomData};
 
 use amethyst::{
     ecs::{
-        Entities, Entity, Join, Read, ReadStorage, Resources, System, SystemData, Write,
+        Entities, Entity, Join, Read, ReadStorage, Resources, System, SystemData, World, Write,
         WriteStorage,
     },
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
@@ -13,7 +14,6 @@ use game_input_model::{
     Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
 };
 use log::debug;
-use shred_derive::SystemData;
 use typename::TypeName as TypeNameTrait;
 use typename_derive::TypeName;
 

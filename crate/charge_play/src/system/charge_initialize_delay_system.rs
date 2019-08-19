@@ -1,11 +1,13 @@
-use amethyst::ecs::{Entities, Join, ReadStorage, System, WriteStorage};
+use amethyst::{
+    ecs::{Entities, Join, ReadStorage, System, World, WriteStorage},
+    shred::{ResourceId, SystemData},
+};
 use charge_model::{
     config::{ChargeDelay, ChargeLimit},
     play::{ChargeBeginDelayClock, ChargeDelayClock, ChargeStatus, ChargeTrackerClock},
 };
 use derivative::Derivative;
 use derive_new::new;
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 /// Ticks `ChargeBeginDelayClock` while `Attack` is held.

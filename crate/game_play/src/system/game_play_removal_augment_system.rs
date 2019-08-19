@@ -1,12 +1,11 @@
 use amethyst::{
-    ecs::{ReadExpect, System, SystemData, Write, WriteStorage},
-    shred::Resources,
+    ecs::{ReadExpect, System, SystemData, World, Write, WriteStorage},
+    shred::{ResourceId, Resources, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
 use derive_new::new;
 use game_play_model::{GamePlayEntity, GamePlayEntityId};
-use shred_derive::SystemData;
 use spawn_model::play::SpawnEvent;
 use state_registry::StateId;
 use typename_derive::TypeName;

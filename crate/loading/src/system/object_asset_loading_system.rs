@@ -9,8 +9,9 @@ use std::{
 
 use amethyst::{
     assets::{AssetStorage, Handle, Loader, Prefab, PrefabLoader, ProgressCounter},
-    ecs::{Read, ReadExpect, System, Write},
+    ecs::{Read, ReadExpect, System, World, Write},
     renderer::{SpriteSheet, Texture},
+    shred::{ResourceId, SystemData},
 };
 use asset_loading::{AssetDiscovery, TomlFormat};
 use asset_model::config::{AssetIndex, AssetRecord};
@@ -22,7 +23,6 @@ use object_loading::ObjectLoadingStatus;
 use object_model::{config::ObjectAssetData, loaded::GameObject};
 use object_prefab::GameObjectPrefab;
 use serde::Deserialize;
-use shred_derive::SystemData;
 use sprite_loading::SpriteLoader;
 use sprite_model::config::SpritesDefinition;
 use typename::TypeName as TypeNameTrait;

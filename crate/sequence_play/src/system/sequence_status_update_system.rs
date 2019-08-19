@@ -3,10 +3,10 @@ use std::marker::PhantomData;
 use amethyst::{
     ecs::{
         storage::{ComponentEvent, Tracked},
-        BitSet, Component, Entities, Join, ReadStorage, ReaderId, System, SystemData, Write,
+        BitSet, Component, Entities, Join, ReadStorage, ReaderId, System, SystemData, World, Write,
         WriteStorage,
     },
-    shred::Resources,
+    shred::{ResourceId, Resources, SystemData},
     shrev::EventChannel,
 };
 use derivative::Derivative;
@@ -15,7 +15,6 @@ use sequence_model::{
     config::SequenceId,
     play::{SequenceStatus, SequenceUpdateEvent},
 };
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 /// Updates `SequenceStatus` to `Begin` when `SequenceId` changes, and sends `SequenceBegin` events.

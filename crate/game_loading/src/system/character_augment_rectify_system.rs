@@ -4,7 +4,7 @@ use amethyst::{
         Entities, Entity, Join, LazyUpdate, Read, ReadExpect, ReadStorage, System, SystemData,
         World, Write, WriteStorage,
     },
-    shred::Resources,
+    shred::{ResourceId, Resources, SystemData},
     utils::removal::Removal,
 };
 use character_prefab::CharacterPrefabHandle;
@@ -16,7 +16,6 @@ use game_play_model::{GamePlayEntity, GamePlayEntityId};
 use kinematic_model::config::Position;
 use map_model::loaded::Map;
 use map_selection_model::MapSelection;
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 use crate::{CharacterAugmentStatus, GameLoadingStatus};

@@ -1,8 +1,12 @@
-use amethyst::{assets::Handle, ecs::WriteStorage, renderer::SpriteRender};
+use amethyst::{
+    assets::Handle,
+    ecs::{World, WriteStorage},
+    renderer::SpriteRender,
+    shred::{ResourceId, SystemData},
+};
 use collision_model::config::{Body, Interactions};
 use derivative::Derivative;
 use sequence_model::config::Wait;
-use shred_derive::SystemData;
 
 /// `Component` storages for components that change per sequence frame.
 #[derive(Derivative, SystemData)]

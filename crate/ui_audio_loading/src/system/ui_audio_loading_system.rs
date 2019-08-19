@@ -3,13 +3,13 @@ use std::path::PathBuf;
 use amethyst::{
     assets::{AssetStorage, Handle, Loader, ProgressCounter},
     audio::{FlacFormat, Mp3Format, OggFormat, Source, WavFormat},
-    ecs::{Read, ReadExpect, System, Write},
+    ecs::{Read, ReadExpect, System, World, Write},
+    shred::{ResourceId, SystemData},
 };
 use asset_loading::TomlFormat;
 use derivative::Derivative;
 use derive_new::new;
 use log::{debug, error};
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 use ui_audio_model::{
     config::{UiSfxId, UiSfxPaths},

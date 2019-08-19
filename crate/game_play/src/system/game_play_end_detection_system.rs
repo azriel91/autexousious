@@ -1,14 +1,14 @@
 use std::collections::HashMap;
 
 use amethyst::{
-    ecs::{Join, ReadExpect, ReadStorage, System, Write},
+    ecs::{Join, ReadExpect, ReadStorage, System, World, Write},
+    shred::{ResourceId, SystemData},
     shrev::EventChannel,
 };
 use derivative::Derivative;
 use derive_new::new;
 use game_play_model::{GamePlayEvent, GamePlayStatus};
 use object_model::play::HealthPoints;
-use shred_derive::SystemData;
 use team_model::play::Team;
 use typename_derive::TypeName;
 

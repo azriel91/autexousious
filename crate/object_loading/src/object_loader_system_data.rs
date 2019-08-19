@@ -1,6 +1,7 @@
 use amethyst::{
     assets::{AssetStorage, Loader},
-    ecs::{Read, ReadExpect},
+    ecs::{Read, ReadExpect, World},
+    shred::{ResourceId, SystemData},
 };
 use collision_model::{
     config::{Body, Interactions},
@@ -8,7 +9,6 @@ use collision_model::{
 };
 use derivative::Derivative;
 use sequence_model::loaded::WaitSequence;
-use shred_derive::SystemData;
 use spawn_model::{config::Spawns, loaded::SpawnsSequence};
 use sprite_model::loaded::SpriteRenderSequence;
 

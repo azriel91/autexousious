@@ -1,6 +1,7 @@
 use amethyst::{
     core::transform::Parent,
-    ecs::{Entities, Entity, Join, ReadExpect, System, WriteStorage},
+    ecs::{Entities, Entity, Join, ReadExpect, System, World, WriteStorage},
+    shred::{ResourceId, SystemData},
     ui::{Anchor, UiText, UiTransform},
 };
 use application_menu::{MenuItem, MenuItemWidgetState, Siblings};
@@ -14,7 +15,6 @@ use game_mode_selection_model::{
 };
 use heck::TitleCase;
 use log::debug;
-use shred_derive::SystemData;
 use strum::IntoEnumIterator;
 use typename_derive::TypeName;
 

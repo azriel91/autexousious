@@ -1,9 +1,10 @@
 use amethyst::{
     assets::AssetStorage,
     ecs::{
-        BitSet, Entities, Entity, Join, Read, ReadStorage, Resources, System, SystemData, Write,
-        WriteStorage,
+        BitSet, Entities, Entity, Join, Read, ReadStorage, Resources, System, SystemData, World,
+        Write, WriteStorage,
     },
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use approx::{relative_eq, relative_ne};
@@ -26,7 +27,6 @@ use sequence_model::loaded::{
     ActionHold, ActionPress, ActionRelease, AxisTransition, ControlTransition,
     ControlTransitionLike, FallbackTransition,
 };
-use shred_derive::SystemData;
 
 use crate::ControlTransitionRequirementSystemData;
 
@@ -528,6 +528,7 @@ mod tests {
     use amethyst::{
         assets::{AssetStorage, Loader},
         ecs::{Builder, Entity, Read, ReadExpect, World, WriteStorage},
+        shred::{ResourceId, SystemData},
         shrev::{EventChannel, ReaderId},
         Error,
     };
@@ -553,7 +554,6 @@ mod tests {
         Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
     };
     use object_model::play::{HealthPoints, Mirrored, SkillPoints};
-    use shred_derive::SystemData;
 
     use super::CharacterControlTransitionsTransitionSystem;
 

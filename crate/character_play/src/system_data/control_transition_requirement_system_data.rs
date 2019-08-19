@@ -1,9 +1,11 @@
-use amethyst::ecs::ReadStorage;
+use amethyst::{
+    ecs::{ReadStorage, World},
+    shred::{ResourceId, SystemData},
+};
 use charge_model::{config::ChargeUseMode, play::ChargeTrackerClock};
 use derivative::Derivative;
 use game_input::ControllerInput;
 use object_model::play::{HealthPoints, Mirrored, SkillPoints};
-use shred_derive::SystemData;
 
 /// `SystemData` used to determine if a transition's requirement is met.
 #[derive(Derivative, SystemData)]

@@ -1,6 +1,6 @@
 use amethyst::{
-    ecs::{Read, ReadStorage, SystemData, Write, WriteStorage},
-    shred::{Resources, System},
+    ecs::{Read, ReadStorage, SystemData, World, Write, WriteStorage},
+    shred::{ResourceId, Resources, System, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
@@ -12,7 +12,6 @@ use game_input_model::{
 };
 use game_model::loaded::CharacterPrefabs;
 use log::debug;
-use shred_derive::SystemData;
 
 use typename_derive::TypeName;
 

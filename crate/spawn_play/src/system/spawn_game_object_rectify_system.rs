@@ -1,13 +1,12 @@
 use amethyst::{
-    ecs::{Entity, System, SystemData, Write, WriteStorage},
-    shred::Resources,
+    ecs::{Entity, System, SystemData, World, Write, WriteStorage},
+    shred::{ResourceId, Resources, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
 use derive_new::new;
 use kinematic_model::config::{Position, Velocity};
 use object_model::play::Mirrored;
-use shred_derive::SystemData;
 use spawn_model::{
     config::Spawn,
     play::{SpawnEvent, SpawnParent},

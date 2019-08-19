@@ -1,5 +1,6 @@
 use amethyst::{
-    ecs::{Join, Read, ReadStorage, Resources, System, SystemData, Write},
+    ecs::{Join, Read, ReadStorage, Resources, System, SystemData, World, Write},
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use character_selection_model::CharacterSelectionEvent;
@@ -7,7 +8,6 @@ use derivative::Derivative;
 use derive_new::new;
 use game_input_model::{ControlAction, ControlActionEventData, ControlInputEvent};
 use log::debug;
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 use crate::{CharacterSelectionWidget, WidgetState};

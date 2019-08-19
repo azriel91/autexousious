@@ -1,8 +1,10 @@
-use amethyst::ecs::{Join, ReadStorage, System, WriteStorage};
+use amethyst::{
+    ecs::{Join, ReadStorage, System, World, WriteStorage},
+    shred::{ResourceId, SystemData},
+};
 use charge_model::play::{ChargeRetention, ChargeStatus, ChargeTrackerClock};
 use derivative::Derivative;
 use derive_new::new;
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 /// Reduces charge when not charging.

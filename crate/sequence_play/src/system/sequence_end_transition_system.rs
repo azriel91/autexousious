@@ -1,8 +1,8 @@
 use std::marker::PhantomData;
 
 use amethyst::{
-    ecs::{Entities, Read, ReadStorage, System, SystemData, WriteStorage},
-    shred::Resources,
+    ecs::{Entities, Read, ReadStorage, System, SystemData, World, WriteStorage},
+    shred::{ResourceId, Resources, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
@@ -11,7 +11,6 @@ use sequence_model::{
     config::{SequenceEndTransition, SequenceId},
     play::SequenceUpdateEvent,
 };
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 /// Transitions an object when their `SequenceUpdateEvent::SequenceEnd`

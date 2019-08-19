@@ -1,11 +1,11 @@
 use amethyst::{
-    ecs::{Read, ReadStorage, Resources, System, SystemData, Write},
+    ecs::{Read, ReadStorage, Resources, System, SystemData, World, Write},
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use collision_model::play::{CollisionEvent, ContactEvent};
 use derivative::Derivative;
 use derive_new::new;
-use shred_derive::SystemData;
 use spawn_model::play::SpawnParent;
 use team_model::play::Team;
 use typename_derive::TypeName;

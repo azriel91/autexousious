@@ -1,12 +1,12 @@
 use amethyst::{
-    ecs::{Read, Resources, System, SystemData, WriteStorage},
+    ecs::{Read, Resources, System, SystemData, World, WriteStorage},
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use collision_model::play::HitEvent;
 use derivative::Derivative;
 use derive_new::new;
 use energy_model::config::EnergySequenceId;
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 /// Determines the next sequence for `Energy`s when they hit another object.

@@ -1,7 +1,8 @@
 use amethyst::{
     core::Transform,
-    ecs::WriteStorage,
+    ecs::{World, WriteStorage},
     renderer::{transparent::Transparent, SpriteRender},
+    shred::{ResourceId, SystemData},
 };
 use derivative::Derivative;
 use map_model::config::MapLayerSequenceId;
@@ -10,7 +11,6 @@ use sequence_model::{
     loaded::WaitSequenceHandle,
     play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
 };
-use shred_derive::SystemData;
 use sprite_model::loaded::SpriteRenderSequenceHandle;
 
 /// Map layer `Component` storages.

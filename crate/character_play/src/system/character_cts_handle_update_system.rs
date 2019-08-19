@@ -2,9 +2,9 @@ use amethyst::{
     assets::AssetStorage,
     ecs::{
         storage::ComponentEvent, BitSet, Entities, Join, Read, ReadStorage, ReaderId, System,
-        SystemData, WriteStorage,
+        SystemData, World, WriteStorage,
     },
-    shred::Resources,
+    shred::{ResourceId, Resources, SystemData},
 };
 use character_model::{
     config::CharacterSequenceId,
@@ -15,7 +15,6 @@ use derive_new::new;
 use log::error;
 use named_type::NamedType;
 use named_type_derive::NamedType;
-use shred_derive::SystemData;
 
 /// Updates the attached `CharacterControlTransitionsSequenceHandle`s when `SequenceId` changes.
 #[derive(Debug, Default, NamedType, new)]

@@ -1,12 +1,12 @@
 use amethyst::{
     core::Transform,
-    ecs::{Entities, Join, ReadStorage, System, WriteStorage},
+    ecs::{Entities, Join, ReadStorage, System, World, WriteStorage},
+    shred::{ResourceId, SystemData},
 };
 use chase_model::play::{ChaseModeStick, TargetObject};
 use derivative::Derivative;
 use derive_new::new;
 use kinematic_model::config::Position;
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 /// Updates a `ChaseModeStick` entity's `Position` and `Translation` to match its `TargetObject`.

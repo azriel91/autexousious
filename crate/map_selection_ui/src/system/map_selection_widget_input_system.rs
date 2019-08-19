@@ -1,4 +1,8 @@
-use amethyst::{ecs::prelude::*, shrev::EventChannel};
+use amethyst::{
+    ecs::{prelude::*, World},
+    shred::{ResourceId, SystemData},
+    shrev::EventChannel,
+};
 use asset_model::loaded::SlugAndHandle;
 use derivative::Derivative;
 use derive_new::new;
@@ -8,7 +12,6 @@ use game_input_model::{
 use game_model::loaded::MapPrefabs;
 use log::debug;
 use map_selection_model::{MapSelection, MapSelectionEvent};
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 use crate::{MapSelectionWidget, WidgetState};

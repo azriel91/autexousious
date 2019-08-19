@@ -1,12 +1,12 @@
 use amethyst::{
     core::Transform,
-    ecs::{Join, ReadStorage, System, WriteStorage},
+    ecs::{Join, ReadStorage, System, World, WriteStorage},
     renderer::SpriteRender,
+    shred::{ResourceId, SystemData},
 };
 use derivative::Derivative;
 use derive_new::new;
 use object_model::play::{HealthPoints, ParentObject};
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 use crate::{HpBar, HP_BAR_LENGTH, HP_BAR_SPRITE_COUNT};

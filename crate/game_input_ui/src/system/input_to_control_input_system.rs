@@ -1,6 +1,7 @@
 use amethyst::{
-    ecs::{Entities, Join, Read, ReadStorage, Resources, System, SystemData, Write},
+    ecs::{Entities, Join, Read, ReadStorage, Resources, System, SystemData, World, Write},
     input::InputEvent,
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
@@ -10,7 +11,6 @@ use game_input_model::{
     AxisMoveEventData, ControlActionEventData, ControlBindings, ControlInputEvent, InputConfig,
     PlayerActionControl, PlayerAxisControl,
 };
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 /// Sends `ControlInputEvent`s based on the `InputHandler` state.

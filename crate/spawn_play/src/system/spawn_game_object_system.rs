@@ -1,7 +1,7 @@
 use amethyst::{
     assets::AssetStorage,
-    ecs::{Entities, Entity, Read, ReadStorage, System, SystemData, Write, WriteStorage},
-    shred::Resources,
+    ecs::{Entities, Entity, Read, ReadStorage, System, SystemData, World, Write, WriteStorage},
+    shred::{ResourceId, Resources, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
@@ -10,7 +10,6 @@ use energy_prefab::EnergyPrefabHandle;
 use game_model::loaded::EnergyPrefabs;
 use log::error;
 use sequence_model::play::SequenceUpdateEvent;
-use shred_derive::SystemData;
 use spawn_model::{
     config::{Spawns, SpawnsHandle},
     play::SpawnEvent,

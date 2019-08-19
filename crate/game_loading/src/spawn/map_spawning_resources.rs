@@ -1,11 +1,11 @@
 use amethyst::{
     assets::AssetStorage,
-    ecs::{Entities, Read},
+    ecs::{Entities, Read, World},
+    shred::{ResourceId, SystemData},
 };
 use derivative::Derivative;
 use map_model::loaded::Map;
 use sequence_model::loaded::WaitSequence;
-use shred_derive::SystemData;
 use sprite_model::loaded::SpriteRenderSequence;
 
 /// Resources needed to spawn a map.

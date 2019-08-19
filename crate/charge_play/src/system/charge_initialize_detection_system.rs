@@ -1,13 +1,12 @@
 use amethyst::{
-    ecs::{Entity, Read, System, SystemData, WriteStorage},
-    shred::Resources,
+    ecs::{Entity, Read, System, SystemData, World, WriteStorage},
+    shred::{ResourceId, Resources, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use charge_model::play::{ChargeBeginDelayClock, ChargeStatus};
 use derivative::Derivative;
 use derive_new::new;
 use game_input_model::{ControlAction, ControlActionEventData, ControlInputEvent};
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 /// Default number of ticks to wait before beginning to charge.

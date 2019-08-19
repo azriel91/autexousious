@@ -1,4 +1,7 @@
-use amethyst::ecs::{Entities, Entity, Read, System, Write, WriteStorage};
+use amethyst::{
+    ecs::{Entities, Entity, Read, System, World, Write, WriteStorage},
+    shred::{ResourceId, SystemData},
+};
 use character_prefab::CharacterPrefabHandle;
 use character_selection_model::CharacterSelections;
 use derivative::Derivative;
@@ -6,7 +9,6 @@ use derive_new::new;
 use game_input::InputControlled;
 use game_model::{loaded::CharacterPrefabs, play::GameEntities};
 use object_type::ObjectType;
-use shred_derive::SystemData;
 use team_model::play::{IndependentCounter, Team};
 use typename_derive::TypeName;
 
