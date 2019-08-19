@@ -9,6 +9,6 @@ proc-macro = true
 
 [dependencies]
 proc-macro2 = "1.0.1"
-proc_macro_roids = "0.4.0"
+proc_macro_roids = "0.5.0"
 quote = "1.0.2"
 syn = { version = "1.0.3", features = ["extra-traits", "visit"] }
