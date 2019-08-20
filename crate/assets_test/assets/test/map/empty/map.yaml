@@ -1,0 +1,7 @@
+header:
+  name: "Empty"
+  bounds: { x: 0, y: 0, z: 0, width: 800, height: 400, depth: 200 }
+
+layer:
+  - position: { x: 0, y: 200, z: 0 }
+    frames: []

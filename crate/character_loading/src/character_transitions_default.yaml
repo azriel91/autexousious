@@ -1,19 +1,15 @@
 sequences:
   stand:
-    frames:
-      - {}
+    frames: [{}]
     transitions:
       press_attack: stand_attack_0
       press_jump: jump
   stand_attack_0:
-    frames:
-      - {}
+    frames: [{}]
   stand_attack_1:
-    frames:
-      - {}
+    frames: [{}]
   walk:
-    frames:
-      - {}
+    frames: [{}]
     transitions:
       press_attack: stand_attack_0
       press_jump: jump
@@ -23,8 +19,7 @@ sequences:
           - input_dir_x: none
           - input_dir_z: none
   run:
-    frames:
-      - {}
+    frames: [{}]
     transitions:
       press_jump: dash_forward
       press_defend: dodge
@@ -33,30 +28,23 @@ sequences:
         requirements:
           - input_dir_x: not_same
   run_stop:
-    frames:
-      - {}
+    frames: [{}]
   dodge:
-    frames:
-      - {}
+    frames: [{}]
   jump:
-    frames:
-      - {}
+    frames: [{}]
   jump_off:
-    frames:
-      - {}
+    frames: [{}]
   jump_ascend:
-    frames:
-      - {}
+    frames: [{}]
     transitions:
       hold_attack: jump_attack
   jump_descend:
-    frames:
-      - {}
+    frames: [{}]
     transitions:
       hold_attack: jump_attack
   jump_descend_land:
-    frames:
-      - {}
+    frames: [{}]
     transitions:
       press_defend: dodge
       press_jump:
@@ -65,50 +53,36 @@ sequences:
             - input_dir_x: same
         - next: dash_back
   dash_forward:
-    frames:
-      - {}
+    frames: [{}]
     transitions:
       press_attack: dash_attack
   dash_forward_ascend:
-    frames:
-      - {}
+    frames: [{}]
     transitions:
       press_attack: dash_attack
   dash_forward_descend:
-    frames:
-      - {}
+    frames: [{}]
     transitions:
       press_attack: dash_attack
   dash_back:
-    frames:
-      - {}
+    frames: [{}]
   dash_back_ascend:
-    frames:
-      - {}
+    frames: [{}]
   dash_back_descend:
-    frames:
-      - {}
+    frames: [{}]
   dash_descend_land:
-    frames:
-      - {}
+    frames: [{}]
   dash_attack:
-    frames:
-      - {}
+    frames: [{}]
   flinch_0:
-    frames:
-      - {}
+    frames: [{}]
   flinch_1:
-    frames:
-      - {}
+    frames: [{}]
   dazed:
-    frames:
-      - {}
+    frames: [{}]
   fall_forward_ascend:
-    frames:
-      - {}
+    frames: [{}]
   fall_forward_descend:
-    frames:
-      - {}
+    frames: [{}]
   fall_forward_land:
-    frames:
-      - {}
+    frames: [{}]

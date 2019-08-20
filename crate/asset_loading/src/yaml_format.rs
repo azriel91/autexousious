@@ -5,21 +5,21 @@ use amethyst::{
 };
 use serde::{Deserialize, Serialize};
 
-/// Format for loading from TOML files.
+/// Format for loading from YAML files.
 #[derive(Default, Clone, Debug, Serialize, Deserialize)]
-pub struct TomlFormat;
+pub struct YamlFormat;
 
-impl<D> Format<D> for TomlFormat
+impl<D> Format<D> for YamlFormat
 where
     D: for<'a> Deserialize<'a> + Send + Sync + 'static,
 {
     fn name(&self) -> &'static str {
-        stringify!(TomlFormat)
+        stringify!(YamlFormat)
     }
 
     fn import_simple(&self, bytes: Vec<u8>) -> Result<D, Error> {
-        toml::from_slice::<D>(&bytes)
-            .with_context(|_| format_err!("Failed to deserialize TOML file")) // kcov-ignore
+        serde_yaml::from_slice::<D>(&bytes)
+            .with_context(|_| format_err!("Failed to deserialize YAML file")) // kcov-ignore
     }
 }
 
@@ -41,17 +41,17 @@ mod tests {
     use derive_new::new;
     use serde::{Deserialize, Serialize};
 
-    use super::TomlFormat;
+    use super::YamlFormat;
 
     const CODE_SOURCE_ID: &str = "code_source";
 
     #[test]
-    fn loads_asset_with_toml_format() -> Result<(), Error> {
+    fn loads_asset_with_yaml_format() -> Result<(), Error> {
         AmethystApplication::blank()
-            .with_system(Processor::<TomlThing>::new(), "toml_thing_processor", &[])
+            .with_system(Processor::<YamlThing>::new(), "yaml_thing_processor", &[])
             .with_setup(|world| {
                 let mut code_source = CodeSource::new();
-                code_source.insert(String::from("file.toml"), "val = 123".as_bytes().to_vec());
+                code_source.insert(String::from("file.yaml"), "val: 123".as_bytes().to_vec());
 
                 let mut loader = world.write_resource::<Loader>();
                 loader.add_source(CODE_SOURCE_ID, code_source);
@@ -61,11 +61,11 @@ mod tests {
                 let thing_handle = {
                     let loader = world.read_resource::<Loader>();
                     loader.load_from(
-                        "file.toml",
-                        TomlFormat,
+                        "file.yaml",
+                        YamlFormat,
                         CODE_SOURCE_ID,
                         &mut progress_counter,
-                        &world.read_resource::<AssetStorage<TomlThing>>(),
+                        &world.read_resource::<AssetStorage<YamlThing>>(),
                     )
                 };
 
@@ -74,13 +74,13 @@ mod tests {
             })
             .with_state(|| WaitForLoad)
             .with_assertion(|world| {
-                let thing_handle = world.read_resource::<Handle<TomlThing>>();
-                let toml_thing_assets = world.read_resource::<AssetStorage<TomlThing>>();
-                let toml_thing = toml_thing_assets
+                let thing_handle = world.read_resource::<Handle<YamlThing>>();
+                let yaml_thing_assets = world.read_resource::<AssetStorage<YamlThing>>();
+                let yaml_thing = yaml_thing_assets
                     .get(&thing_handle)
-                    .expect("Expected TomlThing to be loaded.");
+                    .expect("Expected YamlThing to be loaded.");
 
-                assert_eq!(&TomlThing { val: 123 }, toml_thing);
+                assert_eq!(&YamlThing { val: 123 }, yaml_thing);
             })
             .run()
     }
@@ -105,18 +105,18 @@ mod tests {
     }
 
     #[derive(Debug, Deserialize, PartialEq, Serialize)]
-    struct TomlThing {
+    struct YamlThing {
         val: i32,
     }
 
-    impl Asset for TomlThing {
-        const NAME: &'static str = "asset_loading::toml_format::tests::TomlThing";
+    impl Asset for YamlThing {
+        const NAME: &'static str = "asset_loading::yaml_format::tests::YamlThing";
         type Data = Self;
         type HandleStorage = VecStorage<Handle<Self>>;
     }
 
-    impl From<TomlThing> for Result<ProcessingState<TomlThing>, Error> {
-        fn from(object: TomlThing) -> Result<ProcessingState<TomlThing>, Error> {
+    impl From<YamlThing> for Result<ProcessingState<YamlThing>, Error> {
+        fn from(object: YamlThing) -> Result<ProcessingState<YamlThing>, Error> {
             Ok(ProcessingState::Loaded(object))
         }
     }

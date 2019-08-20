@@ -75,7 +75,7 @@ mod test {
                         .get(&map_handle)
                         .expect("Expected map to be loaded");
 
-                    // See fade/map.toml
+                    // See fade/map.yaml
                     assert_eq!(2, map.wait_sequence_handles.len());
                 })
                 .run_isolated()

@@ -1,4 +1,4 @@
-# Used in `CharacterLoader` test.
+# Used in `ControlTransitionsSequenceLoader` test.
 [transitions]
   # need to copy from character_transitions_default, as TOML doesn't support overriding to `None`.
   press_attack = "stand_attack_0"

@@ -42,8 +42,8 @@ mod tests {
             .with_assertion(|world| {
                 let sprites_definition = load_in::<SpritesDefinition, _>(
                     &*CHAR_BAT_PATH,
-                    "sprites.toml",
-                    Format::Toml,
+                    "sprites.yaml",
+                    Format::Yaml,
                     None,
                 )
                 .expect("Failed to load sprites_definition.");

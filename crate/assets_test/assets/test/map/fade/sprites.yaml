@@ -1,0 +1,16 @@
+sheets:
+  - # 0
+    path: "sky.png"
+    sprite_w: 800
+    sprite_h: 400
+    row_count: 1
+    column_count: 1
+    has_border: false
+
+  - # 1
+    path: "ground.png"
+    sprite_w: 800
+    sprite_h: 200
+    row_count: 3
+    column_count: 1
+    has_border: false

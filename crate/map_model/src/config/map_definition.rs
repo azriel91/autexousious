@@ -33,38 +33,37 @@ impl From<MapDefinition> for Result<ProcessingState<MapDefinition>, Error> {
 #[cfg(test)]
 mod test {
     use sequence_model::config::Wait;
+    use serde_yaml;
     use sprite_model::config::SpriteRef;
-    use toml;
 
     use super::MapDefinition;
     use crate::config::{Layer, LayerFrame, MapBounds, MapHeader, Position};
 
-    const MAP_NO_LAYERS: &str = r#"
-        [header]
-        name   = "Blank Map"
-        bounds = { x = 1, y = 2, z = 3, width = 800, height = 600, depth = 200 }
-    "#;
+    const MAP_NO_LAYERS: &str = r#"---
+header:
+  name: "Blank Map"
+  bounds: { x: 1, y: 2, z: 3, width: 800, height: 600, depth: 200 }
+"#;
 
-    const MAP_WITH_LAYERS: &str = r#"
-        [header]
-        name   = "Layered Map"
-        bounds = { x = 1, y = 2, z = 3, width = 800, height = 600, depth = 200 }
+    const MAP_WITH_LAYERS: &str = r#"---
+header:
+  name: "Layered Map"
+  bounds: { x: 1, y: 2, z: 3, width: 800, height: 600, depth: 200 }
 
-        [[layer]]
-        position = { x = 1, y = 4 } # missing z
-        frames = [
-          { wait = 7, sprite = { sheet = 0, index = 0 } },
-          { wait = 7, sprite = { sheet = 0, index = 1 } },
-        ]
+layer:
+  - position: { x: 1, y: 4 } # missing z
+    frames: [
+      { wait: 7, sprite: { sheet: 0, index: 0 } },
+      { wait: 7, sprite: { sheet: 0, index: 1 } },
+    ]
 
-        [[layer]]
-        position = { x = -1, y = -2, z = -3 }
-        frames = [{ wait = 1, sprite = { sheet = 0, index = 0 } }]
-    "#;
+  - position: { x: -1, y: -2, z: -3 }
+    frames: [{ wait: 1, sprite: { sheet: 0, index: 0 } }]
+"#;
 
     #[test]
     fn deserialize_minimal_definition() {
-        let map_definition = toml::from_str::<MapDefinition>(MAP_NO_LAYERS)
+        let map_definition = serde_yaml::from_str::<MapDefinition>(MAP_NO_LAYERS)
             .expect("Failed to deserialize map definition.");
 
         let bounds = MapBounds::new(1, 2, 3, 800, 600, 200);
@@ -75,7 +74,7 @@ mod test {
 
     #[test]
     fn deserialize_with_layers() {
-        let map_definition = toml::from_str::<MapDefinition>(MAP_WITH_LAYERS)
+        let map_definition = serde_yaml::from_str::<MapDefinition>(MAP_WITH_LAYERS)
             .expect("Failed to deserialize map definition.");
 
         let bounds = MapBounds::new(1, 2, 3, 800, 600, 200);

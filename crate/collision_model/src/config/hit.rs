@@ -23,23 +23,23 @@ pub struct Hit {
 #[cfg(test)]
 mod test {
     use object_status_model::config::StunPoints;
-    use toml;
+    use serde_yaml;
 
     use super::Hit;
     use crate::config::{HitLimit, HitRepeatDelay};
 
-    const HIT_TOML: &str = r#"
-        repeat_delay = 1
-        hit_limit = 2
-        hp_damage = 3
-        sp_damage = 4
-        stun = 5
-    "#;
+    const HIT_YAML: &str = r#"---
+repeat_delay: 1
+hit_limit: 2
+hp_damage: 3
+sp_damage: 4
+stun: 5
+"#;
 
     #[test]
     fn deserialize_hit() {
         let hit_deserialized =
-            toml::from_str::<Hit>(HIT_TOML).expect("Failed to deserialize `Hit`.");
+            serde_yaml::from_str::<Hit>(HIT_YAML).expect("Failed to deserialize `Hit`.");
 
         let expected = Hit::new(
             HitRepeatDelay::new(1),
