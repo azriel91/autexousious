@@ -2,7 +2,7 @@ use amethyst::{
     assets::AssetStorage,
     ecs::{
         storage::ComponentEvent, BitSet, Entities, Join, Read, ReadStorage, ReaderId, System,
-        World, WorldExt, WriteStorage,
+        World, WriteStorage,
     },
     shred::{ResourceId, SystemData},
 };

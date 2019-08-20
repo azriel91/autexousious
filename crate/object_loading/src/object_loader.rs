@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use amethyst::{assets::Handle, ecs::WorldExt, renderer::SpriteRender, Error};
+use amethyst::{assets::Handle, renderer::SpriteRender, Error};
 use collision_model::{
     config::{Body, Interactions},
     loaded::{

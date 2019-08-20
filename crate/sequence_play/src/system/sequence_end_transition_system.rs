@@ -1,7 +1,7 @@
 use std::marker::PhantomData;
 
 use amethyst::{
-    ecs::{Entities, Read, ReadStorage, System, World, WorldExt, WriteStorage},
+    ecs::{Entities, Read, ReadStorage, System, World, WriteStorage},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };

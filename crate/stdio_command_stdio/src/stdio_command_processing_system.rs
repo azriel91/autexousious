@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Read, System, SystemData, World, WorldExt, Write},
+    ecs::{Read, System, SystemData, World, Write},
     shrev::{EventChannel, ReaderId},
 };
 use derive_new::new;

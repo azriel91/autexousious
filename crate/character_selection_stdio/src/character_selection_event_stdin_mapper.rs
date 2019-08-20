@@ -1,9 +1,6 @@
 use std::str::FromStr;
 
-use amethyst::{
-    ecs::{Read, WorldExt},
-    Error,
-};
+use amethyst::{ecs::Read, Error};
 use asset_model::config::AssetSlug;
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
 use game_input_model::ControllerId;

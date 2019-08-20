@@ -1,4 +1,4 @@
-use amethyst::ecs::{Join, System, WorldExt, WriteStorage};
+use amethyst::ecs::{Join, System, WriteStorage};
 use collision_model::play::HitRepeatTrackers;
 use derive_new::new;
 

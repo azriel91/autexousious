@@ -1,6 +1,6 @@
 use amethyst::{
     assets::AssetStorage,
-    ecs::{Entities, Entity, Read, ReadStorage, System, World, WorldExt, Write, WriteStorage},
+    ecs::{Entities, Entity, Read, ReadStorage, System, World, Write, WriteStorage},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };

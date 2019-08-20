@@ -1,7 +1,4 @@
-use amethyst::{
-    assets::{AssetStorage, Loader},
-    ecs::WorldExt,
-};
+use amethyst::assets::{AssetStorage, Loader};
 use character_model::{
     config::{self, CharacterSequence},
     loaded::{

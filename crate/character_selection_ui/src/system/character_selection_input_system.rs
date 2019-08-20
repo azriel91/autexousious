@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Join, Read, ReadStorage, System, World, WorldExt, Write},
+    ecs::{Join, Read, ReadStorage, System, World, Write},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };

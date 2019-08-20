@@ -1,8 +1,8 @@
 use amethyst::{
     assets::{AssetStorage, PrefabData},
     ecs::{
-        Entities, Entity, Join, LazyUpdate, Read, ReadExpect, ReadStorage, System, World, WorldExt,
-        Write, WriteStorage,
+        Entities, Entity, Join, LazyUpdate, Read, ReadExpect, ReadStorage, System, World, Write,
+        WriteStorage,
     },
     shred::{ResourceId, SystemData},
     utils::removal::Removal,

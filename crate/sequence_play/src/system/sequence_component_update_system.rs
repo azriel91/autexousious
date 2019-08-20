@@ -2,7 +2,7 @@ use std::{convert::AsRef, fmt::Debug, marker::PhantomData, ops::Deref};
 
 use amethyst::{
     assets::{Asset, AssetStorage, Handle},
-    ecs::{Entity, Read, ReadStorage, System, World, WorldExt, WriteStorage},
+    ecs::{Entity, Read, ReadStorage, System, World, WriteStorage},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };

@@ -3,7 +3,7 @@ use std::marker::PhantomData;
 use amethyst::{
     ecs::{
         storage::{ComponentEvent, Tracked},
-        BitSet, Component, Entities, Join, ReadStorage, ReaderId, System, World, WorldExt, Write,
+        BitSet, Component, Entities, Join, ReadStorage, ReaderId, System, World, Write,
         WriteStorage,
     },
     shred::{ResourceId, SystemData},

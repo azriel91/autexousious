@@ -4,7 +4,6 @@ use amethyst::{
     assets::Processor,
     audio::Source,
     core::TransformBundle,
-    ecs::WorldExt,
     renderer::{types::DefaultBackend, RenderEmptyBundle},
     window::ScreenDimensions,
     GameData, LogLevelFilter, LoggerConfig,

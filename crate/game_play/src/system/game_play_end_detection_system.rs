@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use amethyst::{
-    ecs::{Join, ReadExpect, ReadStorage, System, World, WorldExt, Write},
+    ecs::{Join, ReadExpect, ReadStorage, System, World, Write},
     shred::{ResourceId, SystemData},
     shrev::EventChannel,
 };

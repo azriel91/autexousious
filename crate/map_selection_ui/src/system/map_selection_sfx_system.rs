@@ -1,7 +1,7 @@
 use amethyst::{
     assets::AssetStorage,
     audio::{output::Output, Source},
-    ecs::{Read, System, SystemData, World, WorldExt},
+    ecs::{Read, System, SystemData, World},
     shrev::{EventChannel, ReaderId},
 };
 use derive_new::new;

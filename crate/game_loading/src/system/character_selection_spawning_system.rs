@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Entities, Entity, Read, System, World, WorldExt, Write, WriteStorage},
+    ecs::{Entities, Entity, Read, System, World, Write, WriteStorage},
     shred::{ResourceId, SystemData},
 };
 use character_prefab::CharacterPrefabHandle;

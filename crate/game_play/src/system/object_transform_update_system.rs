@@ -1,7 +1,7 @@
 use amethyst::{
     assets::AssetStorage,
     core::transform::Transform,
-    ecs::{Join, Read, ReadStorage, System, WorldExt, WriteStorage},
+    ecs::{Join, Read, ReadStorage, System, WriteStorage},
     renderer::{SpriteRender, SpriteSheet},
 };
 use derive_new::new;

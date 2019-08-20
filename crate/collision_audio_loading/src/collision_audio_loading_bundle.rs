@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use amethyst::{
     assets::Processor,
     core::bundle::SystemBundle,
-    ecs::{DispatcherBuilder, World, WorldExt},
+    ecs::{DispatcherBuilder, World},
     Error,
 };
 use collision_audio_model::config::CollisionSfxPaths;

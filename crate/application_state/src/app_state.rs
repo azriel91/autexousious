@@ -340,8 +340,6 @@ mod tests {
     fn delegates_update() {
         let (mut world, mut game_data, invocations, mut state) = setup_with_defaults();
 
-        let event = AppEvent::CharacterSelection(CharacterSelectionEvent::Confirm);
-
         state.on_start(StateData::new(&mut world, &mut game_data));
         state.update(StateData::new(&mut world, &mut game_data));
 

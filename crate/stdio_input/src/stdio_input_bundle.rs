@@ -1,6 +1,6 @@
 use amethyst::{
     core::bundle::SystemBundle,
-    ecs::{DispatcherBuilder, World, WorldExt},
+    ecs::{DispatcherBuilder, World},
     Error,
 };
 use derive_new::new;

@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{prelude::*, World, WorldExt},
+    ecs::{prelude::*, World},
     shred::{ResourceId, SystemData},
     shrev::EventChannel,
 };

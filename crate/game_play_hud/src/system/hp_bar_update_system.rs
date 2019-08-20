@@ -1,6 +1,6 @@
 use amethyst::{
     core::Transform,
-    ecs::{Join, ReadStorage, System, World, WorldExt, WriteStorage},
+    ecs::{Join, ReadStorage, System, World, WriteStorage},
     renderer::SpriteRender,
     shred::{ResourceId, SystemData},
 };

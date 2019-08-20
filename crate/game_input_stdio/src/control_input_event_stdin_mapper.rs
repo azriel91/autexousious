@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Entities, Join, ReadStorage, WorldExt},
+    ecs::{Entities, Join, ReadStorage},
     Error,
 };
 use game_input::InputControlled;

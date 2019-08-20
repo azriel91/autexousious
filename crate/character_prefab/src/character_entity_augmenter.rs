@@ -1,6 +1,6 @@
 use std::convert::TryInto;
 
-use amethyst::ecs::{Entity, WorldExt};
+use amethyst::ecs::Entity;
 use character_model::{config::CharacterDefinition, play::RunCounter};
 use charge_model::play::{ChargeRetention, ChargeTrackerClock};
 use game_input::ControllerInput;

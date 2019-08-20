@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{prelude::*, WorldExt},
+    ecs::prelude::*,
     shrev::{EventChannel, ReaderId},
 };
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent, CharacterSelections};

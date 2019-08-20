@@ -1,4 +1,4 @@
-use amethyst::ecs::{Entity, WorldExt};
+use amethyst::ecs::Entity;
 use object_model::play::Grounding;
 
 use crate::EnergyComponentStorages;

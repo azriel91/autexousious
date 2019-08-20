@@ -1,6 +1,6 @@
 use amethyst::{
     core::bundle::SystemBundle,
-    ecs::{DispatcherBuilder, World, WorldExt},
+    ecs::{DispatcherBuilder, World},
     Error,
 };
 use application_event::AppEventVariant;

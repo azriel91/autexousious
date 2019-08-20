@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Join, ReadStorage, WorldExt, WriteStorage},
+    ecs::{Join, ReadStorage, WriteStorage},
     shred::System,
 };
 use derive_new::new;

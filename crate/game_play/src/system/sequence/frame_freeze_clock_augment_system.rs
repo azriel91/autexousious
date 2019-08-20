@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Read, System, SystemData, World, WorldExt, WriteStorage},
+    ecs::{Read, System, SystemData, World, WriteStorage},
     shrev::{EventChannel, ReaderId},
 };
 use collision_model::{
