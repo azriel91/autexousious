@@ -1,6 +1,6 @@
-use amethyst::ecs::WorldExt; use amethyst::{
+use amethyst::{
     core::Transform,
-    ecs::{Join, ReadStorage, System, World, WriteStorage},
+    ecs::{Join, ReadStorage, System, World, WorldExt, WriteStorage},
     renderer::SpriteRender,
     shred::{ResourceId, SystemData},
 };
@@ -94,10 +94,10 @@ impl<'s> System<'s> for CpBarUpdateSystem {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::ecs::WorldExt; use amethyst::{
+    use amethyst::{
         assets::PrefabData,
         core::{math::Vector3, Transform, TransformBundle},
-        ecs::{Builder, Entity, System, SystemData},
+        ecs::{Builder, Entity, System, SystemData, WorldExt},
         renderer::{types::DefaultBackend, RenderEmptyBundle},
         Error,
     };

@@ -1,6 +1,9 @@
 use std::{fmt::Debug, marker::PhantomData};
 
-use amethyst::{ecs::{World, WorldExt}, GameData, State, StateData, Trans};
+use amethyst::{
+    ecs::{World, WorldExt},
+    GameData, State, StateData, Trans,
+};
 use application_event::AppEvent;
 use application_state::{AppState, AppStateBuilder, AutexState};
 use derivative::Derivative;

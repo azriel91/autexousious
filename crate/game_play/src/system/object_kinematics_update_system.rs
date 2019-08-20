@@ -1,5 +1,5 @@
-use amethyst::ecs::WorldExt; use amethyst::{
-    ecs::{Join, ReadStorage, WriteStorage},
+use amethyst::{
+    ecs::{Join, ReadStorage, WorldExt, WriteStorage},
     shred::System,
 };
 use derive_new::new;
@@ -38,8 +38,8 @@ impl<'s> System<'s> for ObjectKinematicsUpdateSystem {
 
 #[cfg(test)]
 mod test {
-    use amethyst::ecs::WorldExt; use amethyst::{
-        ecs::{Builder, Entity, SystemData},
+    use amethyst::{
+        ecs::{Builder, Entity, SystemData, WorldExt},
         input::StringBindings,
         Error,
     };

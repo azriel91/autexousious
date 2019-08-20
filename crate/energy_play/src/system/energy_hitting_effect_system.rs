@@ -1,5 +1,5 @@
-use amethyst::ecs::WorldExt; use amethyst::{
-    ecs::{Read, System, World, WriteStorage},
+use amethyst::{
+    ecs::{Read, System, World, WorldExt, WriteStorage},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
@@ -67,8 +67,8 @@ impl<'s> System<'s> for EnergyHittingEffectSystem {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::ecs::WorldExt; use amethyst::{
-        ecs::{Builder, Entity},
+    use amethyst::{
+        ecs::{Builder, Entity, WorldExt},
         shrev::EventChannel,
         Error,
     };

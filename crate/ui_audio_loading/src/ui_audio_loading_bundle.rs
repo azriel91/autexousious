@@ -1,9 +1,9 @@
 use std::path::PathBuf;
 
-use amethyst::ecs::WorldExt; use amethyst::{
+use amethyst::{
     assets::Processor,
     core::bundle::SystemBundle,
-    ecs::{DispatcherBuilder, World},
+    ecs::{DispatcherBuilder, World, WorldExt},
     Error,
 };
 use derive_new::new;
@@ -46,7 +46,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for UiAudioLoadingBundle {
 mod test {
     use std::path::PathBuf;
 
-    use amethyst::ecs::WorldExt; use amethyst::{assets::AssetStorage, Error};
+    use amethyst::{assets::AssetStorage, ecs::WorldExt, Error};
     use amethyst_test::AmethystApplication;
     use ui_audio_model::{config::UiSfxPaths, loaded::UiSfxMap, UiAudioLoadingStatus};
 

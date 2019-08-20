@@ -1,4 +1,4 @@
-use amethyst::ecs::WorldExt; use amethyst::ecs::World;
+use amethyst::ecs::{World, WorldExt};
 use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
 use game_model::loaded::MapPrefabs;
 use map_selection::MapSelectionStatus;

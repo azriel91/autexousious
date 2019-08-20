@@ -1,7 +1,7 @@
-use amethyst::ecs::WorldExt; use amethyst::{
+use amethyst::{
     assets::AssetStorage,
     audio::{output::Output, Source},
-    ecs::{Read, System, SystemData, World},
+    ecs::{Read, System, SystemData, World, WorldExt},
     shrev::{EventChannel, ReaderId},
 };
 use collision_audio_model::{config::CollisionSfxId, loaded::CollisionSfxMap};
@@ -72,8 +72,8 @@ impl<'s> System<'s> for HitSfxSystem {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::ecs::WorldExt; use amethyst::{
-        ecs::{Builder, World},
+    use amethyst::{
+        ecs::{Builder, World, WorldExt},
         shrev::EventChannel,
         Error,
     };

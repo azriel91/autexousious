@@ -1,6 +1,6 @@
-use amethyst::ecs::WorldExt; use amethyst::{
+use amethyst::{
     core::bundle::SystemBundle,
-    ecs::{DispatcherBuilder, World},
+    ecs::{DispatcherBuilder, World, WorldExt},
     Error,
 };
 use application_event::AppEventVariant;
@@ -35,7 +35,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionStdioBundle {
 mod test {
     use std::env;
 
-    use amethyst::ecs::WorldExt; use amethyst::{shrev::EventChannel, Error};
+    use amethyst::{ecs::WorldExt, shrev::EventChannel, Error};
     use amethyst_test::AmethystApplication;
     use game_model::loaded::CharacterPrefabs;
     use stdio_spi::VariantAndTokens;

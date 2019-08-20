@@ -1,6 +1,9 @@
 use std::str::FromStr;
 
-use amethyst::ecs::WorldExt; use amethyst::{ecs::Read, Error};
+use amethyst::{
+    ecs::{Read, WorldExt},
+    Error,
+};
 use asset_model::config::AssetSlug;
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
 use game_input_model::ControllerId;
@@ -113,8 +116,8 @@ impl StdinMapper for CharacterSelectionEventStdinMapper {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::ecs::WorldExt; use amethyst::{
-        ecs::{Read, World},
+    use amethyst::{
+        ecs::{Read, World, WorldExt},
         Error,
     };
     use application_test_support::AutexousiousApplication;

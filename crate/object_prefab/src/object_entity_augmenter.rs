@@ -1,4 +1,8 @@
-use amethyst::ecs::WorldExt; use amethyst::{core::transform::Transform, ecs::Entity, renderer::transparent::Transparent};
+use amethyst::{
+    core::transform::Transform,
+    ecs::{Entity, WorldExt},
+    renderer::transparent::Transparent,
+};
 use kinematic_model::config::{Position, Velocity};
 use object_model::{loaded::ObjectWrapper, play::Mirrored};
 use sequence_model::play::{FrameIndexClock, FrameWaitClock, SequenceStatus};
@@ -97,9 +101,9 @@ impl ObjectEntityAugmenter {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::ecs::WorldExt; use amethyst::{
+    use amethyst::{
         core::transform::Transform,
-        ecs::{Builder, ReadStorage, World},
+        ecs::{Builder, ReadStorage, World, WorldExt},
         renderer::transparent::Transparent,
         shred::SystemData,
         Error,

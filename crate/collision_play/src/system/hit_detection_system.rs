@@ -1,5 +1,5 @@
-use amethyst::ecs::WorldExt; use amethyst::{
-    ecs::{Entity, Read, ReadStorage, System, SystemData, World, Write, WriteStorage},
+use amethyst::{
+    ecs::{Entity, Read, ReadStorage, System, SystemData, World, WorldExt, Write, WriteStorage},
     shrev::{EventChannel, ReaderId},
 };
 use collision_model::{
@@ -133,8 +133,8 @@ impl<'s> System<'s> for HitDetectionSystem {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::ecs::WorldExt; use amethyst::{
-        ecs::{Builder, Entity, World},
+    use amethyst::{
+        ecs::{Builder, Entity, World, WorldExt},
         shrev::{EventChannel, ReaderId},
         Error,
     };

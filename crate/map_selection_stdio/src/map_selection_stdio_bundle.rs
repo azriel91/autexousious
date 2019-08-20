@@ -1,6 +1,6 @@
-use amethyst::ecs::WorldExt; use amethyst::{
+use amethyst::{
     core::bundle::SystemBundle,
-    ecs::{DispatcherBuilder, World},
+    ecs::{DispatcherBuilder, World, WorldExt},
     Error,
 };
 use application_event::AppEventVariant;
@@ -33,7 +33,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for MapSelectionStdioBundle {
 mod test {
     use std::env;
 
-    use amethyst::ecs::WorldExt; use amethyst::shrev::EventChannel;
+    use amethyst::{ecs::WorldExt, shrev::EventChannel};
     use amethyst_test::prelude::*;
     use game_model::loaded::MapPrefabs;
     use stdio_spi::VariantAndTokens;

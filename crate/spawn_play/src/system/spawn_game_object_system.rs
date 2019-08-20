@@ -1,6 +1,6 @@
-use amethyst::ecs::WorldExt; use amethyst::{
+use amethyst::{
     assets::AssetStorage,
-    ecs::{Entities, Entity, Read, ReadStorage, System, World, Write, WriteStorage},
+    ecs::{Entities, Entity, Read, ReadStorage, System, World, WorldExt, Write, WriteStorage},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
@@ -149,9 +149,9 @@ impl<'s> System<'s> for SpawnGameObjectSystem {
 mod tests {
     use std::str::FromStr;
 
-    use amethyst::ecs::WorldExt; use amethyst::{
+    use amethyst::{
         assets::{AssetStorage, Loader},
-        ecs::{Builder, Entity, Join, Read, ReadExpect, World},
+        ecs::{Builder, Entity, Join, Read, ReadExpect, World, WorldExt},
         shrev::{EventChannel, ReaderId},
         Error,
     };

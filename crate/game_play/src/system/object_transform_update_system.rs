@@ -1,7 +1,7 @@
-use amethyst::ecs::WorldExt; use amethyst::{
+use amethyst::{
     assets::AssetStorage,
     core::transform::Transform,
-    ecs::{Join, Read, ReadStorage, System, WriteStorage},
+    ecs::{Join, Read, ReadStorage, System, WorldExt, WriteStorage},
     renderer::{SpriteRender, SpriteSheet},
 };
 use derive_new::new;
@@ -63,9 +63,9 @@ impl<'s> System<'s> for ObjectTransformUpdateSystem {
 
 #[cfg(test)]
 mod test {
-    use amethyst::ecs::WorldExt; use amethyst::{
+    use amethyst::{
         core::{math::Vector3, transform::Transform},
-        ecs::{Builder, Entity, World},
+        ecs::{Builder, Entity, World, WorldExt},
         input::StringBindings,
         Error,
     };

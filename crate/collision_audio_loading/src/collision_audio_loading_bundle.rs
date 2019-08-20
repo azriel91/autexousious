@@ -1,9 +1,9 @@
 use std::path::PathBuf;
 
-use amethyst::ecs::WorldExt; use amethyst::{
+use amethyst::{
     assets::Processor,
     core::bundle::SystemBundle,
-    ecs::{DispatcherBuilder, World},
+    ecs::{DispatcherBuilder, World, WorldExt},
     Error,
 };
 use collision_audio_model::config::CollisionSfxPaths;
@@ -46,7 +46,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CollisionAudioLoadingBundle {
 mod test {
     use std::path::PathBuf;
 
-    use amethyst::ecs::WorldExt; use amethyst::{assets::AssetStorage, Error};
+    use amethyst::{assets::AssetStorage, ecs::WorldExt, Error};
     use amethyst_test::AmethystApplication;
     use collision_audio_model::{
         config::CollisionSfxPaths, loaded::CollisionSfxMap, CollisionAudioLoadingStatus,

@@ -1,5 +1,5 @@
-use amethyst::ecs::WorldExt; use amethyst::{
-    ecs::{ReadExpect, System, World, Write, WriteStorage},
+use amethyst::{
+    ecs::{ReadExpect, System, World, WorldExt, Write, WriteStorage},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
@@ -79,8 +79,8 @@ impl<'s> System<'s> for GamePlayRemovalAugmentSystem {
 mod tests {
     use std::str::FromStr;
 
-    use amethyst::ecs::WorldExt; use amethyst::{
-        ecs::{Builder, Entity, World},
+    use amethyst::{
+        ecs::{Builder, Entity, World, WorldExt},
         shrev::EventChannel,
         Error,
     };

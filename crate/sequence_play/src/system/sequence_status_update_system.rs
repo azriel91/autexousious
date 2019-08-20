@@ -1,9 +1,9 @@
 use std::marker::PhantomData;
 
-use amethyst::ecs::WorldExt; use amethyst::{
+use amethyst::{
     ecs::{
         storage::{ComponentEvent, Tracked},
-        BitSet, Component, Entities, Join, ReadStorage, ReaderId, System, World, Write,
+        BitSet, Component, Entities, Join, ReadStorage, ReaderId, System, World, WorldExt, Write,
         WriteStorage,
     },
     shred::{ResourceId, SystemData},
@@ -107,8 +107,8 @@ where
 
 #[cfg(test)]
 mod tests {
-    use amethyst::ecs::WorldExt; use amethyst::{
-        ecs::{Builder, Entity, World},
+    use amethyst::{
+        ecs::{Builder, Entity, World, WorldExt},
         shrev::{EventChannel, ReaderId},
         Error,
     };

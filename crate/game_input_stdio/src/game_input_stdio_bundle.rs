@@ -1,6 +1,6 @@
-use amethyst::ecs::WorldExt; use amethyst::{
+use amethyst::{
     core::bundle::SystemBundle,
-    ecs::{DispatcherBuilder, World},
+    ecs::{DispatcherBuilder, World, WorldExt},
     Error,
 };
 use application_event::AppEventVariant;
@@ -57,7 +57,9 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameInputStdioBundle {
 mod test {
     use std::env;
 
-    use amethyst::ecs::WorldExt; use amethyst::{input::InputBundle, shrev::EventChannel, window::ScreenDimensions, Error};
+    use amethyst::{
+        ecs::WorldExt, input::InputBundle, shrev::EventChannel, window::ScreenDimensions, Error,
+    };
     use amethyst_test::{AmethystApplication, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
     use game_input::GameInputBundle;
     use game_input_model::ControlBindings;

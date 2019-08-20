@@ -1,6 +1,6 @@
-use amethyst::ecs::WorldExt; use amethyst::{
+use amethyst::{
     core::bundle::SystemBundle,
-    ecs::{DispatcherBuilder, World},
+    ecs::{DispatcherBuilder, World, WorldExt},
     Error,
 };
 use application_event::AppEventVariant;
@@ -35,7 +35,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameModeSelectionStdioBundle {
 mod test {
     use std::env;
 
-    use amethyst::ecs::WorldExt; use amethyst::shrev::EventChannel;
+    use amethyst::{ecs::WorldExt, shrev::EventChannel};
     use amethyst_test::prelude::*;
     use stdio_spi::VariantAndTokens;
 

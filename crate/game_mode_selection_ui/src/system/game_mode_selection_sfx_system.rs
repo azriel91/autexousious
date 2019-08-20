@@ -1,7 +1,7 @@
-use amethyst::ecs::WorldExt; use amethyst::{
+use amethyst::{
     assets::AssetStorage,
     audio::{output::Output, Source},
-    ecs::{Read, System, SystemData, World},
+    ecs::{Read, System, SystemData, World, WorldExt},
     shrev::{EventChannel, ReaderId},
 };
 use application_menu::MenuEvent;
@@ -75,7 +75,11 @@ impl<'s> System<'s> for GameModeSelectionSfxSystem {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::ecs::WorldExt; use amethyst::{ecs::World, shrev::EventChannel, Error};
+    use amethyst::{
+        ecs::{World, WorldExt},
+        shrev::EventChannel,
+        Error,
+    };
     use application_menu::MenuEvent;
     use application_test_support::AutexousiousApplication;
     use game_mode_selection_model::{GameModeIndex, GameModeSelectionEvent};

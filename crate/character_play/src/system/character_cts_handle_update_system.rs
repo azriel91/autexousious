@@ -1,8 +1,8 @@
-use amethyst::ecs::WorldExt; use amethyst::{
+use amethyst::{
     assets::AssetStorage,
     ecs::{
         storage::ComponentEvent, BitSet, Entities, Join, Read, ReadStorage, ReaderId, System,
-        World, WriteStorage,
+        World, WorldExt, WriteStorage,
     },
     shred::{ResourceId, SystemData},
 };
@@ -135,8 +135,8 @@ impl<'s> System<'s> for CharacterCtsHandleUpdateSystem {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::ecs::WorldExt; use amethyst::{
-        ecs::{Builder, Entity, World},
+    use amethyst::{
+        ecs::{Builder, Entity, World, WorldExt},
         Error,
     };
     use application_test_support::{AutexousiousApplication, ObjectQueries, SequenceQueries};

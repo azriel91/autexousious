@@ -1,5 +1,5 @@
-use amethyst::ecs::WorldExt; use amethyst::{
-    ecs::{Entity, Read, System, SystemData, World, WriteStorage},
+use amethyst::{
+    ecs::{Entity, Read, System, SystemData, World, WorldExt, WriteStorage},
     shrev::{EventChannel, ReaderId},
 };
 use collision_model::{
@@ -91,8 +91,8 @@ impl<'s> System<'s> for HitRepeatTrackersAugmentSystem {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::ecs::WorldExt; use amethyst::{
-        ecs::{Builder, Entity, World},
+    use amethyst::{
+        ecs::{Builder, Entity, World, WorldExt},
         shrev::EventChannel,
         Error,
     };

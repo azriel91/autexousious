@@ -1,4 +1,4 @@
-use amethyst::ecs::WorldExt; use amethyst::ecs::Entity;
+use amethyst::ecs::{Entity, WorldExt};
 use object_model::play::Grounding;
 
 use crate::EnergyComponentStorages;
@@ -27,9 +27,9 @@ impl EnergyEntityAugmenter {
 
 #[cfg(test)]
 mod test {
-    use amethyst::ecs::WorldExt; use amethyst::{
+    use amethyst::{
         core::TransformBundle,
-        ecs::{Builder, World},
+        ecs::{Builder, World, WorldExt},
         renderer::{types::DefaultBackend, RenderEmptyBundle},
         shred::SystemData,
         Error,

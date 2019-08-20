@@ -1,5 +1,5 @@
-use amethyst::ecs::WorldExt; use amethyst::{
-    ecs::{Entities, Entity, Read, System, World, Write, WriteStorage},
+use amethyst::{
+    ecs::{Entities, Entity, Read, System, World, WorldExt, Write, WriteStorage},
     shred::{ResourceId, SystemData},
 };
 use character_prefab::CharacterPrefabHandle;
@@ -116,11 +116,11 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
 mod tests {
     use std::env;
 
-    use amethyst::ecs::WorldExt; use amethyst::{
+    use amethyst::{
         assets::Processor,
         audio::Source,
         core::TransformBundle,
-        ecs::{Join, ReadStorage, System, World},
+        ecs::{Join, ReadStorage, System, World, WorldExt},
         renderer::{types::DefaultBackend, RenderEmptyBundle},
         shred::SystemData,
         window::ScreenDimensions,

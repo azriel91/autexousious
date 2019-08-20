@@ -1,7 +1,7 @@
-use amethyst::ecs::WorldExt; use amethyst::{
+use amethyst::{
     assets::AssetStorage,
     audio::{output::Output, Source},
-    ecs::{Read, System, SystemData, World},
+    ecs::{Read, System, SystemData, World, WorldExt},
     shrev::{EventChannel, ReaderId},
 };
 use character_selection_model::CharacterSelectionEvent;
@@ -76,7 +76,11 @@ impl<'s> System<'s> for CharacterSelectionSfxSystem {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::ecs::WorldExt; use amethyst::{ecs::World, shrev::EventChannel, Error};
+    use amethyst::{
+        ecs::{World, WorldExt},
+        shrev::EventChannel,
+        Error,
+    };
     use application_test_support::AutexousiousApplication;
     use assets_test::CHAR_BAT_SLUG;
     use character_selection_model::{CharacterSelection, CharacterSelectionEvent};

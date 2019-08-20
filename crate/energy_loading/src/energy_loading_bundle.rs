@@ -1,7 +1,7 @@
-use amethyst::ecs::WorldExt; use amethyst::{
+use amethyst::{
     assets::Processor,
     core::bundle::SystemBundle,
-    ecs::{DispatcherBuilder, World},
+    ecs::{DispatcherBuilder, World, WorldExt},
     Error,
 };
 use derive_new::new;
@@ -47,9 +47,10 @@ impl<'a, 'b> SystemBundle<'a, 'b> for EnergyLoadingBundle {
 
 #[cfg(test)]
 mod test {
-    use amethyst::ecs::WorldExt; use amethyst::{
+    use amethyst::{
         assets::AssetStorage,
         core::TransformBundle,
+        ecs::WorldExt,
         renderer::{types::DefaultBackend, RenderEmptyBundle},
         Error,
     };

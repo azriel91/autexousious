@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use amethyst::ecs::WorldExt; use amethyst::{assets::Handle, renderer::SpriteRender, Error};
+use amethyst::{assets::Handle, ecs::WorldExt, renderer::SpriteRender, Error};
 use collision_model::{
     config::{Body, Interactions},
     loaded::{
@@ -199,10 +199,10 @@ impl ObjectLoader {
 
 #[cfg(test)]
 mod test {
-    use amethyst::ecs::WorldExt; use amethyst::{
+    use amethyst::{
         assets::{AssetStorage, Processor, ProgressCounter},
         core::TransformBundle,
-        ecs::Read,
+        ecs::{Read, WorldExt},
         renderer::{types::DefaultBackend, RenderEmptyBundle, SpriteSheet, Texture},
     };
     use amethyst_test::AmethystApplication;

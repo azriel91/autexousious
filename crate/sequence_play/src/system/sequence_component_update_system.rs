@@ -1,8 +1,8 @@
 use std::{convert::AsRef, fmt::Debug, marker::PhantomData, ops::Deref};
 
-use amethyst::ecs::WorldExt; use amethyst::{
+use amethyst::{
     assets::{Asset, AssetStorage, Handle},
-    ecs::{Entity, Read, ReadStorage, System, World, WriteStorage},
+    ecs::{Entity, Read, ReadStorage, System, World, WorldExt, WriteStorage},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
@@ -157,8 +157,8 @@ where
 
 #[cfg(test)]
 mod tests {
-    use amethyst::ecs::WorldExt; use amethyst::{
-        ecs::{Builder, Entity, World},
+    use amethyst::{
+        ecs::{Builder, Entity, World, WorldExt},
         shrev::EventChannel,
         Error,
     };

@@ -1,5 +1,5 @@
-use amethyst::ecs::WorldExt; use amethyst::{
-    ecs::{Read, ReadStorage, System, World, Write},
+use amethyst::{
+    ecs::{Read, ReadStorage, System, World, WorldExt, Write},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
@@ -105,8 +105,8 @@ impl<'s> System<'s> for ContactDetectionSystem {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::ecs::WorldExt; use amethyst::{
-        ecs::{Builder, Entity, World},
+    use amethyst::{
+        ecs::{Builder, Entity, World, WorldExt},
         shrev::{EventChannel, ReaderId},
         Error,
     };
