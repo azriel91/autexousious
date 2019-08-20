@@ -109,7 +109,7 @@ mod test {
     }
 
     fn setup_components(world: &mut World) {
-        LastTrackerSystemData::<TestComponent>::setup(&mut world.res);
+        LastTrackerSystemData::<TestComponent>::setup(world);
     }
 
     fn assert_last_value(world: &mut World, value: i32) {

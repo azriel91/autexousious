@@ -1,4 +1,4 @@
-use amethyst::ecs::{Join, System, WriteStorage};
+use amethyst::ecs::WorldExt; use amethyst::ecs::{Join, System, WriteStorage};
 use collision_model::play::HitRepeatTrackers;
 use derive_new::new;
 
@@ -29,7 +29,7 @@ impl<'s> System<'s> for HitRepeatTrackersTickerSystem {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::{
+    use amethyst::ecs::WorldExt; use amethyst::{
         ecs::{Builder, Entity, World},
         Error,
     };

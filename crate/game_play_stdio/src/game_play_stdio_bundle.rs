@@ -1,4 +1,8 @@
-use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
+use amethyst::ecs::WorldExt; use amethyst::{
+    core::bundle::SystemBundle,
+    ecs::{DispatcherBuilder, World},
+    Error,
+};
 use application_event::AppEventVariant;
 use derive_new::new;
 use stdio_spi::MapperSystem;
@@ -11,7 +15,11 @@ use crate::GamePlayEventStdinMapper;
 pub struct GamePlayStdioBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayStdioBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
+    fn build(
+        self,
+        _world: &mut World,
+        builder: &mut DispatcherBuilder<'a, 'b>,
+    ) -> Result<(), Error> {
         builder.add(
             MapperSystem::<GamePlayEventStdinMapper>::new(AppEventVariant::GamePlay),
             &MapperSystem::<GamePlayEventStdinMapper>::type_name(),
@@ -25,7 +33,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayStdioBundle {
 mod test {
     use std::env;
 
-    use amethyst::shrev::EventChannel;
+    use amethyst::ecs::WorldExt; use amethyst::shrev::EventChannel;
     use amethyst_test::prelude::*;
     use game_play_model::GamePlayEvent;
 

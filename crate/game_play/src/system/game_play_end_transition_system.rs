@@ -133,7 +133,7 @@ mod test {
     }
 
     fn register_gpec_reader(world: &mut World) {
-        GamePlayEndTransitionSystemData::setup(&mut world.res);
+        GamePlayEndTransitionSystemData::setup(world);
 
         let reader_id = {
             let mut game_play_ec = world.write_resource::<EventChannel<GamePlayEvent>>();

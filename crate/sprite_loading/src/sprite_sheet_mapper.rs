@@ -144,7 +144,7 @@ mod test {
     use amethyst::{
         assets::{AssetStorage, Handle, Loader},
         core::TransformBundle,
-        ecs::World,
+        ecs::{World, WorldExt},
         renderer::{
             loaders::load_from_srgba,
             palette::Srgba,

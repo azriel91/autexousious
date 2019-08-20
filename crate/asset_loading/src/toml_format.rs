@@ -32,7 +32,7 @@ mod tests {
             Asset, AssetStorage, Handle, Loader, ProcessingState, Processor, ProgressCounter,
             Source,
         },
-        ecs::storage::VecStorage,
+        ecs::{storage::VecStorage, WorldExt},
         error::format_err,
         Error, State, StateData, Trans,
     };

@@ -1,6 +1,6 @@
 use amethyst::{
     ecs::{Entity, Read, System, World, WriteStorage},
-    shred::{ResourceId, SystemData, World},
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use charge_model::play::{ChargeBeginDelayClock, ChargeStatus};
@@ -115,7 +115,7 @@ impl<'s> System<'s> for ChargeInitializeDetectionSystem {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{Builder, Entity, ReadStorage},
+        ecs::{Builder, Entity, ReadStorage, WorldExt},
         shrev::EventChannel,
         Error,
     };

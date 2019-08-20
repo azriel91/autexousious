@@ -1,6 +1,6 @@
 use amethyst::{
     ecs::{ReadStorage, System, World, Write, WriteStorage},
-    shred::{ResourceId, SystemData, World},
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use charge_model::{
@@ -119,7 +119,7 @@ impl<'s> System<'s> for ChargeUsageSystem {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{Builder, Entity, ReadStorage, World},
+        ecs::{Builder, Entity, ReadStorage, World, WorldExt},
         shrev::EventChannel,
         Error,
     };

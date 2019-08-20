@@ -234,7 +234,8 @@ mod test {
     use std::fmt::Debug;
 
     use amethyst::{
-        ecs::{Builder, Entity, World},
+        ecs::{Builder, Entity, World, WorldExt},
+        shred::SystemData,
         shrev::{EventChannel, ReaderId},
         Error,
     };
@@ -426,11 +427,11 @@ mod test {
         AmethystApplication::ui_base::<ControlBindings>()
             .with_system(
                 MenuItemWidgetInputSystem::<TestIndex>::new(),
-                MenuItemWidgetInputSystem::<TestIndex>::type_name(),
+                &MenuItemWidgetInputSystem::<TestIndex>::type_name(),
                 &[],
             ) // kcov-ignore
             .with_setup(move |world| {
-                MenuItemWidgetInputSystemData::<TestIndex>::setup(&mut world.res);
+                MenuItemWidgetInputSystemData::<TestIndex>::setup(world);
 
                 // Setup event reader.
                 let event_channel_reader = world

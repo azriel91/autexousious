@@ -1,4 +1,9 @@
-use amethyst::{assets::Processor, core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
+use amethyst::{
+    assets::Processor,
+    core::bundle::SystemBundle,
+    ecs::{DispatcherBuilder, World},
+    Error,
+};
 use collision_model::{
     config::{Body, Interactions},
     loaded::{BodySequence, InteractionsSequence},
@@ -15,7 +20,11 @@ use derive_new::new;
 pub struct CollisionLoadingBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for CollisionLoadingBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
+    fn build(
+        self,
+        _world: &mut World,
+        builder: &mut DispatcherBuilder<'a, 'b>,
+    ) -> Result<(), Error> {
         builder.add(Processor::<Body>::new(), "body_processor", &[]); // kcov-ignore
         builder.add(
             Processor::<BodySequence>::new(),
@@ -38,7 +47,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CollisionLoadingBundle {
 
 #[cfg(test)]
 mod test {
-    use amethyst::{assets::AssetStorage, Error};
+    use amethyst::{assets::AssetStorage, ecs::WorldExt, Error};
     use amethyst_test::AmethystApplication;
     use collision_model::{
         config::{Body, Interactions},

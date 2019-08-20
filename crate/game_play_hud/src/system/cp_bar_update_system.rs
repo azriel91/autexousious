@@ -1,4 +1,4 @@
-use amethyst::{
+use amethyst::ecs::WorldExt; use amethyst::{
     core::Transform,
     ecs::{Join, ReadStorage, System, World, WriteStorage},
     renderer::SpriteRender,
@@ -94,7 +94,7 @@ impl<'s> System<'s> for CpBarUpdateSystem {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::{
+    use amethyst::ecs::WorldExt; use amethyst::{
         assets::PrefabData,
         core::{math::Vector3, Transform, TransformBundle},
         ecs::{Builder, Entity, System, SystemData},
@@ -113,8 +113,8 @@ mod tests {
             .with_bundle(TransformBundle::new())
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_setup(|world| {
-                <CpBarPrefab as PrefabData>::SystemData::setup(&mut world.res);
-                <CpBarUpdateSystem as System>::SystemData::setup(&mut world.res);
+                <CpBarPrefab as PrefabData>::SystemData::setup(world);
+                <CpBarUpdateSystem as System>::SystemData::setup(world);
 
                 let mut transform = Transform::default();
                 transform.set_translation_x(123.);

@@ -1,4 +1,9 @@
-use amethyst::{assets::Processor, core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
+use amethyst::{
+    assets::Processor,
+    core::bundle::SystemBundle,
+    ecs::{DispatcherBuilder, World},
+    Error,
+};
 use derive_new::new;
 use map_model::{config::MapDefinition, loaded::Map};
 
@@ -10,7 +15,11 @@ use map_model::{config::MapDefinition, loaded::Map};
 pub struct MapLoadingBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for MapLoadingBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
+    fn build(
+        self,
+        _world: &mut World,
+        builder: &mut DispatcherBuilder<'a, 'b>,
+    ) -> Result<(), Error> {
         builder.add(
             Processor::<MapDefinition>::new(),
             "map_definition_processor",
@@ -30,6 +39,7 @@ mod test {
     use amethyst::{
         assets::AssetStorage,
         core::TransformBundle,
+        ecs::WorldExt,
         renderer::{types::DefaultBackend, RenderEmptyBundle},
     };
     use amethyst_test::{AmethystApplication, EffectReturn};

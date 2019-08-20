@@ -1,7 +1,7 @@
-use amethyst::{
+use amethyst::ecs::WorldExt; use amethyst::{
     assets::AssetStorage,
     ecs::{Read, ReadStorage, System, World, WriteStorage},
-    shred::{ResourceId, SystemData, World},
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use character_model::{
@@ -120,7 +120,7 @@ impl<'s> System<'s> for CharacterControlTransitionsUpdateSystem {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::{
+    use amethyst::ecs::WorldExt; use amethyst::{
         assets::AssetStorage,
         ecs::{Entities, Join, Read, ReadStorage, World, WriteStorage},
         shrev::EventChannel,

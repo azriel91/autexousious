@@ -1,6 +1,6 @@
-use amethyst::{
+use amethyst::ecs::WorldExt; use amethyst::{
     ecs::{ReadExpect, System, World, Write, WriteStorage},
-    shred::{ResourceId, SystemData, World},
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
@@ -79,7 +79,7 @@ impl<'s> System<'s> for GamePlayRemovalAugmentSystem {
 mod tests {
     use std::str::FromStr;
 
-    use amethyst::{
+    use amethyst::ecs::WorldExt; use amethyst::{
         ecs::{Builder, Entity, World},
         shrev::EventChannel,
         Error,
@@ -108,7 +108,7 @@ mod tests {
         AmethystApplication::blank()
             .with_system(
                 GamePlayRemovalAugmentSystem::new(),
-                &GamePlayRemovalAugmentSystem::type_name(),
+                GamePlayRemovalAugmentSystem::type_name(),
                 &[],
             )
             .with_resource(state_id)

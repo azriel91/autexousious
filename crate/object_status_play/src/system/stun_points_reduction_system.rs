@@ -25,7 +25,7 @@ impl<'s> System<'s> for StunPointsReductionSystem {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{Builder, Join, ReadStorage, World},
+        ecs::{Builder, Join, ReadStorage, World, WorldExt},
         Error,
     };
     use amethyst_test::AmethystApplication;

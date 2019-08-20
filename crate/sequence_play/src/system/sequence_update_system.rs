@@ -1,6 +1,8 @@
 use amethyst::{
     assets::AssetStorage,
-    ecs::{Entities, Entity, Join, Read, ReadStorage, System, World, Write, WriteStorage},
+    ecs::{
+        Entities, Entity, Join, Read, ReadStorage, System, World, WorldExt, Write, WriteStorage,
+    },
     shred::{ResourceId, SystemData},
     shrev::EventChannel,
 };
@@ -241,7 +243,8 @@ impl<'s> System<'s> for SequenceUpdateSystem {
 mod tests {
     use amethyst::{
         assets::{AssetStorage, Loader},
-        ecs::{Entities, Entity, Read, ReadExpect, World, WriteStorage},
+        ecs::{Entities, Entity, Read, ReadExpect, World, WorldExt, WriteStorage},
+        shred::SystemData,
         shrev::{EventChannel, ReaderId},
         Error,
     };
@@ -528,7 +531,7 @@ mod tests {
     }
 
     fn setup_system_data(world: &mut World) {
-        SequenceUpdateSystemData::setup(&mut world.res);
+        SequenceUpdateSystemData::setup(world);
         let reader_id = {
             let mut ec = world.write_resource::<EventChannel<SequenceUpdateEvent>>();
             ec.register_reader()

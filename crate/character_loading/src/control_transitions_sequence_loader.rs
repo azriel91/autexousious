@@ -1,4 +1,4 @@
-use amethyst::assets::{AssetStorage, Loader};
+use amethyst::ecs::WorldExt; use amethyst::assets::{AssetStorage, Loader};
 use character_model::{
     config::{self, CharacterSequence},
     loaded::{
@@ -267,7 +267,7 @@ impl ControlTransitionsSequenceLoader {
 mod tests {
     use std::{iter::FromIterator, path::PathBuf};
 
-    use amethyst::{
+    use amethyst::ecs::WorldExt; use amethyst::{
         assets::{AssetStorage, Loader},
         core::TransformBundle,
         ecs::{Read, ReadExpect},

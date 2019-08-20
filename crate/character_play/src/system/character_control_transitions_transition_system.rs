@@ -1,4 +1,4 @@
-use amethyst::{
+use amethyst::ecs::WorldExt; use amethyst::{
     assets::AssetStorage,
     ecs::{BitSet, Entities, Entity, Join, Read, ReadStorage, System, World, Write, WriteStorage},
     shred::{ResourceId, SystemData},
@@ -523,7 +523,7 @@ impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
 mod tests {
     use std::{iter::FromIterator, path::PathBuf};
 
-    use amethyst::{
+    use amethyst::ecs::WorldExt; use amethyst::{
         assets::{AssetStorage, Loader},
         ecs::{Builder, Entity, Read, ReadExpect, World, WriteStorage},
         shred::{ResourceId, SystemData},

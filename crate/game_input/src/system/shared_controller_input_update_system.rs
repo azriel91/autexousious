@@ -83,7 +83,7 @@ mod test {
         AmethystApplication::ui_base::<ControlBindings>()
             .with_system(
                 SharedControllerInputUpdateSystem::new(),
-                &SharedControllerInputUpdateSystem::type_name(),
+                SharedControllerInputUpdateSystem::type_name(),
                 &[],
             )
             .with_setup(move |world| {
@@ -184,7 +184,7 @@ mod test {
         AmethystApplication::ui_base::<ControlBindings>()
             .with_system(
                 SharedControllerInputUpdateSystem::new(),
-                &SharedControllerInputUpdateSystem::type_name(),
+                SharedControllerInputUpdateSystem::type_name(),
                 &[],
             )
             .with_setup(|world| {

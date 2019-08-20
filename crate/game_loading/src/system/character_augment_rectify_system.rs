@@ -1,10 +1,10 @@
 use amethyst::{
     assets::{AssetStorage, PrefabData},
     ecs::{
-        Entities, Entity, Join, LazyUpdate, Read, ReadExpect, ReadStorage, System, SystemData,
-        World, Write, WriteStorage,
+        Entities, Entity, Join, LazyUpdate, Read, ReadExpect, ReadStorage, System, World, WorldExt,
+        Write, WriteStorage,
     },
-    shred::{ResourceId, SystemData, World},
+    shred::{ResourceId, SystemData},
     utils::removal::Removal,
 };
 use character_prefab::CharacterPrefabHandle;
@@ -159,9 +159,9 @@ impl<'s> System<'s> for CharacterAugmentRectifySystem {
     fn setup(&mut self, world: &mut World) {
         Self::SystemData::setup(world);
 
-        <HpBarPrefab as PrefabData<'_>>::SystemData::setup(res);
-        <CpBarPrefab as PrefabData<'_>>::SystemData::setup(res);
-        <WriteStorage<'_, GamePlayEntity>>::setup(res);
+        <HpBarPrefab as PrefabData<'_>>::SystemData::setup(world);
+        <CpBarPrefab as PrefabData<'_>>::SystemData::setup(world);
+        <WriteStorage<'_, GamePlayEntity>>::setup(world);
     }
 }
 
@@ -171,8 +171,9 @@ mod tests {
         assets::{Prefab, Processor},
         audio::Source,
         core::TransformBundle,
-        ecs::{Builder, Entity, Join, ReadStorage, World},
+        ecs::{Builder, Entity, Join, ReadStorage, World, WorldExt},
         renderer::{types::DefaultBackend, RenderEmptyBundle},
+        shred::SystemData,
         window::ScreenDimensions,
         Error,
     };
@@ -321,7 +322,7 @@ mod tests {
             )
             .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
-            .with_setup(|world| CharacterAugmentRectifySystemData::setup(&mut world.res))
+            .with_setup(|world| CharacterAugmentRectifySystemData::setup(world))
             .with_state(|| LoadingState::new(PopState))
             .with_setup(map_selection(MAP_FADE_SLUG.clone()))
             .with_setup(fn_setup)

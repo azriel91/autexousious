@@ -118,7 +118,7 @@ mod test {
         AmethystApplication::ui_base::<ControlBindings>()
             .with_system(
                 ControllerInputUpdateSystem::new(),
-                &ControllerInputUpdateSystem::type_name(),
+                ControllerInputUpdateSystem::type_name(),
                 &[],
             ) // kcov-ignore
             .with_setup(|world| {
@@ -169,7 +169,7 @@ mod test {
         AmethystApplication::ui_base::<ControlBindings>()
             .with_system(
                 ControllerInputUpdateSystem::new(),
-                &ControllerInputUpdateSystem::type_name(),
+                ControllerInputUpdateSystem::type_name(),
                 &[],
             ) // kcov-ignore
             .with_setup(|world| {

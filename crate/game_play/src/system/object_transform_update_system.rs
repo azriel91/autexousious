@@ -1,4 +1,4 @@
-use amethyst::{
+use amethyst::ecs::WorldExt; use amethyst::{
     assets::AssetStorage,
     core::transform::Transform,
     ecs::{Join, Read, ReadStorage, System, WriteStorage},
@@ -63,7 +63,7 @@ impl<'s> System<'s> for ObjectTransformUpdateSystem {
 
 #[cfg(test)]
 mod test {
-    use amethyst::{
+    use amethyst::ecs::WorldExt; use amethyst::{
         core::{math::Vector3, transform::Transform},
         ecs::{Builder, Entity, World},
         input::StringBindings,
@@ -104,7 +104,7 @@ mod test {
         AmethystApplication::ui_base::<StringBindings>()
             .with_system(
                 ObjectTransformUpdateSystem::new(),
-                &ObjectTransformUpdateSystem::type_name(),
+                ObjectTransformUpdateSystem::type_name(),
                 &[],
             ) // kcov-ignore
             .with_setup(setup)

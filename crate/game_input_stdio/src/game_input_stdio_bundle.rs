@@ -1,4 +1,8 @@
-use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
+use amethyst::ecs::WorldExt; use amethyst::{
+    core::bundle::SystemBundle,
+    ecs::{DispatcherBuilder, World},
+    Error,
+};
 use application_event::AppEventVariant;
 use derive_new::new;
 use stdio_spi::MapperSystem;
@@ -27,7 +31,11 @@ impl GameInputStdioBundle {
 }
 
 impl<'a, 'b> SystemBundle<'a, 'b> for GameInputStdioBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
+    fn build(
+        self,
+        _world: &mut World,
+        builder: &mut DispatcherBuilder<'a, 'b>,
+    ) -> Result<(), Error> {
         let deps = self
             .system_dependencies
             .as_ref()
@@ -49,7 +57,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameInputStdioBundle {
 mod test {
     use std::env;
 
-    use amethyst::{input::InputBundle, shrev::EventChannel, window::ScreenDimensions, Error};
+    use amethyst::ecs::WorldExt; use amethyst::{input::InputBundle, shrev::EventChannel, window::ScreenDimensions, Error};
     use amethyst_test::{AmethystApplication, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
     use game_input::GameInputBundle;
     use game_input_model::ControlBindings;

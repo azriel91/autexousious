@@ -61,7 +61,7 @@ impl<'s> System<'s> for ChargeIncrementSystem {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{Builder, Entity, ReadStorage},
+        ecs::{Builder, Entity, ReadStorage, WorldExt},
         Error,
     };
     use amethyst_test::AmethystApplication;

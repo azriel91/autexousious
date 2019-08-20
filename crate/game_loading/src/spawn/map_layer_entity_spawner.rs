@@ -2,6 +2,7 @@ use amethyst::{
     core::{math::Vector3, transform::Transform},
     ecs::{Entity, World},
     renderer::transparent::Transparent,
+    shred::SystemData,
 };
 use map_model::{config::MapLayerSequenceId, loaded::MapHandle};
 use num_traits::FromPrimitive;
@@ -30,8 +31,8 @@ impl MapLayerEntitySpawner {
     /// * `map_handle`: Handle of the map whose layers to spawn.
     pub fn spawn_world(world: &mut World, map_handle: &MapHandle) -> Vec<Entity> {
         Self::spawn_system(
-            &MapSpawningResources::fetch(&world.res),
-            &mut MapLayerComponentStorages::fetch(&world.res),
+            &MapSpawningResources::fetch(&world),
+            &mut MapLayerComponentStorages::fetch(&world),
             map_handle,
         )
     }

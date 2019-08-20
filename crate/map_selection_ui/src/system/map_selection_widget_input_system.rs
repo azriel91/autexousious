@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{prelude::*, World},
+    ecs::{prelude::*, World, WorldExt},
     shred::{ResourceId, SystemData},
     shrev::EventChannel,
 };
@@ -239,7 +239,8 @@ impl<'s> System<'s> for MapSelectionWidgetInputSystem {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        ecs::{Builder, Entity, World},
+        ecs::{Builder, Entity, World, WorldExt},
+        shred::SystemData,
         shrev::{EventChannel, ReaderId},
         Error,
     };
@@ -428,11 +429,11 @@ mod test {
         AutexousiousApplication::config_base()
             .with_system(
                 MapSelectionWidgetInputSystem::new(),
-                &MapSelectionWidgetInputSystem::type_name(),
+                MapSelectionWidgetInputSystem::type_name(),
                 &[],
             ) // kcov-ignore
             .with_setup(move |world| {
-                MapSelectionWidgetInputSystemData::setup(&mut world.res);
+                MapSelectionWidgetInputSystemData::setup(world);
 
                 // Setup event reader.
                 let event_channel_reader = world

@@ -1,4 +1,4 @@
-use amethyst::{
+use amethyst::ecs::WorldExt; use amethyst::{
     ecs::{Entities, Entity, Read, System, World, Write, WriteStorage},
     shred::{ResourceId, SystemData},
 };
@@ -116,12 +116,13 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
 mod tests {
     use std::env;
 
-    use amethyst::{
+    use amethyst::ecs::WorldExt; use amethyst::{
         assets::Processor,
         audio::Source,
         core::TransformBundle,
         ecs::{Join, ReadStorage, System, World},
         renderer::{types::DefaultBackend, RenderEmptyBundle},
+        shred::SystemData,
         window::ScreenDimensions,
         Error,
     };
@@ -288,7 +289,7 @@ mod tests {
             .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_state(|| LoadingState::new(PopState))
             .with_setup(|world| {
-                <CharacterSelectionSpawningSystem as System>::SystemData::setup(&mut world.res)
+                <CharacterSelectionSpawningSystem as System>::SystemData::setup(world)
             })
             .with_setup(setup_fn)
             .with_system_single(

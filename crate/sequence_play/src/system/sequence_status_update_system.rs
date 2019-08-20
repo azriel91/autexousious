@@ -1,12 +1,12 @@
 use std::marker::PhantomData;
 
-use amethyst::{
+use amethyst::ecs::WorldExt; use amethyst::{
     ecs::{
         storage::{ComponentEvent, Tracked},
         BitSet, Component, Entities, Join, ReadStorage, ReaderId, System, World, Write,
         WriteStorage,
     },
-    shred::{ResourceId, SystemData, World},
+    shred::{ResourceId, SystemData},
     shrev::EventChannel,
 };
 use derivative::Derivative;
@@ -101,13 +101,13 @@ where
 
     fn setup(&mut self, world: &mut World) {
         Self::SystemData::setup(world);
-        self.sequence_id_rid = Some(WriteStorage::<SeqId>::fetch(&res).register_reader());
+        self.sequence_id_rid = Some(WriteStorage::<SeqId>::fetch(world).register_reader());
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use amethyst::{
+    use amethyst::ecs::WorldExt; use amethyst::{
         ecs::{Builder, Entity, World},
         shrev::{EventChannel, ReaderId},
         Error,

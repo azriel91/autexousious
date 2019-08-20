@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::prelude::*,
+    ecs::{prelude::*, WorldExt},
     shrev::{EventChannel, ReaderId},
 };
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent, CharacterSelections};
@@ -80,7 +80,7 @@ mod tests {
         assets::Processor,
         audio::Source,
         core::TransformBundle,
-        ecs::World,
+        ecs::{World, WorldExt},
         renderer::{types::DefaultBackend, RenderEmptyBundle},
         shrev::EventChannel,
         window::ScreenDimensions,
@@ -135,7 +135,7 @@ mod tests {
             .with_state(|| LoadingState::new(PopState))
             .with_system(
                 CharacterSelectionSystem::new(),
-                &CharacterSelectionSystem::type_name(),
+                CharacterSelectionSystem::type_name(),
                 &[],
             ) // kcov-ignore
             .with_setup(|world| {
@@ -185,7 +185,7 @@ mod tests {
             .with_state(|| LoadingState::new(PopState))
             .with_system(
                 CharacterSelectionSystem::new(),
-                &CharacterSelectionSystem::type_name(),
+                CharacterSelectionSystem::type_name(),
                 &[],
             )
             .with_setup(|world| {

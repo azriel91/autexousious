@@ -57,8 +57,8 @@ impl<'s> System<'s> for MapSelectionSystem {
     fn setup(&mut self, world: &mut World) {
         Self::SystemData::setup(world);
 
-        if res.try_fetch::<MapSelection>().is_none() {
-            let slug_and_handle = res
+        if world.try_fetch::<MapSelection>().is_none() {
+            let slug_and_handle = world
                 .fetch::<MapPrefabs>()
                 .iter()
                 .next()
@@ -185,7 +185,7 @@ mod test {
     }
 
     fn setup_components(world: &mut World) {
-        MapSelectionSystemData::setup(&mut world.res);
+        MapSelectionSystemData::setup(world);
     }
 
     fn load_maps(world: &mut World) {

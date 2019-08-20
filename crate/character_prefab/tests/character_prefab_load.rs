@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use amethyst::{
     assets::{AssetStorage, Handle, Loader, Prefab, PrefabLoader},
     core::TransformBundle,
-    ecs::{Builder, Entity, Read, ReadExpect, World},
+    ecs::{Builder, Entity, Read, ReadExpect, World, WorldExt},
     renderer::{
         loaders::load_from_srgba,
         palette::Srgba,
@@ -64,7 +64,7 @@ fn character_prefab_load() -> Result<(), Error> {
         })
         .with_setup(|_world| {}) // Allow texture to load.
         .with_setup(|world| {
-            let character_prefab_handle = world.read_resource::<CharacterPrefabHandle>().clone();
+            let character_prefab_handle = (*world.read_resource::<CharacterPrefabHandle>()).clone();
             let character_entity = world.create_entity().with(character_prefab_handle).build();
             world.insert(character_entity);
         })

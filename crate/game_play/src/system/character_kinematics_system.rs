@@ -407,7 +407,7 @@ mod tests {
             // kcov-ignore-start
             .with_system(
                 CharacterKinematicsSystem::new(),
-                &CharacterKinematicsSystem::type_name(),
+                CharacterKinematicsSystem::type_name(),
                 &[],
             )
             // kcov-ignore-end

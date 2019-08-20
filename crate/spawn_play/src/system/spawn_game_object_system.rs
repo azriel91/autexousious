@@ -1,7 +1,7 @@
-use amethyst::{
+use amethyst::ecs::WorldExt; use amethyst::{
     assets::AssetStorage,
     ecs::{Entities, Entity, Read, ReadStorage, System, World, Write, WriteStorage},
-    shred::{ResourceId, SystemData, World},
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
@@ -149,7 +149,7 @@ impl<'s> System<'s> for SpawnGameObjectSystem {
 mod tests {
     use std::str::FromStr;
 
-    use amethyst::{
+    use amethyst::ecs::WorldExt; use amethyst::{
         assets::{AssetStorage, Loader},
         ecs::{Builder, Entity, Join, Read, ReadExpect, World},
         shrev::{EventChannel, ReaderId},
@@ -213,7 +213,7 @@ mod tests {
         AutexousiousApplication::config_base()
             .with_system(
                 SpawnGameObjectSystem::new(),
-                &SpawnGameObjectSystem::type_name(),
+                SpawnGameObjectSystem::type_name(),
                 &[ObjectAssetLoadingSystem::<
                     Energy,
                     EnergyPrefab,

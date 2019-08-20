@@ -1,6 +1,6 @@
-use amethyst::{
+use amethyst::ecs::WorldExt; use amethyst::{
     ecs::{Entity, System, World, Write, WriteStorage},
-    shred::{ResourceId, SystemData, World},
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
@@ -167,7 +167,7 @@ impl<'s> System<'s> for SpawnGameObjectRectifySystem {
 mod tests {
     use std::str::FromStr;
 
-    use amethyst::{
+    use amethyst::ecs::WorldExt; use amethyst::{
         ecs::{Builder, Entity, World},
         shrev::EventChannel,
         Error,
@@ -247,7 +247,7 @@ mod tests {
         AutexousiousApplication::config_base()
             .with_system(
                 SpawnGameObjectRectifySystem::new(),
-                &SpawnGameObjectRectifySystem::type_name(),
+                SpawnGameObjectRectifySystem::type_name(),
                 &[ObjectAssetLoadingSystem::<
                     Energy,
                     EnergyPrefab,

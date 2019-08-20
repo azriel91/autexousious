@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use amethyst::{
-    ecs::{Join, ReadExpect, ReadStorage, System, World, Write},
+    ecs::{Join, ReadExpect, ReadStorage, System, World, WorldExt, Write},
     shred::{ResourceId, SystemData},
     shrev::EventChannel,
 };
@@ -74,8 +74,9 @@ impl<'s> System<'s> for GamePlayEndDetectionSystem {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        ecs::{Builder, World},
+        ecs::{Builder, World, WorldExt},
         input::StringBindings,
+        shred::SystemData,
         shrev::{EventChannel, ReaderId},
         Error,
     };
@@ -245,7 +246,7 @@ mod test {
     }
 
     fn register_gpec_reader(world: &mut World) {
-        GamePlayEndDetectionSystemData::setup(&mut world.res);
+        GamePlayEndDetectionSystemData::setup(world);
 
         let reader_id = {
             let mut game_play_ec = world.write_resource::<EventChannel<GamePlayEvent>>();

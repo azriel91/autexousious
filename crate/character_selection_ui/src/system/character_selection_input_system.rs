@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Join, Read, ReadStorage, System, World, Write},
+    ecs::{Join, Read, ReadStorage, System, World, WorldExt, Write},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
@@ -150,7 +150,8 @@ impl<'s> System<'s> for CharacterSelectionInputSystem {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        ecs::{Builder, Entity, World},
+        ecs::{Builder, Entity, World, WorldExt},
+        shred::SystemData,
         shrev::{EventChannel, ReaderId},
         Error,
     };
@@ -240,11 +241,11 @@ mod test {
         AutexousiousApplication::config_base()
             .with_system(
                 CharacterSelectionInputSystem::new(),
-                &CharacterSelectionInputSystem::type_name(),
+                CharacterSelectionInputSystem::type_name(),
                 &[],
             ) // kcov-ignore
             .with_setup(move |world| {
-                CharacterSelectionInputSystemData::setup(&mut world.res);
+                CharacterSelectionInputSystemData::setup(world);
 
                 let entities = setup_widget_states
                     .iter()

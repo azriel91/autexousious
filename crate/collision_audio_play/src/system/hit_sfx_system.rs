@@ -1,4 +1,4 @@
-use amethyst::{
+use amethyst::ecs::WorldExt; use amethyst::{
     assets::AssetStorage,
     audio::{output::Output, Source},
     ecs::{Read, System, SystemData, World},
@@ -72,7 +72,7 @@ impl<'s> System<'s> for HitSfxSystem {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::{
+    use amethyst::ecs::WorldExt; use amethyst::{
         ecs::{Builder, World},
         shrev::EventChannel,
         Error,

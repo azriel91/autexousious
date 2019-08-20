@@ -1,4 +1,7 @@
-use amethyst::{assets::AssetStorage, ecs::World};
+use amethyst::{
+    assets::AssetStorage,
+    ecs::{World, WorldExt},
+};
 use asset_model::config::AssetSlug;
 use character_model::{
     config::CharacterSequenceId,

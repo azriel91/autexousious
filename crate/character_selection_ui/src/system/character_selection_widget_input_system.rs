@@ -1,6 +1,6 @@
 use amethyst::{
-    ecs::{Read, ReadStorage, World, Write, WriteStorage},
-    shred::{ResourceId, System, SystemData, World},
+    ecs::{Read, ReadStorage, World, WorldExt, Write, WriteStorage},
+    shred::{ResourceId, System, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
@@ -281,7 +281,8 @@ impl<'s> System<'s> for CharacterSelectionWidgetInputSystem {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        ecs::{Builder, Entity, World},
+        ecs::{Builder, Entity, World, WorldExt},
+        shred::SystemData,
         shrev::{EventChannel, ReaderId},
         Error,
     };
@@ -478,11 +479,11 @@ mod test {
         AutexousiousApplication::config_base()
             .with_system(
                 CharacterSelectionWidgetInputSystem::new(),
-                &CharacterSelectionWidgetInputSystem::type_name(),
+                CharacterSelectionWidgetInputSystem::type_name(),
                 &[],
             ) // kcov-ignore
             .with_setup(move |world| {
-                CharacterSelectionWidgetInputSystemData::setup(&mut world.res);
+                CharacterSelectionWidgetInputSystemData::setup(world);
 
                 let setup_character_selection = setup_character_selection_fn(world);
                 let entity = widget_entity(world, setup_widget_state, setup_character_selection);

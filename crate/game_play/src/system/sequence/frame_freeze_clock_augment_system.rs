@@ -1,4 +1,4 @@
-use amethyst::{
+use amethyst::ecs::WorldExt; use amethyst::{
     ecs::{Read, System, SystemData, World, WriteStorage},
     shrev::{EventChannel, ReaderId},
 };
@@ -62,7 +62,7 @@ impl<'s> System<'s> for FrameFreezeClockAugmentSystem {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::{
+    use amethyst::ecs::WorldExt; use amethyst::{
         ecs::{Builder, Entity, World},
         shrev::EventChannel,
         Error,

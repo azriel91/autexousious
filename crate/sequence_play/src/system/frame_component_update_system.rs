@@ -1,9 +1,9 @@
 use std::{fmt::Debug, marker::PhantomData, ops::Deref};
 
-use amethyst::{
+use amethyst::ecs::WorldExt; use amethyst::{
     assets::{Asset, AssetStorage, Handle},
     ecs::{Entity, Read, ReadStorage, System, World, WriteStorage},
-    shred::{ResourceId, SystemData, World},
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
@@ -147,7 +147,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use amethyst::{
+    use amethyst::ecs::WorldExt; use amethyst::{
         ecs::{Builder, Entity, World},
         shrev::EventChannel,
         Error,

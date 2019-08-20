@@ -1,4 +1,4 @@
-use amethyst::{
+use amethyst::ecs::WorldExt; use amethyst::{
     assets::AssetStorage,
     audio::{output::Output, Source},
     ecs::{Read, System, SystemData, World},
@@ -71,7 +71,7 @@ impl<'s> System<'s> for MapSelectionSfxSystem {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::{ecs::World, shrev::EventChannel, Error};
+    use amethyst::ecs::WorldExt; use amethyst::{ecs::World, shrev::EventChannel, Error};
     use application_test_support::AutexousiousApplication;
     use asset_model::loaded::SlugAndHandle;
     use assets_test::MAP_FADE_SLUG;

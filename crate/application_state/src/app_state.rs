@@ -1,8 +1,11 @@
 use std::{collections::HashMap, fmt::Debug, marker::PhantomData};
 
 use amethyst::{
-    core::SystemBundle,
-    ecs::{Dispatcher, DispatcherBuilder, System, World},
+    core::{
+        deferred_dispatcher_operation::{AddBundle, AddSystem, DispatcherOperation},
+        SystemBundle,
+    },
+    ecs::{Dispatcher, DispatcherBuilder, System, World, WorldExt},
     utils::removal::{self, Removal},
     GameData, State, StateData, Trans,
 };
@@ -35,9 +38,13 @@ where
     S: AutexState<'a, 'b>,
     I: Clone + Debug + Default + PartialEq + Send + Sync + 'static,
 {
+    /// Functions to instantiate state specific dispatcher systems.
+    #[derivative(Debug = "ignore")]
+    dispatcher_operations: Option<Vec<Box<dyn DispatcherOperation<'a, 'b> + 'a>>>,
     /// State specific dispatcher.
     #[derivative(Debug = "ignore")]
-    dispatcher: Dispatcher<'a, 'b>,
+    #[new(default)]
+    dispatcher: Option<Dispatcher<'a, 'b>>,
     /// The `State` to delegate to.
     #[derivative(Debug(bound = "S: Debug"))]
     delegate: S,
@@ -58,7 +65,24 @@ where
     ///
     /// * `world`: `World` to operate on.
     fn initialize_dispatcher(&mut self, world: &mut World) {
-        self.dispatcher.setup(&mut world.res);
+        if self.dispatcher.is_none() {
+            let dispatcher_operations = self.dispatcher_operations.take().expect(
+                "Expected `dispatcher_operations` to exist when dispatcher is not yet built.",
+            );
+
+            let mut dispatcher_builder = DispatcherBuilder::new();
+            dispatcher_operations
+                .into_iter()
+                .for_each(|dispatcher_operation| {
+                    dispatcher_operation
+                        .exec(world, &mut dispatcher_builder)
+                        .expect("Failed to execute dispatcher operation.");
+                });
+
+            let mut dispatcher = dispatcher_builder.build();
+            dispatcher.setup(world);
+            self.dispatcher = Some(dispatcher);
+        }
     }
 
     fn remove_entities(world: &mut World) {
@@ -149,7 +173,10 @@ where
         // `"input_system"` is registered in the main dispatcher, and by design we have chosen that
         // systems that depend on that should be placed in the state specific dispatcher.
         data.data.update(&data.world);
-        self.dispatcher.dispatch(&data.world.res);
+        self.dispatcher
+            .as_mut()
+            .expect("Expected `dispatcher` to be set up.")
+            .dispatch(&data.world);
 
         self.delegate.update(data)
     }
@@ -169,10 +196,10 @@ where
     S: AutexState<'a, 'b>,
     I: Clone + Debug + Default + PartialEq + Send + Sync + 'static,
 {
-    /// State specific dispatcher builder.
+    /// Functions to instantiate state specific dispatcher systems.
     #[derivative(Debug = "ignore")]
-    #[new(value = "DispatcherBuilder::new()")]
-    dispatcher_builder: DispatcherBuilder<'a, 'b>,
+    #[new(default)]
+    dispatcher_operations: Vec<Box<dyn DispatcherOperation<'a, 'b> + 'a>>,
     /// The `State` to delegate to.
     #[derivative(Debug(bound = "S: Debug"))]
     delegate: S,
@@ -193,10 +220,12 @@ where
     /// # Parameters
     ///
     /// * `bundle`: Bundle to register.
-    pub fn with_bundle<B: SystemBundle<'a, 'b>>(mut self, bundle: B) -> Self {
-        bundle
-            .build(&mut self.dispatcher_builder)
-            .expect("Failed to register bundle for `AppState`.");
+    pub fn with_bundle<B>(mut self, bundle: B) -> Self
+    where
+        B: SystemBundle<'a, 'b> + 'a,
+    {
+        self.dispatcher_operations
+            .push(Box::new(AddBundle { bundle }));
         self
     }
 
@@ -215,23 +244,37 @@ where
         self
     }
 
-    /// Registers a system to run in the `AppState`.
+    /// Registers a `System` with the dispatcher builder.
     ///
     /// # Parameters
     ///
-    /// * `system`: Bundle to register.
-    pub fn with_system<Sys>(mut self, system: Sys, name: &str, deps: &[&str]) -> Self
+    /// * `system`: Function to instantiate the `System`.
+    /// * `name`: Name to register the system with, used for dependency ordering.
+    /// * `deps`: Names of systems that must run before this system.
+    pub fn with_system<Sys, N>(mut self, system: Sys, name: N, dependencies: &[N]) -> Self
     where
-        Sys: for<'s> System<'s> + Send + Sync + 'a,
+        Sys: for<'c> System<'c> + Send + 'a,
+        N: Into<String> + Clone,
     {
-        self.dispatcher_builder.add(system, name, deps);
+        let name = Into::<String>::into(name);
+        let dependencies = dependencies
+            .iter()
+            .map(Clone::clone)
+            .map(Into::<String>::into)
+            .collect::<Vec<String>>();
+        let dispatcher_operation = Box::new(AddSystem {
+            system,
+            name,
+            dependencies,
+        }) as Box<dyn DispatcherOperation<'a, 'b> + 'a>;
+        self.dispatcher_operations.push(dispatcher_operation);
         self
     }
 
     /// Builds and returns the `AppState`.
     pub fn build(self) -> AppState<'a, 'b, S, I> {
         AppState::new(
-            self.dispatcher_builder.build(),
+            Some(self.dispatcher_operations),
             self.delegate,
             self.hook_fns,
         )
@@ -243,7 +286,8 @@ mod tests {
     use std::{cell::RefCell, rc::Rc, sync::Arc};
 
     use amethyst::{
-        ecs::{Builder, ReadExpect, System, World, Write, WriteExpect},
+        ecs::{Builder, ReadExpect, System, World, WorldExt, Write, WriteExpect},
+        shred::SystemData,
         utils::removal::Removal,
         DataInit, GameData, GameDataBuilder, State, StateData, Trans,
     };
@@ -280,7 +324,6 @@ mod tests {
         fixed_update,
         Invocation::FixedUpdate
     );
-    test_delegate!(delegates_update, update, Invocation::Update);
 
     #[test]
     fn delegates_handle_event() {
@@ -294,6 +337,21 @@ mod tests {
     }
 
     #[test]
+    fn delegates_update() {
+        let (mut world, mut game_data, invocations, mut state) = setup_with_defaults();
+
+        let event = AppEvent::CharacterSelection(CharacterSelectionEvent::Confirm);
+
+        state.on_start(StateData::new(&mut world, &mut game_data));
+        state.update(StateData::new(&mut world, &mut game_data));
+
+        assert_eq!(
+            vec![Invocation::OnStart, Invocation::Update],
+            *invocations.borrow()
+        );
+    }
+
+    #[test]
     fn on_start_sets_up_world_for_state_specific_dispatcher() {
         let game_data_builder = GameDataBuilder::default();
         let (mut world, mut game_data, _invocations, mut state) =
@@ -301,7 +359,7 @@ mod tests {
 
         state.on_start(StateData::new(&mut world, &mut game_data));
 
-        assert!(world.res.try_fetch::<Counter>().is_some());
+        assert!(world.try_fetch::<Counter>().is_some());
     }
 
     // === `Removal` component === //
@@ -346,7 +404,7 @@ mod tests {
         state.on_start(StateData::new(&mut world, &mut game_data));
         state.update(StateData::new(&mut world, &mut game_data));
 
-        let copy_counter = world.res.try_fetch::<CopyCounter>();
+        let copy_counter = world.try_fetch::<CopyCounter>();
         assert!(copy_counter.is_some());
         assert_eq!(CopyCounter(10), *copy_counter.unwrap());
     }
@@ -362,7 +420,7 @@ mod tests {
 
                 state.$method_name(StateData::new(&mut world, &mut game_data));
 
-                let hook_fn_value = world.res.try_fetch::<HookFnValue>();
+                let hook_fn_value = world.try_fetch::<HookFnValue>();
                 assert!(hook_fn_value.is_some());
                 assert_eq!(HookFnValue($hook_fn_value), *hook_fn_value.unwrap());
             }

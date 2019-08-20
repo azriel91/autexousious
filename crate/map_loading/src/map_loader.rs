@@ -149,6 +149,7 @@ mod tests {
     use amethyst::{
         assets::AssetStorage,
         core::TransformBundle,
+        ecs::WorldExt,
         renderer::{types::DefaultBackend, RenderEmptyBundle},
         Error,
     };

@@ -1,6 +1,6 @@
 use amethyst::{
     core::{math::Vector3, SystemBundle, Transform},
-    ecs::{Builder, DispatcherBuilder, Entity, World},
+    ecs::{Builder, DispatcherBuilder, Entity, World, WorldExt},
     input::{is_key_down, VirtualKeyCode},
     renderer::camera::{Camera, Projection},
     shred::Dispatcher,
@@ -44,11 +44,11 @@ impl GamePlayState {
         let mut dispatcher_builder = DispatcherBuilder::new();
 
         GamePlayBundle::new()
-            .build(&mut dispatcher_builder)
+            .build(world, &mut dispatcher_builder)
             .expect("Failed to register `GamePlayBundle`.");
 
         let mut dispatcher = dispatcher_builder.build();
-        dispatcher.setup(&mut world.res);
+        dispatcher.setup(world);
         self.dispatcher = Some(dispatcher);
     }
 
@@ -209,7 +209,7 @@ impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
         // `"input_system"` is registered in the main dispatcher, and is a dependency of the
         // `ControllerInputUpdateSystem`.
         data.data.update(&data.world);
-        self.dispatcher.as_mut().unwrap().dispatch(&data.world.res);
+        self.dispatcher.as_mut().unwrap().dispatch(&data.world);
         Trans::None
     }
 }

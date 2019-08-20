@@ -1,10 +1,10 @@
-use amethyst::{
+use amethyst::ecs::WorldExt; use amethyst::{
     assets::AssetStorage,
     ecs::{
         storage::ComponentEvent, BitSet, Entities, Join, Read, ReadStorage, ReaderId, System,
         World, WriteStorage,
     },
-    shred::{ResourceId, SystemData, World},
+    shred::{ResourceId, SystemData},
 };
 use character_model::{
     config::CharacterSequenceId,
@@ -129,13 +129,13 @@ impl<'s> System<'s> for CharacterCtsHandleUpdateSystem {
     fn setup(&mut self, world: &mut World) {
         Self::SystemData::setup(world);
         self.sequence_id_rid =
-            Some(WriteStorage::<CharacterSequenceId>::fetch(&res).register_reader());
+            Some(WriteStorage::<CharacterSequenceId>::fetch(world).register_reader());
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use amethyst::{
+    use amethyst::ecs::WorldExt; use amethyst::{
         ecs::{Builder, Entity, World},
         Error,
     };

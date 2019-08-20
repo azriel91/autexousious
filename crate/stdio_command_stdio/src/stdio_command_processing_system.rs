@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Read, System, SystemData, World, Write},
+    ecs::{Read, System, SystemData, World, WorldExt, Write},
     shrev::{EventChannel, ReaderId},
 };
 use derive_new::new;
@@ -60,7 +60,7 @@ impl<'s> System<'s> for StdioCommandProcessingSystem {
 
 #[cfg(test)]
 mod test {
-    use amethyst::{shrev::EventChannel, Error};
+    use amethyst::{ecs::WorldExt, shrev::EventChannel, Error};
     use amethyst_test::AmethystApplication;
     use state_registry::StateId;
     use stdio_command_model::{StateBarrier, StdinCommandBarrier, StdioCommandEvent};
@@ -73,7 +73,7 @@ mod test {
         AmethystApplication::blank()
             .with_system(
                 StdioCommandProcessingSystem::new(),
-                &StdioCommandProcessingSystem::type_name(),
+                StdioCommandProcessingSystem::type_name(),
                 &[],
             ) // kcov-ignore
             .with_setup(|world| {

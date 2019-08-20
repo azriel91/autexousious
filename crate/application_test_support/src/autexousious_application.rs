@@ -1,6 +1,6 @@
 use std::env;
 
-use amethyst::{
+use amethyst::ecs::WorldExt; use amethyst::{
     assets::Processor,
     audio::Source,
     core::TransformBundle,
@@ -133,7 +133,7 @@ impl AutexousiousApplication {
 
 #[cfg(test)]
 mod test {
-    use amethyst::{input::InputHandler, ui::Interactable, Error};
+    use amethyst::ecs::WorldExt; use amethyst::{input::InputHandler, ui::Interactable, Error};
     use game_input_model::ControlBindings;
     use game_model::{
         loaded::{CharacterPrefabs, EnergyPrefabs, MapPrefabs},

@@ -78,7 +78,7 @@ impl<'s> System<'s> for StickToTargetObjectSystem {
 mod tests {
     use amethyst::{
         core::{math::Vector3, transform::Transform},
-        ecs::{Builder, Entity, World},
+        ecs::{Builder, Entity, World, WorldExt},
         Error,
     };
     use amethyst_test::AmethystApplication;

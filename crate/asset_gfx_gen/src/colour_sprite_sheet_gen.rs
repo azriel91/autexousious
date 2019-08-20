@@ -288,6 +288,7 @@ impl ColourSpriteSheetGen {
 mod tests {
     use amethyst::{
         core::TransformBundle,
+        ecs::WorldExt,
         renderer::{sprite::SpriteRender, types::DefaultBackend, RenderEmptyBundle},
         Error,
     };

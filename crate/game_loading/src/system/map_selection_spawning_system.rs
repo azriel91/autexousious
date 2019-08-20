@@ -179,7 +179,7 @@ mod tests {
     }
 
     fn setup_system_data(world: &mut World) {
-        MapSelectionSpawningSystemData::setup(&mut world.res);
+        MapSelectionSpawningSystemData::setup(world);
     }
 
     fn load_maps(world: &mut World) {

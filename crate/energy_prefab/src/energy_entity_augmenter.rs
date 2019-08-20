@@ -1,4 +1,4 @@
-use amethyst::ecs::Entity;
+use amethyst::ecs::WorldExt; use amethyst::ecs::Entity;
 use object_model::play::Grounding;
 
 use crate::EnergyComponentStorages;
@@ -27,10 +27,11 @@ impl EnergyEntityAugmenter {
 
 #[cfg(test)]
 mod test {
-    use amethyst::{
+    use amethyst::ecs::WorldExt; use amethyst::{
         core::TransformBundle,
         ecs::{Builder, World},
         renderer::{types::DefaultBackend, RenderEmptyBundle},
+        shred::SystemData,
         Error,
     };
     use amethyst_test::AmethystApplication;
@@ -44,7 +45,7 @@ mod test {
         let assertion = |world: &mut World| {
             let entity = world.create_entity().build();
             {
-                let mut energy_component_storages = EnergyComponentStorages::fetch(&world.res);
+                let mut energy_component_storages = EnergyComponentStorages::fetch(&world);
                 EnergyEntityAugmenter::augment(entity, &mut energy_component_storages);
             }
 
@@ -55,7 +56,7 @@ mod test {
             .with_bundle(TransformBundle::new())
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_setup(|world| {
-                <EnergyComponentStorages as SystemData>::setup(&mut world.res);
+                <EnergyComponentStorages as SystemData>::setup(world);
             })
             .with_assertion(assertion)
             .run_isolated()

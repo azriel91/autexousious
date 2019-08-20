@@ -1,4 +1,4 @@
-use amethyst::{
+use amethyst::ecs::WorldExt; use amethyst::{
     ecs::{Entity, Read, ReadStorage, System, SystemData, World, Write, WriteStorage},
     shrev::{EventChannel, ReaderId},
 };
@@ -133,7 +133,7 @@ impl<'s> System<'s> for HitDetectionSystem {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::{
+    use amethyst::ecs::WorldExt; use amethyst::{
         ecs::{Builder, Entity, World},
         shrev::{EventChannel, ReaderId},
         Error,

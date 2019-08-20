@@ -139,7 +139,7 @@ mod test {
     use std::{collections::HashMap, convert::TryFrom};
 
     use amethyst::{
-        ecs::{Builder, Entity},
+        ecs::{Builder, Entity, WorldExt},
         input::{Axis as InputAxis, Bindings, Button, InputEvent, InputHandler},
         shrev::{EventChannel, ReaderId},
         Error,
@@ -270,7 +270,7 @@ mod test {
                         .map(|ev| *ev)
                         .collect::<Vec<ControlInputEvent>>()
                 };
-                let entity = world.read_resource::<Entity>().clone();
+                let entity = *world.read_resource::<Entity>();
 
                 assert_that!(
                     &input_events,

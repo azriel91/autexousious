@@ -1,4 +1,9 @@
-use amethyst::{assets::Processor, core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
+use amethyst::{
+    assets::Processor,
+    core::bundle::SystemBundle,
+    ecs::{DispatcherBuilder, World},
+    Error,
+};
 use derive_new::new;
 use sequence_model::loaded::WaitSequence;
 
@@ -9,7 +14,11 @@ use sequence_model::loaded::WaitSequence;
 pub struct SequenceLoadingBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for SequenceLoadingBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
+    fn build(
+        self,
+        _world: &mut World,
+        builder: &mut DispatcherBuilder<'a, 'b>,
+    ) -> Result<(), Error> {
         builder.add(
             Processor::<WaitSequence>::new(),
             "wait_sequence_processor",
@@ -21,7 +30,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for SequenceLoadingBundle {
 
 #[cfg(test)]
 mod test {
-    use amethyst::{assets::AssetStorage, Error};
+    use amethyst::{assets::AssetStorage, ecs::WorldExt, Error};
     use amethyst_test::AmethystApplication;
     use sequence_model::loaded::WaitSequence;
 

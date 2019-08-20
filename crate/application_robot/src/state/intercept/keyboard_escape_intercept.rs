@@ -30,7 +30,10 @@ impl<T> Intercept<T, StateEvent> for KeyboardEscapeIntercept {
 
 #[cfg(test)]
 mod test {
-    use amethyst::{ecs::World, StateData, StateEvent, Trans};
+    use amethyst::{
+        ecs::{World, WorldExt},
+        StateData, StateEvent, Trans,
+    };
     use debug_util_amethyst::assert_eq_opt_trans;
     use winit::{
         DeviceId, ElementState, Event, KeyboardInput, ModifiersState, ScanCode, VirtualKeyCode,

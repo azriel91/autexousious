@@ -41,11 +41,11 @@ where
         let mut dispatcher_builder = DispatcherBuilder::new();
 
         GameLoadingBundle::new()
-            .build(&mut dispatcher_builder)
+            .build(world, &mut dispatcher_builder)
             .expect("Failed to register `GameLoadingBundle`.");
 
         let mut dispatcher = dispatcher_builder.build();
-        dispatcher.setup(&mut world.res);
+        dispatcher.setup(world);
         self.dispatcher = Some(dispatcher);
     }
 
@@ -102,7 +102,7 @@ where
         data: StateData<'_, GameData<'_, '_>>,
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
         data.data.update(&data.world);
-        self.dispatcher.as_mut().unwrap().dispatch(&data.world.res);
+        self.dispatcher.as_mut().unwrap().dispatch(&data.world);
 
         if data.world.read_resource::<GameLoadingStatus>().loaded() {
             // TODO: `Trans:Push` when we have a proper map selection menu.

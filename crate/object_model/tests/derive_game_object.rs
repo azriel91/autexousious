@@ -1,5 +1,5 @@
 // kcov-ignore-start
-use amethyst::{
+use amethyst::ecs::WorldExt; use amethyst::{
     assets::{AssetStorage, Loader},
     ecs::{storage::VecStorage, Component},
     Result,

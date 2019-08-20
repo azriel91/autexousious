@@ -1,6 +1,6 @@
 use std::{fmt::Debug, marker::PhantomData, time::Duration};
 
-use amethyst::{core::Stopwatch, GameData, State, StateData, Trans};
+use amethyst::{core::Stopwatch, ecs::WorldExt, GameData, State, StateData, Trans};
 use application_event::AppEvent;
 use application_state::AutexState;
 use application_ui::ThemeLoader;

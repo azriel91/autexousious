@@ -1,4 +1,8 @@
-use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
+use amethyst::ecs::WorldExt; use amethyst::{
+    core::bundle::SystemBundle,
+    ecs::{DispatcherBuilder, World},
+    Error,
+};
 use application_event::AppEventVariant;
 use derive_new::new;
 use stdio_spi::MapperSystem;
@@ -11,7 +15,11 @@ use crate::CharacterSelectionEventStdinMapper;
 pub struct CharacterSelectionStdioBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionStdioBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
+    fn build(
+        self,
+        _world: &mut World,
+        builder: &mut DispatcherBuilder<'a, 'b>,
+    ) -> Result<(), Error> {
         builder.add(
             MapperSystem::<CharacterSelectionEventStdinMapper>::new(
                 AppEventVariant::CharacterSelection,
@@ -27,7 +35,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionStdioBundle {
 mod test {
     use std::env;
 
-    use amethyst::{shrev::EventChannel, Error};
+    use amethyst::ecs::WorldExt; use amethyst::{shrev::EventChannel, Error};
     use amethyst_test::AmethystApplication;
     use game_model::loaded::CharacterPrefabs;
     use stdio_spi::VariantAndTokens;

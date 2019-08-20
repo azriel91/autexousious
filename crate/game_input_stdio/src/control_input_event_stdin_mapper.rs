@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Entities, Join, ReadStorage},
+    ecs::{Entities, Join, ReadStorage, WorldExt},
     Error,
 };
 use game_input::InputControlled;
@@ -74,7 +74,7 @@ impl StdinMapper for ControlInputEventStdinMapper {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{Builder, Entities, Entity, ReadStorage},
+        ecs::{Builder, Entities, Entity, ReadStorage, WorldExt},
         Error,
     };
     use application_test_support::AutexousiousApplication;
@@ -111,7 +111,7 @@ mod tests {
                 );
 
                 assert!(result.is_ok());
-                let entity = world.read_resource::<Entity>().clone();
+                let entity = *world.read_resource::<Entity>();
                 assert_eq!(
                     ControlInputEvent::AxisMoved(AxisMoveEventData {
                         entity,
@@ -147,7 +147,7 @@ mod tests {
                 );
 
                 assert!(result.is_ok());
-                let entity = world.read_resource::<Entity>().clone();
+                let entity = *world.read_resource::<Entity>();
                 assert_eq!(
                     ControlInputEvent::ControlActionPress(ControlActionEventData {
                         entity,
@@ -182,7 +182,7 @@ mod tests {
                 );
 
                 assert!(result.is_ok());
-                let entity = world.read_resource::<Entity>().clone();
+                let entity = *world.read_resource::<Entity>();
                 assert_eq!(
                     ControlInputEvent::ControlActionRelease(ControlActionEventData {
                         entity,
