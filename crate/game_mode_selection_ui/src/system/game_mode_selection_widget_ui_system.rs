@@ -1,6 +1,7 @@
 use amethyst::{
     core::transform::Parent,
-    ecs::{Entities, Entity, Join, ReadExpect, System, WriteStorage},
+    ecs::{Entities, Entity, Join, ReadExpect, System, World, WriteStorage},
+    shred::{ResourceId, SystemData},
     ui::{Anchor, UiText, UiTransform},
 };
 use application_menu::{MenuItem, MenuItemWidgetState, Siblings};
@@ -14,7 +15,6 @@ use game_mode_selection_model::{
 };
 use heck::TitleCase;
 use log::debug;
-use shred_derive::SystemData;
 use strum::IntoEnumIterator;
 use typename_derive::TypeName;
 
@@ -293,7 +293,7 @@ mod test {
     #[test]
     fn initializes_ui_when_menu_item_widget_states_zero() -> Result<(), Error> {
         AutexousiousApplication::config_base()
-            .with_setup(|world| world.add_resource(input_config()))
+            .with_setup(|world| world.insert(input_config()))
             .with_system_single(
                 GameModeSelectionWidgetUiSystem::new(),
                 GameModeSelectionWidgetUiSystem::type_name(),

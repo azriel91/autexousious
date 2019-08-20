@@ -1,4 +1,8 @@
-use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
+use amethyst::{
+    core::bundle::SystemBundle,
+    ecs::{DispatcherBuilder, World},
+    Error,
+};
 use application_menu::MenuItemWidgetInputSystem;
 use derive_new::new;
 use game_mode_selection_model::GameModeIndex;
@@ -26,7 +30,11 @@ impl GameModeSelectionUiBundle {
 }
 
 impl<'a, 'b> SystemBundle<'a, 'b> for GameModeSelectionUiBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
+    fn build(
+        self,
+        _world: &mut World,
+        builder: &mut DispatcherBuilder<'a, 'b>,
+    ) -> Result<(), Error> {
         builder.add(
             MenuItemWidgetInputSystem::<GameModeIndex>::new(),
             &MenuItemWidgetInputSystem::<GameModeIndex>::type_name(),

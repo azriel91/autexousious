@@ -1,4 +1,8 @@
-use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
+use amethyst::{
+    core::bundle::SystemBundle,
+    ecs::{DispatcherBuilder, World},
+    Error,
+};
 use application_event::AppEventVariant;
 use derive_new::new;
 use stdio_spi::MapperSystem;
@@ -11,7 +15,11 @@ use crate::GameModeSelectionEventStdinMapper;
 pub struct GameModeSelectionStdioBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for GameModeSelectionStdioBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
+    fn build(
+        self,
+        _world: &mut World,
+        builder: &mut DispatcherBuilder<'a, 'b>,
+    ) -> Result<(), Error> {
         builder.add(
             MapperSystem::<GameModeSelectionEventStdinMapper>::new(
                 AppEventVariant::GameModeSelection,
@@ -27,7 +35,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameModeSelectionStdioBundle {
 mod test {
     use std::env;
 
-    use amethyst::shrev::EventChannel;
+    use amethyst::{ecs::WorldExt, shrev::EventChannel};
     use amethyst_test::prelude::*;
     use stdio_spi::VariantAndTokens;
 

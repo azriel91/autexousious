@@ -1,6 +1,7 @@
 use amethyst::{
-    ecs::{Entities, Join, Read, ReadStorage, Resources, System, SystemData, Write},
+    ecs::{Entities, Join, Read, ReadStorage, System, World, Write},
     input::InputEvent,
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
@@ -10,7 +11,6 @@ use game_input_model::{
     AxisMoveEventData, ControlActionEventData, ControlBindings, ControlInputEvent, InputConfig,
     PlayerActionControl, PlayerAxisControl,
 };
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 /// Sends `ControlInputEvent`s based on the `InputHandler` state.
@@ -119,15 +119,16 @@ impl<'s> System<'s> for InputToControlInputSystem {
         control_input_ec.drain_vec_write(&mut self.control_input_events);
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
 
         // TODO: figure out how to implement controller configuration updates, because we need to
         // update the resource and what this system stores.
-        res.insert(self.input_config.clone());
+        world.insert(self.input_config.clone());
 
         self.input_event_rid = Some(
-            res.fetch_mut::<EventChannel<InputEvent<ControlBindings>>>()
+            world
+                .fetch_mut::<EventChannel<InputEvent<ControlBindings>>>()
                 .register_reader(),
         );
     }
@@ -138,7 +139,7 @@ mod test {
     use std::{collections::HashMap, convert::TryFrom};
 
     use amethyst::{
-        ecs::{Builder, Entity},
+        ecs::{Builder, Entity, WorldExt},
         input::{Axis as InputAxis, Bindings, Button, InputEvent, InputHandler},
         shrev::{EventChannel, ReaderId},
         Error,
@@ -240,14 +241,14 @@ mod test {
                 let reader_id = world
                     .write_resource::<EventChannel<ControlInputEvent>>()
                     .register_reader(); // kcov-ignore
-                world.add_resource(reader_id);
+                world.insert(reader_id);
 
                 let controller_id = 0;
                 let entity = world
                     .create_entity()
                     .with(InputControlled::new(controller_id))
                     .build();
-                world.add_resource(entity);
+                world.insert(entity);
 
                 // Use the same closure so that the system does not send events before we send the
                 // key events.
@@ -269,7 +270,7 @@ mod test {
                         .map(|ev| *ev)
                         .collect::<Vec<ControlInputEvent>>()
                 };
-                let entity = world.read_resource::<Entity>().clone();
+                let entity = *world.read_resource::<Entity>();
 
                 assert_that!(
                     &input_events,

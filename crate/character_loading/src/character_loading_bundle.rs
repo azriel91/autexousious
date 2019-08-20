@@ -1,4 +1,9 @@
-use amethyst::{assets::Processor, core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
+use amethyst::{
+    assets::Processor,
+    core::bundle::SystemBundle,
+    ecs::{DispatcherBuilder, World},
+    Error,
+};
 use character_model::{
     config::CharacterDefinition,
     loaded::{Character, CharacterControlTransitions, CharacterControlTransitionsSequence},
@@ -20,7 +25,11 @@ pub const CHARACTER_PROCESSOR: &str = "character_processor";
 pub struct CharacterLoadingBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for CharacterLoadingBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
+    fn build(
+        self,
+        _world: &mut World,
+        builder: &mut DispatcherBuilder<'a, 'b>,
+    ) -> Result<(), Error> {
         builder.add(
             Processor::<CharacterDefinition>::new(),
             "character_definition_processor",
@@ -55,6 +64,7 @@ mod test {
     use amethyst::{
         assets::AssetStorage,
         core::TransformBundle,
+        ecs::WorldExt,
         renderer::{types::DefaultBackend, RenderEmptyBundle},
         Error,
     };

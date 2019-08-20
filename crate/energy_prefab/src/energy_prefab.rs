@@ -2,7 +2,8 @@ use std::mem;
 
 use amethyst::{
     assets::{AssetStorage, Handle, Loader, PrefabData, ProgressCounter},
-    ecs::{Entity, Read, ReadExpect, WriteStorage},
+    ecs::{Entity, Read, ReadExpect, World, WriteStorage},
+    shred::{ResourceId, SystemData},
     Error,
 };
 use derivative::Derivative;
@@ -14,7 +15,6 @@ use energy_model::{
 use log::debug;
 use object_model::config::ObjectAssetData;
 use object_prefab::{GameObjectPrefab, ObjectPrefab};
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 use crate::{EnergyComponentStorages, EnergyEntityAugmenter};

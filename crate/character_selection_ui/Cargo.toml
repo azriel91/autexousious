@@ -10,13 +10,11 @@ application_ui = { path = "../application_ui" }
 asset_model = { path = "../asset_model" }
 character_selection_model = { path = "../character_selection_model" }
 derivative = "1.0.2"
-derive-new = "0.5.6"
+derive-new = "0.5.8"
 game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
 game_model = { path = "../game_model" }
-log = "0.4.6"
-shred = "0.7.0"
-shred-derive = "0.5.1"
+log = "0.4.8"
 strum = "0.15.0"
 strum_macros = "0.15.0"
 typename = "0.1.1"

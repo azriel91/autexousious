@@ -1,13 +1,12 @@
 use amethyst::{
-    ecs::{Entity, Read, System, SystemData, WriteStorage},
-    shred::Resources,
+    ecs::{Entity, Read, System, World, WriteStorage},
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use charge_model::play::{ChargeBeginDelayClock, ChargeStatus};
 use derivative::Derivative;
 use derive_new::new;
 use game_input_model::{ControlAction, ControlActionEventData, ControlInputEvent};
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 /// Default number of ticks to wait before beginning to charge.
@@ -102,11 +101,12 @@ impl<'s> System<'s> for ChargeInitializeDetectionSystem {
             });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
 
         self.control_input_event_rid = Some(
-            res.fetch_mut::<EventChannel<ControlInputEvent>>()
+            world
+                .fetch_mut::<EventChannel<ControlInputEvent>>()
                 .register_reader(),
         );
     }
@@ -115,7 +115,7 @@ impl<'s> System<'s> for ChargeInitializeDetectionSystem {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{Builder, Entity, ReadStorage},
+        ecs::{Builder, Entity, ReadStorage, WorldExt},
         shrev::EventChannel,
         Error,
     };
@@ -197,7 +197,7 @@ mod tests {
                     .write_resource::<EventChannel<ControlInputEvent>>()
                     .single_write(control_input_event);
 
-                world.add_resource(entity);
+                world.insert(entity);
             })
             .with_assertion(move |world| {
                 let entity = *world.read_resource::<Entity>();

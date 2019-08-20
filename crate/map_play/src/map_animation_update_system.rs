@@ -13,5 +13,5 @@ impl<'s> System<'s> for MapAnimationUpdateSystem {
     type SystemData = MapAnimationUpdateSystemData<'s>;
 
     // TODO: Is this system necessary?
-    fn run(&mut self, (_animation_control_set_storage,): Self::SystemData) {} // kcov-ignore
+    fn run(&mut self, _animation_control_set_storage: Self::SystemData) {} // kcov-ignore
 }

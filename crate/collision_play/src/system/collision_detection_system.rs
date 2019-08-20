@@ -1,8 +1,9 @@
 use amethyst::{
     assets::{AssetStorage, Handle},
     core::{math::Vector3, transform::Transform},
-    ecs::{Entities, Join, Read, ReadStorage, System, Write},
+    ecs::{Entities, Join, Read, ReadStorage, System, World, Write},
     renderer::{SpriteRender, SpriteSheet},
+    shred::{ResourceId, SystemData},
     shrev::EventChannel,
 };
 use collision_model::{
@@ -14,7 +15,6 @@ use derive_new::new;
 use log::debug;
 use object_model::play::Mirrored;
 use shape_model::Volume;
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 /// Detects collisions for all objects.

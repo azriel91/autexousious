@@ -1,6 +1,9 @@
 use std::{fmt::Debug, marker::PhantomData};
 
-use amethyst::{ecs::World, GameData, State, StateData, Trans};
+use amethyst::{
+    ecs::{World, WorldExt},
+    GameData, State, StateData, Trans,
+};
 use application_event::AppEvent;
 use application_state::{AppState, AppStateBuilder, AutexState};
 use derivative::Derivative;
@@ -66,7 +69,7 @@ where
     S: AutexState<'a, 'b> + 'static,
 {
     fn reset_map_selection_state(&self, world: &mut World) {
-        world.add_resource(MapSelectionStatus::Pending);
+        world.insert(MapSelectionStatus::Pending);
     }
 }
 
@@ -76,13 +79,13 @@ where
     S: AutexState<'a, 'b> + 'static,
 {
     fn on_start(&mut self, mut data: StateData<'_, GameData<'a, 'b>>) {
-        data.world.add_resource(StateId::MapSelection);
+        data.world.insert(StateId::MapSelection);
 
         self.reset_map_selection_state(&mut data.world);
     }
 
     fn on_resume(&mut self, data: StateData<'_, GameData<'a, 'b>>) {
-        data.world.add_resource(StateId::MapSelection);
+        data.world.insert(StateId::MapSelection);
 
         self.reset_map_selection_state(data.world);
     }

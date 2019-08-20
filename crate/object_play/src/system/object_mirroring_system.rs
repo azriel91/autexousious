@@ -1,11 +1,11 @@
 use amethyst::{
     core::{math::RealField, transform::Transform},
-    ecs::{Join, ReadStorage, System, WriteStorage},
+    ecs::{Join, ReadStorage, System, World, WriteStorage},
+    shred::{ResourceId, SystemData},
 };
 use derivative::Derivative;
 use derive_new::new;
 use object_model::play::Mirrored;
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 /// Rotates `Transform` (and hence, sprites) of `Object`s that are `Mirrored`.

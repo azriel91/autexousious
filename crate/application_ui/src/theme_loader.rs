@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use amethyst::{
     assets::{AssetStorage, Loader},
-    ecs::World,
+    ecs::{World, WorldExt},
     ui::{FontAsset, FontHandle, TtfFormat},
     Error,
 };
@@ -54,7 +54,7 @@ impl ThemeLoader {
             })
             .collect::<HashMap<FontVariant, FontHandle>>();
 
-        world.add_resource(Theme::new(fonts));
+        world.insert(Theme::new(fonts));
 
         Ok(())
     }
@@ -103,7 +103,9 @@ mod test {
             {
                 assert_eq!("non_existent.ron", find_context.file_name);
             } else {
-                panic!("Expected resource `Find` error containing `non_existent.ron`"); // kcov-ignore
+                // kcov-ignore-start
+                panic!("Expected resource `Find` error containing `non_existent.ron`");
+                // kcov-ignore-end
             }
         };
 

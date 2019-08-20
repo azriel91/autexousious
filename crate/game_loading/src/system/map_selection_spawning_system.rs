@@ -88,14 +88,14 @@ mod tests {
             .with_setup(|world| {
                 let mut game_loading_status = GameLoadingStatus::new();
                 game_loading_status.map_loaded = true;
-                world.add_resource(game_loading_status);
+                world.insert(game_loading_status);
 
                 let layer_entity = world.create_entity().build();
-                world.add_resource(GameEntities::new(
+                world.insert(GameEntities::new(
                     HashMap::new(),
                     vec![layer_entity.clone()],
                 ));
-                world.add_resource(EffectReturn(layer_entity));
+                world.insert(EffectReturn(layer_entity));
             })
             .with_system_single(
                 MapSelectionSpawningSystem,
@@ -179,7 +179,7 @@ mod tests {
     }
 
     fn setup_system_data(world: &mut World) {
-        MapSelectionSpawningSystemData::setup(&mut world.res);
+        MapSelectionSpawningSystemData::setup(world);
     }
 
     fn load_maps(world: &mut World) {
@@ -208,8 +208,8 @@ mod tests {
                 SlugAndHandle::from((slug.clone(), map_handle))
             };
 
-            world.add_resource(MapSelection::Id(slug_and_handle));
-            world.add_resource(MapSelectionStatus::Confirmed);
+            world.insert(MapSelection::Id(slug_and_handle));
+            world.insert(MapSelectionStatus::Confirmed);
         }
     }
 }

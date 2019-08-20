@@ -2,9 +2,9 @@ use amethyst::{
     assets::AssetStorage,
     ecs::{
         storage::ComponentEvent, BitSet, Entities, Join, Read, ReadStorage, ReaderId, System,
-        SystemData, WriteStorage,
+        World, WriteStorage,
     },
-    shred::Resources,
+    shred::{ResourceId, SystemData},
 };
 use character_model::{
     config::CharacterSequenceId,
@@ -15,7 +15,6 @@ use derive_new::new;
 use log::error;
 use named_type::NamedType;
 use named_type_derive::NamedType;
-use shred_derive::SystemData;
 
 /// Updates the attached `CharacterControlTransitionsSequenceHandle`s when `SequenceId` changes.
 #[derive(Debug, Default, NamedType, new)]
@@ -127,17 +126,17 @@ impl<'s> System<'s> for CharacterCtsHandleUpdateSystem {
             });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
         self.sequence_id_rid =
-            Some(WriteStorage::<CharacterSequenceId>::fetch(&res).register_reader());
+            Some(WriteStorage::<CharacterSequenceId>::fetch(world).register_reader());
     }
 }
 
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{Builder, Entity, World},
+        ecs::{Builder, Entity, World, WorldExt},
         Error,
     };
     use application_test_support::{AutexousiousApplication, ObjectQueries, SequenceQueries};
@@ -177,7 +176,7 @@ mod tests {
                 .expect("Failed to insert `CharacterSequenceId`.");
         } // kcov-ignore
 
-        world.add_resource(entity);
+        world.insert(entity);
     }
 
     fn update_sequence(world: &mut World, sequence_id: CharacterSequenceId) {
@@ -191,7 +190,7 @@ mod tests {
             *sid = sequence_id;
         }
 
-        world.add_resource(entity);
+        world.insert(entity);
     }
 
     fn create_entity(world: &mut World) -> Entity {

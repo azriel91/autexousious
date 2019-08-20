@@ -1,6 +1,7 @@
 use amethyst::{
     assets::AssetStorage,
-    ecs::{Entities, Entity, Join, Read, ReadStorage, System, Write, WriteStorage},
+    ecs::{Entities, Entity, Join, Read, ReadStorage, System, World, Write, WriteStorage},
+    shred::{ResourceId, SystemData},
     shrev::EventChannel,
 };
 use derivative::Derivative;
@@ -11,7 +12,6 @@ use sequence_model::{
         FrameFreezeClock, FrameIndexClock, FrameWaitClock, SequenceStatus, SequenceUpdateEvent,
     },
 };
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 /// Ticks the logic clocks for sequences, and sends `SequenceUpdateEvent`s.
@@ -241,7 +241,8 @@ impl<'s> System<'s> for SequenceUpdateSystem {
 mod tests {
     use amethyst::{
         assets::{AssetStorage, Loader},
-        ecs::{Entities, Entity, Read, ReadExpect, SystemData, World, WriteStorage},
+        ecs::{Entities, Entity, Read, ReadExpect, World, WorldExt, WriteStorage},
+        shred::SystemData,
         shrev::{EventChannel, ReaderId},
         Error,
     };
@@ -528,12 +529,12 @@ mod tests {
     }
 
     fn setup_system_data(world: &mut World) {
-        SequenceUpdateSystemData::setup(&mut world.res);
+        SequenceUpdateSystemData::setup(world);
         let reader_id = {
             let mut ec = world.write_resource::<EventChannel<SequenceUpdateEvent>>();
             ec.register_reader()
         }; // kcov-ignore
-        world.add_resource(reader_id);
+        world.insert(reader_id);
     }
 
     fn initial_values(
@@ -590,7 +591,7 @@ mod tests {
             entity
         };
 
-        world.add_resource(entity);
+        world.insert(entity);
     }
 
     fn expect_values(

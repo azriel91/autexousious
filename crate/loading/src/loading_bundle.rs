@@ -1,6 +1,10 @@
 use std::path::PathBuf;
 
-use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
+use amethyst::{
+    core::bundle::SystemBundle,
+    ecs::{DispatcherBuilder, World},
+    Error,
+};
 use character_loading::CharacterLoadingStatus;
 use character_model::loaded::Character;
 use character_prefab::CharacterPrefab;
@@ -20,7 +24,11 @@ pub struct LoadingBundle {
 }
 
 impl<'a, 'b> SystemBundle<'a, 'b> for LoadingBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
+    fn build(
+        self,
+        _world: &mut World,
+        builder: &mut DispatcherBuilder<'a, 'b>,
+    ) -> Result<(), Error> {
         builder.add(
             ObjectAssetLoadingSystem::<Character, CharacterPrefab, CharacterLoadingStatus>::new(self.assets_dir.clone()),
             &ObjectAssetLoadingSystem::<Character, CharacterPrefab, CharacterLoadingStatus>::type_name(),
@@ -46,7 +54,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for LoadingBundle {
 mod test {
     use std::env;
 
-    use amethyst::Error;
+    use amethyst::{ecs::WorldExt, Error};
     use amethyst_test::AmethystApplication;
     use assets_test::ASSETS_PATH;
     use character_prefab::CharacterPrefab;

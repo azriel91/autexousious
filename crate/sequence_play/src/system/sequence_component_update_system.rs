@@ -2,15 +2,14 @@ use std::{convert::AsRef, fmt::Debug, marker::PhantomData, ops::Deref};
 
 use amethyst::{
     assets::{Asset, AssetStorage, Handle},
-    ecs::{Entity, Read, ReadStorage, System, SystemData, WriteStorage},
-    shred::Resources,
+    ecs::{Entity, Read, ReadStorage, System, World, WriteStorage},
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
 use derive_new::new;
 use sequence_model::{config::SequenceId, play::SequenceUpdateEvent};
 use sequence_model_spi::loaded::{ComponentDataExt, SequenceComponentData};
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 /// Updates the sequence component based on the current sequence ID.
@@ -146,10 +145,11 @@ where
             });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
         self.reader_id = Some(
-            res.fetch_mut::<EventChannel<SequenceUpdateEvent>>()
+            world
+                .fetch_mut::<EventChannel<SequenceUpdateEvent>>()
                 .register_reader(),
         );
     }
@@ -158,7 +158,7 @@ where
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{Builder, Entity, World},
+        ecs::{Builder, Entity, World, WorldExt},
         shrev::EventChannel,
         Error,
     };
@@ -249,7 +249,7 @@ mod tests {
             entity_builder.build()
         };
 
-        world.add_resource(entity);
+        world.insert(entity);
     }
 
     fn expect_component_values(

@@ -1,4 +1,7 @@
-use amethyst::ecs::{Entities, Entity, Read, System, Write, WriteStorage};
+use amethyst::{
+    ecs::{Entities, Entity, Read, System, World, Write, WriteStorage},
+    shred::{ResourceId, SystemData},
+};
 use character_prefab::CharacterPrefabHandle;
 use character_selection_model::CharacterSelections;
 use derivative::Derivative;
@@ -6,7 +9,6 @@ use derive_new::new;
 use game_input::InputControlled;
 use game_model::{loaded::CharacterPrefabs, play::GameEntities};
 use object_type::ObjectType;
-use shred_derive::SystemData;
 use team_model::play::{IndependentCounter, Team};
 use typename_derive::TypeName;
 
@@ -118,8 +120,9 @@ mod tests {
         assets::Processor,
         audio::Source,
         core::TransformBundle,
-        ecs::{Join, ReadStorage, System, SystemData, World},
+        ecs::{Join, ReadStorage, System, World, WorldExt},
         renderer::{types::DefaultBackend, RenderEmptyBundle},
+        shred::SystemData,
         window::ScreenDimensions,
         Error,
     };
@@ -153,13 +156,13 @@ mod tests {
             |world| {
                 let mut game_loading_status = GameLoadingStatus::new();
                 game_loading_status.character_augment_status = CharacterAugmentStatus::Rectify;
-                world.add_resource(game_loading_status);
+                world.insert(game_loading_status);
 
                 let mut character_selections = CharacterSelections::default();
                 character_selections
                     .selections
                     .insert(0, CHAR_BAT_SLUG.clone());
-                world.add_resource(character_selections);
+                world.insert(character_selections);
             },
             |world| {
                 let (input_controlleds, character_prefab_handles, teams) =
@@ -177,7 +180,7 @@ mod tests {
             |world| {
                 let mut game_loading_status = GameLoadingStatus::new();
                 game_loading_status.character_augment_status = CharacterAugmentStatus::Prefab;
-                world.add_resource(game_loading_status);
+                world.insert(game_loading_status);
 
                 let mut character_selections = CharacterSelections::default();
                 character_selections
@@ -186,7 +189,7 @@ mod tests {
                 character_selections
                     .selections
                     .insert(123, CHAR_BAT_SLUG.clone());
-                world.add_resource(character_selections);
+                world.insert(character_selections);
             },
             |world| {
                 let (input_controlleds, character_prefab_handles, teams) =
@@ -286,7 +289,7 @@ mod tests {
             .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_state(|| LoadingState::new(PopState))
             .with_setup(|world| {
-                <CharacterSelectionSpawningSystem as System>::SystemData::setup(&mut world.res)
+                <CharacterSelectionSpawningSystem as System>::SystemData::setup(world)
             })
             .with_setup(setup_fn)
             .with_system_single(

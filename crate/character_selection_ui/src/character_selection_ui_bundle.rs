@@ -1,4 +1,8 @@
-use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
+use amethyst::{
+    core::bundle::SystemBundle,
+    ecs::{DispatcherBuilder, World},
+    Error,
+};
 use derive_new::new;
 use typename::TypeName;
 
@@ -28,7 +32,11 @@ impl CharacterSelectionUiBundle {
 }
 
 impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionUiBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
+    fn build(
+        self,
+        _world: &mut World,
+        builder: &mut DispatcherBuilder<'a, 'b>,
+    ) -> Result<(), Error> {
         // Order this first, as it means we don't transition until attach has been pressed *after*
         // widgets are ready.
         builder.add(

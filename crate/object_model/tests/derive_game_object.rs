@@ -1,7 +1,7 @@
 // kcov-ignore-start
 use amethyst::{
     assets::{AssetStorage, Loader},
-    ecs::{storage::VecStorage, Component},
+    ecs::{storage::VecStorage, Component, WorldExt},
     Result,
 };
 use amethyst_test::AmethystApplication;
@@ -97,8 +97,8 @@ mod config {
 fn game_object_attribute_generates_handle_field() -> Result<()> {
     AmethystApplication::blank()
         .with_setup(|world| {
-            world.add_resource(AssetStorage::<config::MagicDefinition>::new());
-            world.add_resource(AssetStorage::<MagicObjectWrapper>::new());
+            world.insert(AssetStorage::<config::MagicDefinition>::new());
+            world.insert(AssetStorage::<MagicObjectWrapper>::new());
         })
         .with_assertion(|world| {
             let object_handle = {

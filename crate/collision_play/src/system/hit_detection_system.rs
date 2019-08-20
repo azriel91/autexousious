@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Entity, Read, ReadStorage, Resources, System, SystemData, Write, WriteStorage},
+    ecs::{Entity, Read, ReadStorage, System, SystemData, World, Write, WriteStorage},
     shrev::{EventChannel, ReaderId},
 };
 use collision_model::{
@@ -121,10 +121,11 @@ impl<'s> System<'s> for HitDetectionSystem {
         hit_ec.iter_write(hit_events);
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
         self.contact_event_rid = Some(
-            res.fetch_mut::<EventChannel<ContactEvent>>()
+            world
+                .fetch_mut::<EventChannel<ContactEvent>>()
                 .register_reader(),
         );
     }
@@ -133,7 +134,7 @@ impl<'s> System<'s> for HitDetectionSystem {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{Builder, Entity, World},
+        ecs::{Builder, Entity, World, WorldExt},
         shrev::{EventChannel, ReaderId},
         Error,
     };
@@ -165,7 +166,7 @@ mod tests {
 
                 send_event(world, contact_event(entity_from, entity_to));
 
-                world.add_resource((entity_from, entity_to));
+                world.insert((entity_from, entity_to));
             })
             .with_assertion(|world| {
                 let (entity_from, entity_to) = *world.read_resource::<(Entity, Entity)>();
@@ -193,7 +194,7 @@ mod tests {
                 }
                 send_event(world, contact_event(entity_from, entity_to));
 
-                world.add_resource((entity_from, entity_to));
+                world.insert((entity_from, entity_to));
             })
             .with_assertion(|world| {
                 let (entity_from, entity_to) = *world.read_resource::<(Entity, Entity)>();
@@ -220,7 +221,7 @@ mod tests {
                 }
                 send_event(world, contact_event(entity_from, entity_to));
 
-                world.add_resource((entity_from, entity_to));
+                world.insert((entity_from, entity_to));
             })
             .with_assertion(|world| {
                 assert_events(world, vec![]);
@@ -252,7 +253,7 @@ mod tests {
                     .collect::<Vec<ContactEvent>>();
                 send_events(world, contact_events);
 
-                world.add_resource((entity_from, entity_tos));
+                world.insert((entity_from, entity_tos));
             })
             .with_assertion(|world| {
                 let (entity_from, entity_tos) = {
@@ -293,7 +294,7 @@ mod tests {
                     })
                     .collect::<Vec<Entity>>();
 
-                world.add_resource((entity_from, entity_tos));
+                world.insert((entity_from, entity_tos));
             })
             .with_assertion(|world| {
                 let (entity_from, entity_tos) = {
@@ -317,7 +318,7 @@ mod tests {
             .write_resource::<EventChannel<HitEvent>>()
             .register_reader(); // kcov-ignore
 
-        world.add_resource(hit_event_rid);
+        world.insert(hit_event_rid);
     }
 
     fn send_event(world: &mut World, event: ContactEvent) {

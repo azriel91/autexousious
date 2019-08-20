@@ -1,6 +1,6 @@
 use amethyst::{
     assets::{AssetStorage, Handle, Prefab},
-    ecs::{Entity, World},
+    ecs::{Entity, World, WorldExt},
 };
 use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
 use character_model::loaded::CharacterObjectWrapper;

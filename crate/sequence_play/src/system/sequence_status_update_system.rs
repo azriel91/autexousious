@@ -3,10 +3,10 @@ use std::marker::PhantomData;
 use amethyst::{
     ecs::{
         storage::{ComponentEvent, Tracked},
-        BitSet, Component, Entities, Join, ReadStorage, ReaderId, System, SystemData, Write,
+        BitSet, Component, Entities, Join, ReadStorage, ReaderId, System, World, Write,
         WriteStorage,
     },
-    shred::Resources,
+    shred::{ResourceId, SystemData},
     shrev::EventChannel,
 };
 use derivative::Derivative;
@@ -15,7 +15,6 @@ use sequence_model::{
     config::SequenceId,
     play::{SequenceStatus, SequenceUpdateEvent},
 };
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 /// Updates `SequenceStatus` to `Begin` when `SequenceId` changes, and sends `SequenceBegin` events.
@@ -100,16 +99,16 @@ where
             });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
-        self.sequence_id_rid = Some(WriteStorage::<SeqId>::fetch(&res).register_reader());
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
+        self.sequence_id_rid = Some(WriteStorage::<SeqId>::fetch(world).register_reader());
     }
 }
 
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{Builder, Entity, World},
+        ecs::{Builder, Entity, World, WorldExt},
         shrev::{EventChannel, ReaderId},
         Error,
     };
@@ -167,7 +166,7 @@ mod tests {
             let mut ec = world.write_resource::<EventChannel<SequenceUpdateEvent>>();
             ec.register_reader()
         }; // kcov-ignore
-        world.add_resource(reader_id);
+        world.insert(reader_id);
     }
 
     fn insert_sequence(world: &mut World, sequence_id: TestObjectSequenceId) {
@@ -196,7 +195,7 @@ mod tests {
         }
         let entity = entity_builder.build();
 
-        world.add_resource(entity);
+        world.insert(entity);
     }
 
     fn sequence_begin_events(world: &mut World) -> Vec<SequenceUpdateEvent> {

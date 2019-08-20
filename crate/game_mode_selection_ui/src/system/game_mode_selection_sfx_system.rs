@@ -1,7 +1,7 @@
 use amethyst::{
     assets::AssetStorage,
     audio::{output::Output, Source},
-    ecs::{Read, Resources, System, SystemData},
+    ecs::{Read, System, SystemData, World},
     shrev::{EventChannel, ReaderId},
 };
 use application_menu::MenuEvent;
@@ -63,10 +63,11 @@ impl<'s> System<'s> for GameModeSelectionSfxSystem {
         }
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
         self.game_mode_selection_event_rid = Some(
-            res.fetch_mut::<EventChannel<GameModeSelectionEvent>>()
+            world
+                .fetch_mut::<EventChannel<GameModeSelectionEvent>>()
                 .register_reader(),
         );
     }
@@ -74,7 +75,11 @@ impl<'s> System<'s> for GameModeSelectionSfxSystem {
 
 #[cfg(test)]
 mod tests {
-    use amethyst::{ecs::World, shrev::EventChannel, Error};
+    use amethyst::{
+        ecs::{World, WorldExt},
+        shrev::EventChannel,
+        Error,
+    };
     use application_menu::MenuEvent;
     use application_test_support::AutexousiousApplication;
     use game_mode_selection_model::{GameModeIndex, GameModeSelectionEvent};

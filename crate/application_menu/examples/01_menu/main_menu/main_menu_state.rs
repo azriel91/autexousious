@@ -1,11 +1,11 @@
 use std::sync::Arc;
 
 use amethyst::{
-    ecs::prelude::*,
-    prelude::*,
+    ecs::{Builder, Entity, World, WorldExt},
     shred::ParSeq,
     shrev::{EventChannel, ReaderId},
     ui::{Anchor, FontHandle, Interactable, UiText, UiTransform},
+    GameData, State, StateData, StateEvent, Trans,
 };
 use application_menu::{MenuEvent, MenuItem};
 use application_ui::{FontVariant, Theme, ThemeLoader};
@@ -45,7 +45,7 @@ impl MainMenuState {
         let reader_id = menu_event_channel.register_reader();
         self.menu_event_reader.get_or_insert(reader_id);
 
-        world.add_resource(menu_event_channel);
+        world.insert(menu_event_channel);
     }
 
     fn terminate_menu_event_channel(&mut self, _world: &mut World) {
@@ -110,9 +110,9 @@ impl<'a, 'b> State<GameData<'a, 'b>, StateEvent> for MainMenuState {
     fn on_start(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
         let mut dispatch = ParSeq::new(
             UiEventHandlerSystem::new(),
-            data.world.read_resource::<Arc<rayon::ThreadPool>>().clone(),
+            (*data.world.read_resource::<Arc<rayon::ThreadPool>>()).clone(),
         );
-        ParSeq::setup(&mut dispatch, &mut data.world.res);
+        ParSeq::setup(&mut dispatch, &mut data.world);
         self.dispatch = Some(dispatch);
 
         self.load_theme(&mut data.world);
@@ -142,7 +142,7 @@ impl<'a, 'b> State<GameData<'a, 'b>, StateEvent> for MainMenuState {
         data: StateData<'_, GameData<'_, '_>>,
     ) -> Trans<GameData<'a, 'b>, StateEvent> {
         data.data.update(&data.world);
-        self.dispatch.as_mut().unwrap().dispatch(&data.world.res);
+        self.dispatch.as_mut().unwrap().dispatch(&data.world);
 
         let menu_event_channel = &mut data
             .world

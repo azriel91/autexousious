@@ -202,7 +202,7 @@ mod test {
     use amethyst::{
         assets::{AssetStorage, Processor, ProgressCounter},
         core::TransformBundle,
-        ecs::Read,
+        ecs::{Read, WorldExt},
         renderer::{types::DefaultBackend, RenderEmptyBundle, SpriteSheet, Texture},
     };
     use amethyst_test::AmethystApplication;
@@ -307,7 +307,7 @@ mod test {
                         .expect("Failed to load object")
                     };
 
-                    world.add_resource(object_wrapper);
+                    world.insert(object_wrapper);
                 })
                 .with_assertion(|world| {
                     let object_wrapper = world.read_resource::<CharacterObjectWrapper>();

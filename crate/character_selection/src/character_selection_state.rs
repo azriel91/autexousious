@@ -1,6 +1,9 @@
 use std::{fmt::Debug, marker::PhantomData};
 
-use amethyst::{ecs::World, GameData, State, StateData, Trans};
+use amethyst::{
+    ecs::{World, WorldExt},
+    GameData, State, StateData, Trans,
+};
 use application_event::AppEvent;
 use application_state::{AppState, AppStateBuilder, AutexState};
 use character_selection_model::{
@@ -71,8 +74,8 @@ where
     S: AutexState<'a, 'b> + 'static,
 {
     fn initialize_character_selections(&mut self, world: &mut World) {
-        world.add_resource(CharacterSelectionsStatus::Waiting);
-        world.add_resource(CharacterSelections::default());
+        world.insert(CharacterSelectionsStatus::Waiting);
+        world.insert(CharacterSelections::default());
     }
 }
 
@@ -83,13 +86,13 @@ where
     S: AutexState<'a, 'b> + 'static,
 {
     fn on_start(&mut self, mut data: StateData<'_, GameData<'a, 'b>>) {
-        data.world.add_resource(StateId::CharacterSelection);
+        data.world.insert(StateId::CharacterSelection);
 
         self.initialize_character_selections(&mut data.world);
     }
 
     fn on_resume(&mut self, data: StateData<'_, GameData<'a, 'b>>) {
-        data.world.add_resource(StateId::CharacterSelection);
+        data.world.insert(StateId::CharacterSelection);
 
         let mut selections_status = data.world.write_resource::<CharacterSelectionsStatus>();
         *selections_status = CharacterSelectionsStatus::Confirmed;

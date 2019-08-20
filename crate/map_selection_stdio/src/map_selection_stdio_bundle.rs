@@ -1,4 +1,8 @@
-use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
+use amethyst::{
+    core::bundle::SystemBundle,
+    ecs::{DispatcherBuilder, World},
+    Error,
+};
 use application_event::AppEventVariant;
 use derive_new::new;
 use stdio_spi::MapperSystem;
@@ -11,7 +15,11 @@ use crate::MapSelectionEventStdinMapper;
 pub struct MapSelectionStdioBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for MapSelectionStdioBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
+    fn build(
+        self,
+        _world: &mut World,
+        builder: &mut DispatcherBuilder<'a, 'b>,
+    ) -> Result<(), Error> {
         builder.add(
             MapperSystem::<MapSelectionEventStdinMapper>::new(AppEventVariant::MapSelection),
             &MapperSystem::<MapSelectionEventStdinMapper>::type_name(),
@@ -25,7 +33,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for MapSelectionStdioBundle {
 mod test {
     use std::env;
 
-    use amethyst::shrev::EventChannel;
+    use amethyst::{ecs::WorldExt, shrev::EventChannel};
     use amethyst_test::prelude::*;
     use game_model::loaded::MapPrefabs;
     use stdio_spi::VariantAndTokens;

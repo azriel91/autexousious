@@ -13,7 +13,6 @@
 
 mod main_menu;
 mod other;
-mod render_graph;
 
 use std::{cell::RefCell, process, rc::Rc, time::Duration};
 
@@ -21,9 +20,9 @@ use amethyst::{
     core::transform::TransformBundle,
     input::{InputBundle, StringBindings},
     prelude::*,
-    renderer::{types::DefaultBackend, RenderingSystem},
-    ui::UiBundle,
-    window::{DisplayConfig, WindowBundle},
+    renderer::{plugins::RenderToWindow, types::DefaultBackend, RenderingBundle},
+    ui::{RenderUi, UiBundle},
+    window::DisplayConfig,
     GameData, StateEvent,
 };
 use application::{
@@ -36,7 +35,7 @@ use application_robot::{
 };
 use structopt::StructOpt;
 
-use crate::{main_menu::MainMenuState, render_graph::RenderGraph};
+use crate::main_menu::MainMenuState;
 
 const TITLE: &str = "Example 01: Menu";
 
@@ -82,13 +81,16 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
     let state = RobotState::new_with_intercepts(Box::new(MainMenuState::new()), intercepts);
 
     let game_data = GameDataBuilder::default()
-        .with_bundle(WindowBundle::from_config(display_config))?
         .with_bundle(TransformBundle::new())?
         .with_bundle(InputBundle::<StringBindings>::new())?
         .with_bundle(UiBundle::<StringBindings>::new())?
-        .with_thread_local(RenderingSystem::<DefaultBackend, _>::new(
-            RenderGraph::default(),
-        ));
+        .with_bundle(
+            RenderingBundle::<DefaultBackend>::new()
+                .with_plugin(
+                    RenderToWindow::from_config(display_config).with_clear([0., 0., 0., 1.0]),
+                )
+                .with_plugin(RenderUi::default()),
+        )?;
     let mut app = Application::new("assets", state, game_data)?;
 
     if !opt.no_run {

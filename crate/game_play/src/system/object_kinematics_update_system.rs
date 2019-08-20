@@ -39,7 +39,7 @@ impl<'s> System<'s> for ObjectKinematicsUpdateSystem {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        ecs::{Builder, Entity, SystemData},
+        ecs::{Builder, Entity, SystemData, WorldExt},
         input::StringBindings,
         Error,
     };
@@ -102,7 +102,7 @@ mod test {
     ) -> Result<(), Error> {
         AmethystApplication::ui_base::<StringBindings>()
             .with_setup(move |world| {
-                ObjectKinematicsUpdateSystemData::setup(&mut world.res);
+                ObjectKinematicsUpdateSystemData::setup(world);
 
                 let mut entity_builder = world.create_entity().with(position).with(velocity);
                 if let Some(frame_freeze_clock) = frame_freeze_clock {
@@ -110,7 +110,7 @@ mod test {
                 }
                 let entity = entity_builder.build();
 
-                world.add_resource(entity);
+                world.insert(entity);
             })
             .with_system_single(
                 ObjectKinematicsUpdateSystem::new(),

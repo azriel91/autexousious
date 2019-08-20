@@ -9,7 +9,7 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-s
 application_event = { path = "../application_event" }
 asset_model = { path = "../asset_model" }
 character_selection_model = { path = "../character_selection_model" }
-derive-new = "0.5.6"
+derive-new = "0.5.8"
 game_input_model = { path = "../game_input_model" }
 game_model = { path = "../game_model" }
 stdio_spi = { path = "../stdio_spi" }

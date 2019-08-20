@@ -1,5 +1,8 @@
 use amethyst::{
-    assets::PrefabLoaderSystem, core::bundle::SystemBundle, ecs::DispatcherBuilder, Error,
+    assets::PrefabLoaderSystemDesc,
+    core::{bundle::SystemBundle, SystemDesc},
+    ecs::{DispatcherBuilder, World},
+    Error,
 };
 use derive_new::new;
 
@@ -31,7 +34,11 @@ impl EnergyPrefabBundle {
 }
 
 impl<'a, 'b> SystemBundle<'a, 'b> for EnergyPrefabBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
+    fn build(
+        self,
+        world: &mut World,
+        builder: &mut DispatcherBuilder<'a, 'b>,
+    ) -> Result<(), Error> {
         let deps = self
             .system_dependencies
             .as_ref()
@@ -40,7 +47,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for EnergyPrefabBundle {
             });
 
         builder.add(
-            PrefabLoaderSystem::<EnergyPrefab>::default(),
+            PrefabLoaderSystemDesc::<EnergyPrefab>::default().build(world),
             ENERGY_PREFAB_LOADER_SYSTEM,
             &deps,
         ); // kcov-ignore
@@ -52,6 +59,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for EnergyPrefabBundle {
 mod test {
     use amethyst::{
         assets::{AssetStorage, Prefab},
+        ecs::WorldExt,
         Error,
     };
     use amethyst_test::AmethystApplication;

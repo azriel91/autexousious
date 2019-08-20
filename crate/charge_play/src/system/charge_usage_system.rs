@@ -1,6 +1,6 @@
 use amethyst::{
-    ecs::{ReadStorage, System, SystemData, Write, WriteStorage},
-    shred::Resources,
+    ecs::{ReadStorage, System, World, Write, WriteStorage},
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use charge_model::{
@@ -10,7 +10,6 @@ use charge_model::{
 use derivative::Derivative;
 use derive_new::new;
 use log::warn;
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 /// Subtracts `ChargeTrackerClock` when used.
@@ -106,11 +105,12 @@ impl<'s> System<'s> for ChargeUsageSystem {
         });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
 
         self.charge_event_rid = Some(
-            res.fetch_mut::<EventChannel<ChargeUseEvent>>()
+            world
+                .fetch_mut::<EventChannel<ChargeUseEvent>>()
                 .register_reader(),
         );
     }
@@ -119,7 +119,7 @@ impl<'s> System<'s> for ChargeUsageSystem {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{Builder, Entity, ReadStorage, World},
+        ecs::{Builder, Entity, ReadStorage, World, WorldExt},
         shrev::EventChannel,
         Error,
     };
@@ -291,7 +291,7 @@ mod tests {
 
                 send_event(world, charge_use_event);
 
-                world.add_resource(entity);
+                world.insert(entity);
             })
             .with_assertion(move |world| {
                 let entity = *world.read_resource::<Entity>();

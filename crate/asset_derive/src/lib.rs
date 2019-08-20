@@ -57,10 +57,9 @@
 extern crate proc_macro;
 
 use proc_macro::TokenStream;
-use proc_macro2::Span;
 use proc_macro_roids::IdentExt;
 use quote::quote;
-use syn::{parse_macro_input, DeriveInput, Ident, Meta};
+use syn::{parse_macro_input, parse_quote, DeriveInput, Meta};
 
 const ASSET_DATA_ATTRIBUTE: &str = "asset_data";
 
@@ -82,8 +81,8 @@ pub fn derive_asset(item: TokenStream) -> TokenStream {
             })
         })
         .map(|meta| {
-            if let Meta::Word(ident) = meta {
-                ident
+            if let Meta::Path(path) = meta {
+                path
             } else {
                 panic!(
                     "Expected type name in `{}` attribute.",
@@ -91,7 +90,7 @@ pub fn derive_asset(item: TokenStream) -> TokenStream {
                 )
             }
         })
-        .unwrap_or_else(|| Ident::new("Self", Span::call_site()));
+        .unwrap_or_else(|| parse_quote!(Self));
     let (impl_generics, ty_generics, where_clause) = ast.generics.split_for_impl();
 
     let type_name_string = type_name.to_string();
@@ -120,7 +119,7 @@ pub fn derive_asset(item: TokenStream) -> TokenStream {
     };
 
     // Generate trivial processor impl for `Self` asset datas.
-    if asset_data == "Self" {
+    if asset_data == parse_quote!(Self) {
         token_stream_2.extend(quote! {
             impl #impl_generics std::convert::From<#type_name #ty_generics> for
                 std::result::Result<

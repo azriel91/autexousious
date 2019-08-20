@@ -87,9 +87,9 @@ mod test {
                 .with_setup(setup_components)
                 .with_setup(|world| {
                     let entity = world.create_entity().with(TestComponent(123)).build();
-                    world.add_resource(EffectReturn(entity));
+                    world.insert(EffectReturn(entity));
                 })
-                .with_system_single(system.clone(), system_name.clone(), &[])
+                .with_system_single(system.clone(), &system_name, &[])
                 .with_assertion(|world| assert_last_value(world, 123))
                 .with_effect(|world| {
                     let entity = world.read_resource::<EffectReturn<Entity>>().0.clone();
@@ -101,7 +101,7 @@ mod test {
 
                     test_component.0 = 456;
                 })
-                .with_system_single(system, system_name, &[])
+                .with_system_single(system, &system_name, &[])
                 .with_assertion(|world| assert_last_value(world, 456))
                 .run()
                 .is_ok()
@@ -109,7 +109,7 @@ mod test {
     }
 
     fn setup_components(world: &mut World) {
-        LastTrackerSystemData::<TestComponent>::setup(&mut world.res);
+        LastTrackerSystemData::<TestComponent>::setup(world);
     }
 
     fn assert_last_value(world: &mut World, value: i32) {

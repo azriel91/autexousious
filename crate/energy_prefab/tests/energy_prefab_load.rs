@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use amethyst::{
     assets::{AssetStorage, Handle, Loader, Prefab, PrefabLoader},
     core::TransformBundle,
-    ecs::{Builder, Entity, Read, ReadExpect, World},
+    ecs::{Builder, Entity, Read, ReadExpect, World, WorldExt},
     renderer::{
         loaders::load_from_srgba,
         palette::Srgba,
@@ -45,13 +45,13 @@ fn energy_prefab_load() -> Result<(), Error> {
                 let energy_prefab = EnergyPrefab::new(object_asset_data);
                 energy_prefab_loader.load_from_data(Prefab::new_main(energy_prefab), ())
             };
-            world.add_resource(energy_prefab_handle);
+            world.insert(energy_prefab_handle);
         })
         .with_setup(|_world| {}) // Allow texture to load.
         .with_setup(|world| {
-            let energy_prefab_handle = world.read_resource::<EnergyPrefabHandle>().clone();
+            let energy_prefab_handle = (*world.read_resource::<EnergyPrefabHandle>()).clone();
             let energy_entity = world.create_entity().with(energy_prefab_handle).build();
-            world.add_resource(energy_entity);
+            world.insert(energy_entity);
         })
         .with_effect(|_world| {})
         .with_assertion(|world| {

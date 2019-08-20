@@ -1,4 +1,9 @@
-use amethyst::{core::Transform, ecs::WriteStorage, renderer::transparent::Transparent};
+use amethyst::{
+    core::Transform,
+    ecs::{World, WriteStorage},
+    renderer::transparent::Transparent,
+    shred::{ResourceId, SystemData},
+};
 use derivative::Derivative;
 use kinematic_model::config::{Position, Velocity};
 use object_model::play::Mirrored;
@@ -7,7 +12,6 @@ use sequence_model::{
     loaded::SequenceEndTransitions,
     play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
 };
-use shred_derive::SystemData;
 
 /// Common game object `Component` storages.
 ///

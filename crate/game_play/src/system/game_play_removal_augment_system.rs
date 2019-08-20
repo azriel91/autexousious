@@ -1,12 +1,11 @@
 use amethyst::{
-    ecs::{ReadExpect, System, SystemData, Write, WriteStorage},
-    shred::Resources,
+    ecs::{ReadExpect, System, World, Write, WriteStorage},
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
 use derive_new::new;
 use game_play_model::{GamePlayEntity, GamePlayEntityId};
-use shred_derive::SystemData;
 use spawn_model::play::SpawnEvent;
 use state_registry::StateId;
 use typename_derive::TypeName;
@@ -65,11 +64,12 @@ impl<'s> System<'s> for GamePlayRemovalAugmentSystem {
         }
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
 
         self.spawn_event_rid = Some(
-            res.fetch_mut::<EventChannel<SpawnEvent>>()
+            world
+                .fetch_mut::<EventChannel<SpawnEvent>>()
                 .register_reader(),
         );
     }
@@ -80,7 +80,7 @@ mod tests {
     use std::str::FromStr;
 
     use amethyst::{
-        ecs::{Builder, Entity, World},
+        ecs::{Builder, Entity, World, WorldExt},
         shrev::EventChannel,
         Error,
     };
@@ -120,7 +120,7 @@ mod tests {
     fn spawn_entity(world: &mut World) {
         let entity_parent = world.create_entity().build();
         let entity_spawned = world.create_entity().build();
-        world.add_resource(entity_spawned);
+        world.insert(entity_spawned);
 
         let spawn = Spawn::new(
             AssetSlug::from_str("default/fireball")

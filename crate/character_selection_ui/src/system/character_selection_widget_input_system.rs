@@ -1,6 +1,6 @@
 use amethyst::{
-    ecs::{Read, ReadStorage, SystemData, Write, WriteStorage},
-    shred::{Resources, System},
+    ecs::{Read, ReadStorage, World, Write, WriteStorage},
+    shred::{ResourceId, System, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
@@ -12,7 +12,6 @@ use game_input_model::{
 };
 use game_model::loaded::CharacterPrefabs;
 use log::debug;
-use shred_derive::SystemData;
 
 use typename_derive::TypeName;
 
@@ -268,11 +267,12 @@ impl<'s> System<'s> for CharacterSelectionWidgetInputSystem {
             });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
 
         self.control_input_event_rid = Some(
-            res.fetch_mut::<EventChannel<ControlInputEvent>>()
+            world
+                .fetch_mut::<EventChannel<ControlInputEvent>>()
                 .register_reader(),
         );
     }
@@ -281,7 +281,8 @@ impl<'s> System<'s> for CharacterSelectionWidgetInputSystem {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        ecs::{Builder, Entity, SystemData, World},
+        ecs::{Builder, Entity, World, WorldExt},
+        shred::SystemData,
         shrev::{EventChannel, ReaderId},
         Error,
     };
@@ -482,17 +483,17 @@ mod test {
                 &[],
             ) // kcov-ignore
             .with_setup(move |world| {
-                CharacterSelectionWidgetInputSystemData::setup(&mut world.res);
+                CharacterSelectionWidgetInputSystemData::setup(world);
 
                 let setup_character_selection = setup_character_selection_fn(world);
                 let entity = widget_entity(world, setup_widget_state, setup_character_selection);
-                world.add_resource(entity);
+                world.insert(entity);
 
                 let event_channel_reader = world
                     .write_resource::<EventChannel<CharacterSelectionEvent>>()
                     .register_reader(); // kcov-ignore
 
-                world.add_resource(event_channel_reader);
+                world.insert(event_channel_reader);
             })
             .with_effect(move |world| {
                 if let Some(control_input_event_fn) = control_input_event_fn {

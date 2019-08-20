@@ -5,6 +5,6 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
 [dependencies]
-serde = "1.0.94"
+serde = "1.0.99"
 strum = "0.15.0"
 strum_macros = "0.15.0"

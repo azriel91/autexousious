@@ -99,8 +99,9 @@ impl ObjectEntityAugmenter {
 mod tests {
     use amethyst::{
         core::transform::Transform,
-        ecs::{Builder, ReadStorage, SystemData, World},
+        ecs::{Builder, ReadStorage, World, WorldExt},
         renderer::transparent::Transparent,
+        shred::SystemData,
         Error,
     };
     use kinematic_model::config::{Position, Velocity};
@@ -122,7 +123,7 @@ mod tests {
             {
                 let object_wrapper = world.read_resource::<TestObjectObjectWrapper>();
 
-                let mut object_component_storages = ObjectComponentStorages::fetch(&world.res);
+                let mut object_component_storages = ObjectComponentStorages::fetch(&world);
                 ObjectEntityAugmenter::augment(
                     entity,
                     &mut object_component_storages,
@@ -145,10 +146,8 @@ mod tests {
 
         ObjectTest::application()
             .with_setup(|world| {
-                <FrameComponentStorages as SystemData>::setup(&mut world.res);
-                <ObjectComponentStorages<TestObjectSequenceId> as SystemData>::setup(
-                    &mut world.res,
-                );
+                <FrameComponentStorages as SystemData>::setup(world);
+                <ObjectComponentStorages<TestObjectSequenceId> as SystemData>::setup(world);
             })
             .with_setup(setup_object_wrapper)
             .with_assertion(assert_components_augmented)
@@ -159,10 +158,8 @@ mod tests {
     fn does_not_overwrite_existing_component() -> Result<(), Error> {
         ObjectTest::application()
             .with_setup(|world| {
-                <FrameComponentStorages as SystemData>::setup(&mut world.res);
-                <ObjectComponentStorages<TestObjectSequenceId> as SystemData>::setup(
-                    &mut world.res,
-                );
+                <FrameComponentStorages as SystemData>::setup(world);
+                <ObjectComponentStorages<TestObjectSequenceId> as SystemData>::setup(world);
             })
             .with_setup(setup_object_wrapper)
             .with_assertion(|world| {
@@ -173,7 +170,7 @@ mod tests {
                 {
                     let object_wrapper = world.read_resource::<TestObjectObjectWrapper>();
 
-                    let mut object_component_storages = ObjectComponentStorages::fetch(&world.res);
+                    let mut object_component_storages = ObjectComponentStorages::fetch(&world);
                     ObjectEntityAugmenter::augment(
                         entity,
                         &mut object_component_storages,
@@ -203,6 +200,6 @@ mod tests {
 
     fn setup_object_wrapper(world: &mut World) {
         let object_wrapper = ObjectBuilder::<TestObject>::new().build_wrapper(&*world);
-        world.add_resource(object_wrapper);
+        world.insert(object_wrapper);
     }
 }

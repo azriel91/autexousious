@@ -54,21 +54,21 @@ impl<'s> System<'s> for MapSelectionSystem {
         }
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
 
-        if res.try_fetch::<MapSelection>().is_none() {
-            let slug_and_handle = res
+        if world.try_fetch::<MapSelection>().is_none() {
+            let slug_and_handle = world
                 .fetch::<MapPrefabs>()
                 .iter()
                 .next()
                 .map(SlugAndHandle::from)
                 .expect("Expected at least one map to be loaded.");
 
-            res.insert(MapSelection::Random(slug_and_handle));
+            world.insert(MapSelection::Random(slug_and_handle));
         }
 
-        let mut selection_event_channel = res.fetch_mut::<EventChannel<MapSelectionEvent>>();
+        let mut selection_event_channel = world.fetch_mut::<EventChannel<MapSelectionEvent>>();
         self.reader_id = Some(selection_event_channel.register_reader());
     }
 }
@@ -114,7 +114,7 @@ mod test {
                 .with_setup(|world| {
                     let fade_snh = SlugAndHandle::from((&*world, MAP_FADE_SLUG.clone()));
                     let map_selection = MapSelection::Id(fade_snh);
-                    world.add_resource(map_selection);
+                    world.insert(map_selection);
 
                     // Send event, if the event is not responded to, then we know the system returns
                     // early.
@@ -157,7 +157,7 @@ mod test {
                 .with_setup(|world| {
                     let fade_snh = SlugAndHandle::from((&*world, MAP_FADE_SLUG.clone()));
                     let map_selection = MapSelection::Id(fade_snh);
-                    world.add_resource(map_selection);
+                    world.insert(map_selection);
 
                     // Send event, if the event is responded to, then we know the system has read
                     // it.
@@ -185,7 +185,7 @@ mod test {
     }
 
     fn setup_components(world: &mut World) {
-        MapSelectionSystemData::setup(&mut world.res);
+        MapSelectionSystemData::setup(world);
     }
 
     fn load_maps(world: &mut World) {

@@ -1,6 +1,9 @@
 use std::collections::BTreeMap;
 
-use amethyst::{assets::Handle, ecs::World};
+use amethyst::{
+    assets::Handle,
+    ecs::{World, WorldExt},
+};
 use derivative::Derivative;
 use derive_new::new;
 

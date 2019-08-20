@@ -1,9 +1,7 @@
 use amethyst::{
     assets::AssetStorage,
-    ecs::{
-        BitSet, Entities, Entity, Join, Read, ReadStorage, Resources, System, SystemData, Write,
-        WriteStorage,
-    },
+    ecs::{BitSet, Entities, Entity, Join, Read, ReadStorage, System, World, Write, WriteStorage},
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use approx::{relative_eq, relative_ne};
@@ -26,7 +24,6 @@ use sequence_model::loaded::{
     ActionHold, ActionPress, ActionRelease, AxisTransition, ControlTransition,
     ControlTransitionLike, FallbackTransition,
 };
-use shred_derive::SystemData;
 
 use crate::ControlTransitionRequirementSystemData;
 
@@ -511,11 +508,12 @@ impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
         );
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
 
         self.control_input_event_rid = Some(
-            res.fetch_mut::<EventChannel<ControlInputEvent>>()
+            world
+                .fetch_mut::<EventChannel<ControlInputEvent>>()
                 .register_reader(),
         );
     }
@@ -527,7 +525,8 @@ mod tests {
 
     use amethyst::{
         assets::{AssetStorage, Loader},
-        ecs::{Builder, Entity, Read, ReadExpect, World, WriteStorage},
+        ecs::{Builder, Entity, Read, ReadExpect, World, WorldExt, WriteStorage},
+        shred::{ResourceId, SystemData},
         shrev::{EventChannel, ReaderId},
         Error,
     };
@@ -553,7 +552,6 @@ mod tests {
         Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
     };
     use object_model::play::{HealthPoints, Mirrored, SkillPoints};
-    use shred_derive::SystemData;
 
     use super::CharacterControlTransitionsTransitionSystem;
 
@@ -610,7 +608,7 @@ mod tests {
         run_test(
             SetupParams {
                 sequence_id: CharacterSequenceId::Stand,
-                controller_input: controller_input,
+                controller_input,
                 control_input_event_fn: None,
                 charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
@@ -629,7 +627,7 @@ mod tests {
         run_test(
             SetupParams {
                 sequence_id: CharacterSequenceId::Stand,
-                controller_input: controller_input,
+                controller_input,
                 control_input_event_fn: Some(|entity| {
                     let control_action_event_data = ControlActionEventData {
                         entity,
@@ -655,7 +653,7 @@ mod tests {
         run_test(
             SetupParams {
                 sequence_id: CharacterSequenceId::Stand,
-                controller_input: controller_input,
+                controller_input,
                 control_input_event_fn: Some(|entity| {
                     let control_action_event_data = ControlActionEventData {
                         entity,
@@ -726,7 +724,7 @@ mod tests {
         run_test(
             SetupParams {
                 sequence_id: CharacterSequenceId::Stand,
-                controller_input: controller_input,
+                controller_input,
                 control_input_event_fn: None,
                 charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
@@ -745,7 +743,7 @@ mod tests {
         run_test(
             SetupParams {
                 sequence_id: CharacterSequenceId::Stand,
-                controller_input: controller_input,
+                controller_input,
                 control_input_event_fn: Some(|entity| {
                     let axis_move_event_data = AxisMoveEventData {
                         entity,
@@ -772,7 +770,7 @@ mod tests {
         run_test(
             SetupParams {
                 sequence_id: CharacterSequenceId::Stand,
-                controller_input: controller_input,
+                controller_input,
                 control_input_event_fn: Some(|entity| {
                     let axis_move_event_data = AxisMoveEventData {
                         entity,
@@ -814,7 +812,7 @@ mod tests {
         run_test(
             SetupParams {
                 sequence_id: CharacterSequenceId::Stand,
-                controller_input: controller_input,
+                controller_input,
                 control_input_event_fn: None,
                 charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
@@ -919,7 +917,7 @@ mod tests {
                     )
                 };
 
-                world.add_resource(character_control_transitions_sequence_handle);
+                world.insert(character_control_transitions_sequence_handle);
             })
             // Allow `AssetStorage`s to process loaded data.
             .with_setup(move |world| {
@@ -988,7 +986,7 @@ mod tests {
                     send_event(world, control_input_event_fn(entity));
                 }
 
-                world.add_resource(entity);
+                world.insert(entity);
             })
             .with_assertion(move |world| {
                 let entity = *world.read_resource::<Entity>();
@@ -1036,7 +1034,7 @@ mod tests {
             let mut ec = world.write_resource::<EventChannel<ChargeUseEvent>>();
             ec.register_reader()
         }; // kcov-ignore
-        world.add_resource(reader_id);
+        world.insert(reader_id);
     }
 
     fn send_event(world: &mut World, event: ControlInputEvent) {

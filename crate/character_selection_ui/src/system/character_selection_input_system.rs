@@ -1,5 +1,6 @@
 use amethyst::{
-    ecs::{Join, Read, ReadStorage, Resources, System, SystemData, Write},
+    ecs::{Join, Read, ReadStorage, System, World, Write},
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use character_selection_model::CharacterSelectionEvent;
@@ -7,7 +8,6 @@ use derivative::Derivative;
 use derive_new::new;
 use game_input_model::{ControlAction, ControlActionEventData, ControlInputEvent};
 use log::debug;
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 use crate::{CharacterSelectionWidget, WidgetState};
@@ -136,11 +136,12 @@ impl<'s> System<'s> for CharacterSelectionInputSystem {
             });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
 
         self.control_input_event_rid = Some(
-            res.fetch_mut::<EventChannel<ControlInputEvent>>()
+            world
+                .fetch_mut::<EventChannel<ControlInputEvent>>()
                 .register_reader(),
         );
     }
@@ -149,7 +150,8 @@ impl<'s> System<'s> for CharacterSelectionInputSystem {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        ecs::{Builder, Entity, SystemData, World},
+        ecs::{Builder, Entity, World, WorldExt},
+        shred::SystemData,
         shrev::{EventChannel, ReaderId},
         Error,
     };
@@ -243,7 +245,7 @@ mod test {
                 &[],
             ) // kcov-ignore
             .with_setup(move |world| {
-                CharacterSelectionInputSystemData::setup(&mut world.res);
+                CharacterSelectionInputSystemData::setup(world);
 
                 let entities = setup_widget_states
                     .iter()
@@ -252,13 +254,13 @@ mod test {
                         widget_entity(world, *setup_widget_state, character_selection)
                     })
                     .collect::<Vec<Entity>>();
-                world.add_resource(entities);
+                world.insert(entities);
 
                 let event_channel_reader = world
                     .write_resource::<EventChannel<CharacterSelectionEvent>>()
                     .register_reader(); // kcov-ignore
 
-                world.add_resource(event_channel_reader);
+                world.insert(event_channel_reader);
             })
             .with_effect(move |world| {
                 if let Some(control_input_event_fn) = control_input_event_fn {

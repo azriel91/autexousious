@@ -1,6 +1,6 @@
 use amethyst::{
     ecs::{Join, Read, ReadStorage, System, SystemData, WriteStorage},
-    shred::Resources,
+    shred::World,
     shrev::{EventChannel, ReaderId},
 };
 use character_model::config::CharacterSequenceId;
@@ -139,10 +139,11 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
             });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
         self.sequence_update_event_rid = Some(
-            res.fetch_mut::<EventChannel<SequenceUpdateEvent>>()
+            world
+                .fetch_mut::<EventChannel<SequenceUpdateEvent>>()
                 .register_reader(),
         );
     }

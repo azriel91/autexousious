@@ -3,14 +3,14 @@ use std::{marker::PhantomData, ops::Deref, sync::Arc};
 use amethyst::{
     assets::{AssetStorage, HotReloadStrategy, ProcessingState},
     core::Time,
-    ecs::{Read, ReadExpect, System, Write},
+    ecs::{Read, ReadExpect, System, World, Write},
+    shred::{ResourceId, SystemData},
 };
 use derivative::Derivative;
 use derive_new::new;
 use object_model::{config::GameObjectDefinition, loaded::GameObject};
 use rayon::ThreadPool;
 use serde::{Deserialize, Serialize};
-use shred_derive::SystemData;
 use typename::TypeName as TypeNameTrait;
 use typename_derive::TypeName;
 

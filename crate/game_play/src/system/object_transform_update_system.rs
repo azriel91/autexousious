@@ -65,7 +65,7 @@ impl<'s> System<'s> for ObjectTransformUpdateSystem {
 mod test {
     use amethyst::{
         core::{math::Vector3, transform::Transform},
-        ecs::{Builder, Entity, World},
+        ecs::{Builder, Entity, World, WorldExt},
         input::StringBindings,
         Error,
     };
@@ -86,7 +86,7 @@ mod test {
 
             let entity = world.create_entity().with(position).with(transform).build();
 
-            world.add_resource(entity);
+            world.insert(entity);
         };
 
         let assertion = |world: &mut World| {

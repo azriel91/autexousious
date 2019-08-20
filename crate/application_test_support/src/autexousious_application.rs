@@ -123,8 +123,8 @@ impl AutexousiousApplication {
                     .entry(controller_id)
                     .or_insert_with(|| CHAR_BAT_SLUG.clone());
 
-                world.add_resource(character_selections);
-                world.add_resource(CharacterSelectionsStatus::Ready);
+                world.insert(character_selections);
+                world.insert(CharacterSelectionsStatus::Ready);
             })
             .with_setup(SetupFunction::map_selection(MAP_FADE_SLUG.clone()))
             .with_state(|| GameLoadingState::new(|| Box::new(PopState)))
@@ -133,7 +133,7 @@ impl AutexousiousApplication {
 
 #[cfg(test)]
 mod test {
-    use amethyst::{input::InputHandler, ui::Interactable, Error};
+    use amethyst::{ecs::WorldExt, input::InputHandler, ui::Interactable, Error};
     use game_input_model::ControlBindings;
     use game_model::{
         loaded::{CharacterPrefabs, EnergyPrefabs, MapPrefabs},

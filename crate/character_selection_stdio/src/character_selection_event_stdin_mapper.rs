@@ -114,7 +114,7 @@ impl StdinMapper for CharacterSelectionEventStdinMapper {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{Read, Resources},
+        ecs::{Read, World, WorldExt},
         Error,
     };
     use application_test_support::AutexousiousApplication;
@@ -131,11 +131,11 @@ mod tests {
             #[test]
             fn $test_name() {
                 let args = CharacterSelectionEventArgs::$variant;
-                let mut resources = Resources::new();
-                resources.insert(CharacterPrefabs::new());
+                let mut world = World::empty();
+                world.insert(CharacterPrefabs::new());
 
                 let result = CharacterSelectionEventStdinMapper::map(
-                    &Read::from(resources.fetch::<CharacterPrefabs>()),
+                    &Read::from(world.fetch::<CharacterPrefabs>()),
                     args,
                 );
 
@@ -151,11 +151,11 @@ mod tests {
             fn $test_name() {
                 let controller_id = 0;
                 let args = CharacterSelectionEventArgs::$variant { controller_id };
-                let mut resources = Resources::new();
-                resources.insert(CharacterPrefabs::new());
+                let mut world = World::empty();
+                world.insert(CharacterPrefabs::new());
 
                 let result = CharacterSelectionEventStdinMapper::map(
-                    &Read::from(resources.fetch::<CharacterPrefabs>()),
+                    &Read::from(world.fetch::<CharacterPrefabs>()),
                     args,
                 );
 
@@ -211,11 +211,11 @@ mod tests {
                     controller_id,
                     selection,
                 };
-                let mut resources = Resources::new();
-                resources.insert(CharacterPrefabs::new());
+                let mut world = World::empty();
+                world.insert(CharacterPrefabs::new());
 
                 let result = CharacterSelectionEventStdinMapper::map(
-                    &Read::from(resources.fetch::<CharacterPrefabs>()),
+                    &Read::from(world.fetch::<CharacterPrefabs>()),
                     args,
                 );
 
@@ -237,11 +237,11 @@ mod tests {
                     controller_id,
                     selection,
                 };
-                let mut resources = Resources::new();
-                resources.insert(CharacterPrefabs::new());
+                let mut world = World::empty();
+                world.insert(CharacterPrefabs::new());
 
                 let result = CharacterSelectionEventStdinMapper::map(
-                    &Read::from(resources.fetch::<CharacterPrefabs>()),
+                    &Read::from(world.fetch::<CharacterPrefabs>()),
                     args,
                 );
 

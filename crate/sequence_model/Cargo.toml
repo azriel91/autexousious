@@ -8,7 +8,7 @@ edition = "2018"
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 asset_derive = { path = "../asset_derive" }
 derivative = "1.0.2"
-derive-new = "0.5.6"
+derive-new = "0.5.8"
 derive_deref = "1.1.0"
 derive_more = "0.15.0"
 fnv = "1.0.6"
@@ -18,7 +18,7 @@ numeric_newtype_derive = { path = "../numeric_newtype_derive" }
 sequence_model_core = { path = "../sequence_model_core" }
 sequence_model_derive = { path = "../sequence_model_derive" }
 sequence_model_spi = { path = "../sequence_model_spi" }
-serde = "1.0.94"
+serde = "1.0.99"
 specs-derive = "0.4.0"
 strum = "0.15.0"
 strum_macros = "0.15.0"

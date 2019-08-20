@@ -1,5 +1,5 @@
 use proc_macro::TokenStream;
-use proc_macro_roids::{DeriveInputDeriveExt, DeriveInputStructExt, FieldsUnnamedAppend};
+use proc_macro_roids::{DeriveInputExt, DeriveInputStructExt, FieldsUnnamedAppend};
 use quote::quote;
 use syn::{parse_quote, DeriveInput, FieldsUnnamed, Path};
 
@@ -26,12 +26,6 @@ pub fn frame_component_data_impl(
     let fn_new_doc = format!("Returns a new `{}`.", type_name);
 
     let token_stream_2 = quote! {
-        #[derive(
-            asset_derive::Asset,
-            derive_deref::Deref,
-            derive_deref::DerefMut,
-            typename_derive::TypeName,
-        )]
         #ast
 
         impl #type_name {
@@ -66,7 +60,15 @@ pub fn frame_component_data_impl(
 }
 
 fn derive_append(ast: &mut DeriveInput) {
-    let derives = parse_quote!(Clone, Debug, PartialEq);
+    let derives = parse_quote!(
+        asset_derive::Asset,
+        derive_deref::Deref,
+        derive_deref::DerefMut,
+        typename_derive::TypeName,
+        Clone,
+        Debug,
+        PartialEq
+    );
 
     ast.append_derives(derives);
 }
@@ -76,7 +78,6 @@ fn fields_append(ast: &mut DeriveInput, component_path: &Path) {
         .segments
         .last()
         .expect("Expected `Path` last segment to exist.")
-        .value()
         .ident;
     let doc_string = format!("The chain of `{}` values.", component_name);
     let fields: FieldsUnnamed = parse_quote! {

@@ -36,11 +36,11 @@ pub struct GameModeSelectionStateDelegate;
 
 impl State<GameData<'static, 'static>, AppEvent> for GameModeSelectionStateDelegate {
     fn on_start(&mut self, data: StateData<'_, GameData<'static, 'static>>) {
-        data.world.add_resource(StateId::GameModeSelection);
+        data.world.insert(StateId::GameModeSelection);
     }
 
     fn on_resume(&mut self, data: StateData<'_, GameData<'static, 'static>>) {
-        data.world.add_resource(StateId::GameModeSelection);
+        data.world.insert(StateId::GameModeSelection);
     }
 
     fn handle_event(
