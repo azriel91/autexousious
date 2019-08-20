@@ -608,7 +608,7 @@ mod tests {
         run_test(
             SetupParams {
                 sequence_id: CharacterSequenceId::Stand,
-                controller_input: controller_input,
+                controller_input,
                 control_input_event_fn: None,
                 charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
@@ -627,7 +627,7 @@ mod tests {
         run_test(
             SetupParams {
                 sequence_id: CharacterSequenceId::Stand,
-                controller_input: controller_input,
+                controller_input,
                 control_input_event_fn: Some(|entity| {
                     let control_action_event_data = ControlActionEventData {
                         entity,
@@ -653,7 +653,7 @@ mod tests {
         run_test(
             SetupParams {
                 sequence_id: CharacterSequenceId::Stand,
-                controller_input: controller_input,
+                controller_input,
                 control_input_event_fn: Some(|entity| {
                     let control_action_event_data = ControlActionEventData {
                         entity,
@@ -724,7 +724,7 @@ mod tests {
         run_test(
             SetupParams {
                 sequence_id: CharacterSequenceId::Stand,
-                controller_input: controller_input,
+                controller_input,
                 control_input_event_fn: None,
                 charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
@@ -743,7 +743,7 @@ mod tests {
         run_test(
             SetupParams {
                 sequence_id: CharacterSequenceId::Stand,
-                controller_input: controller_input,
+                controller_input,
                 control_input_event_fn: Some(|entity| {
                     let axis_move_event_data = AxisMoveEventData {
                         entity,
@@ -770,7 +770,7 @@ mod tests {
         run_test(
             SetupParams {
                 sequence_id: CharacterSequenceId::Stand,
-                controller_input: controller_input,
+                controller_input,
                 control_input_event_fn: Some(|entity| {
                     let axis_move_event_data = AxisMoveEventData {
                         entity,
@@ -812,7 +812,7 @@ mod tests {
         run_test(
             SetupParams {
                 sequence_id: CharacterSequenceId::Stand,
-                controller_input: controller_input,
+                controller_input,
                 control_input_event_fn: None,
                 charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
