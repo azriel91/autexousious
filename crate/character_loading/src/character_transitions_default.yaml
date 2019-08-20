@@ -1,0 +1,114 @@
+sequences:
+  stand:
+    frames:
+      - {}
+    transitions:
+      press_attack: stand_attack_0
+      press_jump: jump
+  stand_attack_0:
+    frames:
+      - {}
+  stand_attack_1:
+    frames:
+      - {}
+  walk:
+    frames:
+      - {}
+    transitions:
+      press_attack: stand_attack_0
+      press_jump: jump
+      fallback:
+        next: stand
+        requirements:
+          - input_dir_x: none
+          - input_dir_z: none
+  run:
+    frames:
+      - {}
+    transitions:
+      press_jump: dash_forward
+      press_defend: dodge
+      fallback:
+        next: run_stop
+        requirements:
+          - input_dir_x: not_same
+  run_stop:
+    frames:
+      - {}
+  dodge:
+    frames:
+      - {}
+  jump:
+    frames:
+      - {}
+  jump_off:
+    frames:
+      - {}
+  jump_ascend:
+    frames:
+      - {}
+    transitions:
+      hold_attack: jump_attack
+  jump_descend:
+    frames:
+      - {}
+    transitions:
+      hold_attack: jump_attack
+  jump_descend_land:
+    frames:
+      - {}
+    transitions:
+      press_defend: dodge
+      press_jump:
+        - next: dash_forward
+          requirements:
+            - input_dir_x: same
+        - next: dash_back
+  dash_forward:
+    frames:
+      - {}
+    transitions:
+      press_attack: dash_attack
+  dash_forward_ascend:
+    frames:
+      - {}
+    transitions:
+      press_attack: dash_attack
+  dash_forward_descend:
+    frames:
+      - {}
+    transitions:
+      press_attack: dash_attack
+  dash_back:
+    frames:
+      - {}
+  dash_back_ascend:
+    frames:
+      - {}
+  dash_back_descend:
+    frames:
+      - {}
+  dash_descend_land:
+    frames:
+      - {}
+  dash_attack:
+    frames:
+      - {}
+  flinch_0:
+    frames:
+      - {}
+  flinch_1:
+    frames:
+      - {}
+  dazed:
+    frames:
+      - {}
+  fall_forward_ascend:
+    frames:
+      - {}
+  fall_forward_descend:
+    frames:
+      - {}
+  fall_forward_land:
+    frames:
+      - {}
