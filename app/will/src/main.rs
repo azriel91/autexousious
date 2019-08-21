@@ -103,14 +103,6 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         // `InputBundle` provides `InputHandler<A, B>`, needed by the `UiBundle` for mouse events.
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.
         game_data = game_data
-            .with_bundle(
-                RenderingBundle::<DefaultBackend>::new()
-                    .with_plugin(
-                        RenderToWindow::from_config(display_config).with_clear([0., 0., 0., 1.0]),
-                    )
-                    .with_plugin(RenderFlat2D::default())
-                    .with_plugin(RenderUi::default()),
-            )?
             .with_bundle(AudioBundle::default())?
             .with_bundle(TransformBundle::new())?
             .with_bundle(
@@ -153,7 +145,15 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
                     .with_system_dependencies(&[String::from(ENERGY_PROCESSOR)]),
             )?
             .with_bundle(CollisionAudioLoadingBundle::new(assets_dir.clone()))?
-            .with_bundle(UiAudioLoadingBundle::new(assets_dir.clone()))?;
+            .with_bundle(UiAudioLoadingBundle::new(assets_dir.clone()))?
+            .with_bundle(
+                RenderingBundle::<DefaultBackend>::new()
+                    .with_plugin(
+                        RenderToWindow::from_config(display_config).with_clear([0., 0., 0., 1.0]),
+                    )
+                    .with_plugin(RenderFlat2D::default())
+                    .with_plugin(RenderUi::default()),
+            )?;
     }
 
     let mut app = CoreApplication::<_, AppEvent, AppEventReader>::build(assets_dir, state)?
