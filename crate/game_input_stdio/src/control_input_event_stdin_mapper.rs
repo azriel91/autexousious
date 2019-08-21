@@ -74,7 +74,7 @@ impl StdinMapper for ControlInputEventStdinMapper {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{Builder, Entities, Entity, ReadStorage},
+        ecs::{Builder, Entities, Entity, ReadStorage, WorldExt},
         Error,
     };
     use application_test_support::AutexousiousApplication;
@@ -95,7 +95,7 @@ mod tests {
 
                 let entity = world.create_entity().with(InputControlled::new(1)).build();
 
-                world.add_resource(entity);
+                world.insert(entity);
             })
             .with_assertion(|world| {
                 let args = ControlInputEventArgs {
@@ -111,7 +111,7 @@ mod tests {
                 );
 
                 assert!(result.is_ok());
-                let entity = world.read_resource::<Entity>().clone();
+                let entity = *world.read_resource::<Entity>();
                 assert_eq!(
                     ControlInputEvent::AxisMoved(AxisMoveEventData {
                         entity,
@@ -132,7 +132,7 @@ mod tests {
 
                 let entity = world.create_entity().with(InputControlled::new(1)).build();
 
-                world.add_resource(entity);
+                world.insert(entity);
             })
             .with_assertion(|world| {
                 let args = ControlInputEventArgs {
@@ -147,7 +147,7 @@ mod tests {
                 );
 
                 assert!(result.is_ok());
-                let entity = world.read_resource::<Entity>().clone();
+                let entity = *world.read_resource::<Entity>();
                 assert_eq!(
                     ControlInputEvent::ControlActionPress(ControlActionEventData {
                         entity,
@@ -167,7 +167,7 @@ mod tests {
 
                 let entity = world.create_entity().with(InputControlled::new(1)).build();
 
-                world.add_resource(entity);
+                world.insert(entity);
             })
             .with_assertion(|world| {
                 let args = ControlInputEventArgs {
@@ -182,7 +182,7 @@ mod tests {
                 );
 
                 assert!(result.is_ok());
-                let entity = world.read_resource::<Entity>().clone();
+                let entity = *world.read_resource::<Entity>();
                 assert_eq!(
                     ControlInputEvent::ControlActionRelease(ControlActionEventData {
                         entity,

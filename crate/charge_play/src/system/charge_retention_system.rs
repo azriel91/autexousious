@@ -1,8 +1,10 @@
-use amethyst::ecs::{Join, ReadStorage, System, WriteStorage};
+use amethyst::{
+    ecs::{Join, ReadStorage, System, World, WriteStorage},
+    shred::{ResourceId, SystemData},
+};
 use charge_model::play::{ChargeRetention, ChargeStatus, ChargeTrackerClock};
 use derivative::Derivative;
 use derive_new::new;
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 /// Reduces charge when not charging.
@@ -76,7 +78,7 @@ impl<'s> System<'s> for ChargeRetentionSystem {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{Builder, Entity, ReadStorage},
+        ecs::{Builder, Entity, ReadStorage, WorldExt},
         Error,
     };
     use amethyst_test::AmethystApplication;
@@ -286,7 +288,7 @@ mod tests {
                     .with(charge_tracker_clock)
                     .build();
 
-                world.add_resource(entity);
+                world.insert(entity);
             })
             .with_assertion(move |world| {
                 let entity = *world.read_resource::<Entity>();

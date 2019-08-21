@@ -67,7 +67,7 @@ impl<'s> System<'s> for SharedControllerInputUpdateSystem {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        ecs::{Builder, Entity, Join, ReadStorage, WriteStorage},
+        ecs::{Builder, Entity, Join, ReadStorage, WorldExt, WriteStorage},
         Error,
     };
     use amethyst_test::*;
@@ -97,10 +97,10 @@ mod test {
                             .build()
                     })
                     .collect::<Vec<Entity>>();
-                world.add_resource(EffectReturn(controller_entities));
+                world.insert(EffectReturn(controller_entities));
 
                 let entity = world.create_entity().with(SharedInputControlled).build();
-                world.add_resource(EffectReturn(entity));
+                world.insert(EffectReturn(entity));
             })
             .with_assertion(|world| {
                 let store = world.read_storage::<ControllerInput>();
@@ -189,7 +189,7 @@ mod test {
             )
             .with_setup(|world| {
                 let entity = world.create_entity().with(SharedInputControlled).build();
-                world.add_resource(EffectReturn(entity));
+                world.insert(EffectReturn(entity));
             })
             .with_assertion(|world| {
                 let entity = world.read_resource::<EffectReturn<Entity>>().0;
@@ -221,7 +221,7 @@ mod test {
                     .build();
 
                 let controller_entities = vec![entity_0, entity_1];
-                world.add_resource(EffectReturn(controller_entities));
+                world.insert(EffectReturn(controller_entities));
             })
             .with_assertion(|world| {
                 let entity = world.read_resource::<EffectReturn<Entity>>().0;

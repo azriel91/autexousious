@@ -1,14 +1,14 @@
 use std::collections::HashMap;
 
 use amethyst::{
-    ecs::{Join, ReadExpect, ReadStorage, System, Write},
+    ecs::{Join, ReadExpect, ReadStorage, System, World, Write},
+    shred::{ResourceId, SystemData},
     shrev::EventChannel,
 };
 use derivative::Derivative;
 use derive_new::new;
 use game_play_model::{GamePlayEvent, GamePlayStatus};
 use object_model::play::HealthPoints;
-use shred_derive::SystemData;
 use team_model::play::Team;
 use typename_derive::TypeName;
 
@@ -74,8 +74,9 @@ impl<'s> System<'s> for GamePlayEndDetectionSystem {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        ecs::{Builder, SystemData, World},
+        ecs::{Builder, World, WorldExt},
         input::StringBindings,
+        shred::SystemData,
         shrev::{EventChannel, ReaderId},
         Error,
     };
@@ -245,13 +246,13 @@ mod test {
     }
 
     fn register_gpec_reader(world: &mut World) {
-        GamePlayEndDetectionSystemData::setup(&mut world.res);
+        GamePlayEndDetectionSystemData::setup(world);
 
         let reader_id = {
             let mut game_play_ec = world.write_resource::<EventChannel<GamePlayEvent>>();
             game_play_ec.register_reader()
         }; // kcov-ignore
-        world.add_resource(reader_id);
+        world.insert(reader_id);
     }
 
     fn verify_game_play_events(world: &mut World, expected: &[&GamePlayEvent]) {

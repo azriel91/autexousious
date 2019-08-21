@@ -1,4 +1,8 @@
-use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
+use amethyst::{
+    core::bundle::SystemBundle,
+    ecs::{DispatcherBuilder, World},
+    Error,
+};
 use application_event::AppEventVariant;
 use derive_new::new;
 use stdio_input::StdinSystem;
@@ -12,7 +16,11 @@ use crate::{StdioCommandEventStdinMapper, StdioCommandProcessingSystem};
 pub struct StdioCommandStdioBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for StdioCommandStdioBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
+    fn build(
+        self,
+        _world: &mut World,
+        builder: &mut DispatcherBuilder<'a, 'b>,
+    ) -> Result<(), Error> {
         builder.add(
             MapperSystem::<StdioCommandEventStdinMapper>::new(AppEventVariant::StdioCommand),
             &MapperSystem::<StdioCommandEventStdinMapper>::type_name(),
@@ -31,7 +39,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for StdioCommandStdioBundle {
 mod test {
     use std::env;
 
-    use amethyst::{shrev::EventChannel, Error};
+    use amethyst::{ecs::WorldExt, shrev::EventChannel, Error};
     use amethyst_test::AmethystApplication;
     use state_registry::StateId;
     use stdio_input::StdioInputBundle;

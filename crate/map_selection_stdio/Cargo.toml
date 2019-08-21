@@ -8,7 +8,7 @@ edition = "2018"
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 application_event = { path = "../application_event" }
 asset_model = { path = "../asset_model" }
-derive-new = "0.5.6"
+derive-new = "0.5.8"
 game_model = { path = "../game_model" }
 map_selection_model = { path = "../map_selection_model" }
 stdio_spi = { path = "../stdio_spi" }

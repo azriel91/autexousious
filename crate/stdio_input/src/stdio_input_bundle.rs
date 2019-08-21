@@ -1,4 +1,8 @@
-use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
+use amethyst::{
+    core::bundle::SystemBundle,
+    ecs::{DispatcherBuilder, World},
+    Error,
+};
 use derive_new::new;
 use typename::TypeName;
 
@@ -9,7 +13,11 @@ use crate::StdinSystem;
 pub struct StdioInputBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for StdioInputBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
+    fn build(
+        self,
+        _world: &mut World,
+        builder: &mut DispatcherBuilder<'a, 'b>,
+    ) -> Result<(), Error> {
         builder.add(StdinSystem::new(), &StdinSystem::type_name(), &[]);
         Ok(())
     }
@@ -19,7 +27,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for StdioInputBundle {
 mod test {
     use std::env;
 
-    use amethyst::shrev::EventChannel;
+    use amethyst::{ecs::WorldExt, shrev::EventChannel};
     use amethyst_test::prelude::*;
     use application_input::ApplicationEvent;
     use state_registry::StateId;

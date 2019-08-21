@@ -1,4 +1,7 @@
-use amethyst::ecs::{Entities, Join, ReadStorage, System, WriteStorage};
+use amethyst::{
+    ecs::{Entities, Join, ReadStorage, System, World, WriteStorage},
+    shred::{ResourceId, SystemData},
+};
 use character_model::{config::CharacterSequenceId, play::RunCounter};
 use character_play::{
     CharacterSequenceUpdateComponents, CharacterSequenceUpdater, MirroredUpdater, RunCounterUpdater,
@@ -9,7 +12,6 @@ use game_input::ControllerInput;
 use kinematic_model::config::{Position, Velocity};
 use object_model::play::{Grounding, HealthPoints, Mirrored};
 use sequence_model::play::SequenceStatus;
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 /// Updates character sequence ID based on input (or lack of).

@@ -11,9 +11,9 @@ application_input = { path = "../application_input" }
 bitflags = "1.1.0"
 console = "0.7.7"
 derivative = "1.0.2"
-derive-new = "0.5.6"
+derive-new = "0.5.8"
 itertools = "0.8.0"
-log = "0.4.6"
+log = "0.4.8"
 shell-words = "0.1.0"
 state_registry = { path = "../state_registry" }
 stdio_command_model = { path = "../stdio_command_model" }

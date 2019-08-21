@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Read, Resources, System, SystemData, Write},
+    ecs::{Read, System, SystemData, World, Write},
     shrev::{EventChannel, ReaderId},
 };
 use derive_new::new;
@@ -47,11 +47,12 @@ impl<'s> System<'s> for StdioCommandProcessingSystem {
             });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
 
         self.stdio_command_events_id = Some(
-            res.fetch_mut::<EventChannel<StdioCommandEvent>>()
+            world
+                .fetch_mut::<EventChannel<StdioCommandEvent>>()
                 .register_reader(),
         );
     }
@@ -59,7 +60,7 @@ impl<'s> System<'s> for StdioCommandProcessingSystem {
 
 #[cfg(test)]
 mod test {
-    use amethyst::{shrev::EventChannel, Error};
+    use amethyst::{ecs::WorldExt, shrev::EventChannel, Error};
     use amethyst_test::AmethystApplication;
     use state_registry::StateId;
     use stdio_command_model::{StateBarrier, StdinCommandBarrier, StdioCommandEvent};

@@ -8,15 +8,15 @@ edition = "2018"
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 application = { path = "../application" }
 asset_model = { path = "../asset_model" }
-derive-new = "0.5.6"
+derive-new = "0.5.8"
 heck = "0.3.1"
 itertools = "0.8.0"
-log = "0.4.6"
+log = "0.4.8"
 map_model = { path = "../map_model" }
 object_type = { path = "../object_type" }
-serde = "1.0.94"
+serde = "1.0.99"
 strum = "0.15.0"
-toml = "0.5.1"
+toml = "0.5.3"
 
 [dev-dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "test-support", "vulkan"] }

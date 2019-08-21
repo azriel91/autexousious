@@ -1,8 +1,10 @@
-use amethyst::ecs::WriteStorage;
+use amethyst::{
+    ecs::{World, WriteStorage},
+    shred::{ResourceId, SystemData},
+};
 use collision_model::loaded::{BodySequenceHandle, InteractionsSequenceHandle};
 use derivative::Derivative;
 use sequence_model::loaded::WaitSequenceHandle;
-use shred_derive::SystemData;
 use spawn_model::loaded::SpawnsSequenceHandle;
 use sprite_model::loaded::SpriteRenderSequenceHandle;
 

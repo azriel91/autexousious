@@ -1,7 +1,7 @@
 use amethyst::{
     assets::AssetStorage,
-    ecs::{Read, ReadStorage, System, SystemData, WriteStorage},
-    shred::Resources,
+    ecs::{Read, ReadStorage, System, World, WriteStorage},
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use character_model::{
@@ -17,7 +17,6 @@ use log::error;
 use named_type::NamedType;
 use named_type_derive::NamedType;
 use sequence_model::play::SequenceUpdateEvent;
-use shred_derive::SystemData;
 
 /// Updates the `CharacterControlTransitionsHandle` when sequence ID changes.
 #[derive(Debug, Default, NamedType, new)]
@@ -109,10 +108,11 @@ impl<'s> System<'s> for CharacterControlTransitionsUpdateSystem {
         // kcov-ignore-end
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
         self.reader_id = Some(
-            res.fetch_mut::<EventChannel<SequenceUpdateEvent>>()
+            world
+                .fetch_mut::<EventChannel<SequenceUpdateEvent>>()
                 .register_reader(),
         );
     }
@@ -122,7 +122,7 @@ impl<'s> System<'s> for CharacterControlTransitionsUpdateSystem {
 mod tests {
     use amethyst::{
         assets::AssetStorage,
-        ecs::{Entities, Join, Read, ReadStorage, World, WriteStorage},
+        ecs::{Entities, Join, Read, ReadStorage, World, WorldExt, WriteStorage},
         shrev::EventChannel,
         Error,
     };

@@ -1,4 +1,9 @@
-use amethyst::{assets::Processor, core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
+use amethyst::{
+    assets::Processor,
+    core::bundle::SystemBundle,
+    ecs::{DispatcherBuilder, World},
+    Error,
+};
 use derive_new::new;
 use energy_model::{config::EnergyDefinition, loaded::Energy};
 use object_loading::ObjectDefinitionToWrapperProcessor;
@@ -16,7 +21,11 @@ pub const ENERGY_PROCESSOR: &str = "energy_processor";
 pub struct EnergyLoadingBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for EnergyLoadingBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
+    fn build(
+        self,
+        _world: &mut World,
+        builder: &mut DispatcherBuilder<'a, 'b>,
+    ) -> Result<(), Error> {
         builder.add(
             Processor::<EnergyDefinition>::new(),
             "energy_definition_processor",
@@ -41,6 +50,7 @@ mod test {
     use amethyst::{
         assets::AssetStorage,
         core::TransformBundle,
+        ecs::WorldExt,
         renderer::{types::DefaultBackend, RenderEmptyBundle},
         Error,
     };

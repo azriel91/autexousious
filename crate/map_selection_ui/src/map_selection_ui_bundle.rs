@@ -1,4 +1,8 @@
-use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
+use amethyst::{
+    core::bundle::SystemBundle,
+    ecs::{DispatcherBuilder, World},
+    Error,
+};
 use derive_new::new;
 use typename::TypeName;
 
@@ -23,7 +27,11 @@ impl MapSelectionUiBundle {
 }
 
 impl<'a, 'b> SystemBundle<'a, 'b> for MapSelectionUiBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
+    fn build(
+        self,
+        _world: &mut World,
+        builder: &mut DispatcherBuilder<'a, 'b>,
+    ) -> Result<(), Error> {
         builder.add(
             MapSelectionWidgetInputSystem::new(),
             &MapSelectionWidgetInputSystem::type_name(),

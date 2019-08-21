@@ -1,11 +1,11 @@
 use amethyst::{
-    ecs::{Read, ReadStorage, Resources, System, SystemData, Write},
+    ecs::{Read, ReadStorage, System, World, Write},
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use collision_model::play::{CollisionEvent, ContactEvent};
 use derivative::Derivative;
 use derive_new::new;
-use shred_derive::SystemData;
 use spawn_model::play::SpawnParent;
 use team_model::play::Team;
 use typename_derive::TypeName;
@@ -93,10 +93,11 @@ impl<'s> System<'s> for ContactDetectionSystem {
         contact_ec.iter_write(contact_events);
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
         self.collision_event_rid = Some(
-            res.fetch_mut::<EventChannel<CollisionEvent>>()
+            world
+                .fetch_mut::<EventChannel<CollisionEvent>>()
                 .register_reader(),
         );
     }
@@ -105,7 +106,7 @@ impl<'s> System<'s> for ContactDetectionSystem {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{Builder, Entity, World},
+        ecs::{Builder, Entity, World, WorldExt},
         shrev::{EventChannel, ReaderId},
         Error,
     };
@@ -221,7 +222,7 @@ mod tests {
 
                 send_event(world, collision_event(entity_from, entity_to));
 
-                world.add_resource((entity_from, entity_to));
+                world.insert((entity_from, entity_to));
             })
             .with_assertion(move |world| {
                 let (entity_from, entity_to) = *world.read_resource::<(Entity, Entity)>();
@@ -236,7 +237,7 @@ mod tests {
             .write_resource::<EventChannel<ContactEvent>>()
             .register_reader(); // kcov-ignore
 
-        world.add_resource(contact_event_rid);
+        world.insert(contact_event_rid);
     }
 
     fn send_event(world: &mut World, event: CollisionEvent) {

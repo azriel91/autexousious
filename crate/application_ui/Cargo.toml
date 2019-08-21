@@ -8,8 +8,8 @@ edition = "2018"
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 application = { path = "../application" }
 application_robot = { path = "../application_robot" }
-derive-new = "0.5.6"
-serde = "1.0.94"
+derive-new = "0.5.8"
+serde = "1.0.99"
 strum = "0.15.0"
 strum_macros = "0.15.0"
 
@@ -18,7 +18,7 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-s
 amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
 assert_cmd = "0.11.1"
 escargot = "0.5.0"
-log = "0.4.6"
+log = "0.4.8"
 ron = "0.5.1"
 structopt = "0.2.18"
 structopt-derive = "0.2.18"

@@ -11,9 +11,9 @@ application_state = { path = "../application_state" }
 character_model = { path = "../character_model" }
 character_selection_model = { path = "../character_selection_model" }
 derivative = "1.0.2"
-derive-new = "0.5.6"
+derive-new = "0.5.8"
 game_model = { path = "../game_model" }
-log = "0.4.6"
+log = "0.4.8"
 object_model = { path = "../object_model" }
 state_registry = { path = "../state_registry" }
 typename = "0.1.1"

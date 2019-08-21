@@ -1,4 +1,8 @@
-use amethyst::{ecs::prelude::*, shrev::EventChannel};
+use amethyst::{
+    ecs::{prelude::*, World},
+    shred::{ResourceId, SystemData},
+    shrev::EventChannel,
+};
 use asset_model::loaded::SlugAndHandle;
 use derivative::Derivative;
 use derive_new::new;
@@ -8,7 +12,6 @@ use game_input_model::{
 use game_model::loaded::MapPrefabs;
 use log::debug;
 use map_selection_model::{MapSelection, MapSelectionEvent};
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 use crate::{MapSelectionWidget, WidgetState};
@@ -222,11 +225,12 @@ impl<'s> System<'s> for MapSelectionWidgetInputSystem {
             });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
 
         self.control_input_event_rid = Some(
-            res.fetch_mut::<EventChannel<ControlInputEvent>>()
+            world
+                .fetch_mut::<EventChannel<ControlInputEvent>>()
                 .register_reader(),
         );
     }
@@ -235,7 +239,8 @@ impl<'s> System<'s> for MapSelectionWidgetInputSystem {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        ecs::{Builder, Entity, SystemData, World},
+        ecs::{Builder, Entity, World, WorldExt},
+        shred::SystemData,
         shrev::{EventChannel, ReaderId},
         Error,
     };
@@ -428,17 +433,17 @@ mod test {
                 &[],
             ) // kcov-ignore
             .with_setup(move |world| {
-                MapSelectionWidgetInputSystemData::setup(&mut world.res);
+                MapSelectionWidgetInputSystemData::setup(world);
 
                 // Setup event reader.
                 let event_channel_reader = world
                     .write_resource::<EventChannel<MapSelectionEvent>>()
                     .register_reader(); // kcov-ignore
-                world.add_resource(event_channel_reader);
+                world.insert(event_channel_reader);
 
                 let map_selection = setup_map_selection_fn(world);
                 let entity = widget_entity(world, widget_entity_state, map_selection);
-                world.add_resource(entity);
+                world.insert(entity);
             })
             .with_effect(move |world| {
                 if let Some(control_input_event_fn) = control_input_event_fn {

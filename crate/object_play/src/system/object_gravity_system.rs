@@ -1,6 +1,7 @@
 use amethyst::{
     assets::AssetStorage,
-    ecs::{Join, Read, ReadExpect, ReadStorage, System, WriteStorage},
+    ecs::{Join, Read, ReadExpect, ReadStorage, System, World, WriteStorage},
+    shred::{ResourceId, SystemData},
 };
 use derivative::Derivative;
 use derive_new::new;
@@ -8,7 +9,6 @@ use kinematic_model::config::{Position, Velocity};
 use map_model::loaded::Map;
 use map_selection_model::MapSelection;
 use object_model::{config::Mass, play::Grounding};
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 /// Increases velocity of `Object`s that have `Mass` and are `Airborne`.

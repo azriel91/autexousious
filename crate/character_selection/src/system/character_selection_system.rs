@@ -62,10 +62,11 @@ impl<'s> System<'s> for CharacterSelectionSystem {
             });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
         self.character_selection_event_rid = Some(
-            res.fetch_mut::<EventChannel<CharacterSelectionEvent>>()
+            world
+                .fetch_mut::<EventChannel<CharacterSelectionEvent>>()
                 .register_reader(),
         );
     }
@@ -79,7 +80,7 @@ mod tests {
         assets::Processor,
         audio::Source,
         core::TransformBundle,
-        ecs::World,
+        ecs::{World, WorldExt},
         renderer::{types::DefaultBackend, RenderEmptyBundle},
         shrev::EventChannel,
         window::ScreenDimensions,

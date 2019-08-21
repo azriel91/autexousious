@@ -1,6 +1,6 @@
 use amethyst::{
     assets::{Loader, ProgressCounter},
-    ecs::World,
+    ecs::{World, WorldExt},
 };
 use asset_model::config::AssetRecord;
 use assets_built_in::{MAP_BLANK, MAP_BLANK_SLUG};
@@ -55,6 +55,6 @@ impl AssetLoader {
 
         debug!("Loaded map assets: `{:?}`", map_prefabs);
 
-        world.add_resource(map_prefabs);
+        world.insert(map_prefabs);
     }
 }

@@ -1,4 +1,9 @@
-use amethyst::{assets::Processor, core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
+use amethyst::{
+    assets::Processor,
+    core::bundle::SystemBundle,
+    ecs::{DispatcherBuilder, World},
+    Error,
+};
 use derive_new::new;
 use spawn_model::{config::Spawns, loaded::SpawnsSequence};
 
@@ -10,7 +15,11 @@ use spawn_model::{config::Spawns, loaded::SpawnsSequence};
 pub struct SpawnLoadingBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for SpawnLoadingBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
+    fn build(
+        self,
+        _world: &mut World,
+        builder: &mut DispatcherBuilder<'a, 'b>,
+    ) -> Result<(), Error> {
         builder.add(Processor::<Spawns>::new(), "spawns_processor", &[]); // kcov-ignore
         builder.add(
             Processor::<SpawnsSequence>::new(),
@@ -23,7 +32,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for SpawnLoadingBundle {
 
 #[cfg(test)]
 mod test {
-    use amethyst::{assets::AssetStorage, Error};
+    use amethyst::{assets::AssetStorage, ecs::WorldExt, Error};
     use amethyst_test::AmethystApplication;
     use spawn_model::{config::Spawns, loaded::SpawnsSequence};
 

@@ -157,7 +157,7 @@ mod test {
 
     use amethyst::{
         ecs::prelude::RunNow,
-        shred::{Resources, SystemData},
+        shred::{SystemData, World},
         shrev::{EventChannel, ReaderId},
     };
     use application_event::AppEventVariant;
@@ -171,7 +171,7 @@ mod test {
     fn setup() -> (
         StdinSystem,
         Sender<String>,
-        Resources,
+        World,
         ReaderId<ApplicationEvent>,
         ReaderId<VariantAndTokens>,
     ) {
@@ -183,12 +183,12 @@ mod test {
     ) -> (
         StdinSystem,
         Sender<String>,
-        Resources,
+        World,
         ReaderId<ApplicationEvent>,
         ReaderId<VariantAndTokens>,
     ) {
-        let mut res = Resources::new();
-        res.insert(StateId::CharacterSelection);
+        let mut world = World::empty();
+        world.insert(StateId::CharacterSelection);
         let barrier_state_id = with_barrier.map(|barrier_matches| {
             if barrier_matches {
                 StateId::CharacterSelection
@@ -197,16 +197,16 @@ mod test {
             }
         });
         let stdin_command_barrier = StdinCommandBarrier::new(barrier_state_id);
-        res.insert(stdin_command_barrier);
-        res.insert(EventChannel::<ApplicationEvent>::with_capacity(10));
-        res.insert(EventChannel::<VariantAndTokens>::with_capacity(10));
+        world.insert(stdin_command_barrier);
+        world.insert(EventChannel::<ApplicationEvent>::with_capacity(10));
+        world.insert(EventChannel::<VariantAndTokens>::with_capacity(10));
 
         let (tx, rx) = mpsc::channel();
         let stdin_system = StdinSystem::internal_new(rx, || {});
 
         let (application_ev_id, variant_and_tokens_id) = {
             let (_, _, mut application_events, mut variant_and_tokens) =
-                StdinSystemData::fetch(&res);
+                StdinSystemData::fetch(&world);
             (
                 application_events.register_reader(),
                 variant_and_tokens.register_reader(),
@@ -216,7 +216,7 @@ mod test {
         (
             stdin_system,
             tx,
-            res,
+            world,
             application_ev_id,
             variant_and_tokens_id,
         )
@@ -224,12 +224,12 @@ mod test {
 
     #[test]
     fn sends_exit_event_when_input_is_exit() {
-        let (mut stdin_system, tx, res, mut application_ev_id, _) = setup();
+        let (mut stdin_system, tx, world, mut application_ev_id, _) = setup();
 
         tx.send("exit".to_string()).unwrap();
-        stdin_system.run_now(&res);
+        stdin_system.run_now(&world);
 
-        let (_, _, application_events, _) = StdinSystemData::fetch(&res);
+        let (_, _, application_events, _) = StdinSystemData::fetch(&world);
 
         expect_event(
             &application_events,
@@ -240,45 +240,45 @@ mod test {
 
     #[test]
     fn does_not_send_exit_event_when_input_is_not_exit() {
-        let (mut stdin_system, tx, res, mut application_ev_id, _) = setup();
+        let (mut stdin_system, tx, world, mut application_ev_id, _) = setup();
 
         tx.send("abc".to_string()).unwrap();
-        stdin_system.run_now(&res);
+        stdin_system.run_now(&world);
 
-        let (_, _, application_events, _) = StdinSystemData::fetch(&res);
+        let (_, _, application_events, _) = StdinSystemData::fetch(&world);
         expect_event(&application_events, &mut application_ev_id, None);
     } // kcov-ignore
 
     #[test]
     fn does_nothing_when_input_is_empty() {
-        let (mut stdin_system, _tx, res, mut application_ev_id, _) = setup();
+        let (mut stdin_system, _tx, world, mut application_ev_id, _) = setup();
 
         // we don't call tx.send(..)
-        stdin_system.run_now(&res);
+        stdin_system.run_now(&world);
 
-        let (_, _, application_events, _) = StdinSystemData::fetch(&res);
+        let (_, _, application_events, _) = StdinSystemData::fetch(&world);
         expect_event(&application_events, &mut application_ev_id, None);
     } // kcov-ignore
 
     #[test]
     fn does_not_panic_when_application_channel_is_disconnected() {
-        let (mut stdin_system, tx, res, mut application_ev_id, _) = setup();
+        let (mut stdin_system, tx, world, mut application_ev_id, _) = setup();
 
         drop(tx); // ensure channel is disconnected
-        stdin_system.run_now(&res);
+        stdin_system.run_now(&world);
 
-        let (_, _, application_events, _) = StdinSystemData::fetch(&res);
+        let (_, _, application_events, _) = StdinSystemData::fetch(&world);
         expect_event(&application_events, &mut application_ev_id, None);
     } // kcov-ignore
 
     #[test]
     fn sends_vat_event_when_input_is_app_event() {
-        let (mut stdin_system, tx, res, _, mut vat_ev_id) = setup();
+        let (mut stdin_system, tx, world, _, mut vat_ev_id) = setup();
 
         tx.send("character_selection confirm".to_string()).unwrap();
-        stdin_system.run_now(&res);
+        stdin_system.run_now(&world);
 
-        let (_, _, _, vat_events) = StdinSystemData::fetch(&res);
+        let (_, _, _, vat_events) = StdinSystemData::fetch(&world);
 
         expect_vat_event(
             &vat_events,
@@ -292,24 +292,26 @@ mod test {
 
     #[test]
     fn does_not_send_exit_event_when_barrier_does_not_match() {
-        let (mut stdin_system, tx, res, mut application_ev_id, _) = setup_with_barrier(Some(false));
+        let (mut stdin_system, tx, world, mut application_ev_id, _) =
+            setup_with_barrier(Some(false));
 
         tx.send("exit".to_string()).unwrap();
-        stdin_system.run_now(&res);
+        stdin_system.run_now(&world);
 
-        let (_, _, application_events, _) = StdinSystemData::fetch(&res);
+        let (_, _, application_events, _) = StdinSystemData::fetch(&world);
 
         expect_event(&application_events, &mut application_ev_id, None);
     }
 
     #[test]
     fn sends_exit_event_when_barrier_matches() {
-        let (mut stdin_system, tx, res, mut application_ev_id, _) = setup_with_barrier(Some(true));
+        let (mut stdin_system, tx, world, mut application_ev_id, _) =
+            setup_with_barrier(Some(true));
 
         tx.send("exit".to_string()).unwrap();
-        stdin_system.run_now(&res);
+        stdin_system.run_now(&world);
 
-        let (_, _, application_events, _) = StdinSystemData::fetch(&res);
+        let (_, _, application_events, _) = StdinSystemData::fetch(&world);
 
         expect_event(
             &application_events,
@@ -320,24 +322,24 @@ mod test {
 
     #[test]
     fn does_not_send_vat_event_when_barrier_does_not_match() {
-        let (mut stdin_system, tx, res, _, mut vat_ev_id) = setup_with_barrier(Some(false));
+        let (mut stdin_system, tx, world, _, mut vat_ev_id) = setup_with_barrier(Some(false));
 
         tx.send("character_selection confirm".to_string()).unwrap();
-        stdin_system.run_now(&res);
+        stdin_system.run_now(&world);
 
-        let (_, _, _, vat_events) = StdinSystemData::fetch(&res);
+        let (_, _, _, vat_events) = StdinSystemData::fetch(&world);
 
         expect_vat_event(&vat_events, &mut vat_ev_id, None); // kcov-ignore
     }
 
     #[test]
     fn sends_vat_event_when_barrier_matches() {
-        let (mut stdin_system, tx, res, _, mut vat_ev_id) = setup_with_barrier(Some(true));
+        let (mut stdin_system, tx, world, _, mut vat_ev_id) = setup_with_barrier(Some(true));
 
         tx.send("character_selection confirm".to_string()).unwrap();
-        stdin_system.run_now(&res);
+        stdin_system.run_now(&world);
 
-        let (_, _, _, vat_events) = StdinSystemData::fetch(&res);
+        let (_, _, _, vat_events) = StdinSystemData::fetch(&world);
 
         expect_vat_event(
             &vat_events,

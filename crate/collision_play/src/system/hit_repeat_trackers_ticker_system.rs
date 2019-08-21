@@ -30,7 +30,7 @@ impl<'s> System<'s> for HitRepeatTrackersTickerSystem {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{Builder, Entity, World},
+        ecs::{Builder, Entity, World, WorldExt},
         Error,
     };
     use amethyst_test::AmethystApplication;
@@ -111,7 +111,7 @@ mod tests {
                 .expect("Failed to insert `HitRepeatTrackers` component.");
         }
 
-        world.add_resource((entity_from_0, entity_from_1));
+        world.insert((entity_from_0, entity_from_1));
     }
 
     fn assert_clock_values(world: &mut World, expected_value: usize) {

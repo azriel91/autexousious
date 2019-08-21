@@ -94,8 +94,9 @@ impl CharacterEntityAugmenter {
 mod test {
     use amethyst::{
         core::TransformBundle,
-        ecs::{Builder, SystemData, World},
+        ecs::{Builder, World, WorldExt},
         renderer::{types::DefaultBackend, RenderEmptyBundle},
+        shred::SystemData,
         Error,
     };
     use amethyst_test::AmethystApplication;
@@ -119,8 +120,7 @@ mod test {
         let assertion = |world: &mut World| {
             let entity = world.create_entity().build();
             {
-                let mut character_component_storages =
-                    CharacterComponentStorages::fetch(&world.res);
+                let mut character_component_storages = CharacterComponentStorages::fetch(&world);
                 CharacterEntityAugmenter::augment(
                     entity,
                     &mut character_component_storages,
@@ -145,7 +145,7 @@ mod test {
             .with_bundle(TransformBundle::new())
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_setup(|world| {
-                <CharacterComponentStorages as SystemData>::setup(&mut world.res);
+                <CharacterComponentStorages as SystemData>::setup(world);
             })
             .with_assertion(assertion)
             .run_isolated()

@@ -9,13 +9,11 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-s
 collision_model = { path = "../collision_model" }
 derivative = "1.0.2"
 kinematic_model = { path = "../kinematic_model" }
-log = "0.4.6"
+log = "0.4.8"
 logic_clock = { path = "../logic_clock" }
 object_model = { path = "../object_model" }
 sequence_model = { path = "../sequence_model" }
-serde = "1.0.94"
-shred = "0.7.0"
-shred-derive = "0.5.1"
+serde = "1.0.99"
 spawn_model = { path = "../spawn_model" }
 sprite_model = { path = "../sprite_model" }
 

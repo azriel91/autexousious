@@ -1,6 +1,11 @@
 use std::path::PathBuf;
 
-use amethyst::{assets::Processor, core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
+use amethyst::{
+    assets::Processor,
+    core::bundle::SystemBundle,
+    ecs::{DispatcherBuilder, World},
+    Error,
+};
 use collision_audio_model::config::CollisionSfxPaths;
 use derive_new::new;
 use typename::TypeName;
@@ -18,7 +23,11 @@ pub struct CollisionAudioLoadingBundle {
 }
 
 impl<'a, 'b> SystemBundle<'a, 'b> for CollisionAudioLoadingBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
+    fn build(
+        self,
+        _world: &mut World,
+        builder: &mut DispatcherBuilder<'a, 'b>,
+    ) -> Result<(), Error> {
         builder.add(
             Processor::<CollisionSfxPaths>::new(),
             "collision_sfx_paths_processor",
@@ -37,7 +46,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CollisionAudioLoadingBundle {
 mod test {
     use std::path::PathBuf;
 
-    use amethyst::{assets::AssetStorage, Error};
+    use amethyst::{assets::AssetStorage, ecs::WorldExt, Error};
     use amethyst_test::AmethystApplication;
     use collision_audio_model::{
         config::CollisionSfxPaths, loaded::CollisionSfxMap, CollisionAudioLoadingStatus,

@@ -1,4 +1,8 @@
-use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
+use amethyst::{
+    core::bundle::SystemBundle,
+    ecs::{DispatcherBuilder, World},
+    Error,
+};
 use derive_new::new;
 use typename::TypeName;
 
@@ -11,7 +15,11 @@ use crate::MapAnimationUpdateSystem;
 pub struct MapPlayBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for MapPlayBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
+    fn build(
+        self,
+        _world: &mut World,
+        builder: &mut DispatcherBuilder<'a, 'b>,
+    ) -> Result<(), Error> {
         builder.add(
             MapAnimationUpdateSystem::new(),
             &MapAnimationUpdateSystem::type_name(),

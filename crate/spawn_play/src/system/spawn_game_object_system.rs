@@ -1,7 +1,7 @@
 use amethyst::{
     assets::AssetStorage,
-    ecs::{Entities, Entity, Read, ReadStorage, System, SystemData, Write, WriteStorage},
-    shred::Resources,
+    ecs::{Entities, Entity, Read, ReadStorage, System, World, Write, WriteStorage},
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
@@ -10,7 +10,6 @@ use energy_prefab::EnergyPrefabHandle;
 use game_model::loaded::EnergyPrefabs;
 use log::error;
 use sequence_model::play::SequenceUpdateEvent;
-use shred_derive::SystemData;
 use spawn_model::{
     config::{Spawns, SpawnsHandle},
     play::SpawnEvent,
@@ -136,10 +135,11 @@ impl<'s> System<'s> for SpawnGameObjectSystem {
             });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
         self.reader_id = Some(
-            res.fetch_mut::<EventChannel<SequenceUpdateEvent>>()
+            world
+                .fetch_mut::<EventChannel<SequenceUpdateEvent>>()
                 .register_reader(),
         );
     }
@@ -151,7 +151,7 @@ mod tests {
 
     use amethyst::{
         assets::{AssetStorage, Loader},
-        ecs::{Builder, Entity, Join, Read, ReadExpect, World},
+        ecs::{Builder, Entity, Join, Read, ReadExpect, World, WorldExt},
         shrev::{EventChannel, ReaderId},
         Error,
     };
@@ -244,7 +244,7 @@ mod tests {
             .write_resource::<EventChannel<SpawnEvent>>()
             .register_reader(); // kcov-ignore
 
-        world.add_resource(spawn_event_rid);
+        world.insert(spawn_event_rid);
     }
 
     fn create_entity_with_spawns(
@@ -258,7 +258,7 @@ mod tests {
         };
 
         let entity = world.create_entity().with(spawns_handle).build();
-        world.add_resource(entity);
+        world.insert(entity);
 
         if let Some(sequence_update_event_fn) = sequence_update_event_fn {
             let mut sequence_update_ec =

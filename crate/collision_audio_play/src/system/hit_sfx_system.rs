@@ -1,7 +1,7 @@
 use amethyst::{
     assets::AssetStorage,
     audio::{output::Output, Source},
-    ecs::{Read, Resources, System, SystemData},
+    ecs::{Read, System, SystemData, World},
     shrev::{EventChannel, ReaderId},
 };
 use collision_audio_model::{config::CollisionSfxId, loaded::CollisionSfxMap};
@@ -60,16 +60,20 @@ impl<'s> System<'s> for HitSfxSystem {
         }
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
-        self.hit_event_rid = Some(res.fetch_mut::<EventChannel<HitEvent>>().register_reader());
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
+        self.hit_event_rid = Some(
+            world
+                .fetch_mut::<EventChannel<HitEvent>>()
+                .register_reader(),
+        );
     }
 }
 
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{Builder, World},
+        ecs::{Builder, World, WorldExt},
         shrev::EventChannel,
         Error,
     };

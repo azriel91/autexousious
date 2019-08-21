@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::prelude::{ReadStorage, Resources, System, SystemData, Write},
+    ecs::prelude::{ReadStorage, System, SystemData, World, Write},
     shrev::{EventChannel, ReaderId},
     ui::{UiEvent, UiEventType},
 };
@@ -50,7 +50,7 @@ impl<'s> System<'s> for UiEventHandlerSystem {
         }
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
     }
 }

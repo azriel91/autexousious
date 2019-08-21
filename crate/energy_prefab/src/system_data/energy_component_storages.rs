@@ -1,7 +1,9 @@
-use amethyst::ecs::WriteStorage;
+use amethyst::{
+    ecs::{World, WriteStorage},
+    shred::{ResourceId, SystemData},
+};
 use derivative::Derivative;
 use object_model::play::Grounding;
-use shred_derive::SystemData;
 
 /// Energy specific `Component` storages.
 ///

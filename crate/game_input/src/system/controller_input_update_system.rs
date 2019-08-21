@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Component, Entity, Read, Resources, System, SystemData, WriteStorage},
+    ecs::{Component, Entity, Read, System, SystemData, World, WriteStorage},
     shrev::{EventChannel, ReaderId},
 };
 use derive_new::new;
@@ -85,11 +85,12 @@ impl<'s> System<'s> for ControllerInputUpdateSystem {
         });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
 
         self.input_events_id = Some(
-            res.fetch_mut::<EventChannel<ControlInputEvent>>()
+            world
+                .fetch_mut::<EventChannel<ControlInputEvent>>()
                 .register_reader(),
         );
     }
@@ -98,7 +99,7 @@ impl<'s> System<'s> for ControllerInputUpdateSystem {
 #[cfg(test)]
 mod test {
     use amethyst::{
-        ecs::{Builder, Entity},
+        ecs::{Builder, Entity, WorldExt},
         shrev::EventChannel,
         Error,
     };
@@ -144,7 +145,7 @@ mod test {
                         }),
                     ]); // kcov-ignore
 
-                world.add_resource((e0, e1));
+                world.insert((e0, e1));
             })
             .with_assertion(|world| {
                 let entities = world.read_resource::<(Entity, Entity)>();
@@ -215,7 +216,7 @@ mod test {
                         }),
                     ]); // kcov-ignore
 
-                world.add_resource((e0, e1));
+                world.insert((e0, e1));
             })
             .with_assertion(|world| {
                 let entities = world.read_resource::<(Entity, Entity)>();

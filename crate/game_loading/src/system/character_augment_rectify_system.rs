@@ -1,10 +1,10 @@
 use amethyst::{
     assets::{AssetStorage, PrefabData},
     ecs::{
-        Entities, Entity, Join, LazyUpdate, Read, ReadExpect, ReadStorage, System, SystemData,
-        World, Write, WriteStorage,
+        Entities, Entity, Join, LazyUpdate, Read, ReadExpect, ReadStorage, System, World, Write,
+        WriteStorage,
     },
-    shred::Resources,
+    shred::{ResourceId, SystemData},
     utils::removal::Removal,
 };
 use character_prefab::CharacterPrefabHandle;
@@ -16,7 +16,6 @@ use game_play_model::{GamePlayEntity, GamePlayEntityId};
 use kinematic_model::config::Position;
 use map_model::loaded::Map;
 use map_selection_model::MapSelection;
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 use crate::{CharacterAugmentStatus, GameLoadingStatus};
@@ -157,12 +156,12 @@ impl<'s> System<'s> for CharacterAugmentRectifySystem {
         game_loading_status.character_augment_status = CharacterAugmentStatus::Complete;
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
 
-        <HpBarPrefab as PrefabData<'_>>::SystemData::setup(res);
-        <CpBarPrefab as PrefabData<'_>>::SystemData::setup(res);
-        <WriteStorage<'_, GamePlayEntity>>::setup(res);
+        <HpBarPrefab as PrefabData<'_>>::SystemData::setup(world);
+        <CpBarPrefab as PrefabData<'_>>::SystemData::setup(world);
+        <WriteStorage<'_, GamePlayEntity>>::setup(world);
     }
 }
 
@@ -172,8 +171,9 @@ mod tests {
         assets::{Prefab, Processor},
         audio::Source,
         core::TransformBundle,
-        ecs::{Builder, Entity, Join, ReadStorage, SystemData, World},
+        ecs::{Builder, Entity, Join, ReadStorage, World, WorldExt},
         renderer::{types::DefaultBackend, RenderEmptyBundle},
+        shred::SystemData,
         window::ScreenDimensions,
         Error,
     };
@@ -209,7 +209,7 @@ mod tests {
             |world| {
                 let mut game_loading_status = GameLoadingStatus::new();
                 game_loading_status.character_augment_status = CharacterAugmentStatus::Prefab;
-                world.add_resource(game_loading_status);
+                world.insert(game_loading_status);
 
                 let snh = SlugAndHandle::<Prefab<CharacterPrefab>>::from((
                     &*world,
@@ -217,7 +217,7 @@ mod tests {
                 ));
                 let char_entity = world.create_entity().with(snh.handle).build();
 
-                world.add_resource(char_entity);
+                world.insert(char_entity);
             },
             |world| {
                 let char_entity = *world.read_resource::<Entity>();
@@ -236,7 +236,7 @@ mod tests {
             |world| {
                 let mut game_loading_status = GameLoadingStatus::new();
                 game_loading_status.character_augment_status = CharacterAugmentStatus::Rectify;
-                world.add_resource(game_loading_status);
+                world.insert(game_loading_status);
 
                 let snh = SlugAndHandle::<Prefab<CharacterPrefab>>::from((
                     &*world,
@@ -244,7 +244,7 @@ mod tests {
                 ));
                 let char_entity = world.create_entity().with(snh.handle).build();
 
-                world.add_resource(char_entity);
+                world.insert(char_entity);
             },
             |world| {
                 let char_entity = *world.read_resource::<Entity>();
@@ -274,7 +274,7 @@ mod tests {
             |world| {
                 let mut game_loading_status = GameLoadingStatus::new();
                 game_loading_status.character_augment_status = CharacterAugmentStatus::Rectify;
-                world.add_resource(game_loading_status);
+                world.insert(game_loading_status);
 
                 let snh = SlugAndHandle::<Prefab<CharacterPrefab>>::from((
                     &*world,
@@ -286,7 +286,7 @@ mod tests {
                     .with(InputControlled::new(0))
                     .build();
 
-                world.add_resource(char_entity);
+                world.insert(char_entity);
             },
             |world| {
                 let (hp_bars, cp_bars) =
@@ -322,7 +322,7 @@ mod tests {
             )
             .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
-            .with_setup(|world| CharacterAugmentRectifySystemData::setup(&mut world.res))
+            .with_setup(|world| CharacterAugmentRectifySystemData::setup(world))
             .with_state(|| LoadingState::new(PopState))
             .with_setup(map_selection(MAP_FADE_SLUG.clone()))
             .with_setup(fn_setup)
@@ -354,8 +354,8 @@ mod tests {
                 SlugAndHandle::from((slug.clone(), map_handle))
             };
 
-            world.add_resource(MapSelection::Id(slug_and_handle));
-            world.add_resource(MapSelectionStatus::Confirmed);
+            world.insert(MapSelection::Id(slug_and_handle));
+            world.insert(MapSelectionStatus::Confirmed);
         }
     }
 }

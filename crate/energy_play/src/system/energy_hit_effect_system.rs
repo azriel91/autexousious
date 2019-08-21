@@ -1,12 +1,12 @@
 use amethyst::{
-    ecs::{Read, Resources, System, SystemData, WriteStorage},
+    ecs::{Read, System, World, WriteStorage},
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use collision_model::play::HitEvent;
 use derivative::Derivative;
 use derive_new::new;
 use energy_model::config::EnergySequenceId;
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 /// Determines the next sequence for `Energy`s when they are hit.
@@ -55,16 +55,20 @@ impl<'s> System<'s> for EnergyHitEffectSystem {
             });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
-        self.hit_event_rid = Some(res.fetch_mut::<EventChannel<HitEvent>>().register_reader());
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
+        self.hit_event_rid = Some(
+            world
+                .fetch_mut::<EventChannel<HitEvent>>()
+                .register_reader(),
+        );
     }
 }
 
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{Builder, Entity},
+        ecs::{Builder, Entity, WorldExt},
         shrev::EventChannel,
         Error,
     };
@@ -138,7 +142,7 @@ mod tests {
                     }
                     SetupVariant::WithoutSequenceId => {}
                 }
-                world.add_resource(entity_to);
+                world.insert(entity_to);
 
                 if send_event {
                     let event = HitEvent::new(entity_from, entity_to, interaction(), body());

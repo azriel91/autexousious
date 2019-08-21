@@ -1,10 +1,8 @@
 use std::{fmt::Debug, marker::PhantomData};
 
 use amethyst::{
-    ecs::{
-        Entities, Entity, Join, Read, ReadStorage, Resources, System, SystemData, Write,
-        WriteStorage,
-    },
+    ecs::{Entities, Entity, Join, Read, ReadStorage, System, World, Write, WriteStorage},
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
@@ -13,7 +11,6 @@ use game_input_model::{
     Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
 };
 use log::debug;
-use shred_derive::SystemData;
 use typename::TypeName as TypeNameTrait;
 use typename_derive::TypeName;
 
@@ -221,11 +218,12 @@ where
             });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
 
         self.control_input_event_rid = Some(
-            res.fetch_mut::<EventChannel<ControlInputEvent>>()
+            world
+                .fetch_mut::<EventChannel<ControlInputEvent>>()
                 .register_reader(),
         );
     }
@@ -236,7 +234,8 @@ mod test {
     use std::fmt::Debug;
 
     use amethyst::{
-        ecs::{Builder, Entity, SystemData, World},
+        ecs::{Builder, Entity, World, WorldExt},
+        shred::SystemData,
         shrev::{EventChannel, ReaderId},
         Error,
     };
@@ -428,17 +427,17 @@ mod test {
         AmethystApplication::ui_base::<ControlBindings>()
             .with_system(
                 MenuItemWidgetInputSystem::<TestIndex>::new(),
-                MenuItemWidgetInputSystem::<TestIndex>::type_name(),
+                &MenuItemWidgetInputSystem::<TestIndex>::type_name(),
                 &[],
             ) // kcov-ignore
             .with_setup(move |world| {
-                MenuItemWidgetInputSystemData::<TestIndex>::setup(&mut world.res);
+                MenuItemWidgetInputSystemData::<TestIndex>::setup(world);
 
                 // Setup event reader.
                 let event_channel_reader = world
                     .write_resource::<EventChannel<MenuEvent<TestIndex>>>()
                     .register_reader(); // kcov-ignore
-                world.add_resource(event_channel_reader);
+                world.insert(event_channel_reader);
 
                 let entities = TestIndex::iter()
                     .map(|index| {
@@ -466,7 +465,7 @@ mod test {
                         .expect("Failed to insert `Siblings` component.");
                 }
 
-                world.add_resource(entities);
+                world.insert(entities);
             })
             .with_effect(move |world| {
                 if let Some(control_input_event_fn) = control_input_event_fn {

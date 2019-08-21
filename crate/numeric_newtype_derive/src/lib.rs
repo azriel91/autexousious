@@ -59,7 +59,7 @@
 extern crate proc_macro;
 
 use proc_macro::TokenStream;
-use proc_macro_roids::{DeriveInputDeriveExt, DeriveInputNewtypeExt};
+use proc_macro_roids::{DeriveInputExt, DeriveInputNewtypeExt};
 use quote::quote;
 use syn::{
     parse_macro_input, parse_quote, punctuated::Punctuated, token::Comma, DeriveInput, NestedMeta,
@@ -193,7 +193,7 @@ fn is_eq_ord(ty: &Type) -> bool {
         path.segments
             .last()
             .map(|segment| {
-                let ty_ident = &segment.value().ident;
+                let ty_ident = &segment.ident;
                 KNOWN_TYPES_EQ_ORD
                     .iter()
                     .any(|known_ty| ty_ident == known_ty)

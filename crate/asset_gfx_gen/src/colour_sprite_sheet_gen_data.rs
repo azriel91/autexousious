@@ -1,10 +1,10 @@
 use amethyst::{
     assets::{AssetStorage, Loader},
-    ecs::{Read, ReadExpect},
+    ecs::{Read, ReadExpect, World},
     renderer::{SpriteSheet, Texture},
+    shred::{ResourceId, SystemData},
 };
 use derivative::Derivative;
-use shred_derive::SystemData;
 
 /// System data needed to load colour sprites.
 #[derive(Derivative, SystemData)]

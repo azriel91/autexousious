@@ -270,7 +270,7 @@ mod tests {
     use amethyst::{
         assets::{AssetStorage, Loader},
         core::TransformBundle,
-        ecs::{Read, ReadExpect},
+        ecs::{Read, ReadExpect, WorldExt},
         renderer::{types::DefaultBackend, RenderEmptyBundle},
         Error,
     };
@@ -370,7 +370,7 @@ mod tests {
                         &sequence,
                     )
                 };
-                world.add_resource(character_cts_handle);
+                world.insert(character_cts_handle);
             })
             .with_setup(|_world| {}) // Allow texture to load.
             .with_assertion(move |world| {

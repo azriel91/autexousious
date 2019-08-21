@@ -76,7 +76,7 @@ impl StdinMapper for MapSelectionEventStdinMapper {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{Read, Resources},
+        ecs::{Read, World, WorldExt},
         Error,
     };
     use application_test_support::AutexousiousApplication;
@@ -93,11 +93,11 @@ mod tests {
     fn returns_err_when_asset_slug_invalid() {
         let selection = "invalid".to_string();
         let args = MapSelectionEventArgs::Select { selection };
-        let mut resources = Resources::new();
-        resources.insert(MapPrefabs::new());
+        let mut world = World::new();
+        world.insert(MapPrefabs::new());
 
         let result =
-            MapSelectionEventStdinMapper::map(&Read::from(resources.fetch::<MapPrefabs>()), args);
+            MapSelectionEventStdinMapper::map(&Read::from(world.fetch::<MapPrefabs>()), args);
 
         expect_err_msg(
             result,
@@ -109,11 +109,11 @@ mod tests {
     fn returns_err_when_map_does_not_exist_for_slug() {
         let selection = "test/non_existent".to_string();
         let args = MapSelectionEventArgs::Select { selection };
-        let mut resources = Resources::new();
-        resources.insert(MapPrefabs::new());
+        let mut world = World::new();
+        world.insert(MapPrefabs::new());
 
         let result =
-            MapSelectionEventStdinMapper::map(&Read::from(resources.fetch::<MapPrefabs>()), args);
+            MapSelectionEventStdinMapper::map(&Read::from(world.fetch::<MapPrefabs>()), args);
 
         expect_err_msg(result, "No map found with asset slug `test/non_existent`.");
     }

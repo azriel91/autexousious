@@ -19,10 +19,11 @@ mod sprite_sheet_mapper;
 mod texture_loader;
 
 #[cfg(test)]
-mod test {
+mod tests {
     use amethyst::{
         assets::{AssetStorage, Loader, ProgressCounter},
         core::TransformBundle,
+        ecs::WorldExt,
         renderer::{types::DefaultBackend, RenderEmptyBundle, SpriteSheet, Texture},
         Error,
     };

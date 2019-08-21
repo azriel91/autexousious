@@ -1,4 +1,4 @@
-use amethyst::ecs::World;
+use amethyst::ecs::{World, WorldExt};
 use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
 use game_model::loaded::MapPrefabs;
 use map_selection::MapSelectionStatus;
@@ -26,8 +26,8 @@ impl SetupFunction {
                 SlugAndHandle::from((slug.clone(), map_handle))
             };
 
-            world.add_resource(MapSelection::Id(slug_and_handle));
-            world.add_resource(MapSelectionStatus::Confirmed);
+            world.insert(MapSelection::Id(slug_and_handle));
+            world.insert(MapSelectionStatus::Confirmed);
         }
     }
 }

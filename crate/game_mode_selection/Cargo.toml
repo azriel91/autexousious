@@ -12,11 +12,11 @@ application_state = { path = "../application_state" }
 character_selection = { path = "../character_selection" }
 character_selection_ui = { path = "../character_selection_ui" }
 derivative = "1.0.2"
-derive-new = "0.5.6"
+derive-new = "0.5.8"
 game_loading = { path = "../game_loading" }
 game_mode_selection_model = { path = "../game_mode_selection_model" }
 game_play = { path = "../game_play" }
-log = "0.4.6"
+log = "0.4.8"
 map_selection = { path = "../map_selection" }
 map_selection_ui = { path = "../map_selection_ui" }
 state_registry = { path = "../state_registry" }

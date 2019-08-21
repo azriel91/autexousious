@@ -1,13 +1,13 @@
 use amethyst::{
     core::Transform,
-    ecs::{Join, ReadStorage, System, WriteStorage},
+    ecs::{Join, ReadStorage, System, World, WriteStorage},
     renderer::SpriteRender,
+    shred::{ResourceId, SystemData},
 };
 use charge_model::play::ChargeTrackerClock;
 use derivative::Derivative;
 use derive_new::new;
 use object_model::play::ParentObject;
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 use crate::{CpBar, CP_BAR_LENGTH, CP_BAR_SPRITE_COUNT};
@@ -97,7 +97,7 @@ mod tests {
     use amethyst::{
         assets::PrefabData,
         core::{math::Vector3, Transform, TransformBundle},
-        ecs::{Builder, Entity, System, SystemData},
+        ecs::{Builder, Entity, System, SystemData, WorldExt},
         renderer::{types::DefaultBackend, RenderEmptyBundle},
         Error,
     };
@@ -113,8 +113,8 @@ mod tests {
             .with_bundle(TransformBundle::new())
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_setup(|world| {
-                <CpBarPrefab as PrefabData>::SystemData::setup(&mut world.res);
-                <CpBarUpdateSystem as System>::SystemData::setup(&mut world.res);
+                <CpBarPrefab as PrefabData>::SystemData::setup(world);
+                <CpBarUpdateSystem as System>::SystemData::setup(world);
 
                 let mut transform = Transform::default();
                 transform.set_translation_x(123.);
@@ -144,7 +144,7 @@ mod tests {
                     cp_bar_entity
                 };
 
-                world.add_resource(cp_bar_entity);
+                world.insert(cp_bar_entity);
             })
             .with_system_single(CpBarUpdateSystem::new(), "", &[])
             .with_assertion(|world| {

@@ -1,11 +1,13 @@
-use amethyst::ecs::{Entities, Join, ReadStorage, System, WriteStorage};
+use amethyst::{
+    ecs::{Entities, Join, ReadStorage, System, World, WriteStorage},
+    shred::{ResourceId, SystemData},
+};
 use charge_model::{
     config::{ChargeDelay, ChargeLimit},
     play::{ChargeBeginDelayClock, ChargeDelayClock, ChargeStatus, ChargeTrackerClock},
 };
 use derivative::Derivative;
 use derive_new::new;
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 /// Ticks `ChargeBeginDelayClock` while `Attack` is held.
@@ -101,7 +103,7 @@ impl<'s> System<'s> for ChargeInitializeDelaySystem {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{Builder, Entity, ReadStorage},
+        ecs::{Builder, Entity, ReadStorage, WorldExt},
         Error,
     };
     use amethyst_test::AmethystApplication;
@@ -321,7 +323,7 @@ mod tests {
                     entity_builder.build()
                 };
 
-                world.add_resource(entity);
+                world.insert(entity);
             })
             .with_assertion(move |world| {
                 let entity = *world.read_resource::<Entity>();

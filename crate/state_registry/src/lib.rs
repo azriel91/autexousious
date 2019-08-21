@@ -9,7 +9,7 @@
 //!
 //! impl<'a, 'b> State<GameData<'a, 'b>, AppEvent> for GamePlayState {
 //!     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
-//!         data.world.add_resource(StateId::GamePlay);
+//!         data.world.insert(StateId::GamePlay);
 //!     }
 //! }
 //! ```

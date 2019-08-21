@@ -2,14 +2,14 @@ use std::{fmt::Debug, mem};
 
 use amethyst::{
     assets::{AssetStorage, Handle, Loader, PrefabData, ProgressCounter},
-    ecs::{Entity, Read, ReadExpect, WriteStorage},
+    ecs::{Entity, Read, ReadExpect, World, WriteStorage},
+    shred::{ResourceId, SystemData},
     Error,
 };
 use derivative::Derivative;
 use log::debug;
 use object_model::{config::ObjectAssetData, loaded::GameObject};
 use serde::{Deserialize, Serialize};
-use shred_derive::SystemData;
 
 use crate::{ObjectComponentStorages, ObjectEntityAugmenter, ObjectPrefabError};
 

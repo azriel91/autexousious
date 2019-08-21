@@ -1,8 +1,8 @@
 use std::marker::PhantomData;
 
 use amethyst::{
-    ecs::{Entities, Read, ReadStorage, System, SystemData, WriteStorage},
-    shred::Resources,
+    ecs::{Entities, Read, ReadStorage, System, World, WriteStorage},
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
@@ -11,7 +11,6 @@ use sequence_model::{
     config::{SequenceEndTransition, SequenceId},
     play::SequenceUpdateEvent,
 };
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 /// Transitions an object when their `SequenceUpdateEvent::SequenceEnd`
@@ -108,10 +107,11 @@ where
             });
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
         self.reader_id = Some(
-            res.fetch_mut::<EventChannel<SequenceUpdateEvent>>()
+            world
+                .fetch_mut::<EventChannel<SequenceUpdateEvent>>()
                 .register_reader(),
         );
     }
@@ -122,7 +122,7 @@ mod tests {
     use amethyst::{
         ecs::{
             storage::ComponentEvent, world::EntitiesRes, Builder, Entity, ReadStorage, World,
-            WriteExpect,
+            WorldExt, WriteExpect,
         },
         shrev::{EventChannel, ReaderId},
         Error,
@@ -273,7 +273,7 @@ mod tests {
                     .with(sequence_id_setup)
                     .with(sequence_end_transition)
                     .build();
-                world.add_resource(entity);
+                world.insert(entity);
             })
             .with_setup(register_sequence_id_reader)
             .with_effect(move |world| {
@@ -343,7 +343,7 @@ mod tests {
             let mut test_object_sequence_ids = world.write_storage::<TestObjectSequenceId>();
             test_object_sequence_ids.register_reader()
         };
-        world.add_resource(component_event_rid);
+        world.insert(component_event_rid);
     }
 
     struct ParamsSetup {

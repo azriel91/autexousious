@@ -1,4 +1,7 @@
-use amethyst::ecs::WriteStorage;
+use amethyst::{
+    ecs::{World, WriteStorage},
+    shred::{ResourceId, SystemData},
+};
 use character_model::play::RunCounter;
 use charge_model::{
     config::{ChargeDelay, ChargeLimit, ChargeUseMode},
@@ -11,7 +14,6 @@ use object_model::{
     play::{Grounding, HealthPoints},
 };
 use object_status_model::config::StunPoints;
-use shred_derive::SystemData;
 
 /// Character specific `Component` storages.
 ///

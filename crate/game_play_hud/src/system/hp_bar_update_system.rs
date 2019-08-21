@@ -1,12 +1,12 @@
 use amethyst::{
     core::Transform,
-    ecs::{Join, ReadStorage, System, WriteStorage},
+    ecs::{Join, ReadStorage, System, World, WriteStorage},
     renderer::SpriteRender,
+    shred::{ResourceId, SystemData},
 };
 use derivative::Derivative;
 use derive_new::new;
 use object_model::play::{HealthPoints, ParentObject};
-use shred_derive::SystemData;
 use typename_derive::TypeName;
 
 use crate::{HpBar, HP_BAR_LENGTH, HP_BAR_SPRITE_COUNT};
@@ -94,7 +94,7 @@ mod tests {
     use amethyst::{
         assets::PrefabData,
         core::{math::Vector3, Transform, TransformBundle},
-        ecs::{Builder, Entity, System, SystemData},
+        ecs::{Builder, Entity, System, SystemData, WorldExt},
         renderer::{types::DefaultBackend, RenderEmptyBundle},
         Error,
     };
@@ -110,8 +110,8 @@ mod tests {
             .with_bundle(TransformBundle::new())
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_setup(|world| {
-                <HpBarPrefab as PrefabData>::SystemData::setup(&mut world.res);
-                <HpBarUpdateSystem as System>::SystemData::setup(&mut world.res);
+                <HpBarPrefab as PrefabData>::SystemData::setup(world);
+                <HpBarUpdateSystem as System>::SystemData::setup(world);
 
                 let mut transform = Transform::default();
                 transform.set_translation_x(123.);
@@ -139,7 +139,7 @@ mod tests {
                     hp_bar_entity
                 };
 
-                world.add_resource(hp_bar_entity);
+                world.insert(hp_bar_entity);
             })
             .with_system_single(HpBarUpdateSystem::new(), "", &[])
             .with_assertion(|world| {

@@ -1,4 +1,8 @@
-use amethyst::{core::bundle::SystemBundle, ecs::DispatcherBuilder, Error};
+use amethyst::{
+    core::bundle::SystemBundle,
+    ecs::{DispatcherBuilder, World},
+    Error,
+};
 use derive_new::new;
 use game_input_model::InputConfig;
 use typename::TypeName;
@@ -15,7 +19,11 @@ pub struct GameInputUiBundle {
 }
 
 impl<'a, 'b> SystemBundle<'a, 'b> for GameInputUiBundle {
-    fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<(), Error> {
+    fn build(
+        self,
+        _world: &mut World,
+        builder: &mut DispatcherBuilder<'a, 'b>,
+    ) -> Result<(), Error> {
         builder.add(
             InputToControlInputSystem::new(self.input_config),
             &InputToControlInputSystem::type_name(),

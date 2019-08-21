@@ -2,7 +2,7 @@ use std::path::Path;
 
 use amethyst::{
     assets::{AssetStorage, Loader, ProgressCounter},
-    ecs::World,
+    ecs::{World, WorldExt},
     renderer::{SpriteRender, SpriteSheet, Texture},
     Error,
 };
@@ -149,6 +149,7 @@ mod tests {
     use amethyst::{
         assets::AssetStorage,
         core::TransformBundle,
+        ecs::WorldExt,
         renderer::{types::DefaultBackend, RenderEmptyBundle},
         Error,
     };
@@ -173,7 +174,7 @@ mod tests {
                 let map_handle =
                     MapLoader::load(world, &MAP_EMPTY_PATH).expect("Failed to load map.");
 
-                world.add_resource(EffectReturn(map_handle));
+                world.insert(EffectReturn(map_handle));
             })
             .with_assertion(|world| {
                 let map_handle = world.read_resource::<EffectReturn<MapHandle>>().0.clone();
