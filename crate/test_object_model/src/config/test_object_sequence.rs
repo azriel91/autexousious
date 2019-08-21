@@ -26,22 +26,22 @@ impl GameObjectSequence for TestObjectSequence {
 mod tests {
     use object_model::config::{ObjectFrame, ObjectSequence};
     use sequence_model::config::{SequenceEndTransition, Wait};
+    use serde_yaml;
     use sprite_model::config::SpriteRef;
-    use toml;
 
     use super::TestObjectSequence;
     use crate::config::TestObjectFrame;
 
-    const SEQUENCE_WITH_FRAMES_EMPTY: &str = "frames = []";
-    const SEQUENCE_WITH_CONTROL_TRANSITIONS: &str = r#"
-        [[frames]]
-        wait = 2
-        sprite = { sheet = 0, index = 4 }
-    "#;
+    const SEQUENCE_WITH_FRAMES_EMPTY: &str = "frames: []";
+    const SEQUENCE_WITH_CONTROL_TRANSITIONS: &str = r#"---
+frames:
+  - wait: 2
+    sprite: { sheet: 0, index: 4 }
+"#;
 
     #[test]
     fn sequence_with_empty_frames_list_deserializes_successfully() {
-        let sequence = toml::from_str::<TestObjectSequence>(SEQUENCE_WITH_FRAMES_EMPTY)
+        let sequence = serde_yaml::from_str::<TestObjectSequence>(SEQUENCE_WITH_FRAMES_EMPTY)
             .expect("Failed to deserialize sequence.");
 
         let expected =
@@ -51,8 +51,9 @@ mod tests {
 
     #[test]
     fn sequence_with_control_transitions() {
-        let sequence = toml::from_str::<TestObjectSequence>(SEQUENCE_WITH_CONTROL_TRANSITIONS)
-            .expect("Failed to deserialize sequence.");
+        let sequence =
+            serde_yaml::from_str::<TestObjectSequence>(SEQUENCE_WITH_CONTROL_TRANSITIONS)
+                .expect("Failed to deserialize sequence.");
 
         let frames = vec![TestObjectFrame::new(ObjectFrame {
             wait: Wait::new(2),

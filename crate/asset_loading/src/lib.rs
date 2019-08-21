@@ -17,7 +17,7 @@ pub use crate::{
     dir_traverse::DirTraverse,
     namespace_directory::NamespaceDirectory,
     namespace_discoverer::{ASSETS_DEFAULT_DIR, ASSETS_DOWNLOAD_DIR, ASSETS_TEST_DIR},
-    toml_format::TomlFormat,
+    yaml_format::YamlFormat,
 };
 pub(crate) use crate::{
     asset_indexing_utils::AssetIndexingUtils, map_indexer::MapIndexer,
@@ -32,4 +32,4 @@ mod map_indexer;
 mod namespace_directory;
 mod namespace_discoverer;
 mod object_indexer;
-mod toml_format;
+mod yaml_format;

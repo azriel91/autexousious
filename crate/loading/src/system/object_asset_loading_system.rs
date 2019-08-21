@@ -13,7 +13,7 @@ use amethyst::{
     renderer::{SpriteSheet, Texture},
     shred::{ResourceId, SystemData},
 };
-use asset_loading::{AssetDiscovery, TomlFormat};
+use asset_loading::{AssetDiscovery, YamlFormat};
 use asset_model::config::{AssetIndex, AssetRecord};
 use derivative::Derivative;
 use derive_new::new;
@@ -301,20 +301,20 @@ where
         let game_object_definition_handle = loader.load(
             asset_record
                 .path
-                .join("object.toml")
+                .join("object.yaml")
                 .to_str()
                 .expect("Expected path to be valid unicode."),
-            TomlFormat,
+            YamlFormat,
             &mut *progress_counter,
             game_object_definition_assets,
         );
         let sprites_definition_handle = loader.load(
             asset_record
                 .path
-                .join("sprites.toml")
+                .join("sprites.yaml")
                 .to_str()
                 .expect("Expected path to be valid unicode."),
-            TomlFormat,
+            YamlFormat,
             &mut *progress_counter,
             sprites_definition_assets,
         );

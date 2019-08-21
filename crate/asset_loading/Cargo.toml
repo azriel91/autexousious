@@ -15,8 +15,8 @@ log = "0.4.8"
 map_model = { path = "../map_model" }
 object_type = { path = "../object_type" }
 serde = "1.0.99"
+serde_yaml = "0.8.9"
 strum = "0.15.0"
-toml = "0.5.3"
 
 [dev-dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "test-support", "vulkan"] }

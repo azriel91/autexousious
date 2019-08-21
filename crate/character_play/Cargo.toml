@@ -30,7 +30,7 @@ character_loading = { path = "../character_loading" }
 character_prefab = { path = "../character_prefab" }
 object_type = { path = "../object_type" }
 pretty_assertions = "0.6.1"
-toml = "0.5.3"
+serde_yaml = "0.8.9"
 
 [features]
 nightly = ["amethyst/nightly"]

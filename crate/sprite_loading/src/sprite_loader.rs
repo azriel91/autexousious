@@ -18,7 +18,7 @@ impl SpriteLoader {
     ///
     /// The sprites base directory is expected to contain:
     ///
-    /// * `sprites.toml`: Configuration file that defines what sprites to load.
+    /// * `sprites.yaml`: Configuration file that defines what sprites to load.
     /// * Sprite sheets: The images that contain the sprites.
     ///
     /// # Parameters
@@ -27,7 +27,7 @@ impl SpriteLoader {
     /// * `loader`: `Loader` to load assets.
     /// * `texture_assets`: `AssetStorage` for `Texture`s.
     /// * `sprite_sheet_assets`: `AssetStorage` for `SpriteSheet`s.
-    /// * `sprites_definition`: The loaded `sprites.toml`.
+    /// * `sprites_definition`: The loaded `sprites.yaml`.
     pub fn load(
         progress_counter: &mut ProgressCounter,
         loader: &Loader,

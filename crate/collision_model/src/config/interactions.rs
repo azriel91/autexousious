@@ -35,32 +35,30 @@ impl From<Interactions> for Result<ProcessingState<Interactions>, Error> {
 mod tests {
     use object_status_model::config::StunPoints;
     use serde::Deserialize;
+    use serde_yaml;
     use shape_model::Volume;
-    use toml;
 
     use super::Interactions;
     use crate::config::{Hit, HitLimit, HitRepeatDelay, Interaction, InteractionKind};
 
-    const ITR_PHYSICAL_ALL_SPECIFIED: &str = "
-        interactions = [
-          { hit = { repeat_delay = 5, hit_limit = \"unlimited\", hp_damage = 40, sp_damage = 50, \
-            stun = 33 }, bounds = [{ sphere = { x = 1, y = 1, r = 1 } }], multiple = true },
-        ]
-    ";
-    const ITR_PHYSICAL_MINIMUM_SPECIFIED: &str = r#"
-        interactions = [
-          { hit = {}, bounds = [{ sphere = { x = 1, y = 1, r = 1 } }] },
-        ]
-    "#;
-    const ITR_PHYSICAL_HIT_LIMIT: &str = r#"
-        interactions = [
-          { hit = { hit_limit = 2 }, bounds = [{ sphere = { x = 1, y = 1, r = 1 } }] },
-        ]
-    "#;
+    const ITR_PHYSICAL_ALL_SPECIFIED: &str = r#"---
+interactions:
+  - hit: { repeat_delay: 5, hit_limit: "unlimited", hp_damage: 40, sp_damage: 50, stun: 33 }
+    bounds: [{ sphere: { x: 1, y: 1, r: 1 } }]
+    multiple: true
+"#;
+    const ITR_PHYSICAL_MINIMUM_SPECIFIED: &str = r#"---
+interactions:
+  - { hit: {}, bounds: [{ sphere: { x: 1, y: 1, r: 1 } }] }
+"#;
+    const ITR_PHYSICAL_HIT_LIMIT: &str = r#"---
+interactions:
+  - { hit: { hit_limit: 2 }, bounds: [{ sphere: { x: 1, y: 1, r: 1 } }] }
+"#;
 
     #[test]
     fn itr_physical_specify_all_fields() {
-        let frame = toml::from_str::<InteractionsFrame>(ITR_PHYSICAL_ALL_SPECIFIED)
+        let frame = serde_yaml::from_str::<InteractionsFrame>(ITR_PHYSICAL_ALL_SPECIFIED)
             .expect("Failed to deserialize frame.");
 
         let interactions = vec![Interaction {
@@ -84,7 +82,7 @@ mod tests {
 
     #[test]
     fn itr_physical_specify_minimum_fields() {
-        let frame = toml::from_str::<InteractionsFrame>(ITR_PHYSICAL_MINIMUM_SPECIFIED)
+        let frame = serde_yaml::from_str::<InteractionsFrame>(ITR_PHYSICAL_MINIMUM_SPECIFIED)
             .expect("Failed to deserialize frame.");
 
         let interactions = vec![Interaction {
@@ -102,7 +100,7 @@ mod tests {
 
     #[test]
     fn itr_physical_specify_hit_limit() {
-        let frame = toml::from_str::<InteractionsFrame>(ITR_PHYSICAL_HIT_LIMIT)
+        let frame = serde_yaml::from_str::<InteractionsFrame>(ITR_PHYSICAL_HIT_LIMIT)
             .expect("Failed to deserialize frame.");
 
         let interactions = vec![Interaction {
@@ -124,7 +122,7 @@ mod tests {
         assert_eq!(Interactions::new(interactions), frame.interactions);
     }
 
-    /// Needed because the TOML deserializer does not support deserializing values directly.
+    /// Needed because the YAML deserializer does not support deserializing values directly.
     #[derive(Debug, Deserialize)]
     struct InteractionsFrame {
         interactions: Interactions,

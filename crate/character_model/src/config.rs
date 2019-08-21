@@ -32,43 +32,37 @@ mod test {
         ControlTransition, ControlTransitionMultiple, ControlTransitionSingle,
         SequenceEndTransition, Wait,
     };
+    use serde_yaml;
     use shape_model::Volume;
     use spawn_model::config::Spawns;
     use sprite_model::config::SpriteRef;
-    use toml;
 
     use crate::config::{
         CharacterControlTransitions, CharacterDefinition, CharacterFrame, CharacterSequence,
         CharacterSequenceId, ControlTransitionRequirement,
     };
 
-    const OBJECT_TOML: &str = r#"
-        [sequences.stand]
-          next = "walk"
-
-          [sequences.stand.transitions]
-          press_defend = "stand_attack_1"
-
-          [[sequences.stand.frames]]
-            wait = 5
-            sprite = { sheet = 1, index = 3 }
-            body = [{ box = { x = 25, y = 11, w = 31, h = 68 } }]
-
-            [sequences.stand.frames.transitions]
-              press_attack = "stand_attack_0"
-
-              release_attack = [
-                { next = "walk", requirements = [{ charge = 90 }] },
-                { next = "run", requirements = [{ sp = 50 }] },
-                { next = "run_stop", requirements = [{ hp = 30 }] },
-              ]
-
-              hold_jump = { next = "jump" }
-    "#;
+    const OBJECT_YAML: &str = "\
+sequences:
+  stand:
+    next: 'walk'
+    transitions: { press_defend: 'stand_attack_1' }
+    frames:
+      - wait: 5
+        sprite: { sheet: 1, index: 3 }
+        body: [{ box: { x: 25, y: 11, w: 31, h: 68 } }]
+        transitions:
+          press_attack: 'stand_attack_0'
+          release_attack:
+            - { next: 'walk', requirements: [{ charge: 90 }] }
+            - { next: 'run', requirements: [{ sp: 50 }] }
+            - { next: 'run_stop', requirements: [{ hp: 30 }] }
+          hold_jump: { next: 'jump' }
+";
 
     #[test]
     fn deserialize_character_definition() {
-        let char_definition = toml::from_str::<CharacterDefinition>(OBJECT_TOML)
+        let char_definition = serde_yaml::from_str::<CharacterDefinition>(OBJECT_YAML)
             .expect("Failed to deserialize character definition.");
 
         let frames = vec![CharacterFrame::new(

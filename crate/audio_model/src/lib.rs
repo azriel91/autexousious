@@ -20,7 +20,7 @@
 //!
 //! ## Configuration
 //!
-//! Configuration encoded sounds are defined in object configuration -- `object.toml`. These are not
+//! Configuration encoded sounds are defined in object configuration -- `object.yaml`. These are not
 //! known at application development time, so there is no known value to refer to them.
 //!
 //! In this case, we can use a `HashMap<String, AudioData>` (with better names), so that paths to

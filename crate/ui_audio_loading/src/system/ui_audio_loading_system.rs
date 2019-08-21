@@ -6,7 +6,7 @@ use amethyst::{
     ecs::{Read, ReadExpect, System, World, Write},
     shred::{ResourceId, SystemData},
 };
-use asset_loading::TomlFormat;
+use asset_loading::YamlFormat;
 use derivative::Derivative;
 use derive_new::new;
 use log::{debug, error};
@@ -18,7 +18,7 @@ use ui_audio_model::{
 };
 
 /// File name of the UI audio configuration.
-const UI_AUDIO_TOML: &str = "ui_audio.toml";
+const UI_AUDIO_YAML: &str = "ui_audio.yaml";
 
 /// Loads sound effect (SFX) assets.
 #[derive(Default, Derivative, TypeName, new)]
@@ -71,15 +71,15 @@ impl<'s> System<'s> for UiAudioLoadingSystem {
         if *ui_audio_loading_status == UiAudioLoadingStatus::NotStarted {
             *ui_audio_loading_status = UiAudioLoadingStatus::InProgress;
 
-            let ui_audio_toml_path = self.assets_dir.join(UI_AUDIO_TOML);
+            let ui_audio_yaml_path = self.assets_dir.join(UI_AUDIO_YAML);
 
-            if ui_audio_toml_path.exists() {
+            if ui_audio_yaml_path.exists() {
                 // Borrow self piecewise.
                 let progress_counter = &mut self.progress_counter;
                 let ui_sfx_paths_handle = &mut self.ui_sfx_paths_handle;
                 let handle = loader.load(
-                    UI_AUDIO_TOML,
-                    TomlFormat,
+                    UI_AUDIO_YAML,
+                    YamlFormat,
                     progress_counter,
                     &ui_sfx_paths_assets,
                 );
@@ -87,7 +87,7 @@ impl<'s> System<'s> for UiAudioLoadingSystem {
             } else {
                 error!(
                     "Expected `{}` to exist in `assets` directory.",
-                    UI_AUDIO_TOML
+                    UI_AUDIO_YAML
                 );
                 *ui_audio_loading_status = UiAudioLoadingStatus::Complete;
             }

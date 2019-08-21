@@ -16,23 +16,22 @@ where
 {
     /// Transition that only has a sequence ID.
     ///
-    /// ```toml
-    /// press_attack = "seq_id"
+    /// ```yaml
+    /// press_attack: "seq_id"
     /// ```
     SequenceId(SeqId),
     /// Transition has a sequence ID and extra fields.
     ///
-    /// ```toml
-    /// press_attack = { next = "seq_id", extra_0 = 0, extra_1 = "0" }
+    /// ```yaml
+    /// press_attack: { next: "seq_id", extra_0: 0, extra_1: "0" }
     /// ```
     Single(ControlTransitionSingle<SeqId, Req>),
     /// Multiple transitions with sequence ID and extra fields.
     ///
-    /// ```toml
-    /// press_attack = [
-    ///   { next = "seq_id_0", extra_0 = 0, extra_1 = "0" },
-    ///   { next = "seq_id_1", extra_0 = 1, extra_1 = "1" },
-    /// ]
+    /// ```yaml
+    /// press_attack:
+    ///   - { next: "seq_id_0", extra_0: 0, extra_1: "0" }
+    ///   - { next: "seq_id_1", extra_0: 1, extra_1: "1" }
     /// ```
     Multiple(ControlTransitionMultiple<SeqId, Req>),
 }

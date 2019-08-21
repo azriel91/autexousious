@@ -6,7 +6,7 @@ use amethyst::{
     ecs::{Read, ReadExpect, System, World, Write},
     shred::{ResourceId, SystemData},
 };
-use asset_loading::TomlFormat;
+use asset_loading::YamlFormat;
 use collision_audio_model::{
     config::{CollisionSfxId, CollisionSfxPaths},
     loaded::CollisionSfxMap,
@@ -18,7 +18,7 @@ use log::{debug, error};
 use typename_derive::TypeName;
 
 /// File name of the collision audio configuration.
-const COLLISION_AUDIO_TOML: &str = "collision_audio.toml";
+const COLLISION_AUDIO_YAML: &str = "collision_audio.yaml";
 
 /// Loads sound effect (SFX) assets.
 #[derive(Default, Derivative, TypeName, new)]
@@ -71,15 +71,15 @@ impl<'s> System<'s> for CollisionAudioLoadingSystem {
         if *collision_audio_loading_status == CollisionAudioLoadingStatus::NotStarted {
             *collision_audio_loading_status = CollisionAudioLoadingStatus::InProgress;
 
-            let collision_audio_toml_path = self.assets_dir.join(COLLISION_AUDIO_TOML);
+            let collision_audio_yaml_path = self.assets_dir.join(COLLISION_AUDIO_YAML);
 
-            if collision_audio_toml_path.exists() {
+            if collision_audio_yaml_path.exists() {
                 // Borrow self piecewise.
                 let progress_counter = &mut self.progress_counter;
                 let collision_sfx_paths_handle = &mut self.collision_sfx_paths_handle;
                 let handle = loader.load(
-                    COLLISION_AUDIO_TOML,
-                    TomlFormat,
+                    COLLISION_AUDIO_YAML,
+                    YamlFormat,
                     progress_counter,
                     &collision_sfx_paths_assets,
                 );
@@ -87,7 +87,7 @@ impl<'s> System<'s> for CollisionAudioLoadingSystem {
             } else {
                 error!(
                     "Expected `{}` to exist in `assets` directory.",
-                    COLLISION_AUDIO_TOML
+                    COLLISION_AUDIO_YAML
                 );
                 *collision_audio_loading_status = CollisionAudioLoadingStatus::Complete;
             }
