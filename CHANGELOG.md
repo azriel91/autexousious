@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.14.0 (unreleased)
+
+### Changed
+
+* ***Breaking:*** Configuration files now use YAML instead of TOML. ([#154])
+
+[#154]: https://gitlab.com/azriel91/autexousious/issues/154
+
 ## 0.13.0 (2019-08-16)
 
 ### Added
