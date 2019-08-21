@@ -15,15 +15,15 @@ mod test {
     use asset_model::config::AssetSlug;
     use kinematic_model::config::{Position, Velocity};
     use serde::{Deserialize, Serialize};
-    use toml;
+    use serde_yaml;
 
     use super::{Spawn, Spawns};
 
-    const SPAWNS_TOML: &str = r#"
-        spawns = [
-          { object = "default/fireball" },
-          { object = "default/fireball", position = [-35, 47, 10], velocity = [10, -2, 1] },
-        ]"#;
+    const SPAWNS_YAML: &str = r#"
+spawns:
+  - { object: "default/fireball" }
+  - { object: "default/fireball", position: [-35, 47, 10], velocity: [10, -2, 1] }
+"#;
 
     #[derive(Debug, Deserialize, Serialize)]
     struct Config {
@@ -33,7 +33,7 @@ mod test {
     #[test]
     fn deserialize_spawns() {
         let config =
-            toml::from_str::<Config>(SPAWNS_TOML).expect("Failed to deserialize `Spawns`.");
+            serde_yaml::from_str::<Config>(SPAWNS_YAML).expect("Failed to deserialize `Spawns`.");
         let spawns = config.spawns;
 
         let asset_slug = AssetSlug::from_str("default/fireball")

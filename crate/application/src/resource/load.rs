@@ -7,7 +7,7 @@ use std::{
 use amethyst::Error;
 use ron;
 use serde::Deserialize;
-use toml;
+use serde_yaml;
 
 use crate::{find, find_in, Format, IoUtils};
 
@@ -43,7 +43,7 @@ where
 /// // Cargo.toml
 /// //
 /// // [dependencies]
-/// // serde_derive = "1.0"
+/// // serde = { version = "1.0", features = ["derive"] }
 ///
 /// use serde::Deserialize;
 ///
@@ -95,9 +95,9 @@ where
             let file_reader = File::open(file_path)?;
             Ok(ron::de::from_reader(file_reader)?)
         }
-        Format::Toml => {
-            let toml_contents = IoUtils::read_file(file_path.as_ref())?;
-            Ok(toml::from_slice(&toml_contents)?)
+        Format::Yaml => {
+            let yaml_contents = IoUtils::read_file(file_path.as_ref())?;
+            Ok(serde_yaml::from_slice(&yaml_contents)?)
         }
     }
 }
@@ -111,7 +111,7 @@ mod test {
         de::{ParseError, Position},
     };
     use serde::Deserialize;
-    use toml;
+    use serde_yaml;
 
     use super::{load, load_in};
     use crate::{
@@ -248,12 +248,12 @@ mod test {
     }
 
     test! {
-        fn load_in_toml_returns_resource_when_file_exists_and_parses_successfully() {
+        fn load_in_yaml_returns_resource_when_file_exists_and_parses_successfully() {
             let (temp_dir, resource_path) = setup_temp_file(
                 dir::RESOURCES,
                 "test__load_config",
-                ".toml",
-                Some("val = 123"),
+                ".yaml",
+                Some("val: 123"),
             );
             let temp_dir = temp_dir.unwrap();
 
@@ -261,8 +261,8 @@ mod test {
                 Data { val: 123 },
                 load_in(
                     &temp_dir.path(),
-                    "test__load_config.toml",
-                    Format::Toml,
+                    "test__load_config.yaml",
+                    Format::Yaml,
                     Some(development_base_dirs!())
                 ).unwrap()
             );
@@ -273,24 +273,24 @@ mod test {
     }
 
     test! {
-        fn load_toml_returns_error_when_file_fails_to_parse() {
+        fn load_yaml_returns_error_when_file_fails_to_parse() {
             let (_, resource_path) = setup_temp_file(
                 "",
                 "test__load_config",
-                ".toml",
+                ".yaml",
                 Some("I'm parsable. Unparsable."),
             );
-            let load_result = load::<Data>("test__load_config.toml", Format::Toml);
+            let load_result = load::<Data>("test__load_config.yaml", Format::Yaml);
             resource_path.close().unwrap();
 
-            if let Some(_toml_error) = load_result
+            if let Some(_yaml_error) = load_result
                 .expect_err("Expected parse failure.")
                 .as_error()
-                .downcast_ref::<Box<toml::de::Error>>()
+                .downcast_ref::<Box<serde_yaml::Error>>()
             {
                 // pass
             } else {
-                panic!("Expected `toml::de::Error`."); // kcov-ignore
+                panic!("Expected `serde_yaml::Error`."); // kcov-ignore
             }
         }
     }

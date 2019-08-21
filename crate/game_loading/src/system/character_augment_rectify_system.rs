@@ -251,7 +251,7 @@ mod tests {
                 // kcov-ignore-start
                 assert_eq!(
                     // kcov-ignore-end
-                    // See assets_test/assets/test/map/fade/map.toml
+                    // See assets_test/assets/test/map/fade/map.yaml
                     Position::<f32>::new(400., 200., 100.),
                     *world
                         .read_storage::<Position<f32>>()

@@ -23,6 +23,8 @@ pub enum UiSfxId {
 // Necessary to allow enums to be in key position in TOML.
 //
 // See <https://github.com/serde-rs/serde/issues/908>.
+//
+// TODO: Do we still need this now that we are using YAML?
 impl<'de> Deserialize<'de> for UiSfxId {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where

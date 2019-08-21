@@ -12,7 +12,7 @@ pub enum CollisionSfxId {
     HitNormal,
 }
 
-// Necessary to allow enums to be in key position in TOML.
+// Necessary to allow enums to be in key position in YAML.
 //
 // See <https://github.com/serde-rs/serde/issues/908>.
 impl<'de> Deserialize<'de> for CollisionSfxId {

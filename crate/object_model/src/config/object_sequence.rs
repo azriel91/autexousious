@@ -48,52 +48,50 @@ mod tests {
     use object_status_model::config::StunPoints;
     use sequence_model::config::{SequenceEndTransition, SequenceId, Wait};
     use serde::{Deserialize, Serialize};
+    use serde_yaml;
     use shape_model::Volume;
     use spawn_model::config::{Spawn, Spawns};
     use specs_derive::Component;
     use sprite_model::config::SpriteRef;
     use strum_macros::{Display, EnumString, IntoStaticStr};
-    use toml;
 
     use super::ObjectSequence;
     use crate::config::ObjectFrame;
 
-    const SEQUENCE_WITH_FRAMES: &str = r#"
-        next = "boo"
-        frames = [
-          { wait = 2, sprite = { sheet = 0, index = 4 } },
-          { wait = 2, sprite = { sheet = 0, index = 5 } },
-          { wait = 1, sprite = { sheet = 1, index = 6 } },
-          { wait = 1, sprite = { sheet = 1, index = 7 } },
-          { wait = 2, sprite = { sheet = 0, index = 6 } },
-          { wait = 2, sprite = { sheet = 0, index = 5 } },
-        ]
-    "#;
-    const SEQUENCE_WITH_FRAMES_EMPTY: &str = r#"
-        frames = []
-    "#;
-    const SEQUENCE_WITH_BODY: &str = r#"
-        [[frames]]
-        body = [
-          { box = { x = -1, y = -2, z = -3, w = 11, h = 12, d = 13 } },
-          { sphere = { x = -7, y = -8, z = -9, r = 17 } },
-        ]
-    "#;
-    const SEQUENCE_WITH_ITR: &str = "
-        [[frames]]
-        interactions = [
-          { hit = { repeat_delay = 5 }, bounds = [{ sphere = { x = 1, y = 1, r = 1 } }] },
-        ]
-    ";
-    const SEQUENCE_WITH_SPAWNS: &str = r#"
-        [[frames]]
-        spawns = [{ object = "default/fireball" }]
-    "#;
+    const SEQUENCE_WITH_FRAMES: &str = r#"---
+next: "boo"
+frames:
+  - { wait: 2, sprite: { sheet: 0, index: 4 } }
+  - { wait: 2, sprite: { sheet: 0, index: 5 } }
+  - { wait: 1, sprite: { sheet: 1, index: 6 } }
+  - { wait: 1, sprite: { sheet: 1, index: 7 } }
+  - { wait: 2, sprite: { sheet: 0, index: 6 } }
+  - { wait: 2, sprite: { sheet: 0, index: 5 } }
+"#;
+    const SEQUENCE_WITH_FRAMES_EMPTY: &str = r#"---
+frames: []
+"#;
+    const SEQUENCE_WITH_BODY: &str = r#"---
+frames:
+  - body:
+      - { box: { x: -1, y: -2, z: -3, w: 11, h: 12, d: 13 } }
+      - { sphere: { x: -7, y: -8, z: -9, r: 17 } }
+"#;
+    const SEQUENCE_WITH_ITR: &str = r#"---
+frames:
+  - interactions:
+      - { hit: { repeat_delay: 5 }, bounds: [{ sphere: { x: 1, y: 1, r: 1 } }] }
+"#;
+    const SEQUENCE_WITH_SPAWNS: &str = r#"---
+frames:
+  - spawns: [{ object: "default/fireball" }]
+"#;
 
     #[test]
     fn sequence_with_empty_frames_list_deserializes_successfully() {
-        let sequence = toml::from_str::<ObjectSequence<TestSeqId>>(SEQUENCE_WITH_FRAMES_EMPTY)
-            .expect("Failed to deserialize sequence.");
+        let sequence =
+            serde_yaml::from_str::<ObjectSequence<TestSeqId>>(SEQUENCE_WITH_FRAMES_EMPTY)
+                .expect("Failed to deserialize sequence.");
 
         let expected = ObjectSequence::new(SequenceEndTransition::None, vec![]);
         assert_eq!(expected, sequence);
@@ -101,7 +99,7 @@ mod tests {
 
     #[test]
     fn sequence_with_frames() {
-        let sequence = toml::from_str::<ObjectSequence<TestSeqId>>(SEQUENCE_WITH_FRAMES)
+        let sequence = serde_yaml::from_str::<ObjectSequence<TestSeqId>>(SEQUENCE_WITH_FRAMES)
             .expect("Failed to deserialize sequence.");
 
         let frames = vec![
@@ -155,7 +153,7 @@ mod tests {
 
     #[test]
     fn sequence_with_body() {
-        let sequence = toml::from_str::<ObjectSequence<TestSeqId>>(SEQUENCE_WITH_BODY)
+        let sequence = serde_yaml::from_str::<ObjectSequence<TestSeqId>>(SEQUENCE_WITH_BODY)
             .expect("Failed to deserialize sequence.");
 
         let body_volumes = vec![
@@ -187,7 +185,7 @@ mod tests {
 
     #[test]
     fn sequence_with_itr() {
-        let sequence = toml::from_str::<ObjectSequence<TestSeqId>>(SEQUENCE_WITH_ITR)
+        let sequence = serde_yaml::from_str::<ObjectSequence<TestSeqId>>(SEQUENCE_WITH_ITR)
             .expect("Failed to deserialize sequence.");
 
         let interactions = vec![Interaction {
@@ -219,7 +217,7 @@ mod tests {
 
     #[test]
     fn sequence_with_spawns() {
-        let sequence = toml::from_str::<ObjectSequence<TestSeqId>>(SEQUENCE_WITH_SPAWNS)
+        let sequence = serde_yaml::from_str::<ObjectSequence<TestSeqId>>(SEQUENCE_WITH_SPAWNS)
             .expect("Failed to deserialize sequence.");
 
         let asset_slug = AssetSlug::from_str("default/fireball")

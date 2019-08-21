@@ -1012,21 +1012,21 @@ mod tests {
     }
 
     fn test_character_sequence() -> CharacterSequence {
-        let test_character_sequence_toml = "test_character_sequence.toml";
+        let test_character_sequence_yaml = "test_character_sequence.yaml";
         let test_character_sequence_path = PathBuf::from_iter(&[
             env!("CARGO_MANIFEST_DIR"),
             "tests",
-            test_character_sequence_toml,
+            test_character_sequence_yaml,
         ]);
         let contents = IoUtils::read_file(&test_character_sequence_path).unwrap_or_else(|e| {
             panic!(
                 "Failed to read `{}`. Error: {}",
-                test_character_sequence_toml, e
+                test_character_sequence_yaml, e
             )
         });
 
-        toml::from_slice::<CharacterSequence>(&contents)
-            .expect("Failed to load `test_character_sequence.toml`.")
+        serde_yaml::from_slice::<CharacterSequence>(&contents)
+            .expect("Failed to load `test_character_sequence.yaml`.")
     }
 
     fn register_reader(world: &mut World) {

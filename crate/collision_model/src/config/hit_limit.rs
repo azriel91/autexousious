@@ -12,9 +12,9 @@ use strum_macros::{Display, EnumString, IntoStaticStr};
 /// Serialization and deserialization for this type is custom, so users may specify one of the
 /// following:
 ///
-/// ```toml
-/// hit_limit = 2            # HitLimit::Limit(2)
-/// hit_limit = "unlimited"  # HitLimit::Unlimited
+/// ```yaml
+/// hit_limit: 2            # HitLimit::Limit(2)
+/// hit_limit: "unlimited"  # HitLimit::Unlimited
 /// ```
 #[derive(
     Clone, Copy, Debug, Derivative, Display, EnumString, IntoStaticStr, Hash, PartialEq, Eq,

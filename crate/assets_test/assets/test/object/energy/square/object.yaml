@@ -1,0 +1,18 @@
+sequences:
+  hover:
+    frames:
+      - wait: 1
+        sprite: { sheet: 0, index: 0 }
+        body: [{ box: { x: 0, y: 0, w: 32, h: 32 } }]
+
+  hit:
+    frames:
+      - wait: 1
+        sprite: { sheet: 0, index: 0 }
+        body: [{ box: { x: 0, y: 0, w: 32, h: 32 } }]
+
+  hitting:
+    frames:
+      - wait: 1
+        sprite: { sheet: 0, index: 0 }
+        body: [{ box: { x: 0, y: 0, w: 32, h: 32 } }]

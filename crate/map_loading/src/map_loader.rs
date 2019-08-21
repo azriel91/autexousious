@@ -36,9 +36,9 @@ impl MapLoader {
     pub fn load(world: &World, base_dir: &Path) -> Result<MapHandle, Error> {
         debug!("Loading map in `{}`", base_dir.display());
 
-        let map_definition = load_in::<MapDefinition, _>(base_dir, "map.toml", Format::Toml, None)?;
+        let map_definition = load_in::<MapDefinition, _>(base_dir, "map.yaml", Format::Yaml, None)?;
         let sprite_load_result =
-            load_in::<SpritesDefinition, _>(&base_dir, "sprites.toml", Format::Toml, None)
+            load_in::<SpritesDefinition, _>(&base_dir, "sprites.yaml", Format::Yaml, None)
                 .and_then(|sprites_definition| {
                     let loader = &world.read_resource::<Loader>();
                     let texture_assets = &world.read_resource::<AssetStorage<Texture>>();
@@ -183,7 +183,7 @@ mod tests {
                     .get(&map_handle)
                     .expect("Expected map to be loaded.");
 
-                // See empty/map.toml
+                // See empty/map.yaml
                 assert!(map.wait_sequence_handles.is_empty());
             })
             .run_isolated()

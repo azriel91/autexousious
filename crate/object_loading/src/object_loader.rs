@@ -246,17 +246,17 @@ mod test {
 
                     let character_definition = load_in::<CharacterDefinition, _>(
                         &asset_record.path,
-                        "object.toml",
-                        Format::Toml,
+                        "object.yaml",
+                        Format::Yaml,
                         None,
                     )
-                    .expect("Failed to load object.toml into CharacterDefinition");
+                    .expect("Failed to load object.yaml into CharacterDefinition");
 
                     let object_wrapper = {
                         let sprites_definition = load_in::<SpritesDefinition, _>(
                             &asset_record.path,
-                            "sprites.toml",
-                            Format::Toml,
+                            "sprites.yaml",
+                            Format::Yaml,
                             None,
                         )
                         .expect("Failed to load sprites_definition.");
@@ -321,7 +321,7 @@ mod test {
                                     "Expected 28 ",
                                     stringify!($frame_component_data_field),
                                     " to be loaded.",
-                                    "Check `bat/object.toml` for number of sequences."
+                                    "Check `bat/object.yaml` for number of sequences."
                                 )
                             );
                         };

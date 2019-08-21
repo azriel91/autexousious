@@ -186,7 +186,7 @@ mod tests {
                 send_events(world, events);
             })
             .with_assertion(|world| {
-                // See bat/object.toml for values.
+                // See bat/object.yaml for values.
                 expect_component_values(world, Wait::new(1))
             })
             .run_isolated()
@@ -215,7 +215,7 @@ mod tests {
                 send_events(world, events);
             })
             .with_assertion(|world| {
-                // See bat/object.toml for values.
+                // See bat/object.yaml for values.
                 expect_component_values(world, Wait::new(2))
             })
             .run_isolated()
@@ -239,7 +239,7 @@ mod tests {
                 send_events(world, events);
             })
             .with_assertion(|world| {
-                // See bat/object.toml for values.
+                // See bat/object.yaml for values.
                 expect_component_values(world, Wait::new(2))
             })
             .run_isolated()
