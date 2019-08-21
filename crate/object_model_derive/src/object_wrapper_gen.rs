@@ -67,14 +67,16 @@ pub fn object_wrapper_gen(
         }
 
         impl amethyst::assets::Asset for #object_wrapper_name {
-            const NAME: &'static str = concat!(
-                module_path!(),
-                "::",
-                stringify!(#object_wrapper_name),
-            );
-
             type Data = object_model::config::ObjectAssetData<#object_definition_type>;
             type HandleStorage = amethyst::ecs::storage::VecStorage<amethyst::assets::Handle<Self>>;
+
+            fn name() -> &'static str {
+                concat!(
+                    module_path!(),
+                    "::",
+                    stringify!(#object_wrapper_name),
+                )
+            }
         }
 
         impl std::convert::AsRef<sequence_model::loaded::WaitSequenceHandles<#sequence_id_type>>

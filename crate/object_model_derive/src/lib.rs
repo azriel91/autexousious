@@ -65,9 +65,13 @@ mod object_wrapper_gen;
 /// }
 ///
 /// impl Asset for MagicObjectWrapper {
-///     const NAME: &'static str = concat!(module_path!(), "::", stringify!(MagicObjectWrapper));
+///     const NAME: &'static str = ;
 ///     type Data = MagicDefinition;
 ///     type HandleStorage = VecStorage<Handle<Self>>;
+///
+///     fn name() -> &'static str {
+///         concat!(module_path!(), "::", stringify!(MagicObjectWrapper))
+///     }
 /// }
 ///
 /// impl From<MagicObjectWrapper> for Result<ProcessingState<MagicObjectWrapper>, Error> {

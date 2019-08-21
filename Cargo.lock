@@ -652,6 +652,7 @@ dependencies = [
  "amethyst 0.12.0 (git+https://github.com/kabergstrom/amethyst.git?branch=new-asset-system)",
  "amethyst_test 0.3.0 (git+https://github.com/kabergstrom/amethyst.git?branch=new-asset-system)",
  "application 0.13.0",
+ "asset_derive 0.13.0",
  "asset_model 0.13.0",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1376,6 +1377,7 @@ version = "0.13.0"
 dependencies = [
  "amethyst 0.12.0 (git+https://github.com/kabergstrom/amethyst.git?branch=new-asset-system)",
  "amethyst_test 0.3.0 (git+https://github.com/kabergstrom/amethyst.git?branch=new-asset-system)",
+ "asset_derive 0.13.0",
  "asset_loading 0.13.0",
  "assets_test 0.13.0",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -3281,6 +3283,7 @@ name = "map_model"
 version = "0.13.0"
 dependencies = [
  "amethyst 0.12.0 (git+https://github.com/kabergstrom/amethyst.git?branch=new-asset-system)",
+ "asset_derive 0.13.0",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -6263,6 +6266,7 @@ version = "0.13.0"
 dependencies = [
  "amethyst 0.12.0 (git+https://github.com/kabergstrom/amethyst.git?branch=new-asset-system)",
  "amethyst_test 0.3.0 (git+https://github.com/kabergstrom/amethyst.git?branch=new-asset-system)",
+ "asset_derive 0.13.0",
  "asset_loading 0.13.0",
  "assets_test 0.13.0",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",

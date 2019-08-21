@@ -28,15 +28,13 @@ mod tests {
     use std::collections::HashMap;
 
     use amethyst::{
-        assets::{
-            Asset, AssetStorage, Handle, Loader, ProcessingState, Processor, ProgressCounter,
-            Source,
-        },
-        ecs::{storage::VecStorage, WorldExt},
+        assets::{AssetStorage, Handle, Loader, Processor, ProgressCounter, Source},
+        ecs::WorldExt,
         error::format_err,
         Error, State, StateData, Trans,
     };
     use amethyst_test::{AmethystApplication, GameUpdate};
+    use asset_derive::Asset;
     use derive_deref::{Deref, DerefMut};
     use derive_new::new;
     use serde::{Deserialize, Serialize};
@@ -104,21 +102,9 @@ mod tests {
         }
     }
 
-    #[derive(Debug, Deserialize, PartialEq, Serialize)]
-    struct YamlThing {
+    #[derive(Asset, Debug, Deserialize, PartialEq, Serialize)]
+    pub struct YamlThing {
         val: i32,
-    }
-
-    impl Asset for YamlThing {
-        const NAME: &'static str = "asset_loading::yaml_format::tests::YamlThing";
-        type Data = Self;
-        type HandleStorage = VecStorage<Handle<Self>>;
-    }
-
-    impl From<YamlThing> for Result<ProcessingState<YamlThing>, Error> {
-        fn from(object: YamlThing) -> Result<ProcessingState<YamlThing>, Error> {
-            Ok(ProcessingState::Loaded(object))
-        }
     }
 
     #[derive(Debug, Deref, DerefMut, new)]
