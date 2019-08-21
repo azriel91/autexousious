@@ -57,7 +57,7 @@ impl MapLoader {
         let loaded_sprites = match sprite_load_result {
             Ok(loaded_sprites) => Ok(Some(loaded_sprites)),
             Err(e) => {
-                if e.as_error().downcast_ref::<Box<FindContext>>().is_some() {
+                if e.as_error().downcast_ref::<FindContext>().is_some() {
                     Ok(None)
                 } else {
                     Err(e)
