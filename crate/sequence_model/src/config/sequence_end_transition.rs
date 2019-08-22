@@ -1,13 +1,11 @@
 use std::{fmt, marker::PhantomData, str::FromStr};
 
-use amethyst::ecs::{storage::VecStorage, Component};
 use derivative::Derivative;
 use derive_new::new;
 use serde::{
     de::{Error, Unexpected, Visitor},
     Deserialize, Deserializer, Serialize, Serializer,
 };
-use specs_derive::Component;
 use strum_macros::{Display, EnumString, IntoStaticStr};
 use typename_derive::TypeName;
 
@@ -15,19 +13,9 @@ use crate::config::SequenceId;
 
 /// Specifies the behaviour to transition when the sequence ends.
 #[derive(
-    Clone,
-    Component,
-    Copy,
-    Debug,
-    Derivative,
-    Display,
-    EnumString,
-    IntoStaticStr,
-    PartialEq,
-    TypeName,
+    Clone, Copy, Debug, Derivative, Display, EnumString, IntoStaticStr, PartialEq, TypeName,
 )]
 #[derivative(Default)]
-#[storage(VecStorage)]
 #[strum(serialize_all = "snake_case")]
 pub enum SequenceEndTransition<SeqId>
 where

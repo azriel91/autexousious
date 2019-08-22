@@ -1,6 +1,8 @@
+use std::collections::HashMap;
+
 use amethyst::assets::{AssetStorage, Loader};
 use character_model::{
-    config::{self, CharacterSequence},
+    config::{self, CharacterSequence, CharacterSequenceId},
     loaded::{
         self, CharacterControlTransition, CharacterControlTransitionsSequence,
         CharacterControlTransitionsSequenceHandle,
@@ -12,7 +14,7 @@ use sequence_model::{
     config::ControlTransitionSingle,
     loaded::{
         ActionHold, ActionPress, ActionRelease, AxisTransition, ControlTransition,
-        ControlTransitions, FallbackTransition,
+        ControlTransitions, FallbackTransition, SequenceId,
     },
 };
 
@@ -30,6 +32,7 @@ impl ControlTransitionsSequenceLoader {
             character_control_transitions_assets,
             character_control_transitions_sequence_assets,
         }: &ControlTransitionsSequenceLoaderParams,
+        sequence_id_mappings: &HashMap<CharacterSequenceId, SequenceId>,
         sequence_default: Option<&CharacterSequence>,
         sequence: &CharacterSequence,
     ) -> CharacterControlTransitionsSequenceHandle {
@@ -43,6 +46,7 @@ impl ControlTransitionsSequenceLoader {
                 Self::config_to_loaded_transitions_handle(
                     loader,
                     character_control_transitions_assets,
+                    sequence_id_mappings,
                     config_transitions_default,
                     sequence.transitions.as_ref(),
                     &frame.transitions,
@@ -64,6 +68,7 @@ impl ControlTransitionsSequenceLoader {
     fn config_to_loaded_transitions_handle(
         loader: &Loader,
         character_control_transitions_assets: &AssetStorage<loaded::CharacterControlTransitions>,
+        sequence_id_mappings: &HashMap<CharacterSequenceId, SequenceId>,
         config_transitions_default: Option<&config::CharacterControlTransitions>,
         config_transitions_sequence: Option<&config::CharacterControlTransitions>,
         config_transitions_frame: &config::CharacterControlTransitions,
@@ -86,6 +91,14 @@ impl ControlTransitionsSequenceLoader {
                     use sequence_model::config::ControlTransition::*;
                     match config_control_transition {
                         SequenceId(sequence_id) => {
+                            let sequence_id =
+                                sequence_id_mappings.get(sequence_id).unwrap_or_else(|| {
+                                    panic!(
+                                        "Expected `sequence_id_mappings` to contain mapping for \
+                                         `{}`",
+                                        sequence_id
+                                    )
+                                });
                             loaded_transitions.push(CharacterControlTransition::new(
                                 ControlTransition::$mode($mode_data {
                                     action: ControlAction::$action,
@@ -97,18 +110,36 @@ impl ControlTransitionsSequenceLoader {
                         Single(ControlTransitionSingle {
                             next: sequence_id,
                             requirements: control_transition_requirements,
-                        }) => loaded_transitions.push(CharacterControlTransition::new(
-                            ControlTransition::$mode($mode_data {
-                                action: ControlAction::$action,
-                                sequence_id: *sequence_id,
-                            }),
-                            control_transition_requirements.clone(),
-                        )),
+                        }) => {
+                            let sequence_id =
+                                sequence_id_mappings.get(sequence_id).unwrap_or_else(|| {
+                                    panic!(
+                                        "Expected `sequence_id_mappings` to contain mapping for \
+                                         `{}`",
+                                        sequence_id
+                                    )
+                                });
+                            loaded_transitions.push(CharacterControlTransition::new(
+                                ControlTransition::$mode($mode_data {
+                                    action: ControlAction::$action,
+                                    sequence_id: *sequence_id,
+                                }),
+                                control_transition_requirements.clone(),
+                            ))
+                        }
                         Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
                             |ControlTransitionSingle {
                                  next: sequence_id,
                                  requirements: control_transition_requirements,
                              }| {
+                                let sequence_id =
+                                sequence_id_mappings.get(sequence_id).unwrap_or_else(|| {
+                                    panic!(
+                                        "Expected `sequence_id_mappings` to contain mapping for \
+                                         `{}`",
+                                        sequence_id
+                                    )
+                                });
                                 CharacterControlTransition::new(
                                     ControlTransition::$mode($mode_data {
                                         action: ControlAction::$action,
@@ -139,6 +170,14 @@ impl ControlTransitionsSequenceLoader {
                     use sequence_model::config::ControlTransition::*;
                     match config_control_transition {
                         SequenceId(sequence_id) => {
+                            let sequence_id =
+                                sequence_id_mappings.get(sequence_id).unwrap_or_else(|| {
+                                    panic!(
+                                        "Expected `sequence_id_mappings` to contain mapping for \
+                                         `{}`",
+                                        sequence_id
+                                    )
+                                });
                             loaded_transitions.push(CharacterControlTransition::new(
                                 ControlTransition::$mode(AxisTransition {
                                     axis: Axis::$axis,
@@ -150,18 +189,36 @@ impl ControlTransitionsSequenceLoader {
                         Single(ControlTransitionSingle {
                             next: sequence_id,
                             requirements: control_transition_requirements,
-                        }) => loaded_transitions.push(CharacterControlTransition::new(
-                            ControlTransition::$mode(AxisTransition {
-                                axis: Axis::$axis,
-                                sequence_id: *sequence_id,
-                            }),
-                            control_transition_requirements.clone(),
-                        )),
+                        }) => {
+                            let sequence_id =
+                                sequence_id_mappings.get(sequence_id).unwrap_or_else(|| {
+                                    panic!(
+                                        "Expected `sequence_id_mappings` to contain mapping for \
+                                         `{}`",
+                                        sequence_id
+                                    )
+                                });
+                            loaded_transitions.push(CharacterControlTransition::new(
+                                ControlTransition::$mode(AxisTransition {
+                                    axis: Axis::$axis,
+                                    sequence_id: *sequence_id,
+                                }),
+                                control_transition_requirements.clone(),
+                            ))
+                        }
                         Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
                             |ControlTransitionSingle {
                                  next: sequence_id,
                                  requirements: control_transition_requirements,
                              }| {
+                                let sequence_id =
+                                sequence_id_mappings.get(sequence_id).unwrap_or_else(|| {
+                                    panic!(
+                                        "Expected `sequence_id_mappings` to contain mapping for \
+                                         `{}`",
+                                        sequence_id
+                                    )
+                                });
                                 CharacterControlTransition::new(
                                     ControlTransition::$mode(AxisTransition {
                                         axis: Axis::$axis,
@@ -192,6 +249,14 @@ impl ControlTransitionsSequenceLoader {
                     use sequence_model::config::ControlTransition::*;
                     match config_control_transition {
                         SequenceId(sequence_id) => {
+                            let sequence_id =
+                                sequence_id_mappings.get(sequence_id).unwrap_or_else(|| {
+                                    panic!(
+                                        "Expected `sequence_id_mappings` to contain mapping for \
+                                         `{}`",
+                                        sequence_id
+                                    )
+                                });
                             loaded_transitions.push(CharacterControlTransition::new(
                                 ControlTransition::$mode(FallbackTransition {
                                     sequence_id: *sequence_id,
@@ -202,17 +267,35 @@ impl ControlTransitionsSequenceLoader {
                         Single(ControlTransitionSingle {
                             next: sequence_id,
                             requirements: control_transition_requirements,
-                        }) => loaded_transitions.push(CharacterControlTransition::new(
-                            ControlTransition::$mode(FallbackTransition {
-                                sequence_id: *sequence_id,
-                            }),
-                            control_transition_requirements.clone(),
-                        )),
+                        }) => {
+                            let sequence_id =
+                                sequence_id_mappings.get(sequence_id).unwrap_or_else(|| {
+                                    panic!(
+                                        "Expected `sequence_id_mappings` to contain mapping for \
+                                         `{}`",
+                                        sequence_id
+                                    )
+                                });
+                            loaded_transitions.push(CharacterControlTransition::new(
+                                ControlTransition::$mode(FallbackTransition {
+                                    sequence_id: *sequence_id,
+                                }),
+                                control_transition_requirements.clone(),
+                            ))
+                        }
                         Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
                             |ControlTransitionSingle {
                                  next: sequence_id,
                                  requirements: control_transition_requirements,
                              }| {
+                                let sequence_id =
+                                sequence_id_mappings.get(sequence_id).unwrap_or_else(|| {
+                                    panic!(
+                                        "Expected `sequence_id_mappings` to contain mapping for \
+                                         `{}`",
+                                        sequence_id
+                                    )
+                                });
                                 CharacterControlTransition::new(
                                     ControlTransition::$mode(FallbackTransition {
                                         sequence_id: *sequence_id,
@@ -265,7 +348,7 @@ impl ControlTransitionsSequenceLoader {
 
 #[cfg(test)]
 mod tests {
-    use std::{iter::FromIterator, path::PathBuf};
+    use std::{collections::HashMap, iter::FromIterator, path::PathBuf};
 
     use amethyst::{
         assets::{AssetStorage, Loader},
@@ -290,7 +373,7 @@ mod tests {
     use sequence_loading::SequenceLoadingBundle;
     use sequence_model::loaded::{
         ActionHold, ActionPress, ActionRelease, AxisTransition, ControlTransition,
-        ControlTransitions, FallbackTransition,
+        ControlTransitions, FallbackTransition, SequenceId,
     };
 
     use super::ControlTransitionsSequenceLoader;
@@ -366,6 +449,7 @@ mod tests {
 
                     ControlTransitionsSequenceLoader::load(
                         &character_loader_params,
+                        &sequence_id_mappings(),
                         sequence_default,
                         &sequence,
                     )
@@ -414,20 +498,40 @@ mod tests {
             .expect("Failed to load `test_character_sequence.yaml`.")
     }
 
+    fn sequence_id_mappings() -> HashMap<CharacterSequenceId, SequenceId> {
+        let mut sequence_id_mappings = HashMap::new();
+        sequence_id_mappings.insert(CharacterSequenceId::Stand, SequenceId::new(0));
+        sequence_id_mappings.insert(CharacterSequenceId::Walk, SequenceId::new(1));
+        sequence_id_mappings.insert(CharacterSequenceId::Run, SequenceId::new(2));
+        sequence_id_mappings.insert(CharacterSequenceId::RunStop, SequenceId::new(3));
+        sequence_id_mappings.insert(CharacterSequenceId::StandAttack0, SequenceId::new(4));
+        sequence_id_mappings.insert(CharacterSequenceId::StandAttack1, SequenceId::new(5));
+        sequence_id_mappings.insert(CharacterSequenceId::Jump, SequenceId::new(6));
+        sequence_id_mappings.insert(CharacterSequenceId::JumpOff, SequenceId::new(7));
+        sequence_id_mappings.insert(CharacterSequenceId::DashForward, SequenceId::new(8));
+        sequence_id_mappings.insert(CharacterSequenceId::Flinch0, SequenceId::new(9));
+        sequence_id_mappings.insert(CharacterSequenceId::Flinch1, SequenceId::new(10));
+        sequence_id_mappings.insert(CharacterSequenceId::Dazed, SequenceId::new(11));
+        sequence_id_mappings.insert(CharacterSequenceId::FallForwardAscend, SequenceId::new(12));
+        sequence_id_mappings.insert(CharacterSequenceId::FallForwardDescend, SequenceId::new(13));
+        sequence_id_mappings.insert(CharacterSequenceId::LieFaceDown, SequenceId::new(14));
+        sequence_id_mappings
+    }
+
     // Should overwrite and inherit sequence transitions.
     fn expected_control_transitions_0() -> CharacterControlTransitions {
         CharacterControlTransitions::new(ControlTransitions::new(vec![
             CharacterControlTransition {
                 control_transition: ControlTransition::ActionPress(ActionPress {
                     action: ControlAction::Attack,
-                    sequence_id: CharacterSequenceId::StandAttack1,
+                    sequence_id: SequenceId::new(5),
                 }),
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
                 control_transition: ControlTransition::ActionRelease(ActionRelease {
                     action: ControlAction::Attack,
-                    sequence_id: CharacterSequenceId::Walk,
+                    sequence_id: SequenceId::new(1),
                 }),
                 control_transition_requirements: vec![ControlTransitionRequirement::Charge(
                     ChargePoints::new(90),
@@ -436,7 +540,7 @@ mod tests {
             CharacterControlTransition {
                 control_transition: ControlTransition::ActionRelease(ActionRelease {
                     action: ControlAction::Attack,
-                    sequence_id: CharacterSequenceId::Run,
+                    sequence_id: SequenceId::new(2),
                 }),
                 control_transition_requirements: vec![ControlTransitionRequirement::Sp(
                     SkillPoints::new(50),
@@ -445,7 +549,7 @@ mod tests {
             CharacterControlTransition {
                 control_transition: ControlTransition::ActionRelease(ActionRelease {
                     action: ControlAction::Attack,
-                    sequence_id: CharacterSequenceId::RunStop,
+                    sequence_id: SequenceId::new(3),
                 }),
                 control_transition_requirements: vec![ControlTransitionRequirement::Hp(
                     HealthPoints::new(30),
@@ -454,7 +558,7 @@ mod tests {
             CharacterControlTransition {
                 control_transition: ControlTransition::ActionHold(ActionHold {
                     action: ControlAction::Jump,
-                    sequence_id: CharacterSequenceId::JumpOff,
+                    sequence_id: SequenceId::new(7),
                 }),
                 control_transition_requirements: vec![
                     ControlTransitionRequirement::Charge(ChargePoints::new(90)),
@@ -464,55 +568,55 @@ mod tests {
             CharacterControlTransition {
                 control_transition: ControlTransition::ActionHold(ActionHold {
                     action: ControlAction::Special,
-                    sequence_id: CharacterSequenceId::DashForward,
+                    sequence_id: SequenceId::new(8),
                 }),
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
                 control_transition: ControlTransition::AxisPress(AxisTransition {
                     axis: Axis::X,
-                    sequence_id: CharacterSequenceId::Flinch0,
+                    sequence_id: SequenceId::new(9),
                 }),
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
                 control_transition: ControlTransition::AxisPress(AxisTransition {
                     axis: Axis::Z,
-                    sequence_id: CharacterSequenceId::FallForwardAscend,
+                    sequence_id: SequenceId::new(12),
                 }),
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
                 control_transition: ControlTransition::AxisRelease(AxisTransition {
                     axis: Axis::X,
-                    sequence_id: CharacterSequenceId::Dazed,
+                    sequence_id: SequenceId::new(11),
                 }),
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
                 control_transition: ControlTransition::AxisRelease(AxisTransition {
                     axis: Axis::Z,
-                    sequence_id: CharacterSequenceId::LieFaceDown,
+                    sequence_id: SequenceId::new(14),
                 }),
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
                 control_transition: ControlTransition::AxisHold(AxisTransition {
                     axis: Axis::X,
-                    sequence_id: CharacterSequenceId::Flinch1,
+                    sequence_id: SequenceId::new(10),
                 }),
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
                 control_transition: ControlTransition::AxisHold(AxisTransition {
                     axis: Axis::Z,
-                    sequence_id: CharacterSequenceId::FallForwardDescend,
+                    sequence_id: SequenceId::new(13),
                 }),
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
                 control_transition: ControlTransition::Fallback(FallbackTransition {
-                    sequence_id: CharacterSequenceId::RunStop,
+                    sequence_id: SequenceId::new(3),
                 }),
                 control_transition_requirements: vec![ControlTransitionRequirement::InputDirX(
                     InputDirection::NotSame,
@@ -527,69 +631,69 @@ mod tests {
             CharacterControlTransition {
                 control_transition: ControlTransition::ActionPress(ActionPress {
                     action: ControlAction::Attack,
-                    sequence_id: CharacterSequenceId::StandAttack0,
+                    sequence_id: SequenceId::new(4),
                 }),
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
                 control_transition: ControlTransition::ActionHold(ActionHold {
                     action: ControlAction::Jump,
-                    sequence_id: CharacterSequenceId::Jump,
+                    sequence_id: SequenceId::new(6),
                 }),
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
                 control_transition: ControlTransition::ActionHold(ActionHold {
                     action: ControlAction::Special,
-                    sequence_id: CharacterSequenceId::DashForward,
+                    sequence_id: SequenceId::new(8),
                 }),
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
                 control_transition: ControlTransition::AxisPress(AxisTransition {
                     axis: Axis::X,
-                    sequence_id: CharacterSequenceId::Flinch0,
+                    sequence_id: SequenceId::new(9),
                 }),
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
                 control_transition: ControlTransition::AxisPress(AxisTransition {
                     axis: Axis::Z,
-                    sequence_id: CharacterSequenceId::FallForwardAscend,
+                    sequence_id: SequenceId::new(12),
                 }),
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
                 control_transition: ControlTransition::AxisRelease(AxisTransition {
                     axis: Axis::X,
-                    sequence_id: CharacterSequenceId::Dazed,
+                    sequence_id: SequenceId::new(11),
                 }),
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
                 control_transition: ControlTransition::AxisRelease(AxisTransition {
                     axis: Axis::Z,
-                    sequence_id: CharacterSequenceId::LieFaceDown,
+                    sequence_id: SequenceId::new(14),
                 }),
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
                 control_transition: ControlTransition::AxisHold(AxisTransition {
                     axis: Axis::X,
-                    sequence_id: CharacterSequenceId::Flinch1,
+                    sequence_id: SequenceId::new(10),
                 }),
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
                 control_transition: ControlTransition::AxisHold(AxisTransition {
                     axis: Axis::Z,
-                    sequence_id: CharacterSequenceId::FallForwardDescend,
+                    sequence_id: SequenceId::new(13),
                 }),
                 control_transition_requirements: vec![],
             },
             CharacterControlTransition {
                 control_transition: ControlTransition::Fallback(FallbackTransition {
-                    sequence_id: CharacterSequenceId::RunStop,
+                    sequence_id: SequenceId::new(3),
                 }),
                 control_transition_requirements: vec![ControlTransitionRequirement::InputDirX(
                     InputDirection::NotSame,

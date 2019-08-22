@@ -1,10 +1,7 @@
-use std::marker::PhantomData;
-
 use amethyst::{
     ecs::{
-        storage::{ComponentEvent, Tracked},
-        BitSet, Component, Entities, Join, ReadStorage, ReaderId, System, World, Write,
-        WriteStorage,
+        storage::ComponentEvent, BitSet, Entities, Join, ReadStorage, ReaderId, System, World,
+        Write, WriteStorage,
     },
     shred::{ResourceId, SystemData},
     shrev::EventChannel,
@@ -12,7 +9,7 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use sequence_model::{
-    config::SequenceId,
+    loaded::SequenceId,
     play::{SequenceStatus, SequenceUpdateEvent},
 };
 use typename_derive::TypeName;
@@ -22,32 +19,24 @@ use typename_derive::TypeName;
 /// This **must** run before `SequenceUpdateSystem`, as that relies on the `SequenceStatus` to
 /// determine if a `SequenceBegin` event should be sent.
 #[derive(Debug, Default, TypeName, new)]
-pub struct SequenceStatusUpdateSystem<SeqId>
-where
-    SeqId: SequenceId,
-{
+pub struct SequenceStatusUpdateSystem {
     /// Reader ID for sequence ID changes.
     #[new(default)]
     sequence_id_rid: Option<ReaderId<ComponentEvent>>,
     /// Pre-allocated bitset to track insertions and modifications to `SeqId`s.
     #[new(default)]
     sequence_id_updates: BitSet,
-    /// Marker.
-    phantom_data: PhantomData<SeqId>,
 }
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct SequenceStatusUpdateSystemData<'s, SeqId>
-where
-    SeqId: SequenceId,
-{
+pub struct SequenceStatusUpdateSystemData<'s> {
     /// `Entities` resource.
     #[derivative(Debug = "ignore")]
     pub entities: Entities<'s>,
-    /// `SeqId` components.
+    /// `SequenceId` components.
     #[derivative(Debug = "ignore")]
-    pub sequence_ids: ReadStorage<'s, SeqId>,
+    pub sequence_ids: ReadStorage<'s, SequenceId>,
     /// `SequenceStatus` components.
     #[derivative(Debug = "ignore")]
     pub sequence_statuses: WriteStorage<'s, SequenceStatus>,
@@ -56,12 +45,8 @@ where
     pub sequence_update_ec: Write<'s, EventChannel<SequenceUpdateEvent>>,
 }
 
-impl<'s, SeqId> System<'s> for SequenceStatusUpdateSystem<SeqId>
-where
-    SeqId: SequenceId,
-    <SeqId as Component>::Storage: Tracked,
-{
-    type SystemData = SequenceStatusUpdateSystemData<'s, SeqId>;
+impl<'s> System<'s> for SequenceStatusUpdateSystem {
+    type SystemData = SequenceStatusUpdateSystemData<'s>;
 
     fn run(
         &mut self,
@@ -101,7 +86,7 @@ where
 
     fn setup(&mut self, world: &mut World) {
         Self::SystemData::setup(world);
-        self.sequence_id_rid = Some(WriteStorage::<SeqId>::fetch(world).register_reader());
+        self.sequence_id_rid = Some(WriteStorage::<'_, SequenceId>::fetch(world).register_reader());
     }
 }
 
@@ -113,8 +98,10 @@ mod tests {
         Error,
     };
     use application_test_support::AutexousiousApplication;
-    use sequence_model::play::{SequenceStatus, SequenceUpdateEvent};
-    use test_object_model::config::TestObjectSequenceId;
+    use sequence_model::{
+        loaded::SequenceId,
+        play::{SequenceStatus, SequenceUpdateEvent},
+    };
 
     use super::SequenceStatusUpdateSystem;
 
@@ -122,7 +109,7 @@ mod tests {
     fn attaches_handle_and_sends_event_for_sequence_id_insertions() -> Result<(), Error> {
         run_test(
             |world| create_entity(world, None),
-            |world| insert_sequence(world, TestObjectSequenceId::Zero),
+            |world| insert_sequence(world, SequenceId::new(0)),
             Some(SequenceStatus::Begin),
             sequence_begin_events,
         )
@@ -131,8 +118,8 @@ mod tests {
     #[test]
     fn attaches_handle_and_sends_event_for_sequence_id_modifications() -> Result<(), Error> {
         run_test(
-            |world| create_entity(world, Some(TestObjectSequenceId::Zero)),
-            |world| update_sequence(world, TestObjectSequenceId::One),
+            |world| create_entity(world, Some(SequenceId::new(0))),
+            |world| update_sequence(world, SequenceId::new(1)),
             Some(SequenceStatus::Begin),
             sequence_begin_events,
         )
@@ -145,11 +132,7 @@ mod tests {
         sequence_update_events_expected_fn: fn(&mut World) -> Vec<SequenceUpdateEvent>,
     ) -> Result<(), Error> {
         AutexousiousApplication::game_base()
-            .with_system(
-                SequenceStatusUpdateSystem::<TestObjectSequenceId>::new(),
-                "",
-                &[],
-            )
+            .with_system(SequenceStatusUpdateSystem::new(), "", &[])
             .with_setup(entity_create_fn)
             .with_setup(register_reader)
             .with_effect(sequence_id_alter_fn)
@@ -169,26 +152,26 @@ mod tests {
         world.insert(reader_id);
     }
 
-    fn insert_sequence(world: &mut World, sequence_id: TestObjectSequenceId) {
+    fn insert_sequence(world: &mut World, sequence_id: SequenceId) {
         let entity = *world.read_resource::<Entity>();
 
-        let mut sequence_ids = world.write_storage::<TestObjectSequenceId>();
+        let mut sequence_ids = world.write_storage::<SequenceId>();
         sequence_ids
             .insert(entity, sequence_id)
-            .expect("Failed to insert `TestObjectSequenceId`.");
+            .expect("Failed to insert `SequenceId`.");
     }
 
-    fn update_sequence(world: &mut World, sequence_id: TestObjectSequenceId) {
+    fn update_sequence(world: &mut World, sequence_id: SequenceId) {
         let entity = *world.read_resource::<Entity>();
 
-        let mut sequence_ids = world.write_storage::<TestObjectSequenceId>();
+        let mut sequence_ids = world.write_storage::<SequenceId>();
         let sid = sequence_ids
             .get_mut(entity)
-            .expect("Expected entity to contain `TestObjectSequenceId` component.");
+            .expect("Expected entity to contain `SequenceId` component.");
         *sid = sequence_id;
     }
 
-    fn create_entity(world: &mut World, sequence_id: Option<TestObjectSequenceId>) {
+    fn create_entity(world: &mut World, sequence_id: Option<SequenceId>) {
         let mut entity_builder = world.create_entity();
         if let Some(sequence_id) = sequence_id {
             entity_builder = entity_builder.with(sequence_id);

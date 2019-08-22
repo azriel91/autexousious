@@ -7,8 +7,7 @@ use amethyst::{
 use map_model::{config::MapLayerSequenceId, loaded::MapHandle};
 use num_traits::FromPrimitive;
 use sequence_model::{
-    config::SequenceEndTransition,
-    loaded::WaitSequence,
+    loaded::{SequenceEndTransition, WaitSequence},
     play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
 };
 use sequence_model_spi::loaded::ComponentDataExt;

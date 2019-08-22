@@ -13,7 +13,10 @@ use object_model::{
 };
 use sequence_model::{
     config::Wait,
-    loaded::{SequenceEndTransitions, WaitSequence, WaitSequenceHandles},
+    loaded::{
+        SequenceEndTransition, SequenceEndTransitions, SequenceId, WaitSequence,
+        WaitSequenceHandles,
+    },
 };
 use serde::{Deserialize, Serialize};
 use spawn_model::{
@@ -54,11 +57,41 @@ impl ObjectLoader {
         O: GameObject,
         <O as GameObject>::SequenceId: for<'de> Deserialize<'de> + Serialize,
     {
+        // Calculate the indices of each sequence ID.
+        //
+        // TODO: Extract this out to a separate loading phase, as other objects may reference this
+        // TODO: object's sequences.
+        let sequence_id_mappings = object_definition
+            .sequences
+            .keys()
+            .enumerate()
+            .map(|(index, sequence_id)| (*sequence_id, SequenceId(index)))
+            .collect::<HashMap<O::SequenceId, SequenceId>>();
+
         let sequence_end_transitions = object_definition
             .sequences
-            .iter()
-            .map(|(sequence_id, sequence)| (*sequence_id, sequence.object_sequence().next))
-            .collect::<HashMap<_, _>>();
+            .values()
+            .map(|sequence| {
+                use sequence_model::config as cfg;
+                match sequence.object_sequence().next {
+                    cfg::SequenceEndTransition::None => SequenceEndTransition::None,
+                    cfg::SequenceEndTransition::Repeat => SequenceEndTransition::Repeat,
+                    cfg::SequenceEndTransition::Delete => SequenceEndTransition::Delete,
+                    cfg::SequenceEndTransition::SequenceId(sequence_id) => {
+                        let sequence_id = sequence_id_mappings
+                            .get(&sequence_id)
+                            .map(|index| SequenceId(**index))
+                            .unwrap_or_else(|| {
+                                panic!(
+                                    "Invalid sequence ID specified for `next`: `{}`",
+                                    sequence_id
+                                )
+                            });
+                        SequenceEndTransition::SequenceId(sequence_id)
+                    }
+                }
+            })
+            .collect::<Vec<SequenceEndTransition>>();
 
         // Load frame component datas
         let sequences_handles = (
@@ -74,7 +107,7 @@ impl ObjectLoader {
             body_sequence_handles,
             interactions_sequence_handles,
             spawns_sequence_handles,
-        ) = object_definition.sequences.iter().fold(
+        ) = object_definition.sequences.values().fold(
             sequences_handles,
             |(
                 mut wait_sequence_handles,
@@ -83,7 +116,7 @@ impl ObjectLoader {
                 mut interactions_sequence_handles,
                 mut spawns_sequence_handles,
             ),
-             (sequence_id, sequence)| {
+             sequence| {
                 let wait_sequence = WaitSequence::new(
                     sequence
                         .object_sequence()
@@ -165,13 +198,11 @@ impl ObjectLoader {
                 let spawns_sequence_handle =
                     loader.load_from_data(spawns_sequence, (), spawns_sequence_assets);
 
-                let sequence_id = *sequence_id;
-
-                wait_sequence_handles.insert(sequence_id, wait_sequence_handle);
-                sprite_render_sequence_handles.insert(sequence_id, sprite_render_sequence_handle);
-                body_sequence_handles.insert(sequence_id, body_sequence_handle);
-                interactions_sequence_handles.insert(sequence_id, interactions_sequence_handle);
-                spawns_sequence_handles.insert(sequence_id, spawns_sequence_handle);
+                wait_sequence_handles.push(wait_sequence_handle);
+                sprite_render_sequence_handles.push(sprite_render_sequence_handle);
+                body_sequence_handles.push(body_sequence_handle);
+                interactions_sequence_handles.push(interactions_sequence_handle);
+                spawns_sequence_handles.push(spawns_sequence_handle);
 
                 (
                     wait_sequence_handles,

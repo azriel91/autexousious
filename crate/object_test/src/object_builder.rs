@@ -1,4 +1,4 @@
-use std::{collections::HashMap, marker::PhantomData};
+use std::marker::PhantomData;
 
 use amethyst::{
     assets::AssetStorage,
@@ -18,8 +18,8 @@ use derive_new::new;
 use object_loading::ObjectLoaderSystemData;
 use object_model::loaded::{GameObject, Object, ObjectWrapper};
 use sequence_model::{
-    config::{SequenceEndTransition, Wait},
-    loaded::{SequenceEndTransitions, WaitSequence, WaitSequenceHandles},
+    config::Wait,
+    loaded::{SequenceEndTransition, SequenceEndTransitions, WaitSequence, WaitSequenceHandles},
 };
 use spawn_model::{
     config::Spawns,
@@ -81,7 +81,7 @@ where
     }
 
     /// Builds and returns the object.
-    pub fn build(self, world: &World) -> Object<O::SequenceId> {
+    pub fn build(self, world: &World) -> Object {
         let (
             wait_sequence_handles,
             sprite_render_sequence_handles,
@@ -163,13 +163,11 @@ where
                 InteractionsSequenceHandles::default(),
                 SpawnsSequenceHandles::default(),
             );
-            wait_sequence_handles.insert(O::SequenceId::default(), wait_sequence_handle);
-            sprite_render_sequence_handles
-                .insert(O::SequenceId::default(), sprite_render_sequence_handle);
-            body_sequence_handles.insert(O::SequenceId::default(), body_sequence_handle);
-            interactions_sequence_handles
-                .insert(O::SequenceId::default(), interactions_sequence_handle);
-            spawns_sequence_handles.insert(O::SequenceId::default(), spawns_sequence_handle);
+            wait_sequence_handles.push(wait_sequence_handle);
+            sprite_render_sequence_handles.push(sprite_render_sequence_handle);
+            body_sequence_handles.push(body_sequence_handle);
+            interactions_sequence_handles.push(interactions_sequence_handle);
+            spawns_sequence_handles.push(spawns_sequence_handle);
 
             (
                 wait_sequence_handles,
@@ -180,8 +178,8 @@ where
             )
         };
         let sequence_end_transitions = {
-            let mut sequence_end_transitions = HashMap::default();
-            sequence_end_transitions.insert(O::SequenceId::default(), SequenceEndTransition::None);
+            let mut sequence_end_transitions = Vec::default();
+            sequence_end_transitions.push(SequenceEndTransition::None);
             SequenceEndTransitions::new(sequence_end_transitions)
         };
         Object::new(

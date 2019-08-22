@@ -1,5 +1,3 @@
-use std::marker::PhantomData;
-
 use amethyst::{
     ecs::{Entities, Read, ReadStorage, System, World, WriteStorage},
     shred::{ResourceId, SystemData},
@@ -8,49 +6,38 @@ use amethyst::{
 use derivative::Derivative;
 use derive_new::new;
 use sequence_model::{
-    config::{SequenceEndTransition, SequenceId},
+    loaded::{SequenceEndTransition, SequenceId},
     play::SequenceUpdateEvent,
 };
 use typename_derive::TypeName;
 
 /// Transitions an object when their `SequenceUpdateEvent::SequenceEnd`
 #[derive(Debug, Default, TypeName, new)]
-pub struct SequenceEndTransitionSystem<SeqId>
-where
-    SeqId: SequenceId,
-{
+pub struct SequenceEndTransitionSystem {
     /// Reader ID for the `SequenceUpdateEvent` event channel.
     #[new(default)]
     reader_id: Option<ReaderId<SequenceUpdateEvent>>,
-    /// Marker.
-    phantom_data: PhantomData<SeqId>,
 }
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct SequenceEndTransitionSystemData<'s, SeqId>
-where
-    SeqId: SequenceId,
-{
+pub struct SequenceEndTransitionSystemData<'s> {
     /// `Entities` resource.
     #[derivative(Debug = "ignore")]
     pub entities: Entities<'s>,
     /// Event channel for `SequenceUpdateEvent`s.
     #[derivative(Debug = "ignore")]
     pub sequence_update_ec: Read<'s, EventChannel<SequenceUpdateEvent>>,
-    /// `SequenceEndTransition<SeqId>` components.
+    /// `SequenceEndTransition` components.
     #[derivative(Debug = "ignore")]
-    pub sequence_end_transitions: ReadStorage<'s, SequenceEndTransition<SeqId>>,
-    /// `SeqId` components.
+    pub sequence_end_transitions: ReadStorage<'s, SequenceEndTransition>,
+    /// `SequenceId` components.
     #[derivative(Debug = "ignore")]
-    pub sequence_ids: WriteStorage<'s, SeqId>,
+    pub sequence_ids: WriteStorage<'s, SequenceId>,
 }
 
-impl<'s, SeqId> System<'s> for SequenceEndTransitionSystem<SeqId>
-where
-    SeqId: SequenceId,
-{
-    type SystemData = SequenceEndTransitionSystemData<'s, SeqId>;
+impl<'s> System<'s> for SequenceEndTransitionSystem {
+    type SystemData = SequenceEndTransitionSystemData<'s>;
 
     fn run(
         &mut self,
@@ -128,8 +115,10 @@ mod tests {
         Error,
     };
     use amethyst_test::AmethystApplication;
-    use sequence_model::{config::SequenceEndTransition, play::SequenceUpdateEvent};
-    use test_object_model::config::TestObjectSequenceId;
+    use sequence_model::{
+        loaded::{SequenceEndTransition, SequenceId},
+        play::SequenceUpdateEvent,
+    };
 
     use super::SequenceEndTransitionSystem;
 
@@ -137,12 +126,12 @@ mod tests {
     fn does_nothing_on_transition_none() -> Result<(), Error> {
         run_test(
             ParamsSetup {
-                sequence_id: TestObjectSequenceId::One,
+                sequence_id: SequenceId::new(1),
                 sequence_end_transition: SequenceEndTransition::None,
                 sequence_update_event_fn: Some(sequence_end_event),
             },
             ParamsExpected {
-                sequence_id: TestObjectSequenceId::One,
+                sequence_id: SequenceId::new(1),
                 alive_expected: true,
                 event_expected_fn: |events_actual, _entity| {
                     assert!(events_actual.is_empty());
@@ -155,12 +144,12 @@ mod tests {
     fn does_nothing_on_sequence_begin_event() -> Result<(), Error> {
         run_test(
             ParamsSetup {
-                sequence_id: TestObjectSequenceId::One,
+                sequence_id: SequenceId::new(1),
                 sequence_end_transition: SequenceEndTransition::Repeat,
                 sequence_update_event_fn: Some(sequence_begin_event),
             },
             ParamsExpected {
-                sequence_id: TestObjectSequenceId::One,
+                sequence_id: SequenceId::new(1),
                 alive_expected: true,
                 event_expected_fn: |events_actual, _entity| {
                     assert!(events_actual.is_empty());
@@ -173,12 +162,12 @@ mod tests {
     fn inserts_same_sequence_id_on_transition_repeat() -> Result<(), Error> {
         run_test(
             ParamsSetup {
-                sequence_id: TestObjectSequenceId::One,
+                sequence_id: SequenceId::new(1),
                 sequence_end_transition: SequenceEndTransition::Repeat,
                 sequence_update_event_fn: Some(sequence_end_event),
             },
             ParamsExpected {
-                sequence_id: TestObjectSequenceId::One,
+                sequence_id: SequenceId::new(1),
                 alive_expected: true,
                 event_expected_fn: |events_actual, entity| {
                     assert_eq!(1, events_actual.len());
@@ -203,14 +192,12 @@ mod tests {
     fn inserts_next_sequence_id_on_transition_sequence_id() -> Result<(), Error> {
         run_test(
             ParamsSetup {
-                sequence_id: TestObjectSequenceId::One,
-                sequence_end_transition: SequenceEndTransition::SequenceId(
-                    TestObjectSequenceId::Zero,
-                ),
+                sequence_id: SequenceId::new(1),
+                sequence_end_transition: SequenceEndTransition::SequenceId(SequenceId::new(0)),
                 sequence_update_event_fn: Some(sequence_end_event),
             },
             ParamsExpected {
-                sequence_id: TestObjectSequenceId::Zero,
+                sequence_id: SequenceId::new(0),
                 alive_expected: true,
                 event_expected_fn: |events_actual, entity| {
                     assert_eq!(1, events_actual.len());
@@ -235,12 +222,12 @@ mod tests {
     fn deletes_on_transition_delete() -> Result<(), Error> {
         run_test(
             ParamsSetup {
-                sequence_id: TestObjectSequenceId::One,
+                sequence_id: SequenceId::new(1),
                 sequence_end_transition: SequenceEndTransition::Delete,
                 sequence_update_event_fn: Some(sequence_end_event),
             },
             ParamsExpected {
-                sequence_id: TestObjectSequenceId::Zero,
+                sequence_id: SequenceId::new(0),
                 alive_expected: false,
                 event_expected_fn: |_, _| {},
             },
@@ -260,11 +247,7 @@ mod tests {
         }: ParamsExpected,
     ) -> Result<(), Error> {
         AmethystApplication::blank()
-            .with_system(
-                SequenceEndTransitionSystem::<TestObjectSequenceId>::new(),
-                "",
-                &[],
-            )
+            .with_system(SequenceEndTransitionSystem::new(), "", &[])
             .with_setup(move |world| {
                 // Add entity before registering `component_event_rid`, so we don't get the first
                 // insertion event.
@@ -289,7 +272,7 @@ mod tests {
                     let events_actual = {
                         let (test_object_sequence_ids, mut component_event_rid) = world
                             .system_data::<(
-                                ReadStorage<'_, TestObjectSequenceId>,
+                                ReadStorage<'_, SequenceId>,
                                 WriteExpect<'_, ReaderId<ComponentEvent>>,
                             )>();
 
@@ -302,11 +285,11 @@ mod tests {
                     let entities = world.read_resource::<EntitiesRes>();
                     let entity = *world.read_resource::<Entity>();
                     let sequence_id_actual = {
-                        let test_object_sequence_ids = world.read_storage::<TestObjectSequenceId>();
+                        let test_object_sequence_ids = world.read_storage::<SequenceId>();
                         test_object_sequence_ids
                             .get(entity)
                             .copied()
-                            .expect("Expected entity to have `TestObjectSequenceId` component.")
+                            .expect("Expected entity to have `SequenceId` component.")
                     };
                     assert!(entities.is_alive(entity));
                     assert_eq!(sequence_id_expected, sequence_id_actual);
@@ -340,20 +323,20 @@ mod tests {
 
     fn register_sequence_id_reader(world: &mut World) {
         let component_event_rid = {
-            let mut test_object_sequence_ids = world.write_storage::<TestObjectSequenceId>();
+            let mut test_object_sequence_ids = world.write_storage::<SequenceId>();
             test_object_sequence_ids.register_reader()
         };
         world.insert(component_event_rid);
     }
 
     struct ParamsSetup {
-        sequence_id: TestObjectSequenceId,
-        sequence_end_transition: SequenceEndTransition<TestObjectSequenceId>,
+        sequence_id: SequenceId,
+        sequence_end_transition: SequenceEndTransition,
         sequence_update_event_fn: Option<fn(Entity) -> SequenceUpdateEvent>,
     }
 
     struct ParamsExpected {
-        sequence_id: TestObjectSequenceId,
+        sequence_id: SequenceId,
         alive_expected: bool,
         event_expected_fn: fn(Vec<ComponentEvent>, Entity),
     }

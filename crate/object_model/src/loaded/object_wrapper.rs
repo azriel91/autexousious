@@ -1,15 +1,14 @@
 use amethyst::assets::Asset;
-use sequence_model::config::SequenceId;
 
 use crate::loaded::Object;
 
-/// Newtype for `Object<SequenceId>`.
+/// Newtype for `Object`.
 ///
 /// Due to orphan rules being too strict, we cannot implement:
 ///
 /// ```rust,ignore
-/// impl From<Object<SequenceId>> for
-///     Result<ProcessingState<Object<SequenceId>>, Error>
+/// impl From<Object> for
+///     Result<ProcessingState<Object>, Error>
 /// ```
 ///
 /// It would work if both `SequenceId` and `Object` reside within the same crate, but since each
@@ -21,15 +20,12 @@ pub trait ObjectWrapper: Asset
 where
     Self: Sized,
 {
-    /// Sequence ID of the `Object<SeqId>`.
-    type SequenceId: SequenceId;
-
     /// Returns a new `ObjectWrapper` instance.
-    fn new(object: Object<Self::SequenceId>) -> Self;
+    fn new(object: Object) -> Self;
 
-    /// Returns a reference to the inner `Object<SequenceId>`.
-    fn inner(&self) -> &Object<Self::SequenceId>;
+    /// Returns a reference to the inner `Object`.
+    fn inner(&self) -> &Object;
 
-    /// Returns a mutable reference to the inner `Object<SequenceId>`.
-    fn inner_mut(&mut self) -> &mut Object<Self::SequenceId>;
+    /// Returns a mutable reference to the inner `Object`.
+    fn inner_mut(&mut self) -> &mut Object;
 }

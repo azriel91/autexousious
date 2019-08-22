@@ -154,10 +154,9 @@ mod tests {
     };
     use application_test_support::{AutexousiousApplication, SequenceQueries};
     use assets_test::CHAR_BAT_SLUG;
-    use character_model::config::CharacterSequenceId;
     use sequence_model::{
         config::Wait,
-        loaded::{WaitSequence, WaitSequenceHandle},
+        loaded::{SequenceId, WaitSequence, WaitSequenceHandle},
         play::{FrameIndexClock, FrameWaitClock, SequenceUpdateEvent},
     };
 
@@ -171,7 +170,7 @@ mod tests {
                 let frame_component_data_handle = SequenceQueries::wait_sequence_handle(
                     world,
                     &CHAR_BAT_SLUG.clone(),
-                    CharacterSequenceId::StandAttack0,
+                    SequenceId::new(1),
                 );
                 initial_values(
                     world,
@@ -200,7 +199,7 @@ mod tests {
                 let frame_component_data_handle = SequenceQueries::wait_sequence_handle(
                     world,
                     &CHAR_BAT_SLUG.clone(),
-                    CharacterSequenceId::StandAttack0,
+                    SequenceId::new(1),
                 );
                 initial_values(
                     world,

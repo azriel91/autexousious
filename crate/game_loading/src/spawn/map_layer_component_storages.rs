@@ -7,8 +7,8 @@ use amethyst::{
 use derivative::Derivative;
 use map_model::config::MapLayerSequenceId;
 use sequence_model::{
-    config::{SequenceEndTransition, Wait},
-    loaded::WaitSequenceHandle,
+    config::Wait,
+    loaded::{SequenceEndTransition, WaitSequenceHandle},
     play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
 };
 use sprite_model::loaded::SpriteRenderSequenceHandle;
@@ -31,7 +31,7 @@ pub struct MapLayerComponentStorages<'s> {
     pub map_layer_sequence_ids: WriteStorage<'s, MapLayerSequenceId>,
     /// `SequenceEndTransition` components.
     #[derivative(Debug = "ignore")]
-    pub sequence_end_transitions: WriteStorage<'s, SequenceEndTransition<MapLayerSequenceId>>,
+    pub sequence_end_transitions: WriteStorage<'s, SequenceEndTransition>,
     /// `SequenceStatus` components.
     #[derivative(Debug = "ignore")]
     pub sequence_statuses: WriteStorage<'s, SequenceStatus>,

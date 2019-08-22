@@ -137,7 +137,7 @@ mod tests {
     };
     use game_input_model::ControlAction;
     use sequence_model::{
-        loaded::{ActionPress, ControlTransition, ControlTransitions},
+        loaded::{ActionPress, ControlTransition, ControlTransitions, SequenceId},
         play::{FrameIndexClock, SequenceUpdateEvent},
     };
 
@@ -151,7 +151,7 @@ mod tests {
                 let character_cts_handle = SequenceQueries::character_cts_handle(
                     world,
                     &CHAR_BAT_SLUG.clone(),
-                    CharacterSequenceId::StandAttack0,
+                    SequenceId::new(1),
                 );
                 initial_values(
                     world,
@@ -176,7 +176,7 @@ mod tests {
                 let character_cts_handle = SequenceQueries::character_cts_handle(
                     world,
                     &CHAR_BAT_SLUG.clone(),
-                    CharacterSequenceId::StandAttack0,
+                    SequenceId::new(1),
                 );
                 initial_values(
                     world,
@@ -251,14 +251,14 @@ mod tests {
             CharacterControlTransition::new(
                 ControlTransition::ActionPress(ActionPress::new(
                     ControlAction::Attack,
-                    CharacterSequenceId::StandAttack0,
+                    SequenceId::new(1),
                 )),
                 vec![],
             ),
             CharacterControlTransition::new(
                 ControlTransition::ActionPress(ActionPress::new(
                     ControlAction::Jump,
-                    CharacterSequenceId::Jump,
+                    SequenceId::new(7),
                 )),
                 vec![],
             ),

@@ -33,12 +33,8 @@ pub fn game_object_gen(args: GameObjectAttributeArgs, mut ast: DeriveInput) -> T
     fields_append(&mut ast, &object_wrapper_name, &object_handle_field);
 
     // Generate `<Type>ObjectWrapper` newtype.
-    let mut object_wrapper_gen = object_wrapper_gen(
-        sequence_id,
-        &object_definition_type,
-        &object_wrapper_name,
-        &ast.vis,
-    );
+    let mut object_wrapper_gen =
+        object_wrapper_gen(&object_definition_type, &object_wrapper_name, &ast.vis);
 
     // Implement `GameObject` trait.
     let game_object_trait_impl = game_object_impl(

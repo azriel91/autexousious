@@ -19,9 +19,8 @@ pub trait GameObject {
     type Definition: GameObjectDefinition<GameObjectSequence = Self::GameObjectSequence>
         + Asset<Data = Self::Definition>
         + Clone;
-    /// Newtype wrapper for `Object<SequenceId>`.
-    type ObjectWrapper: ObjectWrapper<SequenceId = Self::SequenceId>
-        + Asset<Data = ObjectAssetData<Self::Definition>>;
+    /// Newtype wrapper for `Object`.
+    type ObjectWrapper: ObjectWrapper + Asset<Data = ObjectAssetData<Self::Definition>>;
 
     /// Returns the handle to the loaded `Object` for this `GameObject`.
     fn object_handle(&self) -> &Handle<Self::ObjectWrapper>;

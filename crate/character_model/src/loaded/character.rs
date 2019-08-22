@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use asset_derive::Asset;
 use derive_new::new;
 use object_model::game_object;
@@ -16,7 +14,6 @@ use crate::{
 #[game_object]
 #[derive(Asset, Clone, Debug, PartialEq, TypeName, new)]
 pub struct Character {
-    /// Handles of `ControlTransitions`es sequences that this character uses, keyed by sequence ID.
-    pub control_transitions_sequence_handles:
-        HashMap<CharacterSequenceId, CharacterControlTransitionsSequenceHandle>,
+    /// Handles of `ControlTransitions`es sequences that this character uses.
+    pub control_transitions_sequence_handles: Vec<CharacterControlTransitionsSequenceHandle>,
 }

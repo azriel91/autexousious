@@ -52,15 +52,21 @@ mod object_wrapper_gen;
 ///     }
 /// }
 ///
-/// /// Newtype for `Object<MagicObjectWrapper>`.
+/// /// Newtype for `Object`.
 /// #[derive(Debug, Deref, DerefMut)]
-/// pub struct MagicObjectWrapper(Object<MagicSequenceId>);
+/// pub struct MagicObjectWrapper(Object);
 ///
 /// impl ObjectWrapper for MagicObjectWrapper {
-///     type SequenceId = MagicSequenceId;
-///
-///     fn new(object: Object<Self::SequenceId>) -> Self {
+///     fn new(object: Object) -> Self {
 ///         MagicObjectWrapper(object)
+///     }
+///
+///     fn inner(&self) -> &object_model::loaded::Object {
+///         &self.0
+///     }
+///
+///     fn inner_mut(&mut self) -> &mut object_model::loaded::Object {
+///         &mut self.0
 ///     }
 /// }
 ///
