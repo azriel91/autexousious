@@ -14,9 +14,8 @@ mod energy_sequence_id;
 
 #[cfg(test)]
 mod test {
-    use std::collections::HashMap;
-
     use collision_model::config::Body;
+    use indexmap::IndexMap;
     use object_model::config::{ObjectDefinition, ObjectFrame, ObjectSequence};
     use sequence_model::config::{SequenceEndTransition, Wait};
     use serde_yaml;
@@ -57,7 +56,7 @@ sequences:
             SequenceEndTransition::SequenceId(EnergySequenceId::Hover),
             frames,
         ));
-        let mut sequences = HashMap::new();
+        let mut sequences = IndexMap::new();
         sequences.insert(EnergySequenceId::Hover, sequence);
         let object_definition = ObjectDefinition::new(sequences);
         let expected = EnergyDefinition::new(object_definition);

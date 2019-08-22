@@ -20,10 +20,9 @@ mod control_transition_requirement_params;
 
 #[cfg(test)]
 mod test {
-    use std::collections::HashMap;
-
     use charge_model::config::ChargePoints;
     use collision_model::config::{Body, Interactions};
+    use indexmap::IndexMap;
     use object_model::{
         config::{ObjectDefinition, ObjectFrame, ObjectSequence},
         play::{HealthPoints, SkillPoints},
@@ -127,7 +126,7 @@ sequences:
             ),
             Some(character_control_transitions),
         );
-        let mut sequences = HashMap::new();
+        let mut sequences = IndexMap::new();
         sequences.insert(CharacterSequenceId::Stand, sequence);
         let object_definition = ObjectDefinition::new(sequences);
         let expected = CharacterDefinition {

@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use amethyst::{
     assets::{AssetStorage, Handle, Loader, Prefab, PrefabLoader},
     core::TransformBundle,
@@ -20,6 +18,7 @@ use energy_model::{
     loaded::{Energy, EnergyHandle},
 };
 use energy_prefab::{EnergyPrefab, EnergyPrefabBundle, EnergyPrefabHandle};
+use indexmap::IndexMap;
 use object_model::config::{ObjectAssetData, ObjectDefinition, ObjectFrame, ObjectSequence};
 use sequence_loading::SequenceLoadingBundle;
 use sequence_model::config::SequenceEndTransition;
@@ -82,7 +81,7 @@ fn energy_definition() -> EnergyDefinition {
         SequenceEndTransition::SequenceId(EnergySequenceId::Hover),
         frames,
     ));
-    let mut sequences = HashMap::new();
+    let mut sequences = IndexMap::new();
     sequences.insert(EnergySequenceId::Hover, sequence);
     let object_definition = ObjectDefinition::new(sequences);
 

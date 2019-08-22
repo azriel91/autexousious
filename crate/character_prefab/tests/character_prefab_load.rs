@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use amethyst::{
     assets::{AssetStorage, Handle, Loader, Prefab, PrefabLoader},
     core::TransformBundle,
@@ -29,6 +27,7 @@ use charge_model::config::{
     ChargeDelay, ChargeLimit, ChargePoints, ChargeRetentionMode, ChargeUseMode,
 };
 use game_input_model::ControlAction;
+use indexmap::IndexMap;
 use object_model::{
     config::{ObjectAssetData, ObjectDefinition, ObjectFrame, ObjectSequence},
     play::{HealthPoints, SkillPoints},
@@ -162,7 +161,7 @@ fn character_definition() -> CharacterDefinition {
         ),
         None,
     );
-    let mut sequences = HashMap::new();
+    let mut sequences = IndexMap::new();
     // 0
     sequences.insert(CharacterSequenceId::Stand, sequence);
     // 1
