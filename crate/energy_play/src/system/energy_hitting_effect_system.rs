@@ -98,7 +98,7 @@ mod tests {
     }
 
     #[test]
-    fn does_nothing_when_hitting_while_hit() -> Result<(), Error> {
+    fn sets_next_sequence_id_to_hitting_when_hitting_while_hit() -> Result<(), Error> {
         run_test(
             Some(SequenceId::new(1)),
             SetupVariant::WithHittingTransition,
@@ -148,19 +148,17 @@ mod tests {
                         entity_builder = entity_builder.with(sequence_id_setup);
                     }
 
+                    match setup_variant {
+                        SetupVariant::WithHittingTransition => {
+                            let hitting_transition = HittingTransition::new(SequenceId::new(2));
+                            entity_builder = entity_builder.with(hitting_transition);
+                        }
+                        SetupVariant::WithoutHittingTransition => {}
+                    }
+
                     entity_builder.build()
                 };
                 let entity_to = world.create_entity().build();
-                match setup_variant {
-                    SetupVariant::WithHittingTransition => {
-                        let hitting_transition = HittingTransition::new(SequenceId::new(2));
-                        let mut hitting_transitions = world.write_storage::<HittingTransition>();
-                        hitting_transitions
-                            .insert(entity_to, hitting_transition)
-                            .expect("Failed to insert `HittingTransition` component.");
-                    }
-                    SetupVariant::WithoutHittingTransition => {}
-                }
                 world.insert(entity_from);
 
                 if send_event {
@@ -170,9 +168,9 @@ mod tests {
                 }
             })
             .with_assertion(move |world| {
-                let entity_to = *world.read_resource::<Entity>();
+                let entity_from = *world.read_resource::<Entity>();
                 let sequence_ids = world.read_storage::<SequenceId>();
-                let energy_sequence_id_actual = sequence_ids.get(entity_to).copied();
+                let energy_sequence_id_actual = sequence_ids.get(entity_from).copied();
                 assert_eq!(energy_sequence_id_expected, energy_sequence_id_actual);
             })
             .run()

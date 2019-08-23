@@ -108,12 +108,12 @@ mod tests {
     }
 
     #[test]
-    fn does_nothing_when_hit_while_hitting() -> Result<(), Error> {
+    fn sets_next_sequence_id_to_hit_when_hit_while_hitting() -> Result<(), Error> {
         run_test(
             Some(SequenceId::new(2)),
             SetupVariant::WithHitTransition,
             true,
-            Some(SequenceId::new(2)),
+            Some(SequenceId::new(1)),
         )
     }
 
@@ -141,26 +141,24 @@ mod tests {
         AmethystApplication::blank()
             .with_system(EnergyHitEffectSystem::new(), "", &[])
             .with_effect(move |world| {
-                let entity_from = {
+                let entity_from = world.create_entity().build();
+                let entity_to = {
                     let mut entity_builder = world.create_entity();
 
                     if let Some(sequence_id_setup) = sequence_id_setup {
                         entity_builder = entity_builder.with(sequence_id_setup);
                     }
 
+                    match setup_variant {
+                        SetupVariant::WithHitTransition => {
+                            let hit_transition = HitTransition::new(SequenceId::new(1));
+                            entity_builder = entity_builder.with(hit_transition);
+                        }
+                        SetupVariant::WithoutHitTransition => {}
+                    }
+
                     entity_builder.build()
                 };
-                let entity_to = world.create_entity().build();
-                match setup_variant {
-                    SetupVariant::WithHitTransition => {
-                        let hit_transition = HitTransition::new(SequenceId::new(1));
-                        let mut hit_transitions = world.write_storage::<HitTransition>();
-                        hit_transitions
-                            .insert(entity_to, hit_transition)
-                            .expect("Failed to insert `HitTransition` component.");
-                    }
-                    SetupVariant::WithoutHitTransition => {}
-                }
                 world.insert(entity_to);
 
                 if send_event {
