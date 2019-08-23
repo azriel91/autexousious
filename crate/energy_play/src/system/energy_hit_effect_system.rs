@@ -1,12 +1,12 @@
 use amethyst::{
-    ecs::{Read, System, World, WriteStorage},
+    ecs::{Read, ReadStorage, System, World, WriteStorage},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
-use collision_model::play::HitEvent;
+use collision_model::{loaded::HitTransition, play::HitEvent};
 use derivative::Derivative;
 use derive_new::new;
-use energy_model::config::EnergySequenceId;
+use sequence_model::loaded::SequenceId;
 use typename_derive::TypeName;
 
 /// Determines the next sequence for `Energy`s when they are hit.
@@ -23,9 +23,12 @@ pub struct EnergyHitEffectSystemData<'s> {
     /// `HitEvent` channel.
     #[derivative(Debug = "ignore")]
     pub hit_ec: Read<'s, EventChannel<HitEvent>>,
-    /// `EnergySequenceId` components.
+    /// `HitTransition` components.
     #[derivative(Debug = "ignore")]
-    pub energy_sequence_ids: WriteStorage<'s, EnergySequenceId>,
+    pub hit_transitions: ReadStorage<'s, HitTransition>,
+    /// `SequenceId` components.
+    #[derivative(Debug = "ignore")]
+    pub sequence_ids: WriteStorage<'s, SequenceId>,
 }
 
 impl<'s> System<'s> for EnergyHitEffectSystem {
@@ -35,7 +38,8 @@ impl<'s> System<'s> for EnergyHitEffectSystem {
         &mut self,
         EnergyHitEffectSystemData {
             hit_ec,
-            mut energy_sequence_ids,
+            hit_transitions,
+            mut sequence_ids,
         }: Self::SystemData,
     ) {
         hit_ec
@@ -45,12 +49,12 @@ impl<'s> System<'s> for EnergyHitEffectSystem {
                     .expect("Expected `hit_event_rid` to exist for `EnergyHitEffectSystem`."),
             )
             .for_each(|ev| {
-                let energy_sequence_id = energy_sequence_ids.get(ev.to).copied();
+                let hit_transition = hit_transitions.get(ev.to).copied();
 
-                if let Some(EnergySequenceId::Hover) = energy_sequence_id {
-                    energy_sequence_ids
-                        .insert(ev.to, EnergySequenceId::Hit)
-                        .expect("Failed to insert `EnergySequenceId` component.");
+                if let Some(HitTransition(sequence_id)) = hit_transition {
+                    sequence_ids
+                        .insert(ev.to, sequence_id)
+                        .expect("Failed to insert `SequenceId` component.");
                 }
             });
     }
@@ -75,9 +79,10 @@ mod tests {
     use amethyst_test::AmethystApplication;
     use collision_model::{
         config::{Hit, Interaction, InteractionKind},
+        loaded::HitTransition,
         play::HitEvent,
     };
-    use energy_model::config::EnergySequenceId;
+    use sequence_model::loaded::SequenceId;
     use shape_model::Volume;
 
     use super::EnergyHitEffectSystem;
@@ -85,62 +90,76 @@ mod tests {
     #[test]
     fn sets_next_sequence_id_to_hit_when_hit_while_hover() -> Result<(), Error> {
         run_test(
-            SetupVariant::WithSequenceId(EnergySequenceId::Hover),
+            Some(SequenceId::new(0)),
+            SetupVariant::WithHitTransition,
             true,
-            Some(EnergySequenceId::Hit),
+            Some(SequenceId::new(1)),
         )
     }
 
     #[test]
     fn does_nothing_when_hit_while_hit() -> Result<(), Error> {
         run_test(
-            SetupVariant::WithSequenceId(EnergySequenceId::Hit),
+            Some(SequenceId::new(1)),
+            SetupVariant::WithHitTransition,
             true,
-            Some(EnergySequenceId::Hit),
+            Some(SequenceId::new(1)),
         )
     }
 
     #[test]
     fn does_nothing_when_hit_while_hitting() -> Result<(), Error> {
         run_test(
-            SetupVariant::WithSequenceId(EnergySequenceId::Hitting),
+            Some(SequenceId::new(2)),
+            SetupVariant::WithHitTransition,
             true,
-            Some(EnergySequenceId::Hitting),
+            Some(SequenceId::new(2)),
         )
     }
 
     #[test]
     fn does_nothing_when_no_hit_event() -> Result<(), Error> {
         run_test(
-            SetupVariant::WithSequenceId(EnergySequenceId::Hover),
+            Some(SequenceId::new(0)),
+            SetupVariant::WithHitTransition,
             false,
-            Some(EnergySequenceId::Hover),
+            Some(SequenceId::new(0)),
         )
     }
 
     #[test]
-    fn does_nothing_when_not_energy() -> Result<(), Error> {
-        run_test(SetupVariant::WithoutSequenceId, true, None)
+    fn does_nothing_when_no_hit_transition() -> Result<(), Error> {
+        run_test(None, SetupVariant::WithoutHitTransition, true, None)
     }
 
     fn run_test(
+        sequence_id_setup: Option<SequenceId>,
         setup_variant: SetupVariant,
         send_event: bool,
-        energy_sequence_id_expected: Option<EnergySequenceId>,
+        sequence_id_expected: Option<SequenceId>,
     ) -> Result<(), Error> {
         AmethystApplication::blank()
             .with_system(EnergyHitEffectSystem::new(), "", &[])
             .with_effect(move |world| {
-                let entity_from = world.create_entity().build();
+                let entity_from = {
+                    let mut entity_builder = world.create_entity();
+
+                    if let Some(sequence_id_setup) = sequence_id_setup {
+                        entity_builder = entity_builder.with(sequence_id_setup);
+                    }
+
+                    entity_builder.build()
+                };
                 let entity_to = world.create_entity().build();
                 match setup_variant {
-                    SetupVariant::WithSequenceId(sequence_id) => {
-                        let mut energy_sequence_ids = world.write_storage::<EnergySequenceId>();
-                        energy_sequence_ids
-                            .insert(entity_to, sequence_id)
-                            .expect("Failed to insert `EnergySequenceId` component.");
+                    SetupVariant::WithHitTransition => {
+                        let hit_transition = HitTransition::new(SequenceId::new(1));
+                        let mut hit_transitions = world.write_storage::<HitTransition>();
+                        hit_transitions
+                            .insert(entity_to, hit_transition)
+                            .expect("Failed to insert `HitTransition` component.");
                     }
-                    SetupVariant::WithoutSequenceId => {}
+                    SetupVariant::WithoutHitTransition => {}
                 }
                 world.insert(entity_to);
 
@@ -152,9 +171,9 @@ mod tests {
             })
             .with_assertion(move |world| {
                 let entity_to = *world.read_resource::<Entity>();
-                let energy_sequence_ids = world.read_storage::<EnergySequenceId>();
-                let energy_sequence_id_actual = energy_sequence_ids.get(entity_to).copied();
-                assert_eq!(energy_sequence_id_expected, energy_sequence_id_actual);
+                let sequence_ids = world.read_storage::<SequenceId>();
+                let sequence_id_actual = sequence_ids.get(entity_to).copied();
+                assert_eq!(sequence_id_expected, sequence_id_actual);
             })
             .run()
     }
@@ -176,7 +195,7 @@ mod tests {
 
     #[derive(Clone, Copy, Debug, PartialEq)]
     enum SetupVariant {
-        WithSequenceId(EnergySequenceId),
-        WithoutSequenceId,
+        WithHitTransition,
+        WithoutHitTransition,
     }
 }

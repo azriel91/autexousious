@@ -1,7 +1,3 @@
-use amethyst::ecs::{
-    storage::{FlaggedStorage, VecStorage},
-    Component,
-};
 use derivative::Derivative;
 use sequence_model::config::SequenceId;
 use serde::{Deserialize, Serialize};
@@ -35,10 +31,6 @@ pub enum EnergySequenceId {
     Hitting,
     /// Sequence to switch to when hit by another object.
     Hit,
-}
-
-impl Component for EnergySequenceId {
-    type Storage = FlaggedStorage<Self, VecStorage<Self>>;
 }
 
 impl SequenceId for EnergySequenceId {}
