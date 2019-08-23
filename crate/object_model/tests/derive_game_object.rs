@@ -1,7 +1,7 @@
 // kcov-ignore-start
 use amethyst::{
     assets::{AssetStorage, Loader},
-    ecs::{storage::VecStorage, Component, WorldExt},
+    ecs::WorldExt,
     Result,
 };
 use amethyst_test::AmethystApplication;
@@ -9,14 +9,12 @@ use derivative::Derivative;
 use object_model::{config::ObjectAssetData, game_object, loaded::GameObject};
 use sequence_model::config::SequenceId;
 use serde::{Deserialize, Serialize};
-use specs_derive::Component;
 use strum_macros::{Display, EnumString, IntoStaticStr};
 use typename_derive::TypeName;
 // kcov-ignore-end
 
 #[derive(
     Clone,
-    Component,
     Copy,
     Debug,
     Derivative,
@@ -31,7 +29,6 @@ use typename_derive::TypeName;
     TypeName,
 )]
 #[derivative(Default)]
-#[storage(VecStorage)]
 #[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
 pub enum MagicSequenceId {

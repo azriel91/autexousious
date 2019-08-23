@@ -110,11 +110,11 @@ mod tests {
     use kinematic_model::config::{Position, Velocity};
     use object_model::play::Mirrored;
     use object_test::{ObjectBuilder, ObjectTest};
-    use sequence_model::play::{FrameIndexClock, FrameWaitClock, SequenceStatus};
-    use test_object_model::{
-        config::TestObjectSequenceId,
-        loaded::{TestObject, TestObjectObjectWrapper},
+    use sequence_model::{
+        loaded::SequenceId,
+        play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
     };
+    use test_object_model::loaded::{TestObject, TestObjectObjectWrapper};
 
     use super::ObjectEntityAugmenter;
     use crate::{FrameComponentStorages, ObjectComponentStorages};
@@ -134,9 +134,7 @@ mod tests {
                 );
             }
 
-            assert!(world
-                .read_storage::<TestObjectSequenceId>()
-                .contains(entity));
+            assert!(world.read_storage::<SequenceId>().contains(entity));
             assert!(world.read_storage::<SequenceStatus>().contains(entity));
             assert!(world.read_storage::<Mirrored>().contains(entity));
             assert!(world.read_storage::<Transparent>().contains(entity));
