@@ -1,8 +1,8 @@
 use amethyst::{
-    ecs::{Read, System, SystemData, World, WriteStorage},
+    ecs::{Read, ReadStorage, System, SystemData, World, WriteStorage},
     shrev::{EventChannel, ReaderId},
 };
-use character_model::config::CharacterSequenceId;
+use character_model::loaded::CharacterHitTransitions;
 use collision_model::{
     config::{Hit, Interaction, InteractionKind},
     play::HitEvent,
@@ -10,6 +10,7 @@ use collision_model::{
 use derive_new::new;
 use object_model::play::HealthPoints;
 use object_status_model::config::StunPoints;
+use sequence_model::loaded::SequenceId;
 use typename_derive::TypeName;
 
 const STUN_THRESHOLD_LOW: StunPoints = StunPoints(40);
@@ -26,9 +27,10 @@ pub(crate) struct CharacterHitEffectSystem {
 
 type CharacterHitEffectSystemData<'s> = (
     Read<'s, EventChannel<HitEvent>>,
+    ReadStorage<'s, CharacterHitTransitions>,
     WriteStorage<'s, HealthPoints>,
     WriteStorage<'s, StunPoints>,
-    WriteStorage<'s, CharacterSequenceId>,
+    WriteStorage<'s, SequenceId>,
 );
 
 impl<'s> System<'s> for CharacterHitEffectSystem {
@@ -38,6 +40,7 @@ impl<'s> System<'s> for CharacterHitEffectSystem {
         &mut self,
         (
             hit_ec,
+            character_hit_transitionses,
             mut health_pointses,
             mut stun_pointses,
             mut character_sequence_ids,
@@ -51,14 +54,22 @@ impl<'s> System<'s> for CharacterHitEffectSystem {
                     .expect("Expected reader ID to exist for CharacterHitEffectSystem."),
             )
             .for_each(|ev| {
-                // Fetch health points of the object that is hit.
+                let character_hit_transitions = character_hit_transitionses.get(ev.to);
                 let health_points = health_pointses.get_mut(ev.to);
                 let stun_points = stun_pointses.get_mut(ev.to);
                 let character_sequence_id = character_sequence_ids.get_mut(ev.to);
 
-                if let (Some(health_points), Some(stun_points), Some(character_sequence_id)) =
-                    (health_points, stun_points, character_sequence_id)
-                {
+                if let (
+                    Some(character_hit_transitions),
+                    Some(health_points),
+                    Some(stun_points),
+                    Some(character_sequence_id),
+                ) = (
+                    character_hit_transitions,
+                    health_points,
+                    stun_points,
+                    character_sequence_id,
+                ) {
                     // TODO: Split this system with health check system.
                     let Interaction {
                         kind:
@@ -76,15 +87,15 @@ impl<'s> System<'s> for CharacterHitEffectSystem {
                     *stun_points += stun;
 
                     let next_sequence_id = if *health_points == 0 {
-                        CharacterSequenceId::FallForwardAscend
+                        character_hit_transitions.falling
                     } else if *stun_points < STUN_THRESHOLD_LOW {
-                        CharacterSequenceId::Flinch0
+                        character_hit_transitions.low_stun
                     } else if *stun_points < STUN_THRESHOLD_MID {
-                        CharacterSequenceId::Flinch1
+                        character_hit_transitions.mid_stun
                     } else if *stun_points < STUN_THRESHOLD_HIGH {
-                        CharacterSequenceId::Dazed
+                        character_hit_transitions.high_stun
                     } else {
-                        CharacterSequenceId::FallForwardAscend
+                        character_hit_transitions.falling
                     };
 
                     // Set sequence id

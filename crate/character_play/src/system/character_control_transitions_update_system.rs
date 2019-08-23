@@ -4,19 +4,16 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
-use character_model::{
-    config::CharacterSequenceId,
-    loaded::{
-        CharacterControlTransitionsHandle, CharacterControlTransitionsSequence,
-        CharacterControlTransitionsSequenceHandle,
-    },
+use character_model::loaded::{
+    CharacterControlTransitionsHandle, CharacterControlTransitionsSequence,
+    CharacterControlTransitionsSequenceHandle,
 };
 use derivative::Derivative;
 use derive_new::new;
 use log::error;
 use named_type::NamedType;
 use named_type_derive::NamedType;
-use sequence_model::play::SequenceUpdateEvent;
+use sequence_model::{loaded::SequenceId, play::SequenceUpdateEvent};
 
 /// Updates the `CharacterControlTransitionsHandle` when sequence ID changes.
 #[derive(Debug, Default, NamedType, new)]
@@ -41,9 +38,9 @@ pub struct CharacterControlTransitionsUpdateSystemData<'s> {
     /// `CharacterControlTransitionsHandle` component storage.
     #[derivative(Debug = "ignore")]
     pub character_control_transitions_handles: WriteStorage<'s, CharacterControlTransitionsHandle>,
-    /// `CharacterSequenceId` components.
+    /// `SequenceId` components.
     #[derivative(Debug = "ignore")]
-    pub character_sequence_ids: ReadStorage<'s, CharacterSequenceId>,
+    pub character_sequence_ids: ReadStorage<'s, SequenceId>,
 }
 
 impl<'s> System<'s> for CharacterControlTransitionsUpdateSystem {
@@ -95,7 +92,7 @@ impl<'s> System<'s> for CharacterControlTransitionsUpdateSystem {
                     } else {
                         let character_sequence_id = character_sequence_ids.get(entity).expect(
                             "Expected entity with `CharacterControlTransitionsSequenceHandle` \
-                             to have `CharacterSequenceId`.",
+                             to have `SequenceId`.",
                         );
 
                         error!(
@@ -128,12 +125,9 @@ mod tests {
     };
     use application_test_support::{AutexousiousApplication, SequenceQueries};
     use assets_test::CHAR_BAT_SLUG;
-    use character_model::{
-        config::CharacterSequenceId,
-        loaded::{
-            CharacterControlTransition, CharacterControlTransitions,
-            CharacterControlTransitionsHandle, CharacterControlTransitionsSequenceHandle,
-        },
+    use character_model::loaded::{
+        CharacterControlTransition, CharacterControlTransitions, CharacterControlTransitionsHandle,
+        CharacterControlTransitionsSequenceHandle,
     };
     use game_input_model::ControlAction;
     use sequence_model::{
@@ -227,7 +221,7 @@ mod tests {
         ) = world.system_data::<(
             Read<AssetStorage<CharacterControlTransitions>>,
             ReadStorage<CharacterControlTransitionsHandle>,
-            ReadStorage<CharacterSequenceId>,
+            ReadStorage<SequenceId>,
         )>();
 
         (&character_control_transitions_handles, &sequence_statuses)

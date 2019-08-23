@@ -2,7 +2,7 @@ use amethyst::{
     ecs::{Entities, Join, ReadStorage, System, World, WriteStorage},
     shred::{ResourceId, SystemData},
 };
-use character_model::{config::CharacterSequenceId, play::RunCounter};
+use character_model::play::RunCounter;
 use character_play::{
     CharacterSequenceUpdateComponents, CharacterSequenceUpdater, MirroredUpdater, RunCounterUpdater,
 };
@@ -11,7 +11,7 @@ use derive_new::new;
 use game_input::ControllerInput;
 use kinematic_model::config::{Position, Velocity};
 use object_model::play::{Grounding, HealthPoints, Mirrored};
-use sequence_model::play::SequenceStatus;
+use sequence_model::{loaded::SequenceId, play::SequenceStatus};
 use typename_derive::TypeName;
 
 /// Updates character sequence ID based on input (or lack of).
@@ -41,9 +41,9 @@ pub struct CharacterSequenceUpdateSystemData<'s> {
     /// `RunCounter` components.
     #[derivative(Debug = "ignore")]
     pub run_counters: WriteStorage<'s, RunCounter>,
-    /// `CharacterSequenceId` components.
+    /// `SequenceId` components.
     #[derivative(Debug = "ignore")]
-    pub character_sequence_ids: WriteStorage<'s, CharacterSequenceId>,
+    pub sequence_ids: WriteStorage<'s, SequenceId>,
     /// `Mirrored` components.
     #[derivative(Debug = "ignore")]
     pub mirroreds: WriteStorage<'s, Mirrored>,
@@ -65,7 +65,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             health_pointses,
             sequence_statuses,
             mut run_counters,
-            mut character_sequence_ids,
+            mut sequence_ids,
             mut mirroreds,
             mut groundings,
         }: Self::SystemData,
@@ -95,18 +95,17 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
         {
             // Retrieve sequence ID separately as we use a `FlaggedStorage` to track if it has been
             // changed.
-            let character_sequence_id = character_sequence_ids.get(entity);
-            if character_sequence_id.is_none() {
+            let sequence_id = sequence_ids.get(entity);
+            if sequence_id.is_none() {
                 continue; // kcov-ignore
             }
-            let character_sequence_id =
-                character_sequence_id.expect("Expected `CharacterSequenceId` to exist.");
+            let sequence_id = sequence_id.expect("Expected `SequenceId` to exist.");
 
-            let next_character_sequence_id =
+            let next_sequence_id =
                 CharacterSequenceUpdater::update(CharacterSequenceUpdateComponents::new(
                     &controller_input,
                     *health_points,
-                    *character_sequence_id,
+                    *sequence_id,
                     *sequence_status,
                     &position,
                     &velocity,
@@ -118,19 +117,18 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             *run_counter = RunCounterUpdater::update(
                 *run_counter,
                 controller_input,
-                *character_sequence_id,
+                *sequence_id,
                 *mirrored,
                 *grounding,
             );
-            *mirrored =
-                MirroredUpdater::update(controller_input, *character_sequence_id, *mirrored);
+            *mirrored = MirroredUpdater::update(controller_input, *sequence_id, *mirrored);
 
-            if let Some(next_character_sequence_id) = next_character_sequence_id {
-                let character_sequence_id = character_sequence_ids
+            if let Some(next_sequence_id) = next_sequence_id {
+                let sequence_id = sequence_ids
                     .get_mut(entity)
-                    .expect("Expected `CharacterSequenceId` to exist.");
+                    .expect("Expected `SequenceId` to exist.");
 
-                *character_sequence_id = next_character_sequence_id;
+                *sequence_id = next_sequence_id;
             }
         }
     }
@@ -144,13 +142,12 @@ mod tests {
         Error,
     };
     use application_test_support::AutexousiousApplication;
-    use character_model::config::CharacterSequenceId;
     use game_input::ControllerInput;
     use kinematic_model::config::Position;
     use map_model::loaded::Map;
     use map_selection_model::MapSelection;
     use object_model::play::{Grounding, Mirrored};
-    use sequence_model::play::SequenceStatus;
+    use sequence_model::{loaded::SequenceId, play::SequenceStatus};
     use typename::TypeName;
 
     use super::CharacterSequenceUpdateSystem;
@@ -163,12 +160,12 @@ mod tests {
 
         run_test(
             SetupParams {
-                sequence_id: CharacterSequenceId::Stand,
+                sequence_id: SequenceId::new(0),
                 controller_input,
                 mirrored: Mirrored(false),
             },
             ExpectedParams {
-                sequence_id: CharacterSequenceId::Walk,
+                sequence_id: SequenceId::new(3),
                 mirrored: Mirrored(true),
             },
         )
@@ -181,12 +178,12 @@ mod tests {
 
         run_test(
             SetupParams {
-                sequence_id: CharacterSequenceId::Stand,
+                sequence_id: SequenceId::new(0),
                 controller_input,
                 mirrored: Mirrored(false),
             },
             ExpectedParams {
-                sequence_id: CharacterSequenceId::Walk,
+                sequence_id: SequenceId::new(3),
                 mirrored: Mirrored(false),
             },
         )
@@ -209,7 +206,7 @@ mod tests {
                     map_selection,
                     maps,
                     mut controller_inputs,
-                    mut character_sequence_ids,
+                    mut sequence_ids,
                     mut sequence_statuses,
                     mut positions,
                     mut mirroreds,
@@ -222,7 +219,7 @@ mod tests {
 
                 (
                     &mut controller_inputs,
-                    &mut character_sequence_ids,
+                    &mut sequence_ids,
                     &mut sequence_statuses,
                     &mut positions,
                     &mut mirroreds,
@@ -232,7 +229,7 @@ mod tests {
                     .for_each(
                         |(
                             controller_input,
-                            character_sequence_id,
+                            sequence_id,
                             sequence_status,
                             position,
                             mirrored,
@@ -240,7 +237,7 @@ mod tests {
                         )| {
                             *controller_input = setup_controller_input;
 
-                            *character_sequence_id = setup_sequence_id;
+                            *sequence_id = setup_sequence_id;
                             *sequence_status = SequenceStatus::Ongoing;
                             *mirrored = setup_mirrored;
                             *grounding = Grounding::OnGround;
@@ -256,14 +253,12 @@ mod tests {
             ) // kcov-ignore
             .with_assertion(move |world| {
                 world.exec(
-                    |(character_sequence_ids, mirroreds): (
-                        ReadStorage<'_, CharacterSequenceId>,
+                    |(sequence_ids, mirroreds): (
+                        ReadStorage<'_, SequenceId>,
                         ReadStorage<'_, Mirrored>,
                     )| {
-                        for (character_sequence_id, mirrored) in
-                            (&character_sequence_ids, &mirroreds).join()
-                        {
-                            assert_eq!(expected_sequence_id, *character_sequence_id);
+                        for (sequence_id, mirrored) in (&sequence_ids, &mirroreds).join() {
+                            assert_eq!(expected_sequence_id, *sequence_id);
                             assert_eq!(expected_mirrored, *mirrored);
                         }
                     },
@@ -276,7 +271,7 @@ mod tests {
         ReadExpect<'s, MapSelection>,
         Read<'s, AssetStorage<Map>>,
         WriteStorage<'s, ControllerInput>,
-        WriteStorage<'s, CharacterSequenceId>,
+        WriteStorage<'s, SequenceId>,
         WriteStorage<'s, SequenceStatus>,
         WriteStorage<'s, Position<f32>>,
         WriteStorage<'s, Mirrored>,
@@ -285,14 +280,14 @@ mod tests {
 
     #[derive(Debug)]
     struct SetupParams {
-        sequence_id: CharacterSequenceId,
+        sequence_id: SequenceId,
         controller_input: ControllerInput,
         mirrored: Mirrored,
     }
 
     #[derive(Debug)]
     struct ExpectedParams {
-        sequence_id: CharacterSequenceId,
+        sequence_id: SequenceId,
         mirrored: Mirrored,
     }
 }
