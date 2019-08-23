@@ -30,6 +30,7 @@ map_model = { path = "../map_model" }
 object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
 object_prefab = { path = "../object_prefab" }
+object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }
 serde = "1.0.99"
 serde_yaml = "0.8.9"

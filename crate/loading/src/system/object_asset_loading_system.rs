@@ -14,7 +14,10 @@ use amethyst::{
     shred::{ResourceId, SystemData},
 };
 use asset_loading::{AssetDiscovery, YamlFormat};
-use asset_model::config::{AssetIndex, AssetRecord};
+use asset_model::{
+    config::{AssetIndex, AssetRecord, AssetSlug},
+    loaded::AssetSlugId,
+};
 use derivative::Derivative;
 use derive_new::new;
 use game_model::loaded::GameObjectPrefabs;
@@ -22,6 +25,7 @@ use log::debug;
 use object_loading::ObjectLoadingStatus;
 use object_model::{config::ObjectAssetData, loaded::GameObject};
 use object_prefab::GameObjectPrefab;
+use object_type::ObjectType;
 use serde::Deserialize;
 use sprite_loading::SpriteLoader;
 use sprite_model::config::SpritesDefinition;
@@ -104,6 +108,9 @@ where
     /// `GameObjectPrefabs<Pf>` resource.
     #[derivative(Debug = "ignore")]
     game_object_prefabs: Write<'s, GameObjectPrefabs<Pf>>,
+    /// `HashMap<AssetSlugId, AssetSlug>` resource.
+    #[derivative(Debug = "ignore")]
+    asset_slug_id_mappings: Write<'s, HashMap<AssetSlug, AssetSlugId>>,
     /// `St` resource.
     #[derivative(Debug = "ignore")]
     object_loading_status: Write<'s, St>,
@@ -134,6 +141,7 @@ where
             game_object_prefab_loader,
             game_object_prefab_assets,
             mut game_object_prefabs,
+            mut asset_slug_id_mappings,
             mut object_loading_status,
         }: Self::SystemData,
     ) {
@@ -153,6 +161,17 @@ where
                 .get(&O::OBJECT_TYPE)
                 .cloned()
                 .unwrap_or_else(Vec::new);
+
+            // Hack: pre-asset replacement implementation.
+            if O::OBJECT_TYPE == ObjectType::Character {
+                *asset_slug_id_mappings = asset_records
+                    .iter()
+                    .map(|asset_record| asset_record.asset_slug.clone())
+                    .enumerate()
+                    .map(|(index, asset_slug)| (asset_slug, AssetSlugId::new(index)))
+                    .collect::<HashMap<AssetSlug, AssetSlugId>>();
+            }
+            // End Hack
 
             let new_asset_records = asset_records.into_iter().filter(|asset_record| {
                 !(assets_in_progress.contains_key(asset_record)

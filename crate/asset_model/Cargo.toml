@@ -9,8 +9,11 @@ amethyst = { git = "https://github.com/kabergstrom/amethyst.git", features = ["n
 derivative = "1.0.2"
 derive-new = "0.5.8"
 derive_builder = "0.7.2"
+derive_more = "0.15.0"
+numeric_newtype_derive = { path = "../numeric_newtype_derive" }
 object_type = { path = "../object_type" }
 serde = "1.0.99"
+specs-derive = "0.4.0"
 strum = "0.15.0"
 strum_macros = "0.15.0"
 
