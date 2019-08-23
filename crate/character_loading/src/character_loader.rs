@@ -1,12 +1,10 @@
-use std::collections::HashMap;
-
 use amethyst::{assets::Handle, Error};
 use character_model::{
-    config::{CharacterDefinition, CharacterSequenceId},
+    config::CharacterDefinition,
     loaded::{Character, CharacterControlTransitionsSequenceHandle, CharacterObjectWrapper},
 };
 use lazy_static::lazy_static;
-use sequence_model::loaded::SequenceId;
+use sequence_model::loaded::{SequenceId, SequenceIdMappings};
 
 use crate::{CharacterLoaderParams, ControlTransitionsSequenceLoader};
 
@@ -40,13 +38,20 @@ impl CharacterLoader {
         //
         // TODO: Extract this out to a separate loading phase, as other objects may reference this
         // TODO: object's sequences.
+        let capacity = character_definition.object_definition.sequences.len();
         let sequence_id_mappings = character_definition
             .object_definition
             .sequences
             .keys()
             .enumerate()
-            .map(|(index, sequence_id)| (*sequence_id, SequenceId::new(index)))
-            .collect::<HashMap<CharacterSequenceId, SequenceId>>();
+            .map(|(index, sequence_name)| (SequenceId::new(index), *sequence_name))
+            .fold(
+                SequenceIdMappings::with_capacity(capacity),
+                |mut sequence_id_mappings, (sequence_id, sequence_name)| {
+                    sequence_id_mappings.insert(sequence_name, sequence_id);
+                    sequence_id_mappings
+                },
+            );
 
         let control_transitions_sequence_handles = character_definition
             .object_definition
@@ -69,6 +74,7 @@ impl CharacterLoader {
 
         Ok(Character::new(
             control_transitions_sequence_handles,
+            sequence_id_mappings,
             object_wrapper_handle,
         ))
     }

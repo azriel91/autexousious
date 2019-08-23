@@ -1,8 +1,12 @@
 use amethyst::{
-    ecs::{Entities, Join, ReadStorage, System, World, WriteStorage},
+    assets::AssetStorage,
+    ecs::{Entities, Join, Read, ReadStorage, System, World, WriteStorage},
     shred::{ResourceId, SystemData},
 };
-use character_model::play::RunCounter;
+use character_model::{
+    loaded::{Character, CharacterHandle},
+    play::RunCounter,
+};
 use character_play::{
     CharacterSequenceUpdateComponents, CharacterSequenceUpdater, MirroredUpdater, RunCounterUpdater,
 };
@@ -23,6 +27,12 @@ pub struct CharacterSequenceUpdateSystemData<'s> {
     /// `Entities` resource.
     #[derivative(Debug = "ignore")]
     pub entities: Entities<'s>,
+    /// `CharacterHandle` components.
+    #[derivative(Debug = "ignore")]
+    pub character_handles: ReadStorage<'s, CharacterHandle>,
+    /// `Character` assets.
+    #[derivative(Debug = "ignore")]
+    pub character_assets: Read<'s, AssetStorage<Character>>,
     /// `ControllerInput` components.
     #[derivative(Debug = "ignore")]
     pub controller_inputs: ReadStorage<'s, ControllerInput>,
@@ -59,6 +69,8 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
         &mut self,
         CharacterSequenceUpdateSystemData {
             entities,
+            character_handles,
+            character_assets,
             controller_inputs,
             positions,
             velocities,
@@ -72,6 +84,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
     ) {
         for (
             entity,
+            character_handle,
             controller_input,
             position,
             velocity,
@@ -82,6 +95,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             grounding,
         ) in (
             &entities,
+            &character_handles,
             &controller_inputs,
             &positions,
             &velocities,
@@ -101,11 +115,19 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             }
             let sequence_id = sequence_id.expect("Expected `SequenceId` to exist.");
 
+            let character = character_assets
+                .get(character_handle)
+                .expect("Expected `Character` to be loaded.");
+            let character_sequence_id = *character
+                .sequence_id_mappings
+                .name(*sequence_id)
+                .expect("Expected sequence ID mapping to exist.");
+
             let next_sequence_id =
                 CharacterSequenceUpdater::update(CharacterSequenceUpdateComponents::new(
                     &controller_input,
                     *health_points,
-                    *sequence_id,
+                    character_sequence_id,
                     *sequence_status,
                     &position,
                     &velocity,
@@ -117,16 +139,21 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             *run_counter = RunCounterUpdater::update(
                 *run_counter,
                 controller_input,
-                *sequence_id,
+                character_sequence_id,
                 *mirrored,
                 *grounding,
             );
-            *mirrored = MirroredUpdater::update(controller_input, *sequence_id, *mirrored);
+            *mirrored = MirroredUpdater::update(controller_input, character_sequence_id, *mirrored);
 
             if let Some(next_sequence_id) = next_sequence_id {
                 let sequence_id = sequence_ids
                     .get_mut(entity)
                     .expect("Expected `SequenceId` to exist.");
+
+                let next_sequence_id = *character
+                    .sequence_id_mappings
+                    .id(next_sequence_id)
+                    .expect("Expected sequence ID mapping to exist.");
 
                 *sequence_id = next_sequence_id;
             }

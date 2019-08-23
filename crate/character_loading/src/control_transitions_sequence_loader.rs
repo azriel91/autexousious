@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use amethyst::assets::{AssetStorage, Loader};
 use character_model::{
     config::{self, CharacterSequence, CharacterSequenceId},
@@ -14,7 +12,7 @@ use sequence_model::{
     config::ControlTransitionSingle,
     loaded::{
         ActionHold, ActionPress, ActionRelease, AxisTransition, ControlTransition,
-        ControlTransitions, FallbackTransition, SequenceId,
+        ControlTransitions, FallbackTransition, SequenceIdMappings,
     },
 };
 
@@ -32,7 +30,7 @@ impl ControlTransitionsSequenceLoader {
             character_control_transitions_assets,
             character_control_transitions_sequence_assets,
         }: &ControlTransitionsSequenceLoaderParams,
-        sequence_id_mappings: &HashMap<CharacterSequenceId, SequenceId>,
+        sequence_id_mappings: &SequenceIdMappings<CharacterSequenceId>,
         sequence_default: Option<&CharacterSequence>,
         sequence: &CharacterSequence,
     ) -> CharacterControlTransitionsSequenceHandle {
@@ -68,7 +66,7 @@ impl ControlTransitionsSequenceLoader {
     fn config_to_loaded_transitions_handle(
         loader: &Loader,
         character_control_transitions_assets: &AssetStorage<loaded::CharacterControlTransitions>,
-        sequence_id_mappings: &HashMap<CharacterSequenceId, SequenceId>,
+        sequence_id_mappings: &SequenceIdMappings<CharacterSequenceId>,
         config_transitions_default: Option<&config::CharacterControlTransitions>,
         config_transitions_sequence: Option<&config::CharacterControlTransitions>,
         config_transitions_frame: &config::CharacterControlTransitions,
@@ -92,7 +90,7 @@ impl ControlTransitionsSequenceLoader {
                     match config_control_transition {
                         SequenceId(sequence_id) => {
                             let sequence_id =
-                                sequence_id_mappings.get(sequence_id).unwrap_or_else(|| {
+                                sequence_id_mappings.id(*sequence_id).unwrap_or_else(|| {
                                     panic!(
                                         "Expected `sequence_id_mappings` to contain mapping for \
                                          `{}`",
@@ -112,7 +110,7 @@ impl ControlTransitionsSequenceLoader {
                             requirements: control_transition_requirements,
                         }) => {
                             let sequence_id =
-                                sequence_id_mappings.get(sequence_id).unwrap_or_else(|| {
+                                sequence_id_mappings.id(*sequence_id).unwrap_or_else(|| {
                                     panic!(
                                         "Expected `sequence_id_mappings` to contain mapping for \
                                          `{}`",
@@ -133,7 +131,7 @@ impl ControlTransitionsSequenceLoader {
                                  requirements: control_transition_requirements,
                              }| {
                                 let sequence_id =
-                                sequence_id_mappings.get(sequence_id).unwrap_or_else(|| {
+                                sequence_id_mappings.id(*sequence_id).unwrap_or_else(|| {
                                     panic!(
                                         "Expected `sequence_id_mappings` to contain mapping for \
                                          `{}`",
@@ -171,7 +169,7 @@ impl ControlTransitionsSequenceLoader {
                     match config_control_transition {
                         SequenceId(sequence_id) => {
                             let sequence_id =
-                                sequence_id_mappings.get(sequence_id).unwrap_or_else(|| {
+                                sequence_id_mappings.id(*sequence_id).unwrap_or_else(|| {
                                     panic!(
                                         "Expected `sequence_id_mappings` to contain mapping for \
                                          `{}`",
@@ -191,7 +189,7 @@ impl ControlTransitionsSequenceLoader {
                             requirements: control_transition_requirements,
                         }) => {
                             let sequence_id =
-                                sequence_id_mappings.get(sequence_id).unwrap_or_else(|| {
+                                sequence_id_mappings.id(*sequence_id).unwrap_or_else(|| {
                                     panic!(
                                         "Expected `sequence_id_mappings` to contain mapping for \
                                          `{}`",
@@ -212,7 +210,7 @@ impl ControlTransitionsSequenceLoader {
                                  requirements: control_transition_requirements,
                              }| {
                                 let sequence_id =
-                                sequence_id_mappings.get(sequence_id).unwrap_or_else(|| {
+                                sequence_id_mappings.id(*sequence_id).unwrap_or_else(|| {
                                     panic!(
                                         "Expected `sequence_id_mappings` to contain mapping for \
                                          `{}`",
@@ -250,7 +248,7 @@ impl ControlTransitionsSequenceLoader {
                     match config_control_transition {
                         SequenceId(sequence_id) => {
                             let sequence_id =
-                                sequence_id_mappings.get(sequence_id).unwrap_or_else(|| {
+                                sequence_id_mappings.id(*sequence_id).unwrap_or_else(|| {
                                     panic!(
                                         "Expected `sequence_id_mappings` to contain mapping for \
                                          `{}`",
@@ -269,7 +267,7 @@ impl ControlTransitionsSequenceLoader {
                             requirements: control_transition_requirements,
                         }) => {
                             let sequence_id =
-                                sequence_id_mappings.get(sequence_id).unwrap_or_else(|| {
+                                sequence_id_mappings.id(*sequence_id).unwrap_or_else(|| {
                                     panic!(
                                         "Expected `sequence_id_mappings` to contain mapping for \
                                          `{}`",
@@ -289,7 +287,7 @@ impl ControlTransitionsSequenceLoader {
                                  requirements: control_transition_requirements,
                              }| {
                                 let sequence_id =
-                                sequence_id_mappings.get(sequence_id).unwrap_or_else(|| {
+                                sequence_id_mappings.id(*sequence_id).unwrap_or_else(|| {
                                     panic!(
                                         "Expected `sequence_id_mappings` to contain mapping for \
                                          `{}`",
@@ -348,7 +346,7 @@ impl ControlTransitionsSequenceLoader {
 
 #[cfg(test)]
 mod tests {
-    use std::{collections::HashMap, iter::FromIterator, path::PathBuf};
+    use std::{iter::FromIterator, path::PathBuf};
 
     use amethyst::{
         assets::{AssetStorage, Loader},
@@ -373,7 +371,7 @@ mod tests {
     use sequence_loading::SequenceLoadingBundle;
     use sequence_model::loaded::{
         ActionHold, ActionPress, ActionRelease, AxisTransition, ControlTransition,
-        ControlTransitions, FallbackTransition, SequenceId,
+        ControlTransitions, FallbackTransition, SequenceId, SequenceIdMappings,
     };
 
     use super::ControlTransitionsSequenceLoader;
@@ -498,8 +496,8 @@ mod tests {
             .expect("Failed to load `test_character_sequence.yaml`.")
     }
 
-    fn sequence_id_mappings() -> HashMap<CharacterSequenceId, SequenceId> {
-        let mut sequence_id_mappings = HashMap::new();
+    fn sequence_id_mappings() -> SequenceIdMappings<CharacterSequenceId> {
+        let mut sequence_id_mappings = SequenceIdMappings::new();
         sequence_id_mappings.insert(CharacterSequenceId::Stand, SequenceId::new(0));
         sequence_id_mappings.insert(CharacterSequenceId::Walk, SequenceId::new(1));
         sequence_id_mappings.insert(CharacterSequenceId::Run, SequenceId::new(2));

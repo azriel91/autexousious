@@ -519,7 +519,7 @@ impl<'s> System<'s> for CharacterControlTransitionsTransitionSystem {
 
 #[cfg(test)]
 mod tests {
-    use std::{collections::HashMap, iter::FromIterator, path::PathBuf};
+    use std::{iter::FromIterator, path::PathBuf};
 
     use amethyst::{
         assets::{AssetStorage, Loader},
@@ -550,7 +550,7 @@ mod tests {
         Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
     };
     use object_model::play::{HealthPoints, Mirrored, SkillPoints};
-    use sequence_model::loaded::SequenceId;
+    use sequence_model::loaded::{SequenceId, SequenceIdMappings};
 
     use super::CharacterControlTransitionsTransitionSystem;
 
@@ -1029,8 +1029,8 @@ mod tests {
             .expect("Failed to load `test_character_sequence.yaml`.")
     }
 
-    fn sequence_id_mappings() -> HashMap<CharacterSequenceId, SequenceId> {
-        let mut sequence_id_mappings = HashMap::new();
+    fn sequence_id_mappings() -> SequenceIdMappings<CharacterSequenceId> {
+        let mut sequence_id_mappings = SequenceIdMappings::new();
         sequence_id_mappings.insert(CharacterSequenceId::Stand, SequenceId::new(0));
         sequence_id_mappings.insert(CharacterSequenceId::Walk, SequenceId::new(1));
         sequence_id_mappings.insert(CharacterSequenceId::Run, SequenceId::new(2));

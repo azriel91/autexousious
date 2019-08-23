@@ -1,6 +1,7 @@
 use asset_derive::Asset;
 use derive_new::new;
 use object_model::game_object;
+use sequence_model::loaded::SequenceIdMappings;
 use typename_derive::TypeName;
 
 use crate::{
@@ -16,4 +17,6 @@ use crate::{
 pub struct Character {
     /// Handles of `ControlTransitions`es sequences that this character uses.
     pub control_transitions_sequence_handles: Vec<CharacterControlTransitionsSequenceHandle>,
+    /// Mappings from sequence name to ID, and ID to name.
+    pub sequence_id_mappings: SequenceIdMappings<CharacterSequenceId>,
 }
