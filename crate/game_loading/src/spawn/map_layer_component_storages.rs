@@ -5,10 +5,9 @@ use amethyst::{
     shred::{ResourceId, SystemData},
 };
 use derivative::Derivative;
-use map_model::config::MapLayerSequenceId;
 use sequence_model::{
     config::Wait,
-    loaded::{SequenceEndTransition, WaitSequenceHandle},
+    loaded::{SequenceEndTransition, SequenceId, WaitSequenceHandle},
     play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
 };
 use sprite_model::loaded::SpriteRenderSequenceHandle;
@@ -26,9 +25,9 @@ pub struct MapLayerComponentStorages<'s> {
     /// `Wait` components.
     #[derivative(Debug = "ignore")]
     pub waits: WriteStorage<'s, Wait>,
-    /// `MapLayerSequenceId` components.
+    /// `SequenceId` components.
     #[derivative(Debug = "ignore")]
-    pub map_layer_sequence_ids: WriteStorage<'s, MapLayerSequenceId>,
+    pub sequence_ids: WriteStorage<'s, SequenceId>,
     /// `SequenceEndTransition` components.
     #[derivative(Debug = "ignore")]
     pub sequence_end_transitions: WriteStorage<'s, SequenceEndTransition>,
