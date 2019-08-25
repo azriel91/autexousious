@@ -6,7 +6,6 @@ edition = "2018"
 
 [dependencies]
 amethyst = { git = "https://github.com/kabergstrom/amethyst.git", features = ["no-slow-safety-checks", "vulkan", "experimental-assets"], branch = "new-asset-system" }
-animation_support = { path = "../animation_support" }
 application = { path = "../application" }
 collision_model = { path = "../collision_model" }
 derive-new = "0.5.8"

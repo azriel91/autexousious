@@ -6,7 +6,6 @@ edition = "2018"
 
 [dependencies]
 amethyst = { git = "https://github.com/kabergstrom/amethyst.git", features = ["no-slow-safety-checks", "vulkan", "experimental-assets"], branch = "new-asset-system" }
-animation_support = { path = "../animation_support" }
 application_event = { path = "../application_event" }
 application_state = { path = "../application_state" }
 character_model = { path = "../character_model" }
