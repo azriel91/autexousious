@@ -73,14 +73,17 @@ impl<'s> System<'s> for SequenceStatusUpdateSystem {
                 ComponentEvent::Removed(_id) => {}
             });
 
-        (&entities, &self.sequence_id_updates)
+        (&entities, &sequence_ids, &self.sequence_id_updates)
             .join()
-            .for_each(|(entity, _)| {
+            .for_each(|(entity, sequence_id, _)| {
                 sequence_statuses
                     .insert(entity, SequenceStatus::Begin)
                     .expect("Failed to insert `SequenceStatus` component.");
 
-                sequence_update_ec.single_write(SequenceUpdateEvent::SequenceBegin { entity });
+                sequence_update_ec.single_write(SequenceUpdateEvent::SequenceBegin {
+                    entity,
+                    sequence_id: *sequence_id,
+                });
             });
     }
 
@@ -111,7 +114,7 @@ mod tests {
             |world| create_entity(world, None),
             |world| insert_sequence(world, SequenceId::new(0)),
             Some(SequenceStatus::Begin),
-            sequence_begin_events,
+            |world| sequence_begin_events(world, SequenceId::new(0)),
         )
     }
 
@@ -121,7 +124,7 @@ mod tests {
             |world| create_entity(world, Some(SequenceId::new(0))),
             |world| update_sequence(world, SequenceId::new(1)),
             Some(SequenceStatus::Begin),
-            sequence_begin_events,
+            |world| sequence_begin_events(world, SequenceId::new(1)),
         )
     }
 
@@ -181,9 +184,15 @@ mod tests {
         world.insert(entity);
     }
 
-    fn sequence_begin_events(world: &mut World) -> Vec<SequenceUpdateEvent> {
+    fn sequence_begin_events(
+        world: &mut World,
+        sequence_id: SequenceId,
+    ) -> Vec<SequenceUpdateEvent> {
         let entity = *world.read_resource::<Entity>();
-        vec![SequenceUpdateEvent::SequenceBegin { entity }]
+        vec![SequenceUpdateEvent::SequenceBegin {
+            entity,
+            sequence_id,
+        }]
     }
 
     fn expect_events(world: &mut World, events_expected: Vec<SequenceUpdateEvent>) {
@@ -198,7 +207,7 @@ mod tests {
         let events_actual = ec
             .read(&mut reader_id)
             .filter(|ev| match ev {
-                SequenceUpdateEvent::SequenceBegin { entity }
+                SequenceUpdateEvent::SequenceBegin { entity, .. }
                 | SequenceUpdateEvent::FrameBegin { entity, .. }
                 | SequenceUpdateEvent::SequenceEnd { entity, .. } => target_entity == *entity,
             })

@@ -139,48 +139,38 @@ mod tests {
 
     #[test]
     fn updates_transitions_on_sequence_begin_event() -> Result<(), Error> {
-        AutexousiousApplication::game_base()
-            .with_system(CharacterControlTransitionsUpdateSystem::new(), "", &[])
-            .with_setup(|world| {
-                let character_cts_handle = SequenceQueries::character_cts_handle(
-                    world,
-                    &CHAR_BAT_SLUG.clone(),
-                    SequenceId::new(1),
-                );
-                initial_values(
-                    world,
-                    // First frame in the sequence.
-                    FrameIndexClock::new_with_value(5, 0),
-                    character_cts_handle,
-                )
-            })
-            .with_setup(|world| {
-                let events = sequence_begin_events(world);
-                send_events(world, events);
-            })
-            .with_assertion(|world| expect_transitions(world, transitions()))
-            .run_isolated()
+        run_test(
+            // First frame in the sequence.
+            FrameIndexClock::new_with_value(5, 0),
+            sequence_begin_events,
+        )
     }
 
     #[test]
     fn updates_transitions_on_frame_begin_event() -> Result<(), Error> {
+        run_test(
+            // Third frame in the sequence.
+            FrameIndexClock::new_with_value(5, 2),
+            frame_begin_events,
+        )
+    }
+
+    fn run_test(
+        frame_index_clock: FrameIndexClock,
+        sequence_update_events_fn: fn(&mut World) -> Vec<SequenceUpdateEvent>,
+    ) -> Result<(), Error> {
         AutexousiousApplication::game_base()
             .with_system(CharacterControlTransitionsUpdateSystem::new(), "", &[])
-            .with_setup(|world| {
+            .with_setup(move |world| {
                 let character_cts_handle = SequenceQueries::character_cts_handle(
                     world,
                     &CHAR_BAT_SLUG.clone(),
                     SequenceId::new(1),
                 );
-                initial_values(
-                    world,
-                    // Third frame in the sequence.
-                    FrameIndexClock::new_with_value(5, 2),
-                    character_cts_handle,
-                )
+                initial_values(world, frame_index_clock, character_cts_handle)
             })
-            .with_setup(|world| {
-                let events = frame_begin_events(world);
+            .with_setup(move |world| {
+                let events = sequence_update_events_fn(world);
                 send_events(world, events);
             })
             .with_assertion(|world| expect_transitions(world, transitions()))
@@ -194,6 +184,7 @@ mod tests {
     ) {
         let (
             _entities,
+            _sequence_ids,
             mut frame_index_clocks,
             _character_control_transitions_handles,
             mut character_cts_handles,
@@ -267,6 +258,7 @@ mod tests {
     fn sequence_begin_events(world: &mut World) -> Vec<SequenceUpdateEvent> {
         let (
             entities,
+            sequence_ids,
             frame_index_clocks,
             character_control_transitions_handles,
             character_cts_handles,
@@ -274,13 +266,19 @@ mod tests {
 
         (
             &entities,
+            &sequence_ids,
             &frame_index_clocks,
             &character_control_transitions_handles,
             &character_cts_handles,
         )
             .join()
             // kcov-ignore-start
-            .map(|(entity, _, _, _)| SequenceUpdateEvent::SequenceBegin { entity })
+            .map(
+                |(entity, sequence_id, _, _, _)| SequenceUpdateEvent::SequenceBegin {
+                    entity,
+                    sequence_id: *sequence_id,
+                },
+            )
             // kcov-ignore-end
             .collect::<Vec<_>>()
     }
@@ -288,6 +286,7 @@ mod tests {
     fn frame_begin_events(world: &mut World) -> Vec<SequenceUpdateEvent> {
         let (
             entities,
+            _sequence_ids,
             frame_index_clocks,
             character_control_transitions_handles,
             character_cts_handles,
@@ -314,6 +313,7 @@ mod tests {
 
     type TestSystemData<'s> = (
         Entities<'s>,
+        ReadStorage<'s, SequenceId>,
         WriteStorage<'s, FrameIndexClock>,
         WriteStorage<'s, CharacterControlTransitionsHandle>,
         WriteStorage<'s, CharacterControlTransitionsSequenceHandle>,

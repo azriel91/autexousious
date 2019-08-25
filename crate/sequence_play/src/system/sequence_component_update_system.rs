@@ -45,9 +45,6 @@ where
     /// Event channel for `SequenceUpdateEvent`s.
     #[derivative(Debug = "ignore")]
     pub sequence_update_ec: Read<'s, EventChannel<SequenceUpdateEvent>>,
-    /// `SequenceId` components.
-    #[derivative(Debug = "ignore")]
-    pub sequence_ids: ReadStorage<'s, SequenceId>,
     /// `Handle<SCDA>` component storage.
     #[derivative(Debug = "ignore")]
     pub scda_handles: ReadStorage<'s, Handle<SCDA>>,
@@ -101,7 +98,6 @@ where
         &mut self,
         SequenceComponentUpdateSystemData {
             sequence_update_ec,
-            sequence_ids,
             scda_handles,
             scda_assets,
             mut sequence_components,
@@ -114,13 +110,12 @@ where
                     .expect("Expected reader ID to exist for SequenceComponentUpdateSystem."),
             )
             .filter_map(|ev| {
-                if let SequenceUpdateEvent::SequenceBegin { entity } = ev {
-                    let entity = *entity;
-
-                    sequence_ids
-                        .get(entity)
-                        .copied()
-                        .map(|sequence_id| (entity, sequence_id))
+                if let SequenceUpdateEvent::SequenceBegin {
+                    entity,
+                    sequence_id,
+                } = ev
+                {
+                    Some((*entity, *sequence_id))
                 } else {
                     None
                 }
@@ -263,7 +258,10 @@ mod tests {
 
     fn sequence_begin_events(world: &mut World) -> Vec<SequenceUpdateEvent> {
         let entity = *world.read_resource::<Entity>();
-        vec![SequenceUpdateEvent::SequenceBegin { entity }]
+        vec![SequenceUpdateEvent::SequenceBegin {
+            entity,
+            sequence_id: SEQUENCE_ID_CURRENT,
+        }]
     }
 
     fn frame_begin_events(world: &mut World) -> Vec<SequenceUpdateEvent> {

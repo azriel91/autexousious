@@ -310,7 +310,10 @@ mod tests {
     }
 
     fn sequence_begin_event(entity: Entity) -> SequenceUpdateEvent {
-        SequenceUpdateEvent::SequenceBegin { entity }
+        SequenceUpdateEvent::SequenceBegin {
+            entity,
+            sequence_id: SequenceId::new(1),
+        }
     }
 
     fn sequence_end_event(entity: Entity) -> SequenceUpdateEvent {

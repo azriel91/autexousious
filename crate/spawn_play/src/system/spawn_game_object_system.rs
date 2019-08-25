@@ -162,7 +162,7 @@ mod tests {
     use energy_prefab::{EnergyPrefab, EnergyPrefabHandle};
     use kinematic_model::config::{Position, Velocity};
     use loading::ObjectAssetLoadingSystem;
-    use sequence_model::play::SequenceUpdateEvent;
+    use sequence_model::{loaded::SequenceId, play::SequenceUpdateEvent};
     use spawn_model::{
         config::{Spawn, Spawns},
         play::SpawnEvent,
@@ -174,7 +174,10 @@ mod tests {
     #[test]
     fn spawns_entity_for_sequence_begin_events() -> Result<(), Error> {
         run_test(
-            Some(|entity| SequenceUpdateEvent::SequenceBegin { entity }),
+            Some(|entity| SequenceUpdateEvent::SequenceBegin {
+                entity,
+                sequence_id: SequenceId::new(0),
+            }),
             1,
         )
     }

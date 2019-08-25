@@ -131,16 +131,18 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                     .expect("Expected `sequence_update_event_rid` to exist."),
             )
             .for_each(|ev| {
-                if let SequenceUpdateEvent::SequenceBegin { entity } = ev {
+                if let SequenceUpdateEvent::SequenceBegin {
+                    entity,
+                    sequence_id,
+                } = ev
+                {
                     if let (
                         Some(character_handle),
-                        Some(sequence_id),
                         Some(mirrored),
                         Some(controller_input),
                         Some(velocity),
                     ) = (
                         character_handles.get(*entity),
-                        sequence_ids.get(*entity),
                         mirroreds.get(*entity),
                         controller_inputs.get(*entity),
                         velocities.get_mut(*entity),
@@ -154,11 +156,8 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                             .expect("Expected sequence ID mapping to exist.");
 
                         match character_sequence_name {
-                            CharacterSequenceName::StandAttack0 => {
-                                velocity[0] = controller_input.x_axis_value as f32 * 2.5;
-                                velocity[2] = controller_input.z_axis_value as f32 * 1.5;
-                            }
-                            CharacterSequenceName::StandAttack1 => {
+                            CharacterSequenceName::StandAttack0
+                            | CharacterSequenceName::StandAttack1 => {
                                 velocity[0] = controller_input.x_axis_value as f32 * 2.5;
                                 velocity[2] = controller_input.z_axis_value as f32 * 1.5;
                             }
@@ -212,15 +211,21 @@ mod tests {
     use map_model::loaded::Map;
     use map_selection_model::MapSelection;
     use object_model::play::{Grounding, Mirrored};
-    use sequence_model::{loaded::SequenceId, play::SequenceUpdateEvent};
+    use sequence_model::{
+        loaded::{SequenceId, SequenceIdMappings},
+        play::SequenceUpdateEvent,
+    };
     use typename::TypeName;
 
     use super::CharacterKinematicsSystem;
 
+    type EventFunction =
+        fn(Entity, &SequenceIdMappings<CharacterSequenceName>) -> SequenceUpdateEvent;
+
     #[test]
     fn stand_x_and_z_velocity_are_zero() -> Result<(), Error> {
-        run_test(
-            ParamsSetup {
+        run_test::<EventFunction>(
+            SetupParams {
                 velocity: Velocity::new(3., 0., 3.),
                 grounding: Grounding::OnGround,
                 character_sequence_name: CharacterSequenceName::Stand,
@@ -245,13 +250,27 @@ mod tests {
             controller_input.z_axis_value = -1.;
 
             run_test(
-                ParamsSetup {
+                SetupParams {
                     velocity: Velocity::new(0., 0., 0.),
                     grounding: Grounding::OnGround,
                     character_sequence_name: stand_attack_id,
                     controller_input: Some(controller_input),
                     mirrored: None,
-                    event_fn: Some(|entity| SequenceUpdateEvent::SequenceBegin { entity }),
+                    event_fn:
+                        Some(
+                            move |entity,
+                                  sequence_id_mappings: &SequenceIdMappings<
+                                CharacterSequenceName,
+                            >| {
+                                let sequence_id = *sequence_id_mappings
+                                    .id(stand_attack_id)
+                                    .expect("Expected mapping for sequence ID to exist.");
+                                SequenceUpdateEvent::SequenceBegin {
+                                    entity,
+                                    sequence_id,
+                                }
+                            },
+                        ),
                 },
                 Velocity::new(2.5, 0., -1.5),
             )
@@ -264,8 +283,8 @@ mod tests {
         controller_input.x_axis_value = 1.;
         controller_input.z_axis_value = -1.;
 
-        run_test(
-            ParamsSetup {
+        run_test::<EventFunction>(
+            SetupParams {
                 velocity: Velocity::new(0., 0., 0.),
                 grounding: Grounding::OnGround,
                 character_sequence_name: CharacterSequenceName::Walk,
@@ -283,8 +302,8 @@ mod tests {
         controller_input.x_axis_value = 1.;
         controller_input.z_axis_value = -1.;
 
-        run_test(
-            ParamsSetup {
+        run_test::<EventFunction>(
+            SetupParams {
                 velocity: Velocity::new(0., 0., 0.),
                 grounding: Grounding::OnGround,
                 character_sequence_name: CharacterSequenceName::Run,
@@ -303,8 +322,8 @@ mod tests {
                 let mut controller_input = ControllerInput::default();
                 controller_input.z_axis_value = 1.;
 
-                run_test(
-                    ParamsSetup {
+                run_test::<EventFunction>(
+                    SetupParams {
                         velocity: Velocity::new(0., 0., 0.),
                         grounding: Grounding::OnGround,
                         character_sequence_name: CharacterSequenceName::RunStop,
@@ -325,8 +344,8 @@ mod tests {
                 let mut controller_input = ControllerInput::default();
                 controller_input.z_axis_value = 1.;
 
-                run_test(
-                    ParamsSetup {
+                run_test::<EventFunction>(
+                    SetupParams {
                         velocity: Velocity::new(0., 0., 0.),
                         grounding: Grounding::OnGround,
                         character_sequence_name: CharacterSequenceName::Dodge,
@@ -347,13 +366,23 @@ mod tests {
         controller_input.z_axis_value = 1.;
 
         run_test(
-            ParamsSetup {
+            SetupParams {
                 velocity: Velocity::new(0., 0., 0.),
                 grounding: Grounding::OnGround,
                 character_sequence_name: CharacterSequenceName::JumpOff,
                 controller_input: Some(controller_input),
                 mirrored: None,
-                event_fn: Some(|entity| SequenceUpdateEvent::SequenceBegin { entity }),
+                event_fn: Some(
+                    |entity, sequence_id_mappings: &SequenceIdMappings<CharacterSequenceName>| {
+                        let sequence_id = *sequence_id_mappings
+                            .id(CharacterSequenceName::JumpOff)
+                            .expect("Expected mapping for sequence ID to exist.");
+                        SequenceUpdateEvent::SequenceBegin {
+                            entity,
+                            sequence_id,
+                        }
+                    },
+                ),
             },
             Velocity::new(-5., 10.5, 2.),
         )
@@ -365,13 +394,23 @@ mod tests {
         controller_input.z_axis_value = 1.;
 
         run_test(
-            ParamsSetup {
+            SetupParams {
                 velocity: Velocity::new(0., 0., 0.),
                 grounding: Grounding::OnGround,
                 character_sequence_name: CharacterSequenceName::DashForward,
                 controller_input: Some(controller_input),
                 mirrored: None,
-                event_fn: Some(|entity| SequenceUpdateEvent::SequenceBegin { entity }),
+                event_fn: Some(
+                    |entity, sequence_id_mappings: &SequenceIdMappings<CharacterSequenceName>| {
+                        let sequence_id = *sequence_id_mappings
+                            .id(CharacterSequenceName::DashForward)
+                            .expect("Expected mapping for sequence ID to exist.");
+                        SequenceUpdateEvent::SequenceBegin {
+                            entity,
+                            sequence_id,
+                        }
+                    },
+                ),
             },
             Velocity::new(8., 7.5, 2.5),
         )
@@ -383,13 +422,23 @@ mod tests {
         controller_input.z_axis_value = 1.;
 
         run_test(
-            ParamsSetup {
+            SetupParams {
                 velocity: Velocity::new(0., 0., 0.),
                 grounding: Grounding::OnGround,
                 character_sequence_name: CharacterSequenceName::DashBack,
                 controller_input: Some(controller_input),
                 mirrored: None,
-                event_fn: Some(|entity| SequenceUpdateEvent::SequenceBegin { entity }),
+                event_fn: Some(
+                    |entity, sequence_id_mappings: &SequenceIdMappings<CharacterSequenceName>| {
+                        let sequence_id = *sequence_id_mappings
+                            .id(CharacterSequenceName::DashBack)
+                            .expect("Expected mapping for sequence ID to exist.");
+                        SequenceUpdateEvent::SequenceBegin {
+                            entity,
+                            sequence_id,
+                        }
+                    },
+                ),
             },
             Velocity::new(-11., 7.5, 2.5),
         )
@@ -397,8 +446,8 @@ mod tests {
 
     #[test]
     fn updates_jump_descend_land_xyz_velocity() -> Result<(), Error> {
-        run_test(
-            ParamsSetup {
+        run_test::<EventFunction>(
+            SetupParams {
                 velocity: Velocity::new(-6., -10., -4.),
                 grounding: Grounding::OnGround,
                 character_sequence_name: CharacterSequenceName::JumpDescendLand,
@@ -412,8 +461,8 @@ mod tests {
 
     #[test]
     fn updates_fall_forward_land_xyz_velocity() -> Result<(), Error> {
-        run_test(
-            ParamsSetup {
+        run_test::<EventFunction>(
+            SetupParams {
                 velocity: Velocity::new(-6., -10., -4.),
                 grounding: Grounding::OnGround,
                 character_sequence_name: CharacterSequenceName::FallForwardLand,
@@ -427,8 +476,8 @@ mod tests {
 
     #[test]
     fn updates_lie_face_down_xyz_velocity() -> Result<(), Error> {
-        run_test(
-            ParamsSetup {
+        run_test::<EventFunction>(
+            SetupParams {
                 velocity: Velocity::new(-6., -10., -4.),
                 grounding: Grounding::OnGround,
                 character_sequence_name: CharacterSequenceName::LieFaceDown,
@@ -440,17 +489,24 @@ mod tests {
         )
     }
 
-    fn run_test(
-        ParamsSetup {
+    fn run_test<FnEvt>(
+        SetupParams {
             velocity: velocity_setup,
             grounding: grounding_setup,
             character_sequence_name: character_sequence_name_setup,
             controller_input: controller_input_setup,
             mirrored: mirrored_setup,
             event_fn,
-        }: ParamsSetup,
+            ..
+        }: SetupParams<FnEvt>,
         velocity_expected: Velocity<f32>,
-    ) -> Result<(), Error> {
+    ) -> Result<(), Error>
+    where
+        FnEvt: Fn(Entity, &SequenceIdMappings<CharacterSequenceName>) -> SequenceUpdateEvent
+            + Send
+            + Sync
+            + 'static,
+    {
         AutexousiousApplication::game_base()
             // kcov-ignore-start
             .with_system(
@@ -499,15 +555,13 @@ mod tests {
                 )
                     .join()
                 {
-                    let sequence_id_setup = {
-                        let character = character_assets
-                            .get(character_handle)
-                            .expect("Expected `Character` to be loaded.");
-                        character
-                            .sequence_id_mappings
-                            .id(character_sequence_name_setup)
-                            .expect("Expected sequence ID mapping to exist.")
-                    };
+                    let character = character_assets
+                        .get(character_handle)
+                        .expect("Expected `Character` to be loaded.");
+                    let sequence_id_mappings = &character.sequence_id_mappings;
+                    let sequence_id_setup = sequence_id_mappings
+                        .id(character_sequence_name_setup)
+                        .expect("Expected sequence ID mapping to exist.");
                     *sequence_id = *sequence_id_setup;
                     *grounding = grounding_setup;
 
@@ -520,8 +574,8 @@ mod tests {
                     if let Some(mirrored_setup) = mirrored_setup {
                         *mirrored = mirrored_setup;
                     }
-                    if let Some(event_fn) = event_fn {
-                        event_channel.single_write(event_fn(entity));
+                    if let Some(event_fn) = &event_fn {
+                        event_channel.single_write(event_fn(entity, sequence_id_mappings));
                     }
                 }
             })
@@ -541,13 +595,19 @@ mod tests {
     }
 
     #[derive(Debug)]
-    struct ParamsSetup {
+    struct SetupParams<FnEvt>
+    where
+        FnEvt: Fn(Entity, &SequenceIdMappings<CharacterSequenceName>) -> SequenceUpdateEvent
+            + Send
+            + Sync
+            + 'static,
+    {
         velocity: Velocity<f32>,
         character_sequence_name: CharacterSequenceName,
         grounding: Grounding,
         controller_input: Option<ControllerInput>,
         mirrored: Option<Mirrored>,
-        event_fn: Option<fn(entity: Entity) -> SequenceUpdateEvent>,
+        event_fn: Option<FnEvt>,
     }
 
     type TestSystemData<'s> = (
