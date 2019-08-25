@@ -23,7 +23,7 @@ pub struct SequenceStatusUpdateSystem {
     /// Reader ID for sequence ID changes.
     #[new(default)]
     sequence_id_rid: Option<ReaderId<ComponentEvent>>,
-    /// Pre-allocated bitset to track insertions and modifications to `SeqId`s.
+    /// Pre-allocated bitset to track insertions and modifications to `SequenceId`s.
     #[new(default)]
     sequence_id_updates: BitSet,
 }

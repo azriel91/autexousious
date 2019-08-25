@@ -14,10 +14,10 @@ pub struct EnergySequence {
 }
 
 impl GameObjectSequence for EnergySequence {
-    type SequenceId = EnergySequenceId;
+    type SequenceName = EnergySequenceId;
     type GameObjectFrame = EnergyFrame;
 
-    fn object_sequence(&self) -> &ObjectSequence<Self::SequenceId, Self::GameObjectFrame> {
+    fn object_sequence(&self) -> &ObjectSequence<Self::SequenceName, Self::GameObjectFrame> {
         &self.object_sequence
     }
 }

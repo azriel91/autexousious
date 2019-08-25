@@ -16,7 +16,7 @@ use typename_derive::TypeName;
 pub struct SequenceEndTransitionSystem {
     /// Reader ID for the `SequenceUpdateEvent` event channel.
     #[new(default)]
-    reader_id: Option<ReaderId<SequenceUpdateEvent>>,
+    sequence_update_event_rid: Option<ReaderId<SequenceUpdateEvent>>,
 }
 
 #[derive(Derivative, SystemData)]
@@ -49,11 +49,10 @@ impl<'s> System<'s> for SequenceEndTransitionSystem {
         }: Self::SystemData,
     ) {
         sequence_update_ec
-            .read(
-                self.reader_id
-                    .as_mut()
-                    .expect("Expected reader ID to exist for SequenceEndTransitionSystem."),
-            )
+            .read(self.sequence_update_event_rid.as_mut().expect(
+                "Expected `sequence_update_event_rid` to exist for \
+                 `SequenceEndTransitionSystem`.",
+            ))
             .filter(|ev| {
                 if let SequenceUpdateEvent::SequenceEnd { .. } = ev {
                     true
@@ -73,11 +72,11 @@ impl<'s> System<'s> for SequenceEndTransitionSystem {
                             let sequence_id = sequence_ids
                                 .get(entity)
                                 .copied()
-                                .expect("Expected entity to have `SeqId` component.");
+                                .expect("Expected entity to have `SequenceId` component.");
                             // Re-insertion causes sequence to restart.
                             sequence_ids
                                 .insert(entity, sequence_id)
-                                .expect("Failed to insert `SeqId` component.");
+                                .expect("Failed to insert `SequenceId` component.");
                         }
                         SequenceEndTransition::Delete => {
                             entities
@@ -87,7 +86,7 @@ impl<'s> System<'s> for SequenceEndTransitionSystem {
                         SequenceEndTransition::SequenceId(sequence_id) => {
                             sequence_ids
                                 .insert(entity, sequence_id)
-                                .expect("Failed to insert `SeqId` component.");
+                                .expect("Failed to insert `SequenceId` component.");
                         }
                     }
                 }
@@ -96,7 +95,7 @@ impl<'s> System<'s> for SequenceEndTransitionSystem {
 
     fn setup(&mut self, world: &mut World) {
         Self::SystemData::setup(world);
-        self.reader_id = Some(
+        self.sequence_update_event_rid = Some(
             world
                 .fetch_mut::<EventChannel<SequenceUpdateEvent>>()
                 .register_reader(),

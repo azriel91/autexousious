@@ -80,7 +80,7 @@ sequences:
                 Spawns::default(),
             ),
             CharacterControlTransitions {
-                press_attack: Some(ControlTransition::SequenceId(
+                press_attack: Some(ControlTransition::SequenceName(
                     CharacterSequenceId::StandAttack0,
                 )),
                 release_attack: Some(ControlTransition::Multiple(ControlTransitionMultiple::new(
@@ -114,14 +114,14 @@ sequences:
         )];
 
         let character_control_transitions = CharacterControlTransitions {
-            press_defend: Some(ControlTransition::SequenceId(
+            press_defend: Some(ControlTransition::SequenceName(
                 CharacterSequenceId::StandAttack1,
             )),
             ..Default::default()
         };
         let sequence = CharacterSequence::new(
             ObjectSequence::new(
-                SequenceEndTransition::SequenceId(CharacterSequenceId::Walk),
+                SequenceEndTransition::SequenceName(CharacterSequenceId::Walk),
                 frames,
             ),
             Some(character_control_transitions),

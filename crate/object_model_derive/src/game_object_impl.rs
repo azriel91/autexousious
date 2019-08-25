@@ -7,7 +7,7 @@ use syn::{DeriveInput, Ident, Path, Variant};
 pub fn game_object_impl(
     ast: &DeriveInput,
     object_type_variant: &Variant,
-    sequence_id_type: &Path,
+    sequence_name_type: &Path,
     sequence_type: &Path,
     object_definition_type: &Path,
     object_wrapper_name: &Ident,
@@ -23,7 +23,7 @@ pub fn game_object_impl(
             const OBJECT_TYPE: object_type::ObjectType =
                 object_type::ObjectType::#object_type_variant;
 
-            type SequenceId = #sequence_id_type;
+            type SequenceName = #sequence_name_type;
             type GameObjectSequence = #sequence_type;
             type Definition = #object_definition_type;
             type ObjectWrapper = #object_wrapper_name;

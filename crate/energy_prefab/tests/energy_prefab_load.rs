@@ -78,7 +78,7 @@ fn energy_definition() -> EnergyDefinition {
         ..Default::default()
     })];
     let sequence = EnergySequence::new(ObjectSequence::new(
-        SequenceEndTransition::SequenceId(EnergySequenceId::Hover),
+        SequenceEndTransition::SequenceName(EnergySequenceId::Hover),
         frames,
     ));
     let mut sequences = IndexMap::new();

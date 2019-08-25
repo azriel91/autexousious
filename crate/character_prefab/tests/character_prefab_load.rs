@@ -126,7 +126,7 @@ fn character_definition() -> CharacterDefinition {
             ..Default::default()
         },
         CharacterControlTransitions {
-            press_attack: Some(ControlTransition::SequenceId(
+            press_attack: Some(ControlTransition::SequenceName(
                 CharacterSequenceId::StandAttack0,
             )),
             release_attack: Some(ControlTransition::Multiple(ControlTransitionMultiple::new(
@@ -156,7 +156,7 @@ fn character_definition() -> CharacterDefinition {
     )];
     let sequence = CharacterSequence::new(
         ObjectSequence::new(
-            SequenceEndTransition::SequenceId(CharacterSequenceId::Stand),
+            SequenceEndTransition::SequenceName(CharacterSequenceId::Stand),
             frames,
         ),
         None,

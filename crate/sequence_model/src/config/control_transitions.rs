@@ -2,91 +2,91 @@ use derivative::Derivative;
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 
-use crate::config::{ControlTransition, SequenceId};
+use crate::config::{ControlTransition, SequenceName};
 
-/// Sequence ID to transition to when a `ControlAction` is pressed, held, or released.
+/// Sequence to transition to when a `ControlAction` is pressed, held, or released.
 #[derive(Clone, Debug, Derivative, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
 #[derivative(Default)]
 #[serde(deny_unknown_fields)]
-pub struct ControlTransitions<SeqId, Req = ()>
+pub struct ControlTransitions<SeqName, Req = ()>
 where
-    SeqId: SequenceId,
+    SeqName: SequenceName,
     Req: Default,
 {
-    /// Sequence ID to transition to when `Defend` is pressed.
+    /// Sequence to transition to when `Defend` is pressed.
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub press_defend: Option<ControlTransition<SeqId, Req>>,
-    /// Sequence ID to transition to when `Jump` is pressed.
+    pub press_defend: Option<ControlTransition<SeqName, Req>>,
+    /// Sequence to transition to when `Jump` is pressed.
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub press_jump: Option<ControlTransition<SeqId, Req>>,
-    /// Sequence ID to transition to when `Attack` is pressed.
+    pub press_jump: Option<ControlTransition<SeqName, Req>>,
+    /// Sequence to transition to when `Attack` is pressed.
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub press_attack: Option<ControlTransition<SeqId, Req>>,
-    /// Sequence ID to transition to when `Special` is pressed.
+    pub press_attack: Option<ControlTransition<SeqName, Req>>,
+    /// Sequence to transition to when `Special` is pressed.
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub press_special: Option<ControlTransition<SeqId, Req>>,
-    /// Sequence ID to transition to when `Defend` is held.
+    pub press_special: Option<ControlTransition<SeqName, Req>>,
+    /// Sequence to transition to when `Defend` is held.
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub hold_defend: Option<ControlTransition<SeqId, Req>>,
-    /// Sequence ID to transition to when `Jump` is held.
+    pub hold_defend: Option<ControlTransition<SeqName, Req>>,
+    /// Sequence to transition to when `Jump` is held.
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub hold_jump: Option<ControlTransition<SeqId, Req>>,
-    /// Sequence ID to transition to when `Attack` is held.
+    pub hold_jump: Option<ControlTransition<SeqName, Req>>,
+    /// Sequence to transition to when `Attack` is held.
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub hold_attack: Option<ControlTransition<SeqId, Req>>,
-    /// Sequence ID to transition to when `Special` is held.
+    pub hold_attack: Option<ControlTransition<SeqName, Req>>,
+    /// Sequence to transition to when `Special` is held.
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub hold_special: Option<ControlTransition<SeqId, Req>>,
-    /// Sequence ID to transition to when `Defend` is released.
+    pub hold_special: Option<ControlTransition<SeqName, Req>>,
+    /// Sequence to transition to when `Defend` is released.
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub release_defend: Option<ControlTransition<SeqId, Req>>,
-    /// Sequence ID to transition to when `Jump` is released.
+    pub release_defend: Option<ControlTransition<SeqName, Req>>,
+    /// Sequence to transition to when `Jump` is released.
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub release_jump: Option<ControlTransition<SeqId, Req>>,
-    /// Sequence ID to transition to when `Attack` is released.
+    pub release_jump: Option<ControlTransition<SeqName, Req>>,
+    /// Sequence to transition to when `Attack` is released.
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub release_attack: Option<ControlTransition<SeqId, Req>>,
-    /// Sequence ID to transition to when `Special` is released.
+    pub release_attack: Option<ControlTransition<SeqName, Req>>,
+    /// Sequence to transition to when `Special` is released.
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub release_special: Option<ControlTransition<SeqId, Req>>,
-    /// Sequence ID to transition to when X axis input is pressed.
+    pub release_special: Option<ControlTransition<SeqName, Req>>,
+    /// Sequence to transition to when X axis input is pressed.
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub press_x: Option<ControlTransition<SeqId, Req>>,
-    /// Sequence ID to transition to when X axis input is held.
+    pub press_x: Option<ControlTransition<SeqName, Req>>,
+    /// Sequence to transition to when X axis input is held.
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub hold_x: Option<ControlTransition<SeqId, Req>>,
-    /// Sequence ID to transition to when X axis input is released.
+    pub hold_x: Option<ControlTransition<SeqName, Req>>,
+    /// Sequence to transition to when X axis input is released.
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub release_x: Option<ControlTransition<SeqId, Req>>,
-    /// Sequence ID to transition to when Z axis input is pressed.
+    pub release_x: Option<ControlTransition<SeqName, Req>>,
+    /// Sequence to transition to when Z axis input is pressed.
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub press_z: Option<ControlTransition<SeqId, Req>>,
-    /// Sequence ID to transition to when Z axis input is held.
+    pub press_z: Option<ControlTransition<SeqName, Req>>,
+    /// Sequence to transition to when Z axis input is held.
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub hold_z: Option<ControlTransition<SeqId, Req>>,
-    /// Sequence ID to transition to when Z axis input is released.
+    pub hold_z: Option<ControlTransition<SeqName, Req>>,
+    /// Sequence to transition to when Z axis input is released.
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub release_z: Option<ControlTransition<SeqId, Req>>,
-    /// Fallback sequence ID to transition to.
+    pub release_z: Option<ControlTransition<SeqName, Req>>,
+    /// Fallback sequence to transition to.
     #[new(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub fallback: Option<ControlTransition<SeqId, Req>>,
+    pub fallback: Option<ControlTransition<SeqName, Req>>,
 }

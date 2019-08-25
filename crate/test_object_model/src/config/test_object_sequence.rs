@@ -14,10 +14,10 @@ pub struct TestObjectSequence {
 }
 
 impl GameObjectSequence for TestObjectSequence {
-    type SequenceId = TestObjectSequenceId;
+    type SequenceName = TestObjectSequenceId;
     type GameObjectFrame = TestObjectFrame;
 
-    fn object_sequence(&self) -> &ObjectSequence<Self::SequenceId, Self::GameObjectFrame> {
+    fn object_sequence(&self) -> &ObjectSequence<Self::SequenceName, Self::GameObjectFrame> {
         &self.object_sequence
     }
 }

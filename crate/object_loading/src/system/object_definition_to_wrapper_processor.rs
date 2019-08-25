@@ -31,7 +31,7 @@ where
 pub struct ObjectDefinitionToWrapperProcessorData<'s, O>
 where
     O: GameObject,
-    <O as GameObject>::SequenceId: for<'de> Deserialize<'de> + Serialize,
+    <O as GameObject>::SequenceName: for<'de> Deserialize<'de> + Serialize,
 {
     /// Pool of worker threads.
     #[derivative(Debug = "ignore")]
@@ -57,7 +57,7 @@ where
 impl<'s, O> System<'s> for ObjectDefinitionToWrapperProcessor<O>
 where
     O: GameObject + TypeNameTrait,
-    <O as GameObject>::SequenceId: for<'de> Deserialize<'de> + Serialize,
+    <O as GameObject>::SequenceName: for<'de> Deserialize<'de> + Serialize,
 {
     type SystemData = ObjectDefinitionToWrapperProcessorData<'s, O>;
 

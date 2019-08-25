@@ -10,6 +10,6 @@ pub trait GameObjectDefinition {
     /// Returns the `ObjectDefinition` for this `GameObjectDefinition`.
     fn object_definition(&self) -> &ObjectDefinition<Self::GameObjectSequence>
     where
-        <Self::GameObjectSequence as GameObjectSequence>::SequenceId:
+        <Self::GameObjectSequence as GameObjectSequence>::SequenceName:
             for<'des> Deserialize<'des> + Serialize;
 }

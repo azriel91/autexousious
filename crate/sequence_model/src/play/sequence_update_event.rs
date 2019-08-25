@@ -5,8 +5,9 @@ use amethyst::ecs::Entity;
 pub enum SequenceUpdateEvent {
     /// A new sequence is beginning.
     ///
-    /// This variant does not hold the sequence ID as that is specific to different object types.
-    /// If your system needs to access the sequence ID, read it from the `ReadStorage<'_, SeqId>`.
+    /// TODO: This variant does not hold the sequence ID as it previously was specific to different
+    /// TODO: object types.
+    /// TODO: Send sequence ID within event.
     SequenceBegin {
         /// Entity whose sequence changed.
         entity: Entity,

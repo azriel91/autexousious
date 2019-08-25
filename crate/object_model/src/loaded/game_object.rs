@@ -1,6 +1,6 @@
 use amethyst::assets::{Asset, Handle};
 use object_type::ObjectType;
-use sequence_model::config::SequenceId;
+use sequence_model::config::SequenceName;
 
 use crate::{
     config::{GameObjectDefinition, GameObjectSequence, ObjectAssetData},
@@ -12,9 +12,9 @@ pub trait GameObject {
     /// The object type, such as `Character`.
     const OBJECT_TYPE: ObjectType;
     /// Sequence ID that this `GameObject` uses.
-    type SequenceId: SequenceId;
+    type SequenceName: SequenceName;
     /// Sequence ID that this `GameObject` uses.
-    type GameObjectSequence: GameObjectSequence<SequenceId = Self::SequenceId>;
+    type GameObjectSequence: GameObjectSequence<SequenceName = Self::SequenceName>;
     /// Type representing this `GameObject`'s configuration.
     type Definition: GameObjectDefinition<GameObjectSequence = Self::GameObjectSequence>
         + Asset<Data = Self::Definition>

@@ -7,7 +7,7 @@ use amethyst::{
 use amethyst_test::AmethystApplication;
 use derivative::Derivative;
 use object_model::{config::ObjectAssetData, game_object, loaded::GameObject};
-use sequence_model::config::SequenceId;
+use sequence_model::config::SequenceName;
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumString, IntoStaticStr};
 use typename_derive::TypeName;
@@ -35,10 +35,10 @@ pub enum MagicSequenceId {
     #[derivative(Default)]
     Boo,
 }
-impl SequenceId for MagicSequenceId {}
+impl SequenceName for MagicSequenceId {}
 
 #[game_object(
-    sequence_id = MagicSequenceId,
+    sequence_name = MagicSequenceId,
     sequence = config::MagicSequence,
     definition = config::MagicDefinition,
     object_type = TestObject,
@@ -81,10 +81,10 @@ mod config {
     }
 
     impl GameObjectSequence for MagicSequence {
-        type SequenceId = MagicSequenceId;
+        type SequenceName = MagicSequenceId;
         type GameObjectFrame = ObjectFrame;
 
-        fn object_sequence(&self) -> &ObjectSequence<Self::SequenceId, Self::GameObjectFrame> {
+        fn object_sequence(&self) -> &ObjectSequence<Self::SequenceName, Self::GameObjectFrame> {
             &self.object_sequence
         }
     }

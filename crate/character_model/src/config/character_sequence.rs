@@ -19,10 +19,10 @@ pub struct CharacterSequence {
 }
 
 impl GameObjectSequence for CharacterSequence {
-    type SequenceId = CharacterSequenceId;
+    type SequenceName = CharacterSequenceId;
     type GameObjectFrame = CharacterFrame;
 
-    fn object_sequence(&self) -> &ObjectSequence<Self::SequenceId, Self::GameObjectFrame> {
+    fn object_sequence(&self) -> &ObjectSequence<Self::SequenceName, Self::GameObjectFrame> {
         &self.object_sequence
     }
 }
@@ -76,7 +76,7 @@ frames:
                 ..Default::default()
             },
             CharacterControlTransitions {
-                press_attack: Some(ControlTransition::SequenceId(
+                press_attack: Some(ControlTransition::SequenceName(
                     CharacterSequenceId::StandAttack0,
                 )),
                 hold_jump: Some(ControlTransition::Single(ControlTransitionSingle {
@@ -87,7 +87,7 @@ frames:
             }, // kcov-ignore
         )];
         let character_control_transitions = CharacterControlTransitions {
-            press_defend: Some(ControlTransition::SequenceId(
+            press_defend: Some(ControlTransition::SequenceName(
                 CharacterSequenceId::StandAttack1,
             )),
             ..Default::default()

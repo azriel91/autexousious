@@ -1,5 +1,5 @@
 use derivative::Derivative;
-use sequence_model::config::SequenceId;
+use sequence_model::config::SequenceName;
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumString, IntoStaticStr};
 use typename_derive::TypeName;
@@ -31,4 +31,4 @@ pub enum TestObjectSequenceId {
     One,
 }
 
-impl SequenceId for TestObjectSequenceId {}
+impl SequenceName for TestObjectSequenceId {}

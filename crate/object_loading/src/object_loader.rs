@@ -55,7 +55,7 @@ impl ObjectLoader {
     ) -> Result<O::ObjectWrapper, Error>
     where
         O: GameObject,
-        <O as GameObject>::SequenceId: for<'de> Deserialize<'de> + Serialize,
+        <O as GameObject>::SequenceName: for<'de> Deserialize<'de> + Serialize,
     {
         // Calculate the indices of each sequence ID.
         //
@@ -66,25 +66,25 @@ impl ObjectLoader {
             .keys()
             .enumerate()
             .map(|(index, sequence_id)| (*sequence_id, SequenceId(index)))
-            .collect::<HashMap<O::SequenceId, SequenceId>>();
+            .collect::<HashMap<O::SequenceName, SequenceId>>();
 
         let sequence_end_transitions = object_definition
             .sequences
             .values()
             .map(|sequence| {
-                use sequence_model::config as cfg;
+                use sequence_model::config;
                 match sequence.object_sequence().next {
-                    cfg::SequenceEndTransition::None => SequenceEndTransition::None,
-                    cfg::SequenceEndTransition::Repeat => SequenceEndTransition::Repeat,
-                    cfg::SequenceEndTransition::Delete => SequenceEndTransition::Delete,
-                    cfg::SequenceEndTransition::SequenceId(sequence_id) => {
+                    config::SequenceEndTransition::None => SequenceEndTransition::None,
+                    config::SequenceEndTransition::Repeat => SequenceEndTransition::Repeat,
+                    config::SequenceEndTransition::Delete => SequenceEndTransition::Delete,
+                    config::SequenceEndTransition::SequenceName(sequence_name) => {
                         let sequence_id = sequence_id_mappings
-                            .get(&sequence_id)
+                            .get(&sequence_name)
                             .map(|index| SequenceId(**index))
                             .unwrap_or_else(|| {
                                 panic!(
                                     "Invalid sequence ID specified for `next`: `{}`",
-                                    sequence_id
+                                    sequence_name
                                 )
                             });
                         SequenceEndTransition::SequenceId(sequence_id)

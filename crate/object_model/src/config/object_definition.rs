@@ -17,8 +17,8 @@ use crate::config::GameObjectSequence;
 pub struct ObjectDefinition<ObjSeq>
 where
     ObjSeq: GameObjectSequence,
-    ObjSeq::SequenceId: for<'des> Deserialize<'des> + Serialize,
+    ObjSeq::SequenceName: for<'des> Deserialize<'des> + Serialize,
 {
     /// Sequences of actions this object can perform.
-    pub sequences: IndexMap<ObjSeq::SequenceId, ObjSeq>,
+    pub sequences: IndexMap<ObjSeq::SequenceName, ObjSeq>,
 }

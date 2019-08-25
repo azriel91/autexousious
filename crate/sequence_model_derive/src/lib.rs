@@ -61,7 +61,7 @@
 //! ```rust,edition2018
 //! # use amethyst::ecs::{storage::VecStorage, Component};
 //! # use derivative::Derivative;
-//! # use sequence_model_core::config::SequenceId;
+//! # use sequence_model_core::config::SequenceName;
 //! # use serde::{Deserialize, Serialize};
 //! # use specs_derive::Component;
 //! # use strum_macros::{Display, EnumString, IntoStaticStr};
@@ -93,7 +93,7 @@
 //! #     #[derivative(Default)]
 //! #     Boo,
 //! # }
-//! # impl SequenceId for MagicSequenceId {}
+//! # impl SequenceName for MagicSequenceId {}
 //! #
 //! use sequence_model_derive::sequence_component_data;
 //!

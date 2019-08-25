@@ -1,5 +1,5 @@
 use derivative::Derivative;
-use sequence_model::config::SequenceId;
+use sequence_model::config::SequenceName;
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumString, IntoStaticStr};
 use typename_derive::TypeName;
@@ -33,4 +33,4 @@ pub enum EnergySequenceId {
     Hit,
 }
 
-impl SequenceId for EnergySequenceId {}
+impl SequenceName for EnergySequenceId {}

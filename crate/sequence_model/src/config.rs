@@ -1,6 +1,6 @@
 //! Contains the types that represent the configuration on disk.
 
-pub use sequence_model_core::config::SequenceId;
+pub use sequence_model_core::config::SequenceName;
 
 pub use self::{
     control_transition::ControlTransition, control_transition_multiple::ControlTransitionMultiple,

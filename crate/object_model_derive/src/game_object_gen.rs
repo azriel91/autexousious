@@ -13,8 +13,8 @@ const OBJECT_HANDLE: &str = "object_handle";
 
 pub fn game_object_gen(args: GameObjectAttributeArgs, mut ast: DeriveInput) -> TokenStream {
     let game_object_ident = &ast.ident;
-    let sequence_id = &args
-        .sequence_id
+    let sequence_name = &args
+        .sequence_name
         .unwrap_or_else(|| Path::from(game_object_ident.append("SequenceId")));
     let sequence_type = &args
         .sequence_type
@@ -40,7 +40,7 @@ pub fn game_object_gen(args: GameObjectAttributeArgs, mut ast: DeriveInput) -> T
     let game_object_trait_impl = game_object_impl(
         &ast,
         object_type_variant,
-        sequence_id,
+        sequence_name,
         &sequence_type,
         &object_definition_type,
         &object_wrapper_name,
