@@ -18,7 +18,7 @@ use object_model::play::{Grounding, HealthPoints, Mirrored};
 use sequence_model::{loaded::SequenceId, play::SequenceStatus};
 use typename_derive::TypeName;
 
-/// Updates character sequence ID based on input (or lack of).
+/// Updates character sequence name based on input (or lack of).
 #[derive(Debug, Default, TypeName, new)]
 pub(crate) struct CharacterSequenceUpdateSystem;
 
@@ -118,7 +118,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             let character = character_assets
                 .get(character_handle)
                 .expect("Expected `Character` to be loaded.");
-            let character_sequence_id = *character
+            let character_sequence_name = *character
                 .sequence_id_mappings
                 .name(*sequence_id)
                 .expect("Expected sequence ID mapping to exist.");
@@ -127,7 +127,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                 CharacterSequenceUpdater::update(CharacterSequenceUpdateComponents::new(
                     &controller_input,
                     *health_points,
-                    character_sequence_id,
+                    character_sequence_name,
                     *sequence_status,
                     &position,
                     &velocity,
@@ -139,11 +139,12 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             *run_counter = RunCounterUpdater::update(
                 *run_counter,
                 controller_input,
-                character_sequence_id,
+                character_sequence_name,
                 *mirrored,
                 *grounding,
             );
-            *mirrored = MirroredUpdater::update(controller_input, character_sequence_id, *mirrored);
+            *mirrored =
+                MirroredUpdater::update(controller_input, character_sequence_name, *mirrored);
 
             if let Some(next_sequence_id) = next_sequence_id {
                 let sequence_id = sequence_ids

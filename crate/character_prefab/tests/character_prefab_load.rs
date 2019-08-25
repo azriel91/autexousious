@@ -15,7 +15,7 @@ use amethyst_test::AmethystApplication;
 use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
 use character_model::{
     config::{
-        CharacterDefinition, CharacterSequence, CharacterSequenceId, ControlTransitionRequirement,
+        CharacterDefinition, CharacterSequence, CharacterSequenceName, ControlTransitionRequirement,
     },
     loaded::{
         Character, CharacterControlTransition, CharacterControlTransitions,
@@ -127,28 +127,28 @@ fn character_definition() -> CharacterDefinition {
         },
         CharacterControlTransitions {
             press_attack: Some(ControlTransition::SequenceName(
-                CharacterSequenceId::StandAttack0,
+                CharacterSequenceName::StandAttack0,
             )),
             release_attack: Some(ControlTransition::Multiple(ControlTransitionMultiple::new(
                 vec![
                     ControlTransitionSingle {
-                        next: CharacterSequenceId::Walk,
+                        next: CharacterSequenceName::Walk,
                         requirements: vec![ControlTransitionRequirement::Charge(
                             ChargePoints::new(90),
                         )],
                     },
                     ControlTransitionSingle {
-                        next: CharacterSequenceId::Run,
+                        next: CharacterSequenceName::Run,
                         requirements: vec![ControlTransitionRequirement::Sp(SkillPoints::new(50))],
                     },
                     ControlTransitionSingle {
-                        next: CharacterSequenceId::RunStop,
+                        next: CharacterSequenceName::RunStop,
                         requirements: vec![ControlTransitionRequirement::Hp(HealthPoints::new(30))],
                     },
                 ],
             ))),
             hold_jump: Some(ControlTransition::Single(ControlTransitionSingle {
-                next: CharacterSequenceId::Jump,
+                next: CharacterSequenceName::Jump,
                 requirements: vec![],
             })),
             ..Default::default()
@@ -156,24 +156,24 @@ fn character_definition() -> CharacterDefinition {
     )];
     let sequence = CharacterSequence::new(
         ObjectSequence::new(
-            SequenceEndTransition::SequenceName(CharacterSequenceId::Stand),
+            SequenceEndTransition::SequenceName(CharacterSequenceName::Stand),
             frames,
         ),
         None,
     );
     let mut sequences = IndexMap::new();
     // 0
-    sequences.insert(CharacterSequenceId::Stand, sequence);
+    sequences.insert(CharacterSequenceName::Stand, sequence);
     // 1
-    sequences.insert(CharacterSequenceId::StandAttack0, empty_sequence());
+    sequences.insert(CharacterSequenceName::StandAttack0, empty_sequence());
     // 2
-    sequences.insert(CharacterSequenceId::Walk, empty_sequence());
+    sequences.insert(CharacterSequenceName::Walk, empty_sequence());
     // 3
-    sequences.insert(CharacterSequenceId::Run, empty_sequence());
+    sequences.insert(CharacterSequenceName::Run, empty_sequence());
     // 4
-    sequences.insert(CharacterSequenceId::RunStop, empty_sequence());
+    sequences.insert(CharacterSequenceName::RunStop, empty_sequence());
     // 5
-    sequences.insert(CharacterSequenceId::Jump, empty_sequence());
+    sequences.insert(CharacterSequenceName::Jump, empty_sequence());
     let object_definition = ObjectDefinition::new(sequences);
 
     CharacterDefinition {

@@ -4,13 +4,13 @@ pub use self::{
     energy_definition::{EnergyDefinition, EnergyDefinitionHandle},
     energy_frame::EnergyFrame,
     energy_sequence::EnergySequence,
-    energy_sequence_id::EnergySequenceId,
+    energy_sequence_name::EnergySequenceName,
 };
 
 mod energy_definition;
 mod energy_frame;
 mod energy_sequence;
-mod energy_sequence_id;
+mod energy_sequence_name;
 
 #[cfg(test)]
 mod test {
@@ -22,7 +22,7 @@ mod test {
     use shape_model::Volume;
     use sprite_model::config::SpriteRef;
 
-    use crate::config::{EnergyDefinition, EnergyFrame, EnergySequence, EnergySequenceId};
+    use crate::config::{EnergyDefinition, EnergyFrame, EnergySequence, EnergySequenceName};
 
     const OBJECT_YAML: &str = r#"---
 sequences:
@@ -53,11 +53,11 @@ sequences:
             ..Default::default()
         })];
         let sequence = EnergySequence::new(ObjectSequence::new(
-            SequenceEndTransition::SequenceName(EnergySequenceId::Hover),
+            SequenceEndTransition::SequenceName(EnergySequenceName::Hover),
             frames,
         ));
         let mut sequences = IndexMap::new();
-        sequences.insert(EnergySequenceId::Hover, sequence);
+        sequences.insert(EnergySequenceName::Hover, sequence);
         let object_definition = ObjectDefinition::new(sequences);
         let expected = EnergyDefinition::new(object_definition);
         assert_eq!(expected, char_definition);

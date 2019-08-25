@@ -31,14 +31,14 @@ use typename_derive::TypeName;
 #[derivative(Default)]
 #[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
-pub enum MagicSequenceId {
+pub enum MagicSequenceName {
     #[derivative(Default)]
     Boo,
 }
-impl SequenceName for MagicSequenceId {}
+impl SequenceName for MagicSequenceName {}
 
 #[game_object(
-    sequence_name = MagicSequenceId,
+    sequence_name = MagicSequenceName,
     sequence = config::MagicSequence,
     definition = config::MagicDefinition,
     object_type = TestObject,
@@ -55,7 +55,7 @@ mod config {
     };
     use serde::{Deserialize, Serialize};
 
-    use super::MagicSequenceId;
+    use super::MagicSequenceName;
 
     /// Contains all of the sequences for an `Object`.
     #[derive(Asset, Clone, Debug, Default, Deserialize, PartialEq, Serialize, new)]
@@ -77,11 +77,11 @@ mod config {
     pub struct MagicSequence {
         /// Object sequence for common object fields.
         #[serde(flatten)]
-        pub object_sequence: ObjectSequence<MagicSequenceId>,
+        pub object_sequence: ObjectSequence<MagicSequenceName>,
     }
 
     impl GameObjectSequence for MagicSequence {
-        type SequenceName = MagicSequenceId;
+        type SequenceName = MagicSequenceName;
         type GameObjectFrame = ObjectFrame;
 
         fn object_sequence(&self) -> &ObjectSequence<Self::SequenceName, Self::GameObjectFrame> {

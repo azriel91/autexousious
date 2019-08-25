@@ -1,4 +1,4 @@
-use character_model::config::CharacterSequenceId;
+use character_model::config::CharacterSequenceName;
 use game_input::ControllerInput;
 use object_model::play::Mirrored;
 
@@ -14,18 +14,18 @@ impl MirroredUpdater {
     /// # Parameters
     ///
     /// * `controller_input`: Controller input for this character.
-    /// * `character_sequence_id`: Current character sequence ID.
+    /// * `character_sequence_name`: Current character sequence name.
     /// * `mirrored`: Whether the object is mirrored (facing left).
     pub fn update(
         controller_input: &ControllerInput,
-        character_sequence_id: CharacterSequenceId,
+        character_sequence_name: CharacterSequenceName,
         mirrored: Mirrored,
     ) -> Mirrored {
-        match character_sequence_id {
-            CharacterSequenceId::Stand
-            | CharacterSequenceId::Walk
-            | CharacterSequenceId::JumpAscend
-            | CharacterSequenceId::JumpDescend => {}
+        match character_sequence_name {
+            CharacterSequenceName::Stand
+            | CharacterSequenceName::Walk
+            | CharacterSequenceName::JumpAscend
+            | CharacterSequenceName::JumpDescend => {}
             _ => return mirrored,
         }
 
@@ -39,7 +39,7 @@ impl MirroredUpdater {
 
 #[cfg(test)]
 mod tests {
-    use character_model::config::CharacterSequenceId;
+    use character_model::config::CharacterSequenceName;
     use game_input::ControllerInput;
     use object_model::play::Mirrored;
 
@@ -89,10 +89,10 @@ mod tests {
         mirrored: Mirrored,
     ) {
         vec![
-            CharacterSequenceId::Stand,
-            CharacterSequenceId::Walk,
-            CharacterSequenceId::JumpAscend,
-            CharacterSequenceId::JumpDescend,
+            CharacterSequenceName::Stand,
+            CharacterSequenceName::Walk,
+            CharacterSequenceName::JumpAscend,
+            CharacterSequenceName::JumpDescend,
         ]
         .into_iter()
         .for_each(|sequence_id| {
@@ -104,7 +104,7 @@ mod tests {
     }
 
     fn verify_for_sequences_na(controller_input: &ControllerInput, mirrored: Mirrored) {
-        vec![CharacterSequenceId::Run, CharacterSequenceId::RunStop]
+        vec![CharacterSequenceName::Run, CharacterSequenceName::RunStop]
             .into_iter()
             .for_each(|sequence_id| {
                 assert_eq!(

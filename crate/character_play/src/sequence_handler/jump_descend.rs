@@ -1,4 +1,4 @@
-use character_model::config::CharacterSequenceId;
+use character_model::config::CharacterSequenceName;
 
 use crate::{
     sequence_handler::{common::SequenceRepeat, CharacterSequenceHandler, SwitchSequenceOnLand},
@@ -6,13 +6,13 @@ use crate::{
 };
 
 const JUMP_DESCEND_LAND: SwitchSequenceOnLand =
-    SwitchSequenceOnLand(CharacterSequenceId::JumpDescendLand);
+    SwitchSequenceOnLand(CharacterSequenceName::JumpDescendLand);
 
 #[derive(Debug)]
 pub(crate) struct JumpDescend;
 
 impl CharacterSequenceHandler for JumpDescend {
-    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {
         JUMP_DESCEND_LAND
             .update(components)
             .or_else(|| SequenceRepeat::update(components))

@@ -17,8 +17,8 @@ mod kw {
 /// everything inside the delimiters after the attribute name.
 ///
 /// ```rust,ignore
-/// #[game_object(CharacterSequenceId)]
-///               ^^^^^^^^^^^^^^^^^^^
+/// #[game_object(CharacterSequenceName)]
+///               ^^^^^^^^^^^^^^^^^^^^^
 /// ```
 ///
 /// The following parameters are optional:
@@ -29,7 +29,7 @@ mod kw {
 ///
 /// ```rust,ignore
 /// #[game_object(
-///     sequence_name = CharacterSequenceId,
+///     sequence_name = CharacterSequenceName,
 ///     sequence = CharacterSequence,
 ///     definition = CharacterDefinition,
 ///     object_type = ObjectType::Character,
@@ -37,7 +37,7 @@ mod kw {
 /// ```
 #[derive(Debug)]
 pub struct GameObjectAttributeArgs {
-    /// The sequence ID for the `GameObject`.
+    /// The sequence name for the `GameObject`.
     pub sequence_name: Option<Path>,
     /// Type that `impl GameObjectSequence`, e.g. `CharacterSequence`.
     pub sequence_type: Option<Path>,

@@ -1,4 +1,4 @@
-use character_model::config::CharacterSequenceId;
+use character_model::config::CharacterSequenceName;
 
 use crate::{
     sequence_handler::{CharacterSequenceHandler, SwitchSequenceOnEndYVelocity},
@@ -7,15 +7,15 @@ use crate::{
 
 const SWITCH_SEQUENCE_ON_END_Y_VELOCITY: SwitchSequenceOnEndYVelocity =
     SwitchSequenceOnEndYVelocity {
-        upwards: CharacterSequenceId::JumpAscend,
-        downwards: CharacterSequenceId::JumpDescend,
+        upwards: CharacterSequenceName::JumpAscend,
+        downwards: CharacterSequenceName::JumpDescend,
     };
 
 #[derive(Debug)]
 pub(crate) struct JumpOff;
 
 impl CharacterSequenceHandler for JumpOff {
-    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {
         SWITCH_SEQUENCE_ON_END_Y_VELOCITY.update(components)
     }
 }

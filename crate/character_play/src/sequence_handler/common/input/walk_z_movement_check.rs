@@ -1,4 +1,4 @@
-use character_model::config::CharacterSequenceId;
+use character_model::config::CharacterSequenceName;
 
 use crate::{
     sequence_handler::{common::SequenceRepeat, CharacterSequenceHandler},
@@ -12,7 +12,7 @@ use crate::{
 pub(crate) struct WalkZMovementCheck;
 
 impl CharacterSequenceHandler for WalkZMovementCheck {
-    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {
         if components.controller_input.z_axis_value != 0. {
             SequenceRepeat::update(components)
         } else {
@@ -23,7 +23,7 @@ impl CharacterSequenceHandler for WalkZMovementCheck {
 
 #[cfg(test)]
 mod tests {
-    use character_model::{config::CharacterSequenceId, play::RunCounter};
+    use character_model::{config::CharacterSequenceName, play::RunCounter};
     use game_input::ControllerInput;
     use kinematic_model::config::{Position, Velocity};
     use object_model::play::{Grounding, HealthPoints, Mirrored};
@@ -41,7 +41,7 @@ mod tests {
             WalkZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::Walk,
+                CharacterSequenceName::Walk,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -62,7 +62,7 @@ mod tests {
                 WalkZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                     &input,
                     HealthPoints::default(),
-                    CharacterSequenceId::Walk,
+                    CharacterSequenceName::Walk,
                     SequenceStatus::default(),
                     &Position::default(),
                     &Velocity::default(),
@@ -80,11 +80,11 @@ mod tests {
             let input = ControllerInput::new(0., z_input, false, false, false, false);
 
             assert_eq!(
-                Some(CharacterSequenceId::Walk),
+                Some(CharacterSequenceName::Walk),
                 WalkZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                     &input,
                     HealthPoints::default(),
-                    CharacterSequenceId::Walk,
+                    CharacterSequenceName::Walk,
                     SequenceStatus::End,
                     &Position::default(),
                     &Velocity::default(),

@@ -14,7 +14,7 @@ use amethyst::{
 use amethyst_test::AmethystApplication;
 use energy_loading::{EnergyLoadingBundle, ENERGY_PROCESSOR};
 use energy_model::{
-    config::{EnergyDefinition, EnergySequenceId},
+    config::{EnergyDefinition, EnergySequenceName},
     loaded::{Energy, EnergyHandle},
 };
 use energy_prefab::{EnergyPrefab, EnergyPrefabBundle, EnergyPrefabHandle};
@@ -78,11 +78,11 @@ fn energy_definition() -> EnergyDefinition {
         ..Default::default()
     })];
     let sequence = EnergySequence::new(ObjectSequence::new(
-        SequenceEndTransition::SequenceName(EnergySequenceId::Hover),
+        SequenceEndTransition::SequenceName(EnergySequenceName::Hover),
         frames,
     ));
     let mut sequences = IndexMap::new();
-    sequences.insert(EnergySequenceId::Hover, sequence);
+    sequences.insert(EnergySequenceName::Hover, sequence);
     let object_definition = ObjectDefinition::new(sequences);
 
     EnergyDefinition::new(object_definition)

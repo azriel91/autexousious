@@ -10,7 +10,7 @@ use character_loading::{
     CharacterLoader, CharacterLoaderParams, ControlTransitionsSequenceLoaderParams,
 };
 use character_model::{
-    config::{CharacterDefinition, CharacterSequenceId},
+    config::{CharacterDefinition, CharacterSequenceName},
     loaded::{
         Character, CharacterControlTransitions, CharacterControlTransitionsSequence,
         CharacterHandle, CharacterHitTransitions,
@@ -148,19 +148,19 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
                     .expect("Expected `Character` to be loaded.");
                 let sequence_id_mappings = &character.sequence_id_mappings;
                 let low_stun = sequence_id_mappings
-                    .id(CharacterSequenceId::Flinch0)
+                    .id(CharacterSequenceName::Flinch0)
                     .copied()
                     .unwrap_or(SequenceId(0));
                 let mid_stun = sequence_id_mappings
-                    .id(CharacterSequenceId::Flinch1)
+                    .id(CharacterSequenceName::Flinch1)
                     .copied()
                     .unwrap_or(SequenceId(0));
                 let high_stun = sequence_id_mappings
-                    .id(CharacterSequenceId::Dazed)
+                    .id(CharacterSequenceName::Dazed)
                     .copied()
                     .unwrap_or(SequenceId(0));
                 let falling = sequence_id_mappings
-                    .id(CharacterSequenceId::FallForwardAscend)
+                    .id(CharacterSequenceName::FallForwardAscend)
                     .copied()
                     .unwrap_or(SequenceId(0));
 

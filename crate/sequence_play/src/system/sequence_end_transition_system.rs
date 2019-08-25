@@ -269,13 +269,13 @@ mod tests {
                 world.maintain();
                 if alive_expected {
                     let events_actual = {
-                        let (test_object_sequence_ids, mut component_event_rid) = world
+                        let (test_object_sequence_names, mut component_event_rid) = world
                             .system_data::<(
                                 ReadStorage<'_, SequenceId>,
                                 WriteExpect<'_, ReaderId<ComponentEvent>>,
                             )>();
 
-                        test_object_sequence_ids
+                        test_object_sequence_names
                             .channel()
                             .read(&mut component_event_rid)
                             .map(Clone::clone)
@@ -284,8 +284,8 @@ mod tests {
                     let entities = world.read_resource::<EntitiesRes>();
                     let entity = *world.read_resource::<Entity>();
                     let sequence_id_actual = {
-                        let test_object_sequence_ids = world.read_storage::<SequenceId>();
-                        test_object_sequence_ids
+                        let test_object_sequence_names = world.read_storage::<SequenceId>();
+                        test_object_sequence_names
                             .get(entity)
                             .copied()
                             .expect("Expected entity to have `SequenceId` component.")
@@ -322,8 +322,8 @@ mod tests {
 
     fn register_sequence_id_reader(world: &mut World) {
         let component_event_rid = {
-            let mut test_object_sequence_ids = world.write_storage::<SequenceId>();
-            test_object_sequence_ids.register_reader()
+            let mut test_object_sequence_names = world.write_storage::<SequenceId>();
+            test_object_sequence_names.register_reader()
         };
         world.insert(component_event_rid);
     }

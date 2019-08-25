@@ -15,7 +15,7 @@ pub fn game_object_gen(args: GameObjectAttributeArgs, mut ast: DeriveInput) -> T
     let game_object_ident = &ast.ident;
     let sequence_name = &args
         .sequence_name
-        .unwrap_or_else(|| Path::from(game_object_ident.append("SequenceId")));
+        .unwrap_or_else(|| Path::from(game_object_ident.append("SequenceName")));
     let sequence_type = &args
         .sequence_type
         .unwrap_or_else(|| Path::from(game_object_ident.append("Sequence")));

@@ -1,4 +1,4 @@
-use character_model::config::CharacterSequenceId;
+use character_model::config::CharacterSequenceName;
 use sequence_model::play::SequenceStatus;
 
 use crate::{
@@ -13,7 +13,7 @@ use crate::{
 pub(crate) struct RunStop;
 
 impl CharacterSequenceHandler for RunStop {
-    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {
         [AliveCheck::update, AirborneCheck::update]
             .iter()
             .fold(None, |status_update, fn_update| {
@@ -21,7 +21,7 @@ impl CharacterSequenceHandler for RunStop {
             })
             .or_else(|| {
                 if components.sequence_status == SequenceStatus::End {
-                    Some(CharacterSequenceId::Stand)
+                    Some(CharacterSequenceName::Stand)
                 } else {
                     None
                 }
@@ -31,7 +31,7 @@ impl CharacterSequenceHandler for RunStop {
 
 #[cfg(test)]
 mod test {
-    use character_model::{config::CharacterSequenceId, play::RunCounter};
+    use character_model::{config::CharacterSequenceName, play::RunCounter};
     use game_input::ControllerInput;
     use kinematic_model::config::{Position, Velocity};
     use object_model::play::{Grounding, HealthPoints, Mirrored};
@@ -43,11 +43,11 @@ mod test {
     #[test]
     fn jump_descend_when_airborne() {
         assert_eq!(
-            Some(CharacterSequenceId::JumpDescend),
+            Some(CharacterSequenceName::JumpDescend),
             RunStop::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceId::RunStop,
+                CharacterSequenceName::RunStop,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -67,7 +67,7 @@ mod test {
             RunStop::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::RunStop,
+                CharacterSequenceName::RunStop,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -83,11 +83,11 @@ mod test {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            Some(CharacterSequenceId::Stand),
+            Some(CharacterSequenceName::Stand),
             RunStop::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::RunStop,
+                CharacterSequenceName::RunStop,
                 SequenceStatus::End,
                 &Position::default(),
                 &Velocity::default(),

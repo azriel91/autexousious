@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumString, IntoStaticStr};
 use typename_derive::TypeName;
 
-/// `Character` Sequence IDs.
+/// `Character` sequence names.
 #[derive(
     Clone,
     Copy,
@@ -23,7 +23,7 @@ use typename_derive::TypeName;
 #[derivative(Default)]
 #[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
-pub enum CharacterSequenceId {
+pub enum CharacterSequenceName {
     /// Default sequence for characters.
     #[derivative(Default)]
     Stand,
@@ -115,4 +115,4 @@ pub enum CharacterSequenceId {
     LieFaceDown,
 }
 
-impl SequenceName for CharacterSequenceId {}
+impl SequenceName for CharacterSequenceName {}

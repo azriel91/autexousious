@@ -1,4 +1,4 @@
-use character_model::config::CharacterSequenceId;
+use character_model::config::CharacterSequenceName;
 
 use crate::{
     sequence_handler::{CharacterSequenceHandler, SwitchSequenceOnDescend},
@@ -6,13 +6,13 @@ use crate::{
 };
 
 const DASH_FORWARD_ASCEND: SwitchSequenceOnDescend =
-    SwitchSequenceOnDescend(CharacterSequenceId::DashForwardDescend);
+    SwitchSequenceOnDescend(CharacterSequenceName::DashForwardDescend);
 
 #[derive(Debug)]
 pub(crate) struct DashForwardAscend;
 
 impl CharacterSequenceHandler for DashForwardAscend {
-    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {
         DASH_FORWARD_ASCEND.update(components)
     }
 }

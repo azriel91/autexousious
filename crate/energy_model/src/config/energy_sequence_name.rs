@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumString, IntoStaticStr};
 use typename_derive::TypeName;
 
-/// `TestObject` Sequence IDs.
+/// `Energy` sequence names.
 #[derive(
     Clone,
     Copy,
@@ -23,12 +23,14 @@ use typename_derive::TypeName;
 #[derivative(Default)]
 #[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
-pub enum TestObjectSequenceId {
-    /// Default sequence.
+pub enum EnergySequenceName {
+    /// Default sequence for energies.
     #[derivative(Default)]
-    Zero,
-    /// Sequence one.
-    One,
+    Hover,
+    /// Sequence to switch to when hitting another object.
+    Hitting,
+    /// Sequence to switch to when hit by another object.
+    Hit,
 }
 
-impl SequenceName for TestObjectSequenceId {}
+impl SequenceName for EnergySequenceName {}

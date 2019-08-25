@@ -1,4 +1,4 @@
-use character_model::config::CharacterSequenceId;
+use character_model::config::CharacterSequenceName;
 
 use crate::{
     sequence_handler::{CharacterSequenceHandler, SwitchSequenceOnDescend},
@@ -6,13 +6,13 @@ use crate::{
 };
 
 const FALL_FORWARD_ASCEND: SwitchSequenceOnDescend =
-    SwitchSequenceOnDescend(CharacterSequenceId::FallForwardDescend);
+    SwitchSequenceOnDescend(CharacterSequenceName::FallForwardDescend);
 
 #[derive(Debug)]
 pub(crate) struct FallForwardAscend;
 
 impl CharacterSequenceHandler for FallForwardAscend {
-    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {
         FALL_FORWARD_ASCEND.update(components)
     }
 }

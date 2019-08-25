@@ -5,7 +5,7 @@ pub use self::{
     character_definition::{CharacterDefinition, CharacterDefinitionHandle},
     character_frame::CharacterFrame,
     character_sequence::CharacterSequence,
-    character_sequence_id::CharacterSequenceId,
+    character_sequence_name::CharacterSequenceName,
     control_transition_requirement::ControlTransitionRequirement,
     control_transition_requirement_params::ControlTransitionRequirementParams,
 };
@@ -14,7 +14,7 @@ mod character_control_transitions;
 mod character_definition;
 mod character_frame;
 mod character_sequence;
-mod character_sequence_id;
+mod character_sequence_name;
 mod control_transition_requirement;
 mod control_transition_requirement_params;
 
@@ -38,7 +38,7 @@ mod test {
 
     use crate::config::{
         CharacterControlTransitions, CharacterDefinition, CharacterFrame, CharacterSequence,
-        CharacterSequenceId, ControlTransitionRequirement,
+        CharacterSequenceName, ControlTransitionRequirement,
     };
 
     const OBJECT_YAML: &str = "\
@@ -81,24 +81,24 @@ sequences:
             ),
             CharacterControlTransitions {
                 press_attack: Some(ControlTransition::SequenceName(
-                    CharacterSequenceId::StandAttack0,
+                    CharacterSequenceName::StandAttack0,
                 )),
                 release_attack: Some(ControlTransition::Multiple(ControlTransitionMultiple::new(
                     vec![
                         ControlTransitionSingle {
-                            next: CharacterSequenceId::Walk,
+                            next: CharacterSequenceName::Walk,
                             requirements: vec![ControlTransitionRequirement::Charge(
                                 ChargePoints::new(90),
                             )],
                         },
                         ControlTransitionSingle {
-                            next: CharacterSequenceId::Run,
+                            next: CharacterSequenceName::Run,
                             requirements: vec![ControlTransitionRequirement::Sp(SkillPoints::new(
                                 50,
                             ))],
                         },
                         ControlTransitionSingle {
-                            next: CharacterSequenceId::RunStop,
+                            next: CharacterSequenceName::RunStop,
                             requirements: vec![ControlTransitionRequirement::Hp(
                                 HealthPoints::new(30),
                             )],
@@ -106,7 +106,7 @@ sequences:
                     ],
                 ))),
                 hold_jump: Some(ControlTransition::Single(ControlTransitionSingle {
-                    next: CharacterSequenceId::Jump,
+                    next: CharacterSequenceName::Jump,
                     requirements: vec![],
                 })),
                 ..Default::default()
@@ -115,19 +115,19 @@ sequences:
 
         let character_control_transitions = CharacterControlTransitions {
             press_defend: Some(ControlTransition::SequenceName(
-                CharacterSequenceId::StandAttack1,
+                CharacterSequenceName::StandAttack1,
             )),
             ..Default::default()
         };
         let sequence = CharacterSequence::new(
             ObjectSequence::new(
-                SequenceEndTransition::SequenceName(CharacterSequenceId::Walk),
+                SequenceEndTransition::SequenceName(CharacterSequenceName::Walk),
                 frames,
             ),
             Some(character_control_transitions),
         );
         let mut sequences = IndexMap::new();
-        sequences.insert(CharacterSequenceId::Stand, sequence);
+        sequences.insert(CharacterSequenceName::Stand, sequence);
         let object_definition = ObjectDefinition::new(sequences);
         let expected = CharacterDefinition {
             object_definition,

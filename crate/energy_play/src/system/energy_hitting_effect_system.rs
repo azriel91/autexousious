@@ -136,7 +136,7 @@ mod tests {
         sequence_id_setup: Option<SequenceId>,
         setup_variant: SetupVariant,
         send_event: bool,
-        energy_sequence_id_expected: Option<SequenceId>,
+        energy_sequence_name_expected: Option<SequenceId>,
     ) -> Result<(), Error> {
         AmethystApplication::blank()
             .with_system(EnergyHittingEffectSystem::new(), "", &[])
@@ -170,8 +170,8 @@ mod tests {
             .with_assertion(move |world| {
                 let entity_from = *world.read_resource::<Entity>();
                 let sequence_ids = world.read_storage::<SequenceId>();
-                let energy_sequence_id_actual = sequence_ids.get(entity_from).copied();
-                assert_eq!(energy_sequence_id_expected, energy_sequence_id_actual);
+                let energy_sequence_name_actual = sequence_ids.get(entity_from).copied();
+                assert_eq!(energy_sequence_name_expected, energy_sequence_name_actual);
             })
             .run()
     }

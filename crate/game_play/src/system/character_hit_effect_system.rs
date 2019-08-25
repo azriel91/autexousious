@@ -43,7 +43,7 @@ impl<'s> System<'s> for CharacterHitEffectSystem {
             character_hit_transitionses,
             mut health_pointses,
             mut stun_pointses,
-            mut character_sequence_ids,
+            mut character_sequence_names,
         ): Self::SystemData,
     ) {
         // Read from channel
@@ -57,18 +57,18 @@ impl<'s> System<'s> for CharacterHitEffectSystem {
                 let character_hit_transitions = character_hit_transitionses.get(ev.to);
                 let health_points = health_pointses.get_mut(ev.to);
                 let stun_points = stun_pointses.get_mut(ev.to);
-                let character_sequence_id = character_sequence_ids.get_mut(ev.to);
+                let character_sequence_name = character_sequence_names.get_mut(ev.to);
 
                 if let (
                     Some(character_hit_transitions),
                     Some(health_points),
                     Some(stun_points),
-                    Some(character_sequence_id),
+                    Some(character_sequence_name),
                 ) = (
                     character_hit_transitions,
                     health_points,
                     stun_points,
-                    character_sequence_id,
+                    character_sequence_name,
                 ) {
                     // TODO: Split this system with health check system.
                     let Interaction {
@@ -99,7 +99,7 @@ impl<'s> System<'s> for CharacterHitEffectSystem {
                     };
 
                     // Set sequence id
-                    *character_sequence_id = next_sequence_id;
+                    *character_sequence_name = next_sequence_id;
                 }
             });
     }

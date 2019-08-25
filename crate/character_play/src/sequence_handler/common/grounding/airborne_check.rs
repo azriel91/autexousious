@@ -1,4 +1,4 @@
-use character_model::config::CharacterSequenceId;
+use character_model::config::CharacterSequenceName;
 use object_model::play::Grounding;
 
 use crate::{sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents};
@@ -8,9 +8,9 @@ use crate::{sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateC
 pub(crate) struct AirborneCheck;
 
 impl CharacterSequenceHandler for AirborneCheck {
-    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {
         if components.grounding == Grounding::Airborne {
-            Some(CharacterSequenceId::JumpDescend)
+            Some(CharacterSequenceName::JumpDescend)
         } else {
             None
         }
@@ -19,7 +19,7 @@ impl CharacterSequenceHandler for AirborneCheck {
 
 #[cfg(test)]
 mod tests {
-    use character_model::{config::CharacterSequenceId, play::RunCounter};
+    use character_model::{config::CharacterSequenceName, play::RunCounter};
     use game_input::ControllerInput;
     use kinematic_model::config::{Position, Velocity};
     use object_model::play::{Grounding, HealthPoints, Mirrored};
@@ -35,7 +35,7 @@ mod tests {
             AirborneCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceId::Stand,
+                CharacterSequenceName::Stand,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -49,11 +49,11 @@ mod tests {
     #[test]
     fn switches_to_jump_descend_when_grounding_is_airborne() {
         assert_eq!(
-            Some(CharacterSequenceId::JumpDescend),
+            Some(CharacterSequenceName::JumpDescend),
             AirborneCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceId::Stand,
+                CharacterSequenceName::Stand,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),

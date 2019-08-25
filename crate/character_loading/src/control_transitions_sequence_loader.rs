@@ -1,6 +1,6 @@
 use amethyst::assets::{AssetStorage, Loader};
 use character_model::{
-    config::{self, CharacterSequence, CharacterSequenceId},
+    config::{self, CharacterSequence, CharacterSequenceName},
     loaded::{
         self, CharacterControlTransition, CharacterControlTransitionsSequence,
         CharacterControlTransitionsSequenceHandle,
@@ -30,7 +30,7 @@ impl ControlTransitionsSequenceLoader {
             character_control_transitions_assets,
             character_control_transitions_sequence_assets,
         }: &ControlTransitionsSequenceLoaderParams,
-        sequence_id_mappings: &SequenceIdMappings<CharacterSequenceId>,
+        sequence_id_mappings: &SequenceIdMappings<CharacterSequenceName>,
         sequence_default: Option<&CharacterSequence>,
         sequence: &CharacterSequence,
     ) -> CharacterControlTransitionsSequenceHandle {
@@ -66,7 +66,7 @@ impl ControlTransitionsSequenceLoader {
     fn config_to_loaded_transitions_handle(
         loader: &Loader,
         character_control_transitions_assets: &AssetStorage<loaded::CharacterControlTransitions>,
-        sequence_id_mappings: &SequenceIdMappings<CharacterSequenceId>,
+        sequence_id_mappings: &SequenceIdMappings<CharacterSequenceName>,
         config_transitions_default: Option<&config::CharacterControlTransitions>,
         config_transitions_sequence: Option<&config::CharacterControlTransitions>,
         config_transitions_frame: &config::CharacterControlTransitions,
@@ -358,7 +358,7 @@ mod tests {
     use amethyst_test::AmethystApplication;
     use application::resource::IoUtils;
     use character_model::{
-        config::{CharacterSequence, CharacterSequenceId, ControlTransitionRequirement},
+        config::{CharacterSequence, CharacterSequenceName, ControlTransitionRequirement},
         loaded::{
             CharacterControlTransition, CharacterControlTransitions,
             CharacterControlTransitionsSequence, CharacterControlTransitionsSequenceHandle,
@@ -385,7 +385,7 @@ mod tests {
         let sequence_default = CHARACTER_TRANSITIONS_DEFAULT
             .object_definition
             .sequences
-            .get(&CharacterSequenceId::Stand);
+            .get(&CharacterSequenceName::Stand);
 
         run_test(
             test_character_sequence(),
@@ -496,23 +496,29 @@ mod tests {
             .expect("Failed to load `test_character_sequence.yaml`.")
     }
 
-    fn sequence_id_mappings() -> SequenceIdMappings<CharacterSequenceId> {
+    fn sequence_id_mappings() -> SequenceIdMappings<CharacterSequenceName> {
         let mut sequence_id_mappings = SequenceIdMappings::new();
-        sequence_id_mappings.insert(CharacterSequenceId::Stand, SequenceId::new(0));
-        sequence_id_mappings.insert(CharacterSequenceId::Walk, SequenceId::new(1));
-        sequence_id_mappings.insert(CharacterSequenceId::Run, SequenceId::new(2));
-        sequence_id_mappings.insert(CharacterSequenceId::RunStop, SequenceId::new(3));
-        sequence_id_mappings.insert(CharacterSequenceId::StandAttack0, SequenceId::new(4));
-        sequence_id_mappings.insert(CharacterSequenceId::StandAttack1, SequenceId::new(5));
-        sequence_id_mappings.insert(CharacterSequenceId::Jump, SequenceId::new(6));
-        sequence_id_mappings.insert(CharacterSequenceId::JumpOff, SequenceId::new(7));
-        sequence_id_mappings.insert(CharacterSequenceId::DashForward, SequenceId::new(8));
-        sequence_id_mappings.insert(CharacterSequenceId::Flinch0, SequenceId::new(9));
-        sequence_id_mappings.insert(CharacterSequenceId::Flinch1, SequenceId::new(10));
-        sequence_id_mappings.insert(CharacterSequenceId::Dazed, SequenceId::new(11));
-        sequence_id_mappings.insert(CharacterSequenceId::FallForwardAscend, SequenceId::new(12));
-        sequence_id_mappings.insert(CharacterSequenceId::FallForwardDescend, SequenceId::new(13));
-        sequence_id_mappings.insert(CharacterSequenceId::LieFaceDown, SequenceId::new(14));
+        sequence_id_mappings.insert(CharacterSequenceName::Stand, SequenceId::new(0));
+        sequence_id_mappings.insert(CharacterSequenceName::Walk, SequenceId::new(1));
+        sequence_id_mappings.insert(CharacterSequenceName::Run, SequenceId::new(2));
+        sequence_id_mappings.insert(CharacterSequenceName::RunStop, SequenceId::new(3));
+        sequence_id_mappings.insert(CharacterSequenceName::StandAttack0, SequenceId::new(4));
+        sequence_id_mappings.insert(CharacterSequenceName::StandAttack1, SequenceId::new(5));
+        sequence_id_mappings.insert(CharacterSequenceName::Jump, SequenceId::new(6));
+        sequence_id_mappings.insert(CharacterSequenceName::JumpOff, SequenceId::new(7));
+        sequence_id_mappings.insert(CharacterSequenceName::DashForward, SequenceId::new(8));
+        sequence_id_mappings.insert(CharacterSequenceName::Flinch0, SequenceId::new(9));
+        sequence_id_mappings.insert(CharacterSequenceName::Flinch1, SequenceId::new(10));
+        sequence_id_mappings.insert(CharacterSequenceName::Dazed, SequenceId::new(11));
+        sequence_id_mappings.insert(
+            CharacterSequenceName::FallForwardAscend,
+            SequenceId::new(12),
+        );
+        sequence_id_mappings.insert(
+            CharacterSequenceName::FallForwardDescend,
+            SequenceId::new(13),
+        );
+        sequence_id_mappings.insert(CharacterSequenceName::LieFaceDown, SequenceId::new(14));
         sequence_id_mappings
     }
 

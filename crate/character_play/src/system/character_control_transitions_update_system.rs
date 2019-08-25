@@ -40,7 +40,7 @@ pub struct CharacterControlTransitionsUpdateSystemData<'s> {
     pub character_control_transitions_handles: WriteStorage<'s, CharacterControlTransitionsHandle>,
     /// `SequenceId` components.
     #[derivative(Debug = "ignore")]
-    pub character_sequence_ids: ReadStorage<'s, SequenceId>,
+    pub character_sequence_names: ReadStorage<'s, SequenceId>,
 }
 
 impl<'s> System<'s> for CharacterControlTransitionsUpdateSystem {
@@ -53,7 +53,7 @@ impl<'s> System<'s> for CharacterControlTransitionsUpdateSystem {
             character_cts_handles,
             character_cts_assets,
             mut character_control_transitions_handles,
-            character_sequence_ids,
+            character_sequence_names,
         }: Self::SystemData,
     ) {
         sequence_update_ec
@@ -90,14 +90,14 @@ impl<'s> System<'s> for CharacterControlTransitionsUpdateSystem {
                             .insert(entity, character_control_transitions_handle.clone())
                             .expect("Failed to insert `CharacterControlTransitions` component.");
                     } else {
-                        let character_sequence_id = character_sequence_ids.get(entity).expect(
+                        let character_sequence_name = character_sequence_names.get(entity).expect(
                             "Expected entity with `CharacterControlTransitionsSequenceHandle` \
                              to have `SequenceId`.",
                         );
 
                         error!(
                             "Attempted to access index `{}` for sequence ID: `{:?}`",
-                            frame_index, character_sequence_id
+                            frame_index, character_sequence_name
                         );
                     }
                 }

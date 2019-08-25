@@ -2,7 +2,7 @@ use derive_new::new;
 use object_model::config::{GameObjectSequence, ObjectSequence};
 use serde::{Deserialize, Serialize};
 
-use crate::config::{CharacterControlTransitions, CharacterFrame, CharacterSequenceId};
+use crate::config::{CharacterControlTransitions, CharacterFrame, CharacterSequenceName};
 
 /// Represents an independent action sequence of a character.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
@@ -10,7 +10,7 @@ use crate::config::{CharacterControlTransitions, CharacterFrame, CharacterSequen
 pub struct CharacterSequence {
     /// Object sequence for common object fields.
     #[serde(flatten)]
-    pub object_sequence: ObjectSequence<CharacterSequenceId, CharacterFrame>,
+    pub object_sequence: ObjectSequence<CharacterSequenceName, CharacterFrame>,
     /// Sequence ID to transition to when a `ControlAction` is pressed, held, or released.
     ///
     /// This is shared by all frames in the sequence, unless overridden.
@@ -19,7 +19,7 @@ pub struct CharacterSequence {
 }
 
 impl GameObjectSequence for CharacterSequence {
-    type SequenceName = CharacterSequenceId;
+    type SequenceName = CharacterSequenceName;
     type GameObjectFrame = CharacterFrame;
 
     fn object_sequence(&self) -> &ObjectSequence<Self::SequenceName, Self::GameObjectFrame> {
@@ -37,7 +37,7 @@ mod tests {
     use sprite_model::config::SpriteRef;
 
     use super::CharacterSequence;
-    use crate::config::{CharacterControlTransitions, CharacterFrame, CharacterSequenceId};
+    use crate::config::{CharacterControlTransitions, CharacterFrame, CharacterSequenceName};
 
     const SEQUENCE_WITH_FRAMES_EMPTY: &str = "frames: []";
     const SEQUENCE_WITH_CONTROL_TRANSITIONS: &str = r#"---
@@ -77,10 +77,10 @@ frames:
             },
             CharacterControlTransitions {
                 press_attack: Some(ControlTransition::SequenceName(
-                    CharacterSequenceId::StandAttack0,
+                    CharacterSequenceName::StandAttack0,
                 )),
                 hold_jump: Some(ControlTransition::Single(ControlTransitionSingle {
-                    next: CharacterSequenceId::Jump,
+                    next: CharacterSequenceName::Jump,
                     requirements: vec![],
                 })),
                 ..Default::default()
@@ -88,7 +88,7 @@ frames:
         )];
         let character_control_transitions = CharacterControlTransitions {
             press_defend: Some(ControlTransition::SequenceName(
-                CharacterSequenceId::StandAttack1,
+                CharacterSequenceName::StandAttack1,
             )),
             ..Default::default()
         };

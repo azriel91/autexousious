@@ -5,7 +5,7 @@ use sequence_model::loaded::SequenceIdMappings;
 use typename_derive::TypeName;
 
 use crate::{
-    config::{CharacterDefinition, CharacterSequence, CharacterSequenceId},
+    config::{CharacterDefinition, CharacterSequence, CharacterSequenceName},
     loaded::CharacterControlTransitionsSequenceHandle,
 };
 
@@ -18,5 +18,5 @@ pub struct Character {
     /// Handles of `ControlTransitions`es sequences that this character uses.
     pub control_transitions_sequence_handles: Vec<CharacterControlTransitionsSequenceHandle>,
     /// Mappings from sequence name to ID, and ID to name.
-    pub sequence_id_mappings: SequenceIdMappings<CharacterSequenceId>,
+    pub sequence_id_mappings: SequenceIdMappings<CharacterSequenceName>,
 }

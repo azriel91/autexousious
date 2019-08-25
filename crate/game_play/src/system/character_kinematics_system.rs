@@ -5,7 +5,7 @@ use amethyst::{
     shrev::{EventChannel, ReaderId},
 };
 use character_model::{
-    config::CharacterSequenceId,
+    config::CharacterSequenceName,
     loaded::{Character, CharacterHandle},
 };
 use derivative::Derivative;
@@ -81,41 +81,41 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
             let character = character_assets
                 .get(character_handle)
                 .expect("Expected `Character` to be loaded.");
-            let character_sequence_id = character
+            let character_sequence_name = character
                 .sequence_id_mappings
                 .name(*sequence_id)
                 .expect("Expected sequence ID mapping to exist.");
 
-            match character_sequence_id {
-                CharacterSequenceId::Stand
-                | CharacterSequenceId::Flinch0
-                | CharacterSequenceId::Flinch1 => {
+            match character_sequence_name {
+                CharacterSequenceName::Stand
+                | CharacterSequenceName::Flinch0
+                | CharacterSequenceName::Flinch1 => {
                     velocity[0] = 0.;
                     velocity[2] = 0.;
                 }
-                CharacterSequenceId::Walk => {
+                CharacterSequenceName::Walk => {
                     velocity[0] = controller_input.x_axis_value as f32 * 3.5;
                     velocity[2] = controller_input.z_axis_value as f32 * 2.;
                 }
-                CharacterSequenceId::Run => {
+                CharacterSequenceName::Run => {
                     velocity[0] = controller_input.x_axis_value as f32 * 6.;
                     velocity[2] = controller_input.z_axis_value as f32 * 1.5;
                 }
-                CharacterSequenceId::RunStop => {
+                CharacterSequenceName::RunStop => {
                     velocity[0] = if mirrored.0 { -2. } else { 2. };
                     velocity[2] = controller_input.z_axis_value as f32 * 0.5;
                 }
                 // TODO: velocity as config
-                CharacterSequenceId::Dodge => {
+                CharacterSequenceName::Dodge => {
                     velocity[0] = if mirrored.0 { -3. } else { 3. };
                     velocity[2] = controller_input.z_axis_value as f32;
                 }
-                CharacterSequenceId::JumpDescendLand
-                | CharacterSequenceId::DashDescendLand
-                | CharacterSequenceId::FallForwardLand
-                | CharacterSequenceId::LieFaceDown
-                | CharacterSequenceId::StandAttack0
-                | CharacterSequenceId::StandAttack1 => {
+                CharacterSequenceName::JumpDescendLand
+                | CharacterSequenceName::DashDescendLand
+                | CharacterSequenceName::FallForwardLand
+                | CharacterSequenceName::LieFaceDown
+                | CharacterSequenceName::StandAttack0
+                | CharacterSequenceName::StandAttack1 => {
                     velocity[0] /= 2.;
                     velocity[1] = 0.;
                     velocity[2] /= 2.;
@@ -148,31 +148,31 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                         let character = character_assets
                             .get(character_handle)
                             .expect("Expected `Character` to be loaded.");
-                        let character_sequence_id = character
+                        let character_sequence_name = character
                             .sequence_id_mappings
                             .name(*sequence_id)
                             .expect("Expected sequence ID mapping to exist.");
 
-                        match character_sequence_id {
-                            CharacterSequenceId::StandAttack0 => {
+                        match character_sequence_name {
+                            CharacterSequenceName::StandAttack0 => {
                                 velocity[0] = controller_input.x_axis_value as f32 * 2.5;
                                 velocity[2] = controller_input.z_axis_value as f32 * 1.5;
                             }
-                            CharacterSequenceId::StandAttack1 => {
+                            CharacterSequenceName::StandAttack1 => {
                                 velocity[0] = controller_input.x_axis_value as f32 * 2.5;
                                 velocity[2] = controller_input.z_axis_value as f32 * 1.5;
                             }
-                            CharacterSequenceId::JumpOff => {
+                            CharacterSequenceName::JumpOff => {
                                 velocity[0] = controller_input.x_axis_value as f32 * 5.;
                                 velocity[1] = 10.5;
                                 velocity[2] = controller_input.z_axis_value as f32 * 2.;
                             }
-                            CharacterSequenceId::DashForward => {
+                            CharacterSequenceName::DashForward => {
                                 velocity[0] = if mirrored.0 { -8. } else { 8. };
                                 velocity[1] = 7.5;
                                 velocity[2] = controller_input.z_axis_value as f32 * 2.5;
                             }
-                            CharacterSequenceId::DashBack => {
+                            CharacterSequenceName::DashBack => {
                                 velocity[0] = if mirrored.0 { 11. } else { -11. };
                                 velocity[1] = 7.5;
                                 velocity[2] = controller_input.z_axis_value as f32 * 2.5;
@@ -204,7 +204,7 @@ mod tests {
     };
     use application_test_support::AutexousiousApplication;
     use character_model::{
-        config::CharacterSequenceId,
+        config::CharacterSequenceName,
         loaded::{Character, CharacterHandle},
     };
     use game_input::ControllerInput;
@@ -223,7 +223,7 @@ mod tests {
             ParamsSetup {
                 velocity: Velocity::new(3., 0., 3.),
                 grounding: Grounding::OnGround,
-                character_sequence_id: CharacterSequenceId::Stand,
+                character_sequence_name: CharacterSequenceName::Stand,
                 controller_input: None,
                 mirrored: None,
                 event_fn: None,
@@ -235,8 +235,8 @@ mod tests {
     #[test]
     fn updates_stand_attack_x_and_z_velocity() -> Result<(), Error> {
         vec![
-            CharacterSequenceId::StandAttack0,
-            CharacterSequenceId::StandAttack1,
+            CharacterSequenceName::StandAttack0,
+            CharacterSequenceName::StandAttack1,
         ]
         .into_iter()
         .try_for_each(|stand_attack_id| {
@@ -248,7 +248,7 @@ mod tests {
                 ParamsSetup {
                     velocity: Velocity::new(0., 0., 0.),
                     grounding: Grounding::OnGround,
-                    character_sequence_id: stand_attack_id,
+                    character_sequence_name: stand_attack_id,
                     controller_input: Some(controller_input),
                     mirrored: None,
                     event_fn: Some(|entity| SequenceUpdateEvent::SequenceBegin { entity }),
@@ -268,7 +268,7 @@ mod tests {
             ParamsSetup {
                 velocity: Velocity::new(0., 0., 0.),
                 grounding: Grounding::OnGround,
-                character_sequence_id: CharacterSequenceId::Walk,
+                character_sequence_name: CharacterSequenceName::Walk,
                 controller_input: Some(controller_input),
                 mirrored: None,
                 event_fn: None,
@@ -287,7 +287,7 @@ mod tests {
             ParamsSetup {
                 velocity: Velocity::new(0., 0., 0.),
                 grounding: Grounding::OnGround,
-                character_sequence_id: CharacterSequenceId::Run,
+                character_sequence_name: CharacterSequenceName::Run,
                 controller_input: Some(controller_input),
                 mirrored: None,
                 event_fn: None,
@@ -307,7 +307,7 @@ mod tests {
                     ParamsSetup {
                         velocity: Velocity::new(0., 0., 0.),
                         grounding: Grounding::OnGround,
-                        character_sequence_id: CharacterSequenceId::RunStop,
+                        character_sequence_name: CharacterSequenceName::RunStop,
                         controller_input: Some(controller_input),
                         mirrored: Some(mirrored_bool.into()),
                         event_fn: None,
@@ -329,7 +329,7 @@ mod tests {
                     ParamsSetup {
                         velocity: Velocity::new(0., 0., 0.),
                         grounding: Grounding::OnGround,
-                        character_sequence_id: CharacterSequenceId::Dodge,
+                        character_sequence_name: CharacterSequenceName::Dodge,
                         controller_input: Some(controller_input),
                         mirrored: Some(mirrored_bool.into()),
                         event_fn: None,
@@ -350,7 +350,7 @@ mod tests {
             ParamsSetup {
                 velocity: Velocity::new(0., 0., 0.),
                 grounding: Grounding::OnGround,
-                character_sequence_id: CharacterSequenceId::JumpOff,
+                character_sequence_name: CharacterSequenceName::JumpOff,
                 controller_input: Some(controller_input),
                 mirrored: None,
                 event_fn: Some(|entity| SequenceUpdateEvent::SequenceBegin { entity }),
@@ -368,7 +368,7 @@ mod tests {
             ParamsSetup {
                 velocity: Velocity::new(0., 0., 0.),
                 grounding: Grounding::OnGround,
-                character_sequence_id: CharacterSequenceId::DashForward,
+                character_sequence_name: CharacterSequenceName::DashForward,
                 controller_input: Some(controller_input),
                 mirrored: None,
                 event_fn: Some(|entity| SequenceUpdateEvent::SequenceBegin { entity }),
@@ -386,7 +386,7 @@ mod tests {
             ParamsSetup {
                 velocity: Velocity::new(0., 0., 0.),
                 grounding: Grounding::OnGround,
-                character_sequence_id: CharacterSequenceId::DashBack,
+                character_sequence_name: CharacterSequenceName::DashBack,
                 controller_input: Some(controller_input),
                 mirrored: None,
                 event_fn: Some(|entity| SequenceUpdateEvent::SequenceBegin { entity }),
@@ -401,7 +401,7 @@ mod tests {
             ParamsSetup {
                 velocity: Velocity::new(-6., -10., -4.),
                 grounding: Grounding::OnGround,
-                character_sequence_id: CharacterSequenceId::JumpDescendLand,
+                character_sequence_name: CharacterSequenceName::JumpDescendLand,
                 controller_input: None,
                 mirrored: None,
                 event_fn: None,
@@ -416,7 +416,7 @@ mod tests {
             ParamsSetup {
                 velocity: Velocity::new(-6., -10., -4.),
                 grounding: Grounding::OnGround,
-                character_sequence_id: CharacterSequenceId::FallForwardLand,
+                character_sequence_name: CharacterSequenceName::FallForwardLand,
                 controller_input: None,
                 mirrored: None,
                 event_fn: None,
@@ -431,7 +431,7 @@ mod tests {
             ParamsSetup {
                 velocity: Velocity::new(-6., -10., -4.),
                 grounding: Grounding::OnGround,
-                character_sequence_id: CharacterSequenceId::LieFaceDown,
+                character_sequence_name: CharacterSequenceName::LieFaceDown,
                 controller_input: None,
                 mirrored: None,
                 event_fn: None,
@@ -444,7 +444,7 @@ mod tests {
         ParamsSetup {
             velocity: velocity_setup,
             grounding: grounding_setup,
-            character_sequence_id: character_sequence_id_setup,
+            character_sequence_name: character_sequence_name_setup,
             controller_input: controller_input_setup,
             mirrored: mirrored_setup,
             event_fn,
@@ -505,7 +505,7 @@ mod tests {
                             .expect("Expected `Character` to be loaded.");
                         character
                             .sequence_id_mappings
-                            .id(character_sequence_id_setup)
+                            .id(character_sequence_name_setup)
                             .expect("Expected sequence ID mapping to exist.")
                     };
                     *sequence_id = *sequence_id_setup;
@@ -543,7 +543,7 @@ mod tests {
     #[derive(Debug)]
     struct ParamsSetup {
         velocity: Velocity<f32>,
-        character_sequence_id: CharacterSequenceId,
+        character_sequence_name: CharacterSequenceName,
         grounding: Grounding,
         controller_input: Option<ControllerInput>,
         mirrored: Option<Mirrored>,

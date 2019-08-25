@@ -1,4 +1,4 @@
-use character_model::config::CharacterSequenceId;
+use character_model::config::CharacterSequenceName;
 
 use crate::{
     sequence_handler::{
@@ -13,7 +13,7 @@ use crate::{
 pub(crate) struct Run;
 
 impl CharacterSequenceHandler for Run {
-    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {
         [
             AliveCheck::update,
             AirborneCheck::update,
@@ -28,7 +28,7 @@ impl CharacterSequenceHandler for Run {
 
 #[cfg(test)]
 mod test {
-    use character_model::{config::CharacterSequenceId, play::RunCounter};
+    use character_model::{config::CharacterSequenceName, play::RunCounter};
     use game_input::ControllerInput;
     use kinematic_model::config::{Position, Velocity};
     use object_model::play::{Grounding, HealthPoints, Mirrored};
@@ -40,11 +40,11 @@ mod test {
     #[test]
     fn jump_descend_when_airborne() {
         assert_eq!(
-            Some(CharacterSequenceId::JumpDescend),
+            Some(CharacterSequenceName::JumpDescend),
             Run::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceId::Run,
+                CharacterSequenceName::Run,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -60,11 +60,11 @@ mod test {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            Some(CharacterSequenceId::RunStop),
+            Some(CharacterSequenceName::RunStop),
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::Run,
+                CharacterSequenceName::Run,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -84,7 +84,7 @@ mod test {
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::Run,
+                CharacterSequenceName::Run,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -104,7 +104,7 @@ mod test {
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::Run,
+                CharacterSequenceName::Run,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -123,11 +123,11 @@ mod test {
                 let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
-                    Some(CharacterSequenceId::Run),
+                    Some(CharacterSequenceName::Run),
                     Run::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         HealthPoints::default(),
-                        CharacterSequenceId::Run,
+                        CharacterSequenceName::Run,
                         SequenceStatus::End,
                         &Position::default(),
                         &Velocity::default(),
@@ -144,11 +144,11 @@ mod test {
         let input = ControllerInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
-            Some(CharacterSequenceId::RunStop),
+            Some(CharacterSequenceName::RunStop),
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::Run,
+                CharacterSequenceName::Run,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -164,11 +164,11 @@ mod test {
         let input = ControllerInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
-            Some(CharacterSequenceId::RunStop),
+            Some(CharacterSequenceName::RunStop),
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::Run,
+                CharacterSequenceName::Run,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -188,7 +188,7 @@ mod test {
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::Run,
+                CharacterSequenceName::Run,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -205,7 +205,7 @@ mod test {
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::Run,
+                CharacterSequenceName::Run,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),

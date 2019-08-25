@@ -1,24 +1,24 @@
-use character_model::config::CharacterSequenceId;
+use character_model::config::CharacterSequenceName;
 
 use crate::sequence_handler::{
     switch_sequence_on_end::SwitchSequenceOnEnd, CharacterSequenceHandler,
     CharacterSequenceUpdateComponents,
 };
 
-const JUMP_DESCEND_LAND: SwitchSequenceOnEnd = SwitchSequenceOnEnd(CharacterSequenceId::Stand);
+const JUMP_DESCEND_LAND: SwitchSequenceOnEnd = SwitchSequenceOnEnd(CharacterSequenceName::Stand);
 
 #[derive(Debug)]
 pub(crate) struct JumpDescendLand;
 
 impl CharacterSequenceHandler for JumpDescendLand {
-    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {
         JUMP_DESCEND_LAND.update(components.sequence_status)
     }
 }
 
 #[cfg(test)]
 mod test {
-    use character_model::{config::CharacterSequenceId, play::RunCounter};
+    use character_model::{config::CharacterSequenceName, play::RunCounter};
     use game_input::ControllerInput;
     use kinematic_model::config::{Position, Velocity};
     use object_model::play::{Grounding, HealthPoints, Mirrored};
@@ -36,7 +36,7 @@ mod test {
             JumpDescendLand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::JumpDescendLand,
+                CharacterSequenceName::JumpDescendLand,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -52,11 +52,11 @@ mod test {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            Some(CharacterSequenceId::Stand),
+            Some(CharacterSequenceName::Stand),
             JumpDescendLand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::JumpDescendLand,
+                CharacterSequenceName::JumpDescendLand,
                 SequenceStatus::End,
                 &Position::default(),
                 &Velocity::default(),
