@@ -20,7 +20,7 @@ use derivative::Derivative;
 use log::debug;
 use object_model::config::ObjectAssetData;
 use object_prefab::{GameObjectPrefab, ObjectPrefab};
-use sequence_model::loaded::SequenceId;
+use sequence_model::{config::SequenceNameString, loaded::SequenceId};
 use typename_derive::TypeName;
 
 use crate::{CharacterComponentStorages, CharacterEntityAugmenter};
@@ -148,19 +148,21 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
                     .expect("Expected `Character` to be loaded.");
                 let sequence_id_mappings = &character.sequence_id_mappings;
                 let low_stun = sequence_id_mappings
-                    .id(&CharacterSequenceName::Flinch0)
+                    .id(&SequenceNameString::Name(CharacterSequenceName::Flinch0))
                     .copied()
                     .unwrap_or(SequenceId(0));
                 let mid_stun = sequence_id_mappings
-                    .id(&CharacterSequenceName::Flinch1)
+                    .id(&SequenceNameString::Name(CharacterSequenceName::Flinch1))
                     .copied()
                     .unwrap_or(SequenceId(0));
                 let high_stun = sequence_id_mappings
-                    .id(&CharacterSequenceName::Dazed)
+                    .id(&SequenceNameString::Name(CharacterSequenceName::Dazed))
                     .copied()
                     .unwrap_or(SequenceId(0));
                 let falling = sequence_id_mappings
-                    .id(&CharacterSequenceName::FallForwardAscend)
+                    .id(&SequenceNameString::Name(
+                        CharacterSequenceName::FallForwardAscend,
+                    ))
                     .copied()
                     .unwrap_or(SequenceId(0));
 

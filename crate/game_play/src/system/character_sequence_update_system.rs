@@ -15,7 +15,7 @@ use derive_new::new;
 use game_input::ControllerInput;
 use kinematic_model::config::{Position, Velocity};
 use object_model::play::{Grounding, HealthPoints, Mirrored};
-use sequence_model::{loaded::SequenceId, play::SequenceStatus};
+use sequence_model::{config::SequenceNameString, loaded::SequenceId, play::SequenceStatus};
 use typename_derive::TypeName;
 
 /// Updates character sequence name based on input (or lack of).
@@ -118,42 +118,50 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             let character = character_assets
                 .get(character_handle)
                 .expect("Expected `Character` to be loaded.");
-            let character_sequence_name = *character
+            let character_sequence_name_string = character
                 .sequence_id_mappings
                 .name(*sequence_id)
                 .expect("Expected sequence ID mapping to exist.");
 
-            let next_sequence_id =
+            let next_sequence_name = if let SequenceNameString::Name(character_sequence_name) =
+                character_sequence_name_string
+            {
                 CharacterSequenceUpdater::update(CharacterSequenceUpdateComponents::new(
                     &controller_input,
                     *health_points,
-                    character_sequence_name,
+                    *character_sequence_name,
                     *sequence_status,
                     &position,
                     &velocity,
                     *mirrored,
                     *grounding,
                     *run_counter,
-                ));
+                ))
+            } else {
+                None
+            };
 
             *run_counter = RunCounterUpdater::update(
                 *run_counter,
                 controller_input,
-                character_sequence_name,
+                character_sequence_name_string,
                 *mirrored,
                 *grounding,
             );
-            *mirrored =
-                MirroredUpdater::update(controller_input, character_sequence_name, *mirrored);
+            *mirrored = MirroredUpdater::update(
+                controller_input,
+                character_sequence_name_string,
+                *mirrored,
+            );
 
-            if let Some(next_sequence_id) = next_sequence_id {
+            if let Some(next_sequence_name) = next_sequence_name {
                 let sequence_id = sequence_ids
                     .get_mut(entity)
                     .expect("Expected `SequenceId` to exist.");
 
                 let next_sequence_id = *character
                     .sequence_id_mappings
-                    .id(&next_sequence_id)
+                    .id(&SequenceNameString::Name(next_sequence_name))
                     .expect("Expected sequence ID mapping to exist.");
 
                 *sequence_id = next_sequence_id;

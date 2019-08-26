@@ -1,6 +1,10 @@
-use character_model::{config::CharacterSequenceName, play::RunCounter};
+use character_model::{
+    config::{CharacterSequenceName, CharacterSequenceNameString},
+    play::RunCounter,
+};
 use game_input::ControllerInput;
 use object_model::play::{Grounding, Mirrored};
+use sequence_model::config::SequenceNameString;
 
 use crate::sequence_handler::SequenceHandlerUtil;
 
@@ -21,12 +25,13 @@ impl RunCounterUpdater {
     pub fn update(
         run_counter: RunCounter,
         controller_input: &ControllerInput,
-        character_sequence_name: CharacterSequenceName,
+        character_sequence_name_string: &CharacterSequenceNameString,
         mirrored: Mirrored,
         grounding: Grounding,
     ) -> RunCounter {
-        match character_sequence_name {
-            CharacterSequenceName::Stand | CharacterSequenceName::Walk => {}
+        match character_sequence_name_string {
+            SequenceNameString::Name(CharacterSequenceName::Stand)
+            | SequenceNameString::Name(CharacterSequenceName::Walk) => {}
             _ => return RunCounter::Unused,
         }
 
@@ -63,6 +68,7 @@ mod tests {
     use character_model::{config::CharacterSequenceName, play::RunCounter};
     use game_input::ControllerInput;
     use object_model::play::{Grounding, Mirrored};
+    use sequence_model::config::SequenceNameString;
 
     use super::RunCounterUpdater;
 
@@ -75,7 +81,7 @@ mod tests {
             RunCounterUpdater::update(
                 RunCounter::Unused,
                 &input,
-                CharacterSequenceName::Jump,
+                &SequenceNameString::Name(CharacterSequenceName::Jump),
                 Mirrored::default(),
                 Grounding::Airborne
             )
@@ -91,7 +97,7 @@ mod tests {
             RunCounterUpdater::update(
                 RunCounter::Unused,
                 &input,
-                CharacterSequenceName::default(),
+                &SequenceNameString::Name(CharacterSequenceName::default()),
                 Mirrored::default(),
                 Grounding::Airborne
             )
@@ -107,7 +113,7 @@ mod tests {
             RunCounterUpdater::update(
                 RunCounter::Increase(10),
                 &input,
-                CharacterSequenceName::default(),
+                &SequenceNameString::Name(CharacterSequenceName::default()),
                 Mirrored::default(),
                 Grounding::Airborne
             )
@@ -123,7 +129,7 @@ mod tests {
             RunCounterUpdater::update(
                 RunCounter::Unused,
                 &input,
-                CharacterSequenceName::default(),
+                &SequenceNameString::Name(CharacterSequenceName::default()),
                 Mirrored::default(),
                 Grounding::default()
             )
@@ -139,7 +145,7 @@ mod tests {
             RunCounterUpdater::update(
                 RunCounter::Decrease(0),
                 &input,
-                CharacterSequenceName::default(),
+                &SequenceNameString::Name(CharacterSequenceName::default()),
                 Mirrored::default(),
                 Grounding::default()
             )
@@ -155,7 +161,7 @@ mod tests {
             RunCounterUpdater::update(
                 RunCounter::Decrease(1),
                 &input,
-                CharacterSequenceName::default(),
+                &SequenceNameString::Name(CharacterSequenceName::default()),
                 Mirrored::default(),
                 Grounding::default()
             )
@@ -171,7 +177,7 @@ mod tests {
             RunCounterUpdater::update(
                 RunCounter::Increase(0),
                 &input,
-                CharacterSequenceName::default(),
+                &SequenceNameString::Name(CharacterSequenceName::default()),
                 Mirrored::default(),
                 Grounding::default()
             )
@@ -194,7 +200,7 @@ mod tests {
                     RunCounterUpdater::update(
                         RunCounter::Unused,
                         &input,
-                        CharacterSequenceName::default(),
+                        &SequenceNameString::Name(CharacterSequenceName::default()),
                         mirrored.into(),
                         Grounding::default()
                     )
@@ -214,7 +220,7 @@ mod tests {
                     RunCounterUpdater::update(
                         RunCounter::Decrease(11),
                         &input,
-                        CharacterSequenceName::default(),
+                        &SequenceNameString::Name(CharacterSequenceName::default()),
                         mirrored.into(),
                         Grounding::default()
                     )
@@ -234,7 +240,7 @@ mod tests {
                     RunCounterUpdater::update(
                         RunCounter::Increase(11),
                         &input,
-                        CharacterSequenceName::default(),
+                        &SequenceNameString::Name(CharacterSequenceName::default()),
                         mirrored.into(),
                         Grounding::default()
                     )
@@ -254,7 +260,7 @@ mod tests {
                     RunCounterUpdater::update(
                         RunCounter::Decrease(11),
                         &input,
-                        CharacterSequenceName::default(),
+                        &SequenceNameString::Name(CharacterSequenceName::default()),
                         mirrored.into(),
                         Grounding::default()
                     )
@@ -274,7 +280,7 @@ mod tests {
                     RunCounterUpdater::update(
                         RunCounter::Increase(0),
                         &input,
-                        CharacterSequenceName::default(),
+                        &SequenceNameString::Name(CharacterSequenceName::default()),
                         mirrored.into(),
                         Grounding::default()
                     )
@@ -294,7 +300,7 @@ mod tests {
                     RunCounterUpdater::update(
                         RunCounter::Increase(11),
                         &input,
-                        CharacterSequenceName::default(),
+                        &SequenceNameString::Name(CharacterSequenceName::default()),
                         mirrored.into(),
                         Grounding::default()
                     )
@@ -314,7 +320,7 @@ mod tests {
                     RunCounterUpdater::update(
                         RunCounter::Exceeded,
                         &input,
-                        CharacterSequenceName::default(),
+                        &SequenceNameString::Name(CharacterSequenceName::default()),
                         mirrored.into(),
                         Grounding::default()
                     )

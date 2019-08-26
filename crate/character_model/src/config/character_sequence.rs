@@ -31,7 +31,7 @@ impl GameObjectSequence for CharacterSequence {
 mod tests {
     use object_model::config::{ObjectFrame, ObjectSequence};
     use sequence_model::config::{
-        ControlTransition, ControlTransitionSingle, SequenceEndTransition, Wait,
+        ControlTransition, ControlTransitionSingle, SequenceEndTransition, SequenceNameString, Wait,
     };
     use serde_yaml;
     use sprite_model::config::SpriteRef;
@@ -76,19 +76,19 @@ frames:
                 ..Default::default()
             },
             CharacterControlTransitions {
-                press_attack: Some(ControlTransition::SequenceName(
-                    CharacterSequenceName::StandAttack0,
+                press_attack: Some(ControlTransition::SequenceNameString(
+                    SequenceNameString::Name(CharacterSequenceName::StandAttack0),
                 )),
                 hold_jump: Some(ControlTransition::Single(ControlTransitionSingle {
-                    next: CharacterSequenceName::Jump,
+                    next: SequenceNameString::Name(CharacterSequenceName::Jump),
                     requirements: vec![],
                 })),
                 ..Default::default()
             }, // kcov-ignore
         )];
         let character_control_transitions = CharacterControlTransitions {
-            press_defend: Some(ControlTransition::SequenceName(
-                CharacterSequenceName::StandAttack1,
+            press_defend: Some(ControlTransition::SequenceNameString(
+                SequenceNameString::Name(CharacterSequenceName::StandAttack1),
             )),
             ..Default::default()
         };

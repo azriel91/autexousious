@@ -550,7 +550,10 @@ mod tests {
         Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
     };
     use object_model::play::{HealthPoints, Mirrored, SkillPoints};
-    use sequence_model::loaded::{SequenceId, SequenceIdMappings};
+    use sequence_model::{
+        config::SequenceNameString,
+        loaded::{SequenceId, SequenceIdMappings},
+    };
 
     use super::CharacterControlTransitionsTransitionSystem;
 
@@ -1031,28 +1034,70 @@ mod tests {
 
     fn sequence_id_mappings() -> SequenceIdMappings<CharacterSequenceName> {
         let mut sequence_id_mappings = SequenceIdMappings::new();
-        sequence_id_mappings.insert(CharacterSequenceName::Stand, SequenceId::new(0));
-        sequence_id_mappings.insert(CharacterSequenceName::Walk, SequenceId::new(1));
-        sequence_id_mappings.insert(CharacterSequenceName::Run, SequenceId::new(2));
-        sequence_id_mappings.insert(CharacterSequenceName::RunStop, SequenceId::new(3));
-        sequence_id_mappings.insert(CharacterSequenceName::StandAttack0, SequenceId::new(4));
-        sequence_id_mappings.insert(CharacterSequenceName::StandAttack1, SequenceId::new(5));
-        sequence_id_mappings.insert(CharacterSequenceName::Jump, SequenceId::new(6));
-        sequence_id_mappings.insert(CharacterSequenceName::JumpOff, SequenceId::new(7));
-        sequence_id_mappings.insert(CharacterSequenceName::DashForward, SequenceId::new(8));
-        sequence_id_mappings.insert(CharacterSequenceName::DashBack, SequenceId::new(9));
-        sequence_id_mappings.insert(CharacterSequenceName::Flinch0, SequenceId::new(10));
-        sequence_id_mappings.insert(CharacterSequenceName::Flinch1, SequenceId::new(11));
-        sequence_id_mappings.insert(CharacterSequenceName::Dazed, SequenceId::new(12));
         sequence_id_mappings.insert(
-            CharacterSequenceName::FallForwardAscend,
+            SequenceNameString::Name(CharacterSequenceName::Stand),
+            SequenceId::new(0),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::Walk),
+            SequenceId::new(1),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::Run),
+            SequenceId::new(2),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::RunStop),
+            SequenceId::new(3),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::StandAttack0),
+            SequenceId::new(4),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::StandAttack1),
+            SequenceId::new(5),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::Jump),
+            SequenceId::new(6),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::JumpOff),
+            SequenceId::new(7),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::DashForward),
+            SequenceId::new(8),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::DashBack),
+            SequenceId::new(9),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::Flinch0),
+            SequenceId::new(10),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::Flinch1),
+            SequenceId::new(11),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::Dazed),
+            SequenceId::new(12),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::FallForwardAscend),
             SequenceId::new(13),
         );
         sequence_id_mappings.insert(
-            CharacterSequenceName::FallForwardDescend,
+            SequenceNameString::Name(CharacterSequenceName::FallForwardDescend),
             SequenceId::new(14),
         );
-        sequence_id_mappings.insert(CharacterSequenceName::LieFaceDown, SequenceId::new(15));
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::LieFaceDown),
+            SequenceId::new(15),
+        );
         sequence_id_mappings
     }
 

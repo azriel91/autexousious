@@ -1,7 +1,9 @@
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 
-use crate::config::{ControlTransitionMultiple, ControlTransitionSingle, SequenceName};
+use crate::config::{
+    ControlTransitionMultiple, ControlTransitionSingle, SequenceName, SequenceNameString,
+};
 
 /// Variants of how a `ControlTransition` may be specified.
 ///
@@ -19,7 +21,7 @@ where
     /// ```yaml
     /// press_attack: "sequence_name"
     /// ```
-    SequenceName(SeqName),
+    SequenceNameString(SequenceNameString<SeqName>),
     /// Transition has a sequence name and extra fields.
     ///
     /// ```yaml

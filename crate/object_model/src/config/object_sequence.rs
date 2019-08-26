@@ -46,7 +46,7 @@ mod tests {
     use derivative::Derivative;
     use kinematic_model::config::{Position, Velocity};
     use object_status_model::config::StunPoints;
-    use sequence_model::config::{SequenceEndTransition, SequenceName, Wait};
+    use sequence_model::config::{SequenceEndTransition, SequenceName, SequenceNameString, Wait};
     use serde::{Deserialize, Serialize};
     use serde_yaml;
     use shape_model::Volume;
@@ -147,7 +147,7 @@ frames:
             ),
         ];
         let expected = ObjectSequence::new(
-            SequenceEndTransition::SequenceName(TestSeqName::Boo),
+            SequenceEndTransition::SequenceName(SequenceNameString::Name(TestSeqName::Boo)),
             frames,
         );
         assert_eq!(expected, sequence);

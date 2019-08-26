@@ -88,7 +88,7 @@ impl ControlTransitionsSequenceLoader {
                 if let Some(config_control_transition) = &mode_action {
                     use sequence_model::config::ControlTransition::*;
                     match config_control_transition {
-                        SequenceName(sequence_name) => {
+                        SequenceNameString(sequence_name) => {
                             let sequence_id =
                                 sequence_id_mappings.id(sequence_name).unwrap_or_else(|| {
                                     panic!(
@@ -106,15 +106,15 @@ impl ControlTransitionsSequenceLoader {
                             ));
                         }
                         Single(ControlTransitionSingle {
-                            next: sequence_id,
+                            next: sequence_name_string,
                             requirements: control_transition_requirements,
                         }) => {
                             let sequence_id =
-                                sequence_id_mappings.id(sequence_id).unwrap_or_else(|| {
+                                sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
                                     panic!(
                                         "Expected `sequence_id_mappings` to contain mapping for \
                                          `{}`",
-                                        sequence_id
+                                        sequence_name_string
                                     )
                                 });
                             loaded_transitions.push(CharacterControlTransition::new(
@@ -127,15 +127,15 @@ impl ControlTransitionsSequenceLoader {
                         }
                         Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
                             |ControlTransitionSingle {
-                                 next: sequence_id,
+                                 next: sequence_name_string,
                                  requirements: control_transition_requirements,
                              }| {
                                 let sequence_id =
-                                sequence_id_mappings.id(sequence_id).unwrap_or_else(|| {
+                                sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
                                     panic!(
                                         "Expected `sequence_id_mappings` to contain mapping for \
                                          `{}`",
-                                        sequence_id
+                                        sequence_name_string
                                     )
                                 });
                                 CharacterControlTransition::new(
@@ -167,7 +167,7 @@ impl ControlTransitionsSequenceLoader {
                 if let Some(config_control_transition) = &mode_action {
                     use sequence_model::config::ControlTransition::*;
                     match config_control_transition {
-                        SequenceName(sequence_name) => {
+                        SequenceNameString(sequence_name) => {
                             let sequence_id =
                                 sequence_id_mappings.id(sequence_name).unwrap_or_else(|| {
                                     panic!(
@@ -185,15 +185,15 @@ impl ControlTransitionsSequenceLoader {
                             ));
                         }
                         Single(ControlTransitionSingle {
-                            next: sequence_id,
+                            next: sequence_name_string,
                             requirements: control_transition_requirements,
                         }) => {
                             let sequence_id =
-                                sequence_id_mappings.id(sequence_id).unwrap_or_else(|| {
+                                sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
                                     panic!(
                                         "Expected `sequence_id_mappings` to contain mapping for \
                                          `{}`",
-                                        sequence_id
+                                        sequence_name_string
                                     )
                                 });
                             loaded_transitions.push(CharacterControlTransition::new(
@@ -206,15 +206,15 @@ impl ControlTransitionsSequenceLoader {
                         }
                         Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
                             |ControlTransitionSingle {
-                                 next: sequence_id,
+                                 next: sequence_name_string,
                                  requirements: control_transition_requirements,
                              }| {
                                 let sequence_id =
-                                sequence_id_mappings.id(sequence_id).unwrap_or_else(|| {
+                                sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
                                     panic!(
                                         "Expected `sequence_id_mappings` to contain mapping for \
                                          `{}`",
-                                        sequence_id
+                                        sequence_name_string
                                     )
                                 });
                                 CharacterControlTransition::new(
@@ -246,7 +246,7 @@ impl ControlTransitionsSequenceLoader {
                 if let Some(config_control_transition) = &mode_action {
                     use sequence_model::config::ControlTransition::*;
                     match config_control_transition {
-                        SequenceName(sequence_name) => {
+                        SequenceNameString(sequence_name) => {
                             let sequence_id =
                                 sequence_id_mappings.id(sequence_name).unwrap_or_else(|| {
                                     panic!(
@@ -263,15 +263,15 @@ impl ControlTransitionsSequenceLoader {
                             ));
                         }
                         Single(ControlTransitionSingle {
-                            next: sequence_id,
+                            next: sequence_name_string,
                             requirements: control_transition_requirements,
                         }) => {
                             let sequence_id =
-                                sequence_id_mappings.id(sequence_id).unwrap_or_else(|| {
+                                sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
                                     panic!(
                                         "Expected `sequence_id_mappings` to contain mapping for \
                                          `{}`",
-                                        sequence_id
+                                        sequence_name_string
                                     )
                                 });
                             loaded_transitions.push(CharacterControlTransition::new(
@@ -283,15 +283,15 @@ impl ControlTransitionsSequenceLoader {
                         }
                         Multiple(multiple) => loaded_transitions.extend(multiple.iter().map(
                             |ControlTransitionSingle {
-                                 next: sequence_id,
+                                 next: sequence_name_string,
                                  requirements: control_transition_requirements,
                              }| {
                                 let sequence_id =
-                                sequence_id_mappings.id(sequence_id).unwrap_or_else(|| {
+                                sequence_id_mappings.id(sequence_name_string).unwrap_or_else(|| {
                                     panic!(
                                         "Expected `sequence_id_mappings` to contain mapping for \
                                          `{}`",
-                                        sequence_id
+                                        sequence_name_string
                                     )
                                 });
                                 CharacterControlTransition::new(
@@ -369,9 +369,12 @@ mod tests {
     use object_model::play::{HealthPoints, SkillPoints};
     use pretty_assertions::assert_eq;
     use sequence_loading::SequenceLoadingBundle;
-    use sequence_model::loaded::{
-        ActionHold, ActionPress, ActionRelease, AxisTransition, ControlTransition,
-        ControlTransitions, FallbackTransition, SequenceId, SequenceIdMappings,
+    use sequence_model::{
+        config::SequenceNameString,
+        loaded::{
+            ActionHold, ActionPress, ActionRelease, AxisTransition, ControlTransition,
+            ControlTransitions, FallbackTransition, SequenceId, SequenceIdMappings,
+        },
     };
 
     use super::ControlTransitionsSequenceLoader;
@@ -385,7 +388,7 @@ mod tests {
         let sequence_default = CHARACTER_TRANSITIONS_DEFAULT
             .object_definition
             .sequences
-            .get(&CharacterSequenceName::Stand);
+            .get(&SequenceNameString::Name(CharacterSequenceName::Stand));
 
         run_test(
             test_character_sequence(),
@@ -498,27 +501,66 @@ mod tests {
 
     fn sequence_id_mappings() -> SequenceIdMappings<CharacterSequenceName> {
         let mut sequence_id_mappings = SequenceIdMappings::new();
-        sequence_id_mappings.insert(CharacterSequenceName::Stand, SequenceId::new(0));
-        sequence_id_mappings.insert(CharacterSequenceName::Walk, SequenceId::new(1));
-        sequence_id_mappings.insert(CharacterSequenceName::Run, SequenceId::new(2));
-        sequence_id_mappings.insert(CharacterSequenceName::RunStop, SequenceId::new(3));
-        sequence_id_mappings.insert(CharacterSequenceName::StandAttack0, SequenceId::new(4));
-        sequence_id_mappings.insert(CharacterSequenceName::StandAttack1, SequenceId::new(5));
-        sequence_id_mappings.insert(CharacterSequenceName::Jump, SequenceId::new(6));
-        sequence_id_mappings.insert(CharacterSequenceName::JumpOff, SequenceId::new(7));
-        sequence_id_mappings.insert(CharacterSequenceName::DashForward, SequenceId::new(8));
-        sequence_id_mappings.insert(CharacterSequenceName::Flinch0, SequenceId::new(9));
-        sequence_id_mappings.insert(CharacterSequenceName::Flinch1, SequenceId::new(10));
-        sequence_id_mappings.insert(CharacterSequenceName::Dazed, SequenceId::new(11));
         sequence_id_mappings.insert(
-            CharacterSequenceName::FallForwardAscend,
+            SequenceNameString::Name(CharacterSequenceName::Stand),
+            SequenceId::new(0),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::Walk),
+            SequenceId::new(1),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::Run),
+            SequenceId::new(2),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::RunStop),
+            SequenceId::new(3),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::StandAttack0),
+            SequenceId::new(4),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::StandAttack1),
+            SequenceId::new(5),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::Jump),
+            SequenceId::new(6),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::JumpOff),
+            SequenceId::new(7),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::DashForward),
+            SequenceId::new(8),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::Flinch0),
+            SequenceId::new(9),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::Flinch1),
+            SequenceId::new(10),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::Dazed),
+            SequenceId::new(11),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::FallForwardAscend),
             SequenceId::new(12),
         );
         sequence_id_mappings.insert(
-            CharacterSequenceName::FallForwardDescend,
+            SequenceNameString::Name(CharacterSequenceName::FallForwardDescend),
             SequenceId::new(13),
         );
-        sequence_id_mappings.insert(CharacterSequenceName::LieFaceDown, SequenceId::new(14));
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::LieFaceDown),
+            SequenceId::new(14),
+        );
         sequence_id_mappings
     }
 

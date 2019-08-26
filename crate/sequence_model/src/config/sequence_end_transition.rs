@@ -9,12 +9,10 @@ use serde::{
 use strum_macros::{Display, EnumString, IntoStaticStr};
 use typename_derive::TypeName;
 
-use crate::config::SequenceName;
+use crate::config::{SequenceName, SequenceNameString};
 
 /// Specifies the behaviour to transition when the sequence ends.
-#[derive(
-    Clone, Copy, Debug, Derivative, Display, EnumString, IntoStaticStr, PartialEq, TypeName,
-)]
+#[derive(Clone, Debug, Derivative, Display, EnumString, IntoStaticStr, PartialEq, TypeName)]
 #[derivative(Default)]
 #[strum(serialize_all = "snake_case")]
 pub enum SequenceEndTransition<SeqName>
@@ -32,7 +30,7 @@ where
     //
     // TODO: Ideally we could use `#[serde(flatten)]` for enum variants, but it isn't supported yet.
     // TODO: See: <https://github.com/serde-rs/serde/issues/1402>
-    SequenceName(SeqName),
+    SequenceName(SequenceNameString<SeqName>),
 }
 
 impl<SeqName> Serialize for SequenceEndTransition<SeqName>
@@ -63,10 +61,14 @@ where
                     Into::<&'static str>::into(SequenceEndTransition::<SeqName>::Delete);
                 serializer.serialize_unit_variant(enum_name, variant_index, &variant_name)
             }
-            SequenceEndTransition::SequenceName(sequence_name) => {
-                let variant_index = 3;
-                let variant_name = Into::<&'static str>::into(*sequence_name);
-                serializer.serialize_unit_variant(enum_name, variant_index, &variant_name)
+            SequenceEndTransition::SequenceName(sequence_name_string) => {
+                let string = match sequence_name_string {
+                    SequenceNameString::Name(sequence_name) => {
+                        Into::<&'static str>::into(*sequence_name)
+                    }
+                    SequenceNameString::String(string) => string,
+                };
+                serializer.serialize_str(string)
             }
         }
     }
@@ -104,7 +106,9 @@ where
         E: Error,
     {
         SequenceEndTransition::from_str(value)
-            .or_else(|_| SeqName::from_str(value).map(SequenceEndTransition::SequenceName))
+            .or_else(|_| {
+                SequenceNameString::from_str(value).map(SequenceEndTransition::SequenceName)
+            })
             .map_err(|_| E::invalid_value(Unexpected::Str(value), &self))
     }
 }

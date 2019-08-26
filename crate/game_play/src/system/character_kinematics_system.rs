@@ -13,7 +13,7 @@ use derive_new::new;
 use game_input::ControllerInput;
 use kinematic_model::config::Velocity;
 use object_model::play::Mirrored;
-use sequence_model::{loaded::SequenceId, play::SequenceUpdateEvent};
+use sequence_model::{config::SequenceNameString, loaded::SequenceId, play::SequenceUpdateEvent};
 use typename_derive::TypeName;
 
 /// Updates `Character` velocity based on sequence.
@@ -86,42 +86,44 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                 .name(*sequence_id)
                 .expect("Expected sequence ID mapping to exist.");
 
-            match character_sequence_name {
-                CharacterSequenceName::Stand
-                | CharacterSequenceName::Flinch0
-                | CharacterSequenceName::Flinch1 => {
-                    velocity[0] = 0.;
-                    velocity[2] = 0.;
-                }
-                CharacterSequenceName::Walk => {
-                    velocity[0] = controller_input.x_axis_value as f32 * 3.5;
-                    velocity[2] = controller_input.z_axis_value as f32 * 2.;
-                }
-                CharacterSequenceName::Run => {
-                    velocity[0] = controller_input.x_axis_value as f32 * 6.;
-                    velocity[2] = controller_input.z_axis_value as f32 * 1.5;
-                }
-                CharacterSequenceName::RunStop => {
-                    velocity[0] = if mirrored.0 { -2. } else { 2. };
-                    velocity[2] = controller_input.z_axis_value as f32 * 0.5;
-                }
-                // TODO: velocity as config
-                CharacterSequenceName::Dodge => {
-                    velocity[0] = if mirrored.0 { -3. } else { 3. };
-                    velocity[2] = controller_input.z_axis_value as f32;
-                }
-                CharacterSequenceName::JumpDescendLand
-                | CharacterSequenceName::DashDescendLand
-                | CharacterSequenceName::FallForwardLand
-                | CharacterSequenceName::LieFaceDown
-                | CharacterSequenceName::StandAttack0
-                | CharacterSequenceName::StandAttack1 => {
-                    velocity[0] /= 2.;
-                    velocity[1] = 0.;
-                    velocity[2] /= 2.;
-                }
-                _ => {}
-            };
+            if let SequenceNameString::Name(character_sequence_name) = character_sequence_name {
+                match character_sequence_name {
+                    CharacterSequenceName::Stand
+                    | CharacterSequenceName::Flinch0
+                    | CharacterSequenceName::Flinch1 => {
+                        velocity[0] = 0.;
+                        velocity[2] = 0.;
+                    }
+                    CharacterSequenceName::Walk => {
+                        velocity[0] = controller_input.x_axis_value as f32 * 3.5;
+                        velocity[2] = controller_input.z_axis_value as f32 * 2.;
+                    }
+                    CharacterSequenceName::Run => {
+                        velocity[0] = controller_input.x_axis_value as f32 * 6.;
+                        velocity[2] = controller_input.z_axis_value as f32 * 1.5;
+                    }
+                    CharacterSequenceName::RunStop => {
+                        velocity[0] = if mirrored.0 { -2. } else { 2. };
+                        velocity[2] = controller_input.z_axis_value as f32 * 0.5;
+                    }
+                    // TODO: velocity as config
+                    CharacterSequenceName::Dodge => {
+                        velocity[0] = if mirrored.0 { -3. } else { 3. };
+                        velocity[2] = controller_input.z_axis_value as f32;
+                    }
+                    CharacterSequenceName::JumpDescendLand
+                    | CharacterSequenceName::DashDescendLand
+                    | CharacterSequenceName::FallForwardLand
+                    | CharacterSequenceName::LieFaceDown
+                    | CharacterSequenceName::StandAttack0
+                    | CharacterSequenceName::StandAttack1 => {
+                        velocity[0] /= 2.;
+                        velocity[1] = 0.;
+                        velocity[2] /= 2.;
+                    }
+                    _ => {}
+                };
+            }
         }
 
         sequence_update_ec
@@ -155,29 +157,33 @@ impl<'s> System<'s> for CharacterKinematicsSystem {
                             .name(*sequence_id)
                             .expect("Expected sequence ID mapping to exist.");
 
-                        match character_sequence_name {
-                            CharacterSequenceName::StandAttack0
-                            | CharacterSequenceName::StandAttack1 => {
-                                velocity[0] = controller_input.x_axis_value as f32 * 2.5;
-                                velocity[2] = controller_input.z_axis_value as f32 * 1.5;
-                            }
-                            CharacterSequenceName::JumpOff => {
-                                velocity[0] = controller_input.x_axis_value as f32 * 5.;
-                                velocity[1] = 10.5;
-                                velocity[2] = controller_input.z_axis_value as f32 * 2.;
-                            }
-                            CharacterSequenceName::DashForward => {
-                                velocity[0] = if mirrored.0 { -8. } else { 8. };
-                                velocity[1] = 7.5;
-                                velocity[2] = controller_input.z_axis_value as f32 * 2.5;
-                            }
-                            CharacterSequenceName::DashBack => {
-                                velocity[0] = if mirrored.0 { 11. } else { -11. };
-                                velocity[1] = 7.5;
-                                velocity[2] = controller_input.z_axis_value as f32 * 2.5;
-                            }
-                            _ => {}
-                        };
+                        if let SequenceNameString::Name(character_sequence_name) =
+                            character_sequence_name
+                        {
+                            match character_sequence_name {
+                                CharacterSequenceName::StandAttack0
+                                | CharacterSequenceName::StandAttack1 => {
+                                    velocity[0] = controller_input.x_axis_value as f32 * 2.5;
+                                    velocity[2] = controller_input.z_axis_value as f32 * 1.5;
+                                }
+                                CharacterSequenceName::JumpOff => {
+                                    velocity[0] = controller_input.x_axis_value as f32 * 5.;
+                                    velocity[1] = 10.5;
+                                    velocity[2] = controller_input.z_axis_value as f32 * 2.;
+                                }
+                                CharacterSequenceName::DashForward => {
+                                    velocity[0] = if mirrored.0 { -8. } else { 8. };
+                                    velocity[1] = 7.5;
+                                    velocity[2] = controller_input.z_axis_value as f32 * 2.5;
+                                }
+                                CharacterSequenceName::DashBack => {
+                                    velocity[0] = if mirrored.0 { 11. } else { -11. };
+                                    velocity[1] = 7.5;
+                                    velocity[2] = controller_input.z_axis_value as f32 * 2.5;
+                                }
+                                _ => {}
+                            };
+                        }
                     }
                 }
             });
@@ -212,6 +218,7 @@ mod tests {
     use map_selection_model::MapSelection;
     use object_model::play::{Grounding, Mirrored};
     use sequence_model::{
+        config::SequenceNameString,
         loaded::{SequenceId, SequenceIdMappings},
         play::SequenceUpdateEvent,
     };
@@ -263,7 +270,7 @@ mod tests {
                                 CharacterSequenceName,
                             >| {
                                 let sequence_id = *sequence_id_mappings
-                                    .id(&stand_attack_id)
+                                    .id(&SequenceNameString::Name(stand_attack_id))
                                     .expect("Expected mapping for sequence ID to exist.");
                                 SequenceUpdateEvent::SequenceBegin {
                                     entity,
@@ -375,7 +382,7 @@ mod tests {
                 event_fn: Some(
                     |entity, sequence_id_mappings: &SequenceIdMappings<CharacterSequenceName>| {
                         let sequence_id = *sequence_id_mappings
-                            .id(&CharacterSequenceName::JumpOff)
+                            .id(&SequenceNameString::Name(CharacterSequenceName::JumpOff))
                             .expect("Expected mapping for sequence ID to exist.");
                         SequenceUpdateEvent::SequenceBegin {
                             entity,
@@ -403,7 +410,9 @@ mod tests {
                 event_fn: Some(
                     |entity, sequence_id_mappings: &SequenceIdMappings<CharacterSequenceName>| {
                         let sequence_id = *sequence_id_mappings
-                            .id(&CharacterSequenceName::DashForward)
+                            .id(&SequenceNameString::Name(
+                                CharacterSequenceName::DashForward,
+                            ))
                             .expect("Expected mapping for sequence ID to exist.");
                         SequenceUpdateEvent::SequenceBegin {
                             entity,
@@ -431,7 +440,7 @@ mod tests {
                 event_fn: Some(
                     |entity, sequence_id_mappings: &SequenceIdMappings<CharacterSequenceName>| {
                         let sequence_id = *sequence_id_mappings
-                            .id(&CharacterSequenceName::DashBack)
+                            .id(&SequenceNameString::Name(CharacterSequenceName::DashBack))
                             .expect("Expected mapping for sequence ID to exist.");
                         SequenceUpdateEvent::SequenceBegin {
                             entity,
@@ -560,7 +569,7 @@ mod tests {
                         .expect("Expected `Character` to be loaded.");
                     let sequence_id_mappings = &character.sequence_id_mappings;
                     let sequence_id_setup = sequence_id_mappings
-                        .id(&character_sequence_name_setup)
+                        .id(&SequenceNameString::Name(character_sequence_name_setup))
                         .expect("Expected sequence ID mapping to exist.");
                     *sequence_id = *sequence_id_setup;
                     *grounding = grounding_setup;

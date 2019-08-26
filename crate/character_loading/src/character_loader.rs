@@ -44,11 +44,13 @@ impl CharacterLoader {
             .sequences
             .keys()
             .enumerate()
-            .map(|(index, sequence_name)| (SequenceId::new(index), *sequence_name))
+            .map(|(index, sequence_name_string)| {
+                (SequenceId::new(index), sequence_name_string.clone())
+            })
             .fold(
                 SequenceIdMappings::with_capacity(capacity),
-                |mut sequence_id_mappings, (sequence_id, sequence_name)| {
-                    sequence_id_mappings.insert(sequence_name, sequence_id);
+                |mut sequence_id_mappings, (sequence_id, sequence_name_string)| {
+                    sequence_id_mappings.insert(sequence_name_string, sequence_id);
                     sequence_id_mappings
                 },
             );

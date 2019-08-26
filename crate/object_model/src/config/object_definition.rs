@@ -1,6 +1,7 @@
 use derivative::Derivative;
 use derive_new::new;
 use indexmap::IndexMap;
+use sequence_model::config::SequenceNameString;
 use serde::{Deserialize, Serialize};
 
 use crate::config::GameObjectSequence;
@@ -20,5 +21,5 @@ where
     ObjSeq::SequenceName: for<'des> Deserialize<'des> + Serialize,
 {
     /// Sequences of actions this object can perform.
-    pub sequences: IndexMap<ObjSeq::SequenceName, ObjSeq>,
+    pub sequences: IndexMap<SequenceNameString<ObjSeq::SequenceName>, ObjSeq>,
 }

@@ -6,6 +6,7 @@ pub use self::{
     character_frame::CharacterFrame,
     character_sequence::CharacterSequence,
     character_sequence_name::CharacterSequenceName,
+    character_sequence_name_string::CharacterSequenceNameString,
     control_transition_requirement::ControlTransitionRequirement,
     control_transition_requirement_params::ControlTransitionRequirementParams,
 };
@@ -15,6 +16,7 @@ mod character_definition;
 mod character_frame;
 mod character_sequence;
 mod character_sequence_name;
+mod character_sequence_name_string;
 mod control_transition_requirement;
 mod control_transition_requirement_params;
 
@@ -29,7 +31,7 @@ mod test {
     };
     use sequence_model::config::{
         ControlTransition, ControlTransitionMultiple, ControlTransitionSingle,
-        SequenceEndTransition, Wait,
+        SequenceEndTransition, SequenceNameString, Wait,
     };
     use serde_yaml;
     use shape_model::Volume;
@@ -80,25 +82,25 @@ sequences:
                 Spawns::default(),
             ),
             CharacterControlTransitions {
-                press_attack: Some(ControlTransition::SequenceName(
-                    CharacterSequenceName::StandAttack0,
+                press_attack: Some(ControlTransition::SequenceNameString(
+                    SequenceNameString::Name(CharacterSequenceName::StandAttack0),
                 )),
                 release_attack: Some(ControlTransition::Multiple(ControlTransitionMultiple::new(
                     vec![
                         ControlTransitionSingle {
-                            next: CharacterSequenceName::Walk,
+                            next: SequenceNameString::Name(CharacterSequenceName::Walk),
                             requirements: vec![ControlTransitionRequirement::Charge(
                                 ChargePoints::new(90),
                             )],
                         },
                         ControlTransitionSingle {
-                            next: CharacterSequenceName::Run,
+                            next: SequenceNameString::Name(CharacterSequenceName::Run),
                             requirements: vec![ControlTransitionRequirement::Sp(SkillPoints::new(
                                 50,
                             ))],
                         },
                         ControlTransitionSingle {
-                            next: CharacterSequenceName::RunStop,
+                            next: SequenceNameString::Name(CharacterSequenceName::RunStop),
                             requirements: vec![ControlTransitionRequirement::Hp(
                                 HealthPoints::new(30),
                             )],
@@ -106,7 +108,7 @@ sequences:
                     ],
                 ))),
                 hold_jump: Some(ControlTransition::Single(ControlTransitionSingle {
-                    next: CharacterSequenceName::Jump,
+                    next: SequenceNameString::Name(CharacterSequenceName::Jump),
                     requirements: vec![],
                 })),
                 ..Default::default()
@@ -114,20 +116,25 @@ sequences:
         )];
 
         let character_control_transitions = CharacterControlTransitions {
-            press_defend: Some(ControlTransition::SequenceName(
-                CharacterSequenceName::StandAttack1,
+            press_defend: Some(ControlTransition::SequenceNameString(
+                SequenceNameString::Name(CharacterSequenceName::StandAttack1),
             )),
             ..Default::default()
         };
         let sequence = CharacterSequence::new(
             ObjectSequence::new(
-                SequenceEndTransition::SequenceName(CharacterSequenceName::Walk),
+                SequenceEndTransition::SequenceName(SequenceNameString::Name(
+                    CharacterSequenceName::Walk,
+                )),
                 frames,
             ),
             Some(character_control_transitions),
         );
         let mut sequences = IndexMap::new();
-        sequences.insert(CharacterSequenceName::Stand, sequence);
+        sequences.insert(
+            SequenceNameString::Name(CharacterSequenceName::Stand),
+            sequence,
+        );
         let object_definition = ObjectDefinition::new(sequences);
         let expected = CharacterDefinition {
             object_definition,

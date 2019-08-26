@@ -17,7 +17,7 @@ mod test {
     use collision_model::config::Body;
     use indexmap::IndexMap;
     use object_model::config::{ObjectDefinition, ObjectFrame, ObjectSequence};
-    use sequence_model::config::{SequenceEndTransition, Wait};
+    use sequence_model::config::{SequenceEndTransition, SequenceNameString, Wait};
     use serde_yaml;
     use shape_model::Volume;
     use sprite_model::config::SpriteRef;
@@ -53,11 +53,16 @@ sequences:
             ..Default::default()
         })];
         let sequence = EnergySequence::new(ObjectSequence::new(
-            SequenceEndTransition::SequenceName(EnergySequenceName::Hover),
+            SequenceEndTransition::SequenceName(SequenceNameString::Name(
+                EnergySequenceName::Hover,
+            )),
             frames,
         ));
         let mut sequences = IndexMap::new();
-        sequences.insert(EnergySequenceName::Hover, sequence);
+        sequences.insert(
+            SequenceNameString::Name(EnergySequenceName::Hover),
+            sequence,
+        );
         let object_definition = ObjectDefinition::new(sequences);
         let expected = EnergyDefinition::new(object_definition);
         assert_eq!(expected, char_definition);

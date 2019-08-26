@@ -12,7 +12,7 @@ use object_model::{
     loaded::{GameObject, Object, ObjectWrapper},
 };
 use sequence_model::{
-    config::Wait,
+    config::{SequenceNameString, Wait},
     loaded::{
         SequenceEndTransition, SequenceEndTransitions, SequenceId, WaitSequence,
         WaitSequenceHandles,
@@ -65,15 +65,15 @@ impl ObjectLoader {
             .sequences
             .keys()
             .enumerate()
-            .map(|(index, sequence_id)| (*sequence_id, SequenceId(index)))
-            .collect::<HashMap<O::SequenceName, SequenceId>>();
+            .map(|(index, sequence_name_string)| (sequence_name_string.clone(), SequenceId(index)))
+            .collect::<HashMap<SequenceNameString<O::SequenceName>, SequenceId>>();
 
         let sequence_end_transitions = object_definition
             .sequences
             .values()
             .map(|sequence| {
                 use sequence_model::config;
-                match sequence.object_sequence().next {
+                match &sequence.object_sequence().next {
                     config::SequenceEndTransition::None => SequenceEndTransition::None,
                     config::SequenceEndTransition::Repeat => SequenceEndTransition::Repeat,
                     config::SequenceEndTransition::Delete => SequenceEndTransition::Delete,

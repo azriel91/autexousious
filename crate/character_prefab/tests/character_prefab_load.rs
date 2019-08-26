@@ -35,7 +35,7 @@ use object_model::{
 use pretty_assertions::assert_eq;
 use sequence_loading::SequenceLoadingBundle;
 use sequence_model::{
-    config::SequenceEndTransition,
+    config::{SequenceEndTransition, SequenceNameString},
     loaded::{
         ActionHold, ActionPress, ActionRelease, ControlTransition, ControlTransitions, SequenceId,
     },
@@ -126,29 +126,29 @@ fn character_definition() -> CharacterDefinition {
             ..Default::default()
         },
         CharacterControlTransitions {
-            press_attack: Some(ControlTransition::SequenceName(
-                CharacterSequenceName::StandAttack0,
+            press_attack: Some(ControlTransition::SequenceNameString(
+                SequenceNameString::Name(CharacterSequenceName::StandAttack0),
             )),
             release_attack: Some(ControlTransition::Multiple(ControlTransitionMultiple::new(
                 vec![
                     ControlTransitionSingle {
-                        next: CharacterSequenceName::Walk,
+                        next: SequenceNameString::Name(CharacterSequenceName::Walk),
                         requirements: vec![ControlTransitionRequirement::Charge(
                             ChargePoints::new(90),
                         )],
                     },
                     ControlTransitionSingle {
-                        next: CharacterSequenceName::Run,
+                        next: SequenceNameString::Name(CharacterSequenceName::Run),
                         requirements: vec![ControlTransitionRequirement::Sp(SkillPoints::new(50))],
                     },
                     ControlTransitionSingle {
-                        next: CharacterSequenceName::RunStop,
+                        next: SequenceNameString::Name(CharacterSequenceName::RunStop),
                         requirements: vec![ControlTransitionRequirement::Hp(HealthPoints::new(30))],
                     },
                 ],
             ))),
             hold_jump: Some(ControlTransition::Single(ControlTransitionSingle {
-                next: CharacterSequenceName::Jump,
+                next: SequenceNameString::Name(CharacterSequenceName::Jump),
                 requirements: vec![],
             })),
             ..Default::default()
@@ -156,24 +156,44 @@ fn character_definition() -> CharacterDefinition {
     )];
     let sequence = CharacterSequence::new(
         ObjectSequence::new(
-            SequenceEndTransition::SequenceName(CharacterSequenceName::Stand),
+            SequenceEndTransition::SequenceName(SequenceNameString::Name(
+                CharacterSequenceName::Stand,
+            )),
             frames,
         ),
         None,
     );
     let mut sequences = IndexMap::new();
     // 0
-    sequences.insert(CharacterSequenceName::Stand, sequence);
+    sequences.insert(
+        SequenceNameString::Name(CharacterSequenceName::Stand),
+        sequence,
+    );
     // 1
-    sequences.insert(CharacterSequenceName::StandAttack0, empty_sequence());
+    sequences.insert(
+        SequenceNameString::Name(CharacterSequenceName::StandAttack0),
+        empty_sequence(),
+    );
     // 2
-    sequences.insert(CharacterSequenceName::Walk, empty_sequence());
+    sequences.insert(
+        SequenceNameString::Name(CharacterSequenceName::Walk),
+        empty_sequence(),
+    );
     // 3
-    sequences.insert(CharacterSequenceName::Run, empty_sequence());
+    sequences.insert(
+        SequenceNameString::Name(CharacterSequenceName::Run),
+        empty_sequence(),
+    );
     // 4
-    sequences.insert(CharacterSequenceName::RunStop, empty_sequence());
+    sequences.insert(
+        SequenceNameString::Name(CharacterSequenceName::RunStop),
+        empty_sequence(),
+    );
     // 5
-    sequences.insert(CharacterSequenceName::Jump, empty_sequence());
+    sequences.insert(
+        SequenceNameString::Name(CharacterSequenceName::Jump),
+        empty_sequence(),
+    );
     let object_definition = ObjectDefinition::new(sequences);
 
     CharacterDefinition {
