@@ -153,7 +153,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
 
                 let next_sequence_id = *character
                     .sequence_id_mappings
-                    .id(next_sequence_id)
+                    .id(&next_sequence_id)
                     .expect("Expected sequence ID mapping to exist.");
 
                 *sequence_id = next_sequence_id;
