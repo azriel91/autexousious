@@ -61,7 +61,7 @@ mod test {
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                &CharacterSequenceName::Stand,
+                CharacterSequenceName::Stand,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -81,7 +81,7 @@ mod test {
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                &CharacterSequenceName::Stand,
+                CharacterSequenceName::Stand,
                 SequenceStatus::End,
                 &Position::default(),
                 &Velocity::default(),
@@ -101,7 +101,7 @@ mod test {
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                &CharacterSequenceName::Stand,
+                CharacterSequenceName::Stand,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -120,7 +120,7 @@ mod test {
         Stand::update(CharacterSequenceUpdateComponents::new(
             &input,
             HealthPoints::default(),
-            &CharacterSequenceName::default(),
+            CharacterSequenceName::default(),
             SequenceStatus::default(),
             &Position::default(),
             &Velocity::default(),
@@ -138,7 +138,7 @@ mod test {
         Stand::update(CharacterSequenceUpdateComponents::new(
             &input,
             HealthPoints::default(),
-            &CharacterSequenceName::default(),
+            CharacterSequenceName::default(),
             SequenceStatus::default(),
             &Position::default(),
             &Velocity::default(),
@@ -157,7 +157,7 @@ mod test {
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                &CharacterSequenceName::Stand,
+                CharacterSequenceName::Stand,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -173,7 +173,7 @@ mod test {
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                &CharacterSequenceName::Stand,
+                CharacterSequenceName::Stand,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -193,7 +193,7 @@ mod test {
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                &CharacterSequenceName::Stand,
+                CharacterSequenceName::Stand,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -209,7 +209,7 @@ mod test {
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                &CharacterSequenceName::Stand,
+                CharacterSequenceName::Stand,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -229,7 +229,7 @@ mod test {
             Stand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                &CharacterSequenceName::Stand,
+                CharacterSequenceName::Stand,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -252,7 +252,7 @@ mod test {
                     Stand::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         HealthPoints::default(),
-                        &CharacterSequenceName::Stand,
+                        CharacterSequenceName::Stand,
                         SequenceStatus::default(),
                         &Position::default(),
                         &Velocity::default(),
@@ -276,7 +276,7 @@ mod test {
                     Stand::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         HealthPoints::default(),
-                        &CharacterSequenceName::Stand,
+                        CharacterSequenceName::Stand,
                         SequenceStatus::default(),
                         &Position::default(),
                         &Velocity::default(),

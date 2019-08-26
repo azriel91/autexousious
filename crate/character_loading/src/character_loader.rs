@@ -44,7 +44,7 @@ impl CharacterLoader {
             .sequences
             .keys()
             .enumerate()
-            .map(|(index, sequence_name)| (SequenceId::new(index), sequence_name.clone()))
+            .map(|(index, sequence_name)| (SequenceId::new(index), *sequence_name))
             .fold(
                 SequenceIdMappings::with_capacity(capacity),
                 |mut sequence_id_mappings, (sequence_id, sequence_name)| {

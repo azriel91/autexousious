@@ -21,7 +21,7 @@ impl RunCounterUpdater {
     pub fn update(
         run_counter: RunCounter,
         controller_input: &ControllerInput,
-        character_sequence_name: &CharacterSequenceName,
+        character_sequence_name: CharacterSequenceName,
         mirrored: Mirrored,
         grounding: Grounding,
     ) -> RunCounter {
@@ -75,7 +75,7 @@ mod tests {
             RunCounterUpdater::update(
                 RunCounter::Unused,
                 &input,
-                &CharacterSequenceName::Jump,
+                CharacterSequenceName::Jump,
                 Mirrored::default(),
                 Grounding::Airborne
             )
@@ -91,7 +91,7 @@ mod tests {
             RunCounterUpdater::update(
                 RunCounter::Unused,
                 &input,
-                &CharacterSequenceName::default(),
+                CharacterSequenceName::default(),
                 Mirrored::default(),
                 Grounding::Airborne
             )
@@ -107,7 +107,7 @@ mod tests {
             RunCounterUpdater::update(
                 RunCounter::Increase(10),
                 &input,
-                &CharacterSequenceName::default(),
+                CharacterSequenceName::default(),
                 Mirrored::default(),
                 Grounding::Airborne
             )
@@ -123,7 +123,7 @@ mod tests {
             RunCounterUpdater::update(
                 RunCounter::Unused,
                 &input,
-                &CharacterSequenceName::default(),
+                CharacterSequenceName::default(),
                 Mirrored::default(),
                 Grounding::default()
             )
@@ -139,7 +139,7 @@ mod tests {
             RunCounterUpdater::update(
                 RunCounter::Decrease(0),
                 &input,
-                &CharacterSequenceName::default(),
+                CharacterSequenceName::default(),
                 Mirrored::default(),
                 Grounding::default()
             )
@@ -155,7 +155,7 @@ mod tests {
             RunCounterUpdater::update(
                 RunCounter::Decrease(1),
                 &input,
-                &CharacterSequenceName::default(),
+                CharacterSequenceName::default(),
                 Mirrored::default(),
                 Grounding::default()
             )
@@ -171,7 +171,7 @@ mod tests {
             RunCounterUpdater::update(
                 RunCounter::Increase(0),
                 &input,
-                &CharacterSequenceName::default(),
+                CharacterSequenceName::default(),
                 Mirrored::default(),
                 Grounding::default()
             )
@@ -194,7 +194,7 @@ mod tests {
                     RunCounterUpdater::update(
                         RunCounter::Unused,
                         &input,
-                        &CharacterSequenceName::default(),
+                        CharacterSequenceName::default(),
                         mirrored.into(),
                         Grounding::default()
                     )
@@ -214,7 +214,7 @@ mod tests {
                     RunCounterUpdater::update(
                         RunCounter::Decrease(11),
                         &input,
-                        &CharacterSequenceName::default(),
+                        CharacterSequenceName::default(),
                         mirrored.into(),
                         Grounding::default()
                     )
@@ -234,7 +234,7 @@ mod tests {
                     RunCounterUpdater::update(
                         RunCounter::Increase(11),
                         &input,
-                        &CharacterSequenceName::default(),
+                        CharacterSequenceName::default(),
                         mirrored.into(),
                         Grounding::default()
                     )
@@ -254,7 +254,7 @@ mod tests {
                     RunCounterUpdater::update(
                         RunCounter::Decrease(11),
                         &input,
-                        &CharacterSequenceName::default(),
+                        CharacterSequenceName::default(),
                         mirrored.into(),
                         Grounding::default()
                     )
@@ -274,7 +274,7 @@ mod tests {
                     RunCounterUpdater::update(
                         RunCounter::Increase(0),
                         &input,
-                        &CharacterSequenceName::default(),
+                        CharacterSequenceName::default(),
                         mirrored.into(),
                         Grounding::default()
                     )
@@ -294,7 +294,7 @@ mod tests {
                     RunCounterUpdater::update(
                         RunCounter::Increase(11),
                         &input,
-                        &CharacterSequenceName::default(),
+                        CharacterSequenceName::default(),
                         mirrored.into(),
                         Grounding::default()
                     )
@@ -314,7 +314,7 @@ mod tests {
                     RunCounterUpdater::update(
                         RunCounter::Exceeded,
                         &input,
-                        &CharacterSequenceName::default(),
+                        CharacterSequenceName::default(),
                         mirrored.into(),
                         Grounding::default()
                     )

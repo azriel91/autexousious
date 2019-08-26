@@ -10,7 +10,7 @@ pub(crate) struct SequenceRepeat;
 impl CharacterSequenceHandler for SequenceRepeat {
     fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {
         if components.sequence_status == SequenceStatus::End {
-            Some(components.character_sequence_name.clone())
+            Some(components.character_sequence_name)
         } else {
             None
         }
@@ -35,7 +35,7 @@ mod tests {
             SequenceRepeat::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                &CharacterSequenceName::Walk,
+                CharacterSequenceName::Walk,
                 SequenceStatus::Begin,
                 &Position::default(),
                 &Velocity::default(),
@@ -53,7 +53,7 @@ mod tests {
             SequenceRepeat::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                &CharacterSequenceName::Walk,
+                CharacterSequenceName::Walk,
                 SequenceStatus::Ongoing,
                 &Position::default(),
                 &Velocity::default(),
@@ -73,7 +73,7 @@ mod tests {
             SequenceRepeat::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                &CharacterSequenceName::Walk,
+                CharacterSequenceName::Walk,
                 SequenceStatus::End,
                 &Position::default(),
                 &Velocity::default(),

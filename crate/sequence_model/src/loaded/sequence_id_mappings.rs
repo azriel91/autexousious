@@ -1,22 +1,21 @@
-use std::iter::FromIterator;
+use std::{collections::HashMap, iter::FromIterator};
 
-use bimap::BiMap;
-use derive_deref::{Deref, DerefMut};
 use derive_new::new;
 
 use crate::{config, loaded::SequenceId};
 
 /// Mappings from sequence name to ID, and ID to name.
-///
-/// This is essentially a wrapper around `BiMap`, with the `name()` and `id()` methods.
-#[derive(Clone, Debug, Default, Deref, DerefMut, PartialEq, new)]
+#[derive(Clone, Debug, Default, PartialEq, new)]
 pub struct SequenceIdMappings<SeqName>
 where
     SeqName: config::SequenceName,
 {
-    /// Bi-directional mapping from sequence name to id.
+    /// Maps sequence ID to sequence name.
     #[new(default)]
-    pub sequence_name_to_id: BiMap<SeqName, SequenceId>,
+    pub sequence_name_by_id: HashMap<SequenceId, SeqName>,
+    /// Maps sequence name to sequence ID.
+    #[new(default)]
+    pub sequence_id_by_name: HashMap<SeqName, SequenceId>,
 }
 
 impl<SeqName> SequenceIdMappings<SeqName>
@@ -28,18 +27,35 @@ where
     /// The mappings are guaranteed to hold `capacity` elements without re-allocating.
     pub fn with_capacity(capacity: usize) -> Self {
         SequenceIdMappings {
-            sequence_name_to_id: BiMap::with_capacity(capacity),
+            sequence_name_by_id: HashMap::with_capacity(capacity),
+            sequence_id_by_name: HashMap::with_capacity(capacity),
         }
+    }
+
+    /// Inserts a mapping from the sequence name to ID and back.
+    pub fn insert(&mut self, sequence_name: SeqName, sequence_id: SequenceId) {
+        self.sequence_id_by_name.insert(sequence_name, sequence_id);
+        self.sequence_name_by_id.insert(sequence_id, sequence_name);
     }
 
     /// Returns the sequence name for the given ID.
     pub fn name(&self, sequence_id: SequenceId) -> Option<&SeqName> {
-        self.sequence_name_to_id.get_by_right(&sequence_id)
+        self.sequence_name_by_id.get(&sequence_id)
     }
 
     /// Returns the sequence name for the given ID.
-    pub fn id(&self, sequence_name: &SeqName) -> Option<&SequenceId> {
-        self.sequence_name_to_id.get_by_left(sequence_name)
+    pub fn id(&self, sequence_name: SeqName) -> Option<&SequenceId> {
+        self.sequence_id_by_name.get(&sequence_name)
+    }
+
+    /// Returns the number of sequence mappings.
+    pub fn len(&self) -> usize {
+        self.sequence_name_by_id.len()
+    }
+
+    /// Returns if the mappings is empty.
+    pub fn is_empty(&self) -> bool {
+        self.sequence_name_by_id.is_empty()
     }
 }
 
@@ -50,9 +66,34 @@ where
     fn from_iter<T: IntoIterator<Item = (SeqName, SequenceId)>>(
         iter: T,
     ) -> SequenceIdMappings<SeqName> {
-        let sequence_name_to_id = BiMap::from_iter(iter);
-        SequenceIdMappings {
-            sequence_name_to_id,
-        }
+        let mut sequence_id_mappings = SequenceIdMappings::default();
+        sequence_id_mappings.extend(iter);
+        sequence_id_mappings
+    }
+}
+
+impl<SeqName> Extend<(SeqName, SequenceId)> for SequenceIdMappings<SeqName>
+where
+    SeqName: config::SequenceName,
+{
+    #[inline]
+    fn extend<T: IntoIterator<Item = (SeqName, SequenceId)>>(&mut self, iter: T) {
+        iter.into_iter().for_each(|(sequence_name, sequence_id)| {
+            self.insert(sequence_name, sequence_id);
+        });
+    }
+}
+
+impl<'a, SeqName> Extend<(&'a SeqName, &'a SequenceId)> for SequenceIdMappings<SeqName>
+where
+    SeqName: config::SequenceName,
+{
+    #[inline]
+    fn extend<T: IntoIterator<Item = (&'a SeqName, &'a SequenceId)>>(&mut self, iter: T) {
+        iter.into_iter()
+            .map(|(sequence_name, sequence_id)| (*sequence_name, *sequence_id))
+            .for_each(|(sequence_name, sequence_id)| {
+                self.insert(sequence_name, sequence_id);
+            });
     }
 }

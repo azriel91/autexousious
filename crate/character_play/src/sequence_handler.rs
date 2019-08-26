@@ -82,7 +82,7 @@ mod test {
             Sit::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                &CharacterSequenceName::default(),
+                CharacterSequenceName::default(),
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),

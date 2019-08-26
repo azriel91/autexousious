@@ -47,7 +47,7 @@ mod tests {
                     RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         HealthPoints::default(),
-                        &CharacterSequenceName::Walk,
+                        CharacterSequenceName::Walk,
                         SequenceStatus::default(),
                         &Position::default(),
                         &Velocity::default(),
@@ -68,7 +68,7 @@ mod tests {
             RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                &CharacterSequenceName::Walk,
+                CharacterSequenceName::Walk,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -91,7 +91,7 @@ mod tests {
                     RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         HealthPoints::default(),
-                        &CharacterSequenceName::Walk,
+                        CharacterSequenceName::Walk,
                         SequenceStatus::default(),
                         &Position::default(),
                         &Velocity::default(),
@@ -115,7 +115,7 @@ mod tests {
                     RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         HealthPoints::default(),
-                        &CharacterSequenceName::Run,
+                        CharacterSequenceName::Run,
                         SequenceStatus::End,
                         &Position::default(),
                         &Velocity::default(),

@@ -65,7 +65,7 @@ impl ObjectLoader {
             .sequences
             .keys()
             .enumerate()
-            .map(|(index, sequence_id)| (sequence_id.clone(), SequenceId(index)))
+            .map(|(index, sequence_id)| (*sequence_id, SequenceId(index)))
             .collect::<HashMap<O::SequenceName, SequenceId>>();
 
         let sequence_end_transitions = object_definition
@@ -73,13 +73,13 @@ impl ObjectLoader {
             .values()
             .map(|sequence| {
                 use sequence_model::config;
-                match &sequence.object_sequence().next {
+                match sequence.object_sequence().next {
                     config::SequenceEndTransition::None => SequenceEndTransition::None,
                     config::SequenceEndTransition::Repeat => SequenceEndTransition::Repeat,
                     config::SequenceEndTransition::Delete => SequenceEndTransition::Delete,
                     config::SequenceEndTransition::SequenceName(sequence_name) => {
                         let sequence_id = sequence_id_mappings
-                            .get(sequence_name)
+                            .get(&sequence_name)
                             .map(|index| SequenceId(**index))
                             .unwrap_or_else(|| {
                                 panic!(

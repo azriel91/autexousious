@@ -56,7 +56,7 @@ mod tests {
             StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                &CharacterSequenceName::Stand,
+                CharacterSequenceName::Stand,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -76,7 +76,7 @@ mod tests {
             StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                &CharacterSequenceName::Stand,
+                CharacterSequenceName::Stand,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -92,7 +92,7 @@ mod tests {
             StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                &CharacterSequenceName::Stand,
+                CharacterSequenceName::Stand,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -112,7 +112,7 @@ mod tests {
             StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                &CharacterSequenceName::Stand,
+                CharacterSequenceName::Stand,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -128,7 +128,7 @@ mod tests {
             StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                &CharacterSequenceName::Stand,
+                CharacterSequenceName::Stand,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -151,7 +151,7 @@ mod tests {
                     StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         HealthPoints::default(),
-                        &CharacterSequenceName::Stand,
+                        CharacterSequenceName::Stand,
                         SequenceStatus::default(),
                         &Position::default(),
                         &Velocity::default(),
@@ -175,7 +175,7 @@ mod tests {
                     StandXMovementCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         HealthPoints::default(),
-                        &CharacterSequenceName::Stand,
+                        CharacterSequenceName::Stand,
                         SequenceStatus::default(),
                         &Position::default(),
                         &Velocity::default(),

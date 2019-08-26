@@ -36,7 +36,7 @@ mod test {
             Jump::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                &CharacterSequenceName::Jump,
+                CharacterSequenceName::Jump,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -58,7 +58,7 @@ mod test {
             Jump::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                &CharacterSequenceName::Jump,
+                CharacterSequenceName::Jump,
                 SequenceStatus::End,
                 &Position::default(),
                 &velocity,

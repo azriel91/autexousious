@@ -16,9 +16,9 @@ impl SwitchSequenceOnDescend {
     ) -> Option<CharacterSequenceName> {
         // Switch to descend_sequence when Y axis velocity is no longer upwards.
         if components.velocity[1] <= 0. {
-            Some(self.0.clone())
+            Some(self.0)
         } else if components.sequence_status == SequenceStatus::End {
-            Some(components.character_sequence_name.clone())
+            Some(components.character_sequence_name)
         } else {
             None
         }
@@ -48,7 +48,7 @@ mod test {
                 CharacterSequenceUpdateComponents::new(
                     &input,
                     HealthPoints::default(),
-                    &CharacterSequenceName::FallForwardAscend,
+                    CharacterSequenceName::FallForwardAscend,
                     SequenceStatus::default(),
                     &Position::default(),
                     &velocity,
@@ -72,7 +72,7 @@ mod test {
                 CharacterSequenceUpdateComponents::new(
                     &input,
                     HealthPoints::default(),
-                    &CharacterSequenceName::FallForwardAscend,
+                    CharacterSequenceName::FallForwardAscend,
                     SequenceStatus::End,
                     &Position::default(),
                     &velocity,
@@ -99,7 +99,7 @@ mod test {
                         CharacterSequenceUpdateComponents::new(
                             &input,
                             HealthPoints::default(),
-                            &CharacterSequenceName::FallForwardAscend,
+                            CharacterSequenceName::FallForwardAscend,
                             SequenceStatus::Ongoing,
                             &Position::default(),
                             &velocity,

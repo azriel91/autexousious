@@ -36,7 +36,7 @@ mod test {
             JumpDescendLand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                &CharacterSequenceName::JumpDescendLand,
+                CharacterSequenceName::JumpDescendLand,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -56,7 +56,7 @@ mod test {
             JumpDescendLand::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                &CharacterSequenceName::JumpDescendLand,
+                CharacterSequenceName::JumpDescendLand,
                 SequenceStatus::End,
                 &Position::default(),
                 &Velocity::default(),

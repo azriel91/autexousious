@@ -253,7 +253,7 @@ mod tests {
                 SetupParams {
                     velocity: Velocity::new(0., 0., 0.),
                     grounding: Grounding::OnGround,
-                    character_sequence_name: stand_attack_id.clone(),
+                    character_sequence_name: stand_attack_id,
                     controller_input: Some(controller_input),
                     mirrored: None,
                     event_fn:
@@ -263,7 +263,7 @@ mod tests {
                                 CharacterSequenceName,
                             >| {
                                 let sequence_id = *sequence_id_mappings
-                                    .id(&stand_attack_id)
+                                    .id(stand_attack_id)
                                     .expect("Expected mapping for sequence ID to exist.");
                                 SequenceUpdateEvent::SequenceBegin {
                                     entity,
@@ -375,7 +375,7 @@ mod tests {
                 event_fn: Some(
                     |entity, sequence_id_mappings: &SequenceIdMappings<CharacterSequenceName>| {
                         let sequence_id = *sequence_id_mappings
-                            .id(&CharacterSequenceName::JumpOff)
+                            .id(CharacterSequenceName::JumpOff)
                             .expect("Expected mapping for sequence ID to exist.");
                         SequenceUpdateEvent::SequenceBegin {
                             entity,
@@ -403,7 +403,7 @@ mod tests {
                 event_fn: Some(
                     |entity, sequence_id_mappings: &SequenceIdMappings<CharacterSequenceName>| {
                         let sequence_id = *sequence_id_mappings
-                            .id(&CharacterSequenceName::DashForward)
+                            .id(CharacterSequenceName::DashForward)
                             .expect("Expected mapping for sequence ID to exist.");
                         SequenceUpdateEvent::SequenceBegin {
                             entity,
@@ -431,7 +431,7 @@ mod tests {
                 event_fn: Some(
                     |entity, sequence_id_mappings: &SequenceIdMappings<CharacterSequenceName>| {
                         let sequence_id = *sequence_id_mappings
-                            .id(&CharacterSequenceName::DashBack)
+                            .id(CharacterSequenceName::DashBack)
                             .expect("Expected mapping for sequence ID to exist.");
                         SequenceUpdateEvent::SequenceBegin {
                             entity,
@@ -560,7 +560,7 @@ mod tests {
                         .expect("Expected `Character` to be loaded.");
                     let sequence_id_mappings = &character.sequence_id_mappings;
                     let sequence_id_setup = sequence_id_mappings
-                        .id(&character_sequence_name_setup)
+                        .id(character_sequence_name_setup)
                         .expect("Expected sequence ID mapping to exist.");
                     *sequence_id = *sequence_id_setup;
                     *grounding = grounding_setup;

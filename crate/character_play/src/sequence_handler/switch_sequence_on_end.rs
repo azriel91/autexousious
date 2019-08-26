@@ -10,7 +10,7 @@ pub(crate) struct SwitchSequenceOnEnd(
 impl SwitchSequenceOnEnd {
     pub fn update(&self, sequence_status: SequenceStatus) -> Option<CharacterSequenceName> {
         if sequence_status == SequenceStatus::End {
-            Some(self.0.clone())
+            Some(self.0)
         } else {
             None
         }
