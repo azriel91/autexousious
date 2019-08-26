@@ -118,7 +118,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             let character = character_assets
                 .get(character_handle)
                 .expect("Expected `Character` to be loaded.");
-            let character_sequence_name = *character
+            let character_sequence_name = character
                 .sequence_id_mappings
                 .name(*sequence_id)
                 .expect("Expected sequence ID mapping to exist.");
@@ -127,8 +127,8 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                 CharacterSequenceUpdater::update(CharacterSequenceUpdateComponents::new(
                     &controller_input,
                     *health_points,
-                    character_sequence_name,
-                    *sequence_status,
+                    &character_sequence_name,
+                    sequence_status.clone(),
                     &position,
                     &velocity,
                     *mirrored,
@@ -153,7 +153,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
 
                 let next_sequence_id = *character
                     .sequence_id_mappings
-                    .id(next_sequence_id)
+                    .id(&next_sequence_id)
                     .expect("Expected sequence ID mapping to exist.");
 
                 *sequence_id = next_sequence_id;

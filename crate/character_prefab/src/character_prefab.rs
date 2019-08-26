@@ -148,19 +148,19 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
                     .expect("Expected `Character` to be loaded.");
                 let sequence_id_mappings = &character.sequence_id_mappings;
                 let low_stun = sequence_id_mappings
-                    .id(CharacterSequenceName::Flinch0)
+                    .id(&CharacterSequenceName::Flinch0)
                     .copied()
                     .unwrap_or(SequenceId(0));
                 let mid_stun = sequence_id_mappings
-                    .id(CharacterSequenceName::Flinch1)
+                    .id(&CharacterSequenceName::Flinch1)
                     .copied()
                     .unwrap_or(SequenceId(0));
                 let high_stun = sequence_id_mappings
-                    .id(CharacterSequenceName::Dazed)
+                    .id(&CharacterSequenceName::Dazed)
                     .copied()
                     .unwrap_or(SequenceId(0));
                 let falling = sequence_id_mappings
-                    .id(CharacterSequenceName::FallForwardAscend)
+                    .id(&CharacterSequenceName::FallForwardAscend)
                     .copied()
                     .unwrap_or(SequenceId(0));
 

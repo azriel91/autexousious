@@ -19,7 +19,7 @@ pub struct CharacterSequenceUpdateComponents<'c> {
     /// Health points.
     pub health_points: HealthPoints,
     /// Current character sequence name.
-    pub character_sequence_name: CharacterSequenceName,
+    pub character_sequence_name: &'c CharacterSequenceName,
     /// Whether a sequence has just begun, is ongoing, or has ended.
     pub sequence_status: SequenceStatus,
     /// Position of the character.

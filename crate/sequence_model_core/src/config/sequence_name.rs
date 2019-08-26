@@ -14,6 +14,6 @@ use std::{
 /// * <https://github.com/rust-lang/rfcs/blob/master/text/1733-trait-alias.md>
 /// * <https://github.com/rust-lang/rust/issues/41517>
 pub trait SequenceName:
-    Copy + Debug + Default + Display + Eq + FromStr + Into<&'static str> + Hash + Send + Sync
+    Clone + Debug + Default + Display + Eq + FromStr + Into<&'static str> + Hash + Send + Sync
 {
 }

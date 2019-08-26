@@ -50,7 +50,7 @@ mod test {
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceName::Walk,
+                &CharacterSequenceName::Walk,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -70,7 +70,7 @@ mod test {
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceName::Walk,
+                &CharacterSequenceName::Walk,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -90,7 +90,7 @@ mod test {
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceName::Walk,
+                &CharacterSequenceName::Walk,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -107,7 +107,7 @@ mod test {
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceName::Walk,
+                &CharacterSequenceName::Walk,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -130,7 +130,7 @@ mod test {
                     Walk::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         HealthPoints::default(),
-                        CharacterSequenceName::Walk,
+                        &CharacterSequenceName::Walk,
                         SequenceStatus::End,
                         &Position::default(),
                         &Velocity::default(),
@@ -151,7 +151,7 @@ mod test {
                     Walk::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         HealthPoints::default(),
-                        CharacterSequenceName::Walk,
+                        &CharacterSequenceName::Walk,
                         SequenceStatus::End,
                         &Position::default(),
                         &Velocity::default(),
@@ -172,7 +172,7 @@ mod test {
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceName::Walk,
+                &CharacterSequenceName::Walk,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -192,7 +192,7 @@ mod test {
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceName::Walk,
+                &CharacterSequenceName::Walk,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),

@@ -44,7 +44,7 @@ mod test {
             Run::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceName::Run,
+                &CharacterSequenceName::Run,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -64,7 +64,7 @@ mod test {
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceName::Run,
+                &CharacterSequenceName::Run,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -84,7 +84,7 @@ mod test {
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceName::Run,
+                &CharacterSequenceName::Run,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -104,7 +104,7 @@ mod test {
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceName::Run,
+                &CharacterSequenceName::Run,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -127,7 +127,7 @@ mod test {
                     Run::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         HealthPoints::default(),
-                        CharacterSequenceName::Run,
+                        &CharacterSequenceName::Run,
                         SequenceStatus::End,
                         &Position::default(),
                         &Velocity::default(),
@@ -148,7 +148,7 @@ mod test {
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceName::Run,
+                &CharacterSequenceName::Run,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -168,7 +168,7 @@ mod test {
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceName::Run,
+                &CharacterSequenceName::Run,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -188,7 +188,7 @@ mod test {
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceName::Run,
+                &CharacterSequenceName::Run,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -205,7 +205,7 @@ mod test {
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceName::Run,
+                &CharacterSequenceName::Run,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),

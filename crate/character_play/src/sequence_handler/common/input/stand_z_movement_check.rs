@@ -38,7 +38,7 @@ mod tests {
             StandZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceName::default(),
+                &CharacterSequenceName::default(),
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -58,7 +58,7 @@ mod tests {
             StandZMovementCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceName::default(),
+                &CharacterSequenceName::default(),
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),

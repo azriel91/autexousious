@@ -18,7 +18,7 @@ impl MirroredUpdater {
     /// * `mirrored`: Whether the object is mirrored (facing left).
     pub fn update(
         controller_input: &ControllerInput,
-        character_sequence_name: CharacterSequenceName,
+        character_sequence_name: &CharacterSequenceName,
         mirrored: Mirrored,
     ) -> Mirrored {
         match character_sequence_name {
@@ -98,7 +98,7 @@ mod tests {
         .for_each(|sequence_id| {
             assert_eq!(
                 expected,
-                MirroredUpdater::update(controller_input, sequence_id, mirrored,)
+                MirroredUpdater::update(controller_input, &sequence_id, mirrored,)
             );
         });
     }
@@ -109,7 +109,7 @@ mod tests {
             .for_each(|sequence_id| {
                 assert_eq!(
                     mirrored,
-                    MirroredUpdater::update(controller_input, sequence_id, mirrored,)
+                    MirroredUpdater::update(controller_input, &sequence_id, mirrored,)
                 );
             });
     }

@@ -19,9 +19,9 @@ impl SwitchSequenceOnEndYVelocity {
     ) -> Option<CharacterSequenceName> {
         if components.sequence_status == SequenceStatus::End {
             if components.velocity[1] > 0. {
-                Some(self.upwards)
+                Some(self.upwards.clone())
             } else {
-                Some(self.downwards)
+                Some(self.downwards.clone())
             }
         } else {
             None
@@ -51,7 +51,7 @@ mod test {
             .update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceName::DashForward,
+                &CharacterSequenceName::DashForward,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -76,7 +76,7 @@ mod test {
             .update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceName::DashForward,
+                &CharacterSequenceName::DashForward,
                 SequenceStatus::End,
                 &Position::default(),
                 &velocity,
@@ -100,7 +100,7 @@ mod test {
             .update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceName::DashForward,
+                &CharacterSequenceName::DashForward,
                 SequenceStatus::End,
                 &Position::default(),
                 &velocity,

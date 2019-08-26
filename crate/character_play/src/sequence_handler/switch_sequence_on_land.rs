@@ -15,7 +15,7 @@ impl SwitchSequenceOnLand {
         components: CharacterSequenceUpdateComponents<'c>,
     ) -> Option<CharacterSequenceName> {
         if components.grounding == Grounding::OnGround {
-            Some(self.0)
+            Some(self.0.clone())
         } else {
             None
         }
@@ -45,7 +45,7 @@ mod test {
                 CharacterSequenceUpdateComponents::new(
                     &input,
                     HealthPoints::default(),
-                    CharacterSequenceName::FallForwardDescend,
+                    &CharacterSequenceName::FallForwardDescend,
                     SequenceStatus::default(),
                     &Position::default(),
                     &velocity,
@@ -69,7 +69,7 @@ mod test {
                 CharacterSequenceUpdateComponents::new(
                     &input,
                     HealthPoints::default(),
-                    CharacterSequenceName::FallForwardDescend,
+                    &CharacterSequenceName::FallForwardDescend,
                     SequenceStatus::default(),
                     &Position::default(),
                     &velocity,

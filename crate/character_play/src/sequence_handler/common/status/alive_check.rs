@@ -34,7 +34,7 @@ mod tests {
             AliveCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceName::Stand,
+                &CharacterSequenceName::Stand,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -52,7 +52,7 @@ mod tests {
             AliveCheck::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints(0),
-                CharacterSequenceName::Stand,
+                &CharacterSequenceName::Stand,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),

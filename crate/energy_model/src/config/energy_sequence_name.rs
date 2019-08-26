@@ -7,7 +7,6 @@ use typename_derive::TypeName;
 /// `Energy` sequence names.
 #[derive(
     Clone,
-    Copy,
     Debug,
     Derivative,
     Deserialize,

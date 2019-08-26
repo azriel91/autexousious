@@ -49,7 +49,7 @@ mod test {
             JumpAttack::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceName::JumpAttack,
+                &CharacterSequenceName::JumpAttack,
                 SequenceStatus::default(),
                 &Position::default(),
                 &velocity,
@@ -70,7 +70,7 @@ mod test {
             JumpAttack::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceName::FallForwardDescend,
+                &CharacterSequenceName::FallForwardDescend,
                 SequenceStatus::default(),
                 &Position::default(),
                 &velocity,
@@ -91,7 +91,7 @@ mod test {
             JumpAttack::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceName::JumpAttack,
+                &CharacterSequenceName::JumpAttack,
                 SequenceStatus::End,
                 &Position::default(),
                 &velocity,
@@ -111,7 +111,7 @@ mod test {
             JumpAttack::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceName::JumpAttack,
+                &CharacterSequenceName::JumpAttack,
                 SequenceStatus::End,
                 &Position::default(),
                 &velocity,

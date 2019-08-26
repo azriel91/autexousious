@@ -65,7 +65,7 @@ where
             }
             SequenceEndTransition::SequenceName(sequence_name) => {
                 let variant_index = 3;
-                let variant_name = Into::<&'static str>::into(*sequence_name);
+                let variant_name = Into::<&'static str>::into(sequence_name.clone());
                 serializer.serialize_unit_variant(enum_name, variant_index, &variant_name)
             }
         }
@@ -96,7 +96,7 @@ where
     type Value = SequenceEndTransition<SeqName>;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("one of `none`, `repeat`, `delete`, or a sequence ID")
+        formatter.write_str("one of `none`, `repeat`, `delete`, or a sequence name")
     }
 
     fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>

@@ -47,7 +47,7 @@ mod test {
             RunStop::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceName::RunStop,
+                &CharacterSequenceName::RunStop,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -67,7 +67,7 @@ mod test {
             RunStop::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceName::RunStop,
+                &CharacterSequenceName::RunStop,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -87,7 +87,7 @@ mod test {
             RunStop::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceName::RunStop,
+                &CharacterSequenceName::RunStop,
                 SequenceStatus::End,
                 &Position::default(),
                 &Velocity::default(),

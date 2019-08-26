@@ -42,7 +42,7 @@ mod test {
             Dodge::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceName::Dodge,
+                &CharacterSequenceName::Dodge,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -62,7 +62,7 @@ mod test {
             Dodge::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceName::Dodge,
+                &CharacterSequenceName::Dodge,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -82,7 +82,7 @@ mod test {
             Dodge::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceName::Dodge,
+                &CharacterSequenceName::Dodge,
                 SequenceStatus::End,
                 &Position::default(),
                 &Velocity::default(),

@@ -90,7 +90,7 @@ impl ControlTransitionsSequenceLoader {
                     match config_control_transition {
                         SequenceName(sequence_name) => {
                             let sequence_id =
-                                sequence_id_mappings.id(*sequence_name).unwrap_or_else(|| {
+                                sequence_id_mappings.id(sequence_name).unwrap_or_else(|| {
                                     panic!(
                                         "Expected `sequence_id_mappings` to contain mapping for \
                                          `{}`",
@@ -110,7 +110,7 @@ impl ControlTransitionsSequenceLoader {
                             requirements: control_transition_requirements,
                         }) => {
                             let sequence_id =
-                                sequence_id_mappings.id(*sequence_id).unwrap_or_else(|| {
+                                sequence_id_mappings.id(sequence_id).unwrap_or_else(|| {
                                     panic!(
                                         "Expected `sequence_id_mappings` to contain mapping for \
                                          `{}`",
@@ -131,7 +131,7 @@ impl ControlTransitionsSequenceLoader {
                                  requirements: control_transition_requirements,
                              }| {
                                 let sequence_id =
-                                sequence_id_mappings.id(*sequence_id).unwrap_or_else(|| {
+                                sequence_id_mappings.id(sequence_id).unwrap_or_else(|| {
                                     panic!(
                                         "Expected `sequence_id_mappings` to contain mapping for \
                                          `{}`",
@@ -169,7 +169,7 @@ impl ControlTransitionsSequenceLoader {
                     match config_control_transition {
                         SequenceName(sequence_name) => {
                             let sequence_id =
-                                sequence_id_mappings.id(*sequence_name).unwrap_or_else(|| {
+                                sequence_id_mappings.id(sequence_name).unwrap_or_else(|| {
                                     panic!(
                                         "Expected `sequence_id_mappings` to contain mapping for \
                                          `{}`",
@@ -189,7 +189,7 @@ impl ControlTransitionsSequenceLoader {
                             requirements: control_transition_requirements,
                         }) => {
                             let sequence_id =
-                                sequence_id_mappings.id(*sequence_id).unwrap_or_else(|| {
+                                sequence_id_mappings.id(sequence_id).unwrap_or_else(|| {
                                     panic!(
                                         "Expected `sequence_id_mappings` to contain mapping for \
                                          `{}`",
@@ -210,7 +210,7 @@ impl ControlTransitionsSequenceLoader {
                                  requirements: control_transition_requirements,
                              }| {
                                 let sequence_id =
-                                sequence_id_mappings.id(*sequence_id).unwrap_or_else(|| {
+                                sequence_id_mappings.id(sequence_id).unwrap_or_else(|| {
                                     panic!(
                                         "Expected `sequence_id_mappings` to contain mapping for \
                                          `{}`",
@@ -248,7 +248,7 @@ impl ControlTransitionsSequenceLoader {
                     match config_control_transition {
                         SequenceName(sequence_name) => {
                             let sequence_id =
-                                sequence_id_mappings.id(*sequence_name).unwrap_or_else(|| {
+                                sequence_id_mappings.id(sequence_name).unwrap_or_else(|| {
                                     panic!(
                                         "Expected `sequence_id_mappings` to contain mapping for \
                                          `{}`",
@@ -267,7 +267,7 @@ impl ControlTransitionsSequenceLoader {
                             requirements: control_transition_requirements,
                         }) => {
                             let sequence_id =
-                                sequence_id_mappings.id(*sequence_id).unwrap_or_else(|| {
+                                sequence_id_mappings.id(sequence_id).unwrap_or_else(|| {
                                     panic!(
                                         "Expected `sequence_id_mappings` to contain mapping for \
                                          `{}`",
@@ -287,7 +287,7 @@ impl ControlTransitionsSequenceLoader {
                                  requirements: control_transition_requirements,
                              }| {
                                 let sequence_id =
-                                sequence_id_mappings.id(*sequence_id).unwrap_or_else(|| {
+                                sequence_id_mappings.id(sequence_id).unwrap_or_else(|| {
                                     panic!(
                                         "Expected `sequence_id_mappings` to contain mapping for \
                                          `{}`",

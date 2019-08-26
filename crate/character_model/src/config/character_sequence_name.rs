@@ -7,7 +7,6 @@ use typename_derive::TypeName;
 /// `Character` sequence names.
 #[derive(
     Clone,
-    Copy,
     Debug,
     Derivative,
     Deserialize,
