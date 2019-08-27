@@ -2,30 +2,24 @@ use amethyst::ecs::{storage::VecStorage, Component};
 use derive_new::new;
 use specs_derive::Component;
 
-use crate::{
-    config::SequenceId,
-    loaded::{ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition},
-};
+use crate::loaded::{ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition};
 
 /// Sequence to transition to on control input.
 #[derive(Clone, Component, Copy, Debug, PartialEq, Eq, new)]
 #[storage(VecStorage)]
-pub enum ControlTransition<SeqId>
-where
-    SeqId: SequenceId,
-{
+pub enum ControlTransition {
     /// Transition to a specified sequence on control input press event.
-    ActionPress(ActionPress<SeqId>),
+    ActionPress(ActionPress),
     /// Transition to a specified sequence on control input enabled state.
-    ActionHold(ActionHold<SeqId>),
+    ActionHold(ActionHold),
     /// Transition to a specified sequence on control input release event.
-    ActionRelease(ActionRelease<SeqId>),
+    ActionRelease(ActionRelease),
     /// Transition to a specified sequence on axis input press event.
-    AxisPress(AxisTransition<SeqId>),
+    AxisPress(AxisTransition),
     /// Transition to a specified sequence on axis input state.
-    AxisHold(AxisTransition<SeqId>),
+    AxisHold(AxisTransition),
     /// Transition to a specified sequence on axis input press event.
-    AxisRelease(AxisTransition<SeqId>),
+    AxisRelease(AxisTransition),
     /// Transition to a specified fallback sequence.
-    Fallback(FallbackTransition<SeqId>),
+    Fallback(FallbackTransition),
 }

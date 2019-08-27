@@ -5,7 +5,8 @@ pub use self::{
     character_definition::{CharacterDefinition, CharacterDefinitionHandle},
     character_frame::CharacterFrame,
     character_sequence::CharacterSequence,
-    character_sequence_id::CharacterSequenceId,
+    character_sequence_name::CharacterSequenceName,
+    character_sequence_name_string::CharacterSequenceNameString,
     control_transition_requirement::ControlTransitionRequirement,
     control_transition_requirement_params::ControlTransitionRequirementParams,
 };
@@ -14,23 +15,23 @@ mod character_control_transitions;
 mod character_definition;
 mod character_frame;
 mod character_sequence;
-mod character_sequence_id;
+mod character_sequence_name;
+mod character_sequence_name_string;
 mod control_transition_requirement;
 mod control_transition_requirement_params;
 
 #[cfg(test)]
 mod test {
-    use std::collections::HashMap;
-
     use charge_model::config::ChargePoints;
     use collision_model::config::{Body, Interactions};
+    use indexmap::IndexMap;
     use object_model::{
         config::{ObjectDefinition, ObjectFrame, ObjectSequence},
         play::{HealthPoints, SkillPoints},
     };
     use sequence_model::config::{
         ControlTransition, ControlTransitionMultiple, ControlTransitionSingle,
-        SequenceEndTransition, Wait,
+        SequenceEndTransition, SequenceNameString, Wait,
     };
     use serde_yaml;
     use shape_model::Volume;
@@ -39,7 +40,7 @@ mod test {
 
     use crate::config::{
         CharacterControlTransitions, CharacterDefinition, CharacterFrame, CharacterSequence,
-        CharacterSequenceId, ControlTransitionRequirement,
+        CharacterSequenceName, ControlTransitionRequirement,
     };
 
     const OBJECT_YAML: &str = "\
@@ -58,6 +59,31 @@ sequences:
             - { next: 'run', requirements: [{ sp: 50 }] }
             - { next: 'run_stop', requirements: [{ hp: 30 }] }
           hold_jump: { next: 'jump' }
+
+  custom_sequence_0:
+    next: 'custom_sequence_1'
+    transitions: { press_defend: 'custom_sequence_4' }
+    frames:
+      - wait: 5
+        sprite: { sheet: 1, index: 3 }
+        transitions:
+          press_attack: 'custom_sequence_1'
+          release_attack:
+            - { next: 'custom_sequence_2' }
+          hold_jump: { next: 'custom_sequence_3' }
+
+  custom_sequence_1:
+    next: 'stand'
+    frames: []
+  custom_sequence_2:
+    next: 'stand'
+    frames: []
+  custom_sequence_3:
+    next: 'stand'
+    frames: []
+  custom_sequence_4:
+    next: 'stand'
+    frames: []
 ";
 
     #[test]
@@ -65,6 +91,40 @@ sequences:
         let char_definition = serde_yaml::from_str::<CharacterDefinition>(OBJECT_YAML)
             .expect("Failed to deserialize character definition.");
 
+        let mut sequences = IndexMap::new();
+        sequences.insert(
+            SequenceNameString::Name(CharacterSequenceName::Stand),
+            stand_sequence(),
+        );
+        sequences.insert(
+            SequenceNameString::String(String::from("custom_sequence_0")),
+            custom_sequence_0(),
+        );
+        sequences.insert(
+            SequenceNameString::String(String::from("custom_sequence_1")),
+            empty_sequence(),
+        );
+        sequences.insert(
+            SequenceNameString::String(String::from("custom_sequence_2")),
+            empty_sequence(),
+        );
+        sequences.insert(
+            SequenceNameString::String(String::from("custom_sequence_3")),
+            empty_sequence(),
+        );
+        sequences.insert(
+            SequenceNameString::String(String::from("custom_sequence_4")),
+            empty_sequence(),
+        );
+        let object_definition = ObjectDefinition::new(sequences);
+        let expected = CharacterDefinition {
+            object_definition,
+            ..Default::default()
+        };
+        assert_eq!(expected, char_definition);
+    }
+
+    fn stand_sequence() -> CharacterSequence {
         let frames = vec![CharacterFrame::new(
             ObjectFrame::new(
                 Wait::new(5),
@@ -81,25 +141,25 @@ sequences:
                 Spawns::default(),
             ),
             CharacterControlTransitions {
-                press_attack: Some(ControlTransition::SequenceId(
-                    CharacterSequenceId::StandAttack0,
+                press_attack: Some(ControlTransition::SequenceNameString(
+                    SequenceNameString::Name(CharacterSequenceName::StandAttack0),
                 )),
                 release_attack: Some(ControlTransition::Multiple(ControlTransitionMultiple::new(
                     vec![
                         ControlTransitionSingle {
-                            next: CharacterSequenceId::Walk,
+                            next: SequenceNameString::Name(CharacterSequenceName::Walk),
                             requirements: vec![ControlTransitionRequirement::Charge(
                                 ChargePoints::new(90),
                             )],
                         },
                         ControlTransitionSingle {
-                            next: CharacterSequenceId::Run,
+                            next: SequenceNameString::Name(CharacterSequenceName::Run),
                             requirements: vec![ControlTransitionRequirement::Sp(SkillPoints::new(
                                 50,
                             ))],
                         },
                         ControlTransitionSingle {
-                            next: CharacterSequenceId::RunStop,
+                            next: SequenceNameString::Name(CharacterSequenceName::RunStop),
                             requirements: vec![ControlTransitionRequirement::Hp(
                                 HealthPoints::new(30),
                             )],
@@ -107,7 +167,7 @@ sequences:
                     ],
                 ))),
                 hold_jump: Some(ControlTransition::Single(ControlTransitionSingle {
-                    next: CharacterSequenceId::Jump,
+                    next: SequenceNameString::Name(CharacterSequenceName::Jump),
                     requirements: vec![],
                 })),
                 ..Default::default()
@@ -115,25 +175,76 @@ sequences:
         )];
 
         let character_control_transitions = CharacterControlTransitions {
-            press_defend: Some(ControlTransition::SequenceId(
-                CharacterSequenceId::StandAttack1,
+            press_defend: Some(ControlTransition::SequenceNameString(
+                SequenceNameString::Name(CharacterSequenceName::StandAttack1),
             )),
             ..Default::default()
         };
-        let sequence = CharacterSequence::new(
+        CharacterSequence::new(
             ObjectSequence::new(
-                SequenceEndTransition::SequenceId(CharacterSequenceId::Walk),
+                SequenceEndTransition::SequenceName(SequenceNameString::Name(
+                    CharacterSequenceName::Walk,
+                )),
                 frames,
             ),
             Some(character_control_transitions),
-        );
-        let mut sequences = HashMap::new();
-        sequences.insert(CharacterSequenceId::Stand, sequence);
-        let object_definition = ObjectDefinition::new(sequences);
-        let expected = CharacterDefinition {
-            object_definition,
+        )
+    }
+
+    fn custom_sequence_0() -> CharacterSequence {
+        let frames = vec![CharacterFrame::new(
+            ObjectFrame::new(
+                Wait::new(5),
+                SpriteRef::new(1, 3),
+                Body::default(),
+                Interactions::default(),
+                Spawns::default(),
+            ),
+            CharacterControlTransitions {
+                press_attack: Some(ControlTransition::SequenceNameString(
+                    SequenceNameString::String(String::from("custom_sequence_1")),
+                )),
+                release_attack: Some(ControlTransition::Multiple(ControlTransitionMultiple::new(
+                    vec![ControlTransitionSingle {
+                        next: SequenceNameString::String(String::from("custom_sequence_2")),
+                        requirements: vec![],
+                    }],
+                ))),
+                hold_jump: Some(ControlTransition::Single(ControlTransitionSingle {
+                    next: SequenceNameString::String(String::from("custom_sequence_3")),
+                    requirements: vec![],
+                })),
+                ..Default::default()
+            }, // kcov-ignore
+        )];
+
+        let character_control_transitions = CharacterControlTransitions {
+            press_defend: Some(ControlTransition::SequenceNameString(
+                SequenceNameString::String(String::from("custom_sequence_4")),
+            )),
             ..Default::default()
         };
-        assert_eq!(expected, char_definition);
+        CharacterSequence::new(
+            ObjectSequence::new(
+                SequenceEndTransition::SequenceName(SequenceNameString::String(String::from(
+                    "custom_sequence_1",
+                ))),
+                frames,
+            ),
+            Some(character_control_transitions),
+        )
+    }
+
+    fn empty_sequence() -> CharacterSequence {
+        let frames = vec![];
+        CharacterSequence::new(
+            ObjectSequence::new(
+                SequenceEndTransition::SequenceName(SequenceNameString::Name(
+                    CharacterSequenceName::Stand,
+                )),
+                frames,
+            ),
+            None,
+        )
     }
 }

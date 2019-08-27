@@ -3,7 +3,7 @@ use derive_new::new;
 use object_model::game_object;
 use typename_derive::TypeName;
 
-use crate::config::{EnergyDefinition, EnergySequence, EnergySequenceId};
+use crate::config::{EnergyDefinition, EnergySequence, EnergySequenceName};
 
 /// Represents an in-game energy that has been loaded.
 ///

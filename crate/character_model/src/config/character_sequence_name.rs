@@ -1,14 +1,10 @@
-use amethyst::ecs::{
-    storage::{FlaggedStorage, VecStorage},
-    Component,
-};
 use derivative::Derivative;
-use sequence_model::config::SequenceId;
+use sequence_model::config::SequenceName;
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumString, IntoStaticStr};
 use typename_derive::TypeName;
 
-/// `Character` Sequence IDs.
+/// `Character` sequence names.
 #[derive(
     Clone,
     Copy,
@@ -27,7 +23,7 @@ use typename_derive::TypeName;
 #[derivative(Default)]
 #[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
-pub enum CharacterSequenceId {
+pub enum CharacterSequenceName {
     /// Default sequence for characters.
     #[derivative(Default)]
     Stand,
@@ -119,10 +115,4 @@ pub enum CharacterSequenceId {
     LieFaceDown,
 }
 
-/// Not every entity will have this, but since this is probably a `u8`, we don't need an indirection
-/// table.
-impl Component for CharacterSequenceId {
-    type Storage = FlaggedStorage<Self, VecStorage<Self>>;
-}
-
-impl SequenceId for CharacterSequenceId {}
+impl SequenceName for CharacterSequenceName {}

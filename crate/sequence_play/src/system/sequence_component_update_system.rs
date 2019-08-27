@@ -8,7 +8,7 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_new::new;
-use sequence_model::{config::SequenceId, play::SequenceUpdateEvent};
+use sequence_model::{loaded::SequenceId, play::SequenceUpdateEvent};
 use sequence_model_spi::loaded::{ComponentDataExt, SequenceComponentData};
 use typename_derive::TypeName;
 
@@ -16,41 +16,35 @@ use typename_derive::TypeName;
 ///
 /// # Type Parameters
 ///
-/// * `SCDA`: Asset type that the sequence component data is stored in, e.g. `Object<SeqId>`.
+/// * `SCDA`: Asset type that the sequence component data is stored in, e.g. `Object`.
 /// * `SCD`: Type of sequence component data, e.g. `SequenceEndTransitions`.
-/// * `SeqId`: Sequence ID type.
 #[derive(Debug, Default, TypeName, new)]
-pub struct SequenceComponentUpdateSystem<SCDA, SCD, SeqId>
+pub struct SequenceComponentUpdateSystem<SCDA, SCD>
 where
     SCDA: Asset + AsRef<SCD>,
     SCD: ComponentDataExt
         + Debug
-        + Deref<Target = SequenceComponentData<SeqId, <SCD as ComponentDataExt>::Component>>,
-    SeqId: SequenceId,
+        + Deref<Target = SequenceComponentData<<SCD as ComponentDataExt>::Component>>,
 {
     /// Reader ID for the `SequenceUpdateEvent` event channel.
     #[new(default)]
     reader_id: Option<ReaderId<SequenceUpdateEvent>>,
     /// Marker.
-    phantom_data: PhantomData<(SCDA, SCD, SeqId)>,
+    phantom_data: PhantomData<(SCDA, SCD)>,
 }
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct SequenceComponentUpdateSystemData<'s, SCDA, SCD, SeqId>
+pub struct SequenceComponentUpdateSystemData<'s, SCDA, SCD>
 where
     SCDA: Asset + AsRef<SCD>,
     SCD: ComponentDataExt
         + Debug
-        + Deref<Target = SequenceComponentData<SeqId, <SCD as ComponentDataExt>::Component>>,
-    SeqId: SequenceId,
+        + Deref<Target = SequenceComponentData<<SCD as ComponentDataExt>::Component>>,
 {
     /// Event channel for `SequenceUpdateEvent`s.
     #[derivative(Debug = "ignore")]
     pub sequence_update_ec: Read<'s, EventChannel<SequenceUpdateEvent>>,
-    /// `SeqId` components.
-    #[derivative(Debug = "ignore")]
-    pub sequence_ids: ReadStorage<'s, SeqId>,
     /// `Handle<SCDA>` component storage.
     #[derivative(Debug = "ignore")]
     pub scda_handles: ReadStorage<'s, Handle<SCDA>>,
@@ -62,23 +56,22 @@ where
     pub sequence_components: WriteStorage<'s, <SCD as ComponentDataExt>::Component>,
 }
 
-impl<SCDA, SCD, SeqId> SequenceComponentUpdateSystem<SCDA, SCD, SeqId>
+impl<SCDA, SCD> SequenceComponentUpdateSystem<SCDA, SCD>
 where
     SCDA: Asset + AsRef<SCD>,
     SCD: ComponentDataExt
         + Debug
-        + Deref<Target = SequenceComponentData<SeqId, <SCD as ComponentDataExt>::Component>>,
-    SeqId: SequenceId,
+        + Deref<Target = SequenceComponentData<<SCD as ComponentDataExt>::Component>>,
 {
     fn update_component(
         sequence_components: &mut WriteStorage<<SCD as ComponentDataExt>::Component>,
         scda: &SCDA,
         entity: Entity,
-        sequence_id: SeqId,
+        sequence_id: SequenceId,
     ) {
         let sequence_component_data = AsRef::<SCD>::as_ref(scda);
         let component = sequence_component_data
-            .get(&sequence_id)
+            .get(*sequence_id)
             .map(SCD::to_owned)
             .unwrap_or_else(|| {
                 panic!(
@@ -92,21 +85,19 @@ where
     }
 }
 
-impl<'s, SCDA, SCD, SeqId> System<'s> for SequenceComponentUpdateSystem<SCDA, SCD, SeqId>
+impl<'s, SCDA, SCD> System<'s> for SequenceComponentUpdateSystem<SCDA, SCD>
 where
     SCDA: Asset + AsRef<SCD>,
     SCD: ComponentDataExt
         + Debug
-        + Deref<Target = SequenceComponentData<SeqId, <SCD as ComponentDataExt>::Component>>,
-    SeqId: SequenceId,
+        + Deref<Target = SequenceComponentData<<SCD as ComponentDataExt>::Component>>,
 {
-    type SystemData = SequenceComponentUpdateSystemData<'s, SCDA, SCD, SeqId>;
+    type SystemData = SequenceComponentUpdateSystemData<'s, SCDA, SCD>;
 
     fn run(
         &mut self,
         SequenceComponentUpdateSystemData {
             sequence_update_ec,
-            sequence_ids,
             scda_handles,
             scda_assets,
             mut sequence_components,
@@ -119,13 +110,12 @@ where
                     .expect("Expected reader ID to exist for SequenceComponentUpdateSystem."),
             )
             .filter_map(|ev| {
-                if let SequenceUpdateEvent::SequenceBegin { entity } = ev {
-                    let entity = *entity;
-
-                    sequence_ids
-                        .get(entity)
-                        .copied()
-                        .map(|sequence_id| (entity, sequence_id))
+                if let SequenceUpdateEvent::SequenceBegin {
+                    entity,
+                    sequence_id,
+                } = ev
+                {
+                    Some((*entity, *sequence_id))
                 } else {
                     None
                 }
@@ -164,16 +154,16 @@ mod tests {
     };
     use application_test_support::{AutexousiousApplication, ObjectQueries, SequenceQueries};
     use assets_test::CHAR_BAT_SLUG;
-    use character_model::{config::CharacterSequenceId, loaded::CharacterObjectWrapper};
+    use character_model::loaded::CharacterObjectWrapper;
     use sequence_model::{
-        loaded::{WaitSequenceHandle, WaitSequenceHandles},
+        loaded::{SequenceId, WaitSequenceHandle, WaitSequenceHandles},
         play::SequenceUpdateEvent,
     };
 
     use super::SequenceComponentUpdateSystem;
 
-    const SEQUENCE_ID_PREV: CharacterSequenceId = CharacterSequenceId::StandAttack0;
-    const SEQUENCE_ID_CURRENT: CharacterSequenceId = CharacterSequenceId::StandAttack1;
+    const SEQUENCE_ID_PREV: SequenceId = SequenceId(1);
+    const SEQUENCE_ID_CURRENT: SequenceId = SequenceId(2);
 
     #[test]
     fn updates_sequence_component_on_sequence_begin_event() -> Result<(), Error> {
@@ -193,15 +183,11 @@ mod tests {
     fn run_test(
         sequence_update_events_fn: fn(&mut World) -> Vec<SequenceUpdateEvent>,
         with_scda_handle: bool,
-        sequence_id_expected: CharacterSequenceId,
+        sequence_id_expected: SequenceId,
     ) -> Result<(), Error> {
         AutexousiousApplication::game_base()
             .with_system(
-                SequenceComponentUpdateSystem::<
-                    CharacterObjectWrapper,
-                    WaitSequenceHandles<CharacterSequenceId>,
-                    CharacterSequenceId,
-                >::new(),
+                SequenceComponentUpdateSystem::<CharacterObjectWrapper, WaitSequenceHandles>::new(),
                 "",
                 &[],
             )
@@ -272,7 +258,10 @@ mod tests {
 
     fn sequence_begin_events(world: &mut World) -> Vec<SequenceUpdateEvent> {
         let entity = *world.read_resource::<Entity>();
-        vec![SequenceUpdateEvent::SequenceBegin { entity }]
+        vec![SequenceUpdateEvent::SequenceBegin {
+            entity,
+            sequence_id: SEQUENCE_ID_CURRENT,
+        }]
     }
 
     fn frame_begin_events(world: &mut World) -> Vec<SequenceUpdateEvent> {

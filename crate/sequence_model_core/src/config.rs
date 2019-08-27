@@ -1,5 +1,5 @@
 //! Contains the types that represent the configuration on disk.
 
-pub use self::sequence_id::SequenceId;
+pub use self::sequence_name::SequenceName;
 
-mod sequence_id;
+mod sequence_name;

@@ -2,11 +2,16 @@
 
 ## 0.14.0 (unreleased)
 
+### Added
+
+* Support arbitrary sequence names. ([#155])
+
 ### Changed
 
 * ***Breaking:*** Configuration files now use YAML instead of TOML. ([#154])
 
 [#154]: https://gitlab.com/azriel91/autexousious/issues/154
+[#155]: https://gitlab.com/azriel91/autexousious/issues/155
 
 ## 0.13.0 (2019-08-16)
 

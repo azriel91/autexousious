@@ -3,23 +3,22 @@ use proc_macro_roids::{DeriveInputExt, DeriveInputStructExt, FieldsUnnamedAppend
 use quote::quote;
 use syn::{parse_quote, DeriveInput, FieldsUnnamed, Path};
 
-use crate::{to_owned_fn_impl, ComponentDataAttributeArgs, SequenceComponentDataAttributeArgs};
+use crate::{to_owned_fn_impl, ComponentDataAttributeArgs};
 
 /// Generates the `SequenceComponentData` implementation.
 pub fn sequence_component_data_impl(
     mut ast: DeriveInput,
-    args: SequenceComponentDataAttributeArgs,
+    args: ComponentDataAttributeArgs,
 ) -> TokenStream {
-    let sequence_id_path = args.sequence_id_path;
     let ComponentDataAttributeArgs {
         component_path,
         component_copy,
         to_owned_fn,
-    } = args.component_data_attribute_args;
+    } = args;
 
     ast.assert_fields_unit();
     derive_append(&mut ast);
-    fields_append(&mut ast, &sequence_id_path, &component_path);
+    fields_append(&mut ast, &component_path);
 
     let type_name = &ast.ident;
     let (impl_generics, ty_generics, where_clause) = ast.generics.split_for_impl();
@@ -32,10 +31,9 @@ pub fn sequence_component_data_impl(
 
         impl #impl_generics #type_name #ty_generics #where_clause {
             #[doc = #fn_new_doc]
-            pub fn new(sequence: std::collections::HashMap<#sequence_id_path, #component_path>) -> Self {
+            pub fn new(sequence: std::vec::Vec<#component_path>) -> Self {
                 #type_name(
                     sequence_model_spi::loaded::SequenceComponentData::<
-                        #sequence_id_path,
                         #component_path
                     >::new(sequence)
                 )
@@ -48,9 +46,8 @@ pub fn sequence_component_data_impl(
             fn default() -> Self {
                 #type_name(
                     sequence_model_spi::loaded::SequenceComponentData::<
-                        #sequence_id_path,
                         #component_path
-                    >::new(std::collections::HashMap::default())
+                    >::new(std::vec::Vec::default())
                 )
             }
         }
@@ -80,7 +77,7 @@ fn derive_append(ast: &mut DeriveInput) {
     ast.append_derives(derives);
 }
 
-fn fields_append(ast: &mut DeriveInput, sequence_id_path: &Path, component_path: &Path) {
+fn fields_append(ast: &mut DeriveInput, component_path: &Path) {
     let component_name = &component_path
         .segments
         .last()
@@ -88,7 +85,8 @@ fn fields_append(ast: &mut DeriveInput, sequence_id_path: &Path, component_path:
         .ident;
     let doc_string = format!("The chain of `{}` values.", component_name);
     let fields: FieldsUnnamed = parse_quote! {
-        (#[doc = #doc_string] pub sequence_model_spi::loaded::SequenceComponentData<#sequence_id_path, #component_path>)
+        (#[doc = #doc_string]
+        pub sequence_model_spi::loaded::SequenceComponentData<#component_path>)
     };
 
     ast.append_unnamed(fields);

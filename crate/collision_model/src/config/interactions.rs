@@ -1,8 +1,4 @@
-use amethyst::{
-    assets::{Asset, Handle, ProcessingState},
-    ecs::VecStorage,
-    Error,
-};
+use asset_derive::Asset;
 use derive_deref::{Deref, DerefMut};
 use derive_new::new;
 use serde::{Deserialize, Serialize};
@@ -11,25 +7,13 @@ use crate::config::Interaction;
 
 /// Effects on other objects.
 #[derive(
-    Clone, Debug, Default, Deref, DerefMut, Deserialize, Hash, PartialEq, Eq, Serialize, new,
+    Asset, Clone, Debug, Default, Deref, DerefMut, Deserialize, Hash, PartialEq, Eq, Serialize, new,
 )]
 pub struct Interactions(
     /// Backing vector of `Interaction`s.
     #[serde(default)]
     pub Vec<Interaction>,
 );
-
-impl Asset for Interactions {
-    const NAME: &'static str = concat!(module_path!(), "::", stringify!(Interactions));
-    type Data = Self;
-    type HandleStorage = VecStorage<Handle<Self>>;
-}
-
-impl From<Interactions> for Result<ProcessingState<Interactions>, Error> {
-    fn from(interactions: Interactions) -> Result<ProcessingState<Interactions>, Error> {
-        Ok(ProcessingState::Loaded(interactions))
-    }
-}
 
 #[cfg(test)]
 mod tests {

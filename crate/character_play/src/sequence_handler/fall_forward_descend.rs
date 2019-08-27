@@ -1,4 +1,4 @@
-use character_model::config::CharacterSequenceId;
+use character_model::config::CharacterSequenceName;
 
 use crate::{
     sequence_handler::{common::SequenceRepeat, CharacterSequenceHandler, SwitchSequenceOnLand},
@@ -6,15 +6,15 @@ use crate::{
 };
 
 const FALL_FORWARD_DESCEND_BOUNCE: SwitchSequenceOnLand =
-    SwitchSequenceOnLand(CharacterSequenceId::FallForwardLand);
+    SwitchSequenceOnLand(CharacterSequenceName::FallForwardLand);
 const FALL_FORWARD_DESCEND_LIE: SwitchSequenceOnLand =
-    SwitchSequenceOnLand(CharacterSequenceId::LieFaceDown);
+    SwitchSequenceOnLand(CharacterSequenceName::LieFaceDown);
 
 #[derive(Debug)]
 pub(crate) struct FallForwardDescend;
 
 impl CharacterSequenceHandler for FallForwardDescend {
-    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {
         if components.velocity[1] <= -10. {
             FALL_FORWARD_DESCEND_BOUNCE.update(components)
         } else {

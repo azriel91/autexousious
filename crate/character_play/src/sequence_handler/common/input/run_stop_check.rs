@@ -1,4 +1,4 @@
-use character_model::config::CharacterSequenceId;
+use character_model::config::CharacterSequenceName;
 
 use crate::{
     sequence_handler::{common::SequenceRepeat, CharacterSequenceHandler, SequenceHandlerUtil},
@@ -12,21 +12,21 @@ use crate::{
 pub(crate) struct RunStopCheck;
 
 impl CharacterSequenceHandler for RunStopCheck {
-    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {
         if SequenceHandlerUtil::input_matches_direction(
             components.controller_input,
             components.mirrored,
         ) {
             SequenceRepeat::update(components)
         } else {
-            Some(CharacterSequenceId::RunStop)
+            Some(CharacterSequenceName::RunStop)
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use character_model::{config::CharacterSequenceId, play::RunCounter};
+    use character_model::{config::CharacterSequenceName, play::RunCounter};
     use game_input::ControllerInput;
     use kinematic_model::config::{Position, Velocity};
     use object_model::play::{Grounding, HealthPoints, Mirrored};
@@ -47,7 +47,7 @@ mod tests {
                     RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         HealthPoints::default(),
-                        CharacterSequenceId::Walk,
+                        CharacterSequenceName::Walk,
                         SequenceStatus::default(),
                         &Position::default(),
                         &Velocity::default(),
@@ -64,11 +64,11 @@ mod tests {
         let input = ControllerInput::new(0., 1., false, false, false, false);
 
         assert_eq!(
-            Some(CharacterSequenceId::RunStop),
+            Some(CharacterSequenceName::RunStop),
             RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::Walk,
+                CharacterSequenceName::Walk,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -87,11 +87,11 @@ mod tests {
                 let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
-                    Some(CharacterSequenceId::RunStop),
+                    Some(CharacterSequenceName::RunStop),
                     RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         HealthPoints::default(),
-                        CharacterSequenceId::Walk,
+                        CharacterSequenceName::Walk,
                         SequenceStatus::default(),
                         &Position::default(),
                         &Velocity::default(),
@@ -111,11 +111,11 @@ mod tests {
                 let input = ControllerInput::new(x_input, 0., false, false, false, false);
 
                 assert_eq!(
-                    Some(CharacterSequenceId::Run),
+                    Some(CharacterSequenceName::Run),
                     RunStopCheck::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         HealthPoints::default(),
-                        CharacterSequenceId::Run,
+                        CharacterSequenceName::Run,
                         SequenceStatus::End,
                         &Position::default(),
                         &Velocity::default(),

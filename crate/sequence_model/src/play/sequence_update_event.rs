@@ -1,15 +1,16 @@
 use amethyst::ecs::Entity;
 
+use crate::loaded::SequenceId;
+
 /// Event signalling a change in sequence or frame.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum SequenceUpdateEvent {
     /// A new sequence is beginning.
-    ///
-    /// This variant does not hold the sequence ID as that is specific to different object types.
-    /// If your system needs to access the sequence ID, read it from the `ReadStorage<'_, SeqId>`.
     SequenceBegin {
         /// Entity whose sequence changed.
         entity: Entity,
+        /// ID of the sequence that is beginning.
+        sequence_id: SequenceId,
     },
     /// The next frame in the current sequence is beginning.
     FrameBegin {
@@ -33,7 +34,7 @@ impl SequenceUpdateEvent {
     /// Returns the entity this event corresponds to.
     pub fn entity(self) -> Entity {
         match self {
-            SequenceUpdateEvent::SequenceBegin { entity }
+            SequenceUpdateEvent::SequenceBegin { entity, .. }
             | SequenceUpdateEvent::FrameBegin { entity, .. }
             | SequenceUpdateEvent::SequenceEnd { entity, .. } => entity,
         }

@@ -13,9 +13,9 @@ const OBJECT_HANDLE: &str = "object_handle";
 
 pub fn game_object_gen(args: GameObjectAttributeArgs, mut ast: DeriveInput) -> TokenStream {
     let game_object_ident = &ast.ident;
-    let sequence_id = &args
-        .sequence_id
-        .unwrap_or_else(|| Path::from(game_object_ident.append("SequenceId")));
+    let sequence_name = &args
+        .sequence_name
+        .unwrap_or_else(|| Path::from(game_object_ident.append("SequenceName")));
     let sequence_type = &args
         .sequence_type
         .unwrap_or_else(|| Path::from(game_object_ident.append("Sequence")));
@@ -33,18 +33,14 @@ pub fn game_object_gen(args: GameObjectAttributeArgs, mut ast: DeriveInput) -> T
     fields_append(&mut ast, &object_wrapper_name, &object_handle_field);
 
     // Generate `<Type>ObjectWrapper` newtype.
-    let mut object_wrapper_gen = object_wrapper_gen(
-        sequence_id,
-        &object_definition_type,
-        &object_wrapper_name,
-        &ast.vis,
-    );
+    let mut object_wrapper_gen =
+        object_wrapper_gen(&object_definition_type, &object_wrapper_name, &ast.vis);
 
     // Implement `GameObject` trait.
     let game_object_trait_impl = game_object_impl(
         &ast,
         object_type_variant,
-        sequence_id,
+        sequence_name,
         &sequence_type,
         &object_definition_type,
         &object_wrapper_name,

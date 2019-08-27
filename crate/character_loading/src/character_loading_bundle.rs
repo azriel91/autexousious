@@ -38,7 +38,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterLoadingBundle {
         builder.add(
             ObjectDefinitionToWrapperProcessor::<Character>::new(),
             &ObjectDefinitionToWrapperProcessor::<Character>::type_name(),
-            &["character_definition_processor", "sprite_sheet_processor"],
+            &["character_definition_processor"],
         ); // kcov-ignore
         builder.add(
             Processor::<CharacterControlTransitions>::new(),

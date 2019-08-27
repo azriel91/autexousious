@@ -1,22 +1,20 @@
 // kcov-ignore-start
 use amethyst::{
     assets::{AssetStorage, Loader},
-    ecs::{storage::VecStorage, Component, WorldExt},
+    ecs::WorldExt,
     Result,
 };
 use amethyst_test::AmethystApplication;
 use derivative::Derivative;
 use object_model::{config::ObjectAssetData, game_object, loaded::GameObject};
-use sequence_model::config::SequenceId;
+use sequence_model::config::SequenceName;
 use serde::{Deserialize, Serialize};
-use specs_derive::Component;
 use strum_macros::{Display, EnumString, IntoStaticStr};
 use typename_derive::TypeName;
 // kcov-ignore-end
 
 #[derive(
     Clone,
-    Component,
     Copy,
     Debug,
     Derivative,
@@ -31,17 +29,16 @@ use typename_derive::TypeName;
     TypeName,
 )]
 #[derivative(Default)]
-#[storage(VecStorage)]
 #[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
-pub enum MagicSequenceId {
+pub enum MagicSequenceName {
     #[derivative(Default)]
     Boo,
 }
-impl SequenceId for MagicSequenceId {}
+impl SequenceName for MagicSequenceName {}
 
 #[game_object(
-    sequence_id = MagicSequenceId,
+    sequence_name = MagicSequenceName,
     sequence = config::MagicSequence,
     definition = config::MagicDefinition,
     object_type = TestObject,
@@ -58,7 +55,7 @@ mod config {
     };
     use serde::{Deserialize, Serialize};
 
-    use super::MagicSequenceId;
+    use super::MagicSequenceName;
 
     /// Contains all of the sequences for an `Object`.
     #[derive(Asset, Clone, Debug, Default, Deserialize, PartialEq, Serialize, new)]
@@ -80,14 +77,14 @@ mod config {
     pub struct MagicSequence {
         /// Object sequence for common object fields.
         #[serde(flatten)]
-        pub object_sequence: ObjectSequence<MagicSequenceId>,
+        pub object_sequence: ObjectSequence<MagicSequenceName>,
     }
 
     impl GameObjectSequence for MagicSequence {
-        type SequenceId = MagicSequenceId;
+        type SequenceName = MagicSequenceName;
         type GameObjectFrame = ObjectFrame;
 
-        fn object_sequence(&self) -> &ObjectSequence<Self::SequenceId, Self::GameObjectFrame> {
+        fn object_sequence(&self) -> &ObjectSequence<Self::SequenceName, Self::GameObjectFrame> {
             &self.object_sequence
         }
     }

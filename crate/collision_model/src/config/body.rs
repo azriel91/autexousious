@@ -1,8 +1,4 @@
-use amethyst::{
-    assets::{Asset, Handle, ProcessingState},
-    ecs::VecStorage,
-    Error,
-};
+use asset_derive::Asset;
 use derive_deref::{Deref, DerefMut};
 use derive_new::new;
 use serde::{Deserialize, Serialize};
@@ -10,25 +6,13 @@ use shape_model::Volume;
 
 /// Hittable volumes of an interactable object.
 #[derive(
-    Clone, Debug, Default, Deref, DerefMut, Deserialize, Hash, PartialEq, Eq, Serialize, new,
+    Asset, Clone, Debug, Default, Deref, DerefMut, Deserialize, Hash, PartialEq, Eq, Serialize, new,
 )]
 pub struct Body(
     /// Backing vector of `Volume`s.
     #[serde(default)]
     pub Vec<Volume>,
 );
-
-impl Asset for Body {
-    const NAME: &'static str = concat!(module_path!(), "::", stringify!(Body));
-    type Data = Self;
-    type HandleStorage = VecStorage<Handle<Self>>;
-}
-
-impl From<Body> for Result<ProcessingState<Body>, Error> {
-    fn from(body: Body) -> Result<ProcessingState<Body>, Error> {
-        Ok(ProcessingState::Loaded(body))
-    }
-}
 
 #[cfg(test)]
 mod tests {

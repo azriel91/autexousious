@@ -1,4 +1,4 @@
-use character_model::config::CharacterSequenceId;
+use character_model::config::CharacterSequenceName;
 
 use crate::{
     sequence_handler::{
@@ -9,19 +9,19 @@ use crate::{
 
 /// Disallow dash when landing in the middle of an attack.
 const DASH_ATTACK_NOT_END: SwitchSequenceOnLand =
-    SwitchSequenceOnLand(CharacterSequenceId::DashDescendLand);
+    SwitchSequenceOnLand(CharacterSequenceName::DashDescendLand);
 
 /// Switch to the appropriate sequence based on velocity after attacking.
 const DASH_ATTACK_END: SwitchSequenceOnEndYVelocity = SwitchSequenceOnEndYVelocity {
-    upwards: CharacterSequenceId::DashForwardAscend,
-    downwards: CharacterSequenceId::DashForwardDescend,
+    upwards: CharacterSequenceName::DashForwardAscend,
+    downwards: CharacterSequenceName::DashForwardDescend,
 };
 
 #[derive(Debug)]
 pub(crate) struct DashAttack;
 
 impl CharacterSequenceHandler for DashAttack {
-    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {
         DASH_ATTACK_NOT_END
             .update(components)
             .or_else(|| DASH_ATTACK_END.update(components))
@@ -30,7 +30,7 @@ impl CharacterSequenceHandler for DashAttack {
 
 #[cfg(test)]
 mod test {
-    use character_model::{config::CharacterSequenceId, play::RunCounter};
+    use character_model::{config::CharacterSequenceName, play::RunCounter};
     use game_input::ControllerInput;
     use kinematic_model::config::{Position, Velocity};
     use object_model::play::{Grounding, HealthPoints, Mirrored};
@@ -49,7 +49,7 @@ mod test {
             DashAttack::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceId::DashAttack,
+                CharacterSequenceName::DashAttack,
                 SequenceStatus::default(),
                 &Position::default(),
                 &velocity,
@@ -66,11 +66,11 @@ mod test {
         velocity[1] = -1.;
 
         assert_eq!(
-            Some(CharacterSequenceId::DashDescendLand),
+            Some(CharacterSequenceName::DashDescendLand),
             DashAttack::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceId::FallForwardDescend,
+                CharacterSequenceName::FallForwardDescend,
                 SequenceStatus::default(),
                 &Position::default(),
                 &velocity,
@@ -87,11 +87,11 @@ mod test {
         velocity[1] = 1.;
 
         assert_eq!(
-            Some(CharacterSequenceId::DashForwardAscend),
+            Some(CharacterSequenceName::DashForwardAscend),
             DashAttack::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceId::DashAttack,
+                CharacterSequenceName::DashAttack,
                 SequenceStatus::End,
                 &Position::default(),
                 &velocity,
@@ -107,11 +107,11 @@ mod test {
         velocity[1] = -1.;
 
         assert_eq!(
-            Some(CharacterSequenceId::DashForwardDescend),
+            Some(CharacterSequenceName::DashForwardDescend),
             DashAttack::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceId::DashAttack,
+                CharacterSequenceName::DashAttack,
                 SequenceStatus::End,
                 &Position::default(),
                 &velocity,

@@ -23,9 +23,16 @@
 //! }
 //!
 //! impl Asset for MyAsset {
-//!     const NAME: &'static str = concat!(module_path!(), "::", stringify!(MyAsset));
 //!     type Data = Self;
 //!     type HandleStorage = VecStorage<Handle<Self>>;
+//!
+//!     fn name() -> &'static str {
+//!             concat!(
+//!                 module_path!(),
+//!                 "::",
+//!                 stringify!(MyAsset),
+//!             )
+//!         }
 //! }
 //!
 //! impl From<MyAsset> for Result<ProcessingState<MyAsset>, Error> {
@@ -104,14 +111,17 @@ pub fn derive_asset(item: TokenStream) -> TokenStream {
 
     let mut token_stream_2 = quote! {
         impl #impl_generics amethyst::assets::Asset for #type_name #ty_generics #where_clause {
-            const NAME: &'static str = concat!(
-                module_path!(),
-                "::",
-                stringify!(#type_name),
-                stringify!(#ty_generics),
-            );
             type Data = #asset_data;
             type HandleStorage = amethyst::ecs::storage::VecStorage<amethyst::assets::Handle<Self>>;
+
+            fn name() -> &'static str {
+                concat!(
+                    module_path!(),
+                    "::",
+                    stringify!(#type_name),
+                    stringify!(#ty_generics),
+                )
+            }
         }
 
         #[doc = #handle_doc]

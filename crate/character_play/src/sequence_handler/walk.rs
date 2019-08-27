@@ -1,4 +1,4 @@
-use character_model::config::CharacterSequenceId;
+use character_model::config::CharacterSequenceName;
 
 use crate::{
     sequence_handler::{
@@ -16,7 +16,7 @@ use crate::{
 pub(crate) struct Walk;
 
 impl CharacterSequenceHandler for Walk {
-    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {
         [
             AliveCheck::update,
             AirborneCheck::update,
@@ -32,7 +32,7 @@ impl CharacterSequenceHandler for Walk {
 
 #[cfg(test)]
 mod test {
-    use character_model::{config::CharacterSequenceId, play::RunCounter};
+    use character_model::{config::CharacterSequenceName, play::RunCounter};
     use game_input::ControllerInput;
     use kinematic_model::config::{Position, Velocity};
     use object_model::play::{Grounding, HealthPoints, Mirrored};
@@ -46,11 +46,11 @@ mod test {
         let input = ControllerInput::new(1., 0., false, false, false, false);
 
         assert_eq!(
-            Some(CharacterSequenceId::Walk),
+            Some(CharacterSequenceName::Walk),
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::Walk,
+                CharacterSequenceName::Walk,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -66,11 +66,11 @@ mod test {
         let input = ControllerInput::new(-1., 0., false, false, false, false);
 
         assert_eq!(
-            Some(CharacterSequenceId::Walk),
+            Some(CharacterSequenceName::Walk),
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::Walk,
+                CharacterSequenceName::Walk,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -90,7 +90,7 @@ mod test {
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::Walk,
+                CharacterSequenceName::Walk,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -107,7 +107,7 @@ mod test {
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::Walk,
+                CharacterSequenceName::Walk,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -126,11 +126,11 @@ mod test {
                 let input = ControllerInput::new(x_input, z_input, false, false, false, false);
 
                 assert_eq!(
-                    Some(CharacterSequenceId::Walk),
+                    Some(CharacterSequenceName::Walk),
                     Walk::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         HealthPoints::default(),
-                        CharacterSequenceId::Walk,
+                        CharacterSequenceName::Walk,
                         SequenceStatus::End,
                         &Position::default(),
                         &Velocity::default(),
@@ -147,11 +147,11 @@ mod test {
                 let input = ControllerInput::new(x_input, z_input, false, false, false, false);
 
                 assert_eq!(
-                    Some(CharacterSequenceId::Walk),
+                    Some(CharacterSequenceName::Walk),
                     Walk::update(CharacterSequenceUpdateComponents::new(
                         &input,
                         HealthPoints::default(),
-                        CharacterSequenceId::Walk,
+                        CharacterSequenceName::Walk,
                         SequenceStatus::End,
                         &Position::default(),
                         &Velocity::default(),
@@ -168,11 +168,11 @@ mod test {
         let input = ControllerInput::new(1., -1., false, false, false, false);
 
         assert_eq!(
-            Some(CharacterSequenceId::Run),
+            Some(CharacterSequenceName::Run),
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::Walk,
+                CharacterSequenceName::Walk,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -188,11 +188,11 @@ mod test {
         let input = ControllerInput::new(-1., -1., false, false, false, false);
 
         assert_eq!(
-            Some(CharacterSequenceId::Run),
+            Some(CharacterSequenceName::Run),
             Walk::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::Walk,
+                CharacterSequenceName::Walk,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),

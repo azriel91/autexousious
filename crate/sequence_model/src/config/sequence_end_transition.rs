@@ -1,37 +1,23 @@
 use std::{fmt, marker::PhantomData, str::FromStr};
 
-use amethyst::ecs::{storage::VecStorage, Component};
 use derivative::Derivative;
 use derive_new::new;
 use serde::{
     de::{Error, Unexpected, Visitor},
     Deserialize, Deserializer, Serialize, Serializer,
 };
-use specs_derive::Component;
 use strum_macros::{Display, EnumString, IntoStaticStr};
 use typename_derive::TypeName;
 
-use crate::config::SequenceId;
+use crate::config::{SequenceName, SequenceNameString};
 
 /// Specifies the behaviour to transition when the sequence ends.
-#[derive(
-    Clone,
-    Component,
-    Copy,
-    Debug,
-    Derivative,
-    Display,
-    EnumString,
-    IntoStaticStr,
-    PartialEq,
-    TypeName,
-)]
+#[derive(Clone, Debug, Derivative, Display, EnumString, IntoStaticStr, PartialEq, TypeName)]
 #[derivative(Default)]
-#[storage(VecStorage)]
 #[strum(serialize_all = "snake_case")]
-pub enum SequenceEndTransition<SeqId>
+pub enum SequenceEndTransition<SeqName>
 where
-    SeqId: SequenceId,
+    SeqName: SequenceName,
 {
     /// Don't transition, stay on the last frame.
     #[derivative(Default)]
@@ -44,12 +30,12 @@ where
     //
     // TODO: Ideally we could use `#[serde(flatten)]` for enum variants, but it isn't supported yet.
     // TODO: See: <https://github.com/serde-rs/serde/issues/1402>
-    SequenceId(SeqId),
+    SequenceName(SequenceNameString<SeqName>),
 }
 
-impl<SeqId> Serialize for SequenceEndTransition<SeqId>
+impl<SeqName> Serialize for SequenceEndTransition<SeqName>
 where
-    SeqId: SequenceId,
+    SeqName: SequenceName,
 {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -59,33 +45,38 @@ where
         match self {
             SequenceEndTransition::None => {
                 let variant_index = 0;
-                let variant_name = Into::<&'static str>::into(SequenceEndTransition::<SeqId>::None);
+                let variant_name =
+                    Into::<&'static str>::into(SequenceEndTransition::<SeqName>::None);
                 serializer.serialize_unit_variant(enum_name, variant_index, &variant_name)
             }
             SequenceEndTransition::Repeat => {
                 let variant_index = 1;
                 let variant_name =
-                    Into::<&'static str>::into(SequenceEndTransition::<SeqId>::Repeat);
+                    Into::<&'static str>::into(SequenceEndTransition::<SeqName>::Repeat);
                 serializer.serialize_unit_variant(enum_name, variant_index, &variant_name)
             }
             SequenceEndTransition::Delete => {
                 let variant_index = 2;
                 let variant_name =
-                    Into::<&'static str>::into(SequenceEndTransition::<SeqId>::Delete);
+                    Into::<&'static str>::into(SequenceEndTransition::<SeqName>::Delete);
                 serializer.serialize_unit_variant(enum_name, variant_index, &variant_name)
             }
-            SequenceEndTransition::SequenceId(sequence_id) => {
-                let variant_index = 3;
-                let variant_name = Into::<&'static str>::into(*sequence_id);
-                serializer.serialize_unit_variant(enum_name, variant_index, &variant_name)
+            SequenceEndTransition::SequenceName(sequence_name_string) => {
+                let string = match sequence_name_string {
+                    SequenceNameString::Name(sequence_name) => {
+                        Into::<&'static str>::into(*sequence_name)
+                    }
+                    SequenceNameString::String(string) => string,
+                };
+                serializer.serialize_str(string)
             }
         }
     }
 }
 
-impl<'de, SeqId> Deserialize<'de> for SequenceEndTransition<SeqId>
+impl<'de, SeqName> Deserialize<'de> for SequenceEndTransition<SeqName>
 where
-    SeqId: SequenceId,
+    SeqName: SequenceName,
 {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -96,15 +87,15 @@ where
 }
 
 #[derive(new)]
-struct SequenceEndTransitionVisitor<SeqId>(PhantomData<SeqId>)
+struct SequenceEndTransitionVisitor<SeqName>(PhantomData<SeqName>)
 where
-    SeqId: SequenceId;
+    SeqName: SequenceName;
 
-impl<'de, SeqId> Visitor<'de> for SequenceEndTransitionVisitor<SeqId>
+impl<'de, SeqName> Visitor<'de> for SequenceEndTransitionVisitor<SeqName>
 where
-    SeqId: SequenceId,
+    SeqName: SequenceName,
 {
-    type Value = SequenceEndTransition<SeqId>;
+    type Value = SequenceEndTransition<SeqName>;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         formatter.write_str("one of `none`, `repeat`, `delete`, or a sequence ID")
@@ -115,7 +106,9 @@ where
         E: Error,
     {
         SequenceEndTransition::from_str(value)
-            .or_else(|_| SeqId::from_str(value).map(SequenceEndTransition::SequenceId))
+            .or_else(|_| {
+                SequenceNameString::from_str(value).map(SequenceEndTransition::SequenceName)
+            })
             .map_err(|_| E::invalid_value(Unexpected::Str(value), &self))
     }
 }

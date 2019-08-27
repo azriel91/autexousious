@@ -1,7 +1,7 @@
 // See comment on struct. This attribute isn't detected if we put it on the struct.
 #![allow(clippy::too_many_arguments)]
 
-use character_model::{config::CharacterSequenceId, play::RunCounter};
+use character_model::{config::CharacterSequenceName, play::RunCounter};
 use derive_new::new;
 use game_input::ControllerInput;
 use kinematic_model::config::{Position, Velocity};
@@ -18,8 +18,8 @@ pub struct CharacterSequenceUpdateComponents<'c> {
     pub controller_input: &'c ControllerInput,
     /// Health points.
     pub health_points: HealthPoints,
-    /// Current character sequence ID.
-    pub character_sequence_id: CharacterSequenceId,
+    /// Current character sequence name.
+    pub character_sequence_name: CharacterSequenceName,
     /// Whether a sequence has just begun, is ongoing, or has ended.
     pub sequence_status: SequenceStatus,
     /// Position of the character.

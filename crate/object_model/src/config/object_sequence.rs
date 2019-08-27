@@ -3,12 +3,12 @@
 //! A sequence is an independent grouping of frames, which contains not only animation information,
 //! but also the collision zones, interaction, and effects.
 //!
-//! Sequences are shared by different object types, and are genericized by the sequence ID. This is
-//! because different object types have different valid sequence IDs, and we want to be able to
+//! Sequences are shared by different object types, and are genericized by the sequence name. This is
+//! because different object types have different valid sequence names, and we want to be able to
 //! define this at compile time rather than needing to process this at run time.
 
 use derive_new::new;
-use sequence_model::config::{SequenceEndTransition, SequenceId};
+use sequence_model::config::{SequenceEndTransition, SequenceName};
 use serde::{Deserialize, Serialize};
 
 use crate::config::{GameObjectFrame, ObjectFrame};
@@ -19,17 +19,17 @@ use crate::config::{GameObjectFrame, ObjectFrame};
 /// interactions that happen during each frame of that animation.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
 #[serde(deny_unknown_fields)]
-pub struct ObjectSequence<SeqId, Frame = ObjectFrame>
+pub struct ObjectSequence<SeqName, Frame = ObjectFrame>
 where
-    SeqId: SequenceId,
+    SeqName: SequenceName,
     Frame: GameObjectFrame,
 {
-    /// ID of the sequence to switch to after this one has completed.
+    /// Name of the sequence to switch to after this one has completed.
     ///
     /// Note: This may not be immediately after the last frame of the sequence. For example, a
     /// character that is in mid-air should remain in the last frame until it lands on the ground.
     #[serde(default)]
-    pub next: SequenceEndTransition<SeqId>,
+    pub next: SequenceEndTransition<SeqName>,
     /// Key frames in the animation sequence.
     pub frames: Vec<Frame>,
 }
@@ -46,7 +46,7 @@ mod tests {
     use derivative::Derivative;
     use kinematic_model::config::{Position, Velocity};
     use object_status_model::config::StunPoints;
-    use sequence_model::config::{SequenceEndTransition, SequenceId, Wait};
+    use sequence_model::config::{SequenceEndTransition, SequenceName, SequenceNameString, Wait};
     use serde::{Deserialize, Serialize};
     use serde_yaml;
     use shape_model::Volume;
@@ -90,7 +90,7 @@ frames:
     #[test]
     fn sequence_with_empty_frames_list_deserializes_successfully() {
         let sequence =
-            serde_yaml::from_str::<ObjectSequence<TestSeqId>>(SEQUENCE_WITH_FRAMES_EMPTY)
+            serde_yaml::from_str::<ObjectSequence<TestSeqName>>(SEQUENCE_WITH_FRAMES_EMPTY)
                 .expect("Failed to deserialize sequence.");
 
         let expected = ObjectSequence::new(SequenceEndTransition::None, vec![]);
@@ -99,7 +99,7 @@ frames:
 
     #[test]
     fn sequence_with_frames() {
-        let sequence = serde_yaml::from_str::<ObjectSequence<TestSeqId>>(SEQUENCE_WITH_FRAMES)
+        let sequence = serde_yaml::from_str::<ObjectSequence<TestSeqName>>(SEQUENCE_WITH_FRAMES)
             .expect("Failed to deserialize sequence.");
 
         let frames = vec![
@@ -146,14 +146,16 @@ frames:
                 Spawns::default(),
             ),
         ];
-        let expected =
-            ObjectSequence::new(SequenceEndTransition::SequenceId(TestSeqId::Boo), frames);
+        let expected = ObjectSequence::new(
+            SequenceEndTransition::SequenceName(SequenceNameString::Name(TestSeqName::Boo)),
+            frames,
+        );
         assert_eq!(expected, sequence);
     }
 
     #[test]
     fn sequence_with_body() {
-        let sequence = serde_yaml::from_str::<ObjectSequence<TestSeqId>>(SEQUENCE_WITH_BODY)
+        let sequence = serde_yaml::from_str::<ObjectSequence<TestSeqName>>(SEQUENCE_WITH_BODY)
             .expect("Failed to deserialize sequence.");
 
         let body_volumes = vec![
@@ -185,7 +187,7 @@ frames:
 
     #[test]
     fn sequence_with_itr() {
-        let sequence = serde_yaml::from_str::<ObjectSequence<TestSeqId>>(SEQUENCE_WITH_ITR)
+        let sequence = serde_yaml::from_str::<ObjectSequence<TestSeqName>>(SEQUENCE_WITH_ITR)
             .expect("Failed to deserialize sequence.");
 
         let interactions = vec![Interaction {
@@ -217,7 +219,7 @@ frames:
 
     #[test]
     fn sequence_with_spawns() {
-        let sequence = serde_yaml::from_str::<ObjectSequence<TestSeqId>>(SEQUENCE_WITH_SPAWNS)
+        let sequence = serde_yaml::from_str::<ObjectSequence<TestSeqName>>(SEQUENCE_WITH_SPAWNS)
             .expect("Failed to deserialize sequence.");
 
         let asset_slug = AssetSlug::from_str("default/fireball")
@@ -256,9 +258,9 @@ frames:
     #[derivative(Default)]
     #[serde(rename_all = "snake_case")]
     #[strum(serialize_all = "snake_case")]
-    enum TestSeqId {
+    enum TestSeqName {
         #[derivative(Default)]
         Boo,
     }
-    impl SequenceId for TestSeqId {}
+    impl SequenceName for TestSeqName {}
 }

@@ -641,7 +641,7 @@ mod tests {
         let actual_events = ec
             .read(&mut reader_id)
             .filter(|ev| match ev {
-                SequenceUpdateEvent::SequenceBegin { entity }
+                SequenceUpdateEvent::SequenceBegin { entity, .. }
                 | SequenceUpdateEvent::FrameBegin { entity, .. }
                 | SequenceUpdateEvent::SequenceEnd { entity, .. } => target_entity == *entity,
             })

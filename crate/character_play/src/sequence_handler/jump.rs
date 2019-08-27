@@ -1,24 +1,24 @@
-use character_model::config::CharacterSequenceId;
+use character_model::config::CharacterSequenceName;
 
 use crate::{
     sequence_handler::{CharacterSequenceHandler, SwitchSequenceOnEnd},
     CharacterSequenceUpdateComponents,
 };
 
-const JUMP: SwitchSequenceOnEnd = SwitchSequenceOnEnd(CharacterSequenceId::JumpOff);
+const JUMP: SwitchSequenceOnEnd = SwitchSequenceOnEnd(CharacterSequenceName::JumpOff);
 
 #[derive(Debug)]
 pub(crate) struct Jump;
 
 impl CharacterSequenceHandler for Jump {
-    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {
         JUMP.update(components.sequence_status)
     }
 }
 
 #[cfg(test)]
 mod test {
-    use character_model::{config::CharacterSequenceId, play::RunCounter};
+    use character_model::{config::CharacterSequenceName, play::RunCounter};
     use game_input::ControllerInput;
     use kinematic_model::config::{Position, Velocity};
     use object_model::play::{Grounding, HealthPoints, Mirrored};
@@ -36,7 +36,7 @@ mod test {
             Jump::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::Jump,
+                CharacterSequenceName::Jump,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -54,11 +54,11 @@ mod test {
         velocity[1] = 1.;
 
         assert_eq!(
-            Some(CharacterSequenceId::JumpOff),
+            Some(CharacterSequenceName::JumpOff),
             Jump::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::Jump,
+                CharacterSequenceName::Jump,
                 SequenceStatus::End,
                 &Position::default(),
                 &velocity,

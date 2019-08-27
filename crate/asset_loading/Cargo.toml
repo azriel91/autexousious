@@ -5,7 +5,7 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
 [dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
+amethyst = { git = "https://github.com/kabergstrom/amethyst.git", features = ["no-slow-safety-checks", "vulkan", "experimental-assets"], branch = "new-asset-system" }
 application = { path = "../application" }
 asset_model = { path = "../asset_model" }
 derive-new = "0.5.8"
@@ -19,8 +19,9 @@ serde_yaml = "0.8.9"
 strum = "0.15.0"
 
 [dev-dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "test-support", "vulkan"] }
-amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
+amethyst = { git = "https://github.com/kabergstrom/amethyst.git", features = ["no-slow-safety-checks", "test-support", "vulkan", "experimental-assets"], branch = "new-asset-system" }
+amethyst_test = { git = "https://github.com/kabergstrom/amethyst.git", branch = "new-asset-system" }
+asset_derive = { path = "../asset_derive" }
 derive_deref = "1.1.0"
 hamcrest = "0.1.5"
 pretty_assertions = "0.6.1"

@@ -3,7 +3,7 @@ use amethyst::{
     ecs::{DispatcherBuilder, World},
     Error,
 };
-use character_model::{config::CharacterSequenceId, loaded::CharacterObjectWrapper};
+use character_model::loaded::CharacterObjectWrapper;
 use character_play::{
     CharacterControlTransitionsTransitionSystem, CharacterControlTransitionsUpdateSystem,
     CharacterCtsHandleUpdateSystem,
@@ -22,11 +22,10 @@ use collision_play::{
     HitRepeatTrackersAugmentSystem, HitRepeatTrackersTickerSystem,
 };
 use derive_new::new;
-use energy_model::{config::EnergySequenceId, loaded::EnergyObjectWrapper};
+use energy_model::loaded::EnergyObjectWrapper;
 use energy_play::{EnergyHitEffectSystem, EnergyHittingEffectSystem};
 use game_input::ControllerInput;
 use game_play_hud::{CpBarUpdateSystem, HpBarUpdateSystem};
-use map_model::config::MapLayerSequenceId;
 use named_type::NamedType;
 use object_play::{ObjectGravitySystem, ObjectMirroringSystem};
 use object_status_play::StunPointsReductionSystem;
@@ -59,78 +58,41 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
     ) -> Result<(), Error> {
         // === Component augmentation === //
 
-        macro_rules! sequence_status_update_system {
-            ($sequence_id_type:ty) => {
-                builder.add(
-                    SequenceStatusUpdateSystem::<$sequence_id_type>::new(),
-                    &SequenceStatusUpdateSystem::<$sequence_id_type>::type_name(),
-                    &[],
-                ); // kcov-ignore
-            };
-        }
-        sequence_status_update_system!(MapLayerSequenceId);
-        sequence_status_update_system!(CharacterSequenceId);
-        sequence_status_update_system!(EnergySequenceId);
+        builder.add(
+            SequenceStatusUpdateSystem::new(),
+            &SequenceStatusUpdateSystem::type_name(),
+            &[],
+        ); // kcov-ignore
 
         macro_rules! sequence_component_update_system {
-            ($component_asset_type:path, $component_data_type:path, $sequence_id_type:path) => {
+            ($component_asset_type:path, $component_data_type:path) => {
                 builder.add(
-                    SequenceComponentUpdateSystem::<
-                        $component_asset_type,
-                        $component_data_type,
-                        $sequence_id_type,
-                    >::new(),
-                    &SequenceComponentUpdateSystem::<
-                        $component_asset_type,
-                        $component_data_type,
-                        $sequence_id_type,
-                    >::type_name(),
-                    &[
-                        &SequenceStatusUpdateSystem::<MapLayerSequenceId>::type_name(),
-                        &SequenceStatusUpdateSystem::<CharacterSequenceId>::type_name(),
-                        &SequenceStatusUpdateSystem::<EnergySequenceId>::type_name(),
-                    ],
-                ); // kcov-ignore
+                                                    SequenceComponentUpdateSystem::<
+                                                        $component_asset_type,
+                                                        $component_data_type,
+                                                    >::new(),
+                                                    &SequenceComponentUpdateSystem::<
+                                                        $component_asset_type,
+                                                        $component_data_type,
+                                                    >::type_name(),
+                                                    &[&SequenceStatusUpdateSystem::type_name()],
+                                                ); // kcov-ignore
             };
         }
 
         macro_rules! object_sequence_component_update_systems {
-            ($wrapper_type:path, $seq_id_type:path) => {
-                sequence_component_update_system!(
-                    $wrapper_type,
-                    WaitSequenceHandles<$seq_id_type>,
-                    $seq_id_type
-                );
-                sequence_component_update_system!(
-                    $wrapper_type,
-                    SpriteRenderSequenceHandles<$seq_id_type>,
-                    $seq_id_type
-                );
-                sequence_component_update_system!(
-                    $wrapper_type,
-                    BodySequenceHandles<$seq_id_type>,
-                    $seq_id_type
-                );
-                sequence_component_update_system!(
-                    $wrapper_type,
-                    InteractionsSequenceHandles<$seq_id_type>,
-                    $seq_id_type
-                );
-                sequence_component_update_system!(
-                    $wrapper_type,
-                    SpawnsSequenceHandles<$seq_id_type>,
-                    $seq_id_type
-                );
-                sequence_component_update_system!(
-                    $wrapper_type,
-                    SequenceEndTransitions<$seq_id_type>,
-                    $seq_id_type
-                );
+            ($wrapper_type:path) => {
+                sequence_component_update_system!($wrapper_type, WaitSequenceHandles);
+                sequence_component_update_system!($wrapper_type, SpriteRenderSequenceHandles);
+                sequence_component_update_system!($wrapper_type, BodySequenceHandles);
+                sequence_component_update_system!($wrapper_type, InteractionsSequenceHandles);
+                sequence_component_update_system!($wrapper_type, SpawnsSequenceHandles);
+                sequence_component_update_system!($wrapper_type, SequenceEndTransitions);
             };
         }
 
-        object_sequence_component_update_systems!(CharacterObjectWrapper, CharacterSequenceId);
-        object_sequence_component_update_systems!(EnergyObjectWrapper, EnergySequenceId);
+        object_sequence_component_update_systems!(CharacterObjectWrapper);
+        object_sequence_component_update_systems!(EnergyObjectWrapper);
 
         // TODO: The `SequenceUpdateSystem`s depend on the following systems:
         //
@@ -299,18 +261,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         // === Sequence ID Updates === //
 
         builder.add(
-            SequenceEndTransitionSystem::<MapLayerSequenceId>::new(),
-            &SequenceEndTransitionSystem::<MapLayerSequenceId>::type_name(),
-            &[],
-        ); // kcov-ignore
-        builder.add(
-            SequenceEndTransitionSystem::<CharacterSequenceId>::new(),
-            &SequenceEndTransitionSystem::<CharacterSequenceId>::type_name(),
-            &[],
-        ); // kcov-ignore
-        builder.add(
-            SequenceEndTransitionSystem::<EnergySequenceId>::new(),
-            &SequenceEndTransitionSystem::<EnergySequenceId>::type_name(),
+            SequenceEndTransitionSystem::new(),
+            &SequenceEndTransitionSystem::type_name(),
             &[],
         ); // kcov-ignore
 
@@ -318,13 +270,13 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         // `game_input::ControllerInputUpdateSystem`. We rely on the main dispatcher to be run
         // before the `GamePlayState` dispatcher.
         //
-        // It also depends on `&SequenceEndTransitionSystem::<CharacterSequenceId>` as the
+        // It also depends on `&SequenceEndTransitionSystem` as the
         // `CharacterSequenceUpdater` transitions should overwrite the `SequenceEndTransition`
         // update.
         builder.add(
             CharacterSequenceUpdateSystem::new(),
             &CharacterSequenceUpdateSystem::type_name(),
-            &[&SequenceEndTransitionSystem::<CharacterSequenceId>::type_name()],
+            &[&SequenceEndTransitionSystem::type_name()],
         ); // kcov-ignore
         builder.add(
             CharacterControlTransitionsTransitionSystem::new(),

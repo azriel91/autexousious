@@ -1,4 +1,4 @@
-use character_model::config::CharacterSequenceId;
+use character_model::config::CharacterSequenceName;
 
 use crate::CharacterSequenceUpdateComponents;
 
@@ -59,14 +59,14 @@ pub(super) trait CharacterSequenceHandler {
     /// # Parameters
     ///
     /// * `components`: Components used to compute character sequence updates.
-    fn update(_components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
+    fn update(_components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {
         None
     }
 }
 
 #[cfg(test)]
 mod test {
-    use character_model::{config::CharacterSequenceId, play::RunCounter};
+    use character_model::{config::CharacterSequenceName, play::RunCounter};
     use game_input::ControllerInput;
     use kinematic_model::config::{Position, Velocity};
     use object_model::play::{Grounding, HealthPoints, Mirrored};
@@ -82,7 +82,7 @@ mod test {
             Sit::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceId::default(),
+                CharacterSequenceName::default(),
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),

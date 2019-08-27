@@ -99,7 +99,7 @@ mod test {
             if let Some(find_context) = ThemeLoader::load_internal(world, "non_existent.ron")
                 .unwrap_err()
                 .as_error()
-                .downcast_ref::<Box<FindContext>>()
+                .downcast_ref::<FindContext>()
             {
                 assert_eq!("non_existent.ron", find_context.file_name);
             } else {
@@ -126,7 +126,7 @@ mod test {
             if let Some(_ron_error) = ThemeLoader::load_internal(world, "bad_config.ron")
                 .unwrap_err()
                 .as_error()
-                .downcast_ref::<Box<ron::de::Error>>()
+                .downcast_ref::<ron::de::Error>()
             {
                 // pass
             } else {
