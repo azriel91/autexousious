@@ -6,15 +6,15 @@ use amethyst::{
     },
     shred::{ResourceId, SystemData},
 };
-use character_model::{
-    config::CharacterSequenceId,
-    loaded::{Character, CharacterControlTransitionsSequenceHandle, CharacterHandle},
+use character_model::loaded::{
+    Character, CharacterControlTransitionsSequenceHandle, CharacterHandle,
 };
 use derivative::Derivative;
 use derive_new::new;
 use log::error;
 use named_type::NamedType;
 use named_type_derive::NamedType;
+use sequence_model::loaded::SequenceId;
 
 /// Updates the attached `CharacterControlTransitionsSequenceHandle`s when `SequenceId` changes.
 #[derive(Debug, Default, NamedType, new)]
@@ -22,7 +22,7 @@ pub struct CharacterCtsHandleUpdateSystem {
     /// Reader ID for sequence ID changes.
     #[new(default)]
     sequence_id_rid: Option<ReaderId<ComponentEvent>>,
-    /// Pre-allocated bitset to track insertions and modifications to `CharacterSequenceId`s.
+    /// Pre-allocated bitset to track insertions and modifications to `SequenceId`s.
     #[new(default)]
     sequence_id_updates: BitSet,
 }
@@ -35,7 +35,7 @@ pub struct CharacterCtsHandleUpdateSystemData<'s> {
     pub entities: Entities<'s>,
     /// `SequenceStatus` component storage.
     #[derivative(Debug = "ignore")]
-    pub sequence_ids: ReadStorage<'s, CharacterSequenceId>,
+    pub sequence_ids: ReadStorage<'s, SequenceId>,
     /// `CharacterHandle` component storage.
     #[derivative(Debug = "ignore")]
     pub character_handles: ReadStorage<'s, CharacterHandle>,
@@ -91,7 +91,7 @@ impl<'s> System<'s> for CharacterCtsHandleUpdateSystem {
                     &character.control_transitions_sequence_handles;
 
                 let character_cts_handle = control_transitions_sequence_handles
-                    .get(&sequence_id)
+                    .get(**sequence_id)
                     // kcov-ignore-start
                     .unwrap_or_else(|| {
                         let message = format!(
@@ -101,10 +101,10 @@ impl<'s> System<'s> for CharacterCtsHandleUpdateSystem {
                         );
                         error!("{}", message);
 
-                        let default_sequence_id = CharacterSequenceId::default();
+                        let default_sequence_id = SequenceId::default();
 
                         control_transitions_sequence_handles
-                            .get(&default_sequence_id)
+                            .get(*default_sequence_id)
                             .unwrap_or_else(|| {
                                 let message = format!(
                                     "Failed to get `CharacterControlTransitionsSequenceHandle` \
@@ -128,8 +128,7 @@ impl<'s> System<'s> for CharacterCtsHandleUpdateSystem {
 
     fn setup(&mut self, world: &mut World) {
         Self::SystemData::setup(world);
-        self.sequence_id_rid =
-            Some(WriteStorage::<CharacterSequenceId>::fetch(world).register_reader());
+        self.sequence_id_rid = Some(WriteStorage::<SequenceId>::fetch(world).register_reader());
     }
 }
 
@@ -141,10 +140,9 @@ mod tests {
     };
     use application_test_support::{AutexousiousApplication, ObjectQueries, SequenceQueries};
     use assets_test::CHAR_BAT_SLUG;
-    use character_model::{
-        config::CharacterSequenceId, loaded::CharacterControlTransitionsSequenceHandle,
-    };
+    use character_model::loaded::CharacterControlTransitionsSequenceHandle;
     use character_prefab::CharacterPrefab;
+    use sequence_model::loaded::SequenceId;
 
     use super::CharacterCtsHandleUpdateSystem;
 
@@ -152,8 +150,8 @@ mod tests {
     fn attaches_handle_for_sequence_id_insertions() -> Result<(), Error> {
         AutexousiousApplication::game_base()
             .with_system(CharacterCtsHandleUpdateSystem::new(), "", &[])
-            .with_setup(|world| insert_sequence(world, CharacterSequenceId::RunStop))
-            .with_assertion(|world| expect_cts_handle(world, CharacterSequenceId::RunStop))
+            .with_setup(|world| insert_sequence(world, SequenceId::new(5)))
+            .with_assertion(|world| expect_cts_handle(world, SequenceId::new(5)))
             .run_isolated()
     }
 
@@ -161,32 +159,32 @@ mod tests {
     fn attaches_handle_for_sequence_id_modifications() -> Result<(), Error> {
         AutexousiousApplication::game_base()
             .with_system(CharacterCtsHandleUpdateSystem::new(), "", &[])
-            .with_setup(|world| update_sequence(world, CharacterSequenceId::RunStop))
-            .with_assertion(|world| expect_cts_handle(world, CharacterSequenceId::RunStop))
+            .with_setup(|world| update_sequence(world, SequenceId::new(5)))
+            .with_assertion(|world| expect_cts_handle(world, SequenceId::new(5)))
             .run_isolated()
     }
 
-    fn insert_sequence(world: &mut World, sequence_id: CharacterSequenceId) {
+    fn insert_sequence(world: &mut World, sequence_id: SequenceId) {
         let entity = create_entity(world);
 
         {
-            let mut sequence_ids = world.write_storage::<CharacterSequenceId>();
+            let mut sequence_ids = world.write_storage::<SequenceId>();
             sequence_ids
                 .insert(entity, sequence_id)
-                .expect("Failed to insert `CharacterSequenceId`.");
+                .expect("Failed to insert `SequenceId`.");
         } // kcov-ignore
 
         world.insert(entity);
     }
 
-    fn update_sequence(world: &mut World, sequence_id: CharacterSequenceId) {
+    fn update_sequence(world: &mut World, sequence_id: SequenceId) {
         let entity = create_entity(world);
 
         {
-            let mut sequence_ids = world.write_storage::<CharacterSequenceId>();
+            let mut sequence_ids = world.write_storage::<SequenceId>();
             let sid = sequence_ids
                 .get_mut(entity)
-                .expect("Expected entity to contain `CharacterSequenceId` component.");
+                .expect("Expected entity to contain `SequenceId` component.");
             *sid = sequence_id;
         }
 
@@ -199,17 +197,17 @@ mod tests {
             ObjectQueries::game_object_handle::<CharacterPrefab>(world, &asset_slug)
                 .expect("Expected `CharacterHandle` to exist.");
         let character_cts_handle =
-            SequenceQueries::character_cts_handle(world, &asset_slug, CharacterSequenceId::Stand);
+            SequenceQueries::character_cts_handle(world, &asset_slug, SequenceId::new(0));
 
         world
             .create_entity()
             .with(character_handle)
-            .with(CharacterSequenceId::Stand)
+            .with(SequenceId::new(0))
             .with(character_cts_handle)
             .build()
     }
 
-    fn expect_cts_handle(world: &mut World, sequence_id: CharacterSequenceId) {
+    fn expect_cts_handle(world: &mut World, sequence_id: SequenceId) {
         let entity = *world.read_resource::<Entity>();
         let expected_handle =
             SequenceQueries::character_cts_handle(world, &CHAR_BAT_SLUG.clone(), sequence_id);

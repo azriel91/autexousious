@@ -8,8 +8,7 @@ use derivative::Derivative;
 use kinematic_model::config::{Position, Velocity};
 use object_model::play::Mirrored;
 use sequence_model::{
-    config::SequenceId,
-    loaded::SequenceEndTransitions,
+    loaded::{SequenceEndTransitions, SequenceId},
     play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
 };
 
@@ -17,15 +16,9 @@ use sequence_model::{
 ///
 /// These are the storages for the components common to all game objects.
 ///
-/// # Type Parameters:
-///
-/// * `SeqId`: Sequence ID of the object, such as `CharacterSequenceId`.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct ObjectComponentStorages<'s, SeqId>
-where
-    SeqId: SequenceId + 'static,
-{
+pub struct ObjectComponentStorages<'s> {
     /// `Transparent` components.
     #[derivative(Debug = "ignore")]
     pub transparents: WriteStorage<'s, Transparent>,
@@ -43,10 +36,10 @@ where
     pub mirroreds: WriteStorage<'s, Mirrored>,
     /// `SequenceEndTransitions` components.
     #[derivative(Debug = "ignore")]
-    pub sequence_end_transitionses: WriteStorage<'s, SequenceEndTransitions<SeqId>>,
-    /// `SeqId` components.
+    pub sequence_end_transitionses: WriteStorage<'s, SequenceEndTransitions>,
+    /// `SequenceId` components.
     #[derivative(Debug = "ignore")]
-    pub sequence_ids: WriteStorage<'s, SeqId>,
+    pub sequence_ids: WriteStorage<'s, SequenceId>,
     /// `SequenceStatus` components.
     #[derivative(Debug = "ignore")]
     pub sequence_statuses: WriteStorage<'s, SequenceStatus>,

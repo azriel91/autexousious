@@ -2,7 +2,7 @@
 # `object_loader.rs`.
 
 sequences:
-  stand:
+  stand: # 0
     # Used in the following tests:
     #
     # * `CharacterControlTransitionsTransitionSystem`
@@ -32,7 +32,7 @@ sequences:
         transitions:
           press_attack: stand_attack_1
 
-  stand_attack_0:
+  stand_attack_0: # 1
     frames:
       - wait: 1
         sprite: { sheet: 1, index: 0 }
@@ -69,7 +69,7 @@ sequences:
         transitions:
           press_attack: stand_attack_1
 
-  stand_attack_1:
+  stand_attack_1: # 2
     frames:
       - wait: 1
         sprite: { sheet: 1, index: 0 }
@@ -104,7 +104,7 @@ sequences:
               hp_damage: 20
             bounds: [box: { x: 113, y: 10, w: 14, h: 13 }]
 
-  walk:
+  walk: # 3
     frames:
       - wait: 2
         sprite: { sheet: 0, index: 0 }
@@ -122,7 +122,7 @@ sequences:
         sprite: { sheet: 0, index: 4 }
         body: [box: { x: 145, y: 12, w: 14, h: 13 }]
 
-  run:
+  run: # 4
     frames:
       - wait: 2
         sprite: { sheet: 0, index: 0 }
@@ -142,7 +142,7 @@ sequences:
 
   # This sequence is used in the `ObjectSequenceUpdateSystem` tests for number of frames --
   # `frame_index_clock.limit`.
-  run_stop:
+  run_stop: # 5
     frames:
       - wait: 2
         sprite: { sheet: 0, index: 0 }
@@ -160,7 +160,7 @@ sequences:
         sprite: { sheet: 0, index: 4 }
         body: [box: { x: 145, y: 12, w: 14, h: 13 }]
 
-  dodge:
+  dodge: # 6
     frames:
       - wait: 4
         sprite: { sheet: 0, index: 1 }
@@ -178,7 +178,7 @@ sequences:
   # * `jump_ascend`: The character is moving upwards, but has not yet reached the peak of its jump.
   # * `jump_descend`: The character is moving downwards, but has not yet reached the ground.
   # * `jump_descend_land`: The character has landed.
-  jump:
+  jump: # 7
     frames:
       - sprite: { sheet: 0, index: 0 }
         body: [box: { x: 16, y: 11, w: 15, h: 12 }]
@@ -191,7 +191,7 @@ sequences:
       - sprite: { sheet: 0, index: 4 }
         body: [box: { x: 145, y: 12, w: 14, h: 13 }]
 
-  jump_off:
+  jump_off: # 8
     frames:
       - wait: 1
         sprite: { sheet: 1, index: 3 }
@@ -200,20 +200,7 @@ sequences:
         sprite: { sheet: 1, index: 4 }
         body: [box: { x: 145, y: 12, w: 14, h: 13 }]
 
-  jump_ascend:
-    frames:
-      - wait: 1
-        sprite: { sheet: 1, index: 3 }
-        body: [box: { x: 113, y: 10, w: 14, h: 13 }]
-        transitions:
-          press_attack: jump_attack
-      - wait: 1
-        sprite: { sheet: 1, index: 4 }
-        body: [box: { x: 145, y: 12, w: 14, h: 13 }]
-        transitions:
-          press_attack: jump_attack
-
-  jump_descend:
+  jump_ascend: # 9
     frames:
       - wait: 1
         sprite: { sheet: 1, index: 3 }
@@ -226,7 +213,20 @@ sequences:
         transitions:
           press_attack: jump_attack
 
-  jump_descend_land:
+  jump_descend: # 10
+    frames:
+      - wait: 1
+        sprite: { sheet: 1, index: 3 }
+        body: [box: { x: 113, y: 10, w: 14, h: 13 }]
+        transitions:
+          press_attack: jump_attack
+      - wait: 1
+        sprite: { sheet: 1, index: 4 }
+        body: [box: { x: 145, y: 12, w: 14, h: 13 }]
+        transitions:
+          press_attack: jump_attack
+
+  jump_descend_land: # 11
     frames:
       - sprite: { sheet: 0, index: 4 }
         body: [box: { x: 145, y: 12, w: 14, h: 13 }]
@@ -239,7 +239,7 @@ sequences:
       - sprite: { sheet: 0, index: 0 }
         body: [box: { x: 16, y: 11, w: 15, h: 12 }]
 
-  jump_attack:
+  jump_attack: # 12
     frames:
       - wait: 1
         sprite: { sheet: 1, index: 0 }
@@ -305,7 +305,7 @@ sequences:
   #
   #     The character has landed.
   #
-  dash_forward:
+  dash_forward: # 13
     frames:
       - wait: 1
         sprite: { sheet: 1, index: 3 }
@@ -318,7 +318,7 @@ sequences:
         transitions:
           press_attack: dash_attack
 
-  dash_forward_ascend:
+  dash_forward_ascend: # 14
     frames:
       - wait: 1
         sprite: { sheet: 1, index: 3 }
@@ -331,7 +331,7 @@ sequences:
         transitions:
           press_attack: dash_attack
 
-  dash_forward_descend:
+  dash_forward_descend: # 15
     frames:
       - wait: 1
         sprite: { sheet: 1, index: 3 }
@@ -344,7 +344,7 @@ sequences:
         transitions:
           press_attack: dash_attack
 
-  dash_back:
+  dash_back: # 16
     frames:
       - wait: 1
         sprite: { sheet: 1, index: 3 }
@@ -353,19 +353,19 @@ sequences:
         sprite: { sheet: 1, index: 4 }
         body: [box: { x: 145, y: 12, w: 14, h: 13 }]
 
-  dash_back_ascend:
+  dash_back_ascend: # 17
     frames:
       - wait: 1
         sprite: { sheet: 1, index: 2 }
         body: [box: { x: 81, y: 0, w: 14, h: 12 }]
 
-  dash_back_descend:
+  dash_back_descend: # 18
     frames:
       - wait: 1
         sprite: { sheet: 1, index: 2 }
         body: [box: { x: 81, y: 0, w: 14, h: 12 }]
 
-  dash_descend_land:
+  dash_descend_land: # 19
     frames:
       - sprite: { sheet: 0, index: 4 }
         body: [box: { x: 145, y: 12, w: 14, h: 13 }]
@@ -378,7 +378,7 @@ sequences:
       - sprite: { sheet: 0, index: 0 }
         body: [box: { x: 16, y: 11, w: 15, h: 12 }]
 
-  dash_attack:
+  dash_attack: # 20
     frames:
       - wait: 1
         sprite: { sheet: 1, index: 0 }
@@ -416,7 +416,7 @@ sequences:
   # # Flinching
   #
   # Getting hit.
-  flinch_0:
+  flinch_0: # 21
     frames:
       - wait: 1
         sprite: { sheet: 0, index: 4 }
@@ -428,7 +428,7 @@ sequences:
         sprite: { sheet: 0, index: 5 }
         body: [box: { x: 169, y: 5, w: 12, h: 20 }]
 
-  flinch_1:
+  flinch_1: # 22
     frames:
       - wait: 1
         sprite: { sheet: 0, index: 4 }
@@ -441,7 +441,7 @@ sequences:
         body: [box: { x: 169, y: 5, w: 12, h: 20 }]
 
   # Hit until dizzy.
-  dazed:
+  dazed: # 23
     frames:
       - wait: 6
         sprite: { sheet: 0, index: 3 }
@@ -457,13 +457,13 @@ sequences:
         body: [box: { x: 48, y: 13, w: 15, h: 12 }]
 
   # Fall when knocked down.
-  fall_forward_ascend:
+  fall_forward_ascend: # 24
     frames:
       - wait: 2
         sprite: { sheet: 0, index: 1 }
         body: [box: { x: 48, y: 13, w: 15, h: 12 }]
 
-  fall_forward_descend:
+  fall_forward_descend: # 25
     frames:
       - wait: 2
         sprite: { sheet: 0, index: 0 }
@@ -472,7 +472,7 @@ sequences:
         sprite: { sheet: 0, index: 4 }
         body: [box: { x: 145, y: 12, w: 14, h: 13 }]
 
-  fall_forward_land:
+  fall_forward_land: # 26
     frames:
       - wait: 2
         sprite: { sheet: 0, index: 3 }
@@ -481,7 +481,7 @@ sequences:
         sprite: { sheet: 0, index: 4 }
         body: [box: { x: 145, y: 12, w: 14, h: 13 }]
 
-  lie_face_down:
+  lie_face_down: # 27
     frames:
       - wait: 30
         sprite: { sheet: 0, index: 3 }

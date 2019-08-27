@@ -48,7 +48,7 @@ where
     #[derivative(Debug = "ignore")]
     object_wrapper_handles: WriteStorage<'s, Handle<O::ObjectWrapper>>,
     /// Common game object `Component` storages.
-    object_component_storages: ObjectComponentStorages<'s, O::SequenceId>,
+    object_component_storages: ObjectComponentStorages<'s>,
 }
 
 impl<'s, O> PrefabData<'s> for ObjectPrefab<O>

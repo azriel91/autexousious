@@ -1,19 +1,13 @@
-use crate::{config::SequenceId, loaded::ControlTransition};
+use crate::loaded::ControlTransition;
 
 /// Marks types that has a `ControlTransition` in its composition.
-pub trait ControlTransitionLike<SeqId>
-where
-    SeqId: SequenceId,
-{
+pub trait ControlTransitionLike {
     /// Returns the underlying `ControlTransition`s.
-    fn control_transition(&self) -> &ControlTransition<SeqId>;
+    fn control_transition(&self) -> &ControlTransition;
 }
 
-impl<SeqId> ControlTransitionLike<SeqId> for ControlTransition<SeqId>
-where
-    SeqId: SequenceId,
-{
-    fn control_transition(&self) -> &ControlTransition<SeqId> {
+impl ControlTransitionLike for ControlTransition {
+    fn control_transition(&self) -> &ControlTransition {
         self
     }
 }

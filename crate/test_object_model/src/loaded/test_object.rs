@@ -3,7 +3,7 @@ use derive_new::new;
 use object_model::game_object;
 use typename_derive::TypeName;
 
-use crate::config::{TestObjectDefinition, TestObjectSequence, TestObjectSequenceId};
+use crate::config::{TestObjectDefinition, TestObjectSequence, TestObjectSequenceName};
 
 /// Represents an in-game test object that has been loaded.
 ///

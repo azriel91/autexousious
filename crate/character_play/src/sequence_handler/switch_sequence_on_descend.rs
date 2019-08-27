@@ -1,4 +1,4 @@
-use character_model::config::CharacterSequenceId;
+use character_model::config::CharacterSequenceName;
 use sequence_model::play::SequenceStatus;
 
 use crate::CharacterSequenceUpdateComponents;
@@ -6,19 +6,19 @@ use crate::CharacterSequenceUpdateComponents;
 #[derive(Debug)]
 pub(crate) struct SwitchSequenceOnDescend(
     /// The sequence to switch to.
-    pub CharacterSequenceId,
+    pub CharacterSequenceName,
 );
 
 impl SwitchSequenceOnDescend {
     pub fn update<'c>(
         &self,
         components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    ) -> Option<CharacterSequenceName> {
         // Switch to descend_sequence when Y axis velocity is no longer upwards.
         if components.velocity[1] <= 0. {
             Some(self.0)
         } else if components.sequence_status == SequenceStatus::End {
-            Some(components.character_sequence_id)
+            Some(components.character_sequence_name)
         } else {
             None
         }
@@ -27,7 +27,7 @@ impl SwitchSequenceOnDescend {
 
 #[cfg(test)]
 mod test {
-    use character_model::{config::CharacterSequenceId, play::RunCounter};
+    use character_model::{config::CharacterSequenceName, play::RunCounter};
     use game_input::ControllerInput;
     use kinematic_model::config::{Position, Velocity};
     use object_model::play::{Grounding, HealthPoints, Mirrored};
@@ -44,11 +44,11 @@ mod test {
 
         assert_eq!(
             None,
-            SwitchSequenceOnDescend(CharacterSequenceId::FallForwardDescend).update(
+            SwitchSequenceOnDescend(CharacterSequenceName::FallForwardDescend).update(
                 CharacterSequenceUpdateComponents::new(
                     &input,
                     HealthPoints::default(),
-                    CharacterSequenceId::FallForwardAscend,
+                    CharacterSequenceName::FallForwardAscend,
                     SequenceStatus::default(),
                     &Position::default(),
                     &velocity,
@@ -67,12 +67,12 @@ mod test {
         velocity[1] = 1.;
 
         assert_eq!(
-            Some(CharacterSequenceId::FallForwardAscend),
-            SwitchSequenceOnDescend(CharacterSequenceId::FallForwardDescend).update(
+            Some(CharacterSequenceName::FallForwardAscend),
+            SwitchSequenceOnDescend(CharacterSequenceName::FallForwardDescend).update(
                 CharacterSequenceUpdateComponents::new(
                     &input,
                     HealthPoints::default(),
-                    CharacterSequenceId::FallForwardAscend,
+                    CharacterSequenceName::FallForwardAscend,
                     SequenceStatus::End,
                     &Position::default(),
                     &velocity,
@@ -94,12 +94,12 @@ mod test {
             .into_iter()
             .for_each(|velocity| {
                 assert_eq!(
-                    Some(CharacterSequenceId::FallForwardDescend),
-                    SwitchSequenceOnDescend(CharacterSequenceId::FallForwardDescend).update(
+                    Some(CharacterSequenceName::FallForwardDescend),
+                    SwitchSequenceOnDescend(CharacterSequenceName::FallForwardDescend).update(
                         CharacterSequenceUpdateComponents::new(
                             &input,
                             HealthPoints::default(),
-                            CharacterSequenceId::FallForwardAscend,
+                            CharacterSequenceName::FallForwardAscend,
                             SequenceStatus::Ongoing,
                             &Position::default(),
                             &velocity,

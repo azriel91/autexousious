@@ -1,7 +1,10 @@
 use amethyst::{core::transform::Transform, ecs::Entity, renderer::transparent::Transparent};
 use kinematic_model::config::{Position, Velocity};
 use object_model::{loaded::ObjectWrapper, play::Mirrored};
-use sequence_model::play::{FrameIndexClock, FrameWaitClock, SequenceStatus};
+use sequence_model::{
+    loaded::SequenceId,
+    play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
+};
 
 use crate::ObjectComponentStorages;
 
@@ -33,14 +36,14 @@ impl ObjectEntityAugmenter {
             ref mut sequence_statuses,
             ref mut frame_index_clocks,
             ref mut frame_wait_clocks,
-        }: &mut ObjectComponentStorages<'s, W::SequenceId>,
+        }: &mut ObjectComponentStorages<'s>,
         object_wrapper: &W,
     ) where
         W: ObjectWrapper,
     {
         let sequence_end_transitions = &object_wrapper.inner().sequence_end_transitions;
 
-        let sequence_id = W::SequenceId::default();
+        let sequence_id = SequenceId::default();
 
         if transparents.get(entity).is_none() {
             transparents
@@ -107,11 +110,11 @@ mod tests {
     use kinematic_model::config::{Position, Velocity};
     use object_model::play::Mirrored;
     use object_test::{ObjectBuilder, ObjectTest};
-    use sequence_model::play::{FrameIndexClock, FrameWaitClock, SequenceStatus};
-    use test_object_model::{
-        config::TestObjectSequenceId,
-        loaded::{TestObject, TestObjectObjectWrapper},
+    use sequence_model::{
+        loaded::SequenceId,
+        play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
     };
+    use test_object_model::loaded::{TestObject, TestObjectObjectWrapper};
 
     use super::ObjectEntityAugmenter;
     use crate::{FrameComponentStorages, ObjectComponentStorages};
@@ -131,9 +134,7 @@ mod tests {
                 );
             }
 
-            assert!(world
-                .read_storage::<TestObjectSequenceId>()
-                .contains(entity));
+            assert!(world.read_storage::<SequenceId>().contains(entity));
             assert!(world.read_storage::<SequenceStatus>().contains(entity));
             assert!(world.read_storage::<Mirrored>().contains(entity));
             assert!(world.read_storage::<Transparent>().contains(entity));
@@ -147,7 +148,7 @@ mod tests {
         ObjectTest::application()
             .with_setup(|world| {
                 <FrameComponentStorages as SystemData>::setup(world);
-                <ObjectComponentStorages<TestObjectSequenceId> as SystemData>::setup(world);
+                <ObjectComponentStorages as SystemData>::setup(world);
             })
             .with_setup(setup_object_wrapper)
             .with_assertion(assert_components_augmented)
@@ -159,7 +160,7 @@ mod tests {
         ObjectTest::application()
             .with_setup(|world| {
                 <FrameComponentStorages as SystemData>::setup(world);
-                <ObjectComponentStorages<TestObjectSequenceId> as SystemData>::setup(world);
+                <ObjectComponentStorages as SystemData>::setup(world);
             })
             .with_setup(setup_object_wrapper)
             .with_assertion(|world| {

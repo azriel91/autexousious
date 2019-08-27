@@ -1,12 +1,8 @@
 use amethyst::{
-    assets::{Asset, Handle, ProcessingState},
-    ecs::{
-        storage::{DenseVecStorage, VecStorage},
-        Component,
-    },
+    ecs::{storage::DenseVecStorage, Component},
     renderer::sprite::SpriteSheetHandle,
-    Error,
 };
+use asset_derive::Asset;
 use derive_new::new;
 use sequence_model::loaded::WaitSequenceHandle;
 use sprite_model::loaded::SpriteRenderSequenceHandle;
@@ -14,7 +10,7 @@ use sprite_model::loaded::SpriteRenderSequenceHandle;
 use crate::{config::MapDefinition, loaded::Margins};
 
 /// Loaded representation of a `Map`.
-#[derive(Clone, Debug, PartialEq, new)]
+#[derive(Asset, Clone, Debug, PartialEq, new)]
 pub struct Map {
     /// Map configuration.
     pub definition: MapDefinition,
@@ -28,21 +24,6 @@ pub struct Map {
     pub sprite_render_sequence_handles: Vec<SpriteRenderSequenceHandle>,
 }
 
-impl Asset for Map {
-    const NAME: &'static str = "map_model::loaded::Map";
-    type Data = Self;
-    type HandleStorage = VecStorage<Handle<Self>>;
-}
-
 impl Component for Map {
     type Storage = DenseVecStorage<Self>;
 }
-
-impl From<Map> for Result<ProcessingState<Map>, Error> {
-    fn from(map: Map) -> Result<ProcessingState<Map>, Error> {
-        Ok(ProcessingState::Loaded(map))
-    }
-}
-
-/// Handle to a Map
-pub type MapHandle = Handle<Map>;

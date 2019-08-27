@@ -1,4 +1,4 @@
-use character_model::config::CharacterSequenceId;
+use character_model::config::CharacterSequenceName;
 use object_model::play::Grounding;
 
 use crate::CharacterSequenceUpdateComponents;
@@ -6,14 +6,14 @@ use crate::CharacterSequenceUpdateComponents;
 #[derive(Debug)]
 pub(crate) struct SwitchSequenceOnLand(
     /// The sequence to switch to.
-    pub CharacterSequenceId,
+    pub CharacterSequenceName,
 );
 
 impl SwitchSequenceOnLand {
     pub fn update<'c>(
         &self,
         components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    ) -> Option<CharacterSequenceName> {
         if components.grounding == Grounding::OnGround {
             Some(self.0)
         } else {
@@ -24,7 +24,7 @@ impl SwitchSequenceOnLand {
 
 #[cfg(test)]
 mod test {
-    use character_model::{config::CharacterSequenceId, play::RunCounter};
+    use character_model::{config::CharacterSequenceName, play::RunCounter};
     use game_input::ControllerInput;
     use kinematic_model::config::{Position, Velocity};
     use object_model::play::{Grounding, HealthPoints, Mirrored};
@@ -41,11 +41,11 @@ mod test {
 
         assert_eq!(
             None,
-            SwitchSequenceOnLand(CharacterSequenceId::FallForwardLand).update(
+            SwitchSequenceOnLand(CharacterSequenceName::FallForwardLand).update(
                 CharacterSequenceUpdateComponents::new(
                     &input,
                     HealthPoints::default(),
-                    CharacterSequenceId::FallForwardDescend,
+                    CharacterSequenceName::FallForwardDescend,
                     SequenceStatus::default(),
                     &Position::default(),
                     &velocity,
@@ -64,12 +64,12 @@ mod test {
         velocity[1] = -1.;
 
         assert_eq!(
-            Some(CharacterSequenceId::FallForwardLand),
-            SwitchSequenceOnLand(CharacterSequenceId::FallForwardLand).update(
+            Some(CharacterSequenceName::FallForwardLand),
+            SwitchSequenceOnLand(CharacterSequenceName::FallForwardLand).update(
                 CharacterSequenceUpdateComponents::new(
                     &input,
                     HealthPoints::default(),
-                    CharacterSequenceId::FallForwardDescend,
+                    CharacterSequenceName::FallForwardDescend,
                     SequenceStatus::default(),
                     &Position::default(),
                     &velocity,

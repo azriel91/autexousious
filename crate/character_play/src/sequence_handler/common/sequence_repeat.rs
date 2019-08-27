@@ -1,4 +1,4 @@
-use character_model::config::CharacterSequenceId;
+use character_model::config::CharacterSequenceName;
 use sequence_model::play::SequenceStatus;
 
 use crate::{sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateComponents};
@@ -8,9 +8,9 @@ use crate::{sequence_handler::CharacterSequenceHandler, CharacterSequenceUpdateC
 pub(crate) struct SequenceRepeat;
 
 impl CharacterSequenceHandler for SequenceRepeat {
-    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {
         if components.sequence_status == SequenceStatus::End {
-            Some(components.character_sequence_id)
+            Some(components.character_sequence_name)
         } else {
             None
         }
@@ -19,7 +19,7 @@ impl CharacterSequenceHandler for SequenceRepeat {
 
 #[cfg(test)]
 mod tests {
-    use character_model::{config::CharacterSequenceId, play::RunCounter};
+    use character_model::{config::CharacterSequenceName, play::RunCounter};
     use game_input::ControllerInput;
     use kinematic_model::config::{Position, Velocity};
     use object_model::play::{Grounding, HealthPoints, Mirrored};
@@ -35,7 +35,7 @@ mod tests {
             SequenceRepeat::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceId::Walk,
+                CharacterSequenceName::Walk,
                 SequenceStatus::Begin,
                 &Position::default(),
                 &Velocity::default(),
@@ -53,7 +53,7 @@ mod tests {
             SequenceRepeat::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceId::Walk,
+                CharacterSequenceName::Walk,
                 SequenceStatus::Ongoing,
                 &Position::default(),
                 &Velocity::default(),
@@ -69,11 +69,11 @@ mod tests {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            Some(CharacterSequenceId::Walk),
+            Some(CharacterSequenceName::Walk),
             SequenceRepeat::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::Walk,
+                CharacterSequenceName::Walk,
                 SequenceStatus::End,
                 &Position::default(),
                 &Velocity::default(),

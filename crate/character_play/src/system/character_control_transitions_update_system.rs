@@ -4,19 +4,16 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
-use character_model::{
-    config::CharacterSequenceId,
-    loaded::{
-        CharacterControlTransitionsHandle, CharacterControlTransitionsSequence,
-        CharacterControlTransitionsSequenceHandle,
-    },
+use character_model::loaded::{
+    CharacterControlTransitionsHandle, CharacterControlTransitionsSequence,
+    CharacterControlTransitionsSequenceHandle,
 };
 use derivative::Derivative;
 use derive_new::new;
 use log::error;
 use named_type::NamedType;
 use named_type_derive::NamedType;
-use sequence_model::play::SequenceUpdateEvent;
+use sequence_model::{loaded::SequenceId, play::SequenceUpdateEvent};
 
 /// Updates the `CharacterControlTransitionsHandle` when sequence ID changes.
 #[derive(Debug, Default, NamedType, new)]
@@ -41,9 +38,9 @@ pub struct CharacterControlTransitionsUpdateSystemData<'s> {
     /// `CharacterControlTransitionsHandle` component storage.
     #[derivative(Debug = "ignore")]
     pub character_control_transitions_handles: WriteStorage<'s, CharacterControlTransitionsHandle>,
-    /// `CharacterSequenceId` components.
+    /// `SequenceId` components.
     #[derivative(Debug = "ignore")]
-    pub character_sequence_ids: ReadStorage<'s, CharacterSequenceId>,
+    pub character_sequence_names: ReadStorage<'s, SequenceId>,
 }
 
 impl<'s> System<'s> for CharacterControlTransitionsUpdateSystem {
@@ -56,7 +53,7 @@ impl<'s> System<'s> for CharacterControlTransitionsUpdateSystem {
             character_cts_handles,
             character_cts_assets,
             mut character_control_transitions_handles,
-            character_sequence_ids,
+            character_sequence_names,
         }: Self::SystemData,
     ) {
         sequence_update_ec
@@ -93,14 +90,14 @@ impl<'s> System<'s> for CharacterControlTransitionsUpdateSystem {
                             .insert(entity, character_control_transitions_handle.clone())
                             .expect("Failed to insert `CharacterControlTransitions` component.");
                     } else {
-                        let character_sequence_id = character_sequence_ids.get(entity).expect(
+                        let character_sequence_name = character_sequence_names.get(entity).expect(
                             "Expected entity with `CharacterControlTransitionsSequenceHandle` \
-                             to have `CharacterSequenceId`.",
+                             to have `SequenceId`.",
                         );
 
                         error!(
                             "Attempted to access index `{}` for sequence ID: `{:?}`",
-                            frame_index, character_sequence_id
+                            frame_index, character_sequence_name
                         );
                     }
                 }
@@ -128,16 +125,13 @@ mod tests {
     };
     use application_test_support::{AutexousiousApplication, SequenceQueries};
     use assets_test::CHAR_BAT_SLUG;
-    use character_model::{
-        config::CharacterSequenceId,
-        loaded::{
-            CharacterControlTransition, CharacterControlTransitions,
-            CharacterControlTransitionsHandle, CharacterControlTransitionsSequenceHandle,
-        },
+    use character_model::loaded::{
+        CharacterControlTransition, CharacterControlTransitions, CharacterControlTransitionsHandle,
+        CharacterControlTransitionsSequenceHandle,
     };
     use game_input_model::ControlAction;
     use sequence_model::{
-        loaded::{ActionPress, ControlTransition, ControlTransitions},
+        loaded::{ActionPress, ControlTransition, ControlTransitions, SequenceId},
         play::{FrameIndexClock, SequenceUpdateEvent},
     };
 
@@ -145,48 +139,38 @@ mod tests {
 
     #[test]
     fn updates_transitions_on_sequence_begin_event() -> Result<(), Error> {
-        AutexousiousApplication::game_base()
-            .with_system(CharacterControlTransitionsUpdateSystem::new(), "", &[])
-            .with_setup(|world| {
-                let character_cts_handle = SequenceQueries::character_cts_handle(
-                    world,
-                    &CHAR_BAT_SLUG.clone(),
-                    CharacterSequenceId::StandAttack0,
-                );
-                initial_values(
-                    world,
-                    // First frame in the sequence.
-                    FrameIndexClock::new_with_value(5, 0),
-                    character_cts_handle,
-                )
-            })
-            .with_setup(|world| {
-                let events = sequence_begin_events(world);
-                send_events(world, events);
-            })
-            .with_assertion(|world| expect_transitions(world, transitions()))
-            .run_isolated()
+        run_test(
+            // First frame in the sequence.
+            FrameIndexClock::new_with_value(5, 0),
+            sequence_begin_events,
+        )
     }
 
     #[test]
     fn updates_transitions_on_frame_begin_event() -> Result<(), Error> {
+        run_test(
+            // Third frame in the sequence.
+            FrameIndexClock::new_with_value(5, 2),
+            frame_begin_events,
+        )
+    }
+
+    fn run_test(
+        frame_index_clock: FrameIndexClock,
+        sequence_update_events_fn: fn(&mut World) -> Vec<SequenceUpdateEvent>,
+    ) -> Result<(), Error> {
         AutexousiousApplication::game_base()
             .with_system(CharacterControlTransitionsUpdateSystem::new(), "", &[])
-            .with_setup(|world| {
+            .with_setup(move |world| {
                 let character_cts_handle = SequenceQueries::character_cts_handle(
                     world,
                     &CHAR_BAT_SLUG.clone(),
-                    CharacterSequenceId::StandAttack0,
+                    SequenceId::new(1),
                 );
-                initial_values(
-                    world,
-                    // Third frame in the sequence.
-                    FrameIndexClock::new_with_value(5, 2),
-                    character_cts_handle,
-                )
+                initial_values(world, frame_index_clock, character_cts_handle)
             })
-            .with_setup(|world| {
-                let events = frame_begin_events(world);
+            .with_setup(move |world| {
+                let events = sequence_update_events_fn(world);
                 send_events(world, events);
             })
             .with_assertion(|world| expect_transitions(world, transitions()))
@@ -200,6 +184,7 @@ mod tests {
     ) {
         let (
             _entities,
+            _sequence_ids,
             mut frame_index_clocks,
             _character_control_transitions_handles,
             mut character_cts_handles,
@@ -227,7 +212,7 @@ mod tests {
         ) = world.system_data::<(
             Read<AssetStorage<CharacterControlTransitions>>,
             ReadStorage<CharacterControlTransitionsHandle>,
-            ReadStorage<CharacterSequenceId>,
+            ReadStorage<SequenceId>,
         )>();
 
         (&character_control_transitions_handles, &sequence_statuses)
@@ -251,14 +236,14 @@ mod tests {
             CharacterControlTransition::new(
                 ControlTransition::ActionPress(ActionPress::new(
                     ControlAction::Attack,
-                    CharacterSequenceId::StandAttack0,
+                    SequenceId::new(1),
                 )),
                 vec![],
             ),
             CharacterControlTransition::new(
                 ControlTransition::ActionPress(ActionPress::new(
                     ControlAction::Jump,
-                    CharacterSequenceId::Jump,
+                    SequenceId::new(7),
                 )),
                 vec![],
             ),
@@ -273,6 +258,7 @@ mod tests {
     fn sequence_begin_events(world: &mut World) -> Vec<SequenceUpdateEvent> {
         let (
             entities,
+            sequence_ids,
             frame_index_clocks,
             character_control_transitions_handles,
             character_cts_handles,
@@ -280,13 +266,19 @@ mod tests {
 
         (
             &entities,
+            &sequence_ids,
             &frame_index_clocks,
             &character_control_transitions_handles,
             &character_cts_handles,
         )
             .join()
             // kcov-ignore-start
-            .map(|(entity, _, _, _)| SequenceUpdateEvent::SequenceBegin { entity })
+            .map(
+                |(entity, sequence_id, _, _, _)| SequenceUpdateEvent::SequenceBegin {
+                    entity,
+                    sequence_id: *sequence_id,
+                },
+            )
             // kcov-ignore-end
             .collect::<Vec<_>>()
     }
@@ -294,6 +286,7 @@ mod tests {
     fn frame_begin_events(world: &mut World) -> Vec<SequenceUpdateEvent> {
         let (
             entities,
+            _sequence_ids,
             frame_index_clocks,
             character_control_transitions_handles,
             character_cts_handles,
@@ -320,6 +313,7 @@ mod tests {
 
     type TestSystemData<'s> = (
         Entities<'s>,
+        ReadStorage<'s, SequenceId>,
         WriteStorage<'s, FrameIndexClock>,
         WriteStorage<'s, CharacterControlTransitionsHandle>,
         WriteStorage<'s, CharacterControlTransitionsSequenceHandle>,

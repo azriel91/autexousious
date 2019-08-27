@@ -1,4 +1,4 @@
-use character_model::config::CharacterSequenceId;
+use character_model::config::CharacterSequenceName;
 
 use crate::{
     sequence_handler::{
@@ -23,39 +23,39 @@ impl CharacterSequenceUpdater {
     /// * `components`: Components used to compute character sequence updates.
     pub fn update<'c>(
         components: CharacterSequenceUpdateComponents<'c>,
-    ) -> Option<CharacterSequenceId> {
+    ) -> Option<CharacterSequenceName> {
         let sequence_handler: &dyn Fn(
             CharacterSequenceUpdateComponents<'_>,
-        ) -> Option<CharacterSequenceId> = match components.character_sequence_id {
-            CharacterSequenceId::Stand => &Stand::update,
-            CharacterSequenceId::StandAttack0 | CharacterSequenceId::StandAttack1 => {
+        ) -> Option<CharacterSequenceName> = match components.character_sequence_name {
+            CharacterSequenceName::Stand => &Stand::update,
+            CharacterSequenceName::StandAttack0 | CharacterSequenceName::StandAttack1 => {
                 &StandAttack::update
             }
-            CharacterSequenceId::Walk => &Walk::update,
-            CharacterSequenceId::Run => &Run::update,
-            CharacterSequenceId::RunStop => &RunStop::update,
-            CharacterSequenceId::Dodge => &Dodge::update,
-            CharacterSequenceId::Jump => &Jump::update,
-            CharacterSequenceId::JumpOff => &JumpOff::update,
-            CharacterSequenceId::JumpAscend => &JumpAscend::update,
-            CharacterSequenceId::JumpDescend => &JumpDescend::update,
-            CharacterSequenceId::JumpDescendLand => &JumpDescendLand::update,
-            CharacterSequenceId::JumpAttack => &JumpAttack::update,
-            CharacterSequenceId::Flinch0
-            | CharacterSequenceId::Flinch1
-            | CharacterSequenceId::Dazed => &StandOnSequenceEnd::update,
-            CharacterSequenceId::FallForwardAscend => &FallForwardAscend::update,
-            CharacterSequenceId::FallForwardDescend => &FallForwardDescend::update,
-            CharacterSequenceId::FallForwardLand => &FallForwardLand::update,
-            CharacterSequenceId::LieFaceDown => &LieFaceDown::update,
-            CharacterSequenceId::DashForward => &DashForward::update,
-            CharacterSequenceId::DashForwardAscend => &DashForwardAscend::update,
-            CharacterSequenceId::DashForwardDescend => &DashForwardDescend::update,
-            CharacterSequenceId::DashBack => &DashBack::update,
-            CharacterSequenceId::DashBackAscend => &DashBackAscend::update,
-            CharacterSequenceId::DashBackDescend => &DashBackDescend::update,
-            CharacterSequenceId::DashDescendLand => &DashDescendLand::update,
-            CharacterSequenceId::DashAttack => &DashAttack::update,
+            CharacterSequenceName::Walk => &Walk::update,
+            CharacterSequenceName::Run => &Run::update,
+            CharacterSequenceName::RunStop => &RunStop::update,
+            CharacterSequenceName::Dodge => &Dodge::update,
+            CharacterSequenceName::Jump => &Jump::update,
+            CharacterSequenceName::JumpOff => &JumpOff::update,
+            CharacterSequenceName::JumpAscend => &JumpAscend::update,
+            CharacterSequenceName::JumpDescend => &JumpDescend::update,
+            CharacterSequenceName::JumpDescendLand => &JumpDescendLand::update,
+            CharacterSequenceName::JumpAttack => &JumpAttack::update,
+            CharacterSequenceName::Flinch0
+            | CharacterSequenceName::Flinch1
+            | CharacterSequenceName::Dazed => &StandOnSequenceEnd::update,
+            CharacterSequenceName::FallForwardAscend => &FallForwardAscend::update,
+            CharacterSequenceName::FallForwardDescend => &FallForwardDescend::update,
+            CharacterSequenceName::FallForwardLand => &FallForwardLand::update,
+            CharacterSequenceName::LieFaceDown => &LieFaceDown::update,
+            CharacterSequenceName::DashForward => &DashForward::update,
+            CharacterSequenceName::DashForwardAscend => &DashForwardAscend::update,
+            CharacterSequenceName::DashForwardDescend => &DashForwardDescend::update,
+            CharacterSequenceName::DashBack => &DashBack::update,
+            CharacterSequenceName::DashBackAscend => &DashBackAscend::update,
+            CharacterSequenceName::DashBackDescend => &DashBackDescend::update,
+            CharacterSequenceName::DashDescendLand => &DashDescendLand::update,
+            CharacterSequenceName::DashAttack => &DashAttack::update,
         };
 
         sequence_handler(components)

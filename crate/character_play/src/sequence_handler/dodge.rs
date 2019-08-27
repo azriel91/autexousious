@@ -1,4 +1,4 @@
-use character_model::config::CharacterSequenceId;
+use character_model::config::CharacterSequenceName;
 
 use crate::{
     sequence_handler::{
@@ -8,13 +8,13 @@ use crate::{
     CharacterSequenceUpdateComponents,
 };
 
-const DODGE: SwitchSequenceOnEnd = SwitchSequenceOnEnd(CharacterSequenceId::Stand);
+const DODGE: SwitchSequenceOnEnd = SwitchSequenceOnEnd(CharacterSequenceName::Stand);
 
 #[derive(Debug)]
 pub(crate) struct Dodge;
 
 impl CharacterSequenceHandler for Dodge {
-    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceId> {
+    fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {
         [AliveCheck::update, AirborneCheck::update]
             .iter()
             .fold(None, |status_update, fn_update| {
@@ -26,7 +26,7 @@ impl CharacterSequenceHandler for Dodge {
 
 #[cfg(test)]
 mod test {
-    use character_model::{config::CharacterSequenceId, play::RunCounter};
+    use character_model::{config::CharacterSequenceName, play::RunCounter};
     use game_input::ControllerInput;
     use kinematic_model::config::{Position, Velocity};
     use object_model::play::{Grounding, HealthPoints, Mirrored};
@@ -38,11 +38,11 @@ mod test {
     #[test]
     fn jump_descend_when_airborne() {
         assert_eq!(
-            Some(CharacterSequenceId::JumpDescend),
+            Some(CharacterSequenceName::JumpDescend),
             Dodge::update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceId::Dodge,
+                CharacterSequenceName::Dodge,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -62,7 +62,7 @@ mod test {
             Dodge::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::Dodge,
+                CharacterSequenceName::Dodge,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -78,11 +78,11 @@ mod test {
         let input = ControllerInput::new(0., 0., false, false, false, false);
 
         assert_eq!(
-            Some(CharacterSequenceId::Stand),
+            Some(CharacterSequenceName::Stand),
             Dodge::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),
-                CharacterSequenceId::Dodge,
+                CharacterSequenceName::Dodge,
                 SequenceStatus::End,
                 &Position::default(),
                 &Velocity::default(),

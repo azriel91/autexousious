@@ -6,9 +6,7 @@ use amethyst::{
 };
 use approx::{relative_eq, relative_ne};
 use character_model::{
-    config::{
-        CharacterSequenceId, ControlTransitionRequirement, ControlTransitionRequirementParams,
-    },
+    config::{ControlTransitionRequirement, ControlTransitionRequirementParams},
     loaded::{CharacterControlTransitions, CharacterControlTransitionsHandle},
 };
 use charge_model::play::ChargeUseEvent;
@@ -22,12 +20,12 @@ use named_type::NamedType;
 use named_type_derive::NamedType;
 use sequence_model::loaded::{
     ActionHold, ActionPress, ActionRelease, AxisTransition, ControlTransition,
-    ControlTransitionLike, FallbackTransition,
+    ControlTransitionLike, FallbackTransition, SequenceId,
 };
 
 use crate::ControlTransitionRequirementSystemData;
 
-/// Updates `CharacterSequenceId` based on `ControlInputEvent`s and held buttons.
+/// Updates `SequenceId` based on `ControlInputEvent`s and held buttons.
 #[derive(Debug, Default, NamedType, new)]
 pub struct CharacterControlTransitionsTransitionSystem {
     /// Reader ID for the `ControlInputEvent` channel.
@@ -66,9 +64,9 @@ pub struct CharacterControlTransitionsTransitionResources<'s> {
     /// `CharacterControlTransitions` assets.
     #[derivative(Debug = "ignore")]
     pub character_control_transitions_assets: Read<'s, AssetStorage<CharacterControlTransitions>>,
-    /// `CharacterSequenceId` components.
+    /// `SequenceId` components.
     #[derivative(Debug = "ignore")]
-    pub character_sequence_ids: WriteStorage<'s, CharacterSequenceId>,
+    pub sequence_ids: WriteStorage<'s, SequenceId>,
     /// `ChargeUseEvent` channel.
     #[derivative(Debug = "ignore")]
     pub charge_use_ec: Write<'s, EventChannel<ChargeUseEvent>>,
@@ -82,7 +80,7 @@ impl CharacterControlTransitionsTransitionSystem {
             ref controller_inputs,
             ref character_control_transitions_handles,
             ref character_control_transitions_assets,
-            ref mut character_sequence_ids,
+            ref mut sequence_ids,
             ref mut charge_use_ec,
         }: &mut CharacterControlTransitionsTransitionResources,
         control_transition_requirement_system_data: &ControlTransitionRequirementSystemData,
@@ -149,9 +147,9 @@ impl CharacterControlTransitionsTransitionSystem {
                 .next();
 
             if let Some(transition_sequence_id) = transition_sequence_id {
-                character_sequence_ids
+                sequence_ids
                     .insert(entity, transition_sequence_id)
-                    .expect("Failed to insert `CharacterSequenceId` component.");
+                    .expect("Failed to insert `SequenceId` component.");
             }
         }
     }
@@ -163,7 +161,7 @@ impl CharacterControlTransitionsTransitionSystem {
             ref controller_inputs,
             ref character_control_transitions_handles,
             ref character_control_transitions_assets,
-            ref mut character_sequence_ids,
+            ref mut sequence_ids,
             ref mut charge_use_ec,
         }: &mut CharacterControlTransitionsTransitionResources,
         control_transition_requirement_system_data: &ControlTransitionRequirementSystemData,
@@ -224,9 +222,9 @@ impl CharacterControlTransitionsTransitionSystem {
                 .next();
 
             if let Some(transition_sequence_id) = transition_sequence_id {
-                character_sequence_ids
+                sequence_ids
                     .insert(entity, transition_sequence_id)
-                    .expect("Failed to insert `CharacterSequenceId` component.");
+                    .expect("Failed to insert `SequenceId` component.");
             }
         }
     }
@@ -241,7 +239,7 @@ impl CharacterControlTransitionsTransitionSystem {
             ref controller_inputs,
             ref character_control_transitions_handles,
             ref character_control_transitions_assets,
-            ref mut character_sequence_ids,
+            ref mut sequence_ids,
             ref mut charge_use_ec,
         }: &mut CharacterControlTransitionsTransitionResources,
         control_transition_requirement_system_data: &ControlTransitionRequirementSystemData,
@@ -297,9 +295,9 @@ impl CharacterControlTransitionsTransitionSystem {
                         .next();
 
                     if let Some(transition_sequence_id) = transition_sequence_id {
-                        character_sequence_ids
+                        sequence_ids
                             .insert(entity, transition_sequence_id)
-                            .expect("Failed to insert `CharacterSequenceId` component.");
+                            .expect("Failed to insert `SequenceId` component.");
                     }
                 },
             );
@@ -315,9 +313,9 @@ impl CharacterControlTransitionsTransitionSystem {
         ActionHold {
             action,
             sequence_id,
-        }: ActionHold<CharacterSequenceId>,
+        }: ActionHold,
         controller_input: ControllerInput,
-    ) -> Option<CharacterSequenceId> {
+    ) -> Option<SequenceId> {
         match action {
             ControlAction::Defend => {
                 if controller_input.defend {
@@ -357,9 +355,9 @@ impl CharacterControlTransitionsTransitionSystem {
     /// * `axis_transition`: `Axis` and sequence ID the hold transition applies to.
     /// * `controller_input`: Controller input status.
     fn hold_transition_axis(
-        AxisTransition { axis, sequence_id }: AxisTransition<CharacterSequenceId>,
+        AxisTransition { axis, sequence_id }: AxisTransition,
         controller_input: ControllerInput,
-    ) -> Option<CharacterSequenceId> {
+    ) -> Option<SequenceId> {
         match axis {
             Axis::X => {
                 if relative_ne!(0., controller_input.x_axis_value) {
@@ -382,9 +380,9 @@ impl CharacterControlTransitionsTransitionSystem {
         charge_use_ec: &mut EventChannel<ChargeUseEvent>,
         control_transition_requirement_system_data: &ControlTransitionRequirementSystemData,
         entity: Entity,
-        sequence_id: CharacterSequenceId,
+        sequence_id: SequenceId,
         control_transition_requirements: &[ControlTransitionRequirement],
-    ) -> Option<CharacterSequenceId> {
+    ) -> Option<SequenceId> {
         if Self::transition_requirements_met(
             control_transition_requirement_system_data,
             &control_transition_requirements,
@@ -536,7 +534,7 @@ mod tests {
         ControlTransitionsSequenceLoader, ControlTransitionsSequenceLoaderParams,
     };
     use character_model::{
-        config::{CharacterSequence, CharacterSequenceId},
+        config::{CharacterSequence, CharacterSequenceName},
         loaded::{
             CharacterControlTransitions, CharacterControlTransitionsHandle,
             CharacterControlTransitionsSequence, CharacterControlTransitionsSequenceHandle,
@@ -552,6 +550,10 @@ mod tests {
         Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
     };
     use object_model::play::{HealthPoints, Mirrored, SkillPoints};
+    use sequence_model::{
+        config::SequenceNameString,
+        loaded::{SequenceId, SequenceIdMappings},
+    };
 
     use super::CharacterControlTransitionsTransitionSystem;
 
@@ -559,7 +561,7 @@ mod tests {
     fn inserts_transition_for_action_press_event() -> Result<(), Error> {
         run_test(
             SetupParams {
-                sequence_id: CharacterSequenceId::Stand,
+                sequence_id: SequenceId::new(0),
                 controller_input: ControllerInput::default(),
                 control_input_event_fn: Some(|entity| {
                     let control_action_event_data = ControlActionEventData {
@@ -571,7 +573,7 @@ mod tests {
                 charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
-                sequence_id: CharacterSequenceId::StandAttack0,
+                sequence_id: SequenceId::new(4),
                 charge_use_events_fn: None,
             },
         )
@@ -581,7 +583,7 @@ mod tests {
     fn inserts_transition_for_action_release_event() -> Result<(), Error> {
         run_test(
             SetupParams {
-                sequence_id: CharacterSequenceId::Stand,
+                sequence_id: SequenceId::new(0),
                 controller_input: ControllerInput::default(),
                 control_input_event_fn: Some(|entity| {
                     let control_action_event_data = ControlActionEventData {
@@ -593,7 +595,7 @@ mod tests {
                 charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
-                sequence_id: CharacterSequenceId::DashBack,
+                sequence_id: SequenceId::new(9),
                 charge_use_events_fn: None,
             },
         )
@@ -607,13 +609,13 @@ mod tests {
 
         run_test(
             SetupParams {
-                sequence_id: CharacterSequenceId::Stand,
+                sequence_id: SequenceId::new(0),
                 controller_input,
                 control_input_event_fn: None,
                 charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
-                sequence_id: CharacterSequenceId::Flinch0,
+                sequence_id: SequenceId::new(10),
                 charge_use_events_fn: None,
             },
         )
@@ -626,7 +628,7 @@ mod tests {
 
         run_test(
             SetupParams {
-                sequence_id: CharacterSequenceId::Stand,
+                sequence_id: SequenceId::new(0),
                 controller_input,
                 control_input_event_fn: Some(|entity| {
                     let control_action_event_data = ControlActionEventData {
@@ -638,7 +640,7 @@ mod tests {
                 charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
-                sequence_id: CharacterSequenceId::Jump,
+                sequence_id: SequenceId::new(6),
                 charge_use_events_fn: None,
             },
         )
@@ -652,7 +654,7 @@ mod tests {
 
         run_test(
             SetupParams {
-                sequence_id: CharacterSequenceId::Stand,
+                sequence_id: SequenceId::new(0),
                 controller_input,
                 control_input_event_fn: Some(|entity| {
                     let control_action_event_data = ControlActionEventData {
@@ -664,7 +666,7 @@ mod tests {
                 charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
-                sequence_id: CharacterSequenceId::DashBack,
+                sequence_id: SequenceId::new(9),
                 charge_use_events_fn: None,
             },
         )
@@ -674,7 +676,7 @@ mod tests {
     fn inserts_transition_for_axis_press_event() -> Result<(), Error> {
         run_test(
             SetupParams {
-                sequence_id: CharacterSequenceId::Stand,
+                sequence_id: SequenceId::new(0),
                 controller_input: ControllerInput::default(),
                 control_input_event_fn: Some(|entity| {
                     let axis_move_event_data = AxisMoveEventData {
@@ -687,7 +689,7 @@ mod tests {
                 charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
-                sequence_id: CharacterSequenceId::FallForwardAscend,
+                sequence_id: SequenceId::new(13),
                 charge_use_events_fn: None,
             },
         )
@@ -697,7 +699,7 @@ mod tests {
     fn inserts_transition_for_axis_release_event() -> Result<(), Error> {
         run_test(
             SetupParams {
-                sequence_id: CharacterSequenceId::Stand,
+                sequence_id: SequenceId::new(0),
                 controller_input: ControllerInput::default(),
                 control_input_event_fn: Some(|entity| {
                     let axis_move_event_data = AxisMoveEventData {
@@ -710,7 +712,7 @@ mod tests {
                 charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
-                sequence_id: CharacterSequenceId::LieFaceDown,
+                sequence_id: SequenceId::new(15),
                 charge_use_events_fn: None,
             },
         )
@@ -723,13 +725,13 @@ mod tests {
 
         run_test(
             SetupParams {
-                sequence_id: CharacterSequenceId::Stand,
+                sequence_id: SequenceId::new(0),
                 controller_input,
                 control_input_event_fn: None,
                 charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
-                sequence_id: CharacterSequenceId::FallForwardDescend,
+                sequence_id: SequenceId::new(14),
                 charge_use_events_fn: None,
             },
         )
@@ -742,7 +744,7 @@ mod tests {
 
         run_test(
             SetupParams {
-                sequence_id: CharacterSequenceId::Stand,
+                sequence_id: SequenceId::new(0),
                 controller_input,
                 control_input_event_fn: Some(|entity| {
                     let axis_move_event_data = AxisMoveEventData {
@@ -755,7 +757,7 @@ mod tests {
                 charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
-                sequence_id: CharacterSequenceId::FallForwardAscend,
+                sequence_id: SequenceId::new(13),
                 charge_use_events_fn: None,
             },
         )
@@ -769,7 +771,7 @@ mod tests {
 
         run_test(
             SetupParams {
-                sequence_id: CharacterSequenceId::Stand,
+                sequence_id: SequenceId::new(0),
                 controller_input,
                 control_input_event_fn: Some(|entity| {
                     let axis_move_event_data = AxisMoveEventData {
@@ -782,7 +784,7 @@ mod tests {
                 charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
-                sequence_id: CharacterSequenceId::Dazed,
+                sequence_id: SequenceId::new(12),
                 charge_use_events_fn: None,
             },
         )
@@ -792,13 +794,13 @@ mod tests {
     fn inserts_transition_for_fallback() -> Result<(), Error> {
         run_test(
             SetupParams {
-                sequence_id: CharacterSequenceId::Stand,
+                sequence_id: SequenceId::new(0),
                 controller_input: ControllerInput::default(),
                 control_input_event_fn: None,
                 charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
-                sequence_id: CharacterSequenceId::RunStop,
+                sequence_id: SequenceId::new(3),
                 charge_use_events_fn: None,
             },
         )
@@ -811,13 +813,13 @@ mod tests {
 
         run_test(
             SetupParams {
-                sequence_id: CharacterSequenceId::Stand,
+                sequence_id: SequenceId::new(0),
                 controller_input,
                 control_input_event_fn: None,
                 charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
-                sequence_id: CharacterSequenceId::Stand,
+                sequence_id: SequenceId::new(0),
                 charge_use_events_fn: None,
             },
         )
@@ -827,7 +829,7 @@ mod tests {
     fn sends_charge_use_event_when_requirement_met() -> Result<(), Error> {
         run_test(
             SetupParams {
-                sequence_id: CharacterSequenceId::Stand,
+                sequence_id: SequenceId::new(0),
                 controller_input: ControllerInput::default(),
                 control_input_event_fn: Some(|entity| {
                     let control_action_event_data = ControlActionEventData {
@@ -839,7 +841,7 @@ mod tests {
                 charge_tracker_clock: ChargeTrackerClock::new_with_value(100, 100),
             },
             ExpectedParams {
-                sequence_id: CharacterSequenceId::DashBack,
+                sequence_id: SequenceId::new(9),
                 charge_use_events_fn: Some(|entity| {
                     let charge_use_event = ChargeUseEvent {
                         entity,
@@ -855,7 +857,7 @@ mod tests {
     fn does_not_send_charge_use_event_when_requirement_not_met() -> Result<(), Error> {
         run_test(
             SetupParams {
-                sequence_id: CharacterSequenceId::Stand,
+                sequence_id: SequenceId::new(0),
                 controller_input: ControllerInput::default(),
                 control_input_event_fn: Some(|entity| {
                     let control_action_event_data = ControlActionEventData {
@@ -867,7 +869,7 @@ mod tests {
                 charge_tracker_clock: ChargeTrackerClock::new_with_value(5, 5),
             },
             ExpectedParams {
-                sequence_id: CharacterSequenceId::Stand,
+                sequence_id: SequenceId::new(0),
                 charge_use_events_fn: Some(|_| vec![]),
             },
         )
@@ -912,6 +914,7 @@ mod tests {
 
                     ControlTransitionsSequenceLoader::load(
                         &control_transitions_sequence_loader_params,
+                        &sequence_id_mappings(),
                         None,
                         &test_character_sequence,
                     )
@@ -949,7 +952,7 @@ mod tests {
                 let entity = world.create_entity().build();
                 {
                     let TestSystemData {
-                        mut character_sequence_ids,
+                        mut sequence_ids,
                         mut character_control_transitions_handles,
                         mut health_pointses,
                         mut skill_pointses,
@@ -958,9 +961,9 @@ mod tests {
                         mut controller_inputs,
                     } = world.system_data::<TestSystemData>();
 
-                    character_sequence_ids
+                    sequence_ids
                         .insert(entity, sequence_id_setup)
-                        .expect("Failed to insert `CharacterSequenceId` component.");
+                        .expect("Failed to insert `SequenceId` component.");
                     character_control_transitions_handles
                         .insert(entity, character_control_transitions_handle)
                         .expect("Failed to insert `CharacterControlTransitionsHandle` component.");
@@ -991,16 +994,16 @@ mod tests {
             .with_assertion(move |world| {
                 let entity = *world.read_resource::<Entity>();
 
-                let character_sequence_id = {
-                    let character_sequence_ids = world.read_storage::<CharacterSequenceId>();
+                let sequence_id = {
+                    let sequence_ids = world.read_storage::<SequenceId>();
 
-                    character_sequence_ids
+                    sequence_ids
                         .get(entity)
                         .copied()
-                        .expect("Expected `CharacterSequenceId` component to exist.")
+                        .expect("Expected `SequenceId` component to exist.")
                 };
 
-                assert_eq!(sequence_id_expected, character_sequence_id);
+                assert_eq!(sequence_id_expected, sequence_id);
 
                 if let Some(charge_use_events_fn) = charge_use_events_fn {
                     let charge_use_events = charge_use_events_fn(entity);
@@ -1027,6 +1030,75 @@ mod tests {
 
         serde_yaml::from_slice::<CharacterSequence>(&contents)
             .expect("Failed to load `test_character_sequence.yaml`.")
+    }
+
+    fn sequence_id_mappings() -> SequenceIdMappings<CharacterSequenceName> {
+        let mut sequence_id_mappings = SequenceIdMappings::new();
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::Stand),
+            SequenceId::new(0),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::Walk),
+            SequenceId::new(1),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::Run),
+            SequenceId::new(2),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::RunStop),
+            SequenceId::new(3),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::StandAttack0),
+            SequenceId::new(4),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::StandAttack1),
+            SequenceId::new(5),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::Jump),
+            SequenceId::new(6),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::JumpOff),
+            SequenceId::new(7),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::DashForward),
+            SequenceId::new(8),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::DashBack),
+            SequenceId::new(9),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::Flinch0),
+            SequenceId::new(10),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::Flinch1),
+            SequenceId::new(11),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::Dazed),
+            SequenceId::new(12),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::FallForwardAscend),
+            SequenceId::new(13),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::FallForwardDescend),
+            SequenceId::new(14),
+        );
+        sequence_id_mappings.insert(
+            SequenceNameString::Name(CharacterSequenceName::LieFaceDown),
+            SequenceId::new(15),
+        );
+        sequence_id_mappings
     }
 
     fn register_reader(world: &mut World) {
@@ -1063,7 +1135,7 @@ mod tests {
     #[derivative(Debug)]
     struct TestSystemData<'s> {
         #[derivative(Debug = "ignore")]
-        character_sequence_ids: WriteStorage<'s, CharacterSequenceId>,
+        sequence_ids: WriteStorage<'s, SequenceId>,
         #[derivative(Debug = "ignore")]
         character_control_transitions_handles: WriteStorage<'s, CharacterControlTransitionsHandle>,
         #[derivative(Debug = "ignore")]
@@ -1079,14 +1151,14 @@ mod tests {
     }
 
     struct SetupParams {
-        sequence_id: CharacterSequenceId,
+        sequence_id: SequenceId,
         controller_input: ControllerInput,
         control_input_event_fn: Option<fn(Entity) -> ControlInputEvent>,
         charge_tracker_clock: ChargeTrackerClock,
     }
 
     struct ExpectedParams {
-        sequence_id: CharacterSequenceId,
+        sequence_id: SequenceId,
         charge_use_events_fn: Option<fn(Entity) -> Vec<ChargeUseEvent>>,
     }
 }

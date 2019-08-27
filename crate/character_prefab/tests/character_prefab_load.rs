@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use amethyst::{
     assets::{AssetStorage, Handle, Loader, Prefab, PrefabLoader},
     core::TransformBundle,
@@ -16,7 +14,9 @@ use amethyst::{
 use amethyst_test::AmethystApplication;
 use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
 use character_model::{
-    config::{CharacterDefinition, CharacterSequenceId, ControlTransitionRequirement},
+    config::{
+        CharacterDefinition, CharacterSequence, CharacterSequenceName, ControlTransitionRequirement,
+    },
     loaded::{
         Character, CharacterControlTransition, CharacterControlTransitions,
         CharacterControlTransitionsSequence, CharacterHandle,
@@ -27,6 +27,7 @@ use charge_model::config::{
     ChargeDelay, ChargeLimit, ChargePoints, ChargeRetentionMode, ChargeUseMode,
 };
 use game_input_model::ControlAction;
+use indexmap::IndexMap;
 use object_model::{
     config::{ObjectAssetData, ObjectDefinition, ObjectFrame, ObjectSequence},
     play::{HealthPoints, SkillPoints},
@@ -34,8 +35,10 @@ use object_model::{
 use pretty_assertions::assert_eq;
 use sequence_loading::SequenceLoadingBundle;
 use sequence_model::{
-    config::SequenceEndTransition,
-    loaded::{ActionHold, ActionPress, ActionRelease, ControlTransition, ControlTransitions},
+    config::{SequenceEndTransition, SequenceNameString},
+    loaded::{
+        ActionHold, ActionPress, ActionRelease, ControlTransition, ControlTransitions, SequenceId,
+    },
 };
 
 #[test]
@@ -84,7 +87,7 @@ fn character_prefab_load() -> Result<(), Error> {
             let character_control_transitions_sequences = {
                 let handle = character
                     .control_transitions_sequence_handles
-                    .get(&CharacterSequenceId::Stand)
+                    .get(*SequenceId::new(0))
                     .expect("Expected `CharacterControlTransitionsSequenceHandle` to exist.");
 
                 character_control_transitions_sequence_assets
@@ -112,7 +115,7 @@ fn character_prefab_load() -> Result<(), Error> {
 }
 
 fn character_definition() -> CharacterDefinition {
-    use character_model::config::{CharacterControlTransitions, CharacterFrame, CharacterSequence};
+    use character_model::config::{CharacterControlTransitions, CharacterFrame};
     use sequence_model::config::{
         ControlTransition, ControlTransitionMultiple, ControlTransitionSingle, Wait,
     };
@@ -123,29 +126,29 @@ fn character_definition() -> CharacterDefinition {
             ..Default::default()
         },
         CharacterControlTransitions {
-            press_attack: Some(ControlTransition::SequenceId(
-                CharacterSequenceId::StandAttack0,
+            press_attack: Some(ControlTransition::SequenceNameString(
+                SequenceNameString::Name(CharacterSequenceName::StandAttack0),
             )),
             release_attack: Some(ControlTransition::Multiple(ControlTransitionMultiple::new(
                 vec![
                     ControlTransitionSingle {
-                        next: CharacterSequenceId::Walk,
+                        next: SequenceNameString::Name(CharacterSequenceName::Walk),
                         requirements: vec![ControlTransitionRequirement::Charge(
                             ChargePoints::new(90),
                         )],
                     },
                     ControlTransitionSingle {
-                        next: CharacterSequenceId::Run,
+                        next: SequenceNameString::Name(CharacterSequenceName::Run),
                         requirements: vec![ControlTransitionRequirement::Sp(SkillPoints::new(50))],
                     },
                     ControlTransitionSingle {
-                        next: CharacterSequenceId::RunStop,
+                        next: SequenceNameString::Name(CharacterSequenceName::RunStop),
                         requirements: vec![ControlTransitionRequirement::Hp(HealthPoints::new(30))],
                     },
                 ],
             ))),
             hold_jump: Some(ControlTransition::Single(ControlTransitionSingle {
-                next: CharacterSequenceId::Jump,
+                next: SequenceNameString::Name(CharacterSequenceName::Jump),
                 requirements: vec![],
             })),
             ..Default::default()
@@ -153,13 +156,44 @@ fn character_definition() -> CharacterDefinition {
     )];
     let sequence = CharacterSequence::new(
         ObjectSequence::new(
-            SequenceEndTransition::SequenceId(CharacterSequenceId::Stand),
+            SequenceEndTransition::SequenceName(SequenceNameString::Name(
+                CharacterSequenceName::Stand,
+            )),
             frames,
         ),
         None,
     );
-    let mut sequences = HashMap::new();
-    sequences.insert(CharacterSequenceId::Stand, sequence);
+    let mut sequences = IndexMap::new();
+    // 0
+    sequences.insert(
+        SequenceNameString::Name(CharacterSequenceName::Stand),
+        sequence,
+    );
+    // 1
+    sequences.insert(
+        SequenceNameString::Name(CharacterSequenceName::StandAttack0),
+        empty_sequence(),
+    );
+    // 2
+    sequences.insert(
+        SequenceNameString::Name(CharacterSequenceName::Walk),
+        empty_sequence(),
+    );
+    // 3
+    sequences.insert(
+        SequenceNameString::Name(CharacterSequenceName::Run),
+        empty_sequence(),
+    );
+    // 4
+    sequences.insert(
+        SequenceNameString::Name(CharacterSequenceName::RunStop),
+        empty_sequence(),
+    );
+    // 5
+    sequences.insert(
+        SequenceNameString::Name(CharacterSequenceName::Jump),
+        empty_sequence(),
+    );
     let object_definition = ObjectDefinition::new(sequences);
 
     CharacterDefinition {
@@ -169,6 +203,11 @@ fn character_definition() -> CharacterDefinition {
         charge_use_mode: ChargeUseMode::Exact,
         charge_retention_mode: ChargeRetentionMode::Lossy { delay: 5 },
     }
+}
+
+fn empty_sequence() -> CharacterSequence {
+    let object_sequence = ObjectSequence::new(Default::default(), Vec::new());
+    CharacterSequence::new(object_sequence, None)
 }
 
 fn sprite_sheet_handles(world: &World) -> Vec<SpriteSheetHandle> {
@@ -208,21 +247,21 @@ fn expected_control_transitions() -> CharacterControlTransitions {
         CharacterControlTransition {
             control_transition: ControlTransition::ActionPress(ActionPress {
                 action: ControlAction::Jump,
-                sequence_id: CharacterSequenceId::Jump,
+                sequence_id: SequenceId::new(5),
             }),
             control_transition_requirements: vec![],
         },
         CharacterControlTransition {
             control_transition: ControlTransition::ActionPress(ActionPress {
                 action: ControlAction::Attack,
-                sequence_id: CharacterSequenceId::StandAttack0,
+                sequence_id: SequenceId::new(1),
             }),
             control_transition_requirements: vec![],
         },
         CharacterControlTransition {
             control_transition: ControlTransition::ActionRelease(ActionRelease {
                 action: ControlAction::Attack,
-                sequence_id: CharacterSequenceId::Walk,
+                sequence_id: SequenceId::new(2),
             }),
             control_transition_requirements: vec![ControlTransitionRequirement::Charge(
                 ChargePoints::new(90),
@@ -231,7 +270,7 @@ fn expected_control_transitions() -> CharacterControlTransitions {
         CharacterControlTransition {
             control_transition: ControlTransition::ActionRelease(ActionRelease {
                 action: ControlAction::Attack,
-                sequence_id: CharacterSequenceId::Run,
+                sequence_id: SequenceId::new(3),
             }),
             control_transition_requirements: vec![ControlTransitionRequirement::Sp(
                 SkillPoints::new(50),
@@ -240,7 +279,7 @@ fn expected_control_transitions() -> CharacterControlTransitions {
         CharacterControlTransition {
             control_transition: ControlTransition::ActionRelease(ActionRelease {
                 action: ControlAction::Attack,
-                sequence_id: CharacterSequenceId::RunStop,
+                sequence_id: SequenceId::new(4),
             }),
             control_transition_requirements: vec![ControlTransitionRequirement::Hp(
                 HealthPoints::new(30),
@@ -249,7 +288,7 @@ fn expected_control_transitions() -> CharacterControlTransitions {
         CharacterControlTransition {
             control_transition: ControlTransition::ActionHold(ActionHold {
                 action: ControlAction::Jump,
-                sequence_id: CharacterSequenceId::Jump,
+                sequence_id: SequenceId::new(5),
             }),
             control_transition_requirements: vec![],
         },

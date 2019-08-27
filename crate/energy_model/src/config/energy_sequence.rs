@@ -2,7 +2,7 @@ use derive_new::new;
 use object_model::config::{GameObjectSequence, ObjectSequence};
 use serde::{Deserialize, Serialize};
 
-use crate::config::{EnergyFrame, EnergySequenceId};
+use crate::config::{EnergyFrame, EnergySequenceName};
 
 /// Represents an independent action sequence of an `Energy`.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
@@ -10,14 +10,14 @@ use crate::config::{EnergyFrame, EnergySequenceId};
 pub struct EnergySequence {
     /// Object sequence for common object fields.
     #[serde(flatten)]
-    pub object_sequence: ObjectSequence<EnergySequenceId, EnergyFrame>,
+    pub object_sequence: ObjectSequence<EnergySequenceName, EnergyFrame>,
 }
 
 impl GameObjectSequence for EnergySequence {
-    type SequenceId = EnergySequenceId;
+    type SequenceName = EnergySequenceName;
     type GameObjectFrame = EnergyFrame;
 
-    fn object_sequence(&self) -> &ObjectSequence<Self::SequenceId, Self::GameObjectFrame> {
+    fn object_sequence(&self) -> &ObjectSequence<Self::SequenceName, Self::GameObjectFrame> {
         &self.object_sequence
     }
 }

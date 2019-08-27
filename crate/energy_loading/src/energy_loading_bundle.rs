@@ -34,7 +34,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for EnergyLoadingBundle {
         builder.add(
             ObjectDefinitionToWrapperProcessor::<Energy>::new(),
             &ObjectDefinitionToWrapperProcessor::<Energy>::type_name(),
-            &["energy_definition_processor", "sprite_sheet_processor"],
+            &["energy_definition_processor"],
         ); // kcov-ignore
         builder.add(
             Processor::<Energy>::new(),

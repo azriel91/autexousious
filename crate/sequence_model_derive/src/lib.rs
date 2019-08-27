@@ -61,7 +61,7 @@
 //! ```rust,edition2018
 //! # use amethyst::ecs::{storage::VecStorage, Component};
 //! # use derivative::Derivative;
-//! # use sequence_model_core::config::SequenceId;
+//! # use sequence_model_core::config::SequenceName;
 //! # use serde::{Deserialize, Serialize};
 //! # use specs_derive::Component;
 //! # use strum_macros::{Display, EnumString, IntoStaticStr};
@@ -73,7 +73,6 @@
 //! #
 //! # #[derive(
 //! #     Clone,
-//! #     Component,
 //! #     Copy,
 //! #     Debug,
 //! #     Derivative,
@@ -88,18 +87,17 @@
 //! #     TypeName,
 //! # )]
 //! # #[derivative(Default)]
-//! # #[storage(VecStorage)]
 //! # #[serde(rename_all = "snake_case")]
 //! # #[strum(serialize_all = "snake_case")]
 //! # pub enum MagicSequenceId {
 //! #     #[derivative(Default)]
 //! #     Boo,
 //! # }
-//! # impl SequenceId for MagicSequenceId {}
+//! # impl SequenceName for MagicSequenceId {}
 //! #
 //! use sequence_model_derive::sequence_component_data;
 //!
-//! #[sequence_component_data(MagicSequenceId, SequenceEndTransition, copy)]
+//! #[sequence_component_data(SequenceEndTransition, copy)]
 //! pub struct SequenceEndTransitions;
 //! ```
 //!
@@ -116,14 +114,14 @@
 //!
 //! #[derive(Asset, Clone, Debug, Deref, DerefMut, PartialEq, TypeName)]
 //! pub struct SequenceEndTransitions(
-//!     pub SequenceComponentData<MagicSequenceId, SequenceEndTransition>
+//!     pub SequenceComponentData<SequenceEndTransition>
 //! );
 //!
 //! impl SequenceEndTransitions {
 //!     #[doc = #fn_new_doc]
-//!     pub fn new(sequence: HashMap<MagicSequenceId, SequenceEndTransition>) -> Self {
+//!     pub fn new(sequence: Vec<SequenceEndTransition>) -> Self {
 //!         SequenceEndTransitions(
-//!             SequenceComponentData::<MagicSequenceId, SequenceEndTransition>::new(sequence)
+//!             SequenceComponentData::<SequenceEndTransition>::new(sequence)
 //!         )
 //!     }
 //! }
@@ -133,8 +131,8 @@
 //! impl Default for SequenceEndTransitions {
 //!     fn default() -> Self {
 //!         SequenceEndTransitions(
-//!             SequenceComponentData::<MagicSequenceId, SequenceEndTransition>::new(
-//!                 HashMap::default()
+//!             SequenceComponentData::<SequenceEndTransition>::new(
+//!                 Vec::default()
 //!             )
 //!         )
 //!     }
@@ -157,13 +155,11 @@ use syn::{parse_macro_input, DeriveInput};
 use crate::{
     component_data_attribute_args::ComponentDataAttributeArgs,
     frame_component_data_impl::frame_component_data_impl,
-    sequence_component_data_attribute_args::SequenceComponentDataAttributeArgs,
     sequence_component_data_impl::sequence_component_data_impl, to_owned_fn_impl::to_owned_fn_impl,
 };
 
 mod component_data_attribute_args;
 mod frame_component_data_impl;
-mod sequence_component_data_attribute_args;
 mod sequence_component_data_impl;
 mod to_owned_fn_impl;
 
@@ -178,7 +174,7 @@ pub fn frame_component_data(args: TokenStream, item: TokenStream) -> TokenStream
 #[proc_macro_attribute]
 pub fn sequence_component_data(args: TokenStream, item: TokenStream) -> TokenStream {
     let ast = parse_macro_input!(item as DeriveInput);
-    let args = parse_macro_input!(args as SequenceComponentDataAttributeArgs);
+    let args = parse_macro_input!(args as ComponentDataAttributeArgs);
 
     sequence_component_data_impl(ast, args)
 }

@@ -1,4 +1,4 @@
-use character_model::config::CharacterSequenceId;
+use character_model::config::CharacterSequenceName;
 use derive_new::new;
 use sequence_model::play::SequenceStatus;
 
@@ -7,16 +7,16 @@ use crate::CharacterSequenceUpdateComponents;
 #[derive(Debug, new)]
 pub(crate) struct SwitchSequenceOnEndYVelocity {
     /// The sequence to switch to if Y velocity is upwards.
-    pub upwards: CharacterSequenceId,
+    pub upwards: CharacterSequenceName,
     /// The sequence to switch to if Y velocity is downwards.
-    pub downwards: CharacterSequenceId,
+    pub downwards: CharacterSequenceName,
 }
 
 impl SwitchSequenceOnEndYVelocity {
     pub fn update(
         &self,
         components: CharacterSequenceUpdateComponents<'_>,
-    ) -> Option<CharacterSequenceId> {
+    ) -> Option<CharacterSequenceName> {
         if components.sequence_status == SequenceStatus::End {
             if components.velocity[1] > 0. {
                 Some(self.upwards)
@@ -31,7 +31,7 @@ impl SwitchSequenceOnEndYVelocity {
 
 #[cfg(test)]
 mod test {
-    use character_model::{config::CharacterSequenceId, play::RunCounter};
+    use character_model::{config::CharacterSequenceName, play::RunCounter};
     use game_input::ControllerInput;
     use kinematic_model::config::{Position, Velocity};
     use object_model::play::{Grounding, HealthPoints, Mirrored};
@@ -45,13 +45,13 @@ mod test {
         assert_eq!(
             None,
             SwitchSequenceOnEndYVelocity::new(
-                CharacterSequenceId::DashForwardAscend,
-                CharacterSequenceId::DashForwardDescend
+                CharacterSequenceName::DashForwardAscend,
+                CharacterSequenceName::DashForwardDescend
             )
             .update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceId::DashForward,
+                CharacterSequenceName::DashForward,
                 SequenceStatus::default(),
                 &Position::default(),
                 &Velocity::default(),
@@ -68,15 +68,15 @@ mod test {
         velocity[1] = 1.;
 
         assert_eq!(
-            Some(CharacterSequenceId::DashForwardAscend),
+            Some(CharacterSequenceName::DashForwardAscend),
             SwitchSequenceOnEndYVelocity::new(
-                CharacterSequenceId::DashForwardAscend,
-                CharacterSequenceId::DashForwardDescend
+                CharacterSequenceName::DashForwardAscend,
+                CharacterSequenceName::DashForwardDescend
             )
             .update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceId::DashForward,
+                CharacterSequenceName::DashForward,
                 SequenceStatus::End,
                 &Position::default(),
                 &velocity,
@@ -92,15 +92,15 @@ mod test {
         velocity[1] = -1.;
 
         assert_eq!(
-            Some(CharacterSequenceId::DashForwardDescend),
+            Some(CharacterSequenceName::DashForwardDescend),
             SwitchSequenceOnEndYVelocity::new(
-                CharacterSequenceId::DashForwardAscend,
-                CharacterSequenceId::DashForwardDescend
+                CharacterSequenceName::DashForwardAscend,
+                CharacterSequenceName::DashForwardDescend
             )
             .update(CharacterSequenceUpdateComponents::new(
                 &ControllerInput::default(),
                 HealthPoints::default(),
-                CharacterSequenceId::DashForward,
+                CharacterSequenceName::DashForward,
                 SequenceStatus::End,
                 &Position::default(),
                 &velocity,

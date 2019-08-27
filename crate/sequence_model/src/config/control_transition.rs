@@ -1,7 +1,9 @@
 use derive_new::new;
 use serde::{Deserialize, Serialize};
 
-use crate::config::{ControlTransitionMultiple, ControlTransitionSingle, SequenceId};
+use crate::config::{
+    ControlTransitionMultiple, ControlTransitionSingle, SequenceName, SequenceNameString,
+};
 
 /// Variants of how a `ControlTransition` may be specified.
 ///
@@ -9,29 +11,29 @@ use crate::config::{ControlTransitionMultiple, ControlTransitionSingle, Sequence
 /// configuration.
 #[derive(Clone, Debug, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
 #[serde(deny_unknown_fields, rename_all = "snake_case", untagged)]
-pub enum ControlTransition<SeqId, Req>
+pub enum ControlTransition<SeqName, Req>
 where
-    SeqId: SequenceId,
+    SeqName: SequenceName,
     Req: Default,
 {
-    /// Transition that only has a sequence ID.
+    /// Transition that only has a sequence name.
     ///
     /// ```yaml
-    /// press_attack: "seq_id"
+    /// press_attack: "sequence_name"
     /// ```
-    SequenceId(SeqId),
-    /// Transition has a sequence ID and extra fields.
+    SequenceNameString(SequenceNameString<SeqName>),
+    /// Transition has a sequence name and extra fields.
     ///
     /// ```yaml
-    /// press_attack: { next: "seq_id", extra_0: 0, extra_1: "0" }
+    /// press_attack: { next: "sequence_name", extra_0: 0, extra_1: "0" }
     /// ```
-    Single(ControlTransitionSingle<SeqId, Req>),
-    /// Multiple transitions with sequence ID and extra fields.
+    Single(ControlTransitionSingle<SeqName, Req>),
+    /// Multiple transitions with sequence name and extra fields.
     ///
     /// ```yaml
     /// press_attack:
-    ///   - { next: "seq_id_0", extra_0: 0, extra_1: "0" }
-    ///   - { next: "seq_id_1", extra_0: 1, extra_1: "1" }
+    ///   - { next: "sequence_name_0", extra_0: 0, extra_1: "0" }
+    ///   - { next: "sequence_name_1", extra_0: 1, extra_1: "1" }
     /// ```
-    Multiple(ControlTransitionMultiple<SeqId, Req>),
+    Multiple(ControlTransitionMultiple<SeqName, Req>),
 }

@@ -5,20 +5,20 @@ use syn::{
 
 /// https://docs.rs/syn/latest/syn/macro.custom_keyword.html
 mod kw {
-    syn::custom_keyword!(sequence_id);
+    syn::custom_keyword!(sequence_name);
     syn::custom_keyword!(sequence);
     syn::custom_keyword!(definition);
     syn::custom_keyword!(object_type);
 }
 
-/// Parses the `Path` for the type to use as a `GameObject`'s `SequenceId`.
+/// Parses the `Path` for the type to use as a `GameObject`'s `SequenceName`.
 ///
 /// This is how the compiler passes in arguments to our attribute -- it is
 /// everything inside the delimiters after the attribute name.
 ///
 /// ```rust,ignore
-/// #[game_object(CharacterSequenceId)]
-///               ^^^^^^^^^^^^^^^^^^^
+/// #[game_object(CharacterSequenceName)]
+///               ^^^^^^^^^^^^^^^^^^^^^
 /// ```
 ///
 /// The following parameters are optional:
@@ -29,7 +29,7 @@ mod kw {
 ///
 /// ```rust,ignore
 /// #[game_object(
-///     sequence_id = CharacterSequenceId,
+///     sequence_name = CharacterSequenceName,
 ///     sequence = CharacterSequence,
 ///     definition = CharacterDefinition,
 ///     object_type = ObjectType::Character,
@@ -37,8 +37,8 @@ mod kw {
 /// ```
 #[derive(Debug)]
 pub struct GameObjectAttributeArgs {
-    /// The sequence ID for the `GameObject`.
-    pub sequence_id: Option<Path>,
+    /// The sequence name for the `GameObject`.
+    pub sequence_name: Option<Path>,
     /// Type that `impl GameObjectSequence`, e.g. `CharacterSequence`.
     pub sequence_type: Option<Path>,
     /// Type that `impl GameObjectDefinition`, e.g. `CharacterDefinition`.
@@ -49,7 +49,7 @@ pub struct GameObjectAttributeArgs {
 
 impl Parse for GameObjectAttributeArgs {
     fn parse(input: ParseStream) -> Result<Self> {
-        let mut sequence_id = None;
+        let mut sequence_name = None;
         let mut sequence_type = None;
         let mut object_definition = None;
         let mut object_type = None;
@@ -79,7 +79,7 @@ impl Parse for GameObjectAttributeArgs {
                     }
                 };
             }
-            parse_param!(sequence_id, sequence_id, SequenceId);
+            parse_param!(sequence_name, sequence_name, SequenceName);
             parse_param!(sequence_type, sequence, GameObjectSequence);
             parse_param!(object_definition, definition, GameObjectDefinition);
             parse_param!(object_type, object_type, ObjectType);
@@ -88,7 +88,7 @@ impl Parse for GameObjectAttributeArgs {
         }
 
         Ok(GameObjectAttributeArgs {
-            sequence_id,
+            sequence_name,
             sequence_type,
             object_definition,
             object_type,

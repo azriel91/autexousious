@@ -10,16 +10,17 @@ use character_loading::{
     CharacterLoader, CharacterLoaderParams, ControlTransitionsSequenceLoaderParams,
 };
 use character_model::{
-    config::CharacterDefinition,
+    config::{CharacterDefinition, CharacterSequenceName},
     loaded::{
         Character, CharacterControlTransitions, CharacterControlTransitionsSequence,
-        CharacterHandle,
+        CharacterHandle, CharacterHitTransitions,
     },
 };
 use derivative::Derivative;
 use log::debug;
 use object_model::config::ObjectAssetData;
 use object_prefab::{GameObjectPrefab, ObjectPrefab};
+use sequence_model::{config::SequenceNameString, loaded::SequenceId};
 use typename_derive::TypeName;
 
 use crate::{CharacterComponentStorages, CharacterEntityAugmenter};
@@ -71,6 +72,9 @@ pub struct CharacterPrefabSystemData<'s> {
     /// `CharacterHandle` components.
     #[derivative(Debug = "ignore")]
     pub character_handles: WriteStorage<'s, CharacterHandle>,
+    /// `CharacterHitTransitions` components.
+    #[derivative(Debug = "ignore")]
+    pub character_hit_transitionses: WriteStorage<'s, CharacterHitTransitions>,
     /// `CharacterComponentStorages` system data.
     pub character_component_storages: CharacterComponentStorages<'s>,
 }
@@ -102,6 +106,8 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
             object_prefab_system_data,
             ref character_definition_assets,
             ref mut character_handles,
+            ref character_assets,
+            ref mut character_hit_transitionses,
             ref mut character_component_storages,
             ..
         }: &mut Self::SystemData,
@@ -136,6 +142,39 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
                     character_component_storages,
                     character_definition,
                 );
+
+                let character = character_assets
+                    .get(character_handle)
+                    .expect("Expected `Character` to be loaded.");
+                let sequence_id_mappings = &character.sequence_id_mappings;
+                let low_stun = sequence_id_mappings
+                    .id(&SequenceNameString::Name(CharacterSequenceName::Flinch0))
+                    .copied()
+                    .unwrap_or(SequenceId(0));
+                let mid_stun = sequence_id_mappings
+                    .id(&SequenceNameString::Name(CharacterSequenceName::Flinch1))
+                    .copied()
+                    .unwrap_or(SequenceId(0));
+                let high_stun = sequence_id_mappings
+                    .id(&SequenceNameString::Name(CharacterSequenceName::Dazed))
+                    .copied()
+                    .unwrap_or(SequenceId(0));
+                let falling = sequence_id_mappings
+                    .id(&SequenceNameString::Name(
+                        CharacterSequenceName::FallForwardAscend,
+                    ))
+                    .copied()
+                    .unwrap_or(SequenceId(0));
+
+                let character_hit_transitions = CharacterHitTransitions {
+                    low_stun,
+                    mid_stun,
+                    high_stun,
+                    falling,
+                };
+                character_hit_transitionses
+                    .insert(entity, character_hit_transitions)
+                    .expect("Failed to insert `CharacterHitTransitions` component.");
 
                 Ok(())
             }

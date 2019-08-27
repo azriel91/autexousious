@@ -208,7 +208,7 @@ mod test {
                 find("test__find_config.ron")
                     .unwrap_err()
                     .as_error()
-                    .downcast_ref::<Box<FindContext>>()
+                    .downcast_ref::<FindContext>()
             {
                 let base_dirs = vec![exe_dir()];
                 let expected = FindContext {
@@ -217,7 +217,7 @@ mod test {
                     file_name: "test__find_config.ron".to_owned(),
                 }; // kcov-ignore
 
-                assert_eq!(&Box::new(expected), find_context);
+                assert_eq!(&expected, find_context);
             } else {
                 panic!("Expected `find` to return error"); // kcov-ignore
             }
@@ -237,7 +237,7 @@ mod test {
             if let Some(find_context) = find_result
                 .unwrap_err()
                 .as_error()
-                .downcast_ref::<Box<FindContext>>()
+                .downcast_ref::<FindContext>()
             {
                 let base_dirs = vec![exe_dir()];
                 let expected = FindContext {
@@ -246,7 +246,7 @@ mod test {
                     file_name: "test__find_config.ron".to_owned(),
                 }; // kcov-ignore
 
-                assert_eq!(&Box::new(expected), find_context);
+                assert_eq!(&expected, find_context);
             } else {
                 panic!("Expected `find_in` to return error"); // kcov-ignore
             }

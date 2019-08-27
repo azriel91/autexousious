@@ -6,6 +6,7 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     Error,
 };
+use collision_model::loaded::{HitTransition, HittingTransition};
 use derivative::Derivative;
 use energy_loading::EnergyLoader;
 use energy_model::{
@@ -15,6 +16,7 @@ use energy_model::{
 use log::debug;
 use object_model::config::ObjectAssetData;
 use object_prefab::{GameObjectPrefab, ObjectPrefab};
+use sequence_model::loaded::SequenceId;
 use typename_derive::TypeName;
 
 use crate::{EnergyComponentStorages, EnergyEntityAugmenter};
@@ -57,6 +59,12 @@ pub struct EnergyPrefabSystemData<'s> {
     /// `EnergyHandle` components.
     #[derivative(Debug = "ignore")]
     pub energy_handles: WriteStorage<'s, EnergyHandle>,
+    /// `HitTransition` components.
+    #[derivative(Debug = "ignore")]
+    pub hit_transitions: WriteStorage<'s, HitTransition>,
+    /// `HittingTransition` components.
+    #[derivative(Debug = "ignore")]
+    pub hitting_transitions: WriteStorage<'s, HittingTransition>,
     /// `EnergyComponentStorages` system data.
     pub energy_component_storages: EnergyComponentStorages<'s>,
 }
@@ -88,6 +96,8 @@ impl<'s> PrefabData<'s> for EnergyPrefab {
             object_prefab_system_data,
             ref mut energy_handles,
             ref mut energy_component_storages,
+            ref mut hit_transitions,
+            ref mut hitting_transitions,
             ..
         }: &mut Self::SystemData,
         entities: &[Entity],
@@ -112,6 +122,15 @@ impl<'s> PrefabData<'s> for EnergyPrefab {
                     .expect("Failed to insert `EnergyHandle` component.");
 
                 EnergyEntityAugmenter::augment(entity, energy_component_storages);
+
+                // Hack: this should be read off an asset.
+                hit_transitions
+                    .insert(entity, HitTransition::new(SequenceId::new(2)))
+                    .expect("Failed to insert `HitTransition` component.");
+                hitting_transitions
+                    .insert(entity, HittingTransition::new(SequenceId::new(2)))
+                    .expect("Failed to insert `HittingTransition` component.");
+                // End Hack.
 
                 Ok(())
             }

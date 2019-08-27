@@ -1,7 +1,7 @@
-use std::collections::HashMap;
-
 use derivative::Derivative;
 use derive_new::new;
+use indexmap::IndexMap;
+use sequence_model::config::SequenceNameString;
 use serde::{Deserialize, Serialize};
 
 use crate::config::GameObjectSequence;
@@ -18,8 +18,8 @@ use crate::config::GameObjectSequence;
 pub struct ObjectDefinition<ObjSeq>
 where
     ObjSeq: GameObjectSequence,
-    ObjSeq::SequenceId: for<'des> Deserialize<'des> + Serialize,
+    ObjSeq::SequenceName: for<'des> Deserialize<'des> + Serialize,
 {
     /// Sequences of actions this object can perform.
-    pub sequences: HashMap<ObjSeq::SequenceId, ObjSeq>,
+    pub sequences: IndexMap<SequenceNameString<ObjSeq::SequenceName>, ObjSeq>,
 }

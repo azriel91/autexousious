@@ -1,11 +1,10 @@
-use std::collections::HashMap;
-
 use amethyst::{assets::Handle, Error};
 use character_model::{
     config::CharacterDefinition,
-    loaded::{Character, CharacterObjectWrapper},
+    loaded::{Character, CharacterControlTransitionsSequenceHandle, CharacterObjectWrapper},
 };
 use lazy_static::lazy_static;
+use sequence_model::loaded::{SequenceId, SequenceIdMappings};
 
 use crate::{CharacterLoaderParams, ControlTransitionsSequenceLoader};
 
@@ -35,6 +34,27 @@ impl CharacterLoader {
         character_definition: &CharacterDefinition,
         object_wrapper_handle: Handle<CharacterObjectWrapper>,
     ) -> Result<Character, Error> {
+        // Calculate the indices of each sequence ID.
+        //
+        // TODO: Extract this out to a separate loading phase, as other objects may reference this
+        // TODO: object's sequences.
+        let capacity = character_definition.object_definition.sequences.len();
+        let sequence_id_mappings = character_definition
+            .object_definition
+            .sequences
+            .keys()
+            .enumerate()
+            .map(|(index, sequence_name_string)| {
+                (SequenceId::new(index), sequence_name_string.clone())
+            })
+            .fold(
+                SequenceIdMappings::with_capacity(capacity),
+                |mut sequence_id_mappings, (sequence_id, sequence_name_string)| {
+                    sequence_id_mappings.insert(sequence_name_string, sequence_id);
+                    sequence_id_mappings
+                },
+            );
+
         let control_transitions_sequence_handles = character_definition
             .object_definition
             .sequences
@@ -46,15 +66,17 @@ impl CharacterLoader {
                     .get(sequence_id);
                 let control_transitions_sequence_handle = ControlTransitionsSequenceLoader::load(
                     &character_loader_params.control_transitions_sequence_loader_params,
+                    &sequence_id_mappings,
                     sequence_default,
                     sequence,
                 );
-                (*sequence_id, control_transitions_sequence_handle)
+                control_transitions_sequence_handle
             })
-            .collect::<HashMap<_, _>>();
+            .collect::<Vec<CharacterControlTransitionsSequenceHandle>>();
 
         Ok(Character::new(
             control_transitions_sequence_handles,
+            sequence_id_mappings,
             object_wrapper_handle,
         ))
     }
