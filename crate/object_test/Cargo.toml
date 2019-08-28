@@ -5,8 +5,8 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
 [dependencies]
-amethyst = { git = "https://github.com/kabergstrom/amethyst.git", features = ["no-slow-safety-checks", "test-support", "vulkan", "experimental-assets"], branch = "new-asset-system" }
-amethyst_test = { git = "https://github.com/kabergstrom/amethyst.git", branch = "new-asset-system" }
+amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "test-support", "vulkan"] }
+amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
 application_event = { path = "../application_event" }
 collision_loading = { path = "../collision_loading" }
 collision_model = { path = "../collision_model" }
