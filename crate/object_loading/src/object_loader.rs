@@ -7,6 +7,10 @@ use collision_model::{
         BodySequence, BodySequenceHandles, InteractionsSequence, InteractionsSequenceHandles,
     },
 };
+use kinematic_model::{
+    config::ObjectAcceleration,
+    loaded::{ObjectAccelerationSequence, ObjectAccelerationSequenceHandles},
+};
 use object_model::{
     config::{GameObjectFrame, GameObjectSequence, ObjectDefinition},
     loaded::{GameObject, Object, ObjectWrapper},
@@ -42,6 +46,7 @@ impl ObjectLoader {
         ObjectLoaderParams {
             loader,
             wait_sequence_assets,
+            object_acceleration_sequence_assets,
             sprite_render_sequence_assets,
             body_sequence_assets,
             interactions_sequence_assets,
@@ -96,6 +101,7 @@ impl ObjectLoader {
         // Load frame component datas
         let sequences_handles = (
             WaitSequenceHandles::default(),
+            ObjectAccelerationSequenceHandles::default(),
             SpriteRenderSequenceHandles::default(),
             BodySequenceHandles::default(),
             InteractionsSequenceHandles::default(),
@@ -103,6 +109,7 @@ impl ObjectLoader {
         );
         let (
             wait_sequence_handles,
+            object_acceleration_sequence_handles,
             sprite_render_sequence_handles,
             body_sequence_handles,
             interactions_sequence_handles,
@@ -111,6 +118,7 @@ impl ObjectLoader {
             sequences_handles,
             |(
                 mut wait_sequence_handles,
+                mut object_acceleration_sequence_handles,
                 mut sprite_render_sequence_handles,
                 mut body_sequence_handles,
                 mut interactions_sequence_handles,
@@ -124,6 +132,14 @@ impl ObjectLoader {
                         .iter()
                         .map(|frame| frame.object_frame().wait)
                         .collect::<Vec<Wait>>(),
+                );
+                let object_acceleration_sequence = ObjectAccelerationSequence::new(
+                    sequence
+                        .object_sequence()
+                        .frames
+                        .iter()
+                        .map(|frame| frame.object_frame().acceleration)
+                        .collect::<Vec<ObjectAcceleration>>(),
                 );
                 let sprite_render_sequence = SpriteRenderSequence::new(
                     sequence
@@ -186,6 +202,11 @@ impl ObjectLoader {
 
                 let wait_sequence_handle =
                     loader.load_from_data(wait_sequence, (), wait_sequence_assets);
+                let object_acceleration_sequence_handle = loader.load_from_data(
+                    object_acceleration_sequence,
+                    (),
+                    object_acceleration_sequence_assets,
+                );
                 let sprite_render_sequence_handle = loader.load_from_data(
                     sprite_render_sequence,
                     (),
@@ -199,6 +220,7 @@ impl ObjectLoader {
                     loader.load_from_data(spawns_sequence, (), spawns_sequence_assets);
 
                 wait_sequence_handles.push(wait_sequence_handle);
+                object_acceleration_sequence_handles.push(object_acceleration_sequence_handle);
                 sprite_render_sequence_handles.push(sprite_render_sequence_handle);
                 body_sequence_handles.push(body_sequence_handle);
                 interactions_sequence_handles.push(interactions_sequence_handle);
@@ -206,6 +228,7 @@ impl ObjectLoader {
 
                 (
                     wait_sequence_handles,
+                    object_acceleration_sequence_handles,
                     sprite_render_sequence_handles,
                     body_sequence_handles,
                     interactions_sequence_handles,
@@ -216,6 +239,7 @@ impl ObjectLoader {
 
         let object = Object::new(
             wait_sequence_handles,
+            object_acceleration_sequence_handles,
             sprite_render_sequence_handles,
             body_sequence_handles,
             interactions_sequence_handles,
@@ -296,6 +320,7 @@ mod test {
                             ObjectLoaderSystemData {
                                 loader,
                                 wait_sequence_assets,
+                                object_acceleration_sequence_assets,
                                 sprite_render_sequence_assets,
                                 body_sequence_assets,
                                 interactions_sequence_assets,
@@ -324,6 +349,8 @@ mod test {
                             ObjectLoaderParams {
                                 loader: &loader,
                                 wait_sequence_assets: &wait_sequence_assets,
+                                object_acceleration_sequence_assets:
+                                    &object_acceleration_sequence_assets,
                                 sprite_render_sequence_assets: &sprite_render_sequence_assets,
                                 body_sequence_assets: &body_sequence_assets,
                                 interactions_sequence_assets: &interactions_sequence_assets,

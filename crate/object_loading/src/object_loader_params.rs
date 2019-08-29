@@ -7,6 +7,7 @@ use collision_model::{
     loaded::{BodySequence, InteractionsSequence},
 };
 use derivative::Derivative;
+use kinematic_model::loaded::ObjectAccelerationSequence;
 use sequence_model::loaded::WaitSequence;
 use spawn_model::{config::Spawns, loaded::SpawnsSequence};
 use sprite_model::loaded::SpriteRenderSequence;
@@ -23,6 +24,9 @@ pub struct ObjectLoaderParams<'s> {
     /// `WaitSequence`s assets.
     #[derivative(Debug = "ignore")]
     pub wait_sequence_assets: &'s AssetStorage<WaitSequence>,
+    /// `ObjectAccelerationSequence`s assets.
+    #[derivative(Debug = "ignore")]
+    pub object_acceleration_sequence_assets: &'s AssetStorage<ObjectAccelerationSequence>,
     /// `SpriteRenderSequence`s assets.
     #[derivative(Debug = "ignore")]
     pub sprite_render_sequence_assets: &'s AssetStorage<SpriteRenderSequence>,
@@ -60,6 +64,7 @@ impl<'s> From<(&'s ObjectLoaderSystemData<'s>, &'s [SpriteSheetHandle])>
         let ObjectLoaderSystemData {
             ref loader,
             ref wait_sequence_assets,
+            ref object_acceleration_sequence_assets,
             ref sprite_render_sequence_assets,
             ref body_sequence_assets,
             ref interactions_sequence_assets,
@@ -72,6 +77,7 @@ impl<'s> From<(&'s ObjectLoaderSystemData<'s>, &'s [SpriteSheetHandle])>
         ObjectLoaderParams {
             loader,
             wait_sequence_assets,
+            object_acceleration_sequence_assets,
             sprite_render_sequence_assets,
             body_sequence_assets,
             interactions_sequence_assets,

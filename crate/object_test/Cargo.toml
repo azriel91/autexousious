@@ -12,6 +12,7 @@ collision_loading = { path = "../collision_loading" }
 collision_model = { path = "../collision_model" }
 derive-new = "0.5.8"
 game_input_model = { path = "../game_input_model" }
+kinematic_model = { path = "../kinematic_model" }
 object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
 sequence_loading = { path = "../sequence_loading" }

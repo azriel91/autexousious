@@ -19,6 +19,7 @@ sprite_model = { path = "../sprite_model" }
 
 [dev-dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "test-support", "vulkan"] }
+object_loading = { path = "../object_loading" }
 object_test = { path = "../object_test" }
 test_object_model = { path = "../test_object_model" }
 
