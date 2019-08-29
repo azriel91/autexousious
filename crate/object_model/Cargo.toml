@@ -13,6 +13,7 @@ derive-new = "0.5.8"
 derive_deref = "1.1.0"
 derive_more = "0.15.0"
 indexmap = { version = "1.1.0", features = ["serde-1"] }
+kinematic_model = { path = "../kinematic_model" }
 logic_clock = { path = "../logic_clock" }
 numeric_newtype_derive = { path = "../numeric_newtype_derive" }
 object_model_derive = { path = "../object_model_derive" }
@@ -34,7 +35,6 @@ amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
 application = { path = "../application" }
 asset_derive = { path = "../asset_derive" }
 asset_model = { path = "../asset_model" }
-kinematic_model = { path = "../kinematic_model" }
 object_status_model = { path = "../object_status_model" }
 object_type = { path = "../object_type", features = ["test-support"] }
 pretty_assertions = "0.6.1"

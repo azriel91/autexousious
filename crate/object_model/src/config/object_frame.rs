@@ -1,5 +1,6 @@
 use collision_model::config::{Body, Interactions};
 use derive_new::new;
+use kinematic_model::config::ObjectAcceleration;
 use sequence_model::config::Wait;
 use serde::{Deserialize, Serialize};
 use spawn_model::config::Spawns;
@@ -15,10 +16,12 @@ use sprite_model::config::SpriteRef;
 /// * **Spawning:** Spawning additional object(s).
 /// * **Weapon:** Where an active weapon should be.
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, new)]
-#[serde(default)]
+#[serde(default, deny_unknown_fields)]
 pub struct ObjectFrame {
     /// Number of ticks to wait before the sequence switches to the next frame.
     pub wait: Wait,
+    /// Acceleration to apply to the object on this frame.
+    pub acceleration: ObjectAcceleration,
     /// Sprite to render.
     pub sprite: SpriteRef,
     /// Hittable volume of the object.

@@ -1,5 +1,18 @@
 //! Contains the types that represent the configuration on disk.
 
+pub use self::{
+    object_acceleration::ObjectAcceleration, object_acceleration_kind::ObjectAccelerationKind,
+    object_acceleration_value::ObjectAccelerationValue,
+    object_acceleration_value_expr::ObjectAccelerationValueExpr,
+    object_acceleration_value_multiplier::ObjectAccelerationValueMultiplier,
+};
+
+mod object_acceleration;
+mod object_acceleration_kind;
+mod object_acceleration_value;
+mod object_acceleration_value_expr;
+mod object_acceleration_value_multiplier;
+
 use std::{
     fmt::Debug,
     ops::{Deref, DerefMut},
