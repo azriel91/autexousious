@@ -12,6 +12,7 @@ derivative = "1.0.2"
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
 derive_more = "0.15.0"
+kinematic_model = { path = "../kinematic_model" }
 object_model = { path = "../object_model" }
 object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }

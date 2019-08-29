@@ -69,6 +69,14 @@ pub fn object_wrapper_gen(
             }
         }
 
+        impl std::convert::AsRef<kinematic_model::loaded::ObjectAccelerationSequenceHandles>
+        for #object_wrapper_name
+        {
+            fn as_ref(&self) -> &kinematic_model::loaded::ObjectAccelerationSequenceHandles {
+                &self.0.object_acceleration_sequence_handles
+            }
+        }
+
         impl std::convert::AsRef<
             sprite_model::loaded::SpriteRenderSequenceHandles
         > for #object_wrapper_name

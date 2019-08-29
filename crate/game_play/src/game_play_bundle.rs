@@ -26,6 +26,7 @@ use energy_model::loaded::EnergyObjectWrapper;
 use energy_play::{EnergyHitEffectSystem, EnergyHittingEffectSystem};
 use game_input::ControllerInput;
 use game_play_hud::{CpBarUpdateSystem, HpBarUpdateSystem};
+use kinematic_model::loaded::{ObjectAccelerationSequence, ObjectAccelerationSequenceHandles};
 use named_type::NamedType;
 use object_play::{ObjectGravitySystem, ObjectMirroringSystem};
 use object_status_play::StunPointsReductionSystem;
@@ -83,6 +84,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         macro_rules! object_sequence_component_update_systems {
             ($wrapper_type:path) => {
                 sequence_component_update_system!($wrapper_type, WaitSequenceHandles);
+                sequence_component_update_system!($wrapper_type, ObjectAccelerationSequenceHandles);
                 sequence_component_update_system!($wrapper_type, SpriteRenderSequenceHandles);
                 sequence_component_update_system!($wrapper_type, BodySequenceHandles);
                 sequence_component_update_system!($wrapper_type, InteractionsSequenceHandles);
@@ -124,6 +126,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             };
         }
         frame_component_update_system!(WaitSequence);
+        frame_component_update_system!(ObjectAccelerationSequence);
         frame_component_update_system!(SpriteRenderSequence);
         frame_component_update_system!(BodySequence);
         frame_component_update_system!(InteractionsSequence);

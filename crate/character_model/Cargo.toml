@@ -16,6 +16,7 @@ derive_deref = "1.1.0"
 derive_more = "0.15.0"
 game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
+kinematic_model = { path = "../kinematic_model" }
 object_model = { path = "../object_model" }
 object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }

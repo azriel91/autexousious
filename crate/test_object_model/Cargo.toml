@@ -10,6 +10,7 @@ asset_derive = { path = "../asset_derive" }
 collision_model = { path = "../collision_model" }
 derivative = "1.0.2"
 derive-new = "0.5.8"
+kinematic_model = { path = "../kinematic_model" }
 object_model = { path = "../object_model" }
 object_type = { path = "../object_type", features = ["test-support"] }
 sequence_model = { path = "../sequence_model" }
