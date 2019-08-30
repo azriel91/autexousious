@@ -3,3 +3,4 @@
 //! Types used to represent kinematic values -- position, velocity, acceleration.
 
 pub mod config;
+pub mod loaded;

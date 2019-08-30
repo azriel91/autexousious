@@ -15,6 +15,10 @@ use collision_model::{
     },
 };
 use derive_new::new;
+use kinematic_model::{
+    config::ObjectAcceleration,
+    loaded::{ObjectAccelerationSequence, ObjectAccelerationSequenceHandles},
+};
 use object_loading::ObjectLoaderSystemData;
 use object_model::loaded::{GameObject, Object, ObjectWrapper};
 use sequence_model::{
@@ -39,6 +43,9 @@ where
     /// `Wait` to use in all frames.
     #[new(value = "Wait::new(2)")]
     pub wait: Wait,
+    /// `ObjectAcceleration` to use in all frames.
+    #[new(default)]
+    pub object_acceleration: ObjectAcceleration,
     /// `Body` to use in all frames.
     #[new(default)]
     pub body: Body,
@@ -59,6 +66,12 @@ where
     /// Set the `Wait` for this `Object`.
     pub fn with_wait(mut self, wait: Wait) -> Self {
         self.wait = wait;
+        self
+    }
+
+    /// Set the `ObjectAcceleration` for this `Object`.
+    pub fn with_object_acceleration(mut self, object_acceleration: ObjectAcceleration) -> Self {
+        self.object_acceleration = object_acceleration;
         self
     }
 
@@ -84,6 +97,7 @@ where
     pub fn build(self, world: &World) -> Object {
         let (
             wait_sequence_handles,
+            object_acceleration_sequence_handles,
             sprite_render_sequence_handles,
             body_sequence_handles,
             interactions_sequence_handles,
@@ -93,6 +107,7 @@ where
                 ObjectLoaderSystemData {
                     loader,
                     wait_sequence_assets,
+                    object_acceleration_sequence_assets,
                     sprite_render_sequence_assets,
                     body_sequence_assets,
                     interactions_sequence_assets,
@@ -110,6 +125,9 @@ where
             )>();
 
             let wait_sequence = WaitSequence::new(vec![self.wait]);
+
+            let object_acceleration_sequence =
+                ObjectAccelerationSequence::new(vec![self.object_acceleration]);
 
             let texture_builder = load_from_srgba(Srgba::new(0., 0., 0., 1.));
             let texture_data = TextureData::from(texture_builder);
@@ -141,6 +159,11 @@ where
 
             let wait_sequence_handle =
                 loader.load_from_data(wait_sequence, (), &wait_sequence_assets);
+            let object_acceleration_sequence_handle = loader.load_from_data(
+                object_acceleration_sequence,
+                (),
+                &object_acceleration_sequence_assets,
+            );
             let sprite_render_sequence_handle =
                 loader.load_from_data(sprite_render_sequence, (), &sprite_render_sequence_assets);
             let body_sequence_handle =
@@ -152,18 +175,21 @@ where
 
             let (
                 mut wait_sequence_handles,
+                mut object_acceleration_sequence_handles,
                 mut sprite_render_sequence_handles,
                 mut body_sequence_handles,
                 mut interactions_sequence_handles,
                 mut spawns_sequence_handles,
             ) = (
                 WaitSequenceHandles::default(),
+                ObjectAccelerationSequenceHandles::default(),
                 SpriteRenderSequenceHandles::default(),
                 BodySequenceHandles::default(),
                 InteractionsSequenceHandles::default(),
                 SpawnsSequenceHandles::default(),
             );
             wait_sequence_handles.push(wait_sequence_handle);
+            object_acceleration_sequence_handles.push(object_acceleration_sequence_handle);
             sprite_render_sequence_handles.push(sprite_render_sequence_handle);
             body_sequence_handles.push(body_sequence_handle);
             interactions_sequence_handles.push(interactions_sequence_handle);
@@ -171,6 +197,7 @@ where
 
             (
                 wait_sequence_handles,
+                object_acceleration_sequence_handles,
                 sprite_render_sequence_handles,
                 body_sequence_handles,
                 interactions_sequence_handles,
@@ -184,6 +211,7 @@ where
         };
         Object::new(
             wait_sequence_handles,
+            object_acceleration_sequence_handles,
             sprite_render_sequence_handles,
             body_sequence_handles,
             interactions_sequence_handles,

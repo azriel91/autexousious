@@ -57,13 +57,8 @@ pub fn object_wrapper_gen(
             type Data = object_model::config::ObjectAssetData<#object_definition_type>;
             type HandleStorage = amethyst::ecs::storage::VecStorage<amethyst::assets::Handle<Self>>;
 
-            fn name() -> &'static str {
-                concat!(
-                    module_path!(),
-                    "::",
-                    stringify!(#object_wrapper_name),
-                )
-            }
+            const NAME: &'static str =
+                concat!(module_path!(), "::", stringify!(#object_wrapper_name));
         }
 
         impl std::convert::AsRef<sequence_model::loaded::WaitSequenceHandles>
@@ -71,6 +66,14 @@ pub fn object_wrapper_gen(
         {
             fn as_ref(&self) -> &sequence_model::loaded::WaitSequenceHandles {
                 &self.0.wait_sequence_handles
+            }
+        }
+
+        impl std::convert::AsRef<kinematic_model::loaded::ObjectAccelerationSequenceHandles>
+        for #object_wrapper_name
+        {
+            fn as_ref(&self) -> &kinematic_model::loaded::ObjectAccelerationSequenceHandles {
+                &self.0.object_acceleration_sequence_handles
             }
         }
 

@@ -26,8 +26,9 @@ use energy_model::loaded::EnergyObjectWrapper;
 use energy_play::{EnergyHitEffectSystem, EnergyHittingEffectSystem};
 use game_input::ControllerInput;
 use game_play_hud::{CpBarUpdateSystem, HpBarUpdateSystem};
+use kinematic_model::loaded::{ObjectAccelerationSequence, ObjectAccelerationSequenceHandles};
 use named_type::NamedType;
-use object_play::{ObjectGravitySystem, ObjectMirroringSystem};
+use object_play::{ObjectAccelerationSystem, ObjectGravitySystem, ObjectMirroringSystem};
 use object_status_play::StunPointsReductionSystem;
 use sequence_model::loaded::{SequenceEndTransitions, WaitSequence, WaitSequenceHandles};
 use sequence_play::{
@@ -41,9 +42,9 @@ use tracker::LastTrackerSystem;
 use typename::TypeName;
 
 use crate::{
-    CharacterHitEffectSystem, CharacterKinematicsSystem, CharacterSequenceUpdateSystem,
-    FrameFreezeClockAugmentSystem, GamePlayEndDetectionSystem, GamePlayEndTransitionSystem,
-    GamePlayRemovalAugmentSystem, ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
+    CharacterHitEffectSystem, CharacterSequenceUpdateSystem, FrameFreezeClockAugmentSystem,
+    GamePlayEndDetectionSystem, GamePlayEndTransitionSystem, GamePlayRemovalAugmentSystem,
+    GroundingFrictionSystem, ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
 };
 
 /// Adds the object type update systems to the provided dispatcher.
@@ -83,6 +84,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         macro_rules! object_sequence_component_update_systems {
             ($wrapper_type:path) => {
                 sequence_component_update_system!($wrapper_type, WaitSequenceHandles);
+                sequence_component_update_system!($wrapper_type, ObjectAccelerationSequenceHandles);
                 sequence_component_update_system!($wrapper_type, SpriteRenderSequenceHandles);
                 sequence_component_update_system!($wrapper_type, BodySequenceHandles);
                 sequence_component_update_system!($wrapper_type, InteractionsSequenceHandles);
@@ -124,6 +126,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             };
         }
         frame_component_update_system!(WaitSequence);
+        frame_component_update_system!(ObjectAccelerationSequence);
         frame_component_update_system!(SpriteRenderSequence);
         frame_component_update_system!(BodySequence);
         frame_component_update_system!(InteractionsSequence);
@@ -178,8 +181,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 
         // Sets velocity based on sequence ID and input.
         builder.add(
-            CharacterKinematicsSystem::new(),
-            &CharacterKinematicsSystem::type_name(),
+            GroundingFrictionSystem::new(),
+            &GroundingFrictionSystem::type_name(),
             &[],
         ); // kcov-ignore
 
@@ -197,13 +200,23 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[],
         ); // kcov-ignore
 
+        // vel += `ObjectAcceleration`.
+        builder.add(
+            ObjectAccelerationSystem::new(),
+            &ObjectAccelerationSystem::type_name(),
+            &[&GroundingFrictionSystem::type_name()],
+        ); // kcov-ignore
+
         // pos += vel
         // This must be between the `FrameFreezeClockAugmentSystem` and `SequenceUpdateSystem`s
         // since it needs to wait for the `FrameFreezeClock` to tick.
         builder.add(
             ObjectKinematicsUpdateSystem::new(),
             &ObjectKinematicsUpdateSystem::type_name(),
-            &[&CharacterKinematicsSystem::type_name()],
+            &[
+                &ObjectAccelerationSystem::type_name(),
+                &GroundingFrictionSystem::type_name(),
+            ],
         ); // kcov-ignore
 
         // `Position` correction based on margins.

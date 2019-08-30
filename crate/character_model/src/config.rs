@@ -23,7 +23,7 @@ mod control_transition_requirement_params;
 #[cfg(test)]
 mod test {
     use charge_model::config::ChargePoints;
-    use collision_model::config::{Body, Interactions};
+    use collision_model::config::Body;
     use indexmap::IndexMap;
     use object_model::{
         config::{ObjectDefinition, ObjectFrame, ObjectSequence},
@@ -35,7 +35,6 @@ mod test {
     };
     use serde_yaml;
     use shape_model::Volume;
-    use spawn_model::config::Spawns;
     use sprite_model::config::SpriteRef;
 
     use crate::config::{
@@ -126,10 +125,10 @@ sequences:
 
     fn stand_sequence() -> CharacterSequence {
         let frames = vec![CharacterFrame::new(
-            ObjectFrame::new(
-                Wait::new(5),
-                SpriteRef::new(1, 3),
-                Body::new(vec![Volume::Box {
+            ObjectFrame {
+                wait: Wait::new(5),
+                sprite: SpriteRef::new(1, 3),
+                body: Body::new(vec![Volume::Box {
                     x: 25,
                     y: 11,
                     z: 0,
@@ -137,9 +136,8 @@ sequences:
                     h: 68,
                     d: 26,
                 }]),
-                Interactions::default(),
-                Spawns::default(),
-            ),
+                ..Default::default()
+            },
             CharacterControlTransitions {
                 press_attack: Some(ControlTransition::SequenceNameString(
                     SequenceNameString::Name(CharacterSequenceName::StandAttack0),
@@ -193,13 +191,11 @@ sequences:
 
     fn custom_sequence_0() -> CharacterSequence {
         let frames = vec![CharacterFrame::new(
-            ObjectFrame::new(
-                Wait::new(5),
-                SpriteRef::new(1, 3),
-                Body::default(),
-                Interactions::default(),
-                Spawns::default(),
-            ),
+            ObjectFrame {
+                wait: Wait::new(5),
+                sprite: SpriteRef::new(1, 3),
+                ..Default::default()
+            },
             CharacterControlTransitions {
                 press_attack: Some(ControlTransition::SequenceNameString(
                     SequenceNameString::String(String::from("custom_sequence_1")),

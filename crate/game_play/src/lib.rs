@@ -9,9 +9,9 @@ pub use crate::game_play_state::GamePlayState;
 pub(crate) use crate::{
     game_play_bundle::GamePlayBundle,
     system::{
-        CharacterHitEffectSystem, CharacterKinematicsSystem, CharacterSequenceUpdateSystem,
-        FrameFreezeClockAugmentSystem, GamePlayEndDetectionSystem, GamePlayEndTransitionSystem,
-        GamePlayRemovalAugmentSystem, ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
+        CharacterHitEffectSystem, CharacterSequenceUpdateSystem, FrameFreezeClockAugmentSystem,
+        GamePlayEndDetectionSystem, GamePlayEndTransitionSystem, GamePlayRemovalAugmentSystem,
+        GroundingFrictionSystem, ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
     },
 };
 

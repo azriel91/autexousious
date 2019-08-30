@@ -42,6 +42,7 @@ use game_mode_selection::{GameModeSelectionStateBuilder, GameModeSelectionStateD
 use game_mode_selection_stdio::GameModeSelectionStdioBundle;
 use game_mode_selection_ui::GameModeSelectionUiBundle;
 use game_play_stdio::GamePlayStdioBundle;
+use kinematic_loading::KinematicLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
 use map_selection_stdio::MapSelectionStdioBundle;
@@ -113,6 +114,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(HotReloadBundle::default())?
             .with_bundle(SpriteLoadingBundle::new())?
             .with_bundle(SequenceLoadingBundle::new())?
+            .with_bundle(KinematicLoadingBundle::new())?
             .with_bundle(LoadingBundle::new(assets_dir.clone()))?
             .with_bundle(GameInputUiBundle::new(input_config))?
             .with_bundle(
