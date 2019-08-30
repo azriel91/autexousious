@@ -42,9 +42,9 @@ use tracker::LastTrackerSystem;
 use typename::TypeName;
 
 use crate::{
-    CharacterHitEffectSystem, CharacterKinematicsSystem, CharacterSequenceUpdateSystem,
-    FrameFreezeClockAugmentSystem, GamePlayEndDetectionSystem, GamePlayEndTransitionSystem,
-    GamePlayRemovalAugmentSystem, ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
+    CharacterHitEffectSystem, CharacterSequenceUpdateSystem, FrameFreezeClockAugmentSystem,
+    GamePlayEndDetectionSystem, GamePlayEndTransitionSystem, GamePlayRemovalAugmentSystem,
+    GroundingFrictionSystem, ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
 };
 
 /// Adds the object type update systems to the provided dispatcher.
@@ -181,8 +181,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 
         // Sets velocity based on sequence ID and input.
         builder.add(
-            CharacterKinematicsSystem::new(),
-            &CharacterKinematicsSystem::type_name(),
+            GroundingFrictionSystem::new(),
+            &GroundingFrictionSystem::type_name(),
             &[],
         ); // kcov-ignore
 
@@ -204,7 +204,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         builder.add(
             ObjectAccelerationSystem::new(),
             &ObjectAccelerationSystem::type_name(),
-            &[&CharacterKinematicsSystem::type_name()],
+            &[&GroundingFrictionSystem::type_name()],
         ); // kcov-ignore
 
         // pos += vel
@@ -215,7 +215,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &ObjectKinematicsUpdateSystem::type_name(),
             &[
                 &ObjectAccelerationSystem::type_name(),
-                &CharacterKinematicsSystem::type_name(),
+                &GroundingFrictionSystem::type_name(),
             ],
         ); // kcov-ignore
 
