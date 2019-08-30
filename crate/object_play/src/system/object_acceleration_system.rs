@@ -71,7 +71,7 @@ impl ObjectAccelerationSystem {
                     ObjectAccelerationValueMultiplier::One => value,
                     ObjectAccelerationValueMultiplier::XAxis => {
                         let multiplier = controller_input
-                            .map(|controller_input| controller_input.x_axis_value)
+                            .map(|controller_input| controller_input.x_axis_value.abs())
                             .unwrap_or(0.);
                         multiplier * value
                     }
@@ -411,7 +411,7 @@ mod tests {
     }
 
     #[test]
-    fn negates_velocity_for_x_expr_value_when_x_controller_input_valued_and_mirrored(
+    fn negates_velocity_for_x_expr_value_when_x_controller_input_positive_and_mirrored(
     ) -> Result<(), Error> {
         let object_acceleration = ObjectAcceleration {
             kind: ObjectAccelerationKind::Continuous,
@@ -438,6 +438,38 @@ mod tests {
             },
             ExpectedParams {
                 velocity: Velocity::new(9., 0., 0.),
+            },
+        )
+    }
+
+    #[test]
+    fn negates_velocity_once_for_x_expr_value_when_x_controller_input_negative_and_mirrored(
+    ) -> Result<(), Error> {
+        let object_acceleration = ObjectAcceleration {
+            kind: ObjectAccelerationKind::Continuous,
+            x: ObjectAccelerationValue::Expr(ObjectAccelerationValueExpr {
+                multiplier: ObjectAccelerationValueMultiplier::XAxis,
+                value: -0.5,
+            }),
+            y: ObjectAccelerationValue::Const(0.),
+            z: ObjectAccelerationValue::Const(0.),
+        };
+        let velocity = Velocity::new(10., 0., 0.);
+        let controller_input = ControllerInput {
+            x_axis_value: 2.,
+            ..Default::default()
+        };
+
+        run_test(
+            SetupParams {
+                controller_input: Some(controller_input),
+                mirrored: Some(Mirrored::new(true)),
+                object_acceleration,
+                velocity,
+                sequence_update_event_fn: None,
+            },
+            ExpectedParams {
+                velocity: Velocity::new(11., 0., 0.),
             },
         )
     }
