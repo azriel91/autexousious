@@ -5,7 +5,7 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
 [dependencies]
-amethyst = { git = "https://github.com/kabergstrom/amethyst.git", features = ["no-slow-safety-checks", "vulkan", "experimental-assets"], branch = "new-asset-system" }
+amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 application_ui = { path = "../application_ui" }
 asset_model = { path = "../asset_model" }
 character_selection_model = { path = "../character_selection_model" }
@@ -22,8 +22,8 @@ typename_derive = "0.1.3"
 ui_audio_model = { path = "../ui_audio_model" }
 
 [dev-dependencies]
-amethyst = { git = "https://github.com/kabergstrom/amethyst.git", features = ["no-slow-safety-checks", "test-support", "vulkan", "experimental-assets"], branch = "new-asset-system" }
-amethyst_test = { git = "https://github.com/kabergstrom/amethyst.git", branch = "new-asset-system" }
+amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "test-support", "vulkan"] }
+amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
 application_test_support = { path = "../application_test_support" }
 assets_test = { path = "../assets_test" }
 

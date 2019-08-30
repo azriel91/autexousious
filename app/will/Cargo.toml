@@ -6,7 +6,7 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
 [dependencies]
-amethyst = { git = "https://github.com/kabergstrom/amethyst.git", features = ["no-slow-safety-checks", "vulkan", "experimental-assets"], branch = "new-asset-system" }
+amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 application = { path = "../../crate/application" }
 application_event = { path = "../../crate/application_event" }
 application_input = { path = "../../crate/application_input" }
@@ -31,6 +31,7 @@ game_mode_selection = { path = "../../crate/game_mode_selection" }
 game_mode_selection_stdio = { path = "../../crate/game_mode_selection_stdio" }
 game_mode_selection_ui = { path = "../../crate/game_mode_selection_ui" }
 game_play_stdio = { path = "../../crate/game_play_stdio" }
+kinematic_loading = { path = "../../crate/kinematic_loading" }
 loading = { path = "../../crate/loading" }
 log = "0.4.8"
 map_loading = { path = "../../crate/map_loading" }

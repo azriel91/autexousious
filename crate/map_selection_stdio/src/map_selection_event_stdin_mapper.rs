@@ -208,8 +208,15 @@ mod tests {
 
     fn expect_err_msg(result: Result<MapSelectionEvent, Error>, expected: &str) {
         assert!(result.is_err());
-        if let Some(stdio_error) = result.unwrap_err().as_error().downcast_ref::<StdioError>() {
-            assert_eq!(&StdioError::Msg(expected.to_string()), stdio_error);
+        if let Some(stdio_error) = result
+            .unwrap_err()
+            .as_error()
+            .downcast_ref::<Box<StdioError>>()
+        {
+            assert_eq!(
+                &Box::new(StdioError::Msg(expected.to_string())),
+                stdio_error
+            );
         } else {
             panic!("Expected `StdioError::Msg({:?})`.", expected); // kcov-ignore
         }

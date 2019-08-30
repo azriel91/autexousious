@@ -217,13 +217,13 @@ mod tests {
                 assert!(result.is_err());
                 let error = result.unwrap_err();
                 if let Some(game_input_stdio_error) =
-                    error.as_error().downcast_ref::<GameInputStdioError>()
+                    error.as_error().downcast_ref::<Box<GameInputStdioError>>()
                 {
                     let expected_error = GameInputStdioError::EntityWithControllerIdNotFound {
                         controller_id: 2,
                         existent_controllers: vec![1],
                     };
-                    assert_eq!(&expected_error, game_input_stdio_error);
+                    assert_eq!(&Box::new(expected_error), game_input_stdio_error);
                 } else {
                     // kcov-ignore-start
                     panic!(

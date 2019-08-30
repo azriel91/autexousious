@@ -8,6 +8,7 @@ use collision_model::{
     loaded::{BodySequence, InteractionsSequence},
 };
 use derivative::Derivative;
+use kinematic_model::loaded::ObjectAccelerationSequence;
 use sequence_model::loaded::WaitSequence;
 use spawn_model::{config::Spawns, loaded::SpawnsSequence};
 use sprite_model::loaded::SpriteRenderSequence;
@@ -22,6 +23,9 @@ pub struct ObjectLoaderSystemData<'s> {
     /// `WaitSequence`s assets.
     #[derivative(Debug = "ignore")]
     pub wait_sequence_assets: Read<'s, AssetStorage<WaitSequence>>,
+    /// `ObjectAccelerationSequence`s assets.
+    #[derivative(Debug = "ignore")]
+    pub object_acceleration_sequence_assets: Read<'s, AssetStorage<ObjectAccelerationSequence>>,
     /// `SpriteRenderSequence`s assets.
     #[derivative(Debug = "ignore")]
     pub sprite_render_sequence_assets: Read<'s, AssetStorage<SpriteRenderSequence>>,

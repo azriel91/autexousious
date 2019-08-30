@@ -5,7 +5,7 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
 [dependencies]
-amethyst = { git = "https://github.com/kabergstrom/amethyst.git", features = ["no-slow-safety-checks", "vulkan", "experimental-assets"], branch = "new-asset-system" }
+amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 asset_derive = { path = "../asset_derive" }
 asset_loading = { path = "../asset_loading" }
 derivative = "1.0.2"
@@ -16,8 +16,8 @@ strum = "0.15.0"
 strum_macros = "0.15.0"
 
 [dev-dependencies]
-amethyst = { git = "https://github.com/kabergstrom/amethyst.git", features = ["no-slow-safety-checks", "test-support", "vulkan", "experimental-assets"], branch = "new-asset-system" }
-amethyst_test = { git = "https://github.com/kabergstrom/amethyst.git", branch = "new-asset-system" }
+amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "test-support", "vulkan"] }
+amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
 assets_test = { path = "../assets_test" }
 
 [features]

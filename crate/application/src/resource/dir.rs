@@ -104,8 +104,8 @@ mod test {
         assets_dir_result: Result<PathBuf, Error>,
     ) {
         let error = assets_dir_result.unwrap_err();
-        if let Some(discovery_context) = error.as_error().downcast_ref::<DiscoveryContext>() {
-            assert_eq!(&expected_context, discovery_context);
+        if let Some(discovery_context) = error.as_error().downcast_ref::<Box<DiscoveryContext>>() {
+            assert_eq!(&Box::new(expected_context), discovery_context);
         } else {
             // kcov-ignore-start
             panic!(
@@ -133,8 +133,8 @@ mod test {
             Err(e) => e,
         }; // kcov-ignore
 
-        if let Some(find_context) = error.as_error().downcast_ref::<FindContext>() {
-            assert_eq!(&expected_find_context, find_context);
+        if let Some(find_context) = error.as_error().downcast_ref::<Box<FindContext>>() {
+            assert_eq!(Box::new(expected_find_context), *find_context);
         } else {
             // kcov-ignore-start
             panic!(
@@ -163,11 +163,11 @@ mod test {
             Err(e) => e,
         }; // kcov-ignore
 
-        if let Some(io_error) = error.as_error().downcast_ref::<io::Error>() {
+        if let Some(io_error) = error.as_error().downcast_ref::<Box<io::Error>>() {
             assert_eq!(expected_io_error_kind, io_error.kind());
         } else {
             panic!(
-                "Expected `Box<io::Error>` error but was `{:?}`",
+                "Expected `io::Error` error but was `{:?}`",
                 error.as_error()
             ); // kcov-ignore
         }

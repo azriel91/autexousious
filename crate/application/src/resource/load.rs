@@ -178,7 +178,7 @@ mod test {
             if let Some(find_context) = load_result
                 .unwrap_err()
                 .as_error()
-                .downcast_ref::<FindContext>()
+                .downcast_ref::<Box<FindContext>>()
             {
                 let base_dirs = vec![exe_dir()];
                 let expected = FindContext {
@@ -187,7 +187,7 @@ mod test {
                     file_name: "test__load_config.ron".to_owned(),
                 }; // kcov-ignore
 
-                assert_eq!(&expected, find_context);
+                assert_eq!(&Box::new(expected), find_context);
             } else {
                 panic!("Expected `load_in` to return error"); // kcov-ignore
             }
@@ -201,7 +201,7 @@ mod test {
             if let Some(find_context) = load::<Data>("test__load_config.ron", Format::Ron)
                 .unwrap_err()
                 .as_error()
-                .downcast_ref::<FindContext>()
+                .downcast_ref::<Box<FindContext>>()
             {
                 let base_dirs = vec![exe_dir()];
                 let expected = FindContext {
@@ -210,7 +210,7 @@ mod test {
                     file_name: "test__load_config.ron".to_owned(),
                 }; // kcov-ignore
 
-                assert_eq!(&expected, find_context);
+                assert_eq!(&Box::new(expected), find_context);
             } else {
                 panic!("Expected `load` to return error"); // kcov-ignore
             }
@@ -232,13 +232,13 @@ mod test {
             if let Some(boxed_error) = load_result
                 .expect_err("Expected parse failure.")
                 .as_error()
-                .downcast_ref::<ron::de::Error>()
+                .downcast_ref::<Box<ron::de::Error>>()
             {
                 assert_eq!(
-                    &ron::de::Error::Parser(
+                    &Box::new(ron::de::Error::Parser(
                         ParseError::ExpectedStruct,
                         Position { col: 1, line: 1 }
-                    ),
+                    )),
                     boxed_error
                 )
             } else {
@@ -286,7 +286,7 @@ mod test {
             if let Some(_yaml_error) = load_result
                 .expect_err("Expected parse failure.")
                 .as_error()
-                .downcast_ref::<serde_yaml::Error>()
+                .downcast_ref::<Box<serde_yaml::Error>>()
             {
                 // pass
             } else {

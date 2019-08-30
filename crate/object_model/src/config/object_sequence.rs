@@ -44,7 +44,10 @@ mod tests {
         Body, Hit, HitLimit, HitRepeatDelay, Interaction, InteractionKind, Interactions,
     };
     use derivative::Derivative;
-    use kinematic_model::config::{Position, Velocity};
+    use kinematic_model::config::{
+        ObjectAcceleration, ObjectAccelerationKind, ObjectAccelerationValue,
+        ObjectAccelerationValueExpr, ObjectAccelerationValueMultiplier, Position, Velocity,
+    };
     use object_status_model::config::StunPoints;
     use sequence_model::config::{SequenceEndTransition, SequenceName, SequenceNameString, Wait};
     use serde::{Deserialize, Serialize};
@@ -86,6 +89,19 @@ frames:
 frames:
   - spawns: [{ object: "default/fireball" }]
 "#;
+    const SEQUENCE_WITH_ACCELERATION_DEFAULTS: &str = r#"---
+frames:
+  - acceleration: { kind: "continuous" }
+"#;
+
+    const SEQUENCE_WITH_ACCELERATION_FULL: &str = r#"---
+frames:
+  - acceleration:
+      kind: "once"
+      x: { value: 5.0 }
+      y: 2.5
+      z: { multiplier: "z_axis", value: 3.0 }
+"#;
 
     #[test]
     fn sequence_with_empty_frames_list_deserializes_successfully() {
@@ -103,48 +119,36 @@ frames:
             .expect("Failed to deserialize sequence.");
 
         let frames = vec![
-            ObjectFrame::new(
-                Wait::new(2),
-                SpriteRef::new(0, 4),
-                Body::default(),
-                Interactions::default(),
-                Spawns::default(),
-            ),
-            ObjectFrame::new(
-                Wait::new(2),
-                SpriteRef::new(0, 5),
-                Body::default(),
-                Interactions::default(),
-                Spawns::default(),
-            ),
-            ObjectFrame::new(
-                Wait::new(1),
-                SpriteRef::new(1, 6),
-                Body::default(),
-                Interactions::default(),
-                Spawns::default(),
-            ),
-            ObjectFrame::new(
-                Wait::new(1),
-                SpriteRef::new(1, 7),
-                Body::default(),
-                Interactions::default(),
-                Spawns::default(),
-            ),
-            ObjectFrame::new(
-                Wait::new(2),
-                SpriteRef::new(0, 6),
-                Body::default(),
-                Interactions::default(),
-                Spawns::default(),
-            ),
-            ObjectFrame::new(
-                Wait::new(2),
-                SpriteRef::new(0, 5),
-                Body::default(),
-                Interactions::default(),
-                Spawns::default(),
-            ),
+            ObjectFrame {
+                wait: Wait::new(2),
+                sprite: SpriteRef::new(0, 4),
+                ..Default::default()
+            },
+            ObjectFrame {
+                wait: Wait::new(2),
+                sprite: SpriteRef::new(0, 5),
+                ..Default::default()
+            },
+            ObjectFrame {
+                wait: Wait::new(1),
+                sprite: SpriteRef::new(1, 6),
+                ..Default::default()
+            },
+            ObjectFrame {
+                wait: Wait::new(1),
+                sprite: SpriteRef::new(1, 7),
+                ..Default::default()
+            },
+            ObjectFrame {
+                wait: Wait::new(2),
+                sprite: SpriteRef::new(0, 6),
+                ..Default::default()
+            },
+            ObjectFrame {
+                wait: Wait::new(2),
+                sprite: SpriteRef::new(0, 5),
+                ..Default::default()
+            },
         ];
         let expected = ObjectSequence::new(
             SequenceEndTransition::SequenceName(SequenceNameString::Name(TestSeqName::Boo)),
@@ -174,13 +178,11 @@ frames:
                 r: 17,
             },
         ];
-        let frames = vec![ObjectFrame::new(
-            Wait::new(0),
-            SpriteRef::default(),
-            Body::new(body_volumes),
-            Interactions::default(),
-            Spawns::default(),
-        )];
+        let frames = vec![ObjectFrame {
+            wait: Wait::new(0),
+            body: Body::new(body_volumes),
+            ..Default::default()
+        }];
         let expected = ObjectSequence::new(SequenceEndTransition::None, frames);
         assert_eq!(expected, sequence);
     }
@@ -206,13 +208,11 @@ frames:
             }],
             multiple: false,
         }];
-        let frames = vec![ObjectFrame::new(
-            Wait::new(0),
-            SpriteRef::default(),
-            Body::default(),
-            Interactions::new(interactions),
-            Spawns::default(),
-        )];
+        let frames = vec![ObjectFrame {
+            wait: Wait::new(0),
+            interactions: Interactions::new(interactions),
+            ..Default::default()
+        }];
         let expected = ObjectSequence::new(SequenceEndTransition::None, frames);
         assert_eq!(expected, sequence);
     }
@@ -229,13 +229,53 @@ frames:
             Position::<i32>::from((0, 0, 0)),
             Velocity::<i32>::from((0, 0, 0)),
         )];
-        let frames = vec![ObjectFrame::new(
-            Wait::new(0),
-            SpriteRef::default(),
-            Body::default(),
-            Interactions::default(),
-            Spawns::new(spawns),
-        )];
+        let frames = vec![ObjectFrame {
+            wait: Wait::new(0),
+            spawns: Spawns::new(spawns),
+            ..Default::default()
+        }];
+        let expected = ObjectSequence::new(SequenceEndTransition::None, frames);
+        assert_eq!(expected, sequence);
+    }
+
+    #[test]
+    fn sequence_with_acceleration_defaults() {
+        let sequence = serde_yaml::from_str::<ObjectSequence<TestSeqName>>(
+            SEQUENCE_WITH_ACCELERATION_DEFAULTS,
+        )
+        .expect("Failed to deserialize sequence.");
+
+        let frames = vec![ObjectFrame {
+            wait: Wait::new(0),
+            acceleration: ObjectAcceleration::default(),
+            ..Default::default()
+        }];
+        let expected = ObjectSequence::new(SequenceEndTransition::None, frames);
+        assert_eq!(expected, sequence);
+    }
+
+    #[test]
+    fn sequence_with_acceleration_full() {
+        let sequence =
+            serde_yaml::from_str::<ObjectSequence<TestSeqName>>(SEQUENCE_WITH_ACCELERATION_FULL)
+                .expect("Failed to deserialize sequence.");
+
+        let frames = vec![ObjectFrame {
+            wait: Wait::new(0),
+            acceleration: ObjectAcceleration {
+                kind: ObjectAccelerationKind::Once,
+                x: ObjectAccelerationValue::Expr(ObjectAccelerationValueExpr {
+                    multiplier: ObjectAccelerationValueMultiplier::One,
+                    value: 5.,
+                }),
+                y: ObjectAccelerationValue::Const(2.5),
+                z: ObjectAccelerationValue::Expr(ObjectAccelerationValueExpr {
+                    multiplier: ObjectAccelerationValueMultiplier::ZAxis,
+                    value: 3.,
+                }),
+            },
+            ..Default::default()
+        }];
         let expected = ObjectSequence::new(SequenceEndTransition::None, frames);
         assert_eq!(expected, sequence);
     }

@@ -164,16 +164,16 @@ mod tests {
                 .source()
                 .expect("Expected `BindingError` source.")
                 .as_error()
-                .downcast_ref::<BindingError<ControlBindings>>()
+                .downcast_ref::<Box<BindingError<ControlBindings>>>()
             {
                 assert_eq!(
-                    &BindingError::AxisButtonAlreadyBoundToAxis(
+                    &Box::new(BindingError::AxisButtonAlreadyBoundToAxis(
                         PlayerAxisControl::new(0, Axis::X),
                         InputAxis::Emulated {
                             neg: Button::Key(VirtualKeyCode::A),
                             pos: Button::Key(VirtualKeyCode::D),
                         }
-                    ),
+                    )),
                     binding_error
                 );
             } else {
@@ -207,12 +207,14 @@ mod tests {
                 .source()
                 .expect("Expected `BindingError` source.")
                 .as_error()
-                .downcast_ref::<BindingError<ControlBindings>>()
+                .downcast_ref::<Box<BindingError<ControlBindings>>>()
             {
                 let player = 0;
                 let action = ControlAction::Jump;
                 assert_eq!(
-                    &BindingError::ComboAlreadyBound(PlayerActionControl::new(player, action)),
+                    &Box::new(BindingError::ComboAlreadyBound(PlayerActionControl::new(
+                        player, action
+                    ))),
                     binding_error
                 );
             } else {

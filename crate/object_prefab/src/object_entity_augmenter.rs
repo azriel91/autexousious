@@ -108,6 +108,7 @@ mod tests {
         Error,
     };
     use kinematic_model::config::{Position, Velocity};
+    use object_loading::ObjectLoaderSystemData;
     use object_model::play::Mirrored;
     use object_test::{ObjectBuilder, ObjectTest};
     use sequence_model::{
@@ -121,7 +122,7 @@ mod tests {
 
     #[test]
     fn augments_entity_with_object_components() -> Result<(), Error> {
-        let assert_components_augmented = |world: &mut World| {
+        run_test(|world| {
             let entity = world.create_entity().build();
             {
                 let object_wrapper = world.read_resource::<TestObjectObjectWrapper>();
@@ -143,59 +144,55 @@ mod tests {
             assert!(world.read_storage::<Transform>().contains(entity));
             assert!(world.read_storage::<FrameIndexClock>().contains(entity));
             assert!(world.read_storage::<FrameWaitClock>().contains(entity));
-        };
-
-        ObjectTest::application()
-            .with_setup(|world| {
-                <FrameComponentStorages as SystemData>::setup(world);
-                <ObjectComponentStorages as SystemData>::setup(world);
-            })
-            .with_setup(setup_object_wrapper)
-            .with_assertion(assert_components_augmented)
-            .run_isolated()
+        })
     }
 
     #[test]
     fn does_not_overwrite_existing_component() -> Result<(), Error> {
+        run_test(|world| {
+            let position = Position::<f32>::new(1., 2., 3.);
+            let velocity = Velocity::<f32>::new(1., 2., 3.);
+
+            let entity = world.create_entity().with(position).with(velocity).build();
+            {
+                let object_wrapper = world.read_resource::<TestObjectObjectWrapper>();
+
+                let mut object_component_storages = ObjectComponentStorages::fetch(&world);
+                ObjectEntityAugmenter::augment(
+                    entity,
+                    &mut object_component_storages,
+                    &*object_wrapper,
+                );
+            }
+
+            let (positions, velocities) = world.system_data::<(
+                ReadStorage<'_, Position<f32>>,
+                ReadStorage<'_, Velocity<f32>>,
+            )>();
+            assert_eq!(
+                &position,
+                positions
+                    .get(entity)
+                    .expect("Expected entity to have `Position<f32>` component.")
+            );
+            assert_eq!(
+                &velocity,
+                velocities
+                    .get(entity)
+                    .expect("Expected entity to have `Velocity<f32>` component.")
+            );
+        })
+    }
+
+    fn run_test(assertion_fn: fn(&mut World)) -> Result<(), Error> {
         ObjectTest::application()
             .with_setup(|world| {
                 <FrameComponentStorages as SystemData>::setup(world);
+                <ObjectLoaderSystemData as SystemData>::setup(world);
                 <ObjectComponentStorages as SystemData>::setup(world);
             })
             .with_setup(setup_object_wrapper)
-            .with_assertion(|world| {
-                let position = Position::<f32>::new(1., 2., 3.);
-                let velocity = Velocity::<f32>::new(1., 2., 3.);
-
-                let entity = world.create_entity().with(position).with(velocity).build();
-                {
-                    let object_wrapper = world.read_resource::<TestObjectObjectWrapper>();
-
-                    let mut object_component_storages = ObjectComponentStorages::fetch(&world);
-                    ObjectEntityAugmenter::augment(
-                        entity,
-                        &mut object_component_storages,
-                        &*object_wrapper,
-                    );
-                }
-
-                let (positions, velocities) = world.system_data::<(
-                    ReadStorage<'_, Position<f32>>,
-                    ReadStorage<'_, Velocity<f32>>,
-                )>();
-                assert_eq!(
-                    &position,
-                    positions
-                        .get(entity)
-                        .expect("Expected entity to have `Position<f32>` component.")
-                );
-                assert_eq!(
-                    &velocity,
-                    velocities
-                        .get(entity)
-                        .expect("Expected entity to have `Velocity<f32>` component.")
-                );
-            })
+            .with_assertion(assertion_fn)
             .run_isolated()
     }
 
