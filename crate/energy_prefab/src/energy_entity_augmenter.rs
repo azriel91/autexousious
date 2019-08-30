@@ -20,7 +20,7 @@ impl EnergyEntityAugmenter {
     ) {
         // Grounding.
         groundings
-            .insert(entity, Grounding::default())
+            .insert(entity, Grounding::Airborne)
             .expect("Failed to insert grounding component.");
     }
 }
