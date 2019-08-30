@@ -28,7 +28,7 @@ use game_input::ControllerInput;
 use game_play_hud::{CpBarUpdateSystem, HpBarUpdateSystem};
 use kinematic_model::loaded::{ObjectAccelerationSequence, ObjectAccelerationSequenceHandles};
 use named_type::NamedType;
-use object_play::{ObjectGravitySystem, ObjectMirroringSystem};
+use object_play::{ObjectAccelerationSystem, ObjectGravitySystem, ObjectMirroringSystem};
 use object_status_play::StunPointsReductionSystem;
 use sequence_model::loaded::{SequenceEndTransitions, WaitSequence, WaitSequenceHandles};
 use sequence_play::{
@@ -200,13 +200,23 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[],
         ); // kcov-ignore
 
+        // vel += `ObjectAcceleration`.
+        builder.add(
+            ObjectAccelerationSystem::new(),
+            &ObjectAccelerationSystem::type_name(),
+            &[&CharacterKinematicsSystem::type_name()],
+        ); // kcov-ignore
+
         // pos += vel
         // This must be between the `FrameFreezeClockAugmentSystem` and `SequenceUpdateSystem`s
         // since it needs to wait for the `FrameFreezeClock` to tick.
         builder.add(
             ObjectKinematicsUpdateSystem::new(),
             &ObjectKinematicsUpdateSystem::type_name(),
-            &[&CharacterKinematicsSystem::type_name()],
+            &[
+                &ObjectAccelerationSystem::type_name(),
+                &CharacterKinematicsSystem::type_name(),
+            ],
         ); // kcov-ignore
 
         // `Position` correction based on margins.
