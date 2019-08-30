@@ -38,7 +38,7 @@ impl<'s> System<'s> for GroundingFrictionSystem {
             .join()
             .for_each(|(grounding, velocity)| match grounding {
                 Grounding::OnGround => {
-                    if velocity[0] < 5. {
+                    if velocity[0].abs() < 11. {
                         velocity[0] = 0.;
                     } else {
                         velocity[0] /= 2.;
@@ -46,7 +46,7 @@ impl<'s> System<'s> for GroundingFrictionSystem {
 
                     velocity[1] = 0.;
 
-                    if velocity[2] < 3. {
+                    if velocity[2].abs() < 7. {
                         velocity[2] = 0.;
                     } else {
                         velocity[2] /= 2.;
@@ -75,9 +75,9 @@ mod tests {
         run_test(
             SetupParams {
                 grounding: Grounding::OnGround,
-                velocity: Velocity::new(5., 0., 0.),
+                velocity: Velocity::new(11., 0., 0.),
             },
-            Velocity::new(2.5, 0., 0.),
+            Velocity::new(5.5, 0., 0.),
         )
     }
 
@@ -86,9 +86,9 @@ mod tests {
         run_test(
             SetupParams {
                 grounding: Grounding::OnGround,
-                velocity: Velocity::new(0., 0., 3.),
+                velocity: Velocity::new(0., 0., 7.),
             },
-            Velocity::new(0., 0., 1.5),
+            Velocity::new(0., 0., 3.5),
         )
     }
 
@@ -104,22 +104,22 @@ mod tests {
     }
 
     #[test]
-    fn zeroes_x_velocity_when_less_than_5_when_on_ground() -> Result<(), Error> {
+    fn zeroes_x_velocity_when_less_than_10_when_on_ground() -> Result<(), Error> {
         run_test(
             SetupParams {
                 grounding: Grounding::OnGround,
-                velocity: Velocity::new(4., 0., 0.),
+                velocity: Velocity::new(9.99, 0., 0.),
             },
             Velocity::new(0., 0., 0.),
         )
     }
 
     #[test]
-    fn zeroes_z_velocity_when_less_than_3_when_on_ground() -> Result<(), Error> {
+    fn zeroes_z_velocity_when_less_than_7_when_on_ground() -> Result<(), Error> {
         run_test(
             SetupParams {
                 grounding: Grounding::OnGround,
-                velocity: Velocity::new(0., 0., 2.),
+                velocity: Velocity::new(0., 0., 6.99),
             },
             Velocity::new(0., 0., 0.),
         )
