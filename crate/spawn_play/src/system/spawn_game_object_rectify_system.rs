@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{Entity, System, World, Write, WriteStorage},
+    ecs::{Entity, Read, System, World, WriteStorage},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
@@ -27,7 +27,7 @@ pub struct SpawnGameObjectRectifySystem {
 pub struct SpawnGameObjectRectifySystemData<'s> {
     /// `SpawnEvent` channel.
     #[derivative(Debug = "ignore")]
-    pub spawn_ec: Write<'s, EventChannel<SpawnEvent>>,
+    pub spawn_ec: Read<'s, EventChannel<SpawnEvent>>,
     /// `SpawnParent` components.
     #[derivative(Debug = "ignore")]
     pub parent_objects: WriteStorage<'s, SpawnParent>,
@@ -43,61 +43,6 @@ pub struct SpawnGameObjectRectifySystemData<'s> {
     /// `Team` components.
     #[derivative(Debug = "ignore")]
     pub teams: WriteStorage<'s, Team>,
-}
-
-impl SpawnGameObjectRectifySystem {
-    /// Returns the rectified `Position<f32>` for the spawned entity.
-    fn position_rectify(
-        positions: &WriteStorage<'_, Position<f32>>,
-        spawn: &Spawn,
-        entity_parent: Entity,
-        mirrored_parent: Option<Mirrored>,
-    ) -> Position<f32> {
-        let spawn_position = spawn.position;
-        let spawn_position_x = if let Some(Mirrored(true)) = mirrored_parent {
-            -spawn_position.x
-        } else {
-            spawn_position.x
-        };
-        let mut position = Position::new(
-            spawn_position_x as f32,
-            spawn_position.y as f32,
-            spawn_position.z as f32,
-        );
-        if let Some(position_parent) = positions.get(entity_parent) {
-            *position += **position_parent;
-        }
-        position
-    }
-
-    /// Returns the rectified `Velocity<f32>` for the spawned entity.
-    fn velocity_rectify(
-        velocities: &WriteStorage<'_, Velocity<f32>>,
-        spawn: &Spawn,
-        entity_parent: Entity,
-        mirrored_parent: Option<Mirrored>,
-    ) -> Velocity<f32> {
-        let spawn_velocity = spawn.velocity;
-        let spawn_velocity_x = if let Some(Mirrored(true)) = mirrored_parent {
-            -spawn_velocity.x
-        } else {
-            spawn_velocity.x
-        };
-        let mut velocity = Velocity::new(
-            spawn_velocity_x as f32,
-            spawn_velocity.y as f32,
-            spawn_velocity.z as f32,
-        );
-        if let Some(velocity_parent) = velocities.get(entity_parent) {
-            *velocity += **velocity_parent;
-        }
-        velocity
-    }
-
-    /// Returns the rectified `Mirrored` for the spawned entity.
-    fn mirrored_rectify(mirrored_parent: Option<Mirrored>) -> Mirrored {
-        mirrored_parent.unwrap_or(Mirrored(false))
-    }
 }
 
 impl<'s> System<'s> for SpawnGameObjectRectifySystem {
@@ -160,6 +105,61 @@ impl<'s> System<'s> for SpawnGameObjectRectifySystem {
                 .fetch_mut::<EventChannel<SpawnEvent>>()
                 .register_reader(),
         );
+    }
+}
+
+impl SpawnGameObjectRectifySystem {
+    /// Returns the rectified `Position<f32>` for the spawned entity.
+    fn position_rectify(
+        positions: &WriteStorage<'_, Position<f32>>,
+        spawn: &Spawn,
+        entity_parent: Entity,
+        mirrored_parent: Option<Mirrored>,
+    ) -> Position<f32> {
+        let spawn_position = spawn.position;
+        let spawn_position_x = if let Some(Mirrored(true)) = mirrored_parent {
+            -spawn_position.x
+        } else {
+            spawn_position.x
+        };
+        let mut position = Position::new(
+            spawn_position_x as f32,
+            spawn_position.y as f32,
+            spawn_position.z as f32,
+        );
+        if let Some(position_parent) = positions.get(entity_parent) {
+            *position += **position_parent;
+        }
+        position
+    }
+
+    /// Returns the rectified `Velocity<f32>` for the spawned entity.
+    fn velocity_rectify(
+        velocities: &WriteStorage<'_, Velocity<f32>>,
+        spawn: &Spawn,
+        entity_parent: Entity,
+        mirrored_parent: Option<Mirrored>,
+    ) -> Velocity<f32> {
+        let spawn_velocity = spawn.velocity;
+        let spawn_velocity_x = if let Some(Mirrored(true)) = mirrored_parent {
+            -spawn_velocity.x
+        } else {
+            spawn_velocity.x
+        };
+        let mut velocity = Velocity::new(
+            spawn_velocity_x as f32,
+            spawn_velocity.y as f32,
+            spawn_velocity.z as f32,
+        );
+        if let Some(velocity_parent) = velocities.get(entity_parent) {
+            *velocity += **velocity_parent;
+        }
+        velocity
+    }
+
+    /// Returns the rectified `Mirrored` for the spawned entity.
+    fn mirrored_rectify(mirrored_parent: Option<Mirrored>) -> Mirrored {
+        mirrored_parent.unwrap_or(Mirrored(false))
     }
 }
 
