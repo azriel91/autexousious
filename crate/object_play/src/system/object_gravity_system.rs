@@ -104,6 +104,11 @@ mod tests {
         }: ExpectedParams,
     ) -> Result<(), Error> {
         AmethystApplication::blank()
+            .with_system(
+                ObjectGravitySystem::new(),
+                ObjectGravitySystem::type_name(),
+                &[],
+            ) // kcov-ignore
             .with_effect(move |world| {
                 let entity = world
                     .create_entity()
@@ -114,11 +119,6 @@ mod tests {
 
                 world.insert(entity);
             })
-            .with_system_single(
-                ObjectGravitySystem::new(),
-                ObjectGravitySystem::type_name(),
-                &[],
-            ) // kcov-ignore
             .with_assertion(move |world| {
                 let entity = *world.read_resource::<Entity>();
                 let velocities = world.read_storage::<Velocity<f32>>();
