@@ -177,7 +177,7 @@ mod tests {
     ) -> Result<(), Error> {
         AmethystApplication::blank()
             .with_system(ContactDetectionSystem::new(), "", &[])
-            .with_setup(setup_event_reader)
+            .with_effect(setup_event_reader)
             .with_effect(move |world| {
                 let entity_from = world.create_entity().build();
                 let entity_to = world.create_entity().build();

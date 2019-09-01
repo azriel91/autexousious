@@ -288,10 +288,10 @@ mod tests {
             .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_state(|| LoadingState::new(PopState))
-            .with_setup(|world| {
+            .with_effect(|world| {
                 <CharacterSelectionSpawningSystem as System>::SystemData::setup(world)
             })
-            .with_setup(setup_fn)
+            .with_effect(setup_fn)
             .with_system_single(
                 CharacterSelectionSpawningSystem,
                 CharacterSelectionSpawningSystem::type_name(),

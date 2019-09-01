@@ -669,8 +669,8 @@ mod tests {
     ) -> Result<(), Error> {
         AmethystApplication::blank()
             .with_bundle(MapLoadingBundle::new())
-            .with_setup(setup_system_data)
-            .with_setup(|world| {
+            .with_effect(setup_system_data)
+            .with_effect(|world| {
                 let map_handle = {
                     let map = empty_map();
                     let loader = world.read_resource::<Loader>();
@@ -686,8 +686,8 @@ mod tests {
 
                 world.insert(map_selection);
             })
-            .with_setup(setup_event_reader)
-            .with_setup(move |world| {
+            .with_effect(setup_event_reader)
+            .with_effect(move |world| {
                 let entity = world
                     .create_entity()
                     .with(Last::new(position_last))

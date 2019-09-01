@@ -107,8 +107,8 @@ mod test {
 
         AmethystApplication::ui_base::<StringBindings>()
             .with_resource(GamePlayStatus::Ended)
-            .with_setup(register_gpec_reader)
-            .with_setup(setup)
+            .with_effect(register_gpec_reader)
+            .with_effect(setup)
             .with_system_single(
                 GamePlayEndDetectionSystem::new(),
                 GamePlayEndDetectionSystem::type_name(),
@@ -137,8 +137,8 @@ mod test {
 
         AmethystApplication::ui_base::<StringBindings>()
             .with_resource(GamePlayStatus::Playing)
-            .with_setup(register_gpec_reader)
-            .with_setup(setup)
+            .with_effect(register_gpec_reader)
+            .with_effect(setup)
             .with_system_single(
                 GamePlayEndDetectionSystem::new(),
                 GamePlayEndDetectionSystem::type_name(),
@@ -173,8 +173,8 @@ mod test {
 
         AmethystApplication::ui_base::<StringBindings>()
             .with_resource(GamePlayStatus::Playing)
-            .with_setup(register_gpec_reader)
-            .with_setup(setup)
+            .with_effect(register_gpec_reader)
+            .with_effect(setup)
             .with_system_single(
                 GamePlayEndDetectionSystem::new(),
                 GamePlayEndDetectionSystem::type_name(),
@@ -203,8 +203,8 @@ mod test {
 
         AmethystApplication::ui_base::<StringBindings>()
             .with_resource(GamePlayStatus::Playing)
-            .with_setup(register_gpec_reader)
-            .with_setup(setup)
+            .with_effect(register_gpec_reader)
+            .with_effect(setup)
             .with_system_single(
                 GamePlayEndDetectionSystem::new(),
                 GamePlayEndDetectionSystem::type_name(),
@@ -234,8 +234,8 @@ mod test {
 
         AmethystApplication::ui_base::<StringBindings>()
             .with_resource(GamePlayStatus::Playing)
-            .with_setup(register_gpec_reader)
-            .with_setup(setup)
+            .with_effect(register_gpec_reader)
+            .with_effect(setup)
             .with_system_single(
                 GamePlayEndDetectionSystem::new(),
                 GamePlayEndDetectionSystem::type_name(),

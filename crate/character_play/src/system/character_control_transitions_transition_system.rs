@@ -889,8 +889,8 @@ mod tests {
     ) -> Result<(), Error> {
         AutexousiousApplication::config_base()
             .with_system(CharacterControlTransitionsTransitionSystem::new(), "", &[])
-            .with_setup(register_reader)
-            .with_setup(move |world| {
+            .with_effect(register_reader)
+            .with_effect(move |world| {
                 let character_control_transitions_sequence_handle = {
                     let (
                         loader,
@@ -923,7 +923,7 @@ mod tests {
                 world.insert(character_control_transitions_sequence_handle);
             })
             // Allow `AssetStorage`s to process loaded data.
-            .with_setup(move |world| {
+            .with_effect(move |world| {
                 let character_control_transitions_handle = {
                     let character_control_transitions_sequence_assets = world.system_data::<Read<
                         '_,

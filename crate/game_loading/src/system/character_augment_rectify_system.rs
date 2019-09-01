@@ -322,10 +322,10 @@ mod tests {
             )
             .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
-            .with_setup(|world| CharacterAugmentRectifySystemData::setup(world))
+            .with_effect(|world| CharacterAugmentRectifySystemData::setup(world))
             .with_state(|| LoadingState::new(PopState))
-            .with_setup(map_selection(MAP_FADE_SLUG.clone()))
-            .with_setup(fn_setup)
+            .with_effect(map_selection(MAP_FADE_SLUG.clone()))
+            .with_effect(fn_setup)
             .with_system_single(
                 CharacterAugmentRectifySystem,
                 CharacterAugmentRectifySystem::type_name(),

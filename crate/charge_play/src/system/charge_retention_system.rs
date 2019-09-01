@@ -280,7 +280,7 @@ mod tests {
     ) -> Result<(), Error> {
         AmethystApplication::blank()
             .with_system(ChargeRetentionSystem::new(), "", &[])
-            .with_setup(move |world| {
+            .with_effect(move |world| {
                 let entity = world
                     .create_entity()
                     .with(charge_status)

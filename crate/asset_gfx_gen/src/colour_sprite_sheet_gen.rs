@@ -305,7 +305,7 @@ mod tests {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
-            .with_setup(|world| {
+            .with_effect(|world| {
                 let sprite_render = {
                     let colour_sprite_gen_data = world.system_data::<ColourSpriteSheetGenData>();
                     ColourSpriteSheetGen::solid(&colour_sprite_gen_data, RED)
@@ -340,7 +340,7 @@ mod tests {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
-            .with_setup(|world| {
+            .with_effect(|world| {
                 let sprite_render = {
                     let colour_sprite_gen_data = world.system_data::<ColourSpriteSheetGenData>();
                     ColourSpriteSheetGen::gradient(

@@ -434,7 +434,7 @@ mod tests {
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
-            .with_setup(move |world| {
+            .with_effect(move |world| {
                 let character_cts_handle = {
                     let (
                         loader,
@@ -457,7 +457,7 @@ mod tests {
                 };
                 world.insert(character_cts_handle);
             })
-            .with_setup(|_world| {}) // Allow texture to load.
+            .with_effect(|_| {}) // Allow texture to load.
             .with_assertion(move |world| {
                 let character_cts_handle = world
                     .read_resource::<CharacterControlTransitionsSequenceHandle>()

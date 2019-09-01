@@ -267,8 +267,8 @@ mod tests {
     #[test]
     fn resets_frame_wait_clocks_on_sequence_begin() -> Result<(), Error> {
         AutexousiousApplication::game_base()
-            .with_setup(setup_system_data)
-            .with_setup(|world| {
+            .with_effect(setup_system_data)
+            .with_effect(|world| {
                 initial_values(
                     world,
                     FrameIndexClock::new_with_value(10, 10),
@@ -302,8 +302,8 @@ mod tests {
     fn ticks_frame_wait_clock_when_sequence_ongoing_and_no_frame_freeze_clock() -> Result<(), Error>
     {
         AutexousiousApplication::game_base()
-            .with_setup(setup_system_data)
-            .with_setup(|world| {
+            .with_effect(setup_system_data)
+            .with_effect(|world| {
                 initial_values(
                     world,
                     FrameIndexClock::new_with_value(5, 0),
@@ -338,8 +338,8 @@ mod tests {
     fn ticks_frame_freeze_clock_when_sequence_ongoing_and_frame_freeze_clock_not_complete(
     ) -> Result<(), Error> {
         AutexousiousApplication::game_base()
-            .with_setup(setup_system_data)
-            .with_setup(|world| {
+            .with_effect(setup_system_data)
+            .with_effect(|world| {
                 initial_values(
                     world,
                     FrameIndexClock::new_with_value(5, 0),
@@ -374,8 +374,8 @@ mod tests {
     fn ticks_frame_freeze_clock_when_sequence_ongoing_and_frame_freeze_clock_complete(
     ) -> Result<(), Error> {
         AutexousiousApplication::game_base()
-            .with_setup(setup_system_data)
-            .with_setup(|world| {
+            .with_effect(setup_system_data)
+            .with_effect(|world| {
                 initial_values(
                     world,
                     FrameIndexClock::new_with_value(5, 0),
@@ -409,8 +409,8 @@ mod tests {
     fn resets_frame_wait_clock_and_sends_event_when_frame_ends_and_sequence_ongoing(
     ) -> Result<(), Error> {
         AutexousiousApplication::game_base()
-            .with_setup(setup_system_data)
-            .with_setup(|world| {
+            .with_effect(setup_system_data)
+            .with_effect(|world| {
                 initial_values(
                     world,
                     FrameIndexClock::new_with_value(5, 0),
@@ -447,8 +447,8 @@ mod tests {
     #[test]
     fn sends_end_event_when_frame_ends_and_sequence_ends() -> Result<(), Error> {
         AutexousiousApplication::game_base()
-            .with_setup(setup_system_data)
-            .with_setup(|world| {
+            .with_effect(setup_system_data)
+            .with_effect(|world| {
                 initial_values(
                     world,
                     FrameIndexClock::new_with_value(5, 4),
@@ -477,8 +477,8 @@ mod tests {
     #[test]
     fn does_not_tick_frame_clocks_when_sequence_end() -> Result<(), Error> {
         AutexousiousApplication::game_base()
-            .with_setup(setup_system_data)
-            .with_setup(|world| {
+            .with_effect(setup_system_data)
+            .with_effect(|world| {
                 initial_values(
                     world,
                     FrameIndexClock::new_with_value(5, 5),
@@ -504,8 +504,8 @@ mod tests {
     #[test]
     fn ticks_frame_freeze_clock_when_sequence_end() -> Result<(), Error> {
         AutexousiousApplication::game_base()
-            .with_setup(setup_system_data)
-            .with_setup(|world| {
+            .with_effect(setup_system_data)
+            .with_effect(|world| {
                 initial_values(
                     world,
                     FrameIndexClock::new_with_value(5, 5),

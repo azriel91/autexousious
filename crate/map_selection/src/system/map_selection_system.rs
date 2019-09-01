@@ -109,9 +109,9 @@ mod test {
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
                 .with_resource(MapSelectionStatus::Confirmed)
-                .with_setup(setup_components)
-                .with_setup(load_maps)
-                .with_setup(|world| {
+                .with_effect(setup_components)
+                .with_effect(load_maps)
+                .with_effect(|world| {
                     let fade_snh = SlugAndHandle::from((&*world, MAP_FADE_SLUG.clone()));
                     let map_selection = MapSelection::Id(fade_snh);
                     world.insert(map_selection);
@@ -152,9 +152,9 @@ mod test {
                 .with_bundle(SpriteLoadingBundle::new())
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
-                .with_setup(setup_components)
-                .with_setup(load_maps)
-                .with_setup(|world| {
+                .with_effect(setup_components)
+                .with_effect(load_maps)
+                .with_effect(|world| {
                     let fade_snh = SlugAndHandle::from((&*world, MAP_FADE_SLUG.clone()));
                     let map_selection = MapSelection::Id(fade_snh);
                     world.insert(map_selection);

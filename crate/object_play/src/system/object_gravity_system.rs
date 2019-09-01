@@ -104,7 +104,7 @@ mod tests {
         }: ExpectedParams,
     ) -> Result<(), Error> {
         AmethystApplication::blank()
-            .with_setup(move |world| {
+            .with_effect(move |world| {
                 let entity = world
                     .create_entity()
                     .with(grounding)

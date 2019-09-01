@@ -186,12 +186,12 @@ mod tests {
 
     fn run_test(assertion_fn: fn(&mut World)) -> Result<(), Error> {
         ObjectTest::application()
-            .with_setup(|world| {
+            .with_effect(|world| {
                 <FrameComponentStorages as SystemData>::setup(world);
                 <ObjectLoaderSystemData as SystemData>::setup(world);
                 <ObjectComponentStorages as SystemData>::setup(world);
             })
-            .with_setup(setup_object_wrapper)
+            .with_effect(setup_object_wrapper)
             .with_assertion(assertion_fn)
             .run_isolated()
     }

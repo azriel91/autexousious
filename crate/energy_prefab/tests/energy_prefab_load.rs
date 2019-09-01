@@ -33,7 +33,7 @@ fn energy_prefab_load() -> Result<(), Error> {
         .with_bundle(
             EnergyPrefabBundle::new().with_system_dependencies(&[String::from(ENERGY_PROCESSOR)]),
         )
-        .with_setup(|world| {
+        .with_effect(|world| {
             let energy_prefab_handle = {
                 let (loader, energy_definition_assets, energy_prefab_loader) =
                     world.system_data::<TestSystemData>();
@@ -46,8 +46,8 @@ fn energy_prefab_load() -> Result<(), Error> {
             };
             world.insert(energy_prefab_handle);
         })
-        .with_setup(|_world| {}) // Allow texture to load.
-        .with_setup(|world| {
+        .with_effect(|_world| {}) // Allow texture to load.
+        .with_effect(|world| {
             let energy_prefab_handle = (*world.read_resource::<EnergyPrefabHandle>()).clone();
             let energy_entity = world.create_entity().with(energy_prefab_handle).build();
             world.insert(energy_entity);

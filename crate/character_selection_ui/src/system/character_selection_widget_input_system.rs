@@ -482,7 +482,7 @@ mod test {
                 CharacterSelectionWidgetInputSystem::type_name(),
                 &[],
             ) // kcov-ignore
-            .with_setup(move |world| {
+            .with_effect(move |world| {
                 CharacterSelectionWidgetInputSystemData::setup(world);
 
                 let setup_character_selection = setup_character_selection_fn(world);

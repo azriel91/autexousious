@@ -254,7 +254,7 @@ mod tests {
                     EnergyLoadingStatus,
                 >::type_name()],
             )
-            .with_setup(setup_fn)
+            .with_effect(setup_fn)
             .with_assertion(assertion_fn)
             .run_isolated()
     }

@@ -144,7 +144,7 @@ mod test {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
-            .with_setup(|world| {
+            .with_effect(|world| {
                 <CharacterComponentStorages as SystemData>::setup(world);
             })
             .with_assertion(assertion)

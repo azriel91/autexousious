@@ -84,8 +84,8 @@ mod test {
         assert!(
             // kcov-ignore-end
             AmethystApplication::blank()
-                .with_setup(setup_components)
-                .with_setup(|world| {
+                .with_effect(setup_components)
+                .with_effect(|world| {
                     let entity = world.create_entity().with(TestComponent(123)).build();
                     world.insert(EffectReturn(entity));
                 })
