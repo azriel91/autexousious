@@ -13,6 +13,7 @@ enumflags2 = "0.5.2"
 enumflags2_derive = "0.5.0"
 sequence_model = { path = "../sequence_model" }
 serde = "1.0.99"
+specs-derive = "0.4.0"
 sprite_model = { path = "../sprite_model" }
 strum = "0.15.0"
 strum_macros = "0.15.0"
