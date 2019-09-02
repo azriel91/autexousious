@@ -19,7 +19,7 @@ use crate::config::{GameObjectFrame, ObjectFrame};
 /// This carries the information necessary for an `Animation`, as well as the effects and
 /// interactions that happen during each frame of that animation.
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, new)]
-#[serde(deny_unknown_fields)]
+#[serde(default, deny_unknown_fields)]
 pub struct ObjectSequence<SeqName, Frame = ObjectFrame>
 where
     SeqName: SequenceName,
@@ -29,10 +29,8 @@ where
     ///
     /// Note: This may not be immediately after the last frame of the sequence. For example, a
     /// character that is in mid-air should remain in the last frame until it lands on the ground.
-    #[serde(default)]
     pub next: SequenceEndTransition<SeqName>,
     /// Acceleration to apply to the object on this frame.
-    #[serde(default)]
     pub acceleration: ObjectAcceleration,
     /// Key frames in the animation sequence.
     pub frames: Vec<Frame>,
