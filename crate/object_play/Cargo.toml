@@ -22,6 +22,7 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-s
 amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
 application_test_support = { path = "../application_test_support" }
 approx = "0.3.2"
+enumflags2 = "0.5.2"
 pretty_assertions = "0.6.1"
 
 [features]
