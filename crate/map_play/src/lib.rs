@@ -2,6 +2,9 @@
 
 //! Provides systems that update the map during game play.
 
-pub use crate::system::{KeepWithinMapBoundsSystem, MapEnterExitDetectionSystem};
+pub use crate::system::{
+    KeepWithinMapBoundsSystem, MapEnterExitDetectionSystem, MapOutOfBoundsClockAugmentSystem,
+    MapOutOfBoundsDeletionSystem,
+};
 
 mod system;
