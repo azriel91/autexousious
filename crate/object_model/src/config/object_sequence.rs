@@ -8,6 +8,7 @@
 //! define this at compile time rather than needing to process this at run time.
 
 use derive_new::new;
+use kinematic_model::config::ObjectAcceleration;
 use sequence_model::config::{SequenceEndTransition, SequenceName};
 use serde::{Deserialize, Serialize};
 
@@ -17,7 +18,7 @@ use crate::config::{GameObjectFrame, ObjectFrame};
 ///
 /// This carries the information necessary for an `Animation`, as well as the effects and
 /// interactions that happen during each frame of that animation.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, new)]
 #[serde(deny_unknown_fields)]
 pub struct ObjectSequence<SeqName, Frame = ObjectFrame>
 where
@@ -30,6 +31,9 @@ where
     /// character that is in mid-air should remain in the last frame until it lands on the ground.
     #[serde(default)]
     pub next: SequenceEndTransition<SeqName>,
+    /// Acceleration to apply to the object on this frame.
+    #[serde(default)]
+    pub acceleration: ObjectAcceleration,
     /// Key frames in the animation sequence.
     pub frames: Vec<Frame>,
 }
@@ -95,6 +99,11 @@ frames:
 "#;
 
     const SEQUENCE_WITH_ACCELERATION_FULL: &str = r#"---
+acceleration:
+  kind: "continuous"
+  x: { value: -5.0 }
+  y: -2.5
+  z: { multiplier: "z_axis", value: -3.0 }
 frames:
   - acceleration:
       kind: "once"
@@ -109,7 +118,7 @@ frames:
             serde_yaml::from_str::<ObjectSequence<TestSeqName>>(SEQUENCE_WITH_FRAMES_EMPTY)
                 .expect("Failed to deserialize sequence.");
 
-        let expected = ObjectSequence::new(SequenceEndTransition::None, vec![]);
+        let expected = ObjectSequence::default();
         assert_eq!(expected, sequence);
     }
 
@@ -150,10 +159,11 @@ frames:
                 ..Default::default()
             },
         ];
-        let expected = ObjectSequence::new(
-            SequenceEndTransition::SequenceName(SequenceNameString::Name(TestSeqName::Boo)),
+        let expected = ObjectSequence {
+            next: SequenceEndTransition::SequenceName(SequenceNameString::Name(TestSeqName::Boo)),
             frames,
-        );
+            ..Default::default()
+        };
         assert_eq!(expected, sequence);
     }
 
@@ -183,7 +193,11 @@ frames:
             body: Body::new(body_volumes),
             ..Default::default()
         }];
-        let expected = ObjectSequence::new(SequenceEndTransition::None, frames);
+        let expected = ObjectSequence {
+            next: SequenceEndTransition::None,
+            frames,
+            ..Default::default()
+        };
         assert_eq!(expected, sequence);
     }
 
@@ -213,7 +227,11 @@ frames:
             interactions: Interactions::new(interactions),
             ..Default::default()
         }];
-        let expected = ObjectSequence::new(SequenceEndTransition::None, frames);
+        let expected = ObjectSequence {
+            next: SequenceEndTransition::None,
+            frames,
+            ..Default::default()
+        };
         assert_eq!(expected, sequence);
     }
 
@@ -234,7 +252,11 @@ frames:
             spawns: Spawns::new(spawns),
             ..Default::default()
         }];
-        let expected = ObjectSequence::new(SequenceEndTransition::None, frames);
+        let expected = ObjectSequence {
+            next: SequenceEndTransition::None,
+            frames,
+            ..Default::default()
+        };
         assert_eq!(expected, sequence);
     }
 
@@ -250,7 +272,11 @@ frames:
             acceleration: ObjectAcceleration::default(),
             ..Default::default()
         }];
-        let expected = ObjectSequence::new(SequenceEndTransition::None, frames);
+        let expected = ObjectSequence {
+            next: SequenceEndTransition::None,
+            frames,
+            ..Default::default()
+        };
         assert_eq!(expected, sequence);
     }
 
@@ -276,7 +302,22 @@ frames:
             },
             ..Default::default()
         }];
-        let expected = ObjectSequence::new(SequenceEndTransition::None, frames);
+        let expected = ObjectSequence {
+            next: SequenceEndTransition::None,
+            acceleration: ObjectAcceleration {
+                kind: ObjectAccelerationKind::Continuous,
+                x: ObjectAccelerationValue::Expr(ObjectAccelerationValueExpr {
+                    multiplier: ObjectAccelerationValueMultiplier::One,
+                    value: -5.,
+                }),
+                y: ObjectAccelerationValue::Const(-2.5),
+                z: ObjectAccelerationValue::Expr(ObjectAccelerationValueExpr {
+                    multiplier: ObjectAccelerationValueMultiplier::ZAxis,
+                    value: -3.,
+                }),
+            },
+            frames,
+        };
         assert_eq!(expected, sequence);
     }
 

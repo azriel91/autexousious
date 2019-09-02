@@ -44,8 +44,7 @@ frames:
         let sequence = serde_yaml::from_str::<TestObjectSequence>(SEQUENCE_WITH_FRAMES_EMPTY)
             .expect("Failed to deserialize sequence.");
 
-        let expected =
-            TestObjectSequence::new(ObjectSequence::new(SequenceEndTransition::None, vec![]));
+        let expected = TestObjectSequence::new(ObjectSequence::default());
         assert_eq!(expected, sequence);
     }
 
@@ -60,8 +59,11 @@ frames:
             sprite: SpriteRef::new(0, 4),
             ..Default::default()
         })];
-        let expected =
-            TestObjectSequence::new(ObjectSequence::new(SequenceEndTransition::None, frames));
+        let expected = TestObjectSequence::new(ObjectSequence {
+            next: SequenceEndTransition::None,
+            frames,
+            ..Default::default()
+        });
 
         assert_eq!(expected, sequence);
     }

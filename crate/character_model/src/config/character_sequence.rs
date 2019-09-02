@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::config::{CharacterControlTransitions, CharacterFrame, CharacterSequenceName};
 
 /// Represents an independent action sequence of a character.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, new)]
 #[serde(deny_unknown_fields)]
 pub struct CharacterSequence {
     /// Object sequence for common object fields.
@@ -29,6 +29,7 @@ impl GameObjectSequence for CharacterSequence {
 
 #[cfg(test)]
 mod tests {
+    use kinematic_model::config::ObjectAcceleration;
     use object_model::config::{ObjectFrame, ObjectSequence};
     use sequence_model::config::{
         ControlTransition, ControlTransitionSingle, SequenceEndTransition, SequenceNameString, Wait,
@@ -57,10 +58,7 @@ frames:
         let sequence = serde_yaml::from_str::<CharacterSequence>(SEQUENCE_WITH_FRAMES_EMPTY)
             .expect("Failed to deserialize sequence.");
 
-        let expected = CharacterSequence::new(
-            ObjectSequence::new(SequenceEndTransition::None, vec![]),
-            None,
-        );
+        let expected = CharacterSequence::new(ObjectSequence::default(), None);
         assert_eq!(expected, sequence);
     }
 
@@ -93,7 +91,11 @@ frames:
             ..Default::default()
         };
         let expected = CharacterSequence::new(
-            ObjectSequence::new(SequenceEndTransition::None, frames),
+            ObjectSequence {
+                next: SequenceEndTransition::None,
+                acceleration: ObjectAcceleration::default(),
+                frames,
+            },
             Some(character_control_transitions),
         );
 

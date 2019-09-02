@@ -179,12 +179,13 @@ sequences:
             ..Default::default()
         };
         CharacterSequence::new(
-            ObjectSequence::new(
-                SequenceEndTransition::SequenceName(SequenceNameString::Name(
+            ObjectSequence {
+                next: SequenceEndTransition::SequenceName(SequenceNameString::Name(
                     CharacterSequenceName::Walk,
                 )),
                 frames,
-            ),
+                ..Default::default()
+            },
             Some(character_control_transitions),
         )
     }
@@ -221,12 +222,13 @@ sequences:
             ..Default::default()
         };
         CharacterSequence::new(
-            ObjectSequence::new(
-                SequenceEndTransition::SequenceName(SequenceNameString::String(String::from(
-                    "custom_sequence_1",
-                ))),
+            ObjectSequence {
+                next: SequenceEndTransition::SequenceName(SequenceNameString::String(
+                    String::from("custom_sequence_1"),
+                )),
                 frames,
-            ),
+                ..Default::default()
+            },
             Some(character_control_transitions),
         )
     }
@@ -234,12 +236,13 @@ sequences:
     fn empty_sequence() -> CharacterSequence {
         let frames = vec![];
         CharacterSequence::new(
-            ObjectSequence::new(
-                SequenceEndTransition::SequenceName(SequenceNameString::Name(
+            ObjectSequence {
+                next: SequenceEndTransition::SequenceName(SequenceNameString::Name(
                     CharacterSequenceName::Stand,
                 )),
                 frames,
-            ),
+                ..Default::default()
+            },
             None,
         )
     }
