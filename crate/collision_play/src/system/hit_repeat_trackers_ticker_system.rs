@@ -46,7 +46,7 @@ mod tests {
     fn ticks_every_clock() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_system(HitRepeatTrackersTickerSystem::new(), "", &[])
-            .with_setup(create_entities_with_hit_repeat_trackers)
+            .with_effect(create_entities_with_hit_repeat_trackers)
             .with_assertion(|world| assert_clock_values(world, 1))
             .with_assertion(|world| {
                 assert_clock_values(world, 2);
@@ -62,7 +62,7 @@ mod tests {
     fn deletes_completed_clocks() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_system(HitRepeatTrackersTickerSystem::new(), "", &[])
-            .with_setup(create_entities_with_hit_repeat_trackers)
+            .with_effect(create_entities_with_hit_repeat_trackers)
             .with_effect(|world| {
                 let (entity_from_0, _entity_from_1) = *world.read_resource::<(Entity, Entity)>();
 

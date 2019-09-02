@@ -303,7 +303,7 @@ mod tests {
     ) -> Result<(), Error> {
         AmethystApplication::blank()
             .with_system(ChargeInitializeDelaySystem::new(), "", &[])
-            .with_setup(move |world| {
+            .with_effect(move |world| {
                 let entity = {
                     let mut entity_builder = world
                         .create_entity()

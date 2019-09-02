@@ -101,7 +101,7 @@ mod test {
         expected_position: Position<f32>,
     ) -> Result<(), Error> {
         AmethystApplication::ui_base::<StringBindings>()
-            .with_setup(move |world| {
+            .with_effect(move |world| {
                 ObjectKinematicsUpdateSystemData::setup(world);
 
                 let mut entity_builder = world.create_entity().with(position).with(velocity);

@@ -6,12 +6,16 @@
 
 * Support arbitrary sequence names. ([#155])
 * Support acceleration in configuration. ([#125])
+* Detect out of bounds entities. ([#142])
+* Use events to detect and reposition `MapBounded` entities. ([#142])
+* Delete out of bounds entities. ([#142])
 
 ### Changed
 
 * ***Breaking:*** Configuration files now use YAML instead of TOML. ([#154])
 
 [#125]: https://gitlab.com/azriel91/autexousious/issues/125
+[#142]: https://gitlab.com/azriel91/autexousious/issues/142
 [#154]: https://gitlab.com/azriel91/autexousious/issues/154
 [#155]: https://gitlab.com/azriel91/autexousious/issues/155
 

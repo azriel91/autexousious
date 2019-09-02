@@ -247,7 +247,7 @@ mod tests {
     ) -> Result<(), Error> {
         AmethystApplication::blank()
             .with_system(SequenceEndTransitionSystem::new(), "", &[])
-            .with_setup(move |world| {
+            .with_effect(move |world| {
                 // Add entity before registering `component_event_rid`, so we don't get the first
                 // insertion event.
                 let entity = world
@@ -257,7 +257,7 @@ mod tests {
                     .build();
                 world.insert(entity);
             })
-            .with_setup(register_sequence_id_reader)
+            .with_effect(register_sequence_id_reader)
             .with_effect(move |world| {
                 if let Some(sequence_update_event_fn) = sequence_update_event_fn {
                     let entity = *world.read_resource::<Entity>();

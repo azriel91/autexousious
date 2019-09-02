@@ -13,6 +13,7 @@ derivative = "1.0.2"
 derive-new = "0.5.8"
 game_input = { path = "../game_input" }
 log = "0.4.8"
+map_model = { path = "../map_model" }
 object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
 object_prefab = { path = "../object_prefab" }

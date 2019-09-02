@@ -191,8 +191,8 @@ mod tests {
                 "",
                 &[],
             )
-            .with_setup(move |world| initial_values(world, with_scda_handle))
-            .with_setup(move |world| {
+            .with_effect(move |world| initial_values(world, with_scda_handle))
+            .with_effect(move |world| {
                 let events = sequence_update_events_fn(world);
                 send_events(world, events);
             })

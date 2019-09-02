@@ -37,7 +37,7 @@ mod tests {
     fn reduces_stun_points_each_tick() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_system(StunPointsReductionSystem::new(), "", &[])
-            .with_setup(|world| create_entity_with_stun_points(world, 3))
+            .with_effect(|world| create_entity_with_stun_points(world, 3))
             .with_assertion(|world| assert_entity_with_stun_points(world, 2))
             .with_assertion(|world| assert_entity_with_stun_points(world, 1))
             .with_assertion(|world| assert_entity_with_stun_points(world, 0))

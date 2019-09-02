@@ -150,7 +150,7 @@ mod tests {
     fn attaches_handle_for_sequence_id_insertions() -> Result<(), Error> {
         AutexousiousApplication::game_base()
             .with_system(CharacterCtsHandleUpdateSystem::new(), "", &[])
-            .with_setup(|world| insert_sequence(world, SequenceId::new(5)))
+            .with_effect(|world| insert_sequence(world, SequenceId::new(5)))
             .with_assertion(|world| expect_cts_handle(world, SequenceId::new(5)))
             .run_isolated()
     }
@@ -159,7 +159,7 @@ mod tests {
     fn attaches_handle_for_sequence_id_modifications() -> Result<(), Error> {
         AutexousiousApplication::game_base()
             .with_system(CharacterCtsHandleUpdateSystem::new(), "", &[])
-            .with_setup(|world| update_sequence(world, SequenceId::new(5)))
+            .with_effect(|world| update_sequence(world, SequenceId::new(5)))
             .with_assertion(|world| expect_cts_handle(world, SequenceId::new(5)))
             .run_isolated()
     }

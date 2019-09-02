@@ -161,7 +161,7 @@ mod tests {
     ) -> Result<(), Error> {
         AutexousiousApplication::game_base()
             .with_system(CharacterControlTransitionsUpdateSystem::new(), "", &[])
-            .with_setup(move |world| {
+            .with_effect(move |world| {
                 let character_cts_handle = SequenceQueries::character_cts_handle(
                     world,
                     &CHAR_BAT_SLUG.clone(),
@@ -169,7 +169,7 @@ mod tests {
                 );
                 initial_values(world, frame_index_clock, character_cts_handle)
             })
-            .with_setup(move |world| {
+            .with_effect(move |world| {
                 let events = sequence_update_events_fn(world);
                 send_events(world, events);
             })

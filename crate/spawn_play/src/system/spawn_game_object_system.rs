@@ -229,7 +229,7 @@ mod tests {
             //     String::from(ENERGY_PROCESSOR),
             //     SpawnGameObjectSystem::type_name(),
             // ]))
-            .with_setup(setup_spawn_ec_reader)
+            .with_effect(setup_spawn_ec_reader)
             .with_assertion(|world| {
                 assert_energy_count(world, 0);
                 assert_events(world, 0);

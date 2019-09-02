@@ -121,7 +121,7 @@ mod test {
                 ControllerInputUpdateSystem::type_name(),
                 &[],
             ) // kcov-ignore
-            .with_setup(|world| {
+            .with_effect(|world| {
                 let e0 = world.create_entity().build();
                 let e1 = world.create_entity().build();
 
@@ -172,7 +172,7 @@ mod test {
                 ControllerInputUpdateSystem::type_name(),
                 &[],
             ) // kcov-ignore
-            .with_setup(|world| {
+            .with_effect(|world| {
                 let e0 = world
                     .create_entity()
                     .with(ControllerInput::new(1., -1., true, true, false, false))

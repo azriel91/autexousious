@@ -86,7 +86,7 @@ mod test {
                 SharedControllerInputUpdateSystem::type_name(),
                 &[],
             )
-            .with_setup(move |world| {
+            .with_effect(move |world| {
                 let controller_entities = (0..controller_count)
                     .map(|n| {
                         let controller_id = n as ControllerId;
@@ -187,7 +187,7 @@ mod test {
                 SharedControllerInputUpdateSystem::type_name(),
                 &[],
             )
-            .with_setup(|world| {
+            .with_effect(|world| {
                 let entity = world.create_entity().with(SharedInputControlled).build();
                 world.insert(EffectReturn(entity));
             })

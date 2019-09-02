@@ -430,7 +430,7 @@ mod test {
                 &MenuItemWidgetInputSystem::<TestIndex>::type_name(),
                 &[],
             ) // kcov-ignore
-            .with_setup(move |world| {
+            .with_effect(move |world| {
                 MenuItemWidgetInputSystemData::<TestIndex>::setup(world);
 
                 // Setup event reader.

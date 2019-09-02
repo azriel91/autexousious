@@ -237,7 +237,7 @@ mod tests {
         }: ExpectedParams,
     ) -> Result<(), Error> {
         AutexousiousApplication::game_base()
-            .with_setup(move |world| {
+            .with_effect(move |world| {
                 let (
                     map_selection,
                     maps,

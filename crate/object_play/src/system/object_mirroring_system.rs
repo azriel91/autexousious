@@ -83,7 +83,7 @@ mod tests {
         assertion_fn: fn((&Mirrored, &Transform)),
     ) -> Result<(), Error> {
         AutexousiousApplication::game_base()
-            .with_setup(move |world| {
+            .with_effect(move |world| {
                 let (mut mirroreds, mut transforms) = world
                     .system_data::<(WriteStorage<'_, Mirrored>, WriteStorage<'_, Transform>)>();
                 (&mut mirroreds, &mut transforms).join().for_each(setup_fn)
