@@ -9,8 +9,11 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-s
 asset_derive = { path = "../asset_derive" }
 derivative = "1.0.2"
 derive-new = "0.5.8"
+derive_deref = "1.1.0"
+derive_more = "0.15.0"
 enumflags2 = "0.5.2"
 enumflags2_derive = "0.5.0"
+logic_clock = { path = "../logic_clock" }
 sequence_model = { path = "../sequence_model" }
 serde = "1.0.99"
 specs-derive = "0.4.0"
