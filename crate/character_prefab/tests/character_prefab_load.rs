@@ -155,12 +155,13 @@ fn character_definition() -> CharacterDefinition {
         }, // kcov-ignore
     )];
     let sequence = CharacterSequence::new(
-        ObjectSequence::new(
-            SequenceEndTransition::SequenceName(SequenceNameString::Name(
+        ObjectSequence {
+            next: SequenceEndTransition::SequenceName(SequenceNameString::Name(
                 CharacterSequenceName::Stand,
             )),
             frames,
-        ),
+            ..Default::default()
+        },
         None,
     );
     let mut sequences = IndexMap::new();
@@ -206,7 +207,7 @@ fn character_definition() -> CharacterDefinition {
 }
 
 fn empty_sequence() -> CharacterSequence {
-    let object_sequence = ObjectSequence::new(Default::default(), Vec::new());
+    let object_sequence = ObjectSequence::default();
     CharacterSequence::new(object_sequence, None)
 }
 

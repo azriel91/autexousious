@@ -5,7 +5,7 @@
 ### Added
 
 * Support arbitrary sequence names. ([#155])
-* Support acceleration in configuration. ([#125])
+* Support acceleration in configuration. ([#125], [#160])
 * Detect out of bounds entities. ([#142])
 * Use events to detect and reposition `MapBounded` entities. ([#142])
 * Delete out of bounds entities. ([#142])
@@ -18,6 +18,7 @@
 [#142]: https://gitlab.com/azriel91/autexousious/issues/142
 [#154]: https://gitlab.com/azriel91/autexousious/issues/154
 [#155]: https://gitlab.com/azriel91/autexousious/issues/155
+[#160]: https://gitlab.com/azriel91/autexousious/issues/160
 
 ## 0.13.0 (2019-08-16)
 
