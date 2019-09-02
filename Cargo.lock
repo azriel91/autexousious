@@ -2373,6 +2373,7 @@ dependencies = [
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "logic_clock 0.13.0",
  "map_model 0.13.0",
+ "map_play 0.13.0",
  "map_selection_model 0.13.0",
  "named_type 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "named_type_derive 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",

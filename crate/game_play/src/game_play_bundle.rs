@@ -26,9 +26,15 @@ use energy_model::loaded::EnergyObjectWrapper;
 use energy_play::{EnergyHitEffectSystem, EnergyHittingEffectSystem};
 use game_input::ControllerInput;
 use game_play_hud::{CpBarUpdateSystem, HpBarUpdateSystem};
-use kinematic_model::loaded::{ObjectAccelerationSequence, ObjectAccelerationSequenceHandles};
+use kinematic_model::{
+    config::Position,
+    loaded::{ObjectAccelerationSequence, ObjectAccelerationSequenceHandles},
+};
+use map_play::{KeepWithinMapBoundsSystem, MapEnterExitDetectionSystem};
 use named_type::NamedType;
-use object_play::{ObjectAccelerationSystem, ObjectGravitySystem, ObjectMirroringSystem};
+use object_play::{
+    ObjectAccelerationSystem, ObjectGravitySystem, ObjectGroundingSystem, ObjectMirroringSystem,
+};
 use object_status_play::StunPointsReductionSystem;
 use sequence_model::loaded::{SequenceEndTransitions, WaitSequence, WaitSequenceHandles};
 use sequence_play::{
@@ -220,17 +226,34 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         ); // kcov-ignore
 
         // `Position` correction based on margins.
+        // vel += mass
         builder.add(
             ObjectGravitySystem::new(),
             &ObjectGravitySystem::type_name(),
             &[&ObjectKinematicsUpdateSystem::type_name()],
         ); // kcov-ignore
         builder.add(
+            MapEnterExitDetectionSystem::new(),
+            &MapEnterExitDetectionSystem::type_name(),
+            &[&ObjectGravitySystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
+            KeepWithinMapBoundsSystem::new(),
+            &KeepWithinMapBoundsSystem::type_name(),
+            &[&MapEnterExitDetectionSystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
+            ObjectGroundingSystem::new(),
+            &ObjectGroundingSystem::type_name(),
+            &[&MapEnterExitDetectionSystem::type_name()],
+        ); // kcov-ignore
+
+        builder.add(
             ObjectTransformUpdateSystem::new(),
             &ObjectTransformUpdateSystem::type_name(),
             &[
                 &ObjectKinematicsUpdateSystem::type_name(),
-                &ObjectGravitySystem::type_name(),
+                &KeepWithinMapBoundsSystem::type_name(),
             ],
         ); // kcov-ignore
         builder.add(
@@ -370,6 +393,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &GamePlayEndTransitionSystem::type_name(),
             &[&GamePlayEndDetectionSystem::type_name()],
         ); // kcov-ignore
+
+        let position_tracker_system =
+            LastTrackerSystem::<Position<f32>>::new(stringify!(Position<f32>));
+        let position_tracker_system_name = position_tracker_system.system_name();
+        builder.add(position_tracker_system, &position_tracker_system_name, &[]); // kcov-ignore
 
         let controller_input_tracker_system =
             LastTrackerSystem::<ControllerInput>::new(stringify!(game_input::ControllerInput));

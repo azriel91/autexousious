@@ -27,6 +27,7 @@ kinematic_model = { path = "../kinematic_model" }
 log = "0.4.8"
 logic_clock = { path = "../logic_clock" }
 map_model = { path = "../map_model" }
+map_play = { path = "../map_play" }
 map_selection_model = { path = "../map_selection_model" }
 named_type = "0.2.1"
 named_type_derive = "0.2.1"
