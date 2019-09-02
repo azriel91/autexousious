@@ -114,7 +114,7 @@ impl ObjectLoader {
             body_sequence_handles,
             interactions_sequence_handles,
             spawns_sequence_handles,
-        ) = object_definition.sequences.values().fold(
+        ) = object_definition.sequences.iter().fold(
             sequences_handles,
             |(
                 mut wait_sequence_handles,
@@ -124,7 +124,17 @@ impl ObjectLoader {
                 mut interactions_sequence_handles,
                 mut spawns_sequence_handles,
             ),
-             sequence| {
+             (sequence_name_string, sequence)| {
+                let sequence_default = {
+                    if let SequenceNameString::Name(sequence_name) = sequence_name_string {
+                        OBJECT_ACCELERATION_DEFAULT
+                            .object_definition
+                            .sequences
+                            .get(sequence_name)
+                    } else {
+                        None
+                    }
+                };
                 let object_sequence = sequence.object_sequence();
 
                 let wait_sequence = WaitSequence::new(
@@ -134,19 +144,21 @@ impl ObjectLoader {
                         .map(|frame| frame.object_frame().wait)
                         .collect::<Vec<Wait>>(),
                 );
-                let object_acceleration_sequence = ObjectAccelerationSequence::new(
-                    object_sequence
-                        .frames
-                        .iter()
-                        .map(|frame| {
-                            frame
-                                .object_frame()
-                                .acceleration
-                                .or_else(|| object_sequence.acceleration)
-                                .unwrap_or_else(|| ObjectAcceleration::default())
-                        })
-                        .collect::<Vec<ObjectAcceleration>>(),
-                );
+                let object_acceleration_sequence = {
+                    ObjectAccelerationSequence::new(
+                        object_sequence
+                            .frames
+                            .iter()
+                            .map(|frame| {
+                                frame
+                                    .object_frame()
+                                    .acceleration
+                                    .or_else(|| object_sequence.acceleration)
+                                    .unwrap_or_else(|| ObjectAcceleration::default())
+                            })
+                            .collect::<Vec<ObjectAcceleration>>(),
+                    )
+                };
                 let sprite_render_sequence = SpriteRenderSequence::new(
                     object_sequence
                         .frames
