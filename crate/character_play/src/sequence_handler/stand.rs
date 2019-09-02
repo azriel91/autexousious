@@ -86,7 +86,7 @@ mod test {
                 &Position::default(),
                 &Velocity::default(),
                 Mirrored::default(),
-                Grounding::default(),
+                Grounding::OnGround,
                 RunCounter::default()
             ))
         );
@@ -125,7 +125,7 @@ mod test {
             &Position::default(),
             &Velocity::default(),
             Mirrored::default(),
-            Grounding::default(),
+            Grounding::OnGround,
             RunCounter::Exceeded,
         ));
     } // kcov-ignore
@@ -143,7 +143,7 @@ mod test {
             &Position::default(),
             &Velocity::default(),
             Mirrored::default(),
-            Grounding::default(),
+            Grounding::OnGround,
             RunCounter::Increase(10),
         ));
     } // kcov-ignore
@@ -162,7 +162,7 @@ mod test {
                 &Position::default(),
                 &Velocity::default(),
                 Mirrored(true),
-                Grounding::default(),
+                Grounding::OnGround,
                 RunCounter::default()
             ))
         );
@@ -178,7 +178,7 @@ mod test {
                 &Position::default(),
                 &Velocity::default(),
                 Mirrored(false),
-                Grounding::default(),
+                Grounding::OnGround,
                 RunCounter::default()
             ))
         );
@@ -198,7 +198,7 @@ mod test {
                 &Position::default(),
                 &Velocity::default(),
                 Mirrored(false),
-                Grounding::default(),
+                Grounding::OnGround,
                 RunCounter::default()
             ))
         );
@@ -214,7 +214,7 @@ mod test {
                 &Position::default(),
                 &Velocity::default(),
                 Mirrored(true),
-                Grounding::default(),
+                Grounding::OnGround,
                 RunCounter::default()
             ))
         );
@@ -234,7 +234,7 @@ mod test {
                 &Position::default(),
                 &Velocity::default(),
                 Mirrored(false),
-                Grounding::default(),
+                Grounding::OnGround,
                 RunCounter::default()
             ))
         );
@@ -257,7 +257,7 @@ mod test {
                         &Position::default(),
                         &Velocity::default(),
                         mirrored.into(),
-                        Grounding::default(),
+                        Grounding::OnGround,
                         RunCounter::Decrease(10)
                     ))
                 );
@@ -281,7 +281,7 @@ mod test {
                         &Position::default(),
                         &Velocity::default(),
                         mirrored.into(),
-                        Grounding::default(),
+                        Grounding::OnGround,
                         RunCounter::Decrease(10)
                     ))
                 );

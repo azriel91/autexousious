@@ -61,7 +61,7 @@ mod tests {
                 &Position::default(),
                 &Velocity::default(),
                 Mirrored::default(),
-                Grounding::default(),
+                Grounding::OnGround,
                 RunCounter::default()
             ))
         );
@@ -81,7 +81,7 @@ mod tests {
                 &Position::default(),
                 &Velocity::default(),
                 Mirrored(true),
-                Grounding::default(),
+                Grounding::OnGround,
                 RunCounter::default()
             ))
         );
@@ -97,7 +97,7 @@ mod tests {
                 &Position::default(),
                 &Velocity::default(),
                 Mirrored(false),
-                Grounding::default(),
+                Grounding::OnGround,
                 RunCounter::default()
             ))
         );
@@ -117,7 +117,7 @@ mod tests {
                 &Position::default(),
                 &Velocity::default(),
                 Mirrored(false),
-                Grounding::default(),
+                Grounding::OnGround,
                 RunCounter::default()
             ))
         );
@@ -133,7 +133,7 @@ mod tests {
                 &Position::default(),
                 &Velocity::default(),
                 Mirrored(true),
-                Grounding::default(),
+                Grounding::OnGround,
                 RunCounter::default()
             ))
         );
@@ -156,7 +156,7 @@ mod tests {
                         &Position::default(),
                         &Velocity::default(),
                         mirrored.into(),
-                        Grounding::default(),
+                        Grounding::OnGround,
                         RunCounter::Decrease(10)
                     ))
                 );
@@ -180,7 +180,7 @@ mod tests {
                         &Position::default(),
                         &Velocity::default(),
                         mirrored.into(),
-                        Grounding::default(),
+                        Grounding::OnGround,
                         RunCounter::Decrease(10)
                     ))
                 );
