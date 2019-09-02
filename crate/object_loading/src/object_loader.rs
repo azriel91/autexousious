@@ -125,25 +125,29 @@ impl ObjectLoader {
                 mut spawns_sequence_handles,
             ),
              sequence| {
+                let object_sequence = sequence.object_sequence();
+
                 let wait_sequence = WaitSequence::new(
-                    sequence
-                        .object_sequence()
+                    object_sequence
                         .frames
                         .iter()
                         .map(|frame| frame.object_frame().wait)
                         .collect::<Vec<Wait>>(),
                 );
                 let object_acceleration_sequence = ObjectAccelerationSequence::new(
-                    sequence
-                        .object_sequence()
+                    object_sequence
                         .frames
                         .iter()
-                        .map(|frame| frame.object_frame().acceleration)
+                        .map(|frame| {
+                            frame
+                                .object_frame()
+                                .acceleration
+                                .unwrap_or_else(|| object_sequence.acceleration)
+                        })
                         .collect::<Vec<ObjectAcceleration>>(),
                 );
                 let sprite_render_sequence = SpriteRenderSequence::new(
-                    sequence
-                        .object_sequence()
+                    object_sequence
                         .frames
                         .iter()
                         .map(|frame| {
@@ -158,8 +162,7 @@ impl ObjectLoader {
                         .collect::<Vec<SpriteRender>>(),
                 );
                 let body_sequence = BodySequence::new(
-                    sequence
-                        .object_sequence()
+                    object_sequence
                         .frames
                         .iter()
                         .map(|frame| {
@@ -172,8 +175,7 @@ impl ObjectLoader {
                         .collect::<Vec<Handle<Body>>>(),
                 );
                 let interactions_sequence = InteractionsSequence::new(
-                    sequence
-                        .object_sequence()
+                    object_sequence
                         .frames
                         .iter()
                         .map(|frame| {
@@ -186,8 +188,7 @@ impl ObjectLoader {
                         .collect::<Vec<Handle<Interactions>>>(),
                 );
                 let spawns_sequence = SpawnsSequence::new(
-                    sequence
-                        .object_sequence()
+                    object_sequence
                         .frames
                         .iter()
                         .map(|frame| {

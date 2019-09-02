@@ -269,7 +269,10 @@ frames:
 
         let frames = vec![ObjectFrame {
             wait: Wait::new(0),
-            acceleration: ObjectAcceleration::default(),
+            acceleration: Some(ObjectAcceleration {
+                kind: ObjectAccelerationKind::Continuous,
+                ..Default::default()
+            }),
             ..Default::default()
         }];
         let expected = ObjectSequence {
@@ -288,7 +291,7 @@ frames:
 
         let frames = vec![ObjectFrame {
             wait: Wait::new(0),
-            acceleration: ObjectAcceleration {
+            acceleration: Some(ObjectAcceleration {
                 kind: ObjectAccelerationKind::Once,
                 x: ObjectAccelerationValue::Expr(ObjectAccelerationValueExpr {
                     multiplier: ObjectAccelerationValueMultiplier::One,
@@ -299,7 +302,7 @@ frames:
                     multiplier: ObjectAccelerationValueMultiplier::ZAxis,
                     value: 3.,
                 }),
-            },
+            }),
             ..Default::default()
         }];
         let expected = ObjectSequence {

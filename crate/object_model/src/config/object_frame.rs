@@ -21,7 +21,7 @@ pub struct ObjectFrame {
     /// Number of ticks to wait before the sequence switches to the next frame.
     pub wait: Wait,
     /// Acceleration to apply to the object on this frame.
-    pub acceleration: ObjectAcceleration,
+    pub acceleration: Option<ObjectAcceleration>,
     /// Sprite to render.
     pub sprite: SpriteRef,
     /// Hittable volume of the object.
