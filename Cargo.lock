@@ -1819,6 +1819,7 @@ dependencies = [
  "energy_model 0.13.0",
  "indexmap 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "map_model 0.13.0",
  "object_loading 0.13.0",
  "object_model 0.13.0",
  "object_prefab 0.13.0",

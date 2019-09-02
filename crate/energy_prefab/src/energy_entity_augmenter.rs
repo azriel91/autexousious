@@ -1,4 +1,5 @@
 use amethyst::ecs::Entity;
+use map_model::play::MapUnboundedDelete;
 use object_model::play::Grounding;
 
 use crate::EnergyComponentStorages;
@@ -16,12 +17,17 @@ impl EnergyEntityAugmenter {
     /// * `energy_component_storages`: Energy specific `Component` storages.
     pub fn augment<'s>(
         entity: Entity,
-        EnergyComponentStorages { ref mut groundings }: &mut EnergyComponentStorages<'s>,
+        EnergyComponentStorages {
+            ref mut groundings,
+            ref mut map_unbounded_deletes,
+        }: &mut EnergyComponentStorages<'s>,
     ) {
-        // Grounding.
         groundings
             .insert(entity, Grounding::Airborne)
-            .expect("Failed to insert grounding component.");
+            .expect("Failed to insert `Grounding` component.");
+        map_unbounded_deletes
+            .insert(entity, MapUnboundedDelete::default())
+            .expect("Failed to insert `MapUnboundedDelete` component.");
     }
 }
 
@@ -35,6 +41,7 @@ mod test {
         Error,
     };
     use amethyst_test::AmethystApplication;
+    use map_model::play::MapUnboundedDelete;
     use object_model::play::Grounding;
 
     use super::EnergyEntityAugmenter;
@@ -50,6 +57,7 @@ mod test {
             }
 
             assert!(world.read_storage::<Grounding>().contains(entity));
+            assert!(world.read_storage::<MapUnboundedDelete>().contains(entity));
         };
 
         AmethystApplication::blank()
