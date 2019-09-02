@@ -90,7 +90,7 @@ mod tests {
     #[test]
     fn maps_axis_input() -> Result<(), Error> {
         AutexousiousApplication::config_base()
-            .with_setup(|world| {
+            .with_effect(|world| {
                 world.register::<InputControlled>();
 
                 let entity = world.create_entity().with(InputControlled::new(1)).build();
@@ -127,7 +127,7 @@ mod tests {
     #[test]
     fn maps_action_pressed() -> Result<(), Error> {
         AutexousiousApplication::config_base()
-            .with_setup(|world| {
+            .with_effect(|world| {
                 world.register::<InputControlled>();
 
                 let entity = world.create_entity().with(InputControlled::new(1)).build();
@@ -162,7 +162,7 @@ mod tests {
     #[test]
     fn maps_action_released() -> Result<(), Error> {
         AutexousiousApplication::config_base()
-            .with_setup(|world| {
+            .with_effect(|world| {
                 world.register::<InputControlled>();
 
                 let entity = world.create_entity().with(InputControlled::new(1)).build();
@@ -197,7 +197,7 @@ mod tests {
     #[test]
     fn returns_err_when_no_entity_for_controller_id() -> Result<(), Error> {
         AutexousiousApplication::config_base()
-            .with_setup(|world| {
+            .with_effect(|world| {
                 world.register::<InputControlled>();
 
                 world.create_entity().with(InputControlled::new(1)).build();

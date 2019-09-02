@@ -76,7 +76,7 @@ mod test {
                 StdioCommandProcessingSystem::type_name(),
                 &[],
             ) // kcov-ignore
-            .with_setup(|world| {
+            .with_effect(|world| {
                 world
                     .write_resource::<EventChannel<StdioCommandEvent>>()
                     .single_write(StdioCommandEvent::StateBarrier(StateBarrier {

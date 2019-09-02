@@ -230,7 +230,7 @@ mod test {
                 InputToControlInputSystem::type_name(),
                 &[],
             ) // kcov-ignore
-            .with_setup(move |world| {
+            .with_effect(move |world| {
                 // HACK: This is what `InputSystem` does from `amethyst::input::InputBundle` in the
                 // system setup phase.
                 // TODO: Update `amethyst_test` to take in `InputBindings`.

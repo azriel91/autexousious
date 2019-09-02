@@ -52,7 +52,7 @@ fn character_prefab_load() -> Result<(), Error> {
             CharacterPrefabBundle::new()
                 .with_system_dependencies(&[String::from(CHARACTER_PROCESSOR)]),
         )
-        .with_setup(|world| {
+        .with_effect(|world| {
             let character_prefab_handle = {
                 let (loader, character_definition_assets, character_prefab_loader) =
                     world.system_data::<TestSystemData>();
@@ -65,8 +65,8 @@ fn character_prefab_load() -> Result<(), Error> {
             };
             world.insert(character_prefab_handle);
         })
-        .with_setup(|_world| {}) // Allow texture to load.
-        .with_setup(|world| {
+        .with_effect(|_world| {}) // Allow texture to load.
+        .with_effect(|world| {
             let character_prefab_handle = (*world.read_resource::<CharacterPrefabHandle>()).clone();
             let character_entity = world.create_entity().with(character_prefab_handle).build();
             world.insert(character_entity);

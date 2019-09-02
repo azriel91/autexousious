@@ -40,7 +40,7 @@ mod tests {
                 &Position::default(),
                 &Velocity::default(),
                 Mirrored::default(),
-                Grounding::default(),
+                Grounding::OnGround,
                 RunCounter::default()
             ))
         );
@@ -58,7 +58,7 @@ mod tests {
                 &Position::default(),
                 &Velocity::default(),
                 Mirrored::default(),
-                Grounding::default(),
+                Grounding::OnGround,
                 RunCounter::default()
             ))
         );
@@ -78,7 +78,7 @@ mod tests {
                 &Position::default(),
                 &Velocity::default(),
                 Mirrored::default(),
-                Grounding::default(),
+                Grounding::OnGround,
                 RunCounter::default()
             ))
         );

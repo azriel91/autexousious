@@ -109,7 +109,7 @@ mod tests {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
-            .with_setup(|world| {
+            .with_effect(|world| {
                 <HpBarPrefab as PrefabData>::SystemData::setup(world);
                 <HpBarUpdateSystem as System>::SystemData::setup(world);
 

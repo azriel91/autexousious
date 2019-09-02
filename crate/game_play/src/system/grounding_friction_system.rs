@@ -52,7 +52,7 @@ impl<'s> System<'s> for GroundingFrictionSystem {
                         velocity[2] /= 2.;
                     }
                 }
-                Grounding::Airborne => {}
+                Grounding::Airborne | Grounding::Underground => {}
             });
     }
 }
@@ -141,7 +141,7 @@ mod tests {
                 &[],
             )
             // kcov-ignore-end
-            .with_setup(move |world| {
+            .with_effect(move |world| {
                 let entity = world
                     .create_entity()
                     .with(grounding)

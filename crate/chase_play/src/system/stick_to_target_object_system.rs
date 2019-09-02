@@ -91,7 +91,7 @@ mod tests {
     fn updates_child_translation_to_match_target() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_system(StickToTargetObjectSystem::new(), "", &[])
-            .with_setup(|world| create_target_and_child_entity(world, true, true, false))
+            .with_effect(|world| create_target_and_child_entity(world, true, true, false))
             .with_effect(|world| set_target_translation(world, 1., 2., 3.5))
             .with_assertion(|world| assert_child_entity_translation(world, 1., 2., 3.5))
             .run()
@@ -101,7 +101,7 @@ mod tests {
     fn updates_child_position_to_match_target() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_system(StickToTargetObjectSystem::new(), "", &[])
-            .with_setup(|world| create_target_and_child_entity(world, true, false, true))
+            .with_effect(|world| create_target_and_child_entity(world, true, false, true))
             .with_effect(|world| set_target_position(world, 1., 2., 3.5))
             .with_assertion(|world| assert_child_entity_position(world, 1., 2., 3.5))
             .run()
@@ -111,7 +111,7 @@ mod tests {
     fn does_not_update_components_for_non_chase_mode_stick() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_system(StickToTargetObjectSystem::new(), "", &[])
-            .with_setup(|world| create_target_and_child_entity(world, false, true, true))
+            .with_effect(|world| create_target_and_child_entity(world, false, true, true))
             .with_effect(|world| set_target_translation(world, 1., 2., 3.5))
             .with_effect(|world| set_target_position(world, 1., 2., 3.5))
             .with_assertion(|world| assert_child_entity_translation(world, 0., 0., 0.))

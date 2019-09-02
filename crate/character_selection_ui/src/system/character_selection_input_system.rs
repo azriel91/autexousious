@@ -244,7 +244,7 @@ mod test {
                 CharacterSelectionInputSystem::type_name(),
                 &[],
             ) // kcov-ignore
-            .with_setup(move |world| {
+            .with_effect(move |world| {
                 CharacterSelectionInputSystemData::setup(world);
 
                 let entities = setup_widget_states

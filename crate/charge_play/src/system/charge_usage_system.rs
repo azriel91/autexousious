@@ -277,7 +277,7 @@ mod tests {
     ) -> Result<(), Error> {
         AmethystApplication::blank()
             .with_system(ChargeUsageSystem::new(), "", &[])
-            .with_setup(move |world| {
+            .with_effect(move |world| {
                 let entity = {
                     let mut entity_builder = world.create_entity().with(charge_tracker_clock_setup);
 

@@ -47,7 +47,7 @@ mod tests {
     fn loads_asset_with_yaml_format() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_system(Processor::<YamlThing>::new(), "yaml_thing_processor", &[])
-            .with_setup(|world| {
+            .with_effect(|world| {
                 let mut code_source = CodeSource::new();
                 code_source.insert(String::from("file.yaml"), "val: 123".as_bytes().to_vec());
 

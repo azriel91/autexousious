@@ -66,7 +66,7 @@ mod tests {
                 &Position::default(),
                 &Velocity::default(),
                 Mirrored::default(),
-                Grounding::default(),
+                Grounding::OnGround,
                 RunCounter::Increase(10)
             ))
         );
@@ -86,7 +86,7 @@ mod tests {
                 &Position::default(),
                 &Velocity::default(),
                 Mirrored(true),
-                Grounding::default(),
+                Grounding::OnGround,
                 RunCounter::Increase(11)
             ))
         );
@@ -106,7 +106,7 @@ mod tests {
                 &Position::default(),
                 &Velocity::default(),
                 Mirrored(false),
-                Grounding::default(),
+                Grounding::OnGround,
                 RunCounter::Increase(11)
             ))
         );
@@ -129,7 +129,7 @@ mod tests {
                         &Position::default(),
                         &Velocity::default(),
                         mirrored.into(),
-                        Grounding::default(),
+                        Grounding::OnGround,
                         RunCounter::Increase(1)
                     ))
                 );
@@ -150,7 +150,7 @@ mod tests {
                 &Position::default(),
                 &Velocity::default(),
                 Mirrored(false),
-                Grounding::default(),
+                Grounding::OnGround,
                 RunCounter::Decrease(10)
             ))
         );
@@ -170,7 +170,7 @@ mod tests {
                 &Position::default(),
                 &Velocity::default(),
                 Mirrored(true),
-                Grounding::default(),
+                Grounding::OnGround,
                 RunCounter::Decrease(10)
             ))
         );

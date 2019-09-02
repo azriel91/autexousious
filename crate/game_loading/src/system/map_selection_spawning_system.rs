@@ -82,10 +82,10 @@ mod tests {
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
-            .with_setup(setup_system_data)
-            .with_setup(load_maps)
-            .with_setup(map_selection(MAP_EMPTY_SLUG.clone()))
-            .with_setup(|world| {
+            .with_effect(setup_system_data)
+            .with_effect(load_maps)
+            .with_effect(map_selection(MAP_EMPTY_SLUG.clone()))
+            .with_effect(|world| {
                 let mut game_loading_status = GameLoadingStatus::new();
                 game_loading_status.map_loaded = true;
                 world.insert(game_loading_status);
@@ -131,9 +131,9 @@ mod tests {
                 .with_bundle(SpriteLoadingBundle::new())
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
-                .with_setup(setup_system_data)
-                .with_setup(load_maps)
-                .with_setup(map_selection(MAP_FADE_SLUG.clone()))
+                .with_effect(setup_system_data)
+                .with_effect(load_maps)
+                .with_effect(map_selection(MAP_FADE_SLUG.clone()))
                 .with_system_single(
                     MapSelectionSpawningSystem,
                     MapSelectionSpawningSystem::type_name(),
@@ -161,9 +161,9 @@ mod tests {
                 .with_bundle(SpriteLoadingBundle::new())
                 .with_bundle(SequenceLoadingBundle::new())
                 .with_bundle(MapLoadingBundle::new())
-                .with_setup(setup_system_data)
-                .with_setup(load_maps)
-                .with_setup(map_selection(MAP_EMPTY_SLUG.clone()))
+                .with_effect(setup_system_data)
+                .with_effect(load_maps)
+                .with_effect(map_selection(MAP_EMPTY_SLUG.clone()))
                 .with_system_single(
                     MapSelectionSpawningSystem,
                     MapSelectionSpawningSystem::type_name(),

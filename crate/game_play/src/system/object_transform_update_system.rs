@@ -107,7 +107,7 @@ mod test {
                 ObjectTransformUpdateSystem::type_name(),
                 &[],
             ) // kcov-ignore
-            .with_setup(setup)
+            .with_effect(setup)
             .with_assertion(assertion)
             .run()
     }

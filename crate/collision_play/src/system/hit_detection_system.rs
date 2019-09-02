@@ -159,7 +159,7 @@ mod tests {
     fn inserts_hit_event_when_hit_repeat_trackers_does_not_exist() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_system(HitDetectionSystem::new(), "", &[])
-            .with_setup(setup_event_reader)
+            .with_effect(setup_event_reader)
             .with_effect(|world| {
                 let entity_from = world.create_entity().build();
                 let entity_to = world.create_entity().build();
@@ -180,7 +180,7 @@ mod tests {
     {
         AmethystApplication::blank()
             .with_system(HitDetectionSystem::new(), "", &[])
-            .with_setup(setup_event_reader)
+            .with_effect(setup_event_reader)
             .with_effect(|world| {
                 let entity_from = world.create_entity().build();
                 let entity_to = world.create_entity().build();
@@ -208,7 +208,7 @@ mod tests {
     {
         AmethystApplication::blank()
             .with_system(HitDetectionSystem::new(), "", &[])
-            .with_setup(setup_event_reader)
+            .with_effect(setup_event_reader)
             .with_effect(|world| {
                 let entity_from = world.create_entity().build();
                 let entity_to = world.create_entity().build();
@@ -233,7 +233,7 @@ mod tests {
     fn limits_hit_events_to_remaining_hit_limit_count() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_system(HitDetectionSystem::new(), "", &[])
-            .with_setup(setup_event_reader)
+            .with_effect(setup_event_reader)
             .with_effect(|world| {
                 let entity_from = world.create_entity().build();
                 let entity_tos = (0..HIT_LIMIT)
@@ -276,7 +276,7 @@ mod tests {
     fn does_not_limit_hit_events_to_when_hit_limit_unlimited() -> Result<(), Error> {
         AmethystApplication::blank()
             .with_system(HitDetectionSystem::new(), "", &[])
-            .with_setup(setup_event_reader)
+            .with_effect(setup_event_reader)
             .with_effect(|world| {
                 let entity_from = world.create_entity().build();
                 let entity_tos = (0..(HIT_LIMIT + 5))

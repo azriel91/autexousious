@@ -131,7 +131,7 @@ mod tests {
                 &input,
                 &SequenceNameString::Name(CharacterSequenceName::default()),
                 Mirrored::default(),
-                Grounding::default()
+                Grounding::OnGround
             )
         );
     }
@@ -147,7 +147,7 @@ mod tests {
                 &input,
                 &SequenceNameString::Name(CharacterSequenceName::default()),
                 Mirrored::default(),
-                Grounding::default()
+                Grounding::OnGround
             )
         );
     }
@@ -163,7 +163,7 @@ mod tests {
                 &input,
                 &SequenceNameString::Name(CharacterSequenceName::default()),
                 Mirrored::default(),
-                Grounding::default()
+                Grounding::OnGround
             )
         );
     }
@@ -179,7 +179,7 @@ mod tests {
                 &input,
                 &SequenceNameString::Name(CharacterSequenceName::default()),
                 Mirrored::default(),
-                Grounding::default()
+                Grounding::OnGround
             )
         );
     }
@@ -202,7 +202,7 @@ mod tests {
                         &input,
                         &SequenceNameString::Name(CharacterSequenceName::default()),
                         mirrored.into(),
-                        Grounding::default()
+                        Grounding::OnGround
                     )
                 );
             });
@@ -222,7 +222,7 @@ mod tests {
                         &input,
                         &SequenceNameString::Name(CharacterSequenceName::default()),
                         mirrored.into(),
-                        Grounding::default()
+                        Grounding::OnGround
                     )
                 );
             });
@@ -242,7 +242,7 @@ mod tests {
                         &input,
                         &SequenceNameString::Name(CharacterSequenceName::default()),
                         mirrored.into(),
-                        Grounding::default()
+                        Grounding::OnGround
                     )
                 );
             });
@@ -262,7 +262,7 @@ mod tests {
                         &input,
                         &SequenceNameString::Name(CharacterSequenceName::default()),
                         mirrored.into(),
-                        Grounding::default()
+                        Grounding::OnGround
                     )
                 );
             });
@@ -282,7 +282,7 @@ mod tests {
                         &input,
                         &SequenceNameString::Name(CharacterSequenceName::default()),
                         mirrored.into(),
-                        Grounding::default()
+                        Grounding::OnGround
                     )
                 );
             });
@@ -302,7 +302,7 @@ mod tests {
                         &input,
                         &SequenceNameString::Name(CharacterSequenceName::default()),
                         mirrored.into(),
-                        Grounding::default()
+                        Grounding::OnGround
                     )
                 );
             });
@@ -322,7 +322,7 @@ mod tests {
                         &input,
                         &SequenceNameString::Name(CharacterSequenceName::default()),
                         mirrored.into(),
-                        Grounding::default()
+                        Grounding::OnGround
                     )
                 );
             });

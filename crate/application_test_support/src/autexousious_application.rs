@@ -115,7 +115,7 @@ impl AutexousiousApplication {
     pub fn game_base() -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader>
     {
         AutexousiousApplication::config_base()
-            .with_setup(|world| {
+            .with_effect(|world| {
                 let mut character_selections = CharacterSelections::default();
                 let controller_id = 0;
                 character_selections
@@ -126,7 +126,7 @@ impl AutexousiousApplication {
                 world.insert(character_selections);
                 world.insert(CharacterSelectionsStatus::Ready);
             })
-            .with_setup(SetupFunction::map_selection(MAP_FADE_SLUG.clone()))
+            .with_effect(SetupFunction::map_selection(MAP_FADE_SLUG.clone()))
             .with_state(|| GameLoadingState::new(|| Box::new(PopState)))
     }
 }

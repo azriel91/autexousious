@@ -9,6 +9,7 @@ use charge_model::{
 };
 use derivative::Derivative;
 use game_input::ControllerInput;
+use map_model::play::MapBounded;
 use object_model::{
     config::Mass,
     play::{Grounding, HealthPoints},
@@ -40,6 +41,9 @@ pub struct CharacterComponentStorages<'s> {
     /// `Mass` component storage.
     #[derivative(Debug = "ignore")]
     pub masses: WriteStorage<'s, Mass>,
+    /// `MapBounded` component storage.
+    #[derivative(Debug = "ignore")]
+    pub map_boundeds: WriteStorage<'s, MapBounded>,
     /// `ChargeTrackerClock` components.
     #[derivative(Debug = "ignore")]
     pub charge_tracker_clocks: WriteStorage<'s, ChargeTrackerClock>,

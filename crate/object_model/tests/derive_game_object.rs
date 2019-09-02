@@ -93,7 +93,7 @@ mod config {
 #[test]
 fn game_object_attribute_generates_handle_field() -> Result<()> {
     AmethystApplication::blank()
-        .with_setup(|world| {
+        .with_effect(|world| {
             world.insert(AssetStorage::<config::MagicDefinition>::new());
             world.insert(AssetStorage::<MagicObjectWrapper>::new());
         })

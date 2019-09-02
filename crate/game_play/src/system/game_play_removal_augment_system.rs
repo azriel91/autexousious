@@ -112,7 +112,7 @@ mod tests {
                 &[],
             )
             .with_resource(state_id)
-            .with_setup(spawn_entity)
+            .with_effect(spawn_entity)
             .with_assertion(move |world| assert_has_removal(world, has_removal_expected))
             .run()
     }

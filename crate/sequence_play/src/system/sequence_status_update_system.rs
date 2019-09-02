@@ -136,8 +136,8 @@ mod tests {
     ) -> Result<(), Error> {
         AutexousiousApplication::game_base()
             .with_system(SequenceStatusUpdateSystem::new(), "", &[])
-            .with_setup(entity_create_fn)
-            .with_setup(register_reader)
+            .with_effect(entity_create_fn)
+            .with_effect(register_reader)
             .with_effect(sequence_id_alter_fn)
             .with_assertion(move |world| expect_sequence_status(world, sequence_status_expected))
             .with_assertion(move |world| {

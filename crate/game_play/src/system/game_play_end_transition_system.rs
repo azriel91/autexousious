@@ -59,8 +59,8 @@ mod test {
             // kcov-ignore-end
             AmethystApplication::ui_base::<StringBindings>()
                 .with_resource(GamePlayStatus::Playing)
-                .with_setup(register_gpec_reader)
-                .with_setup(|world| setup_controller_input(world, false, false))
+                .with_effect(register_gpec_reader)
+                .with_effect(|world| setup_controller_input(world, false, false))
                 .with_system_single(
                     GamePlayEndTransitionSystem::new(),
                     GamePlayEndTransitionSystem::type_name(),
@@ -79,8 +79,8 @@ mod test {
             // kcov-ignore-end
             AmethystApplication::ui_base::<StringBindings>()
                 .with_resource(GamePlayStatus::Ended)
-                .with_setup(register_gpec_reader)
-                .with_setup(|world| setup_controller_input(world, true, false))
+                .with_effect(register_gpec_reader)
+                .with_effect(|world| setup_controller_input(world, true, false))
                 .with_system_single(
                     GamePlayEndTransitionSystem::new(),
                     GamePlayEndTransitionSystem::type_name(),
@@ -99,8 +99,8 @@ mod test {
             // kcov-ignore-end
             AmethystApplication::ui_base::<StringBindings>()
                 .with_resource(GamePlayStatus::Ended)
-                .with_setup(register_gpec_reader)
-                .with_setup(|world| setup_controller_input(world, true, true))
+                .with_effect(register_gpec_reader)
+                .with_effect(|world| setup_controller_input(world, true, true))
                 .with_system_single(
                     GamePlayEndTransitionSystem::new(),
                     GamePlayEndTransitionSystem::type_name(),
@@ -119,8 +119,8 @@ mod test {
             // kcov-ignore-end
             AmethystApplication::ui_base::<StringBindings>()
                 .with_resource(GamePlayStatus::Ended)
-                .with_setup(register_gpec_reader)
-                .with_setup(|world| setup_controller_input(world, false, true))
+                .with_effect(register_gpec_reader)
+                .with_effect(|world| setup_controller_input(world, false, true))
                 .with_system_single(
                     GamePlayEndTransitionSystem::new(),
                     GamePlayEndTransitionSystem::type_name(),

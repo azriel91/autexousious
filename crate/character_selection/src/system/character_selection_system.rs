@@ -138,7 +138,7 @@ mod tests {
                 CharacterSelectionSystem::type_name(),
                 &[],
             ) // kcov-ignore
-            .with_setup(|world| {
+            .with_effect(|world| {
                 send_event(
                     world,
                     CharacterSelectionEvent::Select {
@@ -188,13 +188,13 @@ mod tests {
                 CharacterSelectionSystem::type_name(),
                 &[],
             )
-            .with_setup(|world| {
+            .with_effect(|world| {
                 world
                     .write_resource::<CharacterSelections>()
                     .selections
                     .insert(123, CHAR_BAT_SLUG.clone());
             })
-            .with_setup(|world| {
+            .with_effect(|world| {
                 send_event(
                     world,
                     CharacterSelectionEvent::Deselect { controller_id: 123 },

@@ -293,7 +293,7 @@ mod test {
     #[test]
     fn initializes_ui_when_menu_item_widget_states_zero() -> Result<(), Error> {
         AutexousiousApplication::config_base()
-            .with_setup(|world| world.insert(input_config()))
+            .with_effect(|world| world.insert(input_config()))
             .with_system_single(
                 GameModeSelectionWidgetUiSystem::new(),
                 GameModeSelectionWidgetUiSystem::type_name(),

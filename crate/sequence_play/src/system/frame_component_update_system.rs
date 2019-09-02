@@ -215,7 +215,7 @@ mod tests {
     ) -> Result<(), Error> {
         AutexousiousApplication::game_base()
             .with_system(FrameComponentUpdateSystem::<WaitSequence>::new(), "", &[])
-            .with_setup(move |world| {
+            .with_effect(move |world| {
                 let frame_component_data_handle = if attach_frame_component_data_handle {
                     Some(SequenceQueries::wait_sequence_handle(
                         world,
@@ -232,7 +232,7 @@ mod tests {
                     frame_component_data_handle,
                 )
             })
-            .with_setup(move |world| {
+            .with_effect(move |world| {
                 let events = sequence_update_events_fn(world);
                 send_events(world, events);
             })

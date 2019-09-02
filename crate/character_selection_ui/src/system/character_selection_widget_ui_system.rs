@@ -244,7 +244,7 @@ mod test {
         assert!(
             // kcov-ignore-end
             AutexousiousApplication::config_base()
-                .with_setup(|world| world.insert(input_config()))
+                .with_effect(|world| world.insert(input_config()))
                 .with_system_single(
                     CharacterSelectionWidgetUiSystem::new(),
                     CharacterSelectionWidgetUiSystem::type_name(),
