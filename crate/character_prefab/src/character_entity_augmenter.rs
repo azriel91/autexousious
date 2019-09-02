@@ -4,6 +4,7 @@ use amethyst::ecs::Entity;
 use character_model::{config::CharacterDefinition, play::RunCounter};
 use charge_model::play::{ChargeRetention, ChargeTrackerClock};
 use game_input::ControllerInput;
+use map_model::play::MapBounded;
 use object_model::{
     config::Mass,
     play::{Grounding, HealthPoints},
@@ -35,6 +36,7 @@ impl CharacterEntityAugmenter {
             ref mut run_counters,
             ref mut groundings,
             ref mut masses,
+            ref mut map_boundeds,
             ref mut charge_tracker_clocks,
             ref mut charge_limits,
             ref mut charge_delays,
@@ -62,6 +64,9 @@ impl CharacterEntityAugmenter {
         masses
             .insert(entity, CHARACTER_MASS_DEFAULT)
             .expect("Failed to insert `Mass` component.");
+        map_boundeds
+            .insert(entity, MapBounded::default())
+            .expect("Failed to insert `MapBounded` component.");
         charge_tracker_clocks
             .insert(
                 entity,
@@ -106,6 +111,7 @@ mod test {
         play::{ChargeRetention, ChargeTrackerClock},
     };
     use game_input::ControllerInput;
+    use map_model::play::MapBounded;
     use object_model::{
         config::Mass,
         play::{Grounding, HealthPoints},
@@ -134,6 +140,7 @@ mod test {
             assert!(world.read_storage::<RunCounter>().contains(entity));
             assert!(world.read_storage::<Grounding>().contains(entity));
             assert!(world.read_storage::<Mass>().contains(entity));
+            assert!(world.read_storage::<MapBounded>().contains(entity));
             assert!(world.read_storage::<ChargeTrackerClock>().contains(entity));
             assert!(world.read_storage::<ChargeLimit>().contains(entity));
             assert!(world.read_storage::<ChargeDelay>().contains(entity));
