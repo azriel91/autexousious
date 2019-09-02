@@ -93,8 +93,8 @@ frames:
         let expected = CharacterSequence::new(
             ObjectSequence {
                 next: SequenceEndTransition::None,
-                acceleration: ObjectAcceleration::default(),
                 frames,
+                ..Default::default()
             },
             Some(character_control_transitions),
         );

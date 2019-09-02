@@ -142,7 +142,8 @@ impl ObjectLoader {
                             frame
                                 .object_frame()
                                 .acceleration
-                                .unwrap_or_else(|| object_sequence.acceleration)
+                                .or_else(|| object_sequence.acceleration)
+                                .unwrap_or_else(|| ObjectAcceleration::default())
                         })
                         .collect::<Vec<ObjectAcceleration>>(),
                 );

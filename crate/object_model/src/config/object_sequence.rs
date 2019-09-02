@@ -31,7 +31,7 @@ where
     /// character that is in mid-air should remain in the last frame until it lands on the ground.
     pub next: SequenceEndTransition<SeqName>,
     /// Acceleration to apply to the object on this frame.
-    pub acceleration: ObjectAcceleration,
+    pub acceleration: Option<ObjectAcceleration>,
     /// Key frames in the animation sequence.
     pub frames: Vec<Frame>,
 }
@@ -305,7 +305,7 @@ frames:
         }];
         let expected = ObjectSequence {
             next: SequenceEndTransition::None,
-            acceleration: ObjectAcceleration {
+            acceleration: Some(ObjectAcceleration {
                 kind: ObjectAccelerationKind::Continuous,
                 x: ObjectAccelerationValue::Expr(ObjectAccelerationValueExpr {
                     multiplier: ObjectAccelerationValueMultiplier::One,
@@ -316,7 +316,7 @@ frames:
                     multiplier: ObjectAccelerationValueMultiplier::ZAxis,
                     value: -3.,
                 }),
-            },
+            }),
             frames,
         };
         assert_eq!(expected, sequence);
