@@ -52,7 +52,7 @@ impl<'s> System<'s> for GroundingFrictionSystem {
                         velocity[2] /= 2.;
                     }
                 }
-                Grounding::Airborne => {}
+                Grounding::Airborne | Grounding::Underground => {}
             });
     }
 }

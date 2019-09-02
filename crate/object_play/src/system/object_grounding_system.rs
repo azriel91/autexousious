@@ -1,31 +1,32 @@
 use amethyst::{
-    ecs::{Read, ReadStorage, System, World, WriteStorage},
+    assets::AssetStorage,
+    ecs::{Join, Read, ReadExpect, ReadStorage, System, World, WriteStorage},
     shred::{ResourceId, SystemData},
-    shrev::{EventChannel, ReaderId},
 };
 use derivative::Derivative;
 use derive_new::new;
-use map_model::play::{BoundaryFace, MapBoundaryEvent, MapBoundaryEventData, MapBounded};
+use kinematic_model::config::Position;
+use map_model::loaded::Map;
+use map_selection_model::MapSelection;
 use object_model::play::Grounding;
 use typename_derive::TypeName;
 
-/// Updates the `Grounding` for objects that are `MapBounded` and exit the map bottom boundary.
+/// Updates `Grounding` to `Airborne` for objects above the map bottom boundary.
 #[derive(Debug, Default, TypeName, new)]
-pub struct ObjectGroundingSystem {
-    /// Reader ID for the `MapBoundaryEvent` channel.
-    #[new(default)]
-    map_boundary_event_rid: Option<ReaderId<MapBoundaryEvent>>,
-}
+pub struct ObjectGroundingSystem;
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct ObjectGroundingSystemData<'s> {
-    /// `MapBoundaryEvent` channel.
+    /// `MapSelection` resource.
     #[derivative(Debug = "ignore")]
-    pub map_boundary_ec: Read<'s, EventChannel<MapBoundaryEvent>>,
-    /// `MapBounded` components.
+    pub map_selection: ReadExpect<'s, MapSelection>,
+    /// `Map` assets.
     #[derivative(Debug = "ignore")]
-    pub map_boundeds: ReadStorage<'s, MapBounded>,
+    pub maps: Read<'s, AssetStorage<Map>>,
+    /// `Position<f32>` components.
+    #[derivative(Debug = "ignore")]
+    pub positions: ReadStorage<'s, Position<f32>>,
     /// `Grounding` components.
     #[derivative(Debug = "ignore")]
     pub groundings: WriteStorage<'s, Grounding>,
@@ -37,105 +38,61 @@ impl<'s> System<'s> for ObjectGroundingSystem {
     fn run(
         &mut self,
         ObjectGroundingSystemData {
-            map_boundary_ec,
-            map_boundeds,
+            map_selection,
+            maps,
+            positions,
             mut groundings,
         }: Self::SystemData,
     ) {
-        let map_boundary_event_rid = self
-            .map_boundary_event_rid
-            .as_mut()
-            .expect("Expected `map_boundary_event_rid` field to be set.");
+        let map_margins = {
+            maps.get(map_selection.handle())
+                .map(|map| &map.margins)
+                .expect("Expected map to be loaded.")
+        };
 
-        map_boundary_ec.read(map_boundary_event_rid).for_each(|ev| {
-            if let MapBoundaryEvent::Exit(MapBoundaryEventData {
-                entity,
-                boundary_faces,
-            }) = ev
-            {
-                if boundary_faces.contains(BoundaryFace::Bottom) {
-                    let entity = *entity;
-                    if let (Some(_), Some(grounding)) =
-                        (map_boundeds.get(entity), groundings.get_mut(entity))
-                    {
-                        *grounding = Grounding::OnGround;
-                    }
+        (&positions, &mut groundings)
+            .join()
+            .for_each(|(position, grounding)| {
+                if position[1] > map_margins.bottom {
+                    *grounding = Grounding::Airborne;
+                } else if position[1] < map_margins.bottom {
+                    *grounding = Grounding::Underground;
+                } else {
+                    *grounding = Grounding::OnGround;
                 }
-            }
-        });
-    }
-
-    fn setup(&mut self, world: &mut World) {
-        Self::SystemData::setup(world);
-
-        self.map_boundary_event_rid = Some(
-            world
-                .fetch_mut::<EventChannel<MapBoundaryEvent>>()
-                .register_reader(),
-        );
+            });
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
+
     use amethyst::{
+        assets::{AssetStorage, Loader},
         ecs::{Builder, Entity, System, SystemData, World, WorldExt},
-        shrev::EventChannel,
         Error,
     };
     use amethyst_test::AmethystApplication;
-    use enumflags2::BitFlags;
-    use map_model::play::{BoundaryFace, MapBoundaryEvent, MapBoundaryEventData, MapBounded};
+    use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
+    use kinematic_model::config::Position;
+    use map_loading::MapLoadingBundle;
+    use map_model::{
+        config::{MapBounds, MapDefinition, MapHeader},
+        loaded::{Map, Margins},
+    };
+    use map_selection_model::MapSelection;
     use object_model::play::Grounding;
     use typename::TypeName;
 
     use super::ObjectGroundingSystem;
 
     #[test]
-    fn does_not_change_grounding_when_no_map_boundary_event() -> Result<(), Error> {
+    fn sets_grounding_to_on_ground_when_on_bottom_boundary() -> Result<(), Error> {
         run_test(
             SetupParams {
                 grounding: Grounding::Airborne,
-                map_boundary_event_fn: None,
-            },
-            ExpectedParams {
-                grounding: Grounding::Airborne,
-            },
-        )
-    }
-
-    #[test]
-    fn does_not_change_grounding_on_enter_event() -> Result<(), Error> {
-        run_test(
-            SetupParams {
-                grounding: Grounding::Airborne,
-                map_boundary_event_fn: Some(|entity| {
-                    let boundary_faces =
-                        BoundaryFace::Left | BoundaryFace::Bottom | BoundaryFace::Back;
-                    MapBoundaryEvent::Enter(MapBoundaryEventData {
-                        entity,
-                        boundary_faces,
-                    })
-                }),
-            },
-            ExpectedParams {
-                grounding: Grounding::Airborne,
-            },
-        )
-    }
-
-    #[test]
-    fn sets_grounding_to_on_ground_on_exit_event_bottom() -> Result<(), Error> {
-        run_test(
-            SetupParams {
-                grounding: Grounding::Airborne,
-                map_boundary_event_fn: Some(|entity| {
-                    let boundary_faces = BitFlags::from(BoundaryFace::Bottom);
-                    MapBoundaryEvent::Exit(MapBoundaryEventData {
-                        entity,
-                        boundary_faces,
-                    })
-                }),
+                position: Position::new(0., 200., 0.),
             },
             ExpectedParams {
                 grounding: Grounding::OnGround,
@@ -143,39 +100,70 @@ mod tests {
         )
     }
 
+    #[test]
+    fn sets_grounding_to_underground_when_below_ground() -> Result<(), Error> {
+        run_test(
+            SetupParams {
+                grounding: Grounding::OnGround,
+                position: Position::new(0., 190., 0.),
+            },
+            ExpectedParams {
+                grounding: Grounding::Underground,
+            },
+        )
+    }
+
+    #[test]
+    fn sets_grounding_to_airborne_when_above_ground() -> Result<(), Error> {
+        run_test(
+            SetupParams {
+                grounding: Grounding::OnGround,
+                position: Position::new(0., 210., 0.),
+            },
+            ExpectedParams {
+                grounding: Grounding::Airborne,
+            },
+        )
+    }
+
     fn run_test(
         SetupParams {
             grounding,
-            map_boundary_event_fn,
+            position,
         }: SetupParams,
         ExpectedParams {
             grounding: grounding_expected,
         }: ExpectedParams,
     ) -> Result<(), Error> {
         AmethystApplication::blank()
-            .with_system(
+            .with_bundle(MapLoadingBundle::new())
+            .with_setup(setup_system_data)
+            .with_setup(|world| {
+                let map_handle = {
+                    let map = empty_map();
+                    let loader = world.read_resource::<Loader>();
+                    let map_assets = world.read_resource::<AssetStorage<Map>>();
+
+                    loader.load_from_data(map, (), &map_assets)
+                };
+
+                let slug = AssetSlug::from_str("test/empty_map")
+                    .expect("Expected asset slug to be valid.");
+                let snh = SlugAndHandle::new(slug, map_handle);
+                let map_selection = MapSelection::Id(snh);
+
+                world.insert(map_selection);
+            })
+            .with_effect(move |world| {
+                let entity = world.create_entity().with(grounding).with(position).build();
+
+                world.insert(entity);
+            })
+            .with_system_single(
                 ObjectGroundingSystem::new(),
                 ObjectGroundingSystem::type_name(),
                 &[],
             ) // kcov-ignore
-            .with_setup(setup_system_data)
-            .with_effect(move |world| {
-                let entity = world
-                    .create_entity()
-                    .with(grounding)
-                    .with(MapBounded)
-                    .build();
-
-                if let Some(map_boundary_event_fn) = map_boundary_event_fn {
-                    let map_boundary_event = map_boundary_event_fn(entity);
-                    let mut map_boundary_ec =
-                        world.write_resource::<EventChannel<MapBoundaryEvent>>();
-
-                    map_boundary_ec.single_write(map_boundary_event);
-                }
-
-                world.insert(entity);
-            })
             .with_assertion(move |world| {
                 let entity = *world.read_resource::<Entity>();
                 let groundings = world.read_storage::<Grounding>();
@@ -193,9 +181,23 @@ mod tests {
         <ObjectGroundingSystem as System<'_>>::SystemData::setup(world);
     }
 
+    fn empty_map() -> Map {
+        let map_bounds = MapBounds::new(0, 0, 0, 800, 600, 200);
+        let map_header = MapHeader::new(String::from("empty_map"), map_bounds);
+        let map_definition = MapDefinition::new(map_header, Vec::new());
+        let map_margins = Margins::from(map_bounds);
+        Map::new(
+            map_definition,
+            map_margins,
+            Vec::new(),
+            Vec::new(),
+            Vec::new(),
+        )
+    }
+
     struct SetupParams {
         grounding: Grounding,
-        map_boundary_event_fn: Option<fn(Entity) -> MapBoundaryEvent>,
+        position: Position<f32>,
     }
 
     struct ExpectedParams {
