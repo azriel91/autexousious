@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::config::{EnergyFrame, EnergySequenceName};
 
 /// Represents an independent action sequence of an `Energy`.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, new)]
 #[serde(deny_unknown_fields)]
 pub struct EnergySequence {
     /// Object sequence for common object fields.
@@ -25,7 +25,7 @@ impl GameObjectSequence for EnergySequence {
 #[cfg(test)]
 mod tests {
     use object_model::config::{ObjectFrame, ObjectSequence};
-    use sequence_model::config::{SequenceEndTransition, Wait};
+    use sequence_model::config::Wait;
     use serde_yaml;
     use sprite_model::config::SpriteRef;
 
@@ -44,8 +44,7 @@ frames:
         let sequence = serde_yaml::from_str::<EnergySequence>(SEQUENCE_WITH_FRAMES_EMPTY)
             .expect("Failed to deserialize sequence.");
 
-        let expected =
-            EnergySequence::new(ObjectSequence::new(SequenceEndTransition::None, vec![]));
+        let expected = EnergySequence::default();
         assert_eq!(expected, sequence);
     }
 
@@ -59,8 +58,10 @@ frames:
             sprite: SpriteRef::new(0, 4),
             ..Default::default()
         })];
-        let expected =
-            EnergySequence::new(ObjectSequence::new(SequenceEndTransition::None, frames));
+        let expected = EnergySequence::new(ObjectSequence {
+            frames,
+            ..Default::default()
+        });
 
         assert_eq!(expected, sequence);
     }

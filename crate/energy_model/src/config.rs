@@ -52,12 +52,13 @@ sequences:
             }]),
             ..Default::default()
         })];
-        let sequence = EnergySequence::new(ObjectSequence::new(
-            SequenceEndTransition::SequenceName(SequenceNameString::Name(
+        let sequence = EnergySequence::new(ObjectSequence {
+            next: SequenceEndTransition::SequenceName(SequenceNameString::Name(
                 EnergySequenceName::Hover,
             )),
             frames,
-        ));
+            ..Default::default()
+        });
         let mut sequences = IndexMap::new();
         sequences.insert(
             SequenceNameString::Name(EnergySequenceName::Hover),
