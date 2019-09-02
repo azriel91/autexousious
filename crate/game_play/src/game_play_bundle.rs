@@ -30,7 +30,10 @@ use kinematic_model::{
     config::Position,
     loaded::{ObjectAccelerationSequence, ObjectAccelerationSequenceHandles},
 };
-use map_play::{KeepWithinMapBoundsSystem, MapEnterExitDetectionSystem};
+use map_play::{
+    KeepWithinMapBoundsSystem, MapEnterExitDetectionSystem, MapOutOfBoundsClockAugmentSystem,
+    MapOutOfBoundsDeletionSystem,
+};
 use named_type::NamedType;
 use object_play::{
     ObjectAccelerationSystem, ObjectGravitySystem, ObjectGroundingSystem, ObjectMirroringSystem,
@@ -246,6 +249,17 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             ObjectGroundingSystem::new(),
             &ObjectGroundingSystem::type_name(),
             &[&MapEnterExitDetectionSystem::type_name()],
+        ); // kcov-ignore
+
+        builder.add(
+            MapOutOfBoundsDeletionSystem::new(),
+            &MapOutOfBoundsDeletionSystem::type_name(),
+            &[&MapEnterExitDetectionSystem::type_name()],
+        ); // kcov-ignore
+        builder.add(
+            MapOutOfBoundsClockAugmentSystem::new(),
+            &MapOutOfBoundsClockAugmentSystem::type_name(),
+            &[&MapOutOfBoundsDeletionSystem::type_name()],
         ); // kcov-ignore
 
         builder.add(
