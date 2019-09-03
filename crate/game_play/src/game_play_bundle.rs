@@ -1,6 +1,7 @@
 use amethyst::{
     core::bundle::SystemBundle,
     ecs::{DispatcherBuilder, World},
+    utils::ortho_camera::CameraOrthoSystem,
     Error,
 };
 use character_model::loaded::CharacterObjectWrapper;
@@ -407,6 +408,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &GamePlayEndTransitionSystem::type_name(),
             &[&GamePlayEndDetectionSystem::type_name()],
         ); // kcov-ignore
+
+        builder.add(CameraOrthoSystem::default(), "camera_ortho", &[]); // kcov-ignore
 
         let position_tracker_system =
             LastTrackerSystem::<Position<f32>>::new(stringify!(Position<f32>));
