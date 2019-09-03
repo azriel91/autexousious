@@ -2,8 +2,8 @@
 (
   title: "Autexousious",
   dimensions: Some((800, 600)),
-  max_dimensions: Some((800, 600)),
-  min_dimensions: Some((800, 600)),
+  max_dimensions: None,
+  min_dimensions: None,
   fullscreen: None,
   multisampling: 0, // #12
   visibility: true,

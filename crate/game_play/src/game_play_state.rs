@@ -4,7 +4,10 @@ use amethyst::{
     input::{is_key_down, VirtualKeyCode},
     renderer::camera::{Camera, Projection},
     shred::Dispatcher,
-    utils::removal::{self, Removal},
+    utils::{
+        ortho_camera::{CameraNormalizeMode, CameraOrtho, CameraOrthoWorldCoordinates},
+        removal::{self, Removal},
+    },
     window::ScreenDimensions,
     GameData, State, StateData, Trans,
 };
@@ -19,7 +22,12 @@ use state_registry::StateId;
 use crate::GamePlayBundle;
 
 /// Depth the camera can see.
-const CAMERA_DEPTH: f32 = 10000.;
+const CAMERA_DEPTH: f32 = 2000.;
+
+/// Visible play area width.
+const PLAY_WIDTH: f32 = 800.;
+/// Visible play area height.
+const PLAY_HEIGHT: f32 = 600.;
 
 /// `State` where game play takes place.
 #[derive(Derivative, Default, new)]
@@ -103,6 +111,15 @@ impl GamePlayState {
         let translation = Vector3::new(0., 0., CAMERA_DEPTH / 2.);
         let transform = Transform::from(translation);
 
+        let world_coordinates = CameraOrthoWorldCoordinates {
+            left: 0.,
+            right: PLAY_WIDTH,
+            bottom: -PLAY_HEIGHT,
+            top: 0.,
+        };
+        let mut camera_ortho = CameraOrtho::normalized(CameraNormalizeMode::Contain);
+        camera_ortho.world_coordinates = world_coordinates;
+
         let camera = world
             .create_entity()
             .with(Camera::from(Projection::orthographic(
@@ -116,6 +133,7 @@ impl GamePlayState {
                 // all entities in front of it.
                 CAMERA_DEPTH,
             )))
+            .with(camera_ortho)
             .with(transform)
             .build();
 
