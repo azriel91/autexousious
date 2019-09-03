@@ -9,6 +9,7 @@
 * Detect out of bounds entities. ([#142])
 * Use events to detect and reposition `MapBounded` entities. ([#142])
 * Delete out of bounds entities. ([#142])
+* During game play, camera is readjusted when window is resized. ([#161])
 
 ### Changed
 
@@ -19,6 +20,7 @@
 [#154]: https://gitlab.com/azriel91/autexousious/issues/154
 [#155]: https://gitlab.com/azriel91/autexousious/issues/155
 [#160]: https://gitlab.com/azriel91/autexousious/issues/160
+[#161]: https://gitlab.com/azriel91/autexousious/issues/161
 
 ## 0.13.0 (2019-08-16)
 
