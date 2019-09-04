@@ -7,6 +7,7 @@ edition = "2018"
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 application_event = { path = "../application_event" }
+camera_model = { path = "../camera_model" }
 character_model = { path = "../character_model" }
 character_play = { path = "../character_play" }
 character_selection = { path = "../character_selection" }
