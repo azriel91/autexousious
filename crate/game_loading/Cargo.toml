@@ -8,6 +8,7 @@ edition = "2018"
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 application_event = { path = "../application_event" }
 application_state = { path = "../application_state" }
+camera_model = { path = "../camera_model" }
 character_model = { path = "../character_model" }
 character_prefab = { path = "../character_prefab" }
 character_selection_model = { path = "../character_selection_model" }

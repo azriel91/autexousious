@@ -1,18 +1,13 @@
 use amethyst::{
-    core::{math::Vector3, SystemBundle, Transform},
-    ecs::{Builder, DispatcherBuilder, Entity, Read, World, WorldExt},
+    core::SystemBundle,
+    ecs::{DispatcherBuilder, Entity, World, WorldExt},
     input::{is_key_down, VirtualKeyCode},
-    renderer::camera::{Camera, Projection},
     shred::Dispatcher,
-    utils::{
-        ortho_camera::{CameraNormalizeMode, CameraOrtho, CameraOrthoWorldCoordinates},
-        removal::{self, Removal},
-    },
-    window::ScreenDimensions,
+    utils::removal::{self, Removal},
     GameData, State, StateData, Trans,
 };
 use application_event::AppEvent;
-use camera_model::play::CameraZoomDimensions;
+use camera_play::CameraCreator;
 use derivative::Derivative;
 use derive_new::new;
 use game_model::play::GameEntities;
@@ -21,9 +16,6 @@ use log::{debug, info};
 use state_registry::StateId;
 
 use crate::GamePlayBundle;
-
-/// Depth the camera can see.
-const CAMERA_DEPTH: f32 = 2000.;
 
 /// `State` where game play takes place.
 #[derive(Derivative, Default, new)]
@@ -91,53 +83,7 @@ impl GamePlayState {
 
     /// Initializes a camera to view the game.
     fn initialize_camera(&mut self, world: &mut World) {
-        let (window_width, window_height) = {
-            let screen_dimensions = world.read_resource::<ScreenDimensions>();
-            (screen_dimensions.width(), screen_dimensions.height())
-        };
-        let (zoom_width, zoom_height) = {
-            world.setup::<Read<'_, CameraZoomDimensions>>();
-            let camera_zoom_dimensions = world.read_resource::<CameraZoomDimensions>();
-            (camera_zoom_dimensions.width, camera_zoom_dimensions.height)
-        };
-
-        // Camera translation from origin.
-        //
-        // The Z coordinate of the camera is how far along it should be before it faces the
-        // entities. If an entity's Z coordinate is greater than the camera's Z coordinate, it will
-        // be culled.
-        //
-        // By using `::std::f32::MAX` here, we ensure that all entities will be in the camera's
-        // view.
-        let translation = Vector3::new(zoom_width / 2., zoom_height / 2., CAMERA_DEPTH / 2.);
-        let transform = Transform::from(translation);
-
-        let world_coordinates = CameraOrthoWorldCoordinates {
-            left: -zoom_width / 2.,
-            right: zoom_width / 2.,
-            bottom: -zoom_height / 2.,
-            top: zoom_height / 2.,
-        };
-        let mut camera_ortho = CameraOrtho::normalized(CameraNormalizeMode::Contain);
-        camera_ortho.world_coordinates = world_coordinates;
-
-        let camera = world
-            .create_entity()
-            .with(Camera::from(Projection::orthographic(
-                -window_width / 2.,
-                window_width / 2.,
-                -window_height / 2.,
-                window_height / 2.,
-                0.,
-                // The distance that the camera can see. Since the camera is moved to the maximum Z
-                // position, we also need to give it maximum Z viewing distance to ensure it can see
-                // all entities in front of it.
-                CAMERA_DEPTH,
-            )))
-            .with(camera_ortho)
-            .with(transform)
-            .build();
-
+        let camera = CameraCreator::create_in_world(world);
         self.camera = Some(camera);
     }
 

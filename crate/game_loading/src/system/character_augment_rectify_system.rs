@@ -7,6 +7,7 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     utils::removal::Removal,
 };
+use camera_model::play::CameraTracked;
 use character_prefab::CharacterPrefabHandle;
 use derivative::Derivative;
 use derive_new::new;
@@ -45,6 +46,9 @@ pub struct CharacterAugmentRectifySystemData<'s> {
     /// `InputControlled` components.
     #[derivative(Debug = "ignore")]
     pub input_controlleds: ReadStorage<'s, InputControlled>,
+    /// `CameraTracked` components.
+    #[derivative(Debug = "ignore")]
+    pub camera_trackeds: WriteStorage<'s, CameraTracked>,
     /// `Position<f32>` components.
     #[derivative(Debug = "ignore")]
     pub positions: WriteStorage<'s, Position<f32>>,
@@ -106,6 +110,7 @@ impl<'s> System<'s> for CharacterAugmentRectifySystem {
             map_assets,
             character_prefab_handles,
             input_controlleds,
+            mut camera_trackeds,
             mut positions,
             lazy_update,
         }: Self::SystemData,
@@ -143,7 +148,12 @@ impl<'s> System<'s> for CharacterAugmentRectifySystem {
                 // Set character `position` based on the map.
                 positions
                     .insert(entity, position)
-                    .expect("Failed to insert position for character.");
+                    .expect("Failed to insert `Position<f32>` component.");
+
+                // Track player with camera.
+                camera_trackeds
+                    .insert(entity, CameraTracked)
+                    .expect("Failed to insert `CameraTracked` component.");
             });
 
         (&entities, &input_controlleds, &character_prefab_handles)
