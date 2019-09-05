@@ -9,7 +9,10 @@ use camera_model::play::{CameraTargetCoordinates, CameraTracked, CameraZoomDimen
 use derivative::Derivative;
 use derive_new::new;
 use kinematic_model::config::Position;
-use map_model::loaded::Map;
+use map_model::{
+    config::MapBounds,
+    loaded::{Map, Margins},
+};
 use map_selection_model::MapSelection;
 use typename_derive::TypeName;
 
@@ -43,37 +46,27 @@ pub struct CameraTrackingSystemData<'s> {
     pub camera_target_coordinateses: WriteStorage<'s, CameraTargetCoordinates>,
 }
 
-impl<'s> System<'s> for CameraTrackingSystem {
-    type SystemData = CameraTrackingSystemData<'s>;
-
-    fn run(
-        &mut self,
-        CameraTrackingSystemData {
-            camera_zoom_dimensions,
-            map_selection,
-            map_assets,
-            camera_trackeds,
-            positions,
-            cameras,
-            mut camera_target_coordinateses,
-        }: Self::SystemData,
-    ) {
-        let map = map_assets
-            .get(map_selection.handle())
-            .expect("Expected map to be loaded.");
-        let map_margins = &map.margins;
-        let map_bounds = &map.definition.header.bounds;
-
-        // Focus on tracked entities.
-        //
-        // Keep the average x in the middle of the screen.
-        // Keep the average (y + z) at 40% distance from bottom of the screen.
-        let positions = (&camera_trackeds, &positions)
+impl CameraTrackingSystem {
+    /// Returns the mean position of `CameraTracked` entities.
+    fn position_average(
+        camera_trackeds: &ReadStorage<'_, CameraTracked>,
+        positions: &ReadStorage<'_, Position<f32>>,
+    ) -> Vector3<f32> {
+        let positions = (camera_trackeds, positions)
             .join()
             .map(|(_, position)| **position)
             .collect::<Vec<Vector3<f32>>>();
-        let position_avg: Vector3<f32> =
-            positions.iter().sum::<Vector3<f32>>() / (positions.len() as f32);
+
+        positions.iter().sum::<Vector3<f32>>() / (positions.len() as f32)
+    }
+
+    /// Returns the coordinates for the camera to focus on the average position.
+    fn coordinates_centred(
+        map_margins: Margins,
+        map_bounds: MapBounds,
+        camera_zoom_dimensions: CameraZoomDimensions,
+        position_avg: Vector3<f32>,
+    ) -> (f32, f32, f32) {
         let x_centred = if camera_zoom_dimensions.width < map_bounds.width as f32 {
             position_avg
                 .x
@@ -98,6 +91,44 @@ impl<'s> System<'s> for CameraTrackingSystem {
                 camera_zoom_dimensions.height / 2.
             };
         let z_centred = position_avg.z + camera_zoom_dimensions.depth / 2.;
+
+        (x_centred, y_centred, z_centred)
+    }
+}
+
+impl<'s> System<'s> for CameraTrackingSystem {
+    type SystemData = CameraTrackingSystemData<'s>;
+
+    fn run(
+        &mut self,
+        CameraTrackingSystemData {
+            camera_zoom_dimensions,
+            map_selection,
+            map_assets,
+            camera_trackeds,
+            positions,
+            cameras,
+            mut camera_target_coordinateses,
+        }: Self::SystemData,
+    ) {
+        let map = map_assets
+            .get(map_selection.handle())
+            .expect("Expected map to be loaded.");
+        let map_margins = map.margins;
+        let map_bounds = map.definition.header.bounds;
+
+        // Focus on tracked entities.
+        //
+        // Keep the average x in the middle of the screen, offset by the direction characters are
+        // facing.
+        // Keep the average (y + z) in the middle of the screen.
+        let position_avg = Self::position_average(&camera_trackeds, &positions);
+        let (x_centred, y_centred, z_centred) = Self::coordinates_centred(
+            map_margins,
+            map_bounds,
+            *camera_zoom_dimensions,
+            position_avg,
+        );
 
         (&cameras, &mut camera_target_coordinateses)
             .join()
