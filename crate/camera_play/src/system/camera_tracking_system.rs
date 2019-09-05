@@ -74,23 +74,30 @@ impl<'s> System<'s> for CameraTrackingSystem {
             .collect::<Vec<Vector3<f32>>>();
         let position_avg: Vector3<f32> =
             positions.iter().sum::<Vector3<f32>>() / (positions.len() as f32);
-        let x_centred = position_avg
-            .x
-            .max(map_margins.left + camera_zoom_dimensions.width / 2.)
-            .min(map_margins.right - camera_zoom_dimensions.width / 2.);
-        let y_centred = {
-            // Subtract Z because Z+ is rendered downwards.
-            let yz_avg = position_avg.y - position_avg.z;
-            let bounded_max = map_margins.top
-                - map_margins.back
-                - map_bounds.depth as f32
-                - camera_zoom_dimensions.height / 2.;
-            let bounded_min = map_margins.bottom - map_margins.front - map_bounds.depth as f32
-                + camera_zoom_dimensions.height / 2.;
-
-            yz_avg.max(bounded_min).min(bounded_max)
+        let x_centred = if camera_zoom_dimensions.width < map_bounds.width as f32 {
+            position_avg
+                .x
+                .max(map_margins.left + camera_zoom_dimensions.width / 2.)
+                .min(map_margins.right - camera_zoom_dimensions.width / 2.)
+        } else {
+            camera_zoom_dimensions.width / 2.
         };
-        let z_centred = position_avg.z;
+        let y_centred =
+            if camera_zoom_dimensions.height < (map_bounds.height + map_bounds.depth) as f32 {
+                // Subtract Z because Z+ is rendered downwards.
+                let yz_avg = position_avg.y - position_avg.z;
+                let bounded_max = map_margins.top
+                    - map_margins.back
+                    - map_bounds.depth as f32
+                    - camera_zoom_dimensions.height / 2.;
+                let bounded_min = map_margins.bottom - map_margins.front - map_bounds.depth as f32
+                    + camera_zoom_dimensions.height / 2.;
+
+                yz_avg.max(bounded_min).min(bounded_max)
+            } else {
+                camera_zoom_dimensions.height / 2.
+            };
+        let z_centred = position_avg.z + camera_zoom_dimensions.depth / 2.;
 
         (&cameras, &mut transforms)
             .join()
@@ -114,7 +121,8 @@ mod tests {
     use amethyst_test::{AmethystApplication, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
     use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
     use camera_model::play::{
-        CameraTracked, CAMERA_ZOOM_HEIGHT_DEFAULT, CAMERA_ZOOM_WIDTH_DEFAULT,
+        CameraTracked, CAMERA_ZOOM_DEPTH_DEFAULT, CAMERA_ZOOM_HEIGHT_DEFAULT,
+        CAMERA_ZOOM_WIDTH_DEFAULT,
     };
     use kinematic_model::config::Position;
     use map_loading::MapLoadingBundle;
@@ -142,9 +150,14 @@ mod tests {
                     Position::new(900., 1500., 0.),
                     Position::new(1100., 1500., 0.),
                 ],
+                map: big_map(),
             },
             ExpectedParams {
-                camera_transform: Transform::from(Vector3::new(1000., 1500., 0.)),
+                camera_transform: Transform::from(Vector3::new(
+                    1000.,
+                    1500.,
+                    CAMERA_ZOOM_DEPTH_DEFAULT / 2.,
+                )),
             },
         )
     }
@@ -157,9 +170,14 @@ mod tests {
                     Position::new(900., 900., 500.),
                     Position::new(1100., 1100., 700.),
                 ],
+                map: big_map(),
             },
             ExpectedParams {
-                camera_transform: Transform::from(Vector3::new(1000., 400., 600.)),
+                camera_transform: Transform::from(Vector3::new(
+                    1000.,
+                    400.,
+                    600. + CAMERA_ZOOM_DEPTH_DEFAULT / 2.,
+                )),
             },
         )
     }
@@ -172,12 +190,13 @@ mod tests {
                     Position::new(0., 900., 500.),
                     Position::new(0., 1100., 700.),
                 ],
+                map: big_map(),
             },
             ExpectedParams {
                 camera_transform: Transform::from(Vector3::new(
                     CAMERA_ZOOM_WIDTH_DEFAULT / 2.,
                     400.,
-                    600.,
+                    600. + CAMERA_ZOOM_DEPTH_DEFAULT / 2.,
                 )),
             },
         )
@@ -191,12 +210,13 @@ mod tests {
                     Position::new(MAP_WIDTH, 900., 500.),
                     Position::new(MAP_WIDTH, 1100., 700.),
                 ],
+                map: big_map(),
             },
             ExpectedParams {
                 camera_transform: Transform::from(Vector3::new(
                     MAP_WIDTH - CAMERA_ZOOM_WIDTH_DEFAULT / 2.,
                     400.,
-                    600.,
+                    600. + CAMERA_ZOOM_DEPTH_DEFAULT / 2.,
                 )),
             },
         )
@@ -210,12 +230,13 @@ mod tests {
                     Position::new(900., MAP_HEIGHT, 0.),
                     Position::new(1100., MAP_HEIGHT, 0.),
                 ],
+                map: big_map(),
             },
             ExpectedParams {
                 camera_transform: Transform::from(Vector3::new(
                     1000.,
                     MAP_HEIGHT - CAMERA_ZOOM_HEIGHT_DEFAULT / 2.,
-                    0.,
+                    CAMERA_ZOOM_DEPTH_DEFAULT / 2.,
                 )),
             },
         )
@@ -229,36 +250,56 @@ mod tests {
                     Position::new(900., 0., MAP_DEPTH),
                     Position::new(1100., 0., MAP_DEPTH),
                 ],
+                map: big_map(),
             },
             ExpectedParams {
                 camera_transform: Transform::from(Vector3::new(
                     1000.,
                     -MAP_DEPTH + CAMERA_ZOOM_HEIGHT_DEFAULT / 2.,
-                    MAP_DEPTH,
+                    MAP_DEPTH + CAMERA_ZOOM_DEPTH_DEFAULT / 2.,
+                )),
+            },
+        )
+    }
+
+    #[test]
+    fn centres_camera_if_map_dimensions_are_smaller_than_zoom() -> Result<(), Error> {
+        run_test(
+            SetupParams {
+                positions_tracked: vec![Position::new(0., 0., 0.), Position::new(0., 0., 0.)],
+                map: small_map(),
+            },
+            ExpectedParams {
+                camera_transform: Transform::from(Vector3::new(
+                    CAMERA_ZOOM_WIDTH_DEFAULT / 2.,
+                    CAMERA_ZOOM_HEIGHT_DEFAULT / 2.,
+                    CAMERA_ZOOM_DEPTH_DEFAULT / 2.,
                 )),
             },
         )
     }
 
     fn run_test(
-        SetupParams { positions_tracked }: SetupParams,
+        SetupParams {
+            positions_tracked,
+            map,
+        }: SetupParams,
         ExpectedParams { camera_transform }: ExpectedParams,
     ) -> Result<(), Error> {
         AmethystApplication::blank()
             .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
             .with_bundle(MapLoadingBundle::new())
             .with_effect(setup_system_data)
-            .with_effect(|world| {
+            .with_effect(move |world| {
                 let map_handle = {
-                    let map = empty_map();
                     let loader = world.read_resource::<Loader>();
                     let map_assets = world.read_resource::<AssetStorage<Map>>();
 
-                    loader.load_from_data(map, (), &map_assets)
+                    loader.load_from_data(map.clone(), (), &map_assets)
                 };
 
-                let slug = AssetSlug::from_str("test/empty_map")
-                    .expect("Expected asset slug to be valid.");
+                let slug =
+                    AssetSlug::from_str("test/big_map").expect("Expected asset slug to be valid.");
                 let snh = SlugAndHandle::new(slug, map_handle);
                 let map_selection = MapSelection::Id(snh);
 
@@ -298,7 +339,21 @@ mod tests {
             .run()
     }
 
-    fn empty_map() -> Map {
+    fn small_map() -> Map {
+        let map_bounds = MapBounds::new(0, 0, 0, 400, 300, 200);
+        let map_header = MapHeader::new(String::from("small_map"), map_bounds);
+        let map_definition = MapDefinition::new(map_header, Vec::new());
+        let map_margins = Margins::from(map_bounds);
+        Map::new(
+            map_definition,
+            map_margins,
+            Vec::new(),
+            Vec::new(),
+            Vec::new(),
+        )
+    }
+
+    fn big_map() -> Map {
         let map_bounds = MapBounds::new(
             0,
             0,
@@ -307,7 +362,7 @@ mod tests {
             MAP_HEIGHT as u32,
             MAP_DEPTH as u32,
         );
-        let map_header = MapHeader::new(String::from("empty_map"), map_bounds);
+        let map_header = MapHeader::new(String::from("big_map"), map_bounds);
         let map_definition = MapDefinition::new(map_header, Vec::new());
         let map_margins = Margins::from(map_bounds);
         Map::new(
@@ -325,6 +380,7 @@ mod tests {
 
     struct SetupParams {
         positions_tracked: Vec<Position<f32>>,
+        map: Map,
     }
 
     struct ExpectedParams {
