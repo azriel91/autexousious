@@ -1,11 +1,11 @@
 use amethyst::{
     assets::AssetStorage,
-    core::{math::Vector3, Transform},
+    core::math::Vector3,
     ecs::{Join, Read, ReadExpect, ReadStorage, System, World, WriteStorage},
     renderer::camera::Camera,
     shred::{ResourceId, SystemData},
 };
-use camera_model::play::{CameraTracked, CameraZoomDimensions};
+use camera_model::play::{CameraTargetCoordinates, CameraTracked, CameraZoomDimensions};
 use derivative::Derivative;
 use derive_new::new;
 use kinematic_model::config::Position;
@@ -38,9 +38,9 @@ pub struct CameraTrackingSystemData<'s> {
     /// `Camera` components.
     #[derivative(Debug = "ignore")]
     pub cameras: ReadStorage<'s, Camera>,
-    /// `Transform` components.
+    /// `CameraTargetCoordinates` components.
     #[derivative(Debug = "ignore")]
-    pub transforms: WriteStorage<'s, Transform>,
+    pub camera_target_coordinateses: WriteStorage<'s, CameraTargetCoordinates>,
 }
 
 impl<'s> System<'s> for CameraTrackingSystem {
@@ -55,7 +55,7 @@ impl<'s> System<'s> for CameraTrackingSystem {
             camera_trackeds,
             positions,
             cameras,
-            mut transforms,
+            mut camera_target_coordinateses,
         }: Self::SystemData,
     ) {
         let map = map_assets
@@ -99,10 +99,12 @@ impl<'s> System<'s> for CameraTrackingSystem {
             };
         let z_centred = position_avg.z + camera_zoom_dimensions.depth / 2.;
 
-        (&cameras, &mut transforms)
+        (&cameras, &mut camera_target_coordinateses)
             .join()
-            .for_each(|(_, transform)| {
-                transform.set_translation_xyz(x_centred, y_centred, z_centred);
+            .for_each(|(_, camera_target_coordinates)| {
+                (*camera_target_coordinates).x = x_centred;
+                (*camera_target_coordinates).y = y_centred;
+                (*camera_target_coordinates).z = z_centred;
             });
     }
 }
@@ -113,7 +115,6 @@ mod tests {
 
     use amethyst::{
         assets::{AssetStorage, Loader},
-        core::{math::Vector3, Transform},
         ecs::{Builder, Entity, System, SystemData, World, WorldExt},
         window::ScreenDimensions,
         Error,
@@ -121,8 +122,8 @@ mod tests {
     use amethyst_test::{AmethystApplication, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
     use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
     use camera_model::play::{
-        CameraTracked, CAMERA_ZOOM_DEPTH_DEFAULT, CAMERA_ZOOM_HEIGHT_DEFAULT,
-        CAMERA_ZOOM_WIDTH_DEFAULT,
+        CameraTargetCoordinates, CameraTracked, CAMERA_ZOOM_DEPTH_DEFAULT,
+        CAMERA_ZOOM_HEIGHT_DEFAULT, CAMERA_ZOOM_WIDTH_DEFAULT,
     };
     use kinematic_model::config::Position;
     use map_loading::MapLoadingBundle;
@@ -153,11 +154,11 @@ mod tests {
                 map: big_map(),
             },
             ExpectedParams {
-                camera_transform: Transform::from(Vector3::new(
+                camera_target_coordinates: CameraTargetCoordinates::new(
                     1000.,
                     1500.,
                     CAMERA_ZOOM_DEPTH_DEFAULT / 2.,
-                )),
+                ),
             },
         )
     }
@@ -173,11 +174,11 @@ mod tests {
                 map: big_map(),
             },
             ExpectedParams {
-                camera_transform: Transform::from(Vector3::new(
+                camera_target_coordinates: CameraTargetCoordinates::new(
                     1000.,
                     400.,
                     600. + CAMERA_ZOOM_DEPTH_DEFAULT / 2.,
-                )),
+                ),
             },
         )
     }
@@ -193,11 +194,11 @@ mod tests {
                 map: big_map(),
             },
             ExpectedParams {
-                camera_transform: Transform::from(Vector3::new(
+                camera_target_coordinates: CameraTargetCoordinates::new(
                     CAMERA_ZOOM_WIDTH_DEFAULT / 2.,
                     400.,
                     600. + CAMERA_ZOOM_DEPTH_DEFAULT / 2.,
-                )),
+                ),
             },
         )
     }
@@ -213,11 +214,11 @@ mod tests {
                 map: big_map(),
             },
             ExpectedParams {
-                camera_transform: Transform::from(Vector3::new(
+                camera_target_coordinates: CameraTargetCoordinates::new(
                     MAP_WIDTH - CAMERA_ZOOM_WIDTH_DEFAULT / 2.,
                     400.,
                     600. + CAMERA_ZOOM_DEPTH_DEFAULT / 2.,
-                )),
+                ),
             },
         )
     }
@@ -233,11 +234,11 @@ mod tests {
                 map: big_map(),
             },
             ExpectedParams {
-                camera_transform: Transform::from(Vector3::new(
+                camera_target_coordinates: CameraTargetCoordinates::new(
                     1000.,
                     MAP_HEIGHT - CAMERA_ZOOM_HEIGHT_DEFAULT / 2.,
                     CAMERA_ZOOM_DEPTH_DEFAULT / 2.,
-                )),
+                ),
             },
         )
     }
@@ -253,11 +254,11 @@ mod tests {
                 map: big_map(),
             },
             ExpectedParams {
-                camera_transform: Transform::from(Vector3::new(
+                camera_target_coordinates: CameraTargetCoordinates::new(
                     1000.,
                     -MAP_DEPTH + CAMERA_ZOOM_HEIGHT_DEFAULT / 2.,
                     MAP_DEPTH + CAMERA_ZOOM_DEPTH_DEFAULT / 2.,
-                )),
+                ),
             },
         )
     }
@@ -270,11 +271,11 @@ mod tests {
                 map: small_map(),
             },
             ExpectedParams {
-                camera_transform: Transform::from(Vector3::new(
+                camera_target_coordinates: CameraTargetCoordinates::new(
                     CAMERA_ZOOM_WIDTH_DEFAULT / 2.,
                     CAMERA_ZOOM_HEIGHT_DEFAULT / 2.,
                     CAMERA_ZOOM_DEPTH_DEFAULT / 2.,
-                )),
+                ),
             },
         )
     }
@@ -284,7 +285,9 @@ mod tests {
             positions_tracked,
             map,
         }: SetupParams,
-        ExpectedParams { camera_transform }: ExpectedParams,
+        ExpectedParams {
+            camera_target_coordinates,
+        }: ExpectedParams,
     ) -> Result<(), Error> {
         AmethystApplication::blank()
             .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
@@ -325,16 +328,13 @@ mod tests {
             ) // kcov-ignore
             .with_assertion(move |world| {
                 let entity = *world.read_resource::<Entity>();
-                let transforms = world.read_storage::<Transform>();
-                let transform_actual = transforms
+                let camera_target_coordinateses = world.read_storage::<CameraTargetCoordinates>();
+                let camera_target_coordinates_actual = camera_target_coordinateses
                     .get(entity)
-                    .cloned()
-                    .expect("Expected entity to have `Transform` component.");
+                    .copied()
+                    .expect("Expected entity to have `CameraTargetCoordinates` component.");
 
-                assert_eq!(
-                    camera_transform.translation(),
-                    transform_actual.translation()
-                );
+                assert_eq!(camera_target_coordinates, camera_target_coordinates_actual);
             })
             .run()
     }
@@ -384,6 +384,6 @@ mod tests {
     }
 
     struct ExpectedParams {
-        camera_transform: Transform,
+        camera_target_coordinates: CameraTargetCoordinates,
     }
 }

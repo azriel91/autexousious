@@ -825,6 +825,7 @@ dependencies = [
  "amethyst 0.12.0 (git+https://github.com/azriel91/amethyst.git?branch=feature/run-setup-fn-before-systems)",
  "derivative 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive_deref 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "specs-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 

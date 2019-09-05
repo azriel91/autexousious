@@ -5,7 +5,9 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     utils::ortho_camera::CameraOrtho,
 };
+use camera_model::play::CameraTargetCoordinates;
 use derivative::Derivative;
+use kinematic_model::config::Position;
 
 /// Camera entity `Component` storages.
 #[derive(Derivative, SystemData)]
@@ -17,6 +19,12 @@ pub struct CameraComponentStorages<'s> {
     /// `CameraOrtho` components.
     #[derivative(Debug = "ignore")]
     pub camera_orthos: WriteStorage<'s, CameraOrtho>,
+    /// `CameraTargetCoordinates` components.
+    #[derivative(Debug = "ignore")]
+    pub camera_target_coordinateses: WriteStorage<'s, CameraTargetCoordinates>,
+    /// `Position<f32>` components.
+    #[derivative(Debug = "ignore")]
+    pub positions: WriteStorage<'s, Position<f32>>,
     /// `Transform` components.
     #[derivative(Debug = "ignore")]
     pub transforms: WriteStorage<'s, Transform>,
