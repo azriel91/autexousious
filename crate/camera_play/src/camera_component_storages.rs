@@ -7,7 +7,7 @@ use amethyst::{
 };
 use camera_model::play::CameraTargetCoordinates;
 use derivative::Derivative;
-use kinematic_model::config::Position;
+use kinematic_model::config::{Position, Velocity};
 
 /// Camera entity `Component` storages.
 #[derive(Derivative, SystemData)]
@@ -25,6 +25,9 @@ pub struct CameraComponentStorages<'s> {
     /// `Position<f32>` components.
     #[derivative(Debug = "ignore")]
     pub positions: WriteStorage<'s, Position<f32>>,
+    /// `Velocity<f32>` components.
+    #[derivative(Debug = "ignore")]
+    pub velocities: WriteStorage<'s, Velocity<f32>>,
     /// `Transform` components.
     #[derivative(Debug = "ignore")]
     pub transforms: WriteStorage<'s, Transform>,

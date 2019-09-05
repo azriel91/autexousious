@@ -1,9 +1,11 @@
 use amethyst::{
     assets::AssetStorage,
     core::transform::Transform,
-    ecs::{Join, Read, ReadStorage, System, WriteStorage},
-    renderer::{SpriteRender, SpriteSheet},
+    ecs::{Join, Read, ReadStorage, System, World, WriteStorage},
+    renderer::{camera::Camera, SpriteRender, SpriteSheet},
+    shred::{ResourceId, SystemData},
 };
+use derivative::Derivative;
 use derive_new::new;
 use kinematic_model::config::Position;
 use object_model::play::Mirrored;
@@ -15,26 +17,49 @@ use typename_derive::TypeName;
 #[derive(Debug, Default, TypeName, new)]
 pub(crate) struct ObjectTransformUpdateSystem;
 
-type ObjectTransformUpdateSystemData<'s> = (
-    ReadStorage<'s, Position<f32>>,
-    ReadStorage<'s, Mirrored>,
-    ReadStorage<'s, SpriteRender>,
-    Read<'s, AssetStorage<SpriteSheet>>,
-    WriteStorage<'s, Transform>,
-);
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub struct ObjectTransformUpdateSystemData<'s> {
+    /// `Position<f32>` components.
+    #[derivative(Debug = "ignore")]
+    pub positions: ReadStorage<'s, Position<f32>>,
+    /// `Mirrored` components.
+    #[derivative(Debug = "ignore")]
+    pub mirroreds: ReadStorage<'s, Mirrored>,
+    /// `SpriteRender` components.
+    #[derivative(Debug = "ignore")]
+    pub sprite_renders: ReadStorage<'s, SpriteRender>,
+    /// `Camera` components.
+    #[derivative(Debug = "ignore")]
+    pub cameras: ReadStorage<'s, Camera>,
+    /// `SpriteSheet` assets.
+    #[derivative(Debug = "ignore")]
+    pub sprite_sheet_assets: Read<'s, AssetStorage<SpriteSheet>>,
+    /// `Transform` components.
+    #[derivative(Debug = "ignore")]
+    pub transforms: WriteStorage<'s, Transform>,
+}
 
 impl<'s> System<'s> for ObjectTransformUpdateSystem {
     type SystemData = ObjectTransformUpdateSystemData<'s>;
 
     fn run(
         &mut self,
-        (positions, mirroreds, sprite_renders, sprite_sheet_assets, mut transform_storage): Self::SystemData,
+        ObjectTransformUpdateSystemData {
+            positions,
+            mirroreds,
+            sprite_renders,
+            cameras,
+            sprite_sheet_assets,
+            mut transforms,
+        }: Self::SystemData,
     ) {
-        for (position, mirrored, sprite_render, transform) in (
+        for (position, mirrored, sprite_render, camera, transform) in (
             &positions,
             mirroreds.maybe(),
             sprite_renders.maybe(),
-            &mut transform_storage,
+            cameras.maybe(),
+            &mut transforms,
         )
             .join()
         {
@@ -53,9 +78,13 @@ impl<'s> System<'s> for ObjectTransformUpdateSystem {
                 transform.set_translation_x(position.x);
             }
 
-            // We subtract z from the y translation as the z axis increases "out of the screen".
-            // Entities that have a larger Z value are transformed downwards.
-            transform.set_translation_y(position.y - position.z);
+            if camera.is_some() {
+                transform.set_translation_y(position.y);
+            } else {
+                // We subtract z from the y translation as the z axis increases "out of the screen".
+                // Entities that have a larger Z value are transformed downwards.
+                transform.set_translation_y(position.y - position.z);
+            }
             transform.set_translation_z(position.z);
         }
     }
@@ -65,8 +94,9 @@ impl<'s> System<'s> for ObjectTransformUpdateSystem {
 mod test {
     use amethyst::{
         core::{math::Vector3, transform::Transform},
-        ecs::{Builder, Entity, World, WorldExt},
+        ecs::{Builder, Entity, WorldExt},
         input::StringBindings,
+        renderer::camera::Camera,
         Error,
     };
     use amethyst_test::AmethystApplication;
@@ -77,38 +107,78 @@ mod test {
 
     #[test]
     fn updates_transform_with_x_and_yz() -> Result<(), Error> {
-        let setup = |world: &mut World| {
-            // Create entity with position
-            let position = Position::<f32>::new(-5., -3., -4.);
+        run_test(
+            SetupParams {
+                position: Position::new(100., -10., 1.),
+                camera: None,
+            },
+            ExpectedParams {
+                transform: Transform::from(Vector3::new(100., -11., 1.)),
+            },
+        )
+    }
 
-            let mut transform = Transform::default();
-            transform.set_translation(Vector3::new(10., 20., 0.));
+    #[test]
+    fn updates_camera_transform_xyz() -> Result<(), Error> {
+        run_test(
+            SetupParams {
+                position: Position::new(100., -10., 1.),
+                camera: Some(Camera::standard_2d(800., 600.)),
+            },
+            ExpectedParams {
+                transform: Transform::from(Vector3::new(100., -10., 1.)),
+            },
+        )
+    }
 
-            let entity = world.create_entity().with(position).with(transform).build();
-
-            world.insert(entity);
-        };
-
-        let assertion = |world: &mut World| {
-            let entity = *world.read_resource::<Entity>();
-            let transforms = world.read_storage::<Transform>();
-
-            let expected_translation = Vector3::new(-5., 1., -4.);
-
-            let transform = transforms
-                .get(entity)
-                .expect("Expected entity to have `Transform` component.");
-            assert_eq!(&expected_translation, transform.translation());
-        };
-
+    fn run_test(
+        SetupParams { position, camera }: SetupParams,
+        ExpectedParams {
+            transform: transform_expected,
+        }: ExpectedParams,
+    ) -> Result<(), Error> {
         AmethystApplication::ui_base::<StringBindings>()
             .with_system(
                 ObjectTransformUpdateSystem::new(),
                 ObjectTransformUpdateSystem::type_name(),
                 &[],
             ) // kcov-ignore
-            .with_effect(setup)
-            .with_assertion(assertion)
+            .with_effect(move |world| {
+                let entity = {
+                    let mut entity_builder = world
+                        .create_entity()
+                        .with(position)
+                        .with(Transform::default());
+
+                    if let Some(camera) = camera.clone() {
+                        entity_builder = entity_builder.with(camera);
+                    }
+
+                    entity_builder.build()
+                };
+
+                world.insert(entity);
+            })
+            .with_assertion(move |world| {
+                let entity = *world.read_resource::<Entity>();
+                let transforms = world.read_storage::<Transform>();
+
+                let transform_actual = transforms
+                    .get(entity)
+                    .expect("Expected entity to have `Transform` component.");
+                assert_eq!(
+                    transform_expected.translation(),
+                    transform_actual.translation()
+                );
+            })
             .run()
+    }
+
+    struct SetupParams {
+        position: Position<f32>,
+        camera: Option<Camera>,
+    }
+    struct ExpectedParams {
+        transform: Transform,
     }
 }

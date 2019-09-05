@@ -5,7 +5,7 @@ use amethyst::{
     utils::ortho_camera::{CameraNormalizeMode, CameraOrtho, CameraOrthoWorldCoordinates},
 };
 use camera_model::play::{CameraTargetCoordinates, CAMERA_ZOOM_DEPTH_DEFAULT};
-use kinematic_model::config::Position;
+use kinematic_model::config::{Position, Velocity};
 
 use crate::{CameraComponentStorages, CameraCreatorResources};
 
@@ -42,6 +42,7 @@ impl CameraCreator {
                     camera_orthos,
                     camera_target_coordinateses,
                     positions,
+                    velocities,
                     transforms,
                 },
         }: &mut CameraCreatorResources<'_>,
@@ -107,6 +108,9 @@ impl CameraCreator {
         positions
             .insert(entity, position)
             .expect("Failed to insert `Position<f32>` component.");
+        velocities
+            .insert(entity, Velocity::default())
+            .expect("Failed to insert `Velocity<f32>` component.");
         transforms
             .insert(entity, transform)
             .expect("Failed to insert `Transform` component.");

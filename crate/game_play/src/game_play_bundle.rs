@@ -4,7 +4,7 @@ use amethyst::{
     utils::ortho_camera::CameraOrthoSystem,
     Error,
 };
-use camera_play::CameraTrackingSystem;
+use camera_play::{CameraTrackingSystem, CameraVelocitySystem};
 use character_model::loaded::CharacterObjectWrapper;
 use character_play::{
     CharacterControlTransitionsTransitionSystem, CharacterControlTransitionsUpdateSystem,
@@ -414,6 +414,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             CameraTrackingSystem::default(),
             &CameraTrackingSystem::type_name(),
             &[],
+        ); // kcov-ignore
+        builder.add(
+            CameraVelocitySystem::default(),
+            &CameraVelocitySystem::type_name(),
+            &[&CameraTrackingSystem::type_name()],
         ); // kcov-ignore
         builder.add(
             CameraOrthoSystem::default(),
