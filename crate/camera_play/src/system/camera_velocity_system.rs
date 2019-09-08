@@ -9,9 +9,16 @@ use derive_new::new;
 use kinematic_model::config::{Position, Velocity};
 use typename_derive::TypeName;
 
+/// How much to divide the target velocity by, to smoothen the acceleration.
+const SMOOTHING_FACTOR_DEFAULT: f32 = 3.;
+
 /// Updates camera velocity to smoothen camera movement between its current and target position.
 #[derive(Debug, Default, TypeName, new)]
-pub struct CameraVelocitySystem;
+pub struct CameraVelocitySystem {
+    /// How much to divide the target velocity by, to smoothen the acceleration.
+    #[new(value = "SMOOTHING_FACTOR_DEFAULT")]
+    pub smoothing_factor: f32,
+}
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
@@ -58,14 +65,10 @@ impl<'s> System<'s> for CameraVelocitySystem {
                     //
                     // 2. Calculate an average between the current velocity and the target velocity.
                     //
-                    //     If our current velocity is 0, then we will increase to 50.
-                    //     Next frame will be 75: (50 + 100) / 2
-                    //
-                    //     If our current velocity is 200, then we will decrease to 150.
-                    //     Next frame will be 125: (150 + 100) / 2
-                    //
+                    //     If our current velocity is 0, then we will increase to 33.
+                    //     Next frame will be 44: (33 + 100) / 3
                     let velocity_limit = (**camera_target_coordinates - **position) / 10.;
-                    (**velocity + velocity_limit) / 2.
+                    (**velocity + velocity_limit) / self.smoothing_factor
                 }
             });
     }
@@ -130,7 +133,9 @@ mod tests {
         let mut amethyst_application = AmethystApplication::blank()
             .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
             .with_system(
-                CameraVelocitySystem::new(),
+                CameraVelocitySystem {
+                    smoothing_factor: 2.,
+                },
                 CameraVelocitySystem::type_name(),
                 &[],
             ) // kcov-ignore
