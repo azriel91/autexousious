@@ -29,7 +29,6 @@ impl GameObjectSequence for CharacterSequence {
 
 #[cfg(test)]
 mod tests {
-    use kinematic_model::config::ObjectAcceleration;
     use object_model::config::{ObjectFrame, ObjectSequence};
     use sequence_model::config::{
         ControlTransition, ControlTransitionSingle, SequenceEndTransition, SequenceNameString, Wait,
