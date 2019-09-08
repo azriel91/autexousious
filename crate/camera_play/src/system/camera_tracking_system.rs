@@ -14,6 +14,7 @@ use map_model::{
     loaded::{Map, Margins},
 };
 use map_selection_model::MapSelection;
+use object_model::play::Mirrored;
 use typename_derive::TypeName;
 
 /// Focuses the camera at the average position of tracked entities.
@@ -38,6 +39,9 @@ pub struct CameraTrackingSystemData<'s> {
     /// `Position<f32>` components.
     #[derivative(Debug = "ignore")]
     pub positions: ReadStorage<'s, Position<f32>>,
+    /// `Mirrored` components.
+    #[derivative(Debug = "ignore")]
+    pub mirroreds: ReadStorage<'s, Mirrored>,
     /// `Camera` components.
     #[derivative(Debug = "ignore")]
     pub cameras: ReadStorage<'s, Camera>,
@@ -61,14 +65,14 @@ impl CameraTrackingSystem {
     }
 
     /// Returns the coordinates for the camera to focus on the average position.
-    fn coordinates_centred(
+    fn camera_target_coordinates(
         map_margins: Margins,
         map_bounds: MapBounds,
         camera_zoom_dimensions: CameraZoomDimensions,
-        position_avg: Vector3<f32>,
-    ) -> (f32, f32, f32) {
+        focus_coordinate: Vector3<f32>,
+    ) -> CameraTargetCoordinates {
         let x_centred = if camera_zoom_dimensions.width < map_bounds.width as f32 {
-            position_avg
+            focus_coordinate
                 .x
                 .max(map_margins.left + camera_zoom_dimensions.width / 2.)
                 .min(map_margins.right - camera_zoom_dimensions.width / 2.)
@@ -78,7 +82,7 @@ impl CameraTrackingSystem {
         let y_centred =
             if camera_zoom_dimensions.height < (map_bounds.height + map_bounds.depth) as f32 {
                 // Subtract Z because Z+ is rendered downwards.
-                let yz_avg = position_avg.y - position_avg.z;
+                let yz_avg = focus_coordinate.y - focus_coordinate.z;
                 let bounded_max = map_margins.top
                     - map_margins.back
                     - map_bounds.depth as f32
@@ -90,9 +94,43 @@ impl CameraTrackingSystem {
             } else {
                 camera_zoom_dimensions.height / 2.
             };
-        let z_centred = position_avg.z + camera_zoom_dimensions.depth / 2.;
+        let z_centred = focus_coordinate.z + camera_zoom_dimensions.depth / 2.;
 
-        (x_centred, y_centred, z_centred)
+        CameraTargetCoordinates::new(x_centred, y_centred, z_centred)
+    }
+
+    /// Returns the position skewed in the direction tracked entities are facing.
+    fn position_with_direction(
+        camera_trackeds: &ReadStorage<'_, CameraTracked>,
+        mirroreds: &ReadStorage<'_, Mirrored>,
+        camera_zoom_dimensions: CameraZoomDimensions,
+        mut target_position: Vector3<f32>,
+    ) -> Vector3<f32> {
+        let mirroreds = (camera_trackeds, mirroreds)
+            .join()
+            .map(|(_, mirrored)| *mirrored)
+            .collect::<Vec<Mirrored>>();
+
+        if !mirroreds.is_empty() {
+            // We take half the length and subtract number of mirrored entities.
+            //
+            // This determines the factor to multiply the offset with, which adjusts how
+            // much weighting we place on the offset to shift left or right based on the
+            // direction that the `CameraTracked` entities are facing.
+            let mirrored_count = mirroreds.iter().filter(|mirrored| mirrored.0).count() as f32;
+            let mirrored_weight = mirroreds.len() as f32 / 2. - mirrored_count;
+
+            // An offset of 1/6th of camera zoom width will keep the tracked average
+            // position at 1/3rd of the window -- since it is already offset to the centre
+            // of the window.
+
+            // 1/6 * mirrored_weight * zoom width.
+            let offset = mirrored_weight * camera_zoom_dimensions.width / 6.;
+
+            target_position.x += offset
+        }
+
+        target_position
     }
 }
 
@@ -107,6 +145,7 @@ impl<'s> System<'s> for CameraTrackingSystem {
             map_assets,
             camera_trackeds,
             positions,
+            mirroreds,
             cameras,
             mut camera_target_coordinateses,
         }: Self::SystemData,
@@ -123,19 +162,24 @@ impl<'s> System<'s> for CameraTrackingSystem {
         // facing.
         // Keep the average (y + z) in the middle of the screen.
         let position_avg = Self::position_average(&camera_trackeds, &positions);
-        let (x_centred, y_centred, z_centred) = Self::coordinates_centred(
+        let target_position = Self::position_with_direction(
+            &camera_trackeds,
+            &mirroreds,
+            *camera_zoom_dimensions,
+            position_avg,
+        );
+
+        let target_coordinates = Self::camera_target_coordinates(
             map_margins,
             map_bounds,
             *camera_zoom_dimensions,
-            position_avg,
+            target_position,
         );
 
         (&cameras, &mut camera_target_coordinateses)
             .join()
             .for_each(|(_, camera_target_coordinates)| {
-                (*camera_target_coordinates).x = x_centred;
-                (*camera_target_coordinates).y = y_centred;
-                (*camera_target_coordinates).z = z_centred;
+                *camera_target_coordinates = target_coordinates;
             });
     }
 }
@@ -163,6 +207,7 @@ mod tests {
         loaded::{Map, Margins},
     };
     use map_selection_model::MapSelection;
+    use object_model::play::Mirrored;
     use pretty_assertions::assert_eq;
     use typename::TypeName;
 
@@ -178,9 +223,9 @@ mod tests {
     fn sets_camera_x_to_tracked_average_x() -> Result<(), Error> {
         run_test(
             SetupParams {
-                positions_tracked: vec![
-                    Position::new(900., 1500., 0.),
-                    Position::new(1100., 1500., 0.),
+                position_mirroreds: vec![
+                    (Position::new(900., 1500., 0.), None),
+                    (Position::new(1100., 1500., 0.), None),
                 ],
                 map: big_map(),
             },
@@ -198,9 +243,9 @@ mod tests {
     fn sets_camera_y_to_tracked_average_yz() -> Result<(), Error> {
         run_test(
             SetupParams {
-                positions_tracked: vec![
-                    Position::new(900., 900., 500.),
-                    Position::new(1100., 1100., 700.),
+                position_mirroreds: vec![
+                    (Position::new(900., 900., 500.), None),
+                    (Position::new(1100., 1100., 700.), None),
                 ],
                 map: big_map(),
             },
@@ -218,9 +263,9 @@ mod tests {
     fn does_not_go_out_of_bounds_left() -> Result<(), Error> {
         run_test(
             SetupParams {
-                positions_tracked: vec![
-                    Position::new(0., 900., 500.),
-                    Position::new(0., 1100., 700.),
+                position_mirroreds: vec![
+                    (Position::new(0., 900., 500.), None),
+                    (Position::new(0., 1100., 700.), None),
                 ],
                 map: big_map(),
             },
@@ -238,9 +283,9 @@ mod tests {
     fn does_not_go_out_of_bounds_right() -> Result<(), Error> {
         run_test(
             SetupParams {
-                positions_tracked: vec![
-                    Position::new(MAP_WIDTH, 900., 500.),
-                    Position::new(MAP_WIDTH, 1100., 700.),
+                position_mirroreds: vec![
+                    (Position::new(MAP_WIDTH, 900., 500.), None),
+                    (Position::new(MAP_WIDTH, 1100., 700.), None),
                 ],
                 map: big_map(),
             },
@@ -258,9 +303,9 @@ mod tests {
     fn does_not_go_out_of_bounds_top() -> Result<(), Error> {
         run_test(
             SetupParams {
-                positions_tracked: vec![
-                    Position::new(900., MAP_HEIGHT, 0.),
-                    Position::new(1100., MAP_HEIGHT, 0.),
+                position_mirroreds: vec![
+                    (Position::new(900., MAP_HEIGHT, 0.), None),
+                    (Position::new(1100., MAP_HEIGHT, 0.), None),
                 ],
                 map: big_map(),
             },
@@ -278,9 +323,9 @@ mod tests {
     fn does_not_go_out_of_bounds_bottom() -> Result<(), Error> {
         run_test(
             SetupParams {
-                positions_tracked: vec![
-                    Position::new(900., 0., MAP_DEPTH),
-                    Position::new(1100., 0., MAP_DEPTH),
+                position_mirroreds: vec![
+                    (Position::new(900., 0., MAP_DEPTH), None),
+                    (Position::new(1100., 0., MAP_DEPTH), None),
                 ],
                 map: big_map(),
             },
@@ -298,7 +343,10 @@ mod tests {
     fn centres_camera_if_map_dimensions_are_smaller_than_zoom() -> Result<(), Error> {
         run_test(
             SetupParams {
-                positions_tracked: vec![Position::new(0., 0., 0.), Position::new(0., 0., 0.)],
+                position_mirroreds: vec![
+                    (Position::new(0., 0., 0.), None),
+                    (Position::new(0., 0., 0.), None),
+                ],
                 map: small_map(),
             },
             ExpectedParams {
@@ -311,9 +359,93 @@ mod tests {
         )
     }
 
+    #[test]
+    fn centres_camera_if_map_dimensions_are_smaller_than_zoom_with_mirrored() -> Result<(), Error> {
+        run_test(
+            SetupParams {
+                position_mirroreds: vec![
+                    (Position::new(0., 0., 0.), Some(Mirrored::new(true))),
+                    (Position::new(0., 0., 0.), Some(Mirrored::new(true))),
+                ],
+                map: small_map(),
+            },
+            ExpectedParams {
+                camera_target_coordinates: CameraTargetCoordinates::new(
+                    CAMERA_ZOOM_WIDTH_DEFAULT / 2.,
+                    CAMERA_ZOOM_HEIGHT_DEFAULT / 2.,
+                    CAMERA_ZOOM_DEPTH_DEFAULT / 2.,
+                ),
+            },
+        )
+    }
+
+    #[test]
+    fn sets_camera_x_to_x_offset_when_entities_have_mirrored_false() -> Result<(), Error> {
+        run_test(
+            SetupParams {
+                position_mirroreds: vec![
+                    (Position::new(900., 1500., 0.), Some(Mirrored::new(false))),
+                    (Position::new(1100., 1500., 0.), Some(Mirrored::new(false))),
+                ],
+                map: big_map(),
+            },
+            ExpectedParams {
+                camera_target_coordinates: CameraTargetCoordinates::new(
+                    // Shift target 1/6 to the right.
+                    // 800. / 6 = 133.333
+                    1000. + CAMERA_ZOOM_WIDTH_DEFAULT / 6.,
+                    1500.,
+                    CAMERA_ZOOM_DEPTH_DEFAULT / 2.,
+                ),
+            },
+        )
+    }
+
+    #[test]
+    fn sets_camera_x_to_x_offset_when_entities_have_mirrored_true() -> Result<(), Error> {
+        run_test(
+            SetupParams {
+                position_mirroreds: vec![
+                    (Position::new(900., 1500., 0.), Some(Mirrored::new(true))),
+                    (Position::new(1100., 1500., 0.), Some(Mirrored::new(true))),
+                ],
+                map: big_map(),
+            },
+            ExpectedParams {
+                camera_target_coordinates: CameraTargetCoordinates::new(
+                    // Shift target 1/6 to the left.
+                    // 800. / 6 = 133.333
+                    1000. - CAMERA_ZOOM_WIDTH_DEFAULT / 6.,
+                    1500.,
+                    CAMERA_ZOOM_DEPTH_DEFAULT / 2.,
+                ),
+            },
+        )
+    }
+
+    #[test]
+    fn sets_camera_x_to_x_offset_when_entities_have_mirrored_balanced() -> Result<(), Error> {
+        run_test(
+            SetupParams {
+                position_mirroreds: vec![
+                    (Position::new(900., 1500., 0.), Some(Mirrored::new(true))),
+                    (Position::new(1100., 1500., 0.), Some(Mirrored::new(false))),
+                ],
+                map: big_map(),
+            },
+            ExpectedParams {
+                camera_target_coordinates: CameraTargetCoordinates::new(
+                    1000.,
+                    1500.,
+                    CAMERA_ZOOM_DEPTH_DEFAULT / 2.,
+                ),
+            },
+        )
+    }
+
     fn run_test(
         SetupParams {
-            positions_tracked,
+            position_mirroreds,
             map,
         }: SetupParams,
         ExpectedParams {
@@ -344,12 +476,17 @@ mod tests {
                 world.insert(camera_entity);
             })
             .with_effect(move |world| {
-                positions_tracked.iter().for_each(|position| {
-                    world
+                position_mirroreds.iter().for_each(|(position, mirrored)| {
+                    let mut entity_builder = world
                         .create_entity()
                         .with(CameraTracked)
-                        .with(position.clone())
-                        .build();
+                        .with(position.clone());
+
+                    if let Some(mirrored) = mirrored {
+                        entity_builder = entity_builder.with(*mirrored);
+                    }
+
+                    entity_builder.build();
                 });
             })
             .with_system_single(
@@ -410,7 +547,7 @@ mod tests {
     }
 
     struct SetupParams {
-        positions_tracked: Vec<Position<f32>>,
+        position_mirroreds: Vec<(Position<f32>, Option<Mirrored>)>,
         map: Map,
     }
 
