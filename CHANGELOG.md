@@ -10,6 +10,8 @@
 * Use events to detect and reposition `MapBounded` entities. ([#142])
 * Delete out of bounds entities. ([#142])
 * During game play, camera is readjusted when window is resized. ([#161])
+* Camera moves to focus on tracked entities. ([#162])
+* Camera is offset to direction tracked entities are facing. ([#162])
 
 ### Changed
 
@@ -21,6 +23,7 @@
 [#155]: https://gitlab.com/azriel91/autexousious/issues/155
 [#160]: https://gitlab.com/azriel91/autexousious/issues/160
 [#161]: https://gitlab.com/azriel91/autexousious/issues/161
+[#162]: https://gitlab.com/azriel91/autexousious/issues/162
 
 ## 0.13.0 (2019-08-16)
 
