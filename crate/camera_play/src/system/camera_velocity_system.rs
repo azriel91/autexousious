@@ -13,10 +13,11 @@ use typename_derive::TypeName;
 const SMOOTHING_FACTOR_DEFAULT: f32 = 3.;
 
 /// Updates camera velocity to smoothen camera movement between its current and target position.
-#[derive(Debug, Default, TypeName, new)]
+#[derive(Debug, Derivative, TypeName, new)]
+#[derivative(Default)]
 pub struct CameraVelocitySystem {
     /// How much to divide the target velocity by, to smoothen the acceleration.
-    #[new(value = "SMOOTHING_FACTOR_DEFAULT")]
+    #[derivative(Default(value = "SMOOTHING_FACTOR_DEFAULT"))]
     pub smoothing_factor: f32,
 }
 
@@ -69,7 +70,7 @@ impl<'s> System<'s> for CameraVelocitySystem {
                     //     Next frame will be 44: (33 + 100) / 3
                     let velocity_limit = (**camera_target_coordinates - **position) / 10.;
                     (**velocity + velocity_limit) / self.smoothing_factor
-                }
+                };
             });
     }
 }
