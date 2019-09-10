@@ -59,16 +59,20 @@ impl<'s> System<'s> for SequenceAudioPlaySystem {
         );
 
         if let Some(output) = output {
-            events_iterator.for_each(|ev| {
-                let source_handle_opt = source_handle_opts.get(ev.entity());
+            events_iterator.for_each(|ev| match ev {
+                SequenceUpdateEvent::SequenceBegin { entity, .. }
+                | SequenceUpdateEvent::FrameBegin { entity, .. } => {
+                    let source_handle_opt = source_handle_opts.get(*entity);
 
-                let source = source_handle_opt
-                    .and_then(|source_handle_opt| source_handle_opt.as_ref())
-                    .and_then(|source_handle| source_assets.get(source_handle));
+                    let source = source_handle_opt
+                        .and_then(|source_handle_opt| source_handle_opt.as_ref())
+                        .and_then(|source_handle| source_assets.get(source_handle));
 
-                if let Some(source) = source {
-                    output.play_once(source, VOLUME);
+                    if let Some(source) = source {
+                        output.play_once(source, VOLUME);
+                    }
                 }
+                SequenceUpdateEvent::SequenceEnd { .. } => {}
             });
         }
     }
@@ -102,10 +106,26 @@ mod tests {
     use super::SequenceAudioPlaySystem;
 
     #[test]
-    fn plays_sound_on_sequence_update_event() -> Result<(), Error> {
+    fn plays_sound_on_sequence_begin_event() -> Result<(), Error> {
         run_test(|entity| SequenceUpdateEvent::SequenceBegin {
             entity,
             sequence_id: SequenceId::new(0),
+        })
+    }
+
+    #[test]
+    fn plays_sound_on_frame_begin_event() -> Result<(), Error> {
+        run_test(|entity| SequenceUpdateEvent::FrameBegin {
+            entity,
+            frame_index: 0,
+        })
+    }
+
+    #[test]
+    fn does_not_play_sound_on_sequence_end_event() -> Result<(), Error> {
+        run_test(|entity| SequenceUpdateEvent::SequenceEnd {
+            entity,
+            frame_index: 1,
         })
     }
 
@@ -140,7 +160,9 @@ mod tests {
                 let event = sequence_update_event_fn(entity);
                 send_event(world, event);
             })
-            .with_assertion(|_world| {})
+            .with_assertion(|_world| {
+                // TODO: assert that sound was played / not played
+            })
             .run()
     }
 
