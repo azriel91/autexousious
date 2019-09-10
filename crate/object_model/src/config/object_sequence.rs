@@ -38,7 +38,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use std::str::FromStr;
+    use std::{path::PathBuf, str::FromStr};
 
     use amethyst::ecs::{storage::DenseVecStorage, Component};
     use asset_model::config::AssetSlug;
@@ -75,6 +75,10 @@ frames:
 "#;
     const SEQUENCE_WITH_FRAMES_EMPTY: &str = r#"---
 frames: []
+"#;
+    const SEQUENCE_WITH_SOUND: &str = r#"---
+frames:
+  - sound: "path/to/sound.wav"
 "#;
     const SEQUENCE_WITH_BODY: &str = r#"---
 frames:
@@ -159,6 +163,24 @@ frames:
         ];
         let expected = ObjectSequence {
             next: SequenceEndTransition::SequenceName(SequenceNameString::Name(TestSeqName::Boo)),
+            frames,
+            ..Default::default()
+        };
+        assert_eq!(expected, sequence);
+    }
+
+    #[test]
+    fn sequence_with_sound() {
+        let sequence = serde_yaml::from_str::<ObjectSequence<TestSeqName>>(SEQUENCE_WITH_SOUND)
+            .expect("Failed to deserialize sequence.");
+
+        let frames = vec![ObjectFrame {
+            wait: Wait::new(0),
+            sound: Some(PathBuf::from("path/to/sound.wav")),
+            ..Default::default()
+        }];
+        let expected = ObjectSequence {
+            next: SequenceEndTransition::None,
             frames,
             ..Default::default()
         };

@@ -2,7 +2,7 @@ use character_model::config::CharacterSequenceName;
 
 use crate::{
     sequence_handler::{
-        common::{grounding::AirborneCheck, input::RunStopCheck, status::AliveCheck},
+        common::{grounding::AirborneCheck, status::AliveCheck},
         CharacterSequenceHandler,
     },
     CharacterSequenceUpdateComponents,
@@ -14,15 +14,11 @@ pub(crate) struct Run;
 
 impl CharacterSequenceHandler for Run {
     fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {
-        [
-            AliveCheck::update,
-            AirborneCheck::update,
-            RunStopCheck::update,
-        ]
-        .iter()
-        .fold(None, |status_update, fn_update| {
-            status_update.or_else(|| fn_update(components))
-        })
+        [AliveCheck::update, AirborneCheck::update]
+            .iter()
+            .fold(None, |status_update, fn_update| {
+                status_update.or_else(|| fn_update(components))
+            })
     }
 }
 
@@ -56,26 +52,6 @@ mod test {
     }
 
     #[test]
-    fn reverts_to_run_stop_when_no_input() {
-        let input = ControllerInput::new(0., 0., false, false, false, false);
-
-        assert_eq!(
-            Some(CharacterSequenceName::RunStop),
-            Run::update(CharacterSequenceUpdateComponents::new(
-                &input,
-                HealthPoints::default(),
-                CharacterSequenceName::Run,
-                SequenceStatus::default(),
-                &Position::default(),
-                &Velocity::default(),
-                Mirrored(false),
-                Grounding::OnGround,
-                RunCounter::default()
-            ))
-        );
-    }
-
-    #[test]
     fn keeps_running_when_x_axis_positive_and_non_mirrored() {
         let input = ControllerInput::new(1., 0., false, false, false, false);
 
@@ -101,70 +77,6 @@ mod test {
 
         assert_eq!(
             None,
-            Run::update(CharacterSequenceUpdateComponents::new(
-                &input,
-                HealthPoints::default(),
-                CharacterSequenceName::Run,
-                SequenceStatus::default(),
-                &Position::default(),
-                &Velocity::default(),
-                Mirrored(true),
-                Grounding::OnGround,
-                RunCounter::default()
-            ))
-        );
-    }
-
-    #[test]
-    fn restarts_run_when_sequence_ended() {
-        vec![(1., false), (-1., true)]
-            .into_iter()
-            .for_each(|(x_input, mirrored)| {
-                let input = ControllerInput::new(x_input, 0., false, false, false, false);
-
-                assert_eq!(
-                    Some(CharacterSequenceName::Run),
-                    Run::update(CharacterSequenceUpdateComponents::new(
-                        &input,
-                        HealthPoints::default(),
-                        CharacterSequenceName::Run,
-                        SequenceStatus::End,
-                        &Position::default(),
-                        &Velocity::default(),
-                        mirrored.into(),
-                        Grounding::OnGround,
-                        RunCounter::default()
-                    ))
-                );
-            });
-    }
-
-    #[test]
-    fn reverts_to_run_stop_when_x_axis_negative_and_non_mirrored() {
-        let input = ControllerInput::new(-1., 0., false, false, false, false);
-
-        assert_eq!(
-            Some(CharacterSequenceName::RunStop),
-            Run::update(CharacterSequenceUpdateComponents::new(
-                &input,
-                HealthPoints::default(),
-                CharacterSequenceName::Run,
-                SequenceStatus::default(),
-                &Position::default(),
-                &Velocity::default(),
-                Mirrored(false),
-                Grounding::OnGround,
-                RunCounter::default()
-            ))
-        );
-    }
-
-    #[test]
-    fn reverts_to_run_stop_when_x_axis_positive_and_mirrored() {
-        let input = ControllerInput::new(1., 0., false, false, false, false);
-
-        assert_eq!(
-            Some(CharacterSequenceName::RunStop),
             Run::update(CharacterSequenceUpdateComponents::new(
                 &input,
                 HealthPoints::default(),

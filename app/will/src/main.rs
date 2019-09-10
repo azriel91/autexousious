@@ -26,6 +26,7 @@ use application::{
 };
 use application_event::{AppEvent, AppEventReader};
 use application_robot::RobotState;
+use audio_loading::AudioLoadingBundle;
 use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
 use character_prefab::CharacterPrefabBundle;
 use character_selection_stdio::CharacterSelectionStdioBundle;
@@ -114,6 +115,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(HotReloadBundle::default())?
             .with_bundle(SpriteLoadingBundle::new())?
             .with_bundle(SequenceLoadingBundle::new())?
+            .with_bundle(AudioLoadingBundle::new())?
             .with_bundle(KinematicLoadingBundle::new())?
             .with_bundle(LoadingBundle::new(assets_dir.clone()))?
             .with_bundle(GameInputUiBundle::new(input_config))?

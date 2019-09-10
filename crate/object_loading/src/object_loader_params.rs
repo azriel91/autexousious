@@ -1,7 +1,9 @@
 use amethyst::{
     assets::{AssetStorage, Loader},
+    audio::Source,
     renderer::sprite::SpriteSheetHandle,
 };
+use audio_model::loaded::SourceSequence;
 use collision_model::{
     config::{Body, Interactions},
     loaded::{BodySequence, InteractionsSequence},
@@ -24,6 +26,12 @@ pub struct ObjectLoaderParams<'s> {
     /// `WaitSequence`s assets.
     #[derivative(Debug = "ignore")]
     pub wait_sequence_assets: &'s AssetStorage<WaitSequence>,
+    /// `Source`s assets.
+    #[derivative(Debug = "ignore")]
+    pub source_assets: &'s AssetStorage<Source>,
+    /// `SourceSequence`s assets.
+    #[derivative(Debug = "ignore")]
+    pub source_sequence_assets: &'s AssetStorage<SourceSequence>,
     /// `ObjectAccelerationSequence`s assets.
     #[derivative(Debug = "ignore")]
     pub object_acceleration_sequence_assets: &'s AssetStorage<ObjectAccelerationSequence>,
@@ -64,6 +72,8 @@ impl<'s> From<(&'s ObjectLoaderSystemData<'s>, &'s [SpriteSheetHandle])>
         let ObjectLoaderSystemData {
             ref loader,
             ref wait_sequence_assets,
+            ref source_assets,
+            ref source_sequence_assets,
             ref object_acceleration_sequence_assets,
             ref sprite_render_sequence_assets,
             ref body_sequence_assets,
@@ -77,6 +87,8 @@ impl<'s> From<(&'s ObjectLoaderSystemData<'s>, &'s [SpriteSheetHandle])>
         ObjectLoaderParams {
             loader,
             wait_sequence_assets,
+            source_assets,
+            source_sequence_assets,
             object_acceleration_sequence_assets,
             sprite_render_sequence_assets,
             body_sequence_assets,

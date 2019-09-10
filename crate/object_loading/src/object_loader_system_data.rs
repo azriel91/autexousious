@@ -1,8 +1,10 @@
 use amethyst::{
     assets::{AssetStorage, Loader},
+    audio::Source,
     ecs::{Read, ReadExpect, World},
     shred::{ResourceId, SystemData},
 };
+use audio_model::loaded::SourceSequence;
 use collision_model::{
     config::{Body, Interactions},
     loaded::{BodySequence, InteractionsSequence},
@@ -23,6 +25,12 @@ pub struct ObjectLoaderSystemData<'s> {
     /// `WaitSequence`s assets.
     #[derivative(Debug = "ignore")]
     pub wait_sequence_assets: Read<'s, AssetStorage<WaitSequence>>,
+    /// `Source`s assets.
+    #[derivative(Debug = "ignore")]
+    pub source_assets: Read<'s, AssetStorage<Source>>,
+    /// `SourceSequence`s assets.
+    #[derivative(Debug = "ignore")]
+    pub source_sequence_assets: Read<'s, AssetStorage<SourceSequence>>,
     /// `ObjectAccelerationSequence`s assets.
     #[derivative(Debug = "ignore")]
     pub object_acceleration_sequence_assets: Read<'s, AssetStorage<ObjectAccelerationSequence>>,

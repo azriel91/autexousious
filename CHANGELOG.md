@@ -12,6 +12,7 @@
 * During game play, camera is readjusted when window is resized. ([#161])
 * Camera moves to focus on tracked entities. ([#162])
 * Camera is offset to direction tracked entities are facing. ([#162])
+* Support playing sound from object configuration. ([#163])
 
 ### Changed
 
@@ -24,6 +25,7 @@
 [#160]: https://gitlab.com/azriel91/autexousious/issues/160
 [#161]: https://gitlab.com/azriel91/autexousious/issues/161
 [#162]: https://gitlab.com/azriel91/autexousious/issues/162
+[#163]: https://gitlab.com/azriel91/autexousious/issues/163
 
 ## 0.13.0 (2019-08-16)
 

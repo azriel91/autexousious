@@ -13,6 +13,7 @@ application_input = { path = "../../crate/application_input" }
 application_robot = { path = "../../crate/application_robot" }
 application_state = { path = "../../crate/application_state" }
 application_ui = { path = "../../crate/application_ui" }
+audio_loading = { path = "../../crate/audio_loading" }
 character_loading = { path = "../../crate/character_loading" }
 character_model = { path = "../../crate/character_model" }
 character_prefab = { path = "../../crate/character_prefab" }

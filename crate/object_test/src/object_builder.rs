@@ -8,6 +8,7 @@ use amethyst::{
         SpriteSheet, Texture,
     },
 };
+use audio_model::loaded::SourceSequenceHandles;
 use collision_model::{
     config::{Body, Interactions},
     loaded::{
@@ -97,6 +98,7 @@ where
     pub fn build(self, world: &World) -> Object {
         let (
             wait_sequence_handles,
+            source_sequence_handles,
             object_acceleration_sequence_handles,
             sprite_render_sequence_handles,
             body_sequence_handles,
@@ -115,6 +117,7 @@ where
                     body_assets,
                     interactions_assets,
                     spawns_assets,
+                    ..
                 },
                 texture_assets,
                 sprite_sheet_assets,
@@ -175,6 +178,7 @@ where
 
             let (
                 mut wait_sequence_handles,
+                source_sequence_handles,
                 mut object_acceleration_sequence_handles,
                 mut sprite_render_sequence_handles,
                 mut body_sequence_handles,
@@ -182,6 +186,7 @@ where
                 mut spawns_sequence_handles,
             ) = (
                 WaitSequenceHandles::default(),
+                SourceSequenceHandles::default(),
                 ObjectAccelerationSequenceHandles::default(),
                 SpriteRenderSequenceHandles::default(),
                 BodySequenceHandles::default(),
@@ -197,6 +202,7 @@ where
 
             (
                 wait_sequence_handles,
+                source_sequence_handles,
                 object_acceleration_sequence_handles,
                 sprite_render_sequence_handles,
                 body_sequence_handles,
@@ -211,6 +217,7 @@ where
         };
         Object::new(
             wait_sequence_handles,
+            source_sequence_handles,
             object_acceleration_sequence_handles,
             sprite_render_sequence_handles,
             body_sequence_handles,
