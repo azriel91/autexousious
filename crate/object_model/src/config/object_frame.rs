@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use collision_model::config::{Body, Interactions};
 use derive_new::new;
 use kinematic_model::config::ObjectAcceleration;
@@ -20,6 +22,8 @@ use sprite_model::config::SpriteRef;
 pub struct ObjectFrame {
     /// Number of ticks to wait before the sequence switches to the next frame.
     pub wait: Wait,
+    /// Sound to play when this frame begins.
+    pub sound: Option<PathBuf>,
     /// Acceleration to apply to the object on this frame.
     pub acceleration: Option<ObjectAcceleration>,
     /// Sprite to render.

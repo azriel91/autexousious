@@ -1,3 +1,4 @@
+use audio_model::loaded::SourceSequenceHandles;
 use collision_model::loaded::{BodySequenceHandles, InteractionsSequenceHandles};
 use derivative::Derivative;
 use derive_new::new;
@@ -12,6 +13,8 @@ use sprite_model::loaded::SpriteRenderSequenceHandles;
 pub struct Object {
     /// Handles to `WaitSequence`s that this object uses.
     pub wait_sequence_handles: WaitSequenceHandles,
+    /// Handles to `SourceSequence`s that this object uses.
+    pub source_sequence_handles: SourceSequenceHandles,
     /// Handles to `ObjectAccelerationSequence`s that this object uses.
     pub object_acceleration_sequence_handles: ObjectAccelerationSequenceHandles,
     /// Handles to `SpriteRenderSequence`s that this object uses.

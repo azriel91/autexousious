@@ -11,6 +11,7 @@ use amethyst::{
 use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
 use application_event::{AppEvent, AppEventReader};
 use assets_test::{ASSETS_PATH, CHAR_BAT_SLUG, MAP_FADE_SLUG};
+use audio_loading::AudioLoadingBundle;
 use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
 use character_prefab::CharacterPrefabBundle;
 use character_selection::CharacterSelectionBundle;
@@ -89,6 +90,7 @@ impl AutexousiousApplication {
             .with_system(Processor::<Source>::new(), "source_processor", &[])
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
+            .with_bundle(AudioLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(SpawnLoadingBundle::new())

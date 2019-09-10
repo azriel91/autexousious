@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
 use amethyst::{assets::Handle, renderer::SpriteRender, Error};
+use audio_loading::AudioLoader;
+use audio_model::loaded::{SourceHandleOpt, SourceSequence, SourceSequenceHandles};
 use collision_model::{
     config::{Body, Interactions},
     loaded::{
@@ -46,6 +48,8 @@ impl ObjectLoader {
         ObjectLoaderParams {
             loader,
             wait_sequence_assets,
+            source_assets,
+            source_sequence_assets,
             object_acceleration_sequence_assets,
             sprite_render_sequence_assets,
             body_sequence_assets,
@@ -101,6 +105,7 @@ impl ObjectLoader {
         // Load frame component datas
         let sequences_handles = (
             WaitSequenceHandles::default(),
+            SourceSequenceHandles::default(),
             ObjectAccelerationSequenceHandles::default(),
             SpriteRenderSequenceHandles::default(),
             BodySequenceHandles::default(),
@@ -109,6 +114,7 @@ impl ObjectLoader {
         );
         let (
             wait_sequence_handles,
+            source_sequence_handles,
             object_acceleration_sequence_handles,
             sprite_render_sequence_handles,
             body_sequence_handles,
@@ -118,6 +124,7 @@ impl ObjectLoader {
             sequences_handles,
             |(
                 mut wait_sequence_handles,
+                mut source_sequence_handles,
                 mut object_acceleration_sequence_handles,
                 mut sprite_render_sequence_handles,
                 mut body_sequence_handles,
@@ -133,6 +140,19 @@ impl ObjectLoader {
                         .iter()
                         .map(|frame| frame.object_frame().wait)
                         .collect::<Vec<Wait>>(),
+                );
+                let source_sequence = SourceSequence::new(
+                    object_sequence
+                        .frames
+                        .iter()
+                        .map(|frame| {
+                            let source_handle_opt =
+                                frame.object_frame().sound.as_ref().map(|source_path| {
+                                    AudioLoader::load(loader, source_assets, (), source_path)
+                                });
+                            SourceHandleOpt::new(source_handle_opt)
+                        })
+                        .collect::<Vec<SourceHandleOpt>>(),
                 );
                 let object_acceleration_sequence = ObjectAccelerationSequence::new(
                     object_sequence
@@ -204,6 +224,8 @@ impl ObjectLoader {
 
                 let wait_sequence_handle =
                     loader.load_from_data(wait_sequence, (), wait_sequence_assets);
+                let source_sequence_handle =
+                    loader.load_from_data(source_sequence, (), source_sequence_assets);
                 let object_acceleration_sequence_handle = loader.load_from_data(
                     object_acceleration_sequence,
                     (),
@@ -222,6 +244,7 @@ impl ObjectLoader {
                     loader.load_from_data(spawns_sequence, (), spawns_sequence_assets);
 
                 wait_sequence_handles.push(wait_sequence_handle);
+                source_sequence_handles.push(source_sequence_handle);
                 object_acceleration_sequence_handles.push(object_acceleration_sequence_handle);
                 sprite_render_sequence_handles.push(sprite_render_sequence_handle);
                 body_sequence_handles.push(body_sequence_handle);
@@ -230,6 +253,7 @@ impl ObjectLoader {
 
                 (
                     wait_sequence_handles,
+                    source_sequence_handles,
                     object_acceleration_sequence_handles,
                     sprite_render_sequence_handles,
                     body_sequence_handles,
@@ -241,6 +265,7 @@ impl ObjectLoader {
 
         let object = Object::new(
             wait_sequence_handles,
+            source_sequence_handles,
             object_acceleration_sequence_handles,
             sprite_render_sequence_handles,
             body_sequence_handles,
@@ -318,27 +343,13 @@ mod test {
                         )
                         .expect("Failed to load sprites_definition.");
 
-                        let (
-                            ObjectLoaderSystemData {
-                                loader,
-                                wait_sequence_assets,
-                                object_acceleration_sequence_assets,
-                                sprite_render_sequence_assets,
-                                body_sequence_assets,
-                                interactions_sequence_assets,
-                                spawns_sequence_assets,
-                                body_assets,
-                                interactions_assets,
-                                spawns_assets,
-                            },
-                            texture_assets,
-                            sprite_sheet_assets,
-                        ) = world.system_data::<TestSystemData>();
+                        let (object_loader_system_data, texture_assets, sprite_sheet_assets) =
+                            world.system_data::<TestSystemData>();
 
                         // TODO: <https://gitlab.com/azriel91/autexousious/issues/94>
                         let sprite_sheet_handles = SpriteLoader::load(
                             &mut ProgressCounter::default(),
-                            &loader,
+                            &object_loader_system_data.loader,
                             &texture_assets,
                             &sprite_sheet_assets,
                             &sprites_definition,
@@ -348,20 +359,10 @@ mod test {
                         let sprite_sheet_handles = &sprite_sheet_handles;
 
                         ObjectLoader::load::<Character>(
-                            ObjectLoaderParams {
-                                loader: &loader,
-                                wait_sequence_assets: &wait_sequence_assets,
-                                object_acceleration_sequence_assets:
-                                    &object_acceleration_sequence_assets,
-                                sprite_render_sequence_assets: &sprite_render_sequence_assets,
-                                body_sequence_assets: &body_sequence_assets,
-                                interactions_sequence_assets: &interactions_sequence_assets,
-                                spawns_sequence_assets: &spawns_sequence_assets,
-                                sprite_sheet_handles,
-                                body_assets: &body_assets,
-                                interactions_assets: &interactions_assets,
-                                spawns_assets: &spawns_assets,
-                            },
+                            ObjectLoaderParams::from((
+                                &object_loader_system_data,
+                                sprite_sheet_handles.as_slice(),
+                            )),
                             &character_definition.object_definition,
                         )
                         .expect("Failed to load object")
