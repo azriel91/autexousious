@@ -69,6 +69,14 @@ pub fn object_wrapper_gen(
             }
         }
 
+        impl std::convert::AsRef<audio_model::loaded::SourceSequenceHandles>
+        for #object_wrapper_name
+        {
+            fn as_ref(&self) -> &audio_model::loaded::SourceSequenceHandles {
+                &self.0.source_sequence_handles
+            }
+        }
+
         impl std::convert::AsRef<kinematic_model::loaded::ObjectAccelerationSequenceHandles>
         for #object_wrapper_name
         {
