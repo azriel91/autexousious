@@ -2420,6 +2420,8 @@ dependencies = [
  "application_test_support 0.13.0",
  "asset_model 0.13.0",
  "assets_test 0.13.0",
+ "audio_model 0.14.0",
+ "audio_play 0.14.0",
  "camera_model 0.14.0",
  "camera_play 0.14.0",
  "character_model 0.13.0",

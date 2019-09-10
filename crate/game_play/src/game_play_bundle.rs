@@ -4,6 +4,8 @@ use amethyst::{
     utils::ortho_camera::CameraOrthoSystem,
     Error,
 };
+use audio_model::loaded::{SourceSequence, SourceSequenceHandles};
+use audio_play::SequenceAudioPlaySystem;
 use camera_play::{CameraTrackingSystem, CameraVelocitySystem};
 use character_model::loaded::CharacterObjectWrapper;
 use character_play::{
@@ -95,6 +97,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         macro_rules! object_sequence_component_update_systems {
             ($wrapper_type:path) => {
                 sequence_component_update_system!($wrapper_type, WaitSequenceHandles);
+                sequence_component_update_system!($wrapper_type, SourceSequenceHandles);
                 sequence_component_update_system!($wrapper_type, ObjectAccelerationSequenceHandles);
                 sequence_component_update_system!($wrapper_type, SpriteRenderSequenceHandles);
                 sequence_component_update_system!($wrapper_type, BodySequenceHandles);
@@ -137,6 +140,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             };
         }
         frame_component_update_system!(WaitSequence);
+        frame_component_update_system!(SourceSequence);
         frame_component_update_system!(ObjectAccelerationSequence);
         frame_component_update_system!(SpriteRenderSequence);
         frame_component_update_system!(BodySequence);
@@ -168,6 +172,13 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         ); // kcov-ignore
 
         builder.add(HitSfxSystem::new(), &HitSfxSystem::type_name(), &[]);
+
+        // Play sounds from sequence updates.
+        builder.add(
+            SequenceAudioPlaySystem::new(),
+            &SequenceAudioPlaySystem::type_name(),
+            &[&FrameComponentUpdateSystem::<SourceSequence>::type_name()],
+        ); // kcov-ignore
 
         // Spawn objects
         builder.add(
