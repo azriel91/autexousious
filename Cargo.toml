@@ -5,7 +5,3 @@ members = ["app/*", "crate/*"]
 # Slower compilation, but better performance of final executable.
 # <https://blog.rust-lang.org/2018/02/15/Rust-1.24.html#incremental-compilation>
 codegen-units = 1
-
-[patch."https://github.com/amethyst/amethyst.git"]
-amethyst = { git = "https://github.com/azriel91/amethyst.git", branch = "feature/run-setup-fn-before-systems" }
-amethyst_test = { git = "https://github.com/azriel91/amethyst.git", branch = "feature/run-setup-fn-before-systems" }
