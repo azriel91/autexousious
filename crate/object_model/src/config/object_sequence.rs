@@ -43,14 +43,13 @@ mod tests {
     use amethyst::ecs::{storage::DenseVecStorage, Component};
     use asset_model::config::AssetSlug;
     use collision_model::config::{
-        Body, Hit, HitLimit, HitRepeatDelay, Interaction, InteractionKind, Interactions,
+        Body, Hit, HitRepeatDelay, Interaction, InteractionKind, Interactions,
     };
     use derivative::Derivative;
     use kinematic_model::config::{
         ObjectAcceleration, ObjectAccelerationKind, ObjectAccelerationValue,
         ObjectAccelerationValueExpr, ObjectAccelerationValueMultiplier, Position, Velocity,
     };
-    use object_status_model::config::StunPoints;
     use sequence_model::config::{SequenceEndTransition, SequenceName, SequenceNameString, Wait};
     use serde::{Deserialize, Serialize};
     use serde_yaml;
@@ -229,10 +228,7 @@ frames:
         let interactions = vec![Interaction {
             kind: InteractionKind::Hit(Hit {
                 repeat_delay: HitRepeatDelay::new(5),
-                hit_limit: HitLimit::default(),
-                hp_damage: 0,
-                sp_damage: 0,
-                stun: StunPoints::default(),
+                ..Default::default()
             }),
             bounds: vec![Volume::Sphere {
                 x: 1,

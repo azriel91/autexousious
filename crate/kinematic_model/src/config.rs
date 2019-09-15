@@ -189,6 +189,7 @@ macro_rules! kinematic_type {
 
 kinematic_type!(Position);
 kinematic_type!(Velocity);
+kinematic_type!(Acceleration);
 
 #[cfg(test)]
 mod tests {

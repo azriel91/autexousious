@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::config::Hit;
 
 /// Type of collision -- hit, picking weapon, grabbing, and so on.
-#[derive(Clone, Copy, Debug, Derivative, Deserialize, PartialEq, Eq, Hash, Serialize)]
+#[derive(Clone, Copy, Debug, Derivative, Deserialize, PartialEq, Eq, Serialize)]
 #[derivative(Default)]
 #[serde(deny_unknown_fields, rename_all = "snake_case")]
 pub enum InteractionKind {

@@ -1,11 +1,12 @@
 use derive_new::new;
+use kinematic_model::config::Acceleration;
 use object_status_model::config::StunPoints;
 use serde::{Deserialize, Serialize};
 
 use crate::config::{HitLimit, HitRepeatDelay};
 
 /// Configuration of a hit interaction.
-#[derive(Clone, Copy, Debug, Default, Deserialize, PartialEq, Eq, Hash, Serialize, new)]
+#[derive(Clone, Copy, Debug, Default, Deserialize, PartialEq, Eq, Serialize, new)]
 #[serde(default, deny_unknown_fields)]
 pub struct Hit {
     /// Number of ticks to wait before another hit may occur.
@@ -18,10 +19,13 @@ pub struct Hit {
     pub sp_damage: u32,
     /// Amount of stun points to inflict on collision.
     pub stun: StunPoints,
+    /// Acceleration to inflict on collision.
+    pub acceleration: Acceleration<i32>,
 }
 
 #[cfg(test)]
 mod test {
+    use kinematic_model::config::Acceleration;
     use object_status_model::config::StunPoints;
     use serde_yaml;
 
@@ -34,6 +38,7 @@ hit_limit: 2
 hp_damage: 3
 sp_damage: 4
 stun: 5
+acceleration: { x: -1, y: 2 }
 "#;
 
     #[test]
@@ -47,6 +52,7 @@ stun: 5
             3,
             4,
             StunPoints::new(5),
+            Acceleration::new(-1, 2, 0),
         );
 
         assert_eq!(expected, hit_deserialized);

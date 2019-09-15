@@ -1364,6 +1364,7 @@ dependencies = [
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_more 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kinematic_model 0.13.0",
  "logic_clock 0.13.0",
  "minterpolate 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "numeric_newtype_derive 0.13.0",

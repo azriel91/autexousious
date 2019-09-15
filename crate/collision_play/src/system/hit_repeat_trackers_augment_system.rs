@@ -101,7 +101,6 @@ mod tests {
         config::{Hit, HitLimit, HitRepeatDelay, Interaction, InteractionKind},
         play::{HitEvent, HitRepeatClock, HitRepeatTracker, HitRepeatTrackers},
     };
-    use object_status_model::config::StunPoints;
     use shape_model::Volume;
     use slotmap::SlotMap;
 
@@ -184,13 +183,11 @@ mod tests {
 
     fn interaction() -> Interaction {
         Interaction::new(
-            InteractionKind::Hit(Hit::new(
-                HitRepeatDelay::new(4),
-                HitLimit::Unlimited,
-                0,
-                0,
-                StunPoints::default(),
-            )),
+            InteractionKind::Hit(Hit {
+                repeat_delay: HitRepeatDelay::new(4),
+                hit_limit: HitLimit::Unlimited,
+                ..Default::default()
+            }),
             vec![],
             true,
         )

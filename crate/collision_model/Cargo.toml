@@ -11,6 +11,7 @@ derivative = "1.0.2"
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
 derive_more = "0.15.0"
+kinematic_model = { path = "../kinematic_model" }
 logic_clock = { path = "../logic_clock" }
 minterpolate = { version = "0.4.0", features = ["serde"] }
 numeric_newtype_derive = { path = "../numeric_newtype_derive" }
