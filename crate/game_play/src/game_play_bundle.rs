@@ -22,12 +22,11 @@ use collision_model::loaded::{
     BodySequence, BodySequenceHandles, InteractionsSequence, InteractionsSequenceHandles,
 };
 use collision_play::{
-    CollisionDetectionSystem, ContactDetectionSystem, HitDetectionSystem,
-    HitRepeatTrackersAugmentSystem, HitRepeatTrackersTickerSystem,
+    CollisionDetectionSystem, ContactDetectionSystem, HitDetectionSystem, HitEffectSystem,
+    HitRepeatTrackersAugmentSystem, HitRepeatTrackersTickerSystem, HittingEffectSystem,
 };
 use derive_new::new;
 use energy_model::loaded::EnergyObjectWrapper;
-use energy_play::{EnergyHitEffectSystem, EnergyHittingEffectSystem};
 use game_input::ControllerInput;
 use game_play_hud::{CpBarUpdateSystem, HpBarUpdateSystem};
 use kinematic_model::{
@@ -201,32 +200,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 
         // === Component value update === //
 
-        // Sets velocity based on sequence ID and input.
-        builder.add(
-            GroundingFrictionSystem::new(),
-            &GroundingFrictionSystem::type_name(),
-            &[],
-        ); // kcov-ignore
-
-        // Reduces charge when not charging.
-        builder.add(
-            ChargeRetentionSystem::new(),
-            &ChargeRetentionSystem::type_name(),
-            &[],
-        ); // kcov-ignore
-
-        // Reduces `StunPoints` each tick.
-        builder.add(
-            StunPointsReductionSystem::new(),
-            &StunPointsReductionSystem::type_name(),
-            &[],
-        ); // kcov-ignore
-
-        // vel += `ObjectAcceleration`.
+        // vel += `ObjectAcceleration` (from frame config).
         builder.add(
             ObjectAccelerationSystem::new(),
             &ObjectAccelerationSystem::type_name(),
-            &[&GroundingFrictionSystem::type_name()],
+            &[],
         ); // kcov-ignore
 
         // pos += vel
@@ -235,10 +213,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         builder.add(
             ObjectKinematicsUpdateSystem::new(),
             &ObjectKinematicsUpdateSystem::type_name(),
-            &[
-                &ObjectAccelerationSystem::type_name(),
-                &GroundingFrictionSystem::type_name(),
-            ],
+            &[&ObjectAccelerationSystem::type_name()],
         ); // kcov-ignore
 
         // `Position` correction based on margins.
@@ -262,6 +237,13 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             ObjectGroundingSystem::new(),
             &ObjectGroundingSystem::type_name(),
             &[&MapEnterExitDetectionSystem::type_name()],
+        ); // kcov-ignore
+
+        // Updates `Velocity<f32>` based on grounding.
+        builder.add(
+            GroundingFrictionSystem::new(),
+            &GroundingFrictionSystem::type_name(),
+            &[&ObjectGroundingSystem::type_name()],
         ); // kcov-ignore
 
         builder.add(
@@ -293,6 +275,21 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &StickToTargetObjectSystem::type_name(),
             &[&ObjectTransformUpdateSystem::type_name()],
         ); // kcov-ignore
+
+        // Reduces charge when not charging.
+        builder.add(
+            ChargeRetentionSystem::new(),
+            &ChargeRetentionSystem::type_name(),
+            &[],
+        ); // kcov-ignore
+
+        // Reduces `StunPoints` each tick.
+        builder.add(
+            StunPointsReductionSystem::new(),
+            &StunPointsReductionSystem::type_name(),
+            &[],
+        ); // kcov-ignore
+
         builder.add(
             HitRepeatTrackersTickerSystem::new(),
             &HitRepeatTrackersTickerSystem::type_name(),
@@ -306,7 +303,10 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         builder.add(
             CollisionDetectionSystem::new(),
             &CollisionDetectionSystem::type_name(),
-            &[],
+            &[
+                &StunPointsReductionSystem::type_name(),
+                &HitRepeatTrackersTickerSystem::type_name(),
+            ],
         ); // kcov-ignore
         builder.add(
             ContactDetectionSystem::new(),
@@ -374,20 +374,21 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             &[&ChargeIncrementSystem::type_name()],
         ); // kcov-ignore
 
-        // `Energy` hit / hitting effects.
+        // Hit / Hitting effects.
+        //
         // There are only two currently, but if there is a timer system, perhaps that should go
         // last.
-        // The `EnergyHitEffectSystem` depends on the `EnergyHittingEffectSystem` to ensure the
+        // The `HitEffectSystem` depends on the `HittingEffectSystem` to ensure the
         // `Hit` sequence is deterministic and overwrites the `Hitting` sequence.
         builder.add(
-            EnergyHittingEffectSystem::new(),
-            &EnergyHittingEffectSystem::type_name(),
+            HittingEffectSystem::new(),
+            &HittingEffectSystem::type_name(),
             &[],
         ); // kcov-ignore
         builder.add(
-            EnergyHitEffectSystem::new(),
-            &EnergyHitEffectSystem::type_name(),
-            &[&EnergyHittingEffectSystem::type_name()],
+            HitEffectSystem::new(),
+            &HitEffectSystem::type_name(),
+            &[&HittingEffectSystem::type_name()],
         ); // kcov-ignore
 
         // Perhaps this should be straight after the `StickToTargetObjectSystem`, but we put it here

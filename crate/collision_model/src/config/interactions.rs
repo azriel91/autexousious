@@ -7,7 +7,7 @@ use crate::config::Interaction;
 
 /// Effects on other objects.
 #[derive(
-    Asset, Clone, Debug, Default, Deref, DerefMut, Deserialize, Hash, PartialEq, Eq, Serialize, new,
+    Asset, Clone, Debug, Default, Deref, DerefMut, Deserialize, PartialEq, Eq, Serialize, new,
 )]
 pub struct Interactions(
     /// Backing vector of `Interaction`s.
@@ -17,6 +17,7 @@ pub struct Interactions(
 
 #[cfg(test)]
 mod tests {
+    use kinematic_model::config::Acceleration;
     use object_status_model::config::StunPoints;
     use serde::Deserialize;
     use serde_yaml;
@@ -27,7 +28,13 @@ mod tests {
 
     const ITR_PHYSICAL_ALL_SPECIFIED: &str = r#"---
 interactions:
-  - hit: { repeat_delay: 5, hit_limit: "unlimited", hp_damage: 40, sp_damage: 50, stun: 33 }
+  - hit:
+      repeat_delay: 5
+      hit_limit: "unlimited"
+      hp_damage: 40
+      sp_damage: 50
+      stun: 33
+      acceleration: { x: -1, y: 2 }
     bounds: [{ sphere: { x: 1, y: 1, r: 1 } }]
     multiple: true
 "#;
@@ -52,6 +59,7 @@ interactions:
                 hp_damage: 40,
                 sp_damage: 50,
                 stun: StunPoints::new(33),
+                acceleration: Acceleration::new(-1, 2, 0),
             }),
             bounds: vec![Volume::Sphere {
                 x: 1,
@@ -95,11 +103,8 @@ interactions:
                 r: 1,
             }],
             kind: InteractionKind::Hit(Hit {
-                repeat_delay: HitRepeatDelay::default(),
                 hit_limit: HitLimit::Limit(2),
-                hp_damage: 0,
-                sp_damage: 0,
-                stun: StunPoints::default(),
+                ..Default::default()
             }),
             multiple: Default::default(),
         }]; // kcov-ignore

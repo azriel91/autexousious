@@ -22,7 +22,6 @@ collision_play = { path = "../collision_play" }
 derivative = "1.0.2"
 derive-new = "0.5.8"
 energy_model = { path = "../energy_model" }
-energy_play = { path = "../energy_play" }
 game_input = { path = "../game_input" }
 game_model = { path = "../game_model" }
 game_play_hud = { path = "../game_play_hud" }
