@@ -9,9 +9,9 @@ use derive_new::new;
 use sequence_model::loaded::SequenceId;
 use typename_derive::TypeName;
 
-/// Determines the next sequence for `Energy`s when they are hit.
+/// Determines the next sequence for entities when they are hit.
 #[derive(Debug, Default, TypeName, new)]
-pub struct EnergyHitEffectSystem {
+pub struct HitEffectSystem {
     /// Reader ID for the `HitEvent` event channel.
     #[new(default)]
     hit_event_rid: Option<ReaderId<HitEvent>>,
@@ -19,7 +19,7 @@ pub struct EnergyHitEffectSystem {
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct EnergyHitEffectSystemData<'s> {
+pub struct HitEffectSystemData<'s> {
     /// `HitEvent` channel.
     #[derivative(Debug = "ignore")]
     pub hit_ec: Read<'s, EventChannel<HitEvent>>,
@@ -31,12 +31,12 @@ pub struct EnergyHitEffectSystemData<'s> {
     pub sequence_ids: WriteStorage<'s, SequenceId>,
 }
 
-impl<'s> System<'s> for EnergyHitEffectSystem {
-    type SystemData = EnergyHitEffectSystemData<'s>;
+impl<'s> System<'s> for HitEffectSystem {
+    type SystemData = HitEffectSystemData<'s>;
 
     fn run(
         &mut self,
-        EnergyHitEffectSystemData {
+        HitEffectSystemData {
             hit_ec,
             hit_transitions,
             mut sequence_ids,
@@ -46,7 +46,7 @@ impl<'s> System<'s> for EnergyHitEffectSystem {
             .read(
                 self.hit_event_rid
                     .as_mut()
-                    .expect("Expected `hit_event_rid` to exist for `EnergyHitEffectSystem`."),
+                    .expect("Expected `hit_event_rid` to exist for `HitEffectSystem`."),
             )
             .for_each(|ev| {
                 let hit_transition = hit_transitions.get(ev.to).copied();
@@ -85,7 +85,7 @@ mod tests {
     use sequence_model::loaded::SequenceId;
     use shape_model::Volume;
 
-    use super::EnergyHitEffectSystem;
+    use super::HitEffectSystem;
 
     #[test]
     fn sets_next_sequence_id_to_hit_when_hit_while_hover() -> Result<(), Error> {
@@ -139,7 +139,7 @@ mod tests {
         sequence_id_expected: Option<SequenceId>,
     ) -> Result<(), Error> {
         AmethystApplication::blank()
-            .with_system(EnergyHitEffectSystem::new(), "", &[])
+            .with_system(HitEffectSystem::new(), "", &[])
             .with_effect(move |world| {
                 let entity_from = world.create_entity().build();
                 let entity_to = {
