@@ -5,7 +5,7 @@ use shape_model::Volume;
 use crate::config::InteractionKind;
 
 /// Effects of one object on another
-#[derive(Clone, Debug, Deserialize, Hash, PartialEq, Eq, Serialize, new)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, new)]
 #[serde(deny_unknown_fields)]
 pub struct Interaction {
     /// Type of collision -- hit, picking weapon, grabbing, and so on.

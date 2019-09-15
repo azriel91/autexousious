@@ -22,7 +22,7 @@ mod test {
     const SPAWNS_YAML: &str = r#"
 spawns:
   - { object: "default/fireball" }
-  - { object: "default/fireball", position: [-35, 47, 10], velocity: [10, -2, 1] }
+  - { object: "default/fireball", position: { x: -1, y: 2, z: 3 }, velocity: { x: -4, y: 5 } }
 "#;
 
     #[derive(Debug, Deserialize, Serialize)]
@@ -47,8 +47,8 @@ spawns:
                 ),
                 Spawn::new(
                     asset_slug,
-                    Position::<i32>::from((-35, 47, 10)),
-                    Velocity::<i32>::from((10, -2, 1))
+                    Position::<i32>::from((-1, 2, 3)),
+                    Velocity::<i32>::from((-4, 5, 0))
                 )
             ]),
             spawns

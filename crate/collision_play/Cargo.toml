@@ -12,6 +12,7 @@ derive-new = "0.5.8"
 log = "0.4.8"
 logic_clock = { path = "../logic_clock" }
 object_model = { path = "../object_model" }
+sequence_model = { path = "../sequence_model" }
 shape_model = { path = "../shape_model" }
 slotmap = "0.3.0"
 spawn_model = { path = "../spawn_model" }

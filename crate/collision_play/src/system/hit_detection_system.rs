@@ -146,7 +146,6 @@ mod tests {
             HitRepeatTrackers,
         },
     };
-    use object_status_model::config::StunPoints;
     use pretty_assertions::assert_eq;
     use shape_model::Volume;
     use slotmap::SlotMap;
@@ -363,13 +362,11 @@ mod tests {
 
     fn interaction(hit_limit: HitLimit) -> Interaction {
         Interaction::new(
-            InteractionKind::Hit(Hit::new(
-                HitRepeatDelay::new(4),
+            InteractionKind::Hit(Hit {
+                repeat_delay: HitRepeatDelay::new(4),
                 hit_limit,
-                0,
-                0,
-                StunPoints::default(),
-            )),
+                ..Default::default()
+            }),
             vec![],
             true,
         )

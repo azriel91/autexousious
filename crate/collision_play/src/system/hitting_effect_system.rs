@@ -9,9 +9,9 @@ use derive_new::new;
 use sequence_model::loaded::SequenceId;
 use typename_derive::TypeName;
 
-/// Determines the next sequence for `Energy`s when they hit another object.
+/// Determines the next sequence for entities when they hit another object.
 #[derive(Debug, Default, TypeName, new)]
-pub struct EnergyHittingEffectSystem {
+pub struct HittingEffectSystem {
     /// Reader ID for the `HitEvent` event channel.
     #[new(default)]
     hit_event_rid: Option<ReaderId<HitEvent>>,
@@ -19,7 +19,7 @@ pub struct EnergyHittingEffectSystem {
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct EnergyHittingEffectSystemData<'s> {
+pub struct HittingEffectSystemData<'s> {
     /// `HitEvent` channel.
     #[derivative(Debug = "ignore")]
     pub hit_ec: Read<'s, EventChannel<HitEvent>>,
@@ -31,12 +31,12 @@ pub struct EnergyHittingEffectSystemData<'s> {
     pub sequence_ids: WriteStorage<'s, SequenceId>,
 }
 
-impl<'s> System<'s> for EnergyHittingEffectSystem {
-    type SystemData = EnergyHittingEffectSystemData<'s>;
+impl<'s> System<'s> for HittingEffectSystem {
+    type SystemData = HittingEffectSystemData<'s>;
 
     fn run(
         &mut self,
-        EnergyHittingEffectSystemData {
+        HittingEffectSystemData {
             hit_ec,
             hitting_transitions,
             mut sequence_ids,
@@ -46,7 +46,7 @@ impl<'s> System<'s> for EnergyHittingEffectSystem {
             .read(
                 self.hit_event_rid
                     .as_mut()
-                    .expect("Expected `hit_event_rid` to exist for `EnergyHittingEffectSystem`."),
+                    .expect("Expected `hit_event_rid` to exist for `HittingEffectSystem`."),
             )
             .for_each(|ev| {
                 let hitting_transition = hitting_transitions.get(ev.from).copied();
@@ -85,7 +85,7 @@ mod tests {
     use sequence_model::loaded::SequenceId;
     use shape_model::Volume;
 
-    use super::EnergyHittingEffectSystem;
+    use super::HittingEffectSystem;
 
     #[test]
     fn sets_next_sequence_id_to_hitting_when_hitting_while_hover() -> Result<(), Error> {
@@ -139,7 +139,7 @@ mod tests {
         energy_sequence_name_expected: Option<SequenceId>,
     ) -> Result<(), Error> {
         AmethystApplication::blank()
-            .with_system(EnergyHittingEffectSystem::new(), "", &[])
+            .with_system(HittingEffectSystem::new(), "", &[])
             .with_effect(move |world| {
                 let entity_from = {
                     let mut entity_builder = world.create_entity();
