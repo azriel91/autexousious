@@ -1,5 +1,6 @@
 use amethyst::{
-    ecs::{Read, ReadStorage, System, SystemData, World, WriteStorage},
+    ecs::{Read, ReadStorage, System, World, WriteStorage},
+    shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
 use character_model::loaded::CharacterHitTransitions;
@@ -7,8 +8,10 @@ use collision_model::{
     config::{Hit, Interaction, InteractionKind},
     play::HitEvent,
 };
+use derivative::Derivative;
 use derive_new::new;
-use object_model::play::HealthPoints;
+use kinematic_model::config::Velocity;
+use object_model::play::{HealthPoints, Mirrored};
 use object_status_model::config::StunPoints;
 use sequence_model::loaded::SequenceId;
 use typename_derive::TypeName;
@@ -25,26 +28,46 @@ pub(crate) struct CharacterHitEffectSystem {
     hit_event_rid: Option<ReaderId<HitEvent>>,
 }
 
-type CharacterHitEffectSystemData<'s> = (
-    Read<'s, EventChannel<HitEvent>>,
-    ReadStorage<'s, CharacterHitTransitions>,
-    WriteStorage<'s, HealthPoints>,
-    WriteStorage<'s, StunPoints>,
-    WriteStorage<'s, SequenceId>,
-);
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub struct CharacterHitEffectSystemData<'s> {
+    /// `HitEvent` channel.
+    #[derivative(Debug = "ignore")]
+    pub hit_ec: Read<'s, EventChannel<HitEvent>>,
+    /// `Mirrored` components.
+    #[derivative(Debug = "ignore")]
+    pub mirroreds: ReadStorage<'s, Mirrored>,
+    /// `CharacterHitTransitions` components.
+    #[derivative(Debug = "ignore")]
+    pub character_hit_transitionses: ReadStorage<'s, CharacterHitTransitions>,
+    /// `HealthPoints` components.
+    #[derivative(Debug = "ignore")]
+    pub health_pointses: WriteStorage<'s, HealthPoints>,
+    /// `StunPoints` components.
+    #[derivative(Debug = "ignore")]
+    pub stun_pointses: WriteStorage<'s, StunPoints>,
+    /// `Velocity<f32>` components.
+    #[derivative(Debug = "ignore")]
+    pub velocities: WriteStorage<'s, Velocity<f32>>,
+    /// `SequenceId` components.
+    #[derivative(Debug = "ignore")]
+    pub sequence_ids: WriteStorage<'s, SequenceId>,
+}
 
 impl<'s> System<'s> for CharacterHitEffectSystem {
     type SystemData = CharacterHitEffectSystemData<'s>;
 
     fn run(
         &mut self,
-        (
+        CharacterHitEffectSystemData {
             hit_ec,
+            mirroreds,
             character_hit_transitionses,
             mut health_pointses,
             mut stun_pointses,
-            mut character_sequence_names,
-        ): Self::SystemData,
+            mut velocities,
+            mut sequence_ids,
+        }: Self::SystemData,
     ) {
         // Read from channel
         hit_ec
@@ -54,27 +77,38 @@ impl<'s> System<'s> for CharacterHitEffectSystem {
                     .expect("Expected reader ID to exist for CharacterHitEffectSystem."),
             )
             .for_each(|ev| {
+                let mirrored = mirroreds
+                    .get(ev.from)
+                    .map(|mirrored| **mirrored)
+                    .unwrap_or(false);
+
                 let character_hit_transitions = character_hit_transitionses.get(ev.to);
                 let health_points = health_pointses.get_mut(ev.to);
                 let stun_points = stun_pointses.get_mut(ev.to);
-                let character_sequence_name = character_sequence_names.get_mut(ev.to);
+                let velocity = velocities.get_mut(ev.to);
+                let sequence_id = sequence_ids.get_mut(ev.to);
 
                 if let (
                     Some(character_hit_transitions),
                     Some(health_points),
                     Some(stun_points),
-                    Some(character_sequence_name),
+                    Some(velocity),
+                    Some(sequence_id),
                 ) = (
                     character_hit_transitions,
                     health_points,
                     stun_points,
-                    character_sequence_name,
+                    velocity,
+                    sequence_id,
                 ) {
                     // TODO: Split this system with health check system.
                     let Interaction {
                         kind:
                             InteractionKind::Hit(Hit {
-                                hp_damage, stun, ..
+                                hp_damage,
+                                stun,
+                                acceleration,
+                                ..
                             }),
                         ..
                     } = ev.interaction;
@@ -85,6 +119,14 @@ impl<'s> System<'s> for CharacterHitEffectSystem {
                     }
 
                     *stun_points += stun;
+
+                    if mirrored {
+                        velocity.x -= (*acceleration).x as f32;
+                    } else {
+                        velocity.x += (*acceleration).x as f32;
+                    }
+                    velocity.y += (*acceleration).y as f32;
+                    velocity.z += (*acceleration).z as f32;
 
                     let next_sequence_id = if *health_points == 0 {
                         character_hit_transitions.falling
@@ -99,7 +141,7 @@ impl<'s> System<'s> for CharacterHitEffectSystem {
                     };
 
                     // Set sequence id
-                    *character_sequence_name = next_sequence_id;
+                    *sequence_id = next_sequence_id;
                 }
             });
     }
