@@ -15,6 +15,7 @@ derive_more = "0.15.0"
 numeric_newtype_derive = { path = "../numeric_newtype_derive" }
 object_type = { path = "../object_type" }
 serde = "1.0.99"
+slotmap = "0.4.0"
 specs-derive = "0.4.0"
 strum = "0.15.0"
 strum_macros = "0.15.0"
