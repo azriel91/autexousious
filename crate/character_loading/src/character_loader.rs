@@ -1,7 +1,7 @@
 use amethyst::{assets::Handle, Error};
 use character_model::{
     config::CharacterDefinition,
-    loaded::{Character, CharacterCtsHandle, CharacterObjectWrapper},
+    loaded::{Character, CharacterCtsHandle, CharacterCtsHandles, CharacterObjectWrapper},
 };
 use lazy_static::lazy_static;
 use sequence_model::loaded::{SequenceId, SequenceIdMappings};
@@ -55,7 +55,7 @@ impl CharacterLoader {
                 },
             );
 
-        let cts_handles = character_definition
+        let character_cts_handles = character_definition
             .object_definition
             .sequences
             .iter()
@@ -73,9 +73,10 @@ impl CharacterLoader {
                 cts_handle
             })
             .collect::<Vec<CharacterCtsHandle>>();
+        let character_cts_handles = CharacterCtsHandles::new(character_cts_handles);
 
         Ok(Character::new(
-            cts_handles,
+            character_cts_handles,
             sequence_id_mappings,
             object_wrapper_handle,
         ))
