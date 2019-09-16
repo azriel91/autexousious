@@ -6,14 +6,12 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     Error,
 };
-use character_loading::{
-    CharacterLoader, CharacterLoaderParams, ControlTransitionsSequenceLoaderParams,
-};
+use character_loading::{CharacterLoader, CharacterLoaderParams, CtsLoaderParams};
 use character_model::{
     config::{CharacterDefinition, CharacterSequenceName},
     loaded::{
-        Character, CharacterControlTransitions, CharacterControlTransitionsSequence,
-        CharacterHandle, CharacterHitTransitions,
+        Character, CharacterControlTransitions, CharacterCts, CharacterHandle,
+        CharacterHitTransitions,
     },
 };
 use derivative::Derivative;
@@ -62,10 +60,9 @@ pub struct CharacterPrefabSystemData<'s> {
     /// `CharacterControlTransitions` assets.
     #[derivative(Debug = "ignore")]
     pub character_control_transitions_assets: Read<'s, AssetStorage<CharacterControlTransitions>>,
-    /// `CharacterControlTransitionsSequence` assets.
+    /// `CharacterCts` assets.
     #[derivative(Debug = "ignore")]
-    pub character_control_transitions_sequence_assets:
-        Read<'s, AssetStorage<CharacterControlTransitionsSequence>>,
+    pub character_cts_assets: Read<'s, AssetStorage<CharacterCts>>,
     /// `Character` assets.
     #[derivative(Debug = "ignore")]
     pub character_assets: Read<'s, AssetStorage<Character>>,
@@ -192,7 +189,7 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
             loader,
             character_definition_assets,
             character_control_transitions_assets,
-            character_control_transitions_sequence_assets,
+            character_cts_assets,
             character_assets,
             ..
         }: &mut Self::SystemData,
@@ -207,17 +204,12 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
                 if let ObjectPrefab::Handle(object_wrapper_handle) = &object_prefab {
                     let object_wrapper_handle = object_wrapper_handle.clone();
 
-                    let control_transitions_sequence_loader_params =
-                        ControlTransitionsSequenceLoaderParams {
-                            loader: &loader,
-                            character_control_transitions_assets:
-                                &character_control_transitions_assets,
-                            character_control_transitions_sequence_assets:
-                                &character_control_transitions_sequence_assets,
-                        };
-                    let character_loader_params = CharacterLoaderParams {
-                        control_transitions_sequence_loader_params,
+                    let cts_loader_params = CtsLoaderParams {
+                        loader: &loader,
+                        character_control_transitions_assets: &character_control_transitions_assets,
+                        character_cts_assets: &character_cts_assets,
                     };
+                    let character_loader_params = CharacterLoaderParams { cts_loader_params };
                     let character_definition = character_definition_assets
                         .get(&character_definition_handle)
                         .expect("Expected `CharacterDefinition` to be loaded.");

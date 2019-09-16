@@ -18,8 +18,8 @@ use character_model::{
         CharacterDefinition, CharacterSequence, CharacterSequenceName, ControlTransitionRequirement,
     },
     loaded::{
-        Character, CharacterControlTransition, CharacterControlTransitions,
-        CharacterControlTransitionsSequence, CharacterHandle,
+        Character, CharacterControlTransition, CharacterControlTransitions, CharacterCts,
+        CharacterHandle,
     },
 };
 use character_prefab::{CharacterPrefab, CharacterPrefabBundle, CharacterPrefabHandle};
@@ -82,17 +82,16 @@ fn character_prefab_load() -> Result<(), Error> {
             let character = character_assets
                 .get(character_handle)
                 .expect("Expected `Character` to be loaded.");
-            let character_control_transitions_sequence_assets =
-                world.read_resource::<AssetStorage<CharacterControlTransitionsSequence>>();
-            let character_control_transitions_sequences = {
+            let character_cts_assets = world.read_resource::<AssetStorage<CharacterCts>>();
+            let character_ctses = {
                 let handle = character
-                    .control_transitions_sequence_handles
+                    .cts_handles
                     .get(*SequenceId::new(0))
-                    .expect("Expected `CharacterControlTransitionsSequenceHandle` to exist.");
+                    .expect("Expected `CharacterCtsHandle` to exist.");
 
-                character_control_transitions_sequence_assets
+                character_cts_assets
                     .get(handle)
-                    .expect("Expected `CharacterControlTransitionsSequence` to be loaded.")
+                    .expect("Expected `CharacterCts` to be loaded.")
             };
 
             // Assert the values for each handle.
@@ -100,7 +99,7 @@ fn character_prefab_load() -> Result<(), Error> {
                 world.read_resource::<AssetStorage<CharacterControlTransitions>>();
 
             let expected_character_control_transitions = expected_control_transitions();
-            let character_control_transitions_handle = character_control_transitions_sequences
+            let character_control_transitions_handle = character_ctses
                 .first()
                 .expect("Expected `CharacterControlTransitionsHandle` to exist.");
             let character_control_transitions = character_control_transitions_assets

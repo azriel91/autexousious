@@ -4,8 +4,8 @@ use amethyst::{
 };
 use asset_model::config::AssetSlug;
 use character_model::loaded::{
-    Character, CharacterControlTransitionsHandle, CharacterControlTransitionsSequence,
-    CharacterControlTransitionsSequenceHandle, CharacterObjectWrapper,
+    Character, CharacterControlTransitionsHandle, CharacterCts, CharacterCtsHandle,
+    CharacterObjectWrapper,
 };
 use character_prefab::CharacterPrefab;
 use collision_model::loaded::{BodySequenceHandle, InteractionsSequenceHandle};
@@ -21,7 +21,7 @@ use crate::ObjectQueries;
 pub struct SequenceQueries;
 
 impl SequenceQueries {
-    /// Returns the `CharacterControlTransitionsSequenceHandle` for the specified sequence ID.
+    /// Returns the `CharacterCtsHandle` for the specified sequence ID.
     ///
     /// This function assumes the character for the specified slug is instantiated in the world.
     ///
@@ -29,12 +29,12 @@ impl SequenceQueries {
     ///
     /// * `world`: `World` of the running application.
     /// * `asset_slug`: Object slug whose `Handle<O::ObjectWrapper>` to retrieve.
-    /// * `sequence_id`: Sequence ID whose `CharacterControlTransitionsSequenceHandle` to retrieve.
+    /// * `sequence_id`: Sequence ID whose `CharacterCtsHandle` to retrieve.
     pub fn character_cts_handle(
         world: &World,
         asset_slug: &AssetSlug,
         sequence_id: SequenceId,
-    ) -> CharacterControlTransitionsSequenceHandle {
+    ) -> CharacterCtsHandle {
         let character_handle = ObjectQueries::game_object_handle::<CharacterPrefab>(
             world, asset_slug,
         )
@@ -53,11 +53,11 @@ impl SequenceQueries {
         });
 
         character
-            .control_transitions_sequence_handles
+            .cts_handles
             .get(*sequence_id)
             .unwrap_or_else(|| {
                 panic!(
-                    "Expected `CharacterControlTransitionsSequenceHandle` to exist for sequence \
+                    "Expected `CharacterCtsHandle` to exist for sequence \
                      ID: `{:?}`.",
                     sequence_id
                 )
@@ -73,7 +73,7 @@ impl SequenceQueries {
     ///
     /// * `world`: `World` of the running application.
     /// * `asset_slug`: Object slug whose `Handle<O::ObjectWrapper>` to retrieve.
-    /// * `sequence_id`: Sequence ID whose `CharacterControlTransitionsSequenceHandle` to retrieve.
+    /// * `sequence_id`: Sequence ID whose `CharacterCtsHandle` to retrieve.
     /// * `frame_index`: Frame index within the sequence whose control transitions to retrieve.
     pub fn character_control_transitions_handle(
         world: &World,
@@ -83,11 +83,10 @@ impl SequenceQueries {
     ) -> CharacterControlTransitionsHandle {
         let character_cts_handle = Self::character_cts_handle(world, asset_slug, sequence_id);
 
-        let character_cts_assets =
-            world.read_resource::<AssetStorage<CharacterControlTransitionsSequence>>();
+        let character_cts_assets = world.read_resource::<AssetStorage<CharacterCts>>();
         let character_cts = character_cts_assets
             .get(&character_cts_handle)
-            .expect("Expected `CharacterControlTransitionsSequence` to be loaded.");
+            .expect("Expected `CharacterCts` to be loaded.");
 
         character_cts[frame_index].clone()
     }

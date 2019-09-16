@@ -1,12 +1,12 @@
 use amethyst::{assets::Handle, Error};
 use character_model::{
     config::CharacterDefinition,
-    loaded::{Character, CharacterControlTransitionsSequenceHandle, CharacterObjectWrapper},
+    loaded::{Character, CharacterCtsHandle, CharacterObjectWrapper},
 };
 use lazy_static::lazy_static;
 use sequence_model::loaded::{SequenceId, SequenceIdMappings};
 
-use crate::{CharacterLoaderParams, ControlTransitionsSequenceLoader};
+use crate::{CharacterLoaderParams, CtsLoader};
 
 lazy_static! {
     /// Default `CharacterDefinition` with control transitions.
@@ -55,7 +55,7 @@ impl CharacterLoader {
                 },
             );
 
-        let control_transitions_sequence_handles = character_definition
+        let cts_handles = character_definition
             .object_definition
             .sequences
             .iter()
@@ -64,18 +64,18 @@ impl CharacterLoader {
                     .object_definition
                     .sequences
                     .get(sequence_id);
-                let control_transitions_sequence_handle = ControlTransitionsSequenceLoader::load(
-                    &character_loader_params.control_transitions_sequence_loader_params,
+                let cts_handle = CtsLoader::load(
+                    &character_loader_params.cts_loader_params,
                     &sequence_id_mappings,
                     sequence_default,
                     sequence,
                 );
-                control_transitions_sequence_handle
+                cts_handle
             })
-            .collect::<Vec<CharacterControlTransitionsSequenceHandle>>();
+            .collect::<Vec<CharacterCtsHandle>>();
 
         Ok(Character::new(
-            control_transitions_sequence_handles,
+            cts_handles,
             sequence_id_mappings,
             object_wrapper_handle,
         ))

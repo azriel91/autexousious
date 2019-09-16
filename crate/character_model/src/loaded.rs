@@ -9,14 +9,12 @@ pub use self::{
     character_control_transitions::{
         CharacterControlTransitions, CharacterControlTransitionsHandle,
     },
-    character_control_transitions_sequence::{
-        CharacterControlTransitionsSequence, CharacterControlTransitionsSequenceHandle,
-    },
+    character_cts::{CharacterCts, CharacterCtsHandle},
     character_hit_transitions::CharacterHitTransitions,
 };
 
 mod character;
 mod character_control_transition;
 mod character_control_transitions;
-mod character_control_transitions_sequence;
+mod character_cts;
 mod character_hit_transitions;

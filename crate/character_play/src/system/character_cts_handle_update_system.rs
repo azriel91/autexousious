@@ -6,9 +6,7 @@ use amethyst::{
     },
     shred::{ResourceId, SystemData},
 };
-use character_model::loaded::{
-    Character, CharacterControlTransitionsSequenceHandle, CharacterHandle,
-};
+use character_model::loaded::{Character, CharacterCtsHandle, CharacterHandle};
 use derivative::Derivative;
 use derive_new::new;
 use log::error;
@@ -16,7 +14,7 @@ use named_type::NamedType;
 use named_type_derive::NamedType;
 use sequence_model::loaded::SequenceId;
 
-/// Updates the attached `CharacterControlTransitionsSequenceHandle`s when `SequenceId` changes.
+/// Updates the attached `CharacterCtsHandle`s when `SequenceId` changes.
 #[derive(Debug, Default, NamedType, new)]
 pub struct CharacterCtsHandleUpdateSystem {
     /// Reader ID for sequence ID changes.
@@ -42,9 +40,9 @@ pub struct CharacterCtsHandleUpdateSystemData<'s> {
     /// `Character` assets.
     #[derivative(Debug = "ignore")]
     pub character_assets: Read<'s, AssetStorage<Character>>,
-    /// `CharacterControlTransitionsSequenceHandle` component storage.
+    /// `CharacterCtsHandle` component storage.
     #[derivative(Debug = "ignore")]
-    pub character_cts_handles: WriteStorage<'s, CharacterControlTransitionsSequenceHandle>,
+    pub character_cts_handles: WriteStorage<'s, CharacterCtsHandle>,
 }
 
 impl<'s> System<'s> for CharacterCtsHandleUpdateSystem {
@@ -87,15 +85,14 @@ impl<'s> System<'s> for CharacterCtsHandleUpdateSystem {
                 let character = character_assets
                     .get(&character_handle)
                     .expect("Expected `ObjectWrapper` to be loaded.");
-                let control_transitions_sequence_handles =
-                    &character.control_transitions_sequence_handles;
+                let cts_handles = &character.cts_handles;
 
-                let character_cts_handle = control_transitions_sequence_handles
+                let character_cts_handle = cts_handles
                     .get(**sequence_id)
                     // kcov-ignore-start
                     .unwrap_or_else(|| {
                         let message = format!(
-                            "Expected `CharacterControlTransitionsSequenceHandle` to exist for \
+                            "Expected `CharacterCtsHandle` to exist for \
                              sequence ID: `{:?}`. Falling back to default sequence.",
                             sequence_id
                         );
@@ -103,26 +100,22 @@ impl<'s> System<'s> for CharacterCtsHandleUpdateSystem {
 
                         let default_sequence_id = SequenceId::default();
 
-                        control_transitions_sequence_handles
-                            .get(*default_sequence_id)
-                            .unwrap_or_else(|| {
-                                let message = format!(
-                                    "Failed to get `CharacterControlTransitionsSequenceHandle` \
-                                     for sequence ID: `{:?}`.",
-                                    default_sequence_id
-                                );
-                                error!("{}", message);
-                                panic!(message);
-                            })
+                        cts_handles.get(*default_sequence_id).unwrap_or_else(|| {
+                            let message = format!(
+                                "Failed to get `CharacterCtsHandle` \
+                                 for sequence ID: `{:?}`.",
+                                default_sequence_id
+                            );
+                            error!("{}", message);
+                            panic!(message);
+                        })
                     })
                     // kcov-ignore-end
                     .clone();
 
                 character_cts_handles
                     .insert(entity, character_cts_handle)
-                    .expect(
-                        "Failed to insert `CharacterControlTransitionsSequenceHandle` component.",
-                    );
+                    .expect("Failed to insert `CharacterCtsHandle` component.");
             });
     }
 
@@ -140,7 +133,7 @@ mod tests {
     };
     use application_test_support::{AutexousiousApplication, ObjectQueries, SequenceQueries};
     use assets_test::CHAR_BAT_SLUG;
-    use character_model::loaded::CharacterControlTransitionsSequenceHandle;
+    use character_model::loaded::CharacterCtsHandle;
     use character_prefab::CharacterPrefab;
     use sequence_model::loaded::SequenceId;
 
@@ -211,14 +204,13 @@ mod tests {
         let entity = *world.read_resource::<Entity>();
         let expected_handle =
             SequenceQueries::character_cts_handle(world, &CHAR_BAT_SLUG.clone(), sequence_id);
-        let character_cts_handles =
-            world.read_storage::<CharacterControlTransitionsSequenceHandle>();
+        let character_cts_handles = world.read_storage::<CharacterCtsHandle>();
 
         assert_eq!(
             &expected_handle,
-            character_cts_handles.get(entity).expect(
-                "Expected entity to contain `CharacterControlTransitionsSequenceHandle` component."
-            )
+            character_cts_handles
+                .get(entity)
+                .expect("Expected entity to contain `CharacterCtsHandle` component.")
         );
     }
 }

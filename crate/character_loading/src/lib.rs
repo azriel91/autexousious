@@ -7,13 +7,13 @@ pub use crate::{
     character_loader_params::CharacterLoaderParams,
     character_loading_bundle::{CharacterLoadingBundle, CHARACTER_PROCESSOR},
     character_loading_status::CharacterLoadingStatus,
-    control_transitions_sequence_loader::ControlTransitionsSequenceLoader,
-    control_transitions_sequence_loader_params::ControlTransitionsSequenceLoaderParams,
+    cts_loader::CtsLoader,
+    cts_loader_params::CtsLoaderParams,
 };
 
 mod character_loader;
 mod character_loader_params;
 mod character_loading_bundle;
 mod character_loading_status;
-mod control_transitions_sequence_loader;
-mod control_transitions_sequence_loader_params;
+mod cts_loader;
+mod cts_loader_params;

@@ -1,10 +1,7 @@
 use amethyst::assets::{AssetStorage, Loader};
 use character_model::{
     config::{self, CharacterSequence, CharacterSequenceName},
-    loaded::{
-        self, CharacterControlTransition, CharacterControlTransitionsSequence,
-        CharacterControlTransitionsSequenceHandle,
-    },
+    loaded::{self, CharacterControlTransition, CharacterCts, CharacterCtsHandle},
 };
 use game_input_model::{Axis, ControlAction};
 use object_model::config::GameObjectSequence;
@@ -16,25 +13,25 @@ use sequence_model::{
     },
 };
 
-use crate::ControlTransitionsSequenceLoaderParams;
+use crate::CtsLoaderParams;
 
 /// Loads control transitions configuration into the loaded model.
 #[derive(Debug)]
-pub enum ControlTransitionsSequenceLoader {}
+pub enum CtsLoader {}
 
-impl ControlTransitionsSequenceLoader {
-    /// Extracts a `CharacterControlTransitionsSequence` from a `CharacterSequence`.
+impl CtsLoader {
+    /// Extracts a `CharacterCts` from a `CharacterSequence`.
     pub fn load(
-        ControlTransitionsSequenceLoaderParams {
+        CtsLoaderParams {
             loader,
             character_control_transitions_assets,
-            character_control_transitions_sequence_assets,
-        }: &ControlTransitionsSequenceLoaderParams,
+            character_cts_assets,
+        }: &CtsLoaderParams,
         sequence_id_mappings: &SequenceIdMappings<CharacterSequenceName>,
         sequence_default: Option<&CharacterSequence>,
         sequence: &CharacterSequence,
-    ) -> CharacterControlTransitionsSequenceHandle {
-        let control_transitions_sequence = sequence
+    ) -> CharacterCtsHandle {
+        let cts = sequence
             .object_sequence()
             .frames
             .iter()
@@ -52,14 +49,9 @@ impl ControlTransitionsSequenceLoader {
             })
             .collect::<Vec<loaded::CharacterControlTransitionsHandle>>();
 
-        let character_control_transitions_sequence =
-            CharacterControlTransitionsSequence::new(control_transitions_sequence);
+        let character_cts = CharacterCts::new(cts);
 
-        loader.load_from_data(
-            character_control_transitions_sequence,
-            (),
-            character_control_transitions_sequence_assets,
-        )
+        loader.load_from_data(character_cts, (), character_cts_assets)
     }
 
     /// Maps `config::CharacterControlTransitions` to `loaded::CharacterControlTransitions`
@@ -360,8 +352,8 @@ mod tests {
     use character_model::{
         config::{CharacterSequence, CharacterSequenceName, ControlTransitionRequirement},
         loaded::{
-            CharacterControlTransition, CharacterControlTransitions,
-            CharacterControlTransitionsSequence, CharacterControlTransitionsSequenceHandle,
+            CharacterControlTransition, CharacterControlTransitions, CharacterCts,
+            CharacterCtsHandle,
         },
     };
     use charge_model::config::ChargePoints;
@@ -377,14 +369,11 @@ mod tests {
         },
     };
 
-    use super::ControlTransitionsSequenceLoader;
-    use crate::{
-        CharacterLoadingBundle, ControlTransitionsSequenceLoaderParams,
-        CHARACTER_TRANSITIONS_DEFAULT,
-    };
+    use super::CtsLoader;
+    use crate::{CharacterLoadingBundle, CtsLoaderParams, CHARACTER_TRANSITIONS_DEFAULT};
 
     #[test]
-    fn loads_control_transitions_sequences() -> Result<(), Error> {
+    fn loads_ctss() -> Result<(), Error> {
         let sequence_default = CHARACTER_TRANSITIONS_DEFAULT
             .object_definition
             .sequences
@@ -393,9 +382,9 @@ mod tests {
         run_test(
             test_character_sequence(),
             sequence_default,
-            |character_control_transitions_sequence, character_control_transitions_assets| {
+            |character_cts, character_control_transitions_assets| {
                 let expected_character_control_transitions = expected_control_transitions_0();
-                let character_control_transitions_handle = character_control_transitions_sequence
+                let character_control_transitions_handle = character_cts
                     .get(0)
                     .expect("Expected `CharacterControlTransitionsHandle` to exist.");
                 let character_control_transitions = character_control_transitions_assets
@@ -407,7 +396,7 @@ mod tests {
                 );
 
                 let expected_character_control_transitions = expected_control_transitions_1();
-                let character_control_transitions_handle = character_control_transitions_sequence
+                let character_control_transitions_handle = character_cts
                     .get(1)
                     .expect("Expected `CharacterControlTransitionsHandle` to exist.");
                 let character_control_transitions = character_control_transitions_assets
@@ -424,10 +413,7 @@ mod tests {
     fn run_test(
         sequence: CharacterSequence,
         sequence_default: Option<&'static CharacterSequence>,
-        assertion_fn: fn(
-            &CharacterControlTransitionsSequence,
-            &AssetStorage<CharacterControlTransitions>,
-        ),
+        assertion_fn: fn(&CharacterCts, &AssetStorage<CharacterControlTransitions>),
     ) -> Result<(), Error> {
         AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
@@ -436,19 +422,15 @@ mod tests {
             .with_bundle(CharacterLoadingBundle::new())
             .with_effect(move |world| {
                 let character_cts_handle = {
-                    let (
-                        loader,
-                        character_control_transitions_assets,
-                        character_control_transitions_sequence_assets,
-                    ) = world.system_data::<TestSystemData>();
-                    let character_loader_params = ControlTransitionsSequenceLoaderParams {
+                    let (loader, character_control_transitions_assets, character_cts_assets) =
+                        world.system_data::<TestSystemData>();
+                    let character_loader_params = CtsLoaderParams {
                         loader: &loader,
                         character_control_transitions_assets: &character_control_transitions_assets,
-                        character_control_transitions_sequence_assets:
-                            &character_control_transitions_sequence_assets,
+                        character_cts_assets: &character_cts_assets,
                     };
 
-                    ControlTransitionsSequenceLoader::load(
+                    CtsLoader::load(
                         &character_loader_params,
                         &sequence_id_mappings(),
                         sequence_default,
@@ -459,24 +441,17 @@ mod tests {
             })
             .with_effect(|_| {}) // Allow texture to load.
             .with_assertion(move |world| {
-                let character_cts_handle = world
-                    .read_resource::<CharacterControlTransitionsSequenceHandle>()
-                    .clone();
-                let character_control_transitions_sequence_assets =
-                    world.read_resource::<AssetStorage<CharacterControlTransitionsSequence>>();
-                let character_control_transitions_sequence =
-                    character_control_transitions_sequence_assets
-                        .get(&character_cts_handle)
-                        .expect("Expected `CharacterControlTransitionsSequence` to be loaded.");
+                let character_cts_handle = world.read_resource::<CharacterCtsHandle>().clone();
+                let character_cts_assets = world.read_resource::<AssetStorage<CharacterCts>>();
+                let character_cts = character_cts_assets
+                    .get(&character_cts_handle)
+                    .expect("Expected `CharacterCts` to be loaded.");
 
                 // Assert the values for each handle.
                 let character_control_transitions_assets =
                     world.read_resource::<AssetStorage<CharacterControlTransitions>>();
 
-                assertion_fn(
-                    character_control_transitions_sequence,
-                    &character_control_transitions_assets,
-                );
+                assertion_fn(character_cts, &character_control_transitions_assets);
             })
             .run_isolated()
     }
@@ -751,6 +726,6 @@ mod tests {
     type TestSystemData<'s> = (
         ReadExpect<'s, Loader>,
         Read<'s, AssetStorage<CharacterControlTransitions>>,
-        Read<'s, AssetStorage<CharacterControlTransitionsSequence>>,
+        Read<'s, AssetStorage<CharacterCts>>,
     );
 }

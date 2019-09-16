@@ -6,7 +6,7 @@ use amethyst::{
 };
 use character_model::{
     config::CharacterDefinition,
-    loaded::{Character, CharacterControlTransitions, CharacterControlTransitionsSequence},
+    loaded::{Character, CharacterControlTransitions, CharacterCts},
 };
 use derive_new::new;
 use object_loading::ObjectDefinitionToWrapperProcessor;
@@ -19,7 +19,7 @@ pub const CHARACTER_PROCESSOR: &str = "character_processor";
 ///
 /// * `Processor::<CharacterDefinition>`
 /// * `ObjectDefinitionToWrapperProcessor::<Character>`
-/// * `Processor::<CharacterControlTransitionsSequence>`
+/// * `Processor::<CharacterCts>`
 /// * `Processor::<Character>`
 #[derive(Debug, new)]
 pub struct CharacterLoadingBundle;
@@ -46,14 +46,14 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterLoadingBundle {
             &[&ObjectDefinitionToWrapperProcessor::<Character>::type_name()],
         ); // kcov-ignore
         builder.add(
-            Processor::<CharacterControlTransitionsSequence>::new(),
-            "character_control_transitions_sequence_processor",
+            Processor::<CharacterCts>::new(),
+            "character_cts_processor",
             &["character_control_transitions_processor"],
         ); // kcov-ignore
         builder.add(
             Processor::<Character>::new(),
             CHARACTER_PROCESSOR,
-            &["character_control_transitions_sequence_processor"],
+            &["character_cts_processor"],
         ); // kcov-ignore
         Ok(())
     }
@@ -71,7 +71,7 @@ mod test {
     use amethyst_test::AmethystApplication;
     use character_model::{
         config::CharacterDefinition,
-        loaded::{Character, CharacterControlTransitionsSequence, CharacterObjectWrapper},
+        loaded::{Character, CharacterCts, CharacterObjectWrapper},
     };
     use sequence_loading::SequenceLoadingBundle;
 
@@ -88,7 +88,7 @@ mod test {
                 // Panics if the Processors are not added.
                 world.read_resource::<AssetStorage<CharacterDefinition>>();
                 world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
-                world.read_resource::<AssetStorage<CharacterControlTransitionsSequence>>();
+                world.read_resource::<AssetStorage<CharacterCts>>();
                 world.read_resource::<AssetStorage<Character>>();
             })
             .run_isolated()

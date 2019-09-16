@@ -5,8 +5,7 @@ use amethyst::{
     shrev::{EventChannel, ReaderId},
 };
 use character_model::loaded::{
-    CharacterControlTransitionsHandle, CharacterControlTransitionsSequence,
-    CharacterControlTransitionsSequenceHandle,
+    CharacterControlTransitionsHandle, CharacterCts, CharacterCtsHandle,
 };
 use derivative::Derivative;
 use derive_new::new;
@@ -29,12 +28,12 @@ pub struct CharacterControlTransitionsUpdateSystemData<'s> {
     /// Event channel for `SequenceUpdateEvent`s.
     #[derivative(Debug = "ignore")]
     pub sequence_update_ec: Read<'s, EventChannel<SequenceUpdateEvent>>,
-    /// `CharacterControlTransitionsSequenceHandle` component storage.
+    /// `CharacterCtsHandle` component storage.
     #[derivative(Debug = "ignore")]
-    pub character_cts_handles: ReadStorage<'s, CharacterControlTransitionsSequenceHandle>,
-    /// `CharacterControlTransitionsSequence` assets.
+    pub character_cts_handles: ReadStorage<'s, CharacterCtsHandle>,
+    /// `CharacterCts` assets.
     #[derivative(Debug = "ignore")]
-    pub character_cts_assets: Read<'s, AssetStorage<CharacterControlTransitionsSequence>>,
+    pub character_cts_assets: Read<'s, AssetStorage<CharacterCts>>,
     /// `CharacterControlTransitionsHandle` component storage.
     #[derivative(Debug = "ignore")]
     pub character_control_transitions_handles: WriteStorage<'s, CharacterControlTransitionsHandle>,
@@ -78,20 +77,19 @@ impl<'s> System<'s> for CharacterControlTransitionsUpdateSystem {
 
                 // `SequenceUpdateEvent`s are also sent for non-object entities such as map layers
                 if let Some(character_cts_handle) = character_cts_handles.get(entity) {
-                    let character_control_transitions_sequence = character_cts_assets
+                    let character_cts = character_cts_assets
                         .get(character_cts_handle)
-                        .expect("Expected `CharacterControlTransitionsSequence` to be loaded.");
+                        .expect("Expected `CharacterCts` to be loaded.");
 
-                    if frame_index < character_control_transitions_sequence.len() {
-                        let character_control_transitions_handle =
-                            &character_control_transitions_sequence[frame_index];
+                    if frame_index < character_cts.len() {
+                        let character_control_transitions_handle = &character_cts[frame_index];
 
                         character_control_transitions_handles
                             .insert(entity, character_control_transitions_handle.clone())
                             .expect("Failed to insert `CharacterControlTransitions` component.");
                     } else {
                         let character_sequence_name = character_sequence_names.get(entity).expect(
-                            "Expected entity with `CharacterControlTransitionsSequenceHandle` \
+                            "Expected entity with `CharacterCtsHandle` \
                              to have `SequenceId`.",
                         );
 
@@ -127,7 +125,7 @@ mod tests {
     use assets_test::CHAR_BAT_SLUG;
     use character_model::loaded::{
         CharacterControlTransition, CharacterControlTransitions, CharacterControlTransitionsHandle,
-        CharacterControlTransitionsSequenceHandle,
+        CharacterCtsHandle,
     };
     use game_input_model::ControlAction;
     use sequence_model::{
@@ -180,7 +178,7 @@ mod tests {
     fn initial_values(
         world: &mut World,
         frame_index_clock_setup: FrameIndexClock,
-        character_cts_handle_initial: CharacterControlTransitionsSequenceHandle,
+        character_cts_handle_initial: CharacterCtsHandle,
     ) {
         let (
             _entities,
@@ -316,6 +314,6 @@ mod tests {
         ReadStorage<'s, SequenceId>,
         WriteStorage<'s, FrameIndexClock>,
         WriteStorage<'s, CharacterControlTransitionsHandle>,
-        WriteStorage<'s, CharacterControlTransitionsSequenceHandle>,
+        WriteStorage<'s, CharacterCtsHandle>,
     );
 }
