@@ -3118,6 +3118,7 @@ dependencies = [
  "sequence_model 0.13.0",
  "serde 1.0.100 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_yaml 0.8.9 (registry+https://github.com/rust-lang/crates.io-index)",
+ "slotmap 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sprite_loading 0.13.0",
  "sprite_model 0.13.0",
  "state_registry 0.13.0",

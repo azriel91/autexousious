@@ -34,6 +34,7 @@ object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }
 serde = "1.0.99"
 serde_yaml = "0.8.9"
+slotmap = "0.4.0"
 sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }
 state_registry = { path = "../state_registry" }

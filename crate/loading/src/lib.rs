@@ -9,7 +9,9 @@ pub use crate::{
     map_asset_handles::MapAssetHandles,
     map_loading_status::MapLoadingStatus,
     object_asset_handles::ObjectAssetHandles,
-    system::{AssetDiscoverySystem, MapAssetLoadingSystem, ObjectAssetLoadingSystem},
+    system::{
+        AssetDiscoverySystem, AssetLoadingSystem, MapAssetLoadingSystem, ObjectAssetLoadingSystem,
+    },
 };
 
 mod asset_loader;
