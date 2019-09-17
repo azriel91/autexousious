@@ -4,7 +4,7 @@ use bimap::BiMap;
 use derive_deref::{Deref, DerefMut};
 use derive_new::new;
 
-use crate::{config::AssetType, loaded::AssetSlugId};
+use crate::{config::AssetType, loaded::AssetId};
 
 /// Mappings from asset ID to asset type, and asset type to ID.
 ///
@@ -13,7 +13,7 @@ use crate::{config::AssetType, loaded::AssetSlugId};
 pub struct AssetTypeMappings {
     /// Bi-directional mapping from asset ID to asset type.
     #[new(default)]
-    pub asset_id_to_type: BiMap<AssetSlugId, AssetType>,
+    pub asset_id_to_type: BiMap<AssetId, AssetType>,
 }
 
 impl AssetTypeMappings {
@@ -27,18 +27,18 @@ impl AssetTypeMappings {
     }
 
     /// Returns the asset ID for the given asset type.
-    pub fn asset_id(&self, asset_type: AssetType) -> Option<&AssetSlugId> {
+    pub fn asset_id(&self, asset_type: AssetType) -> Option<&AssetId> {
         self.asset_id_to_type.get_by_right(&asset_type)
     }
 
     /// Returns the asset type for the given asset ID.
-    pub fn asset_type(&self, asset_id: &AssetSlugId) -> Option<&AssetType> {
+    pub fn asset_type(&self, asset_id: &AssetId) -> Option<&AssetType> {
         self.asset_id_to_type.get_by_left(asset_id)
     }
 }
 
-impl FromIterator<(AssetSlugId, AssetType)> for AssetTypeMappings {
-    fn from_iter<T: IntoIterator<Item = (AssetSlugId, AssetType)>>(iter: T) -> AssetTypeMappings {
+impl FromIterator<(AssetId, AssetType)> for AssetTypeMappings {
+    fn from_iter<T: IntoIterator<Item = (AssetId, AssetType)>>(iter: T) -> AssetTypeMappings {
         let asset_id_to_type = BiMap::from_iter(iter);
         AssetTypeMappings { asset_id_to_type }
     }

@@ -2,37 +2,37 @@ use std::{collections::HashMap, iter::FromIterator};
 
 use slotmap::DenseSlotMap;
 
-use crate::{config::AssetSlug, loaded::AssetSlugId};
+use crate::{config::AssetSlug, loaded::AssetId};
 
 /// Mappings from asset slug to ID, and ID to slug.
 ///
 /// Asset slugs are intended to be inserted / removed, but not modified.
 #[derive(Clone, Debug, Default)]
-pub struct AssetSlugIdMappings {
+pub struct AssetIdMappings {
     /// Mapping from asset ID to slug.
-    asset_id_to_slug: DenseSlotMap<AssetSlugId, AssetSlug>,
+    asset_id_to_slug: DenseSlotMap<AssetId, AssetSlug>,
     /// Mapping from asset slug to id.
-    asset_slug_to_id: HashMap<AssetSlug, AssetSlugId>,
+    asset_slug_to_id: HashMap<AssetSlug, AssetId>,
 }
 
-impl AssetSlugIdMappings {
-    /// Returns a `AssetSlugIdMappings` with pre-allocated capacity.
+impl AssetIdMappings {
+    /// Returns a `AssetIdMappings` with pre-allocated capacity.
     ///
     /// The mappings are guaranteed to hold `capacity` elements without re-allocating.
     pub fn with_capacity(capacity: usize) -> Self {
-        AssetSlugIdMappings {
+        AssetIdMappings {
             asset_id_to_slug: DenseSlotMap::with_capacity_and_key(capacity),
             asset_slug_to_id: HashMap::with_capacity(capacity),
         }
     }
 
     /// Returns the asset slug for the given ID.
-    pub fn slug(&self, asset_slug_id: AssetSlugId) -> Option<&AssetSlug> {
-        self.asset_id_to_slug.get(asset_slug_id)
+    pub fn slug(&self, asset_id: AssetId) -> Option<&AssetSlug> {
+        self.asset_id_to_slug.get(asset_id)
     }
 
-    /// Returns the asset slug ID for the given asset slug.
-    pub fn id(&self, asset_slug: &AssetSlug) -> Option<&AssetSlugId> {
+    /// Returns the asset ID for the given asset slug.
+    pub fn id(&self, asset_slug: &AssetSlug) -> Option<&AssetId> {
         self.asset_slug_to_id.get(asset_slug)
     }
 
@@ -50,20 +50,20 @@ impl AssetSlugIdMappings {
     /// # Panics
     ///
     /// Panics if the number of mappings equals 2<sup>32</sup> - 2.
-    pub fn insert(&mut self, asset_slug: AssetSlug) -> AssetSlugId {
-        let asset_slug_id = self.asset_id_to_slug.insert(asset_slug.clone());
-        self.asset_slug_to_id.insert(asset_slug, asset_slug_id);
+    pub fn insert(&mut self, asset_slug: AssetSlug) -> AssetId {
+        let asset_id = self.asset_id_to_slug.insert(asset_slug.clone());
+        self.asset_slug_to_id.insert(asset_slug, asset_id);
 
-        asset_slug_id
+        asset_id
     }
 
-    /// Returns an iterator of asset slug IDs to slug.
-    pub fn iter(&self) -> impl Iterator<Item = (AssetSlugId, &AssetSlug)> {
+    /// Returns an iterator of asset IDs to slug.
+    pub fn iter(&self) -> impl Iterator<Item = (AssetId, &AssetSlug)> {
         self.asset_id_to_slug.iter()
     }
 
-    /// Returns an iterator visiting all `AssetSlugId`s in arbitrary order.
-    pub fn keys<'a>(&'a self) -> impl Iterator<Item = AssetSlugId> + 'a {
+    /// Returns an iterator visiting all `AssetId`s in arbitrary order.
+    pub fn keys<'a>(&'a self) -> impl Iterator<Item = AssetId> + 'a {
         self.asset_id_to_slug.keys()
     }
 
@@ -78,8 +78,8 @@ impl AssetSlugIdMappings {
     }
 
     /// Removes the ID mapping for the given asset slug, returning it if it exists.
-    pub fn remove(&mut self, asset_slug_id: AssetSlugId) -> Option<AssetSlug> {
-        let asset_slug = self.asset_id_to_slug.remove(asset_slug_id);
+    pub fn remove(&mut self, asset_id: AssetId) -> Option<AssetSlug> {
+        let asset_slug = self.asset_id_to_slug.remove(asset_id);
         if let Some(asset_slug) = asset_slug.as_ref() {
             self.asset_slug_to_id.remove(asset_slug);
         }
@@ -100,19 +100,19 @@ impl AssetSlugIdMappings {
     }
 }
 
-impl FromIterator<AssetSlug> for AssetSlugIdMappings {
-    fn from_iter<T: IntoIterator<Item = AssetSlug>>(iter: T) -> AssetSlugIdMappings {
+impl FromIterator<AssetSlug> for AssetIdMappings {
+    fn from_iter<T: IntoIterator<Item = AssetSlug>>(iter: T) -> AssetIdMappings {
         let (asset_id_to_slug, asset_slug_to_id) = iter.into_iter().fold(
             (DenseSlotMap::with_key(), HashMap::new()),
             |(mut asset_id_to_slug, mut asset_slug_to_id), asset_slug| {
-                let asset_slug_id = asset_id_to_slug.insert(asset_slug.clone());
-                asset_slug_to_id.insert(asset_slug, asset_slug_id);
+                let asset_id = asset_id_to_slug.insert(asset_slug.clone());
+                asset_slug_to_id.insert(asset_slug, asset_id);
 
                 (asset_id_to_slug, asset_slug_to_id)
             },
         );
 
-        AssetSlugIdMappings {
+        AssetIdMappings {
             asset_id_to_slug,
             asset_slug_to_id,
         }

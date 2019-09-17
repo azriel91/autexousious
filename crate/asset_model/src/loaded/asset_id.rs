@@ -4,9 +4,9 @@ slotmap::new_key_type! {
     /// Asset slug ID.
     ///
     /// This is a cheap `Copy` type to use instead of `AssetSlug` which is `Clone`.
-    pub struct AssetSlugId;
+    pub struct AssetId;
 }
 
-impl Component for AssetSlugId {
+impl Component for AssetId {
     type Storage = VecStorage<Self>;
 }
