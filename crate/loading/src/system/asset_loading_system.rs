@@ -12,7 +12,7 @@ use asset_model::{
     config::AssetType,
     loaded::{AssetId, AssetIdMappings, AssetTypeMappings},
 };
-use audio_model::loaded::{SourceSequence, SourceSequenceHandles};
+use audio_model::loaded::{AssetSourceSequenceHandles, SourceSequence};
 use character_model::{
     config::{CharacterDefinition, CharacterDefinitionHandle, CharacterSequenceName},
     loaded::{Character, CharacterObjectWrapper},
@@ -20,7 +20,8 @@ use character_model::{
 use collision_model::{
     config::{Body, Interactions},
     loaded::{
-        BodySequence, BodySequenceHandles, InteractionsSequence, InteractionsSequenceHandles,
+        AssetBodySequenceHandles, AssetInteractionsSequenceHandles, BodySequence,
+        InteractionsSequence,
     },
 };
 use derivative::Derivative;
@@ -29,44 +30,38 @@ use energy_model::{
     config::{EnergyDefinition, EnergyDefinitionHandle, EnergySequenceName},
     loaded::{Energy, EnergyObjectWrapper},
 };
-use kinematic_model::loaded::{ObjectAccelerationSequence, ObjectAccelerationSequenceHandles};
+use kinematic_model::loaded::{AssetObjectAccelerationSequenceHandles, ObjectAccelerationSequence};
 use log::{debug, info};
-use map_model::{config::MapDefinition, loaded::Margins};
+use map_model::{
+    config::MapDefinition,
+    loaded::{AssetMargins, Margins},
+};
 use object_loading::{ObjectLoader, ObjectLoaderParams};
 use object_model::loaded::Object;
 use object_type::ObjectType;
 use sequence_model::{
     config::Wait,
     loaded::{
-        SequenceEndTransitions, SequenceId, SequenceIdMappings, WaitSequence, WaitSequenceHandle,
-        WaitSequenceHandles,
+        AssetSequenceEndTransitions, AssetSequenceIdMappings, AssetWaitSequenceHandles, SequenceId,
+        SequenceIdMappings, WaitSequence, WaitSequenceHandle, WaitSequenceHandles,
     },
 };
-use slotmap::{SecondaryMap, SparseSecondaryMap};
+use slotmap::SecondaryMap;
 use spawn_model::{
     config::Spawns,
-    loaded::{SpawnsSequence, SpawnsSequenceHandles},
+    loaded::{AssetSpawnsSequenceHandles, SpawnsSequence},
 };
 use sprite_loading::SpriteLoader;
 use sprite_model::{
     config::SpritesDefinition,
-    loaded::{SpriteRenderSequence, SpriteRenderSequenceHandle, SpriteRenderSequenceHandles},
+    loaded::{
+        AssetSpriteRenderSequenceHandles, SpriteRenderSequence, SpriteRenderSequenceHandle,
+        SpriteRenderSequenceHandles,
+    },
 };
 use typename_derive::TypeName;
 
 use crate::AssetLoadStatus;
-
-pub type AssetSequenceIdMappings<SeqName> = SecondaryMap<AssetId, SequenceIdMappings<SeqName>>;
-pub type AssetSequenceEndTransitions = SecondaryMap<AssetId, SequenceEndTransitions>;
-pub type AssetWaitSequenceHandles = SecondaryMap<AssetId, WaitSequenceHandles>;
-pub type AssetSourceSequenceHandles = SecondaryMap<AssetId, SourceSequenceHandles>;
-pub type AssetObjectAccelerationSequenceHandles =
-    SecondaryMap<AssetId, ObjectAccelerationSequenceHandles>;
-pub type AssetSpriteRenderSequenceHandles = SecondaryMap<AssetId, SpriteRenderSequenceHandles>;
-pub type AssetBodySequenceHandles = SecondaryMap<AssetId, BodySequenceHandles>;
-pub type AssetInteractionsSequenceHandles = SecondaryMap<AssetId, InteractionsSequenceHandles>;
-pub type AssetSpawnsSequenceHandles = SecondaryMap<AssetId, SpawnsSequenceHandles>;
-pub type AssetMargins = SparseSecondaryMap<AssetId, Margins>;
 
 /// Loads game object assets.
 #[derive(Default, Derivative, TypeName, new)]
