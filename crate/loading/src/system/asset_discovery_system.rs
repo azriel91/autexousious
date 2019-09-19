@@ -87,6 +87,12 @@ impl<'s> System<'s> for AssetDiscoverySystem {
             let asset_records = asset_records_objects.chain(asset_records_maps);
             asset_records.for_each(|(asset_type, asset_record)| {
                 let asset_id = asset_id_mappings.insert(asset_record.asset_slug.clone());
+
+                debug!(
+                    "Asset ID ({:?}): slug: `{}`, type: `{:?}`",
+                    asset_id, &asset_record.asset_slug, asset_type
+                );
+
                 asset_type_mappings.insert(asset_id, asset_type);
                 asset_id_to_status.insert(asset_id, AssetLoadStatus::New);
                 asset_id_to_path.insert(asset_id, asset_record.path.clone());

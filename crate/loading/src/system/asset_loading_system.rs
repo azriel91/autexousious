@@ -30,7 +30,7 @@ use energy_model::{
     loaded::{Energy, EnergyObjectWrapper},
 };
 use kinematic_model::loaded::{ObjectAccelerationSequence, ObjectAccelerationSequenceHandles};
-use log::debug;
+use log::{debug, info};
 use map_model::{config::MapDefinition, loaded::Margins};
 use object_loading::{ObjectLoader, ObjectLoaderParams};
 use object_model::loaded::Object;
@@ -326,6 +326,13 @@ impl AssetLoadingSystem {
             }
             AssetLoadStatus::SequenceComponentLoading => {
                 if Self::sequence_components_loaded(asset_loading_resources, asset_id) {
+                    let asset_slug = asset_loading_resources
+                        .asset_id_mappings
+                        .slug(asset_id)
+                        .expect("Expected `AssetSlug` mapping to exist for `AssetId`.");
+
+                    info!("Loaded `{}`.", asset_slug);
+
                     AssetLoadStatus::Complete
                 } else {
                     AssetLoadStatus::SequenceComponentLoading
@@ -356,8 +363,10 @@ impl AssetLoadingSystem {
         }: &mut AssetLoadingResources,
         asset_id: AssetId,
     ) {
+        debug!("Loading asset with ID: {:?}", asset_id);
+
         let asset_type = asset_type_mappings
-            .asset_type(&asset_id)
+            .get(&asset_id)
             .expect("Expected `AssetType` mapping to exist.");
 
         let progress_counter = load_status_progress_counters
@@ -442,7 +451,7 @@ impl AssetLoadingSystem {
         asset_id: AssetId,
     ) -> bool {
         let asset_type = asset_type_mappings
-            .asset_type(&asset_id)
+            .get(&asset_id)
             .expect("Expected `AssetType` mapping to exist.");
 
         match asset_type {
@@ -492,7 +501,7 @@ impl AssetLoadingSystem {
         asset_id: AssetId,
     ) {
         let asset_type = asset_type_mappings
-            .asset_type(&asset_id)
+            .get(&asset_id)
             .expect("Expected `AssetType` mapping to exist.");
 
         let progress_counter = load_status_progress_counters
@@ -699,7 +708,7 @@ impl AssetLoadingSystem {
         asset_id: AssetId,
     ) {
         let asset_type = asset_type_mappings
-            .asset_type(&asset_id)
+            .get(&asset_id)
             .expect("Expected `AssetType` mapping to exist.");
 
         let asset_slug = asset_id_mappings
@@ -923,43 +932,30 @@ impl AssetLoadingSystem {
         asset_id: AssetId,
     ) -> bool {
         macro_rules! sequence_component_loaded {
-            ($handleses:ident, $assets:ident, $typename:path) => {{
-                let handles = $handleses
-                    .get(asset_id)
-                    .unwrap_or_else(|| panic!("Expected `{}` to exist.", stringify!($typename)));
-
-                handles.iter().all(|handle| $assets.get(handle).is_some())
+            ($handleses:ident, $assets:ident) => {{
+                if let Some(handles) = $handleses.get(asset_id) {
+                    handles.iter().all(|handle| $assets.get(handle).is_some())
+                } else {
+                    true
+                }
             }};
         };
 
-        sequence_component_loaded!(
-            asset_wait_sequence_handles,
-            wait_sequence_assets,
-            WaitSequenceHandle
-        ) && sequence_component_loaded!(
-            asset_source_sequence_handles,
-            source_sequence_assets,
-            SourceSequenceHandle
-        ) && sequence_component_loaded!(
-            asset_object_acceleration_sequence_handles,
-            object_acceleration_sequence_assets,
-            ObjectAccelerationSequenceHandle
-        ) && sequence_component_loaded!(
-            asset_sprite_render_sequence_handles,
-            sprite_render_sequence_assets,
-            SpriteRenderSequenceHandle
-        ) && sequence_component_loaded!(
-            asset_body_sequence_handles,
-            body_sequence_assets,
-            BodySequenceHandle
-        ) && sequence_component_loaded!(
-            asset_interactions_sequence_handles,
-            interactions_sequence_assets,
-            InteractionsSequenceHandle
-        ) && sequence_component_loaded!(
-            asset_spawns_sequence_handles,
-            spawns_sequence_assets,
-            SpawnsSequenceHandle
-        )
+        sequence_component_loaded!(asset_wait_sequence_handles, wait_sequence_assets)
+            && sequence_component_loaded!(asset_source_sequence_handles, source_sequence_assets)
+            && sequence_component_loaded!(
+                asset_object_acceleration_sequence_handles,
+                object_acceleration_sequence_assets
+            )
+            && sequence_component_loaded!(
+                asset_sprite_render_sequence_handles,
+                sprite_render_sequence_assets
+            )
+            && sequence_component_loaded!(asset_body_sequence_handles, body_sequence_assets)
+            && sequence_component_loaded!(
+                asset_interactions_sequence_handles,
+                interactions_sequence_assets
+            )
+            && sequence_component_loaded!(asset_spawns_sequence_handles, spawns_sequence_assets)
     }
 }

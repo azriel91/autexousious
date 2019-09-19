@@ -14,7 +14,9 @@ use energy_model::loaded::Energy;
 use energy_prefab::EnergyPrefab;
 use typename::TypeName;
 
-use crate::{AssetDiscoverySystem, MapAssetLoadingSystem, ObjectAssetLoadingSystem};
+use crate::{
+    AssetDiscoverySystem, AssetLoadingSystem, MapAssetLoadingSystem, ObjectAssetLoadingSystem,
+};
 
 /// Adds asset discovery and loading systems to the `World`.
 #[derive(Debug, new)]
@@ -33,6 +35,11 @@ impl<'a, 'b> SystemBundle<'a, 'b> for LoadingBundle {
             AssetDiscoverySystem::new(self.assets_dir.clone()),
             &AssetDiscoverySystem::type_name(),
             &[],
+        ); // kcov-ignore
+        builder.add(
+            AssetLoadingSystem::new(),
+            &AssetLoadingSystem::type_name(),
+            &[&AssetDiscoverySystem::type_name()],
         ); // kcov-ignore
         builder.add(
             ObjectAssetLoadingSystem::<Character, CharacterPrefab, CharacterLoadingStatus>::new(self.assets_dir.clone()),
