@@ -2,8 +2,9 @@ use std::{collections::HashMap, path::PathBuf};
 
 use amethyst::{
     assets::{AssetStorage, Handle, Loader, ProgressCounter},
+    audio::Source,
     ecs::{Read, ReadExpect, System, World, Write},
-    renderer::{sprite::SpriteSheetHandle, SpriteSheet, Texture},
+    renderer::{sprite::SpriteSheetHandle, SpriteRender, SpriteSheet, Texture},
     shred::{ResourceId, SystemData},
 };
 use asset_loading::YamlFormat;
@@ -11,20 +12,61 @@ use asset_model::{
     config::AssetType,
     loaded::{AssetId, AssetIdMappings, AssetTypeMappings},
 };
-use character_model::config::{CharacterDefinition, CharacterDefinitionHandle};
+use audio_model::loaded::{SourceSequence, SourceSequenceHandles};
+use character_model::{
+    config::{CharacterDefinition, CharacterDefinitionHandle, CharacterSequenceName},
+    loaded::{Character, CharacterObjectWrapper},
+};
+use collision_model::{
+    config::{Body, Interactions},
+    loaded::{
+        BodySequence, BodySequenceHandles, InteractionsSequence, InteractionsSequenceHandles,
+    },
+};
 use derivative::Derivative;
 use derive_new::new;
-use energy_model::config::{EnergyDefinition, EnergyDefinitionHandle};
+use energy_model::{
+    config::{EnergyDefinition, EnergyDefinitionHandle, EnergySequenceName},
+    loaded::{Energy, EnergyObjectWrapper},
+};
+use kinematic_model::loaded::{ObjectAccelerationSequence, ObjectAccelerationSequenceHandles};
 use log::debug;
-use map_model::config::MapDefinition;
+use map_model::{config::MapDefinition, loaded::Margins};
+use object_loading::{ObjectLoader, ObjectLoaderParams};
+use object_model::loaded::Object;
 use object_type::ObjectType;
-use sequence_model::loaded::{WaitSequence, WaitSequenceHandles};
-use slotmap::SecondaryMap;
+use sequence_model::{
+    config::Wait,
+    loaded::{
+        SequenceEndTransitions, SequenceId, SequenceIdMappings, WaitSequence, WaitSequenceHandle,
+        WaitSequenceHandles,
+    },
+};
+use slotmap::{SecondaryMap, SparseSecondaryMap};
+use spawn_model::{
+    config::Spawns,
+    loaded::{SpawnsSequence, SpawnsSequenceHandles},
+};
 use sprite_loading::SpriteLoader;
-use sprite_model::config::SpritesDefinition;
+use sprite_model::{
+    config::SpritesDefinition,
+    loaded::{SpriteRenderSequence, SpriteRenderSequenceHandle, SpriteRenderSequenceHandles},
+};
 use typename_derive::TypeName;
 
 use crate::AssetLoadStatus;
+
+pub type AssetSequenceIdMappings<SeqName> = SecondaryMap<AssetId, SequenceIdMappings<SeqName>>;
+pub type AssetSequenceEndTransitions = SecondaryMap<AssetId, SequenceEndTransitions>;
+pub type AssetWaitSequenceHandles = SecondaryMap<AssetId, WaitSequenceHandles>;
+pub type AssetSourceSequenceHandles = SecondaryMap<AssetId, SourceSequenceHandles>;
+pub type AssetObjectAccelerationSequenceHandles =
+    SecondaryMap<AssetId, ObjectAccelerationSequenceHandles>;
+pub type AssetSpriteRenderSequenceHandles = SecondaryMap<AssetId, SpriteRenderSequenceHandles>;
+pub type AssetBodySequenceHandles = SecondaryMap<AssetId, BodySequenceHandles>;
+pub type AssetInteractionsSequenceHandles = SecondaryMap<AssetId, InteractionsSequenceHandles>;
+pub type AssetSpawnsSequenceHandles = SecondaryMap<AssetId, SpawnsSequenceHandles>;
+pub type AssetMargins = SparseSecondaryMap<AssetId, Margins>;
 
 /// Loads game object assets.
 #[derive(Default, Derivative, TypeName, new)]
@@ -66,12 +108,8 @@ pub struct AssetLoadingResources<'s> {
     pub sprite_loading_resources: SpriteLoadingResources<'s>,
     /// `TextureLoadingResources`.
     pub texture_loading_resources: TextureLoadingResources<'s>,
-    /// `WaitSequence` assets.
-    #[derivative(Debug = "ignore")]
-    pub wait_sequence_assets: Read<'s, AssetStorage<WaitSequence>>,
-    /// `SecondaryMap<AssetId, WaitSequenceHandles>` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_wait_sequence_handles: Write<'s, SecondaryMap<AssetId, WaitSequenceHandles>>,
+    /// `SequenceComponentResources`.
+    pub sequence_component_resources: SequenceComponentResources<'s>,
 }
 
 #[derive(Derivative, SystemData)]
@@ -124,6 +162,81 @@ pub struct TextureLoadingResources<'s> {
     pub asset_sprite_sheet_handles: Write<'s, SecondaryMap<AssetId, Vec<SpriteSheetHandle>>>,
 }
 
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub struct SequenceComponentResources<'s> {
+    /// `Source`s assets.
+    #[derivative(Debug = "ignore")]
+    pub source_assets: Read<'s, AssetStorage<Source>>,
+    /// `Body` assets.
+    #[derivative(Debug = "ignore")]
+    pub body_assets: Read<'s, AssetStorage<Body>>,
+    /// `Interactions` assets.
+    #[derivative(Debug = "ignore")]
+    pub interactions_assets: Read<'s, AssetStorage<Interactions>>,
+    /// `Spawns` assets.
+    #[derivative(Debug = "ignore")]
+    pub spawns_assets: Read<'s, AssetStorage<Spawns>>,
+
+    /// `WaitSequence` assets.
+    #[derivative(Debug = "ignore")]
+    pub wait_sequence_assets: Read<'s, AssetStorage<WaitSequence>>,
+    /// `SourceSequence` assets.
+    #[derivative(Debug = "ignore")]
+    pub source_sequence_assets: Read<'s, AssetStorage<SourceSequence>>,
+    /// `ObjectAccelerationSequence` assets.
+    #[derivative(Debug = "ignore")]
+    pub object_acceleration_sequence_assets: Read<'s, AssetStorage<ObjectAccelerationSequence>>,
+    /// `SpriteRenderSequence` assets.
+    #[derivative(Debug = "ignore")]
+    pub sprite_render_sequence_assets: Read<'s, AssetStorage<SpriteRenderSequence>>,
+    /// `BodySequence` assets.
+    #[derivative(Debug = "ignore")]
+    pub body_sequence_assets: Read<'s, AssetStorage<BodySequence>>,
+    /// `InteractionsSequence` assets.
+    #[derivative(Debug = "ignore")]
+    pub interactions_sequence_assets: Read<'s, AssetStorage<InteractionsSequence>>,
+    /// `SpawnsSequence` assets.
+    #[derivative(Debug = "ignore")]
+    pub spawns_sequence_assets: Read<'s, AssetStorage<SpawnsSequence>>,
+
+    /// `AssetSequenceIdMappings<CharacterSequenceName>` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_sequence_id_mappings_character:
+        Write<'s, AssetSequenceIdMappings<CharacterSequenceName>>,
+    /// `AssetSequenceIdMappings<EnergySequenceName>` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_sequence_id_mappings_energy: Write<'s, AssetSequenceIdMappings<EnergySequenceName>>,
+    /// `AssetSequenceEndTransitions` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_sequence_end_transitions: Write<'s, AssetSequenceEndTransitions>,
+    /// `AssetWaitSequenceHandles` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_wait_sequence_handles: Write<'s, AssetWaitSequenceHandles>,
+    /// `AssetSourceSequenceHandles` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_source_sequence_handles: Write<'s, AssetSourceSequenceHandles>,
+    /// `AssetObjectAccelerationSequenceHandles` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_object_acceleration_sequence_handles:
+        Write<'s, AssetObjectAccelerationSequenceHandles>,
+    /// `AssetSpriteRenderSequenceHandles` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_sprite_render_sequence_handles: Write<'s, AssetSpriteRenderSequenceHandles>,
+    /// `AssetBodySequenceHandles` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_body_sequence_handles: Write<'s, AssetBodySequenceHandles>,
+    /// `AssetInteractionsSequenceHandles` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_interactions_sequence_handles: Write<'s, AssetInteractionsSequenceHandles>,
+    /// `AssetSpawnsSequenceHandles` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_spawns_sequence_handles: Write<'s, AssetSpawnsSequenceHandles>,
+    /// `AssetMargins` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_margins: Write<'s, AssetMargins>,
+}
+
 impl<'s> System<'s> for AssetLoadingSystem {
     type SystemData = AssetLoadingSystemData<'s>;
 
@@ -135,9 +248,29 @@ impl<'s> System<'s> for AssetLoadingSystem {
         }: Self::SystemData,
     ) {
         let capacity = asset_loading_resources.asset_id_mappings.capacity();
-        asset_loading_resources
-            .asset_wait_sequence_handles
-            .set_capacity(capacity);
+        let SequenceComponentResources {
+            asset_sequence_id_mappings_character,
+            asset_sequence_id_mappings_energy,
+            asset_sequence_end_transitions,
+            asset_wait_sequence_handles,
+            asset_source_sequence_handles,
+            asset_object_acceleration_sequence_handles,
+            asset_sprite_render_sequence_handles,
+            asset_body_sequence_handles,
+            asset_interactions_sequence_handles,
+            asset_spawns_sequence_handles,
+            ..
+        } = &mut asset_loading_resources.sequence_component_resources;
+        asset_sequence_id_mappings_character.set_capacity(capacity);
+        asset_sequence_id_mappings_energy.set_capacity(capacity);
+        asset_sequence_end_transitions.set_capacity(capacity);
+        asset_wait_sequence_handles.set_capacity(capacity);
+        asset_source_sequence_handles.set_capacity(capacity);
+        asset_object_acceleration_sequence_handles.set_capacity(capacity);
+        asset_sprite_render_sequence_handles.set_capacity(capacity);
+        asset_body_sequence_handles.set_capacity(capacity);
+        asset_interactions_sequence_handles.set_capacity(capacity);
+        asset_spawns_sequence_handles.set_capacity(capacity);
 
         asset_id_to_status
             .iter_mut()
@@ -182,7 +315,15 @@ impl AssetLoadingSystem {
                     AssetLoadStatus::SpritesLoading
                 }
             }
-            AssetLoadStatus::TextureLoading => unimplemented!(),
+            AssetLoadStatus::TextureLoading => {
+                if Self::textures_loaded(asset_loading_resources, asset_id) {
+                    Self::sequence_components_load(asset_loading_resources, asset_id);
+
+                    AssetLoadStatus::SequenceComponentLoading
+                } else {
+                    AssetLoadStatus::TextureLoading
+                }
+            }
             AssetLoadStatus::SequenceComponentLoading => unimplemented!(),
             AssetLoadStatus::Complete => AssetLoadStatus::Complete,
         }
@@ -471,6 +612,282 @@ impl AssetLoadingSystem {
             .expect("Failed to load textures and sprite sheets.");
 
             asset_sprite_sheet_handles.insert(asset_id, sprite_sheet_handles);
+        }
+    }
+
+    /// Returns whether the `Texture`s and `SpriteSheet` assets have been loaded.
+    ///
+    /// Returns `true` if there are no textures to load.
+    fn textures_loaded(
+        AssetLoadingResources {
+            texture_loading_resources:
+                TextureLoadingResources {
+                    ref texture_assets,
+                    ref sprite_sheet_assets,
+                    ref mut asset_sprite_sheet_handles,
+                },
+            ..
+        }: &mut AssetLoadingResources,
+        asset_id: AssetId,
+    ) -> bool {
+        asset_sprite_sheet_handles
+            .get(asset_id)
+            .map(|sprite_sheet_handles| {
+                sprite_sheet_handles.iter().all(|sprite_sheet_handle| {
+                    sprite_sheet_assets
+                        .get(sprite_sheet_handle)
+                        .and_then(|sprite_sheet| texture_assets.get(&sprite_sheet.texture))
+                        .is_some()
+                })
+            })
+            .unwrap_or(true)
+    }
+
+    /// Loads an asset's sequence components.
+    fn sequence_components_load(
+        AssetLoadingResources {
+            ref asset_id_mappings,
+            ref asset_type_mappings,
+            ref loader,
+            definition_loading_resources:
+                DefinitionLoadingResources {
+                    ref character_definition_assets,
+                    ref energy_definition_assets,
+                    ref map_definition_assets,
+                    ref mut asset_character_definition_handles,
+                    ref mut asset_energy_definition_handles,
+                    ref mut asset_map_definition_handles,
+                },
+            texture_loading_resources:
+                TextureLoadingResources {
+                    ref mut asset_sprite_sheet_handles,
+                    ..
+                },
+            sequence_component_resources:
+                SequenceComponentResources {
+                    ref source_assets,
+                    ref body_assets,
+                    ref interactions_assets,
+                    ref spawns_assets,
+                    ref wait_sequence_assets,
+                    ref source_sequence_assets,
+                    ref object_acceleration_sequence_assets,
+                    ref sprite_render_sequence_assets,
+                    ref body_sequence_assets,
+                    ref interactions_sequence_assets,
+                    ref spawns_sequence_assets,
+                    ref mut asset_sequence_id_mappings_character,
+                    ref mut asset_sequence_id_mappings_energy,
+                    ref mut asset_sequence_end_transitions,
+                    ref mut asset_wait_sequence_handles,
+                    ref mut asset_source_sequence_handles,
+                    ref mut asset_object_acceleration_sequence_handles,
+                    ref mut asset_sprite_render_sequence_handles,
+                    ref mut asset_body_sequence_handles,
+                    ref mut asset_interactions_sequence_handles,
+                    ref mut asset_spawns_sequence_handles,
+                    ref mut asset_margins,
+                },
+            ..
+        }: &mut AssetLoadingResources,
+        asset_id: AssetId,
+    ) {
+        let asset_type = asset_type_mappings
+            .asset_type(&asset_id)
+            .expect("Expected `AssetType` mapping to exist.");
+
+        let asset_slug = asset_id_mappings
+            .slug(asset_id)
+            .expect("Expected `AssetSlug` mapping to exist for `AssetId`.");
+
+        debug!("Loading `{}` sequence components.", asset_slug,);
+
+        let sprite_sheet_handles = asset_sprite_sheet_handles.get(asset_id);
+        match asset_type {
+            AssetType::Object(object_type) => {
+                let sprite_sheet_handles = sprite_sheet_handles
+                    .expect("Expected `SpriteSheetHandles` to exist for object.");
+                let object_loader_params = ObjectLoaderParams {
+                    loader: &*loader,
+                    wait_sequence_assets: &*wait_sequence_assets,
+                    source_assets: &*source_assets,
+                    source_sequence_assets: &*source_sequence_assets,
+                    object_acceleration_sequence_assets: &*object_acceleration_sequence_assets,
+                    sprite_render_sequence_assets: &*sprite_render_sequence_assets,
+                    body_sequence_assets: &*body_sequence_assets,
+                    interactions_sequence_assets: &*interactions_sequence_assets,
+                    spawns_sequence_assets: &*spawns_sequence_assets,
+                    body_assets: &*body_assets,
+                    interactions_assets: &*interactions_assets,
+                    spawns_assets: &*spawns_assets,
+                    sprite_sheet_handles: &sprite_sheet_handles,
+                };
+
+                let object = match object_type {
+                    ObjectType::Character => {
+                        let character_definition = asset_character_definition_handles
+                            .get(asset_id)
+                            .and_then(|character_definition_handle| {
+                                character_definition_assets.get(character_definition_handle)
+                            })
+                            .expect("Expected `CharacterDefinition` to be loaded.");
+
+                        // `SequenceIdMappings`.
+                        let capacity = character_definition.object_definition.sequences.len();
+                        let sequence_id_mappings = character_definition
+                            .object_definition
+                            .sequences
+                            .keys()
+                            .enumerate()
+                            .map(|(index, sequence_name_string)| {
+                                (SequenceId::new(index), sequence_name_string.clone())
+                            })
+                            .fold(
+                                SequenceIdMappings::with_capacity(capacity),
+                                |mut sequence_id_mappings, (sequence_id, sequence_name_string)| {
+                                    sequence_id_mappings.insert(sequence_name_string, sequence_id);
+                                    sequence_id_mappings
+                                },
+                            );
+                        asset_sequence_id_mappings_character.insert(asset_id, sequence_id_mappings);
+
+                        let CharacterObjectWrapper(object) = ObjectLoader::load::<Character>(
+                            object_loader_params,
+                            &character_definition.object_definition,
+                        )
+                        .expect("Failed to load `Character`.");
+
+                        object
+                    }
+                    ObjectType::Energy => {
+                        let energy_definition = asset_energy_definition_handles
+                            .get(asset_id)
+                            .and_then(|energy_definition_handle| {
+                                energy_definition_assets.get(energy_definition_handle)
+                            })
+                            .expect("Expected `EnergyDefinition` to be loaded.");
+
+                        // `SequenceIdMappings`.
+                        let capacity = energy_definition.object_definition.sequences.len();
+                        let sequence_id_mappings = energy_definition
+                            .object_definition
+                            .sequences
+                            .keys()
+                            .enumerate()
+                            .map(|(index, sequence_name_string)| {
+                                (SequenceId::new(index), sequence_name_string.clone())
+                            })
+                            .fold(
+                                SequenceIdMappings::with_capacity(capacity),
+                                |mut sequence_id_mappings, (sequence_id, sequence_name_string)| {
+                                    sequence_id_mappings.insert(sequence_name_string, sequence_id);
+                                    sequence_id_mappings
+                                },
+                            );
+                        asset_sequence_id_mappings_energy.insert(asset_id, sequence_id_mappings);
+
+                        let EnergyObjectWrapper(object) = ObjectLoader::load::<Energy>(
+                            object_loader_params,
+                            &energy_definition.object_definition,
+                        )
+                        .expect("Failed to load `Energy`.");
+
+                        object
+                    }
+                    ObjectType::TestObject => panic!("`TestObject` loading is not supported."),
+                };
+                let Object {
+                    sequence_end_transitions,
+                    wait_sequence_handles,
+                    source_sequence_handles,
+                    object_acceleration_sequence_handles,
+                    sprite_render_sequence_handles,
+                    body_sequence_handles,
+                    interactions_sequence_handles,
+                    spawns_sequence_handles,
+                } = object;
+
+                asset_sequence_end_transitions.insert(asset_id, sequence_end_transitions);
+                asset_wait_sequence_handles.insert(asset_id, wait_sequence_handles);
+                asset_source_sequence_handles.insert(asset_id, source_sequence_handles);
+                asset_object_acceleration_sequence_handles
+                    .insert(asset_id, object_acceleration_sequence_handles);
+                asset_sprite_render_sequence_handles
+                    .insert(asset_id, sprite_render_sequence_handles);
+                asset_body_sequence_handles.insert(asset_id, body_sequence_handles);
+                asset_interactions_sequence_handles.insert(asset_id, interactions_sequence_handles);
+                asset_spawns_sequence_handles.insert(asset_id, spawns_sequence_handles);
+            }
+            AssetType::Map => {
+                let map_definition = asset_map_definition_handles
+                    .get(asset_id)
+                    .and_then(|map_definition_handle| {
+                        map_definition_assets.get(map_definition_handle)
+                    })
+                    .expect("Expected `MapDefinition` to be loaded.");
+
+                if let Some(sprite_sheet_handles) = asset_sprite_sheet_handles.get(asset_id) {
+                    let sequence_handles = (
+                        Vec::<WaitSequenceHandle>::with_capacity(map_definition.layers.len()),
+                        Vec::<SpriteRenderSequenceHandle>::with_capacity(
+                            map_definition.layers.len(),
+                        ),
+                    );
+                    let (wait_sequence_handles, sprite_render_sequence_handles) =
+                        map_definition.layers.iter().fold(
+                            sequence_handles,
+                            |(mut wait_sequence_handles, mut sprite_render_sequence_handles),
+                             layer| {
+                                let wait_sequence = WaitSequence::new(
+                                    layer
+                                        .frames
+                                        .iter()
+                                        .map(|frame| frame.wait)
+                                        .collect::<Vec<Wait>>(),
+                                );
+                                let sprite_render_sequence = SpriteRenderSequence::new(
+                                    layer
+                                        .frames
+                                        .iter()
+                                        .map(|frame| {
+                                            let sprite_ref = &frame.sprite;
+                                            let sprite_sheet =
+                                                sprite_sheet_handles[sprite_ref.sheet].clone();
+                                            let sprite_number = sprite_ref.index;
+                                            SpriteRender {
+                                                sprite_sheet,
+                                                sprite_number,
+                                            }
+                                        })
+                                        .collect::<Vec<SpriteRender>>(),
+                                );
+
+                                let wait_sequence_handle =
+                                    loader.load_from_data(wait_sequence, (), &wait_sequence_assets);
+                                let sprite_render_sequence_handle = loader.load_from_data(
+                                    sprite_render_sequence,
+                                    (),
+                                    &sprite_render_sequence_assets,
+                                );
+
+                                wait_sequence_handles.push(wait_sequence_handle);
+                                sprite_render_sequence_handles.push(sprite_render_sequence_handle);
+
+                                (wait_sequence_handles, sprite_render_sequence_handles)
+                            },
+                        );
+                    let wait_sequence_handles = WaitSequenceHandles::new(wait_sequence_handles);
+                    let sprite_render_sequence_handles =
+                        SpriteRenderSequenceHandles::new(sprite_render_sequence_handles);
+
+                    asset_wait_sequence_handles.insert(asset_id, wait_sequence_handles);
+                    asset_sprite_render_sequence_handles
+                        .insert(asset_id, sprite_render_sequence_handles);
+                }
+
+                let margins = Margins::from(map_definition.header.bounds);
+                asset_margins.insert(asset_id, margins);
+            }
         }
     }
 }
