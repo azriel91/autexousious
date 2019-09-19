@@ -202,6 +202,7 @@ impl AssetLoadingSystem {
 
                         asset_energy_definition_handles.insert(asset_id, energy_definition_handle);
                     }
+                    ObjectType::TestObject => panic!("`TestObject` loading is not supported."),
                 }
             }
             AssetType::Map => {

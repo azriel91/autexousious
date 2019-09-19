@@ -15,6 +15,5 @@ pub enum ObjectType {
     /// Energy / aura / spark effects.
     Energy,
     /// Used in tests.
-    #[cfg(feature = "test-support")]
     TestObject,
 }
