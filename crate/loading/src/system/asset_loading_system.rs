@@ -324,7 +324,13 @@ impl AssetLoadingSystem {
                     AssetLoadStatus::TextureLoading
                 }
             }
-            AssetLoadStatus::SequenceComponentLoading => unimplemented!(),
+            AssetLoadStatus::SequenceComponentLoading => {
+                if Self::sequence_components_loaded(asset_loading_resources, asset_id) {
+                    AssetLoadStatus::Complete
+                } else {
+                    AssetLoadStatus::SequenceComponentLoading
+                }
+            }
             AssetLoadStatus::Complete => AssetLoadStatus::Complete,
         }
     }
@@ -889,5 +895,71 @@ impl AssetLoadingSystem {
                 asset_margins.insert(asset_id, margins);
             }
         }
+    }
+
+    /// Returns whether sequence components assets have been loaded.
+    fn sequence_components_loaded(
+        AssetLoadingResources {
+            sequence_component_resources:
+                SequenceComponentResources {
+                    ref wait_sequence_assets,
+                    ref source_sequence_assets,
+                    ref object_acceleration_sequence_assets,
+                    ref sprite_render_sequence_assets,
+                    ref body_sequence_assets,
+                    ref interactions_sequence_assets,
+                    ref spawns_sequence_assets,
+                    ref mut asset_wait_sequence_handles,
+                    ref mut asset_source_sequence_handles,
+                    ref mut asset_object_acceleration_sequence_handles,
+                    ref mut asset_sprite_render_sequence_handles,
+                    ref mut asset_body_sequence_handles,
+                    ref mut asset_interactions_sequence_handles,
+                    ref mut asset_spawns_sequence_handles,
+                    ..
+                },
+            ..
+        }: &mut AssetLoadingResources,
+        asset_id: AssetId,
+    ) -> bool {
+        macro_rules! sequence_component_loaded {
+            ($handleses:ident, $assets:ident, $typename:path) => {{
+                let handles = $handleses
+                    .get(asset_id)
+                    .unwrap_or_else(|| panic!("Expected `{}` to exist.", stringify!($typename)));
+
+                handles.iter().all(|handle| $assets.get(handle).is_some())
+            }};
+        };
+
+        sequence_component_loaded!(
+            asset_wait_sequence_handles,
+            wait_sequence_assets,
+            WaitSequenceHandle
+        ) && sequence_component_loaded!(
+            asset_source_sequence_handles,
+            source_sequence_assets,
+            SourceSequenceHandle
+        ) && sequence_component_loaded!(
+            asset_object_acceleration_sequence_handles,
+            object_acceleration_sequence_assets,
+            ObjectAccelerationSequenceHandle
+        ) && sequence_component_loaded!(
+            asset_sprite_render_sequence_handles,
+            sprite_render_sequence_assets,
+            SpriteRenderSequenceHandle
+        ) && sequence_component_loaded!(
+            asset_body_sequence_handles,
+            body_sequence_assets,
+            BodySequenceHandle
+        ) && sequence_component_loaded!(
+            asset_interactions_sequence_handles,
+            interactions_sequence_assets,
+            InteractionsSequenceHandle
+        ) && sequence_component_loaded!(
+            asset_spawns_sequence_handles,
+            spawns_sequence_assets,
+            SpawnsSequenceHandle
+        )
     }
 }
