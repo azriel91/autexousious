@@ -3,6 +3,7 @@ use std::{collections::HashMap, path::PathBuf};
 use amethyst::{
     assets::{AssetStorage, Handle, Loader, ProgressCounter},
     ecs::{Read, ReadExpect, System, World, Write},
+    renderer::{sprite::SpriteSheetHandle, SpriteSheet, Texture},
     shred::{ResourceId, SystemData},
 };
 use asset_loading::YamlFormat;
@@ -19,6 +20,7 @@ use map_model::config::MapDefinition;
 use object_type::ObjectType;
 use sequence_model::loaded::{WaitSequence, WaitSequenceHandles};
 use slotmap::SecondaryMap;
+use sprite_loading::SpriteLoader;
 use sprite_model::config::SpritesDefinition;
 use typename_derive::TypeName;
 
@@ -62,10 +64,12 @@ pub struct AssetLoadingResources<'s> {
     pub definition_loading_resources: DefinitionLoadingResources<'s>,
     /// `SpriteLoadingResources`.
     pub sprite_loading_resources: SpriteLoadingResources<'s>,
+    /// `TextureLoadingResources`.
+    pub texture_loading_resources: TextureLoadingResources<'s>,
     /// `WaitSequence` assets.
     #[derivative(Debug = "ignore")]
     pub wait_sequence_assets: Read<'s, AssetStorage<WaitSequence>>,
-    /// `SecondaryMap::<AssetId, WaitSequenceHandles>` resource.
+    /// `SecondaryMap<AssetId, WaitSequenceHandles>` resource.
     #[derivative(Debug = "ignore")]
     pub asset_wait_sequence_handles: Write<'s, SecondaryMap<AssetId, WaitSequenceHandles>>,
 }
@@ -82,14 +86,14 @@ pub struct DefinitionLoadingResources<'s> {
     /// `MapDefinition` assets.
     #[derivative(Debug = "ignore")]
     pub map_definition_assets: Read<'s, AssetStorage<MapDefinition>>,
-    /// `SecondaryMap::<AssetId, CharacterDefinitionHandle>` resource.
+    /// `SecondaryMap<AssetId, CharacterDefinitionHandle>` resource.
     #[derivative(Debug = "ignore")]
     pub asset_character_definition_handles:
         Write<'s, SecondaryMap<AssetId, CharacterDefinitionHandle>>,
-    /// `SecondaryMap::<AssetId, EnergyDefinitionHandle>` resource.
+    /// `SecondaryMap<AssetId, EnergyDefinitionHandle>` resource.
     #[derivative(Debug = "ignore")]
     pub asset_energy_definition_handles: Write<'s, SecondaryMap<AssetId, EnergyDefinitionHandle>>,
-    /// `SecondaryMap::<AssetId, Handle<MapDefinition>>` resource.
+    /// `SecondaryMap<AssetId, Handle<MapDefinition>>` resource.
     #[derivative(Debug = "ignore")]
     pub asset_map_definition_handles: Write<'s, SecondaryMap<AssetId, Handle<MapDefinition>>>,
 }
@@ -100,10 +104,24 @@ pub struct SpriteLoadingResources<'s> {
     /// `SpritesDefinition` assets.
     #[derivative(Debug = "ignore")]
     pub sprites_definition_assets: Read<'s, AssetStorage<SpritesDefinition>>,
-    /// `SecondaryMap::<AssetId, Handle<SpritesDefinition>>` resource.
+    /// `SecondaryMap<AssetId, Handle<SpritesDefinition>>` resource.
     #[derivative(Debug = "ignore")]
     pub asset_sprites_definition_handles:
         Write<'s, SecondaryMap<AssetId, Handle<SpritesDefinition>>>,
+}
+
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub struct TextureLoadingResources<'s> {
+    /// `Texture` assets.
+    #[derivative(Debug = "ignore")]
+    pub texture_assets: Read<'s, AssetStorage<Texture>>,
+    /// `SpriteSheet` assets.
+    #[derivative(Debug = "ignore")]
+    pub sprite_sheet_assets: Read<'s, AssetStorage<SpriteSheet>>,
+    /// `SecondaryMap<AssetId, Vec<SpriteSheetHandle>>` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_sprite_sheet_handles: Write<'s, SecondaryMap<AssetId, Vec<SpriteSheetHandle>>>,
 }
 
 impl<'s> System<'s> for AssetLoadingSystem {
@@ -155,7 +173,16 @@ impl AssetLoadingSystem {
                     AssetLoadStatus::DefinitionLoading
                 }
             }
-            AssetLoadStatus::SpritesLoading => unimplemented!(),
+            AssetLoadStatus::SpritesLoading => {
+                if Self::sprites_definition_loaded(asset_loading_resources, asset_id) {
+                    Self::texture_load(asset_loading_resources, asset_id);
+
+                    AssetLoadStatus::TextureLoading
+                } else {
+                    AssetLoadStatus::SpritesLoading
+                }
+            }
+            AssetLoadStatus::TextureLoading => unimplemented!(),
             AssetLoadStatus::SequenceComponentLoading => unimplemented!(),
             AssetLoadStatus::Complete => AssetLoadStatus::Complete,
         }
@@ -347,7 +374,7 @@ impl AssetLoadingSystem {
             .expect("Expected path to be valid unicode.");
 
         debug!(
-            "Loading `{}` sprites from: `{}`",
+            "Loading `{}` sprites definition from: `{}`",
             asset_slug,
             asset_path.display()
         );
@@ -360,5 +387,90 @@ impl AssetLoadingSystem {
         );
 
         asset_sprites_definition_handles.insert(asset_id, sprites_definition_handle);
+    }
+
+    /// Returns whether the `SpritesDefinition` asset has been loaded.
+    ///
+    /// Returns `true` if there was no sprite definition for the asset.
+    fn sprites_definition_loaded(
+        AssetLoadingResources {
+            sprite_loading_resources:
+                SpriteLoadingResources {
+                    ref sprites_definition_assets,
+                    ref mut asset_sprites_definition_handles,
+                },
+            ..
+        }: &mut AssetLoadingResources,
+        asset_id: AssetId,
+    ) -> bool {
+        asset_sprites_definition_handles
+            .get(asset_id)
+            .map(|sprites_definition_handle| {
+                sprites_definition_assets
+                    .get(sprites_definition_handle)
+                    .is_some()
+            })
+            .unwrap_or(true)
+    }
+
+    /// Loads an asset's `Texture`s and `SpriteSheet`s.
+    fn texture_load(
+        AssetLoadingResources {
+            ref asset_id_to_path,
+            ref asset_id_mappings,
+            ref mut load_status_progress_counters,
+            ref loader,
+            sprite_loading_resources:
+                SpriteLoadingResources {
+                    ref sprites_definition_assets,
+                    ref asset_sprites_definition_handles,
+                },
+            texture_loading_resources:
+                TextureLoadingResources {
+                    ref texture_assets,
+                    ref sprite_sheet_assets,
+                    ref mut asset_sprite_sheet_handles,
+                },
+            ..
+        }: &mut AssetLoadingResources,
+        asset_id: AssetId,
+    ) {
+        let mut progress_counter = load_status_progress_counters
+            .entry(AssetLoadStatus::TextureLoading)
+            .or_insert(ProgressCounter::new());
+
+        let asset_slug = asset_id_mappings
+            .slug(asset_id)
+            .expect("Expected `AssetSlug` mapping to exist for `AssetId`.");
+        let asset_path = asset_id_to_path
+            .get(asset_id)
+            .expect("Expected `PathBuf` mapping to exist for `AssetId`.");
+
+        let sprites_definition =
+            asset_sprites_definition_handles
+                .get(asset_id)
+                .and_then(|sprites_definition_handle| {
+                    sprites_definition_assets.get(sprites_definition_handle)
+                });
+
+        if let Some(sprites_definition) = sprites_definition {
+            debug!(
+                "Loading `{}` textures from: `{}`",
+                asset_slug,
+                asset_path.display()
+            );
+
+            let sprite_sheet_handles = SpriteLoader::load(
+                &mut progress_counter,
+                &loader,
+                &texture_assets,
+                &sprite_sheet_assets,
+                &sprites_definition,
+                &asset_path,
+            )
+            .expect("Failed to load textures and sprite sheets.");
+
+            asset_sprite_sheet_handles.insert(asset_id, sprite_sheet_handles);
+        }
     }
 }

@@ -7,6 +7,8 @@ pub enum AssetLoadStatus {
     DefinitionLoading,
     /// Sprite definition is loading.
     SpritesLoading,
+    /// Textures are loading.
+    TextureLoading,
     /// Sequence components are loading.
     SequenceComponentLoading,
     /// The collective asset is fully loaded.
