@@ -26,6 +26,11 @@ impl AssetIdMappings {
         }
     }
 
+    /// Returns the number of elements the mappings can hold without reallocating.
+    pub fn capacity(&self) -> usize {
+        self.asset_id_to_slug.capacity()
+    }
+
     /// Returns the asset slug for the given ID.
     pub fn slug(&self, asset_id: AssetId) -> Option<&AssetSlug> {
         self.asset_id_to_slug.get(asset_id)

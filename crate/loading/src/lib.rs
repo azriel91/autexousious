@@ -3,6 +3,7 @@
 //! Provides a wrapper `State` around asset loading.
 
 pub use crate::{
+    asset_load_status::AssetLoadStatus,
     asset_loader::AssetLoader,
     loading_bundle::LoadingBundle,
     loading_state::LoadingState,
@@ -14,6 +15,7 @@ pub use crate::{
     },
 };
 
+mod asset_load_status;
 mod asset_loader;
 mod loading_bundle;
 mod loading_state;
