@@ -19,6 +19,7 @@ use map_model::config::MapDefinition;
 use object_type::ObjectType;
 use sequence_model::loaded::{WaitSequence, WaitSequenceHandles};
 use slotmap::SecondaryMap;
+use sprite_model::config::SpritesDefinition;
 use typename_derive::TypeName;
 
 use crate::AssetLoadStatus;
@@ -59,6 +60,8 @@ pub struct AssetLoadingResources<'s> {
     pub loader: ReadExpect<'s, Loader>,
     /// `DefinitionLoadingResources`.
     pub definition_loading_resources: DefinitionLoadingResources<'s>,
+    /// `SpriteLoadingResources`.
+    pub sprite_loading_resources: SpriteLoadingResources<'s>,
     /// `WaitSequence` assets.
     #[derivative(Debug = "ignore")]
     pub wait_sequence_assets: Read<'s, AssetStorage<WaitSequence>>,
@@ -89,6 +92,18 @@ pub struct DefinitionLoadingResources<'s> {
     /// `SecondaryMap::<AssetId, Handle<MapDefinition>>` resource.
     #[derivative(Debug = "ignore")]
     pub asset_map_definition_handles: Write<'s, SecondaryMap<AssetId, Handle<MapDefinition>>>,
+}
+
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub struct SpriteLoadingResources<'s> {
+    /// `SpritesDefinition` assets.
+    #[derivative(Debug = "ignore")]
+    pub sprites_definition_assets: Read<'s, AssetStorage<SpritesDefinition>>,
+    /// `SecondaryMap::<AssetId, Handle<SpritesDefinition>>` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_sprites_definition_handles:
+        Write<'s, SecondaryMap<AssetId, Handle<SpritesDefinition>>>,
 }
 
 impl<'s> System<'s> for AssetLoadingSystem {
@@ -124,19 +139,29 @@ impl AssetLoadingSystem {
         asset_id: &AssetId,
         asset_load_status: AssetLoadStatus,
     ) -> AssetLoadStatus {
+        let asset_id = *asset_id;
         match asset_load_status {
             AssetLoadStatus::New => {
-                Self::definition_load(asset_loading_resources, *asset_id);
+                Self::definition_load(asset_loading_resources, asset_id);
 
                 AssetLoadStatus::DefinitionLoading
             }
-            AssetLoadStatus::DefinitionLoading => unimplemented!(),
+            AssetLoadStatus::DefinitionLoading => {
+                if Self::definition_loaded(asset_loading_resources, asset_id) {
+                    Self::sprites_load(asset_loading_resources, asset_id);
+
+                    AssetLoadStatus::SpritesLoading
+                } else {
+                    AssetLoadStatus::DefinitionLoading
+                }
+            }
             AssetLoadStatus::SpritesLoading => unimplemented!(),
             AssetLoadStatus::SequenceComponentLoading => unimplemented!(),
             AssetLoadStatus::Complete => AssetLoadStatus::Complete,
         }
     }
 
+    /// Loads an asset's `Definition`.
     fn definition_load(
         AssetLoadingResources {
             ref asset_id_to_path,
@@ -171,7 +196,11 @@ impl AssetLoadingSystem {
         let asset_path = asset_id_to_path
             .get(asset_id)
             .expect("Expected `PathBuf` mapping to exist for `AssetId`.");
-        debug!("Loading `{}` from: `{}`", asset_slug, asset_path.display());
+        debug!(
+            "Loading `{}` definition from: `{}`",
+            asset_slug,
+            asset_path.display()
+        );
 
         match asset_type {
             AssetType::Object(object_type) => {
@@ -219,5 +248,117 @@ impl AssetLoadingSystem {
                 asset_map_definition_handles.insert(asset_id, map_definition_handle);
             }
         }
+    }
+
+    /// Returns whether the definition asset has been loaded.
+    fn definition_loaded(
+        AssetLoadingResources {
+            ref asset_type_mappings,
+            definition_loading_resources:
+                DefinitionLoadingResources {
+                    ref character_definition_assets,
+                    ref energy_definition_assets,
+                    ref map_definition_assets,
+                    ref mut asset_character_definition_handles,
+                    ref mut asset_energy_definition_handles,
+                    ref mut asset_map_definition_handles,
+                },
+            ..
+        }: &mut AssetLoadingResources,
+        asset_id: AssetId,
+    ) -> bool {
+        let asset_type = asset_type_mappings
+            .asset_type(&asset_id)
+            .expect("Expected `AssetType` mapping to exist.");
+
+        match asset_type {
+            AssetType::Object(object_type) => match object_type {
+                ObjectType::Character => {
+                    let character_definition_handle = asset_character_definition_handles
+                        .get(asset_id)
+                        .expect("Expected `CharacterDefinitionHandle` to exist.");
+                    character_definition_assets
+                        .get(character_definition_handle)
+                        .is_some()
+                }
+                ObjectType::Energy => {
+                    let energy_definition_handle = asset_energy_definition_handles
+                        .get(asset_id)
+                        .expect("Expected `EnergyDefinitionHandle` to exist.");
+                    energy_definition_assets
+                        .get(energy_definition_handle)
+                        .is_some()
+                }
+                ObjectType::TestObject => panic!("`TestObject` loading is not supported."),
+            },
+            AssetType::Map => {
+                let map_definition_handle = asset_map_definition_handles
+                    .get(asset_id)
+                    .expect("Expected `MapDefinitionHandle` to exist.");
+                map_definition_assets.get(map_definition_handle).is_some()
+            }
+        }
+    }
+
+    /// Loads an asset's `SpritesDefinition`.
+    fn sprites_load(
+        AssetLoadingResources {
+            ref asset_id_to_path,
+            ref asset_id_mappings,
+            ref asset_type_mappings,
+            ref mut load_status_progress_counters,
+            ref loader,
+            sprite_loading_resources:
+                SpriteLoadingResources {
+                    ref sprites_definition_assets,
+                    ref mut asset_sprites_definition_handles,
+                },
+            ..
+        }: &mut AssetLoadingResources,
+        asset_id: AssetId,
+    ) {
+        let asset_type = asset_type_mappings
+            .asset_type(&asset_id)
+            .expect("Expected `AssetType` mapping to exist.");
+
+        let progress_counter = load_status_progress_counters
+            .entry(AssetLoadStatus::SpritesLoading)
+            .or_insert(ProgressCounter::new());
+
+        let asset_slug = asset_id_mappings
+            .slug(asset_id)
+            .expect("Expected `AssetSlug` mapping to exist for `AssetId`.");
+        let asset_path = asset_id_to_path
+            .get(asset_id)
+            .expect("Expected `PathBuf` mapping to exist for `AssetId`.");
+
+        let sprites_definition_path = asset_path.join("sprites.yaml");
+        if let AssetType::Map = asset_type {
+            // Return early if `sprites.yaml` does not exist.
+            // This means `asset_sprites_definition_handles` will not have a key for the current
+            // `asset_id`.
+            if !sprites_definition_path.exists() {
+                return;
+            }
+        }
+
+        let sprites_definition_path = sprites_definition_path
+            .to_str()
+            .expect("Expected path to be valid unicode.");
+
+        debug!(
+            "Loading `{}` sprites from: `{}`",
+            asset_slug,
+            asset_path.display()
+        );
+
+        let sprites_definition_handle = loader.load(
+            sprites_definition_path,
+            YamlFormat,
+            &mut *progress_counter,
+            sprites_definition_assets,
+        );
+
+        asset_sprites_definition_handles.insert(asset_id, sprites_definition_handle);
     }
 }
