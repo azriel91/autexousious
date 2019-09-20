@@ -1,12 +1,11 @@
 use amethyst::{
-    assets::AssetStorage,
     ecs::{Join, Read, ReadExpect, ReadStorage, System, World, WriteStorage},
     shred::{ResourceId, SystemData},
 };
 use derivative::Derivative;
 use derive_new::new;
 use kinematic_model::config::Position;
-use map_model::loaded::Map;
+use map_model::loaded::AssetMargins;
 use map_selection_model::MapSelection;
 use object_model::play::Grounding;
 use typename_derive::TypeName;
@@ -21,9 +20,9 @@ pub struct ObjectGroundingSystemData<'s> {
     /// `MapSelection` resource.
     #[derivative(Debug = "ignore")]
     pub map_selection: ReadExpect<'s, MapSelection>,
-    /// `Map` assets.
+    /// `AssetMargins` resource.
     #[derivative(Debug = "ignore")]
-    pub maps: Read<'s, AssetStorage<Map>>,
+    pub asset_margins: Read<'s, AssetMargins>,
     /// `Position<f32>` components.
     #[derivative(Debug = "ignore")]
     pub positions: ReadStorage<'s, Position<f32>>,
@@ -39,16 +38,18 @@ impl<'s> System<'s> for ObjectGroundingSystem {
         &mut self,
         ObjectGroundingSystemData {
             map_selection,
-            maps,
+            asset_margins,
             positions,
             mut groundings,
         }: Self::SystemData,
     ) {
-        let map_margins = {
-            maps.get(map_selection.handle())
-                .map(|map| &map.margins)
-                .expect("Expected map to be loaded.")
-        };
+        let map_margins = asset_margins
+            .get(
+                map_selection
+                    .asset_id()
+                    .expect("Expected `MapSelection` asset ID to exist."),
+            )
+            .expect("Expected `Margins` to be loaded.");
 
         (&positions, &mut groundings)
             .join()
@@ -138,22 +139,7 @@ mod tests {
         AmethystApplication::blank()
             .with_bundle(MapLoadingBundle::new())
             .with_setup(setup_system_data)
-            .with_setup(|world| {
-                let map_handle = {
-                    let map = empty_map();
-                    let loader = world.read_resource::<Loader>();
-                    let map_assets = world.read_resource::<AssetStorage<Map>>();
-
-                    loader.load_from_data(map, (), &map_assets)
-                };
-
-                let slug = AssetSlug::from_str("test/empty_map")
-                    .expect("Expected asset slug to be valid.");
-                let snh = SlugAndHandle::new(slug, map_handle);
-                let map_selection = MapSelection::Id(snh);
-
-                world.insert(map_selection);
-            })
+            .with_setup(setup_map_selection)
             .with_effect(move |world| {
                 let entity = world.create_entity().with(grounding).with(position).build();
 
@@ -181,18 +167,23 @@ mod tests {
         <ObjectGroundingSystem as System<'_>>::SystemData::setup(world);
     }
 
-    fn empty_map() -> Map {
-        let map_bounds = MapBounds::new(0, 0, 0, 800, 600, 200);
-        let map_header = MapHeader::new(String::from("empty_map"), map_bounds);
-        let map_definition = MapDefinition::new(map_header, Vec::new());
-        let map_margins = Margins::from(map_bounds);
-        Map::new(
-            map_definition,
-            map_margins,
-            Vec::new(),
-            Vec::new(),
-            Vec::new(),
-        )
+    fn setup_map_selection(world: &mut World) {
+        let map_selection = {
+            let map_bounds = MapBounds::new(0, 0, 0, 800, 600, 200);
+            let map_margins = Margins::from(map_bounds);
+
+            let mut asset_id_mappings = world.write_resource::<AssetIdMappings>();
+            let mut asset_margins = world.write_resource::<AssetMargins>();
+            let slug =
+                AssetSlug::from_str("test/empty_map").expect("Expected asset slug to be valid.");
+
+            let asset_id = asset_id_mappings.insert(slug);
+            asset_margins.insert(asset_id, map_margins);
+
+            MapSelection::Id(asset_id)
+        };
+
+        world.insert(map_selection);
     }
 
     struct SetupParams {

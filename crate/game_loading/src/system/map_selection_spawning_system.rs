@@ -37,10 +37,13 @@ impl<'s> System<'s> for MapSelectionSpawningSystem {
             return;
         }
 
+        // TODO: implement Random
         let map_layer_entities = MapLayerEntitySpawner::spawn_system(
             &map_spawning_resources,
             &mut map_component_storages,
-            map_selection.handle(),
+            map_selection
+                .asset_id()
+                .expect("Expected `MapSelection` to contain ID."),
         );
 
         game_entities.map_layers = map_layer_entities;

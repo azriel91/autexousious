@@ -1,8 +1,10 @@
 use std::str::FromStr;
 
 use amethyst::{ecs::Read, Error};
-use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
-use game_model::loaded::MapPrefabs;
+use asset_model::{
+    config::AssetType,
+    loaded::{AssetId, AssetIdMappings},
+};
 use map_selection_model::{MapSelection, MapSelectionEvent};
 use stdio_spi::{MapperSystemData, StdinMapper, StdioError};
 use typename_derive::TypeName;
@@ -13,7 +15,7 @@ use crate::MapSelectionEventArgs;
 pub struct MapSelectionEventStdinMapperData;
 
 impl<'s> MapperSystemData<'s> for MapSelectionEventStdinMapperData {
-    type SystemData = Read<'s, MapPrefabs>;
+    type SystemData = Read<'s, AssetIdMappings>;
 }
 
 /// Builds a `MapSelectionEvent` from stdin tokens.
@@ -22,31 +24,30 @@ pub struct MapSelectionEventStdinMapper;
 
 impl MapSelectionEventStdinMapper {
     fn map_select_event(
-        map_prefabs: &MapPrefabs,
+        asset_id_mappings: &AssetIdMappings,
         selection: &str,
     ) -> Result<MapSelectionEvent, Error> {
         let map_selection = match selection {
             "random" => {
-                let snh = SlugAndHandle::from(
-                    map_prefabs
-                        .iter()
+                let map_asset_id = SlugAndHandle::from(
+                    asset_id_mappings
+                        .iter_ids(AssetType::Map)
                         .next()
                         .expect("Expected at least one map to be loaded."),
                 );
-                MapSelection::Random(snh)
+                MapSelection::Random(map_asset_id)
             }
             slug_str => {
                 let slug = AssetSlug::from_str(slug_str)
                     .map_err(String::from)
                     .map_err(StdioError::Msg)?;
-                let handle = map_prefabs
-                    .get(&slug)
+                let map_asset_id = asset_id_mappings
+                    .slug(&slug)
+                    .copied()
                     .ok_or_else(|| format!("No map found with asset slug `{}`.", slug))
-                    .map_err(StdioError::Msg)?
-                    .clone();
+                    .map_err(StdioError::Msg)?;
 
-                let snh = SlugAndHandle { slug, handle };
-                MapSelection::Id(snh)
+                MapSelection::Id(map_asset_id)
             }
         };
 
@@ -61,11 +62,14 @@ impl StdinMapper for MapSelectionEventStdinMapper {
     type Event = MapSelectionEvent;
     type Args = MapSelectionEventArgs;
 
-    fn map(map_prefabs: &Read<MapPrefabs>, args: Self::Args) -> Result<Self::Event, Error> {
+    fn map(
+        asset_id_mappings: &Read<'_, AssetIdMappings>,
+        args: Self::Args,
+    ) -> Result<Self::Event, Error> {
         match args {
             MapSelectionEventArgs::Return => Ok(MapSelectionEvent::Return),
             MapSelectionEventArgs::Select { selection } => {
-                Self::map_select_event(map_prefabs, &selection)
+                Self::map_select_event(asset_id_mappings, &selection)
             }
             MapSelectionEventArgs::Deselect => Ok(MapSelectionEvent::Deselect),
             MapSelectionEventArgs::Confirm => Ok(MapSelectionEvent::Confirm),

@@ -34,7 +34,7 @@ use kinematic_model::loaded::{AssetObjectAccelerationSequenceHandles, ObjectAcce
 use log::{debug, info};
 use map_model::{
     config::MapDefinition,
-    loaded::{AssetMargins, Margins},
+    loaded::{AssetMapBounds, AssetMargins, Margins},
 };
 use object_loading::{ObjectLoader, ObjectLoaderParams};
 use object_model::loaded::Object;
@@ -227,6 +227,9 @@ pub struct SequenceComponentResources<'s> {
     /// `AssetSpawnsSequenceHandles` resource.
     #[derivative(Debug = "ignore")]
     pub asset_spawns_sequence_handles: Write<'s, AssetSpawnsSequenceHandles>,
+    /// `AssetMapBounds` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_map_bounds: Write<'s, AssetMapBounds>,
     /// `AssetMargins` resource.
     #[derivative(Debug = "ignore")]
     pub asset_margins: Write<'s, AssetMargins>,
@@ -696,6 +699,7 @@ impl AssetLoadingSystem {
                     ref mut asset_body_sequence_handles,
                     ref mut asset_interactions_sequence_handles,
                     ref mut asset_spawns_sequence_handles,
+                    ref mut asset_map_bounds,
                     ref mut asset_margins,
                 },
             ..
@@ -896,6 +900,7 @@ impl AssetLoadingSystem {
                 }
 
                 let margins = Margins::from(map_definition.header.bounds);
+                asset_map_bounds.insert(asset_id, map_definition.header.bounds);
                 asset_margins.insert(asset_id, margins);
             }
         }

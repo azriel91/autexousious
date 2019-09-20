@@ -5,7 +5,7 @@ use map_selection_model::MapSelection;
 use crate::WidgetState;
 
 /// Component to tag entities that are map selection widgets.
-#[derive(Clone, Debug, PartialEq, new)]
+#[derive(Clone, Copy, Debug, PartialEq, new)]
 pub(crate) struct MapSelectionWidget {
     /// Map selection state.
     pub state: WidgetState,

@@ -1,32 +1,20 @@
-use std::fmt;
-
-use asset_model::loaded::SlugAndHandle;
-use map_model::loaded::{Map, MapHandle};
+use asset_model::loaded::AssetId;
 
 /// Selected map ID or random for a particular controller.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum MapSelection {
     /// User has selected *Random*.
-    Random(SlugAndHandle<Map>),
+    Random(Option<AssetId>),
     /// User has selected a map.
-    Id(SlugAndHandle<Map>),
+    Id(AssetId),
 }
 
 impl MapSelection {
-    /// Returns the map handle of this `MapSelection`.
-    pub fn handle(&self) -> &MapHandle {
+    /// Returns the `AssetId` of the selection.
+    pub fn asset_id(self) -> Option<AssetId> {
         match self {
-            MapSelection::Random(SlugAndHandle { ref handle, .. })
-            | MapSelection::Id(SlugAndHandle { ref handle, .. }) => handle,
-        }
-    }
-}
-
-impl fmt::Display for MapSelection {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            MapSelection::Random(ref _slug_and_handle) => write!(f, "Random"), // TODO: i18n
-            MapSelection::Id(SlugAndHandle { ref slug, .. }) => write!(f, "{}", slug),
+            MapSelection::Random(asset_id) => asset_id,
+            MapSelection::Id(asset_id) => Some(asset_id),
         }
     }
 }

@@ -1,5 +1,4 @@
 use amethyst::{
-    assets::AssetStorage,
     core::math::Vector3,
     ecs::{Join, Read, ReadExpect, ReadStorage, System, World, WriteStorage},
     renderer::camera::Camera,
@@ -11,7 +10,7 @@ use derive_new::new;
 use kinematic_model::config::Position;
 use map_model::{
     config::MapBounds,
-    loaded::{Map, Margins},
+    loaded::{AssetMapBounds, AssetMargins, Margins},
 };
 use map_selection_model::MapSelection;
 use object_model::play::Mirrored;
@@ -30,9 +29,12 @@ pub struct CameraTrackingSystemData<'s> {
     /// `MapSelection` resource.
     #[derivative(Debug = "ignore")]
     pub map_selection: ReadExpect<'s, MapSelection>,
-    /// `Map` assets.
+    /// `AssetMapBounds` resource.
     #[derivative(Debug = "ignore")]
-    pub map_assets: Read<'s, AssetStorage<Map>>,
+    pub asset_map_bounds: Read<'s, AssetMapBounds>,
+    /// `AssetMargins` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_margins: Read<'s, AssetMargins>,
     /// `CameraTracked` components.
     #[derivative(Debug = "ignore")]
     pub camera_trackeds: ReadStorage<'s, CameraTracked>,
@@ -142,7 +144,8 @@ impl<'s> System<'s> for CameraTrackingSystem {
         CameraTrackingSystemData {
             camera_zoom_dimensions,
             map_selection,
-            map_assets,
+            asset_map_bounds,
+            asset_margins,
             camera_trackeds,
             positions,
             mirroreds,
@@ -150,11 +153,17 @@ impl<'s> System<'s> for CameraTrackingSystem {
             mut camera_target_coordinateses,
         }: Self::SystemData,
     ) {
-        let map = map_assets
-            .get(map_selection.handle())
-            .expect("Expected map to be loaded.");
-        let map_margins = map.margins;
-        let map_bounds = map.definition.header.bounds;
+        let map_asset_id = map_selection
+            .asset_id()
+            .expect("Expected `MapSelection` asset ID to exist.");
+        let map_margins = asset_margins
+            .get(map_asset_id)
+            .copied()
+            .expect("Expected `Margins` to be loaded.");
+        let map_bounds = asset_map_bounds
+            .get(map_asset_id)
+            .copied()
+            .expect("Expected `Margins` to be loaded.");
 
         // Focus on tracked entities.
         //
@@ -189,13 +198,12 @@ mod tests {
     use std::str::FromStr;
 
     use amethyst::{
-        assets::{AssetStorage, Loader},
         ecs::{Builder, Entity, System, SystemData, World, WorldExt},
         window::ScreenDimensions,
         Error,
     };
     use amethyst_test::{AmethystApplication, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
-    use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
+    use asset_model::{config::AssetSlug, loaded::AssetIdMappings};
     use camera_model::play::{
         CameraTargetCoordinates, CameraTracked, CAMERA_ZOOM_DEPTH_DEFAULT,
         CAMERA_ZOOM_HEIGHT_DEFAULT, CAMERA_ZOOM_WIDTH_DEFAULT,
@@ -203,8 +211,8 @@ mod tests {
     use kinematic_model::config::Position;
     use map_loading::MapLoadingBundle;
     use map_model::{
-        config::{MapBounds, MapDefinition, MapHeader},
-        loaded::{Map, Margins},
+        config::MapBounds,
+        loaded::{AssetMargins, Margins},
     };
     use map_selection_model::MapSelection;
     use object_model::play::Mirrored;
@@ -227,7 +235,7 @@ mod tests {
                     (Position::new(900., 1500., 0.), None),
                     (Position::new(1100., 1500., 0.), None),
                 ],
-                map: big_map(),
+                setup_map_selection_fn: setup_big_map,
             },
             ExpectedParams {
                 camera_target_coordinates: CameraTargetCoordinates::new(
@@ -247,7 +255,7 @@ mod tests {
                     (Position::new(900., 900., 500.), None),
                     (Position::new(1100., 1100., 700.), None),
                 ],
-                map: big_map(),
+                setup_map_selection_fn: setup_big_map,
             },
             ExpectedParams {
                 camera_target_coordinates: CameraTargetCoordinates::new(
@@ -267,7 +275,7 @@ mod tests {
                     (Position::new(0., 900., 500.), None),
                     (Position::new(0., 1100., 700.), None),
                 ],
-                map: big_map(),
+                setup_map_selection_fn: setup_big_map,
             },
             ExpectedParams {
                 camera_target_coordinates: CameraTargetCoordinates::new(
@@ -287,7 +295,7 @@ mod tests {
                     (Position::new(MAP_WIDTH, 900., 500.), None),
                     (Position::new(MAP_WIDTH, 1100., 700.), None),
                 ],
-                map: big_map(),
+                setup_map_selection_fn: setup_big_map,
             },
             ExpectedParams {
                 camera_target_coordinates: CameraTargetCoordinates::new(
@@ -307,7 +315,7 @@ mod tests {
                     (Position::new(900., MAP_HEIGHT, 0.), None),
                     (Position::new(1100., MAP_HEIGHT, 0.), None),
                 ],
-                map: big_map(),
+                setup_map_selection_fn: setup_big_map,
             },
             ExpectedParams {
                 camera_target_coordinates: CameraTargetCoordinates::new(
@@ -327,7 +335,7 @@ mod tests {
                     (Position::new(900., 0., MAP_DEPTH), None),
                     (Position::new(1100., 0., MAP_DEPTH), None),
                 ],
-                map: big_map(),
+                setup_map_selection_fn: setup_big_map,
             },
             ExpectedParams {
                 camera_target_coordinates: CameraTargetCoordinates::new(
@@ -347,7 +355,7 @@ mod tests {
                     (Position::new(0., 0., 0.), None),
                     (Position::new(0., 0., 0.), None),
                 ],
-                map: small_map(),
+                setup_map_selection_fn: setup_small_map,
             },
             ExpectedParams {
                 camera_target_coordinates: CameraTargetCoordinates::new(
@@ -367,7 +375,7 @@ mod tests {
                     (Position::new(0., 0., 0.), Some(Mirrored::new(true))),
                     (Position::new(0., 0., 0.), Some(Mirrored::new(true))),
                 ],
-                map: small_map(),
+                setup_map_selection_fn: setup_small_map,
             },
             ExpectedParams {
                 camera_target_coordinates: CameraTargetCoordinates::new(
@@ -387,7 +395,7 @@ mod tests {
                     (Position::new(900., 1500., 0.), Some(Mirrored::new(false))),
                     (Position::new(1100., 1500., 0.), Some(Mirrored::new(false))),
                 ],
-                map: big_map(),
+                setup_map_selection_fn: setup_big_map,
             },
             ExpectedParams {
                 camera_target_coordinates: CameraTargetCoordinates::new(
@@ -409,7 +417,7 @@ mod tests {
                     (Position::new(900., 1500., 0.), Some(Mirrored::new(true))),
                     (Position::new(1100., 1500., 0.), Some(Mirrored::new(true))),
                 ],
-                map: big_map(),
+                setup_map_selection_fn: setup_big_map,
             },
             ExpectedParams {
                 camera_target_coordinates: CameraTargetCoordinates::new(
@@ -431,7 +439,7 @@ mod tests {
                     (Position::new(900., 1500., 0.), Some(Mirrored::new(true))),
                     (Position::new(1100., 1500., 0.), Some(Mirrored::new(false))),
                 ],
-                map: big_map(),
+                setup_map_selection_fn: setup_big_map,
             },
             ExpectedParams {
                 camera_target_coordinates: CameraTargetCoordinates::new(
@@ -446,7 +454,7 @@ mod tests {
     fn run_test(
         SetupParams {
             position_mirroreds,
-            map,
+            setup_map_selection_fn,
         }: SetupParams,
         ExpectedParams {
             camera_target_coordinates,
@@ -456,21 +464,7 @@ mod tests {
             .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
             .with_bundle(MapLoadingBundle::new())
             .with_effect(setup_system_data)
-            .with_effect(move |world| {
-                let map_handle = {
-                    let loader = world.read_resource::<Loader>();
-                    let map_assets = world.read_resource::<AssetStorage<Map>>();
-
-                    loader.load_from_data(map.clone(), (), &map_assets)
-                };
-
-                let slug =
-                    AssetSlug::from_str("test/big_map").expect("Expected asset slug to be valid.");
-                let snh = SlugAndHandle::new(slug, map_handle);
-                let map_selection = MapSelection::Id(snh);
-
-                world.insert(map_selection);
-            })
+            .with_effect(setup_map_selection_fn)
             .with_effect(|world| {
                 let camera_entity = CameraCreator::create_in_world(world);
                 world.insert(camera_entity);
@@ -507,21 +501,12 @@ mod tests {
             .run()
     }
 
-    fn small_map() -> Map {
+    fn setup_small_map(world: &mut World) {
         let map_bounds = MapBounds::new(0, 0, 0, 400, 300, 200);
-        let map_header = MapHeader::new(String::from("small_map"), map_bounds);
-        let map_definition = MapDefinition::new(map_header, Vec::new());
-        let map_margins = Margins::from(map_bounds);
-        Map::new(
-            map_definition,
-            map_margins,
-            Vec::new(),
-            Vec::new(),
-            Vec::new(),
-        )
+        setup_map_selection(world, map_bounds, "test/small_map")
     }
 
-    fn big_map() -> Map {
+    fn setup_big_map(world: &mut World) {
         let map_bounds = MapBounds::new(
             0,
             0,
@@ -530,25 +515,33 @@ mod tests {
             MAP_HEIGHT as u32,
             MAP_DEPTH as u32,
         );
-        let map_header = MapHeader::new(String::from("big_map"), map_bounds);
-        let map_definition = MapDefinition::new(map_header, Vec::new());
-        let map_margins = Margins::from(map_bounds);
-        Map::new(
-            map_definition,
-            map_margins,
-            Vec::new(),
-            Vec::new(),
-            Vec::new(),
-        )
+        setup_map_selection(world, map_bounds, "test/big_map")
     }
 
     fn setup_system_data(world: &mut World) {
         <CameraTrackingSystem as System<'_>>::SystemData::setup(world);
     }
 
+    fn setup_map_selection(world: &mut World, map_bounds: MapBounds, slug: &str) {
+        let map_selection = {
+            let map_margins = Margins::from(map_bounds);
+
+            let mut asset_id_mappings = world.write_resource::<AssetIdMappings>();
+            let mut asset_margins = world.write_resource::<AssetMargins>();
+            let slug = AssetSlug::from_str(slug).expect("Expected asset slug to be valid.");
+
+            let asset_id = asset_id_mappings.insert(slug);
+            asset_margins.insert(asset_id, map_margins);
+
+            MapSelection::Id(asset_id)
+        };
+
+        world.insert(map_selection);
+    }
+
     struct SetupParams {
         position_mirroreds: Vec<(Position<f32>, Option<Mirrored>)>,
-        map: Map,
+        setup_map_selection_fn: fn(&mut World),
     }
 
     struct ExpectedParams {
