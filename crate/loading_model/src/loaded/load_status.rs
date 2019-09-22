@@ -1,6 +1,6 @@
 /// Each asset's loading status.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-pub enum AssetLoadStatus {
+pub enum LoadStatus {
     /// The collective asset hasn't been loaded at all.
     New,
     /// Asset definition is loading.

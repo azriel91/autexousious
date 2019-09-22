@@ -27,6 +27,7 @@ energy_prefab = { path = "../energy_prefab" }
 game_model = { path = "../game_model" }
 humantime = "1.2.0"
 kinematic_model = { path = "../kinematic_model" }
+loading_model = { path = "../loading_model" }
 log = "0.4.8"
 map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }

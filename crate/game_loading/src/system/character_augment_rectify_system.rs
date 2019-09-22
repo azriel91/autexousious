@@ -184,13 +184,15 @@ mod tests {
         assets::{Prefab, Processor},
         audio::Source,
         core::TransformBundle,
-        ecs::{Builder, Entity, Join, ReadStorage, World, WorldExt},
+        ecs::{Builder, Entity, Join, Read, ReadStorage, World, WorldExt},
         renderer::{types::DefaultBackend, RenderEmptyBundle},
         shred::SystemData,
         window::ScreenDimensions,
-        Error,
+        Error, State, StateData, Trans,
     };
-    use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
+    use amethyst_test::{
+        AmethystApplication, GameUpdate, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH,
+    };
     use application_event::{AppEvent, AppEventReader};
     use asset_model::{
         config::AssetSlug,
@@ -206,6 +208,7 @@ mod tests {
     use game_play_hud::{CpBar, HpBar};
     use kinematic_model::config::Position;
     use loading::{LoadingBundle, LoadingState};
+    use loading_model::loaded::{AssetLoadStatus, LoadStatus};
     use map_loading::MapLoadingBundle;
     use map_selection::MapSelectionStatus;
     use map_selection_model::MapSelection;
@@ -317,6 +320,10 @@ mod tests {
         FnS: Fn(&mut World) + Send + Sync + 'static,
         FnA: Fn(&mut World) + Send + Sync + 'static,
     {
+        let wait_for_load = WaitForLoad {
+            slug: MAP_FADE_SLUG.clone(),
+        };
+
         AmethystApplication::blank()
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_bundle(TransformBundle::new())
@@ -339,6 +346,7 @@ mod tests {
             .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_effect(|world| CharacterAugmentRectifySystemData::setup(world))
             .with_state(|| LoadingState::new(PopState))
+            .with_state(|| wait_for_load)
             .with_effect(|world| setup_map_selection(world, &*MAP_FADE_SLUG))
             .with_effect(fn_setup)
             .with_system_single(
@@ -359,5 +367,31 @@ mod tests {
 
         world.insert(MapSelection::Id(map_asset_id));
         world.insert(MapSelectionStatus::Confirmed);
+    }
+
+    #[derive(Debug)]
+    struct WaitForLoad {
+        slug: AssetSlug,
+    }
+    impl<T, E> State<T, E> for WaitForLoad
+    where
+        T: GameUpdate,
+        E: Send + Sync + 'static,
+    {
+        fn update(&mut self, data: StateData<'_, T>) -> Trans<T, E> {
+            data.data.update(&data.world);
+
+            let (asset_id_mappings, asset_load_status) = data
+                .world
+                .system_data::<(Read<'_, AssetIdMappings>, Read<'_, AssetLoadStatus>)>();
+            if let Some(LoadStatus::Complete) = asset_id_mappings
+                .id(&self.slug)
+                .and_then(|asset_id| asset_load_status.get(*asset_id))
+            {
+                Trans::Pop
+            } else {
+                Trans::None
+            }
+        }
     }
 }

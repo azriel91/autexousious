@@ -71,15 +71,16 @@ impl<'s> System<'s> for MapSelectionSpawningSystem {
 mod tests {
     use amethyst::{
         core::TransformBundle,
-        ecs::{SystemData, World, WorldExt},
+        ecs::{Read, SystemData, World, WorldExt},
         renderer::{types::DefaultBackend, RenderEmptyBundle},
-        Error,
+        Error, State, StateData, Trans,
     };
-    use amethyst_test::AmethystApplication;
+    use amethyst_test::{AmethystApplication, GameUpdate};
     use asset_model::{config::AssetSlug, loaded::AssetIdMappings};
     use assets_test::{ASSETS_PATH, MAP_EMPTY_SLUG, MAP_FADE_SLUG};
     use game_model::play::GameEntities;
     use loading::LoadingBundle;
+    use loading_model::loaded::{AssetLoadStatus, LoadStatus};
     use map_loading::MapLoadingBundle;
     use map_selection::MapSelectionStatus;
     use map_selection_model::MapSelection;
@@ -137,25 +138,22 @@ mod tests {
         }: ExpectedParams,
     ) -> Result<(), Error> {
         let (slug, map_loaded_setup) = match setup_variant {
-            SetupVariant::NotLoaded(slug) => (Some(slug), false),
-            SetupVariant::Loaded => (None, true),
+            SetupVariant::NotLoaded(slug) => (slug, false),
+            SetupVariant::Loaded => (&*MAP_EMPTY_SLUG, true),
         };
 
-        let mut amethyst_application = AmethystApplication::blank()
+        let wait_for_load = WaitForLoad { slug: slug.clone() };
+
+        AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
-            .with_effect(setup_system_data);
-
-        if let Some(slug) = slug {
-            amethyst_application =
-                amethyst_application.with_effect(move |world| setup_map_selection(world, slug))
-        }
-
-        amethyst_application
+            .with_state(|| wait_for_load)
+            .with_effect(setup_system_data)
+            .with_effect(move |world| setup_map_selection(world, slug))
             .with_effect(move |world| {
                 let mut game_loading_status = GameLoadingStatus::new();
                 game_loading_status.map_loaded = map_loaded_setup;
@@ -209,5 +207,31 @@ mod tests {
     enum SetupVariant<'s> {
         NotLoaded(&'s AssetSlug),
         Loaded,
+    }
+
+    #[derive(Debug)]
+    struct WaitForLoad {
+        slug: AssetSlug,
+    }
+    impl<T, E> State<T, E> for WaitForLoad
+    where
+        T: GameUpdate,
+        E: Send + Sync + 'static,
+    {
+        fn update(&mut self, data: StateData<'_, T>) -> Trans<T, E> {
+            data.data.update(&data.world);
+
+            let (asset_id_mappings, asset_load_status) = data
+                .world
+                .system_data::<(Read<'_, AssetIdMappings>, Read<'_, AssetLoadStatus>)>();
+            if let Some(LoadStatus::Complete) = asset_id_mappings
+                .id(&self.slug)
+                .and_then(|asset_id| asset_load_status.get(*asset_id))
+            {
+                Trans::Pop
+            } else {
+                Trans::None
+            }
+        }
     }
 }

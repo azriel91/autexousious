@@ -46,6 +46,7 @@ collision_audio_loading = { path = "../collision_audio_loading" }
 collision_loading = { path = "../collision_loading" }
 game_input_model = { path = "../game_input_model" }
 loading = { path = "../loading" }
+loading_model = { path = "../loading_model" }
 map_loading = { path = "../map_loading" }
 map_selection = { path = "../map_selection" }
 sequence_loading = { path = "../sequence_loading" }

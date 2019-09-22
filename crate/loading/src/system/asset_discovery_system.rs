@@ -11,11 +11,10 @@ use asset_model::{
 };
 use derivative::Derivative;
 use derive_new::new;
+use loading_model::loaded::{AssetLoadStatus, LoadStatus};
 use log::debug;
 use slotmap::SecondaryMap;
 use typename_derive::TypeName;
-
-use crate::AssetLoadStatus;
 
 /// Discovers assets and writes to `Option<AssetIndex>`.
 #[derive(Debug, Default, TypeName, new)]
@@ -36,9 +35,9 @@ pub struct AssetDiscoverySystemData<'s> {
     /// `AssetTypeMappings` resource.
     #[derivative(Debug = "ignore")]
     asset_type_mappings: Write<'s, AssetTypeMappings>,
-    /// `SecondaryMap<AssetId, AssetLoadStatus>` resource.
+    /// `AssetLoadStatus` resource.
     #[derivative(Debug = "ignore")]
-    asset_id_to_status: Write<'s, SecondaryMap<AssetId, AssetLoadStatus>>,
+    asset_load_status: Write<'s, AssetLoadStatus>,
     /// `SecondaryMap<AssetId, PathBuf>` resource.
     #[derivative(Debug = "ignore")]
     asset_id_to_path: Write<'s, SecondaryMap<AssetId, PathBuf>>,
@@ -53,7 +52,7 @@ impl<'s> System<'s> for AssetDiscoverySystem {
             mut asset_index,
             mut asset_id_mappings,
             mut asset_type_mappings,
-            mut asset_id_to_status,
+            mut asset_load_status,
             mut asset_id_to_path,
         }: Self::SystemData,
     ) {
@@ -94,7 +93,7 @@ impl<'s> System<'s> for AssetDiscoverySystem {
                 );
 
                 asset_type_mappings.insert(asset_id, asset_type);
-                asset_id_to_status.insert(asset_id, AssetLoadStatus::New);
+                asset_load_status.insert(asset_id, LoadStatus::New);
                 asset_id_to_path.insert(asset_id, asset_record.path.clone());
             });
 

@@ -31,6 +31,7 @@ use energy_model::{
     loaded::{Energy, EnergyObjectWrapper},
 };
 use kinematic_model::loaded::{AssetObjectAccelerationSequenceHandles, ObjectAccelerationSequence};
+use loading_model::loaded::{AssetLoadStatus, LoadStatus};
 use log::{debug, info};
 use map_model::{
     config::{LayerPosition, MapDefinition},
@@ -61,8 +62,6 @@ use sprite_model::{
 };
 use typename_derive::TypeName;
 
-use crate::AssetLoadStatus;
-
 /// Loads game object assets.
 #[derive(Default, Derivative, TypeName, new)]
 #[derivative(Debug)]
@@ -73,7 +72,7 @@ pub struct AssetLoadingSystem;
 pub struct AssetLoadingSystemData<'s> {
     /// `AssetTypeMappings` resource.
     #[derivative(Debug = "ignore")]
-    pub asset_id_to_status: Write<'s, SecondaryMap<AssetId, AssetLoadStatus>>,
+    pub asset_load_status: Write<'s, AssetLoadStatus>,
     /// `AssetLoadingResources`.
     #[derivative(Debug = "ignore")]
     pub asset_loading_resources: AssetLoadingResources<'s>,
@@ -91,9 +90,9 @@ pub struct AssetLoadingResources<'s> {
     /// `AssetTypeMappings` resource.
     #[derivative(Debug = "ignore")]
     pub asset_type_mappings: Read<'s, AssetTypeMappings>,
-    /// `HashMap<AssetLoadStatus, WaitSequenceHandles>` resource.
+    /// `HashMap<LoadStatus, WaitSequenceHandles>` resource.
     #[derivative(Debug = "ignore")]
-    pub load_status_progress_counters: Write<'s, HashMap<AssetLoadStatus, ProgressCounter>>,
+    pub load_status_progress_counters: Write<'s, HashMap<LoadStatus, ProgressCounter>>,
     /// `Loader` to load assets.
     #[derivative(Debug = "ignore")]
     pub loader: ReadExpect<'s, Loader>,
@@ -244,7 +243,7 @@ impl<'s> System<'s> for AssetLoadingSystem {
     fn run(
         &mut self,
         AssetLoadingSystemData {
-            mut asset_id_to_status,
+            mut asset_load_status,
             mut asset_loading_resources,
         }: Self::SystemData,
     ) {
@@ -273,14 +272,11 @@ impl<'s> System<'s> for AssetLoadingSystem {
         asset_interactions_sequence_handles.set_capacity(capacity);
         asset_spawns_sequence_handles.set_capacity(capacity);
 
-        asset_id_to_status
+        asset_load_status
             .iter_mut()
-            .for_each(|(asset_id, asset_load_status)| {
-                *asset_load_status = Self::process_asset(
-                    &mut asset_loading_resources,
-                    &asset_id,
-                    *asset_load_status,
-                );
+            .for_each(|(asset_id, load_status)| {
+                *load_status =
+                    Self::process_asset(&mut asset_loading_resources, &asset_id, *load_status);
             });
     }
 }
@@ -289,43 +285,43 @@ impl AssetLoadingSystem {
     fn process_asset(
         asset_loading_resources: &mut AssetLoadingResources,
         asset_id: &AssetId,
-        asset_load_status: AssetLoadStatus,
-    ) -> AssetLoadStatus {
+        load_status: LoadStatus,
+    ) -> LoadStatus {
         let asset_id = *asset_id;
-        match asset_load_status {
-            AssetLoadStatus::New => {
+        match load_status {
+            LoadStatus::New => {
                 Self::definition_load(asset_loading_resources, asset_id);
 
-                AssetLoadStatus::DefinitionLoading
+                LoadStatus::DefinitionLoading
             }
-            AssetLoadStatus::DefinitionLoading => {
+            LoadStatus::DefinitionLoading => {
                 if Self::definition_loaded(asset_loading_resources, asset_id) {
                     Self::sprites_load(asset_loading_resources, asset_id);
 
-                    AssetLoadStatus::SpritesLoading
+                    LoadStatus::SpritesLoading
                 } else {
-                    AssetLoadStatus::DefinitionLoading
+                    LoadStatus::DefinitionLoading
                 }
             }
-            AssetLoadStatus::SpritesLoading => {
+            LoadStatus::SpritesLoading => {
                 if Self::sprites_definition_loaded(asset_loading_resources, asset_id) {
                     Self::texture_load(asset_loading_resources, asset_id);
 
-                    AssetLoadStatus::TextureLoading
+                    LoadStatus::TextureLoading
                 } else {
-                    AssetLoadStatus::SpritesLoading
+                    LoadStatus::SpritesLoading
                 }
             }
-            AssetLoadStatus::TextureLoading => {
+            LoadStatus::TextureLoading => {
                 if Self::textures_loaded(asset_loading_resources, asset_id) {
                     Self::sequence_components_load(asset_loading_resources, asset_id);
 
-                    AssetLoadStatus::SequenceComponentLoading
+                    LoadStatus::SequenceComponentLoading
                 } else {
-                    AssetLoadStatus::TextureLoading
+                    LoadStatus::TextureLoading
                 }
             }
-            AssetLoadStatus::SequenceComponentLoading => {
+            LoadStatus::SequenceComponentLoading => {
                 if Self::sequence_components_loaded(asset_loading_resources, asset_id) {
                     let asset_slug = asset_loading_resources
                         .asset_id_mappings
@@ -334,12 +330,12 @@ impl AssetLoadingSystem {
 
                     info!("Loaded `{}`.", asset_slug);
 
-                    AssetLoadStatus::Complete
+                    LoadStatus::Complete
                 } else {
-                    AssetLoadStatus::SequenceComponentLoading
+                    LoadStatus::SequenceComponentLoading
                 }
             }
-            AssetLoadStatus::Complete => AssetLoadStatus::Complete,
+            LoadStatus::Complete => LoadStatus::Complete,
         }
     }
 
@@ -371,7 +367,7 @@ impl AssetLoadingSystem {
             .expect("Expected `AssetType` mapping to exist.");
 
         let progress_counter = load_status_progress_counters
-            .entry(AssetLoadStatus::DefinitionLoading)
+            .entry(LoadStatus::DefinitionLoading)
             .or_insert(ProgressCounter::new());
 
         let asset_slug = asset_id_mappings
@@ -506,7 +502,7 @@ impl AssetLoadingSystem {
             .expect("Expected `AssetType` mapping to exist.");
 
         let progress_counter = load_status_progress_counters
-            .entry(AssetLoadStatus::SpritesLoading)
+            .entry(LoadStatus::SpritesLoading)
             .or_insert(ProgressCounter::new());
 
         let asset_slug = asset_id_mappings
@@ -593,7 +589,7 @@ impl AssetLoadingSystem {
         asset_id: AssetId,
     ) {
         let mut progress_counter = load_status_progress_counters
-            .entry(AssetLoadStatus::TextureLoading)
+            .entry(LoadStatus::TextureLoading)
             .or_insert(ProgressCounter::new());
 
         let asset_slug = asset_id_mappings
