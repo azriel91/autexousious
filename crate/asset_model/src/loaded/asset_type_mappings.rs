@@ -1,6 +1,10 @@
-use std::{collections::HashMap, iter::FromIterator};
+use std::{collections::HashMap, iter::FromIterator, slice::Iter};
 
 use derive_new::new;
+use indexmap::{
+    map::{Keys, Values},
+    IndexMap,
+};
 
 use crate::{config::AssetType, loaded::AssetId};
 
@@ -9,7 +13,7 @@ use crate::{config::AssetType, loaded::AssetId};
 pub struct AssetTypeMappings {
     /// Mappings from asset ID to asset type.
     #[new(default)]
-    asset_id_to_type: HashMap<AssetId, AssetType>,
+    asset_id_to_type: IndexMap<AssetId, AssetType>,
     /// Mappings from asset type to the asset ID of that type.
     #[new(default)]
     asset_type_to_ids: HashMap<AssetType, Vec<AssetId>>,
@@ -21,7 +25,7 @@ impl AssetTypeMappings {
     /// The mappings are guaranteed to hold `capacity` elements without re-allocating.
     pub fn with_capacity(capacity: usize) -> Self {
         AssetTypeMappings {
-            asset_id_to_type: HashMap::with_capacity(capacity),
+            asset_id_to_type: IndexMap::with_capacity(capacity),
             asset_type_to_ids: HashMap::with_capacity(capacity),
         }
     }
@@ -73,7 +77,7 @@ impl AssetTypeMappings {
     /// # Parameters
     ///
     /// * `asset_type`: Asset type whose IDs to iterate over.
-    pub fn iter_ids(&self, asset_type: &AssetType) -> impl Iterator<Item = &AssetId> {
+    pub fn iter_ids(&self, asset_type: &AssetType) -> Iter<AssetId> {
         self.asset_type_to_ids
             .get(asset_type)
             .map(|asset_ids| asset_ids.iter())
@@ -86,12 +90,12 @@ impl AssetTypeMappings {
     }
 
     /// Returns an iterator visiting all `AssetId`s in arbitrary order.
-    pub fn keys(&self) -> impl Iterator<Item = &AssetId> {
+    pub fn keys(&self) -> Keys<AssetId, AssetType> {
         self.asset_id_to_type.keys()
     }
 
     /// Returns an iterator visiting all `AssetType`s in arbitrary order.
-    pub fn values(&self) -> impl Iterator<Item = &AssetType> {
+    pub fn values(&self) -> Values<AssetId, AssetType> {
         self.asset_id_to_type.values()
     }
 
@@ -102,7 +106,7 @@ impl AssetTypeMappings {
 
     /// Removes the ID mapping for the given asset type, returning it if it exists.
     pub fn remove(&mut self, asset_id: &AssetId) -> Option<AssetType> {
-        let previous_type = self.asset_id_to_type.remove(asset_id);
+        let previous_type = self.asset_id_to_type.swap_remove(asset_id);
 
         if let Some(previous_type) = previous_type {
             self.remove_from_ids(previous_type, asset_id);
@@ -137,7 +141,7 @@ impl AssetTypeMappings {
 
 impl FromIterator<(AssetId, AssetType)> for AssetTypeMappings {
     fn from_iter<T: IntoIterator<Item = (AssetId, AssetType)>>(iter: T) -> AssetTypeMappings {
-        let asset_id_to_type = HashMap::from_iter(iter);
+        let asset_id_to_type = IndexMap::from_iter(iter);
         let asset_type_to_ids = asset_id_to_type.iter().fold(
             HashMap::with_capacity(asset_id_to_type.len()),
             |mut asset_type_to_ids, (asset_id, asset_type)| {

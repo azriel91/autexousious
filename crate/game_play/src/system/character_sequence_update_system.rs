@@ -173,14 +173,13 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        assets::AssetStorage,
         ecs::{Join, Read, ReadExpect, ReadStorage, WriteStorage},
         Error,
     };
     use application_test_support::AutexousiousApplication;
     use game_input::ControllerInput;
     use kinematic_model::config::Position;
-    use map_model::loaded::Map;
+    use map_model::loaded::AssetMargins;
     use map_selection_model::MapSelection;
     use object_model::play::{Grounding, Mirrored};
     use sequence_model::{loaded::SequenceId, play::SequenceStatus};
@@ -240,7 +239,7 @@ mod tests {
             .with_effect(move |world| {
                 let (
                     map_selection,
-                    maps,
+                    asset_margins,
                     mut controller_inputs,
                     mut sequence_ids,
                     mut sequence_statuses,
@@ -249,8 +248,12 @@ mod tests {
                     mut groundings,
                 ) = world.system_data::<TestSystemData>();
 
-                let map = maps
-                    .get(map_selection.handle())
+                let margins = asset_margins
+                    .get(
+                        map_selection
+                            .asset_id()
+                            .expect("Expected `MapSelection` to have asset ID."),
+                    )
                     .expect("Expected map to be loaded.");
 
                 (
@@ -278,7 +281,7 @@ mod tests {
                             *mirrored = setup_mirrored;
                             *grounding = Grounding::OnGround;
 
-                            position[1] = map.margins.bottom;
+                            position[1] = margins.bottom;
                         },
                     );
             })
@@ -305,7 +308,7 @@ mod tests {
 
     type TestSystemData<'s> = (
         ReadExpect<'s, MapSelection>,
-        Read<'s, AssetStorage<Map>>,
+        Read<'s, AssetMargins>,
         WriteStorage<'s, ControllerInput>,
         WriteStorage<'s, SequenceId>,
         WriteStorage<'s, SequenceStatus>,

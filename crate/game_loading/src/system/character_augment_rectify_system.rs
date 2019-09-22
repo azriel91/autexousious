@@ -1,5 +1,5 @@
 use amethyst::{
-    assets::{AssetStorage, PrefabData},
+    assets::PrefabData,
     ecs::{
         Entities, Entity, Join, LazyUpdate, Read, ReadExpect, ReadStorage, System, World, Write,
         WriteStorage,
@@ -15,7 +15,7 @@ use game_input::InputControlled;
 use game_play_hud::{CpBarPrefab, HpBarPrefab};
 use game_play_model::{GamePlayEntity, GamePlayEntityId};
 use kinematic_model::config::Position;
-use map_model::loaded::Map;
+use map_model::loaded::AssetMapBounds;
 use map_selection_model::MapSelection;
 use typename_derive::TypeName;
 
@@ -37,9 +37,9 @@ pub struct CharacterAugmentRectifySystemData<'s> {
     /// `MapSelection` resource.
     #[derivative(Debug = "ignore")]
     pub map_selection: ReadExpect<'s, MapSelection>,
-    /// `Map` assets.
+    /// `AssetMapBounds` resource.
     #[derivative(Debug = "ignore")]
-    pub map_assets: Read<'s, AssetStorage<Map>>,
+    pub asset_map_bounds: Read<'s, AssetMapBounds>,
     /// `CharacterPrefabHandle` components.
     #[derivative(Debug = "ignore")]
     pub character_prefab_handles: ReadStorage<'s, CharacterPrefabHandle>,
@@ -107,7 +107,7 @@ impl<'s> System<'s> for CharacterAugmentRectifySystem {
             entities,
             mut game_loading_status,
             map_selection,
-            map_assets,
+            asset_map_bounds,
             character_prefab_handles,
             input_controlleds,
             mut camera_trackeds,
@@ -126,17 +126,20 @@ impl<'s> System<'s> for CharacterAugmentRectifySystem {
 
         // Read map to determine bounds where the characters can be spawned.
         let (width, height, depth) = {
-            map_assets
-                .get(map_selection.handle())
-                .map(|map| {
-                    let bounds = &map.definition.header.bounds;
+            asset_map_bounds
+                .get(
+                    map_selection
+                        .asset_id()
+                        .expect("Expected map selection to have an `AssetId`."),
+                )
+                .map(|bounds| {
                     (
                         bounds.width as f32,
                         bounds.height as f32,
                         bounds.depth as f32,
                     )
                 })
-                .expect("Expected map to be loaded.")
+                .expect("Expected map selection to have `MapBounds`.")
         };
 
         // This `Position` moves the entity to the middle of a screen wide map.
@@ -189,7 +192,10 @@ mod tests {
     };
     use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
     use application_event::{AppEvent, AppEventReader};
-    use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
+    use asset_model::{
+        config::AssetSlug,
+        loaded::{AssetIdMappings, SlugAndHandle},
+    };
     use assets_test::{ASSETS_PATH, CHAR_BAT_SLUG, MAP_FADE_SLUG};
     use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
     use character_prefab::{CharacterPrefab, CharacterPrefabBundle};
@@ -197,7 +203,6 @@ mod tests {
     use collision_loading::CollisionLoadingBundle;
     use game_input::InputControlled;
     use game_input_model::ControlBindings;
-    use game_model::loaded::MapPrefabs;
     use game_play_hud::{CpBar, HpBar};
     use kinematic_model::config::Position;
     use loading::{LoadingBundle, LoadingState};
@@ -334,7 +339,7 @@ mod tests {
             .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_effect(|world| CharacterAugmentRectifySystemData::setup(world))
             .with_state(|| LoadingState::new(PopState))
-            .with_effect(map_selection(MAP_FADE_SLUG.clone()))
+            .with_effect(|world| setup_map_selection(world, &*MAP_FADE_SLUG))
             .with_effect(fn_setup)
             .with_system_single(
                 CharacterAugmentRectifySystem,
@@ -345,27 +350,14 @@ mod tests {
             .run_isolated()
     }
 
-    /// Returns a function that adds a `MapSelection` and `MapSelectionStatus::Confirmed`.
-    ///
-    /// See `application_test_support::SetupFunction`.
-    ///
-    /// # Parameters
-    ///
-    /// * `slug`: Asset slug of the map to select.
-    fn map_selection(slug: AssetSlug) -> impl Fn(&mut World) {
-        move |world| {
-            let slug_and_handle = {
-                let map_handle = world
-                    .read_resource::<MapPrefabs>()
-                    .get(&slug)
-                    .unwrap_or_else(|| panic!("Expected `{}` to be loaded.", slug))
-                    .clone();
+    fn setup_map_selection(world: &mut World, slug: &AssetSlug) {
+        let map_asset_id = world
+            .read_resource::<AssetIdMappings>()
+            .id(slug)
+            .copied()
+            .unwrap_or_else(|| panic!("Expected `{}` to be loaded.", slug));
 
-                SlugAndHandle::from((slug.clone(), map_handle))
-            };
-
-            world.insert(MapSelection::Id(slug_and_handle));
-            world.insert(MapSelectionStatus::Confirmed);
-        }
+        world.insert(MapSelection::Id(map_asset_id));
+        world.insert(MapSelectionStatus::Confirmed);
     }
 }

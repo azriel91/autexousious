@@ -1,14 +1,18 @@
 use amethyst::{
     core::transform::Parent,
-    ecs::{Entities, Join, Read, ReadExpect, System, WriteStorage},
+    ecs::{Entities, Join, Read, ReadExpect, System, World, WriteStorage},
+    shred::{ResourceId, SystemData},
     ui::{Anchor, UiText, UiTransform},
 };
 use application_ui::{FontVariant, Theme};
-use asset_model::loaded::SlugAndHandle;
+use asset_model::{
+    config::AssetType,
+    loaded::{AssetIdMappings, AssetTypeMappings},
+};
+use derivative::Derivative;
 use derive_new::new;
 use game_input::{ControllerInput, InputControlled};
 use game_input_model::{ControllerId, InputConfig};
-use game_model::loaded::MapPrefabs;
 use log::debug;
 use map_selection_model::{MapSelection, MapSelectionEntity, MapSelectionEntityId};
 use typename_derive::TypeName;
@@ -28,39 +32,64 @@ const LABEL_HEIGHT_HELP: f32 = 20.;
 #[derive(Debug, Default, TypeName, new)]
 pub(crate) struct MapSelectionWidgetUiSystem;
 
-type WidgetComponentStorages<'s> = (
-    WriteStorage<'s, MapSelectionWidget>,
-    WriteStorage<'s, ControllerInput>,
-);
-
-type WidgetUiResources<'s> = (
-    ReadExpect<'s, Theme>,
-    WriteStorage<'s, UiTransform>,
-    WriteStorage<'s, UiText>,
-    WriteStorage<'s, Parent>,
-    WriteStorage<'s, MapSelectionEntity>,
-);
-
-type InputControlledResources<'s> = (Read<'s, InputConfig>, WriteStorage<'s, InputControlled>);
-
-type MapSelectionWidgetUiSystemData<'s> = (
-    Read<'s, MapPrefabs>,
-    Entities<'s>,
-    InputControlledResources<'s>,
-    WidgetComponentStorages<'s>,
-    WidgetUiResources<'s>,
-);
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub struct MapSelectionWidgetUiSystemData<'s> {
+    /// `Entities`.
+    #[derivative(Debug = "ignore")]
+    pub entities: Entities<'s>,
+    /// `AssetIdMappings` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_id_mappings: Read<'s, AssetIdMappings>,
+    /// `AssetTypeMappings` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_type_mappings: Read<'s, AssetTypeMappings>,
+    /// `InputConfig` resource.
+    #[derivative(Debug = "ignore")]
+    pub input_config: Read<'s, InputConfig>,
+    /// `InputControlled` components.
+    #[derivative(Debug = "ignore")]
+    pub input_controlleds: WriteStorage<'s, InputControlled>,
+    /// `MapSelectionWidget` components.
+    #[derivative(Debug = "ignore")]
+    pub map_selection_widgets: WriteStorage<'s, MapSelectionWidget>,
+    /// `ControllerInput` components.
+    #[derivative(Debug = "ignore")]
+    pub controller_inputs: WriteStorage<'s, ControllerInput>,
+    /// `Theme` resource.
+    #[derivative(Debug = "ignore")]
+    pub theme: ReadExpect<'s, Theme>,
+    /// `UiTransform` components.
+    #[derivative(Debug = "ignore")]
+    pub ui_transforms: WriteStorage<'s, UiTransform>,
+    /// `UiText` components.
+    #[derivative(Debug = "ignore")]
+    pub ui_texts: WriteStorage<'s, UiText>,
+    /// `Parent` components.
+    #[derivative(Debug = "ignore")]
+    pub parents: WriteStorage<'s, Parent>,
+    /// `MapSelectionEntity` components.
+    #[derivative(Debug = "ignore")]
+    pub map_selection_entities: WriteStorage<'s, MapSelectionEntity>,
+}
 
 impl MapSelectionWidgetUiSystem {
     fn initialize_ui(
         &mut self,
-        map_prefabs: &MapPrefabs,
-        entities: &Entities<'_>,
-        (input_config, input_controlleds): &mut InputControlledResources<'_>,
-        (map_selection_widgets, controller_inputs): &mut WidgetComponentStorages<'_>,
-        (theme, ui_transforms, ui_texts, parents, map_selection_entities): &mut WidgetUiResources<
-            '_,
-        >,
+        MapSelectionWidgetUiSystemData {
+            entities,
+            asset_type_mappings,
+            input_config,
+            input_controlleds,
+            map_selection_widgets,
+            controller_inputs,
+            theme,
+            ui_transforms,
+            ui_texts,
+            parents,
+            map_selection_entities,
+            ..
+        }: &mut MapSelectionWidgetUiSystemData<'_>,
     ) {
         if map_selection_widgets.count() == 0 {
             debug!("Initializing Map Selection UI.");
@@ -70,14 +99,15 @@ impl MapSelectionWidgetUiSystem {
                 .get(&FontVariant::Regular)
                 .expect("Failed to get regular font handle.");
 
-            let first_map = map_prefabs
-                .iter()
+            let first_map_asset_id = asset_type_mappings
+                .iter_ids(&AssetType::Map)
                 .next()
+                .copied()
                 .expect("Expected at least one map to be loaded.");
 
             let map_selection_widget = MapSelectionWidget::new(
                 WidgetState::default(),
-                MapSelection::Random(SlugAndHandle::from(first_map)),
+                MapSelection::Random(Some(first_map_asset_id)),
             );
 
             let ui_transform = UiTransform::new(
@@ -189,17 +219,26 @@ impl MapSelectionWidgetUiSystem {
 
     fn refresh_ui(
         &mut self,
-        map_selection_widgets: &mut WriteStorage<'_, MapSelectionWidget>,
-        ui_texts: &mut WriteStorage<'_, UiText>,
+        MapSelectionWidgetUiSystemData {
+            asset_id_mappings,
+            map_selection_widgets,
+            ui_texts,
+            ..
+        }: &mut MapSelectionWidgetUiSystemData<'_>,
     ) {
         (map_selection_widgets, ui_texts)
             .join()
             .for_each(|(widget, ui_text)| {
-                ui_text.text = match widget.state {
-                    WidgetState::MapSelect => {
-                        format!("◀ {:^16} ▶", format!("{}", widget.selection))
+                ui_text.text = {
+                    match widget.selection {
+                        MapSelection::Random(..) => format!("◀ {:^16} ▶", "Random"),
+                        MapSelection::Id(asset_id) => {
+                            let slug = asset_id_mappings
+                                .slug(asset_id)
+                                .expect("Expected slug to exist for map selection.");
+                            format!("◀ {:^16} ▶", format!("{}", slug))
+                        }
                     }
-                    WidgetState::Ready => format!("» {:^16} «", format!("{}", widget.selection)),
                 }
             });
     }
@@ -208,24 +247,9 @@ impl MapSelectionWidgetUiSystem {
 impl<'s> System<'s> for MapSelectionWidgetUiSystem {
     type SystemData = MapSelectionWidgetUiSystemData<'s>;
 
-    fn run(
-        &mut self,
-        (
-            map_prefabs,
-            entities,
-            mut input_controlled_resources,
-            mut widget_component_storages,
-            mut widget_ui_resources,
-        ): Self::SystemData,
-    ) {
-        self.initialize_ui(
-            &map_prefabs,
-            &entities,
-            &mut input_controlled_resources,
-            &mut widget_component_storages,
-            &mut widget_ui_resources,
-        );
-        self.refresh_ui(&mut widget_component_storages.0, &mut widget_ui_resources.2);
+    fn run(&mut self, mut map_selection_widget_ui_system_data: Self::SystemData) {
+        self.initialize_ui(&mut map_selection_widget_ui_system_data);
+        self.refresh_ui(&mut map_selection_widget_ui_system_data);
     }
 }
 
@@ -240,8 +264,8 @@ mod test {
         Error,
     };
     use application_test_support::AutexousiousApplication;
+    use asset_model::{config::AssetType, loaded::AssetTypeMappings};
     use game_input_model::{Axis, ControlAction, ControllerConfig, InputConfig};
-    use game_model::loaded::MapPrefabs;
     use map_selection_model::MapSelection;
     use typename::TypeName;
 
@@ -278,22 +302,23 @@ mod test {
             // Select map and send event
             .with_effect(|world| {
                 world.exec(
-                    |(mut widgets, map_prefabs): (
+                    |(mut widgets, asset_type_mappings): (
                         WriteStorage<'_, MapSelectionWidget>,
-                        Read<'_, MapPrefabs>,
+                        Read<'_, AssetTypeMappings>,
                     )| {
                         let widget = (&mut widgets)
                             .join()
                             .next()
                             .expect("Expected entity with `MapSelectionWidget` component.");
 
-                        let first_map = map_prefabs
-                            .iter()
+                        let first_map = asset_type_mappings
+                            .iter_ids(&AssetType::Map)
                             .next()
+                            .copied()
                             .expect("Expected at least one map to be loaded.");
 
                         widget.state = WidgetState::MapSelect;
-                        widget.selection = MapSelection::Random(first_map.into());
+                        widget.selection = MapSelection::Random(Some(first_map));
                     },
                 );
             })

@@ -1,6 +1,5 @@
 use amethyst::ecs::{World, WorldExt};
-use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
-use game_model::loaded::MapPrefabs;
+use asset_model::{config::AssetSlug, loaded::AssetIdMappings};
 use map_selection::MapSelectionStatus;
 use map_selection_model::MapSelection;
 
@@ -16,17 +15,13 @@ impl SetupFunction {
     /// * `slug`: Asset slug of the map to select.
     pub fn map_selection(slug: AssetSlug) -> impl Fn(&mut World) {
         move |world| {
-            let slug_and_handle = {
-                let map_handle = world
-                    .read_resource::<MapPrefabs>()
-                    .get(&slug)
-                    .unwrap_or_else(|| panic!("Expected `{}` to be loaded.", slug))
-                    .clone();
+            let map_asset_id = world
+                .read_resource::<AssetIdMappings>()
+                .id(&slug)
+                .copied()
+                .unwrap_or_else(|| panic!("Expected `{}` to be loaded.", slug));
 
-                SlugAndHandle::from((slug.clone(), map_handle))
-            };
-
-            world.insert(MapSelection::Id(slug_and_handle));
+            world.insert(MapSelection::Id(map_asset_id));
             world.insert(MapSelectionStatus::Confirmed);
         }
     }

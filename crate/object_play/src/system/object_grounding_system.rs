@@ -70,17 +70,16 @@ mod tests {
     use std::str::FromStr;
 
     use amethyst::{
-        assets::{AssetStorage, Loader},
         ecs::{Builder, Entity, System, SystemData, World, WorldExt},
         Error,
     };
     use amethyst_test::AmethystApplication;
-    use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
+    use asset_model::{config::AssetSlug, loaded::AssetIdMappings};
     use kinematic_model::config::Position;
     use map_loading::MapLoadingBundle;
     use map_model::{
-        config::{MapBounds, MapDefinition, MapHeader},
-        loaded::{Map, Margins},
+        config::MapBounds,
+        loaded::{AssetMargins, Margins},
     };
     use map_selection_model::MapSelection;
     use object_model::play::Grounding;

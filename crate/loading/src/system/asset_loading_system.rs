@@ -33,8 +33,8 @@ use energy_model::{
 use kinematic_model::loaded::{AssetObjectAccelerationSequenceHandles, ObjectAccelerationSequence};
 use log::{debug, info};
 use map_model::{
-    config::MapDefinition,
-    loaded::{AssetMapBounds, AssetMargins, Margins},
+    config::{LayerPosition, MapDefinition},
+    loaded::{AssetLayerPositions, AssetMapBounds, AssetMargins, LayerPositions, Margins},
 };
 use object_loading::{ObjectLoader, ObjectLoaderParams};
 use object_model::loaded::Object;
@@ -233,6 +233,9 @@ pub struct SequenceComponentResources<'s> {
     /// `AssetMargins` resource.
     #[derivative(Debug = "ignore")]
     pub asset_margins: Write<'s, AssetMargins>,
+    /// `AssetLayerPositions` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_layer_positions: Write<'s, AssetLayerPositions>,
 }
 
 impl<'s> System<'s> for AssetLoadingSystem {
@@ -701,6 +704,7 @@ impl AssetLoadingSystem {
                     ref mut asset_spawns_sequence_handles,
                     ref mut asset_map_bounds,
                     ref mut asset_margins,
+                    ref mut asset_layer_positions,
                 },
             ..
         }: &mut AssetLoadingResources,
@@ -841,16 +845,20 @@ impl AssetLoadingSystem {
                     .expect("Expected `MapDefinition` to be loaded.");
 
                 if let Some(sprite_sheet_handles) = asset_sprite_sheet_handles.get(asset_id) {
+                    let capacity = map_definition.layers.len();
                     let sequence_handles = (
-                        Vec::<WaitSequenceHandle>::with_capacity(map_definition.layers.len()),
-                        Vec::<SpriteRenderSequenceHandle>::with_capacity(
-                            map_definition.layers.len(),
-                        ),
+                        Vec::<WaitSequenceHandle>::with_capacity(capacity),
+                        Vec::<SpriteRenderSequenceHandle>::with_capacity(capacity),
+                        Vec::<LayerPosition>::with_capacity(capacity),
                     );
-                    let (wait_sequence_handles, sprite_render_sequence_handles) =
+                    let (wait_sequence_handles, sprite_render_sequence_handles, layer_positions) =
                         map_definition.layers.iter().fold(
                             sequence_handles,
-                            |(mut wait_sequence_handles, mut sprite_render_sequence_handles),
+                            |(
+                                mut wait_sequence_handles,
+                                mut sprite_render_sequence_handles,
+                                mut layer_positions,
+                            ),
                              layer| {
                                 let wait_sequence = WaitSequence::new(
                                     layer
@@ -886,17 +894,24 @@ impl AssetLoadingSystem {
 
                                 wait_sequence_handles.push(wait_sequence_handle);
                                 sprite_render_sequence_handles.push(sprite_render_sequence_handle);
+                                layer_positions.push(layer.position);
 
-                                (wait_sequence_handles, sprite_render_sequence_handles)
+                                (
+                                    wait_sequence_handles,
+                                    sprite_render_sequence_handles,
+                                    layer_positions,
+                                )
                             },
                         );
                     let wait_sequence_handles = WaitSequenceHandles::new(wait_sequence_handles);
                     let sprite_render_sequence_handles =
                         SpriteRenderSequenceHandles::new(sprite_render_sequence_handles);
+                    let layer_positions = LayerPositions::new(layer_positions);
 
                     asset_wait_sequence_handles.insert(asset_id, wait_sequence_handles);
                     asset_sprite_render_sequence_handles
                         .insert(asset_id, sprite_render_sequence_handles);
+                    asset_layer_positions.insert(asset_id, layer_positions);
                 }
 
                 let margins = Margins::from(map_definition.header.bounds);

@@ -1,10 +1,15 @@
 use std::str::FromStr;
 
-use amethyst::{ecs::Read, Error};
-use asset_model::{
-    config::AssetType,
-    loaded::{AssetId, AssetIdMappings},
+use amethyst::{
+    ecs::{Read, World},
+    shred::{ResourceId, SystemData},
+    Error,
 };
+use asset_model::{
+    config::{AssetSlug, AssetType},
+    loaded::{AssetIdMappings, AssetTypeMappings},
+};
+use derivative::Derivative;
 use map_selection_model::{MapSelection, MapSelectionEvent};
 use stdio_spi::{MapperSystemData, StdinMapper, StdioError};
 use typename_derive::TypeName;
@@ -14,8 +19,19 @@ use crate::MapSelectionEventArgs;
 #[derive(Debug)]
 pub struct MapSelectionEventStdinMapperData;
 
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub struct MapSelectionEventStdinMapperSystemData<'s> {
+    /// `AssetTypeMappings` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_type_mappings: Read<'s, AssetTypeMappings>,
+    /// `AssetIdMappings` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_id_mappings: Read<'s, AssetIdMappings>,
+}
+
 impl<'s> MapperSystemData<'s> for MapSelectionEventStdinMapperData {
-    type SystemData = Read<'s, AssetIdMappings>;
+    type SystemData = MapSelectionEventStdinMapperSystemData<'s>;
 }
 
 /// Builds a `MapSelectionEvent` from stdin tokens.
@@ -24,25 +40,26 @@ pub struct MapSelectionEventStdinMapper;
 
 impl MapSelectionEventStdinMapper {
     fn map_select_event(
-        asset_id_mappings: &AssetIdMappings,
+        MapSelectionEventStdinMapperSystemData {
+            asset_type_mappings,
+            asset_id_mappings,
+        }: &MapSelectionEventStdinMapperSystemData<'_>,
         selection: &str,
     ) -> Result<MapSelectionEvent, Error> {
         let map_selection = match selection {
             "random" => {
-                let map_asset_id = SlugAndHandle::from(
-                    asset_id_mappings
-                        .iter_ids(AssetType::Map)
-                        .next()
-                        .expect("Expected at least one map to be loaded."),
-                );
-                MapSelection::Random(map_asset_id)
+                let map_asset_id = asset_type_mappings
+                    .iter_ids(&AssetType::Map)
+                    .next()
+                    .expect("Expected at least one map to be loaded.");
+                MapSelection::Random(Some(*map_asset_id))
             }
             slug_str => {
                 let slug = AssetSlug::from_str(slug_str)
                     .map_err(String::from)
                     .map_err(StdioError::Msg)?;
                 let map_asset_id = asset_id_mappings
-                    .slug(&slug)
+                    .id(&slug)
                     .copied()
                     .ok_or_else(|| format!("No map found with asset slug `{}`.", slug))
                     .map_err(StdioError::Msg)?;
@@ -63,13 +80,13 @@ impl StdinMapper for MapSelectionEventStdinMapper {
     type Args = MapSelectionEventArgs;
 
     fn map(
-        asset_id_mappings: &Read<'_, AssetIdMappings>,
+        map_selection_event_stdin_mapper_system_data: &MapSelectionEventStdinMapperSystemData<'_>,
         args: Self::Args,
     ) -> Result<Self::Event, Error> {
         match args {
             MapSelectionEventArgs::Return => Ok(MapSelectionEvent::Return),
             MapSelectionEventArgs::Select { selection } => {
-                Self::map_select_event(asset_id_mappings, &selection)
+                Self::map_select_event(map_selection_event_stdin_mapper_system_data, &selection)
             }
             MapSelectionEventArgs::Deselect => Ok(MapSelectionEvent::Deselect),
             MapSelectionEventArgs::Confirm => Ok(MapSelectionEvent::Confirm),
@@ -80,17 +97,17 @@ impl StdinMapper for MapSelectionEventStdinMapper {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{Read, World, WorldExt},
+        ecs::{World, WorldExt},
         Error,
     };
     use application_test_support::AutexousiousApplication;
-    use asset_model::loaded::SlugAndHandle;
+    use asset_model::config::AssetType;
     use assets_test::MAP_FADE_SLUG;
     use game_model::loaded::MapPrefabs;
     use map_selection_model::{MapSelection, MapSelectionEvent};
     use stdio_spi::{StdinMapper, StdioError};
 
-    use super::MapSelectionEventStdinMapper;
+    use super::{MapSelectionEventStdinMapper, MapSelectionEventStdinMapperSystemData};
     use crate::MapSelectionEventArgs;
 
     #[test]
@@ -100,8 +117,10 @@ mod tests {
         let mut world = World::new();
         world.insert(MapPrefabs::new());
 
-        let result =
-            MapSelectionEventStdinMapper::map(&Read::from(world.fetch::<MapPrefabs>()), args);
+        let result = MapSelectionEventStdinMapper::map(
+            &world.system_data::<MapSelectionEventStdinMapperSystemData<'_>>(),
+            args,
+        );
 
         expect_err_msg(
             result,
@@ -116,8 +135,10 @@ mod tests {
         let mut world = World::new();
         world.insert(MapPrefabs::new());
 
-        let result =
-            MapSelectionEventStdinMapper::map(&Read::from(world.fetch::<MapPrefabs>()), args);
+        let result = MapSelectionEventStdinMapper::map(
+            &world.system_data::<MapSelectionEventStdinMapperSystemData<'_>>(),
+            args,
+        );
 
         expect_err_msg(result, "No map found with asset slug `test/non_existent`.");
     }
@@ -127,9 +148,13 @@ mod tests {
         AutexousiousApplication::config_base()
             .with_assertion(|world| {
                 let args = MapSelectionEventArgs::Return;
-                let map_prefabs = world.read_resource::<MapPrefabs>();
+                let map_selection_event_stdin_mapper_system_data =
+                    world.system_data::<MapSelectionEventStdinMapperSystemData<'_>>();
 
-                let result = MapSelectionEventStdinMapper::map(&Read::from(map_prefabs), args);
+                let result = MapSelectionEventStdinMapper::map(
+                    &map_selection_event_stdin_mapper_system_data,
+                    args,
+                );
 
                 assert!(result.is_ok());
                 assert_eq!(MapSelectionEvent::Return, result.unwrap())
@@ -142,9 +167,13 @@ mod tests {
         AutexousiousApplication::config_base()
             .with_assertion(|world| {
                 let args = MapSelectionEventArgs::Deselect;
-                let map_prefabs = world.read_resource::<MapPrefabs>();
+                let map_selection_event_stdin_mapper_system_data =
+                    world.system_data::<MapSelectionEventStdinMapperSystemData<'_>>();
 
-                let result = MapSelectionEventStdinMapper::map(&Read::from(map_prefabs), args);
+                let result = MapSelectionEventStdinMapper::map(
+                    &map_selection_event_stdin_mapper_system_data,
+                    args,
+                );
 
                 assert!(result.is_ok());
                 assert_eq!(MapSelectionEvent::Deselect, result.unwrap())
@@ -157,9 +186,13 @@ mod tests {
         AutexousiousApplication::config_base()
             .with_assertion(|world| {
                 let args = MapSelectionEventArgs::Confirm;
-                let map_prefabs = world.read_resource::<MapPrefabs>();
+                let map_selection_event_stdin_mapper_system_data =
+                    world.system_data::<MapSelectionEventStdinMapperSystemData<'_>>();
 
-                let result = MapSelectionEventStdinMapper::map(&Read::from(map_prefabs), args);
+                let result = MapSelectionEventStdinMapper::map(
+                    &map_selection_event_stdin_mapper_system_data,
+                    args,
+                );
 
                 assert!(result.is_ok());
                 assert_eq!(MapSelectionEvent::Confirm, result.unwrap())
@@ -174,13 +207,22 @@ mod tests {
                 let args = MapSelectionEventArgs::Select {
                     selection: MAP_FADE_SLUG.to_string(),
                 };
-                let map_prefabs = world.read_resource::<MapPrefabs>();
-                let snh = SlugAndHandle::from((&*map_prefabs, MAP_FADE_SLUG.clone()));
+                let map_selection_event_stdin_mapper_system_data =
+                    world.system_data::<MapSelectionEventStdinMapperSystemData<'_>>();
 
-                let result = MapSelectionEventStdinMapper::map(&Read::from(map_prefabs), args);
+                let result = MapSelectionEventStdinMapper::map(
+                    &map_selection_event_stdin_mapper_system_data,
+                    args,
+                );
 
                 assert!(result.is_ok());
-                let map_selection = MapSelection::Id(snh);
+
+                let asset_id = map_selection_event_stdin_mapper_system_data
+                    .asset_id_mappings
+                    .id(&*MAP_FADE_SLUG)
+                    .copied()
+                    .unwrap_or_else(|| panic!("Expected `{}` to be loaded.", &*MAP_FADE_SLUG));
+                let map_selection = MapSelection::Id(asset_id);
                 assert_eq!(MapSelectionEvent::Select { map_selection }, result.unwrap())
             })
             .run_isolated()
@@ -193,18 +235,21 @@ mod tests {
                 let args = MapSelectionEventArgs::Select {
                     selection: "random".to_string(),
                 };
-                let map_prefabs = world.read_resource::<MapPrefabs>();
-                let snh = SlugAndHandle::from(
-                    map_prefabs
-                        .iter()
-                        .next()
-                        .expect("Expected at least one map to be loaded."),
+                let map_selection_event_stdin_mapper_system_data =
+                    world.system_data::<MapSelectionEventStdinMapperSystemData<'_>>();
+                let asset_id = *map_selection_event_stdin_mapper_system_data
+                    .asset_type_mappings
+                    .iter_ids(&AssetType::Map)
+                    .next()
+                    .expect("Expected at least one map to be loaded.");
+
+                let result = MapSelectionEventStdinMapper::map(
+                    &map_selection_event_stdin_mapper_system_data,
+                    args,
                 );
 
-                let result = MapSelectionEventStdinMapper::map(&Read::from(map_prefabs), args);
-
                 assert!(result.is_ok());
-                let map_selection = MapSelection::Random(snh);
+                let map_selection = MapSelection::Random(Some(asset_id));
                 assert_eq!(MapSelectionEvent::Select { map_selection }, result.unwrap())
             })
             .run_isolated()

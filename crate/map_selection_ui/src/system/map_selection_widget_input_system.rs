@@ -3,10 +3,7 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     shrev::EventChannel,
 };
-use asset_model::{
-    config::AssetType,
-    loaded::{AssetTypeMappings, SlugAndHandle},
-};
+use asset_model::{config::AssetType, loaded::AssetTypeMappings};
 use derivative::Derivative;
 use derive_new::new;
 use game_input_model::{
@@ -60,10 +57,12 @@ impl MapSelectionWidgetInputSystem {
     ) -> MapSelection {
         let first_map_id = asset_type_mappings
             .iter_ids(&AssetType::Map)
+            .copied()
             .next()
             .expect("Expected at least one map to be loaded.");
         let last_map_id = asset_type_mappings
             .iter_ids(&AssetType::Map)
+            .copied()
             .next_back()
             .expect("Expected at least one map to be loaded.");
         widget.selection = match widget.selection {
@@ -73,6 +72,7 @@ impl MapSelectionWidgetInputSystem {
                 } else {
                     let next_map = asset_type_mappings
                         .iter_ids(&AssetType::Map)
+                        .copied()
                         .rev()
                         .skip_while(|id| id != &map_id)
                         .nth(1); // skip current selection
@@ -95,10 +95,12 @@ impl MapSelectionWidgetInputSystem {
     ) -> MapSelection {
         let first_map_id = asset_type_mappings
             .iter_ids(&AssetType::Map)
+            .copied()
             .next()
             .expect("Expected at least one map to be loaded.");
         let last_map_id = asset_type_mappings
             .keys()
+            .copied()
             .next_back()
             .expect("Expected at least one map to be loaded.");
         widget.selection = match widget.selection {
@@ -108,6 +110,7 @@ impl MapSelectionWidgetInputSystem {
                 } else {
                     let next_map = asset_type_mappings
                         .iter_ids(&AssetType::Map)
+                        .copied()
                         .skip_while(|id| id != &map_id)
                         .nth(1); // skip current selection
 
@@ -254,13 +257,14 @@ mod test {
         Error,
     };
     use application_test_support::AutexousiousApplication;
-    use asset_model::loaded::SlugAndHandle;
+    use asset_model::{
+        config::AssetType,
+        loaded::{AssetId, AssetIdMappings, AssetTypeMappings},
+    };
     use assets_test::MAP_FADE_SLUG;
     use game_input_model::{
         Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
     };
-    use game_model::loaded::AssetTypeMappings;
-    use map_model::loaded::Map;
     use map_selection_model::{MapSelection, MapSelectionEvent};
     use typename::TypeName;
 
@@ -524,6 +528,7 @@ mod test {
         world
             .read_resource::<AssetTypeMappings>()
             .iter_ids(&AssetType::Map)
+            .copied()
             .next()
             .expect("Expected at least one map to be loaded.")
             .into()
@@ -533,13 +538,18 @@ mod test {
         world
             .read_resource::<AssetTypeMappings>()
             .iter_ids(&AssetType::Map)
+            .copied()
             .next_back()
             .expect("Expected at least one map to be loaded.")
             .into()
     }
 
     fn fade_map(world: &mut World) -> AssetId {
-        SlugAndHandle::from((&*world, MAP_FADE_SLUG.clone()))
+        world
+            .read_resource::<AssetIdMappings>()
+            .id(&*MAP_FADE_SLUG)
+            .copied()
+            .unwrap_or_else(|| panic!("Expected `{}` to be loaded.", &*MAP_FADE_SLUG))
     }
 
     fn widget_entity(

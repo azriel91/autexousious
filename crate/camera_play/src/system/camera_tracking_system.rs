@@ -163,7 +163,7 @@ impl<'s> System<'s> for CameraTrackingSystem {
         let map_bounds = asset_map_bounds
             .get(map_asset_id)
             .copied()
-            .expect("Expected `Margins` to be loaded.");
+            .expect("Expected `MapBounds` to be loaded.");
 
         // Focus on tracked entities.
         //
@@ -198,7 +198,7 @@ mod tests {
     use std::str::FromStr;
 
     use amethyst::{
-        ecs::{Builder, Entity, System, SystemData, World, WorldExt},
+        ecs::{Builder, Entity, Read, System, SystemData, World, WorldExt},
         window::ScreenDimensions,
         Error,
     };
@@ -212,7 +212,7 @@ mod tests {
     use map_loading::MapLoadingBundle;
     use map_model::{
         config::MapBounds,
-        loaded::{AssetMargins, Margins},
+        loaded::{AssetMapBounds, AssetMargins, Margins},
     };
     use map_selection_model::MapSelection;
     use object_model::play::Mirrored;
@@ -520,6 +520,7 @@ mod tests {
 
     fn setup_system_data(world: &mut World) {
         <CameraTrackingSystem as System<'_>>::SystemData::setup(world);
+        <Read<'_, AssetIdMappings> as SystemData<'_>>::setup(world);
     }
 
     fn setup_map_selection(world: &mut World, map_bounds: MapBounds, slug: &str) {
@@ -527,10 +528,12 @@ mod tests {
             let map_margins = Margins::from(map_bounds);
 
             let mut asset_id_mappings = world.write_resource::<AssetIdMappings>();
+            let mut asset_map_bounds = world.write_resource::<AssetMapBounds>();
             let mut asset_margins = world.write_resource::<AssetMargins>();
             let slug = AssetSlug::from_str(slug).expect("Expected asset slug to be valid.");
 
             let asset_id = asset_id_mappings.insert(slug);
+            asset_map_bounds.insert(asset_id, map_bounds);
             asset_margins.insert(asset_id, map_margins);
 
             MapSelection::Id(asset_id)

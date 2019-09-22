@@ -4,7 +4,7 @@ use amethyst::{
     renderer::transparent::Transparent,
     shred::SystemData,
 };
-use map_model::loaded::MapHandle;
+use asset_model::loaded::AssetId;
 use num_traits::FromPrimitive;
 use sequence_model::{
     loaded::{SequenceEndTransition, SequenceId, WaitSequence},
@@ -27,12 +27,12 @@ impl MapLayerEntitySpawner {
     /// # Parameters
     ///
     /// * `world`: `World` to spawn the map into.
-    /// * `map_handle`: Handle of the map whose layers to spawn.
-    pub fn spawn_world(world: &mut World, map_handle: &MapHandle) -> Vec<Entity> {
+    /// * `map_asset_id`: Asset ID of the map whose layers to spawn.
+    pub fn spawn_world(world: &mut World, map_asset_id: AssetId) -> Vec<Entity> {
         Self::spawn_system(
             &MapSpawningResources::fetch(&world),
             &mut MapLayerComponentStorages::fetch(&world),
-            map_handle,
+            map_asset_id,
         )
     }
 
@@ -42,11 +42,13 @@ impl MapLayerEntitySpawner {
     ///
     /// * `map_spawning_resources`: Resources to construct the map with.
     /// * `map_layer_component_storages`: Component storages for the spawned entities.
-    /// * `map_handle`: Handle of the map whose layers to spawn.
+    /// * `map_asset_id`: Asset ID of the map whose layers to spawn.
     pub fn spawn_system<'res, 's>(
         MapSpawningResources {
             entities,
-            map_assets,
+            asset_wait_sequence_handles,
+            asset_sprite_render_sequence_handles,
+            asset_layer_positions,
             wait_sequence_assets,
             sprite_render_sequence_assets,
         }: &MapSpawningResources<'res>,
@@ -63,29 +65,46 @@ impl MapLayerEntitySpawner {
             ref mut wait_sequence_handles,
             ref mut sprite_render_sequence_handles,
         }: &mut MapLayerComponentStorages<'s>,
-        map_handle: &MapHandle,
+        map_asset_id: AssetId,
     ) -> Vec<Entity> {
-        let map = map_assets
-            .get(map_handle)
-            .expect("Expected map to be loaded.");
+        let asset_wait_sequence_handles = asset_wait_sequence_handles
+            .get(map_asset_id)
+            .unwrap_or_else(|| {
+                panic!(
+                    "Expected asset with ID `{:?}` to have `WaitSequenceHandles`.",
+                    map_asset_id
+                )
+            });
+        let asset_sprite_render_sequence_handles = asset_sprite_render_sequence_handles
+            .get(map_asset_id)
+            .unwrap_or_else(|| {
+                panic!(
+                    "Expected asset with ID `{:?}` to have `SpriteRenderSequenceHandles`.",
+                    map_asset_id
+                )
+            });
+        let layer_positions = asset_layer_positions.get(map_asset_id).unwrap_or_else(|| {
+            panic!(
+                "Expected asset with ID `{:?}` to have `LayerPositions`.",
+                map_asset_id
+            )
+        });
 
         // Spawn map layer entities
-        map.definition
-            .layers
+        asset_wait_sequence_handles
             .iter()
-            .zip(map.wait_sequence_handles.iter())
-            .zip(map.sprite_render_sequence_handles.iter())
+            .zip(asset_sprite_render_sequence_handles.iter())
+            .zip(layer_positions.iter())
             .map(
-                |((layer, wait_sequence_handle), sprite_render_sequence_handle)| {
+                |((wait_sequence_handle, sprite_render_sequence_handle), layer_position)| {
                     let entity = entities.create();
 
-                    let position = layer.position;
                     let mut transform = Transform::default();
                     transform.set_translation(Vector3::new(
-                        f32::from_i32(position.x).expect("Failed to convert i32 into `f32`."),
-                        f32::from_i32(position.y - position.z)
+                        f32::from_i32(layer_position.x).expect("Failed to convert i32 into `f32`."),
+                        f32::from_i32(layer_position.y - layer_position.z)
                             .expect("Failed to convert i32 into `f32`."),
-                        f32::from_i32(position.z).expect("Failed to convert i32 into `f32`."),
+                        f32::from_i32(layer_position.z).expect("Failed to convert i32 into `f32`."),
                     ));
 
                     let starting_frame_index = 0;
