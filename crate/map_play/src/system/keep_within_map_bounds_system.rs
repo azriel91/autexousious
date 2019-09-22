@@ -115,7 +115,7 @@ mod tests {
     use std::str::FromStr;
 
     use amethyst::{
-        ecs::{Builder, Entity, System, SystemData, World, WorldExt},
+        ecs::{Builder, Entity, Read, System, SystemData, World, WorldExt},
         shrev::EventChannel,
         Error,
     };
@@ -408,6 +408,7 @@ mod tests {
 
     fn setup_system_data(world: &mut World) {
         <KeepWithinMapBoundsSystem as System<'_>>::SystemData::setup(world);
+        <Read<'_, AssetIdMappings> as SystemData>::setup(world);
     }
 
     fn setup_map_selection(world: &mut World) {

@@ -97,7 +97,7 @@ impl StdinMapper for MapSelectionEventStdinMapper {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        ecs::{World, WorldExt},
+        ecs::{SystemData, World, WorldExt},
         Error,
     };
     use application_test_support::AutexousiousApplication;
@@ -115,6 +115,7 @@ mod tests {
         let selection = "invalid".to_string();
         let args = MapSelectionEventArgs::Select { selection };
         let mut world = World::new();
+        <MapSelectionEventStdinMapperSystemData<'_> as SystemData>::setup(&mut world);
         world.insert(MapPrefabs::new());
 
         let result = MapSelectionEventStdinMapper::map(
@@ -133,6 +134,7 @@ mod tests {
         let selection = "test/non_existent".to_string();
         let args = MapSelectionEventArgs::Select { selection };
         let mut world = World::new();
+        <MapSelectionEventStdinMapperSystemData<'_> as SystemData>::setup(&mut world);
         world.insert(MapPrefabs::new());
 
         let result = MapSelectionEventStdinMapper::map(
@@ -146,6 +148,9 @@ mod tests {
     #[test]
     fn maps_return_event() -> Result<(), Error> {
         AutexousiousApplication::config_base()
+            .with_setup(|world| {
+                <MapSelectionEventStdinMapperSystemData<'_> as SystemData>::setup(world)
+            })
             .with_assertion(|world| {
                 let args = MapSelectionEventArgs::Return;
                 let map_selection_event_stdin_mapper_system_data =
@@ -165,6 +170,9 @@ mod tests {
     #[test]
     fn maps_deselect_event() -> Result<(), Error> {
         AutexousiousApplication::config_base()
+            .with_setup(|world| {
+                <MapSelectionEventStdinMapperSystemData<'_> as SystemData>::setup(world)
+            })
             .with_assertion(|world| {
                 let args = MapSelectionEventArgs::Deselect;
                 let map_selection_event_stdin_mapper_system_data =
@@ -184,6 +192,9 @@ mod tests {
     #[test]
     fn maps_confirm_event() -> Result<(), Error> {
         AutexousiousApplication::config_base()
+            .with_setup(|world| {
+                <MapSelectionEventStdinMapperSystemData<'_> as SystemData>::setup(world)
+            })
             .with_assertion(|world| {
                 let args = MapSelectionEventArgs::Confirm;
                 let map_selection_event_stdin_mapper_system_data =
@@ -203,6 +214,9 @@ mod tests {
     #[test]
     fn maps_select_id_event() -> Result<(), Error> {
         AutexousiousApplication::config_base()
+            .with_setup(|world| {
+                <MapSelectionEventStdinMapperSystemData<'_> as SystemData>::setup(world)
+            })
             .with_assertion(|world| {
                 let args = MapSelectionEventArgs::Select {
                     selection: MAP_FADE_SLUG.to_string(),
@@ -231,6 +245,9 @@ mod tests {
     #[test]
     fn maps_select_random_event() -> Result<(), Error> {
         AutexousiousApplication::config_base()
+            .with_setup(|world| {
+                <MapSelectionEventStdinMapperSystemData<'_> as SystemData>::setup(world)
+            })
             .with_assertion(|world| {
                 let args = MapSelectionEventArgs::Select {
                     selection: "random".to_string(),

@@ -80,14 +80,14 @@ mod test {
     use std::str::FromStr;
 
     use amethyst::{
-        ecs::{SystemData, World, WorldExt},
+        ecs::{Read, SystemData, World, WorldExt},
         shrev::EventChannel,
         Error,
     };
     use amethyst_test::AmethystApplication;
     use asset_model::{
-        config::AssetSlug,
-        loaded::{AssetId, AssetIdMappings},
+        config::{AssetSlug, AssetType},
+        loaded::{AssetId, AssetIdMappings, AssetTypeMappings},
     };
     use map_selection_model::{MapSelection, MapSelectionEvent};
     use typename::TypeName;
@@ -185,8 +185,12 @@ mod test {
     }
 
     fn setup_maps(world: &mut World) {
+        <Read<'_, AssetIdMappings> as SystemData>::setup(world);
+        <Read<'_, AssetTypeMappings> as SystemData>::setup(world);
+
         let asset_ids = {
             let mut asset_id_mappings = world.write_resource::<AssetIdMappings>();
+            let mut asset_type_mappings = world.write_resource::<AssetTypeMappings>();
             let slug_map_one =
                 AssetSlug::from_str("test/map_one").expect("Expected asset slug to be valid.");
             let slug_map_two =
@@ -194,6 +198,9 @@ mod test {
 
             let asset_id_one = asset_id_mappings.insert(slug_map_one);
             let asset_id_two = asset_id_mappings.insert(slug_map_two);
+
+            asset_type_mappings.insert(asset_id_one, AssetType::Map);
+            asset_type_mappings.insert(asset_id_two, AssetType::Map);
 
             vec![asset_id_one, asset_id_two]
         };
