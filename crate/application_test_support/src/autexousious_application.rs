@@ -22,6 +22,7 @@ use energy_loading::EnergyLoadingBundle;
 use energy_prefab::EnergyPrefabBundle;
 use game_input_model::ControlBindings;
 use game_loading::GameLoadingState;
+use kinematic_loading::KinematicLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
 use sequence_loading::SequenceLoadingBundle;
@@ -91,6 +92,7 @@ impl AutexousiousApplication {
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(AudioLoadingBundle::new())
+            .with_bundle(KinematicLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(SpawnLoadingBundle::new())

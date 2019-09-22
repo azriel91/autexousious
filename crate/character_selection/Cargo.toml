@@ -25,12 +25,15 @@ amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
 asset_loading = { path = "../asset_loading" }
 asset_model = { path = "../asset_model" }
 assets_test = { path = "../assets_test" }
+audio_loading = { path = "../audio_loading" }
 character_loading = { path = "../character_loading" }
 character_prefab = { path = "../character_prefab" }
 collision_audio_loading = { path = "../collision_audio_loading" }
 collision_loading = { path = "../collision_loading" }
 collision_model = { path = "../collision_model" }
+energy_loading = { path = "../energy_loading" }
 game_input_model = { path = "../game_input_model" }
+kinematic_loading = { path = "../kinematic_loading" }
 loading = { path = "../loading" }
 map_loading = { path = "../map_loading" }
 sequence_loading = { path = "../sequence_loading" }
