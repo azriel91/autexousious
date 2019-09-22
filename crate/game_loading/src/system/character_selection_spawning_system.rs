@@ -129,14 +129,17 @@ mod tests {
     use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
     use application_event::{AppEvent, AppEventReader};
     use assets_test::{ASSETS_PATH, CHAR_BAT_SLUG};
+    use audio_loading::AudioLoadingBundle;
     use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
     use character_prefab::{CharacterPrefabBundle, CharacterPrefabHandle};
     use character_selection_model::CharacterSelections;
     use collision_audio_loading::CollisionAudioLoadingBundle;
     use collision_loading::CollisionLoadingBundle;
+    use energy_loading::EnergyLoadingBundle;
     use game_input::InputControlled;
     use game_input_model::ControlBindings;
     use game_model::play::GameEntities;
+    use kinematic_loading::KinematicLoadingBundle;
     use loading::{LoadingBundle, LoadingState};
     use map_loading::MapLoadingBundle;
     use object_type::ObjectType;
@@ -276,11 +279,14 @@ mod tests {
             .with_system(Processor::<Source>::new(), "source_processor", &[])
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
+            .with_bundle(AudioLoadingBundle::new())
+            .with_bundle(KinematicLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(SpawnLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
+            .with_bundle(EnergyLoadingBundle::new())
             .with_bundle(
                 CharacterPrefabBundle::new()
                     .with_system_dependencies(&[String::from(CHARACTER_PROCESSOR)]),

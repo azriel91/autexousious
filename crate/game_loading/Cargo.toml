@@ -41,10 +41,13 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-s
 amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
 asset_loading = { path = "../asset_loading" }
 assets_test = { path = "../assets_test" }
+audio_loading = { path = "../audio_loading" }
 character_loading = { path = "../character_loading" }
 collision_audio_loading = { path = "../collision_audio_loading" }
 collision_loading = { path = "../collision_loading" }
+energy_loading = { path = "../energy_loading" }
 game_input_model = { path = "../game_input_model" }
+kinematic_loading = { path = "../kinematic_loading" }
 loading = { path = "../loading" }
 loading_model = { path = "../loading_model" }
 map_loading = { path = "../map_loading" }
