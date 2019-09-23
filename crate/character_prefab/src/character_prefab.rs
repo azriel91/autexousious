@@ -8,20 +8,16 @@ use amethyst::{
 };
 use character_loading::{CharacterLoader, CharacterLoaderParams, CtsLoaderParams};
 use character_model::{
-    config::{CharacterDefinition, CharacterSequenceName},
-    loaded::{
-        Character, CharacterControlTransitions, CharacterCts, CharacterHandle,
-        CharacterHitTransitions,
-    },
+    config::CharacterDefinition,
+    loaded::{Character, CharacterControlTransitions, CharacterCts, CharacterHandle},
 };
 use derivative::Derivative;
 use log::debug;
 use object_model::config::ObjectAssetData;
 use object_prefab::{GameObjectPrefab, ObjectPrefab};
-use sequence_model::{config::SequenceNameString, loaded::SequenceId};
 use typename_derive::TypeName;
 
-use crate::{CharacterComponentStorages, CharacterEntityAugmenter};
+use crate::CharacterComponentStorages;
 
 /// Loads `CharacterDefinition`s and attaches components to character entities.
 #[derive(Clone, Debug, PartialEq, TypeName)]
@@ -69,9 +65,6 @@ pub struct CharacterPrefabSystemData<'s> {
     /// `CharacterHandle` components.
     #[derivative(Debug = "ignore")]
     pub character_handles: WriteStorage<'s, CharacterHandle>,
-    /// `CharacterHitTransitions` components.
-    #[derivative(Debug = "ignore")]
-    pub character_hit_transitionses: WriteStorage<'s, CharacterHitTransitions>,
     /// `CharacterComponentStorages` system data.
     pub character_component_storages: CharacterComponentStorages<'s>,
 }
@@ -101,11 +94,7 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
         entity: Entity,
         CharacterPrefabSystemData {
             object_prefab_system_data,
-            ref character_definition_assets,
             ref mut character_handles,
-            ref character_assets,
-            ref mut character_hit_transitionses,
-            ref mut character_component_storages,
             ..
         }: &mut Self::SystemData,
         entities: &[Entity],
@@ -115,7 +104,7 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
             CharacterPrefab::Loaded {
                 object_prefab,
                 character_handle,
-                character_definition_handle,
+                ..
             } => {
                 debug!("Augmenting entity: {:?}", entity);
 
@@ -130,49 +119,11 @@ impl<'s> PrefabData<'s> for CharacterPrefab {
                     .insert(entity, character_handle.clone())
                     .expect("Failed to insert `CharacterHandle` component.");
 
-                let character_definition = character_definition_assets
-                    .get(character_definition_handle)
-                    .expect("Expected `CharacterDefinition` to be loaded.");
-
-                CharacterEntityAugmenter::augment(
-                    entity,
-                    character_component_storages,
-                    character_definition,
-                );
-
-                let character = character_assets
-                    .get(character_handle)
-                    .expect("Expected `Character` to be loaded.");
-                let sequence_id_mappings = &character.sequence_id_mappings;
-                let low_stun = sequence_id_mappings
-                    .id(&SequenceNameString::Name(CharacterSequenceName::Flinch0))
-                    .copied()
-                    .unwrap_or(SequenceId(0));
-                let mid_stun = sequence_id_mappings
-                    .id(&SequenceNameString::Name(CharacterSequenceName::Flinch1))
-                    .copied()
-                    .unwrap_or(SequenceId(0));
-                let high_stun = sequence_id_mappings
-                    .id(&SequenceNameString::Name(CharacterSequenceName::Dazed))
-                    .copied()
-                    .unwrap_or(SequenceId(0));
-                let falling = sequence_id_mappings
-                    .id(&SequenceNameString::Name(
-                        CharacterSequenceName::FallForwardAscend,
-                    ))
-                    .copied()
-                    .unwrap_or(SequenceId(0));
-
-                let character_hit_transitions = CharacterHitTransitions {
-                    low_stun,
-                    mid_stun,
-                    high_stun,
-                    falling,
-                };
-                character_hit_transitionses
-                    .insert(entity, character_hit_transitions)
-                    .expect("Failed to insert `CharacterHitTransitions` component.");
-
+                // CharacterEntityAugmenter::augment(
+                //     entity,
+                //     character_component_storages,
+                //     character_definition,
+                // );
                 Ok(())
             }
             // kcov-ignore-start

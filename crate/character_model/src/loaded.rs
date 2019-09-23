@@ -4,6 +4,7 @@
 //! that will be used in game.
 
 pub use self::{
+    asset_character_definition_handle::AssetCharacterDefinitionHandle,
     character::{Character, CharacterHandle, CharacterObjectWrapper},
     character_control_transition::CharacterControlTransition,
     character_control_transitions::{
@@ -14,6 +15,7 @@ pub use self::{
     character_hit_transitions::CharacterHitTransitions,
 };
 
+mod asset_character_definition_handle;
 mod character;
 mod character_control_transition;
 mod character_control_transitions;

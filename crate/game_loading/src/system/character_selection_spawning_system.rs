@@ -2,13 +2,14 @@ use amethyst::{
     ecs::{Entities, Entity, Read, System, World, Write, WriteStorage},
     shred::{ResourceId, SystemData},
 };
-use asset_model::loaded::AssetIdMappings;
-use character_prefab::CharacterPrefabHandle;
+use character_prefab::{
+    CharacterComponentStorages, CharacterEntityAugmenter, CharacterSpawningResources,
+};
 use character_selection_model::CharacterSelections;
 use derivative::Derivative;
 use derive_new::new;
 use game_input::InputControlled;
-use game_model::{loaded::CharacterPrefabs, play::GameEntities};
+use game_model::play::GameEntities;
 use object_type::ObjectType;
 use team_model::play::{IndependentCounter, Team};
 use typename_derive::TypeName;
@@ -28,21 +29,18 @@ pub struct CharacterSelectionSpawningSystemData<'s> {
     /// `CharacterSelections` resource.
     #[derivative(Debug = "ignore")]
     pub character_selections: Read<'s, CharacterSelections>,
-    /// `AssetIdMappings` resource.
-    #[derivative(Debug = "ignore")]
-    pub asset_id_mappings: Read<'s, AssetIdMappings>,
-    /// `CharacterPrefabs` resource.
-    #[derivative(Debug = "ignore")]
-    pub character_prefabs: Read<'s, CharacterPrefabs>,
     /// `GameLoadingStatus` resource.
     #[derivative(Debug = "ignore")]
     pub game_loading_status: Write<'s, GameLoadingStatus>,
     /// `IndependentCounter` resource.
     #[derivative(Debug = "ignore")]
     pub independent_counter: Write<'s, IndependentCounter>,
-    /// `CharacterPrefabHandle` components.
+    /// `CharacterSpawningResources`.
     #[derivative(Debug = "ignore")]
-    pub character_prefab_handles: WriteStorage<'s, CharacterPrefabHandle>,
+    pub character_spawning_resources: CharacterSpawningResources<'s>,
+    /// `CharacterComponentStorages`.
+    #[derivative(Debug = "ignore")]
+    pub character_component_storages: CharacterComponentStorages<'s>,
     /// `InputControlled` components.
     #[derivative(Debug = "ignore")]
     pub input_controlleds: WriteStorage<'s, InputControlled>,
@@ -62,11 +60,10 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
         CharacterSelectionSpawningSystemData {
             entities,
             character_selections,
-            asset_id_mappings,
-            character_prefabs,
             mut game_loading_status,
             mut independent_counter,
-            mut character_prefab_handles,
+            character_spawning_resources,
+            mut character_component_storages,
             mut input_controlleds,
             mut teams,
             mut game_entities,
@@ -81,29 +78,16 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             .iter()
             .map(|(controller_id, asset_id)| {
                 let entity = entities.create();
-                let asset_slug = asset_id_mappings.slug(*asset_id).unwrap_or_else(|| {
-                    panic!(
-                        "Expected asset slug to exist for asset ID: `{:?}`",
-                        asset_id
-                    )
-                });
-
-                let handle = character_prefabs
-                    .get(asset_slug)
-                    .unwrap_or_else(|| {
-                        panic!(
-                            "Expected prefab handle to exist for asset slug: `{}`",
-                            asset_slug
-                        )
-                    })
-                    .clone();
+                CharacterEntityAugmenter::augment(
+                    &character_spawning_resources,
+                    &mut character_component_storages,
+                    *asset_id,
+                    entity,
+                );
 
                 input_controlleds
                     .insert(entity, InputControlled::new(*controller_id))
                     .expect("Failed to insert `InputControlled` for character.");
-                character_prefab_handles
-                    .insert(entity, handle)
-                    .expect("Failed to insert `CharacterPrefabHandle` for character.");
                 teams
                     .insert(
                         entity,
@@ -146,7 +130,7 @@ mod tests {
     use assets_test::ASSETS_PATH;
     use audio_loading::AudioLoadingBundle;
     use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
-    use character_prefab::{CharacterPrefabBundle, CharacterPrefabHandle};
+    use character_prefab::CharacterPrefabBundle;
     use character_selection_model::CharacterSelections;
     use collision_audio_loading::CollisionAudioLoadingBundle;
     use collision_loading::CollisionLoadingBundle;
@@ -183,10 +167,8 @@ mod tests {
                 world.insert(character_selections);
             },
             |world| {
-                let (input_controlleds, character_prefab_handles, teams) =
-                    world.system_data::<TestSystemData<'_>>();
+                let (input_controlleds, teams) = world.system_data::<TestSystemData<'_>>();
                 assert_eq!(0, input_controlleds.count());
-                assert_eq!(0, character_prefab_handles.count());
                 assert_eq!(0, teams.count());
             },
         )
@@ -208,55 +190,52 @@ mod tests {
                 world.insert(character_selections);
             },
             |world| {
-                let (input_controlleds, character_prefab_handles, teams) =
-                    world.system_data::<TestSystemData<'_>>();
-                let components = (&input_controlleds, &character_prefab_handles, &teams)
-                    .join()
-                    .collect::<Vec<_>>();
+                let (input_controlleds, teams) = world.system_data::<TestSystemData<'_>>();
+                let components = (&input_controlleds, &teams).join().collect::<Vec<_>>();
 
                 // Need to use `find()` because the joins may be presented out of order.
                 assert_eq!(2, components.len());
                 assert!(
                     components
                         .iter()
-                        .find(|(&input_controlled, _character_prefab_handle, &_team)| {
+                        .find(|(&input_controlled, &_team)| {
                             input_controlled == InputControlled::new(0)
                         })
                         .is_some(),
-                    "Expected entity with `InputControlled`, `CharacterPrefabHandle`, and \
+                    "Expected entity with `InputControlled`, `CharacterComponentStorages`, and \
                      `Team` components to exist. Components: {:?}",
                     components
                 );
                 assert!(
                     components
                         .iter()
-                        .find(|(&_input_controlled, _character_prefab_handle, &team)| {
+                        .find(|(&_input_controlled, &team)| {
                             team == Team::Independent(IndependentCounter::new(0))
                         })
                         .is_some(),
-                    "Expected entity with `InputControlled`, `CharacterPrefabHandle`, and \
+                    "Expected entity with `InputControlled`, `CharacterComponentStorages`, and \
                      `Team` components to exist. Components: {:?}",
                     components
                 );
                 assert!(
                     components
                         .iter()
-                        .find(|(&input_controlled, _character_prefab_handle, &_team)| {
+                        .find(|(&input_controlled, &_team)| {
                             input_controlled == InputControlled::new(123)
                         })
                         .is_some(),
-                    "Expected entity with `InputControlled`, `CharacterPrefabHandle`, and \
+                    "Expected entity with `InputControlled`, `CharacterComponentStorages`, and \
                      `Team` components to exist. Components: {:?}",
                     components
                 );
                 assert!(
                     components
                         .iter()
-                        .find(|(&_input_controlled, _character_prefab_handle, &team)| {
+                        .find(|(&_input_controlled, &team)| {
                             team == Team::Independent(IndependentCounter::new(1))
                         })
                         .is_some(),
-                    "Expected entity with `InputControlled`, `CharacterPrefabHandle`, and \
+                    "Expected entity with `InputControlled`, `CharacterComponentStorages`, and \
                      `Team` components to exist. Components: {:?}",
                     components
                 );
@@ -329,9 +308,5 @@ mod tests {
             .expect("Expected at least one character to be loaded.")
     }
 
-    type TestSystemData<'s> = (
-        ReadStorage<'s, InputControlled>,
-        ReadStorage<'s, CharacterPrefabHandle>,
-        ReadStorage<'s, Team>,
-    );
+    type TestSystemData<'s> = (ReadStorage<'s, InputControlled>, ReadStorage<'s, Team>);
 }

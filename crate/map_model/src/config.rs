@@ -1,8 +1,12 @@
 //! Types representing a map in configuration form.
 
 pub use self::{
-    layer::Layer, layer_frame::LayerFrame, layer_position::LayerPosition, map_bounds::MapBounds,
-    map_definition::MapDefinition, map_header::MapHeader,
+    layer::Layer,
+    layer_frame::LayerFrame,
+    layer_position::LayerPosition,
+    map_bounds::MapBounds,
+    map_definition::{MapDefinition, MapDefinitionHandle},
+    map_header::MapHeader,
 };
 
 mod layer;

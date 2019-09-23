@@ -2,7 +2,7 @@ use amethyst::{
     ecs::{World, WriteStorage},
     shred::{ResourceId, SystemData},
 };
-use character_model::play::RunCounter;
+use character_model::{loaded::CharacterHitTransitions, play::RunCounter};
 use charge_model::{
     config::{ChargeDelay, ChargeLimit, ChargeUseMode},
     play::{ChargeRetention, ChargeTrackerClock},
@@ -59,4 +59,7 @@ pub struct CharacterComponentStorages<'s> {
     /// `ChargeRetention` components.
     #[derivative(Debug = "ignore")]
     pub charge_retentions: WriteStorage<'s, ChargeRetention>,
+    /// `CharacterHitTransitions` components.
+    #[derivative(Debug = "ignore")]
+    pub character_hit_transitionses: WriteStorage<'s, CharacterHitTransitions>,
 }

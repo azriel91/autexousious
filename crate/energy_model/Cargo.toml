@@ -7,6 +7,7 @@ edition = "2018"
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 asset_derive = { path = "../asset_derive" }
+asset_model = { path = "../asset_model" }
 audio_model = { path = "../audio_model" }
 collision_model = { path = "../collision_model" }
 derivative = "1.0.2"
@@ -21,6 +22,7 @@ sequence_model_spi = { path = "../sequence_model_spi" }
 serde = "1.0.99"
 spawn_model = { path = "../spawn_model" }
 specs-derive = "0.4.0"
+slotmap = { version = "0.4.0", features = ["serde"] }
 sprite_model = { path = "../sprite_model" }
 strum = "0.15.0"
 strum_macros = "0.15.0"

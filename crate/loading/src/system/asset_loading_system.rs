@@ -1,4 +1,4 @@
-use std::{collections::HashMap, path::PathBuf};
+use std::{collections::HashMap, iter::FromIterator, path::PathBuf};
 
 use amethyst::{
     assets::{AssetStorage, Handle, Loader, ProgressCounter},
@@ -14,8 +14,8 @@ use asset_model::{
 };
 use audio_model::loaded::{AssetSourceSequenceHandles, SourceSequence};
 use character_model::{
-    config::{CharacterDefinition, CharacterDefinitionHandle, CharacterSequenceName},
-    loaded::{Character, CharacterObjectWrapper},
+    config::{CharacterDefinition, CharacterSequenceName},
+    loaded::{AssetCharacterDefinitionHandle, Character, CharacterObjectWrapper},
 };
 use collision_model::{
     config::{Body, Interactions},
@@ -27,15 +27,18 @@ use collision_model::{
 use derivative::Derivative;
 use derive_new::new;
 use energy_model::{
-    config::{EnergyDefinition, EnergyDefinitionHandle, EnergySequenceName},
-    loaded::{Energy, EnergyObjectWrapper},
+    config::{EnergyDefinition, EnergySequenceName},
+    loaded::{AssetEnergyDefinitionHandle, Energy, EnergyObjectWrapper},
 };
 use kinematic_model::loaded::{AssetObjectAccelerationSequenceHandles, ObjectAccelerationSequence};
 use loading_model::loaded::{AssetLoadStatus, LoadStatus};
 use log::{debug, info};
 use map_model::{
     config::{LayerPosition, MapDefinition},
-    loaded::{AssetLayerPositions, AssetMapBounds, AssetMargins, LayerPositions, Margins},
+    loaded::{
+        AssetLayerPositions, AssetMapBounds, AssetMapDefinitionHandle, AssetMargins,
+        LayerPositions, Margins,
+    },
 };
 use object_loading::{ObjectLoader, ObjectLoaderParams};
 use object_model::loaded::Object;
@@ -43,7 +46,7 @@ use object_type::ObjectType;
 use sequence_model::{
     config::Wait,
     loaded::{
-        AssetSequenceEndTransitions, AssetSequenceIdMappings, AssetWaitSequenceHandles, SequenceId,
+        AssetSequenceEndTransitions, AssetSequenceIdMappings, AssetWaitSequenceHandles,
         SequenceIdMappings, WaitSequence, WaitSequenceHandle, WaitSequenceHandles,
     },
 };
@@ -118,16 +121,15 @@ pub struct DefinitionLoadingResources<'s> {
     /// `MapDefinition` assets.
     #[derivative(Debug = "ignore")]
     pub map_definition_assets: Read<'s, AssetStorage<MapDefinition>>,
-    /// `SecondaryMap<AssetId, CharacterDefinitionHandle>` resource.
+    /// `AssetCharacterDefinitionHandle` resource.
     #[derivative(Debug = "ignore")]
-    pub asset_character_definition_handles:
-        Write<'s, SecondaryMap<AssetId, CharacterDefinitionHandle>>,
-    /// `SecondaryMap<AssetId, EnergyDefinitionHandle>` resource.
+    pub asset_character_definition_handle: Write<'s, AssetCharacterDefinitionHandle>,
+    /// `AssetEnergyDefinitionHandle` resource.
     #[derivative(Debug = "ignore")]
-    pub asset_energy_definition_handles: Write<'s, SecondaryMap<AssetId, EnergyDefinitionHandle>>,
-    /// `SecondaryMap<AssetId, Handle<MapDefinition>>` resource.
+    pub asset_energy_definition_handle: Write<'s, AssetEnergyDefinitionHandle>,
+    /// `AssetMapDefinitionHandle` resource.
     #[derivative(Debug = "ignore")]
-    pub asset_map_definition_handles: Write<'s, SecondaryMap<AssetId, Handle<MapDefinition>>>,
+    pub asset_map_definition_handle: Write<'s, AssetMapDefinitionHandle>,
 }
 
 #[derive(Derivative, SystemData)]
@@ -352,9 +354,9 @@ impl AssetLoadingSystem {
                     ref character_definition_assets,
                     ref energy_definition_assets,
                     ref map_definition_assets,
-                    ref mut asset_character_definition_handles,
-                    ref mut asset_energy_definition_handles,
-                    ref mut asset_map_definition_handles,
+                    ref mut asset_character_definition_handle,
+                    ref mut asset_energy_definition_handle,
+                    ref mut asset_map_definition_handle,
                 },
             ..
         }: &mut AssetLoadingResources,
@@ -398,7 +400,7 @@ impl AssetLoadingSystem {
                             character_definition_assets,
                         );
 
-                        asset_character_definition_handles
+                        asset_character_definition_handle
                             .insert(asset_id, character_definition_handle);
                     }
                     ObjectType::Energy => {
@@ -409,7 +411,7 @@ impl AssetLoadingSystem {
                             energy_definition_assets,
                         );
 
-                        asset_energy_definition_handles.insert(asset_id, energy_definition_handle);
+                        asset_energy_definition_handle.insert(asset_id, energy_definition_handle);
                     }
                     ObjectType::TestObject => panic!("`TestObject` loading is not supported."),
                 }
@@ -425,7 +427,7 @@ impl AssetLoadingSystem {
                     map_definition_assets,
                 );
 
-                asset_map_definition_handles.insert(asset_id, map_definition_handle);
+                asset_map_definition_handle.insert(asset_id, map_definition_handle);
             }
         }
     }
@@ -439,9 +441,9 @@ impl AssetLoadingSystem {
                     ref character_definition_assets,
                     ref energy_definition_assets,
                     ref map_definition_assets,
-                    ref mut asset_character_definition_handles,
-                    ref mut asset_energy_definition_handles,
-                    ref mut asset_map_definition_handles,
+                    ref mut asset_character_definition_handle,
+                    ref mut asset_energy_definition_handle,
+                    ref mut asset_map_definition_handle,
                 },
             ..
         }: &mut AssetLoadingResources,
@@ -454,7 +456,7 @@ impl AssetLoadingSystem {
         match asset_type {
             AssetType::Object(object_type) => match object_type {
                 ObjectType::Character => {
-                    let character_definition_handle = asset_character_definition_handles
+                    let character_definition_handle = asset_character_definition_handle
                         .get(asset_id)
                         .expect("Expected `CharacterDefinitionHandle` to exist.");
                     character_definition_assets
@@ -462,7 +464,7 @@ impl AssetLoadingSystem {
                         .is_some()
                 }
                 ObjectType::Energy => {
-                    let energy_definition_handle = asset_energy_definition_handles
+                    let energy_definition_handle = asset_energy_definition_handle
                         .get(asset_id)
                         .expect("Expected `EnergyDefinitionHandle` to exist.");
                     energy_definition_assets
@@ -472,7 +474,7 @@ impl AssetLoadingSystem {
                 ObjectType::TestObject => panic!("`TestObject` loading is not supported."),
             },
             AssetType::Map => {
-                let map_definition_handle = asset_map_definition_handles
+                let map_definition_handle = asset_map_definition_handle
                     .get(asset_id)
                     .expect("Expected `MapDefinitionHandle` to exist.");
                 map_definition_assets.get(map_definition_handle).is_some()
@@ -666,9 +668,9 @@ impl AssetLoadingSystem {
                     ref character_definition_assets,
                     ref energy_definition_assets,
                     ref map_definition_assets,
-                    ref mut asset_character_definition_handles,
-                    ref mut asset_energy_definition_handles,
-                    ref mut asset_map_definition_handles,
+                    ref mut asset_character_definition_handle,
+                    ref mut asset_energy_definition_handle,
+                    ref mut asset_map_definition_handle,
                 },
             texture_loading_resources:
                 TextureLoadingResources {
@@ -739,30 +741,16 @@ impl AssetLoadingSystem {
 
                 let object = match object_type {
                     ObjectType::Character => {
-                        let character_definition = asset_character_definition_handles
+                        let character_definition = asset_character_definition_handle
                             .get(asset_id)
                             .and_then(|character_definition_handle| {
                                 character_definition_assets.get(character_definition_handle)
                             })
                             .expect("Expected `CharacterDefinition` to be loaded.");
 
-                        // `SequenceIdMappings`.
-                        let capacity = character_definition.object_definition.sequences.len();
-                        let sequence_id_mappings = character_definition
-                            .object_definition
-                            .sequences
-                            .keys()
-                            .enumerate()
-                            .map(|(index, sequence_name_string)| {
-                                (SequenceId::new(index), sequence_name_string.clone())
-                            })
-                            .fold(
-                                SequenceIdMappings::with_capacity(capacity),
-                                |mut sequence_id_mappings, (sequence_id, sequence_name_string)| {
-                                    sequence_id_mappings.insert(sequence_name_string, sequence_id);
-                                    sequence_id_mappings
-                                },
-                            );
+                        let sequence_id_mappings = SequenceIdMappings::from_iter(
+                            character_definition.object_definition.sequences.keys(),
+                        );
                         asset_sequence_id_mappings_character.insert(asset_id, sequence_id_mappings);
 
                         let CharacterObjectWrapper(object) = ObjectLoader::load::<Character>(
@@ -774,30 +762,16 @@ impl AssetLoadingSystem {
                         object
                     }
                     ObjectType::Energy => {
-                        let energy_definition = asset_energy_definition_handles
+                        let energy_definition = asset_energy_definition_handle
                             .get(asset_id)
                             .and_then(|energy_definition_handle| {
                                 energy_definition_assets.get(energy_definition_handle)
                             })
                             .expect("Expected `EnergyDefinition` to be loaded.");
 
-                        // `SequenceIdMappings`.
-                        let capacity = energy_definition.object_definition.sequences.len();
-                        let sequence_id_mappings = energy_definition
-                            .object_definition
-                            .sequences
-                            .keys()
-                            .enumerate()
-                            .map(|(index, sequence_name_string)| {
-                                (SequenceId::new(index), sequence_name_string.clone())
-                            })
-                            .fold(
-                                SequenceIdMappings::with_capacity(capacity),
-                                |mut sequence_id_mappings, (sequence_id, sequence_name_string)| {
-                                    sequence_id_mappings.insert(sequence_name_string, sequence_id);
-                                    sequence_id_mappings
-                                },
-                            );
+                        let sequence_id_mappings = SequenceIdMappings::from_iter(
+                            energy_definition.object_definition.sequences.keys(),
+                        );
                         asset_sequence_id_mappings_energy.insert(asset_id, sequence_id_mappings);
 
                         let EnergyObjectWrapper(object) = ObjectLoader::load::<Energy>(
@@ -833,7 +807,7 @@ impl AssetLoadingSystem {
                 asset_spawns_sequence_handles.insert(asset_id, spawns_sequence_handles);
             }
             AssetType::Map => {
-                let map_definition = asset_map_definition_handles
+                let map_definition = asset_map_definition_handle
                     .get(asset_id)
                     .and_then(|map_definition_handle| {
                         map_definition_assets.get(map_definition_handle)

@@ -6,6 +6,7 @@ edition = "2018"
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
+asset_model = { path = "../asset_model" }
 character_loading = { path = "../character_loading" }
 character_model = { path = "../character_model" }
 charge_model = { path = "../charge_model" }

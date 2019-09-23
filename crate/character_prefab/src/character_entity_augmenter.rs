@@ -1,7 +1,10 @@
 use std::convert::TryInto;
 
 use amethyst::ecs::Entity;
-use character_model::{config::CharacterDefinition, play::RunCounter};
+use asset_model::loaded::AssetId;
+use character_model::{
+    config::CharacterSequenceName, loaded::CharacterHitTransitions, play::RunCounter,
+};
 use charge_model::play::{ChargeRetention, ChargeTrackerClock};
 use game_input::ControllerInput;
 use map_model::play::MapBounded;
@@ -10,8 +13,9 @@ use object_model::{
     play::{Grounding, HealthPoints},
 };
 use object_status_model::config::StunPoints;
+use sequence_model::{config::SequenceNameString, loaded::SequenceId};
 
-use crate::CharacterComponentStorages;
+use crate::{CharacterComponentStorages, CharacterSpawningResources};
 
 /// Default `Character` `Mass`.
 const CHARACTER_MASS_DEFAULT: Mass = Mass(0.7);
@@ -25,26 +29,80 @@ impl CharacterEntityAugmenter {
     ///
     /// # Parameters
     ///
-    /// * `entity`: The entity to augment.
+    /// * `character_spawning_resources`: Resources needed to spawn the character.
     /// * `character_component_storages`: Character specific `Component` storages.
+    /// * `asset_id`: Asset ID of the character.
+    /// * `entity`: The entity to augment.
     pub fn augment<'s>(
-        entity: Entity,
+        CharacterSpawningResources {
+            asset_sequence_id_mappings_character,
+            asset_character_definition_handle,
+            character_definition_assets,
+        }: &CharacterSpawningResources<'s>,
         CharacterComponentStorages {
-            ref mut controller_inputs,
-            ref mut health_pointses,
-            ref mut stun_pointses,
-            ref mut run_counters,
-            ref mut groundings,
-            ref mut masses,
-            ref mut map_boundeds,
-            ref mut charge_tracker_clocks,
-            ref mut charge_limits,
-            ref mut charge_delays,
-            ref mut charge_use_modes,
-            ref mut charge_retentions,
+            controller_inputs,
+            health_pointses,
+            stun_pointses,
+            run_counters,
+            groundings,
+            masses,
+            map_boundeds,
+            charge_tracker_clocks,
+            charge_limits,
+            charge_delays,
+            charge_use_modes,
+            charge_retentions,
+            character_hit_transitionses,
         }: &mut CharacterComponentStorages<'s>,
-        character_definition: &CharacterDefinition,
+        asset_id: AssetId,
+        entity: Entity,
     ) {
+        let character_definition_handle = asset_character_definition_handle
+            .get(asset_id)
+            .unwrap_or_else(|| {
+                panic!(
+                    "Expected `CharacterDefinitionHandle` to exist for `{:?}`.",
+                    asset_id
+                )
+            });
+        let character_definition = character_definition_assets
+            .get(&character_definition_handle)
+            .expect("Expected `CharacterDefinition` to be loaded.");
+
+        let sequence_id_mappings = asset_sequence_id_mappings_character
+            .get(asset_id)
+            .unwrap_or_else(|| {
+                panic!(
+                    "Expected `SequenceIdMappings<Character>` to exist for `{:?}`.",
+                    asset_id
+                )
+            });
+        let low_stun = sequence_id_mappings
+            .id(&SequenceNameString::Name(CharacterSequenceName::Flinch0))
+            .copied()
+            .unwrap_or(SequenceId(0));
+        let mid_stun = sequence_id_mappings
+            .id(&SequenceNameString::Name(CharacterSequenceName::Flinch1))
+            .copied()
+            .unwrap_or(SequenceId(0));
+        let high_stun = sequence_id_mappings
+            .id(&SequenceNameString::Name(CharacterSequenceName::Dazed))
+            .copied()
+            .unwrap_or(SequenceId(0));
+        let falling = sequence_id_mappings
+            .id(&SequenceNameString::Name(
+                CharacterSequenceName::FallForwardAscend,
+            ))
+            .copied()
+            .unwrap_or(SequenceId(0));
+
+        let character_hit_transitions = CharacterHitTransitions {
+            low_stun,
+            mid_stun,
+            high_stun,
+            falling,
+        };
+
         // Controller of this entity
         controller_inputs
             .insert(entity, ControllerInput::default())
@@ -92,20 +150,32 @@ impl CharacterEntityAugmenter {
                 ChargeRetention::from(character_definition.charge_retention_mode),
             )
             .expect("Failed to insert `ChargeUseMode` component.");
+        character_hit_transitionses
+            .insert(entity, character_hit_transitions)
+            .expect("Failed to insert `CharacterHitTransitions` component.");
     }
 }
 
 #[cfg(test)]
 mod test {
+    use std::{iter::FromIterator, str::FromStr};
+
     use amethyst::{
-        core::TransformBundle,
-        ecs::{Builder, World, WorldExt},
-        renderer::{types::DefaultBackend, RenderEmptyBundle},
+        assets::{AssetStorage, Loader, Processor},
+        ecs::{Builder, Read, ReadExpect, World, WorldExt, Write},
         shred::SystemData,
         Error,
     };
     use amethyst_test::AmethystApplication;
-    use character_model::{config::CharacterDefinition, play::RunCounter};
+    use asset_model::{
+        config::AssetSlug,
+        loaded::{AssetId, AssetIdMappings},
+    };
+    use character_model::{
+        config::{CharacterDefinition, CharacterSequenceName},
+        loaded::AssetCharacterDefinitionHandle,
+        play::RunCounter,
+    };
     use charge_model::{
         config::{ChargeDelay, ChargeLimit, ChargeUseMode},
         play::{ChargeRetention, ChargeTrackerClock},
@@ -117,20 +187,27 @@ mod test {
         play::{Grounding, HealthPoints},
     };
     use object_status_model::config::StunPoints;
+    use sequence_model::loaded::{AssetSequenceIdMappings, SequenceIdMappings};
 
     use super::CharacterEntityAugmenter;
-    use crate::CharacterComponentStorages;
+    use crate::{CharacterComponentStorages, CharacterSpawningResources};
 
     #[test]
     fn augments_entity_with_character_components() -> Result<(), Error> {
         let assertion = |world: &mut World| {
             let entity = world.create_entity().build();
             {
-                let mut character_component_storages = CharacterComponentStorages::fetch(&world);
+                let asset_id = *world.read_resource::<AssetId>();
+                let (character_spawning_resources, mut character_component_storages) = world
+                    .system_data::<(
+                        CharacterSpawningResources<'_>,
+                        CharacterComponentStorages<'_>,
+                    )>();
                 CharacterEntityAugmenter::augment(
-                    entity,
+                    &character_spawning_resources,
                     &mut character_component_storages,
-                    &CharacterDefinition::default(),
+                    asset_id,
+                    entity,
                 );
             }
 
@@ -149,12 +226,51 @@ mod test {
         };
 
         AmethystApplication::blank()
-            .with_bundle(TransformBundle::new())
-            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
-            .with_effect(|world| {
+            .with_system(Processor::<CharacterDefinition>::new(), "", &[])
+            .with_setup(|world| {
+                <Read<'_, AssetIdMappings> as SystemData>::setup(world);
+                <CharacterSpawningResources as SystemData>::setup(world);
                 <CharacterComponentStorages as SystemData>::setup(world);
             })
+            .with_effect(|world| {
+                let asset_id = {
+                    let mut asset_id_mappings = world.write_resource::<AssetIdMappings>();
+                    let asset_slug =
+                        AssetSlug::from_str("test/char").expect("Expected asset slug to be valid.");
+                    asset_id_mappings.insert(asset_slug)
+                };
+
+                {
+                    let (
+                        loader,
+                        mut asset_sequence_id_mappings_character,
+                        mut asset_character_definition_handle,
+                        character_definition_assets,
+                    ) = world.system_data::<(
+                        ReadExpect<'_, Loader>,
+                        Write<'_, AssetSequenceIdMappings<CharacterSequenceName>>,
+                        Write<'_, AssetCharacterDefinitionHandle>,
+                        Read<'_, AssetStorage<CharacterDefinition>>,
+                    )>();
+
+                    let character_definition = CharacterDefinition::default();
+
+                    let sequence_id_mappings = SequenceIdMappings::from_iter(
+                        character_definition.object_definition.sequences.keys(),
+                    );
+                    asset_sequence_id_mappings_character.insert(asset_id, sequence_id_mappings);
+
+                    let character_definition_handle = loader.load_from_data(
+                        character_definition,
+                        (),
+                        &*character_definition_assets,
+                    );
+                    asset_character_definition_handle.insert(asset_id, character_definition_handle);
+                }
+
+                world.insert(asset_id);
+            })
             .with_assertion(assertion)
-            .run_isolated()
+            .run()
     }
 }
