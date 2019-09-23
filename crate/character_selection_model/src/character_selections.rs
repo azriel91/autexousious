@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use asset_model::config::AssetSlug;
+use asset_model::loaded::AssetId;
 use derive_new::new;
 use game_input_model::ControllerId;
 
@@ -10,5 +10,5 @@ use game_input_model::ControllerId;
 #[derive(Clone, Debug, Default, PartialEq, new)]
 pub struct CharacterSelections {
     /// Map of controller ID to character asset slug.
-    pub selections: HashMap<ControllerId, AssetSlug>,
+    pub selections: HashMap<ControllerId, AssetId>,
 }

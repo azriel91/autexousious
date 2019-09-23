@@ -2,12 +2,17 @@ use amethyst::{
     assets::{AssetStorage, Handle, Prefab},
     ecs::{Entity, World, WorldExt},
 };
-use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
+use asset_model::{
+    config::{AssetSlug, AssetType},
+    loaded::{AssetId, SlugAndHandle},
+};
 use character_model::loaded::CharacterObjectWrapper;
 use character_prefab::CharacterPrefab;
 use game_model::play::GameEntities;
 use object_prefab::{GameObjectPrefab, ObjectPrefab};
 use object_type::ObjectType;
+
+use crate::AssetQueries;
 
 /// Functions to retrieve object data from a running world.
 #[derive(Debug)]
@@ -118,5 +123,14 @@ impl ObjectQueries {
         } else {
             panic!("Expected bat object prefab to be loaded.")
         }
+    }
+
+    /// Returns the `AssetId` of the first character asset.
+    ///
+    /// # Parameters
+    ///
+    /// * `world`: `World` of the running application.
+    pub fn first_character_asset_id(world: &World) -> AssetId {
+        AssetQueries::first_id(world, &AssetType::Object(ObjectType::Character))
     }
 }

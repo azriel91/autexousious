@@ -10,7 +10,7 @@ use amethyst::{
 };
 use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
 use application_event::{AppEvent, AppEventReader};
-use assets_test::{ASSETS_PATH, CHAR_BAT_SLUG, MAP_FADE_SLUG};
+use assets_test::{ASSETS_PATH, MAP_FADE_SLUG};
 use audio_loading::AudioLoadingBundle;
 use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
 use character_prefab::CharacterPrefabBundle;
@@ -30,7 +30,7 @@ use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
 use ui_audio_loading::UiAudioLoadingBundle;
 
-use crate::SetupFunction;
+use crate::{ObjectQueries, SetupFunction};
 
 /// Baselines for building Amethyst applications with Autexousious types.
 #[derive(Debug)]
@@ -125,7 +125,7 @@ impl AutexousiousApplication {
                 character_selections
                     .selections
                     .entry(controller_id)
-                    .or_insert_with(|| CHAR_BAT_SLUG.clone());
+                    .or_insert_with(|| ObjectQueries::first_character_asset_id(&*world));
 
                 world.insert(character_selections);
                 world.insert(CharacterSelectionsStatus::Ready);

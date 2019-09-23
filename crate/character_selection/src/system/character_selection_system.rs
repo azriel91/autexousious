@@ -3,10 +3,11 @@ use amethyst::{
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
+use asset_model::{config::AssetType, loaded::AssetTypeMappings};
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent, CharacterSelections};
 use derivative::Derivative;
 use derive_new::new;
-use game_model::loaded::CharacterPrefabs;
+use object_type::ObjectType;
 use typename_derive::TypeName;
 
 /// Populates the `CharacterSelections` based on user input.
@@ -23,9 +24,9 @@ pub struct CharacterSelectionSystemData<'s> {
     /// `CharacterSelectionEvent` channel.
     #[derivative(Debug = "ignore")]
     pub character_selection_ec: Read<'s, EventChannel<CharacterSelectionEvent>>,
-    /// `CharacterPrefabs` resource.
+    /// `AssetTypeMappings` resource.
     #[derivative(Debug = "ignore")]
-    pub character_prefabs: Read<'s, CharacterPrefabs>,
+    pub asset_type_mappings: Read<'s, AssetTypeMappings>,
     /// `CharacterSelections` resource.
     #[derivative(Debug = "ignore")]
     pub character_selections: Write<'s, CharacterSelections>,
@@ -38,7 +39,7 @@ impl<'s> System<'s> for CharacterSelectionSystem {
         &mut self,
         CharacterSelectionSystemData {
             character_selection_ec,
-            character_prefabs,
+            asset_type_mappings,
             mut character_selections,
         }: Self::SystemData,
     ) {
@@ -53,21 +54,22 @@ impl<'s> System<'s> for CharacterSelectionSystem {
                     controller_id,
                     character_selection,
                 } => {
-                    let asset_slug = match character_selection {
-                        CharacterSelection::Id(asset_slug) => asset_slug,
+                    let asset_id = match character_selection {
+                        CharacterSelection::Id(asset_id) => *asset_id,
                         CharacterSelection::Random => {
                             // TODO: Implement Random
                             // TODO: <https://gitlab.com/azriel91/autexousious/issues/137>
-                            character_prefabs
-                                .keys()
+                            asset_type_mappings
+                                .iter_ids(&AssetType::Object(ObjectType::Character))
                                 .next()
+                                .copied()
                                 .expect("Expected at least one character to be loaded.")
                         }
                     };
                     character_selections
                         .selections
                         .entry(*controller_id)
-                        .or_insert_with(|| asset_slug.clone());
+                        .or_insert(asset_id);
                 }
                 CharacterSelectionEvent::Deselect { controller_id } => {
                     character_selections.selections.remove(&controller_id);
@@ -102,8 +104,11 @@ mod tests {
     };
     use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
     use application_event::{AppEvent, AppEventReader};
-    use asset_model::config::AssetSlug;
-    use assets_test::{ASSETS_PATH, CHAR_BAT_SLUG};
+    use asset_model::{
+        config::AssetType,
+        loaded::{AssetId, AssetTypeMappings},
+    };
+    use assets_test::ASSETS_PATH;
     use audio_loading::AudioLoadingBundle;
     use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
     use character_prefab::CharacterPrefabBundle;
@@ -117,6 +122,7 @@ mod tests {
     use kinematic_loading::KinematicLoadingBundle;
     use loading::{LoadingBundle, LoadingState};
     use map_loading::MapLoadingBundle;
+    use object_type::ObjectType;
     use sequence_loading::SequenceLoadingBundle;
     use spawn_loading::SpawnLoadingBundle;
     use sprite_loading::SpriteLoadingBundle;
@@ -129,13 +135,13 @@ mod tests {
     fn inserts_character_selection_on_select_event() -> Result<(), Error> {
         run_test(
             SetupParams {
-                character_selection_event: CharacterSelectionEvent::Select {
+                character_selection_event_fn: |asset_id| CharacterSelectionEvent::Select {
                     controller_id: 123,
-                    character_selection: CharacterSelection::Id(CHAR_BAT_SLUG.clone()),
+                    character_selection: CharacterSelection::Id(asset_id),
                 },
             },
             ExpectedParams {
-                character_selection: Some(CHAR_BAT_SLUG.clone()),
+                character_selection_fn: |asset_id| Some(asset_id),
             },
         )
     }
@@ -144,30 +150,31 @@ mod tests {
     fn removes_character_selection_on_deselect_event() -> Result<(), Error> {
         run_test(
             SetupParams {
-                character_selection_event: CharacterSelectionEvent::Deselect { controller_id: 123 },
+                character_selection_event_fn: |_| CharacterSelectionEvent::Deselect {
+                    controller_id: 123,
+                },
             },
             ExpectedParams {
-                character_selection: None,
+                character_selection_fn: |_| None,
             },
         )
     }
 
     fn run_test(
         SetupParams {
-            character_selection_event,
+            character_selection_event_fn,
         }: SetupParams,
         ExpectedParams {
-            character_selection: character_selection_expected,
+            character_selection_fn,
         }: ExpectedParams,
     ) -> Result<(), Error> {
         env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
 
         AmethystApplication::blank()
             .with_custom_event_type::<AppEvent, AppEventReader>()
+            .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
             .with_bundle(TransformBundle::new())
-            .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
-            .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
             .with_ui_bundles::<ControlBindings>()
             .with_system(Processor::<Source>::new(), "source_processor", &[])
             .with_bundle(SpriteLoadingBundle::new())
@@ -192,8 +199,16 @@ mod tests {
                 CharacterSelectionSystem::type_name(),
                 &[],
             ) // kcov-ignore
-            .with_effect(move |world| send_event(world, character_selection_event.clone()))
+            .with_effect(move |world| {
+                let asset_id = first_character_asset_id(world);
+
+                let character_selection_event = character_selection_event_fn(asset_id);
+                send_event(world, character_selection_event)
+            })
             .with_assertion(move |world| {
+                let asset_id = first_character_asset_id(world);
+                let character_selection_expected = character_selection_fn(asset_id);
+
                 let character_selections = world.read_resource::<CharacterSelections>();
 
                 assert_eq!(
@@ -210,11 +225,20 @@ mod tests {
             .single_write(event);
     }
 
+    fn first_character_asset_id(world: &mut World) -> AssetId {
+        let asset_type_mappings = world.read_resource::<AssetTypeMappings>();
+        asset_type_mappings
+            .iter_ids(&AssetType::Object(ObjectType::Character))
+            .next()
+            .copied()
+            .expect("Expected at least one character to be loaded.")
+    }
+
     struct SetupParams {
-        character_selection_event: CharacterSelectionEvent,
+        character_selection_event_fn: fn(AssetId) -> CharacterSelectionEvent,
     }
 
     struct ExpectedParams {
-        character_selection: Option<AssetSlug>,
+        character_selection_fn: fn(AssetId) -> Option<AssetId>,
     }
 }

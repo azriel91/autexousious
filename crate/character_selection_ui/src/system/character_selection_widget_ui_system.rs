@@ -1,12 +1,15 @@
 use amethyst::{
     core::transform::Parent,
-    ecs::{Entities, Join, Read, ReadExpect, System, WriteStorage},
+    ecs::{Entities, Join, Read, ReadExpect, System, World, WriteStorage},
+    shred::{ResourceId, SystemData},
     ui::{Anchor, UiText, UiTransform},
 };
 use application_ui::{FontVariant, Theme};
+use asset_model::loaded::AssetIdMappings;
 use character_selection_model::{
     CharacterSelection, CharacterSelectionEntity, CharacterSelectionEntityId,
 };
+use derivative::Derivative;
 use derive_new::new;
 use game_input::{ControllerInput, InputControlled};
 use game_input_model::{ControllerId, InputConfig};
@@ -28,38 +31,60 @@ const LABEL_HEIGHT_HELP: f32 = 20.;
 #[derive(Debug, Default, TypeName, new)]
 pub(crate) struct CharacterSelectionWidgetUiSystem;
 
-type WidgetComponentStorages<'s> = (
-    WriteStorage<'s, CharacterSelectionWidget>,
-    WriteStorage<'s, InputControlled>,
-    WriteStorage<'s, ControllerInput>,
-);
-
-type WidgetUiResources<'s> = (
-    ReadExpect<'s, Theme>,
-    WriteStorage<'s, UiTransform>,
-    WriteStorage<'s, UiText>,
-    WriteStorage<'s, Parent>,
-    WriteStorage<'s, CharacterSelectionEntity>,
-);
-
-type CharacterSelectionWidgetUiSystemData<'s> = (
-    Read<'s, InputConfig>,
-    Entities<'s>,
-    WidgetComponentStorages<'s>,
-    WidgetUiResources<'s>,
-);
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub struct CharacterSelectionWidgetUiSystemData<'s> {
+    /// `Entities`.
+    #[derivative(Debug = "ignore")]
+    pub entities: Entities<'s>,
+    /// `AssetIdMappings` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_id_mappings: Read<'s, AssetIdMappings>,
+    /// `InputConfig` resource.
+    #[derivative(Debug = "ignore")]
+    pub input_config: Read<'s, InputConfig>,
+    /// `InputControlled` components.
+    #[derivative(Debug = "ignore")]
+    pub input_controlleds: WriteStorage<'s, InputControlled>,
+    /// `CharacterSelectionWidget` components.
+    #[derivative(Debug = "ignore")]
+    pub character_selection_widgets: WriteStorage<'s, CharacterSelectionWidget>,
+    /// `ControllerInput` components.
+    #[derivative(Debug = "ignore")]
+    pub controller_inputs: WriteStorage<'s, ControllerInput>,
+    /// `Theme` resource.
+    #[derivative(Debug = "ignore")]
+    pub theme: ReadExpect<'s, Theme>,
+    /// `UiTransform` components.
+    #[derivative(Debug = "ignore")]
+    pub ui_transforms: WriteStorage<'s, UiTransform>,
+    /// `UiText` components.
+    #[derivative(Debug = "ignore")]
+    pub ui_texts: WriteStorage<'s, UiText>,
+    /// `Parent` components.
+    #[derivative(Debug = "ignore")]
+    pub parents: WriteStorage<'s, Parent>,
+    /// `CharacterSelectionEntity` components.
+    #[derivative(Debug = "ignore")]
+    pub character_selection_entities: WriteStorage<'s, CharacterSelectionEntity>,
+}
 
 impl CharacterSelectionWidgetUiSystem {
     fn initialize_ui(
         &mut self,
-        input_config: &InputConfig,
-        entities: &Entities<'_>,
-        (
-            character_selection_widgets,
+        CharacterSelectionWidgetUiSystemData {
+            entities,
+            input_config,
             input_controlleds,
-            controller_inputs
-        ): &mut WidgetComponentStorages<'_>,
-        (theme, ui_transforms, ui_texts, parents, character_selection_entities): &mut WidgetUiResources<'_>,
+            character_selection_widgets,
+            controller_inputs,
+            theme,
+            ui_transforms,
+            ui_texts,
+            parents,
+            character_selection_entities,
+            ..
+        }: &mut CharacterSelectionWidgetUiSystemData<'_>,
     ) {
         if character_selection_widgets.count() == 0 {
             debug!("Initializing Character Selection UI.");
@@ -180,18 +205,27 @@ impl CharacterSelectionWidgetUiSystem {
 
     fn refresh_ui(
         &mut self,
-        character_selection_widgets: &mut WriteStorage<'_, CharacterSelectionWidget>,
-        ui_texts: &mut WriteStorage<'_, UiText>,
+        CharacterSelectionWidgetUiSystemData {
+            asset_id_mappings,
+            character_selection_widgets,
+            ui_texts,
+            ..
+        }: &mut CharacterSelectionWidgetUiSystemData<'_>,
     ) {
         (character_selection_widgets, ui_texts)
             .join()
             .for_each(|(widget, ui_text)| {
                 ui_text.text = match widget.state {
                     WidgetState::Inactive => "Press Attack To Join".to_string(),
-                    WidgetState::CharacterSelect => {
-                        format!("◀ {:^16} ▶", format!("{}", widget.selection))
-                    }
-                    WidgetState::Ready => format!("» {:^16} «", format!("{}", widget.selection)),
+                    WidgetState::CharacterSelect | WidgetState::Ready => match widget.selection {
+                        CharacterSelection::Random => format!("◀ {:^16} ▶", "Random"),
+                        CharacterSelection::Id(asset_id) => {
+                            let slug = asset_id_mappings
+                                .slug(asset_id)
+                                .expect("Expected slug to exist for map selection.");
+                            format!("◀ {:^16} ▶", format!("{}", slug))
+                        }
+                    },
                 }
             });
     }
@@ -200,23 +234,9 @@ impl CharacterSelectionWidgetUiSystem {
 impl<'s> System<'s> for CharacterSelectionWidgetUiSystem {
     type SystemData = CharacterSelectionWidgetUiSystemData<'s>;
 
-    fn run(
-        &mut self,
-        (
-            input_config,
-            entities,
-            mut widget_component_storages,
-            mut widget_ui_resources,
-        ): Self::SystemData,
-    ) {
-        self.initialize_ui(
-            &input_config,
-            &entities,
-            &mut widget_component_storages,
-            &mut widget_ui_resources,
-        );
-
-        self.refresh_ui(&mut widget_component_storages.0, &mut widget_ui_resources.2)
+    fn run(&mut self, mut character_selection_widget_ui_system_data: Self::SystemData) {
+        self.initialize_ui(&mut character_selection_widget_ui_system_data);
+        self.refresh_ui(&mut character_selection_widget_ui_system_data);
     }
 }
 
@@ -229,7 +249,7 @@ mod test {
         input::{Axis as InputAxis, Button, VirtualKeyCode},
         ui::UiText,
     };
-    use application_test_support::AutexousiousApplication;
+    use application_test_support::{AssetQueries, AutexousiousApplication};
     use assets_test::CHAR_BAT_SLUG;
     use character_selection_model::CharacterSelection;
     use game_input_model::{Axis, ControlAction, ControllerConfig, InputConfig};
@@ -320,7 +340,9 @@ mod test {
                         .expect("Expected entity with `CharacterSelectionWidget` component.");
 
                     widget.state = WidgetState::CharacterSelect;
-                    widget.selection = CharacterSelection::Id(CHAR_BAT_SLUG.clone());
+
+                    let bat_asset_id = AssetQueries::id(world, &*CHAR_BAT_SLUG);
+                    widget.selection = CharacterSelection::Id(bat_asset_id);
                 })
                 .with_system_single(
                     CharacterSelectionWidgetUiSystem::new(),

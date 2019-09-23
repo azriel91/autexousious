@@ -1,5 +1,6 @@
 use std::{collections::HashMap, iter::FromIterator};
 
+use derive_new::new;
 use slotmap::DenseSlotMap;
 
 use crate::{config::AssetSlug, loaded::AssetId};
@@ -7,11 +8,13 @@ use crate::{config::AssetSlug, loaded::AssetId};
 /// Mappings from asset slug to ID, and ID to slug.
 ///
 /// Asset slugs are intended to be inserted / removed, but not modified.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, new)]
 pub struct AssetIdMappings {
     /// Mapping from asset ID to slug.
+    #[new(default)]
     asset_id_to_slug: DenseSlotMap<AssetId, AssetSlug>,
     /// Mapping from asset slug to id.
+    #[new(default)]
     asset_slug_to_id: HashMap<AssetSlug, AssetId>,
 }
 

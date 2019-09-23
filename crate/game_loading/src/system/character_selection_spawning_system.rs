@@ -2,6 +2,7 @@ use amethyst::{
     ecs::{Entities, Entity, Read, System, World, Write, WriteStorage},
     shred::{ResourceId, SystemData},
 };
+use asset_model::loaded::AssetIdMappings;
 use character_prefab::CharacterPrefabHandle;
 use character_selection_model::CharacterSelections;
 use derivative::Derivative;
@@ -27,6 +28,9 @@ pub struct CharacterSelectionSpawningSystemData<'s> {
     /// `CharacterSelections` resource.
     #[derivative(Debug = "ignore")]
     pub character_selections: Read<'s, CharacterSelections>,
+    /// `AssetIdMappings` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_id_mappings: Read<'s, AssetIdMappings>,
     /// `CharacterPrefabs` resource.
     #[derivative(Debug = "ignore")]
     pub character_prefabs: Read<'s, CharacterPrefabs>,
@@ -58,6 +62,7 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
         CharacterSelectionSpawningSystemData {
             entities,
             character_selections,
+            asset_id_mappings,
             character_prefabs,
             mut game_loading_status,
             mut independent_counter,
@@ -74,8 +79,14 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
         let character_entities = character_selections
             .selections
             .iter()
-            .map(|(controller_id, asset_slug)| {
+            .map(|(controller_id, asset_id)| {
                 let entity = entities.create();
+                let asset_slug = asset_id_mappings.slug(*asset_id).unwrap_or_else(|| {
+                    panic!(
+                        "Expected asset slug to exist for asset ID: `{:?}`",
+                        asset_id
+                    )
+                });
 
                 let handle = character_prefabs
                     .get(asset_slug)
@@ -128,7 +139,11 @@ mod tests {
     };
     use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
     use application_event::{AppEvent, AppEventReader};
-    use assets_test::{ASSETS_PATH, CHAR_BAT_SLUG};
+    use asset_model::{
+        config::AssetType,
+        loaded::{AssetId, AssetTypeMappings},
+    };
+    use assets_test::ASSETS_PATH;
     use audio_loading::AudioLoadingBundle;
     use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
     use character_prefab::{CharacterPrefabBundle, CharacterPrefabHandle};
@@ -161,10 +176,10 @@ mod tests {
                 game_loading_status.character_augment_status = CharacterAugmentStatus::Rectify;
                 world.insert(game_loading_status);
 
+                let asset_id = first_character_asset_id(world);
+
                 let mut character_selections = CharacterSelections::default();
-                character_selections
-                    .selections
-                    .insert(0, CHAR_BAT_SLUG.clone());
+                character_selections.selections.insert(0, asset_id);
                 world.insert(character_selections);
             },
             |world| {
@@ -185,13 +200,11 @@ mod tests {
                 game_loading_status.character_augment_status = CharacterAugmentStatus::Prefab;
                 world.insert(game_loading_status);
 
+                let asset_id = first_character_asset_id(world);
+
                 let mut character_selections = CharacterSelections::default();
-                character_selections
-                    .selections
-                    .insert(0, CHAR_BAT_SLUG.clone());
-                character_selections
-                    .selections
-                    .insert(123, CHAR_BAT_SLUG.clone());
+                character_selections.selections.insert(0, asset_id);
+                character_selections.selections.insert(123, asset_id);
                 world.insert(character_selections);
             },
             |world| {
@@ -305,6 +318,15 @@ mod tests {
             ) // kcov-ignore
             .with_assertion(assertion_fn)
             .run_isolated()
+    }
+
+    fn first_character_asset_id(world: &mut World) -> AssetId {
+        let asset_type_mappings = world.read_resource::<AssetTypeMappings>();
+        asset_type_mappings
+            .iter_ids(&AssetType::Object(ObjectType::Character))
+            .next()
+            .copied()
+            .expect("Expected at least one character to be loaded.")
     }
 
     type TestSystemData<'s> = (
