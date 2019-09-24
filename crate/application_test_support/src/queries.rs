@@ -1,4 +1,4 @@
-pub use self::{object_queries::ObjectQueries, sequence_queries::SequenceQueries};
+pub use self::{asset_queries::AssetQueries, sequence_queries::SequenceQueries};
 
-mod object_queries;
+mod asset_queries;
 mod sequence_queries;

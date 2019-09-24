@@ -77,8 +77,7 @@ mod tests {
         Error,
     };
     use application_test_support::AutexousiousApplication;
-    use asset_model::loaded::SlugAndHandle;
-    use assets_test::MAP_FADE_SLUG;
+    use asset_model::{config::AssetType, loaded::AssetTypeMappings};
     use map_selection_model::{MapSelection, MapSelectionEvent};
 
     use super::MapSelectionSfxSystem;
@@ -91,8 +90,13 @@ mod tests {
     #[test]
     fn plays_sound_on_switch_event() -> Result<(), Error> {
         run_test(|world| {
-            let snh = SlugAndHandle::from((&*world, MAP_FADE_SLUG.clone()));
-            let map_selection = MapSelection::Id(snh);
+            let asset_id = world
+                .read_resource::<AssetTypeMappings>()
+                .iter_ids(&AssetType::Map)
+                .next()
+                .copied()
+                .expect("Expected at least one map to be loaded.");
+            let map_selection = MapSelection::Id(asset_id);
             MapSelectionEvent::Switch { map_selection }
         })
     }
@@ -100,8 +104,13 @@ mod tests {
     #[test]
     fn plays_sound_on_select_event() -> Result<(), Error> {
         run_test(|world| {
-            let snh = SlugAndHandle::from((&*world, MAP_FADE_SLUG.clone()));
-            let map_selection = MapSelection::Id(snh);
+            let asset_id = world
+                .read_resource::<AssetTypeMappings>()
+                .iter_ids(&AssetType::Map)
+                .next()
+                .copied()
+                .expect("Expected at least one map to be loaded.");
+            let map_selection = MapSelection::Id(asset_id);
             MapSelectionEvent::Select { map_selection }
         })
     }

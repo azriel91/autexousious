@@ -1,7 +1,7 @@
 use asset_derive::Asset;
 use charge_model::config::{ChargeDelay, ChargeLimit, ChargeRetentionMode, ChargeUseMode};
 use derive_new::new;
-use object_model::config::{GameObjectDefinition, ObjectDefinition};
+use object_model::config::ObjectDefinition;
 use serde::{Deserialize, Serialize};
 
 use crate::config::CharacterSequence;
@@ -25,12 +25,4 @@ pub struct CharacterDefinition {
     /// How charge is retained when no longer charging.
     #[serde(default)]
     pub charge_retention_mode: ChargeRetentionMode,
-}
-
-impl GameObjectDefinition for CharacterDefinition {
-    type GameObjectSequence = CharacterSequence;
-
-    fn object_definition(&self) -> &ObjectDefinition<Self::GameObjectSequence> {
-        &self.object_definition
-    }
 }

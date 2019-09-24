@@ -3,7 +3,7 @@ use game_input_model::ControllerId;
 use crate::CharacterSelection;
 
 /// Event signalling a change in character selection state.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum CharacterSelectionEvent {
     /// Signal to return from `CharacterSelectionState`.
     Return,

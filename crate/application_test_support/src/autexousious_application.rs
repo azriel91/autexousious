@@ -10,26 +10,27 @@ use amethyst::{
 };
 use amethyst_test::{AmethystApplication, PopState, HIDPI, SCREEN_HEIGHT, SCREEN_WIDTH};
 use application_event::{AppEvent, AppEventReader};
-use assets_test::{ASSETS_PATH, CHAR_BAT_SLUG, MAP_FADE_SLUG};
+use asset_model::config::AssetType;
+use assets_test::{ASSETS_PATH, MAP_FADE_SLUG};
 use audio_loading::AudioLoadingBundle;
-use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
-use character_prefab::CharacterPrefabBundle;
+use character_loading::CharacterLoadingBundle;
 use character_selection::CharacterSelectionBundle;
 use character_selection_model::{CharacterSelections, CharacterSelectionsStatus};
 use collision_audio_loading::CollisionAudioLoadingBundle;
 use collision_loading::CollisionLoadingBundle;
 use energy_loading::EnergyLoadingBundle;
-use energy_prefab::EnergyPrefabBundle;
 use game_input_model::ControlBindings;
 use game_loading::GameLoadingState;
+use kinematic_loading::KinematicLoadingBundle;
 use loading::{LoadingBundle, LoadingState};
 use map_loading::MapLoadingBundle;
+use object_type::ObjectType;
 use sequence_loading::SequenceLoadingBundle;
 use spawn_loading::SpawnLoadingBundle;
 use sprite_loading::SpriteLoadingBundle;
 use ui_audio_loading::UiAudioLoadingBundle;
 
-use crate::SetupFunction;
+use crate::{AssetQueries, SetupFunction};
 
 /// Baselines for building Amethyst applications with Autexousious types.
 #[derive(Debug)]
@@ -91,20 +92,13 @@ impl AutexousiousApplication {
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(AudioLoadingBundle::new())
+            .with_bundle(KinematicLoadingBundle::new())
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CollisionLoadingBundle::new())
             .with_bundle(SpawnLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
-            .with_bundle(
-                CharacterPrefabBundle::new()
-                    .with_system_dependencies(&[String::from(CHARACTER_PROCESSOR)]),
-            )
             .with_bundle(EnergyLoadingBundle::new())
-            .with_bundle(
-                EnergyPrefabBundle::new()
-                    .with_system_dependencies(&[String::from(CHARACTER_PROCESSOR)]),
-            )
             .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(CharacterSelectionBundle::new())
@@ -123,7 +117,9 @@ impl AutexousiousApplication {
                 character_selections
                     .selections
                     .entry(controller_id)
-                    .or_insert_with(|| CHAR_BAT_SLUG.clone());
+                    .or_insert_with(|| {
+                        AssetQueries::first_id(world, &AssetType::Object(ObjectType::Character))
+                    });
 
                 world.insert(character_selections);
                 world.insert(CharacterSelectionsStatus::Ready);
@@ -136,11 +132,9 @@ impl AutexousiousApplication {
 #[cfg(test)]
 mod test {
     use amethyst::{ecs::WorldExt, input::InputHandler, ui::Interactable, Error};
+    use asset_model::{config::AssetType, loaded::AssetTypeMappings};
     use game_input_model::ControlBindings;
-    use game_model::{
-        loaded::{CharacterPrefabs, EnergyPrefabs, MapPrefabs},
-        play::GameEntities,
-    };
+    use game_model::play::GameEntities;
     use object_type::ObjectType;
     use strum::IntoEnumIterator;
 
@@ -172,15 +166,19 @@ mod test {
     fn config_base_loads_assets_from_self_crate_directory() -> Result<(), Error> {
         AutexousiousApplication::config_base()
             .with_assertion(|world| {
-                // Panics if the resources have not been populated
-                world.read_resource::<MapPrefabs>();
+                let asset_type_mappings = world.read_resource::<AssetTypeMappings>();
+                assert!(asset_type_mappings.iter_ids(&AssetType::Map).count() > 0);
                 assert!(
-                    !world.read_resource::<CharacterPrefabs>().is_empty(),
-                    "Expected at least one `Character` to be loaded."
+                    asset_type_mappings
+                        .iter_ids(&AssetType::Object(ObjectType::Character))
+                        .count()
+                        > 0
                 );
                 assert!(
-                    !world.read_resource::<EnergyPrefabs>().is_empty(),
-                    "Expected at least one `Energy` to be loaded."
+                    asset_type_mappings
+                        .iter_ids(&AssetType::Object(ObjectType::Energy))
+                        .count()
+                        > 0
                 );
             })
             .run_isolated()

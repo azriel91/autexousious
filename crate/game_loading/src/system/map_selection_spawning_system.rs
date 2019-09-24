@@ -1,4 +1,8 @@
-use amethyst::ecs::prelude::*;
+use amethyst::{
+    ecs::{ReadExpect, System, World, Write},
+    shred::{ResourceId, SystemData},
+};
+use derivative::Derivative;
 use derive_new::new;
 use game_model::play::GameEntities;
 use map_selection_model::MapSelection;
@@ -12,35 +16,50 @@ use crate::{
 #[derive(Debug, Default, TypeName, new)]
 pub(crate) struct MapSelectionSpawningSystem;
 
-type MapSelectionSpawningSystemData<'s> = (
-    Write<'s, GameLoadingStatus>,
-    ReadExpect<'s, MapSelection>,
-    MapSpawningResources<'s>,
-    MapLayerComponentStorages<'s>,
-    Write<'s, GameEntities>,
-);
+#[derive(Derivative, SystemData)]
+#[derivative(Debug)]
+pub struct MapSelectionSpawningSystemData<'s> {
+    /// `GameLoadingStatus` resource.
+    #[derivative(Debug = "ignore")]
+    pub game_loading_status: Write<'s, GameLoadingStatus>,
+    /// `MapSelection` resource.
+    #[derivative(Debug = "ignore")]
+    pub map_selection: ReadExpect<'s, MapSelection>,
+    /// `MapSpawningResources`.
+    #[derivative(Debug = "ignore")]
+    pub map_spawning_resources: MapSpawningResources<'s>,
+    /// `MapLayerComponentStorages`.
+    #[derivative(Debug = "ignore")]
+    pub map_layer_component_storages: MapLayerComponentStorages<'s>,
+    /// `GameEntities` resource.
+    #[derivative(Debug = "ignore")]
+    pub game_entities: Write<'s, GameEntities>,
+}
 
 impl<'s> System<'s> for MapSelectionSpawningSystem {
     type SystemData = MapSelectionSpawningSystemData<'s>;
 
     fn run(
         &mut self,
-        (
+        MapSelectionSpawningSystemData {
             mut game_loading_status,
             map_selection,
             map_spawning_resources,
-            mut map_component_storages,
+            mut map_layer_component_storages,
             mut game_entities,
-        ): Self::SystemData,
+        }: Self::SystemData,
     ) {
         if game_loading_status.map_loaded {
             return;
         }
 
+        // TODO: implement Random
         let map_layer_entities = MapLayerEntitySpawner::spawn_system(
             &map_spawning_resources,
-            &mut map_component_storages,
-            map_selection.handle(),
+            &mut map_layer_component_storages,
+            map_selection
+                .asset_id()
+                .expect("Expected `MapSelection` to contain ID."),
         );
 
         game_entities.map_layers = map_layer_entities;
@@ -50,20 +69,18 @@ impl<'s> System<'s> for MapSelectionSpawningSystem {
 
 #[cfg(test)]
 mod tests {
-    use std::{collections::HashMap, env};
-
     use amethyst::{
-        assets::ProgressCounter,
         core::TransformBundle,
-        ecs::prelude::*,
+        ecs::{Read, SystemData, World, WorldExt},
         renderer::{types::DefaultBackend, RenderEmptyBundle},
+        Error, State, StateData, Trans,
     };
-    use amethyst_test::prelude::*;
-    use asset_loading::AssetDiscovery;
-    use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
+    use amethyst_test::{AmethystApplication, GameUpdate};
+    use asset_model::{config::AssetSlug, loaded::AssetIdMappings};
     use assets_test::{ASSETS_PATH, MAP_EMPTY_SLUG, MAP_FADE_SLUG};
-    use game_model::{loaded::MapPrefabs, play::GameEntities};
-    use loading::AssetLoader;
+    use game_model::play::GameEntities;
+    use loading::LoadingBundle;
+    use loading_model::loaded::{AssetLoadStatus, LoadStatus};
     use map_loading::MapLoadingBundle;
     use map_selection::MapSelectionStatus;
     use map_selection_model::MapSelection;
@@ -75,141 +92,146 @@ mod tests {
     use crate::GameLoadingStatus;
 
     #[test]
-    fn returns_if_map_already_loaded() {
-        assert!(AmethystApplication::blank()
+    fn returns_if_map_already_loaded() -> Result<(), Error> {
+        run_test(
+            SetupParams {
+                setup_variant: SetupVariant::Loaded,
+            },
+            ExpectedParams {
+                map_loaded: true,
+                layer_entities_should_exist: false,
+            },
+        )
+    }
+
+    #[test]
+    fn spawns_map_layers_when_they_havent_been_spawned() -> Result<(), Error> {
+        run_test(
+            SetupParams {
+                setup_variant: SetupVariant::NotLoaded(&*MAP_FADE_SLUG),
+            },
+            ExpectedParams {
+                map_loaded: true,
+                layer_entities_should_exist: true,
+            },
+        )
+    }
+
+    #[test]
+    fn spawns_map_that_has_no_layers() -> Result<(), Error> {
+        run_test(
+            SetupParams {
+                setup_variant: SetupVariant::NotLoaded(&*MAP_EMPTY_SLUG),
+            },
+            ExpectedParams {
+                map_loaded: true,
+                layer_entities_should_exist: false,
+            },
+        )
+    }
+
+    fn run_test(
+        SetupParams { setup_variant }: SetupParams<'static>,
+        ExpectedParams {
+            map_loaded: map_loaded_expected,
+            layer_entities_should_exist,
+        }: ExpectedParams,
+    ) -> Result<(), Error> {
+        let (slug, map_loaded_setup) = match setup_variant {
+            SetupVariant::NotLoaded(slug) => (slug, false),
+            SetupVariant::Loaded => (&*MAP_EMPTY_SLUG, true),
+        };
+
+        let wait_for_load = WaitForLoad { slug: slug.clone() };
+
+        AmethystApplication::blank()
             .with_bundle(TransformBundle::new())
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_bundle(SpriteLoadingBundle::new())
             .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(MapLoadingBundle::new())
+            .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
+            .with_state(|| wait_for_load)
             .with_effect(setup_system_data)
-            .with_effect(load_maps)
-            .with_effect(map_selection(MAP_EMPTY_SLUG.clone()))
-            .with_effect(|world| {
+            .with_effect(move |world| setup_map_selection(world, slug))
+            .with_effect(move |world| {
                 let mut game_loading_status = GameLoadingStatus::new();
-                game_loading_status.map_loaded = true;
+                game_loading_status.map_loaded = map_loaded_setup;
                 world.insert(game_loading_status);
-
-                let layer_entity = world.create_entity().build();
-                world.insert(GameEntities::new(
-                    HashMap::new(),
-                    vec![layer_entity.clone()],
-                ));
-                world.insert(EffectReturn(layer_entity));
             })
             .with_system_single(
                 MapSelectionSpawningSystem,
                 MapSelectionSpawningSystem::type_name(),
                 &[],
             ) // kcov-ignore
-            .with_assertion(|world| {
-                let layer_entity = &world.read_resource::<EffectReturn<Entity>>().0;
-                assert_eq!(
-                    layer_entity,
-                    world
-                        .read_resource::<GameEntities>()
-                        .map_layers
-                        .iter()
-                        .next()
-                        .expect("Expected map layers to have an entity.")
-                );
+            .with_assertion(move |world| {
+                if map_loaded_expected {
+                    assert!(world.read_resource::<GameLoadingStatus>().map_loaded);
+                } else {
+                    assert!(world.read_resource::<GameLoadingStatus>().map_loaded);
+                }
+
+                if layer_entities_should_exist {
+                    assert!(!world.read_resource::<GameEntities>().map_layers.is_empty());
+                } else {
+                    assert!(world.read_resource::<GameEntities>().map_layers.is_empty());
+                }
             })
             .run_isolated()
-            .is_ok());
-    }
-
-    #[test]
-    fn spawns_map_layers_when_they_havent_been_spawned() {
-        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
-
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AmethystApplication::blank()
-                .with_bundle(TransformBundle::new())
-                .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
-                .with_bundle(SpriteLoadingBundle::new())
-                .with_bundle(SequenceLoadingBundle::new())
-                .with_bundle(MapLoadingBundle::new())
-                .with_effect(setup_system_data)
-                .with_effect(load_maps)
-                .with_effect(map_selection(MAP_FADE_SLUG.clone()))
-                .with_system_single(
-                    MapSelectionSpawningSystem,
-                    MapSelectionSpawningSystem::type_name(),
-                    &[],
-                ) // kcov-ignore
-                .with_assertion(|world| {
-                    assert!(!world.read_resource::<GameEntities>().map_layers.is_empty());
-                    assert!(world.read_resource::<GameLoadingStatus>().map_loaded);
-                })
-                .run_isolated()
-                .is_ok()
-        );
-    }
-
-    #[test]
-    fn spawns_map_that_has_no_layers() {
-        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
-
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AmethystApplication::blank()
-                .with_bundle(TransformBundle::new())
-                .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
-                .with_bundle(SpriteLoadingBundle::new())
-                .with_bundle(SequenceLoadingBundle::new())
-                .with_bundle(MapLoadingBundle::new())
-                .with_effect(setup_system_data)
-                .with_effect(load_maps)
-                .with_effect(map_selection(MAP_EMPTY_SLUG.clone()))
-                .with_system_single(
-                    MapSelectionSpawningSystem,
-                    MapSelectionSpawningSystem::type_name(),
-                    &[],
-                ) // kcov-ignore
-                .with_assertion(|world| {
-                    assert!(world.read_resource::<GameEntities>().map_layers.is_empty());
-                    assert!(world.read_resource::<GameLoadingStatus>().map_loaded);
-                })
-                .run_isolated()
-                .is_ok()
-        );
     }
 
     fn setup_system_data(world: &mut World) {
         MapSelectionSpawningSystemData::setup(world);
     }
 
-    fn load_maps(world: &mut World) {
-        let asset_index = AssetDiscovery::asset_index(&ASSETS_PATH);
+    fn setup_map_selection(world: &mut World, slug: &AssetSlug) {
+        let map_asset_id = world
+            .read_resource::<AssetIdMappings>()
+            .id(slug)
+            .copied()
+            .unwrap_or_else(|| panic!("Expected `{}` to be loaded.", slug));
 
-        let mut progress_counter = ProgressCounter::new();
-        AssetLoader::load_maps(world, &mut progress_counter, asset_index.maps);
-    } // kcov-ignore
+        world.insert(MapSelection::Id(map_asset_id));
+        world.insert(MapSelectionStatus::Confirmed);
+    }
 
-    /// Returns a function that adds a `MapSelection` and `MapSelectionStatus::Confirmed`.
-    ///
-    /// See `application_test_support::SetupFunction`.
-    ///
-    /// # Parameters
-    ///
-    /// * `slug`: Asset slug of the map to select.
-    fn map_selection(slug: AssetSlug) -> impl Fn(&mut World) {
-        move |world| {
-            let slug_and_handle = {
-                let map_handle = world
-                    .read_resource::<MapPrefabs>()
-                    .get(&slug)
-                    .unwrap_or_else(|| panic!("Expected `{}` to be loaded.", slug))
-                    .clone();
+    struct SetupParams<'s> {
+        setup_variant: SetupVariant<'s>,
+    }
 
-                SlugAndHandle::from((slug.clone(), map_handle))
-            };
+    struct ExpectedParams {
+        map_loaded: bool,
+        layer_entities_should_exist: bool,
+    }
 
-            world.insert(MapSelection::Id(slug_and_handle));
-            world.insert(MapSelectionStatus::Confirmed);
+    enum SetupVariant<'s> {
+        NotLoaded(&'s AssetSlug),
+        Loaded,
+    }
+
+    #[derive(Debug)]
+    struct WaitForLoad {
+        slug: AssetSlug,
+    }
+    impl<T, E> State<T, E> for WaitForLoad
+    where
+        T: GameUpdate,
+        E: Send + Sync + 'static,
+    {
+        fn update(&mut self, data: StateData<'_, T>) -> Trans<T, E> {
+            data.data.update(&data.world);
+
+            let (asset_id_mappings, asset_load_status) = data
+                .world
+                .system_data::<(Read<'_, AssetIdMappings>, Read<'_, AssetLoadStatus>)>();
+            if let Some(LoadStatus::Complete) = asset_id_mappings
+                .id(&self.slug)
+                .and_then(|asset_id| asset_load_status.get(*asset_id))
+            {
+                Trans::Pop
+            } else {
+                Trans::None
+            }
         }
     }
 }

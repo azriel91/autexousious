@@ -4,6 +4,8 @@
 //! that will be used in game.
 
 pub use self::{
+    asset_body_sequence_handles::AssetBodySequenceHandles,
+    asset_interactions_sequence_handles::AssetInteractionsSequenceHandles,
     body_sequence::{BodySequence, BodySequenceHandle},
     body_sequence_handles::BodySequenceHandles,
     hit_transition::HitTransition,
@@ -12,6 +14,8 @@ pub use self::{
     interactions_sequence_handles::InteractionsSequenceHandles,
 };
 
+mod asset_body_sequence_handles;
+mod asset_interactions_sequence_handles;
 mod body_sequence;
 mod body_sequence_handles;
 mod hit_transition;

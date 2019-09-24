@@ -6,6 +6,7 @@ edition = "2018"
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
+asset_model = { path = "../asset_model" }
 derivative = "1.0.2"
 derive-new = "0.5.8"
 energy_prefab = { path = "../energy_prefab" }
@@ -13,6 +14,8 @@ game_model = { path = "../game_model" }
 kinematic_model = { path = "../kinematic_model" }
 log = "0.4.8"
 object_model = { path = "../object_model" }
+object_prefab = { path = "../object_prefab" }
+object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }
 spawn_model = { path = "../spawn_model" }
 team_model = { path = "../team_model" }

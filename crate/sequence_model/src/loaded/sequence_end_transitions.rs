@@ -4,7 +4,7 @@ use specs_derive::Component;
 
 use crate::loaded::SequenceEndTransition;
 
-/// Sequence of sequence transitions upon sequence end.
+/// Sequence transition upon sequence end.
 #[sequence_component_data(SequenceEndTransition)]
 #[derive(Component)]
 pub struct SequenceEndTransitions;

@@ -6,7 +6,7 @@ use crate::WidgetState;
 
 /// Component to tag entities that are character selection widgets.
 #[derive(Clone, Debug, PartialEq, new)]
-pub(crate) struct CharacterSelectionWidget {
+pub struct CharacterSelectionWidget {
     /// Character selection state.
     pub state: WidgetState,
     /// Selected character ID or random.

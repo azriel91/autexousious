@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use asset_model::config::ConfigType;
+use asset_model::config::AssetTypeVariants;
 use lazy_static::lazy_static;
 
 use crate::NAMESPACE_TEST_PATH;
@@ -21,5 +21,5 @@ mod energy;
 lazy_static! {
     /// `PathBuf` to the "objects" asset directory.
     pub static ref OBJECT_PATH: PathBuf =
-        NAMESPACE_TEST_PATH.join(ConfigType::Object.to_string());
+        NAMESPACE_TEST_PATH.join(AssetTypeVariants::Object.to_string());
 }

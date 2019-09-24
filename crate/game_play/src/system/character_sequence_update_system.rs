@@ -1,12 +1,9 @@
 use amethyst::{
-    assets::AssetStorage,
     ecs::{Entities, Join, Read, ReadStorage, System, World, WriteStorage},
     shred::{ResourceId, SystemData},
 };
-use character_model::{
-    loaded::{Character, CharacterHandle},
-    play::RunCounter,
-};
+use asset_model::loaded::AssetId;
+use character_model::{config::CharacterSequenceName, play::RunCounter};
 use character_play::{
     CharacterSequenceUpdateComponents, CharacterSequenceUpdater, MirroredUpdater, RunCounterUpdater,
 };
@@ -15,7 +12,11 @@ use derive_new::new;
 use game_input::ControllerInput;
 use kinematic_model::config::{Position, Velocity};
 use object_model::play::{Grounding, HealthPoints, Mirrored};
-use sequence_model::{config::SequenceNameString, loaded::SequenceId, play::SequenceStatus};
+use sequence_model::{
+    config::SequenceNameString,
+    loaded::{AssetSequenceIdMappings, SequenceId},
+    play::SequenceStatus,
+};
 use typename_derive::TypeName;
 
 /// Updates character sequence name based on input (or lack of).
@@ -27,12 +28,13 @@ pub struct CharacterSequenceUpdateSystemData<'s> {
     /// `Entities` resource.
     #[derivative(Debug = "ignore")]
     pub entities: Entities<'s>,
-    /// `CharacterHandle` components.
+    /// `AssetId` components.
     #[derivative(Debug = "ignore")]
-    pub character_handles: ReadStorage<'s, CharacterHandle>,
-    /// `Character` assets.
+    pub asset_ids: ReadStorage<'s, AssetId>,
+    /// `AssetSequenceIdMappings<CharacterSequenceName>` resource.
     #[derivative(Debug = "ignore")]
-    pub character_assets: Read<'s, AssetStorage<Character>>,
+    pub asset_sequence_id_mappings_character:
+        Read<'s, AssetSequenceIdMappings<CharacterSequenceName>>,
     /// `ControllerInput` components.
     #[derivative(Debug = "ignore")]
     pub controller_inputs: ReadStorage<'s, ControllerInput>,
@@ -69,8 +71,8 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
         &mut self,
         CharacterSequenceUpdateSystemData {
             entities,
-            character_handles,
-            character_assets,
+            asset_ids,
+            asset_sequence_id_mappings_character,
             controller_inputs,
             positions,
             velocities,
@@ -84,7 +86,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
     ) {
         for (
             entity,
-            character_handle,
+            asset_id,
             controller_input,
             position,
             velocity,
@@ -95,7 +97,7 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             grounding,
         ) in (
             &entities,
-            &character_handles,
+            &asset_ids,
             &controller_inputs,
             &positions,
             &velocities,
@@ -115,11 +117,15 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
             }
             let sequence_id = sequence_id.expect("Expected `SequenceId` to exist.");
 
-            let character = character_assets
-                .get(character_handle)
-                .expect("Expected `Character` to be loaded.");
-            let character_sequence_name_string = character
-                .sequence_id_mappings
+            let sequence_id_mappings = asset_sequence_id_mappings_character
+                .get(*asset_id)
+                .unwrap_or_else(|| {
+                    panic!(
+                        "Expected `SequenceIdMappings<CharacterSequenceName>` to exist for `{:?}`.",
+                        asset_id
+                    )
+                });
+            let character_sequence_name_string = sequence_id_mappings
                 .name(*sequence_id)
                 .expect("Expected sequence ID mapping to exist.");
 
@@ -159,9 +165,9 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
                     .get_mut(entity)
                     .expect("Expected `SequenceId` to exist.");
 
-                let next_sequence_id = *character
-                    .sequence_id_mappings
+                let next_sequence_id = sequence_id_mappings
                     .id(&SequenceNameString::Name(next_sequence_name))
+                    .copied()
                     .expect("Expected sequence ID mapping to exist.");
 
                 *sequence_id = next_sequence_id;
@@ -173,14 +179,13 @@ impl<'s> System<'s> for CharacterSequenceUpdateSystem {
 #[cfg(test)]
 mod tests {
     use amethyst::{
-        assets::AssetStorage,
         ecs::{Join, Read, ReadExpect, ReadStorage, WriteStorage},
         Error,
     };
     use application_test_support::AutexousiousApplication;
     use game_input::ControllerInput;
     use kinematic_model::config::Position;
-    use map_model::loaded::Map;
+    use map_model::loaded::AssetMargins;
     use map_selection_model::MapSelection;
     use object_model::play::{Grounding, Mirrored};
     use sequence_model::{loaded::SequenceId, play::SequenceStatus};
@@ -240,7 +245,7 @@ mod tests {
             .with_effect(move |world| {
                 let (
                     map_selection,
-                    maps,
+                    asset_margins,
                     mut controller_inputs,
                     mut sequence_ids,
                     mut sequence_statuses,
@@ -249,8 +254,12 @@ mod tests {
                     mut groundings,
                 ) = world.system_data::<TestSystemData>();
 
-                let map = maps
-                    .get(map_selection.handle())
+                let margins = asset_margins
+                    .get(
+                        map_selection
+                            .asset_id()
+                            .expect("Expected `MapSelection` to have asset ID."),
+                    )
                     .expect("Expected map to be loaded.");
 
                 (
@@ -278,7 +287,7 @@ mod tests {
                             *mirrored = setup_mirrored;
                             *grounding = Grounding::OnGround;
 
-                            position[1] = map.margins.bottom;
+                            position[1] = margins.bottom;
                         },
                     );
             })
@@ -305,7 +314,7 @@ mod tests {
 
     type TestSystemData<'s> = (
         ReadExpect<'s, MapSelection>,
-        Read<'s, AssetStorage<Map>>,
+        Read<'s, AssetMargins>,
         WriteStorage<'s, ControllerInput>,
         WriteStorage<'s, SequenceId>,
         WriteStorage<'s, SequenceStatus>,

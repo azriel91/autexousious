@@ -16,7 +16,6 @@ indexmap = { version = "1.1.0", features = ["serde-1"] }
 kinematic_model = { path = "../kinematic_model" }
 logic_clock = { path = "../logic_clock" }
 numeric_newtype_derive = { path = "../numeric_newtype_derive" }
-object_model_derive = { path = "../object_model_derive" }
 object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }
 sequence_model_spi = { path = "../sequence_model_spi" }

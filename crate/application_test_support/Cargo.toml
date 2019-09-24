@@ -25,6 +25,7 @@ energy_prefab = { path = "../energy_prefab" }
 game_input_model = { path = "../game_input_model" }
 game_loading = { path = "../game_loading" }
 game_model = { path = "../game_model" }
+kinematic_loading = { path = "../kinematic_loading" }
 loading = { path = "../loading" }
 map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }

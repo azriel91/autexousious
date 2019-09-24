@@ -7,6 +7,7 @@ edition = "2018"
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 asset_derive = { path = "../asset_derive" }
+asset_model = { path = "../asset_model" }
 derivative = "1.0.2"
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
@@ -16,6 +17,7 @@ enumflags2_derive = "0.5.0"
 logic_clock = { path = "../logic_clock" }
 sequence_model = { path = "../sequence_model" }
 serde = "1.0.99"
+slotmap = "0.4.0"
 specs-derive = "0.4.0"
 sprite_model = { path = "../sprite_model" }
 strum = "0.15.0"

@@ -1,8 +1,10 @@
-use amethyst::{ecs::prelude::*, shrev::EventChannel};
-
-use asset_model::loaded::SlugAndHandle;
+use amethyst::{
+    ecs::{Read, System, World, Write, WriteExpect},
+    shred::SystemData,
+    shrev::{EventChannel, ReaderId},
+};
+use asset_model::{config::AssetType, loaded::AssetTypeMappings};
 use derive_new::new;
-use game_model::loaded::MapPrefabs;
 use log::warn;
 use map_selection_model::{MapSelection, MapSelectionEvent};
 use typename_derive::TypeName;
@@ -41,7 +43,7 @@ impl<'s> System<'s> for MapSelectionSystem {
         }) = events.next()
         {
             *map_selection_status = MapSelectionStatus::Confirmed;
-            *map_selection = selection.clone();
+            *map_selection = *selection;
 
             // Discard additional events, and log a message
             let additional_events = events.count();
@@ -58,14 +60,14 @@ impl<'s> System<'s> for MapSelectionSystem {
         Self::SystemData::setup(world);
 
         if world.try_fetch::<MapSelection>().is_none() {
-            let slug_and_handle = world
-                .fetch::<MapPrefabs>()
-                .iter()
+            let first_map_id = world
+                .fetch::<AssetTypeMappings>()
+                .iter_ids(&AssetType::Map)
                 .next()
-                .map(SlugAndHandle::from)
+                .copied()
                 .expect("Expected at least one map to be loaded.");
 
-            world.insert(MapSelection::Random(slug_and_handle));
+            world.insert(MapSelection::Random(Some(first_map_id)));
         }
 
         let mut selection_event_channel = world.fetch_mut::<EventChannel<MapSelectionEvent>>();
@@ -75,129 +77,156 @@ impl<'s> System<'s> for MapSelectionSystem {
 
 #[cfg(test)]
 mod test {
+    use std::str::FromStr;
+
     use amethyst::{
-        assets::ProgressCounter,
-        core::TransformBundle,
-        ecs::SystemData,
-        prelude::*,
-        renderer::{types::DefaultBackend, RenderEmptyBundle},
+        ecs::{Read, SystemData, World, WorldExt},
         shrev::EventChannel,
+        Error,
     };
     use amethyst_test::AmethystApplication;
-    use asset_loading::AssetDiscovery;
-    use asset_model::loaded::SlugAndHandle;
-    use assets_test::{ASSETS_PATH, MAP_EMPTY_SLUG, MAP_FADE_SLUG};
-    use loading::AssetLoader;
-    use map_loading::MapLoadingBundle;
+    use asset_model::{
+        config::{AssetSlug, AssetType},
+        loaded::{AssetId, AssetIdMappings, AssetTypeMappings},
+    };
     use map_selection_model::{MapSelection, MapSelectionEvent};
-    use sequence_loading::SequenceLoadingBundle;
-    use sprite_loading::SpriteLoadingBundle;
     use typename::TypeName;
 
     use super::{MapSelectionSystem, MapSelectionSystemData};
     use crate::MapSelectionStatus;
 
     #[test]
-    fn returns_when_map_selection_status_confirmed() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AmethystApplication::blank()
-                .with_bundle(TransformBundle::new())
-                .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
-                .with_bundle(SpriteLoadingBundle::new())
-                .with_bundle(SequenceLoadingBundle::new())
-                .with_bundle(MapLoadingBundle::new())
-                .with_resource(MapSelectionStatus::Confirmed)
-                .with_effect(setup_components)
-                .with_effect(load_maps)
-                .with_effect(|world| {
-                    let fade_snh = SlugAndHandle::from((&*world, MAP_FADE_SLUG.clone()));
-                    let map_selection = MapSelection::Id(fade_snh);
-                    world.insert(map_selection);
-
-                    // Send event, if the event is not responded to, then we know the system returns
-                    // early.
-                    let empty_snh = SlugAndHandle::from((&*world, MAP_EMPTY_SLUG.clone()));
-                    let map_selection = MapSelection::Id(empty_snh);
-                    send_event(world, MapSelectionEvent::Select { map_selection })
-                })
-                .with_system_single(
-                    MapSelectionSystem::new(),
-                    MapSelectionSystem::type_name(),
-                    &[],
-                )
-                .with_assertion(|world| {
-                    let fade_snh = SlugAndHandle::from((&*world, MAP_FADE_SLUG.clone()));
-
-                    let map_selection = world.read_resource::<MapSelection>();
-                    assert_eq!(MapSelection::Id(fade_snh), *map_selection);
-                })
-                .run_isolated()
-                .is_ok()
-        );
+    fn returns_when_map_selection_status_confirmed() -> Result<(), Error> {
+        run_test(
+            SetupParams {
+                map_selection_status: MapSelectionStatus::Confirmed,
+                map_select: MapSelect::Two,
+            },
+            ExpectedParams {
+                map_selection_status: MapSelectionStatus::Confirmed,
+                map_select: MapSelect::One,
+            },
+        )
     }
 
     #[test]
-    #[ignore]
-    // TODO: Fails because the reader ID is registered after the event is sent.
-    // See <https://gitlab.com/azriel91/autexousious/issues/74>
-    fn selects_map_when_select_event_is_sent() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AmethystApplication::blank()
-                .with_bundle(TransformBundle::new())
-                .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
-                .with_bundle(SpriteLoadingBundle::new())
-                .with_bundle(SequenceLoadingBundle::new())
-                .with_bundle(MapLoadingBundle::new())
-                .with_effect(setup_components)
-                .with_effect(load_maps)
-                .with_effect(|world| {
-                    let fade_snh = SlugAndHandle::from((&*world, MAP_FADE_SLUG.clone()));
-                    let map_selection = MapSelection::Id(fade_snh);
-                    world.insert(map_selection);
-
-                    // Send event, if the event is responded to, then we know the system has read
-                    // it.
-                    let empty_snh = SlugAndHandle::from((&*world, MAP_EMPTY_SLUG.clone()));
-                    let map_selection = MapSelection::Id(empty_snh);
-                    send_event(world, MapSelectionEvent::Select { map_selection })
-                })
-                .with_system_single(
-                    MapSelectionSystem::new(),
-                    MapSelectionSystem::type_name(),
-                    &[],
-                )
-                .with_assertion(|world| {
-                    let empty_snh = SlugAndHandle::from((&*world, MAP_EMPTY_SLUG.clone()));
-
-                    let map_selection = world.read_resource::<MapSelection>();
-                    assert_eq!(MapSelection::Id(empty_snh), *map_selection);
-
-                    let map_selection_status = world.read_resource::<MapSelectionStatus>();
-                    assert_eq!(MapSelectionStatus::Confirmed, *map_selection_status);
-                })
-                .run_isolated()
-                .is_ok()
-        );
+    fn selects_map_when_select_event_is_sent() -> Result<(), Error> {
+        run_test(
+            SetupParams {
+                map_selection_status: MapSelectionStatus::Pending,
+                map_select: MapSelect::Two,
+            },
+            ExpectedParams {
+                map_selection_status: MapSelectionStatus::Confirmed,
+                map_select: MapSelect::Two,
+            },
+        )
     }
 
-    fn setup_components(world: &mut World) {
+    fn run_test(
+        SetupParams {
+            map_selection_status: map_selection_status_setup,
+            map_select: map_select_setup,
+        }: SetupParams,
+        ExpectedParams {
+            map_selection_status: map_selection_status_expected,
+            map_select: map_select_expected,
+        }: ExpectedParams,
+    ) -> Result<(), Error> {
+        AmethystApplication::blank()
+            .with_resource(map_selection_status_setup)
+            .with_system(
+                MapSelectionSystem::new(),
+                MapSelectionSystem::type_name(),
+                &[],
+            )
+            .with_setup(setup_maps)
+            .with_setup(setup_system_data)
+            .with_effect(move |world| {
+                let initial_selection = {
+                    let map_asset_ids = &*world.read_resource::<Vec<AssetId>>();
+                    MapSelection::Id(map_asset_ids[0])
+                };
+                world.insert(initial_selection);
+
+                // Send event, if the event is not responded to, then we know the system returns
+                // early.
+                let map_selection = {
+                    let index = match map_select_setup {
+                        MapSelect::One => 0,
+                        MapSelect::Two => 1,
+                    };
+                    let map_asset_ids = &*world.read_resource::<Vec<AssetId>>();
+                    MapSelection::Id(map_asset_ids[index])
+                };
+
+                send_event(world, MapSelectionEvent::Select { map_selection })
+            })
+            .with_assertion(move |world| {
+                let map_selection_expected = {
+                    let index = match map_select_expected {
+                        MapSelect::One => 0,
+                        MapSelect::Two => 1,
+                    };
+                    let map_asset_ids = &*world.read_resource::<Vec<AssetId>>();
+                    MapSelection::Id(map_asset_ids[index])
+                };
+                let map_selection_actual = world.read_resource::<MapSelection>();
+                assert_eq!(map_selection_expected, *map_selection_actual);
+
+                let map_selection_status = world.read_resource::<MapSelectionStatus>();
+                assert_eq!(map_selection_status_expected, *map_selection_status);
+            })
+            .run()
+    }
+
+    fn setup_system_data(world: &mut World) {
         MapSelectionSystemData::setup(world);
     }
 
-    fn load_maps(world: &mut World) {
-        let asset_index = AssetDiscovery::asset_index(&ASSETS_PATH);
+    fn setup_maps(world: &mut World) {
+        <Read<'_, AssetIdMappings> as SystemData>::setup(world);
+        <Read<'_, AssetTypeMappings> as SystemData>::setup(world);
 
-        let mut progress_counter = ProgressCounter::new();
-        AssetLoader::load_maps(world, &mut progress_counter, asset_index.maps);
+        let asset_ids = {
+            let mut asset_id_mappings = world.write_resource::<AssetIdMappings>();
+            let mut asset_type_mappings = world.write_resource::<AssetTypeMappings>();
+            let slug_map_one =
+                AssetSlug::from_str("test/map_one").expect("Expected asset slug to be valid.");
+            let slug_map_two =
+                AssetSlug::from_str("test/map_two").expect("Expected asset slug to be valid.");
+
+            let asset_id_one = asset_id_mappings.insert(slug_map_one);
+            let asset_id_two = asset_id_mappings.insert(slug_map_two);
+
+            asset_type_mappings.insert(asset_id_one, AssetType::Map);
+            asset_type_mappings.insert(asset_id_two, AssetType::Map);
+
+            vec![asset_id_one, asset_id_two]
+        };
+
+        world.insert(asset_ids);
     }
 
     fn send_event(world: &mut World, event: MapSelectionEvent) {
         world
             .write_resource::<EventChannel<MapSelectionEvent>>()
             .single_write(event);
+    }
+
+    struct SetupParams {
+        map_selection_status: MapSelectionStatus,
+        map_select: MapSelect,
+    }
+
+    struct ExpectedParams {
+        map_selection_status: MapSelectionStatus,
+        map_select: MapSelect,
+    }
+
+    #[derive(Clone, Copy, Debug, PartialEq)]
+    enum MapSelect {
+        One,
+        Two,
     }
 }

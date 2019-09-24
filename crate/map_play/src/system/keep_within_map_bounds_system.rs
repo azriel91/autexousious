@@ -1,5 +1,4 @@
 use amethyst::{
-    assets::AssetStorage,
     ecs::{Read, ReadExpect, ReadStorage, System, World, WriteStorage},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
@@ -8,7 +7,7 @@ use derivative::Derivative;
 use derive_new::new;
 use kinematic_model::config::Position;
 use map_model::{
-    loaded::Map,
+    loaded::AssetMargins,
     play::{BoundaryFace, MapBoundaryEvent, MapBoundaryEventData, MapBounded},
 };
 use map_selection_model::MapSelection;
@@ -31,9 +30,9 @@ pub struct KeepWithinMapBoundsSystemData<'s> {
     /// `MapSelection` resource.
     #[derivative(Debug = "ignore")]
     pub map_selection: ReadExpect<'s, MapSelection>,
-    /// `Map` assets.
+    /// `AssetMargins` resource.
     #[derivative(Debug = "ignore")]
-    pub map_assets: Read<'s, AssetStorage<Map>>,
+    pub asset_margins: Read<'s, AssetMargins>,
     /// `MapBounded` components.
     #[derivative(Debug = "ignore")]
     pub map_boundeds: ReadStorage<'s, MapBounded>,
@@ -50,17 +49,18 @@ impl<'s> System<'s> for KeepWithinMapBoundsSystem {
         KeepWithinMapBoundsSystemData {
             map_boundary_ec,
             map_selection,
-            map_assets,
+            asset_margins,
             map_boundeds,
             mut positions,
         }: Self::SystemData,
     ) {
-        let map_margins = {
-            map_assets
-                .get(map_selection.handle())
-                .map(|map| map.margins)
-                .expect("Expected map to be loaded.")
-        };
+        let map_margins = asset_margins
+            .get(
+                map_selection
+                    .asset_id()
+                    .expect("Expected `MapSelection` asset ID to exist."),
+            )
+            .expect("Expected `Margins` to be loaded.");
 
         let map_boundary_event_rid = self
             .map_boundary_event_rid
@@ -115,19 +115,18 @@ mod tests {
     use std::str::FromStr;
 
     use amethyst::{
-        assets::{AssetStorage, Loader},
-        ecs::{Builder, Entity, System, SystemData, World, WorldExt},
+        ecs::{Builder, Entity, Read, System, SystemData, World, WorldExt},
         shrev::EventChannel,
         Error,
     };
     use amethyst_test::AmethystApplication;
-    use asset_model::{config::AssetSlug, loaded::SlugAndHandle};
+    use asset_model::{config::AssetSlug, loaded::AssetIdMappings};
     use enumflags2::BitFlags;
     use kinematic_model::config::Position;
     use map_loading::MapLoadingBundle;
     use map_model::{
-        config::{MapBounds, MapDefinition, MapHeader},
-        loaded::{Map, Margins},
+        config::MapBounds,
+        loaded::{AssetMargins, Margins},
         play::{BoundaryFace, MapBoundaryEvent, MapBoundaryEventData, MapBounded},
     };
     use map_selection_model::MapSelection;
@@ -376,22 +375,7 @@ mod tests {
                 &[String::from("map_processor")],
             ) // kcov-ignore
             .with_setup(setup_system_data)
-            .with_setup(|world| {
-                let map_handle = {
-                    let map = empty_map();
-                    let loader = world.read_resource::<Loader>();
-                    let map_assets = world.read_resource::<AssetStorage<Map>>();
-
-                    loader.load_from_data(map, (), &map_assets)
-                };
-
-                let slug = AssetSlug::from_str("test/empty_map")
-                    .expect("Expected asset slug to be valid.");
-                let snh = SlugAndHandle::new(slug, map_handle);
-                let map_selection = MapSelection::Id(snh);
-
-                world.insert(map_selection);
-            })
+            .with_setup(setup_map_selection)
             .with_effect(move |world| {
                 let entity = world
                     .create_entity()
@@ -424,20 +408,26 @@ mod tests {
 
     fn setup_system_data(world: &mut World) {
         <KeepWithinMapBoundsSystem as System<'_>>::SystemData::setup(world);
+        <Read<'_, AssetIdMappings> as SystemData>::setup(world);
     }
 
-    fn empty_map() -> Map {
-        let map_bounds = MapBounds::new(0, 0, 0, 800, 600, 200);
-        let map_header = MapHeader::new(String::from("empty_map"), map_bounds);
-        let map_definition = MapDefinition::new(map_header, Vec::new());
-        let map_margins = Margins::from(map_bounds);
-        Map::new(
-            map_definition,
-            map_margins,
-            Vec::new(),
-            Vec::new(),
-            Vec::new(),
-        )
+    fn setup_map_selection(world: &mut World) {
+        let map_selection = {
+            let map_bounds = MapBounds::new(0, 0, 0, 800, 600, 200);
+            let map_margins = Margins::from(map_bounds);
+
+            let mut asset_id_mappings = world.write_resource::<AssetIdMappings>();
+            let mut asset_margins = world.write_resource::<AssetMargins>();
+            let slug =
+                AssetSlug::from_str("test/empty_map").expect("Expected asset slug to be valid.");
+
+            let asset_id = asset_id_mappings.insert(slug);
+            asset_margins.insert(asset_id, map_margins);
+
+            MapSelection::Id(asset_id)
+        };
+
+        world.insert(map_selection);
     }
 
     struct SetupParams {

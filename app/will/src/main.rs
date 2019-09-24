@@ -27,13 +27,11 @@ use application::{
 use application_event::{AppEvent, AppEventReader};
 use application_robot::RobotState;
 use audio_loading::AudioLoadingBundle;
-use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
-use character_prefab::CharacterPrefabBundle;
+use character_loading::CharacterLoadingBundle;
 use character_selection_stdio::CharacterSelectionStdioBundle;
 use collision_audio_loading::CollisionAudioLoadingBundle;
 use collision_loading::CollisionLoadingBundle;
-use energy_loading::{EnergyLoadingBundle, ENERGY_PROCESSOR};
-use energy_prefab::EnergyPrefabBundle;
+use energy_loading::EnergyLoadingBundle;
 use frame_rate::strategy::frame_rate_limit_config;
 use game_input::GameInputBundle;
 use game_input_model::{ControlBindings, InputConfig};
@@ -139,15 +137,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             .with_bundle(SpawnLoadingBundle::new())?
             .with_bundle(MapLoadingBundle::new())?
             .with_bundle(CharacterLoadingBundle::new())?
-            .with_bundle(
-                CharacterPrefabBundle::new()
-                    .with_system_dependencies(&[String::from(CHARACTER_PROCESSOR)]),
-            )?
             .with_bundle(EnergyLoadingBundle::new())?
-            .with_bundle(
-                EnergyPrefabBundle::new()
-                    .with_system_dependencies(&[String::from(ENERGY_PROCESSOR)]),
-            )?
             .with_bundle(CollisionAudioLoadingBundle::new(assets_dir.clone()))?
             .with_bundle(UiAudioLoadingBundle::new(assets_dir.clone()))?
             .with_bundle(
