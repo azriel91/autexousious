@@ -1,14 +1,19 @@
 use amethyst::{
     assets::AssetStorage,
-    ecs::{Entities, Entity, Read, ReadStorage, System, World, Write, WriteStorage},
+    ecs::{Entities, Entity, Read, ReadStorage, System, World, Write},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
+use asset_model::{
+    config::AssetType,
+    loaded::{AssetIdMappings, AssetTypeMappings},
+};
 use derivative::Derivative;
 use derive_new::new;
-use energy_prefab::EnergyPrefabHandle;
-use game_model::loaded::EnergyPrefabs;
+use energy_prefab::{EnergyComponentStorages, EnergyEntityAugmenter};
 use log::error;
+use object_prefab::{ObjectComponentStorages, ObjectEntityAugmenter, ObjectSpawningResources};
+use object_type::ObjectType;
 use sequence_model::play::SequenceUpdateEvent;
 use spawn_model::{
     config::{Spawns, SpawnsHandle},
@@ -27,15 +32,24 @@ pub struct SpawnGameObjectSystem {
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct SpawnGameObjectResources<'s> {
-    /// `Entities` resource.
+    /// `Entities`.
     #[derivative(Debug = "ignore")]
     pub entities: Entities<'s>,
-    /// `EnergyPrefabs` resource.
+    /// `AssetIdMappings` resource.
     #[derivative(Debug = "ignore")]
-    pub energy_prefabs: Read<'s, EnergyPrefabs>,
-    /// `EnergyPrefabHandle` components.
+    pub asset_id_mappings: Read<'s, AssetIdMappings>,
+    /// `AssetTypeMappings` resource.
     #[derivative(Debug = "ignore")]
-    pub energy_prefab_handles: WriteStorage<'s, EnergyPrefabHandle>,
+    pub asset_type_mappings: Read<'s, AssetTypeMappings>,
+    /// `ObjectSpawningResources`.
+    #[derivative(Debug = "ignore")]
+    pub object_spawning_resources: ObjectSpawningResources<'s>,
+    /// `ObjectComponentStorages`.
+    #[derivative(Debug = "ignore")]
+    pub object_component_storages: ObjectComponentStorages<'s>,
+    /// `EnergyComponentStorages`.
+    #[derivative(Debug = "ignore")]
+    pub energy_component_storages: EnergyComponentStorages<'s>,
     /// `SpawnEvent` channel.
     #[derivative(Debug = "ignore")]
     pub spawn_ec: Write<'s, EventChannel<SpawnEvent>>,
@@ -61,28 +75,38 @@ impl SpawnGameObjectSystem {
     /// Creates an entity for each `Spawn` and attaches its prefab handle.
     fn spawn_game_objects(
         SpawnGameObjectResources {
-            ref entities,
-            ref energy_prefabs,
-            ref mut energy_prefab_handles,
-            ref mut spawn_ec,
+            entities,
+            asset_id_mappings,
+            asset_type_mappings,
+            object_spawning_resources,
+            object_component_storages,
+            energy_component_storages,
+            spawn_ec,
         }: &mut SpawnGameObjectResources<'_>,
         spawns: &Spawns,
         entity_parent: Entity,
     ) {
         spawns.iter().for_each(|spawn| {
-            if let Some(energy_prefab_handle) = energy_prefabs.get(&spawn.object) {
+            if let Some(asset_id) = asset_id_mappings.id(&spawn.object) {
+                let asset_type = asset_type_mappings
+                    .get(asset_id)
+                    .unwrap_or_else(|| panic!("`AssetType` not found for `{:?}`.", asset_id));
                 let entity_spawned = entities.create();
-                energy_prefab_handles
-                    .insert(entity_spawned, energy_prefab_handle.clone())
-                    .expect("Failed to insert `EnergyPrefabHandle` component.");
+                ObjectEntityAugmenter::augment(
+                    object_spawning_resources,
+                    object_component_storages,
+                    *asset_id,
+                    entity_spawned,
+                );
+
+                if let AssetType::Object(ObjectType::Energy) = asset_type {
+                    EnergyEntityAugmenter::augment(entity_spawned, energy_component_storages);
+                }
 
                 let spawn_event = SpawnEvent::new(spawn.clone(), entity_parent, entity_spawned);
                 spawn_ec.single_write(spawn_event);
             } else {
-                error!(
-                    "`{}` does not exist in loaded `Energy` objects.",
-                    &spawn.object
-                )
+                error!("`AssetId` not found for `{}`.", &spawn.object)
             }
         });
     }
@@ -151,17 +175,13 @@ mod tests {
 
     use amethyst::{
         assets::{AssetStorage, Loader},
-        ecs::{Builder, Entity, Join, Read, ReadExpect, World, WorldExt},
+        ecs::{Builder, Entity, Read, ReadExpect, World, WorldExt},
         shrev::{EventChannel, ReaderId},
         Error,
     };
     use application_test_support::AutexousiousApplication;
     use asset_model::config::AssetSlug;
-    use energy_loading::EnergyLoadingStatus;
-    use energy_model::loaded::Energy;
-    use energy_prefab::{EnergyPrefab, EnergyPrefabHandle};
     use kinematic_model::config::{Position, Velocity};
-    use loading::ObjectAssetLoadingSystem;
     use sequence_model::{loaded::SequenceId, play::SequenceUpdateEvent};
     use spawn_model::{
         config::{Spawn, Spawns},
@@ -217,26 +237,16 @@ mod tests {
             .with_system(
                 SpawnGameObjectSystem::new(),
                 SpawnGameObjectSystem::type_name(),
-                &[ObjectAssetLoadingSystem::<
-                    Energy,
-                    EnergyPrefab,
-                    EnergyLoadingStatus,
-                >::type_name()],
+                &[],
             )
-            // TODO: Split prefab system.
-            // TODO: <https://gitlab.com/azriel91/autexousious/issues/138>
-            // .with_bundle(EnergyPrefabBundle::new().with_system_dependencies(&[
-            //     String::from(ENERGY_PROCESSOR),
-            //     SpawnGameObjectSystem::type_name(),
-            // ]))
             .with_effect(setup_spawn_ec_reader)
             .with_assertion(|world| {
-                assert_energy_count(world, 0);
+                assert_object_count(world, 0);
                 assert_events(world, 0);
             })
             .with_effect(move |world| create_entity_with_spawns(world, sequence_update_event_fn))
             .with_assertion(move |world| {
-                assert_energy_count(world, spawn_count_expected);
+                assert_object_count(world, spawn_count_expected);
                 assert_events(world, spawn_count_expected);
             })
             .run_isolated()
@@ -280,9 +290,9 @@ mod tests {
         )
     }
 
-    fn assert_energy_count(world: &mut World, count: usize) {
-        let energy_prefab_handles = world.read_storage::<EnergyPrefabHandle>();
-        assert_eq!(count, (&energy_prefab_handles).join().count());
+    fn assert_object_count(world: &mut World, count: usize) {
+        let positions = world.read_storage::<Position<f32>>();
+        assert_eq!(count, positions.count());
     }
 
     fn assert_events(world: &mut World, event_count: usize) {

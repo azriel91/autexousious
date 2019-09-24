@@ -5518,6 +5518,8 @@ dependencies = [
  "loading 0.13.0",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "object_model 0.13.0",
+ "object_prefab 0.13.0",
+ "object_type 0.13.0",
  "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "sequence_model 0.13.0",
  "spawn_model 0.13.0",
