@@ -4,17 +4,16 @@ use amethyst::{
 };
 use asset_model::config::AssetSlug;
 use character_model::loaded::{
-    Character, CharacterControlTransitionsHandle, CharacterCts, CharacterCtsHandle,
+    AssetCharacterCtsHandles, CharacterControlTransitionsHandle, CharacterCts, CharacterCtsHandle,
     CharacterObjectWrapper,
 };
-use character_prefab::CharacterPrefab;
 use collision_model::loaded::{BodySequenceHandle, InteractionsSequenceHandle};
 use object_model::loaded::ObjectWrapper;
 use sequence_model::loaded::{SequenceEndTransition, SequenceId, WaitSequenceHandle};
 use spawn_model::loaded::SpawnsSequenceHandle;
 use sprite_model::loaded::SpriteRenderSequenceHandle;
 
-use crate::ObjectQueries;
+use crate::{AssetQueries, ObjectQueries};
 
 /// Functions to retrieve sequence data from a running world.
 #[derive(Debug)]
@@ -35,30 +34,22 @@ impl SequenceQueries {
         asset_slug: &AssetSlug,
         sequence_id: SequenceId,
     ) -> CharacterCtsHandle {
-        let character_handle = ObjectQueries::game_object_handle::<CharacterPrefab>(
-            world, asset_slug,
-        )
-        .unwrap_or_else(|| {
-            panic!(
-                "Expected `CharacterPrefab` to exist for slug: `{}`.",
-                asset_slug
-            )
-        });
-        let character_assets = world.read_resource::<AssetStorage<Character>>();
-        let character = character_assets.get(&character_handle).unwrap_or_else(|| {
-            panic!(
-                "Expected `Character` to be loaded for slug: `{}`.",
-                asset_slug
-            )
-        });
+        let character_asset_id = AssetQueries::id(world, &asset_slug);
+        let asset_character_cts_handles = world.read_resource::<AssetCharacterCtsHandles>();
+        let character_cts_handles = asset_character_cts_handles
+            .get(character_asset_id)
+            .unwrap_or_else(|| {
+                panic!(
+                    "Expected `CharacterCtsHandles` to exist for `{:?}`.",
+                    character_asset_id
+                )
+            });
 
-        character
-            .cts_handles
+        character_cts_handles
             .get(*sequence_id)
             .unwrap_or_else(|| {
                 panic!(
-                    "Expected `CharacterCtsHandle` to exist for sequence \
-                     ID: `{:?}`.",
+                    "Expected `CharacterCtsHandle` to exist for sequence ID: `{:?}`.",
                     sequence_id
                 )
             })

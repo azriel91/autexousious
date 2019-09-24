@@ -1001,6 +1001,7 @@ dependencies = [
  "application 0.13.0",
  "application_test_support 0.13.0",
  "approx 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "asset_model 0.13.0",
  "assets_test 0.13.0",
  "character_loading 0.13.0",
  "character_model 0.13.0",

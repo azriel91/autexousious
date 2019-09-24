@@ -1,12 +1,12 @@
 use amethyst::{
-    assets::AssetStorage,
     ecs::{
         storage::ComponentEvent, BitSet, Entities, Join, Read, ReadStorage, ReaderId, System,
         World, WriteStorage,
     },
     shred::{ResourceId, SystemData},
 };
-use character_model::loaded::{Character, CharacterCtsHandle, CharacterHandle};
+use asset_model::loaded::AssetId;
+use character_model::loaded::{AssetCharacterCtsHandles, CharacterCtsHandle};
 use derivative::Derivative;
 use derive_new::new;
 use log::error;
@@ -31,16 +31,16 @@ pub struct CharacterCtsHandleUpdateSystemData<'s> {
     /// `Entities` resource.
     #[derivative(Debug = "ignore")]
     pub entities: Entities<'s>,
-    /// `SequenceStatus` component storage.
+    /// `SequenceStatus` components.
     #[derivative(Debug = "ignore")]
     pub sequence_ids: ReadStorage<'s, SequenceId>,
-    /// `CharacterHandle` component storage.
+    /// `AssetId` components.
     #[derivative(Debug = "ignore")]
-    pub character_handles: ReadStorage<'s, CharacterHandle>,
-    /// `Character` assets.
+    pub asset_ids: ReadStorage<'s, AssetId>,
+    /// `AssetCharacterCtsHandles` resource.
     #[derivative(Debug = "ignore")]
-    pub character_assets: Read<'s, AssetStorage<Character>>,
-    /// `CharacterCtsHandle` component storage.
+    pub asset_character_cts_handles: Read<'s, AssetCharacterCtsHandles>,
+    /// `CharacterCtsHandle` components.
     #[derivative(Debug = "ignore")]
     pub character_cts_handles: WriteStorage<'s, CharacterCtsHandle>,
 }
@@ -53,8 +53,8 @@ impl<'s> System<'s> for CharacterCtsHandleUpdateSystem {
         CharacterCtsHandleUpdateSystemData {
             entities,
             sequence_ids,
-            character_handles,
-            character_assets,
+            asset_ids,
+            asset_character_cts_handles,
             mut character_cts_handles,
         }: Self::SystemData,
     ) {
@@ -77,15 +77,19 @@ impl<'s> System<'s> for CharacterCtsHandleUpdateSystem {
         (
             &entities,
             &sequence_ids,
-            &character_handles,
+            &asset_ids,
             &self.sequence_id_updates,
         )
             .join()
-            .for_each(|(entity, sequence_id, character_handle, _)| {
-                let character = character_assets
-                    .get(&character_handle)
-                    .expect("Expected `ObjectWrapper` to be loaded.");
-                let cts_handles = &character.cts_handles;
+            .for_each(|(entity, sequence_id, asset_id, _)| {
+                let cts_handles = asset_character_cts_handles
+                    .get(*asset_id)
+                    .unwrap_or_else(|| {
+                        panic!(
+                            "Expected `CharacterCtsHandles` to exist for `{:?}`.",
+                            asset_id
+                        )
+                    });
 
                 let character_cts_handle = cts_handles
                     .get(**sequence_id)
@@ -131,10 +135,9 @@ mod tests {
         ecs::{Builder, Entity, World, WorldExt},
         Error,
     };
-    use application_test_support::{AutexousiousApplication, ObjectQueries, SequenceQueries};
+    use application_test_support::{AssetQueries, AutexousiousApplication, SequenceQueries};
     use assets_test::CHAR_BAT_SLUG;
     use character_model::loaded::CharacterCtsHandle;
-    use character_prefab::CharacterPrefab;
     use sequence_model::loaded::SequenceId;
 
     use super::CharacterCtsHandleUpdateSystem;
@@ -186,15 +189,13 @@ mod tests {
 
     fn create_entity(world: &mut World) -> Entity {
         let asset_slug = CHAR_BAT_SLUG.clone();
-        let character_handle =
-            ObjectQueries::game_object_handle::<CharacterPrefab>(world, &asset_slug)
-                .expect("Expected `CharacterHandle` to exist.");
+        let asset_id = AssetQueries::id(world, &asset_slug);
         let character_cts_handle =
             SequenceQueries::character_cts_handle(world, &asset_slug, SequenceId::new(0));
 
         world
             .create_entity()
-            .with(character_handle)
+            .with(asset_id)
             .with(SequenceId::new(0))
             .with(character_cts_handle)
             .build()
@@ -203,7 +204,7 @@ mod tests {
     fn expect_cts_handle(world: &mut World, sequence_id: SequenceId) {
         let entity = *world.read_resource::<Entity>();
         let expected_handle =
-            SequenceQueries::character_cts_handle(world, &CHAR_BAT_SLUG.clone(), sequence_id);
+            SequenceQueries::character_cts_handle(world, &*CHAR_BAT_SLUG, sequence_id);
         let character_cts_handles = world.read_storage::<CharacterCtsHandle>();
 
         assert_eq!(

@@ -13,9 +13,14 @@ use asset_model::{
     loaded::{AssetId, AssetIdMappings, AssetTypeMappings},
 };
 use audio_model::loaded::{AssetSourceSequenceHandles, SourceSequence};
+use character_loading::{CtsLoader, CtsLoaderParams, CHARACTER_TRANSITIONS_DEFAULT};
 use character_model::{
     config::{CharacterDefinition, CharacterSequenceName},
-    loaded::{AssetCharacterDefinitionHandle, Character, CharacterObjectWrapper},
+    loaded::{
+        AssetCharacterCtsHandles, AssetCharacterDefinitionHandle, Character,
+        CharacterControlTransitions, CharacterCts, CharacterCtsHandle, CharacterCtsHandles,
+        CharacterObjectWrapper,
+    },
 };
 use collision_model::{
     config::{Body, Interactions},
@@ -196,6 +201,13 @@ pub struct SequenceComponentResources<'s> {
     #[derivative(Debug = "ignore")]
     pub spawns_sequence_assets: Read<'s, AssetStorage<SpawnsSequence>>,
 
+    /// `CharacterControlTransitions` assets.
+    #[derivative(Debug = "ignore")]
+    pub character_control_transitions_assets: Read<'s, AssetStorage<CharacterControlTransitions>>,
+    /// `CharacterCts` assets.
+    #[derivative(Debug = "ignore")]
+    pub character_cts_assets: Read<'s, AssetStorage<CharacterCts>>,
+
     /// `AssetSequenceIdMappings<CharacterSequenceName>` resource.
     #[derivative(Debug = "ignore")]
     pub asset_sequence_id_mappings_character:
@@ -228,6 +240,11 @@ pub struct SequenceComponentResources<'s> {
     /// `AssetSpawnsSequenceHandles` resource.
     #[derivative(Debug = "ignore")]
     pub asset_spawns_sequence_handles: Write<'s, AssetSpawnsSequenceHandles>,
+
+    /// `AssetCharacterCtsHandles` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_character_cts_handles: Write<'s, AssetCharacterCtsHandles>,
+
     /// `AssetMapBounds` resource.
     #[derivative(Debug = "ignore")]
     pub asset_map_bounds: Write<'s, AssetMapBounds>,
@@ -690,6 +707,8 @@ impl AssetLoadingSystem {
                     ref body_sequence_assets,
                     ref interactions_sequence_assets,
                     ref spawns_sequence_assets,
+                    ref character_control_transitions_assets,
+                    ref character_cts_assets,
                     ref mut asset_sequence_id_mappings_character,
                     ref mut asset_sequence_id_mappings_energy,
                     ref mut asset_sequence_end_transitions,
@@ -700,6 +719,7 @@ impl AssetLoadingSystem {
                     ref mut asset_body_sequence_handles,
                     ref mut asset_interactions_sequence_handles,
                     ref mut asset_spawns_sequence_handles,
+                    ref mut asset_character_cts_handles,
                     ref mut asset_map_bounds,
                     ref mut asset_margins,
                     ref mut asset_layer_positions,
@@ -751,6 +771,37 @@ impl AssetLoadingSystem {
                         let sequence_id_mappings = SequenceIdMappings::from_iter(
                             character_definition.object_definition.sequences.keys(),
                         );
+
+                        let cts_loader_params = CtsLoaderParams {
+                            loader: &*loader,
+                            character_control_transitions_assets:
+                                &*character_control_transitions_assets,
+                            character_cts_assets: &*character_cts_assets,
+                        };
+
+                        let character_cts_handles = {
+                            let character_cts_handles = character_definition
+                                .object_definition
+                                .sequences
+                                .iter()
+                                .map(|(sequence_id, sequence)| {
+                                    let sequence_default = CHARACTER_TRANSITIONS_DEFAULT
+                                        .object_definition
+                                        .sequences
+                                        .get(sequence_id);
+                                    let cts_handle = CtsLoader::load(
+                                        &cts_loader_params,
+                                        &sequence_id_mappings,
+                                        sequence_default,
+                                        sequence,
+                                    );
+                                    cts_handle
+                                })
+                                .collect::<Vec<CharacterCtsHandle>>();
+                            CharacterCtsHandles::new(character_cts_handles)
+                        };
+                        asset_character_cts_handles.insert(asset_id, character_cts_handles);
+
                         asset_sequence_id_mappings_character.insert(asset_id, sequence_id_mappings);
 
                         let CharacterObjectWrapper(object) = ObjectLoader::load::<Character>(
