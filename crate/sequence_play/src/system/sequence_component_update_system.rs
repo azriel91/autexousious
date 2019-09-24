@@ -178,7 +178,7 @@ mod tests {
         shrev::EventChannel,
         Error,
     };
-    use application_test_support::{AutexousiousApplication, ObjectQueries, SequenceQueries};
+    use application_test_support::{AssetQueries, AutexousiousApplication, SequenceQueries};
     use assets_test::CHAR_BAT_SLUG;
     use sequence_model::{
         loaded::{AssetWaitSequenceHandles, SequenceId, WaitSequenceHandle, WaitSequenceHandles},
@@ -225,7 +225,7 @@ mod tests {
             .with_assertion(move |world| {
                 let wait_sequence_handle_expected = SequenceQueries::wait_sequence_handle(
                     world,
-                    &CHAR_BAT_SLUG.clone(),
+                    &*CHAR_BAT_SLUG,
                     sequence_id_expected,
                 );
                 expect_component_values(world, wait_sequence_handle_expected)
@@ -235,16 +235,10 @@ mod tests {
 
     fn initial_values(world: &mut World, with_asset_id: bool) {
         let entity = {
-            let wait_sequence_handle = SequenceQueries::wait_sequence_handle(
-                world,
-                &CHAR_BAT_SLUG.clone(),
-                SEQUENCE_ID_PREV,
-            );
+            let wait_sequence_handle =
+                SequenceQueries::wait_sequence_handle(world, &*CHAR_BAT_SLUG, SEQUENCE_ID_PREV);
             let asset_id = if with_asset_id {
-                Some(ObjectQueries::object_wrapper_handle(
-                    world,
-                    &CHAR_BAT_SLUG.clone(),
-                ))
+                Some(AssetQueries::id(world, &*CHAR_BAT_SLUG))
             } else {
                 None
             };
