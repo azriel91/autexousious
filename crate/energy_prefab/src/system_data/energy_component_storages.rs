@@ -5,7 +5,6 @@ use amethyst::{
 use collision_model::loaded::{HitTransition, HittingTransition};
 use derivative::Derivative;
 use map_model::play::MapUnboundedDelete;
-use object_model::play::Grounding;
 
 /// Energy specific `Component` storages.
 ///
@@ -14,9 +13,6 @@ use object_model::play::Grounding;
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct EnergyComponentStorages<'s> {
-    /// `Grounding` component storage.
-    #[derivative(Debug = "ignore")]
-    pub groundings: WriteStorage<'s, Grounding>,
     /// `MapUnboundedDelete` component storage.
     #[derivative(Debug = "ignore")]
     pub map_unbounded_deletes: WriteStorage<'s, MapUnboundedDelete>,

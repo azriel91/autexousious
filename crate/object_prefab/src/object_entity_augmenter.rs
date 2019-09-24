@@ -1,7 +1,7 @@
 use amethyst::{core::transform::Transform, ecs::Entity, renderer::transparent::Transparent};
 use asset_model::loaded::AssetId;
 use kinematic_model::config::{Position, Velocity};
-use object_model::play::Mirrored;
+use object_model::play::{Grounding, Mirrored};
 use sequence_model::{
     loaded::SequenceId,
     play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
@@ -36,6 +36,7 @@ impl ObjectEntityAugmenter {
             velocities,
             transforms,
             mirroreds,
+            groundings,
             sequence_end_transitionses,
             sequence_ids,
             sequence_statuses,
@@ -85,6 +86,11 @@ impl ObjectEntityAugmenter {
                 .insert(entity, Mirrored::default())
                 .expect("Failed to insert `Mirrored` component.");
         }
+        if groundings.get(entity).is_none() {
+            groundings
+                .insert(entity, Grounding::Airborne)
+                .expect("Failed to insert `Grounding` component.");
+        }
         if sequence_end_transitionses.get(entity).is_none() {
             sequence_end_transitionses
                 .insert(entity, sequence_end_transitions.clone())
@@ -130,7 +136,7 @@ mod tests {
         loaded::{AssetId, AssetIdMappings},
     };
     use kinematic_model::config::{Position, Velocity};
-    use object_model::play::Mirrored;
+    use object_model::play::{Grounding, Mirrored};
     use sequence_model::{
         loaded::{AssetSequenceEndTransitions, SequenceEndTransitions, SequenceId},
         play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
@@ -155,16 +161,17 @@ mod tests {
                 );
             }
 
+            assert!(world.read_storage::<Transparent>().contains(entity));
+            assert!(world.read_storage::<Position<f32>>().contains(entity));
+            assert!(world.read_storage::<Velocity<f32>>().contains(entity));
+            assert!(world.read_storage::<Transform>().contains(entity));
+            assert!(world.read_storage::<Mirrored>().contains(entity));
+            assert!(world.read_storage::<Grounding>().contains(entity));
             assert!(world
                 .read_storage::<SequenceEndTransitions>()
                 .contains(entity));
             assert!(world.read_storage::<SequenceId>().contains(entity));
             assert!(world.read_storage::<SequenceStatus>().contains(entity));
-            assert!(world.read_storage::<Mirrored>().contains(entity));
-            assert!(world.read_storage::<Transparent>().contains(entity));
-            assert!(world.read_storage::<Position<f32>>().contains(entity));
-            assert!(world.read_storage::<Velocity<f32>>().contains(entity));
-            assert!(world.read_storage::<Transform>().contains(entity));
             assert!(world.read_storage::<FrameIndexClock>().contains(entity));
             assert!(world.read_storage::<FrameWaitClock>().contains(entity));
         })

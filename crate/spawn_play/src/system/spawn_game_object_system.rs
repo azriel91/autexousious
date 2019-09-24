@@ -8,6 +8,9 @@ use asset_model::{
     config::AssetType,
     loaded::{AssetIdMappings, AssetTypeMappings},
 };
+use character_prefab::{
+    CharacterComponentStorages, CharacterEntityAugmenter, CharacterSpawningResources,
+};
 use derivative::Derivative;
 use derive_new::new;
 use energy_prefab::{EnergyComponentStorages, EnergyEntityAugmenter};
@@ -47,6 +50,12 @@ pub struct SpawnGameObjectResources<'s> {
     /// `ObjectComponentStorages`.
     #[derivative(Debug = "ignore")]
     pub object_component_storages: ObjectComponentStorages<'s>,
+    /// `CharacterSpawningResources`.
+    #[derivative(Debug = "ignore")]
+    pub character_spawning_resources: CharacterSpawningResources<'s>,
+    /// `CharacterComponentStorages`.
+    #[derivative(Debug = "ignore")]
+    pub character_component_storages: CharacterComponentStorages<'s>,
     /// `EnergyComponentStorages`.
     #[derivative(Debug = "ignore")]
     pub energy_component_storages: EnergyComponentStorages<'s>,
@@ -80,6 +89,8 @@ impl SpawnGameObjectSystem {
             asset_type_mappings,
             object_spawning_resources,
             object_component_storages,
+            character_spawning_resources,
+            character_component_storages,
             energy_component_storages,
             spawn_ec,
         }: &mut SpawnGameObjectResources<'_>,
@@ -87,11 +98,13 @@ impl SpawnGameObjectSystem {
         entity_parent: Entity,
     ) {
         spawns.iter().for_each(|spawn| {
-            if let Some(asset_id) = asset_id_mappings.id(&spawn.object) {
+            let asset_slug = &spawn.object;
+            if let Some(asset_id) = asset_id_mappings.id(asset_slug) {
                 let asset_type = asset_type_mappings
                     .get(asset_id)
                     .unwrap_or_else(|| panic!("`AssetType` not found for `{:?}`.", asset_id));
                 let entity_spawned = entities.create();
+
                 ObjectEntityAugmenter::augment(
                     object_spawning_resources,
                     object_component_storages,
@@ -99,14 +112,30 @@ impl SpawnGameObjectSystem {
                     entity_spawned,
                 );
 
-                if let AssetType::Object(ObjectType::Energy) = asset_type {
-                    EnergyEntityAugmenter::augment(entity_spawned, energy_component_storages);
+                match asset_type {
+                    AssetType::Object(ObjectType::Character) => {
+                        CharacterEntityAugmenter::augment(
+                            character_spawning_resources,
+                            character_component_storages,
+                            *asset_id,
+                            entity_spawned,
+                        );
+                    }
+                    AssetType::Object(ObjectType::Energy) => {
+                        EnergyEntityAugmenter::augment(entity_spawned, energy_component_storages);
+                    }
+                    _ => {
+                        error!(
+                            "Spawning of asset type `{:?}` (`{}`) is not supported.",
+                            asset_type, asset_slug
+                        );
+                    }
                 }
 
                 let spawn_event = SpawnEvent::new(spawn.clone(), entity_parent, entity_spawned);
                 spawn_ec.single_write(spawn_event);
             } else {
-                error!("`AssetId` not found for `{}`.", &spawn.object)
+                error!("`AssetId` not found for `{}`.", asset_slug)
             }
         });
     }
@@ -198,7 +227,7 @@ mod tests {
                 entity,
                 sequence_id: SequenceId::new(0),
             }),
-            1,
+            2,
         )
     }
 
@@ -209,7 +238,7 @@ mod tests {
                 entity,
                 frame_index: 0,
             }),
-            1,
+            2,
         )
     }
 
@@ -267,7 +296,11 @@ mod tests {
         let spawns_handle = {
             let (loader, spawns_assets) =
                 world.system_data::<(ReadExpect<'_, Loader>, Read<'_, AssetStorage<Spawns>>)>();
-            loader.load_from_data(Spawns::new(vec![spawn()]), (), &spawns_assets)
+            loader.load_from_data(
+                Spawns::new(vec![spawn_character(), spawn_energy()]),
+                (),
+                &spawns_assets,
+            )
         };
 
         let entity = world.create_entity().with(spawns_handle).build();
@@ -281,7 +314,15 @@ mod tests {
         }
     }
 
-    fn spawn() -> Spawn {
+    fn spawn_character() -> Spawn {
+        Spawn::new(
+            AssetSlug::from_str("test/bat").expect("Expected `test/bat` to be a valid asset slug."),
+            Position::<i32>::from((0, 0, 0)),
+            Velocity::<i32>::from((0, 0, 0)),
+        )
+    }
+
+    fn spawn_energy() -> Spawn {
         Spawn::new(
             AssetSlug::from_str("test/square")
                 .expect("Expected `test/square` to be a valid asset slug."),
@@ -306,12 +347,15 @@ mod tests {
         assert_eq!(event_count, actual_events.len());
 
         if event_count > 0 {
-            let spawn_expected = spawn();
+            let spawns_expected = vec![spawn_character(), spawn_energy()];
             let entity_parent = *world.read_resource::<Entity>();
-            actual_events.into_iter().for_each(|ev| {
-                assert_eq!(&spawn_expected, &ev.spawn);
-                assert_eq!(entity_parent, ev.entity_parent);
-            });
+            spawns_expected
+                .into_iter()
+                .zip(actual_events.into_iter())
+                .for_each(|(spawn_expected, ev)| {
+                    assert_eq!(&spawn_expected, &ev.spawn);
+                    assert_eq!(entity_parent, ev.entity_parent);
+                });
         }
     }
 }
