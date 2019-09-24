@@ -1,6 +1,8 @@
 use amethyst::ecs::Entity;
+use collision_model::loaded::{HitTransition, HittingTransition};
 use map_model::play::MapUnboundedDelete;
 use object_model::play::Grounding;
+use sequence_model::loaded::SequenceId;
 
 use crate::EnergyComponentStorages;
 
@@ -18,8 +20,10 @@ impl EnergyEntityAugmenter {
     pub fn augment<'s>(
         entity: Entity,
         EnergyComponentStorages {
-            ref mut groundings,
-            ref mut map_unbounded_deletes,
+            groundings,
+            map_unbounded_deletes,
+            hit_transitions,
+            hitting_transitions,
         }: &mut EnergyComponentStorages<'s>,
     ) {
         groundings
@@ -28,6 +32,15 @@ impl EnergyEntityAugmenter {
         map_unbounded_deletes
             .insert(entity, MapUnboundedDelete::default())
             .expect("Failed to insert `MapUnboundedDelete` component.");
+
+        // Hack: this should be read off an asset.
+        hit_transitions
+            .insert(entity, HitTransition::new(SequenceId::new(2)))
+            .expect("Failed to insert `HitTransition` component.");
+        hitting_transitions
+            .insert(entity, HittingTransition::new(SequenceId::new(2)))
+            .expect("Failed to insert `HittingTransition` component.");
+        // End Hack.
     }
 }
 
