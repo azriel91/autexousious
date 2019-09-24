@@ -1,27 +1,51 @@
-use std::{convert::AsRef, fmt::Debug, marker::PhantomData, ops::Deref};
+use std::{
+    fmt::Debug,
+    marker::PhantomData,
+    ops::{Deref, Index},
+};
 
 use amethyst::{
-    assets::{Asset, AssetStorage, Handle},
     ecs::{Entity, Read, ReadStorage, System, World, WriteStorage},
     shred::{ResourceId, SystemData},
     shrev::{EventChannel, ReaderId},
 };
+use asset_model::loaded::AssetId;
 use derivative::Derivative;
 use derive_new::new;
+use named_type::NamedType;
+use named_type_derive::NamedType;
 use sequence_model::{loaded::SequenceId, play::SequenceUpdateEvent};
 use sequence_model_spi::loaded::{ComponentDataExt, SequenceComponentData};
-use typename_derive::TypeName;
+use slotmap::{SecondaryMap, SparseSecondaryMap};
+
+/// Extensions to allow slotmap inner types to be accessed.
+pub trait AssetScdExt<V> {
+    /// Returns the component if it exists.
+    fn get(&self, asset_id: AssetId) -> Option<&V>;
+}
+
+impl<V> AssetScdExt<V> for SecondaryMap<AssetId, V> {
+    fn get(&self, asset_id: AssetId) -> Option<&V> {
+        self.get(asset_id)
+    }
+}
+
+impl<V> AssetScdExt<V> for SparseSecondaryMap<AssetId, V> {
+    fn get(&self, asset_id: AssetId) -> Option<&V> {
+        self.get(asset_id)
+    }
+}
 
 /// Updates the sequence component based on the current sequence ID.
 ///
 /// # Type Parameters
 ///
-/// * `SCDA`: Asset type that the sequence component data is stored in, e.g. `Object`.
+/// * `AssetScd`: Resource type that the sequence component data is stored in, e.g. `AssetMargins`.
 /// * `SCD`: Type of sequence component data, e.g. `SequenceEndTransitions`.
-#[derive(Debug, Default, TypeName, new)]
-pub struct SequenceComponentUpdateSystem<SCDA, SCD>
+#[derive(Debug, Default, NamedType, new)]
+pub struct SequenceComponentUpdateSystem<AssetScd, SCD>
 where
-    SCDA: Asset + AsRef<SCD>,
+    AssetScd: AssetScdExt<SCD> + Index<AssetId, Output = SCD>,
     SCD: ComponentDataExt
         + Debug
         + Deref<Target = SequenceComponentData<<SCD as ComponentDataExt>::Component>>,
@@ -30,14 +54,14 @@ where
     #[new(default)]
     reader_id: Option<ReaderId<SequenceUpdateEvent>>,
     /// Marker.
-    phantom_data: PhantomData<(SCDA, SCD)>,
+    phantom_data: PhantomData<(AssetScd, SCD)>,
 }
 
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct SequenceComponentUpdateSystemData<'s, SCDA, SCD>
+pub struct SequenceComponentUpdateSystemData<'s, AssetScd, SCD>
 where
-    SCDA: Asset + AsRef<SCD>,
+    AssetScd: AssetScdExt<SCD> + Default + Index<AssetId, Output = SCD> + Send + Sync + 'static,
     SCD: ComponentDataExt
         + Debug
         + Deref<Target = SequenceComponentData<<SCD as ComponentDataExt>::Component>>,
@@ -45,31 +69,30 @@ where
     /// Event channel for `SequenceUpdateEvent`s.
     #[derivative(Debug = "ignore")]
     pub sequence_update_ec: Read<'s, EventChannel<SequenceUpdateEvent>>,
-    /// `Handle<SCDA>` component storage.
+    /// `AssetId` components.
     #[derivative(Debug = "ignore")]
-    pub scda_handles: ReadStorage<'s, Handle<SCDA>>,
-    /// `SCDA` assets.
+    pub asset_ids: ReadStorage<'s, AssetId>,
+    /// `AssetScd` resource.
     #[derivative(Debug = "ignore")]
-    pub scda_assets: Read<'s, AssetStorage<SCDA>>,
+    pub asset_scd: Read<'s, AssetScd>,
     /// Frame `Component` storages.
     #[derivative(Debug = "ignore")]
     pub sequence_components: WriteStorage<'s, <SCD as ComponentDataExt>::Component>,
 }
 
-impl<SCDA, SCD> SequenceComponentUpdateSystem<SCDA, SCD>
+impl<AssetScd, SCD> SequenceComponentUpdateSystem<AssetScd, SCD>
 where
-    SCDA: Asset + AsRef<SCD>,
+    AssetScd: AssetScdExt<SCD> + Index<AssetId, Output = SCD>,
     SCD: ComponentDataExt
         + Debug
         + Deref<Target = SequenceComponentData<<SCD as ComponentDataExt>::Component>>,
 {
     fn update_component(
         sequence_components: &mut WriteStorage<<SCD as ComponentDataExt>::Component>,
-        scda: &SCDA,
+        sequence_component_data: &SCD,
         entity: Entity,
         sequence_id: SequenceId,
     ) {
-        let sequence_component_data = AsRef::<SCD>::as_ref(scda);
         let component = sequence_component_data
             .get(*sequence_id)
             .map(SCD::to_owned)
@@ -85,21 +108,21 @@ where
     }
 }
 
-impl<'s, SCDA, SCD> System<'s> for SequenceComponentUpdateSystem<SCDA, SCD>
+impl<'s, AssetScd, SCD> System<'s> for SequenceComponentUpdateSystem<AssetScd, SCD>
 where
-    SCDA: Asset + AsRef<SCD>,
+    AssetScd: AssetScdExt<SCD> + Default + Index<AssetId, Output = SCD> + Send + Sync + 'static,
     SCD: ComponentDataExt
         + Debug
         + Deref<Target = SequenceComponentData<<SCD as ComponentDataExt>::Component>>,
 {
-    type SystemData = SequenceComponentUpdateSystemData<'s, SCDA, SCD>;
+    type SystemData = SequenceComponentUpdateSystemData<'s, AssetScd, SCD>;
 
     fn run(
         &mut self,
         SequenceComponentUpdateSystemData {
             sequence_update_ec,
-            scda_handles,
-            scda_assets,
+            asset_ids,
+            asset_scd,
             mut sequence_components,
         }: Self::SystemData,
     ) {
@@ -121,16 +144,19 @@ where
                 }
             })
             .for_each(|(entity, sequence_id)| {
-                let scda_handle = scda_handles.get(entity);
+                let sequence_component_data = asset_ids
+                    .get(entity)
+                    .and_then(|asset_id| asset_scd.get(*asset_id));
 
                 // Some entities will have sequence update events, but not this particular sequence
                 // component data asset.
-                if let Some(scda_handle) = scda_handle {
-                    let scda = scda_assets
-                        .get(scda_handle)
-                        .expect("Expected `SCDA` to be loaded.");
-
-                    Self::update_component(&mut sequence_components, scda, entity, sequence_id);
+                if let Some(sequence_component_data) = sequence_component_data {
+                    Self::update_component(
+                        &mut sequence_components,
+                        sequence_component_data,
+                        entity,
+                        sequence_id,
+                    );
                 }
             });
     }
@@ -154,9 +180,8 @@ mod tests {
     };
     use application_test_support::{AutexousiousApplication, ObjectQueries, SequenceQueries};
     use assets_test::CHAR_BAT_SLUG;
-    use character_model::loaded::CharacterObjectWrapper;
     use sequence_model::{
-        loaded::{SequenceId, WaitSequenceHandle, WaitSequenceHandles},
+        loaded::{AssetWaitSequenceHandles, SequenceId, WaitSequenceHandle, WaitSequenceHandles},
         play::SequenceUpdateEvent,
     };
 
@@ -176,22 +201,23 @@ mod tests {
     }
 
     #[test]
-    fn does_not_panic_when_entity_does_not_have_scda_handle() -> Result<(), Error> {
+    fn does_not_panic_when_entity_does_not_have_asset_id() -> Result<(), Error> {
         run_test(sequence_begin_events, false, SEQUENCE_ID_PREV)
     }
 
     fn run_test(
         sequence_update_events_fn: fn(&mut World) -> Vec<SequenceUpdateEvent>,
-        with_scda_handle: bool,
+        with_asset_id: bool,
         sequence_id_expected: SequenceId,
     ) -> Result<(), Error> {
         AutexousiousApplication::game_base()
             .with_system(
-                SequenceComponentUpdateSystem::<CharacterObjectWrapper, WaitSequenceHandles>::new(),
+                SequenceComponentUpdateSystem::<AssetWaitSequenceHandles, WaitSequenceHandles>::new(
+                ),
                 "",
                 &[],
             )
-            .with_effect(move |world| initial_values(world, with_scda_handle))
+            .with_effect(move |world| initial_values(world, with_asset_id))
             .with_effect(move |world| {
                 let events = sequence_update_events_fn(world);
                 send_events(world, events);
@@ -207,14 +233,14 @@ mod tests {
             .run_isolated()
     }
 
-    fn initial_values(world: &mut World, with_scda_handle: bool) {
+    fn initial_values(world: &mut World, with_asset_id: bool) {
         let entity = {
             let wait_sequence_handle = SequenceQueries::wait_sequence_handle(
                 world,
                 &CHAR_BAT_SLUG.clone(),
                 SEQUENCE_ID_PREV,
             );
-            let scda_handle = if with_scda_handle {
+            let asset_id = if with_asset_id {
                 Some(ObjectQueries::object_wrapper_handle(
                     world,
                     &CHAR_BAT_SLUG.clone(),
@@ -228,8 +254,8 @@ mod tests {
                 .with(SEQUENCE_ID_CURRENT)
                 .with(wait_sequence_handle);
 
-            if let Some(scda_handle) = scda_handle {
-                entity_builder = entity_builder.with(scda_handle);
+            if let Some(asset_id) = asset_id {
+                entity_builder = entity_builder.with(asset_id);
             }
 
             entity_builder.build()

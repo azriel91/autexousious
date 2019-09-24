@@ -4,10 +4,10 @@ use amethyst::{
     utils::ortho_camera::CameraOrthoSystem,
     Error,
 };
-use audio_model::loaded::{SourceSequence, SourceSequenceHandles};
+use audio_model::loaded::{AssetSourceSequenceHandles, SourceSequence, SourceSequenceHandles};
 use audio_play::SequenceAudioPlaySystem;
 use camera_play::{CameraTrackingSystem, CameraVelocitySystem};
-use character_model::loaded::CharacterObjectWrapper;
+use character_model::loaded::{AssetCharacterCtsHandles, CharacterCtsHandles};
 use character_play::{
     CharacterControlTransitionsTransitionSystem, CharacterControlTransitionsUpdateSystem,
     CharacterCtsHandleUpdateSystem,
@@ -19,19 +19,22 @@ use charge_play::{
 use chase_play::StickToTargetObjectSystem;
 use collision_audio_play::HitSfxSystem;
 use collision_model::loaded::{
-    BodySequence, BodySequenceHandles, InteractionsSequence, InteractionsSequenceHandles,
+    AssetBodySequenceHandles, AssetInteractionsSequenceHandles, BodySequence, BodySequenceHandles,
+    InteractionsSequence, InteractionsSequenceHandles,
 };
 use collision_play::{
     CollisionDetectionSystem, ContactDetectionSystem, HitDetectionSystem, HitEffectSystem,
     HitRepeatTrackersAugmentSystem, HitRepeatTrackersTickerSystem, HittingEffectSystem,
 };
 use derive_new::new;
-use energy_model::loaded::EnergyObjectWrapper;
 use game_input::ControllerInput;
 use game_play_hud::{CpBarUpdateSystem, HpBarUpdateSystem};
 use kinematic_model::{
     config::Position,
-    loaded::{ObjectAccelerationSequence, ObjectAccelerationSequenceHandles},
+    loaded::{
+        AssetObjectAccelerationSequenceHandles, ObjectAccelerationSequence,
+        ObjectAccelerationSequenceHandles,
+    },
 };
 use map_play::{
     KeepWithinMapBoundsSystem, MapEnterExitDetectionSystem, MapOutOfBoundsClockAugmentSystem,
@@ -42,14 +45,19 @@ use object_play::{
     ObjectAccelerationSystem, ObjectGravitySystem, ObjectGroundingSystem, ObjectMirroringSystem,
 };
 use object_status_play::StunPointsReductionSystem;
-use sequence_model::loaded::{SequenceEndTransitions, WaitSequence, WaitSequenceHandles};
+use sequence_model::loaded::{
+    AssetSequenceEndTransitions, AssetWaitSequenceHandles, SequenceEndTransitions, WaitSequence,
+    WaitSequenceHandles,
+};
 use sequence_play::{
     FrameComponentUpdateSystem, SequenceComponentUpdateSystem, SequenceEndTransitionSystem,
     SequenceStatusUpdateSystem, SequenceUpdateSystem,
 };
-use spawn_model::loaded::{SpawnsSequence, SpawnsSequenceHandles};
+use spawn_model::loaded::{AssetSpawnsSequenceHandles, SpawnsSequence, SpawnsSequenceHandles};
 use spawn_play::{SpawnGameObjectRectifySystem, SpawnGameObjectSystem};
-use sprite_model::loaded::{SpriteRenderSequence, SpriteRenderSequenceHandles};
+use sprite_model::loaded::{
+    AssetSpriteRenderSequenceHandles, SpriteRenderSequence, SpriteRenderSequenceHandles,
+};
 use tracker::LastTrackerSystem;
 use typename::TypeName;
 
@@ -79,35 +87,49 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 
         macro_rules! sequence_component_update_system {
             ($component_asset_type:path, $component_data_type:path) => {
+                let system_name = format!(
+                    "{}{}",
+                    SequenceComponentUpdateSystem::<
+                        $component_asset_type,
+                        $component_data_type,
+                    >::type_name(),
+                    concat!(
+                        "<",
+                        stringify!($component_asset_type),
+                        ", ",
+                        stringify!($component_data_type),
+                        ">"
+                    )
+                );
                 builder.add(
-                                                    SequenceComponentUpdateSystem::<
-                                                        $component_asset_type,
-                                                        $component_data_type,
-                                                    >::new(),
-                                                    &SequenceComponentUpdateSystem::<
-                                                        $component_asset_type,
-                                                        $component_data_type,
-                                                    >::type_name(),
-                                                    &[&SequenceStatusUpdateSystem::type_name()],
-                                                ); // kcov-ignore
+                    SequenceComponentUpdateSystem::<
+                        $component_asset_type,
+                        $component_data_type,
+                    >::new(),
+                    &system_name,
+                    &[&SequenceStatusUpdateSystem::type_name()],
+                ); // kcov-ignore
             };
         }
 
-        macro_rules! object_sequence_component_update_systems {
-            ($wrapper_type:path) => {
-                sequence_component_update_system!($wrapper_type, WaitSequenceHandles);
-                sequence_component_update_system!($wrapper_type, SourceSequenceHandles);
-                sequence_component_update_system!($wrapper_type, ObjectAccelerationSequenceHandles);
-                sequence_component_update_system!($wrapper_type, SpriteRenderSequenceHandles);
-                sequence_component_update_system!($wrapper_type, BodySequenceHandles);
-                sequence_component_update_system!($wrapper_type, InteractionsSequenceHandles);
-                sequence_component_update_system!($wrapper_type, SpawnsSequenceHandles);
-                sequence_component_update_system!($wrapper_type, SequenceEndTransitions);
-            };
-        }
-
-        object_sequence_component_update_systems!(CharacterObjectWrapper);
-        object_sequence_component_update_systems!(EnergyObjectWrapper);
+        sequence_component_update_system!(AssetWaitSequenceHandles, WaitSequenceHandles);
+        sequence_component_update_system!(AssetSourceSequenceHandles, SourceSequenceHandles);
+        sequence_component_update_system!(
+            AssetObjectAccelerationSequenceHandles,
+            ObjectAccelerationSequenceHandles
+        );
+        sequence_component_update_system!(
+            AssetSpriteRenderSequenceHandles,
+            SpriteRenderSequenceHandles
+        );
+        sequence_component_update_system!(AssetBodySequenceHandles, BodySequenceHandles);
+        sequence_component_update_system!(
+            AssetInteractionsSequenceHandles,
+            InteractionsSequenceHandles
+        );
+        sequence_component_update_system!(AssetSpawnsSequenceHandles, SpawnsSequenceHandles);
+        sequence_component_update_system!(AssetSequenceEndTransitions, SequenceEndTransitions);
+        sequence_component_update_system!(AssetCharacterCtsHandles, CharacterCtsHandles);
 
         // TODO: The `SequenceUpdateSystem`s depend on the following systems:
         //
@@ -146,16 +168,16 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         frame_component_update_system!(InteractionsSequence);
         frame_component_update_system!(SpawnsSequence);
 
-        builder.add(
-            CharacterCtsHandleUpdateSystem::new(),
-            &CharacterCtsHandleUpdateSystem::type_name(),
-            &[],
-        ); // kcov-ignore
+        // builder.add(
+        //     CharacterCtsHandleUpdateSystem::new(),
+        //     &CharacterCtsHandleUpdateSystem::type_name(),
+        //     &[],
+        // ); // kcov-ignore
         builder.add(
             CharacterControlTransitionsUpdateSystem::new(),
             &CharacterControlTransitionsUpdateSystem::type_name(),
             &[
-                &CharacterCtsHandleUpdateSystem::type_name(),
+                // &CharacterCtsHandleUpdateSystem::type_name(),
                 &SequenceUpdateSystem::type_name(),
             ],
         ); // kcov-ignore
