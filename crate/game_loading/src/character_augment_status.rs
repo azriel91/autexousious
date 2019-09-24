@@ -4,7 +4,7 @@ use derivative::Derivative;
 #[derive(Clone, Copy, Debug, Derivative, PartialEq, Eq)]
 #[derivative(Default)]
 pub enum CharacterAugmentStatus {
-    /// Entities are being augmented with `CharacterPrefab`.
+    /// Entities are being augmented with `Character` components.
     #[derivative(Default)]
     Prefab,
     /// Additional specific components / values are assigned to the entity.

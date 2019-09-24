@@ -5,18 +5,12 @@ use amethyst::{
     ecs::{DispatcherBuilder, World},
     Error,
 };
-use character_loading::CharacterLoadingStatus;
-use character_model::loaded::Character;
-use character_prefab::CharacterPrefab;
 use derive_new::new;
-use energy_loading::EnergyLoadingStatus;
-use energy_model::loaded::Energy;
-use energy_prefab::EnergyPrefab;
 use typename::TypeName;
 
-use crate::{MapAssetLoadingSystem, ObjectAssetLoadingSystem};
+use crate::{AssetDiscoverySystem, AssetLoadingSystem};
 
-/// Adds the `ObjectAssetLoadingSystem<O, Pf>`s to the `World`.
+/// Adds asset discovery and loading systems to the `World`.
 #[derive(Debug, new)]
 pub struct LoadingBundle {
     /// Path to the assets directory.
@@ -30,21 +24,14 @@ impl<'a, 'b> SystemBundle<'a, 'b> for LoadingBundle {
         builder: &mut DispatcherBuilder<'a, 'b>,
     ) -> Result<(), Error> {
         builder.add(
-            ObjectAssetLoadingSystem::<Character, CharacterPrefab, CharacterLoadingStatus>::new(self.assets_dir.clone()),
-            &ObjectAssetLoadingSystem::<Character, CharacterPrefab, CharacterLoadingStatus>::type_name(),
+            AssetDiscoverySystem::new(self.assets_dir.clone()),
+            &AssetDiscoverySystem::type_name(),
             &[],
         ); // kcov-ignore
         builder.add(
-            ObjectAssetLoadingSystem::<Energy, EnergyPrefab, EnergyLoadingStatus>::new(
-                self.assets_dir.clone(),
-            ),
-            &ObjectAssetLoadingSystem::<Energy, EnergyPrefab, EnergyLoadingStatus>::type_name(),
-            &[],
-        ); // kcov-ignore
-        builder.add(
-            MapAssetLoadingSystem::new(self.assets_dir),
-            &MapAssetLoadingSystem::type_name(),
-            &[],
+            AssetLoadingSystem::new(),
+            &AssetLoadingSystem::type_name(),
+            &[&AssetDiscoverySystem::type_name()],
         ); // kcov-ignore
         Ok(())
     }
@@ -56,10 +43,8 @@ mod test {
 
     use amethyst::{ecs::WorldExt, Error};
     use amethyst_test::AmethystApplication;
+    use asset_model::loaded::AssetTypeMappings;
     use assets_test::ASSETS_PATH;
-    use character_prefab::CharacterPrefab;
-    use energy_prefab::EnergyPrefab;
-    use game_model::loaded::{GameObjectPrefabs, MapPrefabs};
 
     use super::LoadingBundle;
 
@@ -70,9 +55,7 @@ mod test {
         AmethystApplication::blank()
             .with_bundle(LoadingBundle::new(ASSETS_PATH.clone()))
             .with_effect(|world| {
-                world.read_resource::<GameObjectPrefabs<CharacterPrefab>>();
-                world.read_resource::<GameObjectPrefabs<EnergyPrefab>>();
-                world.read_resource::<MapPrefabs>();
+                world.read_resource::<AssetTypeMappings>();
             })
             .run()
     }

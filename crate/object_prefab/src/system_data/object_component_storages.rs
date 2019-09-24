@@ -4,6 +4,7 @@ use amethyst::{
     renderer::transparent::Transparent,
     shred::{ResourceId, SystemData},
 };
+use asset_model::loaded::AssetId;
 use derivative::Derivative;
 use kinematic_model::config::{Position, Velocity};
 use object_model::play::Mirrored;
@@ -19,6 +20,9 @@ use sequence_model::{
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct ObjectComponentStorages<'s> {
+    /// `AssetId` components.
+    #[derivative(Debug = "ignore")]
+    pub asset_ids: WriteStorage<'s, AssetId>,
     /// `Transparent` components.
     #[derivative(Debug = "ignore")]
     pub transparents: WriteStorage<'s, Transparent>,

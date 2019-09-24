@@ -26,7 +26,7 @@
 //!     type Data = Self;
 //!     type HandleStorage = VecStorage<Handle<Self>>;
 //!
-//!     const NAME: &'static str = concat!(module_path!() "::", stringify!(MyAsset));
+//!     const NAME: &'static str = concat!(module_path!(), "::", stringify!(MyAsset));
 //! }
 //!
 //! impl From<MyAsset> for Result<ProcessingState<MyAsset>, Error> {

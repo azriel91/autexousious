@@ -7,7 +7,6 @@ use strum_macros::{Display, EnumIter};
 /// Types of in-game objects.
 ///
 /// In-game objects are those that can be interacted with.
-#[allow(missing_debug_implementations)] // Needed for derived `EnumIter`
 #[derive(Clone, Copy, Debug, Display, EnumIter, Hash, PartialEq, Eq)]
 #[strum(serialize_all = "snake_case")]
 pub enum ObjectType {
@@ -16,6 +15,5 @@ pub enum ObjectType {
     /// Energy / aura / spark effects.
     Energy,
     /// Used in tests.
-    #[cfg(feature = "test-support")]
     TestObject,
 }

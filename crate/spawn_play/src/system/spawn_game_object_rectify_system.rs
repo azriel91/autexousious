@@ -174,11 +174,7 @@ mod tests {
     };
     use application_test_support::AutexousiousApplication;
     use asset_model::config::AssetSlug;
-    use energy_loading::EnergyLoadingStatus;
-    use energy_model::loaded::Energy;
-    use energy_prefab::EnergyPrefab;
     use kinematic_model::config::{Position, Velocity};
-    use loading::ObjectAssetLoadingSystem;
     use object_model::play::Mirrored;
     use spawn_model::{
         config::Spawn,
@@ -248,11 +244,7 @@ mod tests {
             .with_system(
                 SpawnGameObjectRectifySystem::new(),
                 SpawnGameObjectRectifySystem::type_name(),
-                &[ObjectAssetLoadingSystem::<
-                    Energy,
-                    EnergyPrefab,
-                    EnergyLoadingStatus,
-                >::type_name()],
+                &[],
             )
             .with_effect(setup_fn)
             .with_assertion(assertion_fn)

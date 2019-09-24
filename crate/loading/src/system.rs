@@ -1,7 +1,6 @@
 pub use self::{
-    map_asset_loading_system::MapAssetLoadingSystem,
-    object_asset_loading_system::ObjectAssetLoadingSystem,
+    asset_discovery_system::AssetDiscoverySystem, asset_loading_system::AssetLoadingSystem,
 };
 
-mod map_asset_loading_system;
-mod object_asset_loading_system;
+mod asset_discovery_system;
+mod asset_loading_system;

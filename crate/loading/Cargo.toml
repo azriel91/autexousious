@@ -13,10 +13,12 @@ application_ui = { path = "../application_ui" }
 asset_loading = { path = "../asset_loading" }
 asset_model = { path = "../asset_model" }
 assets_built_in = { path = "../assets_built_in" }
+audio_model = { path = "../audio_model" }
 character_loading = { path = "../character_loading" }
 character_model = { path = "../character_model" }
 character_prefab = { path = "../character_prefab" }
 collision_audio_model = { path = "../collision_audio_model" }
+collision_model = { path = "../collision_model" }
 derivative = "1.0.2"
 derive-new = "0.5.8"
 energy_loading = { path = "../energy_loading" }
@@ -24,6 +26,8 @@ energy_model = { path = "../energy_model" }
 energy_prefab = { path = "../energy_prefab" }
 game_model = { path = "../game_model" }
 humantime = "1.2.0"
+kinematic_model = { path = "../kinematic_model" }
+loading_model = { path = "../loading_model" }
 log = "0.4.8"
 map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }
@@ -34,6 +38,8 @@ object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }
 serde = "1.0.99"
 serde_yaml = "0.8.9"
+slotmap = { version = "0.4.0", features = ["serde"] }
+spawn_model = { path = "../spawn_model" }
 sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }
 state_registry = { path = "../state_registry" }

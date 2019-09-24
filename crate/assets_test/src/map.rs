@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use asset_model::config::{AssetSlug, AssetSlugBuilder, ConfigType};
+use asset_model::config::{AssetSlug, AssetSlugBuilder, AssetTypeVariants};
 use lazy_static::lazy_static;
 
 use crate::{NAMESPACE_TEST, NAMESPACE_TEST_PATH};
@@ -14,7 +14,7 @@ pub const MAP_EMPTY_NAME: &str = "empty";
 lazy_static! {
     /// `PathBuf` to the "objects" asset directory.
     static ref MAP_PATH: PathBuf =
-        NAMESPACE_TEST_PATH.join(ConfigType::Map.to_string());
+        NAMESPACE_TEST_PATH.join(AssetTypeVariants::Map.to_string());
 
     /// Slug of the "fade" map asset.
     pub static ref MAP_FADE_SLUG: AssetSlug = {

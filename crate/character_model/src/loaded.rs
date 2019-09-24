@@ -4,19 +4,21 @@
 //! that will be used in game.
 
 pub use self::{
-    character::{Character, CharacterHandle, CharacterObjectWrapper},
+    asset_character_cts_handles::AssetCharacterCtsHandles,
+    asset_character_definition_handle::AssetCharacterDefinitionHandle,
     character_control_transition::CharacterControlTransition,
     character_control_transitions::{
         CharacterControlTransitions, CharacterControlTransitionsHandle,
     },
-    character_control_transitions_sequence::{
-        CharacterControlTransitionsSequence, CharacterControlTransitionsSequenceHandle,
-    },
+    character_cts::{CharacterCts, CharacterCtsHandle},
+    character_cts_handles::CharacterCtsHandles,
     character_hit_transitions::CharacterHitTransitions,
 };
 
-mod character;
+mod asset_character_cts_handles;
+mod asset_character_definition_handle;
 mod character_control_transition;
 mod character_control_transitions;
-mod character_control_transitions_sequence;
+mod character_cts;
+mod character_cts_handles;
 mod character_hit_transitions;

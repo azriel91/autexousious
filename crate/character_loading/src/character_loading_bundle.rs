@@ -6,11 +6,9 @@ use amethyst::{
 };
 use character_model::{
     config::CharacterDefinition,
-    loaded::{Character, CharacterControlTransitions, CharacterControlTransitionsSequence},
+    loaded::{CharacterControlTransitions, CharacterCts},
 };
 use derive_new::new;
-use object_loading::ObjectDefinitionToWrapperProcessor;
-use typename::TypeName;
 
 /// Name of the `Processor<Character>` system.
 pub const CHARACTER_PROCESSOR: &str = "character_processor";
@@ -18,9 +16,8 @@ pub const CHARACTER_PROCESSOR: &str = "character_processor";
 /// Adds the following processor `System`s to the world:
 ///
 /// * `Processor::<CharacterDefinition>`
-/// * `ObjectDefinitionToWrapperProcessor::<Character>`
-/// * `Processor::<CharacterControlTransitionsSequence>`
-/// * `Processor::<Character>`
+/// * `Processor::<CharacterControlTransitions>`
+/// * `Processor::<CharacterCts>`
 #[derive(Debug, new)]
 pub struct CharacterLoadingBundle;
 
@@ -36,24 +33,14 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterLoadingBundle {
             &[],
         ); // kcov-ignore
         builder.add(
-            ObjectDefinitionToWrapperProcessor::<Character>::new(),
-            &ObjectDefinitionToWrapperProcessor::<Character>::type_name(),
+            Processor::<CharacterControlTransitions>::new(),
+            "character_control_transitions_processor",
             &["character_definition_processor"],
         ); // kcov-ignore
         builder.add(
-            Processor::<CharacterControlTransitions>::new(),
-            "character_control_transitions_processor",
-            &[&ObjectDefinitionToWrapperProcessor::<Character>::type_name()],
-        ); // kcov-ignore
-        builder.add(
-            Processor::<CharacterControlTransitionsSequence>::new(),
-            "character_control_transitions_sequence_processor",
+            Processor::<CharacterCts>::new(),
+            "character_cts_processor",
             &["character_control_transitions_processor"],
-        ); // kcov-ignore
-        builder.add(
-            Processor::<Character>::new(),
-            CHARACTER_PROCESSOR,
-            &["character_control_transitions_sequence_processor"],
         ); // kcov-ignore
         Ok(())
     }
@@ -61,36 +48,21 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterLoadingBundle {
 
 #[cfg(test)]
 mod test {
-    use amethyst::{
-        assets::AssetStorage,
-        core::TransformBundle,
-        ecs::WorldExt,
-        renderer::{types::DefaultBackend, RenderEmptyBundle},
-        Error,
-    };
+    use amethyst::{assets::AssetStorage, ecs::WorldExt, Error};
     use amethyst_test::AmethystApplication;
-    use character_model::{
-        config::CharacterDefinition,
-        loaded::{Character, CharacterControlTransitionsSequence, CharacterObjectWrapper},
-    };
-    use sequence_loading::SequenceLoadingBundle;
+    use character_model::{config::CharacterDefinition, loaded::CharacterCts};
 
     use super::CharacterLoadingBundle;
 
     #[test]
     fn bundle_build() -> Result<(), Error> {
         AmethystApplication::blank()
-            .with_bundle(TransformBundle::new())
-            .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
-            .with_bundle(SequenceLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_assertion(|world| {
                 // Panics if the Processors are not added.
                 world.read_resource::<AssetStorage<CharacterDefinition>>();
-                world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
-                world.read_resource::<AssetStorage<CharacterControlTransitionsSequence>>();
-                world.read_resource::<AssetStorage<Character>>();
+                world.read_resource::<AssetStorage<CharacterCts>>();
             })
-            .run_isolated()
+            .run()
     }
 }

@@ -15,6 +15,7 @@ game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
 game_model = { path = "../game_model" }
 log = "0.4.8"
+object_type = { path = "../object_type" }
 strum = "0.15.0"
 strum_macros = "0.15.0"
 typename = "0.1.1"

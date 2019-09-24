@@ -37,7 +37,7 @@ mod test {
 
     use amethyst::{ecs::WorldExt, shrev::EventChannel, Error};
     use amethyst_test::AmethystApplication;
-    use game_model::loaded::CharacterPrefabs;
+    use asset_model::loaded::AssetIdMappings;
     use stdio_spi::VariantAndTokens;
 
     use super::CharacterSelectionStdioBundle;
@@ -51,7 +51,7 @@ mod test {
             // kcov-ignore-start
             .with_effect(|world| {
                 world.read_resource::<EventChannel<VariantAndTokens>>();
-                world.read_resource::<CharacterPrefabs>();
+                world.read_resource::<AssetIdMappings>();
             })
             // kcov-ignore-end
             .run()

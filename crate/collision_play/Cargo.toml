@@ -14,7 +14,7 @@ logic_clock = { path = "../logic_clock" }
 object_model = { path = "../object_model" }
 sequence_model = { path = "../sequence_model" }
 shape_model = { path = "../shape_model" }
-slotmap = "0.3.0"
+slotmap = { version = "0.4.0", features = ["serde"] }
 spawn_model = { path = "../spawn_model" }
 team_model = { path = "../team_model" }
 typename = "0.1.1"

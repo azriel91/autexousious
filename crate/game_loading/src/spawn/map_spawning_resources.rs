@@ -4,24 +4,30 @@ use amethyst::{
     shred::{ResourceId, SystemData},
 };
 use derivative::Derivative;
-use map_model::loaded::Map;
-use sequence_model::loaded::WaitSequence;
-use sprite_model::loaded::SpriteRenderSequence;
+use map_model::loaded::AssetLayerPositions;
+use sequence_model::loaded::{AssetWaitSequenceHandles, WaitSequence};
+use sprite_model::loaded::{AssetSpriteRenderSequenceHandles, SpriteRenderSequence};
 
 /// Resources needed to spawn a map.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
-pub struct MapSpawningResources<'res> {
+pub struct MapSpawningResources<'s> {
     /// `EntitiesRes` resource.
     #[derivative(Debug = "ignore")]
-    pub entities: Entities<'res>,
-    /// `Map` assets.
+    pub entities: Entities<'s>,
+    /// `AssetWaitSequenceHandles` resource.
     #[derivative(Debug = "ignore")]
-    pub map_assets: Read<'res, AssetStorage<Map>>,
+    pub asset_wait_sequence_handles: Read<'s, AssetWaitSequenceHandles>,
+    /// `AssetSpriteRenderSequenceHandles` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_sprite_render_sequence_handles: Read<'s, AssetSpriteRenderSequenceHandles>,
+    /// `AssetLayerPositions` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_layer_positions: Read<'s, AssetLayerPositions>,
     /// `WaitSequence` assets.
     #[derivative(Debug = "ignore")]
-    pub wait_sequence_assets: Read<'res, AssetStorage<WaitSequence>>,
+    pub wait_sequence_assets: Read<'s, AssetStorage<WaitSequence>>,
     /// `SpriteRenderSequence` assets.
     #[derivative(Debug = "ignore")]
-    pub sprite_render_sequence_assets: Read<'res, AssetStorage<SpriteRenderSequence>>,
+    pub sprite_render_sequence_assets: Read<'s, AssetStorage<SpriteRenderSequence>>,
 }

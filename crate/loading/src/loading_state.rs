@@ -1,19 +1,21 @@
 use std::{fmt::Debug, marker::PhantomData, time::Duration};
 
-use amethyst::{core::Stopwatch, ecs::WorldExt, GameData, State, StateData, Trans};
+use amethyst::{
+    core::Stopwatch,
+    ecs::{Read, WorldExt},
+    GameData, State, StateData, Trans,
+};
 use application_event::AppEvent;
 use application_state::AutexState;
 use application_ui::ThemeLoader;
-use character_loading::CharacterLoadingStatus;
+use asset_model::loaded::AssetTypeMappings;
 use collision_audio_model::CollisionAudioLoadingStatus;
 use derivative::Derivative;
 use humantime;
+use loading_model::loaded::{AssetLoadStatus, LoadStatus};
 use log::{error, warn};
-use object_loading::ObjectLoadingStatus;
 use state_registry::StateId;
 use ui_audio_model::UiAudioLoadingStatus;
-
-use crate::MapLoadingStatus;
 
 /// Time limit before outputting a warning message and transitioning to the next state.
 const LOADING_TIME_LIMIT: Duration = Duration::from_secs(10);
@@ -84,12 +86,46 @@ where
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
         data.data.update(&data.world);
 
-        if **data.world.read_resource::<CharacterLoadingStatus>() == ObjectLoadingStatus::Complete
-            && *data.world.read_resource::<MapLoadingStatus>() == MapLoadingStatus::Complete
-            && *data.world.read_resource::<CollisionAudioLoadingStatus>()
-                == CollisionAudioLoadingStatus::Complete
-            && *data.world.read_resource::<UiAudioLoadingStatus>() == UiAudioLoadingStatus::Complete
-        {
+        let loading_statuses_complete = *data.world.read_resource::<CollisionAudioLoadingStatus>()
+            == CollisionAudioLoadingStatus::Complete
+            && *data.world.read_resource::<UiAudioLoadingStatus>()
+                == UiAudioLoadingStatus::Complete;
+
+        let asset_load_statuses_complete = {
+            let (asset_type_mappings, asset_load_status) = data
+                .world
+                .system_data::<(Read<'_, AssetTypeMappings>, Read<'_, AssetLoadStatus>)>();
+
+            let asset_loading_complete = asset_type_mappings
+                .iter_ids_all()
+                .flat_map(|(_asset_type, asset_ids)| asset_ids.iter())
+                .try_fold((), |_, asset_id| {
+                    let load_status =
+                        asset_load_status
+                            .get(*asset_id)
+                            .copied()
+                            .unwrap_or_else(|| {
+                                panic!("Expected asset `{:?}` to have `LoadStatus`.", asset_id)
+                            });
+
+                    if load_status == LoadStatus::Complete {
+                        Ok(())
+                    } else {
+                        if let Stopwatch::Ended(..) = &self.stopwatch {
+                            warn!(
+                                "Asset ID `{:?}` has not completed loading. {:?}",
+                                asset_id, load_status
+                            );
+                        }
+                        Err(())
+                    }
+                })
+                .is_ok();
+
+            asset_loading_complete
+        };
+
+        if loading_statuses_complete && asset_load_statuses_complete {
             Trans::Switch(Box::new(
                 self.next_state
                     .take()
@@ -109,9 +145,10 @@ where
                          \n\
                          * `SpriteLoadingBundle`\n\
                          * `CharacterLoadingBundle`\n\
-                         * `CharacterPrefabBundle`\n\
+                         * `EnergyLoadingBundle`\n\
                          * `MapLoadingBundle`\n\
                          * `amethyst::audio::AudioBundle`\n\
+                         * `KinematicLoadingBundle`\n\
                          * `CollisionAudioLoadingBundle`\n\
                          * `UiAudioLoadingBundle`\n\
                          \n\

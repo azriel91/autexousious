@@ -66,3 +66,32 @@ where
         }
     }
 }
+
+impl<'s, SeqName> FromIterator<&'s SequenceNameString<SeqName>> for SequenceIdMappings<SeqName>
+where
+    SeqName: config::SequenceName,
+{
+    fn from_iter<T: IntoIterator<Item = &'s SequenceNameString<SeqName>>>(
+        iter: T,
+    ) -> SequenceIdMappings<SeqName> {
+        let iter = iter.into_iter().map(Clone::clone);
+
+        SequenceIdMappings::from_iter(iter)
+    }
+}
+
+impl<SeqName> FromIterator<SequenceNameString<SeqName>> for SequenceIdMappings<SeqName>
+where
+    SeqName: config::SequenceName,
+{
+    fn from_iter<T: IntoIterator<Item = SequenceNameString<SeqName>>>(
+        iter: T,
+    ) -> SequenceIdMappings<SeqName> {
+        let iter = iter
+            .into_iter()
+            .enumerate()
+            .map(|(index, sequence_name_string)| (sequence_name_string, SequenceId::new(index)));
+
+        SequenceIdMappings::from_iter(iter)
+    }
+}

@@ -33,5 +33,4 @@
 //! }
 //! ```
 
-pub mod loaded;
 pub mod play;

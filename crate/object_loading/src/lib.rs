@@ -9,11 +9,9 @@ extern crate pretty_assertions;
 pub use crate::{
     object_loader::ObjectLoader, object_loader_params::ObjectLoaderParams,
     object_loader_system_data::ObjectLoaderSystemData, object_loading_status::ObjectLoadingStatus,
-    system::ObjectDefinitionToWrapperProcessor,
 };
 
 mod object_loader;
 mod object_loader_params;
 mod object_loader_system_data;
 mod object_loading_status;
-mod system;

@@ -530,14 +530,12 @@ mod tests {
     };
     use application::resource::IoUtils;
     use application_test_support::AutexousiousApplication;
-    use character_loading::{
-        ControlTransitionsSequenceLoader, ControlTransitionsSequenceLoaderParams,
-    };
+    use character_loading::{CtsLoader, CtsLoaderParams};
     use character_model::{
         config::{CharacterSequence, CharacterSequenceName},
         loaded::{
-            CharacterControlTransitions, CharacterControlTransitionsHandle,
-            CharacterControlTransitionsSequence, CharacterControlTransitionsSequenceHandle,
+            CharacterControlTransitions, CharacterControlTransitionsHandle, CharacterCts,
+            CharacterCtsHandle,
         },
     };
     use charge_model::{
@@ -891,59 +889,45 @@ mod tests {
             .with_system(CharacterControlTransitionsTransitionSystem::new(), "", &[])
             .with_effect(register_reader)
             .with_effect(move |world| {
-                let character_control_transitions_sequence_handle = {
-                    let (
-                        loader,
-                        character_control_transitions_assets,
-                        character_control_transitions_sequence_assets,
-                    ) = world.system_data::<(
-                        ReadExpect<'_, Loader>,
-                        Read<'_, AssetStorage<CharacterControlTransitions>>,
-                        Read<'_, AssetStorage<CharacterControlTransitionsSequence>>,
-                    )>();
+                let character_cts_handle = {
+                    let (loader, character_control_transitions_assets, character_cts_assets) =
+                        world.system_data::<(
+                            ReadExpect<'_, Loader>,
+                            Read<'_, AssetStorage<CharacterControlTransitions>>,
+                            Read<'_, AssetStorage<CharacterCts>>,
+                        )>();
 
-                    let control_transitions_sequence_loader_params =
-                        ControlTransitionsSequenceLoaderParams {
-                            loader: &loader,
-                            character_control_transitions_assets:
-                                &character_control_transitions_assets,
-                            character_control_transitions_sequence_assets:
-                                &character_control_transitions_sequence_assets,
-                        };
+                    let cts_loader_params = CtsLoaderParams {
+                        loader: &loader,
+                        character_control_transitions_assets: &character_control_transitions_assets,
+                        character_cts_assets: &character_cts_assets,
+                    };
                     let test_character_sequence = test_character_sequence();
 
-                    ControlTransitionsSequenceLoader::load(
-                        &control_transitions_sequence_loader_params,
+                    CtsLoader::load(
+                        &cts_loader_params,
                         &sequence_id_mappings(),
                         None,
                         &test_character_sequence,
                     )
                 };
 
-                world.insert(character_control_transitions_sequence_handle);
+                world.insert(character_cts_handle);
             })
             // Allow `AssetStorage`s to process loaded data.
             .with_effect(move |world| {
                 let character_control_transitions_handle = {
-                    let character_control_transitions_sequence_assets = world.system_data::<Read<
-                        '_,
-                        AssetStorage<CharacterControlTransitionsSequence>,
-                    >>(
-                    );
+                    let character_cts_assets =
+                        world.system_data::<Read<'_, AssetStorage<CharacterCts>>>();
 
-                    let character_control_transitions_sequence_handle = world
-                        .read_resource::<CharacterControlTransitionsSequenceHandle>()
-                        .clone();
-                    let character_control_transitions_sequence =
-                        character_control_transitions_sequence_assets
-                            .get(&character_control_transitions_sequence_handle)
-                            .expect(
-                                "Expected `character_control_transitions_sequence` to be loaded.",
-                            );
-                    character_control_transitions_sequence
+                    let character_cts_handle = world.read_resource::<CharacterCtsHandle>().clone();
+                    let character_cts = character_cts_assets
+                        .get(&character_cts_handle)
+                        .expect("Expected `character_cts` to be loaded.");
+                    character_cts
                         .first()
                         .expect(
-                            "Expected `character_control_transitions_sequence` to contain one \
+                            "Expected `character_cts` to contain one \
                              `character_control_transitions_handle`.",
                         )
                         .clone()

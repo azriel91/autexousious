@@ -4,24 +4,27 @@ use amethyst::{
 };
 use asset_model::config::AssetSlug;
 use character_model::loaded::{
-    Character, CharacterControlTransitionsHandle, CharacterControlTransitionsSequence,
-    CharacterControlTransitionsSequenceHandle, CharacterObjectWrapper,
+    AssetCharacterCtsHandles, CharacterControlTransitionsHandle, CharacterCts, CharacterCtsHandle,
 };
-use character_prefab::CharacterPrefab;
-use collision_model::loaded::{BodySequenceHandle, InteractionsSequenceHandle};
-use object_model::loaded::ObjectWrapper;
-use sequence_model::loaded::{SequenceEndTransition, SequenceId, WaitSequenceHandle};
-use spawn_model::loaded::SpawnsSequenceHandle;
-use sprite_model::loaded::SpriteRenderSequenceHandle;
+use collision_model::loaded::{
+    AssetBodySequenceHandles, AssetInteractionsSequenceHandles, BodySequenceHandle,
+    InteractionsSequenceHandle,
+};
+use sequence_model::loaded::{
+    AssetSequenceEndTransitions, AssetWaitSequenceHandles, SequenceEndTransition, SequenceId,
+    WaitSequenceHandle,
+};
+use spawn_model::loaded::{AssetSpawnsSequenceHandles, SpawnsSequenceHandle};
+use sprite_model::loaded::{AssetSpriteRenderSequenceHandles, SpriteRenderSequenceHandle};
 
-use crate::ObjectQueries;
+use crate::AssetQueries;
 
 /// Functions to retrieve sequence data from a running world.
 #[derive(Debug)]
 pub struct SequenceQueries;
 
 impl SequenceQueries {
-    /// Returns the `CharacterControlTransitionsSequenceHandle` for the specified sequence ID.
+    /// Returns the `CharacterCtsHandle` for the specified sequence ID.
     ///
     /// This function assumes the character for the specified slug is instantiated in the world.
     ///
@@ -29,36 +32,29 @@ impl SequenceQueries {
     ///
     /// * `world`: `World` of the running application.
     /// * `asset_slug`: Object slug whose `Handle<O::ObjectWrapper>` to retrieve.
-    /// * `sequence_id`: Sequence ID whose `CharacterControlTransitionsSequenceHandle` to retrieve.
+    /// * `sequence_id`: Sequence ID whose `CharacterCtsHandle` to retrieve.
     pub fn character_cts_handle(
         world: &World,
         asset_slug: &AssetSlug,
         sequence_id: SequenceId,
-    ) -> CharacterControlTransitionsSequenceHandle {
-        let character_handle = ObjectQueries::game_object_handle::<CharacterPrefab>(
-            world, asset_slug,
-        )
-        .unwrap_or_else(|| {
-            panic!(
-                "Expected `CharacterPrefab` to exist for slug: `{}`.",
-                asset_slug
-            )
-        });
-        let character_assets = world.read_resource::<AssetStorage<Character>>();
-        let character = character_assets.get(&character_handle).unwrap_or_else(|| {
-            panic!(
-                "Expected `Character` to be loaded for slug: `{}`.",
-                asset_slug
-            )
-        });
+    ) -> CharacterCtsHandle {
+        let asset_id = AssetQueries::id(world, &asset_slug);
+        let asset_character_cts_handles = world.read_resource::<AssetCharacterCtsHandles>();
+        let character_cts_handles =
+            asset_character_cts_handles
+                .get(asset_id)
+                .unwrap_or_else(|| {
+                    panic!(
+                        "Expected `CharacterCtsHandles` to exist for `{:?}`.",
+                        asset_id
+                    )
+                });
 
-        character
-            .control_transitions_sequence_handles
+        character_cts_handles
             .get(*sequence_id)
             .unwrap_or_else(|| {
                 panic!(
-                    "Expected `CharacterControlTransitionsSequenceHandle` to exist for sequence \
-                     ID: `{:?}`.",
+                    "Expected `CharacterCtsHandle` to exist for sequence ID: `{:?}`.",
                     sequence_id
                 )
             })
@@ -73,7 +69,7 @@ impl SequenceQueries {
     ///
     /// * `world`: `World` of the running application.
     /// * `asset_slug`: Object slug whose `Handle<O::ObjectWrapper>` to retrieve.
-    /// * `sequence_id`: Sequence ID whose `CharacterControlTransitionsSequenceHandle` to retrieve.
+    /// * `sequence_id`: Sequence ID whose `CharacterCtsHandle` to retrieve.
     /// * `frame_index`: Frame index within the sequence whose control transitions to retrieve.
     pub fn character_control_transitions_handle(
         world: &World,
@@ -83,11 +79,10 @@ impl SequenceQueries {
     ) -> CharacterControlTransitionsHandle {
         let character_cts_handle = Self::character_cts_handle(world, asset_slug, sequence_id);
 
-        let character_cts_assets =
-            world.read_resource::<AssetStorage<CharacterControlTransitionsSequence>>();
+        let character_cts_assets = world.read_resource::<AssetStorage<CharacterCts>>();
         let character_cts = character_cts_assets
             .get(&character_cts_handle)
-            .expect("Expected `CharacterControlTransitionsSequence` to be loaded.");
+            .expect("Expected `CharacterCts` to be loaded.");
 
         character_cts[frame_index].clone()
     }
@@ -106,15 +101,19 @@ impl SequenceQueries {
         asset_slug: &AssetSlug,
         sequence_id: SequenceId,
     ) -> SequenceEndTransition {
-        let object_wrapper_handle = ObjectQueries::object_wrapper_handle(world, asset_slug);
-        let object_wrapper_assets = world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
-        let object_wrapper = object_wrapper_assets
-            .get(&object_wrapper_handle)
-            .unwrap_or_else(|| panic!("Expected `{}` object wrapper to be loaded.", asset_slug));
+        let asset_id = AssetQueries::id(world, &asset_slug);
+        let asset_sequence_end_transitions = world.read_resource::<AssetSequenceEndTransitions>();
+        let sequence_end_transitions =
+            asset_sequence_end_transitions
+                .get(asset_id)
+                .unwrap_or_else(|| {
+                    panic!(
+                        "Expected `SequenceEndTransitions` to exist for `{:?}`.",
+                        asset_id
+                    )
+                });
 
-        let object = object_wrapper.inner();
-        object
-            .sequence_end_transitions
+        sequence_end_transitions
             .get(*sequence_id)
             .copied()
             .unwrap_or_else(|| {
@@ -139,15 +138,19 @@ impl SequenceQueries {
         asset_slug: &AssetSlug,
         sequence_id: SequenceId,
     ) -> WaitSequenceHandle {
-        let object_wrapper_handle = ObjectQueries::object_wrapper_handle(world, asset_slug);
-        let object_wrapper_assets = world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
-        let object_wrapper = object_wrapper_assets
-            .get(&object_wrapper_handle)
-            .unwrap_or_else(|| panic!("Expected `{}` object wrapper to be loaded.", asset_slug));
+        let asset_id = AssetQueries::id(world, &asset_slug);
+        let asset_wait_sequence_handles = world.read_resource::<AssetWaitSequenceHandles>();
+        let wait_sequence_handles =
+            asset_wait_sequence_handles
+                .get(asset_id)
+                .unwrap_or_else(|| {
+                    panic!(
+                        "Expected `WaitSequenceHandles` to exist for `{:?}`.",
+                        asset_id
+                    )
+                });
 
-        let object = object_wrapper.inner();
-        object
-            .wait_sequence_handles
+        wait_sequence_handles
             .get(*sequence_id)
             .unwrap_or_else(|| {
                 panic!(
@@ -172,15 +175,19 @@ impl SequenceQueries {
         asset_slug: &AssetSlug,
         sequence_id: SequenceId,
     ) -> SpriteRenderSequenceHandle {
-        let object_wrapper_handle = ObjectQueries::object_wrapper_handle(world, asset_slug);
-        let object_wrapper_assets = world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
-        let object_wrapper = object_wrapper_assets
-            .get(&object_wrapper_handle)
-            .unwrap_or_else(|| panic!("Expected `{}` object wrapper to be loaded.", asset_slug));
+        let asset_id = AssetQueries::id(world, &asset_slug);
+        let asset_sprite_render_handles = world.read_resource::<AssetSpriteRenderSequenceHandles>();
+        let sprite_render_handles =
+            asset_sprite_render_handles
+                .get(asset_id)
+                .unwrap_or_else(|| {
+                    panic!(
+                        "Expected `SpriteRenderSequenceHandles` to exist for `{:?}`.",
+                        asset_id
+                    )
+                });
 
-        let object = object_wrapper.inner();
-        object
-            .sprite_render_sequence_handles
+        sprite_render_handles
             .get(*sequence_id)
             .unwrap_or_else(|| {
                 panic!(
@@ -205,15 +212,19 @@ impl SequenceQueries {
         asset_slug: &AssetSlug,
         sequence_id: SequenceId,
     ) -> BodySequenceHandle {
-        let object_wrapper_handle = ObjectQueries::object_wrapper_handle(world, asset_slug);
-        let object_wrapper_assets = world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
-        let object_wrapper = object_wrapper_assets
-            .get(&object_wrapper_handle)
-            .unwrap_or_else(|| panic!("Expected `{}` object wrapper to be loaded.", asset_slug));
+        let asset_id = AssetQueries::id(world, &asset_slug);
+        let asset_body_sequence_handles = world.read_resource::<AssetBodySequenceHandles>();
+        let body_sequence_handles =
+            asset_body_sequence_handles
+                .get(asset_id)
+                .unwrap_or_else(|| {
+                    panic!(
+                        "Expected `BodySequenceHandles` to exist for `{:?}`.",
+                        asset_id
+                    )
+                });
 
-        let object = object_wrapper.inner();
-        object
-            .body_sequence_handles
+        body_sequence_handles
             .get(*sequence_id)
             .unwrap_or_else(|| {
                 panic!(
@@ -238,15 +249,19 @@ impl SequenceQueries {
         asset_slug: &AssetSlug,
         sequence_id: SequenceId,
     ) -> InteractionsSequenceHandle {
-        let object_wrapper_handle = ObjectQueries::object_wrapper_handle(world, asset_slug);
-        let object_wrapper_assets = world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
-        let object_wrapper = object_wrapper_assets
-            .get(&object_wrapper_handle)
-            .unwrap_or_else(|| panic!("Expected `{}` object wrapper to be loaded.", asset_slug));
+        let asset_id = AssetQueries::id(world, &asset_slug);
+        let asset_interactions_sequence_handles =
+            world.read_resource::<AssetInteractionsSequenceHandles>();
+        let interactions_sequence_handles = asset_interactions_sequence_handles
+            .get(asset_id)
+            .unwrap_or_else(|| {
+                panic!(
+                    "Expected `InteractionsSequenceHandles` to exist for `{:?}`.",
+                    asset_id
+                )
+            });
 
-        let object = object_wrapper.inner();
-        object
-            .interactions_sequence_handles
+        interactions_sequence_handles
             .get(*sequence_id)
             .unwrap_or_else(|| {
                 panic!(
@@ -271,15 +286,19 @@ impl SequenceQueries {
         asset_slug: &AssetSlug,
         sequence_id: SequenceId,
     ) -> SpawnsSequenceHandle {
-        let object_wrapper_handle = ObjectQueries::object_wrapper_handle(world, asset_slug);
-        let object_wrapper_assets = world.read_resource::<AssetStorage<CharacterObjectWrapper>>();
-        let object_wrapper = object_wrapper_assets
-            .get(&object_wrapper_handle)
-            .unwrap_or_else(|| panic!("Expected `{}` object wrapper to be loaded.", asset_slug));
+        let asset_id = AssetQueries::id(world, &asset_slug);
+        let asset_spawns_sequence_handles = world.read_resource::<AssetSpawnsSequenceHandles>();
+        let spawns_sequence_handles =
+            asset_spawns_sequence_handles
+                .get(asset_id)
+                .unwrap_or_else(|| {
+                    panic!(
+                        "Expected `SpawnsSequenceHandles` to exist for `{:?}`.",
+                        asset_id
+                    )
+                });
 
-        let object = object_wrapper.inner();
-        object
-            .spawns_sequence_handles
+        spawns_sequence_handles
             .get(*sequence_id)
             .unwrap_or_else(|| {
                 panic!(

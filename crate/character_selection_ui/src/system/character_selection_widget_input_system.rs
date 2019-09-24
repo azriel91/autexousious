@@ -3,6 +3,7 @@ use amethyst::{
     shred::{ResourceId, System, SystemData},
     shrev::{EventChannel, ReaderId},
 };
+use asset_model::{config::AssetType, loaded::AssetTypeMappings};
 use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
 use derivative::Derivative;
 use derive_new::new;
@@ -10,8 +11,8 @@ use game_input::InputControlled;
 use game_input_model::{
     Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
 };
-use game_model::loaded::CharacterPrefabs;
 use log::debug;
+use object_type::ObjectType;
 
 use typename_derive::TypeName;
 
@@ -37,9 +38,9 @@ pub(crate) struct CharacterSelectionWidgetInputResources<'s> {
     /// `InputControlled` components.
     #[derivative(Debug = "ignore")]
     pub input_controlleds: ReadStorage<'s, InputControlled>,
-    /// `Character` assets.
+    /// `AssetTypeMappings` assets.
     #[derivative(Debug = "ignore")]
-    pub character_prefabs: Read<'s, CharacterPrefabs>,
+    pub asset_type_mappings: Read<'s, AssetTypeMappings>,
     /// `CharacterSelectionEvent` channel.
     #[derivative(Debug = "ignore")]
     pub character_selection_ec: Write<'s, EventChannel<CharacterSelectionEvent>>,
@@ -52,60 +53,66 @@ type CharacterSelectionWidgetInputSystemData<'s> = (
 
 impl CharacterSelectionWidgetInputSystem {
     fn select_previous_character(
-        character_prefabs: &CharacterPrefabs,
+        asset_type_mappings: &AssetTypeMappings,
         widget: &mut CharacterSelectionWidget,
     ) -> CharacterSelection {
-        let first_character_slug = character_prefabs
-            .keys()
+        let first_character_id = asset_type_mappings
+            .iter_ids(&AssetType::Object(ObjectType::Character))
+            .copied()
             .next()
             .expect("Expected at least one character to be loaded.");
-        let last_character_slug = character_prefabs
-            .keys()
+        let last_character_id = asset_type_mappings
+            .iter_ids(&AssetType::Object(ObjectType::Character))
+            .copied()
             .next_back()
             .expect("Expected at least one character to be loaded.");
         widget.selection = match widget.selection {
-            CharacterSelection::Id(ref character_slug) => {
-                if character_slug == first_character_slug {
+            CharacterSelection::Id(character_id) => {
+                if character_id == first_character_id {
                     CharacterSelection::Random
                 } else {
-                    let next_character = character_prefabs
-                        .keys()
+                    let next_character = asset_type_mappings
+                        .iter_ids(&AssetType::Object(ObjectType::Character))
+                        .copied()
                         .rev()
-                        .skip_while(|slug| slug != &character_slug)
+                        .skip_while(|id| id != &character_id)
                         .nth(1); // skip current selection
 
                     if let Some(next_character) = next_character {
-                        CharacterSelection::Id(next_character.clone())
+                        CharacterSelection::Id(next_character)
                     } else {
                         CharacterSelection::Random
                     }
                 }
             }
-            CharacterSelection::Random => CharacterSelection::Id(last_character_slug.clone()),
+            CharacterSelection::Random => CharacterSelection::Id(last_character_id.clone()),
         };
         widget.selection.clone()
     }
 
     fn select_next_character(
-        character_prefabs: &CharacterPrefabs,
+        asset_type_mappings: &AssetTypeMappings,
         widget: &mut CharacterSelectionWidget,
     ) -> CharacterSelection {
-        let first_character_slug = character_prefabs
-            .keys()
+        let first_character_id = asset_type_mappings
+            .iter_ids(&AssetType::Object(ObjectType::Character))
+            .copied()
             .next()
             .expect("Expected at least one character to be loaded.");
-        let last_character_slug = character_prefabs
-            .keys()
+        let last_character_id = asset_type_mappings
+            .iter_ids(&AssetType::Object(ObjectType::Character))
+            .copied()
             .next_back()
             .expect("Expected at least one character to be loaded.");
         widget.selection = match widget.selection {
-            CharacterSelection::Id(ref character_slug) => {
-                if character_slug == last_character_slug {
+            CharacterSelection::Id(character_id) => {
+                if character_id == last_character_id {
                     CharacterSelection::Random
                 } else {
-                    let next_character = character_prefabs
-                        .keys()
-                        .skip_while(|slug| slug != &character_slug)
+                    let next_character = asset_type_mappings
+                        .iter_ids(&AssetType::Object(ObjectType::Character))
+                        .copied()
+                        .skip_while(|id| id != &character_id)
                         .nth(1); // skip current selection
 
                     if let Some(next_character) = next_character {
@@ -115,7 +122,7 @@ impl CharacterSelectionWidgetInputSystem {
                     }
                 }
             }
-            CharacterSelection::Random => CharacterSelection::Id(first_character_slug.clone()),
+            CharacterSelection::Random => CharacterSelection::Id(first_character_id.clone()),
         };
         widget.selection.clone()
     }
@@ -124,7 +131,7 @@ impl CharacterSelectionWidgetInputSystem {
         CharacterSelectionWidgetInputResources {
             ref mut character_selection_widgets,
             ref input_controlleds,
-            ref character_prefabs,
+            ref asset_type_mappings,
             ref mut character_selection_ec,
         }: &mut CharacterSelectionWidgetInputResources,
         event: ControlInputEvent,
@@ -136,7 +143,7 @@ impl CharacterSelectionWidgetInputSystem {
                     input_controlleds.get(axis_move_event_data.entity),
                 ) {
                     Self::handle_axis_event(
-                        &character_prefabs,
+                        &asset_type_mappings,
                         character_selection_ec,
                         character_selection_widget,
                         *input_controlled,
@@ -162,7 +169,7 @@ impl CharacterSelectionWidgetInputSystem {
     }
 
     fn handle_axis_event(
-        character_prefabs: &CharacterPrefabs,
+        asset_type_mappings: &AssetTypeMappings,
         character_selection_ec: &mut EventChannel<CharacterSelectionEvent>,
         character_selection_widget: &mut CharacterSelectionWidget,
         input_controlled: InputControlled,
@@ -170,11 +177,14 @@ impl CharacterSelectionWidgetInputSystem {
     ) {
         let character_selection =
             match (character_selection_widget.state, axis_move_event_data.axis) {
-                (WidgetState::CharacterSelect, Axis::X) if axis_move_event_data.value < 0. => Some(
-                    Self::select_previous_character(character_prefabs, character_selection_widget),
-                ),
+                (WidgetState::CharacterSelect, Axis::X) if axis_move_event_data.value < 0. => {
+                    Some(Self::select_previous_character(
+                        asset_type_mappings,
+                        character_selection_widget,
+                    ))
+                }
                 (WidgetState::CharacterSelect, Axis::X) if axis_move_event_data.value > 0. => Some(
-                    Self::select_next_character(character_prefabs, character_selection_widget),
+                    Self::select_next_character(asset_type_mappings, character_selection_widget),
                 ),
                 _ => None,
             };
@@ -286,15 +296,15 @@ mod test {
         shrev::{EventChannel, ReaderId},
         Error,
     };
-    use application_test_support::AutexousiousApplication;
-    use asset_model::config::AssetSlug;
+    use application_test_support::{AssetQueries, AutexousiousApplication};
+    use asset_model::config::AssetType;
     use assets_test::CHAR_BAT_SLUG;
     use character_selection_model::{CharacterSelection, CharacterSelectionEvent};
     use game_input::InputControlled;
     use game_input_model::{
         Axis, AxisMoveEventData, ControlAction, ControlActionEventData, ControlInputEvent,
     };
-    use game_model::loaded::CharacterPrefabs;
+    use object_type::ObjectType;
     use typename::TypeName;
 
     use super::{CharacterSelectionWidgetInputSystem, CharacterSelectionWidgetInputSystemData};
@@ -346,10 +356,11 @@ mod test {
             ExpectedParams {
                 widget_state: WidgetState::Ready,
                 character_selection_fn: char_bat,
-                character_selection_events_fn: |_world| {
+                character_selection_events_fn: |world| {
+                    let bat_asset_id = AssetQueries::id(world, &*CHAR_BAT_SLUG);
                     vec![CharacterSelectionEvent::Select {
                         controller_id: 123,
-                        character_selection: CharacterSelection::Id(CHAR_BAT_SLUG.clone()),
+                        character_selection: CharacterSelection::Id(bat_asset_id),
                     }]
                 },
             },
@@ -367,11 +378,13 @@ mod test {
             ExpectedParams {
                 widget_state: WidgetState::CharacterSelect,
                 character_selection_fn: |world| {
-                    let last_char = last_character(world);
+                    let last_char =
+                        AssetQueries::last_id(world, &AssetType::Object(ObjectType::Character));
                     CharacterSelection::Id(last_char)
                 },
                 character_selection_events_fn: |world| {
-                    let last_char = last_character(world);
+                    let last_char =
+                        AssetQueries::last_id(world, &AssetType::Object(ObjectType::Character));
                     vec![CharacterSelectionEvent::Switch {
                         controller_id: 123,
                         character_selection: CharacterSelection::Id(last_char),
@@ -392,11 +405,13 @@ mod test {
             ExpectedParams {
                 widget_state: WidgetState::CharacterSelect,
                 character_selection_fn: |world| {
-                    let first_char = first_character(world);
+                    let first_char =
+                        AssetQueries::first_id(world, &AssetType::Object(ObjectType::Character));
                     CharacterSelection::Id(first_char)
                 },
                 character_selection_events_fn: |world| {
-                    let first_char = first_character(world);
+                    let first_char =
+                        AssetQueries::first_id(world, &AssetType::Object(ObjectType::Character));
                     vec![CharacterSelectionEvent::Switch {
                         controller_id: 123,
                         character_selection: CharacterSelection::Id(first_char),
@@ -554,30 +569,13 @@ mod test {
         vec![]
     }
 
-    fn first_character(world: &mut World) -> AssetSlug {
-        world
-            .read_resource::<CharacterPrefabs>()
-            .keys()
-            .next()
-            .expect("Expected at least one character to be loaded.")
-            .clone()
-    }
-
-    fn last_character(world: &mut World) -> AssetSlug {
-        world
-            .read_resource::<CharacterPrefabs>()
-            .keys()
-            .next_back()
-            .expect("Expected at least one character to be loaded.")
-            .clone()
-    }
-
     fn char_random(_world: &mut World) -> CharacterSelection {
         CharacterSelection::Random
     }
 
-    fn char_bat(_world: &mut World) -> CharacterSelection {
-        CharacterSelection::Id(CHAR_BAT_SLUG.clone())
+    fn char_bat(world: &mut World) -> CharacterSelection {
+        let bat_asset_id = AssetQueries::id(&*world, &*CHAR_BAT_SLUG);
+        CharacterSelection::Id(bat_asset_id)
     }
 
     fn widget_entity(

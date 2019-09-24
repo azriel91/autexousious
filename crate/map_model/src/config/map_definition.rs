@@ -21,7 +21,7 @@ mod test {
     use sprite_model::config::SpriteRef;
 
     use super::MapDefinition;
-    use crate::config::{Layer, LayerFrame, MapBounds, MapHeader, Position};
+    use crate::config::{Layer, LayerFrame, LayerPosition, MapBounds, MapHeader};
 
     const MAP_NO_LAYERS: &str = r#"---
 header:
@@ -64,14 +64,14 @@ layer:
         let bounds = MapBounds::new(1, 2, 3, 800, 600, 200);
         let header = MapHeader::new("Layered Map".to_string(), bounds);
         let layer_0 = Layer::new(
-            Position::new(1, 4, 0),
+            LayerPosition::new(1, 4, 0),
             vec![
                 LayerFrame::new(Wait::new(7), SpriteRef::new(0, 0)),
                 LayerFrame::new(Wait::new(7), SpriteRef::new(0, 1)),
             ],
         );
         let layer_1 = Layer::new(
-            Position::new(-1, -2, -3),
+            LayerPosition::new(-1, -2, -3),
             vec![LayerFrame::new(Wait::new(1), SpriteRef::new(0, 0))],
         );
         let layers = vec![layer_0, layer_1];
