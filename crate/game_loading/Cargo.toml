@@ -27,6 +27,7 @@ map_model = { path = "../map_model" }
 map_selection_model = { path = "../map_selection_model" }
 num-traits = "0.2.8"
 object_loading = { path = "../object_loading" }
+object_prefab = { path = "../object_prefab" }
 object_type = { path = "../object_type" }
 sequence_model = { path = "../sequence_model" }
 sequence_model_spi = { path = "../sequence_model_spi" }

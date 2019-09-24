@@ -10,6 +10,7 @@ use derivative::Derivative;
 use derive_new::new;
 use game_input::InputControlled;
 use game_model::play::GameEntities;
+use object_prefab::{ObjectComponentStorages, ObjectEntityAugmenter, ObjectSpawningResources};
 use object_type::ObjectType;
 use team_model::play::{IndependentCounter, Team};
 use typename_derive::TypeName;
@@ -35,6 +36,12 @@ pub struct CharacterSelectionSpawningSystemData<'s> {
     /// `IndependentCounter` resource.
     #[derivative(Debug = "ignore")]
     pub independent_counter: Write<'s, IndependentCounter>,
+    /// `ObjectSpawningResources`.
+    #[derivative(Debug = "ignore")]
+    pub object_spawning_resources: ObjectSpawningResources<'s>,
+    /// `ObjectComponentStorages`.
+    #[derivative(Debug = "ignore")]
+    pub object_component_storages: ObjectComponentStorages<'s>,
     /// `CharacterSpawningResources`.
     #[derivative(Debug = "ignore")]
     pub character_spawning_resources: CharacterSpawningResources<'s>,
@@ -62,6 +69,8 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             character_selections,
             mut game_loading_status,
             mut independent_counter,
+            object_spawning_resources,
+            mut object_component_storages,
             character_spawning_resources,
             mut character_component_storages,
             mut input_controlleds,
@@ -78,6 +87,12 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
             .iter()
             .map(|(controller_id, asset_id)| {
                 let entity = entities.create();
+                ObjectEntityAugmenter::augment(
+                    &object_spawning_resources,
+                    &mut object_component_storages,
+                    *asset_id,
+                    entity,
+                );
                 CharacterEntityAugmenter::augment(
                     &character_spawning_resources,
                     &mut character_component_storages,

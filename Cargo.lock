@@ -2334,6 +2334,7 @@ dependencies = [
  "map_selection_model 0.13.0",
  "num-traits 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "object_loading 0.13.0",
+ "object_prefab 0.13.0",
  "object_type 0.13.0",
  "sequence_loading 0.13.0",
  "sequence_model 0.13.0",
