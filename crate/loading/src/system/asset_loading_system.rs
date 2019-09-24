@@ -15,11 +15,10 @@ use asset_model::{
 use audio_model::loaded::{AssetSourceSequenceHandles, SourceSequence};
 use character_loading::{CtsLoader, CtsLoaderParams, CHARACTER_TRANSITIONS_DEFAULT};
 use character_model::{
-    config::{CharacterDefinition, CharacterSequenceName},
+    config::{CharacterDefinition, CharacterSequence, CharacterSequenceName},
     loaded::{
-        AssetCharacterCtsHandles, AssetCharacterDefinitionHandle, Character,
-        CharacterControlTransitions, CharacterCts, CharacterCtsHandle, CharacterCtsHandles,
-        CharacterObjectWrapper,
+        AssetCharacterCtsHandles, AssetCharacterDefinitionHandle, CharacterControlTransitions,
+        CharacterCts, CharacterCtsHandle, CharacterCtsHandles,
     },
 };
 use collision_model::{
@@ -32,8 +31,8 @@ use collision_model::{
 use derivative::Derivative;
 use derive_new::new;
 use energy_model::{
-    config::{EnergyDefinition, EnergySequenceName},
-    loaded::{AssetEnergyDefinitionHandle, Energy, EnergyObjectWrapper},
+    config::{EnergyDefinition, EnergySequence, EnergySequenceName},
+    loaded::AssetEnergyDefinitionHandle,
 };
 use kinematic_model::loaded::{AssetObjectAccelerationSequenceHandles, ObjectAccelerationSequence};
 use loading_model::loaded::{AssetLoadStatus, LoadStatus};
@@ -804,13 +803,10 @@ impl AssetLoadingSystem {
 
                         asset_sequence_id_mappings_character.insert(asset_id, sequence_id_mappings);
 
-                        let CharacterObjectWrapper(object) = ObjectLoader::load::<Character>(
+                        ObjectLoader::load::<CharacterSequence>(
                             object_loader_params,
                             &character_definition.object_definition,
                         )
-                        .expect("Failed to load `Character`.");
-
-                        object
                     }
                     ObjectType::Energy => {
                         let energy_definition = asset_energy_definition_handle
@@ -825,13 +821,10 @@ impl AssetLoadingSystem {
                         );
                         asset_sequence_id_mappings_energy.insert(asset_id, sequence_id_mappings);
 
-                        let EnergyObjectWrapper(object) = ObjectLoader::load::<Energy>(
+                        ObjectLoader::load::<EnergySequence>(
                             object_loader_params,
                             &energy_definition.object_definition,
                         )
-                        .expect("Failed to load `Energy`.");
-
-                        object
                     }
                     ObjectType::TestObject => panic!("`TestObject` loading is not supported."),
                 };

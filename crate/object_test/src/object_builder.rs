@@ -1,5 +1,3 @@
-use std::marker::PhantomData;
-
 use amethyst::{
     assets::AssetStorage,
     ecs::{Read, World},
@@ -21,7 +19,7 @@ use kinematic_model::{
     loaded::{ObjectAccelerationSequence, ObjectAccelerationSequenceHandles},
 };
 use object_loading::ObjectLoaderSystemData;
-use object_model::loaded::{GameObject, Object, ObjectWrapper};
+use object_model::loaded::Object;
 use sequence_model::{
     config::Wait,
     loaded::{SequenceEndTransition, SequenceEndTransitions, WaitSequence, WaitSequenceHandles},
@@ -37,10 +35,7 @@ use sprite_model::loaded::{SpriteRenderSequence, SpriteRenderSequenceHandles};
 /// This defaults to the minimal fields necessary for an object. Builder methods can be used to
 /// override the defaults.
 #[derive(Debug, new)]
-pub struct ObjectBuilder<O>
-where
-    O: GameObject,
-{
+pub struct ObjectBuilder {
     /// `Wait` to use in all frames.
     #[new(value = "Wait::new(2)")]
     pub wait: Wait,
@@ -56,14 +51,9 @@ where
     /// `Spawns` to use in all frames.
     #[new(default)]
     pub spawns: Spawns,
-    /// Marker.
-    pub marker: PhantomData<O>,
 }
 
-impl<O> ObjectBuilder<O>
-where
-    O: GameObject,
-{
+impl ObjectBuilder {
     /// Set the `Wait` for this `Object`.
     pub fn with_wait(mut self, wait: Wait) -> Self {
         self.wait = wait;
@@ -225,10 +215,5 @@ where
             spawns_sequence_handles,
             sequence_end_transitions,
         )
-    }
-
-    /// Builds and returns the object wrapper.
-    pub fn build_wrapper(self, world: &World) -> O::ObjectWrapper {
-        O::ObjectWrapper::new(self.build(world))
     }
 }

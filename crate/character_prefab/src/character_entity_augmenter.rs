@@ -73,7 +73,7 @@ impl CharacterEntityAugmenter {
             .get(asset_id)
             .unwrap_or_else(|| {
                 panic!(
-                    "Expected `SequenceIdMappings<Character>` to exist for `{:?}`.",
+                    "Expected `SequenceIdMappings<CharacterSequenceName>` to exist for `{:?}`.",
                     asset_id
                 )
             });

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use amethyst::{assets::Handle, renderer::SpriteRender, Error};
+use amethyst::{assets::Handle, renderer::SpriteRender};
 use audio_loading::AudioLoader;
 use audio_model::loaded::{SourceHandleOpt, SourceSequence, SourceSequenceHandles};
 use collision_model::{
@@ -15,7 +15,7 @@ use kinematic_model::{
 };
 use object_model::{
     config::{GameObjectFrame, GameObjectSequence, ObjectDefinition},
-    loaded::{GameObject, Object, ObjectWrapper},
+    loaded::Object,
 };
 use sequence_model::{
     config::{SequenceNameString, Wait},
@@ -44,7 +44,7 @@ impl ObjectLoader {
     ///
     /// * `object_loader_params`: Entry of the object's configuration.
     /// * `object_definition`: Object definition configuration.
-    pub fn load<O>(
+    pub fn load<GOS>(
         ObjectLoaderParams {
             loader,
             wait_sequence_assets,
@@ -60,11 +60,11 @@ impl ObjectLoader {
             interactions_assets,
             spawns_assets,
         }: ObjectLoaderParams,
-        object_definition: &ObjectDefinition<O::GameObjectSequence>,
-    ) -> Result<O::ObjectWrapper, Error>
+        object_definition: &ObjectDefinition<GOS>,
+    ) -> Object
     where
-        O: GameObject,
-        <O as GameObject>::SequenceName: for<'de> Deserialize<'de> + Serialize,
+        GOS: GameObjectSequence,
+        GOS::SequenceName: for<'de> Deserialize<'de> + Serialize,
     {
         // Calculate the indices of each sequence ID.
         //
@@ -75,7 +75,7 @@ impl ObjectLoader {
             .keys()
             .enumerate()
             .map(|(index, sequence_name_string)| (sequence_name_string.clone(), SequenceId(index)))
-            .collect::<HashMap<SequenceNameString<O::SequenceName>, SequenceId>>();
+            .collect::<HashMap<SequenceNameString<GOS::SequenceName>, SequenceId>>();
 
         let sequence_end_transitions = object_definition
             .sequences
@@ -263,7 +263,7 @@ impl ObjectLoader {
             },
         );
 
-        let object = Object::new(
+        Object::new(
             wait_sequence_handles,
             source_sequence_handles,
             object_acceleration_sequence_handles,
@@ -272,38 +272,32 @@ impl ObjectLoader {
             interactions_sequence_handles,
             spawns_sequence_handles,
             SequenceEndTransitions::new(sequence_end_transitions),
-        );
-        let wrapper = O::ObjectWrapper::new(object);
-
-        Ok(wrapper)
+        )
     }
 }
 
 #[cfg(test)]
 mod test {
     use amethyst::{
-        assets::{AssetStorage, Processor, ProgressCounter},
+        assets::{AssetStorage, ProgressCounter},
         core::TransformBundle,
-        ecs::{Read, WorldExt},
+        ecs::{Read, SystemData, WorldExt},
         renderer::{types::DefaultBackend, RenderEmptyBundle, SpriteSheet, Texture},
     };
     use amethyst_test::AmethystApplication;
     use application::{load_in, Format};
     use asset_model::config::AssetRecord;
     use assets_test::{CHAR_BAT_PATH, CHAR_BAT_SLUG};
-    use character_model::{
-        config::CharacterDefinition,
-        loaded::{Character, CharacterObjectWrapper},
-    };
+    use character_model::config::{CharacterDefinition, CharacterSequence};
     use collision_loading::CollisionLoadingBundle;
+    use object_model::loaded::Object;
     use sequence_loading::SequenceLoadingBundle;
     use spawn_loading::SpawnLoadingBundle;
     use sprite_loading::SpriteLoader;
     use sprite_model::config::SpritesDefinition;
-    use typename::TypeName;
 
     use super::ObjectLoader;
-    use crate::{ObjectDefinitionToWrapperProcessor, ObjectLoaderParams, ObjectLoaderSystemData};
+    use crate::{ObjectLoaderParams, ObjectLoaderSystemData};
 
     #[test]
     fn loads_object_assets() {
@@ -316,12 +310,7 @@ mod test {
                 .with_bundle(CollisionLoadingBundle::new())
                 .with_bundle(SpawnLoadingBundle::new())
                 .with_bundle(SequenceLoadingBundle::new())
-                .with_system(
-                    ObjectDefinitionToWrapperProcessor::<Character>::new(),
-                    ObjectDefinitionToWrapperProcessor::<Character>::type_name(),
-                    &[]
-                )
-                .with_system(Processor::<Character>::new(), "character_processor", &[])
+                .with_setup(|world| TestSystemData::setup(world))
                 .with_effect(|world| {
                     let asset_record =
                         AssetRecord::new(CHAR_BAT_SLUG.clone(), CHAR_BAT_PATH.clone());
@@ -334,7 +323,7 @@ mod test {
                     )
                     .expect("Failed to load object.yaml into CharacterDefinition");
 
-                    let object_wrapper = {
+                    let object = {
                         let sprites_definition = load_in::<SpritesDefinition, _>(
                             &asset_record.path,
                             "sprites.yaml",
@@ -358,26 +347,25 @@ mod test {
                         .expect("Failed to load sprites.");
                         let sprite_sheet_handles = &sprite_sheet_handles;
 
-                        ObjectLoader::load::<Character>(
+                        ObjectLoader::load::<CharacterSequence>(
                             ObjectLoaderParams::from((
                                 &object_loader_system_data,
                                 sprite_sheet_handles.as_slice(),
                             )),
                             &character_definition.object_definition,
                         )
-                        .expect("Failed to load object")
                     };
 
-                    world.insert(object_wrapper);
+                    world.insert(object);
                 })
                 .with_assertion(|world| {
-                    let object_wrapper = world.read_resource::<CharacterObjectWrapper>();
+                    let object = world.read_resource::<Object>();
 
                     macro_rules! assert_frame_component_data_count {
                         ($frame_component_data_field:ident) => {
                             assert_eq!(
                                 28,
-                                object_wrapper.$frame_component_data_field.len(),
+                                object.$frame_component_data_field.len(),
                                 concat!(
                                     "Expected 28 ",
                                     stringify!($frame_component_data_field),

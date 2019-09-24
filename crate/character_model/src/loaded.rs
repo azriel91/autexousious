@@ -6,7 +6,6 @@
 pub use self::{
     asset_character_cts_handles::AssetCharacterCtsHandles,
     asset_character_definition_handle::AssetCharacterDefinitionHandle,
-    character::{Character, CharacterHandle, CharacterObjectWrapper},
     character_control_transition::CharacterControlTransition,
     character_control_transitions::{
         CharacterControlTransitions, CharacterControlTransitionsHandle,
@@ -18,7 +17,6 @@ pub use self::{
 
 mod asset_character_cts_handles;
 mod asset_character_definition_handle;
-mod character;
 mod character_control_transition;
 mod character_control_transitions;
 mod character_cts;
