@@ -13,15 +13,15 @@ pub use crate::{
     run_counter_updater::RunCounterUpdater,
     system::{
         CharacterControlTransitionsTransitionSystem, CharacterControlTransitionsUpdateSystem,
-        CharacterCtsHandleUpdateSystem,
     },
     system_data::ControlTransitionRequirementSystemData,
 };
+
+pub(crate) mod sequence_handler;
 
 mod character_sequence_update_components;
 mod character_sequence_updater;
 mod mirrored_updater;
 mod run_counter_updater;
-pub(crate) mod sequence_handler;
 mod system;
 mod system_data;

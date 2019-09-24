@@ -9,17 +9,13 @@ use application_event::AppEvent;
 use application_state::AutexState;
 use application_ui::ThemeLoader;
 use asset_model::loaded::AssetTypeMappings;
-use character_loading::CharacterLoadingStatus;
 use collision_audio_model::CollisionAudioLoadingStatus;
 use derivative::Derivative;
 use humantime;
 use loading_model::loaded::{AssetLoadStatus, LoadStatus};
 use log::{error, warn};
-use object_loading::ObjectLoadingStatus;
 use state_registry::StateId;
 use ui_audio_model::UiAudioLoadingStatus;
-
-use crate::MapLoadingStatus;
 
 /// Time limit before outputting a warning message and transitioning to the next state.
 const LOADING_TIME_LIMIT: Duration = Duration::from_secs(10);
@@ -90,11 +86,8 @@ where
     ) -> Trans<GameData<'a, 'b>, AppEvent> {
         data.data.update(&data.world);
 
-        let loading_statuses_complete = **data.world.read_resource::<CharacterLoadingStatus>()
-            == ObjectLoadingStatus::Complete
-            && *data.world.read_resource::<MapLoadingStatus>() == MapLoadingStatus::Complete
-            && *data.world.read_resource::<CollisionAudioLoadingStatus>()
-                == CollisionAudioLoadingStatus::Complete
+        let loading_statuses_complete = *data.world.read_resource::<CollisionAudioLoadingStatus>()
+            == CollisionAudioLoadingStatus::Complete
             && *data.world.read_resource::<UiAudioLoadingStatus>()
                 == UiAudioLoadingStatus::Complete;
 
@@ -152,7 +145,7 @@ where
                          \n\
                          * `SpriteLoadingBundle`\n\
                          * `CharacterLoadingBundle`\n\
-                         * `CharacterPrefabBundle`\n\
+                         * `EnergyLoadingBundle`\n\
                          * `MapLoadingBundle`\n\
                          * `amethyst::audio::AudioBundle`\n\
                          * `KinematicLoadingBundle`\n\

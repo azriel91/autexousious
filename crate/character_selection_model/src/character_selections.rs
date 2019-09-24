@@ -6,9 +6,9 @@ use game_input_model::ControllerId;
 
 /// Stores the selected characters for each controller.
 ///
-/// The asset slug refers to the selected `CharacterPrefab` in `CharacterPrefabs`.
+/// The asset ID refers to the selected `Character`.
 #[derive(Clone, Debug, Default, PartialEq, new)]
 pub struct CharacterSelections {
-    /// Map of controller ID to character asset slug.
+    /// Map of controller ID to character asset ID.
     pub selections: HashMap<ControllerId, AssetId>,
 }

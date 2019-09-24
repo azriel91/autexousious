@@ -7,7 +7,7 @@
 
 pub use crate::{
     autexousious_application::AutexousiousApplication,
-    queries::{AssetQueries, ObjectQueries, SequenceQueries},
+    queries::{AssetQueries, SequenceQueries},
     setup_function::SetupFunction,
 };
 

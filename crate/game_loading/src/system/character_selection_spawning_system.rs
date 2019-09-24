@@ -144,8 +144,7 @@ mod tests {
     };
     use assets_test::ASSETS_PATH;
     use audio_loading::AudioLoadingBundle;
-    use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
-    use character_prefab::CharacterPrefabBundle;
+    use character_loading::CharacterLoadingBundle;
     use character_selection_model::CharacterSelections;
     use collision_audio_loading::CollisionAudioLoadingBundle;
     use collision_loading::CollisionLoadingBundle;
@@ -294,10 +293,6 @@ mod tests {
             .with_bundle(MapLoadingBundle::new())
             .with_bundle(CharacterLoadingBundle::new())
             .with_bundle(EnergyLoadingBundle::new())
-            .with_bundle(
-                CharacterPrefabBundle::new()
-                    .with_system_dependencies(&[String::from(CHARACTER_PROCESSOR)]),
-            )
             .with_bundle(CollisionAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_bundle(UiAudioLoadingBundle::new(ASSETS_PATH.clone()))
             .with_state(|| LoadingState::new(PopState))

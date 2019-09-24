@@ -103,7 +103,6 @@ mod tests {
     use application_test_support::AutexousiousApplication;
     use asset_model::config::AssetType;
     use assets_test::MAP_FADE_SLUG;
-    use game_model::loaded::MapPrefabs;
     use map_selection_model::{MapSelection, MapSelectionEvent};
     use stdio_spi::{StdinMapper, StdioError};
 
@@ -116,7 +115,6 @@ mod tests {
         let args = MapSelectionEventArgs::Select { selection };
         let mut world = World::new();
         <MapSelectionEventStdinMapperSystemData<'_> as SystemData>::setup(&mut world);
-        world.insert(MapPrefabs::new());
 
         let result = MapSelectionEventStdinMapper::map(
             &world.system_data::<MapSelectionEventStdinMapperSystemData<'_>>(),
@@ -135,7 +133,6 @@ mod tests {
         let args = MapSelectionEventArgs::Select { selection };
         let mut world = World::new();
         <MapSelectionEventStdinMapperSystemData<'_> as SystemData>::setup(&mut world);
-        world.insert(MapPrefabs::new());
 
         let result = MapSelectionEventStdinMapper::map(
             &world.system_data::<MapSelectionEventStdinMapperSystemData<'_>>(),

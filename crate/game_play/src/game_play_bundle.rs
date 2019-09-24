@@ -10,7 +10,6 @@ use camera_play::{CameraTrackingSystem, CameraVelocitySystem};
 use character_model::loaded::{AssetCharacterCtsHandles, CharacterCtsHandles};
 use character_play::{
     CharacterControlTransitionsTransitionSystem, CharacterControlTransitionsUpdateSystem,
-    CharacterCtsHandleUpdateSystem,
 };
 use charge_play::{
     ChargeIncrementSystem, ChargeInitializeDelaySystem, ChargeInitializeDetectionSystem,
@@ -133,7 +132,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
 
         // TODO: The `SequenceUpdateSystem`s depend on the following systems:
         //
-        // * `SequenceComponentUpdateSystem::<_, _, _>`
+        // * `SequenceComponentUpdateSystem::<_, _>`
         //
         // Because there are so many, and we haven't implemented a good way to specify the
         // dependencies without heaps of duplicated code, we use a barrier.
@@ -147,7 +146,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
             SequenceUpdateSystem::new(),
             &SequenceUpdateSystem::type_name(),
             &[
-                // &SequenceComponentUpdateSystem::<_, _, _>::type_name(),
+                // &SequenceComponentUpdateSystem::<_, _>::type_name(),
             ],
         ); // kcov-ignore
 
@@ -168,18 +167,10 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GamePlayBundle {
         frame_component_update_system!(InteractionsSequence);
         frame_component_update_system!(SpawnsSequence);
 
-        // builder.add(
-        //     CharacterCtsHandleUpdateSystem::new(),
-        //     &CharacterCtsHandleUpdateSystem::type_name(),
-        //     &[],
-        // ); // kcov-ignore
         builder.add(
             CharacterControlTransitionsUpdateSystem::new(),
             &CharacterControlTransitionsUpdateSystem::type_name(),
-            &[
-                // &CharacterCtsHandleUpdateSystem::type_name(),
-                &SequenceUpdateSystem::type_name(),
-            ],
+            &[&SequenceUpdateSystem::type_name()],
         ); // kcov-ignore
         builder.add(
             FrameFreezeClockAugmentSystem::new(),
