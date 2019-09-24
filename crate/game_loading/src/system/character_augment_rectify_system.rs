@@ -8,7 +8,6 @@ use amethyst::{
     utils::removal::Removal,
 };
 use camera_model::play::CameraTracked;
-use character_prefab::CharacterPrefabHandle;
 use derivative::Derivative;
 use derive_new::new;
 use game_input::InputControlled;
@@ -40,9 +39,6 @@ pub struct CharacterAugmentRectifySystemData<'s> {
     /// `AssetMapBounds` resource.
     #[derivative(Debug = "ignore")]
     pub asset_map_bounds: Read<'s, AssetMapBounds>,
-    /// `CharacterPrefabHandle` components.
-    #[derivative(Debug = "ignore")]
-    pub character_prefab_handles: ReadStorage<'s, CharacterPrefabHandle>,
     /// `InputControlled` components.
     #[derivative(Debug = "ignore")]
     pub input_controlleds: ReadStorage<'s, InputControlled>,
@@ -108,7 +104,6 @@ impl<'s> System<'s> for CharacterAugmentRectifySystem {
             mut game_loading_status,
             map_selection,
             asset_map_bounds,
-            character_prefab_handles,
             input_controlleds,
             mut camera_trackeds,
             mut positions,
@@ -145,7 +140,7 @@ impl<'s> System<'s> for CharacterAugmentRectifySystem {
         // This `Position` moves the entity to the middle of a screen wide map.
         let position = Position::<f32>::new(width / 2., height / 2., depth / 2.);
 
-        (&entities, &character_prefab_handles)
+        (&entities, &input_controlleds)
             .join()
             .for_each(|(entity, _)| {
                 // Set character `position` based on the map.
@@ -157,13 +152,9 @@ impl<'s> System<'s> for CharacterAugmentRectifySystem {
                 camera_trackeds
                     .insert(entity, CameraTracked)
                     .expect("Failed to insert `CameraTracked` component.");
-            });
 
-        (&entities, &input_controlleds, &character_prefab_handles)
-            .join()
-            .for_each(|(game_object_entity, _, _)| {
-                lazy_update.exec(move |world| Self::hp_bar_augment(world, game_object_entity));
-                lazy_update.exec(move |world| Self::cp_bar_augment(world, game_object_entity));
+                lazy_update.exec(move |world| Self::hp_bar_augment(world, entity));
+                lazy_update.exec(move |world| Self::cp_bar_augment(world, entity));
             });
 
         game_loading_status.character_augment_status = CharacterAugmentStatus::Complete;
@@ -180,11 +171,14 @@ impl<'s> System<'s> for CharacterAugmentRectifySystem {
 
 #[cfg(test)]
 mod tests {
+    use game_model::play::GameEntities;
+    use std::collections::HashMap;
+
     use amethyst::{
-        assets::{Prefab, Processor},
+        assets::Processor,
         audio::Source,
         core::TransformBundle,
-        ecs::{Builder, Entity, Join, Read, ReadStorage, World, WorldExt},
+        ecs::{Join, Read, ReadStorage, World, WorldExt},
         renderer::{types::DefaultBackend, RenderEmptyBundle},
         shred::SystemData,
         window::ScreenDimensions,
@@ -195,17 +189,17 @@ mod tests {
     };
     use application_event::{AppEvent, AppEventReader};
     use asset_model::{
-        config::AssetSlug,
-        loaded::{AssetIdMappings, SlugAndHandle},
+        config::{AssetSlug, AssetType},
+        loaded::{AssetIdMappings, AssetTypeMappings},
     };
-    use assets_test::{ASSETS_PATH, CHAR_BAT_SLUG, MAP_FADE_SLUG};
+    use assets_test::{ASSETS_PATH, MAP_FADE_SLUG};
     use audio_loading::AudioLoadingBundle;
     use character_loading::{CharacterLoadingBundle, CHARACTER_PROCESSOR};
-    use character_prefab::{CharacterPrefab, CharacterPrefabBundle};
+    use character_prefab::CharacterPrefabBundle;
+    use character_selection_model::CharacterSelections;
     use collision_audio_loading::CollisionAudioLoadingBundle;
     use collision_loading::CollisionLoadingBundle;
     use energy_loading::EnergyLoadingBundle;
-    use game_input::InputControlled;
     use game_input_model::ControlBindings;
     use game_play_hud::{CpBar, HpBar};
     use kinematic_loading::KinematicLoadingBundle;
@@ -215,6 +209,7 @@ mod tests {
     use map_loading::MapLoadingBundle;
     use map_selection::MapSelectionStatus;
     use map_selection_model::MapSelection;
+    use object_type::ObjectType;
     use sequence_loading::SequenceLoadingBundle;
     use spawn_loading::SpawnLoadingBundle;
     use sprite_loading::SpriteLoadingBundle;
@@ -222,7 +217,7 @@ mod tests {
     use ui_audio_loading::UiAudioLoadingBundle;
 
     use super::{CharacterAugmentRectifySystem, CharacterAugmentRectifySystemData};
-    use crate::{CharacterAugmentStatus, GameLoadingStatus};
+    use crate::{CharacterAugmentStatus, CharacterSelectionSpawningSystem, GameLoadingStatus};
 
     #[test]
     fn returns_if_augment_status_is_not_rectify() -> Result<(), Error> {
@@ -231,17 +226,17 @@ mod tests {
                 let mut game_loading_status = GameLoadingStatus::new();
                 game_loading_status.character_augment_status = CharacterAugmentStatus::Prefab;
                 world.insert(game_loading_status);
-
-                let snh = SlugAndHandle::<Prefab<CharacterPrefab>>::from((
-                    &*world,
-                    CHAR_BAT_SLUG.clone(),
-                ));
-                let char_entity = world.create_entity().with(snh.handle).build();
-
-                world.insert(char_entity);
             },
             |world| {
-                let char_entity = *world.read_resource::<Entity>();
+                let char_entity = world
+                    .read_resource::<GameEntities>()
+                    .objects
+                    .get(&ObjectType::Character)
+                    .expect("Expected `Character` entities to exist.")
+                    .iter()
+                    .next()
+                    .copied()
+                    .expect("Expected character entity to exist.");
                 assert_eq!(
                     // Default is inserted by character augmenter.
                     Some(Position::<f32>::new(0., 0., 0.)).as_ref(),
@@ -258,17 +253,17 @@ mod tests {
                 let mut game_loading_status = GameLoadingStatus::new();
                 game_loading_status.character_augment_status = CharacterAugmentStatus::Rectify;
                 world.insert(game_loading_status);
-
-                let snh = SlugAndHandle::<Prefab<CharacterPrefab>>::from((
-                    &*world,
-                    CHAR_BAT_SLUG.clone(),
-                ));
-                let char_entity = world.create_entity().with(snh.handle).build();
-
-                world.insert(char_entity);
             },
             |world| {
-                let char_entity = *world.read_resource::<Entity>();
+                let char_entity = world
+                    .read_resource::<GameEntities>()
+                    .objects
+                    .get(&ObjectType::Character)
+                    .expect("Expected `Character` entities to exist.")
+                    .iter()
+                    .next()
+                    .copied()
+                    .expect("Expected character entity to exist.");
                 // kcov-ignore-start
                 assert_eq!(
                     // kcov-ignore-end
@@ -296,18 +291,6 @@ mod tests {
                 let mut game_loading_status = GameLoadingStatus::new();
                 game_loading_status.character_augment_status = CharacterAugmentStatus::Rectify;
                 world.insert(game_loading_status);
-
-                let snh = SlugAndHandle::<Prefab<CharacterPrefab>>::from((
-                    &*world,
-                    CHAR_BAT_SLUG.clone(),
-                ));
-                let char_entity = world
-                    .create_entity()
-                    .with(snh.handle)
-                    .with(InputControlled::new(0))
-                    .build();
-
-                world.insert(char_entity);
             },
             |world| {
                 let (hp_bars, cp_bars) =
@@ -354,6 +337,25 @@ mod tests {
             .with_state(|| LoadingState::new(PopState))
             .with_state(|| wait_for_load)
             .with_effect(|world| setup_map_selection(world, &*MAP_FADE_SLUG))
+            .with_effect(|world| {
+                let mut game_loading_status = GameLoadingStatus::new();
+                game_loading_status.character_augment_status = CharacterAugmentStatus::Prefab;
+                world.insert(game_loading_status);
+
+                let asset_id = {
+                    let asset_type_mappings = world.read_resource::<AssetTypeMappings>();
+                    asset_type_mappings
+                        .iter_ids(&AssetType::Object(ObjectType::Character))
+                        .next()
+                        .copied()
+                        .expect("Expected at least one character to be loaded.")
+                };
+                let mut character_selections = HashMap::new();
+                character_selections.insert(123, asset_id);
+                let character_selections = CharacterSelections::new(character_selections);
+                world.insert(character_selections);
+            })
+            .with_system_single(CharacterSelectionSpawningSystem::new(), "", &[])
             .with_effect(fn_setup)
             .with_system_single(
                 CharacterAugmentRectifySystem,
