@@ -19,6 +19,7 @@
 
 * ***Breaking:*** Configuration files now use YAML instead of TOML. ([#154])
 * ***Breaking:*** Position and velocity configuration use named axes. ([#165])
+* Rewrote asset loading and internal asset representation. ([#167])
 
 [#125]: https://gitlab.com/azriel91/autexousious/issues/125
 [#142]: https://gitlab.com/azriel91/autexousious/issues/142
@@ -29,6 +30,7 @@
 [#162]: https://gitlab.com/azriel91/autexousious/issues/162
 [#163]: https://gitlab.com/azriel91/autexousious/issues/163
 [#165]: https://gitlab.com/azriel91/autexousious/issues/165
+[#167]: https://gitlab.com/azriel91/autexousious/issues/167
 
 ## 0.13.0 (2019-08-16)
 
