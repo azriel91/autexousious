@@ -230,14 +230,19 @@ impl MapSelectionWidgetUiSystem {
             .join()
             .for_each(|(widget, ui_text)| {
                 ui_text.text = {
-                    match widget.selection {
-                        MapSelection::Random(..) => format!("◀ {:^16} ▶", "Random"),
+                    let slug_string = match widget.selection {
+                        MapSelection::Random(..) => String::from("Random"),
                         MapSelection::Id(asset_id) => {
                             let slug = asset_id_mappings
                                 .slug(asset_id)
                                 .expect("Expected slug to exist for map selection.");
-                            format!("◀ {:^16} ▶", format!("{}", slug))
+                            format!("{}", slug)
                         }
+                    };
+
+                    match widget.state {
+                        WidgetState::MapSelect => format!("◀ {:^16} ▶", slug_string),
+                        WidgetState::Ready => format!("» {:^16} «", slug_string),
                     }
                 }
             });

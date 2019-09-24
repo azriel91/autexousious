@@ -215,17 +215,20 @@ impl CharacterSelectionWidgetUiSystem {
         (character_selection_widgets, ui_texts)
             .join()
             .for_each(|(widget, ui_text)| {
+                let slug_string = match widget.selection {
+                    CharacterSelection::Random => String::from("Random"),
+                    CharacterSelection::Id(asset_id) => {
+                        let slug = asset_id_mappings
+                            .slug(asset_id)
+                            .expect("Expected slug to exist for character selection.");
+                        format!("{}", slug)
+                    }
+                };
+
                 ui_text.text = match widget.state {
                     WidgetState::Inactive => "Press Attack To Join".to_string(),
-                    WidgetState::CharacterSelect | WidgetState::Ready => match widget.selection {
-                        CharacterSelection::Random => format!("◀ {:^16} ▶", "Random"),
-                        CharacterSelection::Id(asset_id) => {
-                            let slug = asset_id_mappings
-                                .slug(asset_id)
-                                .expect("Expected slug to exist for map selection.");
-                            format!("◀ {:^16} ▶", format!("{}", slug))
-                        }
-                    },
+                    WidgetState::CharacterSelect => format!("◀ {:^16} ▶", slug_string),
+                    WidgetState::Ready => format!("» {:^16} «", slug_string),
                 }
             });
     }
