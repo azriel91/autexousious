@@ -9,6 +9,7 @@ pub use crate::{
     object_prefab_error::ObjectPrefabError,
     system_data::{
         FrameComponentDataHandleStorages, FrameComponentStorages, ObjectComponentStorages,
+        ObjectSpawningResources,
     },
 };
 

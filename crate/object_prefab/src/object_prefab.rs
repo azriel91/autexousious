@@ -11,8 +11,6 @@ use log::debug;
 use object_model::{config::ObjectAssetData, loaded::GameObject};
 use serde::{Deserialize, Serialize};
 
-use crate::{ObjectComponentStorages, ObjectEntityAugmenter, ObjectPrefabError};
-
 /// Sequence for volumes that can be hit.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum ObjectPrefab<O>
@@ -47,8 +45,6 @@ where
     /// `Handle<O::ObjectWrapper>` component storage.
     #[derivative(Debug = "ignore")]
     object_wrapper_handles: WriteStorage<'s, Handle<O::ObjectWrapper>>,
-    /// Common game object `Component` storages.
-    object_component_storages: ObjectComponentStorages<'s>,
 }
 
 impl<'s, O> PrefabData<'s> for ObjectPrefab<O>
@@ -66,7 +62,6 @@ where
             loader,
             object_wrapper_assets,
             object_wrapper_handles,
-            object_component_storages,
         }: &mut Self::SystemData,
         _: &[Entity],
         _children: &[Entity],
@@ -82,17 +77,12 @@ where
                 panic!("This variant should not be instantiated by consumers.")
             }
         };
-        let object_wrapper = object_wrapper_assets
-            .get(&object_wrapper_handle)
-            .ok_or_else(|| ObjectPrefabError::NotLoaded {
-                object_wrapper_handle: object_wrapper_handle.clone(),
-            })?;
 
         object_wrapper_handles
             .insert(entity, object_wrapper_handle)
             .expect("Failed to insert `Handle<O::ObjectWrapper>` component.");
 
-        ObjectEntityAugmenter::augment(entity, object_component_storages, object_wrapper);
+        // ObjectEntityAugmenter::augment(entity, object_component_storages, object_wrapper);
 
         Ok(())
     }

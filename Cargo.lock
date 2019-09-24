@@ -3926,6 +3926,8 @@ name = "object_prefab"
 version = "0.13.0"
 dependencies = [
  "amethyst 0.12.0 (git+https://github.com/amethyst/amethyst.git)",
+ "amethyst_test 0.3.0 (git+https://github.com/amethyst/amethyst.git)",
+ "asset_model 0.13.0",
  "collision_model 0.13.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "kinematic_model 0.13.0",
@@ -3933,7 +3935,6 @@ dependencies = [
  "logic_clock 0.13.0",
  "object_loading 0.13.0",
  "object_model 0.13.0",
- "object_test 0.13.0",
  "sequence_model 0.13.0",
  "serde 1.0.100 (registry+https://github.com/rust-lang/crates.io-index)",
  "spawn_model 0.13.0",

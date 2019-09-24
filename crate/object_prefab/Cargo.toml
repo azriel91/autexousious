@@ -6,6 +6,7 @@ edition = "2018"
 
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
+asset_model = { path = "../asset_model" }
 collision_model = { path = "../collision_model" }
 derivative = "1.0.2"
 kinematic_model = { path = "../kinematic_model" }
@@ -19,8 +20,8 @@ sprite_model = { path = "../sprite_model" }
 
 [dev-dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "test-support", "vulkan"] }
+amethyst_test = { git = "https://github.com/amethyst/amethyst.git" }
 object_loading = { path = "../object_loading" }
-object_test = { path = "../object_test" }
 test_object_model = { path = "../test_object_model" }
 
 [features]

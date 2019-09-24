@@ -1,14 +1,15 @@
 use amethyst::{core::transform::Transform, ecs::Entity, renderer::transparent::Transparent};
+use asset_model::loaded::AssetId;
 use kinematic_model::config::{Position, Velocity};
-use object_model::{loaded::ObjectWrapper, play::Mirrored};
+use object_model::play::Mirrored;
 use sequence_model::{
     loaded::SequenceId,
     play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
 };
 
-use crate::ObjectComponentStorages;
+use crate::{ObjectComponentStorages, ObjectSpawningResources};
 
-/// Placeholder constant for
+/// Placeholder constant for uninitialized frame index and wait clocks.
 const UNINITIALIZED: usize = 99;
 
 /// Augments an entity with `Object` components.
@@ -20,28 +21,38 @@ impl ObjectEntityAugmenter {
     ///
     /// # Parameters
     ///
+    /// * `object_spawning_resources`: Resources needed to spawn the object.
+    /// * `object_component_storages`: Character specific `Component` storages.
+    /// * `asset_id`: ID of the object assets.
     /// * `entity`: The entity to augment.
-    /// * `object_component_storages`: Non-frame-dependent `Component` storages for objects.
-    /// * `object_wrapper`: Slug and handle of the object to spawn.
-    pub fn augment<'s, W>(
-        entity: Entity,
+    pub fn augment<'s>(
+        ObjectSpawningResources {
+            asset_sequence_end_transitions,
+        }: &ObjectSpawningResources<'s>,
         ObjectComponentStorages {
-            ref mut transparents,
-            ref mut positions,
-            ref mut velocities,
-            ref mut transforms,
-            ref mut mirroreds,
-            ref mut sequence_end_transitionses,
-            ref mut sequence_ids,
-            ref mut sequence_statuses,
-            ref mut frame_index_clocks,
-            ref mut frame_wait_clocks,
+            transparents,
+            positions,
+            velocities,
+            transforms,
+            mirroreds,
+            sequence_end_transitionses,
+            sequence_ids,
+            sequence_statuses,
+            frame_index_clocks,
+            frame_wait_clocks,
         }: &mut ObjectComponentStorages<'s>,
-        object_wrapper: &W,
-    ) where
-        W: ObjectWrapper,
-    {
-        let sequence_end_transitions = &object_wrapper.inner().sequence_end_transitions;
+        asset_id: AssetId,
+        entity: Entity,
+    ) {
+        let sequence_end_transitions =
+            asset_sequence_end_transitions
+                .get(asset_id)
+                .unwrap_or_else(|| {
+                    panic!(
+                        "Expected `SequenceEndTransitions` to exist for `{:?}`.",
+                        asset_id
+                    )
+                });
 
         let sequence_id = SequenceId::default();
 
@@ -100,41 +111,49 @@ impl ObjectEntityAugmenter {
 
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
+
     use amethyst::{
-        core::transform::Transform,
-        ecs::{Builder, ReadStorage, World, WorldExt},
+        core::transform::{Transform, TransformBundle},
+        ecs::{Builder, Read, ReadStorage, World, WorldExt},
         renderer::transparent::Transparent,
         shred::SystemData,
         Error,
     };
+    use amethyst_test::AmethystApplication;
+    use asset_model::{
+        config::AssetSlug,
+        loaded::{AssetId, AssetIdMappings},
+    };
     use kinematic_model::config::{Position, Velocity};
-    use object_loading::ObjectLoaderSystemData;
     use object_model::play::Mirrored;
-    use object_test::{ObjectBuilder, ObjectTest};
     use sequence_model::{
-        loaded::SequenceId,
+        loaded::{AssetSequenceEndTransitions, SequenceEndTransitions, SequenceId},
         play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
     };
-    use test_object_model::loaded::{TestObject, TestObjectObjectWrapper};
 
     use super::ObjectEntityAugmenter;
-    use crate::{FrameComponentStorages, ObjectComponentStorages};
+    use crate::{ObjectComponentStorages, ObjectSpawningResources};
 
     #[test]
     fn augments_entity_with_object_components() -> Result<(), Error> {
         run_test(|world| {
             let entity = world.create_entity().build();
             {
-                let object_wrapper = world.read_resource::<TestObjectObjectWrapper>();
-
-                let mut object_component_storages = ObjectComponentStorages::fetch(&world);
+                let asset_id = *world.read_resource::<AssetId>();
+                let (object_spawning_resources, mut object_component_storages) = world
+                    .system_data::<(ObjectSpawningResources<'_>, ObjectComponentStorages<'_>)>();
                 ObjectEntityAugmenter::augment(
-                    entity,
+                    &object_spawning_resources,
                     &mut object_component_storages,
-                    &*object_wrapper,
+                    asset_id,
+                    entity,
                 );
             }
 
+            assert!(world
+                .read_storage::<SequenceEndTransitions>()
+                .contains(entity));
             assert!(world.read_storage::<SequenceId>().contains(entity));
             assert!(world.read_storage::<SequenceStatus>().contains(entity));
             assert!(world.read_storage::<Mirrored>().contains(entity));
@@ -155,13 +174,14 @@ mod tests {
 
             let entity = world.create_entity().with(position).with(velocity).build();
             {
-                let object_wrapper = world.read_resource::<TestObjectObjectWrapper>();
-
-                let mut object_component_storages = ObjectComponentStorages::fetch(&world);
+                let asset_id = *world.read_resource::<AssetId>();
+                let (object_spawning_resources, mut object_component_storages) = world
+                    .system_data::<(ObjectSpawningResources<'_>, ObjectComponentStorages<'_>)>();
                 ObjectEntityAugmenter::augment(
-                    entity,
+                    &object_spawning_resources,
                     &mut object_component_storages,
-                    &*object_wrapper,
+                    asset_id,
+                    entity,
                 );
             }
 
@@ -185,19 +205,32 @@ mod tests {
     }
 
     fn run_test(assertion_fn: fn(&mut World)) -> Result<(), Error> {
-        ObjectTest::application()
-            .with_effect(|world| {
-                <FrameComponentStorages as SystemData>::setup(world);
-                <ObjectLoaderSystemData as SystemData>::setup(world);
+        AmethystApplication::blank()
+            .with_bundle(TransformBundle::new())
+            .with_setup(|world| {
+                <Read<'_, AssetIdMappings> as SystemData>::setup(world);
+                <ObjectSpawningResources as SystemData>::setup(world);
                 <ObjectComponentStorages as SystemData>::setup(world);
             })
-            .with_effect(setup_object_wrapper)
+            .with_effect(|world| {
+                let asset_id = {
+                    let mut asset_id_mappings = world.write_resource::<AssetIdMappings>();
+                    let asset_slug =
+                        AssetSlug::from_str("test/char").expect("Expected asset slug to be valid.");
+                    asset_id_mappings.insert(asset_slug)
+                };
+
+                {
+                    let mut asset_sequence_end_transitions =
+                        world.write_resource::<AssetSequenceEndTransitions>();
+
+                    asset_sequence_end_transitions
+                        .insert(asset_id, SequenceEndTransitions::default());
+                };
+
+                world.insert(asset_id);
+            })
             .with_assertion(assertion_fn)
             .run_isolated()
-    }
-
-    fn setup_object_wrapper(world: &mut World) {
-        let object_wrapper = ObjectBuilder::<TestObject>::new().build_wrapper(&*world);
-        world.insert(object_wrapper);
     }
 }
