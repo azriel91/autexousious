@@ -22,6 +22,11 @@
 * ***Breaking:*** Position and velocity configuration use named axes. ([#165])
 * Rewrote asset loading and internal asset representation. ([#167])
 
+### Fixed
+
+* Switching map selection actually switches the map. ([#166])
+* Going back from map selection does not return to main menu. ([#166])
+
 [#125]: https://gitlab.com/azriel91/autexousious/issues/125
 [#142]: https://gitlab.com/azriel91/autexousious/issues/142
 [#154]: https://gitlab.com/azriel91/autexousious/issues/154
@@ -32,6 +37,7 @@
 [#162]: https://gitlab.com/azriel91/autexousious/issues/162
 [#163]: https://gitlab.com/azriel91/autexousious/issues/163
 [#165]: https://gitlab.com/azriel91/autexousious/issues/165
+[#166]: https://gitlab.com/azriel91/autexousious/issues/166
 [#167]: https://gitlab.com/azriel91/autexousious/issues/167
 
 ## 0.13.0 (2019-08-16)
