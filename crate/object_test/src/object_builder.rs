@@ -24,10 +24,7 @@ use sequence_model::{
     config::Wait,
     loaded::{SequenceEndTransition, SequenceEndTransitions, WaitSequence, WaitSequenceHandles},
 };
-use spawn_model::{
-    config::Spawns,
-    loaded::{SpawnsSequence, SpawnsSequenceHandles},
-};
+use spawn_model::loaded::{Spawns, SpawnsSequence, SpawnsSequenceHandles};
 use sprite_model::loaded::{SpriteRenderSequence, SpriteRenderSequenceHandles};
 
 /// Builds an `Object` in-memory.

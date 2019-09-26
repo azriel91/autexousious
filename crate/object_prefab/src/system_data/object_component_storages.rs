@@ -7,7 +7,7 @@ use amethyst::{
 use asset_model::loaded::AssetId;
 use derivative::Derivative;
 use kinematic_model::config::{Position, Velocity};
-use object_model::play::Mirrored;
+use object_model::play::{Grounding, Mirrored};
 use sequence_model::{
     loaded::{SequenceEndTransitions, SequenceId},
     play::{FrameIndexClock, FrameWaitClock, SequenceStatus},
@@ -38,6 +38,9 @@ pub struct ObjectComponentStorages<'s> {
     /// `Mirrored` components.
     #[derivative(Debug = "ignore")]
     pub mirroreds: WriteStorage<'s, Mirrored>,
+    /// `Grounding` component storage.
+    #[derivative(Debug = "ignore")]
+    pub groundings: WriteStorage<'s, Grounding>,
     /// `SequenceEndTransitions` components.
     #[derivative(Debug = "ignore")]
     pub sequence_end_transitionses: WriteStorage<'s, SequenceEndTransitions>,

@@ -8,10 +8,7 @@ use character_model::{
 use charge_model::play::{ChargeRetention, ChargeTrackerClock};
 use game_input::ControllerInput;
 use map_model::play::MapBounded;
-use object_model::{
-    config::Mass,
-    play::{Grounding, HealthPoints},
-};
+use object_model::{config::Mass, play::HealthPoints};
 use object_status_model::config::StunPoints;
 use sequence_model::{config::SequenceNameString, loaded::SequenceId};
 
@@ -44,7 +41,6 @@ impl CharacterEntityAugmenter {
             health_pointses,
             stun_pointses,
             run_counters,
-            groundings,
             masses,
             map_boundeds,
             charge_tracker_clocks,
@@ -116,9 +112,6 @@ impl CharacterEntityAugmenter {
         run_counters
             .insert(entity, RunCounter::default())
             .expect("Failed to insert `RunCounter` component.");
-        groundings
-            .insert(entity, Grounding::default())
-            .expect("Failed to insert `Grounding` component.");
         masses
             .insert(entity, CHARACTER_MASS_DEFAULT)
             .expect("Failed to insert `Mass` component.");
@@ -182,10 +175,7 @@ mod test {
     };
     use game_input::ControllerInput;
     use map_model::play::MapBounded;
-    use object_model::{
-        config::Mass,
-        play::{Grounding, HealthPoints},
-    };
+    use object_model::{config::Mass, play::HealthPoints};
     use object_status_model::config::StunPoints;
     use sequence_model::loaded::{AssetSequenceIdMappings, SequenceIdMappings};
 
@@ -215,7 +205,6 @@ mod test {
             assert!(world.read_storage::<HealthPoints>().contains(entity));
             assert!(world.read_storage::<StunPoints>().contains(entity));
             assert!(world.read_storage::<RunCounter>().contains(entity));
-            assert!(world.read_storage::<Grounding>().contains(entity));
             assert!(world.read_storage::<Mass>().contains(entity));
             assert!(world.read_storage::<MapBounded>().contains(entity));
             assert!(world.read_storage::<ChargeTrackerClock>().contains(entity));

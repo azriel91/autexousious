@@ -3,15 +3,18 @@ use amethyst::{
     audio::Source,
     renderer::sprite::SpriteSheetHandle,
 };
+use asset_model::loaded::{AssetIdMappings, AssetTypeMappings};
 use audio_model::loaded::SourceSequence;
+use character_model::config::CharacterSequenceName;
 use collision_model::{
     config::{Body, Interactions},
     loaded::{BodySequence, InteractionsSequence},
 };
 use derivative::Derivative;
+use energy_model::config::EnergySequenceName;
 use kinematic_model::loaded::ObjectAccelerationSequence;
-use sequence_model::loaded::WaitSequence;
-use spawn_model::{config::Spawns, loaded::SpawnsSequence};
+use sequence_model::loaded::{AssetSequenceIdMappings, WaitSequence};
+use spawn_model::loaded::{Spawns, SpawnsSequence};
 use sprite_model::loaded::SpriteRenderSequence;
 
 use crate::ObjectLoaderSystemData;
@@ -23,6 +26,18 @@ pub struct ObjectLoaderParams<'s> {
     /// `Loader` to load assets.
     #[derivative(Debug = "ignore")]
     pub loader: &'s Loader,
+    /// `AssetIdMappings` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_id_mappings: &'s AssetIdMappings,
+    /// `AssetTypeMappings` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_type_mappings: &'s AssetTypeMappings,
+    /// `AssetSequenceIdMappings<CharacterSequenceName>` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_sequence_id_mappings_character: &'s AssetSequenceIdMappings<CharacterSequenceName>,
+    /// `AssetSequenceIdMappings<EnergySequenceName>` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_sequence_id_mappings_energy: &'s AssetSequenceIdMappings<EnergySequenceName>,
     /// `WaitSequence`s assets.
     #[derivative(Debug = "ignore")]
     pub wait_sequence_assets: &'s AssetStorage<WaitSequence>,
@@ -71,6 +86,10 @@ impl<'s> From<(&'s ObjectLoaderSystemData<'s>, &'s [SpriteSheetHandle])>
     ) -> Self {
         let ObjectLoaderSystemData {
             ref loader,
+            ref asset_id_mappings,
+            ref asset_type_mappings,
+            ref asset_sequence_id_mappings_character,
+            ref asset_sequence_id_mappings_energy,
             ref wait_sequence_assets,
             ref source_assets,
             ref source_sequence_assets,
@@ -86,6 +105,10 @@ impl<'s> From<(&'s ObjectLoaderSystemData<'s>, &'s [SpriteSheetHandle])>
 
         ObjectLoaderParams {
             loader,
+            asset_id_mappings,
+            asset_type_mappings,
+            asset_sequence_id_mappings_character,
+            asset_sequence_id_mappings_energy,
             wait_sequence_assets,
             source_assets,
             source_sequence_assets,

@@ -14,6 +14,7 @@
 * Camera is offset to direction tracked entities are facing. ([#162])
 * Support playing sound from object configuration. ([#163])
 * `Hit` interactions inflict `Acceleration` on hit objects. ([#165])
+* Support spawning any object type, on any object sequence. ([#158])
 
 ### Changed
 
@@ -25,6 +26,7 @@
 [#142]: https://gitlab.com/azriel91/autexousious/issues/142
 [#154]: https://gitlab.com/azriel91/autexousious/issues/154
 [#155]: https://gitlab.com/azriel91/autexousious/issues/155
+[#158]: https://gitlab.com/azriel91/autexousious/issues/158
 [#160]: https://gitlab.com/azriel91/autexousious/issues/160
 [#161]: https://gitlab.com/azriel91/autexousious/issues/161
 [#162]: https://gitlab.com/azriel91/autexousious/issues/162
