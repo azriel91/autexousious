@@ -5,6 +5,8 @@ pub enum LoadStatus {
     New,
     /// Asset definition is loading.
     DefinitionLoading,
+    /// Asset definition is loading.
+    IdMapping,
     /// Sprite definition is loading.
     SpritesLoading,
     /// Textures are loading.

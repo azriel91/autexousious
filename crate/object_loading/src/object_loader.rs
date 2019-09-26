@@ -1,22 +1,27 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, str::FromStr};
 
 use amethyst::{assets::Handle, renderer::SpriteRender};
+use asset_model::config::AssetType;
 use audio_loading::AudioLoader;
 use audio_model::loaded::{SourceHandleOpt, SourceSequence, SourceSequenceHandles};
+use character_model::config::CharacterSequenceName;
 use collision_model::{
     config::{Body, Interactions},
     loaded::{
         BodySequence, BodySequenceHandles, InteractionsSequence, InteractionsSequenceHandles,
     },
 };
+use energy_model::config::EnergySequenceName;
 use kinematic_model::{
-    config::ObjectAcceleration,
+    config::{ObjectAcceleration, Position, Velocity},
     loaded::{ObjectAccelerationSequence, ObjectAccelerationSequenceHandles},
 };
+use log::error;
 use object_model::{
     config::{GameObjectFrame, GameObjectSequence, ObjectDefinition},
     loaded::Object,
 };
+use object_type::ObjectType;
 use sequence_model::{
     config::{SequenceNameString, Wait},
     loaded::{
@@ -25,10 +30,7 @@ use sequence_model::{
     },
 };
 use serde::{Deserialize, Serialize};
-use spawn_model::{
-    config::Spawns,
-    loaded::{SpawnsSequence, SpawnsSequenceHandles},
-};
+use spawn_model::loaded::{Spawn, Spawns, SpawnsSequence, SpawnsSequenceHandles};
 use sprite_model::loaded::{SpriteRenderSequence, SpriteRenderSequenceHandles};
 
 use crate::ObjectLoaderParams;
@@ -47,6 +49,10 @@ impl ObjectLoader {
     pub fn load<GOS>(
         ObjectLoaderParams {
             loader,
+            asset_id_mappings,
+            asset_type_mappings,
+            asset_sequence_id_mappings_character,
+            asset_sequence_id_mappings_energy,
             wait_sequence_assets,
             source_assets,
             source_sequence_assets,
@@ -213,11 +219,88 @@ impl ObjectLoader {
                         .frames
                         .iter()
                         .map(|frame| {
-                            loader.load_from_data(
-                                frame.object_frame().spawns.clone(),
-                                (),
-                                spawns_assets,
-                            )
+                            let spawns = frame
+                                .object_frame()
+                                .spawns
+                                .iter()
+                                .map(|spawn_config| {
+                                    let spawn_asset_slug = &spawn_config.object;
+                                    let spawn_asset_id = asset_id_mappings
+                                        .id(spawn_asset_slug)
+                                        .copied()
+                                        .unwrap_or_else(|| panic!("Asset ID not found for `{}`.", spawn_asset_slug));
+                                    let spawn_asset_type = asset_type_mappings
+                                        .get(&spawn_asset_id)
+                                        .expect("Expected `AssetType` mapping to exist.");
+                                    let position = {
+                                        let position_config = spawn_config.position;
+                                        Position::<f32>::new(position_config.x as f32, position_config.y as f32, position_config.z as f32)
+                                    };
+                                    let velocity = {
+                                        let velocity_config = spawn_config.velocity;
+                                        Velocity::<f32>::new(velocity_config.x as f32, velocity_config.y as f32, velocity_config.z as f32)
+                                    };
+
+                                    let sequence_id = match spawn_asset_type {
+                                        AssetType::Object(spawn_object_type) => match spawn_object_type {
+                                            ObjectType::Character => {
+                                                let spawn_sequence_id_mappings = asset_sequence_id_mappings_character.get(spawn_asset_id)
+                                                    .unwrap_or_else(|| panic!("`SequenceIdMappings<Character>` not found for `{}`.", spawn_asset_slug));
+
+                                                if let Some(sequence_string) = spawn_config.sequence.as_ref() {
+                                                    let sequence_name_string = SequenceNameString::from_str(sequence_string).expect("Expected `SequenceNameString::from_str` to succeed.");
+                                                    spawn_sequence_id_mappings.id(&sequence_name_string).copied().unwrap_or_else(|| {
+                                                        let message = format!("Sequence ID not found for string: `{}` in `{}`. Falling back to default.", sequence_string, spawn_asset_slug);
+                                                        error!("{}", message);
+
+                                                        let sequence_default = CharacterSequenceName::default();
+                                                        spawn_sequence_id_mappings.id(&SequenceNameString::from(sequence_default)).copied()
+                                                            .unwrap_or_else(|| panic!("`{}` sequence not found for `{}`", sequence_default, spawn_asset_slug))
+                                                    })
+                                                } else {
+                                                    let sequence_default = CharacterSequenceName::default();
+                                                        spawn_sequence_id_mappings.id(&SequenceNameString::from(sequence_default)).copied()
+                                                            .unwrap_or_else(|| panic!("`{}` sequence not found for `{}`", sequence_default, spawn_asset_slug))
+                                                }
+                                            }
+                                            ObjectType::Energy => {
+                                                let spawn_sequence_id_mappings = asset_sequence_id_mappings_energy.get(spawn_asset_id)
+                                                    .unwrap_or_else(|| panic!("`SequenceIdMappings<Energy>` not found for `{}`.", spawn_asset_slug));
+
+                                                if let Some(sequence_string) = spawn_config.sequence.as_ref() {
+                                                    let sequence_name_string = SequenceNameString::from_str(sequence_string).expect("Expected `SequenceNameString::from_str` to succeed.");
+                                                    spawn_sequence_id_mappings.id(&sequence_name_string).copied().unwrap_or_else(|| {
+                                                        let message = format!("Sequence ID not found for string: `{}` in `{}`. Falling back to default.", sequence_string, spawn_asset_slug);
+                                                        error!("{}", message);
+
+                                                        let sequence_default = EnergySequenceName::default();
+                                                        spawn_sequence_id_mappings.id(&SequenceNameString::from(sequence_default)).copied()
+                                                            .unwrap_or_else(|| panic!("`{}` sequence not found for `{}`", sequence_default, spawn_asset_slug))
+                                                    })
+                                                } else {
+                                                    let sequence_default = EnergySequenceName::default();
+                                                        spawn_sequence_id_mappings.id(&SequenceNameString::from(sequence_default)).copied()
+                                                            .unwrap_or_else(|| panic!("`{}` sequence not found for `{}`", sequence_default, spawn_asset_slug))
+                                                }
+                                            }
+                                            ObjectType::TestObject => {
+                                                panic!("Spawning `TestObject`s is not supported.")
+                                            }
+                                        },
+                                        AssetType::Map => panic!("Spawning `Map`s is not supported."),
+                                    };
+
+                                    Spawn {
+                                        object: spawn_asset_id,
+                                        position,
+                                        velocity,
+                                        sequence_id,
+                                    }
+                                })
+                                .collect::<Vec<Spawn>>();
+                            let spawns = Spawns::new(spawns);
+
+                            loader.load_from_data(spawns, (), spawns_assets)
                         })
                         .collect::<Vec<Handle<Spawns>>>(),
                 );
