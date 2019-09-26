@@ -1,6 +1,6 @@
 [package]
 name = "object_model"
-version = "0.13.0"
+version = "0.14.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
