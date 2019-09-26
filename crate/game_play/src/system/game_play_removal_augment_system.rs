@@ -80,15 +80,16 @@ mod tests {
     use std::str::FromStr;
 
     use amethyst::{
-        ecs::{Builder, Entity, World, WorldExt},
+        ecs::{Builder, Entity, Read, SystemData, World, WorldExt},
         shrev::EventChannel,
         Error,
     };
     use amethyst_test::AmethystApplication;
-    use asset_model::config::AssetSlug;
+    use asset_model::{config::AssetSlug, loaded::AssetIdMappings};
     use game_play_model::GamePlayEntity;
     use kinematic_model::config::{Position, Velocity};
-    use spawn_model::{config::Spawn, play::SpawnEvent};
+    use sequence_model::loaded::SequenceId;
+    use spawn_model::{loaded::Spawn, play::SpawnEvent};
     use state_registry::StateId;
     use typename::TypeName;
 
@@ -106,6 +107,7 @@ mod tests {
 
     fn run_test(state_id: StateId, has_removal_expected: bool) -> Result<(), Error> {
         AmethystApplication::blank()
+            .with_setup(setup_system_data)
             .with_system(
                 GamePlayRemovalAugmentSystem::new(),
                 GamePlayRemovalAugmentSystem::type_name(),
@@ -122,14 +124,24 @@ mod tests {
         let entity_spawned = world.create_entity().build();
         world.insert(entity_spawned);
 
+        let asset_slug = AssetSlug::from_str("default/fireball")
+            .expect("Expected `default/fireball` to be a valid asset slug.");
+        let asset_id = {
+            let mut asset_id_mappings = world.write_resource::<AssetIdMappings>();
+            asset_id_mappings.insert(asset_slug)
+        };
+
         let spawn = Spawn::new(
-            AssetSlug::from_str("default/fireball")
-                .expect("Expected `default/fireball` to be a valid asset slug."),
-            Position::<i32>::new(10, 20, 30),
-            Velocity::<i32>::new(40, 50, 60),
+            asset_id,
+            Position::<f32>::new(10., 20., 30.),
+            Velocity::<f32>::new(40., 50., 60.),
+            SequenceId::new(0),
         );
 
-        send_event(world, SpawnEvent::new(spawn, entity_parent, entity_spawned));
+        send_event(
+            world,
+            SpawnEvent::new(spawn, entity_parent, entity_spawned, asset_id),
+        );
     }
 
     fn send_event(world: &mut World, spawn_event: SpawnEvent) {
@@ -143,5 +155,9 @@ mod tests {
         let game_play_entity_actual = game_play_entities.get(entity_spawned);
 
         assert_eq!(has_removal, game_play_entity_actual.is_some());
+    }
+
+    fn setup_system_data(world: &mut World) {
+        <Read<'_, AssetIdMappings> as SystemData>::setup(world);
     }
 }

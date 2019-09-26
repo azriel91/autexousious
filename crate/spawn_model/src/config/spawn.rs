@@ -1,12 +1,10 @@
-use amethyst::ecs::{storage::DenseVecStorage, Component};
 use asset_model::config::AssetSlug;
 use derive_new::new;
 use kinematic_model::config::{Position, Velocity};
 use serde::{Deserialize, Serialize};
-use specs_derive::Component;
 
 /// Specifies an object to spawn.
-#[derive(Clone, Component, Debug, Deserialize, PartialEq, Serialize, new)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, new)]
 #[serde(deny_unknown_fields)]
 pub struct Spawn {
     /// Slug of the game object to spawn.
@@ -21,4 +19,7 @@ pub struct Spawn {
     /// `Velocity` that the spawned object begins with, relative to its parent.
     #[serde(default)]
     pub velocity: Velocity<i32>,
+    /// `SequenceNameString` that the spawned object should begin with.
+    #[serde(default)]
+    pub sequence: Option<String>,
 }

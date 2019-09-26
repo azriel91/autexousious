@@ -10,10 +10,7 @@ use charge_model::{
 use derivative::Derivative;
 use game_input::ControllerInput;
 use map_model::play::MapBounded;
-use object_model::{
-    config::Mass,
-    play::{Grounding, HealthPoints},
-};
+use object_model::{config::Mass, play::HealthPoints};
 use object_status_model::config::StunPoints;
 
 /// Character specific `Component` storages.
@@ -35,9 +32,6 @@ pub struct CharacterComponentStorages<'s> {
     /// `RunCounter` component storage.
     #[derivative(Debug = "ignore")]
     pub run_counters: WriteStorage<'s, RunCounter>,
-    /// `Grounding` component storage.
-    #[derivative(Debug = "ignore")]
-    pub groundings: WriteStorage<'s, Grounding>,
     /// `Mass` component storage.
     #[derivative(Debug = "ignore")]
     pub masses: WriteStorage<'s, Mass>,

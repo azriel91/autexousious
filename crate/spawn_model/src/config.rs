@@ -1,9 +1,6 @@
 //! User defined configuration types for spawns.
 
-pub use self::{
-    spawn::Spawn,
-    spawns::{Spawns, SpawnsHandle},
-};
+pub use self::{spawn::Spawn, spawns::Spawns};
 
 mod spawn;
 mod spawns;
@@ -22,7 +19,10 @@ mod test {
     const SPAWNS_YAML: &str = r#"
 spawns:
   - { object: "default/fireball" }
-  - { object: "default/fireball", position: { x: -1, y: 2, z: 3 }, velocity: { x: -4, y: 5 } }
+  - object: "default/fireball"
+    position: { x: -1, y: 2, z: 3 }
+    velocity: { x: -4, y: 5 }
+    sequence: "sequence_name_string"
 "#;
 
     #[derive(Debug, Deserialize, Serialize)]
@@ -43,12 +43,14 @@ spawns:
                 Spawn::new(
                     asset_slug.clone(),
                     Position::<i32>::from((0, 0, 0)),
-                    Velocity::<i32>::from((0, 0, 0))
+                    Velocity::<i32>::from((0, 0, 0)),
+                    None,
                 ),
                 Spawn::new(
                     asset_slug,
                     Position::<i32>::from((-1, 2, 3)),
-                    Velocity::<i32>::from((-4, 5, 0))
+                    Velocity::<i32>::from((-4, 5, 0)),
+                    Some(String::from("sequence_name_string")),
                 )
             ]),
             spawns

@@ -1,7 +1,6 @@
 use amethyst::ecs::Entity;
 use collision_model::loaded::{HitTransition, HittingTransition};
 use map_model::play::MapUnboundedDelete;
-use object_model::play::Grounding;
 use sequence_model::loaded::SequenceId;
 
 use crate::EnergyComponentStorages;
@@ -20,15 +19,11 @@ impl EnergyEntityAugmenter {
     pub fn augment<'s>(
         entity: Entity,
         EnergyComponentStorages {
-            groundings,
             map_unbounded_deletes,
             hit_transitions,
             hitting_transitions,
         }: &mut EnergyComponentStorages<'s>,
     ) {
-        groundings
-            .insert(entity, Grounding::Airborne)
-            .expect("Failed to insert `Grounding` component.");
         map_unbounded_deletes
             .insert(entity, MapUnboundedDelete::default())
             .expect("Failed to insert `MapUnboundedDelete` component.");
@@ -54,8 +49,8 @@ mod test {
         Error,
     };
     use amethyst_test::AmethystApplication;
+    use collision_model::loaded::{HitTransition, HittingTransition};
     use map_model::play::MapUnboundedDelete;
-    use object_model::play::Grounding;
 
     use super::EnergyEntityAugmenter;
     use crate::EnergyComponentStorages;
@@ -69,8 +64,9 @@ mod test {
                 EnergyEntityAugmenter::augment(entity, &mut energy_component_storages);
             }
 
-            assert!(world.read_storage::<Grounding>().contains(entity));
             assert!(world.read_storage::<MapUnboundedDelete>().contains(entity));
+            assert!(world.read_storage::<HitTransition>().contains(entity));
+            assert!(world.read_storage::<HittingTransition>().contains(entity));
         };
 
         AmethystApplication::blank()

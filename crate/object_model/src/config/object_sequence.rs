@@ -262,6 +262,7 @@ frames:
             asset_slug,
             Position::<i32>::from((0, 0, 0)),
             Velocity::<i32>::from((0, 0, 0)),
+            None,
         )];
         let frames = vec![ObjectFrame {
             wait: Wait::new(0),

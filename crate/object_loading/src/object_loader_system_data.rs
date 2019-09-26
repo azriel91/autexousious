@@ -4,15 +4,18 @@ use amethyst::{
     ecs::{Read, ReadExpect, World},
     shred::{ResourceId, SystemData},
 };
+use asset_model::loaded::{AssetIdMappings, AssetTypeMappings};
 use audio_model::loaded::SourceSequence;
+use character_model::config::CharacterSequenceName;
 use collision_model::{
     config::{Body, Interactions},
     loaded::{BodySequence, InteractionsSequence},
 };
 use derivative::Derivative;
+use energy_model::config::EnergySequenceName;
 use kinematic_model::loaded::ObjectAccelerationSequence;
-use sequence_model::loaded::WaitSequence;
-use spawn_model::{config::Spawns, loaded::SpawnsSequence};
+use sequence_model::loaded::{AssetSequenceIdMappings, WaitSequence};
+use spawn_model::loaded::{Spawns, SpawnsSequence};
 use sprite_model::loaded::SpriteRenderSequence;
 
 /// Resources needed to load an object.
@@ -22,6 +25,19 @@ pub struct ObjectLoaderSystemData<'s> {
     /// `Loader` to load assets.
     #[derivative(Debug = "ignore")]
     pub loader: ReadExpect<'s, Loader>,
+    /// `AssetIdMappings` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_id_mappings: Read<'s, AssetIdMappings>,
+    /// `AssetTypeMappings` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_type_mappings: Read<'s, AssetTypeMappings>,
+    /// `AssetSequenceIdMappings<CharacterSequenceName>` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_sequence_id_mappings_character:
+        Read<'s, AssetSequenceIdMappings<CharacterSequenceName>>,
+    /// `AssetSequenceIdMappings<EnergySequenceName>` resource.
+    #[derivative(Debug = "ignore")]
+    pub asset_sequence_id_mappings_energy: Read<'s, AssetSequenceIdMappings<EnergySequenceName>>,
     /// `WaitSequence`s assets.
     #[derivative(Debug = "ignore")]
     pub wait_sequence_assets: Read<'s, AssetStorage<WaitSequence>>,

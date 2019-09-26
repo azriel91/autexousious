@@ -5,7 +5,7 @@ use amethyst::{
     Error,
 };
 use derive_new::new;
-use spawn_model::{config::Spawns, loaded::SpawnsSequence};
+use spawn_model::loaded::{Spawns, SpawnsSequence};
 
 /// Adds the following systems to the dispatcher.
 ///
@@ -34,7 +34,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for SpawnLoadingBundle {
 mod test {
     use amethyst::{assets::AssetStorage, ecs::WorldExt, Error};
     use amethyst_test::AmethystApplication;
-    use spawn_model::{config::Spawns, loaded::SpawnsSequence};
+    use spawn_model::loaded::{Spawns, SpawnsSequence};
 
     use super::SpawnLoadingBundle;
 

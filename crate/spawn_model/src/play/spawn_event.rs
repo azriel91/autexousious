@@ -1,7 +1,8 @@
 use amethyst::ecs::Entity;
+use asset_model::loaded::AssetId;
 use derive_new::new;
 
-use crate::config::Spawn;
+use crate::loaded::Spawn;
 
 /// Event indicating an object was just `Spawn`ed.
 ///
@@ -19,4 +20,6 @@ pub struct SpawnEvent {
     pub entity_parent: Entity,
     /// `Entity` that was spawned.
     pub entity_spawned: Entity,
+    /// Asset ID of the spawned `Entity`.
+    pub asset_id: AssetId,
 }
