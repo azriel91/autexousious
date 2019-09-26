@@ -40,6 +40,9 @@ impl CharacterSelectionInputSystem {
         character_selection_ec: &mut EventChannel<CharacterSelectionEvent>,
         control_action_event_data: ControlActionEventData,
     ) {
+        if character_selection_widgets.is_empty() {
+            return;
+        }
         let character_selection_event = match control_action_event_data.control_action {
             ControlAction::Jump => {
                 // If all widgets are inactive, return to previous `State`.
