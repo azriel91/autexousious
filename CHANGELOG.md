@@ -1,12 +1,11 @@
 # Changelog
 
-## 0.14.0 (unreleased)
+## 0.14.0 (2019-09-27)
 
 ### Added
 
 * Support arbitrary sequence names. ([#155])
 * Support acceleration in configuration. ([#125], [#160])
-* Detect out of bounds entities. ([#142])
 * Use events to detect and reposition `MapBounded` entities. ([#142])
 * Delete out of bounds entities. ([#142])
 * During game play, camera is readjusted when window is resized. ([#161])
