@@ -37,7 +37,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionUiBundle {
         _world: &mut World,
         builder: &mut DispatcherBuilder<'a, 'b>,
     ) -> Result<(), Error> {
-        // Order this first, as it means we don't transition until attach has been pressed *after*
+        // Order this first, as it means we don't transition until attack has been pressed *after*
         // widgets are ready.
         builder.add(
             CharacterSelectionInputSystem::new(),

@@ -5,7 +5,6 @@ use amethyst::{
 };
 use asset_model::{config::AssetType, loaded::AssetTypeMappings};
 use derive_new::new;
-use log::warn;
 use map_selection_model::{MapSelection, MapSelectionEvent};
 use typename_derive::TypeName;
 
@@ -16,7 +15,7 @@ use crate::MapSelectionStatus;
 pub(crate) struct MapSelectionSystem {
     /// ID for reading map selection events.
     #[new(default)]
-    reader_id: Option<ReaderId<MapSelectionEvent>>,
+    map_selection_event_rid: Option<ReaderId<MapSelectionEvent>>,
 }
 
 type MapSelectionSystemData<'s, 'c> = (
@@ -32,28 +31,29 @@ impl<'s> System<'s> for MapSelectionSystem {
         &mut self,
         (mut map_selection_status, selection_event_channel, mut map_selection): Self::SystemData,
     ) {
-        if let MapSelectionStatus::Confirmed = *map_selection_status {
-            return;
-        }
-
-        let mut events = selection_event_channel.read(self.reader_id.as_mut().unwrap());
-
-        if let Some(MapSelectionEvent::Select {
-            map_selection: selection,
-        }) = events.next()
-        {
-            *map_selection_status = MapSelectionStatus::Confirmed;
-            *map_selection = *selection;
-
-            // Discard additional events, and log a message
-            let additional_events = events.count();
-            if additional_events > 0 {
-                warn!(
-                    "Discarding `{}` additional map selection events.",
-                    additional_events
-                );
-            }
-        }
+        selection_event_channel
+            .read(
+                self.map_selection_event_rid
+                    .as_mut()
+                    .expect("Expected `map_selection_event_rid` to be set."),
+            )
+            .for_each(|ev| match ev {
+                MapSelectionEvent::Return => {}
+                MapSelectionEvent::Switch {
+                    map_selection: selection,
+                }
+                | MapSelectionEvent::Select {
+                    map_selection: selection,
+                } => {
+                    *map_selection = *selection;
+                }
+                MapSelectionEvent::Deselect => {
+                    *map_selection_status = MapSelectionStatus::Pending;
+                }
+                MapSelectionEvent::Confirm => {
+                    *map_selection_status = MapSelectionStatus::Confirmed;
+                }
+            });
     }
 
     fn setup(&mut self, world: &mut World) {
@@ -71,7 +71,7 @@ impl<'s> System<'s> for MapSelectionSystem {
         }
 
         let mut selection_event_channel = world.fetch_mut::<EventChannel<MapSelectionEvent>>();
-        self.reader_id = Some(selection_event_channel.register_reader());
+        self.map_selection_event_rid = Some(selection_event_channel.register_reader());
     }
 }
 
@@ -96,29 +96,77 @@ mod test {
     use crate::MapSelectionStatus;
 
     #[test]
-    fn returns_when_map_selection_status_confirmed() -> Result<(), Error> {
+    fn does_nothing_on_return() -> Result<(), Error> {
         run_test(
             SetupParams {
-                map_selection_status: MapSelectionStatus::Confirmed,
-                map_select: MapSelect::Two,
+                map_selection_status: MapSelectionStatus::Pending,
+                map_selection_event_fn: |_world| MapSelectionEvent::Return,
             },
             ExpectedParams {
-                map_selection_status: MapSelectionStatus::Confirmed,
                 map_select: MapSelect::One,
+                map_selection_status: MapSelectionStatus::Pending,
             },
         )
     }
 
     #[test]
-    fn selects_map_when_select_event_is_sent() -> Result<(), Error> {
+    fn sets_map_selection_on_switch() -> Result<(), Error> {
         run_test(
             SetupParams {
                 map_selection_status: MapSelectionStatus::Pending,
-                map_select: MapSelect::Two,
+                map_selection_event_fn: |world| {
+                    let map_selection = map_selection(world, MapSelect::Two);
+                    MapSelectionEvent::Switch { map_selection }
+                },
             },
             ExpectedParams {
-                map_selection_status: MapSelectionStatus::Confirmed,
                 map_select: MapSelect::Two,
+                map_selection_status: MapSelectionStatus::Pending,
+            },
+        )
+    }
+
+    #[test]
+    fn sets_map_selection_on_select() -> Result<(), Error> {
+        run_test(
+            SetupParams {
+                map_selection_status: MapSelectionStatus::Pending,
+                map_selection_event_fn: |world| {
+                    let map_selection = map_selection(world, MapSelect::Two);
+                    MapSelectionEvent::Select { map_selection }
+                },
+            },
+            ExpectedParams {
+                map_select: MapSelect::Two,
+                map_selection_status: MapSelectionStatus::Pending,
+            },
+        )
+    }
+
+    #[test]
+    fn pending_map_selection_status_on_deselect() -> Result<(), Error> {
+        run_test(
+            SetupParams {
+                map_selection_status: MapSelectionStatus::Confirmed,
+                map_selection_event_fn: |_world| MapSelectionEvent::Deselect,
+            },
+            ExpectedParams {
+                map_select: MapSelect::One,
+                map_selection_status: MapSelectionStatus::Pending,
+            },
+        )
+    }
+
+    #[test]
+    fn confirms_map_selection_status_on_confirm() -> Result<(), Error> {
+        run_test(
+            SetupParams {
+                map_selection_status: MapSelectionStatus::Pending,
+                map_selection_event_fn: |_world| MapSelectionEvent::Confirm,
+            },
+            ExpectedParams {
+                map_select: MapSelect::One,
+                map_selection_status: MapSelectionStatus::Confirmed,
             },
         )
     }
@@ -126,7 +174,7 @@ mod test {
     fn run_test(
         SetupParams {
             map_selection_status: map_selection_status_setup,
-            map_select: map_select_setup,
+            map_selection_event_fn,
         }: SetupParams,
         ExpectedParams {
             map_selection_status: map_selection_status_expected,
@@ -149,28 +197,11 @@ mod test {
                 };
                 world.insert(initial_selection);
 
-                // Send event, if the event is not responded to, then we know the system returns
-                // early.
-                let map_selection = {
-                    let index = match map_select_setup {
-                        MapSelect::One => 0,
-                        MapSelect::Two => 1,
-                    };
-                    let map_asset_ids = &*world.read_resource::<Vec<AssetId>>();
-                    MapSelection::Id(map_asset_ids[index])
-                };
-
-                send_event(world, MapSelectionEvent::Select { map_selection })
+                let map_selection_event = map_selection_event_fn(world);
+                send_event(world, map_selection_event)
             })
             .with_assertion(move |world| {
-                let map_selection_expected = {
-                    let index = match map_select_expected {
-                        MapSelect::One => 0,
-                        MapSelect::Two => 1,
-                    };
-                    let map_asset_ids = &*world.read_resource::<Vec<AssetId>>();
-                    MapSelection::Id(map_asset_ids[index])
-                };
+                let map_selection_expected = map_selection(world, map_select_expected);
                 let map_selection_actual = world.read_resource::<MapSelection>();
                 assert_eq!(map_selection_expected, *map_selection_actual);
 
@@ -214,14 +245,23 @@ mod test {
             .single_write(event);
     }
 
+    fn map_selection(world: &World, map_select: MapSelect) -> MapSelection {
+        let index = match map_select {
+            MapSelect::One => 0,
+            MapSelect::Two => 1,
+        };
+        let map_asset_ids = &*world.read_resource::<Vec<AssetId>>();
+        MapSelection::Id(map_asset_ids[index])
+    }
+
     struct SetupParams {
         map_selection_status: MapSelectionStatus,
-        map_select: MapSelect,
+        map_selection_event_fn: fn(&mut World) -> MapSelectionEvent,
     }
 
     struct ExpectedParams {
-        map_selection_status: MapSelectionStatus,
         map_select: MapSelect,
+        map_selection_status: MapSelectionStatus,
     }
 
     #[derive(Clone, Copy, Debug, PartialEq)]
