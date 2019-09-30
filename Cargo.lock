@@ -634,7 +634,7 @@ version = "0.14.0"
 dependencies = [
  "amethyst 0.13.0 (git+https://github.com/amethyst/amethyst.git)",
  "proc-macro2 1.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "proc_macro_roids 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc_macro_roids 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "syn 1.0.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -3000,7 +3000,7 @@ name = "logic_clock_derive"
 version = "0.14.0"
 dependencies = [
  "proc-macro2 1.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "proc_macro_roids 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc_macro_roids 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "syn 1.0.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -3523,7 +3523,7 @@ version = "0.14.0"
 dependencies = [
  "derive_more 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "proc-macro2 1.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "proc_macro_roids 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc_macro_roids 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "syn 1.0.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -4019,7 +4019,7 @@ dependencies = [
 
 [[package]]
 name = "proc_macro_roids"
-version = "0.5.0"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "proc-macro2 1.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4776,7 +4776,7 @@ dependencies = [
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "proc-macro2 1.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "proc_macro_roids 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc_macro_roids 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "sequence_model_core 0.14.0",
  "sequence_model_spi 0.14.0",
@@ -6223,7 +6223,7 @@ dependencies = [
 "checksum proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)" = "cf3d2011ab5c909338f7887f4fc896d35932e29146c12c8d01da6b22a80ba759"
 "checksum proc-macro2 1.0.4 (registry+https://github.com/rust-lang/crates.io-index)" = "afdc77cc74ec70ed262262942ebb7dac3d479e9e5cfa2da1841c0806f6cdabcc"
 "checksum proc_macro_roids 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "269db0cab15808b7ec3c485efbd4409318da49cb40f0fedd956e0ed149935abb"
-"checksum proc_macro_roids 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)" = "7714056c0845ee544c263fc761c86d17988199b7dc8fc356fc736fdc5c322748"
+"checksum proc_macro_roids 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)" = "1dac7aead70ffe57c13470bcee836b513958a3ea774a0b383171f8a7a0a09d7d"
 "checksum quick-error 1.2.2 (registry+https://github.com/rust-lang/crates.io-index)" = "9274b940887ce9addde99c4eee6b5c44cc494b182b97e73dc8ffdcb3397fd3f0"
 "checksum quickcheck 0.8.5 (registry+https://github.com/rust-lang/crates.io-index)" = "9c35d9c36a562f37eca96e79f66d5fd56eefbc22560dacc4a864cabd2d277456"
 "checksum quote 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)" = "7a6e920b65c65f10b2ae65c831a81a073a89edd28c7cce89475bff467ab4167a"
