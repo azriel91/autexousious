@@ -11,7 +11,6 @@ derive_deref = "1.1.0"
 derive_more = "0.15.1-pre"
 numeric_newtype_derive = { path = "../numeric_newtype_derive" }
 serde = "1.0.99"
-specs-derive = "0.4.0"
 
 [features]
 nightly = ["amethyst/nightly"]

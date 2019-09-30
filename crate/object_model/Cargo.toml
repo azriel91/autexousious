@@ -23,7 +23,6 @@ sequence_model_spi = { path = "../sequence_model_spi" }
 serde = "1.0.99"
 shape_model = { path = "../shape_model" }
 spawn_model = { path = "../spawn_model" }
-specs-derive = "0.4.0"
 sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }
 strum = "0.15.0"

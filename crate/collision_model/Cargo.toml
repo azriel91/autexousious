@@ -23,7 +23,6 @@ sequence_model_spi = { path = "../sequence_model_spi" }
 serde = "1.0.99"
 shape_model = { path = "../shape_model" }
 slotmap = { version = "0.4.0", features = ["serde"] }
-specs-derive = "0.4.0"
 strum = "0.15.0"
 strum_macros = "0.15.0"
 typename = "0.1.1"

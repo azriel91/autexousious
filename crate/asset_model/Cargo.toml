@@ -17,7 +17,6 @@ numeric_newtype_derive = { path = "../numeric_newtype_derive" }
 object_type = { path = "../object_type" }
 serde = "1.0.99"
 slotmap = { version = "0.4.0", features = ["serde"] }
-specs-derive = "0.4.0"
 strum = "0.15.0"
 strum_macros = "0.15.0"
 

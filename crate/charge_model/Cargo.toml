@@ -13,7 +13,6 @@ derive_more = "0.15.1-pre"
 logic_clock = { path = "../logic_clock" }
 numeric_newtype_derive = { path = "../numeric_newtype_derive" }
 serde = "1.0.99"
-specs-derive = "0.4.0"
 
 [features]
 nightly = ["amethyst/nightly"]

@@ -18,7 +18,6 @@ logic_clock = { path = "../logic_clock" }
 sequence_model = { path = "../sequence_model" }
 serde = "1.0.99"
 slotmap = "0.4.0"
-specs-derive = "0.4.0"
 sprite_model = { path = "../sprite_model" }
 strum = "0.15.0"
 strum_macros = "0.15.0"

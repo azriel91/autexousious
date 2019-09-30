@@ -10,7 +10,6 @@ derivative = "1.0.2"
 derive-new = "0.5.8"
 game_input_model = { path = "../game_input_model" }
 log = "0.4.8"
-specs-derive = "0.4.0"
 strum = "0.15.0"
 strum_macros = "0.15.0"
 typename = "0.1.1"

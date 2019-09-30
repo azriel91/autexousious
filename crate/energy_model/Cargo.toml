@@ -21,7 +21,6 @@ sequence_model = { path = "../sequence_model" }
 sequence_model_spi = { path = "../sequence_model_spi" }
 serde = "1.0.99"
 spawn_model = { path = "../spawn_model" }
-specs-derive = "0.4.0"
 slotmap = { version = "0.4.0", features = ["serde"] }
 sprite_model = { path = "../sprite_model" }
 strum = "0.15.0"
