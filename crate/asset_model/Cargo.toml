@@ -9,9 +9,9 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-s
 bimap = "0.4.0"
 derivative = "1.0.2"
 derive-new = "0.5.8"
-derive_builder = "0.7.2"
+derive_builder = "0.8.0"
 derive_deref = "1.1.0"
-derive_more = "0.15.0"
+derive_more = "0.15.1-pre"
 indexmap = { version = "1.1.0", features = ["serde-1"] }
 numeric_newtype_derive = { path = "../numeric_newtype_derive" }
 object_type = { path = "../object_type" }
