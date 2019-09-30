@@ -8,7 +8,7 @@ edition = "2018"
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 derivative = "1.0.2"
 derive-new = "0.5.8"
-enumflags2 = "0.5.2"
+enumflags2 = { git = "https://github.com/NieDzejkob/enumflags2.git" }
 kinematic_model = { path = "../kinematic_model" }
 map_model = { path = "../map_model" }
 map_selection_model = { path = "../map_selection_model" }
