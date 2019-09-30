@@ -1,4 +1,4 @@
-use enumflags2_derive::EnumFlags;
+use enumflags2::EnumFlags;
 
 /// Boundary faces (individual and combinations) of a cuboid.
 #[derive(Clone, Copy, Debug, EnumFlags, PartialEq)]

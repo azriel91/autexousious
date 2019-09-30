@@ -13,7 +13,6 @@ derive-new = "0.5.8"
 derive_deref = "1.1.0"
 derive_more = "0.15.1-pre"
 enumflags2 = { git = "https://github.com/NieDzejkob/enumflags2.git" }
-enumflags2_derive = { git = "https://github.com/NieDzejkob/enumflags2.git" }
 logic_clock = { path = "../logic_clock" }
 sequence_model = { path = "../sequence_model" }
 serde = "1.0.99"
