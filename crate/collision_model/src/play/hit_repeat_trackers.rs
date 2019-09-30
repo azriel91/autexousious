@@ -4,7 +4,6 @@ use amethyst::ecs::{storage::DenseVecStorage, Component};
 use derive_deref::{Deref, DerefMut};
 use derive_new::new;
 use slotmap::{DefaultKey, SlotMap};
-use specs_derive::Component;
 
 use crate::play::HitRepeatTracker;
 

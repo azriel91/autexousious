@@ -1,6 +1,5 @@
 use amethyst::ecs::{storage::VecStorage, Component};
 use derivative::Derivative;
-use specs_derive::Component;
 use strum_macros::Display;
 
 /// Widget state of a menu item.

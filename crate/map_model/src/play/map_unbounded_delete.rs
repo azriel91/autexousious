@@ -1,5 +1,4 @@
 use amethyst::ecs::{storage::NullStorage, Component};
-use specs_derive::Component;
 
 /// Marks an entity that should be deleted when out of map bounds.
 ///

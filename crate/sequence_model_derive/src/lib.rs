@@ -8,7 +8,6 @@
 //!
 //! ```rust,edition2018
 //! # use amethyst::ecs::{storage::VecStorage, Component};
-//! # use specs_derive::Component;
 //! #
 //! # #[derive(Clone, Component, Copy, Debug, Default, PartialEq)]
 //! # #[storage(VecStorage)]
@@ -63,7 +62,6 @@
 //! # use derivative::Derivative;
 //! # use sequence_model_core::config::SequenceName;
 //! # use serde::{Deserialize, Serialize};
-//! # use specs_derive::Component;
 //! # use strum_macros::{Display, EnumString, IntoStaticStr};
 //! # use typename_derive::TypeName;
 //! #

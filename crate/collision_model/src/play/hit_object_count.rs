@@ -1,7 +1,6 @@
 use amethyst::ecs::{storage::VecStorage, Component};
 use derive_more::{Add, AddAssign, Display, From, Sub, SubAssign};
 use numeric_newtype_derive::numeric_newtype;
-use specs_derive::Component;
 
 /// Number of game objects that this object has hit.
 ///

@@ -1,7 +1,6 @@
 use amethyst::ecs::{storage::VecStorage, Component};
 use derive_new::new;
 use sequence_model::loaded::{ControlTransition, ControlTransitionLike};
-use specs_derive::Component;
 
 use crate::config::ControlTransitionRequirement;
 
