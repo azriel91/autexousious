@@ -3,7 +3,7 @@ use std::{error, fmt, io};
 use derivative::Derivative;
 use derive_new::new;
 
-use crate::resource::io_support;
+use crate::io_support;
 
 /// Information around the failure to discover a directory.
 #[derive(Debug, Derivative, new)]

@@ -28,7 +28,7 @@ mod tests {
         Error,
     };
     use amethyst_test::AmethystApplication;
-    use application::{load_in, resource::Format};
+    use application::{load_in, Format};
     use assets_test::CHAR_BAT_PATH;
     use sprite_model::config::SpritesDefinition;
 

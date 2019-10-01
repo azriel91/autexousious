@@ -4,7 +4,7 @@ use amethyst::{self, config::ConfigError, core};
 use derive_error_chain::ErrorChain;
 use error_chain;
 
-use crate::resource::{self, dir::DiscoveryContext};
+use crate::{self, dir::DiscoveryContext};
 
 // kcov-ignore-start
 /// `ErrorKind` for application directories.
@@ -18,8 +18,8 @@ pub enum ErrorKind {
     Discovery(DiscoveryContext),
 
     /// Resource error, used when searching for a sibling directory
-    #[error_chain(link = "resource::Error")]
-    Resource(resource::ErrorKind),
+    #[error_chain(link = "Error")]
+    Resource(ErrorKind),
 
     /// Application configuration error due to an IO failure
     #[error_chain(foreign, display = r#"|e| write!(f, "io::Error: '{}'", e)"#)]

@@ -1,9 +1,5 @@
 //! Constants for resource directories.
 
-mod discovery_context;
-
-pub use self::discovery_context::DiscoveryContext;
-
 use std::{
     io,
     path::{Path, PathBuf},
@@ -11,7 +7,7 @@ use std::{
 
 use amethyst::{utils::application_root_dir, Error};
 
-use crate::resource::find::find_in_internal;
+use crate::{find::find_in_internal, DiscoveryContext};
 
 // Note to self:
 //
@@ -27,7 +23,7 @@ pub const RESOURCES: &str = "resources";
 ///
 /// # Errors
 ///
-/// Returns a [`resource::Error`][res_err] with error kind [`ErrorKind::Discovery`][dir_disc]
+/// Returns a [`Error`][res_err] with error kind [`ErrorKind::Discovery`][dir_disc]
 /// when the following scenarios occur:
 ///
 /// * Unable to retrieve current executable path.
@@ -80,7 +76,7 @@ mod test {
     use tempfile::tempdir;
 
     use super::{assets_dir_internal, ASSETS};
-    use crate::resource::{dir::DiscoveryContext, FindContext};
+    use crate::{DiscoveryContext, FindContext};
 
     // kcov-ignore-start
     fn assert_dir_discovery_error(

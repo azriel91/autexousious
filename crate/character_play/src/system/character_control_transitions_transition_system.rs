@@ -528,7 +528,7 @@ mod tests {
         shrev::{EventChannel, ReaderId},
         Error,
     };
-    use application::resource::IoUtils;
+    use application::IoUtils;
     use application_test_support::AutexousiousApplication;
     use character_loading::{CtsLoader, CtsLoaderParams};
     use character_model::{

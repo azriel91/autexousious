@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use application::resource::IoUtils;
+use application::IoUtils;
 use asset_model::config::{AssetRecord, AssetSlugBuilder};
 use log::error;
 

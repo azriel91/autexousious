@@ -348,7 +348,7 @@ mod tests {
         Error,
     };
     use amethyst_test::AmethystApplication;
-    use application::resource::IoUtils;
+    use application::IoUtils;
     use character_model::{
         config::{CharacterSequence, CharacterSequenceName, ControlTransitionRequirement},
         loaded::{

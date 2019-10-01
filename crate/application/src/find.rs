@@ -5,7 +5,7 @@ use std::{
 
 use amethyst::{utils::application_root_dir, Error};
 
-use crate::resource::FindContext;
+use crate::FindContext;
 
 /// Finds and returns the path to the configuration file.
 ///
@@ -39,7 +39,7 @@ pub(crate) fn find_internal(
 /// # Examples
 ///
 /// ```rust
-/// use application::resource::{dir, find_in};
+/// use application::{dir, find_in};
 ///
 /// # fn main() {
 /// // Search for '<application_dir>/resources/config.ron'.
@@ -107,7 +107,7 @@ mod test {
     use tempfile::tempdir;
 
     use super::{find, find_in_internal, find_internal};
-    use crate::resource::{dir, test_support::setup_temp_file, FindContext};
+    use crate::{dir, test_support::setup_temp_file, FindContext};
 
     #[test]
     fn find_in_returns_resource_path_when_file_exists() {

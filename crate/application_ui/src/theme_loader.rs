@@ -6,10 +6,7 @@ use amethyst::{
     ui::{FontAsset, FontHandle, TtfFormat},
     Error,
 };
-use application::{
-    resource::{dir, load_in},
-    Format,
-};
+use application::{dir, load_in, Format};
 
 use crate::{FontConfig, FontVariant, Theme};
 

@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use application::resource::IoUtils;
+use application::IoUtils;
 use log::error;
 
 use crate::{DirTraverse, NamespaceDirectory};

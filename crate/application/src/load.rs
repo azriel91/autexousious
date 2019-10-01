@@ -10,7 +10,7 @@ use ron;
 use serde::Deserialize;
 use serde_yaml;
 
-use crate::{find_in, resource::find_internal, Format, IoUtils};
+use crate::{find_in, find_internal, Format, IoUtils};
 
 /// Loads and returns the data from the specified file.
 ///
@@ -58,7 +58,7 @@ where
 ///
 /// use serde::Deserialize;
 ///
-/// use application::resource::{self, dir, load_in};
+/// use application::{dir, load_in, Format};
 ///
 /// #[derive(Debug, Deserialize)]
 /// struct Config {
@@ -70,7 +70,7 @@ where
 /// let config: Config = match load_in(
 ///     dir::RESOURCES,
 ///     "config.ron",
-///     resource::Format::Ron,
+///     Format::Ron,
 /// ) {
 ///     Ok(path) => path,
 ///     Err(e) => panic!("Failed to load configuration file: {}", e),
@@ -118,7 +118,7 @@ mod test {
     use tempfile::tempdir;
 
     use super::{load, load_in, load_internal};
-    use crate::resource::{dir, test_support::setup_temp_file, FindContext, Format};
+    use crate::{dir, test_support::setup_temp_file, FindContext, Format};
 
     #[test]
     fn load_in_ron_returns_resource_when_file_exists_and_parses_successfully() {

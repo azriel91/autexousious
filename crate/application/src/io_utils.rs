@@ -34,7 +34,7 @@ impl IoUtils {
     /// ```rust
     /// use std::path::Path;
     ///
-    /// use application::resource::IoUtils;
+    /// use application::IoUtils;
     ///
     /// # fn main() {
     /// let path = Path::new("directory/child");
