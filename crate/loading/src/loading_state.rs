@@ -96,6 +96,8 @@ where
                 .world
                 .system_data::<(Read<'_, AssetTypeMappings>, Read<'_, AssetLoadStatus>)>();
 
+            // https://github.com/rust-lang/rust-clippy/issues/1524
+            #[allow(clippy::let_and_return)]
             let asset_loading_complete = asset_type_mappings
                 .iter_ids_all()
                 .flat_map(|(_asset_type, asset_ids)| asset_ids.iter())

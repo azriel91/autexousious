@@ -17,7 +17,7 @@ fi
 
 # Security vulnerability
 # TODO: re-enable after `specs` is upgraded in Amethyst
-# cargo audit
+cargo audit
 
 # License compatibility
 ./scripts/conformance_license.sh

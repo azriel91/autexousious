@@ -4,7 +4,6 @@ use amethyst::{
 };
 use derivative::Derivative;
 use derive_deref::{Deref, DerefMut};
-use specs_derive::Component;
 
 /// Target coordinates for the camera to move towards.
 #[derive(Clone, Component, Copy, Debug, Deref, DerefMut, Derivative, PartialEq)]

@@ -1,7 +1,6 @@
 use amethyst::ecs::{storage::HashMapStorage, Component};
 use derive_new::new;
 use game_input_model::ControllerId;
-use specs_derive::Component;
 
 /// Marks a game input controlled entity.
 ///

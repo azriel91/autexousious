@@ -100,7 +100,7 @@ impl SpawnGameObjectSystem {
         spawns.iter().for_each(|spawn| {
             let asset_id = spawn.object;
             let asset_type = asset_type_mappings
-                .get(&asset_id)
+                .get(asset_id)
                 .unwrap_or_else(|| panic!("`AssetType` not found for `{:?}`.", asset_id));
             let entity_spawned = entities.create();
 

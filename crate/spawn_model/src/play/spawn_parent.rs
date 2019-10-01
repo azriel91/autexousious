@@ -1,6 +1,5 @@
 use amethyst::ecs::{storage::DenseVecStorage, Component, Entity};
 use derive_new::new;
-use specs_derive::Component;
 
 /// Links a spawned entity to the game object entity that spawned this.
 ///

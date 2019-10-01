@@ -1,5 +1,4 @@
 use amethyst::ecs::{storage::VecStorage, Component};
-use specs_derive::Component;
 
 /// Whether or not an object is charging.
 #[derive(Clone, Component, Copy, Debug, PartialEq, Eq)]

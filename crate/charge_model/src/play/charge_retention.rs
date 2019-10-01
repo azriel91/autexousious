@@ -1,7 +1,6 @@
 use amethyst::ecs::{storage::VecStorage, Component};
 use derivative::Derivative;
 use serde::{Deserialize, Serialize};
-use specs_derive::Component;
 
 use crate::{config::ChargeRetentionMode, play::ChargeRetentionClock};
 

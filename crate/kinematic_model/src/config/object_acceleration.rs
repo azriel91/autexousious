@@ -1,7 +1,6 @@
 use amethyst::ecs::{storage::DenseVecStorage, Component};
 use derive_new::new;
 use serde::{Deserialize, Serialize};
-use specs_derive::Component;
 
 use crate::config::{ObjectAccelerationKind, ObjectAccelerationValue};
 

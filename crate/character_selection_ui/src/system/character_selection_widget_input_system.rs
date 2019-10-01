@@ -85,9 +85,9 @@ impl CharacterSelectionWidgetInputSystem {
                     }
                 }
             }
-            CharacterSelection::Random => CharacterSelection::Id(last_character_id.clone()),
+            CharacterSelection::Random => CharacterSelection::Id(last_character_id),
         };
-        widget.selection.clone()
+        widget.selection
     }
 
     fn select_next_character(
@@ -116,15 +116,15 @@ impl CharacterSelectionWidgetInputSystem {
                         .nth(1); // skip current selection
 
                     if let Some(next_character) = next_character {
-                        CharacterSelection::Id(next_character.clone())
+                        CharacterSelection::Id(next_character)
                     } else {
                         CharacterSelection::Random
                     }
                 }
             }
-            CharacterSelection::Random => CharacterSelection::Id(first_character_id.clone()),
+            CharacterSelection::Random => CharacterSelection::Id(first_character_id),
         };
-        widget.selection.clone()
+        widget.selection
     }
 
     fn handle_event(
@@ -235,7 +235,7 @@ impl CharacterSelectionWidgetInputSystem {
 
                 Some(CharacterSelectionEvent::Select {
                     controller_id: input_controlled.controller_id,
-                    character_selection: character_selection_widget.selection.clone(),
+                    character_selection: character_selection_widget.selection,
                 })
             }
             (WidgetState::Ready, ControlAction::Jump) => {
@@ -379,12 +379,12 @@ mod test {
                 widget_state: WidgetState::CharacterSelect,
                 character_selection_fn: |world| {
                     let last_char =
-                        AssetQueries::last_id(world, &AssetType::Object(ObjectType::Character));
+                        AssetQueries::last_id(world, AssetType::Object(ObjectType::Character));
                     CharacterSelection::Id(last_char)
                 },
                 character_selection_events_fn: |world| {
                     let last_char =
-                        AssetQueries::last_id(world, &AssetType::Object(ObjectType::Character));
+                        AssetQueries::last_id(world, AssetType::Object(ObjectType::Character));
                     vec![CharacterSelectionEvent::Switch {
                         controller_id: 123,
                         character_selection: CharacterSelection::Id(last_char),
@@ -406,12 +406,12 @@ mod test {
                 widget_state: WidgetState::CharacterSelect,
                 character_selection_fn: |world| {
                     let first_char =
-                        AssetQueries::first_id(world, &AssetType::Object(ObjectType::Character));
+                        AssetQueries::first_id(world, AssetType::Object(ObjectType::Character));
                     CharacterSelection::Id(first_char)
                 },
                 character_selection_events_fn: |world| {
                     let first_char =
-                        AssetQueries::first_id(world, &AssetType::Object(ObjectType::Character));
+                        AssetQueries::first_id(world, AssetType::Object(ObjectType::Character));
                     vec![CharacterSelectionEvent::Switch {
                         controller_id: 123,
                         character_selection: CharacterSelection::Id(first_char),

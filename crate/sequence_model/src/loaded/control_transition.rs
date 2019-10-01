@@ -1,6 +1,5 @@
 use amethyst::ecs::{storage::VecStorage, Component};
 use derive_new::new;
-use specs_derive::Component;
 
 use crate::loaded::{ActionHold, ActionPress, ActionRelease, AxisTransition, FallbackTransition};
 

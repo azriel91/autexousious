@@ -24,7 +24,6 @@ use amethyst::{
     ecs::{storage::DenseVecStorage, Component},
 };
 use serde::{Deserialize, Serialize};
-use specs_derive::Component;
 
 macro_rules! kinematic_type {
     ($name:ident) => {

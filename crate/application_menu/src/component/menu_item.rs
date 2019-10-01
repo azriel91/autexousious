@@ -2,7 +2,6 @@ use std::fmt::Debug;
 
 use amethyst::ecs::{storage::DenseVecStorage, Component};
 use derive_new::new;
-use specs_derive::Component;
 
 /// Menu item component, to be attached to relevant entities.
 ///
