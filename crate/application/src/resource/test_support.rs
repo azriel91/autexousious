@@ -1,4 +1,7 @@
-use std::{env, io::Write, path::PathBuf};
+use std::{
+    io::Write,
+    path::{Path, PathBuf},
+};
 
 use tempfile::{Builder, NamedTempFile, TempDir};
 
@@ -36,13 +39,6 @@ macro_rules! test {
     };
 }
 
-/// Returns the base directory path of the current executable.
-pub(crate) fn exe_dir() -> PathBuf {
-    let mut exe_dir = env::current_exe().unwrap();
-    exe_dir.pop();
-    exe_dir
-}
-
 /// Creates a temporary resource file in a directory for tests.
 ///
 /// # Parameters
@@ -52,6 +48,7 @@ pub(crate) fn exe_dir() -> PathBuf {
 /// * `file_suffix`: File extension including the ".", such as ".ron" in "display_config.ron".
 /// * `contents`: String to write into the file.
 pub(crate) fn setup_temp_file(
+    exe_dir: &Path,
     resource_dir: &str,
     file_prefix: &str,
     file_suffix: &str,
@@ -60,13 +57,12 @@ pub(crate) fn setup_temp_file(
     let conf_path = PathBuf::from(resource_dir);
 
     // normalize relative paths to be relative to exe directory instead of working directory
-    let exe_dir = exe_dir();
     let conf_parent;
     let temp_dir;
 
     // if the conf_path is absolute, or is the exe directory, we don't create a temp_dir
     if conf_path.is_absolute() || resource_dir == "" {
-        conf_parent = exe_dir;
+        conf_parent = exe_dir.to_path_buf();
         temp_dir = None;
     } else {
         let tmp_dir = Builder::new()

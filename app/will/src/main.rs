@@ -16,13 +16,10 @@ use amethyst::{
     window::DisplayConfig,
     CoreApplication, GameDataBuilder, LogLevelFilter, LoggerConfig,
 };
-use application::{
-    development_base_dirs,
-    resource::{
-        self,
-        dir::{self, assets_dir},
-        load_in,
-    },
+use application::resource::{
+    self,
+    dir::{self, assets_dir},
+    load_in,
 };
 use application_event::{AppEvent, AppEventReader};
 use application_robot::RobotState;
@@ -75,7 +72,7 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
         .level_for("rendy_wsi", LogLevelFilter::Warn)
         .start();
 
-    let assets_dir = assets_dir(Some(development_base_dirs!()))?;
+    let assets_dir = assets_dir()?;
 
     let game_mode_selection_state =
         GameModeSelectionStateBuilder::new(GameModeSelectionStateDelegate::new())
@@ -90,15 +87,10 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
             dir::RESOURCES,
             "display_config.ron",
             resource::Format::Ron,
-            Some(development_base_dirs!()),
         )?;
 
-        let input_config = load_in::<InputConfig, _>(
-            dir::RESOURCES,
-            "input_config.ron",
-            resource::Format::Ron,
-            Some(development_base_dirs!()),
-        )?;
+        let input_config =
+            load_in::<InputConfig, _>(dir::RESOURCES, "input_config.ron", resource::Format::Ron)?;
 
         // `InputBundle` provides `InputHandler<A, B>`, needed by the `UiBundle` for mouse events.
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.

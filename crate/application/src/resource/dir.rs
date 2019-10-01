@@ -5,11 +5,11 @@ mod discovery_context;
 pub use self::discovery_context::DiscoveryContext;
 
 use std::{
-    env, io,
+    io,
     path::{Path, PathBuf},
 };
 
-use amethyst::Error;
+use amethyst::{utils::application_root_dir, Error};
 
 use crate::resource::find::find_in_internal;
 
@@ -25,13 +25,6 @@ pub const RESOURCES: &str = "resources";
 
 /// Returns an absolute path to the current exe's assets directory.
 ///
-/// # Parameters
-///
-/// * `additional_base_dirs`: Additional directories to search.
-///
-///     This is exposed primarily for applications to pass in `Some(development_base_dirs!())` so
-///     that the binaries may also search for artifacts in the crate directory.
-///
 /// # Errors
 ///
 /// Returns a [`resource::Error`][res_err] with error kind [`ErrorKind::Discovery`][dir_disc]
@@ -42,21 +35,13 @@ pub const RESOURCES: &str = "resources";
 ///
 /// [res_err]: resource/dir/struct.Error.html
 /// [dir_disc]: resource/dir/enum.ErrorKind.html#variant.Discovery
-pub fn assets_dir(additional_base_dirs: Option<Vec<PathBuf>>) -> Result<PathBuf, Error> {
-    assets_dir_internal(env::current_exe(), additional_base_dirs)
+pub fn assets_dir() -> Result<PathBuf, Error> {
+    assets_dir_internal(application_root_dir())
 }
 
 #[inline]
-fn assets_dir_internal(
-    current_exe_result: io::Result<PathBuf>,
-    additional_base_dirs: Option<Vec<PathBuf>>,
-) -> Result<PathBuf, Error> {
-    let dir = find_in_internal(
-        current_exe_result,
-        Path::new(""),
-        ASSETS,
-        additional_base_dirs,
-    )?;
+fn assets_dir_internal(current_exe_result: io::Result<PathBuf>) -> Result<PathBuf, Error> {
+    let dir = find_in_internal(current_exe_result, Path::new(""), ASSETS)?;
 
     // Canonicalize path to handle symlinks.
     match dir.canonicalize() {
@@ -176,14 +161,13 @@ mod test {
     #[test]
     fn assets_dir_returns_assets_dir_path_beside_current_executable() {
         let exe_dir = tempdir().unwrap();
-        let exe_path = exe_dir.path().join("current_exe");
-        let _assets_dir = fs::create_dir(exe_dir.path().join(ASSETS)).unwrap();
-        let assets_dir = assets_dir_internal(Ok(exe_path), None);
+        let assets_path = exe_dir.path().join(ASSETS);
+        let _assets_dir = fs::create_dir(&assets_path).unwrap();
+        let assets_dir = assets_dir_internal(Ok(exe_dir.into_path()));
 
         // `error-chain` generated `Error` doesn't implement `PartialEq`, so we have to manually
         // compare
-        let expected: Result<PathBuf, Error> =
-            Ok(exe_dir.path().join(ASSETS).canonicalize().unwrap());
+        let expected: Result<PathBuf, Error> = Ok(assets_path.canonicalize().unwrap());
         assert!(
             assets_dir.is_ok(),
             "Expected assets_dir to return {:?}, but was {:?}",
@@ -195,8 +179,7 @@ mod test {
 
     #[test]
     fn assets_dir_returns_contextual_error_when_failing_to_get_current_exe_path() {
-        let assets_dir =
-            assets_dir_internal(Err(io::Error::new(io::ErrorKind::Other, "oh no!")), None);
+        let assets_dir = assets_dir_internal(Err(io::Error::new(io::ErrorKind::Other, "oh no!")));
 
         assert_discovery_resource_io_error(
             io::Error::new(io::ErrorKind::Other, "oh no!"),
@@ -207,12 +190,11 @@ mod test {
     #[test]
     fn assets_dir_returns_contextual_error_when_assets_dir_does_not_exist() {
         let exe_dir = tempdir().unwrap();
-        let exe_path = exe_dir.path().join("current_exe");
 
-        let assets_dir = assets_dir_internal(Ok(exe_path.clone()), None);
+        let assets_dir = assets_dir_internal(Ok(exe_dir.path().to_path_buf()));
 
         let expected_find_context = FindContext {
-            base_dirs: vec![exe_dir.path().to_path_buf()],
+            base_dirs: vec![exe_dir.into_path()],
             conf_dir: Path::new("").to_path_buf(),
             file_name: ASSETS.to_string(),
         }; // kcov-ignore
@@ -222,7 +204,6 @@ mod test {
     #[test]
     fn assets_dir_returns_assets_dir_path_when_path_is_symlink_to_directory() {
         let exe_dir = tempdir().unwrap();
-        let exe_path = exe_dir.path().join("current_exe");
         let _assets_dir = fs::create_dir(exe_dir.path().join("my_assets")).unwrap();
 
         #[cfg(unix)]
@@ -241,9 +222,9 @@ mod test {
             .expect("Failed to create symlink for test.");
         }
 
-        let assets_dir = assets_dir_internal(Ok(exe_path.clone()), None);
         let expected: Result<PathBuf, Error> =
             Ok(exe_dir.path().join("my_assets").canonicalize().unwrap());
+        let assets_dir = assets_dir_internal(Ok(exe_dir.into_path()));
         assert!(
             assets_dir.is_ok(),
             "Expected assets_dir to return {:?}, but was {:?}",
@@ -256,7 +237,6 @@ mod test {
     #[test]
     fn assets_dir_returns_contextual_error_when_assets_dir_points_to_non_directory() {
         let exe_dir = tempdir().unwrap();
-        let exe_path = exe_dir.path().join("current_exe");
         let assets_file = fs::File::create(exe_dir.path().join("my_assets")).unwrap();
         drop(assets_file); // close the file
 
@@ -276,7 +256,7 @@ mod test {
             .expect("Failed to create symlink for test.");
         }
 
-        let assets_dir = assets_dir_internal(Ok(exe_path.clone()), None);
+        let assets_dir = assets_dir_internal(Ok(exe_dir.into_path()));
 
         let expected_discovery_context =
             DiscoveryContext::new(ASSETS, "Path is not a directory.", None);
@@ -286,7 +266,6 @@ mod test {
     #[test]
     fn assets_dir_returns_contextual_error_when_assets_symlink_points_to_non_existent_path() {
         let exe_dir = tempdir().unwrap();
-        let exe_path = exe_dir.path().join("current_exe");
 
         #[cfg(unix)]
         unix::fs::symlink(
@@ -304,10 +283,11 @@ mod test {
             .expect("Failed to create symlink for test.");
         }
 
-        let assets_dir = assets_dir_internal(Ok(exe_path.clone()), None);
+        let assets_dir = assets_dir_internal(Ok(exe_dir.path().to_path_buf()));
+        let base_dir = exe_dir.into_path();
 
         let expected_find_context = FindContext {
-            base_dirs: vec![exe_dir.path().to_path_buf()],
+            base_dirs: vec![base_dir],
             conf_dir: Path::new("").to_path_buf(),
             file_name: ASSETS.to_string(),
         }; // kcov-ignore

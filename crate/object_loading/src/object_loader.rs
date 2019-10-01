@@ -402,7 +402,6 @@ mod test {
                         &asset_record.path,
                         "object.yaml",
                         Format::Yaml,
-                        None,
                     )
                     .expect("Failed to load object.yaml into CharacterDefinition");
 
@@ -411,7 +410,6 @@ mod test {
                             &asset_record.path,
                             "sprites.yaml",
                             Format::Yaml,
-                            None,
                         )
                         .expect("Failed to load sprites_definition.");
 

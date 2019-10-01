@@ -7,7 +7,6 @@ use amethyst::{
     Error,
 };
 use application::{
-    development_base_dirs,
     resource::{dir, load_in},
     Format,
 };
@@ -30,12 +29,7 @@ impl ThemeLoader {
 
     #[inline]
     fn load_internal(world: &mut World, font_config_name: &str) -> Result<(), Error> {
-        let font_config: FontConfig = load_in(
-            dir::RESOURCES,
-            font_config_name,
-            Format::Ron,
-            Some(development_base_dirs!()),
-        )?;
+        let font_config: FontConfig = load_in(dir::RESOURCES, font_config_name, Format::Ron)?;
 
         let font_paths = vec![
             (FontVariant::Regular, font_config.regular),

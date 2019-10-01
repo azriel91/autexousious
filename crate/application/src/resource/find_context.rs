@@ -10,8 +10,6 @@ pub struct FindContext {
     /// This includes:
     ///
     /// * Base directory of the executable
-    /// * During development, directory specified by `OUT_DIR`
-    /// * During development, directory specified by `CARGO_MANIFEST_DIR`
     pub base_dirs: Vec<PathBuf>,
     /// Directory relative to the base directories to look into
     pub conf_dir: PathBuf,

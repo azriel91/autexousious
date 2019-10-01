@@ -1,5 +1,6 @@
 //! Contains modules for various application configuration
 
+pub(crate) use self::find::find_internal;
 pub use self::{
     find::{find, find_in},
     find_context::FindContext,

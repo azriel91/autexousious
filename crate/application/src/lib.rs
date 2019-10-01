@@ -8,17 +8,10 @@
 //! # Examples
 //!
 //! ```rust
-//! use application::{
-//!     development_base_dirs,
-//!     resource::{dir, find_in},
-//! };
+//! use application::resource::{dir, find_in};
 //!
 //! fn main() {
-//!     let path_to_resource = find_in(
-//!         dir::RESOURCES,
-//!         "config.ron",
-//!         Some(development_base_dirs!()),
-//!     ).unwrap();
+//!     let path_to_resource = find_in(dir::RESOURCES, "config.ron").unwrap();
 //!
 //!     println!("{:?}", path_to_resource);
 //!     // "/path/to/crate/application/resources/config.ron"

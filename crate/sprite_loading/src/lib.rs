@@ -40,13 +40,9 @@ mod tests {
             .with_bundle(TransformBundle::new())
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_assertion(|world| {
-                let sprites_definition = load_in::<SpritesDefinition, _>(
-                    &*CHAR_BAT_PATH,
-                    "sprites.yaml",
-                    Format::Yaml,
-                    None,
-                )
-                .expect("Failed to load sprites_definition.");
+                let sprites_definition =
+                    load_in::<SpritesDefinition, _>(&*CHAR_BAT_PATH, "sprites.yaml", Format::Yaml)
+                        .expect("Failed to load sprites_definition.");
 
                 let loader = world.read_resource::<Loader>();
                 let texture_assets = world.read_resource::<AssetStorage<Texture>>();
