@@ -368,7 +368,7 @@ mod test {
         renderer::{types::DefaultBackend, RenderEmptyBundle, SpriteSheet, Texture},
     };
     use amethyst_test::AmethystApplication;
-    use application::{load_in, Format};
+    use application::{AppFile, Format};
     use asset_model::config::AssetRecord;
     use assets_test::{CHAR_BAT_PATH, CHAR_BAT_SLUG};
     use character_model::config::{CharacterDefinition, CharacterSequence};
@@ -398,7 +398,7 @@ mod test {
                     let asset_record =
                         AssetRecord::new(CHAR_BAT_SLUG.clone(), CHAR_BAT_PATH.clone());
 
-                    let character_definition = load_in::<CharacterDefinition, _>(
+                    let character_definition = AppFile::load_in::<CharacterDefinition, _>(
                         &asset_record.path,
                         "object.yaml",
                         Format::Yaml,
@@ -406,7 +406,7 @@ mod test {
                     .expect("Failed to load object.yaml into CharacterDefinition");
 
                     let object = {
-                        let sprites_definition = load_in::<SpritesDefinition, _>(
+                        let sprites_definition = AppFile::load_in::<SpritesDefinition, _>(
                             &asset_record.path,
                             "sprites.yaml",
                             Format::Yaml,

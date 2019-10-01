@@ -18,7 +18,7 @@ use amethyst::{
 };
 use application::{
     dir::{self, assets_dir},
-    load_in, Format,
+    AppFile, Format,
 };
 use application_event::{AppEvent, AppEventReader};
 use application_robot::RobotState;
@@ -82,11 +82,14 @@ fn run(opt: &Opt) -> Result<(), amethyst::Error> {
 
     let mut game_data = GameDataBuilder::default();
     if !opt.headless {
-        let display_config =
-            load_in::<DisplayConfig, _>(dir::RESOURCES, "display_config.ron", Format::Ron)?;
+        let display_config = AppFile::load_in::<DisplayConfig, _>(
+            dir::RESOURCES,
+            "display_config.ron",
+            Format::Ron,
+        )?;
 
         let input_config =
-            load_in::<InputConfig, _>(dir::RESOURCES, "input_config.ron", Format::Ron)?;
+            AppFile::load_in::<InputConfig, _>(dir::RESOURCES, "input_config.ron", Format::Ron)?;
 
         // `InputBundle` provides `InputHandler<A, B>`, needed by the `UiBundle` for mouse events.
         // `UiBundle` registers `Loader<FontAsset>`, needed by `ApplicationUiBundle`.

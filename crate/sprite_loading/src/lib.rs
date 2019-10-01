@@ -28,7 +28,7 @@ mod tests {
         Error,
     };
     use amethyst_test::AmethystApplication;
-    use application::{load_in, Format};
+    use application::{AppFile, Format};
     use assets_test::CHAR_BAT_PATH;
     use sprite_model::config::SpritesDefinition;
 
@@ -40,9 +40,12 @@ mod tests {
             .with_bundle(TransformBundle::new())
             .with_bundle(RenderEmptyBundle::<DefaultBackend>::new())
             .with_assertion(|world| {
-                let sprites_definition =
-                    load_in::<SpritesDefinition, _>(&*CHAR_BAT_PATH, "sprites.yaml", Format::Yaml)
-                        .expect("Failed to load sprites_definition.");
+                let sprites_definition = AppFile::load_in::<SpritesDefinition, _>(
+                    &*CHAR_BAT_PATH,
+                    "sprites.yaml",
+                    Format::Yaml,
+                )
+                .expect("Failed to load sprites_definition.");
 
                 let loader = world.read_resource::<Loader>();
                 let texture_assets = world.read_resource::<AssetStorage<Texture>>();

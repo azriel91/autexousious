@@ -7,7 +7,7 @@ use std::{
 
 use amethyst::{utils::application_root_dir, Error};
 
-use crate::{find::find_in_internal, DiscoveryContext};
+use crate::{AppFile, DiscoveryContext};
 
 // Note to self:
 //
@@ -37,7 +37,7 @@ pub fn assets_dir() -> Result<PathBuf, Error> {
 
 #[inline]
 fn assets_dir_internal(current_exe_result: io::Result<PathBuf>) -> Result<PathBuf, Error> {
-    let dir = find_in_internal(current_exe_result, Path::new(""), ASSETS)?;
+    let dir = AppFile::find_in_internal(current_exe_result, Path::new(""), ASSETS)?;
 
     // Canonicalize path to handle symlinks.
     match dir.canonicalize() {
