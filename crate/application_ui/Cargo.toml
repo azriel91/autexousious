@@ -25,7 +25,3 @@ structopt-derive = "0.3.2"
 
 [features]
 nightly = ["amethyst/nightly"]
-
-[[example]]
-name = "01_draw_text"
-path = "examples/01_draw_text/main.rs"

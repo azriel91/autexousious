@@ -29,7 +29,3 @@ structopt-derive = "0.3.2"
 
 [features]
 nightly = ["amethyst/nightly"]
-
-[[example]]
-name = "01_menu"
-path = "examples/01_menu/main.rs"
