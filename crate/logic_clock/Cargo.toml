@@ -12,4 +12,4 @@ serde = "1.0.101"
 
 [dev-dependencies]
 derive_deref = "1.1.0"
-derive_more = "0.15.0"
+derive_more = "0.15.1-pre"

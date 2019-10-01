@@ -12,7 +12,7 @@ collision_model = { path = "../collision_model" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
-derive_more = "0.15.0"
+derive_more = "0.15.1-pre"
 indexmap = { version = "1.2.0", features = ["serde-1"] }
 kinematic_model = { path = "../kinematic_model" }
 logic_clock = { path = "../logic_clock" }
