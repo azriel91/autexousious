@@ -55,7 +55,6 @@ mod tests {
     use serde_yaml;
     use shape_model::Volume;
     use spawn_model::config::{Spawn, Spawns};
-    use specs_derive::Component;
     use sprite_model::config::SpriteRef;
     use strum_macros::{Display, EnumString, IntoStaticStr};
 

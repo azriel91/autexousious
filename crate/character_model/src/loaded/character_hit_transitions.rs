@@ -1,7 +1,6 @@
 use amethyst::ecs::{storage::DenseVecStorage, Component};
 use derive_new::new;
 use sequence_model::loaded::SequenceId;
-use specs_derive::Component;
 
 /// Sequence to transition to when hit by another entity.
 ///

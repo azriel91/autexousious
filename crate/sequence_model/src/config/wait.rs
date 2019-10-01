@@ -2,7 +2,6 @@ use amethyst::ecs::{storage::VecStorage, Component};
 use derive_more::{Add, AddAssign, Display, From, Sub, SubAssign};
 use numeric_newtype_derive::numeric_newtype;
 use serde::{Deserialize, Serialize};
-use specs_derive::Component;
 
 /// Number of ticks to stay on the current frame before switching to the next frame.
 #[numeric_newtype]

@@ -1,7 +1,6 @@
 use amethyst::ecs::{storage::VecStorage, Component, Entity};
 use derivative::Derivative;
 use derive_new::new;
-use specs_derive::Component;
 
 /// Siblings of a menu item.
 #[derive(Clone, Copy, Component, Debug, Derivative, PartialEq, Eq, new)]

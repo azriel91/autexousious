@@ -5,7 +5,7 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
 [dependencies]
-derivative = "1.0.2"
+derivative = "1.0.3"
 derive-new = "0.5.8"
 state_registry = { path = "../state_registry" }
-structopt = "0.2.18"
+structopt = "0.3.2"

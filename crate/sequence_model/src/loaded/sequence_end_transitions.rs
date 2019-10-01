@@ -1,6 +1,5 @@
 use amethyst::ecs::{storage::DenseVecStorage, Component};
 use sequence_model_derive::sequence_component_data;
-use specs_derive::Component;
 
 use crate::loaded::SequenceEndTransition;
 

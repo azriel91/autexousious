@@ -1,5 +1,4 @@
 use amethyst::ecs::{storage::VecStorage, Component};
-use specs_derive::Component;
 
 use crate::play::{IndependentCounter, TeamCounter};
 

@@ -304,7 +304,7 @@ impl<'s> System<'s> for AssetLoadingSystem {
             .iter_mut()
             .for_each(|(asset_id, load_status)| {
                 *load_status =
-                    Self::process_asset(&mut asset_loading_resources, &asset_id, *load_status);
+                    Self::process_asset(&mut asset_loading_resources, asset_id, *load_status);
             });
     }
 }
@@ -312,10 +312,9 @@ impl<'s> System<'s> for AssetLoadingSystem {
 impl AssetLoadingSystem {
     fn process_asset(
         asset_loading_resources: &mut AssetLoadingResources,
-        asset_id: &AssetId,
+        asset_id: AssetId,
         load_status: LoadStatus,
     ) -> LoadStatus {
-        let asset_id = *asset_id;
         match load_status {
             LoadStatus::New => {
                 Self::definition_load(asset_loading_resources, asset_id);
@@ -400,12 +399,12 @@ impl AssetLoadingSystem {
         debug!("Loading asset with ID: {:?}", asset_id);
 
         let asset_type = asset_type_mappings
-            .get(&asset_id)
+            .get(asset_id)
             .expect("Expected `AssetType` mapping to exist.");
 
         let progress_counter = load_status_progress_counters
             .entry(LoadStatus::DefinitionLoading)
-            .or_insert(ProgressCounter::new());
+            .or_insert_with(ProgressCounter::new);
 
         let asset_slug = asset_id_mappings
             .slug(asset_id)
@@ -485,7 +484,7 @@ impl AssetLoadingSystem {
         asset_id: AssetId,
     ) -> bool {
         let asset_type = asset_type_mappings
-            .get(&asset_id)
+            .get(asset_id)
             .expect("Expected `AssetType` mapping to exist.");
 
         match asset_type {
@@ -547,12 +546,12 @@ impl AssetLoadingSystem {
         debug!("Mapping IDs for asset `{}`", asset_slug);
 
         let asset_type = asset_type_mappings
-            .get(&asset_id)
+            .get(asset_id)
             .expect("Expected `AssetType` mapping to exist.");
 
         let _progress_counter = load_status_progress_counters
             .entry(LoadStatus::IdMapping)
-            .or_insert(ProgressCounter::new());
+            .or_insert_with(ProgressCounter::new);
 
         match asset_type {
             AssetType::Object(object_type) => match object_type {
@@ -609,7 +608,7 @@ impl AssetLoadingSystem {
         } = asset_loading_resources;
 
         let asset_type = asset_type_mappings
-            .get(&asset_id)
+            .get(asset_id)
             .expect("Expected `AssetType` mapping to exist.");
 
         match asset_type {
@@ -688,7 +687,7 @@ impl AssetLoadingSystem {
                     .copied()
                     .unwrap_or_else(|| panic!("Asset ID not found for `{}`.", spawn_asset_slug));
                 let spawn_asset_type = asset_type_mappings
-                    .get(&spawn_asset_id)
+                    .get(spawn_asset_id)
                     .expect("Expected `AssetType` mapping to exist.");
 
                 let spawn_id_mappings_exist = match spawn_asset_type {
@@ -732,12 +731,12 @@ impl AssetLoadingSystem {
         asset_id: AssetId,
     ) {
         let asset_type = asset_type_mappings
-            .get(&asset_id)
+            .get(asset_id)
             .expect("Expected `AssetType` mapping to exist.");
 
         let progress_counter = load_status_progress_counters
             .entry(LoadStatus::SpritesLoading)
-            .or_insert(ProgressCounter::new());
+            .or_insert_with(ProgressCounter::new);
 
         let asset_slug = asset_id_mappings
             .slug(asset_id)
@@ -824,7 +823,7 @@ impl AssetLoadingSystem {
     ) {
         let mut progress_counter = load_status_progress_counters
             .entry(LoadStatus::TextureLoading)
-            .or_insert(ProgressCounter::new());
+            .or_insert_with(ProgressCounter::new);
 
         let asset_slug = asset_id_mappings
             .slug(asset_id)
@@ -947,7 +946,7 @@ impl AssetLoadingSystem {
         asset_id: AssetId,
     ) {
         let asset_type = asset_type_mappings
-            .get(&asset_id)
+            .get(asset_id)
             .expect("Expected `AssetType` mapping to exist.");
 
         let asset_slug = asset_id_mappings
@@ -1011,13 +1010,13 @@ impl AssetLoadingSystem {
                                         .object_definition
                                         .sequences
                                         .get(sequence_id);
-                                    let cts_handle = CtsLoader::load(
+
+                                    CtsLoader::load(
                                         &cts_loader_params,
                                         sequence_id_mappings,
                                         sequence_default,
                                         sequence,
-                                    );
-                                    cts_handle
+                                    )
                                 })
                                 .collect::<Vec<CharacterCtsHandle>>();
                             CharacterCtsHandles::new(character_cts_handles)

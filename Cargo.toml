@@ -5,3 +5,18 @@ members = ["app/*", "crate/*"]
 # Slower compilation, but better performance of final executable.
 # <https://blog.rust-lang.org/2018/02/15/Rust-1.24.html#incremental-compilation>
 codegen-units = 1
+
+[patch.crates-io]
+# https://github.com/trimental/andrew/pull/2
+andrew = { git = "https://github.com/azriel91/andrew.git", branch = "maintenance/update-dependencies" }
+
+# https://github.com/rustsim/alga/pull/88
+alga = { git = "https://github.com/rustsim/alga.git", branch = "dev" }
+
+# https://github.com/sgrif/derive_deref/pull/6
+derive_deref = { git = "https://github.com/azriel91/derive_deref.git", branch = "maintenance/update-syn-quote-proc-macro2" }
+
+derive_more = { git = "https://github.com/JelteF/derive_more.git" }
+
+# https://github.com/slide-rs/specs/pull/650
+specs-derive = { git = "https://github.com/azriel91/specs.git", branch = "maintenance/update-syn-quote-proc-macro2" }

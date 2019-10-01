@@ -3,7 +3,6 @@ use derivative::Derivative;
 use derive_more::{Add, AddAssign, Display, From, Sub, SubAssign};
 use numeric_newtype_derive::numeric_newtype;
 use serde::{Deserialize, Serialize};
-use specs_derive::Component;
 
 /// Number of ticks to wait between charges.
 #[numeric_newtype]

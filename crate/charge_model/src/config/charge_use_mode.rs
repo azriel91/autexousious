@@ -1,7 +1,6 @@
 use amethyst::ecs::{storage::VecStorage, Component};
 use derivative::Derivative;
 use serde::{Deserialize, Serialize};
-use specs_derive::Component;
 
 /// Charge usage subtraction variants.
 #[derive(Clone, Component, Copy, Debug, Derivative, Deserialize, PartialEq, Eq, Serialize)]

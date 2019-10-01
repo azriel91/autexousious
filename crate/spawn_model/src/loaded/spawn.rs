@@ -3,7 +3,6 @@ use asset_model::loaded::AssetId;
 use derive_new::new;
 use kinematic_model::config::{Position, Velocity};
 use sequence_model::loaded::SequenceId;
-use specs_derive::Component;
 
 /// Specifies an object to spawn.
 #[derive(Clone, Component, Debug, PartialEq, new)]
