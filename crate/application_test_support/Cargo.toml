@@ -43,7 +43,7 @@ sprite_model = { path = "../sprite_model" }
 ui_audio_loading = { path = "../../crate/ui_audio_loading" }
 
 [dev-dependencies]
-strum = "0.15.0"
+strum = "0.16.0"
 
 [features]
 nightly = ["amethyst/nightly"]

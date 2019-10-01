@@ -9,9 +9,9 @@ amethyst = { git = "https://github.com/azriel91/amethyst.git", features = ["no-s
 application_event = { path = "../application_event" }
 clap = "2.33.0"
 derive-new = "0.5.8"
-err-derive = "0.1.5"
+err-derive = "0.1.6"
 log = "0.4.8"
-structopt = "0.2.18"
+structopt = "0.3.2"
 typename = "0.1.1"
 typename_derive = "0.1.3"
 

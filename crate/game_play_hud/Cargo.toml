@@ -9,7 +9,7 @@ amethyst = { git = "https://github.com/azriel91/amethyst.git", features = ["no-s
 asset_gfx_gen = { path = "../asset_gfx_gen" }
 charge_model = { path = "../charge_model" }
 chase_model = { path = "../chase_model" }
-derivative = "1.0.2"
+derivative = "1.0.3"
 derive-new = "0.5.8"
 object_model = { path = "../object_model" }
 typename = "0.1.1"

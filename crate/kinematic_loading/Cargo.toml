@@ -9,7 +9,7 @@ amethyst = { git = "https://github.com/azriel91/amethyst.git", features = ["no-s
 application = { path = "../application" }
 kinematic_model = { path = "../kinematic_model" }
 derive-new = "0.5.8"
-serde = "1.0.99"
+serde = "1.0.101"
 typename = "0.1.1"
 typename_derive = "0.1.3"
 
