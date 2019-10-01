@@ -18,7 +18,7 @@ impl GameEntities {
     pub fn iter(&self) -> impl Iterator<Item = &Entity> {
         self.objects
             .values()
-            .flat_map(|entities| entities)
+            .flatten()
             .chain(self.map_layers.iter())
     }
 

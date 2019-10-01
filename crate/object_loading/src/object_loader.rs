@@ -169,7 +169,7 @@ impl ObjectLoader {
                                 .object_frame()
                                 .acceleration
                                 .or_else(|| object_sequence.acceleration)
-                                .unwrap_or_else(|| ObjectAcceleration::default())
+                                .unwrap_or_else(ObjectAcceleration::default)
                         })
                         .collect::<Vec<ObjectAcceleration>>(),
                 );
@@ -230,7 +230,7 @@ impl ObjectLoader {
                                         .copied()
                                         .unwrap_or_else(|| panic!("Asset ID not found for `{}`.", spawn_asset_slug));
                                     let spawn_asset_type = asset_type_mappings
-                                        .get(&spawn_asset_id)
+                                        .get(spawn_asset_id)
                                         .expect("Expected `AssetType` mapping to exist.");
                                     let position = {
                                         let position_config = spawn_config.position;

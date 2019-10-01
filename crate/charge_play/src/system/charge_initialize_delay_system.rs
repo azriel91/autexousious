@@ -75,9 +75,8 @@ impl<'s> System<'s> for ChargeInitializeDelaySystem {
                             *charge_status = ChargeStatus::Charging;
 
                             if !charge_tracker_clocks.contains(entity) {
-                                let charge_limit = charge_limit
-                                    .copied()
-                                    .unwrap_or_else(|| ChargeLimit::default());
+                                let charge_limit =
+                                    charge_limit.copied().unwrap_or_else(ChargeLimit::default);
                                 let charge_limit = (*charge_limit) as usize;
                                 let charge_tracker_clock = ChargeTrackerClock::new(charge_limit);
                                 charge_tracker_clocks
@@ -85,9 +84,8 @@ impl<'s> System<'s> for ChargeInitializeDelaySystem {
                                     .expect("Failed to insert `ChargeTrackerClock` component.");
                             }
 
-                            let charge_delay = charge_delay
-                                .copied()
-                                .unwrap_or_else(|| ChargeDelay::default());
+                            let charge_delay =
+                                charge_delay.copied().unwrap_or_else(ChargeDelay::default);
                             let mut charge_delay_clock = ChargeDelayClock::new(*charge_delay);
                             charge_delay_clock.value = *charge_delay; // Start off as complete.
                             charge_delay_clocks

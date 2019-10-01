@@ -15,10 +15,10 @@ impl AssetQueries {
     ///
     /// * `world`: `World` of the running application.
     /// * `asset_type`: `AssetType` whose first asset ID to retrieve.
-    pub fn first_id(world: &World, asset_type: &AssetType) -> AssetId {
+    pub fn first_id(world: &World, asset_type: AssetType) -> AssetId {
         let asset_type_mappings = world.read_resource::<AssetTypeMappings>();
         asset_type_mappings
-            .iter_ids(asset_type)
+            .iter_ids(&asset_type)
             .next()
             .copied()
             .expect("Expected at least one character to be loaded.")
@@ -30,10 +30,10 @@ impl AssetQueries {
     ///
     /// * `world`: `World` of the running application.
     /// * `asset_type`: `AssetType` whose last asset ID to retrieve.
-    pub fn last_id(world: &World, asset_type: &AssetType) -> AssetId {
+    pub fn last_id(world: &World, asset_type: AssetType) -> AssetId {
         let asset_type_mappings = world.read_resource::<AssetTypeMappings>();
         asset_type_mappings
-            .iter_ids(asset_type)
+            .iter_ids(&asset_type)
             .next_back()
             .copied()
             .expect("Expected at least one character to be loaded.")

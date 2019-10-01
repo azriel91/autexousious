@@ -144,7 +144,7 @@ mod tests {
             .with_system(CharacterSelectionSfxSystem::new(), "", &[])
             .with_effect(move |world| {
                 let asset_id =
-                    AssetQueries::first_id(world, &AssetType::Object(ObjectType::Character));
+                    AssetQueries::first_id(world, AssetType::Object(ObjectType::Character));
                 let character_selection_event = character_selection_event_fn(asset_id);
                 send_event(world, character_selection_event);
             })

@@ -36,8 +36,8 @@ impl AssetTypeMappings {
     }
 
     /// Returns a reference to the value corresponding to the key.
-    pub fn get(&self, asset_id: &AssetId) -> Option<&AssetType> {
-        self.asset_id_to_type.get(asset_id)
+    pub fn get(&self, asset_id: AssetId) -> Option<&AssetType> {
+        self.asset_id_to_type.get(&asset_id)
     }
 
     /// Returns `true` if there are no mappings.
@@ -61,7 +61,7 @@ impl AssetTypeMappings {
         asset_ids.push(asset_id);
 
         if let Some(previous_type) = previous_type {
-            self.remove_from_ids(previous_type, &asset_id);
+            self.remove_from_ids(previous_type, asset_id);
         }
 
         previous_type
@@ -105,8 +105,8 @@ impl AssetTypeMappings {
     }
 
     /// Removes the ID mapping for the given asset type, returning it if it exists.
-    pub fn remove(&mut self, asset_id: &AssetId) -> Option<AssetType> {
-        let previous_type = self.asset_id_to_type.swap_remove(asset_id);
+    pub fn remove(&mut self, asset_id: AssetId) -> Option<AssetType> {
+        let previous_type = self.asset_id_to_type.swap_remove(&asset_id);
 
         if let Some(previous_type) = previous_type {
             self.remove_from_ids(previous_type, asset_id);
@@ -126,7 +126,7 @@ impl AssetTypeMappings {
         self.asset_id_to_type.reserve(additional);
     }
 
-    fn remove_from_ids(&mut self, asset_type: AssetType, asset_id: &AssetId) {
+    fn remove_from_ids(&mut self, asset_type: AssetType, asset_id: AssetId) {
         let asset_type_ids = self
             .asset_type_to_ids
             .get_mut(&asset_type)
@@ -134,7 +134,7 @@ impl AssetTypeMappings {
 
         asset_type_ids
             .iter()
-            .position(|existing_id| existing_id == asset_id)
+            .position(|existing_id| *existing_id == asset_id)
             .map(|i| asset_type_ids.remove(i));
     }
 }

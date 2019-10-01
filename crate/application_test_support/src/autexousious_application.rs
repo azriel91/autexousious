@@ -118,7 +118,7 @@ impl AutexousiousApplication {
                     .selections
                     .entry(controller_id)
                     .or_insert_with(|| {
-                        AssetQueries::first_id(world, &AssetType::Object(ObjectType::Character))
+                        AssetQueries::first_id(world, AssetType::Object(ObjectType::Character))
                     });
 
                 world.insert(character_selections);
