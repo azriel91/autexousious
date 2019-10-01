@@ -32,7 +32,7 @@ dependencies = [
 [[package]]
 name = "alga"
 version = "0.9.1"
-source = "git+https://github.com/azriel91/alga.git?branch=maintenance/update-dependencies#fe8bfd4212ba6ecd3ec2ff248fa08246d376e30d"
+source = "git+https://github.com/rustsim/alga.git?branch=dev#6d93f2cfdbb20b6c49d984a6ab39f208e1c54028"
 dependencies = [
  "approx 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "libm 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -185,7 +185,7 @@ name = "amethyst_core"
 version = "0.8.0"
 source = "git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies#60036fe7df0b83f9cc6888357213cbed13e5c50c"
 dependencies = [
- "alga 0.9.1 (git+https://github.com/azriel91/alga.git?branch=maintenance/update-dependencies)",
+ "alga 0.9.1 (git+https://github.com/rustsim/alga.git?branch=dev)",
  "alga_derive 0.9.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "amethyst_error 0.3.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
  "approx 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -683,7 +683,7 @@ dependencies = [
  "bimap 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "derive_builder 0.8.0 (git+https://github.com/colin-kiegel/rust-derive-builder.git)",
+ "derive_builder 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)",
  "derive_more 0.15.1-pre (git+https://github.com/JelteF/derive_more.git)",
  "indexmap 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1706,10 +1706,10 @@ dependencies = [
 [[package]]
 name = "derive_builder"
 version = "0.8.0"
-source = "git+https://github.com/colin-kiegel/rust-derive-builder.git#67c9c956950839bc4b35a1f3f15a50ccef122c7d"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "darling 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "derive_builder_core 0.8.0 (git+https://github.com/colin-kiegel/rust-derive-builder.git)",
+ "derive_builder_core 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "proc-macro2 1.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "syn 1.0.5 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1718,7 +1718,7 @@ dependencies = [
 [[package]]
 name = "derive_builder_core"
 version = "0.8.0"
-source = "git+https://github.com/colin-kiegel/rust-derive-builder.git#67c9c956950839bc4b35a1f3f15a50ccef122c7d"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "darling 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "proc-macro2 1.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2017,7 +2017,7 @@ dependencies = [
  "fluent-locale 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "fluent-syntax 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "intl_pluralrules 2.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "rental 0.5.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rental 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "smallvec 0.6.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "unic-langid 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -3245,7 +3245,7 @@ name = "nalgebra"
 version = "0.18.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "alga 0.9.1 (git+https://github.com/azriel91/alga.git?branch=maintenance/update-dependencies)",
+ "alga 0.9.1 (git+https://github.com/rustsim/alga.git?branch=dev)",
  "approx 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "generic-array 0.12.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "matrixmultiply 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4482,21 +4482,21 @@ dependencies = [
 
 [[package]]
 name = "rental"
-version = "0.5.4"
+version = "0.5.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "rental-impl 0.5.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rental-impl 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "stable_deref_trait 1.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "rental-impl"
-version = "0.5.4"
+version = "0.5.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)",
- "quote 0.6.13 (registry+https://github.com/rust-lang/crates.io-index)",
- "syn 0.15.44 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc-macro2 1.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 1.0.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -5859,7 +5859,7 @@ dependencies = [
 "checksum ahash 0.2.13 (registry+https://github.com/rust-lang/crates.io-index)" = "b58aeefd9396419a4f4f2b9778f2d832a11851b55010e231c5390cf2b1c416b4"
 "checksum aho-corasick 0.6.10 (registry+https://github.com/rust-lang/crates.io-index)" = "81ce3d38065e618af2d7b77e10c5ad9a069859b4be3c2250f674af3840d9c8a5"
 "checksum aho-corasick 0.7.6 (registry+https://github.com/rust-lang/crates.io-index)" = "58fb5e95d83b38284460a5fda7d6470aa0b8844d283a0b614b8535e880800d2d"
-"checksum alga 0.9.1 (git+https://github.com/azriel91/alga.git?branch=maintenance/update-dependencies)" = "<none>"
+"checksum alga 0.9.1 (git+https://github.com/rustsim/alga.git?branch=dev)" = "<none>"
 "checksum alga_derive 0.9.1 (registry+https://github.com/rust-lang/crates.io-index)" = "f448d7130355515534b7d3af3aa8524365de18b11bbd1deceb06a5956c435f0b"
 "checksum alsa-sys 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "b0edcbbf9ef68f15ae1b620f722180b82a98b6f0628d30baa6b8d2a5abc87d58"
 "checksum amethyst 0.13.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)" = "<none>"
@@ -5948,8 +5948,8 @@ dependencies = [
 "checksum deflate 0.7.20 (registry+https://github.com/rust-lang/crates.io-index)" = "707b6a7b384888a70c8d2e8650b3e60170dfc6a67bb4aa67b6dfca57af4bedb4"
 "checksum derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)" = "942ca430eef7a3806595a6737bc388bf51adb888d3fc0dd1b50f1c170167ee3a"
 "checksum derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)" = "71f31892cd5c62e414316f2963c5689242c43d8e7bbcaaeca97e5e28c95d91d9"
-"checksum derive_builder 0.8.0 (git+https://github.com/colin-kiegel/rust-derive-builder.git)" = "<none>"
-"checksum derive_builder_core 0.8.0 (git+https://github.com/colin-kiegel/rust-derive-builder.git)" = "<none>"
+"checksum derive_builder 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)" = "dfbc80e9c3b77201f32c9541b13d9678388782272554af7e65103310265462e6"
+"checksum derive_builder_core 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)" = "8b68a4fe580fdda1bf3860b2360b9020696d42fc58f2343cf4be2faedf74c5a9"
 "checksum derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)" = "<none>"
 "checksum derive_more 0.15.1-pre (git+https://github.com/JelteF/derive_more.git)" = "<none>"
 "checksum difference 2.0.0 (registry+https://github.com/rust-lang/crates.io-index)" = "524cbf6897b527295dff137cec09ecf3a05f4fddffd7dfcd1585403449e74198"
@@ -6154,8 +6154,8 @@ dependencies = [
 "checksum rendy-texture 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "f2b32d1164c22a20069ffdb9e845aaf9ee3d1368b86f21a09633d4ab0cc6c10f"
 "checksum rendy-util 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)" = "3f2616682961212cd9466b7e21bf58dc400691dbebb8def0be63f506081cbb7f"
 "checksum rendy-wsi 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "b273e68fc57b25dc460d41a743f14018121c43b00317692b2ae4a874803b6c10"
-"checksum rental 0.5.4 (registry+https://github.com/rust-lang/crates.io-index)" = "01916ebd9fc2e81978a5dc9542a2fa47f5bb2ca3402e14c7cc42d6e3c5123e1f"
-"checksum rental-impl 0.5.4 (registry+https://github.com/rust-lang/crates.io-index)" = "82260d54cf2cbe9608df161f7e7c98e81fae702aa13af9e4d5d39dc2ffb25ab6"
+"checksum rental 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)" = "8545debe98b2b139fb04cad8618b530e9b07c152d99a5de83c860b877d67847f"
+"checksum rental-impl 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)" = "475e68978dc5b743f2f40d8e0a8fdc83f1c5e78cbf4b8fa5e74e73beebc340de"
 "checksum rgb 0.8.14 (registry+https://github.com/rust-lang/crates.io-index)" = "2089e4031214d129e201f8c3c8c2fe97cd7322478a0d1cdf78e7029b0042efdb"
 "checksum rodio 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)" = "5d0f961b254e66d147a7b550c78b01308934c97d807a34b417fd0f5a0a0f3a2d"
 "checksum ron 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)" = "2ece421e0c4129b90e4a35b6f625e472e96c552136f5093a2f4fa2bbb75a62d5"

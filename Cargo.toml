@@ -11,13 +11,10 @@ codegen-units = 1
 andrew = { git = "https://github.com/azriel91/andrew.git", branch = "maintenance/update-dependencies" }
 
 # https://github.com/rustsim/alga/pull/88
-alga = { git = "https://github.com/azriel91/alga.git", branch = "maintenance/update-dependencies" }
+alga = { git = "https://github.com/rustsim/alga.git", branch = "dev" }
 
 # https://github.com/sgrif/derive_deref/pull/6
 derive_deref = { git = "https://github.com/azriel91/derive_deref.git", branch = "maintenance/update-syn-quote-proc-macro2" }
-
-# https://github.com/colin-kiegel/rust-derive-builder/pull/148
-derive_builder = { git = "https://github.com/colin-kiegel/rust-derive-builder.git" }
 
 derive_more = { git = "https://github.com/JelteF/derive_more.git" }
 
