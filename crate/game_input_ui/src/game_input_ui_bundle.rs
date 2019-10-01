@@ -35,24 +35,16 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameInputUiBundle {
 
 #[cfg(test)]
 mod test {
-    use std::env;
-
-    use amethyst_test::prelude::*;
+    use amethyst::Error;
+    use amethyst_test::AmethystApplication;
     use game_input_model::{ControlBindings, InputConfig};
 
     use super::GameInputUiBundle;
 
     #[test]
-    fn bundle_build_should_succeed() {
-        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
-
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AmethystApplication::ui_base::<ControlBindings>()
-                .with_bundle(GameInputUiBundle::new(InputConfig::default()))
-                .run()
-                .is_ok()
-        );
+    fn bundle_build_should_succeed() -> Result<(), Error> {
+        AmethystApplication::ui_base::<ControlBindings>()
+            .with_bundle(GameInputUiBundle::new(InputConfig::default()))
+            .run()
     }
 }

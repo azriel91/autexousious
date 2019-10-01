@@ -1,5 +1,3 @@
-use std::env;
-
 use amethyst::{
     assets::Processor,
     audio::Source,
@@ -78,8 +76,6 @@ impl AutexousiousApplication {
     /// map) to be instantiated, please use the `game_base` function.
     pub fn config_base() -> AmethystApplication<GameData<'static, 'static>, AppEvent, AppEventReader>
     {
-        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
-
         AutexousiousApplication::render_and_ui()
             // On Windows, using `AudioBundle` causes a segfault.
             // On Linux, using `AudioSystem` (which needs a default `Output` device) causes a panic.

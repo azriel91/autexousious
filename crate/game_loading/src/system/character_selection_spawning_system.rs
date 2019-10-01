@@ -124,8 +124,6 @@ impl<'s> System<'s> for CharacterSelectionSpawningSystem {
 
 #[cfg(test)]
 mod tests {
-    use std::env;
-
     use amethyst::{
         assets::Processor,
         audio::Source,
@@ -274,8 +272,6 @@ mod tests {
     }
 
     fn run_test(setup_fn: fn(&mut World), assertion_fn: fn(&mut World)) -> Result<(), Error> {
-        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
-
         AmethystApplication::blank()
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_bundle(TransformBundle::new())

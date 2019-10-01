@@ -25,31 +25,23 @@ impl<'a, 'b> SystemBundle<'a, 'b> for StdioInputBundle {
 
 #[cfg(test)]
 mod test {
-    use std::env;
-
-    use amethyst::{ecs::WorldExt, shrev::EventChannel};
-    use amethyst_test::prelude::*;
+    use amethyst::{ecs::WorldExt, shrev::EventChannel, Error};
+    use amethyst_test::AmethystApplication;
     use application_input::ApplicationEvent;
     use state_registry::StateId;
 
     use super::StdioInputBundle;
 
     #[test]
-    fn bundle_should_add_stdin_system_to_dispatcher() {
-        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
-        // kcov-ignore-start
-        assert!(
+    fn bundle_should_add_stdin_system_to_dispatcher() -> Result<(), Error> {
+        AmethystApplication::blank()
+            .with_bundle(StdioInputBundle)
+            .with_resource(StateId::Loading)
+            // kcov-ignore-start
+            .with_effect(|world| {
+                world.read_resource::<EventChannel<ApplicationEvent>>();
+            })
             // kcov-ignore-end
-            AmethystApplication::blank()
-                .with_bundle(StdioInputBundle)
-                .with_resource(StateId::Loading)
-                // kcov-ignore-start
-                .with_effect(|world| {
-                    world.read_resource::<EventChannel<ApplicationEvent>>();
-                })
-                // kcov-ignore-end
-                .run()
-                .is_ok()
-        );
+            .run()
     }
 }

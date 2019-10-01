@@ -37,8 +37,6 @@ impl<'a, 'b> SystemBundle<'a, 'b> for StdioCommandStdioBundle {
 
 #[cfg(test)]
 mod test {
-    use std::env;
-
     use amethyst::{ecs::WorldExt, shrev::EventChannel, Error};
     use amethyst_test::AmethystApplication;
     use state_registry::StateId;
@@ -49,7 +47,6 @@ mod test {
 
     #[test]
     fn bundle_should_add_mapper_system_to_dispatcher() -> Result<(), Error> {
-        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
         AmethystApplication::blank()
             .with_bundle(StdioInputBundle::new())
             .with_bundle(StdioCommandStdioBundle::new())

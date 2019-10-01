@@ -33,8 +33,6 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionStdioBundle {
 
 #[cfg(test)]
 mod test {
-    use std::env;
-
     use amethyst::{ecs::WorldExt, shrev::EventChannel, Error};
     use amethyst_test::AmethystApplication;
     use asset_model::loaded::AssetIdMappings;
@@ -44,8 +42,6 @@ mod test {
 
     #[test]
     fn bundle_should_add_mapper_system_to_dispatcher() -> Result<(), Error> {
-        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
-
         AmethystApplication::blank()
             .with_bundle(CharacterSelectionStdioBundle::new())
             // kcov-ignore-start

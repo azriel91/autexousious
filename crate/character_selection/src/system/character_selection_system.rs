@@ -90,8 +90,6 @@ impl<'s> System<'s> for CharacterSelectionSystem {
 
 #[cfg(test)]
 mod tests {
-    use std::env;
-
     use amethyst::{
         assets::Processor,
         audio::Source,
@@ -167,8 +165,6 @@ mod tests {
             character_selection_fn,
         }: ExpectedParams,
     ) -> Result<(), Error> {
-        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
-
         AmethystApplication::blank()
             .with_custom_event_type::<AppEvent, AppEventReader>()
             .with_resource(ScreenDimensions::new(SCREEN_WIDTH, SCREEN_HEIGHT, HIDPI))
