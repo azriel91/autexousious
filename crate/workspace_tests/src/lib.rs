@@ -47,3 +47,5 @@ mod character_selection;
 mod character_selection_stdio;
 #[cfg(test)]
 mod character_selection_ui;
+#[cfg(test)]
+mod charge_play;
