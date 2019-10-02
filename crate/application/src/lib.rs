@@ -30,9 +30,6 @@ pub use crate::{
     find_context::FindContext, format::Format, io_utils::IoUtils,
 };
 
-#[cfg(test)]
-#[macro_use]
-mod test_support;
 mod app_dir;
 mod app_file;
 mod discovery_context;
