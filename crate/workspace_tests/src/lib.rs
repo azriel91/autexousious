@@ -8,3 +8,5 @@ mod application;
 mod application_menu;
 #[cfg(test)]
 mod application_robot;
+#[cfg(test)]
+mod application_state;

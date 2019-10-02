@@ -495,12 +495,10 @@ version = "0.14.0"
 dependencies = [
  "amethyst 0.13.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
  "application_event 0.14.0",
- "character_selection_model 0.14.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "rayon 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -5781,11 +5779,14 @@ dependencies = [
  "amethyst 0.13.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
  "amethyst_test 0.4.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
  "application 0.14.0",
+ "application_event 0.14.0",
  "application_input 0.14.0",
  "application_menu 0.14.0",
  "application_robot 0.14.0",
+ "application_state 0.14.0",
  "application_ui 0.14.0",
  "assert_cmd 0.11.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "character_selection_model 0.14.0",
  "debug_util_amethyst 0.14.0",
  "game_input_model 0.14.0",
  "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
