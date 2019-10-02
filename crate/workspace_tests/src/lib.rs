@@ -37,3 +37,5 @@ mod camera_play;
 mod character_loading;
 #[cfg(test)]
 mod character_model;
+#[cfg(test)]
+mod character_play;

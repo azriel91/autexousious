@@ -8,8 +8,9 @@ use crate::{
 const FALL_FORWARD_LAND: SwitchSequenceOnEnd =
     SwitchSequenceOnEnd(CharacterSequenceName::LieFaceDown);
 
+/// `FallForwardLand` sequence update.
 #[derive(Debug)]
-pub(crate) struct FallForwardLand;
+pub struct FallForwardLand;
 
 impl CharacterSequenceHandler for FallForwardLand {
     fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {

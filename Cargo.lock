@@ -965,15 +965,9 @@ name = "character_play"
 version = "0.14.0"
 dependencies = [
  "amethyst 0.13.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
- "amethyst_test 0.4.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
- "application 0.14.0",
- "application_test_support 0.14.0",
  "approx 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "asset_model 0.14.0",
- "assets_test 0.14.0",
- "character_loading 0.14.0",
  "character_model 0.14.0",
- "character_prefab 0.14.0",
  "charge_model 0.14.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -984,10 +978,7 @@ dependencies = [
  "named_type 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "named_type_derive 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "object_model 0.14.0",
- "object_type 0.14.0",
- "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "sequence_model 0.14.0",
- "serde_yaml 0.8.9 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -5754,6 +5745,7 @@ dependencies = [
  "asset_gfx_gen 0.14.0",
  "asset_loading 0.14.0",
  "asset_model 0.14.0",
+ "assets_test 0.14.0",
  "audio_loading 0.14.0",
  "audio_model 0.14.0",
  "audio_play 0.14.0",
@@ -5761,10 +5753,12 @@ dependencies = [
  "camera_play 0.14.0",
  "character_loading 0.14.0",
  "character_model 0.14.0",
+ "character_play 0.14.0",
  "character_selection_model 0.14.0",
  "charge_model 0.14.0",
  "collision_model 0.14.0",
  "debug_util_amethyst 0.14.0",
+ "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_deref 1.1.0 (git+https://github.com/azriel91/derive_deref.git?branch=maintenance/update-syn-quote-proc-macro2)",
  "game_input 0.14.0",

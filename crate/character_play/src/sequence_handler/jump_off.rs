@@ -11,8 +11,9 @@ const SWITCH_SEQUENCE_ON_END_Y_VELOCITY: SwitchSequenceOnEndYVelocity =
         downwards: CharacterSequenceName::JumpDescend,
     };
 
+/// `JumpOff` sequence update.
 #[derive(Debug)]
-pub(crate) struct JumpOff;
+pub struct JumpOff;
 
 impl CharacterSequenceHandler for JumpOff {
     fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {

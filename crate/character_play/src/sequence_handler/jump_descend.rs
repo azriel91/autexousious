@@ -8,8 +8,9 @@ use crate::{
 const JUMP_DESCEND_LAND: SwitchSequenceOnLand =
     SwitchSequenceOnLand(CharacterSequenceName::JumpDescendLand);
 
+/// `JumpDescend` sequence update.
 #[derive(Debug)]
-pub(crate) struct JumpDescend;
+pub struct JumpDescend;
 
 impl CharacterSequenceHandler for JumpDescend {
     fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {

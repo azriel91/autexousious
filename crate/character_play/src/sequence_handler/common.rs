@@ -1,7 +1,9 @@
-pub(crate) use self::sequence_repeat::SequenceRepeat;
+//! Common logic for sequence handlers.
 
-pub(crate) mod grounding;
-pub(crate) mod input;
-pub(crate) mod status;
+pub use self::sequence_repeat::SequenceRepeat;
+
+pub mod grounding;
+pub mod input;
+pub mod status;
 
 mod sequence_repeat;

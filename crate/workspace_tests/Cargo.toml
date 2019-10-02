@@ -21,6 +21,7 @@ asset_derive = { path = "../asset_derive" }
 asset_gfx_gen = { path = "../asset_gfx_gen" }
 asset_loading = { path = "../asset_loading" }
 asset_model = { path = "../asset_model" }
+assets_test = { path = "../assets_test" }
 audio_loading = { path = "../audio_loading" }
 audio_model = { path = "../audio_model" }
 audio_play = { path = "../audio_play" }
@@ -28,10 +29,12 @@ camera_model = { path = "../camera_model" }
 camera_play = { path = "../camera_play" }
 character_loading = { path = "../character_loading" }
 character_model = { path = "../character_model" }
+character_play = { path = "../character_play" }
 character_selection_model = { path = "../character_selection_model" }
 charge_model = { path = "../charge_model" }
 collision_model = { path = "../collision_model" }
 debug_util_amethyst = { path = "../debug_util_amethyst" }
+derivative = "1.0.3"
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
 game_input = { path = "../game_input" }

@@ -10,8 +10,9 @@ const FALL_FORWARD_DESCEND_BOUNCE: SwitchSequenceOnLand =
 const FALL_FORWARD_DESCEND_LIE: SwitchSequenceOnLand =
     SwitchSequenceOnLand(CharacterSequenceName::LieFaceDown);
 
+/// `FallForwardDescend` sequence update.
 #[derive(Debug)]
-pub(crate) struct FallForwardDescend;
+pub struct FallForwardDescend;
 
 impl CharacterSequenceHandler for FallForwardDescend {
     fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {
