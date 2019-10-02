@@ -14,3 +14,5 @@ mod application_state;
 mod application_test_support;
 #[cfg(test)]
 mod application_ui;
+#[cfg(test)]
+mod asset_gfx_gen;

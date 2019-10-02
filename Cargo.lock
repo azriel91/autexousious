@@ -622,12 +622,8 @@ name = "asset_gfx_gen"
 version = "0.14.0"
 dependencies = [
  "amethyst 0.13.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
- "amethyst_test 0.4.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
- "approx 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "integer-sqrt 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -5778,14 +5774,18 @@ dependencies = [
  "application_state 0.14.0",
  "application_test_support 0.14.0",
  "application_ui 0.14.0",
+ "approx 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "assert_cmd 0.11.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "asset_gfx_gen 0.14.0",
  "asset_model 0.14.0",
  "character_selection_model 0.14.0",
  "debug_util_amethyst 0.14.0",
+ "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input_model 0.14.0",
  "game_model 0.14.0",
  "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "object_type 0.14.0",
+ "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "rayon 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "ron 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)",

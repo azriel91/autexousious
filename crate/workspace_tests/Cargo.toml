@@ -15,14 +15,18 @@ application_robot = { path = "../application_robot" }
 application_state = { path = "../application_state" }
 application_test_support = { path = "../application_test_support" }
 application_ui = { path = "../application_ui" }
+approx = "0.3.2"
 assert_cmd = "0.11.1"
+asset_gfx_gen = { path = "../asset_gfx_gen" }
 asset_model = { path = "../asset_model" }
 character_selection_model = { path = "../character_selection_model" }
 debug_util_amethyst = { path = "../debug_util_amethyst" }
+derive-new = "0.5.8"
 game_input_model = { path = "../game_input_model" }
 game_model = { path = "../game_model" }
 lazy_static = "1.4.0"
 object_type = { path = "../object_type" }
+pretty_assertions = "0.6.1"
 rayon = "1.2.0"
 ron = "0.5.1"
 serde = "1.0.101"
