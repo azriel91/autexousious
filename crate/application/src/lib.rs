@@ -27,7 +27,7 @@ extern crate pretty_assertions;
 
 pub use crate::{
     app_dir::AppDir, app_file::AppFile, discovery_context::DiscoveryContext,
-    find_context::FindContext, format::Format, io_utils::IoUtils,
+    find_context::FindContext, format::Format, io_support::IoSupport, io_utils::IoUtils,
 };
 
 mod app_dir;

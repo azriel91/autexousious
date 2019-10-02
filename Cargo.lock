@@ -5786,6 +5786,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "workspace_tests"
+version = "0.15.0"
+dependencies = [
+ "amethyst 0.13.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
+ "application 0.14.0",
+ "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ron 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_yaml 0.8.9 (registry+https://github.com/rust-lang/crates.io-index)",
+ "tempfile 3.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "ws2_32-sys"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"

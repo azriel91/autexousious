@@ -3,7 +3,7 @@ use std::{error, fmt, io};
 use derivative::Derivative;
 use derive_new::new;
 
-use crate::io_support;
+use crate::IoSupport;
 
 /// Information around the failure to discover a directory.
 #[derive(Debug, Derivative, new)]
@@ -15,7 +15,7 @@ pub struct DiscoveryContext {
     /// Human-readable message detailing what went wrong with the discovery
     pub message: &'static str,
     /// `io::Error` that caused this discovery error, if any.
-    #[derivative(PartialEq(compare_with = "io_support::cmp_opt_io_error"))]
+    #[derivative(PartialEq(compare_with = "IoSupport::cmp_io_error_opt"))]
     pub io_error: Option<io::Error>,
     // kcov-ignore-end
 }
@@ -37,41 +37,3 @@ impl fmt::Display for DiscoveryContext {
 }
 
 impl error::Error for DiscoveryContext {}
-
-#[cfg(test)]
-mod test {
-    use std::io;
-
-    use super::DiscoveryContext;
-
-    #[test]
-    fn display_with_io_error() {
-        let context = DiscoveryContext::new(
-            "assets",
-            "message",
-            Some(io::Error::new(io::ErrorKind::Other, "boom")),
-        );
-
-        let expected = "\
-                        Failed to find the 'assets' directory beside the current executable.\n\
-                        Additional context:\n\
-                        \n\
-                        * **`io::Error`:** 'boom'\n\
-                        * **Message:** 'message'\n\
-                        \n";
-        assert_eq!(expected, &format!("{}", context));
-    }
-
-    #[test]
-    fn display_without_io_error() {
-        let context = DiscoveryContext::new("assets", "message", None);
-
-        let expected = "\
-                        Failed to find the 'assets' directory beside the current executable.\n\
-                        Additional context:\n\
-                        \n\
-                        * **Message:** 'message'\n\
-                        \n";
-        assert_eq!(expected, &format!("{}", context));
-    }
-}
