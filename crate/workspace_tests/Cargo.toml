@@ -34,6 +34,7 @@ character_prefab = { path = "../character_prefab" }
 character_selection = { path = "../character_selection" }
 character_selection_model = { path = "../character_selection_model" }
 character_selection_stdio = { path = "../character_selection_stdio" }
+character_selection_ui = { path = "../character_selection_ui" }
 charge_model = { path = "../charge_model" }
 collision_audio_loading = { path = "../collision_audio_loading" }
 collision_loading = { path = "../collision_loading" }

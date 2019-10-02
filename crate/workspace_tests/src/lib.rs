@@ -45,3 +45,5 @@ mod character_prefab;
 mod character_selection;
 #[cfg(test)]
 mod character_selection_stdio;
+#[cfg(test)]
+mod character_selection_ui;
