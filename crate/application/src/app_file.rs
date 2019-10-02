@@ -57,10 +57,7 @@ impl AppFile {
     ///
     /// # fn main() {
     /// // Search for '<application_dir>/resources/config.ron'.
-    /// let path = match AppFile::find_in(
-    ///     AppDir::RESOURCES,
-    ///     "config.ron",
-    /// ) {
+    /// let path = match AppFile::find_in(AppDir::RESOURCES, "config.ron") {
     ///     Ok(path) => path,
     ///     Err(e) => panic!("Failed to find configuration file: {}", e),
     /// };
