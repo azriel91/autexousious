@@ -53,12 +53,12 @@ impl AppFile {
     /// # Examples
     ///
     /// ```rust
-    /// use application::{dir, AppFile};
+    /// use application::{AppDir, AppFile};
     ///
     /// # fn main() {
     /// // Search for '<application_dir>/resources/config.ron'.
     /// let path = match AppFile::find_in(
-    ///     dir::RESOURCES,
+    ///     AppDir::RESOURCES,
     ///     "config.ron",
     /// ) {
     ///     Ok(path) => path,
@@ -148,7 +148,7 @@ impl AppFile {
     ///
     /// use serde::Deserialize;
     ///
-    /// use application::{dir, AppFile, Format};
+    /// use application::{AppDir, AppFile, Format};
     ///
     /// #[derive(Debug, Deserialize)]
     /// struct Config {
@@ -158,7 +158,7 @@ impl AppFile {
     /// # fn main() {
     /// // Search for '<application_dir>/resources/config.ron'.
     /// let config: Config = match AppFile::load_in(
-    ///     dir::RESOURCES,
+    ///     AppDir::RESOURCES,
     ///     "config.ron",
     ///     Format::Ron,
     /// ) {
@@ -203,7 +203,7 @@ mod test {
         use amethyst::utils::application_root_dir;
         use tempfile::tempdir;
 
-        use crate::{dir, test_support::setup_temp_file, AppFile, FindContext};
+        use crate::{test_support::setup_temp_file, AppDir, AppFile, FindContext};
 
         #[test]
         fn find_in_returns_resource_path_when_file_exists() {
@@ -211,7 +211,7 @@ mod test {
 
             let (temp_dir, resource_path) = setup_temp_file(
                 exe_dir.path(),
-                dir::RESOURCES,
+                AppDir::RESOURCES,
                 "test__find_config",
                 ".ron",
                 None,
@@ -314,7 +314,7 @@ mod test {
         use serde_yaml;
         use tempfile::tempdir;
 
-        use crate::{dir, test_support::setup_temp_file, AppFile, FindContext, Format};
+        use crate::{test_support::setup_temp_file, AppDir, AppFile, FindContext, Format};
 
         #[test]
         fn load_in_ron_returns_resource_when_file_exists_and_parses_successfully() {
@@ -322,7 +322,7 @@ mod test {
 
             let (temp_dir, resource_path) = setup_temp_file(
                 exe_dir.path(),
-                dir::RESOURCES,
+                AppDir::RESOURCES,
                 "test__load_config",
                 ".ron",
                 Some("Data(val: 123)"),
@@ -453,7 +453,7 @@ mod test {
 
             let (temp_dir, resource_path) = setup_temp_file(
                 exe_dir.path(),
-                dir::RESOURCES,
+                AppDir::RESOURCES,
                 "test__load_config",
                 ".yaml",
                 Some("val: 123"),

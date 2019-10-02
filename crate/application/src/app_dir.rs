@@ -2,6 +2,7 @@
 
 use std::{
     io,
+    marker::PhantomData,
     path::{Path, PathBuf},
 };
 
@@ -9,55 +10,83 @@ use amethyst::{utils::application_root_dir, Error};
 
 use crate::{AppFile, DiscoveryContext};
 
-// Note to self:
-//
-// I know in code we use the singular form of the noun, whereas the directory names are plural.
-// This is in line with Amethyst's convention of resource directories.
+/// Functions to discover and interact with application files.
+#[derive(Debug)]
+pub struct AppDir(
+    // prevent instantiation
+    PhantomData<()>,
+);
 
-/// `assets` directory name.
-pub const ASSETS: &str = "assets";
-/// `resources` directory name.
-pub const RESOURCES: &str = "resources";
+impl AppDir {
+    // Note to self:
+    //
+    // I know in code we use the singular form of the noun, whereas the directory names are plural.
+    // This is in line with Amethyst's convention of resource directories.
 
-/// Returns an absolute path to the current exe's assets directory.
-///
-/// # Errors
-///
-/// Returns a [`Error`][res_err] with error kind [`ErrorKind::Discovery`][dir_disc]
-/// when the following scenarios occur:
-///
-/// * Unable to retrieve current executable path.
-/// * Unable to retrieve current executable parent.
-///
-/// [res_err]: resource/dir/struct.Error.html
-/// [dir_disc]: resource/dir/enum.ErrorKind.html#variant.Discovery
-pub fn assets_dir() -> Result<PathBuf, Error> {
-    assets_dir_internal(application_root_dir())
-}
+    /// `assets` directory name.
+    pub const ASSETS: &'static str = "assets";
+    /// `resources` directory name.
+    pub const RESOURCES: &'static str = "resources";
 
-#[inline]
-fn assets_dir_internal(current_exe_result: io::Result<PathBuf>) -> Result<PathBuf, Error> {
-    let dir = AppFile::find_in_internal(current_exe_result, Path::new(""), ASSETS)?;
+    /// Returns an absolute path to the current exe's assets directory.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Error`][res_err] with error kind [`ErrorKind::Discovery`][dir_disc]
+    /// when the following scenarios occur:
+    ///
+    /// * Unable to retrieve current executable path.
+    /// * Unable to retrieve current executable parent.
+    ///
+    /// [res_err]: resource/dir/struct.Error.html
+    /// [dir_disc]: resource/dir/enum.ErrorKind.html#variant.Discovery
+    pub fn assets() -> Result<PathBuf, Error> {
+        Self::dir_internal(application_root_dir(), Self::ASSETS)
+    }
 
-    // Canonicalize path to handle symlinks.
-    match dir.canonicalize() {
-        Ok(dir) => {
-            if dir.is_dir() {
-                Ok(dir)
-            } else {
-                Err(DiscoveryContext::new(ASSETS, "Path is not a directory.", None).into())
+    /// Returns an absolute path to the current exe's resources directory.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Error`][res_err] with error kind [`ErrorKind::Discovery`][dir_disc]
+    /// when the following scenarios occur:
+    ///
+    /// * Unable to retrieve current executable path.
+    /// * Unable to retrieve current executable parent.
+    ///
+    /// [res_err]: resource/dir/struct.Error.html
+    /// [dir_disc]: resource/dir/enum.ErrorKind.html#variant.Discovery
+    pub fn resources() -> Result<PathBuf, Error> {
+        Self::dir_internal(application_root_dir(), Self::RESOURCES)
+    }
+
+    #[inline]
+    fn dir_internal(
+        current_exe_result: io::Result<PathBuf>,
+        dir_name: &'static str,
+    ) -> Result<PathBuf, Error> {
+        let dir = AppFile::find_in_internal(current_exe_result, Path::new(""), dir_name)?;
+
+        // Canonicalize path to handle symlinks.
+        match dir.canonicalize() {
+            Ok(dir) => {
+                if dir.is_dir() {
+                    Ok(dir)
+                } else {
+                    Err(DiscoveryContext::new(dir_name, "Path is not a directory.", None).into())
+                }
             }
+            // kcov-ignore-start
+            // This case is quite unlikely -- it *could* happen, for example, if the underlying
+            // directory is deleted or renamed after `find_in_internal` has found the directory.
+            Err(io_error) => Err(DiscoveryContext::new(
+                dir_name,
+                "Failed to canonicalize path. Please ensure directory exists and can be accessed.",
+                Some(io_error),
+            )
+            .into()),
+            // kcov-ignore-end
         }
-        // kcov-ignore-start
-        // This case is quite unlikely -- it *could* happen, for example, if the underlying
-        // directory is deleted or renamed after `find_in_internal` has found the directory.
-        Err(io_error) => Err(DiscoveryContext::new(
-            ASSETS,
-            "Failed to canonicalize path. Please ensure directory exists and can be accessed.",
-            Some(io_error),
-        )
-        .into()),
-        // kcov-ignore-end
     }
 }
 
@@ -75,7 +104,7 @@ mod test {
     use amethyst::Error;
     use tempfile::tempdir;
 
-    use super::{assets_dir_internal, ASSETS};
+    use super::AppDir;
     use crate::{DiscoveryContext, FindContext};
 
     // kcov-ignore-start
@@ -157,9 +186,9 @@ mod test {
     #[test]
     fn assets_dir_returns_assets_dir_path_beside_current_executable() {
         let exe_dir = tempdir().unwrap();
-        let assets_path = exe_dir.path().join(ASSETS);
+        let assets_path = exe_dir.path().join(AppDir::ASSETS);
         let _assets_dir = fs::create_dir(&assets_path).unwrap();
-        let assets_dir = assets_dir_internal(Ok(exe_dir.into_path()));
+        let assets_dir = AppDir::dir_internal(Ok(exe_dir.into_path()), AppDir::ASSETS);
 
         // `error-chain` generated `Error` doesn't implement `PartialEq`, so we have to manually
         // compare
@@ -175,7 +204,10 @@ mod test {
 
     #[test]
     fn assets_dir_returns_contextual_error_when_failing_to_get_current_exe_path() {
-        let assets_dir = assets_dir_internal(Err(io::Error::new(io::ErrorKind::Other, "oh no!")));
+        let assets_dir = AppDir::dir_internal(
+            Err(io::Error::new(io::ErrorKind::Other, "oh no!")),
+            AppDir::ASSETS,
+        );
 
         assert_discovery_resource_io_error(
             io::Error::new(io::ErrorKind::Other, "oh no!"),
@@ -187,12 +219,12 @@ mod test {
     fn assets_dir_returns_contextual_error_when_assets_dir_does_not_exist() {
         let exe_dir = tempdir().unwrap();
 
-        let assets_dir = assets_dir_internal(Ok(exe_dir.path().to_path_buf()));
+        let assets_dir = AppDir::dir_internal(Ok(exe_dir.path().to_path_buf()), AppDir::ASSETS);
 
         let expected_find_context = FindContext {
             base_dirs: vec![exe_dir.into_path()],
             conf_dir: Path::new("").to_path_buf(),
-            file_name: ASSETS.to_string(),
+            file_name: AppDir::ASSETS.to_string(),
         }; // kcov-ignore
         assert_discovery_resource_find_error(expected_find_context, assets_dir);
     }
@@ -205,7 +237,7 @@ mod test {
         #[cfg(unix)]
         unix::fs::symlink(
             exe_dir.path().join("my_assets"),
-            exe_dir.path().join(ASSETS),
+            exe_dir.path().join(AppDir::ASSETS),
         )
         .expect("Failed to create symlink for test.");
 
@@ -213,14 +245,14 @@ mod test {
         {
             windows::fs::symlink_dir(
                 exe_dir.path().join("my_assets"),
-                exe_dir.path().join(ASSETS),
+                exe_dir.path().join(AppDir::ASSETS),
             )
             .expect("Failed to create symlink for test.");
         }
 
         let expected: Result<PathBuf, Error> =
             Ok(exe_dir.path().join("my_assets").canonicalize().unwrap());
-        let assets_dir = assets_dir_internal(Ok(exe_dir.into_path()));
+        let assets_dir = AppDir::dir_internal(Ok(exe_dir.into_path()), AppDir::ASSETS);
         assert!(
             assets_dir.is_ok(),
             "Expected assets_dir to return {:?}, but was {:?}",
@@ -239,7 +271,7 @@ mod test {
         #[cfg(unix)]
         unix::fs::symlink(
             exe_dir.path().join("my_assets"),
-            exe_dir.path().join(ASSETS),
+            exe_dir.path().join(AppDir::ASSETS),
         )
         .expect("Failed to create symlink for test.");
 
@@ -252,10 +284,10 @@ mod test {
             .expect("Failed to create symlink for test.");
         }
 
-        let assets_dir = assets_dir_internal(Ok(exe_dir.into_path()));
+        let assets_dir = AppDir::dir_internal(Ok(exe_dir.into_path()), AppDir::ASSETS);
 
         let expected_discovery_context =
-            DiscoveryContext::new(ASSETS, "Path is not a directory.", None);
+            DiscoveryContext::new(AppDir::ASSETS, "Path is not a directory.", None);
         assert_dir_discovery_error(expected_discovery_context, assets_dir);
     } // kcov-ignore
 
@@ -266,7 +298,7 @@ mod test {
         #[cfg(unix)]
         unix::fs::symlink(
             exe_dir.path().join("non_existent_assets"),
-            exe_dir.path().join(ASSETS),
+            exe_dir.path().join(AppDir::ASSETS),
         )
         .expect("Failed to create symlink for test.");
 
@@ -279,13 +311,13 @@ mod test {
             .expect("Failed to create symlink for test.");
         }
 
-        let assets_dir = assets_dir_internal(Ok(exe_dir.path().to_path_buf()));
+        let assets_dir = AppDir::dir_internal(Ok(exe_dir.path().to_path_buf()), AppDir::ASSETS);
         let base_dir = exe_dir.into_path();
 
         let expected_find_context = FindContext {
             base_dirs: vec![base_dir],
             conf_dir: Path::new("").to_path_buf(),
-            file_name: ASSETS.to_string(),
+            file_name: AppDir::ASSETS.to_string(),
         }; // kcov-ignore
         assert_discovery_resource_find_error(expected_find_context, assets_dir);
     }

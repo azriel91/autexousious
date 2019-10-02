@@ -6,7 +6,7 @@ use amethyst::{
     ui::{FontAsset, FontHandle, TtfFormat},
     Error,
 };
-use application::{dir, AppFile, Format};
+use application::{AppDir, AppFile, Format};
 
 use crate::{FontConfig, FontVariant, Theme};
 
@@ -27,7 +27,7 @@ impl ThemeLoader {
     #[inline]
     fn load_internal(world: &mut World, font_config_name: &str) -> Result<(), Error> {
         let font_config: FontConfig =
-            AppFile::load_in(dir::RESOURCES, font_config_name, Format::Ron)?;
+            AppFile::load_in(AppDir::RESOURCES, font_config_name, Format::Ron)?;
 
         let font_paths = vec![
             (FontVariant::Regular, font_config.regular),

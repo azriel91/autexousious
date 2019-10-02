@@ -8,10 +8,10 @@
 //! # Examples
 //!
 //! ```rust
-//! use application::{dir, AppFile};
+//! use application::{AppDir, AppFile};
 //!
 //! fn main() {
-//!     let path_to_resource = AppFile::find_in(dir::RESOURCES, "config.ron").unwrap();
+//!     let path_to_resource = AppFile::find_in(AppDir::RESOURCES, "config.ron").unwrap();
 //!
 //!     println!("{:?}", path_to_resource);
 //!     // "/path/to/crate/application/resources/config.ron"
@@ -26,15 +26,14 @@
 extern crate pretty_assertions;
 
 pub use crate::{
-    app_file::AppFile, discovery_context::DiscoveryContext, find_context::FindContext,
-    format::Format, io_utils::IoUtils,
+    app_dir::AppDir, app_file::AppFile, discovery_context::DiscoveryContext,
+    find_context::FindContext, format::Format, io_utils::IoUtils,
 };
-
-pub mod dir;
 
 #[cfg(test)]
 #[macro_use]
 mod test_support;
+mod app_dir;
 mod app_file;
 mod discovery_context;
 mod find_context;
