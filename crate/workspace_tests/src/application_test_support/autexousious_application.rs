@@ -17,7 +17,7 @@ mod test {
                 world.read_resource::<InputHandler<ControlBindings>>();
                 world.read_storage::<Interactable>();
             })
-            .run_isolated()
+            .run()
     }
 
     #[test]
@@ -28,7 +28,7 @@ mod test {
                 world.read_resource::<InputHandler<ControlBindings>>();
                 world.read_storage::<Interactable>();
             })
-            .run_isolated()
+            .run()
     }
 
     #[test]
@@ -50,7 +50,7 @@ mod test {
                         > 0
                 );
             })
-            .run_isolated()
+            .run()
     }
 
     #[test]
@@ -88,6 +88,6 @@ mod test {
                     "Expected map to be loaded."
                 );
             })
-            .run_isolated()
+            .run()
     }
 }
