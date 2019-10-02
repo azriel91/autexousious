@@ -8,7 +8,7 @@ use amethyst::{
     CoreApplication, Error, GameData, GameDataBuilder, LogLevelFilter, LoggerConfig, State,
     StateData, StateEvent, StateEventReader, Trans,
 };
-use application_robot::{state::FixedTimeoutIntercept, RobotState};
+use application_robot::{FixedTimeoutIntercept, RobotState};
 use stdio_input::StdioInputBundle;
 use structopt::StructOpt as StructOptTrait;
 use structopt_derive::StructOpt;

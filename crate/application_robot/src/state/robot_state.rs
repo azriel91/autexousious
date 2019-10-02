@@ -1,9 +1,9 @@
 use std::{cell::RefCell, rc::Rc};
 
-use amethyst::prelude::*;
+use amethyst::{State, StateData, Trans};
 use derivative::Derivative;
 
-use crate::state::{intercept::ApplicationEventIntercept, Intercept};
+use crate::{ApplicationEventIntercept, Intercept};
 
 /// Wraps a delegate state with automation capabilities.
 #[derive(Derivative)]
@@ -222,7 +222,7 @@ mod test {
     use debug_util_amethyst::{assert_eq_trans, display_trans};
 
     use super::RobotState;
-    use crate::state::Intercept;
+    use crate::Intercept;
 
     type Invocations = Rc<RefCell<Vec<Invocation>>>;
 

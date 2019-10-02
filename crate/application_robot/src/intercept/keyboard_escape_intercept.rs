@@ -3,7 +3,7 @@ use amethyst::{
     StateData, StateEvent, Trans,
 };
 
-use crate::state::Intercept;
+use crate::Intercept;
 
 /// Exits when the `Escape` key is pressed.
 #[derive(Clone, Debug, Default)]
@@ -41,7 +41,7 @@ mod test {
     };
 
     use super::KeyboardEscapeIntercept;
-    use crate::state::Intercept;
+    use crate::Intercept;
 
     // Development Note: See content of this file at revision `f3fc60f` if you attempt to use enigo.
 

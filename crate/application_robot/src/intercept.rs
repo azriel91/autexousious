@@ -10,7 +10,7 @@ mod keyboard_escape_intercept;
 
 use std::fmt::Debug;
 
-use amethyst::prelude::*;
+use amethyst::{StateData, Trans};
 
 // Ignore default implementation coverage.
 // kcov-ignore-start
