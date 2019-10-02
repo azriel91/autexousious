@@ -6,3 +6,5 @@
 mod application;
 #[cfg(test)]
 mod application_menu;
+#[cfg(test)]
+mod application_robot;
