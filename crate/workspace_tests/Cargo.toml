@@ -30,12 +30,15 @@ character_loading = { path = "../character_loading" }
 character_model = { path = "../character_model" }
 character_selection_model = { path = "../character_selection_model" }
 charge_model = { path = "../charge_model" }
+collision_model = { path = "../collision_model" }
 debug_util_amethyst = { path = "../debug_util_amethyst" }
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
+game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
 game_model = { path = "../game_model" }
 hamcrest = "0.1.5"
+indexmap = { version = "1.2.0", features = ["serde-1"] }
 kinematic_model = { path = "../kinematic_model" }
 lazy_static = "1.4.0"
 map_loading = { path = "../map_loading" }
@@ -50,6 +53,8 @@ sequence_loading = { path = "../sequence_loading" }
 sequence_model = { path = "../sequence_model" }
 serde = "1.0.101"
 serde_yaml = "0.8.9"
+shape_model = { path = "../shape_model" }
+sprite_model = { path = "../sprite_model" }
 structopt = "0.3.2"
 structopt-derive = "0.3.2"
 strum = "0.16.0"
