@@ -39,3 +39,5 @@ mod character_loading;
 mod character_model;
 #[cfg(test)]
 mod character_play;
+#[cfg(test)]
+mod character_prefab;

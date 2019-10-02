@@ -30,6 +30,7 @@ camera_play = { path = "../camera_play" }
 character_loading = { path = "../character_loading" }
 character_model = { path = "../character_model" }
 character_play = { path = "../character_play" }
+character_prefab = { path = "../character_prefab" }
 character_selection_model = { path = "../character_selection_model" }
 charge_model = { path = "../charge_model" }
 collision_model = { path = "../collision_model" }
@@ -48,6 +49,7 @@ map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }
 map_selection_model = { path = "../map_selection_model" }
 object_model = { path = "../object_model" }
+object_status_model = { path = "../object_status_model" }
 object_type = { path = "../object_type" }
 pretty_assertions = "0.6.1"
 rayon = "1.2.0"
