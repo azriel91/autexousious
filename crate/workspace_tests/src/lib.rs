@@ -3,6 +3,13 @@
 //! Contains tests for all workspace crates.
 
 #[cfg(test)]
+#[macro_use]
+extern crate hamcrest;
+#[cfg(test)]
+#[macro_use]
+extern crate pretty_assertions;
+
+#[cfg(test)]
 mod application;
 #[cfg(test)]
 mod application_menu;
@@ -16,3 +23,5 @@ mod application_test_support;
 mod application_ui;
 #[cfg(test)]
 mod asset_gfx_gen;
+#[cfg(test)]
+mod asset_loading;
