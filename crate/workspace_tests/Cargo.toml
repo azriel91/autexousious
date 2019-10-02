@@ -23,6 +23,7 @@ asset_loading = { path = "../asset_loading" }
 asset_model = { path = "../asset_model" }
 audio_loading = { path = "../audio_loading" }
 audio_model = { path = "../audio_model" }
+audio_play = { path = "../audio_play" }
 character_selection_model = { path = "../character_selection_model" }
 debug_util_amethyst = { path = "../debug_util_amethyst" }
 derive-new = "0.5.8"
@@ -35,6 +36,7 @@ object_type = { path = "../object_type" }
 pretty_assertions = "0.6.1"
 rayon = "1.2.0"
 ron = "0.5.1"
+sequence_model = { path = "../sequence_model" }
 serde = "1.0.101"
 serde_yaml = "0.8.9"
 structopt = "0.3.2"
