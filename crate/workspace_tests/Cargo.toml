@@ -33,6 +33,7 @@ character_play = { path = "../character_play" }
 character_prefab = { path = "../character_prefab" }
 character_selection = { path = "../character_selection" }
 character_selection_model = { path = "../character_selection_model" }
+character_selection_stdio = { path = "../character_selection_stdio" }
 charge_model = { path = "../charge_model" }
 collision_audio_loading = { path = "../collision_audio_loading" }
 collision_loading = { path = "../collision_loading" }
@@ -68,6 +69,7 @@ shape_model = { path = "../shape_model" }
 spawn_loading = { path = "../spawn_loading" }
 sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }
+stdio_spi = { path = "../stdio_spi" }
 structopt = "0.3.2"
 structopt-derive = "0.3.2"
 strum = "0.16.0"

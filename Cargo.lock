@@ -1044,11 +1044,8 @@ name = "character_selection_stdio"
 version = "0.14.0"
 dependencies = [
  "amethyst 0.13.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
- "amethyst_test 0.4.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
  "application_event 0.14.0",
- "application_test_support 0.14.0",
  "asset_model 0.14.0",
- "assets_test 0.14.0",
  "character_selection_model 0.14.0",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_input_model 0.14.0",
@@ -5734,6 +5731,7 @@ dependencies = [
  "character_prefab 0.14.0",
  "character_selection 0.14.0",
  "character_selection_model 0.14.0",
+ "character_selection_stdio 0.14.0",
  "charge_model 0.14.0",
  "collision_audio_loading 0.14.0",
  "collision_loading 0.14.0",
@@ -5769,6 +5767,7 @@ dependencies = [
  "spawn_loading 0.14.0",
  "sprite_loading 0.14.0",
  "sprite_model 0.14.0",
+ "stdio_spi 0.14.0",
  "structopt 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt-derive 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "strum 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)",
