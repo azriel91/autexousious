@@ -41,3 +41,5 @@ mod character_model;
 mod character_play;
 #[cfg(test)]
 mod character_prefab;
+#[cfg(test)]
+mod character_selection;

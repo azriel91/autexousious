@@ -52,27 +52,3 @@ impl<'a, 'b> SystemBundle<'a, 'b> for CharacterSelectionBundle {
         Ok(())
     }
 }
-
-#[cfg(test)]
-mod test {
-    use amethyst::core::transform::TransformBundle;
-    use amethyst_test::prelude::*;
-
-    use super::CharacterSelectionBundle;
-
-    #[test]
-    fn bundle_build_should_succeed() {
-        // kcov-ignore-start
-        assert!(
-            // kcov-ignore-end
-            AmethystApplication::blank()
-                .with_bundle(TransformBundle::new())
-                .with_bundle(
-                    CharacterSelectionBundle::new()
-                        .with_system_dependencies(&["transform_system".to_string()])
-                )
-                .run()
-                .is_ok()
-        );
-    }
-}
