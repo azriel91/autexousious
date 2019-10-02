@@ -12,3 +12,5 @@ mod application_robot;
 mod application_state;
 #[cfg(test)]
 mod application_test_support;
+#[cfg(test)]
+mod application_ui;
