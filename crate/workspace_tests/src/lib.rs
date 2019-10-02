@@ -27,3 +27,5 @@ mod asset_gfx_gen;
 mod asset_loading;
 #[cfg(test)]
 mod asset_model;
+#[cfg(test)]
+mod audio_loading;

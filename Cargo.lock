@@ -700,7 +700,6 @@ name = "audio_loading"
 version = "0.14.0"
 dependencies = [
  "amethyst 0.13.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
- "amethyst_test 0.4.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
  "audio_model 0.14.0",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -5771,6 +5770,8 @@ dependencies = [
  "asset_gfx_gen 0.14.0",
  "asset_loading 0.14.0",
  "asset_model 0.14.0",
+ "audio_loading 0.14.0",
+ "audio_model 0.14.0",
  "character_selection_model 0.14.0",
  "debug_util_amethyst 0.14.0",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",

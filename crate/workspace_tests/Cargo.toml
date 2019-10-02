@@ -21,6 +21,8 @@ asset_derive = { path = "../asset_derive" }
 asset_gfx_gen = { path = "../asset_gfx_gen" }
 asset_loading = { path = "../asset_loading" }
 asset_model = { path = "../asset_model" }
+audio_loading = { path = "../audio_loading" }
+audio_model = { path = "../audio_model" }
 character_selection_model = { path = "../character_selection_model" }
 debug_util_amethyst = { path = "../debug_util_amethyst" }
 derive-new = "0.5.8"
