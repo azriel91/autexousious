@@ -25,3 +25,5 @@ mod application_ui;
 mod asset_gfx_gen;
 #[cfg(test)]
 mod asset_loading;
+#[cfg(test)]
+mod asset_model;
