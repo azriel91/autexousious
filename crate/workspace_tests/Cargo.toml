@@ -24,6 +24,8 @@ asset_model = { path = "../asset_model" }
 audio_loading = { path = "../audio_loading" }
 audio_model = { path = "../audio_model" }
 audio_play = { path = "../audio_play" }
+camera_model = { path = "../camera_model" }
+camera_play = { path = "../camera_play" }
 character_selection_model = { path = "../character_selection_model" }
 debug_util_amethyst = { path = "../debug_util_amethyst" }
 derive-new = "0.5.8"
@@ -31,7 +33,12 @@ derive_deref = "1.1.0"
 game_input_model = { path = "../game_input_model" }
 game_model = { path = "../game_model" }
 hamcrest = "0.1.5"
+kinematic_model = { path = "../kinematic_model" }
 lazy_static = "1.4.0"
+map_loading = { path = "../map_loading" }
+map_model = { path = "../map_model" }
+map_selection_model = { path = "../map_selection_model" }
+object_model = { path = "../object_model" }
 object_type = { path = "../object_type" }
 pretty_assertions = "0.6.1"
 rayon = "1.2.0"

@@ -31,3 +31,5 @@ mod asset_model;
 mod audio_loading;
 #[cfg(test)]
 mod audio_play;
+#[cfg(test)]
+mod camera_play;
