@@ -10,3 +10,5 @@ mod application_menu;
 mod application_robot;
 #[cfg(test)]
 mod application_state;
+#[cfg(test)]
+mod application_test_support;
