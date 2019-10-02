@@ -4,3 +4,5 @@
 
 #[cfg(test)]
 mod application;
+#[cfg(test)]
+mod application_menu;
