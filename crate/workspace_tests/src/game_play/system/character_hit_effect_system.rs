@@ -28,7 +28,6 @@ pub struct CharacterHitEffectSystem {
     hit_event_rid: Option<ReaderId<HitEvent>>,
 }
 
-/// `CharacterHitEffectSystemData`.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct CharacterHitEffectSystemData<'s> {

@@ -62,7 +62,9 @@ game_mode_selection_model = { path = "../game_mode_selection_model" }
 game_mode_selection_stdio = { path = "../game_mode_selection_stdio" }
 game_mode_selection_ui = { path = "../game_mode_selection_ui" }
 game_model = { path = "../game_model" }
+game_play = { path = "../game_play" }
 game_play_hud = { path = "../game_play_hud" }
+game_play_model = { path = "../game_play_model" }
 hamcrest = "0.1.5"
 indexmap = { version = "1.2.0", features = ["serde-1"] }
 kinematic_loading = { path = "../kinematic_loading" }
@@ -91,6 +93,7 @@ spawn_loading = { path = "../spawn_loading" }
 spawn_model = { path = "../spawn_model" }
 sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }
+state_registry = { path = "../state_registry" }
 stdio_spi = { path = "../stdio_spi" }
 structopt = "0.3.2"
 structopt-derive = "0.3.2"
@@ -98,6 +101,7 @@ strum = "0.16.0"
 strum_macros = "0.16.0"
 team_model = { path = "../team_model" }
 tempfile = "3.1.0"
+tracker = { path = "../tracker" }
 typename = "0.1.1"
 typename_derive = "0.1.3"
 ui_audio_loading = { path = "../ui_audio_loading" }
