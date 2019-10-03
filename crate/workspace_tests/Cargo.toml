@@ -60,6 +60,7 @@ game_loading = { path = "../game_loading" }
 game_mode_selection = { path = "../game_mode_selection" }
 game_mode_selection_model = { path = "../game_mode_selection_model" }
 game_mode_selection_stdio = { path = "../game_mode_selection_stdio" }
+game_mode_selection_ui = { path = "../game_mode_selection_ui" }
 game_model = { path = "../game_model" }
 game_play_hud = { path = "../game_play_hud" }
 hamcrest = "0.1.5"
