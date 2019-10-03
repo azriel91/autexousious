@@ -69,3 +69,5 @@ mod energy_loading;
 mod energy_model;
 #[cfg(test)]
 mod energy_prefab;
+#[cfg(test)]
+mod game_input;
