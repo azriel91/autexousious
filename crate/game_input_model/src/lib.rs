@@ -13,10 +13,6 @@
 //! * Attack
 //! * Special
 
-#[cfg(test)]
-#[macro_use]
-extern crate hamcrest;
-
 pub use crate::{
     axis::Axis,
     control_action::{Attack, ControlAction, Defend, Jump, Special},
