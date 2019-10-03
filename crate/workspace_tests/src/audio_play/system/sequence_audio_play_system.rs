@@ -71,7 +71,7 @@ mod tests {
             .with_assertion(|_world| {
                 // TODO: assert that sound was played / not played
             })
-            .run()
+            .run_isolated()
     }
 
     fn send_event(world: &mut World, event: SequenceUpdateEvent) {
