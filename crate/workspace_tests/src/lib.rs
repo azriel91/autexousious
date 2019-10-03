@@ -67,3 +67,5 @@ mod debug_util_amethyst;
 mod energy_loading;
 #[cfg(test)]
 mod energy_model;
+#[cfg(test)]
+mod energy_prefab;
