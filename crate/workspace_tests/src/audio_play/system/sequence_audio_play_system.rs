@@ -4,7 +4,7 @@ mod tests {
 
     use amethyst::{
         assets::{AssetStorage, Loader, ProgressCounter},
-        audio::{AudioBundle, Source},
+        audio::Source,
         ecs::{Builder, Entity, Read, ReadExpect, World, WorldExt},
         shrev::EventChannel,
         Error,
@@ -41,9 +41,30 @@ mod tests {
     }
 
     fn run_test(sequence_update_event_fn: fn(Entity) -> SequenceUpdateEvent) -> Result<(), Error> {
-        AmethystApplication::blank()
-            .with_bundle(AudioLoadingBundle::new())
-            .with_bundle(AudioBundle::default())
+        let mut amethyst_application =
+            AmethystApplication::blank().with_bundle(AudioLoadingBundle::new());
+
+        #[cfg(unix)]
+        {
+            use amethyst::audio::AudioBundle;
+            amethyst_application = amethyst_application.with_bundle(AudioBundle::default());
+        }
+
+        // Windows cannot handle `AudioBundle` -- a segfault occurs due to threading interaction
+        // with the COM object.
+        //
+        // See <https://github.com/amethyst/amethyst/issues/1595>.
+        #[cfg(windows)]
+        {
+            use amethyst::assets::Processor;
+            amethyst_application = amethyst_application.with_system(
+                Processor::<Source>::new(),
+                "source_processor",
+                &[],
+            );
+        }
+
+        amethyst_application
             .with_system(SequenceAudioPlaySystem::new(), "", &[])
             .with_effect(|world| {
                 let mut progress_counter = ProgressCounter::new();
@@ -71,7 +92,7 @@ mod tests {
             .with_assertion(|_world| {
                 // TODO: assert that sound was played / not played
             })
-            .run_isolated()
+            .run()
     }
 
     fn send_event(world: &mut World, event: SequenceUpdateEvent) {
