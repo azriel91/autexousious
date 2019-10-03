@@ -81,3 +81,5 @@ mod game_input_ui;
 mod game_loading;
 #[cfg(test)]
 mod game_mode_selection;
+#[cfg(test)]
+mod game_mode_selection_stdio;
