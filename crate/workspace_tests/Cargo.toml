@@ -37,6 +37,8 @@ character_selection_stdio = { path = "../character_selection_stdio" }
 character_selection_ui = { path = "../character_selection_ui" }
 charge_model = { path = "../charge_model" }
 charge_play = { path = "../charge_play" }
+chase_model = { path = "../chase_model" }
+chase_play = { path = "../chase_play" }
 collision_audio_loading = { path = "../collision_audio_loading" }
 collision_loading = { path = "../collision_loading" }
 collision_model = { path = "../collision_model" }
