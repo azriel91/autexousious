@@ -50,6 +50,7 @@ derivative = "1.0.3"
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
 energy_loading = { path = "../energy_loading" }
+energy_model = { path = "../energy_model" }
 game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
 game_model = { path = "../game_model" }

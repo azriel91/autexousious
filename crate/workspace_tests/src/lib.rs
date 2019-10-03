@@ -63,3 +63,5 @@ mod collision_model;
 mod collision_play;
 #[cfg(test)]
 mod debug_util_amethyst;
+#[cfg(test)]
+mod energy_loading;
