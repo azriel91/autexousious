@@ -12,7 +12,7 @@ use crate::{
 
 /// Adds game loading systems to the provided dispatcher.
 #[derive(Debug, new)]
-pub(crate) struct GameLoadingBundle;
+pub struct GameLoadingBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for GameLoadingBundle {
     fn build(
@@ -40,20 +40,5 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameLoadingBundle {
             &[],
         ); // kcov-ignore
         Ok(())
-    }
-}
-
-#[cfg(test)]
-mod test {
-    use amethyst::Error;
-    use amethyst_test::AmethystApplication;
-
-    use super::GameLoadingBundle;
-
-    #[test]
-    fn bundle_build_should_succeed() -> Result<(), Error> {
-        AmethystApplication::blank()
-            .with_bundle(GameLoadingBundle::new())
-            .run()
     }
 }

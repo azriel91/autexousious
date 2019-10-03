@@ -1,0 +1,3 @@
+mod character_augment_rectify_system;
+mod character_selection_spawning_system;
+mod map_selection_spawning_system;

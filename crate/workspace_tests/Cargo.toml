@@ -56,16 +56,20 @@ game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
 game_input_stdio = { path = "../game_input_stdio" }
 game_input_ui = { path = "../game_input_ui" }
+game_loading = { path = "../game_loading" }
 game_model = { path = "../game_model" }
+game_play_hud = { path = "../game_play_hud" }
 hamcrest = "0.1.5"
 indexmap = { version = "1.2.0", features = ["serde-1"] }
 kinematic_loading = { path = "../kinematic_loading" }
 kinematic_model = { path = "../kinematic_model" }
 lazy_static = "1.4.0"
 loading = { path = "../loading" }
+loading_model = { path = "../loading_model" }
 log = "0.4.8"
 map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }
+map_selection = { path = "../map_selection" }
 map_selection_model = { path = "../map_selection_model" }
 object_model = { path = "../object_model" }
 object_status_model = { path = "../object_status_model" }

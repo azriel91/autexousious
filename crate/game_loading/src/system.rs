@@ -1,7 +1,11 @@
-pub(crate) use self::{
-    character_augment_rectify_system::CharacterAugmentRectifySystem,
-    character_selection_spawning_system::CharacterSelectionSpawningSystem,
-    map_selection_spawning_system::MapSelectionSpawningSystem,
+pub use self::{
+    character_augment_rectify_system::{
+        CharacterAugmentRectifySystem, CharacterAugmentRectifySystemData,
+    },
+    character_selection_spawning_system::{
+        CharacterSelectionSpawningSystem, CharacterSelectionSpawningSystemData,
+    },
+    map_selection_spawning_system::{MapSelectionSpawningSystem, MapSelectionSpawningSystemData},
 };
 
 mod character_augment_rectify_system;
