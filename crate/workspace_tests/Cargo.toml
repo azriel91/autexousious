@@ -57,6 +57,8 @@ game_input_model = { path = "../game_input_model" }
 game_input_stdio = { path = "../game_input_stdio" }
 game_input_ui = { path = "../game_input_ui" }
 game_loading = { path = "../game_loading" }
+game_mode_selection = { path = "../game_mode_selection" }
+game_mode_selection_model = { path = "../game_mode_selection_model" }
 game_model = { path = "../game_model" }
 game_play_hud = { path = "../game_play_hud" }
 hamcrest = "0.1.5"
