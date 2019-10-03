@@ -1236,7 +1236,6 @@ name = "collision_audio_loading"
 version = "0.14.0"
 dependencies = [
  "amethyst 0.13.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
- "amethyst_test 0.4.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
  "asset_loading 0.14.0",
  "collision_audio_model 0.14.0",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -5731,6 +5730,7 @@ dependencies = [
  "chase_model 0.14.0",
  "chase_play 0.14.0",
  "collision_audio_loading 0.14.0",
+ "collision_audio_model 0.14.0",
  "collision_loading 0.14.0",
  "collision_model 0.14.0",
  "debug_util_amethyst 0.14.0",

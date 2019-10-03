@@ -40,6 +40,7 @@ charge_play = { path = "../charge_play" }
 chase_model = { path = "../chase_model" }
 chase_play = { path = "../chase_play" }
 collision_audio_loading = { path = "../collision_audio_loading" }
+collision_audio_model = { path = "../collision_audio_model" }
 collision_loading = { path = "../collision_loading" }
 collision_model = { path = "../collision_model" }
 debug_util_amethyst = { path = "../debug_util_amethyst" }

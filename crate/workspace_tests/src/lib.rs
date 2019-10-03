@@ -51,3 +51,5 @@ mod character_selection_ui;
 mod charge_play;
 #[cfg(test)]
 mod chase_play;
+#[cfg(test)]
+mod collision_audio_loading;
