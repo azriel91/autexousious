@@ -73,3 +73,5 @@ mod energy_prefab;
 mod game_input;
 #[cfg(test)]
 mod game_input_model;
+#[cfg(test)]
+mod game_input_stdio;
