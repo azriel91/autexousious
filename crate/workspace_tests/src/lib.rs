@@ -55,3 +55,5 @@ mod chase_play;
 mod collision_audio_loading;
 #[cfg(test)]
 mod collision_audio_play;
+#[cfg(test)]
+mod collision_loading;
