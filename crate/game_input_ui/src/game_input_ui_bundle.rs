@@ -32,19 +32,3 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameInputUiBundle {
         Ok(())
     }
 }
-
-#[cfg(test)]
-mod test {
-    use amethyst::Error;
-    use amethyst_test::AmethystApplication;
-    use game_input_model::{ControlBindings, InputConfig};
-
-    use super::GameInputUiBundle;
-
-    #[test]
-    fn bundle_build_should_succeed() -> Result<(), Error> {
-        AmethystApplication::ui_base::<ControlBindings>()
-            .with_bundle(GameInputUiBundle::new(InputConfig::default()))
-            .run()
-    }
-}

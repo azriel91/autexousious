@@ -75,3 +75,5 @@ mod game_input;
 mod game_input_model;
 #[cfg(test)]
 mod game_input_stdio;
+#[cfg(test)]
+mod game_input_ui;
