@@ -44,6 +44,7 @@ collision_audio_model = { path = "../collision_audio_model" }
 collision_audio_play = { path = "../collision_audio_play" }
 collision_loading = { path = "../collision_loading" }
 collision_model = { path = "../collision_model" }
+collision_play = { path = "../collision_play" }
 debug_util_amethyst = { path = "../debug_util_amethyst" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
@@ -73,7 +74,9 @@ sequence_model = { path = "../sequence_model" }
 serde = "1.0.101"
 serde_yaml = "0.8.9"
 shape_model = { path = "../shape_model" }
+slotmap = { version = "0.4.0", features = ["serde"] }
 spawn_loading = { path = "../spawn_loading" }
+spawn_model = { path = "../spawn_model" }
 sprite_loading = { path = "../sprite_loading" }
 sprite_model = { path = "../sprite_model" }
 stdio_spi = { path = "../stdio_spi" }
@@ -81,6 +84,7 @@ structopt = "0.3.2"
 structopt-derive = "0.3.2"
 strum = "0.16.0"
 strum_macros = "0.16.0"
+team_model = { path = "../team_model" }
 tempfile = "3.1.0"
 typename = "0.1.1"
 typename_derive = "0.1.3"

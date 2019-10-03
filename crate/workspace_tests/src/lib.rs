@@ -59,3 +59,5 @@ mod collision_audio_play;
 mod collision_loading;
 #[cfg(test)]
 mod collision_model;
+#[cfg(test)]
+mod collision_play;
