@@ -123,3 +123,5 @@ mod object_status_play;
 mod sequence_loading;
 #[cfg(test)]
 mod sequence_play;
+#[cfg(test)]
+mod spawn_loading;
