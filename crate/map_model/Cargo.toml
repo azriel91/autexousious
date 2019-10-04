@@ -5,14 +5,14 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
 [dependencies]
-amethyst = { git = "https://github.com/azriel91/amethyst.git", features = ["no-slow-safety-checks", "vulkan"], branch = "maintenance/update-dependencies" }
+amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 asset_derive = { path = "../asset_derive" }
 asset_model = { path = "../asset_model" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
 derive_deref = "1.1.0"
 derive_more = "0.15.1-pre"
-enumflags2 = { git = "https://github.com/NieDzejkob/enumflags2.git" }
+enumflags2 = "0.6.0"
 logic_clock = { path = "../logic_clock" }
 sequence_model = { path = "../sequence_model" }
 serde = "1.0.101"

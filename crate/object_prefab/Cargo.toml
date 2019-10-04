@@ -5,7 +5,7 @@ authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
 
 [dependencies]
-amethyst = { git = "https://github.com/azriel91/amethyst.git", features = ["no-slow-safety-checks", "vulkan"], branch = "maintenance/update-dependencies" }
+amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 asset_model = { path = "../asset_model" }
 collision_model = { path = "../collision_model" }
 derivative = "1.0.3"
