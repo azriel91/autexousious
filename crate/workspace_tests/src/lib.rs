@@ -117,3 +117,5 @@ mod object_model;
 mod object_play;
 #[cfg(test)]
 mod object_prefab;
+#[cfg(test)]
+mod object_status_play;
