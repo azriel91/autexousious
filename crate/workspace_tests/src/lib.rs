@@ -109,3 +109,5 @@ mod map_play;
 mod map_selection_stdio;
 #[cfg(test)]
 mod map_selection_ui;
+#[cfg(test)]
+mod object_loading;

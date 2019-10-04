@@ -74,8 +74,8 @@ kinematic_model = { path = "../kinematic_model" }
 lazy_static = "1.4.0"
 loading = { path = "../loading" }
 loading_model = { path = "../loading_model" }
-logic_clock = { path = "../logic_clock" }
 log = "0.4.8"
+logic_clock = { path = "../logic_clock" }
 map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }
 map_play = { path = "../map_play" }
@@ -83,6 +83,7 @@ map_selection = { path = "../map_selection" }
 map_selection_model = { path = "../map_selection_model" }
 map_selection_stdio = { path = "../map_selection_stdio" }
 map_selection_ui = { path = "../map_selection_ui" }
+object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
 object_status_model = { path = "../object_status_model" }
 object_type = { path = "../object_type" }
