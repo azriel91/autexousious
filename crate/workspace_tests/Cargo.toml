@@ -52,6 +52,7 @@ derive_deref = "1.1.0"
 energy_loading = { path = "../energy_loading" }
 energy_model = { path = "../energy_model" }
 energy_prefab = { path = "../energy_prefab" }
+enumflags2 = { git = "https://github.com/NieDzejkob/enumflags2.git" }
 game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
 game_input_stdio = { path = "../game_input_stdio" }
@@ -79,6 +80,7 @@ map_loading = { path = "../map_loading" }
 map_model = { path = "../map_model" }
 map_selection = { path = "../map_selection" }
 map_selection_model = { path = "../map_selection_model" }
+map_play = { path = "../map_play" }
 object_model = { path = "../object_model" }
 object_status_model = { path = "../object_status_model" }
 object_type = { path = "../object_type" }

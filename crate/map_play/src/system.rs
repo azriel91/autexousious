@@ -1,7 +1,9 @@
 pub use self::{
     keep_within_map_bounds_system::KeepWithinMapBoundsSystem,
     map_enter_exit_detection_system::MapEnterExitDetectionSystem,
-    map_out_of_bounds_clock_augment_system::MapOutOfBoundsClockAugmentSystem,
+    map_out_of_bounds_clock_augment_system::{
+        MapOutOfBoundsClockAugmentSystem, OUT_OF_BOUNDS_DELETE_DELAY,
+    },
     map_out_of_bounds_deletion_system::MapOutOfBoundsDeletionSystem,
 };
 

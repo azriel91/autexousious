@@ -103,3 +103,5 @@ mod logic_clock;
 mod map_loading;
 #[cfg(test)]
 mod map_model;
+#[cfg(test)]
+mod map_play;

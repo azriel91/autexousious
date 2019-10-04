@@ -4,7 +4,7 @@
 
 pub use crate::system::{
     KeepWithinMapBoundsSystem, MapEnterExitDetectionSystem, MapOutOfBoundsClockAugmentSystem,
-    MapOutOfBoundsDeletionSystem,
+    MapOutOfBoundsDeletionSystem, OUT_OF_BOUNDS_DELETE_DELAY,
 };
 
 mod system;
