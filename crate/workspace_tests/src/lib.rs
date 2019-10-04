@@ -137,3 +137,5 @@ mod sprite_model;
 mod stdio_command_stdio;
 #[cfg(test)]
 mod stdio_input;
+#[cfg(test)]
+mod team_model;
