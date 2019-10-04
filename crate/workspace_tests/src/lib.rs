@@ -107,3 +107,5 @@ mod map_model;
 mod map_play;
 #[cfg(test)]
 mod map_selection_stdio;
+#[cfg(test)]
+mod map_selection_ui;

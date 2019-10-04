@@ -82,6 +82,7 @@ map_play = { path = "../map_play" }
 map_selection = { path = "../map_selection" }
 map_selection_model = { path = "../map_selection_model" }
 map_selection_stdio = { path = "../map_selection_stdio" }
+map_selection_ui = { path = "../map_selection_ui" }
 object_model = { path = "../object_model" }
 object_status_model = { path = "../object_status_model" }
 object_type = { path = "../object_type" }
