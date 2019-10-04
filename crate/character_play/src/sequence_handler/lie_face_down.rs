@@ -7,8 +7,9 @@ use crate::{
 
 const LIE_FACE_DOWN: SwitchSequenceOnEnd = SwitchSequenceOnEnd(CharacterSequenceName::Stand);
 
+/// `LieFaceDown` sequence update.
 #[derive(Debug)]
-pub(crate) struct LieFaceDown;
+pub struct LieFaceDown;
 
 impl CharacterSequenceHandler for LieFaceDown {
     fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {

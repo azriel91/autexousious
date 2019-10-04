@@ -8,8 +8,9 @@ use crate::{
 const DASH_FORWARD_DESCEND: SwitchSequenceOnLand =
     SwitchSequenceOnLand(CharacterSequenceName::DashDescendLand);
 
+/// `DashForwardDescend` sequence update.
 #[derive(Debug)]
-pub(crate) struct DashForwardDescend;
+pub struct DashForwardDescend;
 
 impl CharacterSequenceHandler for DashForwardDescend {
     fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {

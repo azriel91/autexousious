@@ -2,23 +2,16 @@
 
 //! Provides functions for finding files and loading configuration.
 //!
-//! Please see the documentation for the [`resource::find_in`][find_in] and [`resource::load_in`]
+//! Please see the documentation for the [`find_in`][find_in] and [`load_in`]
 //! [load_in] functions for detailed explanations.
 //!
 //! # Examples
 //!
 //! ```rust
-//! use application::{
-//!     development_base_dirs,
-//!     resource::{dir, find_in},
-//! };
+//! use application::{AppDir, AppFile};
 //!
 //! fn main() {
-//!     let path_to_resource = find_in(
-//!         dir::RESOURCES,
-//!         "config.ron",
-//!         Some(development_base_dirs!()),
-//!     ).unwrap();
+//!     let path_to_resource = AppFile::find_in(AppDir::RESOURCES, "config.ron").unwrap();
 //!
 //!     println!("{:?}", path_to_resource);
 //!     // "/path/to/crate/application/resources/config.ron"
@@ -32,6 +25,15 @@
 #[macro_use]
 extern crate pretty_assertions;
 
-pub use crate::resource::{find, find_in, load, load_in, FindContext, Format, IoUtils};
+pub use crate::{
+    app_dir::AppDir, app_file::AppFile, discovery_context::DiscoveryContext,
+    find_context::FindContext, format::Format, io_support::IoSupport, io_utils::IoUtils,
+};
 
-pub mod resource;
+mod app_dir;
+mod app_file;
+mod discovery_context;
+mod find_context;
+mod format;
+mod io_support;
+mod io_utils;

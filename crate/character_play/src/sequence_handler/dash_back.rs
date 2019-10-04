@@ -11,8 +11,9 @@ const SWITCH_SEQUENCE_ON_END_Y_VELOCITY: SwitchSequenceOnEndYVelocity =
         downwards: CharacterSequenceName::DashBackDescend,
     };
 
+/// `DashBack` sequence update.
 #[derive(Debug)]
-pub(crate) struct DashBack;
+pub struct DashBack;
 
 impl CharacterSequenceHandler for DashBack {
     fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {

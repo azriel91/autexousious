@@ -8,8 +8,9 @@ use crate::{
 const STAND_ON_SEQUENCE_END: SwitchSequenceOnEnd =
     SwitchSequenceOnEnd(CharacterSequenceName::Stand);
 
+/// `StandOnSequenceEnd` sequence update.
 #[derive(Debug)]
-pub(crate) struct StandOnSequenceEnd;
+pub struct StandOnSequenceEnd;
 
 impl CharacterSequenceHandler for StandOnSequenceEnd {
     fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {

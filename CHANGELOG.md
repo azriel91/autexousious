@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.15.0 (unreleased)
+
+### Changed
+
+* Moved all module tests into `workspace_tests` crate. ([#171])
+
+[#171]: https://gitlab.com/azriel91/autexousious/issues/171
+
 ## 0.14.0 (2019-09-27)
 
 ### Added

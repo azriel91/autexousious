@@ -2,10 +2,6 @@
 
 //! Functions to generate textures and sprite sheets.
 
-#[cfg(test)]
-#[macro_use]
-extern crate pretty_assertions;
-
 pub use crate::{
     colour_sprite_sheet_gen::ColourSpriteSheetGen,
     colour_sprite_sheet_gen_data::ColourSpriteSheetGenData,

@@ -2,26 +2,23 @@
 
 //! Discovers and indexes assets.
 //!
-//! This crate provides the logic to discover
-
-#[cfg(test)]
-#[macro_use]
-extern crate hamcrest;
-#[cfg(test)]
-#[macro_use]
-extern crate pretty_assertions;
+//! This crate provides the logic to discover assets from an `"assets"` directory beside the
+//! application.
+//!
+//! The entry point to using this crate is `AssetDiscovery::asset_index`.
 
 pub use crate::{
     asset_discovery::AssetDiscovery,
     asset_indexer::AssetIndexer,
+    asset_indexing_utils::AssetIndexingUtils,
     dir_traverse::DirTraverse,
+    map_indexer::MapIndexer,
     namespace_directory::NamespaceDirectory,
-    namespace_discoverer::{ASSETS_DEFAULT_DIR, ASSETS_DOWNLOAD_DIR, ASSETS_TEST_DIR},
+    namespace_discoverer::{
+        NamespaceDiscoverer, ASSETS_DEFAULT_DIR, ASSETS_DOWNLOAD_DIR, ASSETS_TEST_DIR,
+    },
+    object_indexer::ObjectIndexer,
     yaml_format::YamlFormat,
-};
-pub(crate) use crate::{
-    asset_indexing_utils::AssetIndexingUtils, map_indexer::MapIndexer,
-    namespace_discoverer::NamespaceDiscoverer, object_indexer::ObjectIndexer,
 };
 
 mod asset_discovery;

@@ -8,14 +8,14 @@
 
 pub use crate::{
     character_augment_status::CharacterAugmentStatus,
-    game_loading_state::GameLoadingState,
-    spawn::{MapLayerComponentStorages, MapLayerEntitySpawner, MapSpawningResources},
-};
-pub(crate) use crate::{
     game_loading_bundle::GameLoadingBundle,
+    game_loading_state::GameLoadingState,
     game_loading_status::GameLoadingStatus,
+    spawn::{MapLayerComponentStorages, MapLayerEntitySpawner, MapSpawningResources},
     system::{
-        CharacterAugmentRectifySystem, CharacterSelectionSpawningSystem, MapSelectionSpawningSystem,
+        CharacterAugmentRectifySystem, CharacterAugmentRectifySystemData,
+        CharacterSelectionSpawningSystem, CharacterSelectionSpawningSystemData,
+        MapSelectionSpawningSystem, MapSelectionSpawningSystemData,
     },
 };
 

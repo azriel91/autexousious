@@ -2,10 +2,13 @@
 
 //! UI to allow the user to select the map.
 
-pub use crate::map_selection_ui_bundle::MapSelectionUiBundle;
-pub(crate) use crate::{
+pub use crate::{
     component::{MapSelectionWidget, WidgetState},
-    system::{MapSelectionSfxSystem, MapSelectionWidgetInputSystem, MapSelectionWidgetUiSystem},
+    map_selection_ui_bundle::MapSelectionUiBundle,
+    system::{
+        MapSelectionSfxSystem, MapSelectionWidgetInputSystem, MapSelectionWidgetInputSystemData,
+        MapSelectionWidgetUiSystem,
+    },
 };
 
 mod component;
