@@ -20,4 +20,4 @@ derive_deref = { git = "https://github.com/azriel91/derive_deref.git", branch = 
 derive_more = { git = "https://github.com/JelteF/derive_more.git" }
 
 # Waiting for release > 0.15.1
-specs-derive = { git = "https://github.com/azriel91/specs.git", branch = "maintenance/update-syn-quote-proc-macro2" }
+specs-derive = { git = "https://github.com/slide-rs/specs.git" }

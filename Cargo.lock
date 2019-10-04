@@ -381,7 +381,7 @@ dependencies = [
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)",
- "specs-derive 0.4.0 (git+https://github.com/azriel91/specs.git?branch=maintenance/update-syn-quote-proc-macro2)",
+ "specs-derive 0.4.0 (git+https://github.com/slide-rs/specs.git)",
  "specs-hierarchy 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -4766,14 +4766,14 @@ dependencies = [
  "rayon 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "shred 0.9.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "shrev 1.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "specs-derive 0.4.0 (git+https://github.com/azriel91/specs.git?branch=maintenance/update-syn-quote-proc-macro2)",
+ "specs-derive 0.4.0 (git+https://github.com/slide-rs/specs.git)",
  "tuple_utils 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "specs-derive"
 version = "0.4.0"
-source = "git+https://github.com/azriel91/specs.git?branch=maintenance/update-syn-quote-proc-macro2#5d1dc4729fb2277e414e0c79038bbc23170df38e"
+source = "git+https://github.com/slide-rs/specs.git#3331d627c1bc459f2b6daa6a763425685d2cab39"
 dependencies = [
  "proc-macro2 1.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -6091,7 +6091,7 @@ dependencies = [
 "checksum smallvec 0.6.10 (registry+https://github.com/rust-lang/crates.io-index)" = "ab606a9c5e214920bb66c458cd7be8ef094f813f20fe77a54cc7dbfff220d4b7"
 "checksum smithay-client-toolkit 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)" = "2ccb8c57049b2a34d2cc2b203fa785020ba0129d31920ef0d317430adaf748fa"
 "checksum specs 0.15.1 (registry+https://github.com/rust-lang/crates.io-index)" = "4943fde8c5d3d14c3d19d2a4c7abbd7b626c270a19e6cd35252294a48feb698c"
-"checksum specs-derive 0.4.0 (git+https://github.com/azriel91/specs.git?branch=maintenance/update-syn-quote-proc-macro2)" = "<none>"
+"checksum specs-derive 0.4.0 (git+https://github.com/slide-rs/specs.git)" = "<none>"
 "checksum specs-hierarchy 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)" = "9c3199a5c3147995119adcaba09a4c70f390cd8002013ef35a7494a7fb9255e3"
 "checksum stable_deref_trait 1.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "dba1a27d3efae4351c8051072d619e3ade2820635c3958d826bfea39d59b54c8"
 "checksum static_assertions 0.3.4 (registry+https://github.com/rust-lang/crates.io-index)" = "7f3eb36b47e512f8f1c9e3d10c2c1965bc992bd9cdb024fa581e2194501c83d3"
