@@ -5699,6 +5699,7 @@ dependencies = [
  "loading 0.14.0",
  "loading_model 0.14.0",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "logic_clock 0.14.0",
  "map_loading 0.14.0",
  "map_model 0.14.0",
  "map_selection 0.14.0",

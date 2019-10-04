@@ -97,3 +97,5 @@ mod kinematic_loading;
 mod kinematic_model;
 #[cfg(test)]
 mod loading;
+#[cfg(test)]
+mod logic_clock;
