@@ -101,3 +101,5 @@ mod loading;
 mod logic_clock;
 #[cfg(test)]
 mod map_loading;
+#[cfg(test)]
+mod map_model;
