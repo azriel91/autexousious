@@ -4870,11 +4870,9 @@ name = "stdio_command_stdio"
 version = "0.14.0"
 dependencies = [
  "amethyst 0.13.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
- "amethyst_test 0.4.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
  "application_event 0.14.0",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "state_registry 0.14.0",
  "stdio_command_model 0.14.0",
  "stdio_input 0.14.0",
  "stdio_spi 0.14.0",
@@ -5668,6 +5666,9 @@ dependencies = [
  "sprite_loading 0.14.0",
  "sprite_model 0.14.0",
  "state_registry 0.14.0",
+ "stdio_command_model 0.14.0",
+ "stdio_command_stdio 0.14.0",
+ "stdio_input 0.14.0",
  "stdio_spi 0.14.0",
  "structopt 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt-derive 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
