@@ -99,3 +99,5 @@ mod kinematic_model;
 mod loading;
 #[cfg(test)]
 mod logic_clock;
+#[cfg(test)]
+mod map_loading;

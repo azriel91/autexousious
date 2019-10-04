@@ -2840,13 +2840,10 @@ name = "map_loading"
 version = "0.14.0"
 dependencies = [
  "amethyst 0.13.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
- "amethyst_test 0.4.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
  "application 0.14.0",
- "assets_test 0.14.0",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "map_model 0.14.0",
- "sequence_loading 0.14.0",
  "sequence_model 0.14.0",
  "sprite_loading 0.14.0",
  "sprite_model 0.14.0",
