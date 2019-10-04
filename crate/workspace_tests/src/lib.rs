@@ -115,3 +115,5 @@ mod object_loading;
 mod object_model;
 #[cfg(test)]
 mod object_play;
+#[cfg(test)]
+mod object_prefab;
