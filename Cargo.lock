@@ -2583,7 +2583,6 @@ name = "kinematic_loading"
 version = "0.14.0"
 dependencies = [
  "amethyst 0.13.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
- "amethyst_test 0.4.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
  "application 0.14.0",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "kinematic_model 0.14.0",

@@ -27,23 +27,3 @@ impl<'a, 'b> SystemBundle<'a, 'b> for KinematicLoadingBundle {
         Ok(())
     }
 }
-
-#[cfg(test)]
-mod test {
-    use amethyst::{assets::AssetStorage, ecs::WorldExt, Error};
-    use amethyst_test::AmethystApplication;
-    use kinematic_model::loaded::ObjectAccelerationSequence;
-
-    use super::KinematicLoadingBundle;
-
-    #[test]
-    fn bundle_build_adds_object_acceleration_processor() -> Result<(), Error> {
-        AmethystApplication::blank()
-            .with_bundle(KinematicLoadingBundle::new())
-            .with_assertion(|world| {
-                // Next line will panic if the Processors aren't added
-                world.read_resource::<AssetStorage<ObjectAccelerationSequence>>();
-            })
-            .run()
-    }
-}

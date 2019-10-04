@@ -91,3 +91,5 @@ mod game_play;
 mod game_play_hud;
 #[cfg(test)]
 mod game_play_stdio;
+#[cfg(test)]
+mod kinematic_loading;
