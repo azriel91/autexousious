@@ -4886,7 +4886,6 @@ name = "stdio_input"
 version = "0.14.0"
 dependencies = [
  "amethyst 0.13.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
- "amethyst_test 0.4.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
  "application_event 0.14.0",
  "application_input 0.14.0",
  "application_robot 0.14.0",

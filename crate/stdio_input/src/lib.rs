@@ -2,14 +2,16 @@
 
 //! System that integrates with standard I/O so that the application can be controlled headlessly.
 
-pub(crate) use crate::{
+pub(crate) use crate::ion::{StatementSplitter, StatementVariant, Terminator};
+pub use crate::{
     io_app_event_utils::IoAppEventUtils,
-    ion::{StatementSplitter, StatementVariant, Terminator},
+    stdio_input_bundle::StdioInputBundle,
+    system::{StdinSystem, StdinSystemData},
 };
-pub use crate::{stdio_input_bundle::StdioInputBundle, system::StdinSystem};
 
-mod io_app_event_utils;
 pub(crate) mod ion;
 pub(crate) mod reader;
+
+mod io_app_event_utils;
 mod stdio_input_bundle;
 mod system;
