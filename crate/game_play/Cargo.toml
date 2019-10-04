@@ -14,7 +14,6 @@ camera_model = { path = "../camera_model" }
 camera_play = { path = "../camera_play" }
 character_model = { path = "../character_model" }
 character_play = { path = "../character_play" }
-character_selection = { path = "../character_selection" }
 charge_play = { path = "../charge_play" }
 chase_play = { path = "../chase_play" }
 collision_audio_play = { path = "../collision_audio_play" }
@@ -22,7 +21,6 @@ collision_model = { path = "../collision_model" }
 collision_play = { path = "../collision_play" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
-energy_model = { path = "../energy_model" }
 game_input = { path = "../game_input" }
 game_model = { path = "../game_model" }
 game_play_hud = { path = "../game_play_hud" }

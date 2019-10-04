@@ -9,7 +9,6 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-s
 charge_model = { path = "../charge_model" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
-game_input = { path = "../game_input" }
 game_input_model = { path = "../game_input_model" }
 log = "0.4.8"
 typename = "0.1.1"

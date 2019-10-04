@@ -11,9 +11,7 @@ character_model = { path = "../character_model" }
 character_prefab = { path = "../character_prefab" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
-energy_model = { path = "../energy_model" }
 energy_prefab = { path = "../energy_prefab" }
-game_model = { path = "../game_model" }
 kinematic_model = { path = "../kinematic_model" }
 log = "0.4.8"
 object_model = { path = "../object_model" }

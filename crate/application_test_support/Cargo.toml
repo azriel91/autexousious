@@ -21,7 +21,6 @@ collision_audio_loading = { path = "../collision_audio_loading" }
 collision_loading = { path = "../collision_loading" }
 collision_model = { path = "../collision_model" }
 energy_loading = { path = "../energy_loading" }
-energy_prefab = { path = "../energy_prefab" }
 game_input_model = { path = "../game_input_model" }
 game_loading = { path = "../game_loading" }
 game_model = { path = "../game_model" }

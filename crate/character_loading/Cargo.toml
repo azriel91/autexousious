@@ -13,7 +13,6 @@ derive-new = "0.5.8"
 derive_deref = "1.1.0"
 game_input_model = { path = "../game_input_model" }
 lazy_static = "1.4.0"
-object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
 sequence_model = { path = "../sequence_model" }
 serde_yaml = "0.8.9"

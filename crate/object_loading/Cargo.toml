@@ -20,7 +20,7 @@ object_model = { path = "../object_model" }
 object_type = { path = "../object_type" }
 rayon = "1.2.0"
 sequence_model = { path = "../sequence_model" }
-serde = "1.0.101"
+serde = { version = "1.0.101", features = ["derive"] }
 spawn_model = { path = "../spawn_model" }
 sprite_model = { path = "../sprite_model" }
 typename = "0.1.1"

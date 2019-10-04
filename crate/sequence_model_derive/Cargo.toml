@@ -20,7 +20,7 @@ derivative = "1.0.3"
 derive_deref = "1.1.0"
 sequence_model_core = { path = "../sequence_model_core" }
 sequence_model_spi = { path = "../sequence_model_spi" }
-serde = "1.0.101"
+serde = { version = "1.0.101", features = ["derive"] }
 strum = "0.16.0"
 strum_macros = "0.16.0"
 typename = "0.1.1"

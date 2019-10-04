@@ -12,7 +12,7 @@ derive_deref = "1.1.0"
 derive_more = "0.15.1-pre"
 logic_clock = { path = "../logic_clock" }
 numeric_newtype_derive = { path = "../numeric_newtype_derive" }
-serde = "1.0.101"
+serde = { version = "1.0.101", features = ["derive"] }
 
 [features]
 nightly = ["amethyst/nightly"]

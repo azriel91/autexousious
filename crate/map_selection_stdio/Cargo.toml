@@ -10,7 +10,6 @@ application_event = { path = "../application_event" }
 asset_model = { path = "../asset_model" }
 derivative = "1.0.3"
 derive-new = "0.5.8"
-game_model = { path = "../game_model" }
 map_selection_model = { path = "../map_selection_model" }
 stdio_spi = { path = "../stdio_spi" }
 structopt = "0.3.2"

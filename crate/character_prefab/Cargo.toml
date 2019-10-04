@@ -7,7 +7,6 @@ edition = "2018"
 [dependencies]
 amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
 asset_model = { path = "../asset_model" }
-character_loading = { path = "../character_loading" }
 character_model = { path = "../character_model" }
 charge_model = { path = "../charge_model" }
 derivative = "1.0.3"
@@ -15,9 +14,7 @@ derive-new = "0.5.8"
 game_input = { path = "../game_input" }
 log = "0.4.8"
 map_model = { path = "../map_model" }
-object_loading = { path = "../object_loading" }
 object_model = { path = "../object_model" }
-object_prefab = { path = "../object_prefab" }
 object_status_model = { path = "../object_status_model" }
 sequence_model = { path = "../sequence_model" }
 typename = "0.1.1"

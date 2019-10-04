@@ -14,7 +14,7 @@ log = "0.4.8"
 logic_clock = { path = "../logic_clock" }
 object_model = { path = "../object_model" }
 sequence_model = { path = "../sequence_model" }
-serde = "1.0.101"
+serde = { version = "1.0.101", features = ["derive"] }
 spawn_model = { path = "../spawn_model" }
 sprite_model = { path = "../sprite_model" }
 

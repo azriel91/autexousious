@@ -20,7 +20,7 @@ numeric_newtype_derive = { path = "../numeric_newtype_derive" }
 sequence_model_core = { path = "../sequence_model_core" }
 sequence_model_derive = { path = "../sequence_model_derive" }
 sequence_model_spi = { path = "../sequence_model_spi" }
-serde = "1.0.101"
+serde = { version = "1.0.101", features = ["derive"] }
 slotmap = { version = "0.4.0", features = ["serde"] }
 strum = "0.16.0"
 strum_macros = "0.16.0"

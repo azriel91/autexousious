@@ -15,7 +15,7 @@ derive_more = "0.15.1-pre"
 enumflags2 = "0.6.0"
 logic_clock = { path = "../logic_clock" }
 sequence_model = { path = "../sequence_model" }
-serde = "1.0.101"
+serde = { version = "1.0.101", features = ["derive"] }
 slotmap = "0.4.0"
 sprite_model = { path = "../sprite_model" }
 strum = "0.16.0"

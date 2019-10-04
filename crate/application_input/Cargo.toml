@@ -3,9 +3,3 @@ name = "application_input"
 version = "0.14.0"
 authors = ["Azriel Hoh <mail@azriel.im>"]
 edition = "2018"
-
-[dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["no-slow-safety-checks", "vulkan"] }
-
-[features]
-nightly = ["amethyst/nightly"]
