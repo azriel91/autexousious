@@ -143,3 +143,5 @@ mod team_model;
 mod test_object_model;
 #[cfg(test)]
 mod tracker;
+#[cfg(test)]
+mod ui_audio_loading;
