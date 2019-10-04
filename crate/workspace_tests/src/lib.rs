@@ -127,3 +127,5 @@ mod sequence_play;
 mod spawn_loading;
 #[cfg(test)]
 mod spawn_model;
+#[cfg(test)]
+mod spawn_play;
