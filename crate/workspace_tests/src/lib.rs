@@ -105,3 +105,5 @@ mod map_loading;
 mod map_model;
 #[cfg(test)]
 mod map_play;
+#[cfg(test)]
+mod map_selection_stdio;

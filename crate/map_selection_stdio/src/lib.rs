@@ -4,7 +4,9 @@
 
 pub use crate::{
     map_selection_event_args::MapSelectionEventArgs,
-    map_selection_event_stdin_mapper::MapSelectionEventStdinMapper,
+    map_selection_event_stdin_mapper::{
+        MapSelectionEventStdinMapper, MapSelectionEventStdinMapperSystemData,
+    },
     map_selection_stdio_bundle::MapSelectionStdioBundle,
 };
 
