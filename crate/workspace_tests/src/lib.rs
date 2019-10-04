@@ -131,3 +131,5 @@ mod spawn_model;
 mod spawn_play;
 #[cfg(test)]
 mod sprite_loading;
+#[cfg(test)]
+mod sprite_model;
