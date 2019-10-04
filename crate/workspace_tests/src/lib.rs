@@ -89,3 +89,5 @@ mod game_mode_selection_ui;
 mod game_play;
 #[cfg(test)]
 mod game_play_hud;
+#[cfg(test)]
+mod game_play_stdio;

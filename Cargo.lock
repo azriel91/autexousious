@@ -2267,9 +2267,7 @@ name = "game_play_stdio"
 version = "0.14.0"
 dependencies = [
  "amethyst 0.13.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
- "amethyst_test 0.4.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
  "application_event 0.14.0",
- "assets_test 0.14.0",
  "derive-new 0.5.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "game_play_model 0.14.0",
  "stdio_spi 0.14.0",
@@ -5695,6 +5693,7 @@ dependencies = [
  "game_play 0.14.0",
  "game_play_hud 0.14.0",
  "game_play_model 0.14.0",
+ "game_play_stdio 0.14.0",
  "hamcrest 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "indexmap 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "kinematic_loading 0.14.0",
