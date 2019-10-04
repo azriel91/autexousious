@@ -113,3 +113,5 @@ mod map_selection_ui;
 mod object_loading;
 #[cfg(test)]
 mod object_model;
+#[cfg(test)]
+mod object_play;
