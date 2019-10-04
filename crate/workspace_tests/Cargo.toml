@@ -95,6 +95,7 @@ rayon = "1.2.0"
 ron = "0.5.1"
 sequence_loading = { path = "../sequence_loading" }
 sequence_model = { path = "../sequence_model" }
+sequence_play = { path = "../sequence_play" }
 serde = "1.0.101"
 serde_yaml = "0.8.9"
 shape_model = { path = "../shape_model" }

@@ -121,3 +121,5 @@ mod object_prefab;
 mod object_status_play;
 #[cfg(test)]
 mod sequence_loading;
+#[cfg(test)]
+mod sequence_play;
