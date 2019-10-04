@@ -93,3 +93,5 @@ mod game_play_hud;
 mod game_play_stdio;
 #[cfg(test)]
 mod kinematic_loading;
+#[cfg(test)]
+mod kinematic_model;
