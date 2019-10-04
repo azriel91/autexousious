@@ -2697,7 +2697,6 @@ name = "loading"
 version = "0.14.0"
 dependencies = [
  "amethyst 0.13.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
- "amethyst_test 0.4.0 (git+https://github.com/azriel91/amethyst.git?branch=maintenance/update-dependencies)",
  "application 0.14.0",
  "application_event 0.14.0",
  "application_state 0.14.0",
@@ -2705,7 +2704,6 @@ dependencies = [
  "asset_loading 0.14.0",
  "asset_model 0.14.0",
  "assets_built_in 0.14.0",
- "assets_test 0.14.0",
  "audio_model 0.14.0",
  "character_loading 0.14.0",
  "character_model 0.14.0",

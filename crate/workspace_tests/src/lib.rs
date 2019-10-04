@@ -95,3 +95,5 @@ mod game_play_stdio;
 mod kinematic_loading;
 #[cfg(test)]
 mod kinematic_model;
+#[cfg(test)]
+mod loading;
