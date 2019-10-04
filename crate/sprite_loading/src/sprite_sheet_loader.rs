@@ -9,8 +9,9 @@ use sprite_model::config::SpriteSheetDefinition;
 
 use crate::SpriteSheetMapper;
 
+/// Loads sprite sheets given sprite sheet definitions and texture handles.
 #[derive(Debug)]
-pub(crate) struct SpriteSheetLoader;
+pub struct SpriteSheetLoader;
 
 impl SpriteSheetLoader {
     /// Loads Amethyst `SpriteSheet`s from configuration and returns their handles.
