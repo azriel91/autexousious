@@ -12,7 +12,7 @@ use crate::{
 
 /// Adds game loading systems to the provided dispatcher.
 #[derive(Debug, new)]
-pub(crate) struct GameLoadingBundle;
+pub struct GameLoadingBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for GameLoadingBundle {
     fn build(
@@ -29,9 +29,9 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameLoadingBundle {
             CharacterAugmentRectifySystem::new(),
             &CharacterAugmentRectifySystem::type_name(),
             &[
-                &CharacterSelectionSpawningSystem::type_name(),
                 // Ideally we would also specify `character_prefab::CHARACTER_PREFAB_LOADER_SYSTEM`
                 // However, it is in the main dispatcher, so we cannot depend on it.
+                &CharacterSelectionSpawningSystem::type_name(),
             ],
         ); // kcov-ignore
         builder.add(
@@ -40,24 +40,5 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameLoadingBundle {
             &[],
         ); // kcov-ignore
         Ok(())
-    }
-}
-
-#[cfg(test)]
-mod test {
-    use std::env;
-
-    use amethyst::Error;
-    use amethyst_test::AmethystApplication;
-
-    use super::GameLoadingBundle;
-
-    #[test]
-    fn bundle_build_should_succeed() -> Result<(), Error> {
-        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
-
-        AmethystApplication::blank()
-            .with_bundle(GameLoadingBundle::new())
-            .run()
     }
 }

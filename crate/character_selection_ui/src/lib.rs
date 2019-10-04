@@ -2,12 +2,14 @@
 
 //! Menu to allow the user to select game mode.
 
-pub use crate::character_selection_ui_bundle::CharacterSelectionUiBundle;
-pub(crate) use crate::{
+pub use crate::{
+    character_selection_ui_bundle::CharacterSelectionUiBundle,
     component::{CharacterSelectionWidget, WidgetState},
     system::{
-        CharacterSelectionInputSystem, CharacterSelectionSfxSystem,
-        CharacterSelectionWidgetInputSystem, CharacterSelectionWidgetUiSystem,
+        CharacterSelectionInputSystem, CharacterSelectionInputSystemData,
+        CharacterSelectionSfxSystem, CharacterSelectionSfxSystemData,
+        CharacterSelectionWidgetInputSystem, CharacterSelectionWidgetInputSystemData,
+        CharacterSelectionWidgetUiSystem, CharacterSelectionWidgetUiSystemData,
     },
 };
 

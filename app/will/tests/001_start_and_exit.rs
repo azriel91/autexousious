@@ -16,7 +16,6 @@ fn start_and_exit() -> Result<(), OutputError> {
         .run()
         .expect("Failed to create `cargo` command")
         .command()
-        .env("APP_DIR", env!("CARGO_MANIFEST_DIR"))
         .with_stdin()
         .buffer("exit\n")
         .ok()?

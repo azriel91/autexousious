@@ -5,13 +5,18 @@
 //! Note that game entities are spawned in the `GameLoadingState` provided by the `game_loading`
 //! crate.
 
-pub use crate::game_play_state::GamePlayState;
-pub(crate) use crate::{
+pub use crate::{
     game_play_bundle::GamePlayBundle,
+    game_play_state::GamePlayState,
     system::{
-        CharacterHitEffectSystem, CharacterSequenceUpdateSystem, FrameFreezeClockAugmentSystem,
-        GamePlayEndDetectionSystem, GamePlayEndTransitionSystem, GamePlayRemovalAugmentSystem,
-        GroundingFrictionSystem, ObjectKinematicsUpdateSystem, ObjectTransformUpdateSystem,
+        CharacterHitEffectSystem, CharacterHitEffectSystemData, CharacterSequenceUpdateSystem,
+        CharacterSequenceUpdateSystemData, FrameFreezeClockAugmentSystem,
+        FrameFreezeClockAugmentSystemData, GamePlayEndDetectionSystem,
+        GamePlayEndDetectionSystemData, GamePlayEndTransitionSystem,
+        GamePlayEndTransitionSystemData, GamePlayRemovalAugmentSystem,
+        GamePlayRemovalAugmentSystemData, GroundingFrictionSystem, GroundingFrictionSystemData,
+        ObjectKinematicsUpdateSystem, ObjectKinematicsUpdateSystemData,
+        ObjectTransformUpdateSystem, ObjectTransformUpdateSystemData,
     },
 };
 

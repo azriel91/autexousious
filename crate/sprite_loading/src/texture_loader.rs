@@ -8,8 +8,9 @@ use amethyst::{
 use log::error;
 use sprite_model::config::SpriteSheetDefinition;
 
+/// Loads textures specified in the sprite sheet definitions.
 #[derive(Debug)]
-pub(crate) struct TextureLoader;
+pub struct TextureLoader;
 
 impl TextureLoader {
     /// Loads the sprite sheet images as textures and returns the texture handles.
@@ -21,7 +22,7 @@ impl TextureLoader {
     /// * `texture_assets`: `AssetStorage` for `Texture`s.
     /// * `object_directory`: Object configuration base directory.
     /// * `sprite_sheet_definitions`: List of metadata for sprite sheets to load.
-    pub(crate) fn load_textures(
+    pub fn load_textures(
         progress_counter: &mut ProgressCounter,
         loader: &Loader,
         texture_assets: &AssetStorage<Texture>,

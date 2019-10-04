@@ -16,7 +16,6 @@ use sequence_model::{
 /// Common game object `Component` storages.
 ///
 /// These are the storages for the components common to all game objects.
-///
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct ObjectComponentStorages<'s> {

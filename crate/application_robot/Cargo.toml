@@ -9,9 +9,5 @@ amethyst = { git = "https://github.com/azriel91/amethyst.git", features = ["no-s
 application_input = { path = "../application_input" }
 derivative = "1.0.3"
 
-[dev-dependencies]
-debug_util_amethyst = { path = "../debug_util_amethyst" }
-winit = "0.19.3"
-
 [features]
 nightly = ["amethyst/nightly"]

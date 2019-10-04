@@ -22,12 +22,13 @@ const STUN_THRESHOLD_HIGH: StunPoints = StunPoints(120);
 
 /// Determines collision effects for characters.
 #[derive(Debug, Default, TypeName, new)]
-pub(crate) struct CharacterHitEffectSystem {
+pub struct CharacterHitEffectSystem {
     /// Reader ID for the `HitEvent` event channel.
     #[new(default)]
     hit_event_rid: Option<ReaderId<HitEvent>>,
 }
 
+/// `CharacterHitEffectSystemData`.
 #[derive(Derivative, SystemData)]
 #[derivative(Debug)]
 pub struct CharacterHitEffectSystemData<'s> {

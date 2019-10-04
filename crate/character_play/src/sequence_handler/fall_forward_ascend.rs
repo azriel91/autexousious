@@ -8,8 +8,9 @@ use crate::{
 const FALL_FORWARD_ASCEND: SwitchSequenceOnDescend =
     SwitchSequenceOnDescend(CharacterSequenceName::FallForwardDescend);
 
+/// `FallForwardAscend` sequence update.
 #[derive(Debug)]
-pub(crate) struct FallForwardAscend;
+pub struct FallForwardAscend;
 
 impl CharacterSequenceHandler for FallForwardAscend {
     fn update(components: CharacterSequenceUpdateComponents<'_>) -> Option<CharacterSequenceName> {

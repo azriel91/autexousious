@@ -1,4 +1,6 @@
-pub(crate) use self::{
+//! Input checks in sequence handlers.
+
+pub use self::{
     stand_x_movement_check::StandXMovementCheck, stand_z_movement_check::StandZMovementCheck,
     walk_x_movement_check::WalkXMovementCheck, walk_z_movement_check::WalkZMovementCheck,
 };

@@ -26,7 +26,7 @@ pub struct SpriteSheetDefinition {
     /// This is the number of sprites counting across the sheet.
     pub column_count: u32,
     /// Whether or not there is a 1 pixel border between sprites.
-    #[serde(default = "SpriteSheetDefinition::default_has_border")]
+    #[serde(default = "SpriteSheetDefinition::has_border_default")]
     pub has_border: bool,
     /// Pixel offsets of the sprite relative to the entity's position in the world.
     ///
@@ -36,19 +36,10 @@ pub struct SpriteSheetDefinition {
 }
 
 impl SpriteSheetDefinition {
+    /// Visible for testing.
     // kcov-ignore-start
-    fn default_has_border() -> bool {
+    pub fn has_border_default() -> bool {
         // kcov-ignore-end
         true
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::SpriteSheetDefinition;
-
-    #[test]
-    fn default_has_border_is_true() {
-        assert!(SpriteSheetDefinition::default_has_border());
     }
 }

@@ -58,23 +58,3 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameInputBundle {
         Ok(())
     }
 }
-
-#[cfg(test)]
-mod test {
-    use std::env;
-
-    use amethyst::Error;
-    use amethyst_test::AmethystApplication;
-    use game_input_model::ControlBindings;
-
-    use super::GameInputBundle;
-
-    #[test]
-    fn bundle_build_should_succeed() -> Result<(), Error> {
-        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
-
-        AmethystApplication::ui_base::<ControlBindings>()
-            .with_bundle(GameInputBundle::new())
-            .run()
-    }
-}

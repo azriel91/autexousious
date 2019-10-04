@@ -12,9 +12,5 @@ derive_deref = "1.1.0"
 derive-new = "0.5.8"
 log = "0.4.8"
 
-[dev-dependencies]
-character_selection_model = { path = "../character_selection_model" }
-rayon = "1.2.0"
-
 [features]
 nightly = ["amethyst/nightly"]

@@ -86,7 +86,6 @@
 //!     }
 //! }
 //! ```
-//!
 
 pub use variant_struct_derive::VariantStruct;
 

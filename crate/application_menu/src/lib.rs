@@ -5,7 +5,9 @@
 pub use self::{
     component::{MenuItem, MenuItemWidgetState, Siblings},
     event::MenuEvent,
-    system::MenuItemWidgetInputSystem,
+    system::{
+        MenuItemWidgetInputResources, MenuItemWidgetInputSystem, MenuItemWidgetInputSystemData,
+    },
 };
 
 mod component;

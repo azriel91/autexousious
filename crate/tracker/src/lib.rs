@@ -7,7 +7,10 @@
 //! pressed, but the `System` may be run multiple times before the user has released the button,
 //! causing multiple actions to happen / rapid-fire when only one action is intended.
 
-pub use crate::{component::Last, system::LastTrackerSystem};
+pub use crate::{
+    component::Last,
+    system::{LastTrackerSystem, LastTrackerSystemData},
+};
 
 mod component;
 mod system;

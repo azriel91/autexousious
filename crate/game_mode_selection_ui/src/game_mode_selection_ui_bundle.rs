@@ -55,22 +55,3 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameModeSelectionUiBundle {
         Ok(())
     }
 }
-
-#[cfg(test)]
-mod test {
-    use std::env;
-
-    use amethyst::{input::StringBindings, Error};
-    use amethyst_test::AmethystApplication;
-
-    use super::GameModeSelectionUiBundle;
-
-    #[test]
-    fn bundle_build_should_succeed() -> Result<(), Error> {
-        env::set_var("APP_DIR", env!("CARGO_MANIFEST_DIR"));
-
-        AmethystApplication::ui_base::<StringBindings>()
-            .with_bundle(GameModeSelectionUiBundle::new())
-            .run()
-    }
-}

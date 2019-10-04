@@ -14,9 +14,5 @@ strum = "0.16.0"
 strum_macros = "0.16.0"
 variant_struct = { path = "../variant_struct" }
 
-[dev-dependencies]
-hamcrest = "0.1.5"
-winit = "0.19.3"
-
 [features]
 nightly = ["amethyst/nightly"]
