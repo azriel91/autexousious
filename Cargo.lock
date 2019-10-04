@@ -5093,7 +5093,6 @@ dependencies = [
  "object_type 0.14.0",
  "sequence_model 0.14.0",
  "serde 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde_yaml 0.8.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "spawn_model 0.14.0",
  "sprite_model 0.14.0",
  "strum 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)",

@@ -139,3 +139,5 @@ mod stdio_command_stdio;
 mod stdio_input;
 #[cfg(test)]
 mod team_model;
+#[cfg(test)]
+mod test_object_model;
